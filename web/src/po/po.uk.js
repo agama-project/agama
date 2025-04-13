@@ -740,9 +740,6 @@ export default {
   "Loading data...": [
     "Завантаження даних..."
   ],
-  "Loading installation environment, please wait.": [
-    "Завантаження оточення встановлення, зачекайте."
-  ],
   "Loading the installation repositories...": [
     "Завантаження інсталяційних репозиторіїв..."
   ],

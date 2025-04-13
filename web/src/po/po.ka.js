@@ -1,10 +1,10 @@
 export default {
   "": {
     "plural-forms": (n) => n != 1,
-    "language": "ca"
+    "language": "ka"
   },
   " Timezone selection": [
-    " Selecció de la zona horària"
+    " დროის სარტყლის არჩევანი"
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -13,370 +13,370 @@ export default {
     "%1$s - %2$s"
   ],
   "%1$s at %2$s": [
-    "%1$s a %2$s"
+    "%1$s %2$s-ზე"
   ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
-    "%1$s encara contindrà el grup d'LVM %2$s i qualsevol partició necessària per a arrencar"
+    ""
   ],
   "%s - %s": [
     "%s - %s"
   ],
   "%s [must be registered].": [
-    "%s [ha d'estar registrat]."
+    "%s [დარეგისტრირებული უნდა იყოს]."
   ],
   "%s disk": [
-    "Disc %s"
+    "%s დისკი"
   ],
   "%s has been registered with below information.": [
-    "%s s'ha registrat amb la informació següent."
+    ""
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s és un sistema immutable amb actualitzacions atòmiques. Usa un sistema de fitxers Btrfs només de lectura actualitzat a través d'instantànies."
+    ""
   ],
   "%s logo": [
-    "Logotip per a %s"
+    "%s-ის ლოგო"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
-    "%s encara contindrà els grups d'LVM configurats i qualsevol partició necessària per a arrencar"
+    ""
   ],
   "%s with %d partitions": [
-    "%s amb %d particions"
+    "%s %d დანაყოფით"
   ],
   "A %1$s of %2$s will be created for %3$s": [
-    "Es crearà una %1$s de %2$s per a %3$s"
+    "%1$s ზომით %2$s შეიქმნება მიმაგრების წერტილზე %3$s"
   ],
   "A %1$s of at least %2$s will be created for %3$s": [
-    "Es crearà una %1$s d'almenys %2$s per a %3$s"
+    ""
   ],
   "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "Es crearà una %1$s amb una mida d'entre %2$s i %3$s per a %4$s"
+    ""
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
-    "S'usarà una mida mínima genèrica de %1$s per a la %2$s nova"
+    ""
   ],
   "A generic size of %s will be used for the new %2$s": [
-    "S'usarà una mida genèrica de %s per a la %2$s nova"
+    ""
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
-    "S'usarà un interval de mida genèric entre %1$s i %2$s per a la %3$s nova"
+    ""
   ],
   "A partition may be deleted": [
-    "Es pot suprimir una partició"
+    "დანაყოფი შეიძლება წაიშალოს"
   ],
   "A partition may be shrunk": [
-    "Una partició es pot encongir"
+    "დანაყოფი შეიძლება შემცირდეს"
   ],
   "A partition will be deleted": [
-    "Se suprimirà una partició"
+    "დანაყოფი წაიშლება"
   ],
   "Accept": [
-    "Accepta-ho"
+    "დასტური"
   ],
   "Action": [
-    "Acció"
+    "ქმედება"
   ],
   "Actions": [
-    "Accions"
+    "ქმედებები"
   ],
   "Actions for connection %s": [
-    "Accions per a la connexió %s"
+    "ქმედებები მიერთებისთვის %s"
   ],
   "Activate": [
-    "Activa"
+    "აქტივაცია"
   ],
   "Activate and format DASD devices": [
-    "Activa i formata dispositius DASD"
+    "DASD მოწყობილობების გააქტიურება და დაფორმატება"
   ],
   "Activate new disk": [
-    "Activa el disc nou"
+    "ახალი დისკის გააქტიურება"
   ],
   "Activate zFCP disk": [
-    "Activa el disc zFCP"
+    "zFCP დისკის გააქტიურება"
   ],
   "Activate zFCP disks": [
-    "Activa els discs zFCP"
+    "zFCP დისკების გააქტიურება"
   ],
   "Activated": [
-    "Activat"
+    "აქტივირებულია"
   ],
   "Add": [
-    "Afegeix"
+    "დამატება"
   ],
   "Add DNS": [
-    "Afegeix-hi un DNS"
+    "DNS-ის დამატება"
   ],
   "Add LVM volume group": [
-    "Afegeix un grup de volums d'LVM"
+    "LVM ტომების ჯგუფის დამატება"
   ],
   "Add an address": [
-    "Afegeix-hi una adreça"
+    "მისამართის დამატება"
   ],
   "Add another DNS": [
-    "Afegeix-hi un altre DNS"
+    "კიდევ ერთი DNS-ის დამატება"
   ],
   "Add another address": [
-    "Afegeix-hi una altra adreça"
+    "სხვა მისამართის დამატება"
   ],
   "Add another partition or mount an existing one": [
-    "Afegiu-hi una altra partició o munteu-ne una d'existent"
+    ""
   ],
   "Add logical volume": [
-    "Afegeix un volum lògic"
+    "ლოგიკური ტომის დამატება"
   ],
   "Add or use partition": [
-    "Afegiu o useu una partició"
+    "დანაყოფის დამატება ან გამოყენება"
   ],
   "Address": [
-    "Adreça"
+    "მისამართი"
   ],
   "Addresses": [
-    "Adreces"
+    "მისამართები"
   ],
   "Addresses data list": [
-    "Llista de dades d'adreces"
+    "მისამართის მონაცემების სია"
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
-    "Ajusteu la configuració següent perquè el sistema nou s'adapti a l'espai disponible."
+    ""
   ],
   "All content will be deleted": [
-    "Se'n suprimirà tot el contingut"
+    "შემცველობა სრულად წაიშლება"
   ],
   "All fields are required": [
-    "Tots els camps són obligatoris."
+    "ყველა ველი აუცილებელია"
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
-    "A més de definir el primer usuari, es poden configurar mètodes d'autenticació per a l'usuari d'arrel."
+    ""
   ],
   "Already using all available disks": [
-    "Ja s'usen tots els discs disponibles"
+    "უკვე ვიყენებ ყველა ხელმისაწვდომ დისკს"
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
-    "Se suprimirà qualsevol partició existent i es perdran totes les dades del disc."
+    ""
   ],
   "As a new partition on %1$s (%2$s)": [
-    "Com a partició nova a %1$s (%2$s)"
+    "როგორც ახალი დანაყოფი %1$s-ზე (%2$s)"
   ],
   "At least one address must be provided for selected mode": [
-    "S'ha de proporcionar almenys una adreça per al mode seleccionat."
+    ""
   ],
   "At least one partition will be deleted": [
-    "Se suprimirà almenys una partició"
+    ""
   ],
   "At this point you can power off the machine.": [
-    "En aquest punt, podeu aturar la màquina."
+    ""
   ],
   "At this point you can reboot the machine to log in to the new system.": [
-    "En aquest punt, podeu reiniciar la màquina per iniciar sessió al sistema nou."
+    ""
   ],
   "Authentication": [
-    "Autenticació"
+    "ავთენტიკაცია"
   ],
   "Authentication by initiator": [
-    "Autenticació per iniciador"
+    "ავთენტიკაცია ინიციატორით"
   ],
   "Authentication by target": [
-    "Autenticació per destinació"
+    "ავთენტიკაცია სამიზნით"
   ],
   "Authentication failed, please try again": [
-    "Hi ha hagut un error d'autenticació. Torneu-ho a provar."
+    "ავთენტიკაცია ჩავარდა. თავიდან სცადეთ"
   ],
   "Auto LUNs Scan": [
-    "Escaneig automàtic de LUN"
+    "LUN-ების ავტომატური სკანირება"
   ],
   "Automatic": [
-    "Automàtica"
+    "ავტომატური"
   ],
   "Automatic (DHCP)": [
-    "Automàtic (DHCP)"
+    "ავტომატური (მხოლოდ DHCP)"
   ],
   "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    "L'exploració automàtica de LUN està [desactivada]. Els LUN s'han de configurar       manualment després d'activar un controlador."
+    ""
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    "L'exploració automàtica de LUN està [activada]. L'activació d'un controlador       que s'executa en mode NPIV configurarà automàticament tots els seus LUN."
+    ""
   ],
   "Available products": [
-    "Productes disponibles"
+    "ხელმისაწვდომი პროდუქტები"
   ],
   "Back": [
-    "Enrere"
+    "უკან"
   ],
   "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "Segons la quantitat de memòria RAM del sistema, es crearà una %1s$ de %2$s per a %3$s"
+    ""
   ],
   "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "Segons la quantitat de memòria RAM del sistema, es crearà una %1s$ d'almenys %2$s per a %3$s"
+    ""
   ],
   "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "Segons la quantitat de memòria RAM del sistema, es crearà una %1s$ amb una mida d'entre %2$s i %3$s per a %4$s"
+    ""
   ],
   "Bcachefs": [
     "Bcachefs"
   ],
   "Before %s": [
-    "Abans: %s"
+    "%s-მდე"
   ],
   "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "Abans d'instal·lar, heu de prendre algunes decisions. Cliqueu a cada secció per revisar-ne la configuració."
+    ""
   ],
   "Before starting the installation, you need to address the following problems:": [
-    "Abans de començar la instal·lació, heu de resoldre els problemes següents:"
+    ""
   ],
   "BitLocker": [
     "BitLocker"
   ],
   "Boot options": [
-    "Opcions d'arrencada"
+    "ჩატვირთვის პარამეტრები"
   ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
-    "Btrfs amb instantànies"
+    "Btrfs სწრაფი ასლებით"
   ],
   "Calculated automatically": [
-    "Calculat automàticament"
+    "ავტომატურად გამოთვლილი"
   ],
   "Cancel": [
-    "Cancel·la"
+    "გაუქმება"
   ],
   "Cannot be changed in remote installation": [
-    "No es pot canviar a la instal·lació remota."
+    "ვერ შეიცვლება დაშორებული დაყენებისას"
   ],
   "Cannot connect to Agama server": [
-    "No es pot connectar amb el servidor d'Agama."
+    "Agama-ის სერვერთან მიერთება შეუძლებელია"
   ],
   "Cannot format all selected devices": [
-    "No es poden formatar tots els dispositius seleccionats."
+    "ყველა მონიშნული მოწყობილობის დაფორმატება შეუძლებელია"
   ],
   "Change": [
-    "Canvia"
+    "შეცვლა"
   ],
   "Change boot options": [
-    "Canvia les opcions d'arrencada"
+    "ჩატვირთვის პარამეტრების შეცვლა"
   ],
   "Change product": [
-    "Canvia el producte"
+    "პროდუქტის შეცვლა"
   ],
   "Change selection": [
-    "Canvia la selecció"
+    "მონიშნულის შეცვლა"
   ],
   "Channel ID": [
-    "Identificador del canal"
+    "არხის ID"
   ],
   "Check the %d planned actions": [
-    "Comproveu les %d accions planificades"
+    "%d დაგეგმილი ქმედების შემოწმება"
   ],
   "Check the following before continuing": [
-    "Comproveu el següent abans de continuar:"
+    "შეამოწმეთ შემდეგი ელემენტები გაგრძელებამდე"
   ],
   "Choose a disk for placing the boot loader": [
-    "Trieu un disc per posar-hi el carregador d'arrencada"
+    ""
   ],
   "Choose what to with current content": [
-    "Trieu què voleu fer del contingut actual"
+    "აირჩიეთ, რა ვუყო არსებულ შემცველობას"
   ],
   "Clear": [
-    "Neteja"
+    "გაწმენდა"
   ],
   "Clear selected mount point": [
-    "Suprimeix el punt de muntatge seleccionat"
+    "მონიშნული მიმაგრების წერტილის გასუფთავება"
   ],
   "Close": [
-    "Tanca"
+    "დახურვა"
   ],
   "Collapse the list of planned actions": [
-    "Replega la llista d'accions previstes"
+    "დაგეგმილი ქმედებების ჩამოშლა"
   ],
   "Configure DASD": [
-    "Configuració de DASD"
+    "DASD-ის მორგება"
   ],
   "Configure LVM Volume Group": [
-    "Configura un grup de volums d'LVM"
+    "LVM ტომების ჯგუფის მორგება"
   ],
   "Configure LVM logical volume at %s volume group": [
-    "Configura el volum lògic d'LVM al grup de volums %s"
+    ""
   ],
   "Configure iSCSI": [
-    "Configuració d'iSCSI"
+    "iSCSI-ის მორგება"
   ],
   "Configure partition at %s": [
-    "Configura la partició a %s"
+    "დანაყოფის აღწერა %s-ზე"
   ],
   "Configure zFCP": [
-    "Configuració de zFCP"
+    "zFCP-ის მორგება"
   ],
   "Configuring the product, please wait ...": [
-    "Configurant el producte. Espereu, si us plau..."
+    "მიმდინარეობს პროდუქტის მორგება. მოითმინეთ ..."
   ],
   "Confirm": [
-    "Confirmeu-ho"
+    "დადასტურება"
   ],
   "Confirm Installation": [
-    "Confirmeu la instal·lació"
+    "დაყენების დადასტურება"
   ],
   "Congratulations!": [
-    "Enhorabona!"
+    "გილოცავთ!"
   ],
   "Connect": [
-    "Connecta't"
+    "დაკავშირება"
   ],
   "Connect to a Wi-Fi network": [
-    "Connecteu-vos a una xarxa Wi-Fi"
+    "Wi-Fi ქსელთან მიერთება"
   ],
   "Connect to hidden network": [
-    "Connecta't a una xarxa oculta"
+    "დამალულ ქსელთან მიერთება"
   ],
   "Connect to iSCSI targets": [
-    "Connecta amb objectius iSCSI"
+    "iSCSI სამიზნეებთან მიერთება"
   ],
   "Connected": [
-    "Connectat"
+    "დაკავშირებულია"
   ],
   "Connected (%s)": [
-    "Connectat (%s)"
+    "მიერთებულია (%s)"
   ],
   "Connected to %s": [
-    "Connectat amb %s"
+    "მიერთებულია %s-სთან"
   ],
   "Connecting": [
-    "Connectant"
+    "დაკავშირება"
   ],
   "Connection actions": [
-    "Accions de connexió"
+    "კავშირის ქმედებები"
   ],
   "Content will be kept": [
-    "El contingut es mantindrà"
+    "შემცველობა შენარჩუნებული იქნება"
   ],
   "Continue": [
-    "Continua"
+    "გაგრძელება"
   ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
-    "Continuar sense instal·lar el paquet pot resultar en un sistema trencat. En alguns casos, és possible que el sistema ni tan sols arrenqui."
+    ""
   ],
   "Controllers": [
-    "Controladors"
+    "კონტროლერები"
   ],
   "Could not authenticate against the server, please check it.": [
-    "No s'ha pogut autenticar amb el servidor. Si us plau, reviseu-ho."
+    ""
   ],
   "Could not log in. Please, make sure that the password is correct.": [
-    "No s'ha pogut iniciar la sessió. Si us plau, assegureu-vos que la contrasenya sigui correcta."
+    ""
   ],
   "Create LVM volume group %s": [
-    "Crea el grup de volums d'LVM %s"
+    "შეიქმნება LVM-ის ტომების ჯგუფი %s"
   ],
   "Create user": [
-    "Crea un usuari"
+    "მომხმარებლის შექმნა"
   ],
   "Current %1$s at %2$s": [
-    "%1$s actual a %2$s"
+    "მიმდინარე %1$s მოწყობილობაზე %2$s"
   ],
   "Current %s": [
-    "Actual: %s"
+    "მიმდინარეა %s"
   ],
   "Custom": [
-    "Personalitzat"
+    "მორგებული"
   ],
   "DASD": [
     "DASD"
@@ -385,169 +385,169 @@ export default {
     "DASD %s"
   ],
   "DASD devices selection table": [
-    "Taula de selecció de dispositius DASD"
+    "DASD მოწყობილობების ასარჩევი ცხრილი"
   ],
   "DASDs table section": [
-    "Secció de taula DASD"
+    "DASD-ის ცხრილის სექცია"
   ],
   "DIAG": [
-    "DIAG"
+    "დიაგ"
   ],
   "DNS": [
     "DNS"
   ],
   "Deactivate": [
-    "Desactiva"
+    "დეაქტივაცია"
   ],
   "Deactivated": [
-    "Desactivat"
+    "დეაქტივირებულია"
   ],
   "Default file system for %s": [
-    "Sistema de fitxers per defecte per a %s"
+    "ნაგულისხმევი ფაილური სისტემა %s-სთვის"
   ],
   "Default file system for generic logical volumes": [
-    "Sistema de fitxers per defecte per a volums lògics genèrics"
+    "ნაგულისხმევი ფაილური ზოგადი ლოგიკური ტომებისთვის"
   ],
   "Default file system for generic partitions": [
-    "Sistema de fitxers per defecte per a particions genèriques"
+    ""
   ],
   "Define a custom size or a range": [
-    "Definiu una mida personalitzada o un interval"
+    ""
   ],
   "Define a new LVM on the disk": [
-    "Definiu un LVM nou al disc"
+    ""
   ],
   "Define a new LVM on top of one or several disks": [
-    "Definiu un LVM nou en un o diversos discs"
+    ""
   ],
   "Define a user now": [
-    "Definiu un usuari ara"
+    "მომხარებლის აღწერა"
   ],
   "Define the first user with admin (sudo) privileges for system management.": [
-    "Definiu el primer usuari amb privilegis d'administrador (sudo) per a la gestió del sistema."
+    ""
   ],
   "Defined (hidden)": [
-    "Definit (ocult)"
+    "აღწერილი (დამალული)"
   ],
   "Delete": [
-    "Suprimeix"
+    "წაშლა"
   ],
   "Delete current content": [
-    "Suprimeix el contingut actual"
+    "მიმდინარე შემცველობის წაშლა"
   ],
   "Delete the volume group and its logical volumes": [
-    "Suprimeix el grup de volums i els seus volums lògics"
+    ""
   ],
   "Delete volume group": [
-    "Suprimeix el grup de volums"
+    "ტომების ჯგუფის წაშლა"
   ],
   "Destroy current data and format partition as": [
-    "Destrueix les dades actuals i formata la partició com a"
+    ""
   ],
   "Details": [
-    "Detalls"
+    "დეტალები"
   ],
   "Device": [
-    "Dispositiu"
+    "მოწყობილობა"
   ],
   "Discard": [
-    "Descarta'l"
+    "მოცილება"
   ],
   "Disconnect": [
-    "Desconnecta"
+    "გამოერთება"
   ],
   "Disconnected": [
-    "Desconnectat"
+    "გამოერთებული"
   ],
   "Discover": [
-    "Descobreix"
+    "აღმოაჩინეთ"
   ],
   "Discover and connect to iSCSI targets": [
-    "Descobriu objectius iSCSI i connecteu-vos-hi"
+    "iSCSI სამიზნეების აღმოჩენა და მიერთება"
   ],
   "Discover iSCSI Targets": [
-    "Descobreix les destinacions iSCSI"
+    "iSCSI სამიზნეების აღმოჩენა"
   ],
   "Discover iSCSI targets": [
-    "Descobreix destinacions iSCSI"
+    "iSCSI სამიზნეების აღმოჩენა"
   ],
   "Disk": [
-    "Disc"
+    "დისკი"
   ],
   "Disks": [
-    "Discs"
+    "დისკები"
   ],
   "Do not configure": [
-    "No ho configuris"
+    "მორგება არ მოხდება"
   ],
   "Do not format %s and keep the data": [
-    "No formatis %s i conserva'n les dades"
+    ""
   ],
   "Do not use": [
-    "No l'usis"
+    "არ გამოიყენო"
   ],
   "Download logs": [
-    "Baixa els registres"
+    "ჟურნალის გადმოწერა"
   ],
   "Drive": [
-    "Unitat"
+    "დისკი"
   ],
   "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Durant la instal·lació, es fan diverses accions per configurar el disseny que es mostra a la taula següent."
+    ""
   ],
   "Edit": [
-    "Edita"
+    "ჩასწორება"
   ],
   "Edit %s": [
-    "Edita %s"
+    "%s-ის ჩასწორება"
   ],
   "Edit connection %s": [
-    "Edita la connexió %s"
+    "%s მიერთების ჩასწორება"
   ],
   "Edit iSCSI Initiator": [
-    "Edita l'iniciador iSCSI"
+    "ჩასწორება iSCSI ინიციატორის"
   ],
   "Edit user": [
-    "Edita l'usuari"
+    "მომხმარებლის ჩასწორება"
   ],
   "Edit volume group": [
-    "Edita el grup de volums"
+    "ტომების ჯგუფის ჩასწორება"
   ],
   "Empty LVM volume group %s": [
-    "Grup de volums d'LVM %s buit"
+    "ცარიელი LVM ტომების ჯგუფი %s"
   ],
   "Encrypt the system": [
-    "Encripta el sistema"
+    "სისტემის დაშიფვრა"
   ],
   "Encrypted Device": [
-    "Dispositiu encriptat"
+    "დაშიფრული მოწყობილობა"
   ],
   "Encryption": [
-    "Encriptació"
+    "დაშიფვრა"
   ],
   "Encryption Password": [
-    "Contrasenya d'encriptació"
+    "დაშიფვრის პაროლი"
   ],
   "Encryption is disabled": [
-    "L'encriptació està inhabilitada"
+    "დაშიფვრა გათიშულია"
   ],
   "Encryption is enabled": [
-    "L'encriptació està habilitada"
+    "დაშიფვრა ჩართულია"
   ],
   "Encryption is enabled using TPM unlocking": [
-    "L'encriptació s'habilita amb el desblocatge de TPM"
+    "დაშიფვრა ჩართულია TPM განბლოკვის გამოყენებით"
   ],
   "Encryption settings": [
-    "Configuració de l'encriptació"
+    "დაშიფვრის პარამეტრები"
   ],
   "Enter a hostname.": [
-    "Introduïu un nom d'amfitrió."
+    "შეიყვანეთ ჰოსტის სახელი."
   ],
   "Enter a name": [
-    "Introduïu un nom"
+    "შეიყვანეთ სახელი"
   ],
   "Enter a name for the volume group.": [
-    "Introduïu un nom per al grup de volums."
+    ""
   ],
   "ExFAT": [
     "ExFAT"
@@ -568,338 +568,338 @@ export default {
     "FAT"
   ],
   "Failed to calculate a storage layout": [
-    "No s'ha pogut calcular un disseny d'emmagatzematge"
+    ""
   ],
   "File system": [
-    "Sistema de fitxers"
+    "ფაილური სისტემა"
   ],
   "File system label": [
-    "Etiqueta del sistema de fitxers"
+    "ფაილური სისტემის ჭდე"
   ],
   "Filter by description or keymap code": [
-    "Filtra per descripció o codi de mapa de tecles"
+    "გაფილტვრა აღწერით ან რილაკების რუკის კოდით"
   ],
   "Filter by language, territory or locale code": [
-    "Filtra per llengua, territori o codi local"
+    ""
   ],
   "Filter by max channel": [
-    "Filtra per canal màxim"
+    "გაფილვრა მაქს. არხით"
   ],
   "Filter by min channel": [
-    "Filtra per canal mínim"
+    "მინ. არხით გაფილტვრა"
   ],
   "Filter by pattern title or description": [
-    "Filtra per títol o descripció del patró"
+    ""
   ],
   "Filter by territory, time zone code or UTC offset": [
-    "Filtra per territori, codi de zona horària o desplaçament d'UTC"
+    ""
   ],
   "Find space in %s": [
-    "Cerca espai a %s"
+    "ადგილის პოვნა %s-ში"
   ],
   "Finish": [
-    "Acaba"
+    "დასრულება"
   ],
   "Finished": [
-    "Acabada"
+    "დასრულებულია"
   ],
   "First user": [
-    "Usuari primer"
+    "პირველი მომხმარებელი"
   ],
   "Forget": [
-    "Oblida-la"
+    "დავიწყება"
   ],
   "Forget connection %s": [
-    "Oblida la connexió %s"
+    "%s მიერთების დავიწყება"
   ],
   "Format": [
-    "Formata"
+    "დაფორმატება"
   ],
   "Format logical volume as": [
-    "Formata el volum lògic com a"
+    "ლოგიკური ტომის დაფორმატება, როგორც"
   ],
   "Format partition as": [
-    "Formata la partició com a"
+    "დანაყოფის დაფორმატება, როგორც"
   ],
   "Format selected devices?": [
-    "Voleu formatar els dispositius seleccionats?"
+    "დავაფორმატო არჩეული მოწყობილობები?"
   ],
   "Formatted": [
-    "Formatat"
+    "დაფორმატებული"
   ],
   "Formatting DASD devices": [
-    "Formatatge de dispositius DASD"
+    "DASD მოწყობილობების დაფორმატება"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
-    "L'encriptació de disc complet (FDE) permet protegir la informació emmagatzemada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
+    ""
   ],
   "Full name": [
-    "Nom complet"
+    "სრული სახელი"
   ],
   "Gateway": [
-    "Passarel·la"
+    "ნაგულისხმევი რაუტერი"
   ],
   "Gateway can be defined only in 'Manual' mode": [
-    "La passarel·la només es pot definir en mode manual."
+    ""
   ],
   "GiB": [
-    "GiB"
+    "გიბ"
   ],
   "Hide": [
-    "Amaga"
+    "დამალვა"
   ],
   "Hide %d subvolume action": [
-    "Amaga %d acció de subvolum",
-    "Amaga %d accions de subvolum"
+    "",
+    ""
   ],
   "Hide details": [
-    "Amaga els detalls"
+    "დეტალების დამალვა"
   ],
   "Hostname": [
-    "Nom d'amfitrió"
+    "ჰოსტის სახელი"
   ],
   "I have read and accept the [license] for %s": [
-    "He llegit i accepto la [llicència] de %s"
+    ""
   ],
   "IP Address": [
-    "Adreça IP"
+    "IP მისამართი"
   ],
   "IP address": [
-    "Adreça IP"
+    "IP-მისამართი"
   ],
   "IP addresses": [
-    "Adreces IP"
+    "IP მისამართები"
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
-    "Si s'ha usat un mitjà local per executar aquest instal·lador, traieu-lo abans de la propera arrencada."
+    ""
   ],
   "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "Si s'omet la unitat, s'usaran els bytes (B). Les unitats més grosses poden tenir la forma de GiB (potència de 2) o GB (potència de 10)."
+    ""
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Si continueu, les particions del disc dur es modificaran segons la configuració d'instal·lació proporcionada."
+    ""
   ],
   "In progress": [
-    "En curs"
+    "მიმდინარეობს"
   ],
   "Incorrect IP address": [
-    "Adreça IP incorrecta"
+    "არასწორი IP მისამართი"
   ],
   "Incorrect password": [
-    "Contrasenya incorrecta"
+    "არასწორი პაროლი"
   ],
   "Incorrect port": [
-    "Port incorrecte"
+    "არასწორი პორტი"
   ],
   "Incorrect user name": [
-    "Nom d'usuari incorrecte"
+    "არასწორი მომხმარებლის სახელი"
   ],
   "Initiator": [
-    "Iniciador"
+    "ინიციატორი"
   ],
   "Initiator name": [
-    "Nom de l'iniciador"
+    "ინიციატორის სახელი"
   ],
   "Install": [
-    "Instal·la"
+    "დაყენება"
   ],
   "Install using an advanced configuration.": [
-    "Instal·la mitjançant una configuració avançada."
+    "დაყენება დამატებითი მორგებით."
   ],
   "Install using device %s and deleting all its content.": [
-    "Instal·la al dispositiu %s suprimint-ne tot el contingut."
+    ""
   ],
   "Install using device %s shrinking existing partitions as needed.": [
-    "Instal·la al dispositiu %s encongint-ne les particions existents segons calgui."
+    ""
   ],
   "Install using device %s with a custom strategy to find the needed space.": [
-    "Instal·la al dispositiu %s amb una estratègia personalitzada per trobar l'espai necessari."
+    ""
   ],
   "Install using device %s without modifying existing partitions.": [
-    "Instal·la al dispositiu %s sense modificar-ne les particions existents."
+    ""
   ],
   "Install using several devices and deleting all its content.": [
-    "Instal·la a dispositius diversos suprimint-ne tot el contingut."
+    ""
   ],
   "Install using several devices shrinking existing partitions as needed.": [
-    "Instal·la a dispositius diversos encongint-ne les particions existents segons calgui."
+    ""
   ],
   "Install using several devices with a custom strategy to find the needed space.": [
-    "Instal·la a dispositius diversos amb una estratègia personalitzada per trobar l'espai necessari."
+    ""
   ],
   "Install using several devices without modifying existing partitions.": [
-    "Instal·la a dispositius diversos sense modificar-ne les particions existents."
+    ""
   ],
   "Installation Devices": [
-    "Dispositius d'instal·lació"
+    "დაყენების მოწყობილობები"
   ],
   "Installation will take %s.": [
-    "La instal·lació necessitarà %s."
+    "დაყენებას დასჭირდება %s."
   ],
   "Installer Options": [
-    "Opcions de l'instal·lador"
+    "დაყენების პროგრამის მორგება"
   ],
   "Installer options": [
-    "Opcions de l'instal·lador"
+    "დაყენების პროგრამის მორგება"
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
-    "Instal·lar un paquet trencat afecta l'estabilitat del sistema i és un risc important de seguretat!"
+    ""
   ],
   "Installing the system, please wait...": [
-    "Instal·lant el sistema. Espereu, si us plau..."
+    "მიმდინარეობს სისტემის დაყენება. მოითმინეთ..."
   ],
   "Interface": [
-    "Interfície"
+    "ინტერფეისი"
   ],
   "Invalid storage settings": [
-    "Configuració d'emmagatzematge no vàlida"
+    "არასწორი საცავის პარამეტრები"
   ],
   "Ip prefix or netmask": [
-    "Prefix IP o màscara de xarxa"
+    "IP პრეფიქსი ან ქსელის ნიღაბი"
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
-    "No és possible instal·lar el sistema amb la configuració actual. Ajusteu els paràmetres que hi ha a continuació."
+    ""
   ],
   "JFS": [
     "JFS"
   ],
   "Keep size of %s": [
-    "Mantén la mida de %s"
+    "%s-ის ზომის შენარჩუნება"
   ],
   "Keyboard": [
-    "Teclat"
+    "კლავიატურა"
   ],
   "Keyboard layout": [
-    "Disposició del teclat"
+    "კლავიატურის განლაგება"
   ],
   "Keyboard selection": [
-    "Selecció del teclat"
+    "კლავიატურის არჩევანი"
   ],
   "KiB": [
-    "KiB"
+    "კიბ"
   ],
   "LUN": [
     "LUN"
   ],
   "Label": [
-    "Etiqueta"
+    "ჭდე"
   ],
   "Language": [
-    "Llengua"
+    "ენა"
   ],
   "Let the installer propose a sensible range of sizes": [
-    "Permeteu que l'instal·lador proposi una gamma raonable de mides"
+    ""
   ],
   "License language": [
-    "Llengua de la llicència"
+    "ლიცენზიის ენა"
   ],
   "Limited": [
-    "Limitada"
+    "შეზღუდული"
   ],
   "Loading data...": [
-    "Carregant dades..."
+    "მონაცემების ჩატვირთვა..."
   ],
   "Loading the installation repositories...": [
-    "Carregant els repositoris d'instal·lació..."
+    "დაყენების რეპოზიტორიების ჩატვირთვა..."
   ],
   "Locale selection": [
-    "Selecció de la llengua"
+    "ლოკალის არჩევანი"
   ],
   "Localization": [
-    "Localització"
+    "ლოკალიზაცია"
   ],
   "Log in": [
-    "Inicia la sessió"
+    "შესვლა"
   ],
   "Log in as %s": [
-    "Inicieu sessió com a %s"
+    "შესვლა, როგორც %s"
   ],
   "Logical volume name": [
-    "Nom del volum lògic"
+    "ლოგიკური ტომის სახელი"
   ],
   "Logical volumes": [
-    "Volums lògics"
+    "ლოგიკური ტომები"
   ],
   "Login": [
-    "Entrada"
+    "შესვლა"
   ],
   "Login %s": [
-    "Entrada per a %s"
+    "%s-ზე შესვლა"
   ],
   "Login form": [
-    "Forma d'entrada"
+    "შესვლის ფორმა"
   ],
   "Logout": [
-    "Sortida"
+    "გასვლა"
   ],
   "Main navigation": [
-    "Navegació principal"
+    "მთავარი ნავიგაცია"
   ],
   "Make sure you provide the correct values": [
-    "Assegureu-vos que proporcioneu els valors correctes"
+    ""
   ],
   "Manage DASD devices": [
-    "Gestioneu els dispositius DASD"
+    "DASD მოწყობილობების მართვა"
   ],
   "Manual": [
-    "Manual"
+    "ხელით"
   ],
   "Maximum": [
-    "Màxim"
+    "მაქსიმუმი"
   ],
   "Maximum size mode": [
-    "Mode de mida màxima"
+    "მაქსიმალური ზომის რეჟიმი"
   ],
   "Maximum size options": [
-    "Opcions de mida màxima"
+    "მაქსიმალური ზომის მორგება"
   ],
   "Maximum size value": [
-    "Valor de mida màxima"
+    "მაქსიმალური ზომის მნიშვნელობა"
   ],
   "MiB": [
-    "MiB"
+    "მიბ"
   ],
   "Minimum": [
-    "Mínim"
+    "მინიმუმი"
   ],
   "Minimum size value": [
-    "Valor de mida mínima"
+    "მინიმალური ზომის მნიშვნელობა"
   ],
   "Mode": [
-    "Mode"
+    "რეჟიმი"
   ],
   "Modify settings and physical volumes": [
-    "Modifica la configuració i els volums físics"
+    "პარამეტრების და ფიზიკური ტომების შეცვლა"
   ],
   "More actions": [
-    "Més accions"
+    "მეტი ქმედება"
   ],
   "More devices": [
-    "Més dispositius"
+    "მეტი მოწყობილობა"
   ],
   "Mount Point": [
-    "Punt de muntatge"
+    "მიმაგრების წერტილი"
   ],
   "Mount point": [
-    "Punt de muntatge"
+    "მიმაგრების წერტილი"
   ],
   "Mount point mode": [
-    "Mode de punt de muntatge"
+    "მიმაგრების წერტილის რეჟიმი"
   ],
   "Mount point options": [
-    "Opcions de punt de muntatge"
+    "მიმაგრების წერტილის მორგება"
   ],
   "Mount point toggle": [
-    "Commutació de punt de muntatge"
+    "მიმაგრების წერტილის გადართვა"
   ],
   "Move mount points": [
-    "Mou els punts de muntatge"
+    "მიმაგრების წერტილების გადატანა"
   ],
   "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    "Mou els punts de muntatge configurats actualment als discs seleccionats                    als volums lògics d'aquest grup de volums."
+    ""
   ],
   "Multipath": [
-    "Multicamí"
+    "მრავალბილიკიანი"
   ],
   "NFS": [
     "NFS"
@@ -911,830 +911,830 @@ export default {
     "NTFS"
   ],
   "Name": [
-    "Nom"
+    "სახელი"
   ],
   "Network": [
-    "Xarxa"
+    "ქსელი"
   ],
   "New": [
-    "Nova"
+    "ახალი"
   ],
   "New LVM volume group": [
-    "Grup de volums nou d'LVM"
+    "ახალი LVM-ის ტომების ჯგუფი"
   ],
   "No": [
-    "No"
+    "არა"
   ],
   "No Wi-Fi supported": [
-    "No és compatible amb Wi-Fi."
+    "Wi-Fi მხარდაჭერილი არაა"
   ],
   "No additional partitions will be created": [
-    "No es crearan particions addicionals"
+    "დამატებითი დანაყოფები არ შეიქმნება"
   ],
   "No additional software was selected.": [
-    "No s'ha seleccionat cap programari addicional."
+    "დამატებითი პროგრამები არ არჩეულა."
   ],
   "No connected yet": [
-    "Encara no s'ha connetat."
+    "ჯერ მიერთებული არაა"
   ],
   "No content found": [
-    "No s'ha trobat contingut."
+    "შემცველობა აღმოჩენილი არაა"
   ],
   "No device selected yet": [
-    "Encara no s'ha seleccionat cap dispositiu."
+    "ჯერ მოწყობილობები არჩეული არაა"
   ],
   "No devices configured yet": [
-    "Encara no s'ha configurat cap dispositiu"
+    "ჯერ მოწყობილობები მორგებული არაა"
   ],
   "No devices found": [
-    "No s'ha trobat cap dispositiu"
+    "მოწყობილობები აღმოჩენილი არაა"
   ],
   "No iSCSI targets found.": [
-    "No s'ha trobat cap destinació iSCSI."
+    "პრობლემა iSCSI სამიზნეების აღმოჩენისას."
   ],
   "No logical volumes are defined yet": [
-    "Encara no s'ha definit cap volum lògic"
+    "ლოგიკური ტომები ჯერ აღწერილი არაა"
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
-    "No es configurarà automàticament cap partició per a l'arrencada. Useu-ho amb precaució."
+    ""
   ],
   "No support is planned.": [
-    "No té compatibilitat prevista."
+    "მხარდაჭერა დაგეგმილი არაა."
   ],
   "No user defined yet.": [
-    "Encara no s'ha definit cap usuari."
+    "მომხმარებელი ჯერ აღწერილი არაა."
   ],
   "No visible Wi-Fi networks found": [
-    "No s'ha trobat cap xarxa Wi-Fi visible."
+    "ხილული WiFi ქსელები აღმოჩენილი არაა"
   ],
   "No wired connections found": [
-    "No s'ha trobat cap connexió amb fil."
+    "მავთულიანი მიერთება აღმოჩენილი არაა"
   ],
   "No zFCP controllers found.": [
-    "No s'ha trobat cap controlador de zFCP."
+    "zFCP კონტროლერები აღმოჩენილი არაა."
   ],
   "No zFCP disks found.": [
-    "No s'ha trobat cap disc zFCP."
+    "zFCP დისკები აღმოჩენილი არაა."
   ],
   "None": [
-    "Cap"
+    "არაფერი"
   ],
   "None of the keymaps match the filter.": [
-    "Cap dels mapes de tecles coincideix amb el filtre."
+    ""
   ],
   "None of the locales match the filter.": [
-    "Cap de les llengües coincideix amb el filtre."
+    ""
   ],
   "None of the patterns match the filter.": [
-    "Cap dels patrons coincideix amb el filtre."
+    ""
   ],
   "None of the time zones match the filter.": [
-    "Cap de les zones horàries coincideix amb el filtre."
+    ""
   ],
   "Not defined": [
-    "No definit"
+    "აღწერილი არაა"
   ],
   "Not implemented yet (%s)": [
-    "Encara no s'ha implementat (%s)"
+    "ჯერ განხორციელებული არაა (%s)"
   ],
   "Not possible with the current setup. Click to know more.": [
-    "No és possible amb la configuració actual. Feu clic per saber-ne més."
+    ""
   ],
   "Not selected yet": [
-    "Encara no s'ha seleccionat."
+    "ჯერ არჩეული არაა"
   ],
   "Not supported (%s)": [
-    "No compatible (%s)"
+    "მხარდაჭერილი არაა (%s)"
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Els dispositius fora de línia s'han d'activar abans de formatar-los. Si us plau, desmarqueu o activeu els dispositius que s'indiquen a continuació i torneu-ho a provar."
+    ""
   ],
   "Offload card": [
-    "Targeta de descàrrega"
+    "განტვირთვის ბარათი"
   ],
   "On boot": [
-    "A l'arrencada"
+    "ჩატვირთვისას"
   ],
   "Only available if authentication by target is provided": [
-    "Només està disponible si es proporciona l'autenticació per destinació."
+    ""
   ],
   "Options toggle": [
-    "Canvi d'opcions"
+    "პარამეტრის გადართვა"
   ],
   "Other options": [
-    "Altres opcions"
+    "სხვა პარამეტრები"
   ],
   "Other options toggle": [
-    "Canvi d'altres opcions"
+    "სხვა პარამეტრის გადართვა"
   ],
   "Overview": [
-    "Resum"
+    "გადახედვა"
   ],
   "Package installation failed": [
-    "Ha fallat instal·lació del paquet."
+    "პაკეტის დაყენება ჩავარდა"
   ],
   "Partition Info": [
-    "Informació de la partició"
+    "დანაყოფის ინფორმაცია"
   ],
   "Partitions": [
-    "Particions"
+    "დანაყოფები"
   ],
   "Partitions needed for booting will also be adapted": [
-    "També s'adaptaran les particions necessàries per a l'arrencada"
+    "ასევე მოხდება ჩასატვირთად საჭირო დანაყოფების მორგება"
   ],
   "Partitions needed for booting will remain at %s": [
-    "Les particions necessàries per a arrencar es mantindran a %s"
+    "ჩასატვირთად საჭირო დანაყოფები %s-ზე დარჩება"
   ],
   "Partitions to boot will be allocated at the following device.": [
-    "Les particions per a l'arrencada s'assignaran al dispositiu següent."
+    ""
   ],
   "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Les particions per a l'arrencada s'assignaran al disc d'instal·lació (%s)."
+    ""
   ],
   "Partitions to boot will be allocated at the installation disk.": [
-    "Les particions per a l'arrencada s'assignaran al disc d'instal·lació."
+    "ჩატვირთვადი დანაყოფები დაყენების დისკზე გამოიყოფა."
   ],
   "Partitions will be used and created for %s": [
-    "Les particions s'usaran i es crearan per a %s"
+    ""
   ],
   "Password": [
-    "Contrasenya"
+    "პაროლი"
   ],
   "Password Required": [
-    "Cal una contrasenya."
+    "პაროლი აუცილებელია"
   ],
   "Password confirmation": [
-    "Confirmació de la contrasenya"
+    "პაროლის დადასტურება"
   ],
   "Password input": [
-    "Introducció de contrasenya"
+    "პაროლის შეყვანა"
   ],
   "Password is empty.": [
-    "La contrasenya està buida."
+    "პაროლი ცარიელია."
   ],
   "Password visibility button": [
-    "Botó de visibilitat de la contrasenya"
+    "პაროლის ხილვადობის ღილაკი"
   ],
   "Passwords do not match": [
-    "Les contrasenyes no coincideixen."
+    "პაროლები არ ემთხვევა"
   ],
   "Pending": [
-    "Pendent"
+    "დარჩენილია"
   ],
   "Perform an action": [
-    "Fes una acció"
+    "ქმედების შესრულება"
   ],
   "PiB": [
-    "PiB"
+    "პიბ"
   ],
   "Please, cancel and check the settings if you are unsure.": [
-    "Si us plau, cancel·leu i comproveu-ne la configuració si no n'esteu segur."
+    ""
   ],
   "Please, check whether it is running.": [
-    "Si us plau, comproveu si s'executa."
+    "შეამოწმეთ, გაშვებულია თუ არა ის."
   ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Si us plau, executeu un descobriment d'iSCSI per trobar destinacions iSCSI disponibles."
+    ""
   ],
   "Please, provide its password to log in to the system.": [
-    "Si us plau, proporcioneu-ne la contrasenya per iniciar sessió al sistema."
+    ""
   ],
   "Please, review provided settings and try again.": [
-    "Si us plau, reviseu la configuració proporcionada i torneu-ho a provar."
+    ""
   ],
   "Please, try to activate a zFCP controller.": [
-    "Si us plau, proveu d'activar un controlador de zFCP."
+    ""
   ],
   "Please, try to activate a zFCP disk.": [
-    "Si us plau, proveu d'activar un disc zFCP."
+    ""
   ],
   "Port": [
-    "Port"
+    "პორტი"
   ],
   "Portal": [
-    "Portal"
+    "პორტალი"
   ],
   "Pre-installation checks": [
-    "Comprovacions prèvies a la instal·lació"
+    "დაყენებისწინა შემოწმებები"
   ],
   "Prefix length or netmask": [
-    "Longitud del prefix o màscara de xarxa"
+    "პრეფიქსის სიგრძე ან ნეტმასკა"
   ],
   "Product is already registered": [
-    "El producte ja està registrat."
+    "პროდუქტი უკვე რეგისტრირებულია"
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Protecció de la informació emmagatzemada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
+    ""
   ],
   "Provide email address": [
-    "Proporcioneu una adreça de correu electrònic."
+    "შეიყვანეთ ელფოსტის მისამართი"
   ],
   "Public SSH Key": [
-    "Clau pública SSH"
+    "საჯარო SSH გასაღები"
   ],
   "Public SSH Key is empty.": [
-    "La clau SSH pública és buida."
+    "საჯარო SSH გასაღები ცარიელია."
   ],
   "Question": [
-    "Pregunta"
+    "კითხვა"
   ],
   "Read zFCP devices": [
-    "Llegeix els dispositius zFCP"
+    "zFCP მოწყობილობების წაკითხვა"
   ],
   "Reboot": [
-    "Reinicia"
+    "გადატვირთვა"
   ],
   "Register": [
-    "Registra"
+    "რესგისტრაცია"
   ],
   "Registration": [
-    "Registre"
+    "რეგისტრაცია"
   ],
   "Registration code": [
-    "Codi de registre"
+    "რეგისტრაციის კოდი"
   ],
   "ReiserFS": [
     "ReiserFS"
   ],
   "Reload": [
-    "Torna a carregar"
+    "თავიდან ჩატვირთვა"
   ],
   "Reloading data, please wait...": [
-    "Tornant a carregar les dades; espereu, si us plau..."
+    "მიმდინარეობს მონაცემების თავიდან ჩატვირთვა. მოითმინეთ..."
   ],
   "Remove": [
-    "Suprimeix"
+    "წაშლა"
   ],
   "Remove max channel filter": [
-    "Suprimeix el filtre de canal màxim"
+    "მაქს. არხის ფილტრის მოცილება"
   ],
   "Remove min channel filter": [
-    "Suprimeix el filtre del canal mínim"
+    "მინ. არხის ფილტრის მოცილება"
   ],
   "Remove the configuration for this device": [
-    "Suprimeix la configuració d'aquest dispositiu"
+    "ამ მოწყობილობის კონფიგურაციის წაშლა"
   ],
   "Repository load failed": [
-    "Ha fallat carregar el repositori."
+    "რეპოზიტორიის ჩატვირთვა ჩავარდა"
   ],
   "Reset to defaults": [
-    "Restableix els valors predeterminats"
+    "ნაგულისხმები პარამეტრების დაყენება"
   ],
   "Reset to the default configuration": [
-    "Restableix la configuració predeterminada"
+    "ჩამოყრა ნაგულისხმევ პარამეტრებზე"
   ],
   "Result": [
-    "Resultat"
+    "შედეგი"
   ],
   "Root authentication methods": [
-    "Mètodes d'autenticació d'arrel"
+    "Root-ით ავთენტიკაციის მეთოდები"
   ],
   "Root user": [
-    "Usuari d'arrel"
+    "Root მომხმარებელი"
   ],
   "SD Card": [
-    "Targeta SD"
+    "SD ბარათი"
   ],
   "SSID": [
     "SSID"
   ],
   "Same as minimum": [
-    "Igual que el mínim"
+    "იგივე, რაც მინიმალური"
   ],
   "Search": [
-    "Cerca"
+    "ძებნა"
   ],
   "Security": [
-    "Seguretat"
+    "უსაფრთხოება"
   ],
   "See more details": [
-    "Mostra'n més detalls"
+    "მეტი დეტალების ნახვა"
   ],
   "Select": [
-    "Selecciona"
+    "აირჩიეთ"
   ],
   "Select a device to configure": [
-    "Seleccioneu un dispositiu per configurar-lo"
+    "აირჩიეთ მოსარგები მოწყობილობა"
   ],
   "Select a device to create %s": [
-    "Seleccioneu un dispositiu per crear-hi %s"
+    ""
   ],
   "Select a device to install the system": [
-    "Seleccioneu un dispositiu on instal·lar el sistema"
+    "აირჩიეთ მოწყობილობა სისტემის დასაყენებლად"
   ],
   "Select a disk": [
-    "Seleccioneu un disc"
+    "აირჩიეთ დისკი"
   ],
   "Select a disk to define partitions": [
-    "Seleccioneu un disc per definir-ne les particions"
+    "აირჩიეთ დისკი დანაყოფების აღწერისთვის"
   ],
   "Select a product": [
-    "Seleccioneu un producte"
+    "აირჩიეთ პროდუქტი"
   ],
   "Select another disk to define partitions": [
-    "Seleccioneu un altre disc per definir-ne les particions"
+    "აირჩიეთ სხვა დისკი დანაყოფების აღწერისთვის"
   ],
   "Select at least one disk.": [
-    "Seleccioneu almenys un disc."
+    "აირჩიეთ, სულ ცოტა, ერთი დისკი."
   ],
   "Select or enter a mount point": [
-    "Seleccioneu o introduïu un punt de muntatge"
+    ""
   ],
   "Select or enter a mount point that is not already assigned to another device": [
-    "Seleccioneu o introduïu un punt de muntatge que no estigui assignat a un altre dispositiu"
+    ""
   ],
   "Select or enter a valid mount point": [
-    "Seleccioneu o introduïu un punt de muntatge vàlid"
+    ""
   ],
   "Select the disk to configure partitions for booting": [
-    "Seleccioneu el disc per configurar-hi les particions per a arrencar"
+    "აირჩიეთ დისკი ჩატვირთვადი დანაყოფების მოსარგებად"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
-    "Seleccioneu què fer de cada partició per trobar espai per assignar-hi el sistema nou."
+    ""
   ],
   "Select what to do with each partition.": [
-    "Seleccioneu què voleu fer amb cada partició."
+    "აირჩიეთ, რა მოუვა თითოეულ დანაყოფს."
   ],
   "Selected patterns": [
-    "Patrons seleccionats"
+    "მონიშნული ნიმუშები"
   ],
   "Server IP": [
-    "IP del servidor"
+    "სერვერის IP"
   ],
   "Set DIAG Off": [
-    "Desactiva la diagnosi"
+    "დიაგნოსტიკის გამორთვა"
   ],
   "Set DIAG On": [
-    "Activa la diagnosi"
+    "დიაგნოსტიკის ჩართვა"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
-    "Estableix un nom d'amfitrió permanent que no canviarà amb les actualitzacions per xarxa."
+    ""
   ],
   "Several partitions will be deleted": [
-    "Se suprimiran diverses particions"
+    "წაიშლება რამდენიმე დანაყოფი"
   ],
   "Show": [
-    "Mostra"
+    "ჩვენება"
   ],
   "Show %d subvolume action": [
-    "Mostra %d acció de subvolum",
-    "Mostra %d accions de subvolum"
+    "",
+    ""
   ],
   "Show information about %s": [
-    "Mostra informació quant a %s"
+    "ინფორმაციის ჩვენება %s-ის შესახებ"
   ],
   "Shrink existing partitions": [
-    "Encongeix les particions existents"
+    "არსებული დანაყოფების დაპატარავება"
   ],
   "Size": [
-    "Mida"
+    "ზომა"
   ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
-    "Els límits de mida han de ser números seguits opcionalment d'una unitat com ara GiB o GB"
+    ""
   ],
   "Size options": [
-    "Opcions de mida"
+    "ზომის მორგება"
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "Les mides s'han d'introduir com a números opcionalment seguits d'una unitat."
+    ""
   ],
   "Software": [
-    "Programari"
+    "პროგრამები"
   ],
   "Software %s": [
-    "Programari %s"
+    "პროგრამული %s"
   ],
   "Software selection": [
-    "Selecció de programari"
+    "პროგრამების არჩევანი"
   ],
   "Some existing partitions may be shrunk": [
-    "Algunes particions existents es poden encongir"
+    "ზოგიერთი არსებული დანაყოფი, შეიძლება, დაპატარავდეს"
   ],
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "Alguns repositoris d'instal·lació no s'han pogut carregar. El sistema no es pot instal·lar sense."
+    ""
   ],
   "Some of the elements in your AutoYaST profile are not supported.": [
-    "Alguns dels elements del vostre perfil d'AutoYaST no són compatibles."
+    ""
   ],
   "Some partitions may be deleted": [
-    "Algunes particions es poden suprimir"
+    "ზოგიერთი დანაყოფი შეიძლება წაიშალოს"
   ],
   "Some partitions may be shrunk": [
-    "Algunes particions es poden encongir"
+    "ზოგიერთი დანაყოფი, შეიძლება, შემცირდეს"
   ],
   "Something went wrong": [
-    "Alguna cosa ha anat malament."
+    "რაღაც არასწორია"
   ],
   "Start configuring a basic installation": [
-    "Comenceu a configurar una instal·lació bàsica"
+    "საბაზისო დაყენების მორგების დაწყება"
   ],
   "Start from scratch with the default configuration": [
-    "Comença des de zero amb la configuració predeterminada"
+    ""
   ],
   "Startup": [
-    "Inici"
+    "გაშვება"
   ],
   "Static hostname": [
-    "Nom d'amfitrió estàtic"
+    "სტატიკური ჰოსტის სახელი"
   ],
   "Status": [
-    "Estat"
+    "სტატუსი"
   ],
   "Storage": [
-    "Emmagatzematge"
+    "საცავი"
   ],
   "Structure of the new system, including disks to use and additional devices like LVM volume groups.": [
-    "Estructura del nou sistema, inclosos els discos per usar i els dispositius addicionals com ara els grups de volums d'LVM."
+    ""
   ],
   "Suggested mount points": [
-    "Punts de muntatge suggerits"
+    "ნარჩევი მიმაგრების წერტილები"
   ],
   "Swap": [
-    "Intercanvi"
+    "Swap"
   ],
   "TPM sealing requires the new system to be booted directly.": [
-    "El segellament TPM requereix que el sistema nou s'iniciï directament."
+    ""
   ],
   "Target Password": [
-    "Contrasenya de destinació"
+    "სამიზნე პაროლი"
   ],
   "Targets": [
-    "Destinacions"
+    "სამიზნეები"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
-    "El grup d'LVM %1$s es mantindrà a %2$s"
+    ""
   ],
   "The configured LVM groups will remain at %s": [
-    "Els grups d'LVM configurats es mantindran a %s"
+    ""
   ],
   "The configured partitions will be created as logical volumes": [
-    "Les particions configurades es crearan com a volums lògics"
+    ""
   ],
   "The content may be deleted": [
-    "El contingut pot suprimir-se"
+    "შეიძლება, შემცველობა წაიშალოს"
   ],
   "The current configuration will result in a %1$s of %2$s.": [
-    "La configuració actual tindrà com a resultat una %1$s de %2$s."
+    ""
   ],
   "The current configuration will result in a %1$s of at least %2$s.": [
-    "La configuració actual tindrà com a resultat una %1$s d'almenys %2$s."
+    ""
   ],
   "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "La configuració actual tindrà com a resultat una %1$s amb una mida d'entre %2$s i %3$s."
+    ""
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
-    "Les dades es conserven, però les particions actuals es canviaran de mida segons calgui."
+    ""
   ],
   "The data is kept. Only the space not assigned to any partition will be used.": [
-    "Es conserven les dades. Només s'usarà l'espai no assignat a cap partició."
+    ""
   ],
   "The device cannot be shrunk:": [
-    "El dispositiu no es pot encongir:"
+    "მოწყობილობის დაპატარავება შეუძლებელია:"
   ],
   "The device will be mounted at %s.": [
-    "El dispositiu es muntarà a %s."
+    ""
   ],
   "The device will be used by the new system.": [
-    "El sistema nou usarà el dispositiu."
+    ""
   ],
   "The encryption password did not work": [
-    "La contrasenya d'encriptació no ha funcionat."
+    "დაშიფვრის პაროლმა არ იმუშავა"
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
-    "El pas final per configurar el Mòdul de plataforma de confiança (TPM) per obrir automàticament dispositius encriptats es farà durant la primera arrencada del nou sistema. Perquè això funcioni, la màquina ha d'arrencar directament amb el carregador d'arrencada nou."
+    ""
   ],
   "The following software patterns are selected for installation:": [
-    "S'han seleccionat els patrons de programari següents per a la instal·lació:"
+    ""
   ],
   "The installation on your machine is complete.": [
-    "La instal·lació a la màquina s'ha completat."
+    ""
   ],
   "The installation will take": [
-    "La instal·lació necessitarà"
+    "დაყენებას დასჭირდება"
   ],
   "The installation will take %s including:": [
-    "La instal·lació necessitarà %s, incloent-hi el següent:"
+    "დაყენებას დასჭირდება %s ჩათვლით:"
   ],
   "The installer requires [root] user privileges.": [
-    "L'instal·lador requereix privilegis de l'usuari [root]."
+    "დაყენების პროგრამას [root] მომხმარებლის პრივილეგიები სჭირდება."
   ],
   "The logical volume can grow to use all the contiguous free space": [
-    "El volum lògic pot créixer per usar tot l'espai lliure contigu"
+    ""
   ],
   "The logical volume can grow until a given limit size": [
-    "El volum lògic pot créixer fins a una mida límit introduïda"
+    ""
   ],
   "The logical volume is created exactly with the given size": [
-    "El volum lògic es crea exactament amb la mida introduïda"
+    ""
   ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
-    "El màxim ha de ser un número seguit opcionalment d'una unitat com ara GiB o GB"
+    ""
   ],
   "The minimum cannot be greater than the maximum": [
-    "El mínim no pot ser superior al màxim"
+    ""
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
-    "El mínim ha de ser un número seguit opcionalment d'una unitat com ara GiB o GB"
+    ""
   ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    "Els volums físics d'LVM necessaris s'afegiran com a particions als discs triats,                  segons les mides dels volums lògics. Si seleccioneu més d'un disc,                  els volums físics poden estar distribuïts en diversos discs."
+    ""
   ],
   "The partition can grow to use all the contiguous free space": [
-    "La partició pot créixer per a usar tot l'espai lliure contigu"
+    ""
   ],
   "The partition can grow until a given limit size": [
-    "La partició pot créixer fins a una mida límit introduïda"
+    ""
   ],
   "The partition is created exactly with the given size": [
-    "La partició es crea exactament amb la mida introduïda"
+    ""
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
-    "La contrasenya no caldrà per arrencar i accedir a les dades si el TPM pot verificar la integritat del sistema. El segellat de TPM requereix que el nou sistema s'iniciï directament a la primera execució."
+    ""
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la quantitat de memòria RAM del sistema i de la presència d'un sistema de fitxers separat per a %2$s."
+    ""
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la quantitat de memòria RAM del sistema i de la presència de sistemes de fitxers separats per a %2$s."
+    ""
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la quantitat de memòria RAM del sistema, l'ús de les instantànies de Btrfs i la presència d'un sistema de fitxers separat per a %2$s."
+    ""
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la quantitat de memòria RAM del sistema, l'ús de les instantànies de Btrfs i la presència de sistemes de fitxers separats per a %2$s."
+    ""
   ],
   "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la presència d'un sistema de fitxers independent per a %2$s."
+    ""
   ],
   "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la presència de sistemes de fitxers separats per a %2$s."
+    ""
   ],
   "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs i de la presència d'un sistema de fitxers separat per a %2$s."
+    ""
   ],
   "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs i de la presència de sistemes de fitxers separats per a %2$s."
+    ""
   ],
   "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "L'interval de mida de %s s'ajustarà dinàmicament segons a quantitat de memòria RAM del sistema i de l'ús de les instantànies de Btrfs."
+    ""
   ],
   "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "L'interval de mida de %s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs."
+    ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
-    "La configuració d'emmagatzematge és vàlida (vegeu-ne el resultat a continuació) però usa elements no compatibles amb aquesta interfície."
+    ""
   ],
   "The storage configuration uses elements not supported by this interface.": [
-    "La configuració d'emmagatzematge usa elements no compatibles amb aquesta interfície."
+    ""
   ],
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
-    "El sistema no admet connexions de wifi, probablement a causa de maquinari que manca o que està inhabilitat."
+    ""
   ],
   "The system has not been configured for connecting to a Wi-Fi network yet.": [
-    "El sistema encara no s'ha configurat per connectar-se a una xarxa de wifi."
+    ""
   ],
   "The system will use %s as its default language.": [
-    "El sistema usarà el %s com a llengua per defecte."
+    ""
   ],
   "The zFCP disk was not activated.": [
-    "El disc zFCP no s'ha activat."
+    "zFCP დისკის გააქტიურება შეუძლებელია."
   ],
   "There are no disks available for the installation.": [
-    "No hi ha discs disponibles per a la instal·lació."
+    ""
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
-    "No hi ha discs disponibles per a la instal·lació. És possible que hàgiu de configurar algun dispositiu."
+    ""
   ],
   "There are not usable partitions": [
-    "No hi ha particions usables"
+    "გამოყენებადი დანაყოფები აღმოჩენილი არაა"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Aquests són els paràmetres d'instal·lació més rellevants. No dubteu a navegar per les seccions del menú per a més detalls."
+    ""
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Aquesta acció podria destruir qualsevol dada emmagatzemada als dispositius que s'indiquen a continuació. Si us plau, confirmeu que realment voleu continuar."
+    ""
   ],
   "This device will contain any partition needed for booting": [
-    "Aquest dispositiu contindrà qualsevol partició necessària per a arrencar"
+    "ეს მოწყობილობა შეიცავს ნებისმიერ დანაყოფს, რომელიც საჭიროა ჩასატვირთად"
   ],
   "This device will contain the LVM group '%s'": [
-    "Aquest dispositiu contindrà el grup d'LVM %s"
+    ""
   ],
   "This device will contain the LVM group '%s' and any partition needed to boot": [
-    "Aquest dispositiu contindrà el grup d'LVM %s i qualsevol partició necessària per a arrencar"
+    ""
   ],
   "This device will contain the configured LVM groups": [
-    "Aquest dispositiu contindrà els grups d'LVM configurats"
+    ""
   ],
   "This device will contain the configured LVM groups and any partition needed to boot": [
-    "Aquest dispositiu contindrà els grups d'LVM configurats i qualsevol partició necessària per a arrencar"
+    ""
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    "Aquest nom d'amfitrió és dinàmic i pot canviar després d'un reinici o una actualització per xarxa, tal com el configura l'administrador de la xarxa local."
+    ""
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
-    "Aquest producte no permet seleccionar patrons de programari durant la instal·lació. Tanmateix, hi podeu afegir programari addicional un cop acabada la instal·lació."
+    ""
   ],
   "This space includes the base system and the selected software patterns, if any.": [
-    "Aquest espai inclou el sistema de base i els patrons de programari seleccionats, si n'hi ha."
+    ""
   ],
   "This uses existing partitions at the device": [
-    "Això usa les particions existents al dispositiu"
+    "იყენებს მოწყობილობაზე არსებულ დანაყოფებს"
   ],
   "TiB": [
-    "TiB"
+    "ტიბ"
   ],
   "Time zone": [
-    "Zona horària"
+    "დროის სარტყელი"
   ],
   "Tmpfs": [
     "Tmpfs"
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
-    "Per garantir que el sistema nou pugui arrencar, és possible que l'instal·lador hagi de crear o configurar algunes particions al disc adequat."
+    ""
   ],
   "Transactional root file system": [
-    "Sistema de fitxers d'arrel transaccional"
+    "ტრანზაქციული საწყისი ფაილური სისტემა"
   ],
   "Try again": [
-    "Torna-ho a provar"
+    "თავიდან სცადეთ"
   ],
   "Type": [
-    "Tipus"
+    "ტიპი"
   ],
   "Unable to modify the settings": [
-    "No es pot modificar la configuració"
+    "პარამეტრების შეცვლა შეუძლებელია"
   ],
   "Unselect": [
-    "Desmarca"
+    "მონიშვნის მოხსნა"
   ],
   "Unsupported AutoYaST elements": [
-    "Elements d'AutoYaST no compatibles"
+    "მხარდაუჭერელი AutoYaST-ის ელემენტები"
   ],
   "Unused space": [
-    "Espai sense ús"
+    "გამოუყენებელი ადგილი"
   ],
   "Up to %s can be recovered by shrinking the device.": [
-    "Es poden recuperar fins a %s encongint el dispositiu."
+    ""
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
-    "Actualitzar el nom d'amfitrió ara o més tard no canviarà el nom d'amfitrió registrat actualment."
+    ""
   ],
   "Upload": [
-    "Carrega"
+    "ატვირთვა"
   ],
   "Upload, paste, or drop an SSH public key": [
-    "Carregueu, enganxeu o deixeu-hi anar una clau pública SSH"
+    ""
   ],
   "Use": [
-    "Usa'l"
+    "გამოყენება"
   ],
   "Use %s": [
-    "Usa %s"
+    "%s-ის გამოყენება"
   ],
   "Use %s for LVM and additional partitions": [
-    "Usa %s per a l'LVM i les particions addicionals"
+    ""
   ],
   "Use %s for LVM, additional partitions and booting": [
-    "Usa %s per a l'LVM, les particions addicionals i l'arrencada"
+    ""
   ],
   "Use %s for additional partitions": [
-    "Usa %s per a les particions addicionals"
+    "%s-ის გამოყენება დამატებითი დანაყოფებისთვის"
   ],
   "Use %s for additional partitions and booting": [
-    "Usa %s per a les particions addicionals i l'arrencada"
+    "%s-ის გამოყენება დამატებითი დანაყოფებისთვის და ჩასატვირთად"
   ],
   "Use %s to configure boot partitions": [
-    "Usa %s per configurar les particions d'arrencada"
+    "%s-ის გამოყენება ჩასატვირთი დანაყოფების მოსარგებად"
   ],
   "Use %s to host LVM": [
-    "Usa %s per allotjar-hi l'LVM"
+    "%s-ის გამოყენება LVM-ისთვის"
   ],
   "Use %s to host LVM and boot": [
-    "Usa %s per allotjar-hi l'LVM i per a l'arrencada"
+    ""
   ],
   "Use %s to install": [
-    "Usa %s per a la instal·lació"
+    "%s-ის გამოყენება დასაყენებლად"
   ],
   "Use %s to install and boot": [
-    "Usa %s per a la instal·lació i l'arrencada"
+    ""
   ],
   "Use %s to install and host LVM": [
-    "Usa %s per a la instal·lació i allotjar-hi l'LVM"
+    ""
   ],
   "Use %s to install, host LVM and boot": [
-    "Usa %s per a la instal·lació, allotjar-hi l'LVM i per a l'arrencada"
+    ""
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
-    "Useu les accions següents per configurar els dispositius o cliqueu a %s per començar des de zero amb la configuració predeterminada."
+    ""
   ],
   "Use available space": [
-    "Usa l'espai disponible"
+    "ხელმისაწვდომი ადგილის გამოყენება"
   ],
   "Use password": [
-    "Usa contrasenya"
+    "პაროლის გამოყენება"
   ],
   "Use public SSH Key": [
-    "Usa una clau pública SSH"
+    "საჯარო SSH გასაღების გამოყენება"
   ],
   "Use static hostname": [
-    "Usa un nom d'amfitrió estàtic"
+    "სტატიკური ჰოსტის სახელის გამოყენება"
   ],
   "Use suggested username": [
-    "Usa el nom d'usuari suggerit"
+    "მინიშნებული მომხმარებლის სახელის გამოყენება"
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
-    "Useu el mòdul de plataforma de confiança (TPM) per fer-ne la desencriptació automàticament a cada arrencada."
+    ""
   ],
   "Used space": [
-    "Espai usat"
+    "გამოყენებული ადგილი"
   ],
   "User name": [
-    "Nom d'usuari"
+    "მომხმარებლის სახელი"
   ],
   "Username": [
-    "Nom d'usuari"
+    "მომხმარებლის სახელი"
   ],
   "Username suggestion dropdown": [
-    "Menú desplegable de suggeriments de nom d'usuari"
+    "მომხმარებლის სახელის მინიშნების ჩამოსაშლელი მენიუ"
   ],
   "Using a hashed password.": [
-    "S'usa una contrasenya amb funció resum."
+    "დაჰეშილი პაროლის გამოყენება."
   ],
   "Using an existing partition": [
-    "S'usa una partició existent"
+    "არსებული დანაყოფის გამოყენება"
   ],
   "Using partition %s": [
-    "S'usa la partició %s"
+    "გამოიყენება დანაყოფი %s"
   ],
   "Using transient hostname: %s": [
-    "S'usa un nom d'amfitrió transitori: %s"
+    "გამოიყენება გარდამავლი ჰოსტის სახელი: %s"
   ],
   "Visible Wi-Fi networks": [
-    "Xarxes Wi-Fi visibles"
+    "ხილული WiFi ქსელები"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
-    "El grup de volums %s ja existeix. Introduïu un nom diferent."
+    ""
   ],
   "WPA & WPA2 Personal": [
-    "WPA i WPA2 personal"
+    "WPA & WPA2 პერსონალური"
   ],
   "WPA Password": [
-    "Contrasenya de WPA"
+    "WPA პაროლი"
   ],
   "WWPN": [
     "WWPN"
   ],
   "Waiting for a mount point": [
-    "S'espera un punt de muntatge"
+    "მიმაგრების წერტილის მოლოდინი"
   ],
   "Waiting for information about storage configuration": [
-    "Esperant informació sobre la configuració de l'emmagatzematge"
+    ""
   ],
   "Wi-Fi": [
-    "Wifi"
+    "Wi-Fi"
   ],
   "WiFi connection form": [
-    "Formulari de connexió per WiFi"
+    "WiFi მიერთება წყაროდან"
   ],
   "Will be supported in a future version.": [
-    "Serà compatible en una versió futura."
+    ""
   ],
   "Wired": [
-    "Amb fil"
+    "მავთულიანი"
   ],
   "XFS": [
     "XFS"
   ],
   "Yes": [
-    "Sí"
+    "დიახ"
   ],
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
-    "Podeu procedir a la instal·lació amb la configuració actual o potser voleu descartar-la i començar des de zero amb una de simple."
+    ""
   ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "No ho podeu canviar més tard. Aneu a la secció %s si voleu modificar-la abans de procedir al registre."
+    ""
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
-    "És possible que vulgueu descartar la configuració actual i començar des de zero amb una configuració simple."
+    ""
   ],
   "You may want to discard those settings and start from scratch with a simple configuration.": [
-    "És possible que vulgueu descartar aquests paràmetres i començar des de zero amb una configuració simple."
+    ""
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "at least %s": [
-    "almenys %s"
+    "%s მაინც"
   ],
   "auto selected": [
-    "seleccionat automàticament"
+    "ავტომატურად არჩეული"
   ],
   "configured": [
-    "configurat"
+    "მორგებულია"
   ],
   "hostname": [
-    "Nom d'amfitrió"
+    "ჰოსტის სახელი"
   ],
   "iBFT": [
     "iBFT"
@@ -1743,21 +1743,21 @@ export default {
     "iSCSI"
   ],
   "logical volume": [
-    "volum lògic"
+    "ლოგიკური ტომი"
   ],
   "partition": [
-    "partició"
+    "დანაყოფი"
   ],
   "reset to defaults": [
-    "restableix els valors predeterminats"
+    "ჩამოყრა ნაგულისხმევზე"
   ],
   "zFCP": [
     "zFCP"
   ],
   "zFCP Disk Activation": [
-    "Activació del disc zFCP"
+    "zFCP დისკის გააქტიურება"
   ],
   "zFCP Disk activation form": [
-    "Formulari d'activació del disc zFCP"
+    "zFCP დისკის გააქტიურების ფორმა"
   ]
 };
