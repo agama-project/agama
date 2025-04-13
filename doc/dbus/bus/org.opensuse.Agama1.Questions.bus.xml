@@ -117,6 +117,7 @@
     </method>
     <!--
      Removes question at given object path
+     TODO: use id as parameter ( need at first check other users of method )
      -->
     <method name="Delete">
       <arg name="question" type="o" direction="in"/>
