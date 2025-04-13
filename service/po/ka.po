@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-20 02:39+0000\n"
-"PO-Revision-Date: 2025-02-23 18:50+0000\n"
+"PO-Revision-Date: 2025-04-10 18:56+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/"
 "agama-service-master/ka/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.1\n"
+"X-Generator: Weblate 5.10.4\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -25,7 +25,7 @@ msgstr ""
 #: service/lib/agama/autoyast/profile_reporter.rb:51
 #, perl-brace-format
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
-msgstr ""
+msgstr "აღმოჩენილია მხარდაუწერელი ელემენტები AutoYaST-ის პროფილში: {keys}."
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:94
@@ -67,12 +67,12 @@ msgstr "თავიდან სცადეთ"
 #. TRANSLATORS: button label, ignore the failed download, skip package installation
 #: service/lib/agama/software/callbacks/base.rb:45
 msgid "Continue anyway"
-msgstr ""
+msgstr "მაინც გაგრძელება"
 
 #. TRANSLATORS: button label, abort the installation completely after an error
 #: service/lib/agama/software/callbacks/base.rb:51
 msgid "Abort installation"
-msgstr ""
+msgstr "დაყენების შეწყვეტა"
 
 #. DoneProvide callback
 #.
@@ -81,7 +81,7 @@ msgstr ""
 #. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
 #: service/lib/agama/software/callbacks/script.rb:59
 msgid "There was a problem running a package script."
-msgstr ""
+msgstr "პრობლემა პაჯეტის სკრიპტის შესრულებისას."
 
 #. Callback to handle unsigned files
 #.
@@ -90,7 +90,7 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:63
 #, perl-brace-format
 msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
-msgstr ""
+msgstr "ფაილი {filename} რეპოზიტორიიდან {repo_name} ({repo_url})"
 
 #: service/lib/agama/software/callbacks/signature.rb:67
 #, perl-brace-format
@@ -103,6 +103,8 @@ msgid ""
 "%{source} is not digitally signed. The origin and integrity of the file "
 "cannot be verified. Use it anyway?"
 msgstr ""
+"{source}-ზე ციფრული ხელმოწერა არ არსებობს. ფაილის წყაროს და სიმთლიანის "
+"გადამოწმება შეუძლებელია. გამოვიყენო მაინც?"
 
 #. Callback to handle signature verification failures
 #.
@@ -122,11 +124,11 @@ msgstr "წყაროების ინიციალიზაცია"
 
 #: service/lib/agama/software/manager.rb:146
 msgid "Refreshing repositories metadata"
-msgstr ""
+msgstr "რეპოზიტორიის მეტამონაცემების განახლება"
 
 #: service/lib/agama/software/manager.rb:147
 msgid "Calculating the software proposal"
-msgstr ""
+msgstr "პროგრამების შეთავაზების მომზადება"
 
 #. Issues related to the software proposal.
 #.
@@ -136,21 +138,21 @@ msgstr ""
 #: service/lib/agama/software/manager.rb:596
 #, c-format
 msgid "Could not read repository \"%s\""
-msgstr ""
+msgstr "რეპოზიტორიის \"%s\" წაკთხვა შეუძლებელია"
 
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:606
 msgid "Product not selected yet"
-msgstr ""
+msgstr "ჯერ პროდუქტი არ აგირჩევიათ"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:615
 msgid "Product must be registered"
-msgstr ""
+msgstr "პროდუქტი დარეგისტრირებული უნდა იყოს"
 
 #. Returns solver error messages from the last attempt
 #.
@@ -158,7 +160,7 @@ msgstr ""
 #: service/lib/agama/software/proposal.rb:225
 #, c-format
 msgid "Found %s dependency issues."
-msgstr ""
+msgstr "აღმოჩენილია %s დამოკიდებულების პრობლემა."
 
 #. Issue for not found device.
 #.
@@ -260,37 +262,37 @@ msgstr ""
 #. Probes storage devices and performs an initial proposal
 #: service/lib/agama/storage/manager.rb:120
 msgid "Activating storage devices"
-msgstr ""
+msgstr "საცავის მოწყობილობების გააქტიურება"
 
 #: service/lib/agama/storage/manager.rb:121
 msgid "Probing storage devices"
-msgstr ""
+msgstr "საცავის მოწყობილობების აღმოჩენა"
 
 #: service/lib/agama/storage/manager.rb:122
 msgid "Calculating the storage proposal"
-msgstr ""
+msgstr "საცავის შეთავაზების მომზადება"
 
 #: service/lib/agama/storage/manager.rb:123
 msgid "Selecting Linux Security Modules"
-msgstr ""
+msgstr "Linux-ის უსაფრთხოების მოდულების არჩევა"
 
 #. Prepares the partitioning to install the system
 #: service/lib/agama/storage/manager.rb:131
 msgid "Preparing bootloader proposal"
-msgstr ""
+msgstr "ჩამტვირთავის შეთავაზების მომზადება"
 
 #. then also apply changes to that proposal
 #: service/lib/agama/storage/manager.rb:138
 msgid "Adding storage-related packages"
-msgstr ""
+msgstr "საცავთან დაკავშირებული პაკეტების დამატება"
 
 #: service/lib/agama/storage/manager.rb:139
 msgid "Preparing the storage devices"
-msgstr ""
+msgstr "საცავის მოწყობილობების მომზადება"
 
 #: service/lib/agama/storage/manager.rb:140
 msgid "Writing bootloader sysconfig"
-msgstr ""
+msgstr "ჩამტვირთავის sysconfig-ის ჩაწერა"
 
 #. Issue representing the proposal is not valid.
 #.
@@ -311,7 +313,7 @@ msgstr ""
 #. @return [Issue, nil]
 #: service/lib/agama/storage/proposal_strategies/guided.rb:127
 msgid "No device selected for installation"
-msgstr ""
+msgstr "დაყენებისთვის მოწყობილობა არჩეული არაა"
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
