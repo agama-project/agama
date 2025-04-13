@@ -145,15 +145,22 @@ module Agama
         end
 
         def run
-          target = File.join(Yast::Installation.destdir, UDEV_RULES_DIR)
-          FileUtils.mkdir_p(target)
-          FileUtils.cp(glob_files, target)
+          glob_files.each do |file|
+            target = File.dirname(file).sub(root_dir, dest_dir)
+
+            FileUtils.mkdir_p(target)
+            FileUtils.cp(file, target)
+          end
         end
 
       private
 
         def root_dir
           ROOT_PATH
+        end
+
+        def dest_dir
+          Yast::Installation.destdir
         end
 
         def glob_files
