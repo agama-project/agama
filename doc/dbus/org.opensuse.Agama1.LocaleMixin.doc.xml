@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<node name="/org/opensuse/Agama/Manager1">
+  <!--
+      org.opensuse.Agama1.LocaleMixin:
+      @short_description: Included by objects that can localize their output
+  -->
+  <interface name="org.opensuse.Agama1.LocaleMixin">
+    <!--
+        SetLocale:
+        It expects a locale (en_US.UTF-8) as argument.
+    -->
+    <method name="SetLocale">
+      <arg name="locale" direction="in" type="s"/>
+    </method>
+  </interface>
+</node>

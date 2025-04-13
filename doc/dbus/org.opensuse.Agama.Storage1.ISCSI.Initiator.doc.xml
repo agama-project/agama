@@ -2,11 +2,6 @@
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node name="/org/opensuse/Agama/Storage1">
   <node name="ISCSI" />
-  <node name="iscsi_nodes" />
-  <node name="staging" />
-  <node name="system" />
-  <node name="zfcp_controllers" />
-  <node name="zfcp_disks" />
   <interface name="org.opensuse.Agama.Storage1.ISCSI.Initiator">
     <method name="Discover">
       <arg name="address" direction="in" type="s"/>
