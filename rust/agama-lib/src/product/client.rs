@@ -146,6 +146,7 @@ impl<'a> ProductClient<'a> {
         Ok(addons)
     }
 
+    // details of available addons
     pub async fn available_addons(&self) -> Result<Vec<AddonProperties>, ServiceError> {
         let addons: Vec<AddonProperties> = self
             .registration_proxy
@@ -154,7 +155,7 @@ impl<'a> ProductClient<'a> {
             .into_iter()
             .map(|hash| AddonProperties {
                 id: hash
-                    .get("name")
+                    .get("id")
                     .unwrap_or(&zbus::zvariant::Value::new(""))
                     .try_into()
                     .unwrap_or_default(),

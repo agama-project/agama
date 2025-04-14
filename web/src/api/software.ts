@@ -71,7 +71,7 @@ const fetchRegistration = (): Promise<RegistrationInfo> => get("/api/software/re
 const fetchAddons = (): Promise<AddonInfo[]> => get("/api/software/registration/addons/available");
 
 /**
- * Returns an object with the registration info
+ * Returns list of already registered addons
  */
 const fetchRegisteredAddons = (): Promise<RegisteredAddonInfo[]> =>
   get("/api/software/registration/addons/registered");
@@ -105,7 +105,7 @@ const register = ({ key, email }: { key: string; email?: string }) =>
   post("/api/software/registration", { key, email });
 
 /**
- * Request registration of provided addon
+ * Request registration of the selected addon
  */
 const registerAddon = (addon: RegisteredAddonInfo) =>
   post("/api/software/registration/addons/register", addon);

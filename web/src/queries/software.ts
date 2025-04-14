@@ -112,7 +112,7 @@ const registrationQuery = () => ({
 });
 
 /**
- * Query to retrieve registration info
+ * Query to retrieve available addons info
  */
 const addonsQuery = () => ({
   queryKey: ["software", "registration", "addons"],
@@ -120,7 +120,7 @@ const addonsQuery = () => ({
 });
 
 /**
- * Query to retrieve registration info
+ * Query to retrieve registered addons info
  */
 const registeredAddonsQuery = () => ({
   queryKey: ["software", "registration", "addons", "registered"],
@@ -300,7 +300,7 @@ const useRegistration = (): RegistrationInfo => {
 };
 
 /**
- * Returns registration info
+ * Returns details about the available addons
  */
 const useAddons = (): AddonInfo[] => {
   const { data: addons } = useSuspenseQuery(addonsQuery());
@@ -308,7 +308,7 @@ const useAddons = (): AddonInfo[] => {
 };
 
 /**
- * Returns registration info
+ * Returns list of registered addons
  */
 const useRegisteredAddons = (): RegisteredAddonInfo[] => {
   const { data: addons } = useSuspenseQuery(registeredAddonsQuery());

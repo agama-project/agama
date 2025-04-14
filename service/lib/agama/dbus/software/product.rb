@@ -159,7 +159,7 @@ module Agama
 
           addons.map do |a|
             {
-              "name"        => a.identifier,
+              "id"          => a.identifier,
               "version"     => a.version,
               "label"       => a.friendly_name,
               "available"   => a.available,    # boolean
