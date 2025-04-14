@@ -103,8 +103,12 @@ export default function RegistrationExtension({
       version: isUnique ? null : extension.version,
     };
 
-    // @ts-expect-error
-    registerAddon(data, { onError: onRegisterError, onSettled: () => setLoading(false) });
+    registerAddon(data, {
+      // @ts-expect-error
+      onError: onRegisterError,
+      onSuccess: () => setError(null),
+      onSettled: () => setLoading(false),
+    });
   };
 
   return (
