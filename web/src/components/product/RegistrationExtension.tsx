@@ -92,8 +92,8 @@ export default function RegistrationExtension({
 
   const isRegistered = !!registrationData;
 
-  const submit = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
+  const submit = async (e: React.SyntheticEvent | undefined) => {
+    e?.preventDefault();
     setLoading(true);
 
     const data: RegisteredAddonInfo = {
@@ -131,20 +131,17 @@ export default function RegistrationExtension({
         {isRegistered && (
           <RegisteredExtensionStatus registrationCode={registrationData.registrationCode} />
         )}
-        {!isRegistered && extension.available && (
+        {!isRegistered && extension.available && !extension.free && (
           <Form id={`register-form-${extension.id}-${extension.version}`} onSubmit={submit}>
-            {!extension.free && (
-              // TRANSLATORS: input field label
-              <FormGroup label={_("Registration code")}>
-                <RegistrationCodeInput
-                  isDisabled={loading}
-                  id={`input-reg-code-${extension.id}-${extension.version}`}
-                  value={regCode}
-                  onChange={(_, v) => setRegCode(v)}
-                />
-              </FormGroup>
-            )}
-
+            {/* // TRANSLATORS: input field label */}
+            <FormGroup label={_("Registration code")}>
+              <RegistrationCodeInput
+                isDisabled={loading}
+                id={`input-reg-code-${extension.id}-${extension.version}`}
+                value={regCode}
+                onChange={(_, v) => setRegCode(v)}
+              />
+            </FormGroup>
             <ActionGroup>
               <Button
                 id={`register-button-${extension.id}-${extension.version}`}
@@ -159,6 +156,20 @@ export default function RegistrationExtension({
             </ActionGroup>
           </Form>
         )}
+        {!isRegistered && extension.available && extension.free && (
+          // for free extensions display just the button without any form
+          <Button
+            id={`register-button-${extension.id}-${extension.version}`}
+            variant="primary"
+            isInline
+            isLoading={loading}
+            onClick={submit}
+          >
+            {/* TRANSLATORS: button label */}
+            {_("Register")}
+          </Button>
+        )}
+
         {!isRegistered && !extension.available && (
           // TRANSLATORS: warning title, the extension is not available on the server and cannot be registered
           <Alert title={_("Not available")} variant="warning">
