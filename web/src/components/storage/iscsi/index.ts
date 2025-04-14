@@ -21,7 +21,6 @@
  */
 
 export { default as InitiatorSection } from "./InitiatorSection";
-export { default as InitiatorPresenter } from "./InitiatorPresenter";
 export { default as InitiatorForm } from "./InitiatorForm";
 export { default as TargetsSection } from "./TargetsSection";
 export { default as NodesPresenter } from "./NodesPresenter";

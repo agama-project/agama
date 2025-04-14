@@ -100,7 +100,6 @@ type SpacePolicyAction = {
 type ISCSIInitiator = {
   name: string;
   ibft: boolean;
-  offloadCard: string;
 };
 
 type ISCSINode = {
