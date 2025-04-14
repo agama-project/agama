@@ -115,7 +115,7 @@ const registrationQuery = () => ({
  * Query to retrieve registration info
  */
 const addonsQuery = () => ({
-  queryKey: ["software/registration/addons"],
+  queryKey: ["software", "registration", "addons"],
   queryFn: fetchAddons,
 });
 
@@ -123,7 +123,7 @@ const addonsQuery = () => ({
  * Query to retrieve registration info
  */
 const registeredAddonsQuery = () => ({
-  queryKey: ["software/registration/addons/registered"],
+  queryKey: ["software", "registration", "addons", "registered"],
   queryFn: fetchRegisteredAddons,
 });
 
@@ -197,7 +197,7 @@ const useRegisterAddonMutation = () => {
   const query = {
     mutationFn: registerAddon,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["software/registration/addons/registered"] });
+      queryClient.invalidateQueries({ queryKey: registeredAddonsQuery().queryKey });
     },
   };
   return useMutation(query);
