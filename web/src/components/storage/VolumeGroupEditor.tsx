@@ -50,12 +50,13 @@ import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacin
 const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
   const deleteVolumeGroup = useDeleteVolumeGroup();
   const lvs = vg.logicalVolumes.map((lv) => formattedPath(lv.mountPath));
-  const convert = vg.targetDevices.length === 1 && !!lvs.length;
+  const targetDevices = vg.getTargetDevices();
+  const convert = targetDevices.length === 1 && !!lvs.length;
   let description;
 
   if (lvs.length) {
     if (convert) {
-      const diskName = baseName(vg.targetDevices[0], 20);
+      const diskName = baseName(targetDevices[0].name, 20);
       description = sprintf(
         n_(
           // TRANSLATORS: %1$s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
