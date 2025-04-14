@@ -46,7 +46,7 @@ import { isEmpty, mask } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import RegistrationExtension from "./RegistrationExtension";
-import { KEY_LABEL, RegistrationCodeInput } from "./RegistrationComponents";
+import RegistrationCodeInput from "./RegistrationCodeInput";
 
 const FORM_ID = "productRegistration";
 const EMAIL_LABEL = "Email";
@@ -64,7 +64,8 @@ const RegisteredProductSection = () => {
       </Content>
       <DescriptionList>
         <DescriptionListGroup>
-          <DescriptionListTerm>{KEY_LABEL}</DescriptionListTerm>
+          {/* TRANSLATORS: input field label */}
+          <DescriptionListTerm>{_("Registration code")}</DescriptionListTerm>
           <DescriptionListDescription>
             <Flex gap={{ default: "gapSm" }}>
               {showCode ? registration.key : mask(registration.key)}

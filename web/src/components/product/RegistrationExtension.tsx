@@ -36,7 +36,7 @@ import { AddonInfo, RegisteredAddonInfo } from "~/types/software";
 import { useRegisteredAddons, useRegisterAddonMutation } from "~/queries/software";
 import { mask } from "~/utils";
 import { _ } from "~/i18n";
-import { KEY_LABEL, RegistrationCodeInput } from "./RegistrationComponents";
+import RegistrationCodeInput from "./RegistrationCodeInput";
 
 /**
  * Display registered status of the extension.
@@ -134,7 +134,8 @@ export default function RegistrationExtension({
         {!isRegistered && extension.available && (
           <Form id={`register-form-${extension.id}-${extension.version}`} onSubmit={submit}>
             {!extension.free && (
-              <FormGroup label={KEY_LABEL}>
+              // TRANSLATORS: input field label
+              <FormGroup label={_("Registration code")}>
                 <RegistrationCodeInput
                   isDisabled={loading}
                   id={`input-reg-code-${extension.id}-${extension.version}`}

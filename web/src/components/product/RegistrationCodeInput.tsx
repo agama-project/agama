@@ -24,16 +24,10 @@ import React from "react";
 import { TextInputProps } from "@patternfly/react-core";
 
 import { PasswordInput } from "~/components/core";
-import { _ } from "~/i18n";
-
-// TRANSLATORS: input field label
-const KEY_LABEL = _("Registration code");
 
 // the registration code might be quite long, make the password field wider
-function RegistrationCodeInput({
+export default function RegistrationCodeInput({
   ...props
 }: TextInputProps & { inputRef?: React.Ref<HTMLInputElement> }) {
   return <PasswordInput size={30} {...props} />;
 }
-
-export { KEY_LABEL, RegistrationCodeInput };
