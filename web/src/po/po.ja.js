@@ -798,9 +798,6 @@ export default {
   "Loading data...": [
     "データを読み込んでいます..."
   ],
-  "Loading installation environment, please wait.": [
-    "インストール環境を読み込んでいます。しばらくお待ちください。"
-  ],
   "Loading the installation repositories...": [
     "インストール用リポジトリを読み込んでいます..."
   ],
