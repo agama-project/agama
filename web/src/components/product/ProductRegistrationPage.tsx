@@ -123,8 +123,8 @@ const RegistrationFormSection = () => {
   return (
     <Form id={FORM_ID} onSubmit={submit}>
       {error && <Alert variant="warning" isInline title={error} />}
-
-      <FormGroup fieldId="key" label={KEY_LABEL}>
+      {/* // TRANSLATORS: input field label */}
+      <FormGroup fieldId="key" label={_("Registration code")}>
         <RegistrationCodeInput id="key" value={key} onChange={(_, v) => setKey(v)} />
       </FormGroup>
 
