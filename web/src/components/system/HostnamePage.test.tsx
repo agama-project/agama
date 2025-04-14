@@ -100,7 +100,7 @@ describe("HostnamePage", () => {
         static: "",
       });
       screen.getByText("Success alert:");
-      screen.getByText("Hostname successfully updated.");
+      screen.getByText("Hostname successfully updated");
     });
   });
 
@@ -135,7 +135,7 @@ describe("HostnamePage", () => {
         static: "testing-server",
       });
       screen.getByText("Success alert:");
-      screen.getByText("Hostname successfully updated.");
+      screen.getByText("Hostname successfully updated");
     });
 
     it("renders an error when static hostname is selected but left empty", async () => {
@@ -163,7 +163,7 @@ describe("HostnamePage", () => {
       });
 
       screen.getByText("Warning alert:");
-      screen.getByText(/Something went wrong/);
+      screen.getByText(/Hostname could not be updated/);
     });
   });
 
