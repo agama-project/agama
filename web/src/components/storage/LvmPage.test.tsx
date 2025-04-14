@@ -186,7 +186,7 @@ describe("LvmPage", () => {
     it("allows configuring a new LVM volume group (moving mount points)", async () => {
       const { user } = installerRender(<LvmPage />);
       const disks = screen.getByRole("group", { name: "Disks" });
-      const sdbCheckbox = within(disks).getByRole("checkbox", { name: "/dev/sdb, 1 KiB" });
+      const sdbCheckbox = within(disks).getByRole("checkbox", { name: "sdb, 1 KiB" });
       const moveMountPointsCheckbox = screen.getByRole("checkbox", {
         name: /Move the mount points currently configured at the selected disks to logical volumes/,
       });
