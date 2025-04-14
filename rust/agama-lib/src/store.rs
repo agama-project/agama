@@ -29,6 +29,7 @@ use crate::hostname::store::HostnameStore;
 use crate::install_settings::InstallSettings;
 use crate::manager::{InstallationPhase, ManagerHTTPClient};
 use crate::scripts::{ScriptsClient, ScriptsGroup};
+use crate::storage::http_client::ISCSIHTTPClient;
 use crate::{
     localization::LocalizationStore, network::NetworkStore, product::ProductStore,
     scripts::ScriptsStore, software::SoftwareStore, storage::StorageStore, users::UsersStore,
@@ -51,6 +52,7 @@ pub struct Store {
     storage: StorageStore,
     localization: LocalizationStore,
     scripts: ScriptsStore,
+    iscsi_client: ISCSIHTTPClient,
     manager_client: ManagerHTTPClient,
     http_client: BaseHTTPClient,
 }
@@ -69,6 +71,7 @@ impl Store {
             storage: StorageStore::new(http_client.clone())?,
             scripts: ScriptsStore::new(http_client.clone()),
             manager_client: ManagerHTTPClient::new(http_client.clone()),
+            iscsi_client: ISCSIHTTPClient::new(http_client.clone()),
             http_client,
         })
     }
@@ -76,15 +79,15 @@ impl Store {
     /// Loads the installation settings from the HTTP interface.
     pub async fn load(&self) -> Result<InstallSettings, ServiceError> {
         let mut settings = InstallSettings {
-            bootloader: Some(self.bootloader.load().await?),
-            files: Some(self.files.load().await?),
+            bootloader: self.bootloader.load().await?,
+            files: self.files.load().await?,
             hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),
-            software: Some(self.software.load().await?),
+            software: self.software.load().await?.to_option(),
             user: Some(self.users.load().await?),
             product: Some(self.product.load().await?),
             localization: Some(self.localization.load().await?),
-            scripts: Some(self.scripts.load().await?),
+            scripts: self.scripts.load().await?.to_option(),
             ..Default::default()
         };
 
@@ -136,6 +139,10 @@ impl Store {
         }
         if let Some(software) = &settings.software {
             self.software.store(software).await?;
+        }
+        // iscsi has to be done before storage
+        if let Some(iscsi) = &settings.iscsi {
+            self.iscsi_client.set_config(iscsi).await?
         }
         if settings.storage.is_some() || settings.storage_autoyast.is_some() {
             self.storage.store(&settings.into()).await?

@@ -42,6 +42,24 @@ export default {
   "%s with %d partitions": [
     "%s (%d 個のパーティション)"
   ],
+  "A %1$s of %2$s will be created for %3$s": [
+    "%2$s の %1$s を %3$s 向けに作成します"
+  ],
+  "A %1$s of at least %2$s will be created for %3$s": [
+    "少なくとも %2$s の %1$s を %3$s 向けに作成します"
+  ],
+  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
+    "%2$s から %3$s までの範囲で %1$s を %4$s 向けに作成します"
+  ],
+  "A generic minimum size of %1$s will be used for the new %2$s": [
+    "新しい %2$s に対しては少なくとも %1$s を使用します"
+  ],
+  "A generic size of %s will be used for the new %2$s": [
+    "新しい %2$s に対しては一般的なサイズ %s を使用します"
+  ],
+  "A generic size range between %1$s and %2$s will be used for the new %3$s": [
+    "新しい %3$s に対しては一般的なサイズ %1$s から %2$s の範囲を使用します"
+  ],
   "A partition may be deleted": [
     "パーティションを削除するかもしれません"
   ],
@@ -87,6 +105,9 @@ export default {
   "Add DNS": [
     "DNS の追加"
   ],
+  "Add LVM volume group": [
+    "新規 LVM ボリュームグループの追加"
+  ],
   "Add an address": [
     "アドレスの追加"
   ],
@@ -98,6 +119,9 @@ export default {
   ],
   "Add another partition or mount an existing one": [
     "他のパーティションの追加または既存のパーティションのマウント"
+  ],
+  "Add logical volume": [
+    "論理ボリュームの追加"
   ],
   "Add or use partition": [
     "パーティションの追加または使用"
@@ -112,7 +136,7 @@ export default {
     "アドレスデータの一覧"
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
-    "新しいシステムが利用可能な領域内に収まるよう、下記の設定を調整してください。"
+    "新しいシステムが利用可能な領域内に収まるように設定を調整してください。"
   ],
   "All content will be deleted": [
     "全ての内容を削除する"
@@ -124,7 +148,7 @@ export default {
     "最初のユーザの作成とは別に、 root ユーザに対する認証方式を設定することができます。"
   ],
   "Already using all available disks": [
-    ""
+    "既に利用可能な全てのディスクを使用しています"
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "全てのパーティションを削除し、ディスク内に存在するデータを全て消去します。"
@@ -176,6 +200,15 @@ export default {
   ],
   "Back": [
     "戻る"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
+    "システムのメモリサイズに応じて、 %2$s の %1$s を %3$s 向けに作成します"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
+    "システムのメモリサイズに応じて、少なくとも %2$s の %1$s を %3$s 向けに作成します"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
+    "システムのメモリサイズに応じて、 %2$s から %3$s までの範囲で %1$s を %4$s 向けに作成します"
   ],
   "Bcachefs": [
     "bcachefs"
@@ -258,8 +291,17 @@ export default {
   "Configure DASD": [
     "DASD の設定"
   ],
+  "Configure LVM Volume Group": [
+    "LVM ボリュームグループの設定"
+  ],
+  "Configure LVM logical volume at %s volume group": [
+    "ボリュームグループ %s に対する LVM 論理ボリュームの設定"
+  ],
   "Configure iSCSI": [
     "iSCSI の設定"
+  ],
+  "Configure partition at %s": [
+    "%s でのパーティションの設定"
   ],
   "Configure zFCP": [
     "zFCP の設定"
@@ -321,6 +363,9 @@ export default {
   "Could not log in. Please, make sure that the password is correct.": [
     "ログインできませんでした。入力したパスワードが正しいかどうか、もう一度ご確認ください。"
   ],
+  "Create LVM volume group %s": [
+    "LVM ボリュームグループ %s の作成"
+  ],
   "Create user": [
     "ユーザの作成"
   ],
@@ -360,6 +405,9 @@ export default {
   "Default file system for %s": [
     "%s に対する既定のファイルシステム"
   ],
+  "Default file system for generic logical volumes": [
+    "汎用パーティションに対する既定のファイルシステム"
+  ],
   "Default file system for generic partitions": [
     "汎用パーティションに対する既定のファイルシステム"
   ],
@@ -367,10 +415,10 @@ export default {
     "独自にサイズや範囲を指定する"
   ],
   "Define a new LVM on the disk": [
-    ""
+    "ディスクに対して新しい LVM を設定する"
   ],
   "Define a new LVM on top of one or several disks": [
-    ""
+    "1 つもしくは複数のディスクに対して新しい LVM を設定する"
   ],
   "Define a user now": [
     "今すぐユーザを設定する"
@@ -388,7 +436,10 @@ export default {
     "現在の内容を全て削除する"
   ],
   "Delete the volume group and its logical volumes": [
-    ""
+    "ボリュームグループと論理ボリュームを削除する"
+  ],
+  "Delete volume group": [
+    "ボリュームグループの削除"
   ],
   "Destroy current data and format partition as": [
     "現在のデータを消去して下記の形式でパーティションをフォーマット:"
@@ -459,6 +510,12 @@ export default {
   "Edit user": [
     "ユーザの編集"
   ],
+  "Edit volume group": [
+    "ボリュームグループの編集"
+  ],
+  "Empty LVM volume group %s": [
+    "空の LVM ボリュームグループ %s"
+  ],
   "Encrypt the system": [
     "システムの暗号化"
   ],
@@ -485,6 +542,12 @@ export default {
   ],
   "Enter a hostname.": [
     "ホスト名を入力してください。"
+  ],
+  "Enter a name": [
+    "名前を入力してください"
+  ],
+  "Enter a name for the volume group.": [
+    "ボリュームグループに対する名前を入力してください。"
   ],
   "ExFAT": [
     "ExFAT"
@@ -551,6 +614,9 @@ export default {
   ],
   "Format": [
     "フォーマット"
+  ],
+  "Format logical volume as": [
+    "下記の形式で論理ボリュームをフォーマット"
   ],
   "Format partition as": [
     "下記の形式でフォーマット:"
@@ -732,9 +798,6 @@ export default {
   "Loading data...": [
     "データを読み込んでいます..."
   ],
-  "Loading installation environment, please wait.": [
-    "インストール環境を読み込んでいます。しばらくお待ちください。"
-  ],
   "Loading the installation repositories...": [
     "インストール用リポジトリを読み込んでいます..."
   ],
@@ -749,6 +812,12 @@ export default {
   ],
   "Log in as %s": [
     "%s としてログイン"
+  ],
+  "Logical volume name": [
+    "論理ボリューム名"
+  ],
+  "Logical volumes": [
+    "論理ボリューム"
   ],
   "Login": [
     "ログイン"
@@ -799,10 +868,13 @@ export default {
     "モード"
   ],
   "Modify settings and physical volumes": [
-    ""
+    "設定と物理ボリュームの変更"
   ],
   "More actions": [
     "さらなる処理"
+  ],
+  "More devices": [
+    "さらなるデバイス"
   ],
   "Mount Point": [
     "マウントポイント"
@@ -819,8 +891,11 @@ export default {
   "Mount point toggle": [
     "マウントポイントの切り替え"
   ],
+  "Move mount points": [
+    "マウントポイントの移動"
+  ],
   "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    ""
+    "選択したディスク内に設定されたマウントポイントを、このボリュームグループの論理ボリュームに移動します。"
   ],
   "Multipath": [
     "マルチパス"
@@ -867,11 +942,17 @@ export default {
   "No device selected yet": [
     "まだ何もデバイスを選択していません"
   ],
+  "No devices configured yet": [
+    "まだ何もデバイスを選択していません"
+  ],
   "No devices found": [
     "デバイスが見つかりませんでした"
   ],
   "No iSCSI targets found.": [
     "iSCSI ターゲットが見つかりませんでした。"
+  ],
+  "No logical volumes are defined yet": [
+    "何も論理ボリュームを設定していません"
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "起動用のパーティションを自動設定しません。注意してお使いください。"
@@ -938,6 +1019,12 @@ export default {
   ],
   "Options toggle": [
     "オプションの切り替え"
+  ],
+  "Other options": [
+    "その他のオプション"
+  ],
+  "Other options toggle": [
+    "その他のオプションの切り替え"
   ],
   "Overview": [
     "概要"
@@ -1137,11 +1224,17 @@ export default {
   "Select a disk": [
     "ディスクの選択"
   ],
+  "Select a disk to define partitions": [
+    "パーティションの設定作業を行うディスクを選択"
+  ],
   "Select a product": [
     "製品の選択"
   ],
   "Select another disk to define partitions": [
     "パーティションの設定作業を行う他のディスクを選択"
+  ],
+  "Select at least one disk.": [
+    "少なくとも 1 つのディスクを選択してください。"
   ],
   "Select or enter a mount point": [
     "マウントポイントの選択または入力"
@@ -1156,7 +1249,7 @@ export default {
     "起動用のパーティションを設定するディスクの選択"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
-    "新しいシステムを配置するための領域を検出するため、各パーティションに対してやるべきことを選択します。"
+    "新しいシステムのインストール先となる領域を確保するため、各パーティションに対してすべきことを選択します。"
   ],
   "Select what to do with each partition.": [
     "パーティションの設定作業を独自に実施します。"
@@ -1172,6 +1265,9 @@ export default {
   ],
   "Set DIAG On": [
     "診断を有効化"
+  ],
+  "Set a permanent hostname that won’t change with network updates.": [
+    "ネットワーク側から指定された場合でも変化しない、固定のホスト名を設定します。"
   ],
   "Several partitions will be deleted": [
     "いくつかのパーティションを削除します"
@@ -1227,6 +1323,9 @@ export default {
   "Something went wrong": [
     "何らかの問題が発生しました"
   ],
+  "Start configuring a basic installation": [
+    "基本的なインストールの設定を開始する"
+  ],
   "Start from scratch with the default configuration": [
     "既定の設定で最初から実施する"
   ],
@@ -1272,6 +1371,15 @@ export default {
   "The content may be deleted": [
     "内容が削除されるかもしれません"
   ],
+  "The current configuration will result in a %1$s of %2$s.": [
+    "現在の設定では %2$s の %1$s になります。"
+  ],
+  "The current configuration will result in a %1$s of at least %2$s.": [
+    "現在の設定では少なくとも %2$s の %1$sになります。"
+  ],
+  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
+    "現在の設定では %2$s から %3$s までの %1$s になります。"
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "既存のデータは保持しますが、必要に応じて既存のパーティションのサイズ変更を行います。"
   ],
@@ -1308,6 +1416,15 @@ export default {
   "The installer requires [root] user privileges.": [
     "インストーラを使用するには [root] 権限が必要です。"
   ],
+  "The logical volume can grow to use all the contiguous free space": [
+    "連続した空き領域の範囲まで論理ボリュームを拡大できます"
+  ],
+  "The logical volume can grow until a given limit size": [
+    "指定した上限サイズまで論理ボリュームを拡大できます"
+  ],
+  "The logical volume is created exactly with the given size": [
+    "指定したサイズで論理ボリュームを作成します"
+  ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
     "最大サイズは数値でなければいけません。なお、 GiB や GB のように単位を付けることもできます"
   ],
@@ -1318,7 +1435,7 @@ export default {
     "最小サイズは数値でなければいけません。なお、 GiB や GB のように単位を付けることもできます"
   ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    ""
+    "必要な LVM 物理ボリュームは、論理ボリュームのサイズを元に、選択したディスク内のパーティションとして追加されます。複数のディスクを選択した場合、物理ボリュームはそれらのディスクに分散して配置されます。"
   ],
   "The partition can grow to use all the contiguous free space": [
     "連続した空き領域の範囲までパーティションを拡大できます"
@@ -1485,6 +1602,9 @@ export default {
   "Use %s for additional partitions and booting": [
     "追加パーティションと起動用に %s を使用する"
   ],
+  "Use %s to configure boot partitions": [
+    "起動パーティション用に %s を使用する"
+  ],
   "Use %s to host LVM": [
     "LVM の配置用に %s を使用する"
   ],
@@ -1502,6 +1622,9 @@ export default {
   ],
   "Use %s to install, host LVM and boot": [
     "インストール／ LVM の配置／起動用に %s を使用する"
+  ],
+  "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
+    "下記にあるアクションを押してデバイスを設定するか、もしくは %s を押して何もない状態から設定を行ってください。"
   ],
   "Use available space": [
     "利用可能な領域を使用する"
@@ -1549,7 +1672,7 @@ export default {
     "検出された Wi-Fi ネットワーク"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
-    ""
+    "ボリュームグループ '%s' は既に存在しています。別の名前を入力してください。"
   ],
   "WPA & WPA2 Personal": [
     "WPA および WPA2 Personal"
@@ -1619,6 +1742,12 @@ export default {
   ],
   "logical volume": [
     "論理ボリューム"
+  ],
+  "partition": [
+    "パーティション"
+  ],
+  "reset to defaults": [
+    "既定値に戻す"
   ],
   "zFCP": [
     "zFCP"

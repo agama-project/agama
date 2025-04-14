@@ -42,6 +42,24 @@ export default {
   "%s with %d partitions": [
     "%s mit %d Partitionen"
   ],
+  "A %1$s of %2$s will be created for %3$s": [
+    "Eine %1$s mit %2$s wird für %3$s erstellt"
+  ],
+  "A %1$s of at least %2$s will be created for %3$s": [
+    "Eine %1$s mit mindestens %2$s wird für %3$s erstellt"
+  ],
+  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
+    "Eine %1$s mit einer Größe zwischen %2$s und %3$s wird für %4$s erstellt"
+  ],
+  "A generic minimum size of %1$s will be used for the new %2$s": [
+    "Eine generische Mindestgröße von %1$s wird für die neue %2$s verwendet"
+  ],
+  "A generic size of %s will be used for the new %2$s": [
+    "Für die neue %2$s wird eine generische Größe von %s verwendet"
+  ],
+  "A generic size range between %1$s and %2$s will be used for the new %3$s": [
+    "Ein generischer Größenbereich zwischen %1$s und %2$s wird für die neue %3$s verwendet"
+  ],
   "A partition may be deleted": [
     "Eine Partition kann gelöscht werden"
   ],
@@ -87,6 +105,9 @@ export default {
   "Add DNS": [
     "DNS hinzufügen"
   ],
+  "Add LVM volume group": [
+    "LVM-Volume-Gruppe hinzufügen"
+  ],
   "Add an address": [
     "Adresse hinzufügen"
   ],
@@ -100,7 +121,7 @@ export default {
     "Eine weitere Partition hinzufügen oder eine vorhandene Partition einhängen"
   ],
   "Add logical volume": [
-    ""
+    "Logisches Volume hinzufügen"
   ],
   "Add or use partition": [
     "Partition hinzufügen oder verwenden"
@@ -127,7 +148,7 @@ export default {
     "Neben der Definition des ersten Benutzers können auch die Authentifizierungsmethoden für den Root-Benutzer konfiguriert werden."
   ],
   "Already using all available disks": [
-    ""
+    "Alle verfügbaren Festplatten werden bereits verwendet"
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Alle vorhandenen Partitionen werden entfernt und alle Daten auf der Festplatte gehen verloren."
@@ -179,6 +200,15 @@ export default {
   ],
   "Back": [
     "Zurück"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
+    "Basierend auf der Größe des RAM im System wird eine %1s$ mit %2$s für %3$s erstellt"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
+    "Basierend auf der Größe des RAM im System wird eine %1s$ mit mindestens %2$s für %3$s erstellt"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
+    "Basierend auf der Größe des RAM im System wird eine %1s$ mit einer Größe zwischen %2$s und %3$s für %4$s erstellt"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -261,11 +291,17 @@ export default {
   "Configure DASD": [
     "DASD konfigurieren"
   ],
+  "Configure LVM Volume Group": [
+    "LVM-Volume-Gruppe konfigurieren"
+  ],
   "Configure LVM logical volume at %s volume group": [
     ""
   ],
   "Configure iSCSI": [
     "iSCSI konfigurieren"
+  ],
+  "Configure partition at %s": [
+    "Partition bei %s konfigurieren"
   ],
   "Configure zFCP": [
     "zFCP konfigurieren"
@@ -324,6 +360,9 @@ export default {
   "Could not log in. Please, make sure that the password is correct.": [
     "Die Anmeldung ist fehlgeschlagen. Bitte stellen Sie sicher, dass das Passwort korrekt ist."
   ],
+  "Create LVM volume group %s": [
+    "LVM-Volume-Gruppe %s erstellen"
+  ],
   "Create user": [
     "Benutzer erstellen"
   ],
@@ -360,6 +399,9 @@ export default {
   "Default file system for %s": [
     "Standard-Dateisystem für %s"
   ],
+  "Default file system for generic logical volumes": [
+    "Standard-Dateisystem für generische logische Volumes"
+  ],
   "Default file system for generic partitions": [
     "Standard-Dateisystem für generische Partitionen"
   ],
@@ -367,10 +409,10 @@ export default {
     "Benutzerdefinierte Größe oder einen Bereich definieren"
   ],
   "Define a new LVM on the disk": [
-    ""
+    "Einen neuen LVM auf der Festplatte definieren"
   ],
   "Define a new LVM on top of one or several disks": [
-    ""
+    "Einen neuen LVM auf einer oder mehreren Festplatten definieren"
   ],
   "Define a user now": [
     "Definieren Sie jetzt einen Benutzer"
@@ -388,7 +430,10 @@ export default {
     "Aktuellen Inhalt löschen"
   ],
   "Delete the volume group and its logical volumes": [
-    ""
+    "Die Volume-Gruppe und ihre logischen Volumes löschen"
+  ],
+  "Delete volume group": [
+    "Volume-Gruppe löschen"
   ],
   "Destroy current data and format partition as": [
     "Aktuelle Daten zerstören und Partition formatieren als"
@@ -459,6 +504,9 @@ export default {
   "Edit user": [
     "Benutzer bearbeiten"
   ],
+  "Edit volume group": [
+    "Volume-Gruppe bearbeiten"
+  ],
   "Encrypt the system": [
     "System verschlüsseln"
   ],
@@ -485,6 +533,12 @@ export default {
   ],
   "Enter a hostname.": [
     "Geben Sie einen Hostnamen ein."
+  ],
+  "Enter a name": [
+    "Name eingeben"
+  ],
+  "Enter a name for the volume group.": [
+    "Name für die Volume-Gruppe eingeben."
   ],
   "ExFAT": [
     "ExFAT"
@@ -551,6 +605,9 @@ export default {
   ],
   "Format": [
     "Formatieren"
+  ],
+  "Format logical volume as": [
+    "Logisches Volume formatieren als"
   ],
   "Format partition as": [
     "Partition formatieren als"
@@ -733,9 +790,6 @@ export default {
   "Loading data...": [
     "Daten werden gelesen ..."
   ],
-  "Loading installation environment, please wait.": [
-    "Installationsumgebung wird geladen, bitte warten."
-  ],
   "Loading the installation repositories...": [
     "Installations-Repositorien werden geladen ..."
   ],
@@ -750,6 +804,12 @@ export default {
   ],
   "Log in as %s": [
     "Als %s anmelden"
+  ],
+  "Logical volume name": [
+    "Name des logischen Volumes"
+  ],
+  "Logical volumes": [
+    "Logische Volumes"
   ],
   "Login": [
     "Anmelden"
@@ -800,10 +860,13 @@ export default {
     "Modus"
   ],
   "Modify settings and physical volumes": [
-    ""
+    "Einstellungen und physikalische Volumes ändern"
   ],
   "More actions": [
     "Weitere Aktionen"
+  ],
+  "More devices": [
+    "Weitere Geräte"
   ],
   "Mount Point": [
     "Einhängepunkt"
@@ -819,6 +882,9 @@ export default {
   ],
   "Mount point toggle": [
     "Einhängepunktumschalter"
+  ],
+  "Move mount points": [
+    "Einhängepunkte verschieben"
   ],
   "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
     ""
@@ -868,11 +934,17 @@ export default {
   "No device selected yet": [
     "Noch kein Gerät ausgewählt"
   ],
+  "No devices configured yet": [
+    "Noch keine Geräte konfiguriert"
+  ],
   "No devices found": [
     "Keine Geräte gefunden"
   ],
   "No iSCSI targets found.": [
     "Keine iSCSI-Ziele gefunden."
+  ],
+  "No logical volumes are defined yet": [
+    "Es sind noch keine logischen Volumes definiert"
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Es werden keine Partitionen automatisch für das Booten konfiguriert. Seien Sie vorsichtig."
@@ -933,6 +1005,9 @@ export default {
   ],
   "Options toggle": [
     "Optionen umschalten"
+  ],
+  "Other options": [
+    "Andere Optionen"
   ],
   "Overview": [
     "Übersicht"
@@ -1132,11 +1207,17 @@ export default {
   "Select a disk": [
     "Festplatte auswählen"
   ],
+  "Select a disk to define partitions": [
+    "Wählen Sie eine Festplatte, um Partitionen zu definieren"
+  ],
   "Select a product": [
     "Wählen Sie ein Produkt aus"
   ],
   "Select another disk to define partitions": [
     "Wählen Sie eine andere Festplatte aus, um Partitionen zu definieren"
+  ],
+  "Select at least one disk.": [
+    "Wählen Sie mindestens eine Festplatte aus."
   ],
   "Select or enter a mount point": [
     "Einhängepunkt auswählen oder eingeben"
@@ -1167,6 +1248,9 @@ export default {
   ],
   "Set DIAG On": [
     "DIAG einschalten"
+  ],
+  "Set a permanent hostname that won’t change with network updates.": [
+    "Legen Sie einen permanenten Hostnamen fest, der sich bei Netzwerkaktualisierungen nicht ändert."
   ],
   "Several partitions will be deleted": [
     "Mehrere Partitionen werden gelöscht"
@@ -1223,6 +1307,9 @@ export default {
   "Something went wrong": [
     "Etwas ist schiefgelaufen"
   ],
+  "Start configuring a basic installation": [
+    "Konfiguration einer Basisinstallation beginnen"
+  ],
   "Start from scratch with the default configuration": [
     "Mit der Standardkonfiguration neu beginnen"
   ],
@@ -1265,6 +1352,15 @@ export default {
   "The content may be deleted": [
     "Der Inhalt kann gelöscht werden"
   ],
+  "The current configuration will result in a %1$s of %2$s.": [
+    "Die aktuelle Konfiguration führt zu einer %1$s mit %2$s."
+  ],
+  "The current configuration will result in a %1$s of at least %2$s.": [
+    "Die aktuelle Konfiguration führt zu einer %1$s mit mindestens %2$s."
+  ],
+  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
+    "Die aktuelle Konfiguration führt zu einer %1$s mit einer Größe zwischen %2$s und %3$s."
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Die Daten bleiben erhalten, aber die Größe der aktuellen Partitionen wird nach Bedarf geändert."
   ],
@@ -1300,6 +1396,15 @@ export default {
   ],
   "The installer requires [root] user privileges.": [
     "Das Installationsprogramm erfordert [root]-Benutzerrechte."
+  ],
+  "The logical volume can grow to use all the contiguous free space": [
+    "Das logische Volume kann so lange wachsen, bis es den gesamten zusammenhängenden freien Speicherplatz belegt"
+  ],
+  "The logical volume can grow until a given limit size": [
+    "Das logische Volume kann bis zu einer bestimmten Maximalgröße wachsen"
+  ],
+  "The logical volume is created exactly with the given size": [
+    "Das logische Volume wird genau mit der angegebenen Größe erstellt"
   ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
     "Das Maximum muss eine Zahl sein, optional gefolgt von einer Einheit wie GiB oder GB"
@@ -1397,6 +1502,9 @@ export default {
   "This device will contain the configured LVM groups and any partition needed to boot": [
     "Dieses Gerät wird die konfigurierten LVM-Gruppen und alle zum Booten benötigten Partitionen enthalten"
   ],
+  "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
+    "Dieser Hostname ist dynamisch und kann sich nach einem Neustart oder einer Netzwerkaktualisierung ändern, wie vom lokalen Netzwerkadministrator konfiguriert."
+  ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "Bei diesem Produkt ist es nicht möglich, während der Installation Softwaremuster auszuwählen. Sie können jedoch zusätzliche Software hinzufügen, sobald die Installation abgeschlossen ist."
   ],
@@ -1469,6 +1577,9 @@ export default {
   "Use %s for additional partitions and booting": [
     "%s für zusätzliche Partitionen und zum Booten verwenden"
   ],
+  "Use %s to configure boot partitions": [
+    "Verwenden Sie %s zur Konfiguration von Bootpartitionen"
+  ],
   "Use %s to host LVM": [
     "%s zum Hosten des LVM verwenden"
   ],
@@ -1486,6 +1597,9 @@ export default {
   ],
   "Use %s to install, host LVM and boot": [
     "%s zum Installieren, Hosten des LVM und Booten verwenden"
+  ],
+  "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
+    "Verwenden Sie die nachstehenden Aktionen, um Ihre Geräte einzurichten, oder klicken Sie auf %s, um mit der Standardkonfiguration von vorn zu beginnen."
   ],
   "Use available space": [
     "Verfügbaren Speicherplatz verwenden"
@@ -1530,7 +1644,7 @@ export default {
     "Transienter Hostname wird verwendet: %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
-    ""
+    "Volume-Gruppe ‚%s‘ existiert bereits. Geben Sie einen anderen Namen ein."
   ],
   "WPA & WPA2 Personal": [
     "WPA & WPA2 Personal"
@@ -1591,6 +1705,12 @@ export default {
   ],
   "iSCSI": [
     "iSCSI"
+  ],
+  "partition": [
+    "Partition"
+  ],
+  "reset to defaults": [
+    "Auf Standardeinstellungen zurücksetzen"
   ],
   "zFCP": [
     "zFCP"

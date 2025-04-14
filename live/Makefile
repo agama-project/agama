@@ -30,6 +30,11 @@ all: $(DESTDIR) $(COPY_FILES) $(DESTDIR)/config-cdroot.tar.xz $(DESTDIR)/root.ta
 clean:
 	rm -rf $(DESTDIR)/*
 
+# remove the destination directory completely (useful when changing OBS target as it also cleans
+# the .osc checkout directory)
+distclean:
+	rm -rf $(DESTDIR)
+
 $(DESTDIR):
 	mkdir -p $@
 

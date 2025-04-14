@@ -38,8 +38,13 @@ impl FilesStore {
     }
 
     /// loads the list of user files from http API
-    pub async fn load(&self) -> Result<Vec<UserFile>, ServiceError> {
-        self.files_client.get_files().await
+    pub async fn load(&self) -> Result<Option<Vec<UserFile>>, ServiceError> {
+        let res = self.files_client.get_files().await?;
+        if res.is_empty() {
+            Ok(None)
+        } else {
+            Ok(Some(res))
+        }
     }
 
     /// stores the list of user files via http API

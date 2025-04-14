@@ -8,5 +8,5 @@ Type=oneshot
 ExecStart=/usr/bin/agama-proxy-setup
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
 

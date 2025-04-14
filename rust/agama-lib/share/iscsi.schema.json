@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "Config",
+  "description": "iSCSI config.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "initiator": {
+      "description": "Initiator name.",
+      "type": "string"
+    },
+    "targets": {
+      "description": "List of targets.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/target" }
+    }
+  },
+  "$defs": {
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["address", "port", "name", "interface"],
+      "properties": {
+        "address": {
+          "description": "IP address.",
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "name": { "type": "string" },
+        "interface": { "type": "string" },
+        "startup": {
+          "enum": ["onboot", "manual", "automatic"]
+        },
+        "authByTarget": { "$ref": "#/$defs/authentication" },
+        "authByInitiator": { "$ref": "#/$defs/authentication" }
+      }
+    },
+    "authentication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["username", "password"],
+      "properties": {
+        "username": { "type": "string" },
+        "password": { "type": "string" }
+      }
+    }
+  }
+}

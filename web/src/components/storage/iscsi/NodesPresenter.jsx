@@ -115,7 +115,7 @@ export default function NodesPresenter({ nodes }) {
 
   return (
     <>
-      <Table variant="compact">
+      <Table variant="compact" gridBreakPoint="grid-lg">
         <Thead>
           <Tr>
             <Th>{_("Name")}</Th>

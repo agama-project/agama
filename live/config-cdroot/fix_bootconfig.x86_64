@@ -100,7 +100,7 @@ menuentry "Check Installation Medium" --class os --unrestricted {
 }
 menuentry "Boot from Hard Disk" --class opensuse --class gnu-linux --class gnu --class os {
   if search --no-floppy --file /efi/boot/fallback.efi --set ; then
-    for os in opensuse sles leap; do
+    for os in opensuse sles leap suse; do
       if [ -f /efi/\$os/grub.efi ] ; then
         chainloader /efi/\$os/grub.efi
         boot

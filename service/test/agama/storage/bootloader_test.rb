@@ -45,8 +45,8 @@ describe Agama::Storage::Bootloader::Config do
 
     it "exports only what was previously set" do
       expect(config.to_json).to eq "{\"stopOnBootMenu\":true}"
-      config.load_json({ "timeout" => 10 }.to_json)
-      expect(config.to_json).to eq "{\"timeout\":10}"
+      config.load_json({ "timeout" => 10, "extraKernelParams" => "verbose" }.to_json)
+      expect(config.to_json).to eq "{\"timeout\":10,\"extraKernelParams\":\"verbose\"}"
     end
   end
 
