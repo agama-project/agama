@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr 11 13:02:30 UTC 2025 - Frederic Crozat <fcrozat@suse.com>
+
+- Ensure bootloader pattern is always installed on SLES 16.0
+  (bsc#1240015).
+
+-------------------------------------------------------------------
 Thu Mar 27 12:35:32 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Patterns from extensions are always displayed, the HA extension
