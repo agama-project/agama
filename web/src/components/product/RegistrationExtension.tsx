@@ -127,7 +127,7 @@ export default function RegistrationExtension({
       </Title>
       <Content component="p">{extension.description}</Content>
       {error && <Alert variant="warning" isInline title={error} />}
-      <Content component="p">
+      <Content>
         {isRegistered && (
           <RegisteredExtensionStatus registrationCode={registrationData.registrationCode} />
         )}
