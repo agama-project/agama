@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,17 +24,44 @@ import React from "react";
 
 import { _ } from "~/i18n";
 import { Page } from "~/components/core";
-import { InitiatorPresenter } from "~/components/storage/iscsi";
-import { useInitiator, useInitiatorChanges } from "~/queries/storage/iscsi";
+import {
+  DescriptionList,
+  DescriptionListGroup,
+  DescriptionListTerm,
+  DescriptionListDescription,
+} from "@patternfly/react-core";
+import { InitiatorForm } from "~/components/storage/iscsi";
+import { useInitiator, useInitiatorMutation, useInitiatorChanges } from "~/queries/storage/iscsi";
+
+const InitiatorDescription = ({ initiator }) => {
+  return (
+    <DescriptionList aria-label={_("Initiator details")} isHorizontal isFluid>
+      <DescriptionListGroup>
+        <DescriptionListTerm>{_("Name")}</DescriptionListTerm>
+        <DescriptionListDescription>{initiator.name}</DescriptionListDescription>
+      </DescriptionListGroup>
+    </DescriptionList>
+  );
+};
 
 export default function InitiatorSection() {
   const initiator = useInitiator();
+  const { mutateAsync: updateInitiator } = useInitiatorMutation();
   useInitiatorChanges();
+
+  const submitForm = async ({ name }) => {
+    await updateInitiator({ name });
+  };
+
+  const desc = initiator.ibft
+    ? _("Configuration read from the iSCSI Boot Firmware Table (iBFT).")
+    : _("No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.");
 
   return (
     // TRANSLATORS: iSCSI initiator section name
-    <Page.Section title={_("Initiator")}>
-      <InitiatorPresenter initiator={initiator} />
+    <Page.Section title={_("Initiator")} description={desc}>
+      {initiator.ibft && <InitiatorDescription initiator={initiator} />}
+      {!initiator.ibft && <InitiatorForm initiator={initiator} onSubmit={submitForm} />}
     </Page.Section>
   );
 }

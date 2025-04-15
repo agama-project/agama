@@ -31,8 +31,7 @@ const initiatorQuery = {
   queryKey: ["storage", "iscsi", "initiator"],
   queryFn: async (): Promise<ISCSIInitiator> => {
     const initiator = await fetchInitiator();
-    // FIXME: what is the offloadCard?
-    return { ...initiator, offloadCard: "" };
+    return initiator;
   },
 };
 

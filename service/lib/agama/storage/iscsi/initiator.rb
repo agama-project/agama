@@ -29,11 +29,6 @@ module Agama
         # @return [String]
         attr_accessor :name
 
-        # Configured iSCSI offload card
-        #
-        # @return [String]
-        attr_accessor :offload_card
-
         # Whether the initiator name was set via iBFT
         #
         # @return [Boolean]
