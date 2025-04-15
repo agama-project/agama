@@ -167,7 +167,7 @@ export default function LvmPage() {
                 <Checkbox
                   key={device.sid}
                   id={`device${device.sid}`}
-                  label={<Content isEditorial>{deviceLabel(device, 20)}</Content>}
+                  label={<Content isEditorial>{deviceLabel(device, true)}</Content>}
                   description={
                     <Flex rowGap={{ default: "rowGapXs" }} columnGap={{ default: "columnGapSm" }}>
                       <SubtleContent>

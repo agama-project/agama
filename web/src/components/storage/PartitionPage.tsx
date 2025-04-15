@@ -495,9 +495,9 @@ function TargetOptionLabel({ value }: TargetOptionLabelProps): React.ReactNode {
 
   if (value === NEW_PARTITION) {
     // TRANSLATORS: %s is a disk name with its size (eg. "sda, 10 GiB"
-    return sprintf(_("As a new partition on %s"), deviceLabel(device, 20));
+    return sprintf(_("As a new partition on %s"), deviceLabel(device, true));
   } else {
-    return sprintf(_("Using partition %s"), value);
+    return sprintf(_("Using partition %s"), baseName(value, true));
   }
 }
 

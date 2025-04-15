@@ -177,41 +177,43 @@ const parseToBytes = (size: string | number): number => {
   return Math.trunc(value);
 };
 
+const TRUNCATE_MAX_LENGTH = 17;
+
 /**
  * Base name for a full path
  *
- * FIXME: The maxLength param allows to generate a shorter representation that fits into
+ * FIXME: The truncate param allows to generate a shorter representation that fits into
  * the interface, but that's a temporary solution. The right way to make the strings fit
  * into the responsive interface would be Patternfly's Truncate component.
  */
-const baseName = (name: string, maxLength?: number): string => {
+const baseName = (name: string, truncate?: boolean): string => {
   const base = name.split("/").pop();
 
-  if (!maxLength || base.length <= maxLength) return base;
+  if (!truncate || base.length <= TRUNCATE_MAX_LENGTH) return base;
 
   // Simplistic approach as a first implementation. Anyways, we plan to replace this with
   // the usage of Patternfly's Truncate in the mid-term.
-  const limit1 = Math.ceil((maxLength - 1) / 2.0);
-  const limit2 = base.length - Math.floor((maxLength - 1) / 2.0);
+  const limit1 = Math.ceil((TRUNCATE_MAX_LENGTH - 1) / 2.0);
+  const limit2 = base.length - Math.floor((TRUNCATE_MAX_LENGTH - 1) / 2.0);
   return base.slice(0, limit1) + "…" + base.slice(limit2);
 };
 
 /**
  * Base name of a device.
  *
- * FIXME: See note at baseName about the usage of maxLength.
+ * FIXME: See note at baseName about the usage of truncate.
  */
-const deviceBaseName = (device: StorageDevice, maxLength?: number): string => {
-  return baseName(device.name, maxLength);
+const deviceBaseName = (device: StorageDevice, truncate?: boolean): string => {
+  return baseName(device.name, truncate);
 };
 
 /**
  * Generates the label for the given device
  *
- * FIXME: See note at baseName about the usage of maxLength.
+ * FIXME: See note at baseName about the usage of truncate.
  */
-const deviceLabel = (device: StorageDevice, maxLength?: number): string => {
-  const name = deviceBaseName(device, maxLength);
+const deviceLabel = (device: StorageDevice, truncate?: boolean): string => {
+  const name = deviceBaseName(device, truncate);
   const size = device.size;
 
   return size ? `${name}, ${deviceSize(size)}` : name;

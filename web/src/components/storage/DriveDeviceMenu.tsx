@@ -35,7 +35,7 @@ import { StorageDevice } from "~/types/storage";
 import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 
-const driveBaseName = (device: StorageDevice): string => deviceBaseName(device, 20);
+const driveBaseName = (device: StorageDevice): string => deviceBaseName(device, true);
 
 const UseOnlyOneOption = (drive: apiModel.Drive): boolean => {
   const driveModel = useDrive(drive.name);
@@ -386,7 +386,7 @@ export default function DriveDeviceMenu({
         <RemoveDriveOption key="delete-disk-option" drive={drive} />,
       ]}
     >
-      {<b>{deviceLabel(selected, 20)}</b>}
+      {<b>{deviceLabel(selected, true)}</b>}
     </MenuButton>
   );
 }

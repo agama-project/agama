@@ -56,7 +56,7 @@ const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
 
   if (lvs.length) {
     if (convert) {
-      const diskName = baseName(targetDevices[0].name, 20);
+      const diskName = baseName(targetDevices[0].name, true);
       description = sprintf(
         n_(
           // TRANSLATORS: %1$s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
