@@ -72,7 +72,6 @@ const DisksDrillDownMenuItem = ({
       aria-label={_("Add device menu")}
       isDisabled={isDisabled}
       description={isDisabled ? disabledDescription : enabledDescription}
-      upProps={{ label: title }}
       items={devices.map((device) => (
         <MenuButtonItem
           key={device.sid}
