@@ -46,6 +46,7 @@ export default function HostnamePage() {
   const hasTransientHostname = isEmpty(staticHostname);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [requestError, setRequestError] = useState<string | null>(null);
   const [settingHostname, setSettingHostname] = useState(!hasTransientHostname);
   const [hostname, setHostname] = useState(staticHostname);
 
@@ -55,6 +56,7 @@ export default function HostnamePage() {
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
     setError(null);
+    setRequestError(null);
     setSuccess(null);
 
     if (settingHostname && isEmpty(hostname)) {
@@ -63,10 +65,8 @@ export default function HostnamePage() {
     }
 
     updateHostname({ static: settingHostname ? hostname : "" })
-      .then(() => setSuccess("Hostname successfully updated."))
-      .catch(() =>
-        setError("Something went wrong while updating the hostname. Please, try again."),
-      );
+      .then(() => setSuccess(_("Hostname successfully updated")))
+      .catch(() => setRequestError(_("Hostname could not be updated")));
   };
 
   // TRANSLATORS: The title for a notification shown when the static hostname
@@ -99,6 +99,7 @@ export default function HostnamePage() {
 
         <Form id="hostnameForm" onSubmit={submit}>
           {success && <Alert variant="success" isInline title={success} />}
+          {requestError && <Alert variant="warning" isInline title={requestError} />}
           {error && (
             <Alert variant="warning" isInline title={_("Check the following before continuing")}>
               {error}

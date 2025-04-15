@@ -13,4 +13,4 @@ Type=simple
 User=root
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target

@@ -53,6 +53,8 @@ module Agama
 
       # Execute the final storage actions, reporting the progress
       def run
+        # FIXME: This progress is not emitting changes in D-Bus because its callbacks are not
+        #   configured. Is that expected? If so, why a progress?
         steps = possible_steps.select(&:run?)
         start_progress_with_size(steps.size)
 
@@ -128,7 +130,10 @@ module Agama
         FILES = [
           { dir: "/etc/udev/rules.d", file: "40-*" },
           { dir: "/etc/udev/rules.d", file: "41-*" },
-          { dir: "/etc/udev/rules.d", file: "70-persistent-net.rules" }
+          { dir: "/etc/udev/rules.d", file: "70-persistent-net.rules" },
+          # Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
+          { dir: "/etc/nvme", file: "hostnqn" },
+          { dir: "/etc/nvme", file: "hostid" }
         ].freeze
 
         def label
@@ -140,15 +145,22 @@ module Agama
         end
 
         def run
-          target = File.join(Yast::Installation.destdir, UDEV_RULES_DIR)
-          FileUtils.mkdir_p(target)
-          FileUtils.cp(glob_files, target)
+          glob_files.each do |file|
+            target = File.dirname(file).sub(root_dir, dest_dir)
+
+            FileUtils.mkdir_p(target)
+            FileUtils.cp(file, target)
+          end
         end
 
       private
 
         def root_dir
           ROOT_PATH
+        end
+
+        def dest_dir
+          Yast::Installation.destdir
         end
 
         def glob_files

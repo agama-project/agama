@@ -26,5 +26,23 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Serialize, Deserialize, Default, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct BootloaderSettings {
-    pub stop_on_boot_menu: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stop_on_boot_menu: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timeout: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extra_kernel_params: Option<String>,
+}
+
+impl BootloaderSettings {
+    pub fn to_option(self) -> Option<Self> {
+        if self.stop_on_boot_menu.is_none()
+            && self.timeout.is_none()
+            && self.extra_kernel_params.is_none()
+        {
+            None
+        } else {
+            Some(self)
+        }
+    }
 }

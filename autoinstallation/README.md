@@ -80,11 +80,17 @@ $ sudo agama profile evaluate my-profile.jsonnet
 > [!WARNING]
  You need to use `sudo` to access the hardware information.
 
-Do you want to check whether your profile is valid? `agama` have you covered. Bear in mind that you
-can only validate JSON profiles (a Jsonnet profile must be evaluated first).
+Do you want to check whether your profile is valid? `agama` have you covered.
 
 ```
 $ agama profile validate my-profile.json
+```
+
+Bear in mind that you
+can only validate JSON profiles (a Jsonnet profile must be evaluated first):
+
+```
+$ sudo agama profile evaluate my-profile.jsonnet | agama profile validate -
 ```
 
 ### Generating a configuration file

@@ -94,11 +94,23 @@ describe Agama::Storage::Finisher do
           "41-qeth-0.0.0800.rules", "70-persistent-net.rules"
         ]
       end
+      let(:nvme_files) do
+        [
+          "hostnqn", "hostid"
+        ]
+      end
 
       it "copies some specific udev rules to the target system when exist" do
         subject.run
         rules.each do |rule|
           expect(File.exist?(File.join(destdir, "/etc/udev/rules.d/#{rule}"))).to eql(true)
+        end
+      end
+
+      it "copies some specific NVMe configuration files to the target system" do
+        subject.run
+        nvme_files.each do |file|
+          expect(File.exist?(File.join(destdir, "/etc/nvme/#{file}"))).to eql(true)
         end
       end
     end

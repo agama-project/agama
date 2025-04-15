@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,7 +22,9 @@
 require "dbus"
 require "agama/dbus/bus"
 require "agama/dbus/clients/locale"
-require "agama/dbus/storage"
+require "agama/dbus/service_status"
+require "agama/dbus/storage/iscsi"
+require "agama/dbus/storage/manager"
 require "agama/storage"
 
 module Agama
@@ -74,10 +76,6 @@ module Agama
       # @return [Logger]
       attr_reader :logger
 
-      def manager
-        @manager ||= Agama::Storage::Manager.new(config, logger)
-      end
-
       # @return [::DBus::ObjectServer]
       def service
         @service ||= bus.request_service(SERVICE_NAME)
@@ -85,7 +83,36 @@ module Agama
 
       # @return [Array<::DBus::Object>]
       def dbus_objects
-        @dbus_objects ||= [Agama::DBus::Storage::Manager.new(manager, logger)]
+        @dbus_objects ||= [manager_object, iscsi_object]
+      end
+
+      # @return [Agama::DBus::Storage::Manager]
+      def manager_object
+        @manager_object ||= Agama::DBus::Storage::Manager.new(
+          manager,
+          service_status: service_status,
+          logger:         logger
+        )
+      end
+
+      # @return [Agama::DBus::Storage::ISCSI]
+      def iscsi_object
+        # Uses the same service status as the manager D-Bus object.
+        @iscsi_object ||= Agama::DBus::Storage::ISCSI.new(
+          manager.iscsi,
+          service_status: service_status,
+          logger:         logger
+        )
+      end
+
+      # @return [Agama::Storage::Manager]
+      def manager
+        @manager ||= Agama::Storage::Manager.new(config, logger: logger)
+      end
+
+      # @return [Agama::DBus::ServiceStatus]
+      def service_status
+        @service_status ||= Agama::DBus::ServiceStatus.new
       end
     end
   end

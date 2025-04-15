@@ -22,13 +22,8 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Bullseye,
-  Card,
-  CardBody,
   Content,
   Flex,
-  Grid,
-  GridItem,
   ProgressStep,
   ProgressStepper,
   ProgressStepProps,
@@ -36,10 +31,10 @@ import {
   Stack,
   Truncate,
 } from "@patternfly/react-core";
-
-import { _ } from "~/i18n";
 import { useProgress, useProgressChanges, useResetProgress } from "~/queries/progress";
 import { Progress as ProgressType } from "~/types/progress";
+import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
+import { _ } from "~/i18n";
 
 type StepProps = {
   id: string;
@@ -90,7 +85,10 @@ const Progress = ({ steps, step, firstStep, detail }) => {
   };
 
   return (
-    <ProgressStepper isCenterAligned className="progress-report">
+    <ProgressStepper
+      isCenterAligned
+      className={[sizingStyles.w_100, sizingStyles.h_33OnMd].join(" ")}
+    >
       {firstStep && (
         <ProgressStep key="initial" variant="success">
           {firstStep}
@@ -132,27 +130,17 @@ function ProgressReport({ title, firstStep }: { title: string; firstStep?: React
   const detail = findDetail([softwareProgress, storageProgress]);
 
   return (
-    <Bullseye>
-      <Grid hasGutter>
-        <GridItem sm={10} smOffset={1}>
-          <Card isPlain>
-            <CardBody>
-              <Flex
-                direction={{ default: "column" }}
-                rowGap={{ default: "rowGap2xl" }}
-                alignItems={{ default: "alignItemsCenter" }}
-              >
-                <Spinner size="xl" />
-                <Content component="h1" id="progress-title" style={{ textAlign: "center" }}>
-                  {title}
-                </Content>
-                <Progress steps={steps} step={progress} detail={detail} firstStep={firstStep} />
-              </Flex>
-            </CardBody>
-          </Card>
-        </GridItem>
-      </Grid>
-    </Bullseye>
+    <Flex
+      direction={{ default: "column" }}
+      rowGap={{ default: "rowGapMd" }}
+      alignItems={{ default: "alignItemsCenter" }}
+      justifyContent={{ default: "justifyContentCenter" }}
+      className={sizingStyles.h_100OnMd}
+    >
+      <Spinner size="xl" />
+      <Content component="h1">{title}</Content>
+      <Progress steps={steps} step={progress} detail={detail} firstStep={firstStep} />
+    </Flex>
   );
 }
 

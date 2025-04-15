@@ -26,4 +26,4 @@ StandardInput=tty
 TimeoutStartSec=infinity
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target

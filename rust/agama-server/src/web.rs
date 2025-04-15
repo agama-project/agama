@@ -32,10 +32,11 @@ use crate::{
     l10n::web::l10n_service,
     manager::web::{manager_service, manager_stream},
     network::{web::network_service, NetworkManagerAdapter},
+    profile::web::profile_service,
     questions::web::{questions_service, questions_stream},
     scripts::web::scripts_service,
     software::web::{software_service, software_streams},
-    storage::web::{storage_service, storage_streams},
+    storage::web::{iscsi::iscsi_service, storage_service, storage_streams},
     users::web::{users_service, users_streams},
     web::common::{issues_stream, jobs_stream, progress_stream, service_status_stream},
 };
@@ -82,6 +83,7 @@ where
         .add_service("/manager", manager_service(dbus.clone()).await?)
         .add_service("/software", software_service(dbus.clone()).await?)
         .add_service("/storage", storage_service(dbus.clone()).await?)
+        .add_service("/iscsi", iscsi_service(dbus.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
         .add_service("/network", network_service(network_adapter, events).await?)
         .add_service("/questions", questions_service(dbus.clone()).await?)
@@ -89,6 +91,7 @@ where
         .add_service("/scripts", scripts_service().await?)
         .add_service("/files", files_service().await?)
         .add_service("/hostname", hostname_service().await?)
+        .add_service("/profile", profile_service().await?)
         .with_config(config)
         .build();
     Ok(router)

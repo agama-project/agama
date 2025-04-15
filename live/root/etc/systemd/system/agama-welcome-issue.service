@@ -7,4 +7,4 @@ Type=oneshot
 ExecStart=agama-issue-generator --welcome
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target

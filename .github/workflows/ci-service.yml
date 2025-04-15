@@ -96,6 +96,8 @@ jobs:
 
     # send the code coverage for the Ruby part to the coveralls.io
     - name: Coveralls GitHub Action
+      # ignore errors in this step
+      continue-on-error: true
       uses: coverallsapp/github-action@v2
       with:
         base-path: ./service
@@ -106,6 +108,8 @@ jobs:
     # Rust parts (it needs a separate step, the "carryforward" flag can be used
     # only with the "parallel-finished: true" option)
     - name: Coveralls Finished
+      # ignore errors in this step
+      continue-on-error: true
       uses: coverallsapp/github-action@v2
       with:
         parallel-finished: true
