@@ -21,14 +21,16 @@
  */
 
 import {
-  Pattern,
-  Product,
-  SoftwareConfig,
-  RegistrationInfo,
-  Repository,
-  SoftwareProposal,
+  AddonInfo,
   License,
   LicenseContent,
+  Pattern,
+  Product,
+  RegisteredAddonInfo,
+  RegistrationInfo,
+  Repository,
+  SoftwareConfig,
+  SoftwareProposal,
 } from "~/types/software";
 import { get, post, put } from "~/api/http";
 
@@ -64,6 +66,17 @@ const fetchLicense = (id: string, lang: string = "en"): Promise<LicenseContent> 
 const fetchRegistration = (): Promise<RegistrationInfo> => get("/api/software/registration");
 
 /**
+ * Returns list of available addons
+ */
+const fetchAddons = (): Promise<AddonInfo[]> => get("/api/software/registration/addons/available");
+
+/**
+ * Returns list of already registered addons
+ */
+const fetchRegisteredAddons = (): Promise<RegisteredAddonInfo[]> =>
+  get("/api/software/registration/addons/registered");
+
+/**
  * Returns the list of patterns for the selected product
  */
 const fetchPatterns = (): Promise<Pattern[]> => get("/api/software/patterns");
@@ -91,16 +104,25 @@ const probe = () => post("/api/software/probe");
 const register = ({ key, email }: { key: string; email?: string }) =>
   post("/api/software/registration", { key, email });
 
+/**
+ * Request registration of the selected addon
+ */
+const registerAddon = (addon: RegisteredAddonInfo) =>
+  post("/api/software/registration/addons/register", addon);
+
 export {
+  fetchAddons,
   fetchConfig,
-  fetchPatterns,
-  fetchProposal,
-  fetchProducts,
-  fetchLicenses,
   fetchLicense,
+  fetchLicenses,
+  fetchPatterns,
+  fetchProducts,
+  fetchProposal,
+  fetchRegisteredAddons,
   fetchRegistration,
   fetchRepositories,
-  updateConfig,
   probe,
   register,
+  registerAddon,
+  updateConfig,
 };

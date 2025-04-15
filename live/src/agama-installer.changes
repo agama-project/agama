@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr 10 05:20:55 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a new SUSE_SLE_16_PXE_MINI that only includes the software
+  to use Agama remotely (jsc#PED-12152).
+
+-------------------------------------------------------------------
 Tue Apr  8 15:52:18 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix boot from Hard Disk for EFI x86_64 (bsc#1240646)

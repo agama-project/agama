@@ -790,9 +790,6 @@ export default {
   "Loading data...": [
     "Daten werden gelesen ..."
   ],
-  "Loading installation environment, please wait.": [
-    "Installationsumgebung wird geladen, bitte warten."
-  ],
   "Loading the installation repositories...": [
     "Installations-Repositorien werden geladen ..."
   ],

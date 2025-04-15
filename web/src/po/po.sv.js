@@ -799,9 +799,6 @@ export default {
   "Loading data...": [
     "Laddar data..."
   ],
-  "Loading installation environment, please wait.": [
-    "Laddar installationsmiljö, vänligen vänta."
-  ],
   "Loading the installation repositories...": [
     "Laddar installationsförråd..."
   ],

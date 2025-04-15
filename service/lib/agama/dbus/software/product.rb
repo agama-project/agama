@@ -151,6 +151,27 @@ module Agama
           end
         end
 
+        # list of available addons
+        #
+        # @return [Array<Hash<String, Object>>] List of addons
+        def available_addons
+          addons = backend.registration.available_addons || []
+
+          addons.map do |a|
+            {
+              "id"          => a.identifier,
+              "version"     => a.version,
+              "label"       => a.friendly_name,
+              "available"   => a.available,    # boolean
+              "free"        => a.free,         # boolean
+              "recommended" => a.recommended,  # boolean
+              "description" => a.description,
+              "type"        => a.product_type, # "extension"
+              "release"     => a.release_stage # "beta"
+            }
+          end
+        end
+
         # Tries to register with the given registration code.
         #
         # @note Software is not automatically probed after registering the product. The reason is
@@ -274,6 +295,8 @@ module Agama
           dbus_reader(:email, "s")
 
           dbus_reader(:registered_addons, "a(sss)")
+
+          dbus_reader(:available_addons, "aa{sv}")
 
           dbus_method(:Register, "in reg_code:s, in options:a{sv}, out result:(us)") do |*args|
             [register(args[0], email: args[1]["Email"])]

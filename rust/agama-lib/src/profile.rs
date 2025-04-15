@@ -23,12 +23,7 @@ use anyhow::Context;
 use jsonschema::JSONSchema;
 use log::info;
 use serde_json;
-use std::{
-    fs::{self, File},
-    io::Write,
-    path::Path,
-    process::Command,
-};
+use std::{fs, io::Write, path::Path, process::Command};
 use tempfile::{tempdir, TempDir};
 use url::Url;
 
@@ -38,7 +33,7 @@ pub struct AutoyastProfileImporter {
 }
 
 impl AutoyastProfileImporter {
-    pub fn read(url: &Url) -> anyhow::Result<Self> {
+    pub async fn read(url: &Url) -> anyhow::Result<Self> {
         let path = url.path();
         if !path.ends_with(".xml") && !path.ends_with(".erb") && !path.ends_with('/') {
             let msg = format!("Unsupported AutoYaST format at {}", url);
@@ -49,9 +44,11 @@ impl AutoyastProfileImporter {
         const AUTOINST_JSON: &str = "autoinst.json";
 
         let tmp_dir = TempDir::with_prefix(TMP_DIR_PREFIX)?;
-        Command::new("agama-autoyast")
+        tokio::process::Command::new("agama-autoyast")
+            .env("YAST_SKIP_PROFILE_FETCH_ERROR", "1")
             .args([url.as_str(), &tmp_dir.path().to_string_lossy()])
             .status()
+            .await
             .context("Failed to run agama-autoyast")?;
 
         let autoinst_json = tmp_dir.path().join(AUTOINST_JSON);
@@ -60,16 +57,6 @@ impl AutoyastProfileImporter {
             autoinst_json
         ))?;
         Ok(Self { content })
-    }
-
-    pub fn write(&self, mut file: impl Write) -> anyhow::Result<()> {
-        file.write_all(self.content.as_bytes())?;
-        Ok(())
-    }
-
-    pub fn write_file<P: AsRef<Path>>(&self, path: P) -> anyhow::Result<()> {
-        let mut file = File::create(path)?;
-        self.write(&mut file)
     }
 }
 

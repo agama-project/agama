@@ -20,7 +20,7 @@
 
 use crate::dbus::{get_optional_property, get_property};
 use crate::error::ServiceError;
-use crate::software::model::AddonParams;
+use crate::software::model::{AddonParams, AddonProperties};
 use crate::software::proxies::SoftwareProductProxy;
 use serde::Serialize;
 use std::collections::HashMap;
@@ -144,6 +144,28 @@ impl<'a> ProductClient<'a> {
             })
             .collect();
         Ok(addons)
+    }
+
+    // details of available addons
+    pub async fn available_addons(&self) -> Result<Vec<AddonProperties>, ServiceError> {
+        self.registration_proxy
+            .available_addons()
+            .await?
+            .into_iter()
+            .map(|hash| {
+                Ok(AddonProperties {
+                    id: get_property(&hash, "id")?,
+                    version: get_property(&hash, "version")?,
+                    label: get_property(&hash, "label")?,
+                    available: get_property(&hash, "available")?,
+                    free: get_property(&hash, "free")?,
+                    recommended: get_property(&hash, "recommended")?,
+                    description: get_property(&hash, "description")?,
+                    release: get_property(&hash, "release")?,
+                    r#type: get_property(&hash, "type")?,
+                })
+            })
+            .collect()
     }
 
     /// register product
