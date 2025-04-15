@@ -35,7 +35,7 @@ import { useInitiator, useInitiatorMutation, useInitiatorChanges } from "~/queri
 
 const InitiatorDescription = ({ initiator }) => {
   return (
-    <DescriptionList aria-label={_("Initiator details")} isHorizontal>
+    <DescriptionList aria-label={_("Initiator details")} isHorizontal isFluid>
       <DescriptionListGroup>
         <DescriptionListTerm>{_("Name")}</DescriptionListTerm>
         <DescriptionListDescription>{initiator.name}</DescriptionListDescription>
@@ -55,9 +55,7 @@ export default function InitiatorSection() {
 
   const desc = initiator.ibft
     ? _("Configuration read from the iSCSI Boot Firmware Table (iBFT).")
-    : _(
-        "No iBFT (iSCSI Boot Firmware) configuration found. The initiator can be configured manually.",
-      );
+    : _("No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.");
 
   return (
     // TRANSLATORS: iSCSI initiator section name
