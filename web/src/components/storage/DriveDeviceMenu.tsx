@@ -374,6 +374,9 @@ export default function DriveDeviceMenu({
         "aria-label": sprintf(_("Device %s menu"), drive.name),
         popperProps: { minWidth: "300px", width: "max-content" },
       }}
+      toggleProps={{
+        className: "agm-inline-menu-toggle",
+      }}
       items={[
         <DisksDrillDownMenuItem
           key="change-disk-option"

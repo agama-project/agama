@@ -52,7 +52,7 @@ it("renders all the given menu items", async () => {
         <MenuButtonItem key="item3">{"item 3"}</MenuButtonItem>,
       ]}
     >
-      {"test"}
+      test
     </MenuButton>,
   );
 
@@ -62,6 +62,23 @@ it("renders all the given menu items", async () => {
   within(menu).getByRole("menuitem", { name: "item 1" });
   within(menu).getByRole("menuitem", { name: "item 2" });
   within(menu).getByRole("menuitem", { name: "item 3" });
+});
+
+it("allows passing props to the toggle", () => {
+  plainRender(
+    <MenuButton
+      toggleProps={{ className: "inline-toggle" }}
+      items={[
+        <MenuButtonItem key="item1">{"item 1"}</MenuButtonItem>,
+        <MenuButtonItem key="item2">{"item 2"}</MenuButtonItem>,
+      ]}
+    >
+      test
+    </MenuButton>,
+  );
+
+  const button = screen.getByRole("button", { name: "test" });
+  expect(button).toHaveClass("inline-toggle");
 });
 
 it("allows to drill in", async () => {
@@ -76,11 +93,11 @@ it("allows to drill in", async () => {
             <MenuButtonItem key="item12">{"item 1-2"}</MenuButtonItem>,
           ]}
         >
-          {"item 1"}
+          item 1
         </MenuButtonItem>,
       ]}
     >
-      {"test"}
+      test
     </MenuButton>,
   );
   const button = screen.getByRole("button", { name: "test" });
@@ -108,11 +125,11 @@ it("allows to drill out", async () => {
           ]}
           upProps={{ label: "return" }}
         >
-          {"item 1"}
+          item 1
         </MenuButtonItem>,
       ]}
     >
-      {"test"}
+      test
     </MenuButton>,
   );
   const button = screen.getByRole("button", { name: "test" });
@@ -133,11 +150,11 @@ it("calls the item action on click", async () => {
       items={[
         <MenuButtonItem key="item1">{"item 1"}</MenuButtonItem>,
         <MenuButtonItem key="item2" onClick={action}>
-          {"item 2"}
+          item 2
         </MenuButtonItem>,
       ]}
     >
-      {"test"}
+      test
     </MenuButton>,
   );
 

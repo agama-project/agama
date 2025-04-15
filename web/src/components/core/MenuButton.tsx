@@ -32,6 +32,7 @@ import {
   MenuItem,
   MenuPopperProps,
   MenuItemProps,
+  MenuToggleProps,
 } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 
@@ -97,11 +98,13 @@ export type MenuButtonProps = {
     closeOnClick?: boolean;
     popperProps?: MenuPopperProps;
   };
+  toggleProps?: MenuToggleProps;
 };
 
 export default function MenuButton({
   items = [],
   menuProps = {},
+  toggleProps = {},
   children,
 }: React.PropsWithChildren<MenuButtonProps>): React.ReactNode {
   const menuRef = useRef();
@@ -171,7 +174,7 @@ export default function MenuButton({
       toggleRef={toggleRef}
       popperProps={{ direction: "down", enableFlip: false, ...menuProps.popperProps }}
       toggle={
-        <MenuToggle ref={toggleRef} onClick={toggle} isExpanded={isOpen}>
+        <MenuToggle ref={toggleRef} onClick={toggle} isExpanded={isOpen} {...toggleProps}>
           {children}
         </MenuToggle>
       }
