@@ -375,7 +375,7 @@ export default function DriveDeviceMenu({
         popperProps: { minWidth: "300px", width: "max-content" },
       }}
       toggleProps={{
-        className: "agm-inline-menu-toggle",
+        className: "agm-inline-toggle",
       }}
       items={[
         <DisksDrillDownMenuItem

@@ -33,7 +33,7 @@ import {
 
 const InlineMenuToggle = React.forwardRef(
   (props: MenuToggleProps, ref: React.Ref<MenuToggleElement>) => (
-    <MenuToggle innerRef={ref} className="agm-inline-menu-toggle" {...props} />
+    <MenuToggle innerRef={ref} className="agm-inline-toggle" {...props} />
   ),
 );
 
