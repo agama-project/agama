@@ -71,6 +71,7 @@ const DisksDrillDownMenuItem = ({
     <MenuButtonItem
       isDisabled={isDisabled}
       description={isDisabled ? disabledDescription : enabledDescription}
+      upProps={{ label: title }}
       items={devices.map((device) => (
         <MenuButtonItem
           key={device.sid}

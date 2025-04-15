@@ -247,12 +247,15 @@ const DisksDrillDownMenuItem = ({
     }
   };
 
+  const text = mainText();
+
   return (
     <MenuButtonItem
       description={extraText()}
+      upProps={{ label: text }}
       items={[searchSelectorOptions(drive, devices, selected, onDeviceClick)]}
     >
-      {mainText()}
+      {text}
     </MenuButtonItem>
   );
 };
