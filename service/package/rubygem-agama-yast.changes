@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr 15 08:50:10 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed detection of iBFT (bsc#1239046).
+- Removed offload_card from iSCSI (bsc#1231385).
+
+-------------------------------------------------------------------
 Fri Apr 11 09:07:22 UTC 2025 - Michal Filka <mfilka@suse.com>
 
 - bsc#1238038
