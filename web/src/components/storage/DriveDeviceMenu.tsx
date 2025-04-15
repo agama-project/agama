@@ -146,7 +146,7 @@ const DisksDrillDownMenuItem = ({
 
   const mainText = (): string => {
     if (onlyOneOption) {
-      return _("Selected disk");
+      return _("Selected disk (cannot be changed)");
     }
 
     if (!driveUtils.hasFilesystem(drive)) {
