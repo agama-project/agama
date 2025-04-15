@@ -251,9 +251,10 @@ const DisksDrillDownMenuItem = ({
 
   return (
     <MenuButtonItem
+      aria-label={_("Change device menu")}
       description={extraText()}
       upProps={{ label: text }}
-      items={[searchSelectorOptions(drive, devices, selected, onDeviceClick)]}
+      items={searchSelectorOptions(drive, devices, selected, onDeviceClick)}
     >
       {text}
     </MenuButtonItem>

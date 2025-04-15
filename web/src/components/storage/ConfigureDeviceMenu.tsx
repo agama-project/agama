@@ -69,6 +69,7 @@ const DisksDrillDownMenuItem = ({
 
   return (
     <MenuButtonItem
+      aria-label={_("Add device menu")}
       isDisabled={isDisabled}
       description={isDisabled ? disabledDescription : enabledDescription}
       upProps={{ label: title }}
