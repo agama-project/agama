@@ -59,8 +59,8 @@ export function MenuButtonItem({
   const menuId = useMenuId();
   const onClick = (callback) => {
     return (e) => {
-      callback && callback();
       e.stopPropagation();
+      callback && callback();
     };
   };
 
@@ -92,7 +92,7 @@ export function MenuButtonItem({
 
 export type MenuButtonProps = {
   items?: React.ReactNode[];
-  menuProps: {
+  menuProps?: {
     ["aria-label"]?: string;
     closeOnClick?: boolean;
     popperProps?: MenuPopperProps;
@@ -101,7 +101,7 @@ export type MenuButtonProps = {
 
 export default function MenuButton({
   items = [],
-  menuProps = { popperProps: {} },
+  menuProps = {},
   children,
 }: React.PropsWithChildren<MenuButtonProps>): React.ReactNode {
   const menuRef = useRef();
@@ -111,13 +111,16 @@ export default function MenuButton({
   const [menuDrilledIn, setMenuDrilledIn] = React.useState<string[]>([]);
   const [drilldownPath, setDrilldownPath] = React.useState<string[]>([]);
   const [activeMenu, setActiveMenu] = React.useState<string>(rootId);
+  const [activeItemId, setActiveItemId] = React.useState("");
   const [menuHeights, setMenuHeights] = React.useState({});
+
+  menuProps = { popperProps: {}, closeOnClick: true, ...menuProps };
 
   const resetState = () => {
     setMenuDrilledIn([]);
     setDrilldownPath([]);
     setActiveMenu(rootId);
-    // Reset the height of the root menu. Otherwise, the momorized height could be wrong if the
+    // Reset the height of the root menu. Otherwise, the memorized height could be wrong if the
     // items of the root menu change.
     if (!isOpen) setMenuHeights({ ...menuHeights, [rootId]: undefined });
   };
@@ -136,14 +139,17 @@ export default function MenuButton({
     setMenuDrilledIn([...menuDrilledIn, fromMenuId]);
     setDrilldownPath([...drilldownPath, pathId]);
     setActiveMenu(toMenuId);
+    setActiveItemId(pathId);
   };
 
   const drillOut = (_: React.KeyboardEvent | React.MouseEvent, toMenuId: string) => {
     const menuDrilledInSansLast = menuDrilledIn.slice(0, menuDrilledIn.length - 1);
     const pathSansLast = drilldownPath.slice(0, drilldownPath.length - 1);
+    const lastPath = [...pathSansLast].pop();
     setMenuDrilledIn(menuDrilledInSansLast);
     setDrilldownPath(pathSansLast);
     setActiveMenu(toMenuId);
+    setActiveItemId(lastPath);
   };
 
   const setHeight = (menuId: string, height: number) => {
@@ -178,6 +184,7 @@ export default function MenuButton({
           onDrillOut={drillOut}
           onGetMenuHeight={setHeight}
           activeMenu={activeMenu}
+          activeItemId={activeItemId}
           drilledInMenus={menuDrilledIn}
           drilldownItemPath={drilldownPath}
           ref={menuRef}
