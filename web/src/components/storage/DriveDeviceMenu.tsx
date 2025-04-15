@@ -35,6 +35,8 @@ import { StorageDevice } from "~/types/storage";
 import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 
+const driveBaseName = (device: StorageDevice): string => deviceBaseName(device, 20);
+
 const UseOnlyOneOption = (drive: apiModel.Drive): boolean => {
   const driveModel = useDrive(drive.name);
   if (!driveModel) return false;
@@ -168,7 +170,7 @@ const DisksDrillDownMenuItem = ({
   };
 
   const extraText = (): string => {
-    const name = deviceBaseName(selected, 20);
+    const name = driveBaseName(selected);
 
     if (driveUtils.hasReuse(drive)) {
       // The current device will be the only option to choose from
@@ -310,11 +312,11 @@ const NewVgOption = ({ drive, selected }: NewVgOptionProps): React.ReactNode => 
   const titleText = () => {
     if (vgs.length) {
       // TRANSLATORS: %s is the short name of a disk, like 'sda'
-      return sprintf(_("Create another LVM volume group on %s"), deviceBaseName(selected, 20));
+      return sprintf(_("Create another LVM volume group on %s"), driveBaseName(selected));
     }
 
     // TRANSLATORS: %s is the short name of a disk, like 'sda'
-    return sprintf(_("Create LVM volume group on %s"), deviceBaseName(selected, 20));
+    return sprintf(_("Create LVM volume group on %s"), driveBaseName(selected));
   };
 
   const descriptionText = () => {
