@@ -34,19 +34,21 @@ import {
   Flex,
   Form,
   FormGroup,
+  Title,
   TextInput,
 } from "@patternfly/react-core";
-import { Link, Page, PasswordInput } from "~/components/core";
+import { Link, Page } from "~/components/core";
 import { RegistrationInfo } from "~/types/software";
 import { HOSTNAME } from "~/routes/paths";
-import { useProduct, useRegistration, useRegisterMutation } from "~/queries/software";
+import { useProduct, useRegistration, useRegisterMutation, useAddons } from "~/queries/software";
 import { useHostname } from "~/queries/system";
 import { isEmpty, mask } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import RegistrationExtension from "./RegistrationExtension";
+import RegistrationCodeInput from "./RegistrationCodeInput";
 
 const FORM_ID = "productRegistration";
-const KEY_LABEL = _("Registration code");
 const EMAIL_LABEL = "Email";
 
 const RegisteredProductSection = () => {
@@ -62,7 +64,8 @@ const RegisteredProductSection = () => {
       </Content>
       <DescriptionList>
         <DescriptionListGroup>
-          <DescriptionListTerm>{KEY_LABEL}</DescriptionListTerm>
+          {/* TRANSLATORS: input field label */}
+          <DescriptionListTerm>{_("Registration code")}</DescriptionListTerm>
           <DescriptionListDescription>
             <Flex gap={{ default: "gapSm" }}>
               {showCode ? registration.key : mask(registration.key)}
@@ -120,9 +123,9 @@ const RegistrationFormSection = () => {
   return (
     <Form id={FORM_ID} onSubmit={submit}>
       {error && <Alert variant="warning" isInline title={error} />}
-
-      <FormGroup fieldId="key" label={KEY_LABEL}>
-        <PasswordInput id="key" value={key} onChange={(_, v) => setKey(v)} />
+      {/* // TRANSLATORS: input field label */}
+      <FormGroup fieldId="key" label={_("Registration code")}>
+        <RegistrationCodeInput id="key" value={key} onChange={(_, v) => setKey(v)} />
       </FormGroup>
 
       <FormGroup fieldId="provideEmail">
@@ -174,10 +177,31 @@ const HostnameAlert = () => {
   );
 };
 
+const Extensions = () => {
+  const extensions = useAddons();
+  if (extensions.length === 0) return null;
+
+  const extensionComponents = extensions.map((ext) => (
+    <RegistrationExtension
+      key={`extension-${ext.id}-${ext.version}`}
+      extension={ext}
+      isUnique={extensions.filter((e) => e.id === ext.id).length === 1}
+    />
+  ));
+
+  return (
+    <>
+      <Title headingLevel="h2">{_("Extensions")}</Title>
+      {extensionComponents}
+    </>
+  );
+};
+
 export default function ProductRegistrationPage() {
   const { selectedProduct: product } = useProduct();
   const { key } = useRegistration();
-  const isUnregistered = isEmpty(key);
+  // FIXME: this needs to be fixed for RMT which allows registering with empty key
+  const isRegistered = !isEmpty(key);
 
   // TODO: render something meaningful instead? "Product not registrable"?
   if (!product.registration) return;
@@ -189,8 +213,9 @@ export default function ProductRegistrationPage() {
       </Page.Header>
 
       <Page.Content>
-        {isUnregistered && <HostnameAlert />}
-        {isUnregistered ? <RegistrationFormSection /> : <RegisteredProductSection />}
+        {!isRegistered && <HostnameAlert />}
+        {!isRegistered ? <RegistrationFormSection /> : <RegisteredProductSection />}
+        {isRegistered && <Extensions />}
       </Page.Content>
     </Page>
   );

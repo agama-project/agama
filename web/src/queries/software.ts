@@ -31,10 +31,12 @@ import {
 } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import {
+  AddonInfo,
   License,
   Pattern,
   PatternsSelection,
   Product,
+  RegisteredAddonInfo,
   RegistrationInfo,
   Repository,
   SelectedBy,
@@ -42,15 +44,18 @@ import {
   SoftwareProposal,
 } from "~/types/software";
 import {
+  fetchAddons,
   fetchConfig,
   fetchLicenses,
   fetchPatterns,
   fetchProducts,
   fetchProposal,
+  fetchRegisteredAddons,
   fetchRegistration,
   fetchRepositories,
   probe,
   register,
+  registerAddon,
   updateConfig,
 } from "~/api/software";
 import { QueryHookOptions } from "~/types/queries";
@@ -104,6 +109,22 @@ const selectedProductQuery = () => ({
 const registrationQuery = () => ({
   queryKey: ["software/registration"],
   queryFn: fetchRegistration,
+});
+
+/**
+ * Query to retrieve available addons info
+ */
+const addonsQuery = () => ({
+  queryKey: ["software", "registration", "addons"],
+  queryFn: fetchAddons,
+});
+
+/**
+ * Query to retrieve registered addons info
+ */
+const registeredAddonsQuery = () => ({
+  queryKey: ["software", "registration", "addons", "registered"],
+  queryFn: fetchRegisteredAddons,
 });
 
 /**
@@ -161,6 +182,22 @@ const useRegisterMutation = () => {
       await systemProbe();
       queryClient.invalidateQueries({ queryKey: ["software/registration"] });
       queryClient.invalidateQueries({ queryKey: ["storage"] });
+    },
+  };
+  return useMutation(query);
+};
+
+/**
+ * Hook that builds a mutation for registering an addon
+ *
+ */
+const useRegisterAddonMutation = () => {
+  const queryClient = useQueryClient();
+
+  const query = {
+    mutationFn: registerAddon,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: registeredAddonsQuery().queryKey });
     },
   };
   return useMutation(query);
@@ -263,6 +300,22 @@ const useRegistration = (): RegistrationInfo => {
 };
 
 /**
+ * Returns details about the available addons
+ */
+const useAddons = (): AddonInfo[] => {
+  const { data: addons } = useSuspenseQuery(addonsQuery());
+  return addons;
+};
+
+/**
+ * Returns list of registered addons
+ */
+const useRegisteredAddons = (): RegisteredAddonInfo[] => {
+  const { data: addons } = useSuspenseQuery(registeredAddonsQuery());
+  return addons;
+};
+
+/**
  * Returns repository info
  */
 const useRepositories = (): Repository[] => {
@@ -318,15 +371,18 @@ export {
   configQuery,
   productsQuery,
   selectedProductQuery,
+  useAddons,
   useConfigMutation,
+  useLicenses,
   usePatterns,
   useProduct,
-  useLicenses,
   useProductChanges,
   useProposal,
   useProposalChanges,
-  useRegistration,
+  useRegisterAddonMutation,
   useRegisterMutation,
+  useRegisteredAddons,
+  useRegistration,
   useRepositories,
   useRepositoryMutation,
 };
