@@ -57,7 +57,7 @@ describe("InitiatorPresenter", () => {
 
     it("displays the initiator form", () => {
       plainRender(<InitiatorSection />);
-      screen.getByText(/No iBF/);
+      screen.getByText(/No iSCSI Boot Firmware Table/);
       const name = screen.getByRole("textbox", { name: "Initiator name" });
       expect(name).toHaveValue(initiator.name);
     });
