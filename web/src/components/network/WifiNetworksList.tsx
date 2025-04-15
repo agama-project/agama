@@ -32,6 +32,7 @@ import {
   DataListProps,
   Flex,
   Label,
+  Spinner,
 } from "@patternfly/react-core";
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
 import { EmptyState } from "~/components/core";
@@ -42,6 +43,7 @@ import { NETWORK as PATHS } from "~/routes/paths";
 import { isEmpty } from "~/utils";
 import { formatIp } from "~/utils/network";
 import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 
 const NetworkSignal = ({ id, signal }) => {
   let label: string;
@@ -87,6 +89,16 @@ const NetworkSecurity = ({ id, security }) => {
   );
 };
 
+type ConnectingSpinnerProps = { ssid: WifiNetwork["ssid"]; state: ConnectionState | undefined };
+const ConnectingSpinner = ({ state, ssid }: ConnectingSpinnerProps) => {
+  if (state !== ConnectionState.activating) return;
+
+  // TRANSLATORS: %s will be replaced by Wi-Fi network SSID
+  const label = sprintf(_("Connecting to %s"), ssid);
+
+  return <Spinner size="sm" aria-label={label} />;
+};
+
 type NetworkListItemProps = {
   network: WifiNetwork;
   connection: Connection | undefined;
@@ -130,8 +142,9 @@ const NetworkListItem = ({ network, connection, showIp }: NetworkListItemProps) 
                 )}
               </Flex>
             </DataListCell>,
-            <DataListCell key="security-and-signal" isFilled={false} alignRight>
+            <DataListCell key="badges" isFilled={false} alignRight>
               <Flex gap={{ default: "gapSm" }}>
+                <ConnectingSpinner ssid={network.ssid} state={connection?.state} />
                 <NetworkSecurity security={network.security} id={securityId} />
                 <NetworkSignal signal={network.strength} id={signalId} />
               </Flex>

@@ -267,6 +267,7 @@ type ConnectionOptions = {
   method4?: ConnectionMethod;
   method6?: ConnectionMethod;
   wireless?: Wireless;
+  state?: ConnectionState;
 };
 
 class Connection {

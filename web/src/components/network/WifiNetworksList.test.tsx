@@ -20,12 +20,13 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import WifiNetworksList from "~/components/network/WifiNetworksList";
 import {
   Connection,
   ConnectionMethod,
+  ConnectionState,
   ConnectionType,
   Device,
   DeviceState,
@@ -51,6 +52,7 @@ const wlan0: Device = {
 const mockConnectionRemoval = jest.fn();
 const mockAddConnection = jest.fn();
 let mockWifiNetworks: WifiNetwork[];
+let mockWifiConnections: Connection[];
 
 jest.mock("~/queries/network", () => ({
   ...jest.requireActual("~/queries/network"),
@@ -62,11 +64,25 @@ jest.mock("~/queries/network", () => ({
     mutate: mockAddConnection,
   }),
   useWifiNetworks: () => mockWifiNetworks,
+  useConnections: () => mockWifiConnections,
 }));
 
 describe("WifiNetworksList", () => {
   describe("when visible networks are found", () => {
     beforeEach(() => {
+      mockWifiConnections = [
+        new Connection("Newtwork 2", {
+          method4: ConnectionMethod.AUTO,
+          method6: ConnectionMethod.AUTO,
+          wireless: {
+            security: "none",
+            ssid: "Network 2",
+            mode: "infrastructure",
+          },
+          state: ConnectionState.activating,
+        }),
+      ];
+
       mockWifiNetworks = [
         {
           ssid: "Network 1",
@@ -107,6 +123,15 @@ describe("WifiNetworksList", () => {
       screen.getByRole("listitem", { name: "Secured network Network 1 Weak signal" });
       screen.getByRole("listitem", { name: "Secured network Network 2 Excellent signal" });
       screen.getByRole("listitem", { name: "Public network Network 3 Good signal" });
+    });
+
+    it("renders a spinner in network in connecting state", () => {
+      // @ts-expect-error: you need to specify the aria-label
+      installerRender(<WifiNetworksList />);
+      const network2 = screen.getByRole("listitem", {
+        name: "Secured network Network 2 Excellent signal",
+      });
+      within(network2).getByRole("progressbar", { name: "Connecting to Network 2" });
     });
 
     describe.skip("and user selects a connected network", () => {
