@@ -36,35 +36,12 @@ import {
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
 import { EmptyState } from "~/components/core";
 import Icon, { IconProps } from "~/components/layout/Icon";
-import { DeviceState, WifiNetwork, WifiNetworkStatus } from "~/types/network";
-import { useNetworkChanges, useWifiNetworks } from "~/queries/network";
+import { Connection, ConnectionState, WifiNetwork, WifiNetworkStatus } from "~/types/network";
+import { useConnections, useNetworkChanges, useWifiNetworks } from "~/queries/network";
 import { NETWORK as PATHS } from "~/routes/paths";
 import { isEmpty } from "~/utils";
 import { formatIp } from "~/utils/network";
 import { _ } from "~/i18n";
-
-// FIXME: Move to the model and stop using translations for checking the state
-const networkState = (state: DeviceState): string => {
-  switch (state) {
-    case DeviceState.CONNECTING:
-      // TRANSLATORS: Wifi network status
-      return _("Connecting");
-    case DeviceState.CONNECTED:
-      // TRANSLATORS: Wifi network status
-      return _("Connected");
-    case DeviceState.DISCONNECTING:
-      // TRANSLATORS: Wifi network status
-      return _("Disconnecting");
-    case DeviceState.FAILED:
-      // TRANSLATORS: Wifi network status
-      return _("Failed");
-    case DeviceState.DISCONNECTED:
-      // TRANSLATORS: Wifi network status
-      return _("Disconnected");
-    default:
-      return "";
-  }
-};
 
 const NetworkSignal = ({ id, signal }) => {
   let label: string;
@@ -110,16 +87,18 @@ const NetworkSecurity = ({ id, security }) => {
   );
 };
 
-type NetworkListItemProps = { network: WifiNetwork; showIp: boolean };
+type NetworkListItemProps = {
+  network: WifiNetwork;
+  connection: Connection | undefined;
+  showIp: boolean;
+};
 
-const NetworkListItem = ({ network, showIp }: NetworkListItemProps) => {
+const NetworkListItem = ({ network, connection, showIp }: NetworkListItemProps) => {
   const nameId = useId();
   const securityId = useId();
   const statusId = useId();
   const signalId = useId();
   const ipId = useId();
-
-  const state = networkState(network.device?.state);
 
   return (
     <DataListItem
@@ -136,9 +115,9 @@ const NetworkListItem = ({ network, showIp }: NetworkListItemProps) => {
                   <Content id={nameId} isEditorial>
                     {network.ssid}
                   </Content>
-                  {state === "Connected" && (
+                  {connection?.state === ConnectionState.activated && (
                     <Label id={statusId} isCompact color="green">
-                      {state}
+                      {_("Connected")}
                     </Label>
                   )}
                 </Flex>
@@ -173,6 +152,7 @@ function WifiNetworksList({ showIp = true, ...props }: WifiNetworksListProps) {
   useNetworkChanges();
   const navigate = useNavigate();
   const networks: WifiNetwork[] = useWifiNetworks();
+  const connections = useConnections();
 
   if (networks.length === 0)
     return <EmptyState title={_("No Wi-Fi networks were found")} icon="error" />;
@@ -195,7 +175,12 @@ function WifiNetworksList({ showIp = true, ...props }: WifiNetworksListProps) {
       {...props}
     >
       {networks.map((n) => (
-        <NetworkListItem key={n.ssid} network={n} showIp={showIp} />
+        <NetworkListItem
+          key={n.ssid}
+          network={n}
+          connection={connections.find((c) => c?.wireless?.ssid === n.ssid)}
+          showIp={showIp}
+        />
       ))}
     </DataList>
   );
