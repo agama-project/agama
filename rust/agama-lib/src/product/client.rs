@@ -148,22 +148,23 @@ impl<'a> ProductClient<'a> {
 
     // details of available addons
     pub async fn available_addons(&self) -> Result<Vec<AddonProperties>, ServiceError> {
-        self
-            .registration_proxy
+        self.registration_proxy
             .available_addons()
             .await?
             .into_iter()
-            .map(|hash| Ok(AddonProperties {
-                id: get_property(&hash, "id")?,
-                version: get_property(&hash, "version")?,
-                label: get_property(&hash, "label")?,
-                available: get_property(&hash, "available")?,
-                free: get_property(&hash, "free")?,
-                recommended: get_property(&hash, "recommended")?,
-                description: get_property(&hash, "description")?,
-                release: get_property(&hash, "release")?,
-                r#type: get_property(&hash, "type")?,
-            }))
+            .map(|hash| {
+                Ok(AddonProperties {
+                    id: get_property(&hash, "id")?,
+                    version: get_property(&hash, "version")?,
+                    label: get_property(&hash, "label")?,
+                    available: get_property(&hash, "available")?,
+                    free: get_property(&hash, "free")?,
+                    recommended: get_property(&hash, "recommended")?,
+                    description: get_property(&hash, "description")?,
+                    release: get_property(&hash, "release")?,
+                    r#type: get_property(&hash, "type")?,
+                })
+            })
             .collect()
     }
 
