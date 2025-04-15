@@ -154,51 +154,15 @@ impl<'a> ProductClient<'a> {
             .await?
             .into_iter()
             .map(|hash| AddonProperties {
-                id: hash
-                    .get("id")
-                    .unwrap_or(&zbus::zvariant::Value::new(""))
-                    .try_into()
-                    .unwrap_or_default(),
-                version: hash
-                    .get("version")
-                    .unwrap_or(&zbus::zvariant::Value::new(""))
-                    .try_into()
-                    .unwrap_or_default(),
-                label: hash
-                    .get("label")
-                    .unwrap_or(&zbus::zvariant::Value::new(""))
-                    .try_into()
-                    .unwrap_or_default(),
-                available: hash
-                    .get("available")
-                    .unwrap_or(&zbus::zvariant::Value::new(true))
-                    .try_into()
-                    .unwrap_or(true),
-                free: hash
-                    .get("free")
-                    .unwrap_or(&zbus::zvariant::Value::new(false))
-                    .try_into()
-                    .unwrap_or(false),
-                recommended: hash
-                    .get("recommended")
-                    .unwrap_or(&zbus::zvariant::Value::new(false))
-                    .try_into()
-                    .unwrap_or(false),
-                description: hash
-                    .get("description")
-                    .unwrap_or(&zbus::zvariant::Value::new(""))
-                    .try_into()
-                    .unwrap_or_default(),
-                release: hash
-                    .get("release")
-                    .unwrap_or(&zbus::zvariant::Value::new(""))
-                    .try_into()
-                    .unwrap_or_default(),
-                r#type: hash
-                    .get("type")
-                    .unwrap_or(&zbus::zvariant::Value::new(""))
-                    .try_into()
-                    .unwrap_or_default(),
+                id: get_property(&hash, "id")?,
+                version: get_property(&hash, "version")?,
+                label: get_property(&hash, "label")?,
+                available: get_property(&hash, "available")?,
+                free: get_property(&hash, "free")?,
+                recommended: get_property(&hash, "recommended")?,
+                description: get_property(&hash, "description")?,
+                release: get_property(&hash, "release")?,
+                r#type: get_property(&hash, "type")?,
             })
             .collect();
         Ok(addons)
