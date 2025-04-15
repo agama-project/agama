@@ -39,7 +39,6 @@ describe Agama::Storage::ISCSI::Manager do
   # adapter should have its own tests.
   before do
     allow(Yast::IscsiClientLib).to receive(:initiatorname).and_return(initiator_name)
-    allow(Yast::IscsiClientLib).to receive(:GetOffloadCard).and_return(offload_card)
     allow(Yast::IscsiClientLib).to receive(:getiBFT).and_return(ibft)
     allow(Yast::IscsiClientLib).to receive(:checkInitiatorName)
     allow(Yast::IscsiClientLib).to receive(:getConfig)
@@ -56,8 +55,6 @@ describe Agama::Storage::ISCSI::Manager do
   end
 
   let(:initiator_name) { "iqn.1996-04.de.suse:01:351e6d6249" }
-
-  let(:offload_card) { "test-card" }
 
   let(:ibft) { { "iface.initiatorname" => "test-name" } }
 
@@ -95,7 +92,6 @@ describe Agama::Storage::ISCSI::Manager do
 
       expect(subject.initiator).to be_a(Agama::Storage::ISCSI::Initiator)
       expect(subject.initiator.name).to eq("iqn.1996-04.de.suse:01:351e6d6249")
-      expect(subject.initiator.offload_card).to eq("test-card")
       expect(subject.initiator.ibft_name?).to eq(true)
     end
 
@@ -135,13 +131,7 @@ describe Agama::Storage::ISCSI::Manager do
       it "does not set the initiator name" do
         expect(Yast::IscsiClientLib).to_not receive(:writeInitiatorName)
 
-        subject.update_initiator(name: "test-name", offload_card: "test-card")
-      end
-
-      it "does not set the offload card" do
-        expect(Yast::IscsiClientLib).to_not receive(:setOffloadCard)
-
-        subject.update_initiator(name: "test-name", offload_card: "test-card")
+        subject.update_initiator(name: "test-name")
       end
     end
 
@@ -167,26 +157,6 @@ describe Agama::Storage::ISCSI::Manager do
           expect(Yast::IscsiClientLib).to receive(:writeInitiatorName).with("test-name")
 
           subject.update_initiator(name: name)
-        end
-      end
-
-      context "and the given offload card is the same" do
-        let(:card) { offload_card }
-
-        it "does not set the offload card" do
-          expect(Yast::IscsiClientLib).to_not receive(:SetOffloadCard)
-
-          subject.update_initiator(offload_card: card)
-        end
-      end
-
-      context "and the given offload card is not the same" do
-        let(:card) { "test-card" }
-
-        it "sets the offload card" do
-          expect(Yast::IscsiClientLib).to_not receive(:SetOffloadCard).with("test-card")
-
-          subject.update_initiator(offload_card: card)
         end
       end
     end

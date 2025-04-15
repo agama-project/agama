@@ -66,7 +66,6 @@ module Agama
         def read_initiator
           Initiator.new.tap do |initiator|
             initiator.name = Yast::IscsiClientLib.initiatorname
-            initiator.offload_card = Yast::IscsiClientLib.GetOffloadCard()
             initiator.ibft_name = !Yast::IscsiClientLib.getiBFT["iface.initiatorname"].to_s.empty?
           end
         end
@@ -75,13 +74,9 @@ module Agama
         #
         # @param initiator [Initiator]
         # @param name [String, nil]
-        # @param offload_card [String, nil]
-        def update_initiator(initiator, name: nil, offload_card: nil)
+        def update_initiator(initiator, name: nil)
           update_name = name && name != initiator.name
-          update_offload_card = offload_card && offload_card != initiator.offload_card
-
           Yast::IscsiClientLib.writeInitiatorName(name) if update_name
-          Yast::IscsiClientLib.SetOffloadCard(offload_card) if update_offload_card
         end
 
         # Reads the discovered iSCSI nodes.
