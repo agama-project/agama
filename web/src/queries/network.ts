@@ -288,7 +288,7 @@ const useWifiNetworks = () => {
     .sort((a: AccessPoint, b: AccessPoint) => b.strength - a.strength)
     .map((ap: AccessPoint): WifiNetwork => {
       const settings = connections.find((c: Connection) => c.wireless?.ssid === ap.ssid);
-      const device = devices.find((d: Device) => d.connection === ap.ssid);
+      const device = devices.find((d: Device) => d.connection === settings?.id);
 
       let status: WifiNetworkStatus;
       if (device?.state === DeviceState.CONNECTED) {
