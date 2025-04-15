@@ -362,6 +362,10 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   color: var(--pf-v6-c-check__label--disabled--Color);
 }
 
+.pf-v6-c-menu__list-item.pf-m-danger.pf-m-disabled {
+  --pf-v6-c-menu__item--Color: var(--pf-v6-c-menu__item--m-disabled--Color);
+}
+
 // Do not change the default cursor for labels forms because it is confusing
 //
 // See:
