@@ -148,24 +148,23 @@ impl<'a> ProductClient<'a> {
 
     // details of available addons
     pub async fn available_addons(&self) -> Result<Vec<AddonProperties>, ServiceError> {
-        let addons: Vec<AddonProperties> = self
+        self
             .registration_proxy
             .available_addons()
             .await?
             .into_iter()
-            .map(|hash| AddonProperties {
-                id: get_property(&hash, "id").unwrap_or_default(),
-                version: get_property(&hash, "version").unwrap_or_default(),
-                label: get_property(&hash, "label").unwrap_or_default(),
-                available: get_property(&hash, "available").unwrap_or_default(),
-                free: get_property(&hash, "free").unwrap_or_default(),
-                recommended: get_property(&hash, "recommended").unwrap_or(false),
-                description: get_property(&hash, "description").unwrap_or_default(),
-                release: get_property(&hash, "release").unwrap_or_default(),
-                r#type: get_property(&hash, "type").unwrap_or_default(),
-            })
-            .collect();
-        Ok(addons)
+            .map(|hash| Ok(AddonProperties {
+                id: get_property(&hash, "id")?,
+                version: get_property(&hash, "version")?,
+                label: get_property(&hash, "label")?,
+                available: get_property(&hash, "available")?,
+                free: get_property(&hash, "free")?,
+                recommended: get_property(&hash, "recommended")?,
+                description: get_property(&hash, "description")?,
+                release: get_property(&hash, "release")?,
+                r#type: get_property(&hash, "type")?,
+            }))
+            .collect()
     }
 
     /// register product
