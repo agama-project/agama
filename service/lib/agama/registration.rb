@@ -333,42 +333,35 @@ module Agama
       return false if certificate_imported
 
       cert = SSL::Errors.instance.ssl_failed_cert
+      return false unless cert
+
+      # Import certificate if it matches predefined fingerprint.
+      return true if SSL::Storage.instance.fingerprints.any? { |f| cert.match_fingerprint?(f) }
+
       error_code = SSL::Errors.instance.ssl_error_code
+      return false unless SSL::ErrorCodes::IMPORT_ERROR_CODES.include?(error_code)
 
-      if cert
-        SSL::Storage.instance.fingerprints.each do |fp|
-          # import certificate if it match predefined fingerprint
-          return true if cert.match_fingerprint?(fp)
-        end
+      details = SSL::CertificateDetails.new(cert)
+
+      question = Agama::Question.new(
+        qclass:         "registration.certificate",
+        text:           _("Secure connection error. Import certificate?"),
+        options:        [:Import, :Abort],
+        default_option: :Abort,
+        data: {
+          url: registration_url || "https://scc.suse.com",
+          error: SSL::ErrorCodes::OPENSSL_ERROR_MESSAGES[error_code],
+          subject: details.subject,
+          issuer: details.issuer,
+          summary: details.summary,
+          fingerprints: SSL::Storage.instance.fingerprints
+        }
+      )
+
+      questions_client = Agama::DBus::Clients::Questions.new(logger: @logger)
+      questions_client.ask(question) do |question_client|
+        return question_client.answer == :Import
       end
-
-      if cert && SSL::ErrorCodes::IMPORT_ERROR_CODES.include?(error_code)
-        error_msg = format(
-          _("Secure Connection Error for %{url}: %{error}."),
-          url:     registration_url || "https://scc.suse.com",
-          error:   SSL::ErrorCodes::OPENSSL_ERROR_MESSAGES[error_code],
-        )
-        cert_details = format(
-          _("Certificate details %{details}."),
-          details: SSL::CertificateDetails.new(cert).summary
-        )
-
-        message = "<p>#{error_msg}</p><p>#{cert_details}</p>"
-
-        question = Agama::Question.new(
-          qclass:         "registration.certificate",
-          text:           message,
-          options:        [:Import, :Abort],
-          default_option: :Abort
-        )
-
-        questions_client = Agama::DBus::Clients::Questions.new(logger: @logger)
-        questions_client.ask(question) do |question_client|
-          return question_client.answer == :Import
-        end
-      end
-
-      false
     end
 
     # Returns the URL of the registration server
