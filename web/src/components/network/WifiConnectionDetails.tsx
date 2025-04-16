@@ -48,8 +48,8 @@ const NetworkDetails = ({ network }: { network: WifiNetwork }) => {
           <DescriptionListDescription>{network.ssid}</DescriptionListDescription>
         </DescriptionListGroup>
         <DescriptionListGroup>
-          <DescriptionListTerm>{_("Signal")}</DescriptionListTerm>
-          <DescriptionListDescription>{network.strength}</DescriptionListDescription>
+          <DescriptionListTerm>{_("Signal strength")}</DescriptionListTerm>
+          <DescriptionListDescription>{network.strength}%</DescriptionListDescription>
         </DescriptionListGroup>
         <DescriptionListGroup>
           <DescriptionListTerm>{_("Status")}</DescriptionListTerm>
