@@ -67,6 +67,11 @@ module Agama
     # @return [Array<RegisteredAddon>]
     attr_reader :registered_addons
 
+    # Overwriten default registration URL
+    #
+    # @return [String, nil]
+    attr_accessor :registration_url
+
     # @param software_manager [Agama::Software::Manager]
     # @param logger [Logger]
     def initialize(software_manager, logger)
@@ -75,6 +80,7 @@ module Agama
       @services = []
       @credentials_files = []
       @registered_addons = []
+      @registration_url = registration_url_from_cmdline
     end
 
     # Registers the selected product.
@@ -369,7 +375,7 @@ module Agama
     # At this point, it just checks the kernel's command-line.
     #
     # @return [String, nil]
-    def registration_url
+    def registration_url_from_cmdline
       cmdline_args = CmdlineArgs.read
       cmdline_args.data["register_url"]
     end

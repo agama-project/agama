@@ -162,8 +162,28 @@ module Agama
           end
         end
 
+        def ssl_fingerprints
+          ssl_storage.fingerprints.map { |f| [f.sum, f.value] }
+        end
+
+        def ssl_fingerprints=(new_fps)
+          fps = new_fps.map { |f| SSL::Fingerprint.new(f[0], f[1]) }
+          ssl_storage.fingerprints.replace(fps)
+        end
+
+        SECURITY_INTERFACE = "org.opensuse.Agama.Security"
+        private_constant :SECURITY_INTERFACE
+
+        dbus_interface SOFTWARE_INTERFACE do
+          # List of SSL fingerprints serialized into type and its value
+          dbus_accessor :ssl_fingerprints, "a(ss)"
+        end
+
       private
 
+        def ssl_storage
+          SSL::Storage.instance
+        end
         # @return [Agama::Software]
         attr_reader :backend
 
