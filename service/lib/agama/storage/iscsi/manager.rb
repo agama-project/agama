@@ -119,11 +119,10 @@ module Agama
         # Updates the initiator info.
         #
         # @param name [String, nil]
-        # @param offload_card [String, nil]
-        def update_initiator(name: nil, offload_card: nil)
+        def update_initiator(name: nil)
           return unless initiator
 
-          adapter.update_initiator(initiator, name: name, offload_card: offload_card)
+          adapter.update_initiator(initiator, name: name)
           probe_initiator
         end
 

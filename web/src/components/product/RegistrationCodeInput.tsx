@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,12 +20,14 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as InitiatorSection } from "./InitiatorSection";
-export { default as InitiatorForm } from "./InitiatorForm";
-export { default as TargetsSection } from "./TargetsSection";
-export { default as NodesPresenter } from "./NodesPresenter";
-export { default as DiscoverForm } from "./DiscoverForm";
-export { default as EditNodeForm } from "./EditNodeForm";
-export { default as LoginForm } from "./LoginForm";
-export { default as AuthFields } from "./AuthFields";
-export { default as NodeStartupOptions } from "./NodeStartupOptions";
+import React from "react";
+import { TextInputProps } from "@patternfly/react-core";
+
+import { PasswordInput } from "~/components/core";
+
+// the registration code might be quite long, make the password field wider
+export default function RegistrationCodeInput({
+  ...props
+}: TextInputProps & { inputRef?: React.Ref<HTMLInputElement> }) {
+  return <PasswordInput size={30} {...props} />;
+}
