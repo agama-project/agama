@@ -21,6 +21,7 @@
 use agama_lib::{auth::AuthToken, error::ServiceError};
 use clap::Subcommand;
 
+use crate::auth_tokens_file::AuthTokensFile;
 use crate::error::CliError;
 use agama_lib::base_http_client::BaseHTTPClient;
 use inquire::Password;
@@ -112,12 +113,22 @@ async fn login(client: AuthHTTPClient, password: String) -> anyhow::Result<()> {
     // 1) ask web server for JWT
     let res = client.authenticate(password).await?;
     let token = AuthToken::new(&res);
-    Ok(token.write_user_token()?)
+    let mut hosts_config = AuthTokensFile::read().unwrap_or_default();
+    let url = Url::parse(&client.api.base_url).unwrap();
+    let hostname = url.host_str().unwrap_or("localhost");
+    hosts_config.update_token(hostname, &token);
+    Ok(hosts_config.write()?)
 }
 
 /// Releases JWT
-fn logout() -> anyhow::Result<()> {
-    Ok(AuthToken::remove_user_token()?)
+fn logout(client: AuthHTTPClient) -> anyhow::Result<()> {
+    let url = Url::parse(&client.api.base_url).unwrap();
+    let hostname = url.host_str().unwrap_or("localhost");
+    if let Ok(mut file) = AuthTokensFile::read() {
+        file.remove_host(hostname);
+        file.write()?;
+    }
+    Ok(())
 }
 
 /// Shows stored JWT on stdout

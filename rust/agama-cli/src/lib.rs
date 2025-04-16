@@ -18,11 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_lib::auth::AuthToken;
 use agama_lib::manager::FinishMethod;
 use anyhow::{anyhow, Context};
+use auth_tokens_file::AuthTokensFile;
 use clap::{Args, Parser};
 
 mod auth;
+mod auth_tokens_file;
 mod commands;
 mod config;
 mod error;
@@ -261,6 +264,18 @@ fn api_url(host: String) -> String {
     } else {
         format!("https://{}/api", sanitized_host)
     }
+}
+
+fn find_client_token(api_url: &str) -> Option<AuthToken> {
+    let url = Url::parse(api_url).unwrap();
+    let hostname = url.host_str().unwrap_or("localhost");
+    if let Ok(hosts_file) = AuthTokensFile::read() {
+        if let Some(token) = hosts_file.get_token(hostname) {
+            return Some(token);
+        }
+    }
+
+    AuthToken::master()
 }
 
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {

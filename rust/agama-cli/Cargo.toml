@@ -23,6 +23,8 @@ url = "2.5.2"
 inquire = { version = "0.7.5", default-features = false, features = ["crossterm", "one-liners"] }
 chrono = "0.4.38"
 regex = "1.11.1"
+home = "0.5.11"
+serde = { version = "1.0.219", features = ["derive"] }
 
 [[bin]]
 name = "agama"
