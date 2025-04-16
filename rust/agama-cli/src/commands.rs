@@ -114,7 +114,7 @@ pub enum Commands {
     Finish {
         /// What to do after finishing the installation. Possible values:
         ///
-        /// stop - do not reboot and the system continues running.
+        /// stop - do not reboot and the Agama backend continues running.
         ///
         /// reboot - reboot into the installed system.
         ///
