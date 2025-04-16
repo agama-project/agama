@@ -323,7 +323,7 @@ module Agama
           SSL::Errors.instance.ssl_failed_cert.import
           retry
         end
-        false
+        raise e
       end
     end
 
@@ -335,12 +335,18 @@ module Agama
 
       puts "cert #{cert} code #{error_code}"
       if cert && SSL::ErrorCodes::IMPORT_ERROR_CODES.include?(error_code)
-        message = format(
-          _("Secure Connection Error for %{url}: %{error}. Certificate details %{details}."),
+        error_msg = format(
+          _("Secure Connection Error for %{url}: %{error}."),
           url:     registration_url || "https://scc.suse.com",
           error:   SSL::ErrorCodes::OPENSSL_ERROR_MESSAGES[error_code],
+        )
+        cert_details = format(
+          _("Certificate details %{details}."),
           details: SSL::CertificateDetails.new(cert).summary
         )
+
+        message = "<p>#{error_msg}</p><p>#{cert_details}</p>"
+
         question = Agama::Question.new(
           qclass:         "registration.certificate",
           text:           message,

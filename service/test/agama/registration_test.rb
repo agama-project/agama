@@ -239,7 +239,7 @@ describe Agama::Registration do
           before do
             Agama::SSL::Errors.instance.ssl_error_code = Agama::SSL::ErrorCodes::SELF_SIGNED_CERT
             Agama::SSL::Errors.instance.ssl_error_msg = "test error"
-            Agama::SSL::Errors.instance.ssl_failed_cert = Agama::SSL::Certificate.new("test")
+            Agama::SSL::Errors.instance.ssl_failed_cert = Agama::SSL::Certificate.load(File.read(File.join(FIXTURES_PATH, "test.pem")))
             # mock reset to avoid previous setup
             allow(Agama::SSL::Errors.instance).to receive(:reset)
 
