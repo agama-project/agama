@@ -24,7 +24,7 @@ import React from "react";
 import { Split, Flex, Label } from "@patternfly/react-core";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import MenuDeviceDescription from "./MenuDeviceDescription";
-import { useAvailableDevices } from "~/queries/storage";
+import { useAvailableDevices, useLongestDiskTitle } from "~/queries/storage";
 import { useDrive, useModel } from "~/queries/storage/config-model";
 import { useDrive as useDriveModel } from "~/hooks/storage/drive";
 import { useConvertToVolumeGroup } from "~/hooks/storage/volume-group";
@@ -368,12 +368,13 @@ export default function DriveDeviceMenu({
   const changeDriveTarget = (newDriveName: string) => {
     driveHandler.switch(newDriveName);
   };
+  const longestTitle = useLongestDiskTitle();
 
   return (
     <MenuButton
       menuProps={{
         "aria-label": sprintf(_("Device %s menu"), drive.name),
-        popperProps: { minWidth: "300px", width: "max-content" },
+        popperProps: { minWidth: `min(${longestTitle * 0.75}em, 75vw)`, width: "max-content" },
       }}
       toggleProps={{
         className: "agm-inline-toggle",

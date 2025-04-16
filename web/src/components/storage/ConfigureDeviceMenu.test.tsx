@@ -73,6 +73,7 @@ const mockAddDriveFn = jest.fn();
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useAvailableDevices: () => [vda, vdb],
+  useLongestDiskTitle: () => 20,
 }));
 
 jest.mock("~/queries/storage/config-model", () => ({
