@@ -79,7 +79,7 @@ const DisksDrillDownMenuItem = ({
           onClick={() => onDeviceClick(device.name)}
         >
           <Split hasGutter>
-            {deviceLabel(device)}
+            {deviceLabel(device, true)}
             <Flex columnGap={{ default: "columnGapXs" }}>
               {device.systems.map((s, i) => (
                 <Label key={i} isCompact>

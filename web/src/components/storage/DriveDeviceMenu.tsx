@@ -36,6 +36,7 @@ import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 
 const driveBaseName = (device: StorageDevice): string => deviceBaseName(device, true);
+const driveLabel = (device: StorageDevice): string => deviceLabel(device, true);
 
 const UseOnlyOneOption = (drive: apiModel.Drive): boolean => {
   const driveModel = useDrive(drive.name);
@@ -53,7 +54,7 @@ const DiskSelectorTitle = ({
   device,
   isSelected = false,
 }: DiskSelectorTitleProps): React.ReactNode => {
-  const Name = () => (isSelected ? <b>{deviceLabel(device)}</b> : deviceLabel(device));
+  const Name = () => (isSelected ? <b>{driveLabel(device)}</b> : driveLabel(device));
   const Systems = () => (
     <Flex columnGap={{ default: "columnGapXs" }}>
       {device.systems.map((s, i) => (
@@ -388,7 +389,7 @@ export default function DriveDeviceMenu({
         <RemoveDriveOption key="delete-disk-option" drive={drive} />,
       ]}
     >
-      {<b>{deviceLabel(selected, true)}</b>}
+      {<b>{driveLabel(selected)}</b>}
     </MenuButton>
   );
 }
