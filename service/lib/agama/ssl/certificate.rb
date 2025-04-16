@@ -160,6 +160,10 @@ module Agama
         find_issuer_attribute("OU")
       end
 
+      def match_fingerprint?(fp)
+        fp == fingerprint(fp.sum)
+      end
+
       def fingerprint(sum)
         case sum.upcase
         when Fingerprint::SHA1

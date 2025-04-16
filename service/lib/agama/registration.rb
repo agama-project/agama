@@ -32,6 +32,7 @@ require "agama/registered_addon"
 require "agama/ssl/certificate"
 require "agama/ssl/certificate_details"
 require "agama/ssl/errors"
+require "agama/ssl/storage"
 
 Yast.import "Arch"
 Yast.import "Pkg"
@@ -318,6 +319,7 @@ module Agama
       rescue OpenSSL::SSL::SSLError => e
         @logger.error "OpenSSL error: #{e}"
         should_retry = handle_ssl_error(e, certificate_imported)
+        puts "handle ssl error #{should_retry}"
         if should_retry
           certificate_imported = true
           SSL::Errors.instance.ssl_failed_cert.import
@@ -333,7 +335,13 @@ module Agama
       cert = SSL::Errors.instance.ssl_failed_cert
       error_code = SSL::Errors.instance.ssl_error_code
 
-      puts "cert #{cert} code #{error_code}"
+      if cert
+        SSL::Storage.instance.fingerprints.each do |fp|
+          # import certificate if it match predefined fingerprint
+          return true if cert.match_fingerprint?(fp)
+        end
+      end
+
       if cert && SSL::ErrorCodes::IMPORT_ERROR_CODES.include?(error_code)
         error_msg = format(
           _("Secure Connection Error for %{url}: %{error}."),

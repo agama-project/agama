@@ -236,14 +236,37 @@ describe Agama::Registration do
         end
 
         context "if the registration server has self-signed certificate" do
+          let (:certificate) { Agama::SSL::Certificate.load(File.read(File.join(FIXTURES_PATH, "test.pem"))) }
           before do
             Agama::SSL::Errors.instance.ssl_error_code = Agama::SSL::ErrorCodes::SELF_SIGNED_CERT
             Agama::SSL::Errors.instance.ssl_error_msg = "test error"
-            Agama::SSL::Errors.instance.ssl_failed_cert = Agama::SSL::Certificate.load(File.read(File.join(FIXTURES_PATH, "test.pem")))
-            # mock reset to avoid previous setup
+            Agama::SSL::Errors.instance.ssl_failed_cert = certificate
+            # mock reset to avoid deleting of previous setup
             allow(Agama::SSL::Errors.instance).to receive(:reset)
 
-            allow(SUSE::Connect::YaST).to receive(:activate_product).and_raise(OpenSSL::SSL::SSLError.new("test"))
+            @called = 0
+            allow(SUSE::Connect::YaST).to receive(:activate_product) do
+              @called += 1
+              raise(OpenSSL::SSL::SSLError.new("test")) if @called == 1
+
+              service
+            end
+          end
+
+          context "and certificate fingerprint is in storage" do
+            before do
+              Agama::SSL::Storage.instance.fingerprints.replace([certificate.send(:sha256_fingerprint)])
+            end
+
+            it "tries to import certificate" do
+              expect(certificate).to receive(:import)
+
+              subject.register("11112222", email: "test@test.com")
+            end
+
+            after do
+              Agama::SSL::Storage.instance.fingerprints.clear
+            end
           end
 
           it "opens question" do
@@ -254,7 +277,9 @@ describe Agama::Registration do
             expect(Agama::DBus::Clients::Questions).to receive(:new)
               .and_return(q_client)
 
-            subject.register("11112222", email: "test@test.com")
+            expect { subject.register("11112222", email: "test@test.com") }.to(
+              raise_error(OpenSSL::SSL::SSLError)
+            )
           end
         end
       end
