@@ -182,6 +182,10 @@ Automatic root login and staring the graphical environment is configured in seve
 The default Firefox configuration is defined in the [profile](root/root/.mozilla/firefox/profile)
 file. It disables several features which do not make sense in Live ISO like remembering the used
 passwords.
+Also firefox comes with preinstallated extension to start with full screen as it was found as
+the most reliable way to have fullscreen from start. The used plugin is this one
+https://addons.mozilla.org/en-US/firefox/addon/i-auto-fullscreen/ . It is simple few liner that
+was manually reviewed and has MIT license.
 
 ### Dracut menu
 
