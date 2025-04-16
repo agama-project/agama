@@ -169,6 +169,7 @@ jest.mock("~/queries/storage", () => ({
   useAvailableDevices: () => [sda],
   useVolume: (mountPath: string): Volume =>
     [volume1, volume2, volume3].find((v) => v.mountPath === mountPath),
+  useLongestDiskTitle: () => 20,
 }));
 
 jest.mock("~/queries/storage/config-model", () => ({

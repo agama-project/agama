@@ -25,7 +25,7 @@ import { useNavigate } from "react-router-dom";
 import { Split, Flex, Label, Divider } from "@patternfly/react-core";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import MenuDeviceDescription from "./MenuDeviceDescription";
-import { useAvailableDevices } from "~/queries/storage";
+import { useAvailableDevices, useLongestDiskTitle } from "~/queries/storage";
 import { useConfigModel, useModel } from "~/queries/storage/config-model";
 import { deviceLabel } from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -79,7 +79,7 @@ const DisksDrillDownMenuItem = ({
           onClick={() => onDeviceClick(device.name)}
         >
           <Split hasGutter>
-            {deviceLabel(device)}
+            {deviceLabel(device, true)}
             <Flex columnGap={{ default: "columnGapXs" }}>
               {device.systems.map((s, i) => (
                 <Label key={i} isCompact>
@@ -115,6 +115,7 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
   const drivesNames = model.drives.map((d) => d.name);
   const drivesCount = drivesNames.length;
   const devices = allDevices.filter((d) => !drivesNames.includes(d.name));
+  const longestTitle = useLongestDiskTitle();
 
   const lvmDescription = allDevices.length
     ? _("Define a new LVM on top of one or several disks")
@@ -124,7 +125,7 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
     <MenuButton
       menuProps={{
         "aria-label": _("Configure device menu"),
-        popperProps: { minWidth: "300px", width: "max-content" },
+        popperProps: { minWidth: `min(${longestTitle * 0.75}em, 75vw)`, width: "max-content" },
       }}
       items={[
         <DisksDrillDownMenuItem

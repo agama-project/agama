@@ -24,7 +24,7 @@ import React from "react";
 import { Split, Flex, Label } from "@patternfly/react-core";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import MenuDeviceDescription from "./MenuDeviceDescription";
-import { useAvailableDevices } from "~/queries/storage";
+import { useAvailableDevices, useLongestDiskTitle } from "~/queries/storage";
 import { useDrive, useModel } from "~/queries/storage/config-model";
 import { useDrive as useDriveModel } from "~/hooks/storage/drive";
 import { useConvertToVolumeGroup } from "~/hooks/storage/volume-group";
@@ -36,6 +36,7 @@ import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 
 const driveBaseName = (device: StorageDevice): string => deviceBaseName(device, true);
+const driveLabel = (device: StorageDevice): string => deviceLabel(device, true);
 
 const UseOnlyOneOption = (drive: apiModel.Drive): boolean => {
   const driveModel = useDrive(drive.name);
@@ -53,7 +54,7 @@ const DiskSelectorTitle = ({
   device,
   isSelected = false,
 }: DiskSelectorTitleProps): React.ReactNode => {
-  const Name = () => (isSelected ? <b>{deviceLabel(device)}</b> : deviceLabel(device));
+  const Name = () => (isSelected ? <b>{driveLabel(device)}</b> : driveLabel(device));
   const Systems = () => (
     <Flex columnGap={{ default: "columnGapXs" }}>
       {device.systems.map((s, i) => (
@@ -367,12 +368,13 @@ export default function DriveDeviceMenu({
   const changeDriveTarget = (newDriveName: string) => {
     driveHandler.switch(newDriveName);
   };
+  const longestTitle = useLongestDiskTitle();
 
   return (
     <MenuButton
       menuProps={{
         "aria-label": sprintf(_("Device %s menu"), drive.name),
-        popperProps: { minWidth: "300px", width: "max-content" },
+        popperProps: { minWidth: `min(${longestTitle * 0.75}em, 75vw)`, width: "max-content" },
       }}
       toggleProps={{
         className: "agm-inline-toggle",
@@ -388,7 +390,7 @@ export default function DriveDeviceMenu({
         <RemoveDriveOption key="delete-disk-option" drive={drive} />,
       ]}
     >
-      {<b>{deviceLabel(selected, true)}</b>}
+      {<b>{driveLabel(selected)}</b>}
     </MenuButton>
   );
 }
