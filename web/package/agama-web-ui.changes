@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Apr 16 06:09:58 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Shorten storage device names.
+- Move LVM logical volumes to partitions, if possible.
+- Add MenuButton component (gh#agama-project/agama#2241).
+
+-------------------------------------------------------------------
 Wed Apr  9 12:38:21 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Fix flickering issue during loading and progress transitions
