@@ -147,11 +147,6 @@
         <package name="rubygem(agama-yast)"/>
         <package name="rubygem(byebug)"/>
         <package name="microos-tools"/>
-        <package name="patterns-base-basesystem"/>
-        <package name="gdm"/>
-        <package name="gnome-shell"/>
-        <package name="gnome-session-wayland"/>
-        <package name="gnome-kiosk"/>
         <package name="psmisc"/>
         <package name="joe"/>
         <package name="checkmedia"/>
@@ -176,12 +171,10 @@
         <package name="adobe-sourcehansans-jp-fonts"/>
         <package name="xauth"/>
         <package name="MozillaFirefox"/>
-        <package name="icewm-lite"/>
-        <package name="xinit"/>
-        <package name="xset"/>
-        <package name="xorg-x11-server"/>
-        <package name="xorg-x11-fonts-core"/>
-        <package name="xf86-input-libinput" />
+        <package name="gdm"/>
+        <package name="gnome-shell"/>
+        <package name="gnome-session-wayland"/>
+        <package name="gnome-kiosk"/>
         <package name="spice-vdagent"/>
     </packages>
 
