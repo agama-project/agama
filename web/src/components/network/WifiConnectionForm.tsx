@@ -38,20 +38,12 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { isEmpty } from "~/utils";
 
-/*
- * FIXME: it should be moved to the SecurityProtocols enum that already exists or to a class based
- * enum pattern in the network_manager adapter.
- */
-const security_options = [
+const securityOptions = [
   // TRANSLATORS: WiFi authentication mode
-  { value: "", label: _("None") },
+  { value: "none", label: _("None") },
   // TRANSLATORS: WiFi authentication mode
   { value: "wpa-psk", label: _("WPA & WPA2 Personal") },
 ];
-
-const selectorOptions = security_options.map((security) => (
-  <FormSelectOption key={security.value} value={security.value} label={security.label} />
-));
 
 const securityFrom = (supported: string[]) => {
   if (supported.includes("WPA2")) return "wpa-psk";
@@ -136,7 +128,7 @@ export default function WifiConnectionForm({ network }: { network: WifiNetwork }
     const nextConnection = network.settings || new Connection(network.ssid);
     nextConnection.wireless = new Wireless({
       ssid: network.ssid,
-      security,
+      security: security || "none",
       password,
       hidden: false,
     });
@@ -166,7 +158,13 @@ export default function WifiConnectionForm({ network }: { network: WifiNetwork }
               value={security}
               onChange={(_, v) => setSecurity(v)}
             >
-              {selectorOptions}
+              {securityOptions.map((security) => (
+                <FormSelectOption
+                  key={security.value}
+                  value={security.value}
+                  label={security.label}
+                />
+              ))}
             </FormSelect>
           </FormGroup>
         )}
