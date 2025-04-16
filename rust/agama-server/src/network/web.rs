@@ -254,15 +254,26 @@ fn ports_for(connections: Vec<Connection>, uuid: Uuid) -> Vec<String> {
 )]
 async fn add_connection(
     State(state): State<NetworkServiceState>,
-    Json(conn): Json<NetworkConnection>,
+    Json(net_conn): Json<NetworkConnection>,
 ) -> Result<Json<Connection>, NetworkError> {
-    let conn = Connection::try_from(conn)?;
+    let bond = net_conn.clone().bond;
+    let bridge = net_conn.clone().bridge;
+    let conn = Connection::try_from(net_conn)?;
     let id = conn.id.clone();
 
     state.network.add_connection(conn).await?;
+
     match state.network.get_connection(&id).await? {
         None => Err(NetworkError::CannotAddConnection(id.clone())),
-        Some(conn) => Ok(Json(conn)),
+        Some(conn) => {
+            if let Some(bond) = bond {
+                state.network.set_ports(conn.clone(), bond.ports).await?;
+            }
+            if let Some(bridge) = bridge {
+                state.network.set_ports(conn.clone(), bridge.ports).await?;
+            }
+            Ok(Json(conn))
+        }
     }
 }
 
