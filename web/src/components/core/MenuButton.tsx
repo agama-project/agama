@@ -53,28 +53,30 @@ interface MenuButtonItemProps extends Omit<MenuItemProps, "direction" | "drilldo
 export function MenuButtonItem({
   items = [],
   upProps = { label: _("Back") },
+  onClick,
   children,
   ...props
 }: React.PropsWithChildren<MenuButtonItemProps>): React.ReactNode {
   const itemId = useId();
   const menuId = useMenuId();
-  const onClick = (callback) => {
-    return (e) => {
-      e.stopPropagation();
-      callback && callback();
-    };
+
+  const onDownClick = (event) => {
+    event.stopPropagation();
+    onClick && onClick(event);
   };
 
   if (!items.length) {
-    props = { itemId, ...props };
-    return <MenuItem {...props}>{children}</MenuItem>;
+    return (
+      <MenuItem itemId={itemId} onClick={onClick} {...props}>
+        {children}
+      </MenuItem>
+    );
   }
-
-  props = { itemId, ...props, onClick: onClick(props.onClick) };
-
   return (
     <MenuItem
+      itemId={itemId}
       {...props}
+      onClick={onDownClick}
       direction="down"
       drilldownMenu={
         <DrilldownMenu id={menuId}>
