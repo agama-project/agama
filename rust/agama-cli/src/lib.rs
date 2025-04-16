@@ -18,14 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_lib::auth::AuthToken;
 use agama_lib::manager::FinishMethod;
 use anyhow::{anyhow, Context};
 use clap::{Args, Parser};
+use hosts::HostsConfigFile;
 
 mod auth;
 mod commands;
 mod config;
 mod error;
+mod hosts;
 mod logs;
 mod profile;
 mod progress;

@@ -1,0 +1,10 @@
+[
+  {
+    "host": "my-server.lan",
+    "token": "abcdefghi"
+  },
+  {
+    "host": "my-server2.lan",
+    "token": "abcdefghi"
+  }
+]
