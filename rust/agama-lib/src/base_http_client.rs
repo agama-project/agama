@@ -72,10 +72,12 @@ impl BaseHTTPClient {
         }
     }
 
-    /// Uses `localhost`, authenticates with [`AuthToken`].
-    pub fn authenticated(self) -> Result<Self, ServiceError> {
+    /// Turns the client into an authenticated one using the given token.
+    ///
+    /// * `token`: authentication token.
+    pub fn authenticated(self, token: &AuthToken) -> Result<Self, ServiceError> {
         Ok(Self {
-            client: Self::authenticated_client(self.insecure)?,
+            client: Self::authenticated_client(self.insecure, token)?,
             ..self
         })
     }
@@ -91,11 +93,10 @@ impl BaseHTTPClient {
         })
     }
 
-    fn authenticated_client(insecure: bool) -> Result<reqwest::Client, ServiceError> {
-        // TODO: this error is subtly misleading, leading me to believe the SERVER said it,
-        // but in fact it is the CLIENT not finding an auth token
-        let token = AuthToken::find().ok_or(ServiceError::NotAuthenticated)?;
-
+    fn authenticated_client(
+        insecure: bool,
+        token: &AuthToken,
+    ) -> Result<reqwest::Client, ServiceError> {
         let mut headers = header::HeaderMap::new();
         // just use generic anyhow error here as Bearer format is constructed by us, so failures can come only from token
         let value = header::HeaderValue::from_str(format!("Bearer {}", token).as_str())

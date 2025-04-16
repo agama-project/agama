@@ -20,6 +20,7 @@
 
 use agama_lib::{auth::AuthToken, error::ServiceError};
 use clap::Subcommand;
+use url::Url;
 
 use crate::auth_tokens_file::AuthTokensFile;
 use crate::error::CliError;
@@ -76,7 +77,7 @@ pub async fn run(client: BaseHTTPClient, subcommand: AuthCommands) -> anyhow::Re
 
     match subcommand {
         AuthCommands::Login => login(auth_client, read_password()?).await,
-        AuthCommands::Logout => logout(),
+        AuthCommands::Logout => logout(auth_client),
         AuthCommands::Show => show(),
     }
 }

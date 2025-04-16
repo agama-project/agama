@@ -246,7 +246,10 @@ async fn build_http_client(
     // available and those which not (or don't need it)
     if authenticated {
         // this deals with authentication need inside
-        client.authenticated()
+        if let Some(token) = find_client_token(&client.base_url) {
+            return client.authenticated(&token);
+        }
+        return Err(ServiceError::NotAuthenticated);
     } else {
         client.unauthenticated()
     }
