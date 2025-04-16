@@ -246,7 +246,10 @@ async fn build_http_client(
     // available and those which not (or don't need it)
     if authenticated {
         // this deals with authentication need inside
-        client.authenticated()
+        if let Some(token) = find_client_token(&client.base_url) {
+            return client.authenticated(&token);
+        }
+        return Err(ServiceError::NotAuthenticated);
     } else {
         client.unauthenticated()
     }
@@ -264,6 +267,18 @@ fn api_url(host: String) -> String {
     } else {
         format!("https://{}/api", sanitized_host)
     }
+}
+
+fn find_client_token(api_url: &str) -> Option<AuthToken> {
+    let url = Url::parse(api_url).unwrap();
+    let hostname = url.host_str().unwrap_or("localhost");
+    if let Ok(hosts_file) = HostsConfigFile::read() {
+        if let Some(token) = hosts_file.get_token(hostname) {
+            return Some(token);
+        }
+    }
+
+    AuthToken::master()
 }
 
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {

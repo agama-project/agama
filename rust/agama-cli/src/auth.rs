@@ -20,8 +20,10 @@
 
 use agama_lib::{auth::AuthToken, error::ServiceError};
 use clap::Subcommand;
+use url::Url;
 
 use crate::error::CliError;
+use crate::hosts::HostsConfigFile;
 use agama_lib::base_http_client::BaseHTTPClient;
 use inquire::Password;
 use std::collections::HashMap;
@@ -75,7 +77,7 @@ pub async fn run(client: BaseHTTPClient, subcommand: AuthCommands) -> anyhow::Re
 
     match subcommand {
         AuthCommands::Login => login(auth_client, read_password()?).await,
-        AuthCommands::Logout => logout(),
+        AuthCommands::Logout => logout(auth_client),
         AuthCommands::Show => show(),
     }
 }
@@ -112,12 +114,22 @@ async fn login(client: AuthHTTPClient, password: String) -> anyhow::Result<()> {
     // 1) ask web server for JWT
     let res = client.authenticate(password).await?;
     let token = AuthToken::new(&res);
-    Ok(token.write_user_token()?)
+    let mut hosts_config = HostsConfigFile::read().unwrap_or_default();
+    let url = Url::parse(&client.api.base_url).unwrap();
+    let hostname = url.host_str().unwrap_or("localhost");
+    hosts_config.update_token(hostname, &token);
+    Ok(hosts_config.write()?)
 }
 
 /// Releases JWT
-fn logout() -> anyhow::Result<()> {
-    Ok(AuthToken::remove_user_token()?)
+fn logout(client: AuthHTTPClient) -> anyhow::Result<()> {
+    let url = Url::parse(&client.api.base_url).unwrap();
+    let hostname = url.host_str().unwrap_or("localhost");
+    if let Ok(mut file) = HostsConfigFile::read() {
+        file.remove_host(hostname);
+        file.write()?;
+    }
+    Ok(())
 }
 
 /// Shows stored JWT on stdout

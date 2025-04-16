@@ -62,7 +62,8 @@ use thiserror::Error;
 pub struct AuthTokenError(#[from] jsonwebtoken::errors::Error);
 
 /// Represents an authentication token (JWT).
-pub struct AuthToken(String);
+#[derive(Clone, Debug, PartialEq)]
+pub struct AuthToken(pub String);
 
 impl AuthToken {
     /// Creates a new token with the given content.
@@ -96,6 +97,10 @@ impl AuthToken {
             }
         }
 
+        Self::read(AGAMA_TOKEN_FILE).ok()
+    }
+
+    pub fn master() -> Option<Self> {
         Self::read(AGAMA_TOKEN_FILE).ok()
     }
 
