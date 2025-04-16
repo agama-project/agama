@@ -28,6 +28,9 @@ mod tasks {
         Ok(())
     }
 
+    const GENERATED: &'static str =
+        "---\nNOTE: This documentation is generated. Run `cargo xtask markdown` to update it.\n";
+
     /// Generate Agama's CLI documentation in markdown format.
     pub fn generate_markdown() -> std::io::Result<()> {
         let out_dir = create_output_dir("markdown")?;
@@ -40,6 +43,7 @@ mod tasks {
         let filename = out_dir.join("agama.md");
         let mut file = File::create(&filename)?;
         file.write_all(markdown.as_bytes())?;
+        file.write_all(GENERATED.as_bytes())?;
 
         println!("Generate Markdown documentation at {}.", filename.display());
         Ok(())
