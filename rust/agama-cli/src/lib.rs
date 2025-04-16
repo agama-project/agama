@@ -59,7 +59,9 @@ use url::Url;
 #[derive(Args)]
 pub struct GlobalOpts {
     #[clap(long, default_value = "http://localhost")]
-    /// URI pointing to Agama's remote host. If not provided, default http://localhost is used
+    /// URI pointing to Agama's remote host.
+    ///
+    /// Examples: https://my-server.lan my-server.local localhost:10443
     pub host: String,
 
     #[clap(long, default_value = "false")]
