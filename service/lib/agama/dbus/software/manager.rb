@@ -174,7 +174,7 @@ module Agama
         SECURITY_INTERFACE = "org.opensuse.Agama.Security"
         private_constant :SECURITY_INTERFACE
 
-        dbus_interface SOFTWARE_INTERFACE do
+        dbus_interface SECURITY_INTERFACE do
           # List of SSL fingerprints serialized into type and its value
           dbus_accessor :ssl_fingerprints, "a(ss)"
         end
