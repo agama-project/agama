@@ -47,5 +47,7 @@ pub struct ProductSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub registration_email: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub registration_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub addons: Option<Vec<AddonSettings>>,
 }
