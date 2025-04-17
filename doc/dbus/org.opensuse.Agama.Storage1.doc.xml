@@ -2,25 +2,23 @@
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node name="/org/opensuse/Agama/Storage1">
   <node name="ISCSI" />
-  <node name="iscsi_nodes" />
-  <node name="staging" />
-  <node name="system" />
-  <node name="zfcp_controllers" />
-  <node name="zfcp_disks" />
   <interface name="org.opensuse.Agama.Storage1">
     <method name="Probe">
     </method>
     <!--
+      Reprobe:
       Probes the system and recalculates the proposal using the current config.
     -->
     <method name="Reprobe">
     </method>
     <!--
+      SetConfig:
+      @result, Whether the proposal was correctly calculated: 0: success, 1: failure
+
       Sets the storage config.
-    -->
-    <method name="SetConfig">
-      <!--
-        E.g.,
+
+        @serialized_config, E.g.,
+        <programlisting>
         {
           "storage": {
             "drives": [
@@ -33,32 +31,27 @@
             ]
           }
         }
-      -->
+        </programlisting>
+    -->
+    <method name="SetConfig">
       <arg name="serialized_config" direction="in" type="s"/>
-      <!--
-        Whether the proposal was correctly calculated:
-          0: success
-          1: failure
-      -->
       <arg name="result" direction="out" type="u"/>
     </method>
     <!--
+      ResetConfig:
+      @result: Whether the proposal was correctly calculated: 0: success, 1: failure
+
       Resets the default storage config defined by the selected product.
     -->
     <method name="ResetConfig">
-      <!--
-        Whether the proposal was correctly calculated:
-          0: success
-          1: failure
-      -->
       <arg name="result" direction="out" type="u"/>
     </method>
     <!--
+      GetConfig:
       Gets the unsolved storage config.
-    -->
-    <method name="GetConfig">
-      <!--
-        E.g.,
+
+        @serialized_config, e.g.
+        <programlisting>
         {
           "storage": {
             "drives": [
@@ -71,15 +64,19 @@
             ]
           }
         }
-      -->
+        </programlisting>
+    -->
+    <method name="GetConfig">
       <arg name="serialized_config" direction="out" type="s"/>
     </method>
     <!--
+      SetConfigModel:
+      @result: Whether the proposal was correctly calculated with the given config model: 0: success, 1: failure
+
       Sets the storage config model.
-    -->
-    <method name="SetConfigModel">
-      <!--
+
         E.g.,
+        <programlisting>
         {
           "drives": [
             {
@@ -90,21 +87,18 @@
             }
           ]
         }
-      -->
+        </programlisting>
+    -->
+    <method name="SetConfigModel">
       <arg name="serialized_model" direction="in" type="s"/>
-      <!--
-        Whether the proposal was correctly calculated with the given config model:
-          0: success
-          1: failure
-      -->
       <arg name="result" direction="out" type="u"/>
     </method>
     <!--
+      GetConfigModel:
       Gets the storage config model.
-    -->
-    <method name="GetConfigModel">
-      <!--
+
         E.g.,
+        <programlisting>
         {
           "drives": [
             {
@@ -127,14 +121,17 @@
             }
           ]
         }
-      -->
+        </programlisting>
+    -->
+    <method name="GetConfigModel">
       <arg name="serialized_model" direction="out" type="s"/>
     </method>
     <!--
+      SolveConfigModel:
       Solves the given storage config model.
-    -->
-    <method name="SolveConfigModel">
-      <!--
+
+      Input, e.g.
+      <programlisting>
         E.g.,
         {
           "drives": [
@@ -148,10 +145,10 @@
             }
           ]
         }
-      -->
-      <arg name="sparse_model" direction="in" type="s"/>
-      <!--
-        E.g.,
+        </programlisting>
+
+        Output, e.g.
+        <programlisting>
         {
           "drives": [
             {
@@ -174,14 +171,24 @@
             }
           ]
         }
-      -->
+        </programlisting>
+    -->
+    <method name="SolveConfigModel">
+      <arg name="sparse_model" direction="in" type="s"/>
       <arg name="solved_model" direction="out" type="s"/>
     </method>
+    <!--
+      Install:
+    -->
     <method name="Install">
     </method>
+    <!--
+      Finish:
+    -->
     <method name="Finish">
     </method>
     <!--
+      DeprecatedSystem:
       Whether the system is in a deprecated status.
 
       The system is usually set as deprecated as effect of managing some kind of devices, for

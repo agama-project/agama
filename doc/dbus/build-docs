@@ -1,0 +1,36 @@
+#!/bin/sh
+# Build HTML for GitHub pages
+set -eu
+
+# Workflow:
+# gdbus-codegen (glib2-devel.rpm)
+# - reads *.doc.xml introspection with comments
+# - writes ref-*.xml, DocBook refentry pieces
+# xmlto
+# - reads  ref-*.xml
+# - writes *.html
+
+# TODO opt in for a repo-wide shellcheck
+
+# TODO help message
+distdir=$1
+tmpdir=$2
+mkdir -p "$distdir" "$tmpdir"
+
+for f in org.opensuse.Agama*.doc.xml; do
+  echo "$f"
+  gdbus-codegen \
+    --interface-prefix=org.opensuse.Agama. \
+    --output-directory="$tmpdir" \
+    --generate-docbook=ref \
+    "$f"
+  docbook="$tmpdir/ref-${f%.doc.xml}.xml"
+  xmlto \
+    -o "$distdir" \
+	--skip-validation \
+	--stringparam html.stylesheet=refentry-agama.css \
+	html-nochunks \
+	"$docbook"
+done
+./make-index > "$distdir"/index.html
+cp refentry-agama.css "$distdir"

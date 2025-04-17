@@ -1,0 +1,19 @@
+body
+{
+  font-family: cantarell, sans-serif;
+}
+@media screen {
+  body
+  {
+    max-width: 60em;
+  }
+}
+@media screen and (min-width: 60em) {
+  /* screen larger than 60em */
+  body { margin: auto; }
+}
+.synopsis, .programlisting {
+	background: rgba(238, 238, 236, 0.5);
+	border: solid 1px rgb(238, 238, 236);
+	padding: 0.5em;
+}

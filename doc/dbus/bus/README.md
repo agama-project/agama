@@ -4,6 +4,8 @@ exported by the Agama services.
 The files are produced by `seed.sh`.
 - FIXME: run it in CI.
 - FIXME: make it easy to run it *and* commit the result to git.
+  testing_using_container.sh,
+    (cd doc/dbus/bus; ./seed.sh)
 
 Each file name represents a D-Bus **interface** that we want to document.
 That is why some files have symlinks pointing to them (and why you see no
@@ -19,4 +21,4 @@ Run `make check`.
 
 FIXME: Storage1.ZFCP and Storage1.DASD needs an s390 machine to run,
 we should expose them on x86 too (returning errors), perhaps guarded by an
-`AGAMA_IGNORE_ARCH` flag?
+`AGAMA_MAINFRAME_COSPLAY` flag?

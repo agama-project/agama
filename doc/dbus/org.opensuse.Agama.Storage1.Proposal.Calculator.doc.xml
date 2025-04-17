@@ -2,24 +2,19 @@
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node name="/org/opensuse/Agama/Storage1">
   <node name="ISCSI" />
-  <node name="iscsi_nodes" />
-  <node name="staging" />
-  <node name="system" />
-  <node name="zfcp_controllers" />
-  <node name="zfcp_disks" />
   <!--
-    Interface for calculating a new storage proposal.
+    org.opensuse.Agama.Storage1.Proposal.Calculator
+    @short_description: Interface for calculating a new storage proposal.
   -->
   <interface name="org.opensuse.Agama.Storage1.Proposal.Calculator">
     <!--
+      DefaultVolume:
+      @mount_path: E.g., /home
+
       Gets the default values for a volume with the given mount path.
-    -->
-    <method name="DefaultVolume">
-      <!--
-        E.g., /home
-      -->
-      <arg name="mount_path" direction="in" type="s"/>
-      <!--
+
+      Returns:
+      <programlisting>
         MountPath               s
         MountOptions            as
         Target                  s (options: "default", "new_partition", "new_vg", "device", "filesystem")
@@ -37,14 +32,20 @@
           SnapshotsConfigurable b
           SnapshotsAffectSizes  b
           SizeRelevantVolumes   as
-      -->
+      </programlisting>
+    -->
+    <method name="DefaultVolume">
+      <arg name="mount_path" direction="in" type="s"/>
       <arg name="volume" direction="out" type="a{sv}"/>
     </method>
     <!--
+      Calculate:
+      @result: Whether the proposal was correctly calculated: 0: success, 1: failure
+
       Calculates a new proposal.
-    -->
-    <method name="Calculate">
-      <!--
+
+      Input:
+      <programlisting>
         Target                 s (options: "disk", "newLvmVg", "reusedLvmVg")
         TargeDevice            s (optional: does not make sense if Target is "newLvmVg")
         TargetPVDevices        as (optional: only makes sense if Target is "newLvmVg")
@@ -56,12 +57,16 @@
         SpacePolicy            s
         SpaceActions           aa{sv}
         Volumes                aa{sv}
+      </programlisting>
 
-        Each space action has the following properties:
+      Each space action has the following properties:
+      <programlisting>
           Device                 s
           Action                 s (options: "force_delete", "resize")
+      </programlisting>
 
-        Each volume has the following properties:
+      Each volume has the following properties:
+      <programlisting>
           MountPath               s
           MountOptions            as
           Target                  s (options: "default", "new_partition", "new_vg", "device", "filesystem")
@@ -72,22 +77,19 @@
           AutoSize                b
           Snapshots               b (makes sense only for btrfs)
           Transactional           b (makes sense only for btrfs)
-      -->
+      </programlisting>
+    -->
+    <method name="Calculate">
       <arg name="settings_dbus" direction="in" type="a{sv}"/>
-      <!--
-        Whether the proposal was correctly calculated:
-          0: success
-          1: failure
-      -->
       <arg name="result" direction="out" type="u"/>
     </method>
     <property type="ao" name="AvailableDevices" access="read"/>
     <!--
+      ProductMountPoints:
       Relevant mount points for the selected product. Normally, the product defines some specific
       values for these mount points (e.g., min and max sizes, file system type, etc).
     -->
     <property type="as" name="ProductMountPoints" access="read"/>
     <property type="as" name="EncryptionMethods" access="read"/>
   </interface>
-
 </node>

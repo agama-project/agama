@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <node name="/org/opensuse/Agama/Software1/Product">
   <!--
-    Interface for registering a product.
+    org.opensuse.Agama1.Registration:
+    @short_description: Interface for registering a product.
   -->
   <interface name="org.opensuse.Agama1.Registration">
     <!--
-      Registers the currently selected product.
-    -->
-    <method name="Register">
-      <!--
-        Registration code.
-      -->
-      <arg name="reg_code" direction="in" type="s"/>
-      <!--
-        Email s
-      -->
-      <arg name="options" direction="in" type="a{sv}"/>
-      <!--
-        Result code and description.
+      Register:
+      @reg_code: Registration code.
+      @result: Result code and description.
 
-        Possible result codes are:
+      Registers the currently selected product.
+
+      @options are:
+      <programlisting>
+        Email s
+      </programlisting>
+
+      Possible @result codes are:
+      <programlisting>
         0: success
         1: missing product
         2: already registered
@@ -31,17 +30,21 @@
         8: incorrect credentials
         8: invalid certificate
         10: internal error (e.g., parsing json data)
+      </programlisting>
       -->
+    <method name="Register">
+      <arg name="reg_code" direction="in" type="s"/>
+      <arg name="options" direction="in" type="a{sv}"/>
       <arg name="result" direction="out" type="(us)"/>
     </method>
     <!--
-      Deregisters the currently selected product.
-    -->
-    <method name="Deregister">
-      <!--
-        Result code and description.
+      Deregister:
+      @result: Result code and description.
 
-        Possible result codes are:
+      Deregisters the currently selected product.
+
+      Possible result codes are:
+      <programlisting>
         0: success
         1: missing product
         2: not registered yet
@@ -52,24 +55,31 @@
         7: incorrect credentials
         8: invalid certificate
         9: internal error (e.g., parsing json data)
-      -->
+      </programlisting>
+    -->
+    <method name="Deregister">
       <arg name="result" direction="out" type="(us)"/>
     </method>
     <!--
+      RegCode:
       Registration code. Empty if the current product is not registered yet.
     -->
     <property type="s" name="RegCode" access="read"/>
     <!--
+      Email:
       Email used for the registration. Empty if the current product is not registered yet.
       -->
     <property type="s" name="Email" access="read"/>
     <!--
+      Requirement:
       Indicates the registration requirement of the currently selected product.
 
       Possible values:
+      <programlisting>
       0: registration is not required.
       1: registration is optional.
       2: registration is mandatory.
+      </programlisting>
     -->
     <property type="u" name="Requirement" access="read"/>
   </interface>

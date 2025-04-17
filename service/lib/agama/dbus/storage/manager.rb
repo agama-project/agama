@@ -76,7 +76,7 @@ module Agama
           register_iscsi_callbacks
           register_software_callbacks
 
-          add_s390_interfaces if Yast::Arch.s390
+          add_s390_interfaces if Yast::Arch.s390 || ENV["AGAMA_MAINFRAME_COSPLAY"] == "1"
         end
 
         def locale=(locale)

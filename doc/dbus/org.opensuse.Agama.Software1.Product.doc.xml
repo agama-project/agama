@@ -2,25 +2,24 @@
 <node name="/org/opensuse/Agama/Software1/Product">
   <interface name="org.opensuse.Agama.Software1.Product">
     <!--
-      Selects a product.
-    -->
-    <method name="SelectProduct">
-      <!--
-        Product ID. See #AvailableProducts.
-      -->
-      <arg name="id" direction="in" type="s"/>
-      <!--
-        Result code and description.
+      SelectProduct:
+      @id: Product ID. See #AvailableProducts.
+      @result: Result code and description.
 
-        Possible result codes are:
+      Selects a product.
+
+      Possible result codes are:
         #   0: successfully selected
         #   1: given product is already selected
         #   2: current product must be deregistered before selecting a new product
         #   3: given product is unknown
-      -->
+    -->
+    <method name="SelectProduct">
+      <arg name="id" direction="in" type="s"/>
       <arg name="result" direction="out" type="(us)"/>
     </method>
     <!--
+      AvailableProducts:
       Available products for installation.
 
       For each product, it returns:
@@ -31,6 +30,7 @@
     -->
     <property type="a(ssa{sv})" name="AvailableProducts" access="read"/>
     <!--
+      SelectedProduct:
       ID of the currently selected product.
     -->
     <property type="s" name="SelectedProduct" access="read"/>
