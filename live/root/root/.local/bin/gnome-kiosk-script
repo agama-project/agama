@@ -8,7 +8,10 @@ TOKEN=$(cat $TOKEN_FILE)
 PREFS=$HOME/.mozilla/firefox/profile/user.js
 
 sed -e "s/__HOMEPAGE__/http:\/\/localhost\/login?token=$TOKEN/" $PREFS.template > $PREFS
-firefox --kiosk --profile $HOME/.mozilla/firefox/profile
+
+# Do not use --kiosk mode (see bsc#1236073) until SLE16 is updated to next ESR. For Firefox
+# 128.9 which is currently used the bug is valid, for >= 138 should be fixed.
+firefox --profile $HOME/.mozilla/firefox/profile
 
 sleep 1.0
 exec "$0" "$@"
