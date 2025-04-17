@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Apr 15 15:36:18 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- Switched live ISO to use Wayland (gh#agama-project/agama#1781)
+
+-------------------------------------------------------------------
 Thu Apr 10 05:20:55 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add a new SUSE_SLE_16_PXE_MINI that only includes the software
