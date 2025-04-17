@@ -101,6 +101,15 @@ pub fn extract_id_from_path(path: &OwnedObjectPath) -> Result<u32, zvariant::Err
         })
 }
 
+// small helper to convert dbus empty string to None
+pub fn optional_string(value: String) -> Option<String> {
+    if value.is_empty() {
+        None
+    } else {
+        Some(value)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
