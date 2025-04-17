@@ -213,6 +213,7 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
             "/registration",
             get(get_registration).post(register).delete(deregister),
         )
+        .route("/registration/url", put(set_reg_url))
         .route("/registration/addons/register", post(register_addon))
         .route(
             "/registration/addons/registered",
@@ -285,8 +286,29 @@ async fn get_registration(
     let result = RegistrationInfo {
         key: state.product.registration_code().await?,
         email: state.product.email().await?,
+        url: state.product.registration_url().await?,
     };
     Ok(Json(result))
+}
+
+/// sets registration server url
+///
+/// * `state`: service state.
+#[utoipa::path(
+    put,
+    path = "/registration/url",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "registration server set"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn set_reg_url(
+    State(state): State<SoftwareState<'_>>,
+    Json(config): Json<String>,
+) -> Result<(), Error> {
+    state.product.set_registration_url(&config).await?;
+    Ok(())
 }
 
 /// Register product

@@ -64,6 +64,10 @@
       -->
     <property type="s" name="Email" access="read"/>
     <!--
+      URL used to register against. Empty means use default
+      -->
+    <property type="s" name="Url" access="readwrite"/>
+    <!--
       Indicates the registration requirement of the currently selected product.
 
       Possible values:

@@ -82,4 +82,7 @@
     <property type="aa{sv}" name="All" access="read"/>
     <property type="u" name="Current" access="read"/>
   </interface>
+  <interface name="org.opensuse.Agama.Security">
+    <property type="a(ss)" name="SslFingerprints" access="readwrite"/>
+  </interface>
 </node>
