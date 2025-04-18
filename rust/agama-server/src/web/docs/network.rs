@@ -57,6 +57,7 @@ impl ApiDocBuilder for NetworkApiDocBuilder {
             .schema_from::<agama_lib::network::settings::NetworkSettings>()
             .schema_from::<agama_lib::network::settings::WirelessSettings>()
             .schema_from::<agama_lib::network::types::BondMode>()
+            .schema_from::<agama_lib::network::types::ConnectionState>()
             .schema_from::<agama_lib::network::types::DeviceState>()
             .schema_from::<agama_lib::network::types::DeviceType>()
             .schema_from::<agama_lib::network::types::SSID>()
