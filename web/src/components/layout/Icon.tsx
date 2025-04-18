@@ -43,8 +43,10 @@ import Lock from "@icons/lock.svg?component";
 import ManageAccounts from "@icons/manage_accounts.svg?component";
 import Menu from "@icons/menu.svg?component";
 import MoreVert from "@icons/more_vert.svg?component";
+import NetworkWifi from "@icons/network_wifi.svg?component";
+import NetworkWifi1Bar from "@icons/network_wifi_1_bar.svg?component";
+import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
-import SignalCellularAlt from "@icons/signal_cellular_alt.svg?component";
 import Warning from "@icons/warning.svg?component";
 import Visibility from "@icons/visibility.svg?component";
 import VisibilityOff from "@icons/visibility_off.svg?component";
@@ -71,8 +73,10 @@ const icons = {
   manage_accounts: ManageAccounts,
   menu: Menu,
   more_vert: MoreVert,
+  network_wifi: NetworkWifi,
+  network_wifi_1_bar: NetworkWifi1Bar,
+  network_wifi_3_bar: NetworkWifi3Bar,
   settings_ethernet: SettingsEthernet,
-  signal_cellular_alt: SignalCellularAlt,
   visibility: Visibility,
   visibility_off: VisibilityOff,
   warning: Warning,

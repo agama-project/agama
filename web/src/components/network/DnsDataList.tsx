@@ -36,10 +36,9 @@ import {
   DataListCell,
   DataListAction,
   Flex,
-  Stack,
+  FormGroup,
 } from "@patternfly/react-core";
 
-import { FormLabel } from "~/components/core";
 import IpAddressInput from "~/components/network/IpAddressInput";
 import { _ } from "~/i18n";
 
@@ -116,19 +115,20 @@ export default function DnsDataList({
   const newDnsButtonText = servers.length ? _("Add another DNS") : _("Add DNS");
 
   return (
-    <Stack hasGutter>
-      <Flex justifyContent={{ default: "justifyContentSpaceBetween" }}>
-        <FormLabel>{_("DNS")}</FormLabel>
-      </Flex>
-      {/** FIXME: try to use an aria-labelledby instead when PatternFly permits it (or open a bug report) */}
-      <DataList isCompact aria-label="DNS data list">
-        {servers.map((server) => renderDns(server))}
-      </DataList>
-      <Flex>
+    <FormGroup label={_("DNS")}>
+      <Flex
+        direction={{ default: "column" }}
+        alignItems={{ default: "alignItemsFlexStart" }}
+        gap={{ default: "gapMd" }}
+      >
+        {/** FIXME: try to use an aria-labelledby instead when PatternFly permits it (or open a bug report) */}
+        <DataList isCompact aria-label="DNS data list">
+          {servers.map((server) => renderDns(server))}
+        </DataList>
         <Button size="sm" variant="secondary" onClick={addServer}>
           {newDnsButtonText}
         </Button>
       </Flex>
-    </Stack>
+    </FormGroup>
   );
 }

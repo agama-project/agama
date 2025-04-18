@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::network::model::{AccessPoint, Connection, Device};
-use agama_lib::network::types::DeviceType;
+use agama_lib::network::types::{ConnectionState, DeviceType};
 use tokio::sync::oneshot;
 use uuid::Uuid;
 
@@ -62,6 +62,8 @@ pub enum Action {
     /// Gets all the existent devices
     GetDevices(Responder<Vec<Device>>),
     GetGeneralState(Responder<GeneralState>),
+    /// Connection state changed
+    ChangeConnectionState(String, ConnectionState),
     /// Sets a controller's ports. It uses the Uuid of the controller and the IDs or interface names
     /// of the ports.
     SetPorts(

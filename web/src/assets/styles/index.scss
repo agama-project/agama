@@ -389,6 +389,13 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   justify-self: flex-start;
 }
 
+// Fix select toggle icon visibility by creating more space at the end :/
+.pf-v6-c-form-control > select {
+  --pf-v6-c-form-control--PaddingInlineEnd: calc(
+    var(--pf-v6-c-form-control__select--PaddingInlineEnd) * 3
+  );
+}
+
 .pf-v6-c-check {
   row-gap: var(--pf-t--global--spacer--xs);
   align-content: baseline;
@@ -401,6 +408,10 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 .pf-v6-c-list.pf-m-inline {
   --pf-v6-c-list--m-inline--RowGap: var(--pf-t--global--spacer--sm);
   --pf-v6-c-list--m-inline--ColumnGap: var(--pf-t--global--spacer--md);
+}
+
+.pf-v6-c-data-list li.pf-m-clickable {
+  --pf-v6-c-data-list__item--hover--BackgroundColor: var(--agm-t--action--background--color--hover);
 }
 
 // Nested content inside forms should respect parent grid gap

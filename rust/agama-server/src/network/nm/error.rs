@@ -30,6 +30,8 @@ pub enum NmError {
     UnsupportedIpMethod(String),
     #[error("Unsupported device type: '{0}'")]
     UnsupportedDeviceType(u32),
+    #[error("Unsupported connection state: '{0}'")]
+    UnsupportedConnectionState(u32),
     #[error("Unsupported security protocol: '{0}'")]
     UnsupportedSecurityProtocol(String),
     #[error("Unsupported wireless mode: '{0}'")]
