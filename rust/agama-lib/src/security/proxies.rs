@@ -5,7 +5,7 @@ use zbus::proxy;
     default_path = "/org/opensuse/Agama/Software1",
     assume_defaults = true
 )]
-trait Security {
+pub trait Security {
     /// SslFingerprints property
     #[zbus(property)]
     fn ssl_fingerprints(&self) -> zbus::Result<Vec<(String, String)>>;
