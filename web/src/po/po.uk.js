@@ -99,6 +99,9 @@ export default {
   "Add another partition or mount an existing one": [
     "Додати новий розділ або змонтувати наявний"
   ],
+  "Add device menu": [
+    ""
+  ],
   "Add logical volume": [
     ""
   ],
@@ -131,9 +134,6 @@ export default {
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Всі розділи буде видалено, а всі дані на диску буде втрачено."
-  ],
-  "As a new partition on %1$s (%2$s)": [
-    "Як новий розділ на %1$s (%2$s)"
   ],
   "At least one address must be provided for selected mode": [
     "Для обраного режиму має бути вказана принаймні одна адреса"
@@ -192,6 +192,9 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "До початку встановлення потрібно усунути такі проблеми:"
   ],
+  "Beta": [
+    ""
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -225,6 +228,9 @@ export default {
   "Change boot options": [
     "Змінити параметри завантаження"
   ],
+  "Change device menu": [
+    ""
+  ],
   "Change product": [
     "Змінити продукт"
   ],
@@ -257,6 +263,9 @@ export default {
   ],
   "Collapse the list of planned actions": [
     "Згорнути список запланованих дій"
+  ],
+  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
+    ""
   ],
   "Configure DASD": [
     "Налаштувати DASD"
@@ -393,9 +402,6 @@ export default {
   "Delete current content": [
     "Видалити поточний вміст"
   ],
-  "Delete the volume group and its logical volumes": [
-    ""
-  ],
   "Destroy current data and format partition as": [
     "Знищити поточні дані і відформатувати розділ як"
   ],
@@ -444,9 +450,6 @@ export default {
   "Download logs": [
     "Завантажити журнали"
   ],
-  "Drive": [
-    "Накопичувач"
-  ],
   "During installation, several actions will be performed to setup the layout shown at the table below.": [
     "Під час інсталяції буде виконано кілька дій, щоб налаштувати схему, як показано в таблиці нижче."
   ],
@@ -458,9 +461,6 @@ export default {
   ],
   "Edit connection %s": [
     "Редагувати з'єднання %s"
-  ],
-  "Edit iSCSI Initiator": [
-    "Змінити ініціатор iSCSI"
   ],
   "Edit user": [
     "Змінити користувача"
@@ -503,6 +503,9 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extensions": [
+    ""
   ],
   "F2FS": [
     "F2FS"
@@ -599,6 +602,12 @@ export default {
   "Hostname": [
     "Ім'я хоста"
   ],
+  "Hostname could not be updated": [
+    ""
+  ],
+  "Hostname successfully updated": [
+    ""
+  ],
   "I have read and accept the [license] for %s": [
     "Я прочитав і приймаю [license] на %s"
   ],
@@ -640,6 +649,12 @@ export default {
   ],
   "Initiator name": [
     "Ім'я ініціатора"
+  ],
+  "Initiator name could not be updated": [
+    ""
+  ],
+  "Initiator name successfully updated": [
+    ""
   ],
   "Install": [
     "Встановити"
@@ -848,9 +863,6 @@ export default {
   "New": [
     "Новий"
   ],
-  "New LVM volume group": [
-    "Нова група томів LVM"
-  ],
   "No": [
     "Ні"
   ],
@@ -874,6 +886,9 @@ export default {
   ],
   "No devices found": [
     "Пристроїв не знайдено"
+  ],
+  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
+    ""
   ],
   "No iSCSI targets found.": [
     "Цілі iSCSI не знайдені."
@@ -931,9 +946,6 @@ export default {
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
     "Перед форматуванням автономних пристроїв їх необхідно активувати. Будь ласка, скасуйте вибір або активацію пристроїв, перелічених нижче, і повторіть спробу"
-  ],
-  "Offload card": [
-    "Картка вивантаження"
   ],
   "On boot": [
     "При завантаженні"
@@ -1061,6 +1073,9 @@ export default {
   "Reboot": [
     "Перезавантажити"
   ],
+  "Recommended": [
+    ""
+  ],
   "Register": [
     "Зареєструвати"
   ],
@@ -1087,9 +1102,6 @@ export default {
   ],
   "Remove min channel filter": [
     "Видалити фільтр за мінімальним каналом"
-  ],
-  "Remove the configuration for this device": [
-    "Видалити конфігурацію для цього пристрою"
   ],
   "Repository load failed": [
     "Не вдалося завантажити репозиторій"
@@ -1130,15 +1142,6 @@ export default {
   "Select": [
     "Вибір"
   ],
-  "Select a device to configure": [
-    "Виберіть пристрій для налаштування"
-  ],
-  "Select a device to create %s": [
-    "Виберіть пристрій для створення %s"
-  ],
-  "Select a device to install the system": [
-    "Виберіть пристрій для встановлення системи"
-  ],
   "Select a disk": [
     "Оберіть диск"
   ],
@@ -1165,6 +1168,9 @@ export default {
   ],
   "Select what to do with each partition.": [
     "Оберіть, що робити з кожним розділом."
+  ],
+  "Selected disk (cannot be changed)": [
+    ""
   ],
   "Selected patterns": [
     "Обрані шаблони"
@@ -1273,9 +1279,6 @@ export default {
   "The configured LVM groups will remain at %s": [
     "Налаштовані групи LVM залишаться у %s"
   ],
-  "The configured partitions will be created as logical volumes": [
-    "Налаштовані розділи буде створено як логічні томи"
-  ],
   "The content may be deleted": [
     "Вміст може бути видалений"
   ],
@@ -1293,6 +1296,12 @@ export default {
   ],
   "The device will be used by the new system.": [
     "Пристрій буде використовуватися новою системою."
+  ],
+  "The disk is used for LVM": [
+    ""
+  ],
+  "The disk is used for booting": [
+    ""
   ],
   "The encryption password did not work": [
     "Пароль шифрування не спрацював"
@@ -1402,20 +1411,8 @@ export default {
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Ця дія може знищити будь-які дані, що зберігаються на перелічених нижче пристроях. Будь ласка, підтвердьте, що Ви дійсно хочете продовжити."
   ],
-  "This device will contain any partition needed for booting": [
-    "Цей пристрій буде містити будь-який розділ, необхідний для завантаження"
-  ],
-  "This device will contain the LVM group '%s'": [
-    "Цей пристрій міститиме групу LVM '%s'"
-  ],
-  "This device will contain the LVM group '%s' and any partition needed to boot": [
-    "Цей пристрій міститиме групу LVM '%s' і будь-який розділ, необхідний для завантаження"
-  ],
-  "This device will contain the configured LVM groups": [
-    "Цей пристрій міститиме налаштовані групи LVM"
-  ],
-  "This device will contain the configured LVM groups and any partition needed to boot": [
-    "Цей пристрій міститиме налаштовані групи LVM і будь-який розділ, необхідний для завантаження"
+  "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
+    ""
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "Це ім'я хоста є динамічним і може змінитися після перезавантаження або оновлення мережі, як це налаштовано адміністратором локальної мережі."
@@ -1425,9 +1422,6 @@ export default {
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "Цей простір включає базову систему та вибрані програмні шаблони, якщо такі є."
-  ],
-  "This uses existing partitions at the device": [
-    "Для цього використовуються наявні розділи на пристрої"
   ],
   "TiB": [
     "ТіБ"

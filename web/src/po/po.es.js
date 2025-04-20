@@ -153,9 +153,6 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Cualquier partición existente será eliminada y todos los datos en el disco se perderán."
   ],
-  "As a new partition on %1$s (%2$s)": [
-    "Como una partición nueva en %1$s (%2$s)"
-  ],
   "At least one address must be provided for selected mode": [
     "Se debe proporcionar al menos una dirección para el modo seleccionado"
   ],
@@ -222,6 +219,9 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "Antes de comenzar la instalación, debe solucionar los siguientes problemas:"
   ],
+  "Beta": [
+    ""
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -287,6 +287,9 @@ export default {
   ],
   "Collapse the list of planned actions": [
     "Colapsar el listado de acciones planificadas"
+  ],
+  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
+    ""
   ],
   "Configure DASD": [
     "Configurar DASD"
@@ -435,9 +438,6 @@ export default {
   "Delete current content": [
     "Eliminar el contenido actual"
   ],
-  "Delete the volume group and its logical volumes": [
-    "Borra el grupo de volumen y sus volúmenes lógicos"
-  ],
   "Delete volume group": [
     "Borrar grupo del volumen"
   ],
@@ -489,9 +489,6 @@ export default {
   "Download logs": [
     "Descargar bitácoras"
   ],
-  "Drive": [
-    "Unidad"
-  ],
   "During installation, several actions will be performed to setup the layout shown at the table below.": [
     "Durante la instalación, se realizará varias operaciones para configurar la distribución mostrada en la tabla a continuación."
   ],
@@ -503,9 +500,6 @@ export default {
   ],
   "Edit connection %s": [
     "Editar conexión %s"
-  ],
-  "Edit iSCSI Initiator": [
-    "Editar iniciador iSCSI"
   ],
   "Edit user": [
     "Editar usuario"
@@ -560,6 +554,9 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extensions": [
+    ""
   ],
   "F2FS": [
     "F2FS"
@@ -658,6 +655,12 @@ export default {
   "Hostname": [
     "Nombre de hospedaje"
   ],
+  "Hostname could not be updated": [
+    ""
+  ],
+  "Hostname successfully updated": [
+    ""
+  ],
   "I have read and accept the [license] for %s": [
     "He leído y acepto la [license] para %s"
   ],
@@ -699,6 +702,12 @@ export default {
   ],
   "Initiator name": [
     "Nombre del iniciador"
+  ],
+  "Initiator name could not be updated": [
+    ""
+  ],
+  "Initiator name successfully updated": [
+    ""
   ],
   "Install": [
     "Instalar"
@@ -795,6 +804,9 @@ export default {
   ],
   "Limited": [
     "Limitado"
+  ],
+  "Loading": [
+    "Cargando..."
   ],
   "Loading data...": [
     "Cargando los datos..."
@@ -919,9 +931,6 @@ export default {
   "New": [
     "Nuevo"
   ],
-  "New LVM volume group": [
-    "Nuevo grupo de volumen LVM"
-  ],
   "No": [
     "No"
   ],
@@ -948,6 +957,9 @@ export default {
   ],
   "No devices found": [
     "Ningún dispositivo encontrado"
+  ],
+  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
+    ""
   ],
   "No iSCSI targets found.": [
     "No se encontraron objetivos iSCSI."
@@ -1008,9 +1020,6 @@ export default {
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
     "Los dispositivos sin conexión deben activarse antes de ser formateados. Deseleccione o active los dispositivos listados debajo y trate nuevamente"
-  ],
-  "Offload card": [
-    "Descargar tarjeta"
   ],
   "On boot": [
     "En arranque"
@@ -1144,6 +1153,9 @@ export default {
   "Reboot": [
     "Reiniciar"
   ],
+  "Recommended": [
+    ""
+  ],
   "Register": [
     "Registrar"
   ],
@@ -1170,9 +1182,6 @@ export default {
   ],
   "Remove min channel filter": [
     "Eliminar filtro de canal mínimo"
-  ],
-  "Remove the configuration for this device": [
-    "Quita la configuración para este dispositivo"
   ],
   "Repository load failed": [
     "Falló la carga del repositorio"
@@ -1213,15 +1222,6 @@ export default {
   "Select": [
     "Seleccionar"
   ],
-  "Select a device to configure": [
-    "Seleccione un dispositivo para configurar"
-  ],
-  "Select a device to create %s": [
-    "Seleccione un dispositivo para crear %s"
-  ],
-  "Select a device to install the system": [
-    "Seleccione un dispositivo para instalar el sistema"
-  ],
   "Select a disk": [
     "Seleccionar un disco"
   ],
@@ -1254,6 +1254,9 @@ export default {
   ],
   "Select what to do with each partition.": [
     "Seleccione qué hacer con cada partición."
+  ],
+  "Selected disk (cannot be changed)": [
+    ""
   ],
   "Selected patterns": [
     "Seleccione los patrones"
@@ -1367,9 +1370,6 @@ export default {
   "The configured LVM groups will remain at %s": [
     "Los grupos LVM configurados permanecerán en %s"
   ],
-  "The configured partitions will be created as logical volumes": [
-    "Las particiones configuradas serán creadas como volúmenes lógicos"
-  ],
   "The content may be deleted": [
     "El contenido puede ser eliminado"
   ],
@@ -1396,6 +1396,12 @@ export default {
   ],
   "The device will be used by the new system.": [
     "El dispositivo será utilizado por el sistema nuevo."
+  ],
+  "The disk is used for LVM": [
+    ""
+  ],
+  "The disk is used for booting": [
+    ""
   ],
   "The encryption password did not work": [
     "La contraseña de cifrado no funcionó"
@@ -1514,20 +1520,8 @@ export default {
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Esta acción podría destruir cualquier dato almacenado en los dispositivos listados debajo. Confirme que realmente desea continuar."
   ],
-  "This device will contain any partition needed for booting": [
-    "Este dispositivo contendrá cualquier partición necesaria para el arranque"
-  ],
-  "This device will contain the LVM group '%s'": [
-    "Este dispositivo contendrá el grupo '%s' de LVM"
-  ],
-  "This device will contain the LVM group '%s' and any partition needed to boot": [
-    "Este dispositivo contendrá el grupo '%s' de LVM y cualquier partición necesaria para arrancar"
-  ],
-  "This device will contain the configured LVM groups": [
-    "Este dispositivo contendrá los grupos configurados de LVM"
-  ],
-  "This device will contain the configured LVM groups and any partition needed to boot": [
-    "Este dispositivo contendrá los grupos de VLM configurado y cualquier partición necesaria para arrancar"
+  "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
+    ""
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "Este nombre de hospedaje es dinámico y puede cambiar tras un rearranque o actualización de red, como configuró por el administrador de la red local."
@@ -1537,9 +1531,6 @@ export default {
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "Este espacio incluye el sistema base y los patrones de software seleccionados, si los hubiera."
-  ],
-  "This uses existing partitions at the device": [
-    "Esto utiliza particiones existentes en el dispositivo"
   ],
   "TiB": [
     "TiB"
