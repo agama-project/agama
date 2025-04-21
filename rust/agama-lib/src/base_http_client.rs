@@ -49,15 +49,6 @@ pub struct BaseHTTPClient {
     pub base_url: Url,
 }
 
-const API_URL: &str = "http://localhost/api";
-
-impl Default for BaseHTTPClient {
-    /// A `default` client using localhost.
-    fn default() -> Self {
-        BaseHTTPClient::new(API_URL).unwrap()
-    }
-}
-
 impl BaseHTTPClient {
     /// It builds a new client.
     ///
