@@ -93,8 +93,7 @@ mod test {
     use tokio::test; // without this, "error: async functions cannot be used for tests"
 
     fn questions_client(mock_server_url: String) -> HTTPClient {
-        let mut bhc = BaseHTTPClient::default();
-        bhc.base_url = mock_server_url;
+        let bhc = BaseHTTPClient::new(mock_server_url).unwrap();
         HTTPClient { client: bhc }
     }
 

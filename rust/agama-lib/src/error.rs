@@ -37,7 +37,7 @@ pub enum ServiceError {
     DBusProtocol(#[from] zbus::fdo::Error),
     #[error("Unexpected type on D-Bus '{0}'")]
     ZVariant(#[from] zvariant::Error),
-    #[error("Failed to communicate with the HTTP backend '{0}'")]
+    #[error(transparent)]
     HTTPError(#[from] reqwest::Error),
     // it's fine to say only "Error" because the original
     // specific error will be printed too
@@ -73,6 +73,8 @@ pub enum ServiceError {
     // FIXME reroute the error to a better place
     #[error("Profile error: {0}")]
     Profile(#[from] ProfileError),
+    #[error("Invalid URL: {0}")]
+    InvalidURL(#[from] url::ParseError),
 }
 
 #[derive(Error, Debug)]
