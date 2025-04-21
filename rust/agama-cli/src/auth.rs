@@ -78,7 +78,7 @@ pub async fn run(client: BaseHTTPClient, subcommand: AuthCommands) -> anyhow::Re
     match subcommand {
         AuthCommands::Login => login(auth_client, read_password()?).await,
         AuthCommands::Logout => logout(auth_client),
-        AuthCommands::Show => show(),
+        AuthCommands::Show => show(&auth_client.api.base_url),
     }
 }
 
@@ -133,12 +133,16 @@ fn logout(client: AuthHTTPClient) -> anyhow::Result<()> {
 }
 
 /// Shows stored JWT on stdout
-fn show() -> anyhow::Result<()> {
-    // we do not care if jwt() fails or not. If there is something to print, show it otherwise
-    // stay silent
-    if let Some(token) = AuthToken::find() {
-        println!("{}", token.as_str());
+fn show(base_url: &str) -> anyhow::Result<()> {
+    let url = Url::parse(&base_url).unwrap();
+    let hostname = url.host_str().unwrap_or("localhost");
+    if let Ok(file) = AuthTokensFile::read() {
+        if let Some(token) = file.get_token(hostname) {
+            println!("{}", token.as_str());
+            return Ok(());
+        }
     }
 
+    println!("Not authenticated in {}", hostname);
     Ok(())
 }
