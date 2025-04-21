@@ -37,7 +37,7 @@ use crate::{auth::AuthToken, error::ServiceError};
 ///   use agama_lib::error::ServiceError;
 ///
 ///   async fn get_questions() -> Result<Vec<Question>, ServiceError> {
-///     let client = BaseHTTPClient::new("http://localhost/api/");
+///     let client = BaseHTTPClient::new("http://localhost/api/").unwrap();
 ///     client.get("questions").await
 ///   }
 /// ```
