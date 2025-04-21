@@ -440,9 +440,17 @@
         "agama": "product.registrationCode"
       },
       { "key": "reg_server", "support": "planned" },
-      { "key": "reg_server_cert", "support": "planned" },
-      { "key": "reg_server_cert_fingerprint", "support": "planned" },
-      { "key": "reg_server_cert_fingerprint_type", "support": "planned" },
+      { "key": "reg_server_cert", "support": "no" },
+      {
+        "key": "reg_server_cert_fingerprint",
+        "support": "yes",
+        "agama": "security.sslCertificates[].fingerprint"
+      },
+      {
+        "key": "reg_server_cert_fingerprint_type",
+        "support": "yes",
+        "agama": "security.sslCertificates[].algorithm"
+      },
       {
         "key": "addons[]",
         "support": "yes",
