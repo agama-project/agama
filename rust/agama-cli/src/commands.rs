@@ -120,7 +120,7 @@ pub enum Commands {
         ///
         /// halt - halt the installed machine.
         ///
-        /// poweroff - poweroff the installed machine.
+        /// poweroff - power off the installed machine.
         #[clap(default_value = "reboot")]
         method: Option<FinishMethod>,
     },
