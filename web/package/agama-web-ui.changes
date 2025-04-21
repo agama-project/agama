@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Mon Apr 21 12:37:20 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Rework the network page to (gh#agama-project/agama#2247):
+  - Fix several problems with Wi-Fi networks handling.
+  - Improve error reporting when the connection failed.
+  - Use a regular form to connect, instead of the old "drawer"
+    component.
+  - Drop the "disconnect" and "forget" actions by now.
+  - Reduce the amount of requests to the backend.
+
+-------------------------------------------------------------------
 Wed Apr  9 12:38:21 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Fix flickering issue during loading and progress transitions

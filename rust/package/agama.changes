@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr 21 12:46:07 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report and emit changes to the connections states. (gh#agama-project/agama#2247).
+- Do not write wireless security settings when they are not used.
+
+-------------------------------------------------------------------
 Wed Apr  9 09:06:18 UTC 2025 - Martin Vidner <mvidner@suse.com>
 
 - Made `--api URL` work with `agama profile`
