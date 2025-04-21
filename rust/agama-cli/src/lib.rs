@@ -42,7 +42,6 @@ use agama_lib::{
 use auth::run as run_auth_cmd;
 use commands::Commands;
 use config::run as run_config_cmd;
-use inquire::Confirm;
 use logs::run as run_logs_cmd;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
@@ -51,7 +50,6 @@ use std::fs;
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::PathBuf;
 use std::{
-    collections::HashMap,
     process::{ExitCode, Termination},
     thread::sleep,
     time::Duration,
@@ -187,26 +185,6 @@ async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
     Ok(ManagerClient::new(conn).await?)
 }
 
-/// True if use of the remote API is allowed (yes by default when the API is secure, the user is
-/// asked if the API is insecure - e.g. when it uses self-signed certificate)
-async fn allowed_insecure_api(use_insecure: bool, api_url: &Url) -> Result<bool, ServiceError> {
-    // fake client used for remote site detection
-    let ping_client = BaseHTTPClient::new(api_url.clone())?;
-
-    // decide whether access to remote site has to be insecure (self-signed certificate or not)
-    match ping_client.get::<HashMap<String, String>>("/ping").await {
-        // Problem with http remote API reachability
-        Err(ServiceError::HTTPError(_)) => Ok(use_insecure || Confirm::new("There was a problem with the remote API and it is treated as insecure. Do you want to continue?")
-            .with_default(false)
-            .prompt()
-            .unwrap_or(false)),
-        // another error
-        Err(e) => Err(e),
-        // success doesn't bother us here
-        Ok(_) => Ok(false)
-    }
-}
-
 pub fn download_file(url: &str, path: &PathBuf) -> Result<(), ServiceError> {
     let mut file = fs::OpenOptions::new()
         .create(true)
@@ -229,7 +207,7 @@ async fn build_http_client(
 ) -> Result<BaseHTTPClient, ServiceError> {
     let mut client = BaseHTTPClient::new(api_url)?;
 
-    if allowed_insecure_api(insecure, &client.base_url).await? {
+    if insecure {
         client = client.insecure();
     }
 
