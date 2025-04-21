@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Apr 16 10:45:33 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add missing help to finish command (gh#agama-project/agama#2272).
+
+-------------------------------------------------------------------
 Wed Apr 16 05:40:39 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Replace --api option by --host (gh#agama-project/agama#2271).
