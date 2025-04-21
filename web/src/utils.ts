@@ -62,16 +62,20 @@ const isEmpty = (value) => {
     return true;
   }
 
-  if (typeof value === "number" && !Number.isNaN(value)) {
+  if (typeof value === "function") {
     return false;
   }
 
-  if (typeof value === "function") {
+  if (typeof value === "number" && !Number.isNaN(value)) {
     return false;
   }
 
   if (typeof value === "string") {
     return value.trim() === "";
+  }
+
+  if (Array.isArray(value)) {
+    return value.length === 0;
   }
 
   if (isObject(value)) {

@@ -26,7 +26,7 @@ use crate::network::error::NetworkStateError;
 use agama_lib::network::settings::{
     BondSettings, IEEE8021XSettings, NetworkConnection, WirelessSettings,
 };
-use agama_lib::network::types::{BondMode, DeviceState, DeviceType, Status, SSID};
+use agama_lib::network::types::{BondMode, ConnectionState, DeviceState, DeviceType, Status, SSID};
 use agama_lib::openapi::schemas;
 use cidr::IpInet;
 use serde::{Deserialize, Serialize};
@@ -455,6 +455,7 @@ mod tests {
 /// Network state
 #[serde_as]
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct GeneralState {
     pub hostname: String,
     pub connectivity: bool,
@@ -479,7 +480,7 @@ pub struct AccessPoint {
 /// Network device
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Default, Debug, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Device {
     pub name: String,
@@ -491,7 +492,6 @@ pub struct Device {
     // Connection.id
     pub connection: Option<String>,
     pub state: DeviceState,
-    pub state_reason: u8,
 }
 
 /// Represents a known network connection.
@@ -515,6 +515,7 @@ pub struct Connection {
     pub config: ConnectionConfig,
     pub ieee_8021x_config: Option<IEEE8021XConfig>,
     pub autoconnect: bool,
+    pub state: ConnectionState,
 }
 
 impl Connection {
@@ -587,6 +588,7 @@ impl Default for Connection {
             config: Default::default(),
             ieee_8021x_config: Default::default(),
             autoconnect: true,
+            state: Default::default(),
         }
     }
 }
@@ -1783,6 +1785,8 @@ pub enum NetworkChange {
     /// original device name, which is especially useful if the
     /// device gets renamed.
     DeviceUpdated(String, Device),
+    /// A connection state has changed.
+    ConnectionStateChanged { id: String, state: ConnectionState },
 }
 
 #[derive(Default, Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]

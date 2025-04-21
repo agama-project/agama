@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr 21 12:46:07 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report and emit changes to the connections states. (gh#agama-project/agama#2247).
+- Do not write wireless security settings when they are not used.
+
+-------------------------------------------------------------------
 Wed Apr 16 10:45:33 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Add missing help to finish command (gh#agama-project/agama#2272).
