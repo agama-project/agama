@@ -20,20 +20,16 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import {
-  useQueryClient,
-  useMutation,
-  useSuspenseQuery,
-  useSuspenseQueries,
-  useQuery,
-} from "@tanstack/react-query";
+import React, { useCallback } from "react";
+import { useQueryClient, useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import {
   AccessPoint,
   Connection,
+  ConnectionState,
   Device,
   DeviceState,
+  NetworkGeneralState,
   WifiNetwork,
   WifiNetworkStatus,
 } from "~/types/network";
@@ -50,7 +46,7 @@ import {
 } from "~/api/network";
 
 /**
- * Returns a query for retrieving the network configuration
+ * Returns a query for retrieving the general network configuration
  */
 const stateQuery = () => {
   return {
@@ -72,7 +68,7 @@ const devicesQuery = () => ({
 });
 
 /**
- * Returns a query for retrieving data for the given conneciton name
+ * Returns a query for retrieving data for the given connection name
  */
 const connectionQuery = (name: string) => ({
   queryKey: ["network", "connections", name],
@@ -96,13 +92,14 @@ const connectionsQuery = () => ({
 });
 
 /**
- * Returns a query for retrieving the list of known access points
+ * Returns a query for retrieving the list of known access points sortered by
+ * the signal strength.
  */
 const accessPointsQuery = () => ({
   queryKey: ["network", "accessPoints"],
   queryFn: async (): Promise<AccessPoint[]> => {
     const accessPoints = await fetchAccessPoints();
-    return accessPoints.map(AccessPoint.fromApi).sort((a, b) => (a.strength < b.strength ? -1 : 1));
+    return accessPoints.map(AccessPoint.fromApi).sort((a, b) => b.strength - a.strength);
   },
   // FIXME: Infinity vs 1second
   staleTime: 1000,
@@ -117,9 +114,7 @@ const useAddConnectionMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: (newConnection: Connection) =>
-      addConnection(newConnection.toApi())
-        .then(() => applyChanges())
-        .catch((e) => console.log(e)),
+      addConnection(newConnection.toApi()).then(() => applyChanges()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
       queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
@@ -137,9 +132,7 @@ const useConnectionMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: (newConnection: Connection) =>
-      updateConnection(newConnection.toApi())
-        .then(() => applyChanges())
-        .catch((e) => console.log(e)),
+      updateConnection(newConnection.toApi()).then(() => applyChanges()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
       queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
@@ -169,113 +162,119 @@ const useRemoveConnectionMutation = () => {
 };
 
 /**
- * Returns selected Wi-Fi network
- */
-const selectedWiFiNetworkQuery = () => ({
-  // TODO: use right key, once we stop invalidating everything under network
-  // queryKey: ["network", "wifi", "selected"],
-  queryKey: ["wifi", "selected"],
-  queryFn: async () => {
-    return Promise.resolve({ ssid: null, needsAuth: null });
-  },
-  staleTime: Infinity,
-});
-
-const useSelectedWifi = (): { ssid?: string; needsAuth?: boolean; hidden?: boolean } => {
-  const { data } = useQuery(selectedWiFiNetworkQuery());
-  return data || {};
-};
-
-const useSelectedWifiChange = () => {
-  type SelectedWifi = {
-    ssid?: string;
-    hidden?: boolean;
-    needsAuth?: boolean;
-  };
-
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: async (data: SelectedWifi): Promise<SelectedWifi> => Promise.resolve(data),
-    onSuccess: (data: SelectedWifi) => {
-      queryClient.setQueryData(["wifi", "selected"], (prev: SelectedWifi) => ({
-        ssid: prev.ssid,
-        ...data,
-      }));
-    },
-  });
-
-  return mutation;
-};
-
-/**
  * Hook that returns a useEffect to listen for NetworkChanged events
  *
  * When the configuration changes, it invalidates the config query and forces the router to
  * revalidate its data (executing the loaders again).
  */
-const useNetworkConfigChanges = () => {
+const useNetworkChanges = () => {
   const queryClient = useQueryClient();
   const client = useInstallerClient();
-  const changeSelected = useSelectedWifiChange();
+
+  const updateDevices = useCallback(
+    (func: (devices: Device[]) => Device[]) => {
+      const devices: Device[] = queryClient.getQueryData(["network", "devices"]);
+      if (!devices) return;
+
+      const updatedDevices = func(devices);
+      queryClient.setQueryData(["network", "devices"], updatedDevices);
+    },
+    [queryClient],
+  );
+
+  const updateConnectionState = useCallback(
+    (id: string, state: string) => {
+      const connections: Connection[] = queryClient.getQueryData(["network", "connections"]);
+      if (!connections) return;
+
+      const updatedConnections = connections.map((conn) => {
+        if (conn.id === id) {
+          const { id: _, ...nextConnection } = conn;
+          nextConnection.state = state as ConnectionState;
+          return new Connection(id, nextConnection);
+        }
+        return conn;
+      });
+      queryClient.setQueryData(["network", "connections"], updatedConnections);
+    },
+    [queryClient],
+  );
 
   React.useEffect(() => {
     if (!client) return;
 
     return client.onEvent((event) => {
       if (event.type === "NetworkChange") {
-        if (event.deviceRemoved || event.deviceAdded) {
-          queryClient.invalidateQueries({ queryKey: ["network"] });
+        if (event.deviceAdded) {
+          const newDevice = Device.fromApi(event.deviceAdded);
+          updateDevices((devices) => [...devices, newDevice]);
         }
 
         if (event.deviceUpdated) {
-          const [name, data] = event.deviceUpdated;
-          const devices: Device[] = queryClient.getQueryData(["network", "devices"]);
-          if (!devices) return;
+          const [name, apiDevice] = event.deviceUpdated;
+          const device = Device.fromApi(apiDevice);
+          updateDevices((devices) =>
+            devices.map((d) => {
+              if (d.name === name) {
+                return device;
+              }
 
-          if (name !== data.name) {
-            return queryClient.invalidateQueries({ queryKey: ["network"] });
-          }
+              return d;
+            }),
+          );
+        }
 
-          const current_device = devices.find((d) => d.name === name);
-          if (
-            [DeviceState.DISCONNECTED, DeviceState.ACTIVATED, DeviceState.UNAVAILABLE].includes(
-              data.state,
-            )
-          ) {
-            if (current_device.state !== data.state) {
-              queryClient.invalidateQueries({ queryKey: ["network"] });
-              return changeSelected.mutate({ needsAuth: false });
-            }
-          }
-          if ([DeviceState.NEEDAUTH, DeviceState.FAILED].includes(data.state)) {
-            return changeSelected.mutate({ needsAuth: true });
-          }
+        if (event.deviceRemoved) {
+          updateDevices((devices) => devices.filter((d) => d !== event.deviceRemoved));
+        }
+
+        if (event.connectionStateChanged) {
+          const { id, state } = event.connectionStateChanged;
+          updateConnectionState(id, state);
         }
       }
     });
-  }, [client, queryClient, changeSelected]);
+  }, [client, queryClient, updateDevices, updateConnectionState]);
 };
 
-const useConnection = (name) => {
+const useConnection = (name: string) => {
   const { data } = useSuspenseQuery(connectionQuery(name));
   return data;
 };
 
-const useNetwork = () => {
-  const [{ data: state }, { data: devices }, { data: connections }, { data: accessPoints }] =
-    useSuspenseQueries({
-      queries: [stateQuery(), devicesQuery(), connectionsQuery(), accessPointsQuery()],
-    });
-
-  return { connections, settings: state, devices, accessPoints };
+/**
+ * Returns the general state of the network.
+ */
+const useNetworkState = (): NetworkGeneralState => {
+  const { data } = useSuspenseQuery(stateQuery());
+  return data;
 };
 
+/**
+ * Returns the network devices.
+ */
+const useNetworkDevices = (): Device[] => {
+  const { data } = useSuspenseQuery(devicesQuery());
+  return data;
+};
+
+/**
+ * Returns the network connections.
+ */
+const useConnections = (): Connection[] => {
+  const { data } = useSuspenseQuery(connectionsQuery());
+  return data;
+};
+
+/**
+ * Return the list of Wi-Fi networks.
+ */
 const useWifiNetworks = () => {
   const knownSsids: string[] = [];
-  const [{ data: devices }, { data: connections }, { data: accessPoints }] = useSuspenseQueries({
-    queries: [devicesQuery(), connectionsQuery(), accessPointsQuery()],
-  });
+
+  const devices = useNetworkDevices();
+  const connections = useConnections();
+  const { data: accessPoints } = useSuspenseQuery(accessPointsQuery());
 
   return accessPoints
     .filter((ap: AccessPoint) => {
@@ -290,12 +289,14 @@ const useWifiNetworks = () => {
     .sort((a: AccessPoint, b: AccessPoint) => b.strength - a.strength)
     .map((ap: AccessPoint): WifiNetwork => {
       const settings = connections.find((c: Connection) => c.wireless?.ssid === ap.ssid);
-      const device = devices.find((d: Device) => d.connection === ap.ssid);
-      const status = device
-        ? WifiNetworkStatus.CONNECTED
-        : settings
-          ? WifiNetworkStatus.CONFIGURED
-          : WifiNetworkStatus.NOT_CONFIGURED;
+      const device = devices.find((d: Device) => d.connection === settings?.id);
+
+      let status: WifiNetworkStatus;
+      if (device?.state === DeviceState.CONNECTED) {
+        status = WifiNetworkStatus.CONNECTED;
+      } else {
+        status = settings ? WifiNetworkStatus.CONFIGURED : WifiNetworkStatus.NOT_CONFIGURED;
+      }
 
       return {
         ...ap,
@@ -312,14 +313,13 @@ export {
   connectionQuery,
   connectionsQuery,
   accessPointsQuery,
-  selectedWiFiNetworkQuery,
   useAddConnectionMutation,
+  useConnections,
   useConnectionMutation,
   useRemoveConnectionMutation,
   useConnection,
-  useNetwork,
-  useSelectedWifi,
-  useSelectedWifiChange,
-  useNetworkConfigChanges,
+  useNetworkDevices,
+  useNetworkState,
+  useNetworkChanges,
   useWifiNetworks,
 };

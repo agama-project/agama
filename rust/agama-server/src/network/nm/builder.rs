@@ -35,6 +35,8 @@ use anyhow::Context;
 use cidr::IpInet;
 use std::{collections::HashMap, net::IpAddr, str::FromStr};
 
+use super::model::NmDeviceState;
+
 /// Builder to create a [Device] from its corresponding NetworkManager D-Bus representation.
 pub struct DeviceFromProxyBuilder<'a> {
     connection: zbus::Connection,
@@ -57,21 +59,14 @@ impl<'a> DeviceFromProxyBuilder<'a> {
             .try_into()
             .context("Unsupported device type: {device_type}")?;
 
-        let state = self.proxy.state().await? as u8;
-        let (_, state_reason) = self.proxy.state_reason().await?;
-        let state: DeviceState = state
-            .try_into()
-            .context("Unsupported device state: {state}")?;
-
         let mut device = Device {
             name: self.proxy.interface().await?,
+            state: self.device_state_from_proxy().await?,
             type_,
-            state,
-            state_reason: state_reason as u8,
             ..Default::default()
         };
 
-        if state == DeviceState::Activated {
+        if device.state == DeviceState::Connected {
             device.ip_config = self.build_ip_config().await?;
         }
 
@@ -248,5 +243,45 @@ impl<'a> DeviceFromProxyBuilder<'a> {
         let id: &str = connection.get("id")?.downcast_ref().ok()?;
 
         Some(id.to_string())
+    }
+
+    /// Map the combination of state + reason to the Agama set of states.
+    ///
+    /// See https://www.networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMDeviceState
+    /// and https://www.networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMDeviceStateReason
+    /// for further information.
+    async fn device_state_from_proxy(&self) -> Result<DeviceState, ServiceError> {
+        const USER_REQUESTED: u32 = 39;
+
+        let (state, reason) = self.proxy.state_reason().await?;
+        let state: NmDeviceState = (state as u8)
+            .try_into()
+            .context("Unsupported device state: {state}")?;
+
+        let device_state = match state {
+            NmDeviceState::Unknown => DeviceState::Unknown,
+            NmDeviceState::Unmanaged => DeviceState::Unmanaged,
+            NmDeviceState::Unavailable => DeviceState::Unavailable,
+            NmDeviceState::Prepare
+            | NmDeviceState::IpConfig
+            | NmDeviceState::NeedAuth
+            | NmDeviceState::Config
+            | NmDeviceState::Secondaries
+            | NmDeviceState::IpCheck => DeviceState::Connecting,
+            NmDeviceState::Activated => DeviceState::Connected,
+            NmDeviceState::Deactivating => DeviceState::Disconnecting,
+            NmDeviceState::Disconnected => {
+                // If the connection failed, NetworkManager sets the state to "disconnected".
+                // Let's consider it a problem unless it was requested by the user.
+                if reason == USER_REQUESTED {
+                    DeviceState::Disconnected
+                } else {
+                    DeviceState::Failed
+                }
+            }
+            NmDeviceState::Failed => DeviceState::Failed,
+        };
+
+        Ok(device_state)
     }
 }

@@ -23,6 +23,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  ActionGroup,
   Alert,
   Content,
   Form,
@@ -31,11 +32,8 @@ import {
   FormSelect,
   FormSelectOption,
   FormSelectProps,
-  Grid,
-  GridItem,
   HelperText,
   HelperTextItem,
-  Stack,
   TextInput,
 } from "@patternfly/react-core";
 import { Page } from "~/components/core";
@@ -73,7 +71,8 @@ export default function IpSettingsForm() {
     return isSetAsInvalid(field) ? "error" : "default";
   };
 
-  const cleanAddresses = (addrs: IPAddress[]) => addrs.filter((addr) => addr.address !== "");
+  const cleanAddresses = (addresses: IPAddress[]) =>
+    addresses.filter((address) => address.address !== "");
 
   const cleanError = (field: string) => {
     if (isSetAsInvalid(field)) {
@@ -161,84 +160,64 @@ export default function IpSettingsForm() {
         )}
 
         <Form id="editConnectionForm" onSubmit={onSubmitForm}>
-          <Grid hasGutter>
-            <GridItem sm={12} xl={6} rowSpan={2}>
-              <Page.Section>
-                <Stack hasGutter>
-                  <FormGroup fieldId="method" label={_("Mode")} isRequired>
-                    <FormSelect
-                      id="method"
-                      name="method"
-                      // TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
-                      aria-label={_("Mode")}
-                      value={method}
-                      label={_("Mode")}
-                      onChange={onMethodChange}
-                      validated={validatedAttrValue("method")}
-                    >
-                      <FormSelectOption
-                        key="auto"
-                        value={ConnectionMethod.AUTO}
-                        label={_("Automatic (DHCP)")}
-                      />
-                      {/* TRANSLATORS: manual network configuration mode with a static IP address */}
-                      <FormSelectOption
-                        key="manual"
-                        value={ConnectionMethod.MANUAL}
-                        label={_("Manual")}
-                      />
-                    </FormSelect>
-                    {renderError("method")}
-                  </FormGroup>
-                  <FormGroup fieldId="gateway" label="Gateway">
-                    <TextInput
-                      id="gateway"
-                      name="gateway"
-                      aria-label={_("Gateway")}
-                      value={gateway}
-                      // TRANSLATORS: network gateway configuration
-                      label={_("Gateway")}
-                      isDisabled={isGatewayDisabled}
-                      onChange={(_, value) => setGateway(value)}
-                    />
-                    {isGatewayDisabled && (
-                      <FormHelperText>
-                        <HelperText>
-                          <HelperTextItem variant="indeterminate">
-                            {/** FIXME: check if that afirmation is true */}
-                            {_("Gateway can be defined only in 'Manual' mode")}
-                          </HelperTextItem>
-                        </HelperText>
-                      </FormHelperText>
-                    )}
-                  </FormGroup>
-                </Stack>
-              </Page.Section>
-            </GridItem>
+          <FormGroup fieldId="method" label={_("Mode")} isStack>
+            <FormSelect
+              id="method"
+              name="method"
+              // TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
+              aria-label={_("Mode")}
+              value={method}
+              label={_("Mode")}
+              onChange={onMethodChange}
+              validated={validatedAttrValue("method")}
+            >
+              <FormSelectOption
+                key="auto"
+                value={ConnectionMethod.AUTO}
+                label={_("Automatic (DHCP)")}
+              />
+              {/* TRANSLATORS: manual network configuration mode with a static IP address */}
+              <FormSelectOption key="manual" value={ConnectionMethod.MANUAL} label={_("Manual")} />
+            </FormSelect>
+            {renderError("method")}
+          </FormGroup>
+          <FormGroup fieldId="gateway" label="Gateway">
+            <TextInput
+              id="gateway"
+              name="gateway"
+              aria-label={_("Gateway")}
+              value={gateway}
+              // TRANSLATORS: network gateway configuration
+              label={_("Gateway")}
+              isDisabled={isGatewayDisabled}
+              onChange={(_, value) => setGateway(value)}
+            />
+            {isGatewayDisabled && (
+              <FormHelperText>
+                <HelperText>
+                  <HelperTextItem variant="indeterminate">
+                    {/** FIXME: check if that affirmation is true */}
+                    {_("Gateway can be defined only in 'Manual' mode")}
+                  </HelperTextItem>
+                </HelperText>
+              </FormHelperText>
+            )}
+          </FormGroup>
 
-            <GridItem sm={12} xl={6}>
-              <Page.Section>
-                <AddressesDataList
-                  addresses={addresses}
-                  updateAddresses={setAddresses}
-                  allowEmpty={usingDHCP(method)}
-                />
-              </Page.Section>
-            </GridItem>
+          <AddressesDataList
+            addresses={addresses}
+            updateAddresses={setAddresses}
+            allowEmpty={usingDHCP(method)}
+          />
 
-            <GridItem sm={12} xl={6}>
-              <Page.Section>
-                <DnsDataList servers={nameservers} updateDnsServers={setNameservers} />
-              </Page.Section>
-            </GridItem>
-          </Grid>
+          <DnsDataList servers={nameservers} updateDnsServers={setNameservers} />
+
+          <ActionGroup>
+            <Page.Submit form="editConnectionForm" />
+            <Page.Back>{_("Cancel")}</Page.Back>
+          </ActionGroup>
         </Form>
       </Page.Content>
-
-      <Page.Actions>
-        <Page.Submit form="editConnectionForm" />
-        <Page.Cancel />
-      </Page.Actions>
     </Page>
   );
 }

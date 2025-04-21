@@ -30,7 +30,8 @@ const L10N = {
 const NETWORK = {
   root: "/network",
   editConnection: "/network/connections/:id/edit",
-  wifis: "/network/wifis",
+  wifiNetwork: "/network/wifi_networks/:ssid",
+  wiredConnection: "/network/wired_connection/:id",
 };
 
 const PRODUCT = {

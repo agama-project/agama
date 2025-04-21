@@ -70,37 +70,28 @@ enum ConnectionType {
   UNKNOWN = "unknown",
 }
 
-/**
- * Enum for the active connection state values
- *
- * @readonly
- * @enum { number }
- * https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMActiveConnectionState
- */
-enum ConnectionState {
-  UNKNOWN = 0,
-  ACTIVATING = 1,
-  ACTIVATED = 2,
-  DEACTIVATING = 3,
-  DEACTIVATED = 4,
-}
-
 enum DeviceState {
   UNKNOWN = "unknown",
   UNMANAGED = "unmanaged",
   UNAVAILABLE = "unavailable",
+  CONNECTING = "connecting",
+  CONNECTED = "connected",
+  DISCONNECTING = "disconnecting",
   DISCONNECTED = "disconnected",
-  CONFIG = "config",
-  IPCHECK = "ipCheck",
-  NEEDAUTH = "needAuth",
-  ACTIVATED = "activated",
-  DEACTIVATING = "deactivating",
   FAILED = "failed",
 }
 
 enum ConnectionStatus {
   UP = "up",
   DOWN = "down",
+}
+
+// Current state of the connection.
+enum ConnectionState {
+  activating = "activating",
+  activated = "activated",
+  deactivating = "deactivating",
+  deactivated = "deactivated",
 }
 
 enum ConnectionMethod {
@@ -240,6 +231,7 @@ type APIConnection = {
   method6: string;
   wireless?: Wireless;
   status: ConnectionStatus;
+  state: ConnectionState;
 };
 
 type WirelessOptions = {
@@ -275,11 +267,13 @@ type ConnectionOptions = {
   method4?: ConnectionMethod;
   method6?: ConnectionMethod;
   wireless?: Wireless;
+  state?: ConnectionState;
 };
 
 class Connection {
   id: string;
   status: ConnectionStatus = ConnectionStatus.UP;
+  state: ConnectionState;
   iface: string;
   addresses: IPAddress[] = [];
   nameservers: string[] = [];
@@ -348,8 +342,8 @@ type WifiNetwork = AccessPoint & {
 type NetworkGeneralState = {
   connectivity: boolean;
   hostname: string;
-  networking_enabled: boolean;
-  wireless_enabled: boolean;
+  networkingEnabled: boolean;
+  wirelessEnabled: boolean;
 };
 
 export {
