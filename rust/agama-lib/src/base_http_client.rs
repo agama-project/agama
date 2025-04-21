@@ -18,8 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use reqwest::{header, Response};
+use reqwest::{header, IntoUrl, Response};
 use serde::{de::DeserializeOwned, Serialize};
+use url::Url;
 
 use crate::{auth::AuthToken, error::ServiceError};
 
@@ -36,8 +37,8 @@ use crate::{auth::AuthToken, error::ServiceError};
 ///   use agama_lib::error::ServiceError;
 ///
 ///   async fn get_questions() -> Result<Vec<Question>, ServiceError> {
-///     let client = BaseHTTPClient::default();
-///     client.get("/questions").await
+///     let client = BaseHTTPClient::new("http://localhost/api/");
+///     client.get("questions").await
 ///   }
 /// ```
 
@@ -45,25 +46,39 @@ use crate::{auth::AuthToken, error::ServiceError};
 pub struct BaseHTTPClient {
     pub client: reqwest::Client,
     insecure: bool,
-    pub base_url: String,
+    pub base_url: Url,
 }
 
 const API_URL: &str = "http://localhost/api";
 
 impl Default for BaseHTTPClient {
-    /// A `default` client
-    /// - is NOT authenticated (maybe you want to call `new` instead)
-    /// - uses `localhost`
+    /// A `default` client using localhost.
     fn default() -> Self {
-        Self {
-            client: reqwest::Client::new(),
-            insecure: false,
-            base_url: API_URL.to_owned(),
-        }
+        BaseHTTPClient::new(API_URL).unwrap()
     }
 }
 
 impl BaseHTTPClient {
+    /// It builds a new client.
+    ///
+    /// * `base_url`: base URL of the API to connect to. A trailing "/" is relevant if the URL
+    ///   has a path.
+    pub fn new<T: IntoUrl>(base_url: T) -> Result<Self, ServiceError> {
+        let mut url = base_url.into_url()?;
+
+        // A trailing slash is significant. Let's make sure that it is there.
+        // See https://docs.rs/url/2.5.4/url/struct.Url.html#method.join.
+        if !url.path().ends_with('/') {
+            url.set_path(&format!("{}/", &url.path()));
+        }
+
+        Ok(Self {
+            client: reqwest::Client::new(),
+            insecure: false,
+            base_url: url,
+        })
+    }
+
     /// Allows the client to connect to remote API with insecure certificate (e.g. self-signed)
     pub fn insecure(self) -> Self {
         Self {
@@ -111,8 +126,9 @@ impl BaseHTTPClient {
         Ok(client)
     }
 
-    fn url(&self, path: &str) -> String {
-        self.base_url.clone() + path
+    fn url(&self, path: &str) -> Result<Url, url::ParseError> {
+        let relative_path = path.trim_start_matches('/');
+        self.base_url.join(relative_path)
     }
 
     /// Simple wrapper around [`Response`] to get object from response.
@@ -126,7 +142,7 @@ impl BaseHTTPClient {
     {
         let response: Result<_, ServiceError> = self
             .client
-            .get(self.url(path))
+            .get(self.url(path)?)
             .send()
             .await
             .map_err(|e| e.into());
@@ -220,7 +236,7 @@ impl BaseHTTPClient {
     pub async fn delete_void(&self, path: &str) -> Result<(), ServiceError> {
         let response: Result<_, ServiceError> = self
             .client
-            .delete(self.url(path))
+            .delete(self.url(path)?)
             .send()
             .await
             .map_err(|e| e.into());
@@ -232,7 +248,7 @@ impl BaseHTTPClient {
     pub async fn get_raw(&self, path: &str) -> Result<Response, ServiceError> {
         let raw: Result<_, ServiceError> = self
             .client
-            .get(self.url(path))
+            .get(self.url(path)?)
             .send()
             .await
             .map_err(|e| e.into());
@@ -263,7 +279,7 @@ impl BaseHTTPClient {
         object: &impl Serialize,
     ) -> Result<Response, ServiceError> {
         self.client
-            .request(method, self.url(path))
+            .request(method, self.url(path)?)
             .json(object)
             .send()
             .await

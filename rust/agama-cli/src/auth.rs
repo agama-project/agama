@@ -115,16 +115,14 @@ async fn login(client: AuthHTTPClient, password: String) -> anyhow::Result<()> {
     let res = client.authenticate(password).await?;
     let token = AuthToken::new(&res);
     let mut hosts_config = AuthTokensFile::read().unwrap_or_default();
-    let url = Url::parse(&client.api.base_url).unwrap();
-    let hostname = url.host_str().unwrap_or("localhost");
+    let hostname = client.api.base_url.host_str().unwrap_or("localhost");
     hosts_config.update_token(hostname, &token);
     Ok(hosts_config.write()?)
 }
 
 /// Releases JWT
 fn logout(client: AuthHTTPClient) -> anyhow::Result<()> {
-    let url = Url::parse(&client.api.base_url).unwrap();
-    let hostname = url.host_str().unwrap_or("localhost");
+    let hostname = client.api.base_url.host_str().unwrap_or("localhost");
     if let Ok(mut file) = AuthTokensFile::read() {
         file.remove_host(hostname);
         file.write()?;
@@ -133,8 +131,7 @@ fn logout(client: AuthHTTPClient) -> anyhow::Result<()> {
 }
 
 /// Shows stored JWT on stdout
-fn show(base_url: &str) -> anyhow::Result<()> {
-    let url = Url::parse(&base_url).unwrap();
+fn show(url: &Url) -> anyhow::Result<()> {
     let hostname = url.host_str().unwrap_or("localhost");
     if let Ok(file) = AuthTokensFile::read() {
         if let Some(token) = file.get_token(hostname) {

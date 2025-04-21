@@ -164,12 +164,7 @@ async fn validate_client(
     client: &BaseHTTPClient,
     url_or_path: CliInput,
 ) -> anyhow::Result<ValidationOutcome> {
-    let mut url = Url::parse(&client.base_url)?;
-    // unwrap OK: only fails for cannot_be_a_base URLs like data: and mailto:
-    url.path_segments_mut()
-        .unwrap()
-        .push("profile")
-        .push("validate");
+    let mut url = client.base_url.join("profile/validate").unwrap();
     url_or_path.add_query(&mut url)?;
 
     let body = url_or_path.body_for_web()?;
@@ -202,12 +197,7 @@ async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
 /// Evaluate a Jsonnet profile, by doing a HTTP client request.
 /// Return well-formed Agama JSON on success.
 async fn evaluate_client(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<String> {
-    let mut url = Url::parse(&client.base_url)?;
-    // unwrap OK: only fails for cannot_be_a_base URLs like data: and mailto:
-    url.path_segments_mut()
-        .unwrap()
-        .push("profile")
-        .push("evaluate");
+    let mut url = client.base_url.join("profile/evaluate").unwrap();
     url_or_path.add_query(&mut url)?;
 
     let body = url_or_path.body_for_web()?;

@@ -73,6 +73,8 @@ pub enum ServiceError {
     // FIXME reroute the error to a better place
     #[error("Profile error: {0}")]
     Profile(#[from] ProfileError),
+    #[error("Invalid URL: {0}")]
+    InvalidURL(#[from] url::ParseError),
 }
 
 #[derive(Error, Debug)]

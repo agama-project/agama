@@ -56,8 +56,7 @@ mod test {
     use tokio::test; // without this, "error: async functions cannot be used for tests"
 
     fn storage_store(mock_server_url: String) -> StorageStore {
-        let mut bhc = BaseHTTPClient::default();
-        bhc.base_url = mock_server_url;
+        let bhc = BaseHTTPClient::new(mock_server_url).unwrap();
         let client = StorageHTTPClient::new(bhc);
         StorageStore {
             storage_client: client,
