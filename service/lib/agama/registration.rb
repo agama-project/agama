@@ -200,6 +200,20 @@ module Agama
       end
     end
 
+    # Get the available addons for the specified base product.
+    #
+    # @note The result is bound to the registration code used for the base product, the result
+    # might be different for different codes. E.g. the Alpha/Beta extensions might or might not
+    # be included in the list.
+    def available_addons
+      return @available_addons if @available_addons
+
+      @available_addons = SUSE::Connect::YaST.show_product(base_target_product,
+        connect_params).extensions
+      @logger.info "Available addons: #{available_addons.inspect}"
+      @available_addons
+    end
+
     # Callbacks to be called when registration changes (e.g., a different product is selected).
     def on_change(&block)
       @on_change_callbacks ||= []
@@ -328,20 +342,6 @@ module Agama
       data = Yast::Pkg.SourceGeneralData(repo)
       data["SrcId"] = repo
       data
-    end
-
-    # Get the available addons for the specified base product.
-    #
-    # @note The result is bound to the registration code used for the base product, the result
-    # might be different for different codes. E.g. the Alpha/Beta extensions might or might not
-    # be included in the list.
-    def available_addons
-      return @available_addons if @available_addons
-
-      @available_addons = SUSE::Connect::YaST.show_product(base_target_product,
-        connect_params).extensions
-      @logger.info "Available addons: #{available_addons.inspect}"
-      @available_addons
     end
 
     # Find the version for the specified addon, if none if multiple addons with the same name

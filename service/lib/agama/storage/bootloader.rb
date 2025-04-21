@@ -34,6 +34,8 @@ module Agama
         # bootloader timeout. Only positive numbers are supported and stop_on_boot_menu has
         # precedence
         attr_accessor :timeout
+        # bootloader extra kernel parameters beside ones that is proposed.
+        attr_accessor :extra_kernel_params
         # as both previous keys are conflicting, remember which one to set or none. It can be empty
         # and it means export nothing
         attr_accessor :keys_to_export
@@ -42,6 +44,7 @@ module Agama
           @keys_to_export = []
           @stop_on_boot_menu = false # false means use proposal, which has timeout
           @timeout = 10 # just some reasonable timeout, we do not send it anywhere
+          @extra_kernel_params = ""
         end
 
         def to_json(*_args)
@@ -50,6 +53,10 @@ module Agama
           # our json use camel case
           result[:stopOnBootMenu] = stop_on_boot_menu if keys_to_export.include?(:stop_on_boot_menu)
           result[:timeout] = timeout if keys_to_export.include?(:timeout)
+          if keys_to_export.include?(:extra_kernel_params)
+            result[:extraKernelParams] =
+              @extra_kernel_params
+          end
 
           result.to_json
         end
@@ -58,11 +65,22 @@ module Agama
           hsh = JSON.parse(serialized_config, symbolize_names: true)
           if hsh.include?(:timeout)
             self.timeout = hsh[:timeout]
-            self.keys_to_export = [:timeout]
+            keys_to_export.delete(:stop_on_boot_menu)
+            keys_to_export.push(:timeout) unless keys_to_export.include?(:timeout)
+
           end
           if hsh.include?(:stopOnBootMenu)
             self.stop_on_boot_menu = hsh[:stopOnBootMenu]
-            self.keys_to_export = [:stop_on_boot_menu]
+            keys_to_export.delete(:timeout)
+            unless keys_to_export.include?(:stop_on_boot_menu)
+              keys_to_export.push(:stop_on_boot_menu)
+            end
+          end
+          if hsh.include?(:extraKernelParams)
+            self.extra_kernel_params = hsh[:extraKernelParams]
+            unless keys_to_export.include?(:extra_kernel_params)
+              keys_to_export.push(:extra_kernel_params)
+            end
           end
 
           self
@@ -80,9 +98,24 @@ module Agama
         bootloader = ::Bootloader::BootloaderFactory.current
         write_stop_on_boot(bootloader) if @config.keys_to_export.include?(:stop_on_boot_menu)
         write_timeout(bootloader) if @config.keys_to_export.include?(:timeout)
+        if @config.keys_to_export.include?(:extra_kernel_params)
+          write_extra_kernel_params(bootloader)
+        end
+
+        bootloader
       end
 
     private
+
+      def write_extra_kernel_params(bootloader)
+        # no systemd boot support for now
+        return unless bootloader.respond_to?(:grub_default)
+
+        new_bl = bootloader.class.new
+        new_bl.grub_default.kernel_params.replace(@config.extra_kernel_params)
+        # and now just merge extra kernel params with all merge logic
+        bootloader.merge(new_bl)
+      end
 
       def write_timeout(bootloader)
         # grub2 based bootloaders

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,45 +21,75 @@
  */
 
 import React, { useState } from "react";
-import { Form, FormGroup, TextInput } from "@patternfly/react-core";
+import { Alert, Button, Form, FormGroup, TextInput, Split, Spinner } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
-import { Popup } from "~/components/core";
 
-export default function InitiatorForm({ initiator, onSubmit: onSubmitProp, onCancel }) {
+export default function InitiatorForm({ initiator, onSubmit: onSubmitProp }) {
   const [data, setData] = useState({ ...initiator });
+  const [success, setSuccess] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [updating, setUpdating] = useState(false);
 
   const onNameChange = (_, name) => setData({ ...data, name });
 
+  const submit = async () => {
+    setUpdating(true);
+    setSuccess(null);
+    setError(null);
+    onSubmitProp(data)
+      .then(() => {
+        setSuccess(_("Initiator name successfully updated"));
+        setUpdating(false);
+      })
+      .catch(() => {
+        setError(_("Initiator name could not be updated"));
+        setUpdating(false);
+      });
+  };
+
   const onSubmit = async (event) => {
     event.preventDefault();
-    onSubmitProp(data);
+
+    if (data.name !== "") return submit();
+
+    setSuccess(null);
+    setError(_("The initiator name cannot be blank"));
   };
 
   const id = "editIscsiInitiator";
-  const isDisabled = data.name === "";
+
+  if (updating)
+    return (
+      <Alert
+        isPlain
+        customIcon={<Spinner size="md" aria-hidden />}
+        title={_("Updating the initiator name")}
+      />
+    );
 
   return (
-    <Popup isOpen title={_("Edit iSCSI Initiator")}>
-      <Form id={id} onSubmit={onSubmit}>
-        <FormGroup fieldId="initiatorName" label="Name" isRequired>
+    <Form id={id} onSubmit={onSubmit}>
+      {success && <Alert variant="success" isInline title={success} />}
+      {error && <Alert variant="warning" isInline title={error} />}
+      <FormGroup label={_("Name")}>
+        <Split hasGutter>
           <TextInput
             id="initiatorName"
             name="name"
+            size={50}
             // TRANSLATORS: iSCSI initiator name
             aria-label={_("Initiator name")}
             value={data.name || ""}
             // TRANSLATORS: input field for the iSCSI initiator name
             label={_("Name")}
-            isRequired
             onChange={onNameChange}
           />
-        </FormGroup>
-      </Form>
-      <Popup.Actions>
-        <Popup.Confirm form={id} type="submit" isDisabled={isDisabled} />
-        <Popup.Cancel onClick={onCancel} />
-      </Popup.Actions>
-    </Popup>
+          <Button type="submit" variant="secondary">
+            {_("Change")}
+          </Button>
+        </Split>
+      </FormGroup>
+    </Form>
   );
 }

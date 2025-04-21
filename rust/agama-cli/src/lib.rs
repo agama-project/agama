@@ -58,10 +58,11 @@ use url::Url;
 /// Agama's CLI global options
 #[derive(Args)]
 pub struct GlobalOpts {
-    #[clap(long, default_value = "http://localhost/api")]
-    /// URI pointing to Agama's remote API. If not provided, default https://localhost/api is
-    /// used
-    pub api: String,
+    #[clap(long, default_value = "http://localhost")]
+    /// URI pointing to Agama's remote host.
+    ///
+    /// Examples: https://my-server.lan my-server.local localhost:10443
+    pub host: String,
 
     #[clap(long, default_value = "false")]
     /// Whether to accept invalid (self-signed, ...) certificates or not
@@ -248,10 +249,24 @@ async fn build_http_client(
     }
 }
 
+/// Build the API url from the host.
+///
+/// * `host`: ip or host name. The protocol is optional, using https if omitted (e.g, "myserver",
+/// "http://myserver", "192.168.100.101").
+fn api_url(host: String) -> String {
+    let sanitized_host = host.trim_end_matches('/').to_string();
+
+    if sanitized_host.starts_with("http://") || sanitized_host.starts_with("https://") {
+        format!("{}/api", sanitized_host)
+    } else {
+        format!("https://{}/api", sanitized_host)
+    }
+}
+
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
     // somehow check whether we need to ask user for self-signed certificate acceptance
 
-    let api_url = cli.opts.api.trim_end_matches('/').to_string();
+    let api_url = api_url(cli.opts.host);
 
     match cli.command {
         Commands::Config(subcommand) => {

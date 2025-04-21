@@ -20,23 +20,12 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useRef, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  MenuToggle,
-  Split,
-  Flex,
-  Label,
-  DrilldownMenu,
-  MenuContent,
-  Divider,
-  MenuContainer,
-  Menu,
-  MenuList,
-  MenuItem,
-} from "@patternfly/react-core";
+import { Split, Flex, Label, Divider } from "@patternfly/react-core";
+import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import MenuDeviceDescription from "./MenuDeviceDescription";
-import { useAvailableDevices } from "~/queries/storage";
+import { useAvailableDevices, useLongestDiskTitle } from "~/queries/storage";
 import { useConfigModel, useModel } from "~/queries/storage/config-model";
 import { deviceLabel } from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -60,7 +49,7 @@ const DisksDrillDownMenuItem = ({
   drivesCount,
   devices,
   onDeviceClick,
-}: DisksDrillDownMenuItemProps) => {
+}: DisksDrillDownMenuItemProps): React.ReactNode => {
   const isDisabled = !devices.length;
 
   const disabledDescription = _("Already using all available disks");
@@ -79,41 +68,31 @@ const DisksDrillDownMenuItem = ({
     : _("Select a disk to define partitions");
 
   return (
-    <MenuItem
-      itemId="group:disks-menu"
-      direction="down"
+    <MenuButtonItem
+      aria-label={_("Add device menu")}
       isDisabled={isDisabled}
       description={isDisabled ? disabledDescription : enabledDescription}
-      drilldownMenu={
-        <DrilldownMenu id="disks-menu">
-          <MenuItem itemId="group:disks-menu-back" direction="up">
-            {_("Back")}
-          </MenuItem>
-          <Divider />
-          {devices.map((device) => (
-            <MenuItem
-              key={device.sid}
-              itemId={device.sid}
-              description={<MenuDeviceDescription device={device} />}
-              onClick={() => onDeviceClick(device.name)}
-            >
-              <Split hasGutter>
-                {deviceLabel(device)}
-                <Flex columnGap={{ default: "columnGapXs" }}>
-                  {device.systems.map((s, i) => (
-                    <Label key={i} isCompact>
-                      {s}
-                    </Label>
-                  ))}
-                </Flex>
-              </Split>
-            </MenuItem>
-          ))}
-        </DrilldownMenu>
-      }
+      items={devices.map((device) => (
+        <MenuButtonItem
+          key={device.sid}
+          description={<MenuDeviceDescription device={device} />}
+          onClick={() => onDeviceClick(device.name)}
+        >
+          <Split hasGutter>
+            {deviceLabel(device, true)}
+            <Flex columnGap={{ default: "columnGapXs" }}>
+              {device.systems.map((s, i) => (
+                <Label key={i} isCompact>
+                  {s}
+                </Label>
+              ))}
+            </Flex>
+          </Split>
+        </MenuButtonItem>
+      ))}
     >
       {title}
-    </MenuItem>
+    </MenuButtonItem>
   );
 };
 
@@ -127,118 +106,45 @@ const DisksDrillDownMenuItem = ({
  * share the internal logic with other potential menus that could benefit from a similar
  * approach.
  */
-export default function ConfigureDeviceMenu() {
+export default function ConfigureDeviceMenu(): React.ReactNode {
   const navigate = useNavigate();
   const model = useConfigModel({ suspense: true });
   const { addDrive } = useModel();
   const allDevices = useAvailableDevices();
-  const menuRef = useRef();
-  const toggleRef = useRef();
-  const [isOpen, setIsOpen] = useState(false);
-  const [menuDrilledIn, setMenuDrilledIn] = React.useState<string[]>([]);
-  const [drilldownPath, setDrilldownPath] = React.useState<string[]>([]);
-  const [activeMenu, setActiveMenu] = React.useState<string>("root");
-  const [menuHeights, setMenuHeights] = React.useState({});
-
-  const resetState = () => {
-    setMenuDrilledIn([]);
-    setDrilldownPath([]);
-    setActiveMenu("root");
-  };
-
-  const toggle = () => {
-    setIsOpen(!isOpen);
-    resetState();
-  };
-
-  const addDriveAndClose = (driveName) => {
-    addDrive(driveName);
-    setIsOpen(false);
-    resetState();
-  };
 
   const drivesNames = model.drives.map((d) => d.name);
   const drivesCount = drivesNames.length;
   const devices = allDevices.filter((d) => !drivesNames.includes(d.name));
-
-  const drillIn = (
-    _: React.KeyboardEvent | React.MouseEvent,
-    fromMenuId: string,
-    toMenuId: string,
-    pathId: string,
-  ) => {
-    setMenuDrilledIn([...menuDrilledIn, fromMenuId]);
-    setDrilldownPath([...drilldownPath, pathId]);
-    setActiveMenu(toMenuId);
-  };
-
-  const drillOut = (_: React.KeyboardEvent | React.MouseEvent, toMenuId: string) => {
-    const menuDrilledInSansLast = menuDrilledIn.slice(0, menuDrilledIn.length - 1);
-    const pathSansLast = drilldownPath.slice(0, drilldownPath.length - 1);
-    setMenuDrilledIn(menuDrilledInSansLast);
-    setDrilldownPath(pathSansLast);
-    setActiveMenu(toMenuId);
-  };
-
-  const setHeight = (menuId: string, height: number) => {
-    // FIXME: look for a better way to avoid test crashing because of this
-    // method
-    if (process.env.NODE_ENV === "test") return;
-
-    if (
-      menuHeights[menuId] === undefined ||
-      (menuId !== "root" && menuHeights[menuId] !== height)
-    ) {
-      setMenuHeights({ ...menuHeights, [menuId]: height });
-    }
-  };
+  const longestTitle = useLongestDiskTitle();
 
   const lvmDescription = allDevices.length
     ? _("Define a new LVM on top of one or several disks")
     : _("Define a new LVM on the disk");
 
   return (
-    <MenuContainer
-      isOpen={isOpen}
-      onOpenChange={toggle}
-      toggleRef={toggleRef}
-      toggle={
-        <MenuToggle ref={toggleRef} onClick={toggle} isExpanded={isOpen}>
-          {_("More devices")}
-        </MenuToggle>
-      }
-      menuRef={menuRef}
-      menu={
-        <Menu
-          id="root"
-          containsDrilldown
-          onDrillIn={drillIn}
-          onDrillOut={drillOut}
-          onGetMenuHeight={setHeight}
-          activeMenu={activeMenu}
-          drilledInMenus={menuDrilledIn}
-          drilldownItemPath={drilldownPath}
-          ref={menuRef}
+    <MenuButton
+      menuProps={{
+        "aria-label": _("Configure device menu"),
+        popperProps: { minWidth: `min(${longestTitle * 0.75}em, 75vw)`, width: "max-content" },
+      }}
+      items={[
+        <DisksDrillDownMenuItem
+          key="select-disk-option"
+          drivesCount={drivesCount}
+          devices={devices}
+          onDeviceClick={addDrive}
+        />,
+        <Divider key="divider-option" />,
+        <MenuButtonItem
+          key="add-lvm-option"
+          onClick={() => navigate(PATHS.volumeGroup.add)}
+          description={lvmDescription}
         >
-          <MenuContent menuHeight={`${menuHeights[activeMenu]}px`}>
-            <MenuList>
-              <DisksDrillDownMenuItem
-                drivesCount={drivesCount}
-                devices={devices}
-                onDeviceClick={addDriveAndClose}
-              />
-              <Divider />
-              <MenuItem
-                key="lvm-link"
-                onClick={() => navigate(PATHS.volumeGroup.add)}
-                description={lvmDescription}
-              >
-                {_("Add LVM volume group")}
-              </MenuItem>
-            </MenuList>
-          </MenuContent>
-        </Menu>
-      }
-    />
+          {_("Add LVM volume group")}
+        </MenuButtonItem>,
+      ]}
+    >
+      {_("More devices")}
+    </MenuButton>
   );
 }

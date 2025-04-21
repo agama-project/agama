@@ -5,6 +5,29 @@ Mon Apr 21 12:46:07 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 - Do not write wireless security settings when they are not used.
 
 -------------------------------------------------------------------
+Wed Apr 16 10:45:33 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add missing help to finish command (gh#agama-project/agama#2272).
+
+-------------------------------------------------------------------
+Wed Apr 16 05:40:39 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Replace --api option by --host (gh#agama-project/agama#2271).
+
+-------------------------------------------------------------------
+Fri Apr 11 06:53:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Prevent agama-web-server from getting stuck in the POST
+  /api/profile/autoyast calls (gh#agama-project/agama#2259).
+- Temporarily disable AutoYaST profiles fetch errors.
+
+-------------------------------------------------------------------
+Thu Apr 10 20:24:06 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify extra kernel parameters in profile
+  (jsc#PED-10810)
+
+-------------------------------------------------------------------
 Wed Apr  9 09:06:18 UTC 2025 - Martin Vidner <mvidner@suse.com>
 
 - Made `--api URL` work with `agama profile`

@@ -75,4 +75,10 @@ pub trait Registration {
     /// registered addons property, list of tuples (name, version, reg_code))
     #[zbus(property)]
     fn registered_addons(&self) -> zbus::Result<Vec<(String, String, String)>>;
+
+    /// available addons property, a hash with string key
+    #[zbus(property)]
+    fn available_addons(
+        &self,
+    ) -> zbus::Result<Vec<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>>;
 }
