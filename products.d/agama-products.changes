@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Apr 22 14:14:53 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 14
+
+-------------------------------------------------------------------
 Fri Apr 11 13:02:30 UTC 2025 - Frederic Crozat <fcrozat@suse.com>
 
 - Ensure bootloader pattern is always installed on SLES 16.0

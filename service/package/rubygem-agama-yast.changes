@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Apr 22 14:14:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 14
+
+-------------------------------------------------------------------
 Tue Apr 15 08:50:10 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Fixed detection of iBFT (bsc#1239046).

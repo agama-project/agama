@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Apr 22 14:14:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 14
+
+-------------------------------------------------------------------
 Tue Apr 22 11:16:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - CLI: wait a bit between selecting the product to install and
