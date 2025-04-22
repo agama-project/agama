@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use serde::{Serialize,Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub enum SSLFingerprintAlgorithm {
@@ -33,7 +33,7 @@ impl TryFrom<String> for SSLFingerprintAlgorithm {
         match value.to_uppercase().as_str() {
             "SHA1" => Ok(Self::SHA1),
             "SHA256" => Ok(Self::SHA256),
-            _ => Err(crate::error::ServiceError::UnsupportedSSLFingerprintAlgorithm(value))
+            _ => Err(crate::error::ServiceError::UnsupportedSSLFingerprintAlgorithm(value)),
         }
     }
 }
@@ -55,7 +55,7 @@ impl Default for SSLFingerprintAlgorithm {
 
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct SSLFingerprint {
-    pub value: String,
+    pub fingerprint: String,
     #[serde(default)]
     pub algorithm: SSLFingerprintAlgorithm,
 }

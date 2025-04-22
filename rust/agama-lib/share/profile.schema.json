@@ -98,6 +98,41 @@
         }
       }
     },
+    "security": {
+      "title": "Security settings",
+      "type": "object",
+      "properties": {
+        "sslFingerprints": {
+          "title": "List of SSL fingerprints to accept if unknown certificate appears",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "fingerprint": {
+                "title": "SSL fingerprint value",
+                "type": "string",
+                "examples": ["A8:DE:08:B1:57:52:FE:70:DF:D5:31:EA:E3:53:BB:39:EE:01:FF:B9"] 
+              },
+              "algorithm": {
+                "title": "SSL fingerprint algorithm used to compute it",
+                "type": "string",
+                "enum": ["SHA1", "SHA256"],
+                "examples": ["SHA1"] 
+              }
+
+            }
+          }
+        },
+        "packages": {
+          "title": "List of packages to install",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "examples": ["vim"]
+          }
+        }
+      }
+    },
     "software": {
       "title": "Software settings",
       "type": "object",
@@ -138,6 +173,10 @@
         },
         "registrationEmail": {
           "title": "Product registration email",
+          "type": "string"
+        },
+        "registrationUrl": {
+          "title": "Specific registration server url",
           "type": "string"
         }
       }

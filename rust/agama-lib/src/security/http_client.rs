@@ -18,22 +18,29 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod bootloader;
-pub mod cert;
-pub mod dbus;
-pub mod error;
-pub mod files;
-pub mod hostname;
-pub mod l10n;
-pub mod logs;
-pub mod manager;
-pub mod network;
-pub mod profile;
-pub mod questions;
-pub mod scripts;
-pub mod security;
-pub mod software;
-pub mod storage;
-pub mod users;
-pub mod web;
-pub use web::service;
+use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
+
+use super::model::SSLFingerprint;
+
+pub struct SecurityHTTPClient {
+    client: BaseHTTPClient,
+}
+
+impl SecurityHTTPClient {
+    pub fn new(base: BaseHTTPClient) -> Self {
+        Self { client: base }
+    }
+
+    pub async fn get_ssl_fingerprints(&self) -> Result<Vec<SSLFingerprint>, ServiceError> {
+        self.client.get("/security/ssl_fingerprints").await
+    }
+
+    pub async fn set_ssl_fingerprints(
+        &self,
+        fps: &Vec<SSLFingerprint>,
+    ) -> Result<(), ServiceError> {
+        self.client
+            .put_void("/security/ssl_fingerprints", fps)
+            .await
+    }
+}

@@ -39,14 +39,25 @@ impl<'a> SecurityClient<'a> {
 
     pub async fn get_ssl_fingerprints(&self) -> Result<Vec<SSLFingerprint>, ServiceError> {
         let dbus_list = self.security_proxy.ssl_fingerprints().await?;
-        dbus_list.into_iter().map( |(alg, value)| Ok(SSLFingerprint {
-            value,
-            algorithm: alg.try_into()?,
-        })).collect()
+        dbus_list
+            .into_iter()
+            .map(|(alg, value)| {
+                Ok(SSLFingerprint {
+                    fingerprint: value,
+                    algorithm: alg.try_into()?,
+                })
+            })
+            .collect()
     }
 
-    pub async fn set_ssl_fingerprints(&self, list: &Vec<SSLFingerprint>) -> Result<(), ServiceError> {
-        let dbus_list: Vec<(&str, &str)> = list.into_iter().map(|s| (s.algorithm.to_str(), s.value.as_str())).collect();
+    pub async fn set_ssl_fingerprints(
+        &self,
+        list: &Vec<SSLFingerprint>,
+    ) -> Result<(), ServiceError> {
+        let dbus_list: Vec<(&str, &str)> = list
+            .into_iter()
+            .map(|s| (s.algorithm.to_str(), s.fingerprint.as_str()))
+            .collect();
         self.security_proxy.set_ssl_fingerprints(&dbus_list).await?;
         Ok(())
     }
