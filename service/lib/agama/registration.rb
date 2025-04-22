@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -30,8 +30,8 @@ require "agama/cmdline_args"
 require "agama/errors"
 require "agama/registered_addon"
 require "agama/ssl/certificate"
-require "agama/ssl/certificate_details"
 require "agama/ssl/errors"
+require "agama/ssl/fingerprint"
 require "agama/ssl/storage"
 
 Yast.import "Arch"
@@ -335,6 +335,7 @@ module Agama
       end
     end
 
+    # @return [Boolean]
     def handle_ssl_error(_error, certificate_imported)
       return false if certificate_imported
 
@@ -347,27 +348,35 @@ module Agama
       error_code = SSL::Errors.instance.ssl_error_code
       return false unless SSL::ErrorCodes::IMPORT_ERROR_CODES.include?(error_code)
 
-      details = SSL::CertificateDetails.new(cert)
+      question = certificate_question(cert)
+      questions_client = Agama::DBus::Clients::Questions.new(logger: @logger)
+      questions_client.ask(question) { |c| c.answer == :trust }
+    end
 
-      question = Agama::Question.new(
-        qclass:         "registration.certificate",
-        text:           _("Secure connection error. Import certificate?"),
-        options:        [:Import, :Abort],
-        default_option: :Abort,
-        data: {
-          url: registration_url || "https://scc.suse.com",
-          error: SSL::ErrorCodes::OPENSSL_ERROR_MESSAGES[error_code],
-          subject: details.subject,
-          issuer: details.issuer,
-          summary: details.summary,
-          fingerprints: SSL::Storage.instance.fingerprints
-        }
+    # @param certificate [Agama::SSL::Certificate]
+    # @return [Agama::Question]
+    def certificate_question(certificate)
+      question_data = {
+        "url"                => registration_url || "https://scc.suse.com",
+        "issuer_name"        => certificate.issuer_name,
+        "issue_date"         => certificate.issued_on,
+        "expiration_date"    => certificate.expires_on,
+        "sha1_fingerprint"   => certificate.fingerprint(SSL::Fingerprint::SHA1).value,
+        "sha256_fingerprint" => certificate.fingerprint(SSL::Fingerprint::SHA256).value
+      }.filter { |_, v| !v.nil? }
+
+      question_text = _(
+        "Trying to import a self signed certificate. Do you want to trust it and register the " \
+        "product?"
       )
 
-      questions_client = Agama::DBus::Clients::Questions.new(logger: @logger)
-      questions_client.ask(question) do |question_client|
-        return question_client.answer == :Import
-      end
+      Agama::Question.new(
+        qclass:         "registration.certificate",
+        text:           question_text,
+        options:        [:trust, :reject],
+        default_option: :reject,
+        data:           question_data
+      )
     end
 
     # Returns the URL of the registration server
