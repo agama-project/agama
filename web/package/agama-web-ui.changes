@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Apr 22 11:18:03 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Process the product changed event so the UI can better react on
+  registering the product shortly after that
+  (gh#agama-project/agama#2274)
+
+-------------------------------------------------------------------
 Mon Apr 21 12:37:20 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Rework the network page to (gh#agama-project/agama#2247):

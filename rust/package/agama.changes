@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Apr 22 11:16:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- CLI: wait a bit between selecting the product to install and
+  registering it so the Web UI has enough time to process all
+  events (gh#agama-project/agama#2274)
+
+-------------------------------------------------------------------
 Mon Apr 21 13:42:13 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Allow to log in into multiple systems (gh#agama-project/agama#2261).
