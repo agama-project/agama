@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Apr 22 14:14:53 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 14
+
+-------------------------------------------------------------------
 Tue Apr 22 11:18:03 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Process the product changed event so the UI can better react on
