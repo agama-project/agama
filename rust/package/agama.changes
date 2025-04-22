@@ -1,4 +1,38 @@
 -------------------------------------------------------------------
+Tue Apr 22 14:14:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 14
+
+-------------------------------------------------------------------
+Tue Apr 22 11:16:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- CLI: wait a bit between selecting the product to install and
+  registering it so the Web UI has enough time to process all
+  events (gh#agama-project/agama#2274)
+
+-------------------------------------------------------------------
+Mon Apr 21 13:42:13 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow to log in into multiple systems (gh#agama-project/agama#2261).
+- Do not interactively ask for accepting insecure connections.
+
+-------------------------------------------------------------------
+Mon Apr 21 12:46:07 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report and emit changes to the connections states. (gh#agama-project/agama#2247).
+- Do not write wireless security settings when they are not used.
+
+-------------------------------------------------------------------
+Wed Apr 16 10:45:33 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add missing help to finish command (gh#agama-project/agama#2272).
+
+-------------------------------------------------------------------
+Wed Apr 16 05:40:39 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Replace --api option by --host (gh#agama-project/agama#2271).
+
+-------------------------------------------------------------------
 Fri Apr 11 06:53:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Prevent agama-web-server from getting stuck in the POST

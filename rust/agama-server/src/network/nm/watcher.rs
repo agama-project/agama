@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -23,29 +23,23 @@
 //! Monitors NetworkManager's D-Bus service and emit [actions](crate::network::Action] to update
 //! the NetworkSystem state when devices or active connections change.
 
+use std::collections::{hash_map::Entry, HashMap};
+
 use crate::network::{
     adapter::Watcher, model::Device, nm::proxies::DeviceProxy, Action, NetworkAdapterError,
 };
 use agama_lib::error::ServiceError;
 use async_trait::async_trait;
-use futures_util::ready;
-use pin_project::pin_project;
-use std::{
-    collections::{hash_map::Entry, HashMap},
-    pin::Pin,
-    task::{Context, Poll},
-};
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
-use tokio_stream::{Stream, StreamExt, StreamMap};
-use zbus::{
-    fdo::{InterfacesAdded, InterfacesRemoved, PropertiesChanged},
-    message::Type as MessageType,
-    names::InterfaceName,
-    zvariant::OwnedObjectPath,
-    MatchRule, Message, MessageStream,
-};
+use tokio_stream::StreamExt;
+use zbus::zvariant::OwnedObjectPath;
 
-use super::{builder::DeviceFromProxyBuilder, proxies::NetworkManagerProxy};
+use super::{
+    builder::DeviceFromProxyBuilder,
+    model::NmConnectionState,
+    proxies::{ActiveConnectionProxy, NetworkManagerProxy},
+    streams::{ActiveConnectionChangedStream, DeviceChangedStream, NmChange},
+};
 
 /// Implements a [crate::network::adapter::Watcher] for NetworkManager.
 ///
@@ -86,8 +80,23 @@ impl Watcher for NetworkManagerWatcher {
 
         // Process the DeviceChangedStream in a separate task.
         let connection = self.connection.clone();
+        let tx_clone = tx.clone();
         tokio::spawn(async move {
             let mut stream = DeviceChangedStream::new(&connection).await.unwrap();
+
+            while let Some(change) = stream.next().await {
+                if let Err(e) = tx_clone.send(change) {
+                    tracing::error!("Could not dispatch a network change: {e}");
+                }
+            }
+        });
+
+        // Process the ConnectionChangedStream in a separate task.
+        let connection = self.connection.clone();
+        tokio::spawn(async move {
+            let mut stream = ActiveConnectionChangedStream::new(&connection)
+                .await
+                .unwrap();
 
             while let Some(change) = stream.next().await {
                 if let Err(e) = tx.send(change) {
@@ -109,7 +118,7 @@ impl Watcher for NetworkManagerWatcher {
 struct ActionDispatcher<'a> {
     connection: zbus::Connection,
     proxies: ProxiesRegistry<'a>,
-    updates_rx: UnboundedReceiver<DeviceChange>,
+    updates_rx: UnboundedReceiver<NmChange>,
     actions_tx: UnboundedSender<Action>,
 }
 
@@ -121,7 +130,7 @@ impl ActionDispatcher<'_> {
     /// * `actions_tx`: Channel to dispatch the network actions.
     pub fn new(
         connection: zbus::Connection,
-        updates_rx: UnboundedReceiver<DeviceChange>,
+        updates_rx: UnboundedReceiver<NmChange>,
         actions_tx: UnboundedSender<Action>,
     ) -> Self {
         Self {
@@ -139,11 +148,17 @@ impl ActionDispatcher<'_> {
         self.read_devices().await?;
         while let Some(update) = self.updates_rx.recv().await {
             let result = match update {
-                DeviceChange::DeviceAdded(path) => self.handle_device_added(path).await,
-                DeviceChange::DeviceUpdated(path) => self.handle_device_updated(path).await,
-                DeviceChange::DeviceRemoved(path) => self.handle_device_removed(path).await,
-                DeviceChange::IP4ConfigChanged(path) => self.handle_ip4_config_changed(path).await,
-                DeviceChange::IP6ConfigChanged(path) => self.handle_ip6_config_changed(path).await,
+                NmChange::DeviceAdded(path) => self.handle_device_added(path).await,
+                NmChange::DeviceUpdated(path) => self.handle_device_updated(path).await,
+                NmChange::DeviceRemoved(path) => self.handle_device_removed(path).await,
+                NmChange::IP4ConfigChanged(path) => self.handle_ip4_config_changed(path).await,
+                NmChange::IP6ConfigChanged(path) => self.handle_ip6_config_changed(path).await,
+                NmChange::ActiveConnectionAdded(path) | NmChange::ActiveConnectionUpdated(path) => {
+                    self.handle_active_connection_updated(path).await
+                }
+                NmChange::ActiveConnectionRemoved(path) => {
+                    self.handle_active_connection_removed(path).await
+                }
             };
 
             if let Err(error) = result {
@@ -231,6 +246,46 @@ impl ActionDispatcher<'_> {
         Ok(())
     }
 
+    /// Handles the case where a new active connection appears.
+    ///
+    /// * `path`: D-Bus object path of the new active connection.
+    async fn handle_active_connection_updated(
+        &mut self,
+        path: OwnedObjectPath,
+    ) -> Result<(), ServiceError> {
+        let proxy = self.proxies.find_or_add_active_connection(&path).await?;
+        let id = proxy.id().await?;
+        let state = proxy.state().await.map(|s| NmConnectionState(s.clone()))?;
+        if let Ok(state) = state.try_into() {
+            _ = self
+                .actions_tx
+                .send(Action::ChangeConnectionState(id, state));
+        }
+        // TODO: report an error if the device cannot get generated
+
+        Ok(())
+    }
+
+    /// Handles the case where a device is removed.
+    ///
+    /// * `path`: D-Bus object path of the removed device.
+    async fn handle_active_connection_removed(
+        &mut self,
+        path: OwnedObjectPath,
+    ) -> Result<(), ServiceError> {
+        if let Some(proxy) = self.proxies.remove_active_connection(&path) {
+            let id = proxy.id().await?;
+            let state = proxy.state().await.map(|s| NmConnectionState(s.clone()))?;
+            if let Ok(state) = state.try_into() {
+                _ = self
+                    .actions_tx
+                    .send(Action::ChangeConnectionState(id, state));
+            }
+        }
+
+        Ok(())
+    }
+
     async fn device_from_proxy(
         connection: &zbus::Connection,
         proxy: DeviceProxy<'_>,
@@ -240,188 +295,12 @@ impl ActionDispatcher<'_> {
     }
 }
 
-/// Stream of device-related events.
-///
-/// This stream listens for many NetworkManager events that are related to network devices (state,
-/// IP configuration, etc.) and converts them into variants of the [DeviceChange] enum.
-///
-/// It is implemented as a struct because it needs to keep the ObjectManagerProxy alive.
-#[pin_project]
-struct DeviceChangedStream {
-    connection: zbus::Connection,
-    #[pin]
-    inner: StreamMap<&'static str, MessageStream>,
-}
-
-impl DeviceChangedStream {
-    /// Builds a new stream using the given D-Bus connection.
-    ///
-    /// * `connection`: D-Bus connection.
-    pub async fn new(connection: &zbus::Connection) -> Result<Self, ServiceError> {
-        let connection = connection.clone();
-        let mut inner = StreamMap::new();
-        inner.insert(
-            "object_manager",
-            build_added_and_removed_stream(&connection).await?,
-        );
-        inner.insert(
-            "properties",
-            build_properties_changed_stream(&connection).await?,
-        );
-        Ok(Self { connection, inner })
-    }
-
-    fn handle_added(message: InterfacesAdded) -> Option<DeviceChange> {
-        let args = message.args().ok()?;
-        let interfaces: Vec<String> = args
-            .interfaces_and_properties()
-            .keys()
-            .map(|i| i.to_string())
-            .collect();
-
-        if interfaces.contains(&"org.freedesktop.NetworkManager.Device".to_string()) {
-            let path = OwnedObjectPath::from(args.object_path().clone());
-            return Some(DeviceChange::DeviceAdded(path));
-        }
-
-        None
-    }
-
-    fn handle_removed(message: InterfacesRemoved) -> Option<DeviceChange> {
-        let args = message.args().ok()?;
-
-        let interface = InterfaceName::from_str_unchecked("org.freedesktop.NetworkManager.Device");
-        if args.interfaces.contains(&interface) {
-            let path = OwnedObjectPath::from(args.object_path().clone());
-            return Some(DeviceChange::DeviceRemoved(path));
-        }
-
-        None
-    }
-
-    fn handle_changed(message: PropertiesChanged) -> Option<DeviceChange> {
-        const IP_CONFIG_PROPS: &[&str] = &["AddressData", "Gateway", "NameserverData", "RouteData"];
-        const DEVICE_PROPS: &[&str] = &[
-            "DeviceType",
-            "HwAddress",
-            "Interface",
-            "State",
-            "StateReason",
-        ];
-
-        let args = message.args().ok()?;
-        let inner = message.message();
-        let path = OwnedObjectPath::from(inner.header().path()?.to_owned());
-
-        match args.interface_name.as_str() {
-            "org.freedesktop.NetworkManager.IP4Config" => {
-                if Self::include_properties(IP_CONFIG_PROPS, &args.changed_properties) {
-                    return Some(DeviceChange::IP4ConfigChanged(path));
-                }
-            }
-            "org.freedesktop.NetworkManager.IP6Config" => {
-                if Self::include_properties(IP_CONFIG_PROPS, &args.changed_properties) {
-                    return Some(DeviceChange::IP6ConfigChanged(path));
-                }
-            }
-            "org.freedesktop.NetworkManager.Device" => {
-                if Self::include_properties(DEVICE_PROPS, &args.changed_properties) {
-                    return Some(DeviceChange::DeviceUpdated(path));
-                }
-            }
-            _ => {}
-        };
-        None
-    }
-
-    fn include_properties(
-        wanted: &[&str],
-        changed: &HashMap<&'_ str, zbus::zvariant::Value<'_>>,
-    ) -> bool {
-        let properties: Vec<_> = changed.keys().collect();
-        wanted.iter().any(|i| properties.contains(&i))
-    }
-
-    fn handle_message(message: Result<Message, zbus::Error>) -> Option<DeviceChange> {
-        let Ok(message) = message else {
-            return None;
-        };
-
-        if let Some(added) = InterfacesAdded::from_message(message.clone()) {
-            return Self::handle_added(added);
-        }
-
-        if let Some(removed) = InterfacesRemoved::from_message(message.clone()) {
-            return Self::handle_removed(removed);
-        }
-
-        if let Some(changed) = PropertiesChanged::from_message(message.clone()) {
-            return Self::handle_changed(changed);
-        }
-
-        None
-    }
-}
-
-impl Stream for DeviceChangedStream {
-    type Item = DeviceChange;
-
-    fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
-        let mut pinned = self.project();
-        Poll::Ready(loop {
-            let item = ready!(pinned.inner.as_mut().poll_next(cx));
-            let next_value = match item {
-                Some((_, message)) => Self::handle_message(message),
-                _ => None,
-            };
-            if next_value.is_some() {
-                break next_value;
-            }
-        })
-    }
-}
-
-async fn build_added_and_removed_stream(
-    connection: &zbus::Connection,
-) -> Result<MessageStream, ServiceError> {
-    let rule = MatchRule::builder()
-        .msg_type(MessageType::Signal)
-        .path("/org/freedesktop")?
-        .interface("org.freedesktop.DBus.ObjectManager")?
-        .build();
-    let stream = MessageStream::for_match_rule(rule, connection, Some(1)).await?;
-    Ok(stream)
-}
-
-/// Returns a stream of properties changes to be used by DeviceChangedStream.
-///
-/// It listens for changes in several objects that are related to a network device.
-async fn build_properties_changed_stream(
-    connection: &zbus::Connection,
-) -> Result<MessageStream, ServiceError> {
-    let rule = MatchRule::builder()
-        .msg_type(MessageType::Signal)
-        .interface("org.freedesktop.DBus.Properties")?
-        .member("PropertiesChanged")?
-        .build();
-    let stream = MessageStream::for_match_rule(rule, connection, Some(1)).await?;
-    Ok(stream)
-}
-
-#[derive(Debug, Clone)]
-enum DeviceChange {
-    DeviceAdded(OwnedObjectPath),
-    DeviceUpdated(OwnedObjectPath),
-    DeviceRemoved(OwnedObjectPath),
-    IP4ConfigChanged(OwnedObjectPath),
-    IP6ConfigChanged(OwnedObjectPath),
-}
-
 /// Ancillary class to track the devices and their related D-Bus objects.
-struct ProxiesRegistry<'a> {
+pub struct ProxiesRegistry<'a> {
     connection: zbus::Connection,
     // the String is the device name like eth0
     devices: HashMap<OwnedObjectPath, (String, DeviceProxy<'a>)>,
+    active_connections: HashMap<OwnedObjectPath, ActiveConnectionProxy<'a>>,
 }
 
 impl<'a> ProxiesRegistry<'a> {
@@ -429,6 +308,7 @@ impl<'a> ProxiesRegistry<'a> {
         Self {
             connection: connection.clone(),
             devices: HashMap::new(),
+            active_connections: HashMap::new(),
         }
     }
 
@@ -452,6 +332,37 @@ impl<'a> ProxiesRegistry<'a> {
             }
             Entry::Occupied(entry) => Ok(entry.into_mut()),
         }
+    }
+
+    /// Finds or adds an active connection to the registry.
+    ///
+    /// * `path`: D-Bus object path.
+    pub async fn find_or_add_active_connection(
+        &mut self,
+        path: &OwnedObjectPath,
+    ) -> Result<&ActiveConnectionProxy<'a>, ServiceError> {
+        // Cannot use entry(...).or_insert_with(...) because of the async call.
+        match self.active_connections.entry(path.clone()) {
+            Entry::Vacant(entry) => {
+                let proxy = ActiveConnectionProxy::builder(&self.connection.clone())
+                    .path(path.clone())?
+                    .build()
+                    .await?;
+
+                Ok(entry.insert(proxy))
+            }
+            Entry::Occupied(entry) => Ok(entry.into_mut()),
+        }
+    }
+
+    /// Removes an active connection from the registry.
+    ///
+    /// * `path`: D-Bus object path.
+    pub fn remove_active_connection(
+        &mut self,
+        path: &OwnedObjectPath,
+    ) -> Option<ActiveConnectionProxy> {
+        self.active_connections.remove(path)
     }
 
     /// Removes a device from the registry.

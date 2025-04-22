@@ -153,9 +153,6 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "全てのパーティションを削除し、ディスク内に存在するデータを全て消去します。"
   ],
-  "As a new partition on %1$s (%2$s)": [
-    "%1$s に新しいパーティションとして (%2$s)"
-  ],
   "At least one address must be provided for selected mode": [
     "選択しているモードの場合、 1 つ以上のアドレスを設定しなければなりません"
   ],
@@ -222,6 +219,9 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "インストールを開始する前に、下記の問題に対応する必要があります:"
   ],
+  "Beta": [
+    ""
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -287,6 +287,9 @@ export default {
   ],
   "Collapse the list of planned actions": [
     "処理計画の一覧を巻き取る"
+  ],
+  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
+    ""
   ],
   "Configure DASD": [
     "DASD の設定"
@@ -435,9 +438,6 @@ export default {
   "Delete current content": [
     "現在の内容を全て削除する"
   ],
-  "Delete the volume group and its logical volumes": [
-    "ボリュームグループと論理ボリュームを削除する"
-  ],
   "Delete volume group": [
     "ボリュームグループの削除"
   ],
@@ -489,9 +489,6 @@ export default {
   "Download logs": [
     "ログのダウンロード"
   ],
-  "Drive": [
-    "ドライブ"
-  ],
   "During installation, several actions will be performed to setup the layout shown at the table below.": [
     "インストールの際、下記の表に示した配置を設定するためにいくつかの処理が行われます。"
   ],
@@ -503,9 +500,6 @@ export default {
   ],
   "Edit connection %s": [
     "接続 %s の編集"
-  ],
-  "Edit iSCSI Initiator": [
-    "iSCSI イニシエータの編集"
   ],
   "Edit user": [
     "ユーザの編集"
@@ -560,6 +554,9 @@ export default {
   ],
   "Ext4": [
     "ext4"
+  ],
+  "Extensions": [
+    ""
   ],
   "F2FS": [
     "f2fs"
@@ -657,6 +654,12 @@ export default {
   "Hostname": [
     "ホスト名"
   ],
+  "Hostname could not be updated": [
+    ""
+  ],
+  "Hostname successfully updated": [
+    ""
+  ],
   "I have read and accept the [license] for %s": [
     "%s に対する [ライセンス] を受け入れます"
   ],
@@ -698,6 +701,12 @@ export default {
   ],
   "Initiator name": [
     "イニシエータ名"
+  ],
+  "Initiator name could not be updated": [
+    ""
+  ],
+  "Initiator name successfully updated": [
+    ""
   ],
   "Install": [
     "インストール"
@@ -794,6 +803,9 @@ export default {
   ],
   "Limited": [
     "制限"
+  ],
+  "Loading": [
+    "読み込んでいます"
   ],
   "Loading data...": [
     "データを読み込んでいます..."
@@ -918,9 +930,6 @@ export default {
   "New": [
     "新規"
   ],
-  "New LVM volume group": [
-    "新規 LVM ボリュームグループ"
-  ],
   "No": [
     "いいえ"
   ],
@@ -947,6 +956,9 @@ export default {
   ],
   "No devices found": [
     "デバイスが見つかりませんでした"
+  ],
+  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
+    ""
   ],
   "No iSCSI targets found.": [
     "iSCSI ターゲットが見つかりませんでした。"
@@ -1007,9 +1019,6 @@ export default {
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
     "フォーマットを実施する前にオフラインのデバイスを有効化する必要があります。下記に示されたデバイスの選択を外すか、有効化してからやり直してください"
-  ],
-  "Offload card": [
-    "オフロードカード"
   ],
   "On boot": [
     "システム起動時"
@@ -1143,6 +1152,9 @@ export default {
   "Reboot": [
     "再起動"
   ],
+  "Recommended": [
+    ""
+  ],
   "Register": [
     "登録"
   ],
@@ -1169,9 +1181,6 @@ export default {
   ],
   "Remove min channel filter": [
     "最小チャネルのフィルタを削除"
-  ],
-  "Remove the configuration for this device": [
-    "このデバイス向けの設定を削除"
   ],
   "Repository load failed": [
     "リポジトリ読み込み失敗"
@@ -1212,15 +1221,6 @@ export default {
   "Select": [
     "選択"
   ],
-  "Select a device to configure": [
-    "設定するデバイスの選択"
-  ],
-  "Select a device to create %s": [
-    "%s を作成するデバイスの選択"
-  ],
-  "Select a device to install the system": [
-    "システムのインストール先となるデバイスの選択"
-  ],
   "Select a disk": [
     "ディスクの選択"
   ],
@@ -1253,6 +1253,9 @@ export default {
   ],
   "Select what to do with each partition.": [
     "パーティションの設定作業を独自に実施します。"
+  ],
+  "Selected disk (cannot be changed)": [
+    ""
   ],
   "Selected patterns": [
     "パターンの選択"
@@ -1365,9 +1368,6 @@ export default {
   "The configured LVM groups will remain at %s": [
     "設定済みの LVM グループが %s に残されます"
   ],
-  "The configured partitions will be created as logical volumes": [
-    "設定したパーティションは論理ボリュームとして作成します"
-  ],
   "The content may be deleted": [
     "内容が削除されるかもしれません"
   ],
@@ -1394,6 +1394,12 @@ export default {
   ],
   "The device will be used by the new system.": [
     "デバイスは新しいシステムで使用されます。"
+  ],
+  "The disk is used for LVM": [
+    ""
+  ],
+  "The disk is used for booting": [
+    ""
   ],
   "The encryption password did not work": [
     "暗号化パスワードが正しくありません"
@@ -1512,20 +1518,8 @@ export default {
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "この処理により、下記に示したデバイス内のデータが全て消去されます。続行して問題ないかどうか、ご確認ください。"
   ],
-  "This device will contain any partition needed for booting": [
-    "このデバイスには起動に必要なパーティションが含まれています"
-  ],
-  "This device will contain the LVM group '%s'": [
-    "このデバイスには設定済みの LVM グループ '%s' が含まれています"
-  ],
-  "This device will contain the LVM group '%s' and any partition needed to boot": [
-    "このデバイスには起動に必要な設定済み LVM グループ '%s' とパーティションが含まれています"
-  ],
-  "This device will contain the configured LVM groups": [
-    "このデバイスには設定済みの LVM グループが含まれています"
-  ],
-  "This device will contain the configured LVM groups and any partition needed to boot": [
-    "このデバイスには起動に必要な設定済み LVM グループとパーティションが含まれています"
+  "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
+    ""
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "ホスト名は動的なものとなります。ご利用のネットワークの設定に依存しますが、再起動やネットワーク側の変更によって変わってしまう場合があります。"
@@ -1535,9 +1529,6 @@ export default {
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "この容量にはシステムの基本部分のほか、選択したソフトウエアパターンが含まれます。"
-  ],
-  "This uses existing partitions at the device": [
-    "デバイス内の既存パーティションを使用する"
   ],
   "TiB": [
     "TiB"

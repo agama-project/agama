@@ -21,7 +21,6 @@
  */
 
 import React, { useId, useRef, useState } from "react";
-import { Icon } from "~/components/layout";
 import {
   Menu,
   MenuProps,
@@ -34,13 +33,7 @@ import {
 
 const InlineMenuToggle = React.forwardRef(
   (props: MenuToggleProps, ref: React.Ref<MenuToggleElement>) => (
-    <MenuToggle
-      icon={<Icon name="keyboard_arrow_down" />}
-      innerRef={ref}
-      variant="plain"
-      className="agm-inline-menu-toggle"
-      {...props}
-    />
+    <MenuToggle innerRef={ref} className="agm-inline-toggle" {...props} />
   ),
 );
 

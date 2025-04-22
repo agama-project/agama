@@ -171,24 +171,31 @@
   }
 }
 
-.agm-inline-menu-toggle {
+.agm-inline-toggle {
+  border-radius: 0;
   inline-size: fit-content;
-  flex-direction: row-reverse;
   align-items: center;
-  padding: 0 var(--pf-t--global--spacer--control--vertical--compact);
-  background: var(--agm-t--color--fog);
+  padding: var(--pf-t--global--spacer--control--vertical--compact);
 
-  &:hover {
-    background: #c0efde; // var(--agm-t--action--background--color--hover);
-  }
-
+  &:hover,
   &.pf-m-expanded {
-    background: var(--agm-t--color--jungle);
+    background: #c0efde; // var(--agm-t--action--background--color--hover);
+    border-radius: var(--pf-t--global--border--radius--small);
+
+    &::before {
+      border-radius: var(--pf-t--global--border--radius--small);
+    }
   }
 
-  .pf-v6-c-menu-toggle__icon svg {
-    block-size: var(--pf-t--global--icon--size--lg);
-    inline-size: var(--pf-t--global--icon--size--lg);
+  &::before {
+    border: 0;
+    border-radius: 0;
+    border-bottom: 1px solid var(--pf-t--global--border--color--default);
+  }
+
+  &:focus-visible::before {
+    color: red;
+    border-bottom: 0;
   }
 }
 
@@ -355,6 +362,10 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   color: var(--pf-v6-c-check__label--disabled--Color);
 }
 
+.pf-v6-c-menu__list-item.pf-m-danger.pf-m-disabled {
+  --pf-v6-c-menu__item--Color: var(--pf-v6-c-menu__item--m-disabled--Color);
+}
+
 // Do not change the default cursor for labels forms because it is confusing
 //
 // See:
@@ -378,6 +389,13 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   justify-self: flex-start;
 }
 
+// Fix select toggle icon visibility by creating more space at the end :/
+.pf-v6-c-form-control > select {
+  --pf-v6-c-form-control--PaddingInlineEnd: calc(
+    var(--pf-v6-c-form-control__select--PaddingInlineEnd) * 3
+  );
+}
+
 .pf-v6-c-check {
   row-gap: var(--pf-t--global--spacer--xs);
   align-content: baseline;
@@ -390,6 +408,10 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 .pf-v6-c-list.pf-m-inline {
   --pf-v6-c-list--m-inline--RowGap: var(--pf-t--global--spacer--sm);
   --pf-v6-c-list--m-inline--ColumnGap: var(--pf-t--global--spacer--md);
+}
+
+.pf-v6-c-data-list li.pf-m-clickable {
+  --pf-v6-c-data-list__item--hover--BackgroundColor: var(--agm-t--action--background--color--hover);
 }
 
 // Nested content inside forms should respect parent grid gap

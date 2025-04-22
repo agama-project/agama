@@ -73,6 +73,7 @@ const mockAddDriveFn = jest.fn();
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useAvailableDevices: () => [vda, vdb],
+  useLongestDiskTitle: () => 20,
 }));
 
 jest.mock("~/queries/storage/config-model", () => ({
@@ -109,7 +110,7 @@ describe("ConfigureDeviceMenu", () => {
         const { user } = plainRender(<ConfigureDeviceMenu />);
         const toggler = screen.getByRole("button", { name: /More devices/ });
         await user.click(toggler);
-        const disksMenuItem = screen.getByRole("menuitem", { name: /disk to define/ });
+        const disksMenuItem = screen.getByRole("menuitem", { name: "Add device menu" });
         await user.click(disksMenuItem);
         const vdaItem = screen.getByRole("menuitem", { name: /vda/ });
         await user.click(vdaItem);
@@ -126,7 +127,7 @@ describe("ConfigureDeviceMenu", () => {
         const { user } = plainRender(<ConfigureDeviceMenu />);
         const toggler = screen.getByRole("button", { name: /More devices/ });
         await user.click(toggler);
-        const disksMenuItem = screen.getByRole("menuitem", { name: /disk to define/ });
+        const disksMenuItem = screen.getByRole("menuitem", { name: "Add device menu" });
         await user.click(disksMenuItem);
         expect(screen.queryByRole("menuitem", { name: /vda/ })).toBeNull();
         const vdbItem = screen.getByRole("menuitem", { name: /vdb/ });
@@ -145,7 +146,7 @@ describe("ConfigureDeviceMenu", () => {
       const { user } = plainRender(<ConfigureDeviceMenu />);
       const toggler = screen.getByRole("button", { name: /More devices/ });
       await user.click(toggler);
-      const disksMenuItem = screen.getByRole("menuitem", { name: /disk to define/ });
+      const disksMenuItem = screen.getByRole("menuitem", { name: "Add device menu" });
       expect(disksMenuItem).toBeDisabled();
     });
   });

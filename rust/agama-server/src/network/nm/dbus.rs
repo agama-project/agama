@@ -470,6 +470,10 @@ fn wireless_config_to_dbus(config: &'_ WirelessConfig) -> NestedHash<'_> {
         wireless.insert("bssid", bssid.as_bytes().into());
     }
 
+    if config.security == SecurityProtocol::WEP && config.wep_security.is_none() {
+        return NestedHash::from([(WIRELESS_KEY, wireless)]);
+    }
+
     let mut security: HashMap<&str, zvariant::Value> = HashMap::from([
         ("key-mgmt", config.security.to_string().into()),
         (

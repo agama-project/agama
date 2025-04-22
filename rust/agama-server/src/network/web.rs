@@ -41,7 +41,10 @@ use super::{
 };
 
 use crate::network::{model::Connection, model::Device, NetworkSystem};
-use agama_lib::{error::ServiceError, network::settings::NetworkConnection};
+use agama_lib::{
+    error::ServiceError,
+    network::{settings::NetworkConnection, types::NetworkConnectionWithState},
+};
 
 use serde_json::json;
 use thiserror::Error;
@@ -209,14 +212,21 @@ async fn devices(
 )]
 async fn connections(
     State(state): State<NetworkServiceState>,
-) -> Result<Json<Vec<NetworkConnection>>, NetworkError> {
+) -> Result<Json<Vec<NetworkConnectionWithState>>, NetworkError> {
     let connections = state.network.get_connections().await?;
-    let connections = connections
-        .iter()
-        .map(|c| NetworkConnection::try_from(c.clone()).unwrap())
-        .collect();
+    let mut result = vec![];
 
-    Ok(Json(connections))
+    for conn in connections {
+        let state = conn.state.clone();
+        let network_connection = NetworkConnection::try_from(conn)?;
+        let connection_with_state = NetworkConnectionWithState {
+            connection: network_connection,
+            state,
+        };
+        result.push(connection_with_state);
+    }
+
+    Ok(Json(result))
 }
 
 #[utoipa::path(

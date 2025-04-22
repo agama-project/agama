@@ -23,6 +23,7 @@ use super::{ProductHTTPClient, ProductSettings};
 use crate::base_http_client::BaseHTTPClient;
 use crate::error::ServiceError;
 use crate::manager::http_client::ManagerHTTPClient;
+use std::{thread, time};
 
 /// Loads and stores the product settings from/to the D-Bus service.
 pub struct ProductStore {
@@ -80,6 +81,17 @@ impl ProductStore {
         }
         if let Some(reg_code) = &settings.registration_code {
             let email = settings.registration_email.as_deref().unwrap_or("");
+
+            if probe {
+                // give the UI a short time for processing the events related to changing the
+                // product before starting registration because it triggers another pile of events
+                // in the Web UI as well (workaround for gh#agama-project#2274)
+                // even 1 second should be enough, but rather be safe and use 5s for slow networks,
+                // in autoinstallation it does not hurt
+                let delay = time::Duration::from_secs(5);
+                thread::sleep(delay);
+            }
+
             self.product_client.register(reg_code, email).await?;
             // TODO: avoid reprobing if the system has been already registered with the same code?
             probe = true;
@@ -108,8 +120,7 @@ mod test {
     use tokio::test; // without this, "error: async functions cannot be used for tests"
 
     fn product_store(mock_server_url: String) -> ProductStore {
-        let mut bhc = BaseHTTPClient::default();
-        bhc.base_url = mock_server_url;
+        let bhc = BaseHTTPClient::new(mock_server_url).unwrap();
         let p_client = ProductHTTPClient::new(bhc.clone());
         let m_client = ManagerHTTPClient::new(bhc);
         ProductStore {

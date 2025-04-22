@@ -110,14 +110,17 @@ pub enum Commands {
         /// File name
         destination: PathBuf,
     },
-    /// Finish the installation rebooting the system by default.
-    ///
-    /// This command finishes the installation by performing a set of tasks and rebooting the system by
-    /// default if the installation is completed successfully.
-    ///
-    /// Optionally an argument can be given for determining whether the system should be rebooted,
-    /// poweroff, halt or just stop at the of the installation. Values: [stop|reboot|poweroff|halt]
+    /// Finish the installation.
     Finish {
+        /// What to do after finishing the installation. Possible values:
+        ///
+        /// stop - do not reboot and the Agama backend continues running.
+        ///
+        /// reboot - reboot into the installed system.
+        ///
+        /// halt - halt the installed machine.
+        ///
+        /// poweroff - power off the installed machine.
         #[clap(default_value = "reboot")]
         method: Option<FinishMethod>,
     },

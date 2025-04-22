@@ -153,9 +153,6 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Alla befintliga partitioner kommer att tas bort och all data på disken kommer att gå förlorad."
   ],
-  "As a new partition on %1$s (%2$s)": [
-    "Som en ny partition på %1$s (%2$s)"
-  ],
   "At least one address must be provided for selected mode": [
     "Minst en adress måste tillhandahållas för valt läge"
   ],
@@ -222,6 +219,9 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "Innan du startar installationen måste du åtgärda följande problem:"
   ],
+  "Beta": [
+    ""
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -287,6 +287,9 @@ export default {
   ],
   "Collapse the list of planned actions": [
     "Dölj listan över planerade åtgärder"
+  ],
+  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
+    ""
   ],
   "Configure DASD": [
     "Konfigurera DASD"
@@ -435,9 +438,6 @@ export default {
   "Delete current content": [
     "Radera nuvarande innehåll"
   ],
-  "Delete the volume group and its logical volumes": [
-    "Ta bort volymgruppen och dess logiska volymer"
-  ],
   "Delete volume group": [
     "Ta bort volymgrupp"
   ],
@@ -489,9 +489,6 @@ export default {
   "Download logs": [
     "Ladda ner loggar"
   ],
-  "Drive": [
-    "Hårddisk"
-  ],
   "During installation, several actions will be performed to setup the layout shown at the table below.": [
     "Under installationen kommer flera åtgärder att utföras för att ställa in layouten som visas i tabellen nedan."
   ],
@@ -503,9 +500,6 @@ export default {
   ],
   "Edit connection %s": [
     "Redigera anslutning %s"
-  ],
-  "Edit iSCSI Initiator": [
-    "Redigera iSCSI initiativtagare"
   ],
   "Edit user": [
     "Redigera användare"
@@ -560,6 +554,9 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extensions": [
+    ""
   ],
   "F2FS": [
     "F2FS"
@@ -658,6 +655,12 @@ export default {
   "Hostname": [
     "Värdnamn"
   ],
+  "Hostname could not be updated": [
+    ""
+  ],
+  "Hostname successfully updated": [
+    ""
+  ],
   "I have read and accept the [license] for %s": [
     "Jag har läst och accepterar [licensen] för %s"
   ],
@@ -699,6 +702,12 @@ export default {
   ],
   "Initiator name": [
     "Initiativtagarens namn"
+  ],
+  "Initiator name could not be updated": [
+    ""
+  ],
+  "Initiator name successfully updated": [
+    ""
   ],
   "Install": [
     "Installera"
@@ -795,6 +804,9 @@ export default {
   ],
   "Limited": [
     "Begränsad"
+  ],
+  "Loading": [
+    "Laddar"
   ],
   "Loading data...": [
     "Laddar data..."
@@ -919,9 +931,6 @@ export default {
   "New": [
     "Ny"
   ],
-  "New LVM volume group": [
-    "Ny LVM volymgrupp"
-  ],
   "No": [
     "Nej"
   ],
@@ -948,6 +957,9 @@ export default {
   ],
   "No devices found": [
     "Inga enheter hittades"
+  ],
+  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
+    ""
   ],
   "No iSCSI targets found.": [
     "Inga iSCSI mål hittades."
@@ -1008,9 +1020,6 @@ export default {
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
     "Offlineenheter måste aktiveras innan de formateras. Vänligen avmarkera eller aktivera enheterna listade nedan och försök igen"
-  ],
-  "Offload card": [
-    "Avlastningskort"
   ],
   "On boot": [
     "Vid uppstart"
@@ -1144,6 +1153,9 @@ export default {
   "Reboot": [
     "Starta om"
   ],
+  "Recommended": [
+    ""
+  ],
   "Register": [
     "Registrera"
   ],
@@ -1170,9 +1182,6 @@ export default {
   ],
   "Remove min channel filter": [
     "Ta bort minimum kanal filter"
-  ],
-  "Remove the configuration for this device": [
-    "Ta bort konfigurationen för den här enheten"
   ],
   "Repository load failed": [
     "Det gick inte att ladda förråd"
@@ -1213,15 +1222,6 @@ export default {
   "Select": [
     "Välj"
   ],
-  "Select a device to configure": [
-    "Välj en enhet att konfigurera"
-  ],
-  "Select a device to create %s": [
-    "Välj en enhet för att skapa %s"
-  ],
-  "Select a device to install the system": [
-    "Välj en enhet för att installera systemet"
-  ],
   "Select a disk": [
     "Välj en disk"
   ],
@@ -1254,6 +1254,9 @@ export default {
   ],
   "Select what to do with each partition.": [
     "Välj vad som ska göras med varje partition."
+  ],
+  "Selected disk (cannot be changed)": [
+    ""
   ],
   "Selected patterns": [
     "Valda mönster"
@@ -1367,9 +1370,6 @@ export default {
   "The configured LVM groups will remain at %s": [
     "De konfigurerade LVM-grupperna kommer att finnas kvar på %s"
   ],
-  "The configured partitions will be created as logical volumes": [
-    "De konfigurerade partitionerna kommer att skapas som logiska volymer"
-  ],
   "The content may be deleted": [
     "Innehållet kan komma att raderas"
   ],
@@ -1396,6 +1396,12 @@ export default {
   ],
   "The device will be used by the new system.": [
     "Enheten kommer att användas av det nya systemet."
+  ],
+  "The disk is used for LVM": [
+    ""
+  ],
+  "The disk is used for booting": [
+    ""
   ],
   "The encryption password did not work": [
     "Krypteringslösenordet fungerade inte"
@@ -1514,20 +1520,8 @@ export default {
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Denna åtgärd kan förstöra all data som lagras på enheterna som anges nedan. Vänligen bekräfta att du verkligen vill fortsätta."
   ],
-  "This device will contain any partition needed for booting": [
-    "Den här enheten kommer att innehålla alla partitioner som behövs för uppstart"
-  ],
-  "This device will contain the LVM group '%s'": [
-    "Den här enheten kommer att innehålla LVM-gruppen '%s'"
-  ],
-  "This device will contain the LVM group '%s' and any partition needed to boot": [
-    "Den här enheten kommer att innehålla LVM-gruppen '%s' och vilken partition som helst som behövs för att starta systemet"
-  ],
-  "This device will contain the configured LVM groups": [
-    "Den här enheten kommer att innehålla de konfigurerade LVM-grupperna"
-  ],
-  "This device will contain the configured LVM groups and any partition needed to boot": [
-    "Den här enheten kommer att innehålla de konfigurerade LVM-grupperna och alla partitioner som behövs för att starta systemet"
+  "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
+    ""
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "Detta värdnamn är dynamiskt och kan ändras efter en omstart eller nätverksuppdatering, som konfigurerats av den lokala nätverksadministratören."
@@ -1537,9 +1531,6 @@ export default {
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "Detta utrymme inkluderar bassystemet och de valda programvarumönsterna, om några."
-  ],
-  "This uses existing partitions at the device": [
-    "Detta använder befintliga partitioner på enheten"
   ],
   "TiB": [
     "TiB"

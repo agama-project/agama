@@ -22,22 +22,19 @@
 
 import React from "react";
 import { useNavigate, generatePath } from "react-router-dom";
-import { _, formatList } from "~/i18n";
-import { sprintf } from "sprintf-js";
-import { baseName, deviceLabel, formattedPath, SPACE_POLICIES } from "~/components/storage/utils";
-import { useAvailableDevices } from "~/queries/storage";
+import { _ } from "~/i18n";
+import { baseName, SPACE_POLICIES } from "~/components/storage/utils";
 import { apiModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { useDrive, useModel } from "~/queries/storage/config-model";
-import { useDrive as useDriveModel } from "~/hooks/storage/drive";
+import { useDrive } from "~/queries/storage/config-model";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { contentDescription } from "~/components/storage/utils/device";
+import DriveDeviceMenu from "~/components/storage/DriveDeviceMenu";
 import DeviceMenu from "~/components/storage/DeviceMenu";
 import DeviceHeader from "~/components/storage/DeviceHeader";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
 import { MenuHeader } from "~/components/core";
-import MenuDeviceDescription from "./MenuDeviceDescription";
 import {
   Card,
   CardBody,
@@ -126,276 +123,6 @@ const SpacePolicySelector = ({ drive, driveDevice }: DriveEditorProps) => {
   );
 };
 
-const SearchSelectorIntro = ({ drive }: { drive: apiModel.Drive }) => {
-  /** @todo Replace the useDrive hook from /queries by the hook from /hooks. */
-  const volumeGroups = useDriveModel(drive.name)?.getVolumeGroups() || [];
-  const driveModel = useDrive(drive.name);
-  if (!driveModel) return;
-
-  const { isBoot, isExplicitBoot, hasPv } = driveModel;
-  const vgName = volumeGroups[0]?.vgName;
-
-  const mainText = (): string => {
-    if (driveUtils.hasReuse(drive)) {
-      // The current device will be the only option to choose from
-      return _("This uses existing partitions at the device");
-    }
-
-    if (!driveUtils.hasFilesystem(drive)) {
-      // The current device will be the only option to choose from
-      if (hasPv) {
-        if (volumeGroups.length > 1) {
-          if (isExplicitBoot) {
-            return _(
-              "This device will contain the configured LVM groups and any partition needed to boot",
-            );
-          }
-          return _("This device will contain the configured LVM groups");
-        }
-        if (isExplicitBoot) {
-          return sprintf(
-            // TRANSLATORS: %s is the name of the LVM
-            _("This device will contain the LVM group '%s' and any partition needed to boot"),
-            vgName,
-          );
-        }
-
-        // TRANSLATORS: %s is the name of the LVM
-        return sprintf(_("This device will contain the LVM group '%s'"), vgName);
-      }
-
-      // The current device will be the only option to choose from
-      if (isExplicitBoot) {
-        return _("This device will contain any partition needed for booting");
-      }
-
-      // I guess 'create new LVM' is not a reasonable option here
-      return _("Select a device to configure");
-    }
-
-    if (driveUtils.hasRoot(drive)) {
-      return _("Select a device to install the system");
-    }
-
-    const mountPaths = drive.partitions
-      .filter((p) => !p.name)
-      .map((p) => formattedPath(p.mountPath));
-
-    return sprintf(
-      // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
-      // single mount point in the singular case).
-      _("Select a device to create %s"),
-      formatList(mountPaths),
-    );
-  };
-
-  const extraText = (): string => {
-    // Nothing to add in these cases
-    if (driveUtils.hasReuse(drive)) return;
-    if (!driveUtils.hasFilesystem(drive)) return;
-
-    const name = baseName(drive.name);
-
-    if (hasPv) {
-      if (volumeGroups.length > 1) {
-        if (isExplicitBoot) {
-          return sprintf(
-            // TRANSLATORS: %s is the name of the disk (eg. sda)
-            _("%s will still contain the configured LVM groups and any partition needed to boot"),
-            name,
-          );
-        }
-
-        // TRANSLATORS: %s is the name of the disk (eg. sda)
-        return sprintf(_("The configured LVM groups will remain at %s"), name);
-      }
-
-      if (isExplicitBoot) {
-        return sprintf(
-          // TRANSLATORS: %1$s is the name of the disk (eg. sda) and %2$s the name of the LVM
-          _("%1$s will still contain the LVM group '%2$s' and any partition needed to boot"),
-          name,
-          vgName,
-        );
-      }
-
-      return sprintf(
-        // TRANSLATORS: %1$s is the name of the LVM and %2$s the name of the disk (eg. sda)
-        _("The LVM group '%1$s' will remain at %2$s"),
-        vgName,
-        name,
-      );
-    }
-
-    if (isExplicitBoot) {
-      // TRANSLATORS: %s is the name of the disk (eg. sda)
-      return sprintf(_("Partitions needed for booting will remain at %s"), name);
-    }
-
-    if (isBoot) {
-      return _("Partitions needed for booting will also be adapted");
-    }
-  };
-
-  return <MenuHeader title={mainText()} description={extraText()} />;
-};
-
-const DiskSelectorTitle = ({ device, isSelected = false }) => {
-  const Name = () => (isSelected ? <b>{deviceLabel(device)}</b> : deviceLabel(device));
-  const Systems = () => (
-    <Flex columnGap={{ default: "columnGapXs" }}>
-      {device.systems.map((s, i) => (
-        <Label key={i} isCompact>
-          {s}
-        </Label>
-      ))}
-    </Flex>
-  );
-
-  return (
-    <Split hasGutter>
-      <Name />
-      <Systems />
-    </Split>
-  );
-};
-
-const SearchSelectorMultipleOptions = ({ selected, withNewVg = false, onChange }) => {
-  const navigate = useNavigate();
-  const devices = useAvailableDevices();
-
-  const NewVgOption = () => {
-    if (withNewVg)
-      return (
-        <MenuItem
-          component="a"
-          onClick={() => navigate(PATHS.root)}
-          itemId="lvm"
-          description={_("The configured partitions will be created as logical volumes")}
-        >
-          <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
-            <span>{_("New LVM volume group")}</span>
-          </Flex>
-        </MenuItem>
-      );
-  };
-
-  return (
-    <>
-      {devices.map((device) => {
-        const isSelected = device.sid === selected.sid;
-
-        return (
-          <MenuItem
-            key={device.sid}
-            itemId={device.sid}
-            isSelected={isSelected}
-            description={<MenuDeviceDescription device={device} />}
-            onClick={() => onChange(device.name)}
-          >
-            <DiskSelectorTitle device={device} isSelected={isSelected} />
-          </MenuItem>
-        );
-      })}
-      <NewVgOption />
-    </>
-  );
-};
-
-const SearchSelectorSingleOption = ({ selected }) => {
-  return (
-    <MenuItem
-      isSelected
-      key={selected.sid}
-      itemId={selected.sid}
-      description={<MenuDeviceDescription device={selected} />}
-    >
-      <DiskSelectorTitle device={selected} isSelected />
-    </MenuItem>
-  );
-};
-
-const SearchSelectorOptions = ({ drive, selected, onChange }) => {
-  const driveModel = useDrive(drive.name);
-  if (!driveModel) return;
-
-  const { isExplicitBoot, hasPv } = driveModel;
-  // const boot = isExplicitBoot(drive.name);
-
-  if (driveUtils.hasReuse(drive)) return <SearchSelectorSingleOption selected={selected} />;
-
-  if (!driveUtils.hasFilesystem(drive)) {
-    if (hasPv || isExplicitBoot) {
-      return <SearchSelectorSingleOption selected={selected} />;
-    }
-
-    return <SearchSelectorMultipleOptions selected={selected} onChange={onChange} />;
-  }
-
-  // TODO: use withNewVg prop once LVM is added.
-  return <SearchSelectorMultipleOptions selected={selected} onChange={onChange} />;
-};
-
-const SearchSelector = ({ drive, selected, onChange }) => {
-  return (
-    <MenuGroup label={<SearchSelectorIntro drive={drive} />}>
-      <Divider />
-      <SearchSelectorOptions drive={drive} selected={selected} onChange={onChange} />
-    </MenuGroup>
-  );
-};
-
-const RemoveDriveOption = ({ drive }) => {
-  const driveModel = useDrive(drive.name);
-  const { hasAdditionalDrives } = useModel();
-
-  if (!driveModel) return;
-
-  const { isExplicitBoot, hasPv, delete: deleteDrive } = driveModel;
-
-  // When no additional drives has been added, the "Do not use" button can be confusing so it is
-  // omitted for all drives.
-  if (!hasAdditionalDrives) return;
-
-  // FIXME: in these two cases the button should likely be present, but disabled and with an
-  // explanation of why those particular drive definitions cannot be removed.
-  if (isExplicitBoot) return;
-  if (hasPv) return;
-
-  return (
-    <>
-      <Divider component="hr" />
-      <MenuItem
-        isDanger
-        description={_("Remove the configuration for this device")}
-        onClick={deleteDrive}
-      >
-        {_("Do not use")}
-      </MenuItem>
-    </>
-  );
-};
-
-const DriveSelector = ({ drive, selected, toggleAriaLabel }) => {
-  const driveHandler = useDrive(drive.name);
-  const onDriveChange = (newDriveName: string) => {
-    driveHandler.switch(newDriveName);
-  };
-
-  return (
-    <DeviceMenu
-      title={<b aria-hidden>{deviceLabel(selected)}</b>}
-      ariaLabel={toggleAriaLabel}
-      activeItemId={selected.sid}
-    >
-      <MenuList>
-        <SearchSelector drive={drive} selected={selected} onChange={onDriveChange} />
-        <RemoveDriveOption drive={drive} />
-      </MenuList>
-    </DeviceMenu>
-  );
-};
-
 const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
   const { isBoot, hasPv } = useDrive(drive.name);
 
@@ -452,12 +179,10 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
     // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
     return _("Use %s");
   };
-  // TRANSLATORS: a disk drive
-  const toggleAriaLabel = _("Drive");
 
   return (
     <DeviceHeader title={text(drive)}>
-      <DriveSelector drive={drive} selected={driveDevice} toggleAriaLabel={toggleAriaLabel} />
+      <DriveDeviceMenu drive={drive} selected={driveDevice} />
     </DeviceHeader>
   );
 };

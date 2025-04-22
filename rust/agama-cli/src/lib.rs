@@ -18,11 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_lib::auth::AuthToken;
 use agama_lib::manager::FinishMethod;
-use anyhow::{anyhow, Context};
+use anyhow::Context;
+use auth_tokens_file::AuthTokensFile;
 use clap::{Args, Parser};
 
 mod auth;
+mod auth_tokens_file;
 mod commands;
 mod config;
 mod error;
@@ -39,7 +42,6 @@ use agama_lib::{
 use auth::run as run_auth_cmd;
 use commands::Commands;
 use config::run as run_config_cmd;
-use inquire::Confirm;
 use logs::run as run_logs_cmd;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
@@ -48,7 +50,6 @@ use std::fs;
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::PathBuf;
 use std::{
-    collections::HashMap,
     process::{ExitCode, Termination},
     thread::sleep,
     time::Duration,
@@ -58,10 +59,11 @@ use url::Url;
 /// Agama's CLI global options
 #[derive(Args)]
 pub struct GlobalOpts {
-    #[clap(long, default_value = "http://localhost/api")]
-    /// URI pointing to Agama's remote API. If not provided, default https://localhost/api is
-    /// used
-    pub api: String,
+    #[clap(long, default_value = "http://localhost")]
+    /// URI pointing to Agama's remote host.
+    ///
+    /// Examples: https://my-server.lan my-server.local localhost:10443
+    pub host: String,
 
     #[clap(long, default_value = "false")]
     /// Whether to accept invalid (self-signed, ...) certificates or not
@@ -183,27 +185,6 @@ async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
     Ok(ManagerClient::new(conn).await?)
 }
 
-/// True if use of the remote API is allowed (yes by default when the API is secure, the user is
-/// asked if the API is insecure - e.g. when it uses self-signed certificate)
-async fn allowed_insecure_api(use_insecure: bool, api_url: &str) -> Result<bool, ServiceError> {
-    // fake client used for remote site detection
-    let mut ping_client = BaseHTTPClient::default();
-    ping_client.base_url = api_url.to_string();
-
-    // decide whether access to remote site has to be insecure (self-signed certificate or not)
-    match ping_client.get::<HashMap<String, String>>("/ping").await {
-        // Problem with http remote API reachability
-        Err(ServiceError::HTTPError(_)) => Ok(use_insecure || Confirm::new("There was a problem with the remote API and it is treated as insecure. Do you want to continue?")
-            .with_default(false)
-            .prompt()
-            .unwrap_or(false)),
-        // another error
-        Err(e) => Err(e),
-        // success doesn't bother us here
-        Ok(_) => Ok(false)
-    }
-}
-
 pub fn download_file(url: &str, path: &PathBuf) -> Result<(), ServiceError> {
     let mut file = fs::OpenOptions::new()
         .create(true)
@@ -220,21 +201,13 @@ pub fn download_file(url: &str, path: &PathBuf) -> Result<(), ServiceError> {
 }
 
 async fn build_http_client(
-    api_url: &str,
+    api_url: Url,
     insecure: bool,
     authenticated: bool,
 ) -> Result<BaseHTTPClient, ServiceError> {
-    let parsed = Url::parse(&api_url).context("Parsing API URL")?;
-    if parsed.cannot_be_a_base() {
-        return Err(ServiceError::Anyhow(anyhow!(
-            "Do not try data: or mailto: as the API URL"
-        )));
-    }
+    let mut client = BaseHTTPClient::new(api_url)?;
 
-    let mut client = BaseHTTPClient::default();
-    client.base_url = api_url.to_string();
-
-    if allowed_insecure_api(insecure, &client.base_url).await? {
+    if insecure {
         client = client.insecure();
     }
 
@@ -242,20 +215,51 @@ async fn build_http_client(
     // available and those which not (or don't need it)
     if authenticated {
         // this deals with authentication need inside
-        client.authenticated()
+        if let Some(token) = find_client_token(&client.base_url) {
+            return client.authenticated(&token);
+        }
+        return Err(ServiceError::NotAuthenticated);
     } else {
         client.unauthenticated()
     }
 }
 
+/// Build the API url from the host.
+///
+/// * `host`: ip or host name. The protocol is optional, using https if omitted (e.g, "myserver",
+/// "http://myserver", "192.168.100.101").
+fn api_url(host: String) -> anyhow::Result<Url> {
+    let sanitized_host = host.trim_end_matches('/').to_string();
+
+    let url_str = if sanitized_host.starts_with("http://") || sanitized_host.starts_with("https://")
+    {
+        format!("{}/api/", sanitized_host)
+    } else {
+        format!("https://{}/api/", sanitized_host)
+    };
+
+    Url::parse(&url_str).context("The given URL is not valid.")
+}
+
+fn find_client_token(api_url: &Url) -> Option<AuthToken> {
+    let hostname = api_url.host_str().unwrap_or("localhost");
+    if let Ok(hosts_file) = AuthTokensFile::read() {
+        if let Some(token) = hosts_file.get_token(hostname) {
+            return Some(token);
+        }
+    }
+
+    AuthToken::master()
+}
+
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
     // somehow check whether we need to ask user for self-signed certificate acceptance
 
-    let api_url = cli.opts.api.trim_end_matches('/').to_string();
+    let api_url = api_url(cli.opts.host)?;
 
     match cli.command {
         Commands::Config(subcommand) => {
-            let client = build_http_client(&api_url, cli.opts.insecure, true).await?;
+            let client = build_http_client(api_url, cli.opts.insecure, true).await?;
             run_config_cmd(client, subcommand).await?
         }
         Commands::Probe => {
@@ -264,7 +268,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
             probe().await?
         }
         Commands::Profile(subcommand) => {
-            let client = build_http_client(&api_url, cli.opts.insecure, true).await?;
+            let client = build_http_client(api_url, cli.opts.insecure, true).await?;
             run_profile_cmd(client, subcommand).await?;
         }
         Commands::Install => {
@@ -277,16 +281,16 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
             finish(&manager, method).await?;
         }
         Commands::Questions(subcommand) => {
-            let client = build_http_client(&api_url, cli.opts.insecure, true).await?;
+            let client = build_http_client(api_url, cli.opts.insecure, true).await?;
             run_questions_cmd(client, subcommand).await?
         }
         Commands::Logs(subcommand) => {
-            let client = build_http_client(&api_url, cli.opts.insecure, true).await?;
+            let client = build_http_client(api_url, cli.opts.insecure, true).await?;
             run_logs_cmd(client, subcommand).await?
         }
         Commands::Download { url, destination } => download_file(&url, &destination)?,
         Commands::Auth(subcommand) => {
-            let client = build_http_client(&api_url, cli.opts.insecure, false).await?;
+            let client = build_http_client(api_url, cli.opts.insecure, false).await?;
             run_auth_cmd(client, subcommand).await?;
         }
     };

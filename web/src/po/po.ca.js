@@ -153,9 +153,6 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Se suprimirà qualsevol partició existent i es perdran totes les dades del disc."
   ],
-  "As a new partition on %1$s (%2$s)": [
-    "Com a partició nova a %1$s (%2$s)"
-  ],
   "At least one address must be provided for selected mode": [
     "S'ha de proporcionar almenys una adreça per al mode seleccionat."
   ],
@@ -222,6 +219,9 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "Abans de començar la instal·lació, heu de resoldre els problemes següents:"
   ],
+  "Beta": [
+    ""
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -287,6 +287,9 @@ export default {
   ],
   "Collapse the list of planned actions": [
     "Replega la llista d'accions previstes"
+  ],
+  "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
+    ""
   ],
   "Configure DASD": [
     "Configuració de DASD"
@@ -435,9 +438,6 @@ export default {
   "Delete current content": [
     "Suprimeix el contingut actual"
   ],
-  "Delete the volume group and its logical volumes": [
-    "Suprimeix el grup de volums i els seus volums lògics"
-  ],
   "Delete volume group": [
     "Suprimeix el grup de volums"
   ],
@@ -489,9 +489,6 @@ export default {
   "Download logs": [
     "Baixa els registres"
   ],
-  "Drive": [
-    "Unitat"
-  ],
   "During installation, several actions will be performed to setup the layout shown at the table below.": [
     "Durant la instal·lació, es fan diverses accions per configurar el disseny que es mostra a la taula següent."
   ],
@@ -503,9 +500,6 @@ export default {
   ],
   "Edit connection %s": [
     "Edita la connexió %s"
-  ],
-  "Edit iSCSI Initiator": [
-    "Edita l'iniciador iSCSI"
   ],
   "Edit user": [
     "Edita l'usuari"
@@ -560,6 +554,9 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extensions": [
+    ""
   ],
   "F2FS": [
     "F2FS"
@@ -658,6 +655,12 @@ export default {
   "Hostname": [
     "Nom d'amfitrió"
   ],
+  "Hostname could not be updated": [
+    ""
+  ],
+  "Hostname successfully updated": [
+    ""
+  ],
   "I have read and accept the [license] for %s": [
     "He llegit i accepto la [llicència] de %s"
   ],
@@ -699,6 +702,12 @@ export default {
   ],
   "Initiator name": [
     "Nom de l'iniciador"
+  ],
+  "Initiator name could not be updated": [
+    ""
+  ],
+  "Initiator name successfully updated": [
+    ""
   ],
   "Install": [
     "Instal·la"
@@ -795,6 +804,9 @@ export default {
   ],
   "Limited": [
     "Limitada"
+  ],
+  "Loading": [
+    "Carregant"
   ],
   "Loading data...": [
     "Carregant dades..."
@@ -919,9 +931,6 @@ export default {
   "New": [
     "Nova"
   ],
-  "New LVM volume group": [
-    "Grup de volums nou d'LVM"
-  ],
   "No": [
     "No"
   ],
@@ -948,6 +957,9 @@ export default {
   ],
   "No devices found": [
     "No s'ha trobat cap dispositiu"
+  ],
+  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
+    ""
   ],
   "No iSCSI targets found.": [
     "No s'ha trobat cap destinació iSCSI."
@@ -1008,9 +1020,6 @@ export default {
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
     "Els dispositius fora de línia s'han d'activar abans de formatar-los. Si us plau, desmarqueu o activeu els dispositius que s'indiquen a continuació i torneu-ho a provar."
-  ],
-  "Offload card": [
-    "Targeta de descàrrega"
   ],
   "On boot": [
     "A l'arrencada"
@@ -1144,6 +1153,9 @@ export default {
   "Reboot": [
     "Reinicia"
   ],
+  "Recommended": [
+    ""
+  ],
   "Register": [
     "Registra"
   ],
@@ -1170,9 +1182,6 @@ export default {
   ],
   "Remove min channel filter": [
     "Suprimeix el filtre del canal mínim"
-  ],
-  "Remove the configuration for this device": [
-    "Suprimeix la configuració d'aquest dispositiu"
   ],
   "Repository load failed": [
     "Ha fallat carregar el repositori."
@@ -1213,15 +1222,6 @@ export default {
   "Select": [
     "Selecciona"
   ],
-  "Select a device to configure": [
-    "Seleccioneu un dispositiu per configurar-lo"
-  ],
-  "Select a device to create %s": [
-    "Seleccioneu un dispositiu per crear-hi %s"
-  ],
-  "Select a device to install the system": [
-    "Seleccioneu un dispositiu on instal·lar el sistema"
-  ],
   "Select a disk": [
     "Seleccioneu un disc"
   ],
@@ -1254,6 +1254,9 @@ export default {
   ],
   "Select what to do with each partition.": [
     "Seleccioneu què voleu fer amb cada partició."
+  ],
+  "Selected disk (cannot be changed)": [
+    ""
   ],
   "Selected patterns": [
     "Patrons seleccionats"
@@ -1367,9 +1370,6 @@ export default {
   "The configured LVM groups will remain at %s": [
     "Els grups d'LVM configurats es mantindran a %s"
   ],
-  "The configured partitions will be created as logical volumes": [
-    "Les particions configurades es crearan com a volums lògics"
-  ],
   "The content may be deleted": [
     "El contingut pot suprimir-se"
   ],
@@ -1396,6 +1396,12 @@ export default {
   ],
   "The device will be used by the new system.": [
     "El sistema nou usarà el dispositiu."
+  ],
+  "The disk is used for LVM": [
+    ""
+  ],
+  "The disk is used for booting": [
+    ""
   ],
   "The encryption password did not work": [
     "La contrasenya d'encriptació no ha funcionat."
@@ -1514,20 +1520,8 @@ export default {
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Aquesta acció podria destruir qualsevol dada emmagatzemada als dispositius que s'indiquen a continuació. Si us plau, confirmeu que realment voleu continuar."
   ],
-  "This device will contain any partition needed for booting": [
-    "Aquest dispositiu contindrà qualsevol partició necessària per a arrencar"
-  ],
-  "This device will contain the LVM group '%s'": [
-    "Aquest dispositiu contindrà el grup d'LVM %s"
-  ],
-  "This device will contain the LVM group '%s' and any partition needed to boot": [
-    "Aquest dispositiu contindrà el grup d'LVM %s i qualsevol partició necessària per a arrencar"
-  ],
-  "This device will contain the configured LVM groups": [
-    "Aquest dispositiu contindrà els grups d'LVM configurats"
-  ],
-  "This device will contain the configured LVM groups and any partition needed to boot": [
-    "Aquest dispositiu contindrà els grups d'LVM configurats i qualsevol partició necessària per a arrencar"
+  "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
+    ""
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "Aquest nom d'amfitrió és dinàmic i pot canviar després d'un reinici o una actualització per xarxa, tal com el configura l'administrador de la xarxa local."
@@ -1537,9 +1531,6 @@ export default {
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "Aquest espai inclou el sistema de base i els patrons de programari seleccionats, si n'hi ha."
-  ],
-  "This uses existing partitions at the device": [
-    "Això usa les particions existents al dispositiu"
   ],
   "TiB": [
     "TiB"

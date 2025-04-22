@@ -20,7 +20,9 @@
 
 use agama_lib::{auth::AuthToken, error::ServiceError};
 use clap::Subcommand;
+use url::Url;
 
+use crate::auth_tokens_file::AuthTokensFile;
 use crate::error::CliError;
 use agama_lib::base_http_client::BaseHTTPClient;
 use inquire::Password;
@@ -75,8 +77,8 @@ pub async fn run(client: BaseHTTPClient, subcommand: AuthCommands) -> anyhow::Re
 
     match subcommand {
         AuthCommands::Login => login(auth_client, read_password()?).await,
-        AuthCommands::Logout => logout(),
-        AuthCommands::Show => show(),
+        AuthCommands::Logout => logout(auth_client),
+        AuthCommands::Show => show(&auth_client.api.base_url),
     }
 }
 
@@ -112,21 +114,32 @@ async fn login(client: AuthHTTPClient, password: String) -> anyhow::Result<()> {
     // 1) ask web server for JWT
     let res = client.authenticate(password).await?;
     let token = AuthToken::new(&res);
-    Ok(token.write_user_token()?)
+    let mut hosts_config = AuthTokensFile::read().unwrap_or_default();
+    let hostname = client.api.base_url.host_str().unwrap_or("localhost");
+    hosts_config.update_token(hostname, &token);
+    Ok(hosts_config.write()?)
 }
 
 /// Releases JWT
-fn logout() -> anyhow::Result<()> {
-    Ok(AuthToken::remove_user_token()?)
+fn logout(client: AuthHTTPClient) -> anyhow::Result<()> {
+    let hostname = client.api.base_url.host_str().unwrap_or("localhost");
+    if let Ok(mut file) = AuthTokensFile::read() {
+        file.remove_host(hostname);
+        file.write()?;
+    }
+    Ok(())
 }
 
 /// Shows stored JWT on stdout
-fn show() -> anyhow::Result<()> {
-    // we do not care if jwt() fails or not. If there is something to print, show it otherwise
-    // stay silent
-    if let Some(token) = AuthToken::find() {
-        println!("{}", token.as_str());
+fn show(url: &Url) -> anyhow::Result<()> {
+    let hostname = url.host_str().unwrap_or("localhost");
+    if let Ok(file) = AuthTokensFile::read() {
+        if let Some(token) = file.get_token(hostname) {
+            println!("{}", token.as_str());
+            return Ok(());
+        }
     }
 
+    println!("Not authenticated in {}", hostname);
     Ok(())
 }

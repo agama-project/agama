@@ -31,6 +31,7 @@ mod dbus;
 mod error;
 mod model;
 mod proxies;
+mod streams;
 mod watcher;
 
 pub use adapter::NetworkManagerAdapter;

@@ -99,8 +99,7 @@ mod test {
     async fn localization_store(
         mock_server_url: String,
     ) -> Result<LocalizationStore, ServiceError> {
-        let mut bhc = BaseHTTPClient::default();
-        bhc.base_url = mock_server_url;
+        let bhc = BaseHTTPClient::new(mock_server_url)?;
         let client = LocalizationHTTPClient::new(bhc)?;
         LocalizationStore::new_with_client(client)
     }
