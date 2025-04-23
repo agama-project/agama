@@ -178,31 +178,24 @@
         <package name="spice-vdagent"/>
     </packages>
 
-    <!-- additional packages for the Leap distributions -->
-    <packages type="image" profiles="Leap_16.0,Leap_16.0_PXE">
+    <!-- common packages for openSUSE Tumbleweed and Leap distributions -->
+    <packages type="image" profiles="Leap_16.0,Leap_16.0_PXE,openSUSE,openSUSE_PXE">
         <package name="agama-products-opensuse"/>
         <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
-        <package name="openSUSE-repos-Leap"/>
+        <package name="MozillaFirefox-branding-openSUSE"/>
+        <package name="openSUSE-build-key"/>
         <package name="patterns-openSUSE-base"/>
         <package name="staging-build-key"/>
-        <package name="openSUSE-build-key"/>
+    </packages>
+    <!-- additional packages for the Leap distributions -->
+    <packages type="image" profiles="Leap_16.0,Leap_16.0_PXE">
+        <package name="openSUSE-repos-Leap"/>
         <package name="kernel-default-extra"/>
         <package name="kernel-default-optional"/>
     </packages>
-    <packages type="image" profiles="Leap_16.0">
-        <package name="MozillaFirefox-branding-openSUSE"/>
-    </packages>
-    <!-- additional packages for the openSUSE distributions -->
+    <!-- additional packages for the openSUSE Tumbleweed distribution -->
     <packages type="image" profiles="openSUSE,openSUSE_PXE">
-        <package name="agama-products-opensuse"/>
-        <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
         <package name="openSUSE-repos-Tumbleweed"/>
-        <package name="patterns-openSUSE-base"/>
-        <package name="staging-build-key"/>
-        <package name="openSUSE-build-key"/>
-    </packages>
-    <packages type="image" profiles="openSUSE">
-        <package name="MozillaFirefox-branding-openSUSE"/>
     </packages>
     <!-- additional packages for the SLE distributions -->
     <packages type="image" profiles="SUSE_SLE_16,SUSE_SLE_16_PXE,SUSE_SLE_16_PXE_MINI">
