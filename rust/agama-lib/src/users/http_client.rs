@@ -19,40 +19,58 @@
 // find current contact information at www.suse.com.
 
 use super::client::{FirstUser, RootUser};
+use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
 use crate::users::model::RootPatchSettings;
-use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
+
+#[derive(Debug, thiserror::Error)]
+pub enum UsersHTTPClientError {
+    #[error(transparent)]
+    HTTP(#[from] BaseHTTPClientError),
+    #[error("Wrong user parameters: '{0:?}'")]
+    WrongUser(Vec<String>),
+    #[error("Could not parse user issues: {0}")]
+    InvalidUserIssues(#[from] serde_json::Error),
+}
 
 pub struct UsersHTTPClient {
     client: BaseHTTPClient,
 }
 
 impl UsersHTTPClient {
-    pub fn new(client: BaseHTTPClient) -> Result<Self, ServiceError> {
+    pub fn new(client: BaseHTTPClient) -> Result<Self, UsersHTTPClientError> {
         Ok(Self { client })
     }
 
     /// Returns the settings for first non admin user
-    pub async fn first_user(&self) -> Result<FirstUser, ServiceError> {
-        self.client.get("/users/first").await
+    pub async fn first_user(&self) -> Result<FirstUser, UsersHTTPClientError> {
+        Ok(self.client.get("/users/first").await?)
     }
 
     /// Set the configuration for the first user
-    pub async fn set_first_user(&self, first_user: &FirstUser) -> Result<(), ServiceError> {
+    pub async fn set_first_user(&self, first_user: &FirstUser) -> Result<(), UsersHTTPClientError> {
         let result = self.client.put_void("/users/first", first_user).await;
-        if let Err(ServiceError::BackendError(422, ref issues_s)) = result {
-            let issues: Vec<String> = serde_json::from_str(issues_s)?;
-            return Err(ServiceError::WrongUser(issues));
+
+        if let Err(BaseHTTPClientError::BackendError(422, ref issues_s)) = result {
+            return match serde_json::from_str::<Vec<String>>(issues_s) {
+                Ok(issues) => Err(UsersHTTPClientError::WrongUser(issues)),
+                Err(e) => Err(UsersHTTPClientError::InvalidUserIssues(e)),
+            };
         }
-        result
+
+        Ok(result?)
     }
 
-    pub async fn root_user(&self) -> Result<RootUser, ServiceError> {
-        self.client.get("/users/root").await
+    pub async fn root_user(&self) -> Result<RootUser, UsersHTTPClientError> {
+        Ok(self.client.get("/users/root").await?)
     }
 
     /// SetRootPassword method.
     /// Returns 0 if successful (always, for current backend)
-    pub async fn set_root_password(&self, value: &str, hashed: bool) -> Result<u32, ServiceError> {
+    pub async fn set_root_password(
+        &self,
+        value: &str,
+        hashed: bool,
+    ) -> Result<u32, UsersHTTPClientError> {
         let rps = RootPatchSettings {
             ssh_public_key: None,
             password: Some(value.to_owned()),
@@ -64,7 +82,7 @@ impl UsersHTTPClient {
 
     /// SetRootSSHKey method.
     /// Returns 0 if successful (always, for current backend)
-    pub async fn set_root_sshkey(&self, value: &str) -> Result<u32, ServiceError> {
+    pub async fn set_root_sshkey(&self, value: &str) -> Result<u32, UsersHTTPClientError> {
         let rps = RootPatchSettings {
             ssh_public_key: Some(value.to_owned()),
             password: None,

@@ -47,8 +47,6 @@ pub enum ServiceError {
     // FIXME: It is too generic and starting to looks like an Anyhow error
     #[error("Network client error: '{0}'")]
     NetworkClientError(String),
-    #[error("Wrong user parameters: '{0:?}'")]
-    WrongUser(Vec<String>),
     #[error("Registration failed: '{0}'")]
     FailedRegistration(String),
     #[error("Failed to find these patterns: {0:?}")]
