@@ -150,7 +150,8 @@ mod test {
                 .body(
                     r#"{
                     "key": "",
-                    "email": ""
+                    "email": "",
+                    "url": ""
                 }"#,
                 );
         });
