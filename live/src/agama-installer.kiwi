@@ -187,6 +187,7 @@
         <package name="staging-build-key"/>
         <package name="openSUSE-build-key"/>
         <package name="kernel-default-extra"/>
+        <package name="kernel-default-optional"/>
     </packages>
     <packages type="image" profiles="Leap_16.0">
         <package name="MozillaFirefox-branding-openSUSE"/>
@@ -213,6 +214,7 @@
     <packages type="image" profiles="SUSE_SLE_16,SUSE_SLE_16_PXE">
         <package name="MozillaFirefox-branding-SLE"/>
         <package name="kernel-default-extra"/>
+        <package name="kernel-default-optional"/>
     </packages>
     <packages type="bootstrap">
         <package name="udev"/>
