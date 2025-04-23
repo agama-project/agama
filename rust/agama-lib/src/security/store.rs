@@ -44,12 +44,12 @@ impl SecurityStore {
             Some(fingerprints)
         };
         Ok(SecuritySettings {
-            ssl_fingerprints: opt_fps,
+            ssl_certificates: opt_fps,
         })
     }
 
     pub async fn store(&self, settings: &SecuritySettings) -> Result<(), ServiceError> {
-        if let Some(fingerprints) = &settings.ssl_fingerprints {
+        if let Some(fingerprints) = &settings.ssl_certificates {
             self.security_client
                 .set_ssl_fingerprints(fingerprints)
                 .await?

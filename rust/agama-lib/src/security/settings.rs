@@ -30,12 +30,14 @@ use super::model::SSLFingerprint;
 pub struct SecuritySettings {
     /// List of user selected patterns to install.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub ssl_fingerprints: Option<Vec<SSLFingerprint>>,
+    // when we add support for remote URL here it should be vector of SSL
+    // certificates which will include flatten fingerprint
+    pub ssl_certificates: Option<Vec<SSLFingerprint>>,
 }
 
 impl SecuritySettings {
     pub fn to_option(self) -> Option<Self> {
-        if self.ssl_fingerprints.is_none() {
+        if self.ssl_certificates.is_none() {
             None
         } else {
             Some(self)

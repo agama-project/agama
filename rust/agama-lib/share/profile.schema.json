@@ -102,33 +102,25 @@
       "title": "Security settings",
       "type": "object",
       "properties": {
-        "sslFingerprints": {
-          "title": "List of SSL fingerprints to accept if unknown certificate appears",
+        "sslCertificates": {
+          "title": "List of SSL certificates to add to system",
           "type": "array",
           "items": {
             "type": "object",
             "properties": {
               "fingerprint": {
-                "title": "SSL fingerprint value",
+                "title": "fingerprint of ssl certificate",
                 "type": "string",
                 "examples": ["A8:DE:08:B1:57:52:FE:70:DF:D5:31:EA:E3:53:BB:39:EE:01:FF:B9"] 
               },
               "algorithm": {
-                "title": "SSL fingerprint algorithm used to compute it",
+                "title": "fingerprint algorithm used to compute it",
                 "type": "string",
                 "enum": ["SHA1", "SHA256"],
                 "examples": ["SHA1"] 
               }
-
-            }
-          }
-        },
-        "packages": {
-          "title": "List of packages to install",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "examples": ["vim"]
+            },
+            "required": ["fingerprint", "algorithm"]
           }
         }
       }
