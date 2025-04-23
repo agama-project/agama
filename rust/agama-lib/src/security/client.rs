@@ -30,7 +30,7 @@ pub struct SecurityClient<'a> {
     security_proxy: SecurityProxy<'a>,
 }
 
-impl<'a> SecurityClient<'a> {
+impl SecurityClient<'_> {
     pub async fn new(connection: Connection) -> Result<Self, ServiceError> {
         Ok(Self {
             security_proxy: SecurityProxy::new(&connection).await?,
@@ -55,7 +55,7 @@ impl<'a> SecurityClient<'a> {
         list: &Vec<SSLFingerprint>,
     ) -> Result<(), ServiceError> {
         let dbus_list: Vec<(&str, &str)> = list
-            .into_iter()
+            .iter()
             .map(|s| (s.algorithm.to_str(), s.fingerprint.as_str()))
             .collect();
         self.security_proxy.set_ssl_fingerprints(&dbus_list).await?;
