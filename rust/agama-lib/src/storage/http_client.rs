@@ -21,9 +21,16 @@
 //! Implements a client to access Agama's storage service.
 use serde_json::value::RawValue;
 
-use crate::base_http_client::BaseHTTPClient;
-use crate::storage::StorageSettings;
-use crate::ServiceError;
+use crate::{
+    base_http_client::{BaseHTTPClient, BaseHTTPClientError},
+    storage::StorageSettings,
+};
+
+#[derive(Debug, thiserror::Error)]
+pub enum StorageHTTPClientError {
+    #[error(transparent)]
+    HTTP(#[from] BaseHTTPClientError),
+}
 
 pub struct StorageHTTPClient {
     client: BaseHTTPClient,
@@ -34,12 +41,12 @@ impl StorageHTTPClient {
         Self { client: base }
     }
 
-    pub async fn get_config(&self) -> Result<Option<StorageSettings>, ServiceError> {
-        self.client.get("/storage/config").await
+    pub async fn get_config(&self) -> Result<Option<StorageSettings>, StorageHTTPClientError> {
+        Ok(self.client.get("/storage/config").await?)
     }
 
-    pub async fn set_config(&self, config: &StorageSettings) -> Result<(), ServiceError> {
-        self.client.put_void("/storage/config", config).await
+    pub async fn set_config(&self, config: &StorageSettings) -> Result<(), StorageHTTPClientError> {
+        Ok(self.client.put_void("/storage/config", config).await?)
     }
 }
 
@@ -52,13 +59,13 @@ impl ISCSIHTTPClient {
         Self { client: base }
     }
 
-    pub async fn get_config(&self) -> Result<Option<StorageSettings>, ServiceError> {
+    pub async fn get_config(&self) -> Result<Option<StorageSettings>, StorageHTTPClientError> {
         // TODO: implement it as part of next step
         //self.client.get("/storage/config").await
         Ok(None)
     }
 
-    pub async fn set_config(&self, config: &Box<RawValue>) -> Result<(), ServiceError> {
-        self.client.post_void("/iscsi/config", config).await
+    pub async fn set_config(&self, config: &Box<RawValue>) -> Result<(), StorageHTTPClientError> {
+        Ok(self.client.post_void("/iscsi/config", config).await?)
     }
 }
