@@ -18,6 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use std::str::FromStr;
+
 use zbus::Connection;
 
 use crate::error::ServiceError;
@@ -44,7 +46,7 @@ impl SecurityClient<'_> {
             .map(|(alg, value)| {
                 Ok(SSLFingerprint {
                     fingerprint: value,
-                    algorithm: alg.try_into()?,
+                    algorithm: super::model::SSLFingerprintAlgorithm::from_str(&alg)?,
                 })
             })
             .collect()
@@ -56,7 +58,7 @@ impl SecurityClient<'_> {
     ) -> Result<(), ServiceError> {
         let dbus_list: Vec<(&str, &str)> = list
             .iter()
-            .map(|s| (s.algorithm.to_str(), s.fingerprint.as_str()))
+            .map(|s| (s.algorithm.clone().into(), s.fingerprint.as_str()))
             .collect();
         self.security_proxy.set_ssl_fingerprints(&dbus_list).await?;
         Ok(())

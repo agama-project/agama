@@ -20,42 +20,40 @@
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+use crate::error::ServiceError;
+
+#[derive(
+    Default,
+    Clone,
+    Debug,
+    strum::IntoStaticStr,
+    strum::EnumString,
+    Serialize,
+    Deserialize,
+    utoipa::ToSchema,
+)]
+#[strum(ascii_case_insensitive)]
+#[strum(
+  parse_err_fn = alg_not_found_err,
+  parse_err_ty = ServiceError,
+)]
 pub enum SSLFingerprintAlgorithm {
     SHA1,
+    #[default]
     SHA256,
-}
-
-impl TryFrom<String> for SSLFingerprintAlgorithm {
-    type Error = crate::ServiceError;
-
-    fn try_from(value: String) -> Result<Self, Self::Error> {
-        match value.to_uppercase().as_str() {
-            "SHA1" => Ok(Self::SHA1),
-            "SHA256" => Ok(Self::SHA256),
-            _ => Err(crate::error::ServiceError::UnsupportedSSLFingerprintAlgorithm(value)),
-        }
-    }
-}
-
-impl SSLFingerprintAlgorithm {
-    pub fn to_str(&self) -> &'static str {
-        match self {
-            SSLFingerprintAlgorithm::SHA1 => "SHA1",
-            SSLFingerprintAlgorithm::SHA256 => "SHA256",
-        }
-    }
-}
-
-impl Default for SSLFingerprintAlgorithm {
-    fn default() -> Self {
-        Self::SHA256
-    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct SSLFingerprint {
+    /// The string value for SSL certificate fingerprint.
+    /// Example value is "F6:7A:ED:BB:BC:94:CF:55:9D:B3:BA:74:7A:87:05:EF:67:4E:C2:DB"
     pub fingerprint: String,
+    /// Algorithm used to compute SSL certificate fingerprint.
+    /// Supported options are "SHA1" and "SHA256"
     #[serde(default)]
     pub algorithm: SSLFingerprintAlgorithm,
+}
+
+fn alg_not_found_err(s: &str) -> ServiceError {
+    ServiceError::UnsupportedSSLFingerprintAlgorithm(s.to_string())
 }
