@@ -144,7 +144,7 @@ module Y2Storage
     def clean_graph(devicegraph)
       remove_empty_partition_tables(devicegraph)
       # {Proposal::SpaceMaker#prepare_devicegraph} returns a copy of the given devicegraph.
-      space_maker.prepare_devicegraph(devicegraph, disks_for_clean)
+      space_maker.prepare_devicegraph(devicegraph, devs_for_clean)
     end
 
     # Configures the disk devices on the given devicegraph to prefer the appropriate partition table
@@ -208,8 +208,8 @@ module Y2Storage
     # Devices for which the mandatory actions must be executed
     #
     # @return [Array<String>] names of partitionable devices
-    def disks_for_clean
-      (drives_names + [boot_device_name]).compact.uniq
+    def devs_for_clean
+      (drives_names + raids_names + [boot_device_name]).compact.uniq
     end
 
     # Creates the planned devices on a given devicegraph
@@ -232,6 +232,13 @@ module Y2Storage
     # @return [Array<String>]
     def drives_names
       @drives_names ||= config.drives.map(&:found_device).compact.map(&:name)
+    end
+
+    # Names of all the devices that correspond to an MD RAID from the config
+    #
+    # @return [Array<String>]
+    def raids_names
+      @raids_names ||= config.md_raids.map(&:found_device).compact.map(&:name)
     end
 
     # Equivalent device at the given devicegraph for the given configuration setting (eg. drive)

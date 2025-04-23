@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,11 +20,14 @@
 # find current contact information at www.suse.com.
 
 require "y2storage/planned"
+require "y2storage/proposal/agama_md_name"
 
 module Y2Storage
   module Proposal
     # Base class used by Agama planners.
     class AgamaDevicePlanner
+      include AgamaMdName
+
       # @!attribute [r] devicegraph
       #   Devicegraph to be used as starting point.
       #   @return [Devicegraph]
@@ -35,13 +38,20 @@ module Y2Storage
       #   @return [Array<Agama::Issue>]
       attr_reader :issues_list
 
+      # @!attribute [r] partitionables
+      #   Map to track the planned devices that can contain partitions, indexed by alias
+      # @return [Hash{String => Array<Planned::Device>}]
+      attr_reader :partitionables
+
       # Constructor
       #
       # @param devicegraph [Devicegraph] see {#devicegraph}
       # @param issues_list [Array<Agama::Issue>] see {#issues_list}
-      def initialize(devicegraph, issues_list)
+      # @param partitionables [Array<Agama::Issue>] see {#partitionables}
+      def initialize(devicegraph, issues_list, partitionables)
         @devicegraph = devicegraph
         @issues_list = issues_list
+        @partitionables = partitionables
       end
 
       # Planned devices according to the given config.
@@ -146,6 +156,8 @@ module Y2Storage
       # @param device_config [Agama::Storage::Configs::Drive]
       # @param config [Agama::Storage::Config]
       def configure_partitions(planned, device_config, config)
+        planned.ptable_type = device_config.ptable_type if planned.respond_to?(:ptable_type=)
+
         partition_configs = device_config.partitions
           .reject(&:delete?)
           .reject(&:delete_if_needed?)
@@ -163,12 +175,13 @@ module Y2Storage
       # @return [Planned::Partition]
       def planned_partition(partition_config, device_config, config)
         Planned::Partition.new(nil, nil).tap do |planned|
-          planned.disk = device_config.found_device.name
+          planned.disk = device_config.found_device&.name
           planned.partition_id = partition_config.id
           configure_reuse(planned, partition_config)
           configure_block_device(planned, partition_config)
           configure_size(planned, partition_config.size)
           configure_pv(planned, partition_config, config)
+          configure_md_member(planned, partition_config, config)
         end
       end
 
@@ -182,6 +195,29 @@ module Y2Storage
         return unless vg
 
         planned.lvm_volume_group_name = vg.name
+      end
+
+      # @param planned [Planned::Disk, Planned::Partition]
+      # @param device_config [Agama::Storage::Configs::Drive, Agama::Storage::Configs::Partition]
+      # @param config [Agama::Storage::Config]
+      def configure_md_member(planned, device_config, config)
+        return unless planned.respond_to?(:raid_name) && device_config.alias
+
+        md = config.md_raids.find { |r| r.devices.include?(device_config.alias) }
+        return unless md
+
+        planned.raid_name = member_md_name(md, device_config, config)
+      end
+
+      # Stores the given device at the map of partitionables
+      #
+      # @param device [Planned::Device]
+      # @param config [Agama::Storage::Configs::Drive, Agama::Storage::Configs::Md]
+      def register_partitionable(device, config)
+        return unless config.alias
+
+        partitionables[config.alias] ||= []
+        partitionables[config.alias] << device
       end
     end
   end

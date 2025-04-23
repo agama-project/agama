@@ -33,7 +33,9 @@ module Y2Storage
       def planned_devices(drive_config, config)
         return [] if drive_config.search&.skip_device?
 
-        [planned_drive(drive_config, config)]
+        drive = planned_drive(drive_config, config)
+        register_partitionable(drive, drive_config)
+        [drive]
       end
 
     private
@@ -60,6 +62,7 @@ module Y2Storage
           configure_reuse(planned, drive_config)
           configure_block_device(planned, drive_config)
           configure_pv(planned, drive_config, config)
+          configure_md_member(planned, drive_config, config)
         end
       end
 

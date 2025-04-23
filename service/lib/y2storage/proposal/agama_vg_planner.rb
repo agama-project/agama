@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -26,18 +26,21 @@ module Y2Storage
   module Proposal
     # Volume group planner for Agama.
     class AgamaVgPlanner < AgamaDevicePlanner
-      # @param config [Agama::Storage::Configs::VolumeGroup]
+      # @param vg_config [Agama::Storage::Configs::VolumeGroup]
       # @return [Array<Planned::Device>]
-      def planned_devices(vg_config, config)
-        [planned_vg(vg_config, config)]
+      def planned_devices(vg_config)
+        [planned_vg(vg_config)]
       end
 
     private
 
+      # @return [Hash{String => Planned::Device}] Map with all the new devices that could
+      #   potentially host automatic physical volumes
+      attr_reader :partitionables
+
       # @param vg_config [Agama::Storage::Configs::VolumeGroup]
-      # @param config [Agama::Storage::Config]
       # @return [Planned::LvmVg]
-      def planned_vg(vg_config, config)
+      def planned_vg(vg_config)
         # TODO: A volume group name is expected. Otherwise, the planned physical volumes cannot
         #   be associated to the planned volume group. Should the volume group name be
         #   automatically generated if missing?
@@ -47,23 +50,23 @@ module Y2Storage
           planned.extent_size = vg_config.extent_size
           planned.lvs = planned_lvs(vg_config)
           planned.size_strategy = :use_needed
-          planned.pvs_candidate_devices = devices_for_pvs(vg_config, config)
+          planned.pvs_candidate_devices = devices_for_pvs(vg_config)
           configure_pvs_encryption(planned, vg_config)
         end
       end
 
-      # Names of the devices that must be used to calculate automatic physical volumes
+      # References to the devices that must be used to calculate automatic physical volumes
       # for the given volume group
       #
+      # The field Planned::LvmVg#pvs_candidate_devices is designed to use device names, but Agama
+      # initializes it using Planned::Device indentifiers instead.
+      #
       # @param vg_config [Agama::Storage::Configs::VolumeGroup]
-      # @param config [Agama::Storage::Config]
       # @return [Array<String>]
-      def devices_for_pvs(vg_config, config)
-        drives = vg_config.physical_volumes_devices.flat_map do |dev_alias|
-          config.drives.select { |d| d.alias?(dev_alias) }
-        end.compact
-
-        drives.map { |d| d.found_device.name }
+      def devices_for_pvs(vg_config)
+        devs = vg_config.physical_volumes_devices.flat_map do |dev_alias|
+          partitionables[dev_alias].map(&:planned_id)
+        end
       end
 
       # Configures the encryption-related fields of the given planned volume group

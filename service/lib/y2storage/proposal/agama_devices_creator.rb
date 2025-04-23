@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2017-2020] SUSE LLC
+# Copyright (c) [2017-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,6 +21,7 @@
 
 require "y2storage/exceptions"
 require "y2storage/proposal/lvm_creator"
+require "y2storage/proposal/agama_md_creator"
 require "y2storage/proposal/partition_creator"
 
 module Y2Storage
@@ -111,6 +112,8 @@ module Y2Storage
       #   planned devices have been allocated
       def process_devices
         process_existing_partitionables
+        mds = process_new_mds
+        process_new_partitionables(mds)
         process_volume_groups
 
         # This may be unexpected if the storage configuration provided by the user includes
@@ -124,12 +127,13 @@ module Y2Storage
       # @see #process_devices
       def process_existing_partitionables
         partitions = partitions_for_existing(planned_devices)
+        vgs = resolved_candidate_devices(automatic_vgs_for_existing)
 
         begin
           # Check whether there is any chance of getting an unwanted order for the planned
           # partitions within a disk
           space_result = space_maker.provide_space(
-            original_graph, partitions: partitions, volume_groups: automatic_vgs
+            original_graph, partitions: partitions, volume_groups: vgs
           )
         rescue Error => e
           log.info "SpaceMaker was not able to find enough space: #{e}"
@@ -141,6 +145,36 @@ module Y2Storage
 
         grow_and_reuse_devices(distribution)
         self.creator_result = PartitionCreator.new(devicegraph).create_partitions(distribution)
+      end
+
+      # @see #process_devices
+      def process_new_mds
+        creator = AgamaMdCreator.new(devicegraph, planned_devices, creator_result)
+        planned_devices.mds.reject(&:reuse?).map do |planned_md|
+          creator.create(planned_md)
+        end
+      end
+
+      # @see #process_devices
+      def process_new_partitionables(devices)
+        planned_devices = creator_result.devices_map.fetch_values(*devices.map(&:name))
+        partitions = planned_devices.flat_map(&:partitions)
+        vgs = resolved_candidate_devices(automatic_vgs - automatic_vgs_for_existing)
+
+        spaces = devices.flat_map(&:free_spaces)
+        calculator = Proposal::PartitionsDistributionCalculator.new(partitions, vgs)
+        distribution = calculator.best_distribution(spaces)
+
+        if distribution.nil?
+          log.error "Partitions cannot be allocated:"
+          log.error "  devices: #{devices}"
+          log.error "  automatic volume groups: #{vgs}"
+          log.error "  partitions: #{partitions}"
+          raise NoDiskSpaceError, "Partitions cannot be allocated into #{devices.map(&:name)}"
+        end
+
+        new_result = PartitionCreator.new(devicegraph).create_partitions(distribution)
+        self.creator_result = creator_result.merge(new_result)
       end
 
       # @see #process_devices
@@ -157,6 +191,15 @@ module Y2Storage
         planned_devices.select do |dev|
           dev.is_a?(Planned::LvmVg) && dev.pvs_candidate_devices.any?
         end
+      end
+
+      # Filters {#automatic_vgs} to include only those that target pre-existing devices
+      #
+      # @return [Array<Planned::LvmVg>]
+      def automatic_vgs_for_existing
+        # Use #any? because we know for sure that all candidate devices are of the same type
+        # (either found or created).
+        automatic_vgs.select { |vg| vg.pvs_candidate_devices.any? { |i| find_planned(i).reuse? } }
       end
 
       # Creates a volume group for the the given planned device.
@@ -187,6 +230,43 @@ module Y2Storage
         new_pvs + reused_pvs
       end
 
+      # Turns the values of {Planned::LvmVg#pvs_candidate_devices} into real device names
+      #
+      # This is needed because Agama uses the field to store ids referencing devices that may (or
+      # may not) exist at the beginning of the proposal process.
+      #
+      # @param vgs [Array<Planned::LvmVg>] original list of VGs containing references
+      # @return [Array<Planned::LvmVg>] a copy of the original list in which references has been
+      #   converted into device names
+      def resolved_candidate_devices(vgs)
+        vgs.map do |volume_group|
+          volume_group.dup.tap do |vg|
+            vg.pvs_candidate_devices = volume_group.pvs_candidate_devices.map do |pv|
+              device_name(pv)
+            end
+          end
+        end
+      end
+
+      # Planned device corresponding to the given planned ID
+      #
+      # @param id [String]
+      # @return [Planned::Device]
+      def find_planned(id)
+        planned_devices.find { |d| d.planned_id == id }
+      end
+
+      # Final device name corresponding to the planned device with the given ID
+      #
+      # @param id [String]
+      # @return [String]
+      def device_name(id)
+        planned = find_planned(id)
+        return devicegraph.find_device(planned.reuse_sid).name if planned.reuse?
+
+        creator_result.created_names { |d| d.planned_id == id }.first
+      end
+
       # @see #process_existing_partitionables
       def grow_and_reuse_devices(distribution)
         planned_devices.select(&:reuse?).each do |planned|
@@ -212,9 +292,8 @@ module Y2Storage
 
       # @see #process_existing_partitionables
       def partitions_for_existing(planned_devices)
-        # Maybe in the future this can include partitions on top of existing MDs
-        # NOTE: simplistic implementation
-        planned_devices.partitions.reject(&:reuse?)
+        planned_devices.disk_partitions.reject(&:reuse?) +
+          planned_devices.mds.select(&:reuse?).flat_map(&:partitions).reject(&:reuse?)
       end
 
       # Planned devices configured to be reused.
@@ -222,7 +301,8 @@ module Y2Storage
       # @return [Array<Planned::Device>]
       def reused_planned_devices
         planned_devices.disks.select(&:reuse?) +
-          planned_devices.disks.flat_map(&:partitions).select(&:reuse?)
+          planned_devices.mds.select(&:reuse?) +
+          planned_devices.partitions.select(&:reuse?)
       end
 
       # Formats and/or mounts the disk-like block devices
