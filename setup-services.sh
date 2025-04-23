@@ -129,6 +129,15 @@ fi
 
 )
 
+# See "Install DocBook tooling" in .github/workflows/github-pages.yml
+# glib2-devel has gdbus-codegen
+$SUDO $ZYPPER install \
+  docbook-xsl-stylesheets \
+  glib2-devel \
+  xmlstarlet \
+  xmlto \
+  || exit 1
+
 # Rust service, CLI and auto-installation.
 
 # Only install cargo if it is not available (avoid conflicts with rustup)
@@ -239,6 +248,10 @@ if [ -n "${DISTROBOX_ENTER_PATH:-}" ]; then
 else
   $SUDO systemctl start NetworkManager
 fi
+
+# Let seed.sh see s390 D-Bus interfaces
+sed -i -e '/^AGAMA_MAINFRAME_COSPLAY=/d' /run/agama/environment.conf
+echo AGAMA_MAINFRAME_COSPLAY=${AGAMA_MAINFRAME_COSPLAY:-0} >> /run/agama/environment.conf
 
 # systemd reload and start of service
 (

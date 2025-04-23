@@ -26,5 +26,11 @@
         Whether the progress has finished.
     -->
     <property type="b" name="Finished" access="read"/>
+
+    <!--
+        Steps:
+        Known step descriptions.
+    -->
+    <property type="as" name="Steps" access="read"/>
   </interface>
 </node>

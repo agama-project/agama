@@ -20,8 +20,8 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "y2s390"
-require "y2s390/format_process"
+require "y2s390" unless ENV["AGAMA_MAINFRAME_COSPLAY"] == "1"
+require "y2s390/format_process" unless ENV["AGAMA_MAINFRAME_COSPLAY"] == "1"
 
 module Agama
   module Storage

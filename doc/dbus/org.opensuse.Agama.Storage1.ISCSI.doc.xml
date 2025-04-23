@@ -4,17 +4,11 @@
   <interface name="org.opensuse.Agama.Storage1.ISCSI">
     <!--
       Sets the iSCSI config.
+      @serialized_config: See iscsi.schema.json
+      @result: Whether the config was correctly applied: 0: success, 1: failure
     -->
     <method name="SetConfig">
-      <!--
-        See iscsi.schema.json
-      -->
       <arg name="serialized_config" direction="in" type="s"/>
-      <!--
-        Whether the config was correctly applied:
-          0: success
-          1: failure
-      -->
       <arg name="result" direction="out" type="u"/>
     </method>
   </interface>

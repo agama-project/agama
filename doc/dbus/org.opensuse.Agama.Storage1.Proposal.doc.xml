@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <node name="/org/opensuse/Agama/Storage1/Proposal">
   <!--
-    Interfaces with the properties of the calculated proposal.
+    org.opensuse.Agama.Storage1.Proposal:
+    @short_description: Interfaces with the properties of the calculated proposal.
   -->
   <interface name="org.opensuse.Agama.Storage1.Proposal">
     <!--
+      Settings:
       Proposal settings:
+
+      <programlisting>
         Target                 s (options: "disk", "newLvmVg", "reusedLvmVg")
         TargeDevice            s (optional: does not make sense if Target is "newLvmVg")
         TargetPVDevices        as (optional: only makes sense if Target is "newLvmVg")
@@ -18,12 +22,16 @@
         SpacePolicy            s
         SpaceActions           aa{sv}
         Volumes                aa{sv}
+      </programlisting>
 
       Each space action has the following properties:
+      <programlisting>
         Device                 s
         Action                 s (options: "force_delete", "resize")
+      </programlisting>
 
       Each volume has the following properties:
+      <programlisting>
         MountPath               s
         MountOptions            as
         Target                  s (options: "default", "new_partition", "new_vg", "device", "filesystem")
@@ -41,15 +49,19 @@
           SnapshotsConfigurable b
           SnapshotsAffectSizes  b
           SizeRelevantVolumes   as
+      </programlisting>
     -->
     <property type="a{sv}" name="Settings" access="read"/>
     <!--
+      Actions:
       Actions to perform in the system in order to create the volumes.
       Each action has the following properties:
+      <programlisting>
         Device  s
         Text    s
         Subvol  b
         Delete  b
+      </programlisting>
     -->
     <property type="aa{sv}" name="Actions" access="read"/>
   </interface>

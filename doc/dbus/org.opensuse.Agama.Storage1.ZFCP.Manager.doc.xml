@@ -3,11 +3,13 @@
 <node name="/org/opensuse/Agama/Storage1">
   <interface name="org.opensuse.Agama.Storage1.ZFCP.Manager">
     <!--
+      Probe:
       Probes the zFCP controllers and disks.
     -->
     <method name="Probe">
     </method>
     <!--
+      AllowLUNScan:
       Whether the option allow_lun_scan is active.
     -->
     <property type="b" name="AllowLUNScan" access="read"/>

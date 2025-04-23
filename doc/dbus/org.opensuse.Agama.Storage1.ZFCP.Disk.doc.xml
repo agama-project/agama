@@ -2,22 +2,27 @@
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
   <!--
-    Interface for a zFCP disk
+    org.opensuse.Agama.Storage1.ZFCP.Disk:
+    @short_description: Interface for a zFCP disk
   -->
   <interface name="org.opensuse.Agama.Storage1.ZFCP.Disk">
     <!--
+      Name:
       Name of the SCSI device (e.g., /dev/sda)
     -->
     <property type="s" name="Name" access="read"/>
     <!--
+      Channel:
       zFCP controller channel id (e.g., 0.0.fa00).
     -->
     <property type="s" name="Channel" access="read"/>
     <!--
+      WWPN:
       WWPN of the targer port (e.g., 0x500507630300c562)
     -->
     <property type="s" name="WWPN" access="read"/>
     <!--
+      LUN:
       LUN of the SCSI device (e.g. 0x4010403300000000)
     -->
     <property type="s" name="LUN" access="read"/>

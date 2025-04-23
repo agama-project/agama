@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "y2s390/zfcp"
+require "y2s390/zfcp" unless ENV["AGAMA_MAINFRAME_COSPLAY"] == "1"
 require "y2storage/storage_manager"
 require "agama/storage/zfcp/controller"
 require "agama/storage/zfcp/disk"
