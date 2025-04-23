@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Apr 23 08:39:34 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Rename "root" source directory to "live-root" to avoid confusion
+  with root/root directory
+- Removed duplicate files which are located in root/root
+  (live-root/root now)
+
+-------------------------------------------------------------------
 Wed Apr 23 05:47:23 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Include the kernel-default-optional package in the Live ISO
