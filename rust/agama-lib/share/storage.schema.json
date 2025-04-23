@@ -16,6 +16,11 @@
       "description": "LVM volume groups.",
       "type": "array",
       "items": { "$ref": "#/$defs/volumeGroup" }
+    },
+    "mdRaids": {
+      "description": "MD RAIDs.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/mdRaidElement" }
     }
   },
   "$defs": {
@@ -39,7 +44,7 @@
       ]
     },
     "formattedDrive": {
-      "description": "Drive without a partition table (e.g., directly formatted).",
+      "description": "Drive without a partition table (directly formatted).",
       "type": "object",
       "additionalProperties": false,
       "required": ["filesystem"],
@@ -62,6 +67,89 @@
           "items": { "$ref": "#/$defs/partitionElement" }
         }
       }
+    },
+    "mdRaidElement": {
+      "anyOf": [
+        { "$ref": "#/$defs/formattedMdRaid" },
+        { "$ref": "#/$defs/partitionedMdRaid" }
+      ]
+    },
+    "formattedMdRaid": {
+      "description": "MD RAID without a partition table (directly formatted).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "filesystem"],
+      "properties": {
+        "alias": { "$ref": "#/$defs/alias" },
+        "name": { "$ref": "#/$defs/mdRaidName" },
+        "level": { "$ref": "#/$defs/mdRaidLevel" },
+        "parity": { "$ref": "#/$defs/mdRaidParity" },
+        "chunkSize": { "$ref": "#/$defs/sizeValue" },
+        "devices": { "$ref": "#/$defs/mdRaidDevices" },
+        "encryption": { "$ref": "#/$defs/encryption" },
+        "filesystem": { "$ref": "#/$defs/filesystem" }
+      }
+    },
+    "partitionedMdRaid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level"],
+      "properties": {
+        "alias": { "$ref": "#/$defs/alias" },
+        "name": { "$ref": "#/$defs/mdRaidName" },
+        "level": { "$ref": "#/$defs/mdRaidLevel" },
+        "parity": { "$ref": "#/$defs/mdRaidParity" },
+        "chunkSize": { "$ref": "#/$defs/sizeValue" },
+        "devices": { "$ref": "#/$defs/mdRaidDevices" },
+        "ptableType": { "$ref": "#/$defs/ptableType" },
+        "partitions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/partitionElement" }
+        }
+      }
+    },
+    "mdRaidName": {
+      "description": "MD base name.",
+      "type": "string",
+      "examples": ["system"]
+    },
+    "mdRaidLevel": {
+      "title": "MD level",
+      "enum": [
+        "raid0",
+        "raid1",
+        "raid5",
+        "raid6",
+        "raid10"
+      ]
+    },
+    "mdRaidParity": {
+      "title": "MD parity",
+      "description": "Only applies to raid5, raid6 and raid10",
+      "enum": [
+        "left_asymmetric",
+        "left_symmetric",
+        "right_asymmetric",
+        "right_symmetric",
+        "first",
+        "last",
+        "left_asymmetric_6",
+        "left_symmetric_6",
+        "right_asymmetric_6",
+        "right_symmetric_6",
+        "first_6",
+        "near_2",
+        "offset_2",
+        "far_2",
+        "near_3",
+        "offset_3",
+        "far_3"
+      ]
+    },
+    "mdRaidDevices": {
+      "description": "Devices used by the MD RAID.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/alias" }
     },
     "ptableType": {
       "description": "Partition table type.",

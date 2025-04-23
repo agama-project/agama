@@ -1,0 +1,83 @@
+{
+  "storage": {
+    "drives": [
+      {
+        "search": "/dev/vda",
+        "partitions": [
+          {
+            "search": "*",
+            "delete": true
+          },
+          {
+            "alias": "system-device1",
+            "size": "10 GiB"
+          },
+          {
+            "alias": "home-device1",
+            "size": "10 GiB"
+          }
+        ]
+      },
+      {
+        "search": "/dev/vdb",
+        "partitions": [
+          {
+            "search": "*",
+            "delete": true
+          },
+          {
+            "alias": "system-device2",
+            "size": "10 GiB"
+          },
+          {
+            "alias": "home-device2",
+            "size": "10 GiB"
+          }
+        ]
+      }
+    ],
+    "mdRaids": [
+      {
+        "alias": "system",
+        "name": "system",
+        "level": "raid1",
+        "parity": "left_symmetric",
+        "chunkSize": "4 KiB",
+        "devices": ["system-device1", "system-device2"],
+        "ptableType": "gpt",
+        "partitions": [
+          {
+            "encryption": {
+              "luks1": {
+                "password": "notsecret"
+              }
+            },
+            "filesystem": {
+              "type": {
+                "btrfs": {
+                  "snapshots": true
+                }
+              },
+              "path": "/"
+            }
+          }
+        ]
+      },
+      {
+        "alias": "home",
+        "name": "home",
+        "level": "raid0",
+        "devices": ["home-device1", "home-device2"],
+        "encryption": {
+          "luks1": {
+            "password": "notsecret"
+          }
+        },
+        "filesystem": {
+          "type": "xfs",
+          "path": "/home"
+        }
+      }
+    ]
+  }
+}
