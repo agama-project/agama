@@ -1,3 +1,8 @@
+# This file deals with automatic login into the display manager, see
+# DISPLAYMANAGER_AUTOLOGIN variable. This file was originally copied
+# from Tumbleweed and rest of the content is currently useless (default)
+
+
 ## Path:	Desktop/Display manager
 ## Description:	settings to generate a proper displaymanager config
 ## Type:	yesno
