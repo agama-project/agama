@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require "agama/ssl/fingerprint"
 
 module Agama
-  # class handling SSL certificate
   module SSL
+    # class handling SSL certificate details
     class CertificateDetails
       include Yast::I18n
 
@@ -24,36 +26,28 @@ module Agama
           certificate.issuer_organization_unit)
       end
 
-      def summary(small_space: false)
+      def summary
         summary = _("Certificate:") + "\n" + _("Issued To") + "\n" + subject +
           "\n" + _("Issued By") + "\n" + issuer + "\n" + _("SHA1 Fingerprint: ") +
           "\n" + INDENT + certificate.fingerprint(Fingerprint::SHA1).value + "\n" +
           _("SHA256 Fingerprint: ") + "\n"
 
         sha256 = certificate.fingerprint(Fingerprint::SHA256).value
-        summary += if small_space
-          # split the long SHA256 digest to two lines in small text mode UI
-          INDENT + sha256[0..59] + "\n" + INDENT + sha256[60..-1]
-        else
-          INDENT + sha256
-        end
-
-        summary
+        summary += INDENT + sha256
       end
 
     private
 
       attr_reader :certificate
 
-      def identity_details(cn, o, ou)
+      def identity_details(cname, org, orgu)
         # label followed by the SSL certificate identification
-        _("Common Name (CN): ") + (cn || "") + "\n" +
+        _("Common Name (CN): ") + (cname || "") + "\n" +
           # label followed by the SSL certificate identification
-          _("Organization (O): ") + (o || "") + "\n" +
+          _("Organization (O): ") + (org || "") + "\n" +
           # label followed by the SSL certificate identification
-          _("Organization Unit (OU): ") + (ou || "") + "\n"
+          _("Organization Unit (OU): ") + (orgu || "") + "\n"
       end
     end
   end
 end
-

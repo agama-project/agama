@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "openssl"
 require "suse/connect"
 require "yast2/execute"
@@ -14,10 +16,10 @@ module Agama
       Yast.import "Installation"
 
       # Path to the registration certificate in the instsys
-      INSTSYS_CERT_DIR = "/etc/pki/trust/anchors".freeze
+      INSTSYS_CERT_DIR = "/etc/pki/trust/anchors"
       INSTSYS_SERVER_CERT_FILE = File.join(INSTSYS_CERT_DIR, "registration_server.pem").freeze
       # Path to system CA certificates
-      CA_CERTS_DIR = "/var/lib/ca-certificates".freeze
+      CA_CERTS_DIR = "/var/lib/ca-certificates"
 
       # all used certificate paths, this is used during upgrade to import
       # the old certificate into the inst-sys, put the older paths at the end
@@ -64,12 +66,12 @@ module Agama
 
       def self.download(url, insecure: false)
         # TODO
-        #result = Downloader.download(url, insecure: insecure)
-        #load(result)
+        # result = Downloader.download(url, insecure: insecure)
+        # load(result)
       end
 
       # Path to temporal CA certificates (to be used only in instsys)
-      TMP_CA_CERTS_DIR = "/var/lib/YaST2/ca-certificates".freeze
+      TMP_CA_CERTS_DIR = "/var/lib/YaST2/ca-certificates"
 
       # Update instys CA certificates
       #
@@ -160,8 +162,8 @@ module Agama
         find_issuer_attribute("OU")
       end
 
-      def match_fingerprint?(fp)
-        fp == fingerprint(fp.sum)
+      def match_fingerprint?(fingerp)
+        fingerp == fingerprint(fingerp.sum)
       end
 
       def fingerprint(sum)
@@ -215,7 +217,7 @@ module Agama
         require "registration/ssl_certificate_details"
         # log also the dates
         log.info("#{CertificateDetails.new(self).summary}\n" \
-          "Issued on: #{issued_on}\nExpires on: #{expires_on}")
+                 "Issued on: #{issued_on}\nExpires on: #{expires_on}")
 
         # log a warning for expired certificate
         expires = x509_cert.not_after.localtime

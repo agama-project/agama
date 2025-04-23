@@ -236,7 +236,9 @@ describe Agama::Registration do
         end
 
         context "if the registration server has self-signed certificate" do
-          let (:certificate) { Agama::SSL::Certificate.load(File.read(File.join(FIXTURES_PATH, "test.pem"))) }
+          let(:certificate) do
+            Agama::SSL::Certificate.load(File.read(File.join(FIXTURES_PATH, "test.pem")))
+          end
           before do
             Agama::SSL::Errors.instance.ssl_error_code = Agama::SSL::ErrorCodes::SELF_SIGNED_CERT
             Agama::SSL::Errors.instance.ssl_error_msg = "test error"
@@ -247,7 +249,7 @@ describe Agama::Registration do
             @called = 0
             allow(SUSE::Connect::YaST).to receive(:activate_product) do
               @called += 1
-              raise(OpenSSL::SSL::SSLError.new("test")) if @called == 1
+              raise OpenSSL::SSL::SSLError, "test" if @called == 1
 
               service
             end
@@ -255,7 +257,8 @@ describe Agama::Registration do
 
           context "and certificate fingerprint is in storage" do
             before do
-              Agama::SSL::Storage.instance.fingerprints.replace([certificate.send(:sha256_fingerprint)])
+              Agama::SSL::Storage.instance.fingerprints
+                .replace([certificate.send(:sha256_fingerprint)])
             end
 
             it "tries to import certificate" do

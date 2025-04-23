@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 require "singleton"
 
 module Agama
   module SSL
+    # Holds SSL related configuration
     class Storage
       include Singleton
 

@@ -1,10 +1,13 @@
+# frozen_string_literal: true
+
 module Agama
   module SSL
+    # Represents SSL fingerprint
     class Fingerprint
       attr_reader :sum, :value
 
-      SHA1 = "SHA1".freeze
-      SHA256 = "SHA256".freeze
+      SHA1 = "SHA1"
+      SHA256 = "SHA256"
 
       def initialize(sum, value)
         @sum = sum

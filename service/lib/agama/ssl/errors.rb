@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require "yast"
 
 module Agama
   module SSL
     # remember the details about SSL verification failure
     # the attributes are read from the SSL error context
-    class Errors < Struct.new(:ssl_error_code, :ssl_error_msg, :ssl_failed_cert)
+    Errors = Struct.new(:ssl_error_code, :ssl_error_msg, :ssl_failed_cert) do
       include Singleton
 
       def reset
@@ -14,6 +16,7 @@ module Agama
       end
     end
 
+    # handles SSL error codes
     module ErrorCodes
       extend Yast::I18n
       textdomain "registration"

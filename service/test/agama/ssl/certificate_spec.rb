@@ -1,4 +1,5 @@
 #! /usr/bin/env rspec
+# frozen_string_literal: true
 
 require_relative "../../test_helper"
 
@@ -48,7 +49,7 @@ describe Agama::SSL::Certificate do
   end
 
   describe ".update_instsys_ca" do
-    CERT_NAME = "YaST_Team.pem".freeze
+    CERT_NAME = "YaST_Team.pem"
     # Names are asigned by "trust" and related to certificate content
     CERT_LINKS = ["8820a2e8.0", "8f13f82e.0"].freeze
 
@@ -70,7 +71,7 @@ describe Agama::SSL::Certificate do
 
     after do
       FileUtils.rm_rf(ca_dir.to_s)
-      cert_links = Dir[File.join(tmp_ca_dir, "*")].select { |f| File.symlink?(f)}
+      cert_links = Dir[File.join(tmp_ca_dir, "*")].select { |f| File.symlink?(f) }
       FileUtils.rm(cert_links) unless cert_links.empty?
     end
 
