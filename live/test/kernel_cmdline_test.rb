@@ -3,7 +3,7 @@ require "tmpdir"
 
 describe "kernel-cmdline-conf.sh" do
   it "filters out any agama params" do
-    script_path = File.expand_path("../root/usr/bin/kernel-cmdline-conf.sh", __dir__, )
+    script_path = File.expand_path("../live-root/usr/bin/kernel-cmdline-conf.sh", __dir__, )
     source_path = File.expand_path("fixtures/source/cmdline", __dir__, )
     expected_path = File.expand_path("fixtures/expected/cmdline", __dir__, )
     tmpdir = Dir.mktmpdir do |tmpdir|
