@@ -98,7 +98,4 @@
     </method>
     <property type="a{sy}" name="SelectedPatterns" access="read"/>
   </interface>
-  <interface name="org.opensuse.Agama.Security">
-    <property type="a(ss)" name="SslFingerprints" access="readwrite"/>
-  </interface>
 </node>
