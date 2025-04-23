@@ -24,7 +24,7 @@ use serde::{Deserialize, Serialize};
 
 use super::model::SSLFingerprint;
 
-/// Software settings for installation
+/// Security settings for installation
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SecuritySettings {

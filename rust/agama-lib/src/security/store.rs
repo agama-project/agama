@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -24,7 +24,7 @@ use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
 
 use super::{http_client::SecurityHTTPClient, settings::SecuritySettings};
 
-/// Loads and stores the security settings from/to the http API.
+/// Loads and stores the security settings from/to the HTTP API.
 pub struct SecurityStore {
     security_client: SecurityHTTPClient,
 }

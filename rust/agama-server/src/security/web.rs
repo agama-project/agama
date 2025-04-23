@@ -76,7 +76,7 @@ async fn get_fingerprints(
     path = "/ssl_fingerprints",
     context_path = "/api/security",
     responses(
-        (status = 200, description = "fingerprints set properly"),
+        (status = 200, description = "SSL fingerprints were set properly."),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]

@@ -114,7 +114,7 @@
                 "examples": ["A8:DE:08:B1:57:52:FE:70:DF:D5:31:EA:E3:53:BB:39:EE:01:FF:B9"] 
               },
               "algorithm": {
-                "title": "fingerprint algorithm used to compute it",
+                "title": "Fingerprint algorithm used to compute it",
                 "type": "string",
                 "enum": ["SHA1", "SHA256"],
                 "examples": ["SHA1"] 
@@ -168,7 +168,7 @@
           "type": "string"
         },
         "registrationUrl": {
-          "title": "Specific registration server url",
+          "title": "URL of the registration server",
           "type": "string"
         }
       }

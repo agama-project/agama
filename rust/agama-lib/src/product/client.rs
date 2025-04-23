@@ -126,7 +126,7 @@ impl<'a> ProductClient<'a> {
         Ok(self.registration_proxy.email().await?)
     }
 
-    /// url of registration server
+    /// URL of the registration server
     pub async fn registration_url(&self) -> Result<String, ServiceError> {
         Ok(self.registration_proxy.url().await?)
     }
