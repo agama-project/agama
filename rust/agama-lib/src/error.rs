@@ -42,9 +42,6 @@ pub enum ServiceError {
     // `#` is std::fmt "Alternate form", anyhow::Error interprets as "include causes"
     #[error("Error: {0:#}")]
     Anyhow(#[from] anyhow::Error),
-    // FIXME: It is too generic and starting to looks like an Anyhow error
-    #[error("Network client error: '{0}'")]
-    NetworkClientError(String),
     #[error("Failed to find these patterns: {0:?}")]
     UnknownPatterns(Vec<String>),
     #[error("Passed json data is not correct: {0}")]

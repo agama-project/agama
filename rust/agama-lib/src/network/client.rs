@@ -19,8 +19,13 @@
 // find current contact information at www.suse.com.
 
 use super::{settings::NetworkConnection, types::Device};
-use crate::base_http_client::BaseHTTPClient;
-use crate::error::ServiceError;
+use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
+
+#[derive(Debug, thiserror::Error)]
+pub enum NetworkClientError {
+    #[error(transparent)]
+    HTTP(#[from] BaseHTTPClientError),
+}
 
 /// HTTP/JSON client for the network service
 pub struct NetworkClient {
@@ -28,19 +33,19 @@ pub struct NetworkClient {
 }
 
 impl NetworkClient {
-    pub async fn new(client: BaseHTTPClient) -> Result<NetworkClient, ServiceError> {
+    pub async fn new(client: BaseHTTPClient) -> Result<NetworkClient, NetworkClientError> {
         Ok(Self { client })
     }
 
     /// Returns an array of network devices
-    pub async fn devices(&self) -> Result<Vec<Device>, ServiceError> {
+    pub async fn devices(&self) -> Result<Vec<Device>, NetworkClientError> {
         let json = self.client.get::<Vec<Device>>("/network/devices").await?;
 
         Ok(json)
     }
 
     /// Returns an array of network connections
-    pub async fn connections(&self) -> Result<Vec<NetworkConnection>, ServiceError> {
+    pub async fn connections(&self) -> Result<Vec<NetworkConnection>, NetworkClientError> {
         let json = self
             .client
             .get::<Vec<NetworkConnection>>("/network/connections")
@@ -50,7 +55,7 @@ impl NetworkClient {
     }
 
     /// Returns an array of network connections
-    pub async fn connection(&self, id: &str) -> Result<NetworkConnection, ServiceError> {
+    pub async fn connection(&self, id: &str) -> Result<NetworkConnection, NetworkClientError> {
         let json = self
             .client
             .get::<NetworkConnection>(format!("/network/connections/{id}").as_str())
@@ -63,7 +68,7 @@ impl NetworkClient {
     pub async fn add_or_update_connection(
         &self,
         connection: NetworkConnection,
-    ) -> Result<(), ServiceError> {
+    ) -> Result<(), NetworkClientError> {
         let id = connection.id.clone();
         let response = self.connection(id.as_str()).await;
 
@@ -80,7 +85,7 @@ impl NetworkClient {
     }
 
     /// Returns an array of network connections
-    pub async fn apply(&self) -> Result<(), ServiceError> {
+    pub async fn apply(&self) -> Result<(), NetworkClientError> {
         // trying to be tricky here. If something breaks then we need a put method on
         // BaseHTTPClient which doesn't require a serialiable object for the body
         self.client
