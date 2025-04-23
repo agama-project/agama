@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr 23 05:47:23 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Include the kernel-default-optional package in the Live ISO
+  to support more hardware (bsc#1241099)
+
+-------------------------------------------------------------------
 Tue Apr 22 14:14:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 14
