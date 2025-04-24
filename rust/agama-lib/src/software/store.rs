@@ -32,7 +32,7 @@ use crate::base_http_client::BaseHTTPClient;
 #[error("Error processing software settings: {0}")]
 pub struct SoftwareStoreError(#[from] SoftwareHTTPClientError);
 
-/// Loads and stores the software settings from/to the D-Bus service.
+/// Loads and stores the software settings from/to the HTTP API.
 pub struct SoftwareStore {
     software_client: SoftwareHTTPClient,
 }

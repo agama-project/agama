@@ -70,6 +70,7 @@ impl ProductStore {
             id: Some(product),
             registration_code: Self::non_empty_string(registration_info.key),
             registration_email: Self::non_empty_string(registration_info.email),
+            registration_url: Self::non_empty_string(registration_info.url),
             addons,
         })
     }
@@ -83,6 +84,9 @@ impl ProductStore {
                 self.product_client.select_product(product).await?;
                 probe = true;
             }
+        }
+        if let Some(url) = &settings.registration_url {
+            self.product_client.set_registration_url(url).await?;
         }
         if let Some(reg_code) = &settings.registration_code {
             let email = settings.registration_email.as_deref().unwrap_or("");
@@ -155,7 +159,8 @@ mod test {
                 .body(
                     r#"{
                     "key": "",
-                    "email": ""
+                    "email": "",
+                    "url": ""
                 }"#,
                 );
         });
@@ -175,6 +180,7 @@ mod test {
             id: Some("Tumbleweed".to_owned()),
             registration_code: None,
             registration_email: None,
+            registration_url: None,
             addons: None,
         };
         // main assertion
@@ -224,6 +230,7 @@ mod test {
             id: Some("Tumbleweed".to_owned()),
             registration_code: None,
             registration_email: None,
+            registration_url: None,
             addons: None,
         };
 
