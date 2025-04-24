@@ -42,7 +42,7 @@ module Agama
       # @return [Array<Configs::VolumeGroup>]
       attr_accessor :volume_groups
 
-      # @return [Array]
+      # @return [Array<Configs::MdRaid>]
       attr_accessor :md_raids
 
       # @return [Array]

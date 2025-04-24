@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,31 +19,27 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/configs/search"
-require "agama/storage/configs/with_alias"
-require "agama/storage/configs/with_filesystem"
-require "agama/storage/configs/with_partitions"
-require "agama/storage/configs/with_search"
-
 module Agama
   module Storage
     module Configs
-      # Configuration representing a drive.
-      #
-      # The device is expected to exist in the target system and can be used as a regular disk.
-      class Drive
-        include WithAlias
-        include WithFilesystem
-        include WithPartitions
-        include WithSearch
+      # Mixin for configs with partitions.
+      module WithPartitions
+        # @return [Y2Storage::PartitionTables::Type, nil]
+        attr_accessor :ptable_type
 
-        # @return [Encryption, nil]
-        attr_accessor :encryption
+        # @return [Array<Partition>]
+        attr_accessor :partitions
 
-        def initialize
-          initialize_partitions
-          # All drives are expected to match a real device in the system, so let's ensure a search.
-          @search = Search.new.tap { |s| s.max = 1 }
+        # Sets initial value for partitions.
+        def initialize_partitions
+          @partitions = []
+        end
+
+        # Whether the config contains partition definitions.
+        #
+        # @return [Boolean]
+        def partitions?
+          partitions.any?
         end
       end
     end

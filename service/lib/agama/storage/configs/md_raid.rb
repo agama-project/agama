@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,31 +19,45 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/configs/search"
-require "agama/storage/configs/with_alias"
 require "agama/storage/configs/with_filesystem"
 require "agama/storage/configs/with_partitions"
-require "agama/storage/configs/with_search"
 
 module Agama
   module Storage
     module Configs
-      # Configuration representing a drive.
-      #
-      # The device is expected to exist in the target system and can be used as a regular disk.
-      class Drive
-        include WithAlias
+      # Configuration representing a MD RAID.
+      class MdRaid
         include WithFilesystem
         include WithPartitions
-        include WithSearch
+
+        # MD RAID base name.
+        #
+        # @return [String, nil] e.g., "system".
+        attr_accessor :name
+
+        # MD RAId level.
+        #
+        # @return [Y2Storage::MdLevel, nil]
+        attr_accessor :level
+
+        # MD RAId parity algorithm.
+        #
+        # @return [Y2Storage::MdParity, nil]
+        attr_accessor :parity
+
+        # @return [Y2Storage::DiskSize, nil]
+        attr_accessor :chunk_size
+
+        # Aliases of the devices used by the MD RAID.
+        #
+        # @return [Array<String>]
+        attr_accessor :devices
 
         # @return [Encryption, nil]
         attr_accessor :encryption
 
         def initialize
           initialize_partitions
-          # All drives are expected to match a real device in the system, so let's ensure a search.
-          @search = Search.new.tap { |s| s.max = 1 }
         end
       end
     end
