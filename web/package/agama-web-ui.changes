@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Apr 24 06:45:00 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update axios to version 1.8.4 (bsc#1239306, CVE-2025-27152).
+
+-------------------------------------------------------------------
 Tue Apr 22 14:14:53 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 14
