@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Thu Apr 24 14:13:19 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify in Agama profile SSL certificate fingerprint
+  to handle self-signed certificates used for non default
+  registration server
+- Allow to specify registration server URL via Agama profile
+  gh#agama-project/agama#2270
+
+
+-------------------------------------------------------------------
 Tue Apr 22 14:14:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 14

@@ -27,7 +27,7 @@ use super::{SoftwareHTTPClient, SoftwareSettings};
 use crate::base_http_client::BaseHTTPClient;
 use crate::error::ServiceError;
 
-/// Loads and stores the software settings from/to the D-Bus service.
+/// Loads and stores the software settings from/to the HTTP API.
 pub struct SoftwareStore {
     software_client: SoftwareHTTPClient,
 }

@@ -29,6 +29,7 @@ use crate::hostname::store::HostnameStore;
 use crate::install_settings::InstallSettings;
 use crate::manager::{InstallationPhase, ManagerHTTPClient};
 use crate::scripts::{ScriptsClient, ScriptsGroup};
+use crate::security::store::SecurityStore;
 use crate::storage::http_client::ISCSIHTTPClient;
 use crate::{
     localization::LocalizationStore, network::NetworkStore, product::ProductStore,
@@ -48,6 +49,7 @@ pub struct Store {
     users: UsersStore,
     network: NetworkStore,
     product: ProductStore,
+    security: SecurityStore,
     software: SoftwareStore,
     storage: StorageStore,
     localization: LocalizationStore,
@@ -67,6 +69,7 @@ impl Store {
             users: UsersStore::new(http_client.clone())?,
             network: NetworkStore::new(http_client.clone()).await?,
             product: ProductStore::new(http_client.clone())?,
+            security: SecurityStore::new(http_client.clone())?,
             software: SoftwareStore::new(http_client.clone())?,
             storage: StorageStore::new(http_client.clone())?,
             scripts: ScriptsStore::new(http_client.clone()),
@@ -83,6 +86,7 @@ impl Store {
             files: self.files.load().await?,
             hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),
+            security: self.security.load().await?.to_option(),
             software: self.software.load().await?.to_option(),
             user: Some(self.users.load().await?),
             product: Some(self.product.load().await?),
@@ -127,6 +131,11 @@ impl Store {
         }
         if let Some(network) = &settings.network {
             self.network.store(network).await?;
+        }
+        // security has to be done before product to allow registration against
+        // self-signed RMT
+        if let Some(security) = &settings.security {
+            self.security.store(security).await?;
         }
         // order is important here as network can be critical for connection
         // to registration server and selecting product is important for rest

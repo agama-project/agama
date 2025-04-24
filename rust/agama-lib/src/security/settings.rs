@@ -18,22 +18,29 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod bootloader;
-pub mod cert;
-pub mod dbus;
-pub mod error;
-pub mod files;
-pub mod hostname;
-pub mod l10n;
-pub mod logs;
-pub mod manager;
-pub mod network;
-pub mod profile;
-pub mod questions;
-pub mod scripts;
-pub mod security;
-pub mod software;
-pub mod storage;
-pub mod users;
-pub mod web;
-pub use web::service;
+//! Representation of the software settings
+
+use serde::{Deserialize, Serialize};
+
+use super::model::SSLFingerprint;
+
+/// Security settings for installation
+#[derive(Debug, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SecuritySettings {
+    /// List of user selected patterns to install.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    // when we add support for remote URL here it should be vector of SSL
+    // certificates which will include flatten fingerprint
+    pub ssl_certificates: Option<Vec<SSLFingerprint>>,
+}
+
+impl SecuritySettings {
+    pub fn to_option(self) -> Option<Self> {
+        if self.ssl_certificates.is_none() {
+            None
+        } else {
+            Some(self)
+        }
+    }
+}

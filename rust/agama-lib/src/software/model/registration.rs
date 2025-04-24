@@ -73,6 +73,8 @@ pub struct RegistrationInfo {
     pub key: String,
     /// Registration email. Empty value mean email not used or not registered.
     pub email: String,
+    /// Registration URL. Empty value mean that de default value is used.
+    pub url: String,
 }
 
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]

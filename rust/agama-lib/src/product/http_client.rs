@@ -68,6 +68,12 @@ impl ProductHTTPClient {
         self.client.get("/software/registration").await
     }
 
+    pub async fn set_registration_url(&self, url: &String) -> Result<(), ServiceError> {
+        self.client
+            .put_void("/software/registration/url", url)
+            .await
+    }
+
     // get list of registered addons
     pub async fn get_registered_addons(&self) -> Result<Vec<AddonSettings>, ServiceError> {
         self.client
