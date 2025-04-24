@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -28,26 +28,27 @@ use crate::{
 #[error("Error processing network settings: {0}")]
 pub struct NetworkStoreError(#[from] NetworkClientError);
 
+type NetworkStoreResult<T> = Result<T, NetworkStoreError>;
+
 /// Loads and stores the network settings from/to the D-Bus service.
 pub struct NetworkStore {
     network_client: NetworkClient,
 }
 
 impl NetworkStore {
-    pub async fn new(client: BaseHTTPClient) -> Result<NetworkStore, NetworkStoreError> {
+    pub async fn new(client: BaseHTTPClient) -> NetworkStoreResult<Self> {
         Ok(Self {
             network_client: NetworkClient::new(client).await?,
         })
     }
 
     // TODO: read the settings from the service
-    pub async fn load(&self) -> Result<NetworkSettings, NetworkStoreError> {
+    pub async fn load(&self) -> NetworkStoreResult<NetworkSettings> {
         let connections = self.network_client.connections().await?;
-
         Ok(NetworkSettings { connections })
     }
 
-    pub async fn store(&self, settings: &NetworkSettings) -> Result<(), NetworkStoreError> {
+    pub async fn store(&self, settings: &NetworkSettings) -> NetworkStoreResult<()> {
         for id in ordered_connections(&settings.connections) {
             let id = id.as_str();
             let fallback = default_connection(id);

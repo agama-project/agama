@@ -27,7 +27,7 @@ use super::{
 use crate::base_http_client::BaseHTTPClient;
 
 // FIXME: should we follow this approach more often?
-type BootloaderResult<T> = Result<T, BootloaderStoreError>;
+type BootloaderStoreResult<T> = Result<T, BootloaderStoreError>;
 
 #[derive(Debug, thiserror::Error)]
 #[error("Error processing bootloader settings: {0}")]
@@ -39,17 +39,17 @@ pub struct BootloaderStore {
 }
 
 impl BootloaderStore {
-    pub fn new(client: BaseHTTPClient) -> BootloaderResult<Self> {
+    pub fn new(client: BaseHTTPClient) -> BootloaderStoreResult<Self> {
         Ok(Self {
             bootloader_client: BootloaderHTTPClient::new(client),
         })
     }
 
-    pub async fn load(&self) -> BootloaderResult<Option<BootloaderSettings>> {
+    pub async fn load(&self) -> BootloaderStoreResult<Option<BootloaderSettings>> {
         Ok(self.bootloader_client.get_config().await?.to_option())
     }
 
-    pub async fn store(&self, settings: &BootloaderSettings) -> BootloaderResult<()> {
+    pub async fn store(&self, settings: &BootloaderSettings) -> BootloaderStoreResult<()> {
         Ok(self.bootloader_client.set_config(settings).await?)
     }
 }

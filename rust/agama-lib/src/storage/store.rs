@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -27,23 +27,25 @@ use crate::{base_http_client::BaseHTTPClient, storage::http_client::StorageHTTPC
 #[error("Error processing storage settings: {0}")]
 pub struct StorageStoreError(#[from] StorageHTTPClientError);
 
+type StorageStoreResult<T> = Result<T, StorageStoreError>;
+
 /// Loads and stores the storage settings from/to the HTTP service.
 pub struct StorageStore {
     storage_client: StorageHTTPClient,
 }
 
 impl StorageStore {
-    pub fn new(client: BaseHTTPClient) -> Result<StorageStore, StorageStoreError> {
+    pub fn new(client: BaseHTTPClient) -> StorageStoreResult<StorageStore> {
         Ok(Self {
             storage_client: StorageHTTPClient::new(client),
         })
     }
 
-    pub async fn load(&self) -> Result<Option<StorageSettings>, StorageStoreError> {
+    pub async fn load(&self) -> StorageStoreResult<Option<StorageSettings>> {
         Ok(self.storage_client.get_config().await?)
     }
 
-    pub async fn store(&self, settings: &StorageSettings) -> Result<(), StorageStoreError> {
+    pub async fn store(&self, settings: &StorageSettings) -> StorageStoreResult<()> {
         self.storage_client.set_config(settings).await?;
         Ok(())
     }

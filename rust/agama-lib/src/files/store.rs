@@ -30,20 +30,22 @@ use crate::base_http_client::BaseHTTPClient;
 #[error("Error processing files settings: {0}")]
 pub struct FilesStoreError(#[from] FilesHTTPClientError);
 
+type FilesStoreResult<T> = Result<T, FilesStoreError>;
+
 /// Loads and stores the files settings from/to the HTTP service.
 pub struct FilesStore {
     files_client: FilesClient,
 }
 
 impl FilesStore {
-    pub fn new(client: BaseHTTPClient) -> Result<Self, FilesStoreError> {
+    pub fn new(client: BaseHTTPClient) -> FilesStoreResult<Self> {
         Ok(Self {
             files_client: FilesClient::new(client),
         })
     }
 
     /// loads the list of user files from http API
-    pub async fn load(&self) -> Result<Option<Vec<UserFile>>, FilesStoreError> {
+    pub async fn load(&self) -> FilesStoreResult<Option<Vec<UserFile>>> {
         let res = self.files_client.get_files().await?;
         if res.is_empty() {
             Ok(None)
@@ -53,7 +55,7 @@ impl FilesStore {
     }
 
     /// stores the list of user files via http API
-    pub async fn store(&self, files: &Vec<UserFile>) -> Result<(), FilesStoreError> {
+    pub async fn store(&self, files: &Vec<UserFile>) -> FilesStoreResult<()> {
         Ok(self.files_client.set_files(files).await?)
     }
 }

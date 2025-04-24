@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -28,25 +28,27 @@ use crate::base_http_client::BaseHTTPClient;
 #[error("Error processing users options: {0}")]
 pub struct UsersStoreError(#[from] UsersHTTPClientError);
 
+type UsersStoreResult<T> = Result<T, UsersStoreError>;
+
 /// Loads and stores the users settings from/to the D-Bus service.
 pub struct UsersStore {
     users_client: UsersHTTPClient,
 }
 
 impl UsersStore {
-    pub fn new(client: BaseHTTPClient) -> Result<Self, UsersStoreError> {
+    pub fn new(client: BaseHTTPClient) -> UsersStoreResult<Self> {
         Ok(Self {
             users_client: UsersHTTPClient::new(client)?,
         })
     }
 
-    pub fn new_with_client(client: UsersHTTPClient) -> Result<Self, UsersStoreError> {
+    pub fn new_with_client(client: UsersHTTPClient) -> UsersStoreResult<Self> {
         Ok(Self {
             users_client: client,
         })
     }
 
-    pub async fn load(&self) -> Result<UserSettings, UsersStoreError> {
+    pub async fn load(&self) -> UsersStoreResult<UserSettings> {
         let first_user = self.users_client.first_user().await?;
         let first_user = FirstUserSettings {
             user_name: Some(first_user.user_name),
@@ -67,7 +69,7 @@ impl UsersStore {
         })
     }
 
-    pub async fn store(&self, settings: &UserSettings) -> Result<(), UsersStoreError> {
+    pub async fn store(&self, settings: &UserSettings) -> UsersStoreResult<()> {
         // fixme: improve
         if let Some(settings) = &settings.first_user {
             self.store_first_user(settings).await?;
@@ -79,7 +81,7 @@ impl UsersStore {
         Ok(())
     }
 
-    async fn store_first_user(&self, settings: &FirstUserSettings) -> Result<(), UsersStoreError> {
+    async fn store_first_user(&self, settings: &FirstUserSettings) -> UsersStoreResult<()> {
         let first_user = FirstUser {
             user_name: settings.user_name.clone().unwrap_or_default(),
             full_name: settings.full_name.clone().unwrap_or_default(),
@@ -89,7 +91,7 @@ impl UsersStore {
         Ok(self.users_client.set_first_user(&first_user).await?)
     }
 
-    async fn store_root_user(&self, settings: &RootUserSettings) -> Result<(), UsersStoreError> {
+    async fn store_root_user(&self, settings: &RootUserSettings) -> UsersStoreResult<()> {
         let hashed_password = settings.hashed_password.unwrap_or_default();
 
         if let Some(root_password) = &settings.password {
@@ -115,7 +117,7 @@ mod test {
     use std::error::Error;
     use tokio::test; // without this, "error: async functions cannot be used for tests"
 
-    fn users_store(mock_server_url: String) -> Result<UsersStore, UsersStoreError> {
+    fn users_store(mock_server_url: String) -> UsersStoreResult<UsersStore> {
         let bhc =
             BaseHTTPClient::new(mock_server_url).map_err(|e| UsersHTTPClientError::HTTP(e))?;
         let client = UsersHTTPClient::new(bhc)?;

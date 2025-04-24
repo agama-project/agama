@@ -34,6 +34,8 @@ pub enum ProductStoreError {
     Probe(#[from] ManagerHTTPClientError),
 }
 
+type ProductStoreResult<T> = Result<T, ProductStoreError>;
+
 /// Loads and stores the product settings from/to the D-Bus service.
 pub struct ProductStore {
     product_client: ProductHTTPClient,
@@ -41,7 +43,7 @@ pub struct ProductStore {
 }
 
 impl ProductStore {
-    pub fn new(client: BaseHTTPClient) -> Result<ProductStore, ProductStoreError> {
+    pub fn new(client: BaseHTTPClient) -> ProductStoreResult<ProductStore> {
         Ok(Self {
             product_client: ProductHTTPClient::new(client.clone()),
             manager_client: ManagerHTTPClient::new(client.clone()),
@@ -56,7 +58,7 @@ impl ProductStore {
         }
     }
 
-    pub async fn load(&self) -> Result<ProductSettings, ProductStoreError> {
+    pub async fn load(&self) -> ProductStoreResult<ProductSettings> {
         let product = self.product_client.product().await?;
         let registration_info = self.product_client.get_registration().await?;
         let registered_addons = self.product_client.get_registered_addons().await?;
@@ -75,7 +77,7 @@ impl ProductStore {
         })
     }
 
-    pub async fn store(&self, settings: &ProductSettings) -> Result<(), ProductStoreError> {
+    pub async fn store(&self, settings: &ProductSettings) -> ProductStoreResult<()> {
         let mut probe = false;
         if let Some(product) = &settings.id {
             let existing_product = self.product_client.product().await?;

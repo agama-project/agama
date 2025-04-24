@@ -37,6 +37,8 @@ pub enum ScriptsStoreError {
     Software(#[from] SoftwareHTTPClientError),
 }
 
+type ScriptStoreResult<T> = Result<T, ScriptsStoreError>;
+
 pub struct ScriptsStore {
     scripts: ScriptsClient,
     software: SoftwareHTTPClient,
@@ -50,7 +52,7 @@ impl ScriptsStore {
         }
     }
 
-    pub async fn load(&self) -> Result<ScriptsConfig, ScriptsStoreError> {
+    pub async fn load(&self) -> ScriptStoreResult<ScriptsConfig> {
         let scripts = self.scripts.scripts().await?;
 
         Ok(ScriptsConfig {
@@ -61,7 +63,7 @@ impl ScriptsStore {
         })
     }
 
-    pub async fn store(&self, settings: &ScriptsConfig) -> Result<(), ScriptsStoreError> {
+    pub async fn store(&self, settings: &ScriptsConfig) -> ScriptStoreResult<()> {
         self.scripts.delete_scripts().await?;
 
         if let Some(scripts) = &settings.pre {

@@ -27,7 +27,7 @@ use crate::base_http_client::BaseHTTPClient;
 #[error("Error processing security settings: {0}")]
 pub struct SecurityStoreError(#[from] SecurityHTTPClientError);
 
-type SecurityResult<T> = Result<T, SecurityStoreError>;
+type SecurityStoreResult<T> = Result<T, SecurityStoreError>;
 
 /// Loads and stores the security settings from/to the HTTP API.
 pub struct SecurityStore {
@@ -35,13 +35,13 @@ pub struct SecurityStore {
 }
 
 impl SecurityStore {
-    pub fn new(client: BaseHTTPClient) -> SecurityResult<SecurityStore> {
+    pub fn new(client: BaseHTTPClient) -> SecurityStoreResult<SecurityStore> {
         Ok(Self {
             security_client: SecurityHTTPClient::new(client),
         })
     }
 
-    pub async fn load(&self) -> SecurityResult<SecuritySettings> {
+    pub async fn load(&self) -> SecurityStoreResult<SecuritySettings> {
         let fingerprints = self.security_client.get_ssl_fingerprints().await?;
         let opt_fps = if fingerprints.is_empty() {
             None
@@ -53,7 +53,7 @@ impl SecurityStore {
         })
     }
 
-    pub async fn store(&self, settings: &SecuritySettings) -> SecurityResult<()> {
+    pub async fn store(&self, settings: &SecuritySettings) -> SecurityStoreResult<()> {
         if let Some(fingerprints) = &settings.ssl_certificates {
             self.security_client
                 .set_ssl_fingerprints(fingerprints)

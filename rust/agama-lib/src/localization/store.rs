@@ -30,21 +30,21 @@ use crate::{base_http_client::BaseHTTPClient, localization::model::LocaleConfig}
 #[error("Error processing localization settings: {0}")]
 pub struct LocalizationStoreError(#[from] LocalizationHTTPClientError);
 
+type LocalizationStoreResult<T> = Result<T, LocalizationStoreError>;
+
 /// Loads and stores the storage settings from/to the D-Bus service.
 pub struct LocalizationStore {
     localization_client: LocalizationHTTPClient,
 }
 
 impl LocalizationStore {
-    pub fn new(client: BaseHTTPClient) -> Result<LocalizationStore, LocalizationStoreError> {
+    pub fn new(client: BaseHTTPClient) -> LocalizationStoreResult<Self> {
         Ok(Self {
             localization_client: LocalizationHTTPClient::new(client)?,
         })
     }
 
-    pub fn new_with_client(
-        client: LocalizationHTTPClient,
-    ) -> Result<LocalizationStore, LocalizationStoreError> {
+    pub fn new_with_client(client: LocalizationHTTPClient) -> LocalizationStoreResult<Self> {
         Ok(Self {
             localization_client: client,
         })
@@ -60,7 +60,7 @@ impl LocalizationStore {
         }
     }
 
-    pub async fn load(&self) -> Result<LocalizationSettings, LocalizationStoreError> {
+    pub async fn load(&self) -> LocalizationStoreResult<LocalizationSettings> {
         let config = self.localization_client.get_config().await?;
 
         let opt_language = config.locales.and_then(Self::chestburster);
@@ -74,10 +74,7 @@ impl LocalizationStore {
         })
     }
 
-    pub async fn store(
-        &self,
-        settings: &LocalizationSettings,
-    ) -> Result<(), LocalizationStoreError> {
+    pub async fn store(&self, settings: &LocalizationSettings) -> LocalizationStoreResult<()> {
         // clones are necessary as we have different structs owning their data
         let opt_language = settings.language.clone();
         let opt_keymap = settings.keyboard.clone();
@@ -105,7 +102,7 @@ mod test {
 
     async fn localization_store(
         mock_server_url: String,
-    ) -> Result<LocalizationStore, LocalizationStoreError> {
+    ) -> LocalizationStoreResult<LocalizationStore> {
         let bhc =
             BaseHTTPClient::new(mock_server_url).map_err(LocalizationHTTPClientError::HTTP)?;
         let client = LocalizationHTTPClient::new(bhc)?;
