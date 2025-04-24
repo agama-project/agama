@@ -24,7 +24,10 @@ use zbus::Connection;
 
 use crate::error::ServiceError;
 
-use super::{model::{SSLFingerprint, SSLFingerprintAlgorithm}, proxies::SecurityProxy};
+use super::{
+    model::{SSLFingerprint, SSLFingerprintAlgorithm},
+    proxies::SecurityProxy,
+};
 
 /// D-Bus client for the security service
 #[derive(Clone)]
