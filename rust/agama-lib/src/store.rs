@@ -29,7 +29,8 @@ use crate::hostname::store::HostnameStore;
 use crate::install_settings::InstallSettings;
 use crate::manager::{InstallationPhase, ManagerHTTPClient};
 use crate::scripts::{ScriptsClient, ScriptsGroup};
-use crate::storage::http_client::ISCSIHTTPClient;
+use crate::storage::http_client::iscsi::ISCSIHTTPClient;
+use crate::storage::store::dasd::DASDStore;
 use crate::{
     localization::LocalizationStore, network::NetworkStore, product::ProductStore,
     scripts::ScriptsStore, software::SoftwareStore, storage::StorageStore, users::UsersStore,
@@ -43,6 +44,7 @@ use crate::{
 /// This struct uses the default connection built by [connection function](super::connection).
 pub struct Store {
     bootloader: BootloaderStore,
+    dasd: DASDStore,
     files: FilesStore,
     hostname: HostnameStore,
     users: UsersStore,
@@ -61,6 +63,7 @@ impl Store {
     pub async fn new(http_client: BaseHTTPClient) -> Result<Store, ServiceError> {
         Ok(Self {
             bootloader: BootloaderStore::new(http_client.clone())?,
+            dasd: DASDStore::new(http_client.clone())?,
             files: FilesStore::new(http_client.clone())?,
             hostname: HostnameStore::new(http_client.clone())?,
             localization: LocalizationStore::new(http_client.clone())?,
@@ -80,6 +83,7 @@ impl Store {
     pub async fn load(&self) -> Result<InstallSettings, ServiceError> {
         let mut settings = InstallSettings {
             bootloader: self.bootloader.load().await?,
+            dasd: self.dasd.load().await?,
             files: self.files.load().await?,
             hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),
@@ -143,6 +147,10 @@ impl Store {
         // iscsi has to be done before storage
         if let Some(iscsi) = &settings.iscsi {
             self.iscsi_client.set_config(iscsi).await?
+        }
+        // dasd devices has to be activated before storage
+        if let Some(dasd) = &settings.dasd {
+            self.dasd.store(dasd).await?
         }
         if settings.storage.is_some() || settings.storage_autoyast.is_some() {
             self.storage.store(&settings.into()).await?

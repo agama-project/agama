@@ -27,7 +27,7 @@
 
 use agama_lib::{
     error::ServiceError,
-    storage::{client::dasd::DASDClient, model::dasd::DASDDevice},
+    storage::{client::dasd::DASDClient, model::dasd::DASDDevice, settings::dasd::DASDConfig},
 };
 use axum::{
     extract::State,
@@ -70,6 +70,7 @@ pub async fn dasd_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Servi
     let state = DASDState { client };
     let router = Router::new()
         .route("/supported", get(supported))
+        .route("/config", get(get_config).put(set_config))
         .route("/devices", get(devices))
         .route("/probe", post(probe))
         .route("/format", post(format))
@@ -92,6 +93,32 @@ pub async fn dasd_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Servi
 )]
 async fn supported(State(state): State<DASDState<'_>>) -> Result<Json<bool>, Error> {
     Ok(Json(state.client.supported().await?))
+}
+
+/// Returns DASD config
+#[utoipa::path(
+    get,
+    path="/config",
+    context_path="/api/storage/dasd",
+    responses(
+        (status = OK, description = "Returns DASD config")
+    )
+)]
+async fn get_config(State(state): State<DASDState<'_>>) -> Result<Json<DASDConfig>, Error> {
+    Ok(Json(state.client.get_config().await?))
+}
+
+/// Returns DASD config
+#[utoipa::path(
+    put,
+    path="/config",
+    context_path="/api/storage/dasd",
+    responses(
+        (status = OK, description = "Returns DASD config", body=DASDConfig)
+    )
+)]
+async fn set_config(State(state): State<DASDState<'_>>, Json(config): Json<DASDConfig>) -> Result<(), Error> {
+    Ok(state.client.set_config(config).await?)
 }
 
 /// Returns the list of known DASD devices.

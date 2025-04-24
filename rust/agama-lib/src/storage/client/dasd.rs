@@ -28,7 +28,7 @@ use zbus::{
 
 use crate::{
     error::ServiceError,
-    storage::{model::dasd::DASDDevice, proxies::dasd::ManagerProxy},
+    storage::{model::dasd::DASDDevice, proxies::dasd::ManagerProxy, settings::dasd::DASDConfig},
 };
 
 /// Client to connect to Agama's D-Bus API for DASD management.
@@ -64,6 +64,16 @@ impl<'a> DASDClient<'a> {
         let introspect = self.introspectable_proxy.introspect().await?;
         // simply check if introspection contain given interface
         Ok(introspect.contains("org.opensuse.Agama.Storage1.DASD.Manager"))
+    }
+
+    pub async fn get_config(&self) -> Result<DASDConfig, ServiceError> {
+        // TODO: implement
+        Ok(DASDConfig::default())
+    }
+
+    pub async fn set_config(&self, config: DASDConfig) -> Result<(), ServiceError> {
+        // TODO: implement
+        Ok(())
     }
 
     pub async fn probe(&self) -> Result<(), ServiceError> {

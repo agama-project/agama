@@ -26,7 +26,7 @@ use crate::files::model::UserFile;
 use crate::hostname::model::HostnameSettings;
 use crate::{
     localization::LocalizationSettings, network::NetworkSettings, product::ProductSettings,
-    scripts::ScriptsConfig, software::SoftwareSettings, users::UserSettings,
+    scripts::ScriptsConfig, software::SoftwareSettings, users::UserSettings, storage::settings::dasd::DASDConfig
 };
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
@@ -45,6 +45,9 @@ pub struct InstallSettings {
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bootloader: Option<BootloaderSettings>,
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dasd: Option<DASDConfig>,
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub files: Option<Vec<UserFile>>,

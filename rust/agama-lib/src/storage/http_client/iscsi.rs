@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,29 +18,28 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements a client to access Agama's storage service.
+//! Implements a client to access Agama's iscsi service.
 
-pub mod iscsi;
-pub mod dasd;
+use serde_json::value::RawValue;
 
-use crate::base_http_client::BaseHTTPClient;
-use crate::storage::StorageSettings;
-use crate::ServiceError;
+use crate::{base_http_client::BaseHTTPClient, error::ServiceError, storage::StorageSettings};
 
-pub struct StorageHTTPClient {
+pub struct ISCSIHTTPClient {
     client: BaseHTTPClient,
 }
 
-impl StorageHTTPClient {
+impl ISCSIHTTPClient {
     pub fn new(base: BaseHTTPClient) -> Self {
         Self { client: base }
     }
 
     pub async fn get_config(&self) -> Result<Option<StorageSettings>, ServiceError> {
-        self.client.get("/storage/config").await
+        // TODO: implement it as part of next step
+        //self.client.get("/storage/config").await
+        Ok(None)
     }
 
-    pub async fn set_config(&self, config: &StorageSettings) -> Result<(), ServiceError> {
-        self.client.put_void("/storage/config", config).await
+    pub async fn set_config(&self, config: &Box<RawValue>) -> Result<(), ServiceError> {
+        self.client.post_void("/iscsi/config", config).await
     }
 }
