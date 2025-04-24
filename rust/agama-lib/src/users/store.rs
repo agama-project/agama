@@ -36,10 +36,10 @@ pub struct UsersStore {
 }
 
 impl UsersStore {
-    pub fn new(client: BaseHTTPClient) -> UsersStoreResult<Self> {
-        Ok(Self {
-            users_client: UsersHTTPClient::new(client)?,
-        })
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self {
+            users_client: UsersHTTPClient::new(client),
+        }
     }
 
     pub fn new_with_client(client: UsersHTTPClient) -> UsersStoreResult<Self> {
@@ -120,7 +120,7 @@ mod test {
     fn users_store(mock_server_url: String) -> UsersStoreResult<UsersStore> {
         let bhc =
             BaseHTTPClient::new(mock_server_url).map_err(|e| UsersHTTPClientError::HTTP(e))?;
-        let client = UsersHTTPClient::new(bhc)?;
+        let client = UsersHTTPClient::new(bhc.clone());
         UsersStore::new_with_client(client)
     }
 

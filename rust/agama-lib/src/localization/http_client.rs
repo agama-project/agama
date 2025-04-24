@@ -32,8 +32,8 @@ pub struct LocalizationHTTPClient {
 }
 
 impl LocalizationHTTPClient {
-    pub fn new(base: BaseHTTPClient) -> Result<Self, LocalizationHTTPClientError> {
-        Ok(Self { client: base })
+    pub fn new(base: BaseHTTPClient) -> Self {
+        Self { client: base }
     }
 
     pub async fn get_config(&self) -> Result<LocaleConfig, LocalizationHTTPClientError> {

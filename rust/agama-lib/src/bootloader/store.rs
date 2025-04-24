@@ -39,10 +39,10 @@ pub struct BootloaderStore {
 }
 
 impl BootloaderStore {
-    pub fn new(client: BaseHTTPClient) -> BootloaderStoreResult<Self> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self {
             bootloader_client: BootloaderHTTPClient::new(client),
-        })
+        }
     }
 
     pub async fn load(&self) -> BootloaderStoreResult<Option<BootloaderSettings>> {

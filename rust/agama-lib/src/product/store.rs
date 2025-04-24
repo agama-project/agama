@@ -43,11 +43,11 @@ pub struct ProductStore {
 }
 
 impl ProductStore {
-    pub fn new(client: BaseHTTPClient) -> ProductStoreResult<ProductStore> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> ProductStore {
+        Self {
             product_client: ProductHTTPClient::new(client.clone()),
-            manager_client: ManagerHTTPClient::new(client.clone()),
-        })
+            manager_client: ManagerHTTPClient::new(client),
+        }
     }
 
     fn non_empty_string(s: String) -> Option<String> {

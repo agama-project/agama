@@ -36,10 +36,10 @@ pub struct NetworkStore {
 }
 
 impl NetworkStore {
-    pub async fn new(client: BaseHTTPClient) -> NetworkStoreResult<Self> {
-        Ok(Self {
-            network_client: NetworkClient::new(client).await?,
-        })
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self {
+            network_client: NetworkClient::new(client),
+        }
     }
 
     // TODO: read the settings from the service

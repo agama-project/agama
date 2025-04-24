@@ -35,10 +35,10 @@ pub struct StorageStore {
 }
 
 impl StorageStore {
-    pub fn new(client: BaseHTTPClient) -> StorageStoreResult<StorageStore> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> StorageStore {
+        Self {
             storage_client: StorageHTTPClient::new(client),
-        })
+        }
     }
 
     pub async fn load(&self) -> StorageStoreResult<Option<StorageSettings>> {

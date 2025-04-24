@@ -37,8 +37,8 @@ pub struct StorageHTTPClient {
 }
 
 impl StorageHTTPClient {
-    pub fn new(base: BaseHTTPClient) -> Self {
-        Self { client: base }
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self { client }
     }
 
     pub async fn get_config(&self) -> Result<Option<StorageSettings>, StorageHTTPClientError> {

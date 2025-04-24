@@ -35,10 +35,10 @@ pub struct SecurityStore {
 }
 
 impl SecurityStore {
-    pub fn new(client: BaseHTTPClient) -> SecurityStoreResult<SecurityStore> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self {
             security_client: SecurityHTTPClient::new(client),
-        })
+        }
     }
 
     pub async fn load(&self) -> SecurityStoreResult<SecuritySettings> {

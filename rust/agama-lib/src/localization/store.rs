@@ -38,16 +38,16 @@ pub struct LocalizationStore {
 }
 
 impl LocalizationStore {
-    pub fn new(client: BaseHTTPClient) -> LocalizationStoreResult<Self> {
-        Ok(Self {
-            localization_client: LocalizationHTTPClient::new(client)?,
-        })
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self {
+            localization_client: LocalizationHTTPClient::new(client),
+        }
     }
 
-    pub fn new_with_client(client: LocalizationHTTPClient) -> LocalizationStoreResult<Self> {
-        Ok(Self {
+    pub fn new_with_client(client: LocalizationHTTPClient) -> Self {
+        Self {
             localization_client: client,
-        })
+        }
     }
 
     /// Consume *v* and return its first element, or None.
@@ -102,11 +102,11 @@ mod test {
 
     async fn localization_store(
         mock_server_url: String,
-    ) -> LocalizationStoreResult<LocalizationStore> {
+    ) -> Result<LocalizationStore, Box<dyn Error>> {
         let bhc =
             BaseHTTPClient::new(mock_server_url).map_err(LocalizationHTTPClientError::HTTP)?;
-        let client = LocalizationHTTPClient::new(bhc)?;
-        LocalizationStore::new_with_client(client)
+        let client = LocalizationHTTPClient::new(bhc);
+        Ok(LocalizationStore::new_with_client(client))
     }
 
     #[test]

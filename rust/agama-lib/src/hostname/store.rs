@@ -38,10 +38,10 @@ pub struct HostnameStore {
 }
 
 impl HostnameStore {
-    pub fn new(client: BaseHTTPClient) -> HostnameStoreResult<Self> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self {
             hostname_client: HostnameHTTPClient::new(client),
-        })
+        }
     }
 
     pub async fn load(&self) -> HostnameStoreResult<HostnameSettings> {

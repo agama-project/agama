@@ -37,8 +37,8 @@ pub struct UsersHTTPClient {
 }
 
 impl UsersHTTPClient {
-    pub fn new(client: BaseHTTPClient) -> Result<Self, UsersHTTPClientError> {
-        Ok(Self { client })
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self { client }
     }
 
     /// Returns the settings for first non admin user

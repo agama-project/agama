@@ -33,8 +33,8 @@ pub struct NetworkClient {
 }
 
 impl NetworkClient {
-    pub async fn new(client: BaseHTTPClient) -> Result<NetworkClient, NetworkClientError> {
-        Ok(Self { client })
+    pub fn new(base: BaseHTTPClient) -> Self {
+        Self { client: base }
     }
 
     /// Returns an array of network devices

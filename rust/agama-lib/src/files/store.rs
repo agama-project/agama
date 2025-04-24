@@ -38,10 +38,10 @@ pub struct FilesStore {
 }
 
 impl FilesStore {
-    pub fn new(client: BaseHTTPClient) -> FilesStoreResult<Self> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self {
             files_client: FilesClient::new(client),
-        })
+        }
     }
 
     /// loads the list of user files from http API

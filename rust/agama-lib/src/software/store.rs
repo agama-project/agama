@@ -40,10 +40,10 @@ pub struct SoftwareStore {
 }
 
 impl SoftwareStore {
-    pub fn new(client: BaseHTTPClient) -> SoftwareStoreResult<SoftwareStore> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> SoftwareStore {
+        Self {
             software_client: SoftwareHTTPClient::new(client),
-        })
+        }
     }
 
     pub async fn load(&self) -> SoftwareStoreResult<SoftwareSettings> {
