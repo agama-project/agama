@@ -21,10 +21,14 @@
 //! Implements the store for the localization settings.
 // TODO: for an overview see crate::store (?)
 
-use super::{LocalizationHTTPClient, LocalizationSettings};
-use crate::base_http_client::BaseHTTPClient;
-use crate::error::ServiceError;
-use crate::localization::model::LocaleConfig;
+use super::{
+    http_client::LocalizationHTTPClientError, LocalizationHTTPClient, LocalizationSettings,
+};
+use crate::{base_http_client::BaseHTTPClient, localization::model::LocaleConfig};
+
+#[derive(Debug, thiserror::Error)]
+#[error("Error processing localization settings: {0}")]
+pub struct LocalizationStoreError(#[from] LocalizationHTTPClientError);
 
 /// Loads and stores the storage settings from/to the D-Bus service.
 pub struct LocalizationStore {
@@ -32,7 +36,7 @@ pub struct LocalizationStore {
 }
 
 impl LocalizationStore {
-    pub fn new(client: BaseHTTPClient) -> Result<LocalizationStore, ServiceError> {
+    pub fn new(client: BaseHTTPClient) -> Result<LocalizationStore, LocalizationStoreError> {
         Ok(Self {
             localization_client: LocalizationHTTPClient::new(client)?,
         })
@@ -40,7 +44,7 @@ impl LocalizationStore {
 
     pub fn new_with_client(
         client: LocalizationHTTPClient,
-    ) -> Result<LocalizationStore, ServiceError> {
+    ) -> Result<LocalizationStore, LocalizationStoreError> {
         Ok(Self {
             localization_client: client,
         })
@@ -56,7 +60,7 @@ impl LocalizationStore {
         }
     }
 
-    pub async fn load(&self) -> Result<LocalizationSettings, ServiceError> {
+    pub async fn load(&self) -> Result<LocalizationSettings, LocalizationStoreError> {
         let config = self.localization_client.get_config().await?;
 
         let opt_language = config.locales.and_then(Self::chestburster);
@@ -70,7 +74,10 @@ impl LocalizationStore {
         })
     }
 
-    pub async fn store(&self, settings: &LocalizationSettings) -> Result<(), ServiceError> {
+    pub async fn store(
+        &self,
+        settings: &LocalizationSettings,
+    ) -> Result<(), LocalizationStoreError> {
         // clones are necessary as we have different structs owning their data
         let opt_language = settings.language.clone();
         let opt_keymap = settings.keyboard.clone();
@@ -83,7 +90,7 @@ impl LocalizationStore {
             ui_locale: None,
             ui_keymap: None,
         };
-        self.localization_client.set_config(&config).await
+        Ok(self.localization_client.set_config(&config).await?)
     }
 }
 
@@ -98,8 +105,9 @@ mod test {
 
     async fn localization_store(
         mock_server_url: String,
-    ) -> Result<LocalizationStore, ServiceError> {
-        let bhc = BaseHTTPClient::new(mock_server_url)?;
+    ) -> Result<LocalizationStore, LocalizationStoreError> {
+        let bhc =
+            BaseHTTPClient::new(mock_server_url).map_err(LocalizationHTTPClientError::HTTP)?;
         let client = LocalizationHTTPClient::new(bhc)?;
         LocalizationStore::new_with_client(client)
     }

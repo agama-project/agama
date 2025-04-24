@@ -29,7 +29,7 @@ use crate::{
 #[derive(Debug, thiserror::Error)]
 pub enum StorageHTTPClientError {
     #[error(transparent)]
-    HTTP(#[from] BaseHTTPClientError),
+    Storage(#[from] BaseHTTPClientError),
 }
 
 pub struct StorageHTTPClient {
@@ -50,6 +50,12 @@ impl StorageHTTPClient {
     }
 }
 
+#[derive(Debug, thiserror::Error)]
+pub enum ISCSIHTTPClientError {
+    #[error(transparent)]
+    ISCSI(#[from] BaseHTTPClientError),
+}
+
 pub struct ISCSIHTTPClient {
     client: BaseHTTPClient,
 }
@@ -59,13 +65,13 @@ impl ISCSIHTTPClient {
         Self { client: base }
     }
 
-    pub async fn get_config(&self) -> Result<Option<StorageSettings>, StorageHTTPClientError> {
+    pub async fn get_config(&self) -> Result<Option<StorageSettings>, ISCSIHTTPClientError> {
         // TODO: implement it as part of next step
         //self.client.get("/storage/config").await
         Ok(None)
     }
 
-    pub async fn set_config(&self, config: &Box<RawValue>) -> Result<(), StorageHTTPClientError> {
+    pub async fn set_config(&self, config: &Box<RawValue>) -> Result<(), ISCSIHTTPClientError> {
         Ok(self.client.post_void("/iscsi/config", config).await?)
     }
 }

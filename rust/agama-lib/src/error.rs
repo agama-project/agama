@@ -56,16 +56,9 @@ pub enum ServiceError {
     BackendError(u16, String),
     #[error("You are not logged in. Please use: agama auth login")]
     NotAuthenticated,
-    // Specific error when something does not work as expected, but it is not user fault
-    #[error("Internal error. Please report a bug and attach logs. Details: {0}")]
-    InternalError(String),
-    #[error("Could not read the file: '{0}'")]
-    CouldNotTransferFile(#[from] TransferError),
     // FIXME reroute the error to a better place
     #[error("Profile error: {0}")]
     Profile(#[from] ProfileError),
-    #[error("Invalid URL: {0}")]
-    InvalidURL(#[from] url::ParseError),
 }
 
 #[derive(Error, Debug)]
