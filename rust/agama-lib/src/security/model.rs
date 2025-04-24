@@ -25,6 +25,7 @@ use crate::error::ServiceError;
 #[derive(
     Default,
     Clone,
+    Copy,
     Debug,
     strum::IntoStaticStr,
     strum::EnumString,
