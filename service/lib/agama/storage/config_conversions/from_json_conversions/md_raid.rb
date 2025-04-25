@@ -55,6 +55,7 @@ module Agama
           def conversions
             {
               name:        md_raid_json[:name],
+              alias:       md_raid_json[:alias],
               level:       convert_level,
               parity:      convert_parity,
               chunk_size:  convert_chunk_size,

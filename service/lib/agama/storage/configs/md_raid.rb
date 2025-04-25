@@ -29,6 +29,7 @@ module Agama
       class MdRaid
         include WithFilesystem
         include WithPartitions
+        include WithAlias
 
         # MD RAID base name.
         #

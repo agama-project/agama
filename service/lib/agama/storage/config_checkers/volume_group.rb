@@ -91,8 +91,7 @@ module Agama
         # @param pv_alias [String]
         # @return [Issue, nil]
         def missing_physical_volume_issue(pv_alias)
-          configs = storage_config.drives + storage_config.drives.flat_map(&:partitions)
-          return if configs.any? { |c| c.alias == pv_alias }
+          return if storage_config.potential_for_pv.any? { |c| c.alias == pv_alias }
 
           error(
             # TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
@@ -115,7 +114,7 @@ module Agama
         # @param device_alias [String]
         # @return [Issue, nil]
         def missing_physical_volumes_device_issue(device_alias)
-          return if storage_config.drives.any? { |d| d.alias == device_alias }
+          return if storage_config.potential_for_pv_device.any? { |d| d.alias == device_alias }
 
           error(
             format(

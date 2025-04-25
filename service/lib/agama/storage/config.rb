@@ -132,6 +132,37 @@ module Agama
       def with_size
         partitions + logical_volumes
       end
+
+      # Config objects that could act as physical volume
+      #
+      # @return [Array<Configs::Drive, Configs::Md, Configs::Partition>]
+      def potential_for_pv
+        drives + md_raids + partitions
+      end
+
+      # Config objects that could be used to create automatic physical volume
+      #
+      # @return [Array<Configs::Drive, Configs::Md>]
+      def potential_for_pv_device
+        drives + md_raids
+      end
+
+    private
+
+      # Whether the device config contains root.
+      #
+      # @param device [Configs::Drive, Configs::MdRaid, Configs::VolumeGroup]
+      # @return [Boolean]
+      def root_device?(device)
+        case device
+        when Configs::Drive, Configs::MdRaid
+          device.root? || device.partitions.any?(&:root?)
+        when Configs::VolumeGroup
+          device.logical_volumes.any?(&:root?)
+        else
+          false
+        end
+      end
     end
   end
 end
