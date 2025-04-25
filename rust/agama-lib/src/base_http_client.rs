@@ -47,10 +47,9 @@ pub enum BaseHTTPClientError {
 ///
 /// ```no_run
 ///   use agama_lib::questions::model::Question;
-///   use agama_lib::base_http_client::BaseHTTPClient;
-///   use agama_lib::error::ServiceError;
+///   use agama_lib::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
 ///
-///   async fn get_questions() -> Result<Vec<Question>, ServiceError> {
+///   async fn get_questions() -> Result<Vec<Question>, BaseHTTPClientError> {
 ///     let client = BaseHTTPClient::new("http://localhost/api/").unwrap();
 ///     client.get("questions").await
 ///   }
