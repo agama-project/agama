@@ -24,7 +24,9 @@ module Agama
     module Configs
       # Section of the configuration representing a LVM volume group.
       class VolumeGroup
-        # @return [String, nil]
+        # Base name.
+        #
+        # @return [String, nil] e.g., "system".
         attr_accessor :name
 
         # @return [Y2Storage::DiskSize, nil]

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -37,7 +37,7 @@ module Agama
         def solve(config)
           @config = config
 
-          configs_with_filesystem.each { |c| solve_filesystem(c) }
+          config.with_filesystem.each { |c| solve_filesystem(c) }
         end
 
       private
@@ -64,11 +64,6 @@ module Agama
           btrfs.read_only = default_btrfs.read_only? if btrfs.read_only.nil?
           btrfs.subvolumes ||= default_btrfs.subvolumes
           btrfs.default_subvolume ||= (default_btrfs.default_subvolume || "")
-        end
-
-        # @return [Array<#filesystem>]
-        def configs_with_filesystem
-          config.drives + config.partitions + config.logical_volumes
         end
 
         # Default filesystem defined by the product.

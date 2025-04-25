@@ -97,7 +97,7 @@ module Agama
 
       # @return [Array<Configs::Partition>]
       def partitions
-        drives.flat_map(&:partitions)
+        (drives + md_raids).flat_map(&:partitions)
       end
 
       # @return [Array<Configs::LogicalVolume>]
@@ -107,11 +107,30 @@ module Agama
 
       # @return [Array<Configs::Filesystem>]
       def filesystems
-        (
-          drives.map(&:filesystem) +
-          partitions.map(&:filesystem) +
-          logical_volumes.map(&:filesystem)
-        ).compact
+        (drives + md_raids + partitions + logical_volumes)
+          .map(&:filesystem)
+          .compact
+      end
+
+      # Configs with configurable encryption.
+      #
+      # @return [Array<#encryption>]
+      def with_encryption
+        drives + md_raids + partitions + logical_volumes
+      end
+
+      # Configs with configurable filesystem.
+      #
+      # @return [Array<#filesystem>]
+      def with_filesystem
+        drives + md_raids + partitions + logical_volumes
+      end
+
+      # Configs with configurable size.
+      #
+      # @return [Array<#size>]
+      def with_size
+        partitions + logical_volumes
       end
     end
   end

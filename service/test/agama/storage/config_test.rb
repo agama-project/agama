@@ -339,4 +339,279 @@ describe Agama::Storage::Config do
       end
     end
   end
+
+  describe "#partitions" do
+    let(:config_json) do
+      {
+        drives:  [
+          {
+            partitions: [
+              { alias: "p1" },
+              { alias: "p2" }
+            ]
+          }
+        ],
+        mdRaids: [
+          {
+            partitions: [
+              { alias: "p3" }
+            ]
+          }
+        ]
+      }
+    end
+
+    it "returns all partitions" do
+      partitions = subject.partitions
+
+      expect(partitions.size).to eq(3)
+      expect(partitions.map(&:alias)).to contain_exactly("p1", "p2", "p3")
+    end
+  end
+
+  describe "#logical_volumes" do
+    let(:config_json) do
+      {
+        volumeGroups: [
+          {
+            logicalVolumes: [
+              { name: "lv1" },
+              { name: "lv2" }
+            ]
+          },
+          {
+            logicalVolumes: [
+              { name: "lv3" }
+            ]
+          }
+        ]
+      }
+    end
+
+    it "returns all logical volumes" do
+      logical_volumes = subject.logical_volumes
+
+      expect(logical_volumes.size).to eq(3)
+      expect(logical_volumes.map(&:name)).to contain_exactly("lv1", "lv2", "lv3")
+    end
+  end
+
+  describe "#filesystems" do
+    let(:config_json) do
+      {
+        drives:       [
+          {
+            filesystem: { path: "/test1" }
+          },
+          {
+            partitions: [
+              {
+                filesystem: { path: "/test2" }
+              },
+              {
+                filesystem: { path: "/test3" }
+              }
+            ]
+          }
+        ],
+        volumeGroups: [
+          {
+            logicalVolumes: [
+              {
+                filesystem: { path: "/test4" }
+              }
+            ]
+          }
+        ],
+        mdRaids:      [
+          {
+            filesystem: { path: "/test5" }
+          },
+          {
+            partitions: [
+              {
+                filesystem: { path: "/test6" }
+              },
+              {
+                filesystem: { path: "/test7" }
+              }
+            ]
+          }
+        ]
+      }
+    end
+
+    it "returns all filesystems" do
+      filesystems = subject.filesystems
+
+      expect(filesystems.size).to eq(7)
+      expect(filesystems.map(&:path))
+        .to contain_exactly("/test1", "/test2", "/test3", "/test4", "/test5", "/test6", "/test7")
+    end
+  end
+
+  describe "#with_encryption" do
+    let(:config_json) do
+      {
+        drives:       [
+          {},
+          {
+            partitions: [
+              {}
+            ]
+          }
+        ],
+        volumeGroups: [
+          {
+            logicalVolumes: [
+              {}
+            ]
+          }
+        ],
+        mdRaids:      [
+          {},
+          {
+            partitions: [
+              {}
+            ]
+          }
+        ]
+      }
+    end
+
+    it "returns all configs with configurable encryption" do
+      configs = subject.with_encryption
+      expect(configs.size).to eq(7)
+    end
+
+    it "includes all drives" do
+      expect(subject.with_encryption).to include(*subject.drives)
+    end
+
+    it "includes all MD RAIDs" do
+      expect(subject.with_encryption).to include(*subject.md_raids)
+    end
+
+    it "includes all partitions" do
+      expect(subject.with_encryption).to include(*subject.partitions)
+    end
+
+    it "includes all logical volumes" do
+      expect(subject.with_encryption).to include(*subject.logical_volumes)
+    end
+
+    it "does not include volume groups" do
+      expect(subject.with_encryption).to_not include(*subject.volume_groups)
+    end
+  end
+
+  describe "#with_filesystem" do
+    let(:config_json) do
+      {
+        drives:       [
+          {},
+          {
+            partitions: [
+              {}
+            ]
+          }
+        ],
+        volumeGroups: [
+          {
+            logicalVolumes: [
+              {}
+            ]
+          }
+        ],
+        mdRaids:      [
+          {},
+          {
+            partitions: [
+              {}
+            ]
+          }
+        ]
+      }
+    end
+
+    it "returns all configs with configurable filesystem" do
+      configs = subject.with_filesystem
+      expect(configs.size).to eq(7)
+    end
+
+    it "includes all drives" do
+      expect(subject.with_filesystem).to include(*subject.drives)
+    end
+
+    it "includes all MD RAIDs" do
+      expect(subject.with_filesystem).to include(*subject.md_raids)
+    end
+
+    it "includes all partitions" do
+      expect(subject.with_filesystem).to include(*subject.partitions)
+    end
+
+    it "includes all logical volumes" do
+      expect(subject.with_filesystem).to include(*subject.logical_volumes)
+    end
+
+    it "does not include volume groups" do
+      expect(subject.with_filesystem).to_not include(*subject.volume_groups)
+    end
+  end
+
+  describe "#with_size" do
+    let(:config_json) do
+      {
+        drives:       [
+          {},
+          {
+            partitions: [
+              {}
+            ]
+          }
+        ],
+        volumeGroups: [
+          {
+            logicalVolumes: [
+              {}
+            ]
+          }
+        ],
+        mdRaids:      [
+          {},
+          {
+            partitions: [
+              {}
+            ]
+          }
+        ]
+      }
+    end
+
+    it "returns all configs with configurable size" do
+      configs = subject.with_size
+      expect(configs.size).to eq(3)
+    end
+
+    it "includes all partitions" do
+      expect(subject.with_size).to include(*subject.partitions)
+    end
+
+    it "includes all logical volumes" do
+      expect(subject.with_size).to include(*subject.logical_volumes)
+    end
+
+    it "does not include drives" do
+      expect(subject.with_size).to_not include(*subject.drives)
+    end
+
+    it "does not include MD RAIDs" do
+      expect(subject.with_size).to_not include(*subject.md_raids)
+    end
+
+    it "does not include volume groups" do
+      expect(subject.with_size).to_not include(*subject.volume_groups)
+    end
+  end
 end

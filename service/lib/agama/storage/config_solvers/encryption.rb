@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -44,7 +44,7 @@ module Agama
       private
 
         def solve_encryptions
-          configs_with_encryption.each { |c| solve_encryption(c) }
+          config.with_encryption.each { |c| solve_encryption(c) }
         end
 
         # @param config [#encryption]
@@ -82,11 +82,6 @@ module Agama
           config.label ||= default_encryption.label
           config.cipher ||= default_encryption.cipher
           config.key_size ||= default_encryption.key_size
-        end
-
-        # @return [Array<#encryption>]
-        def configs_with_encryption
-          config.drives + config.partitions + config.logical_volumes
         end
 
         # Default encryption defined by the product.

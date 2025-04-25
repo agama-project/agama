@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -104,15 +104,15 @@ module Agama
           end
         end
 
-        # @return [Array<Configs::Partition, Configs::LogicalVolume>]
+        # @return [Array<#size>]
         def configs_with_size
-          configs = config.partitions + config.logical_volumes
+          configs = config.with_size
           configs.select { |c| valid?(c) }
         end
 
-        # @return [Array<Configs::Drive, Configs::Partition, Configs::LogicalVolume>]
+        # @return [Array<#filesystem>]
         def configs_with_filesystem
-          configs = config.drives + config.partitions + config.logical_volumes
+          configs = config.with_filesystem
           configs.select { |c| valid?(c) }
         end
 
