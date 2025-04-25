@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 # Script to clean kernel command line from agama specific parameters. Result is later used for bootloader proposal.
 
@@ -12,6 +12,8 @@ write_kernel_args() {
   # if there is no kernel params
   touch "${TARGET}"
 
+  # silence the "To read lines rather than words..." hint
+  # shellcheck disable=SC2013
   for _i in $(cat "${SOURCE}"); do
     case ${_i} in
     # remove all agama kernel params
@@ -19,11 +21,23 @@ write_kernel_args() {
     LIBSTORAGE_* | YAST_* | inst* | agama* | live* | Y2* | ZYPP_* | autoyast*)
       _found=1
       ;;
+    # remove the Kiwi PXE boot options or Live options
+    rd.kiwi.* | rd.live.* | ramdisk_size=* | initrd=* | BOOT_IMAGE=*)
+      _found=1
+      ;;
+    # remove the network configuration options
+    # https://man7.org/linux/man-pages/man7/dracut.cmdline.7.html
+    ip=* | rd.route=* | bootdev=* | BOOTIF=* | rd.bootif=* | nameserver=* | \
+    rd.peerdns=* | rd.neednet=* | vlan=* | bond=* | team=* | bridge=*)
+      _found=1
+      ;;
     esac
 
     if [ -z "$_found" ]; then
-      echo "Non-Agama parameter found ($_i)"
+      echo "Using boot parameter \"$_i\""
       echo -n " $_i" >>"${TARGET}"
+    else
+      echo "Ignoring boot parameter \"$_i\""
     fi
     unset _found
   done

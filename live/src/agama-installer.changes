@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr 24 15:11:35 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Filter out the special PXE boot parameters, do not pass them
+  to the installed system. Remove also most of the network
+  settings (gh#agama-project/agama#2280)
+
+-------------------------------------------------------------------
 Wed Apr 23 08:39:34 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Rename "root" source directory to "live-root" to avoid confusion
