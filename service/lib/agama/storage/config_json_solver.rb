@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -60,6 +60,16 @@ module Agama
     #
     # See doc/storage_proposal_from_profile.md for a complete description of how the config is
     # generated from a profile.
+    #
+    # FIXME: Solve all the "generate" sections.
+    #
+    #   The config is expected to have only a "generate". If there are more than one, then the first
+    #   "generate" is solved, ignoring the rest. Nevertheless, deciding which is the first one
+    #   might be controversial. Right now, the first "generate" is searched in this order: drives,
+    #   mdRaids and VolumeGroups.
+    #
+    #   All the "generate" sections should be solved, and the config checker would complain if there
+    #   is any repeated mount point.
     class ConfigJSONSolver
       # @param default_paths [Array<String>] Default paths of the product.
       # @param mandatory_paths [Array<String>] Mandatory paths of the product.
@@ -172,13 +182,13 @@ module Agama
 
       # @return [Array<Hash>]
       def configs_with_generate
-        configs = drive_configs + volume_group_configs
+        configs = drive_configs + md_raid_configs + volume_group_configs
         configs.select { |c| with_volume_generate?(c) }
       end
 
       # @return [Array<Hash>]
       def configs_with_filesystem
-        drive_configs + partition_configs + logical_volume_configs
+        drive_configs + md_raid_configs + partition_configs + logical_volume_configs
       end
 
       # @return [Array<Hash>]
@@ -192,11 +202,15 @@ module Agama
       end
 
       # @return [Array<Hash>]
-      def partition_configs
-        drive_configs = config_json[:drives]
-        return [] unless drive_configs
+      def md_raid_configs
+        config_json[:mdRaids] || []
+      end
 
-        drive_configs
+      # @return [Array<Hash>]
+      def partition_configs
+        configs = drive_configs + md_raid_configs
+
+        configs
           .flat_map { |c| c[:partitions] }
           .compact
       end
