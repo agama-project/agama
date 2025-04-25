@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Apr 25 14:10:04 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Display Firefox devtool in fullscreen window, display the
+  console by default after pressing F12, display timestamps
+  in console
+
+-------------------------------------------------------------------
 Thu Apr 24 16:40:41 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - bsc#1239777, bsc#1236885 gh#agama-project/agama#2291.
