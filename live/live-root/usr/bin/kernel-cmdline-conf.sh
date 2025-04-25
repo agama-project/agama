@@ -21,8 +21,8 @@ write_kernel_args() {
     LIBSTORAGE_* | YAST_* | inst* | agama* | live* | Y2* | ZYPP_* | autoyast*)
       _found=1
       ;;
-    # remove the Kiwi PXE boot options
-    rd.kiwi.* | ramdisk_size=* | initrd=* | BOOT_IMAGE=*)
+    # remove the Kiwi PXE boot options or Live options
+    rd.kiwi.* | rd.live.* | ramdisk_size=* | initrd=* | BOOT_IMAGE=*)
       _found=1
       ;;
     # remove the network configuration options
