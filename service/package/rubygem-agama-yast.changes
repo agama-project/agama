@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Apr 25 13:36:13 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- AutoYaST profile compatibility: <reg_server_cert_fingerprint />
+  and <reg_server_cert_fingerprint_type /> (related to
+  gh#agama-project/agama#2270).
+
+-------------------------------------------------------------------
 Thu Apr 24 14:10:46 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow to specify SSL certificate fingerprint to handle self-signed
