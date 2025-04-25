@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr 24 17:18:04 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Copy only the NetworkManager connnections from /etc and just
+  in case the copy has not been disabled 
+  (gh#agama-project/agama#2291).
+
+-------------------------------------------------------------------
 Thu Apr 24 14:10:46 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow to specify SSL certificate fingerprint to handle self-signed

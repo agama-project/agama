@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Thu Apr 24 16:40:41 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- bsc#1239777, bsc#1236885 gh#agama-project/agama#2291.
+  - Persist the NetworkManager runtime config created by 
+    nm-initrd-generator when given explicitlly with the 'ip=' 
+    kernel cmdline argument.
+  - Allow to disable the copy of the persistent configuration with
+    the inst.copy_network kernel cmdline argument.
+  - Do not copy the NetworkManager runtime configuration to the 
+    target system anymore.
+
+-------------------------------------------------------------------
 Thu Apr 24 15:11:35 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Filter out the special PXE boot parameters, do not pass them
