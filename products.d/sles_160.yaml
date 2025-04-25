@@ -88,6 +88,7 @@ software:
     - gnome
   mandatory_packages:
     - NetworkManager
+    # bsc#1241224, bsc#1224868 avoid probe DHCP over all ethernet devices and ignore carrier
     - NetworkManager-config-server
     - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
   optional_packages: null
