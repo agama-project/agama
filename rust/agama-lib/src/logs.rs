@@ -18,7 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::error::ServiceError;
 use fs_extra::copy_items;
 use fs_extra::dir::CopyOptions;
 use serde::Serialize;
@@ -66,6 +65,10 @@ const DEFAULT_RESULT: &str = "/run/agama/agama-logs";
 // (<compression as distinguished by tar>, <an extension for resulting archive>)
 pub const DEFAULT_COMPRESSION: (&str, &str) = ("gzip", "tar.gz");
 const TMP_DIR_PREFIX: &str = "agama-logs.";
+
+#[derive(Debug, thiserror::Error)]
+#[error("Could not generate logs: {0}")]
+pub struct LogsError(String);
 
 fn log_paths() -> Vec<String> {
     DEFAULT_PATHS.iter().map(|p| p.to_string()).collect()
@@ -277,7 +280,7 @@ pub fn set_archive_permissions(archive: PathBuf) -> io::Result<()> {
 }
 
 /// Handler for the "agama logs store" subcommand
-pub fn store() -> Result<PathBuf, ServiceError> {
+pub fn store() -> Result<PathBuf, LogsError> {
     // preparation, e.g. in later features some log commands can be added / excluded per users request or
     let commands = log_commands();
     let paths = log_paths();
@@ -287,7 +290,7 @@ pub fn store() -> Result<PathBuf, ServiceError> {
     // create temporary directory where to collect all files (similar to what old save_y2logs
     // does)
     let tmp_dir = TempDir::with_prefix(TMP_DIR_PREFIX)
-        .map_err(|_| ServiceError::CannotGenerateLogs(String::from("Cannot collect the logs")))?;
+        .map_err(|_| LogsError(String::from("Cannot collect the logs")))?;
     let mut log_sources = paths_to_log_sources(&paths, &tmp_dir);
 
     log_sources.append(&mut cmds_to_log_sources(&commands, &tmp_dir));
@@ -302,16 +305,12 @@ pub fn store() -> Result<PathBuf, ServiceError> {
             // file might be missing e.g. bcs the tool doesn't generate it anymore, ...
             let _ = log.store().is_err();
         } else {
-            return Err(ServiceError::CannotGenerateLogs(String::from(
-                "Cannot collect the logs",
-            )));
+            return Err(LogsError(String::from("Cannot collect the logs")));
         }
     }
 
     if compress_logs(&tmp_dir, &result).is_err() {
-        return Err(ServiceError::CannotGenerateLogs(String::from(
-            "Cannot collect the logs",
-        )));
+        return Err(LogsError(String::from("Cannot collect the logs")));
     }
 
     Ok(PathBuf::from(result))

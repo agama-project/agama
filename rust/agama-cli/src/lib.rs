@@ -204,7 +204,7 @@ async fn build_http_client(
     api_url: Url,
     insecure: bool,
     authenticated: bool,
-) -> Result<BaseHTTPClient, ServiceError> {
+) -> anyhow::Result<BaseHTTPClient> {
     let mut client = BaseHTTPClient::new(api_url)?;
 
     if insecure {
@@ -216,11 +216,11 @@ async fn build_http_client(
     if authenticated {
         // this deals with authentication need inside
         if let Some(token) = find_client_token(&client.base_url) {
-            return client.authenticated(&token);
+            return Ok(client.authenticated(&token)?);
         }
-        return Err(ServiceError::NotAuthenticated);
+        return Err(ServiceError::NotAuthenticated.into());
     } else {
-        client.unauthenticated()
+        Ok(client.unauthenticated()?)
     }
 }
 

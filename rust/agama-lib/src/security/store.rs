@@ -20,9 +20,14 @@
 
 //! Implements the store for the security settings.
 
-use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
+use super::{settings::SecuritySettings, SecurityHTTPClient, SecurityHTTPClientError};
+use crate::base_http_client::BaseHTTPClient;
 
-use super::{http_client::SecurityHTTPClient, settings::SecuritySettings};
+#[derive(Debug, thiserror::Error)]
+#[error("Error processing security settings: {0}")]
+pub struct SecurityStoreError(#[from] SecurityHTTPClientError);
+
+type SecurityStoreResult<T> = Result<T, SecurityStoreError>;
 
 /// Loads and stores the security settings from/to the HTTP API.
 pub struct SecurityStore {
@@ -30,13 +35,13 @@ pub struct SecurityStore {
 }
 
 impl SecurityStore {
-    pub fn new(client: BaseHTTPClient) -> Result<SecurityStore, ServiceError> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self {
             security_client: SecurityHTTPClient::new(client),
-        })
+        }
     }
 
-    pub async fn load(&self) -> Result<SecuritySettings, ServiceError> {
+    pub async fn load(&self) -> SecurityStoreResult<SecuritySettings> {
         let fingerprints = self.security_client.get_ssl_fingerprints().await?;
         let opt_fps = if fingerprints.is_empty() {
             None
@@ -48,7 +53,7 @@ impl SecurityStore {
         })
     }
 
-    pub async fn store(&self, settings: &SecuritySettings) -> Result<(), ServiceError> {
+    pub async fn store(&self, settings: &SecuritySettings) -> SecurityStoreResult<()> {
         if let Some(fingerprints) = &settings.ssl_certificates {
             self.security_client
                 .set_ssl_fingerprints(fingerprints)

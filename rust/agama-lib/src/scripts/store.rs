@@ -20,11 +20,24 @@
 
 use crate::{
     base_http_client::BaseHTTPClient,
-    error::ServiceError,
-    software::{model::ResolvableType, SoftwareHTTPClient},
+    software::{model::ResolvableType, SoftwareHTTPClient, SoftwareHTTPClientError},
 };
 
-use super::{client::ScriptsClient, settings::ScriptsConfig, Script, ScriptError};
+use super::{
+    client::{ScriptsClient, ScriptsClientError},
+    settings::ScriptsConfig,
+    Script, ScriptError,
+};
+
+#[derive(Debug, thiserror::Error)]
+pub enum ScriptsStoreError {
+    #[error("Error processing script settings: {0}")]
+    Script(#[from] ScriptsClientError),
+    #[error("Error selecting software: {0}")]
+    Software(#[from] SoftwareHTTPClientError),
+}
+
+type ScriptStoreResult<T> = Result<T, ScriptsStoreError>;
 
 pub struct ScriptsStore {
     scripts: ScriptsClient,
@@ -39,7 +52,7 @@ impl ScriptsStore {
         }
     }
 
-    pub async fn load(&self) -> Result<ScriptsConfig, ServiceError> {
+    pub async fn load(&self) -> ScriptStoreResult<ScriptsConfig> {
         let scripts = self.scripts.scripts().await?;
 
         Ok(ScriptsConfig {
@@ -50,7 +63,7 @@ impl ScriptsStore {
         })
     }
 
-    pub async fn store(&self, settings: &ScriptsConfig) -> Result<(), ServiceError> {
+    pub async fn store(&self, settings: &ScriptsConfig) -> ScriptStoreResult<()> {
         self.scripts.delete_scripts().await?;
 
         if let Some(scripts) = &settings.pre {

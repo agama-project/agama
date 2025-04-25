@@ -18,11 +18,19 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
 use crate::software::model::SoftwareConfig;
-use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
 use std::collections::HashMap;
 
 use super::model::{ResolvableParams, ResolvableType};
+
+#[derive(Debug, thiserror::Error)]
+pub enum SoftwareHTTPClientError {
+    #[error(transparent)]
+    HTTP(#[from] BaseHTTPClientError),
+    #[error("Registration failed: {0}")]
+    FailedRegistration(String),
+}
 
 pub struct SoftwareHTTPClient {
     client: BaseHTTPClient,
@@ -33,22 +41,22 @@ impl SoftwareHTTPClient {
         Self { client: base }
     }
 
-    pub async fn get_config(&self) -> Result<SoftwareConfig, ServiceError> {
-        self.client.get("/software/config").await
+    pub async fn get_config(&self) -> Result<SoftwareConfig, SoftwareHTTPClientError> {
+        Ok(self.client.get("/software/config").await?)
     }
 
-    pub async fn set_config(&self, config: &SoftwareConfig) -> Result<(), ServiceError> {
+    pub async fn set_config(&self, config: &SoftwareConfig) -> Result<(), SoftwareHTTPClientError> {
         // FIXME: test how errors come out:
         // unknown pattern name,
         // D-Bus client returns
-        //            Err(ServiceError::UnknownPatterns(wrong_patterns))
+        //            Err(SoftwareHTTPClientError::UnknownPatterns(wrong_patterns))
         // CLI prints:
         // Anyhow(Backend call failed with status 400 and text '{"error":"Agama service error: Failed to find these patterns: [\"no_such_pattern\"]"}')
-        self.client.put_void("/software/config", config).await
+        Ok(self.client.put_void("/software/config", config).await?)
     }
 
     /// Returns the ids of patterns selected by user
-    pub async fn user_selected_patterns(&self) -> Result<Vec<String>, ServiceError> {
+    pub async fn user_selected_patterns(&self) -> Result<Vec<String>, SoftwareHTTPClientError> {
         // TODO: this way we unnecessarily ask D-Bus (via web.rs) also for the product and then ignore it
         let config = self.get_config().await?;
 
@@ -68,7 +76,7 @@ impl SoftwareHTTPClient {
     pub async fn select_patterns(
         &self,
         patterns: HashMap<String, bool>,
-    ) -> Result<(), ServiceError> {
+    ) -> Result<(), SoftwareHTTPClientError> {
         let config = SoftwareConfig {
             product: None,
             // TODO: SoftwareStore only passes true bools, false branch is untested
@@ -85,7 +93,7 @@ impl SoftwareHTTPClient {
         r#type: ResolvableType,
         names: &[&str],
         optional: bool,
-    ) -> Result<(), ServiceError> {
+    ) -> Result<(), SoftwareHTTPClientError> {
         let path = format!("/software/resolvables/{}", name);
         let options = ResolvableParams {
             names: names.iter().map(|n| n.to_string()).collect(),

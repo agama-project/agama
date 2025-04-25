@@ -22,10 +22,17 @@
 
 use std::collections::HashMap;
 
-use super::model::SoftwareConfig;
-use super::{SoftwareHTTPClient, SoftwareSettings};
+use super::{
+    http_client::SoftwareHTTPClientError, model::SoftwareConfig, SoftwareHTTPClient,
+    SoftwareSettings,
+};
 use crate::base_http_client::BaseHTTPClient;
-use crate::error::ServiceError;
+
+#[derive(Debug, thiserror::Error)]
+#[error("Error processing software settings: {0}")]
+pub struct SoftwareStoreError(#[from] SoftwareHTTPClientError);
+
+type SoftwareStoreResult<T> = Result<T, SoftwareStoreError>;
 
 /// Loads and stores the software settings from/to the HTTP API.
 pub struct SoftwareStore {
@@ -33,13 +40,13 @@ pub struct SoftwareStore {
 }
 
 impl SoftwareStore {
-    pub fn new(client: BaseHTTPClient) -> Result<SoftwareStore, ServiceError> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> SoftwareStore {
+        Self {
             software_client: SoftwareHTTPClient::new(client),
-        })
+        }
     }
 
-    pub async fn load(&self) -> Result<SoftwareSettings, ServiceError> {
+    pub async fn load(&self) -> SoftwareStoreResult<SoftwareSettings> {
         let patterns = self.software_client.user_selected_patterns().await?;
         // FIXME: user_selected_patterns is calling get_config too.
         let config = self.software_client.get_config().await?;
@@ -53,7 +60,7 @@ impl SoftwareStore {
         })
     }
 
-    pub async fn store(&self, settings: &SoftwareSettings) -> Result<(), ServiceError> {
+    pub async fn store(&self, settings: &SoftwareSettings) -> SoftwareStoreResult<()> {
         let patterns: Option<HashMap<String, bool>> = settings
             .patterns
             .clone()

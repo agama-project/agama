@@ -20,11 +20,17 @@
 
 //! Implements the store for the hostname settings.
 
+use super::{
+    http_client::{HostnameHTTPClient, HostnameHTTPClientError},
+    model::HostnameSettings,
+};
 use crate::base_http_client::BaseHTTPClient;
-use crate::error::ServiceError;
 
-use super::http_client::HostnameHTTPClient;
-use super::model::HostnameSettings;
+#[derive(Debug, thiserror::Error)]
+#[error("Error processing hostname settings: {0}")]
+pub struct HostnameStoreError(#[from] HostnameHTTPClientError);
+
+type HostnameStoreResult<T> = Result<T, HostnameStoreError>;
 
 /// Loads and stores the hostname settings from/to the HTTP service.
 pub struct HostnameStore {
@@ -32,17 +38,17 @@ pub struct HostnameStore {
 }
 
 impl HostnameStore {
-    pub fn new(client: BaseHTTPClient) -> Result<Self, ServiceError> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self {
             hostname_client: HostnameHTTPClient::new(client),
-        })
+        }
     }
 
-    pub async fn load(&self) -> Result<HostnameSettings, ServiceError> {
-        self.hostname_client.get_config().await
+    pub async fn load(&self) -> HostnameStoreResult<HostnameSettings> {
+        Ok(self.hostname_client.get_config().await?)
     }
 
-    pub async fn store(&self, settings: &HostnameSettings) -> Result<(), ServiceError> {
-        self.hostname_client.set_config(settings).await
+    pub async fn store(&self, settings: &HostnameSettings) -> HostnameStoreResult<()> {
+        Ok(self.hostname_client.set_config(settings).await?)
     }
 }

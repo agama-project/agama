@@ -18,9 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
-
 use super::model::SSLFingerprint;
+use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
+
+#[derive(Debug, thiserror::Error)]
+pub enum SecurityHTTPClientError {
+    #[error(transparent)]
+    HTTP(#[from] BaseHTTPClientError),
+}
 
 pub struct SecurityHTTPClient {
     client: BaseHTTPClient,
@@ -31,16 +36,19 @@ impl SecurityHTTPClient {
         Self { client: base }
     }
 
-    pub async fn get_ssl_fingerprints(&self) -> Result<Vec<SSLFingerprint>, ServiceError> {
-        self.client.get("/security/ssl_fingerprints").await
+    pub async fn get_ssl_fingerprints(
+        &self,
+    ) -> Result<Vec<SSLFingerprint>, SecurityHTTPClientError> {
+        Ok(self.client.get("/security/ssl_fingerprints").await?)
     }
 
     pub async fn set_ssl_fingerprints(
         &self,
         fps: &Vec<SSLFingerprint>,
-    ) -> Result<(), ServiceError> {
+    ) -> Result<(), SecurityHTTPClientError> {
         self.client
             .put_void("/security/ssl_fingerprints", fps)
-            .await
+            .await?;
+        Ok(())
     }
 }
