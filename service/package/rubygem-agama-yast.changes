@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Apr 25 13:36:13 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- AutoYaST profile compatibility: <reg_server_cert_fingerprint />
+  and <reg_server_cert_fingerprint_type /> (related to
+  gh#agama-project/agama#2270).
+
+-------------------------------------------------------------------
 Thu Apr 24 17:18:04 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Copy only the NetworkManager connnections from /etc and just
