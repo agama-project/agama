@@ -20,6 +20,14 @@ user_pref("browser.startup.homepage_override.mstone", "ignore");
 // TODO: make the XDG portal working again, it has more features (mounting USB flash)
 user_pref("widget.use-xdg-desktop-portal.file-picker", 0);
 
+// configure devtools
+// show devtools in a separate window
+user_pref("devtools.toolbox.host", "window");
+// show the console tab instead of the page inspector after pressing F12
+user_pref("devtools.toolbox.selectedTool", "console");
+// show time stamps in the console
+user_pref("devtools.webconsole.timestampMessages", true);
+
 // start always in the custom homepage
 user_pref("browser.startup.page", 1);
 // custom homepage: the value is expected to be replaced with the login URL by the startup script
