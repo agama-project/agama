@@ -136,6 +136,15 @@ module Agama
           backend.registration.email || ""
         end
 
+        def url
+          backend.registration.registration_url || ""
+        end
+
+        def url=(url)
+          # dbus has problem with nils, so empty string is only for dbus nil
+          backend.registration.registration_url = url.empty? ? nil : url
+        end
+
         # list of already registered addons
         #
         # @return [Array<Array<String>>] each list contains three items: addon id, version and
@@ -293,6 +302,8 @@ module Agama
           dbus_reader(:reg_code, "s")
 
           dbus_reader(:email, "s")
+
+          dbus_accessor(:url, "s")
 
           dbus_reader(:registered_addons, "a(sss)")
 

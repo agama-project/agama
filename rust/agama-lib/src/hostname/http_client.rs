@@ -20,9 +20,16 @@
 
 //! Implements a client to access Agama's HTTP API related to Hostname management.
 
-use crate::base_http_client::BaseHTTPClient;
-use crate::hostname::model::HostnameSettings;
-use crate::ServiceError;
+use crate::{
+    base_http_client::{BaseHTTPClient, BaseHTTPClientError},
+    hostname::model::HostnameSettings,
+};
+
+#[derive(Debug, thiserror::Error)]
+pub enum HostnameHTTPClientError {
+    #[error(transparent)]
+    HTTP(#[from] BaseHTTPClientError),
+}
 
 pub struct HostnameHTTPClient {
     client: BaseHTTPClient,
@@ -33,11 +40,14 @@ impl HostnameHTTPClient {
         Self { client: base }
     }
 
-    pub async fn get_config(&self) -> Result<HostnameSettings, ServiceError> {
-        self.client.get("/hostname/config").await
+    pub async fn get_config(&self) -> Result<HostnameSettings, HostnameHTTPClientError> {
+        Ok(self.client.get("/hostname/config").await?)
     }
 
-    pub async fn set_config(&self, config: &HostnameSettings) -> Result<(), ServiceError> {
-        self.client.put_void("/hostname/config", config).await
+    pub async fn set_config(
+        &self,
+        config: &HostnameSettings,
+    ) -> Result<(), HostnameHTTPClientError> {
+        Ok(self.client.put_void("/hostname/config", config).await?)
     }
 }

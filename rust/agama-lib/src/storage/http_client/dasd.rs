@@ -20,7 +20,13 @@
 
 //! Implements a client to access Agama's iscsi service.
 
-use crate::{base_http_client::BaseHTTPClient, error::ServiceError, storage::settings::dasd::DASDConfig};
+use crate::{base_http_client::{BaseHTTPClient, BaseHTTPClientError}, storage::settings::dasd::DASDConfig};
+
+#[derive(Debug, thiserror::Error)]
+pub enum DASDHTTPClientError {
+    #[error(transparent)]
+    DASD(#[from] BaseHTTPClientError),
+}
 
 pub struct DASDHTTPClient {
     client: BaseHTTPClient,
@@ -31,11 +37,11 @@ impl DASDHTTPClient {
         Self { client: base }
     }
 
-    pub async fn get_config(&self) -> Result<Option<DASDConfig>, ServiceError> {
-        self.client.get("/dasd/config").await
+    pub async fn get_config(&self) -> Result<Option<DASDConfig>, DASDHTTPClientError> {
+        Ok(self.client.get("/dasd/config").await?)
     }
 
-    pub async fn set_config(&self, config: &DASDConfig) -> Result<(), ServiceError> {
-        self.client.put_void("/dasd/config", config).await
+    pub async fn set_config(&self, config: &DASDConfig) -> Result<(), DASDHTTPClientError> {
+        Ok(self.client.put_void("/dasd/config", config).await?)
     }
 }

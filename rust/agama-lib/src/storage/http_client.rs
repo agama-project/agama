@@ -23,24 +23,31 @@
 pub mod iscsi;
 pub mod dasd;
 
-use crate::base_http_client::BaseHTTPClient;
-use crate::storage::StorageSettings;
-use crate::ServiceError;
+use crate::{
+    base_http_client::{BaseHTTPClient, BaseHTTPClientError},
+    storage::StorageSettings,
+};
+
+#[derive(Debug, thiserror::Error)]
+pub enum StorageHTTPClientError {
+    #[error(transparent)]
+    Storage(#[from] BaseHTTPClientError),
+}
 
 pub struct StorageHTTPClient {
     client: BaseHTTPClient,
 }
 
 impl StorageHTTPClient {
-    pub fn new(base: BaseHTTPClient) -> Self {
-        Self { client: base }
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self { client }
     }
 
-    pub async fn get_config(&self) -> Result<Option<StorageSettings>, ServiceError> {
-        self.client.get("/storage/config").await
+    pub async fn get_config(&self) -> Result<Option<StorageSettings>, StorageHTTPClientError> {
+        Ok(self.client.get("/storage/config").await?)
     }
 
-    pub async fn set_config(&self, config: &StorageSettings) -> Result<(), ServiceError> {
-        self.client.put_void("/storage/config", config).await
+    pub async fn set_config(&self, config: &StorageSettings) -> Result<(), StorageHTTPClientError> {
+        Ok(self.client.put_void("/storage/config", config).await?)
     }
 }

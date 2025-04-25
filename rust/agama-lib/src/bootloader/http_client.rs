@@ -20,9 +20,16 @@
 
 //! Implements a client to access Agama's HTTP API related to Bootloader management.
 
-use crate::base_http_client::BaseHTTPClient;
-use crate::bootloader::model::BootloaderSettings;
-use crate::ServiceError;
+use crate::{
+    base_http_client::{BaseHTTPClient, BaseHTTPClientError},
+    bootloader::model::BootloaderSettings,
+};
+
+#[derive(Debug, thiserror::Error)]
+pub enum BootloaderHTTPClientError {
+    #[error(transparent)]
+    HTTP(#[from] BaseHTTPClientError),
+}
 
 pub struct BootloaderHTTPClient {
     client: BaseHTTPClient,
@@ -33,11 +40,14 @@ impl BootloaderHTTPClient {
         Self { client: base }
     }
 
-    pub async fn get_config(&self) -> Result<BootloaderSettings, ServiceError> {
-        self.client.get("/bootloader/config").await
+    pub async fn get_config(&self) -> Result<BootloaderSettings, BootloaderHTTPClientError> {
+        Ok(self.client.get("/bootloader/config").await?)
     }
 
-    pub async fn set_config(&self, config: &BootloaderSettings) -> Result<(), ServiceError> {
-        self.client.put_void("/bootloader/config", config).await
+    pub async fn set_config(
+        &self,
+        config: &BootloaderSettings,
+    ) -> Result<(), BootloaderHTTPClientError> {
+        Ok(self.client.put_void("/bootloader/config", config).await?)
     }
 }

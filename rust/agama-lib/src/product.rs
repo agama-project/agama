@@ -29,4 +29,4 @@ mod store;
 pub use client::{Product, ProductClient};
 pub use http_client::ProductHTTPClient;
 pub use settings::ProductSettings;
-pub use store::ProductStore;
+pub use store::{ProductStore, ProductStoreError};

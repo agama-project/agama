@@ -98,6 +98,33 @@
         }
       }
     },
+    "security": {
+      "title": "Security settings",
+      "type": "object",
+      "properties": {
+        "sslCertificates": {
+          "title": "List of SSL certificates to add to system",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "fingerprint": {
+                "title": "fingerprint of ssl certificate",
+                "type": "string",
+                "examples": ["A8:DE:08:B1:57:52:FE:70:DF:D5:31:EA:E3:53:BB:39:EE:01:FF:B9"] 
+              },
+              "algorithm": {
+                "title": "Fingerprint algorithm used to compute it",
+                "type": "string",
+                "enum": ["SHA1", "SHA256"],
+                "examples": ["SHA1"] 
+              }
+            },
+            "required": ["fingerprint", "algorithm"]
+          }
+        }
+      }
+    },
     "software": {
       "title": "Software settings",
       "type": "object",
@@ -138,6 +165,10 @@
         },
         "registrationEmail": {
           "title": "Product registration email",
+          "type": "string"
+        },
+        "registrationUrl": {
+          "title": "URL of the registration server",
           "type": "string"
         }
       }

@@ -27,8 +27,6 @@ use crate::utils::TransferError;
 
 #[derive(Error, Debug)]
 pub enum ServiceError {
-    #[error("Cannot generate Agama logs: {0}")]
-    CannotGenerateLogs(String),
     #[error("D-Bus service error: {0}")]
     DBus(#[from] zbus::Error),
     #[error("Could not connect to Agama bus at '{0}': {1}")]
@@ -44,13 +42,6 @@ pub enum ServiceError {
     // `#` is std::fmt "Alternate form", anyhow::Error interprets as "include causes"
     #[error("Error: {0:#}")]
     Anyhow(#[from] anyhow::Error),
-    // FIXME: It is too generic and starting to looks like an Anyhow error
-    #[error("Network client error: '{0}'")]
-    NetworkClientError(String),
-    #[error("Wrong user parameters: '{0:?}'")]
-    WrongUser(Vec<String>),
-    #[error("Registration failed: '{0}'")]
-    FailedRegistration(String),
     #[error("Failed to find these patterns: {0:?}")]
     UnknownPatterns(Vec<String>),
     #[error("Passed json data is not correct: {0}")]
@@ -65,16 +56,11 @@ pub enum ServiceError {
     BackendError(u16, String),
     #[error("You are not logged in. Please use: agama auth login")]
     NotAuthenticated,
-    // Specific error when something does not work as expected, but it is not user fault
-    #[error("Internal error. Please report a bug and attach logs. Details: {0}")]
-    InternalError(String),
-    #[error("Could not read the file: '{0}'")]
-    CouldNotTransferFile(#[from] TransferError),
     // FIXME reroute the error to a better place
     #[error("Profile error: {0}")]
     Profile(#[from] ProfileError),
-    #[error("Invalid URL: {0}")]
-    InvalidURL(#[from] url::ParseError),
+    #[error("Unsupported SSL Fingeprint algorithm '#{0}'.")]
+    UnsupportedSSLFingerprintAlgorithm(String),
 }
 
 #[derive(Error, Debug)]

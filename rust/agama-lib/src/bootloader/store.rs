@@ -20,11 +20,18 @@
 
 //! Implements the store for the bootloader settings.
 
+use super::{
+    http_client::{BootloaderHTTPClient, BootloaderHTTPClientError},
+    model::BootloaderSettings,
+};
 use crate::base_http_client::BaseHTTPClient;
-use crate::error::ServiceError;
 
-use super::http_client::BootloaderHTTPClient;
-use super::model::BootloaderSettings;
+// FIXME: should we follow this approach more often?
+type BootloaderStoreResult<T> = Result<T, BootloaderStoreError>;
+
+#[derive(Debug, thiserror::Error)]
+#[error("Error processing bootloader settings: {0}")]
+pub struct BootloaderStoreError(#[from] BootloaderHTTPClientError);
 
 /// Loads and stores the bootloader settings from/to the HTTP service.
 pub struct BootloaderStore {
@@ -32,18 +39,17 @@ pub struct BootloaderStore {
 }
 
 impl BootloaderStore {
-    pub fn new(client: BaseHTTPClient) -> Result<Self, ServiceError> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self {
             bootloader_client: BootloaderHTTPClient::new(client),
-        })
+        }
     }
 
-    pub async fn load(&self) -> Result<Option<BootloaderSettings>, ServiceError> {
+    pub async fn load(&self) -> BootloaderStoreResult<Option<BootloaderSettings>> {
         Ok(self.bootloader_client.get_config().await?.to_option())
     }
 
-    pub async fn store(&self, settings: &BootloaderSettings) -> Result<(), ServiceError> {
-        self.bootloader_client.set_config(settings).await?;
-        Ok(())
+    pub async fn store(&self, settings: &BootloaderSettings) -> BootloaderStoreResult<()> {
+        Ok(self.bootloader_client.set_config(settings).await?)
     }
 }

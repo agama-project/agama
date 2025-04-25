@@ -21,20 +21,59 @@
 //! Load/store the settings from/to the D-Bus services.
 // TODO: quickly explain difference between FooSettings and FooStore, with an example
 
-use crate::base_http_client::BaseHTTPClient;
-use crate::bootloader::store::BootloaderStore;
-use crate::error::ServiceError;
-use crate::files::store::FilesStore;
-use crate::hostname::store::HostnameStore;
-use crate::install_settings::InstallSettings;
-use crate::manager::{InstallationPhase, ManagerHTTPClient};
-use crate::scripts::{ScriptsClient, ScriptsGroup};
-use crate::storage::http_client::iscsi::ISCSIHTTPClient;
-use crate::storage::store::dasd::DASDStore;
 use crate::{
-    localization::LocalizationStore, network::NetworkStore, product::ProductStore,
-    scripts::ScriptsStore, software::SoftwareStore, storage::StorageStore, users::UsersStore,
+    base_http_client::BaseHTTPClient,
+    bootloader::store::{BootloaderStore, BootloaderStoreError},
+    files::store::{FilesStore, FilesStoreError},
+    hostname::store::{HostnameStore, HostnameStoreError},
+    install_settings::InstallSettings,
+    localization::{LocalizationStore, LocalizationStoreError},
+    manager::{http_client::ManagerHTTPClientError, InstallationPhase, ManagerHTTPClient},
+    network::{NetworkStore, NetworkStoreError},
+    product::{ProductStore, ProductStoreError},
+    scripts::{ScriptsClient, ScriptsClientError, ScriptsGroup, ScriptsStore, ScriptsStoreError},
+    security::store::{SecurityStore, SecurityStoreError},
+    software::{SoftwareStore, SoftwareStoreError},
+    storage::{
+        http_client::iscsi::{ISCSIHTTPClient, ISCSIHTTPClientError}, store::dasd::{DASDStore, DASDStoreError}, StorageStore, StorageStoreError
+    },
+    users::{UsersStore, UsersStoreError},
 };
+
+#[derive(Debug, thiserror::Error)]
+pub enum StoreError {
+    #[error(transparent)]
+    Bootloader(#[from] BootloaderStoreError),
+    #[error(transparent)]
+    DASD(#[from] DASDStoreError),
+    #[error(transparent)]
+    Files(#[from] FilesStoreError),
+    #[error(transparent)]
+    Hostname(#[from] HostnameStoreError),
+    #[error(transparent)]
+    Users(#[from] UsersStoreError),
+    #[error(transparent)]
+    Network(#[from] NetworkStoreError),
+    #[error(transparent)]
+    Product(#[from] ProductStoreError),
+    #[error(transparent)]
+    Security(#[from] SecurityStoreError),
+    #[error(transparent)]
+    Software(#[from] SoftwareStoreError),
+    #[error(transparent)]
+    Storage(#[from] StorageStoreError),
+    #[error(transparent)]
+    ISCSI(#[from] ISCSIHTTPClientError),
+    #[error(transparent)]
+    Localization(#[from] LocalizationStoreError),
+    #[error(transparent)]
+    Scripts(#[from] ScriptsStoreError),
+    // FIXME: it uses the client instead of the store.
+    #[error(transparent)]
+    ScriptsClient(#[from] ScriptsClientError),
+    #[error(transparent)]
+    Manager(#[from] ManagerHTTPClientError),
+}
 
 /// Struct that loads/stores the settings from/to the D-Bus services.
 ///
@@ -50,6 +89,7 @@ pub struct Store {
     users: UsersStore,
     network: NetworkStore,
     product: ProductStore,
+    security: SecurityStore,
     software: SoftwareStore,
     storage: StorageStore,
     localization: LocalizationStore,
@@ -60,18 +100,19 @@ pub struct Store {
 }
 
 impl Store {
-    pub async fn new(http_client: BaseHTTPClient) -> Result<Store, ServiceError> {
+    pub async fn new(http_client: BaseHTTPClient) -> Result<Store, StoreError> {
         Ok(Self {
-            bootloader: BootloaderStore::new(http_client.clone())?,
-            dasd: DASDStore::new(http_client.clone())?,
-            files: FilesStore::new(http_client.clone())?,
-            hostname: HostnameStore::new(http_client.clone())?,
-            localization: LocalizationStore::new(http_client.clone())?,
-            users: UsersStore::new(http_client.clone())?,
-            network: NetworkStore::new(http_client.clone()).await?,
-            product: ProductStore::new(http_client.clone())?,
-            software: SoftwareStore::new(http_client.clone())?,
-            storage: StorageStore::new(http_client.clone())?,
+            bootloader: BootloaderStore::new(http_client.clone()),
+            dasd: DASDStore::new(http_client.clone()),
+            files: FilesStore::new(http_client.clone()),
+            hostname: HostnameStore::new(http_client.clone()),
+            localization: LocalizationStore::new(http_client.clone()),
+            users: UsersStore::new(http_client.clone()),
+            network: NetworkStore::new(http_client.clone()),
+            product: ProductStore::new(http_client.clone()),
+            security: SecurityStore::new(http_client.clone()),
+            software: SoftwareStore::new(http_client.clone()),
+            storage: StorageStore::new(http_client.clone()),
             scripts: ScriptsStore::new(http_client.clone()),
             manager_client: ManagerHTTPClient::new(http_client.clone()),
             iscsi_client: ISCSIHTTPClient::new(http_client.clone()),
@@ -80,13 +121,14 @@ impl Store {
     }
 
     /// Loads the installation settings from the HTTP interface.
-    pub async fn load(&self) -> Result<InstallSettings, ServiceError> {
+    pub async fn load(&self) -> Result<InstallSettings, StoreError> {
         let mut settings = InstallSettings {
             bootloader: self.bootloader.load().await?,
             dasd: self.dasd.load().await?,
             files: self.files.load().await?,
             hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),
+            security: self.security.load().await?.to_option(),
             software: self.software.load().await?.to_option(),
             user: Some(self.users.load().await?),
             product: Some(self.product.load().await?),
@@ -111,7 +153,7 @@ impl Store {
     /// the future but it might be the storage service the responsible for dealing with this.
     ///
     /// * `settings`: installation settings.
-    pub async fn store(&self, settings: &InstallSettings) -> Result<(), ServiceError> {
+    pub async fn store(&self, settings: &InstallSettings) -> Result<(), StoreError> {
         if let Some(scripts) = &settings.scripts {
             self.scripts.store(scripts).await?;
 
@@ -131,6 +173,11 @@ impl Store {
         }
         if let Some(network) = &settings.network {
             self.network.store(network).await?;
+        }
+        // security has to be done before product to allow registration against
+        // self-signed RMT
+        if let Some(security) = &settings.security {
+            self.security.store(security).await?;
         }
         // order is important here as network can be critical for connection
         // to registration server and selecting product is important for rest
@@ -166,7 +213,7 @@ impl Store {
     }
 
     /// Runs the pre-installation scripts and forces a probe if the installation phase is "config".
-    async fn run_pre_scripts(&self) -> Result<(), ServiceError> {
+    async fn run_pre_scripts(&self) -> Result<(), StoreError> {
         let scripts_client = ScriptsClient::new(self.http_client.clone());
         scripts_client.run_scripts(ScriptsGroup::Pre).await?;
 

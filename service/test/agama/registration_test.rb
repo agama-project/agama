@@ -56,6 +56,16 @@ describe Agama::Registration do
   let(:service) { OpenStruct.new(name: "test-service", url: nil) }
   let(:cmdline_args) { Agama::CmdlineArgs.new({}) }
 
+  describe "#verify_callback" do
+    it "stores to SSL::Error ssl error details" do
+      error = double(error: 20, error_string: "Error", current_cert: nil)
+
+      subject.send(:verify_callback).call(false, error)
+      expect(Agama::SSL::Errors.instance.ssl_error_code).to eq 20
+      expect(Agama::SSL::Errors.instance.ssl_error_msg).to eq "Error"
+    end
+  end
+
   describe "#register" do
     context "if there is no product selected yet" do
       let(:product) { nil }
@@ -85,7 +95,7 @@ describe Agama::Registration do
       context "and the product is not registered yet" do
         it "announces the system" do
           expect(SUSE::Connect::YaST).to receive(:announce_system).with(
-            { token: "11112222", email: "test@test.com" },
+            { token: "11112222", email: "test@test.com", verify_callback: anything },
             "test-5-x86_64"
           )
 
@@ -99,7 +109,8 @@ describe Agama::Registration do
 
           it "registers using the given URL" do
             expect(SUSE::Connect::YaST).to receive(:announce_system).with(
-              { token: "11112222", email: "test@test.com", url: "http://scc.example.net" },
+              { token: "11112222", email: "test@test.com", url: "http://scc.example.net",
+                verify_callback: anything },
               "test-5-x86_64"
             )
 
@@ -221,6 +232,57 @@ describe Agama::Registration do
               .to raise_error(Timeout::Error)
 
             expect(subject.email).to be_nil
+          end
+        end
+
+        context "if the registration server has self-signed certificate" do
+          let(:certificate) do
+            Agama::SSL::Certificate.load(File.read(File.join(FIXTURES_PATH, "test.pem")))
+          end
+          before do
+            Agama::SSL::Errors.instance.ssl_error_code = Agama::SSL::ErrorCodes::SELF_SIGNED_CERT
+            Agama::SSL::Errors.instance.ssl_error_msg = "test error"
+            Agama::SSL::Errors.instance.ssl_failed_cert = certificate
+            # mock reset to avoid deleting of previous setup
+            allow(Agama::SSL::Errors.instance).to receive(:reset)
+
+            @called = 0
+            allow(SUSE::Connect::YaST).to receive(:activate_product) do
+              @called += 1
+              raise OpenSSL::SSL::SSLError, "test" if @called == 1
+
+              service
+            end
+          end
+
+          context "and certificate fingerprint is in storage" do
+            before do
+              Agama::SSL::Storage.instance.fingerprints
+                .replace([certificate.send(:sha256_fingerprint)])
+            end
+
+            it "tries to import certificate" do
+              expect(certificate).to receive(:import)
+
+              subject.register("11112222", email: "test@test.com")
+            end
+
+            after do
+              Agama::SSL::Storage.instance.fingerprints.clear
+            end
+          end
+
+          it "opens question" do
+            expect(Agama::Question).to receive(:new)
+            q_client = double
+            expect(q_client).to receive(:ask).and_yield(q_client)
+            expect(q_client).to receive(:answer).and_return(:Abort)
+            expect(Agama::DBus::Clients::Questions).to receive(:new)
+              .and_return(q_client)
+
+            expect { subject.register("11112222", email: "test@test.com") }.to(
+              raise_error(OpenSSL::SSL::SSLError)
+            )
           end
         end
       end
@@ -362,7 +424,7 @@ describe Agama::Registration do
 
         it "deactivates the system" do
           expect(SUSE::Connect::YaST).to receive(:deactivate_system).with(
-            { token: "11112222", email: "test@test.com" }
+            { token: "11112222", email: "test@test.com", verify_callback: anything }
           )
 
           subject.deregister

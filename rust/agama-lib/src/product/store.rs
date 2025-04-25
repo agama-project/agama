@@ -19,11 +19,22 @@
 // find current contact information at www.suse.com.
 
 //! Implements the store for the product settings.
-use super::{ProductHTTPClient, ProductSettings};
-use crate::base_http_client::BaseHTTPClient;
-use crate::error::ServiceError;
-use crate::manager::http_client::ManagerHTTPClient;
+use super::{http_client::ProductHTTPClientError, ProductHTTPClient, ProductSettings};
+use crate::{
+    base_http_client::BaseHTTPClient,
+    manager::http_client::{ManagerHTTPClient, ManagerHTTPClientError},
+};
 use std::{thread, time};
+
+#[derive(Debug, thiserror::Error)]
+pub enum ProductStoreError {
+    #[error("Error processing product settings: {0}")]
+    Product(#[from] ProductHTTPClientError),
+    #[error("Error reading software repositories: {0}")]
+    Probe(#[from] ManagerHTTPClientError),
+}
+
+type ProductStoreResult<T> = Result<T, ProductStoreError>;
 
 /// Loads and stores the product settings from/to the D-Bus service.
 pub struct ProductStore {
@@ -32,11 +43,11 @@ pub struct ProductStore {
 }
 
 impl ProductStore {
-    pub fn new(client: BaseHTTPClient) -> Result<ProductStore, ServiceError> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> ProductStore {
+        Self {
             product_client: ProductHTTPClient::new(client.clone()),
-            manager_client: ManagerHTTPClient::new(client.clone()),
-        })
+            manager_client: ManagerHTTPClient::new(client),
+        }
     }
 
     fn non_empty_string(s: String) -> Option<String> {
@@ -47,7 +58,7 @@ impl ProductStore {
         }
     }
 
-    pub async fn load(&self) -> Result<ProductSettings, ServiceError> {
+    pub async fn load(&self) -> ProductStoreResult<ProductSettings> {
         let product = self.product_client.product().await?;
         let registration_info = self.product_client.get_registration().await?;
         let registered_addons = self.product_client.get_registered_addons().await?;
@@ -61,11 +72,12 @@ impl ProductStore {
             id: Some(product),
             registration_code: Self::non_empty_string(registration_info.key),
             registration_email: Self::non_empty_string(registration_info.email),
+            registration_url: Self::non_empty_string(registration_info.url),
             addons,
         })
     }
 
-    pub async fn store(&self, settings: &ProductSettings) -> Result<(), ServiceError> {
+    pub async fn store(&self, settings: &ProductSettings) -> ProductStoreResult<()> {
         let mut probe = false;
         if let Some(product) = &settings.id {
             let existing_product = self.product_client.product().await?;
@@ -74,6 +86,9 @@ impl ProductStore {
                 self.product_client.select_product(product).await?;
                 probe = true;
             }
+        }
+        if let Some(url) = &settings.registration_url {
+            self.product_client.set_registration_url(url).await?;
         }
         if let Some(reg_code) = &settings.registration_code {
             let email = settings.registration_email.as_deref().unwrap_or("");
@@ -146,7 +161,8 @@ mod test {
                 .body(
                     r#"{
                     "key": "",
-                    "email": ""
+                    "email": "",
+                    "url": ""
                 }"#,
                 );
         });
@@ -166,6 +182,7 @@ mod test {
             id: Some("Tumbleweed".to_owned()),
             registration_code: None,
             registration_email: None,
+            registration_url: None,
             addons: None,
         };
         // main assertion
@@ -215,6 +232,7 @@ mod test {
             id: Some("Tumbleweed".to_owned()),
             registration_code: None,
             registration_email: None,
+            registration_url: None,
             addons: None,
         };
 

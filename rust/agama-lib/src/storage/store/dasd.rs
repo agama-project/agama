@@ -20,7 +20,13 @@
 
 //! Implements the store for the storage settings.
 
-use crate::{base_http_client::BaseHTTPClient, error::ServiceError, storage::{http_client::dasd::DASDHTTPClient, settings::dasd::DASDConfig}};
+use crate::{base_http_client::BaseHTTPClient, storage::{http_client::dasd::{DASDHTTPClient, DASDHTTPClientError}, settings::dasd::DASDConfig}};
+
+#[derive(Debug, thiserror::Error)]
+#[error("Error processing DASD settings: {0}")]
+pub struct DASDStoreError(#[from] DASDHTTPClientError);
+
+type DASDStoreResult<T> = Result<T, DASDStoreError>;
 
 /// Loads and stores the storage settings from/to the HTTP service.
 pub struct DASDStore {
@@ -28,17 +34,17 @@ pub struct DASDStore {
 }
 
 impl DASDStore {
-    pub fn new(client: BaseHTTPClient) -> Result<Self, ServiceError> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self {
             client: DASDHTTPClient::new(client),
-        })
+        }
     }
 
-    pub async fn load(&self) -> Result<Option<DASDConfig>, ServiceError> {
-        self.client.get_config().await
+    pub async fn load(&self) -> DASDStoreResult<Option<DASDConfig>> {
+        Ok(self.client.get_config().await?)
     }
 
-    pub async fn store(&self, settings: &DASDConfig) -> Result<(), ServiceError> {
+    pub async fn store(&self, settings: &DASDConfig) -> DASDStoreResult<()> {
         self.client.set_config(settings).await?;
         Ok(())
     }

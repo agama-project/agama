@@ -24,6 +24,7 @@
 use crate::bootloader::model::BootloaderSettings;
 use crate::files::model::UserFile;
 use crate::hostname::model::HostnameSettings;
+use crate::security::settings::SecuritySettings;
 use crate::{
     localization::LocalizationSettings, network::NetworkSettings, product::ProductSettings,
     scripts::ScriptsConfig, software::SoftwareSettings, users::UserSettings, storage::settings::dasd::DASDConfig
@@ -58,6 +59,9 @@ pub struct InstallSettings {
     pub iscsi: Option<Box<RawValue>>,
     #[serde(default, flatten)]
     pub user: Option<UserSettings>,
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub security: Option<SecuritySettings>,
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub software: Option<SoftwareSettings>,
