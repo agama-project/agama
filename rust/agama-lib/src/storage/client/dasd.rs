@@ -20,6 +20,8 @@
 
 //! Implements a client to access Agama's D-Bus API related to DASD management.
 
+use std::collections::HashMap;
+
 use zbus::{
     fdo::{IntrospectableProxy, ObjectManagerProxy},
     zvariant::{ObjectPath, OwnedObjectPath},
@@ -28,7 +30,7 @@ use zbus::{
 
 use crate::{
     error::ServiceError,
-    storage::{model::dasd::DASDDevice, proxies::dasd::ManagerProxy, settings::dasd::DASDConfig},
+    storage::{model::dasd::DASDDevice, proxies::dasd::ManagerProxy, settings::dasd::{DASDConfig, DASDDeviceConfig, DASDDeviceState}},
 };
 
 /// Client to connect to Agama's D-Bus API for DASD management.
@@ -72,8 +74,65 @@ impl<'a> DASDClient<'a> {
     }
 
     pub async fn set_config(&self, config: DASDConfig) -> Result<(), ServiceError> {
+        // at first probe to ensure we work on real system info
+        self.probe().await?;
+        self.config_activate(&config).await?;
+        self.config_format(&config).await?;
         // TODO: implement
         Ok(())
+    }
+
+    async fn config_activate(&self, config: &DASDConfig) -> Result<(), ServiceError> {
+        let pairs = self.config_pairs(config).await?;
+        let to_activate: Vec<&str> = pairs.iter()
+            .filter(|(system, _config)| system.enabled == false )
+            .filter(|(_system, config)| config.state.clone().unwrap_or_default() == DASDDeviceState::Active)
+            .map(|(system, _config)| system.id.as_str())
+            .collect();
+        self.enable(&to_activate).await?;
+
+        if !to_activate.is_empty() {
+            // reprobe after calling enable. TODO: check if it is needed or callbacks take into action and update it automatically
+            self.probe().await?;
+        }
+        Ok(())
+    }
+
+    async fn config_format(&self, config: &DASDConfig) -> Result<(), ServiceError> {
+        let pairs = self.config_pairs(config).await?;
+        let to_format: Vec<&str> = pairs.iter()
+            .filter(|(system, config)| 
+                if config.format == Some(true) {
+                    true
+                } else if config.format == None {
+                    !system.formatted
+                } else {
+                    false
+                }
+            )
+            .map(|(system, _config)| system.id.as_str())
+            .collect();
+        self.format(&to_format).await?;
+
+        if !to_format.is_empty() {
+            // reprobe after calling format. TODO: check if it is needed or callbacks take into action and update it automatically
+            // also do we need to wait here for finish of format progress?
+            self.probe().await?;
+        }
+        Ok(())
+    }
+
+    async fn config_pairs(&self, config: &DASDConfig) -> Result<Vec<(DASDDevice, DASDDeviceConfig)>, ServiceError> {
+        let devices = self.devices().await?;
+        let devices_map: HashMap<&str, DASDDevice> = devices.iter()
+            .map( |d| (d.1.id.as_str(), d.1.clone()))
+            .collect();
+        config.devices.iter()
+        .map(|c| Ok((
+            devices_map.get(c.channel.as_str()).ok_or(ServiceError::DASDChannelNotFound(c.channel.clone()))?.clone(),
+            c.clone()
+        )))
+        .collect()
     }
 
     pub async fn probe(&self) -> Result<(), ServiceError> {

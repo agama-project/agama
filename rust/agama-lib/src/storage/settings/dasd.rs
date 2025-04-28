@@ -25,10 +25,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct DASDConfig {
-    devices: Vec<DASDDeviceConfig>
+    pub devices: Vec<DASDDeviceConfig>
 }
 
-#[derive(Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 pub enum DASDDeviceState {
     #[default]
     Active,
@@ -36,16 +36,16 @@ pub enum DASDDeviceState {
 }
 
 /// Representation of single DASD device in settings used in set/get config
-#[derive(Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct DASDDeviceConfig {
     /// DASD device Channel. Mandatory part of device config.
-    channel: String,
+    pub channel: String,
     /// State of device. Optional, if missing then default is active.
-    state: Option<DASDDeviceState>,
+    pub state: Option<DASDDeviceState>,
     /// explicit request to format device. If missing then it will format only if not already formatted.
     /// false means never format.
-    format: Option<bool>,
+    pub format: Option<bool>,
     /// Set diag flag for device. If missing, then do not change what device already has set.
-    diag: Option<bool>,
+    pub diag: Option<bool>,
 }
