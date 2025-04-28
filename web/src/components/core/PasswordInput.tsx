@@ -23,13 +23,28 @@
 import React, { useState } from "react";
 import {
   Button,
+  HelperText,
+  HelperTextItem,
   InputGroup,
   InputGroupItem,
+  Stack,
   TextInput,
   TextInputProps,
 } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { Icon } from "~/components/layout";
+import { useInstallerL10n } from "~/context/installerL10n";
+import { sprintf } from "sprintf-js";
+
+const ChangeKeyboardButton = () => (
+  <Button
+    variant="link"
+    isInline
+    onClick={() => document.getElementById("language-and-keyboard").click()}
+  >
+    {_("Change")}
+  </Button>
+);
 
 /**
  * Props matching the {@link https://www.patternfly.org/components/forms/text-input PF/TextInput},
@@ -37,6 +52,7 @@ import { Icon } from "~/components/layout";
  */
 export type PasswordInputProps = Omit<TextInputProps, "type"> & {
   inputRef?: React.Ref<HTMLInputElement>;
+  showKeyboardHint?: boolean;
 };
 
 /**
@@ -45,7 +61,13 @@ export type PasswordInputProps = Omit<TextInputProps, "type"> & {
  * @component
  *
  */
-export default function PasswordInput({ id, inputRef, ...props }: PasswordInputProps) {
+export default function PasswordInput({
+  id,
+  inputRef,
+  showKeyboardHint = true,
+  ...props
+}: PasswordInputProps) {
+  const { keymap } = useInstallerL10n();
   const [showPassword, setShowPassword] = useState(false);
   const visibilityIconName = showPassword ? "visibility_off" : "visibility";
 
@@ -56,24 +78,42 @@ export default function PasswordInput({ id, inputRef, ...props }: PasswordInputP
     );
   }
 
+  const [keyboardHintStart, keyboard, keyboardHintEnd] = sprintf(
+    _("Using [%s] keyboard."),
+    keymap,
+  ).split(/[[\]]/);
+
   return (
-    <InputGroup>
-      <InputGroupItem isFill>
-        <TextInput {...props} ref={inputRef} id={id} type={showPassword ? "text" : "password"} />
-      </InputGroupItem>
-      <InputGroupItem>
-        <Button
-          id={`toggle-${id}-visibility`}
-          className="password-toggler"
-          aria-label={_("Password visibility button")}
-          variant="control"
-          onClick={() => setShowPassword((prev) => !prev)}
-          isDisabled={props.isDisabled}
-          isInline
-        >
-          <Icon name={visibilityIconName} style={{ width: "1em", height: "1em" }} />
-        </Button>
-      </InputGroupItem>
-    </InputGroup>
+    <Stack hasGutter>
+      {showKeyboardHint && (
+        <HelperText>
+          <HelperTextItem variant="indeterminate">
+            {keyboardHintStart}{" "}
+            <code>
+              <b>{keyboard}</b>
+            </code>{" "}
+            {keyboardHintEnd} <ChangeKeyboardButton />
+          </HelperTextItem>
+        </HelperText>
+      )}
+      <InputGroup>
+        <InputGroupItem isFill>
+          <TextInput {...props} ref={inputRef} id={id} type={showPassword ? "text" : "password"} />
+        </InputGroupItem>
+        <InputGroupItem>
+          <Button
+            id={`toggle-${id}-visibility`}
+            className="password-toggler"
+            aria-label={_("Password visibility button")}
+            variant="control"
+            onClick={() => setShowPassword((prev) => !prev)}
+            isDisabled={props.isDisabled}
+            isInline
+          >
+            <Icon name={visibilityIconName} style={{ width: "1em", height: "1em" }} />
+          </Button>
+        </InputGroupItem>
+      </InputGroup>
+    </Stack>
   );
 }
