@@ -22,11 +22,13 @@
 
 import React, { useState } from "react";
 import {
+  Button,
   Content,
   Divider,
   Dropdown,
   DropdownItem,
   DropdownList,
+  Flex,
   Masthead,
   MastheadContent,
   MastheadLogo,
@@ -44,11 +46,13 @@ import { Icon } from "~/components/layout";
 import { useProduct } from "~/queries/software";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerStatus } from "~/queries/status";
+import { useInstallerL10n } from "~/context/installerL10n";
 import { Route } from "~/types/routes";
 import { ChangeProductOption, InstallButton, InstallerOptions, SkipTo } from "~/components/core";
 import { useLocation, useMatches } from "react-router-dom";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
+import supportedLanguages from "~/languages.json";
 
 export type HeaderProps = {
   /** Whether the application sidebar should be mounted or not */
@@ -118,6 +122,44 @@ const OptionsDropdown = ({ showInstallerOptions }) => {
   );
 };
 
+const Language = ({ value }) => (
+  <>
+    <Icon name="language" /> {value}
+  </>
+);
+
+const Keyboard = ({ value }) => (
+  <>
+    <Icon name="keyboard" /> {value}
+  </>
+);
+
+const LanguageAndKeyboardButton = () => {
+  const { language, keymap } = useInstallerL10n();
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <>
+      <Button
+        onClick={() => setIsOpen(true)}
+        aria-label={_("Change display language and keyboard layout")}
+        variant="plain"
+        icon={
+          <Flex
+            gap={{ default: "gapXs" }}
+            alignContent={{ default: "alignContentCenter" }}
+            alignItems={{ default: "alignItemsCenter" }}
+          >
+            <Language value={supportedLanguages[language]} />
+            <Keyboard value={keymap} />
+          </Flex>
+        }
+      />
+      <InstallerOptions isOpen={isOpen} onClose={() => setIsOpen(false)} />
+    </>
+  );
+};
+
 /**
  * Internal component for building the layout header
  *
@@ -172,6 +214,9 @@ export default function Header({
         <Toolbar isFullHeight>
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
+              <ToolbarItem>
+                <LanguageAndKeyboardButton />
+              </ToolbarItem>
               <ToolbarItem>
                 <InstallButton onClickWithIssues={toggleIssuesDrawer} />
               </ToolbarItem>
