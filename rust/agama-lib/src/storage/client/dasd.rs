@@ -78,7 +78,7 @@ impl<'a> DASDClient<'a> {
         self.probe().await?;
         self.config_activate(&config).await?;
         self.config_format(&config).await?;
-        // TODO: implement
+        self.config_set_diag(&config).await?;
         Ok(())
     }
 
@@ -115,6 +115,28 @@ impl<'a> DASDClient<'a> {
         self.format(&to_format).await?;
 
         if !to_format.is_empty() {
+            // reprobe after calling format. TODO: check if it is needed or callbacks take into action and update it automatically
+            // also do we need to wait here for finish of format progress?
+            self.probe().await?;
+        }
+        Ok(())
+    }
+
+    async fn config_set_diag(&self, config: &DASDConfig) -> Result<(), ServiceError> {
+        let pairs = self.config_pairs(config).await?;
+        let to_enable: Vec<&str> = pairs.iter()
+            .filter(|(_system, config)| config.diag == Some(true))
+            .map(|(system, _config)| system.id.as_str())
+            .collect();
+        self.set_diag(&to_enable, true).await?;
+
+        let to_disable: Vec<&str> = pairs.iter()
+            .filter(|(_system, config)| config.diag == Some(false))
+            .map(|(system, _config)| system.id.as_str())
+            .collect();
+        self.set_diag(&to_disable, false).await?;
+
+        if !to_enable.is_empty() || !to_disable.is_empty() {
             // reprobe after calling format. TODO: check if it is needed or callbacks take into action and update it automatically
             // also do we need to wait here for finish of format progress?
             self.probe().await?;
