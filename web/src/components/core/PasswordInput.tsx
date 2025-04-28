@@ -35,16 +35,7 @@ import { _ } from "~/i18n";
 import { Icon } from "~/components/layout";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { sprintf } from "sprintf-js";
-
-const ChangeKeyboardButton = () => (
-  <Button
-    variant="link"
-    isInline
-    onClick={() => document.getElementById("language-and-keyboard").click()}
-  >
-    {_("Change")}
-  </Button>
-);
+import { useKeyLock } from "~/hooks/use-key-lock";
 
 /**
  * Props matching the {@link https://www.patternfly.org/components/forms/text-input PF/TextInput},
@@ -69,6 +60,7 @@ export default function PasswordInput({
 }: PasswordInputProps) {
   const { keymap } = useInstallerL10n();
   const [showPassword, setShowPassword] = useState(false);
+  const isCapsLockOn = useKeyLock("CapsLock");
   const visibilityIconName = showPassword ? "visibility_off" : "visibility";
 
   if (!id) {
@@ -79,7 +71,7 @@ export default function PasswordInput({
   }
 
   const [keyboardHintStart, keyboard, keyboardHintEnd] = sprintf(
-    _("Using [%s] keyboard."),
+    _("Remember you are using [%s] keyboard."),
     keymap,
   ).split(/[[\]]/);
 
@@ -92,8 +84,11 @@ export default function PasswordInput({
             <code>
               <b>{keyboard}</b>
             </code>{" "}
-            {keyboardHintEnd} <ChangeKeyboardButton />
+            {keyboardHintEnd}
           </HelperTextItem>
+          {isCapsLockOn && (
+            <HelperTextItem variant="warning">{_("Caps lock is on")}</HelperTextItem>
+          )}
         </HelperText>
       )}
       <InputGroup>
