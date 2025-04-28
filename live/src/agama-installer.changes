@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Apr 28 12:14:51 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed missing drivers in ppc64le initrd, fixes broken
+  installation via PXE (bsc#1241887)
+- Removed the workaroung for adding the xhci-pci-renesas driver,
+  now it is included in the default dracut drivers
+
+-------------------------------------------------------------------
 Wed Apr 23 05:47:23 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Include the kernel-default-optional package in the Live ISO
