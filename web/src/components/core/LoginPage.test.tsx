@@ -40,6 +40,8 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
+jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
+
 jest.mock("~/queries/status", () => ({
   useInstallerStatus: () => ({
     phase,
