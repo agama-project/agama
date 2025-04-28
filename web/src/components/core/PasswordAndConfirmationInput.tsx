@@ -106,6 +106,7 @@ const PasswordAndConfirmationInput = ({
       </FormGroup>
       <FormGroup fieldId="passwordConfirmation" label={_("Password confirmation")}>
         <PasswordInput
+          showKeyboardHint={false}
           id="passwordConfirmation"
           name="passwordConfirmation"
           value={confirmation}

@@ -129,6 +129,7 @@ const LanguageAndKeyboardButton = () => {
   return (
     <>
       <Button
+        id="language-and-keyboard"
         onClick={() => setIsOpen(true)}
         aria-label={_("Change display language and keyboard layout")}
         variant="plain"
