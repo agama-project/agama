@@ -3,7 +3,7 @@ Mon Apr 28 12:14:51 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed missing drivers in ppc64le initrd, fixes broken
   installation via PXE (bsc#1241887)
-- Removed the workaroung for adding the xhci-pci-renesas driver,
+- Removed the workaround for adding the xhci-pci-renesas driver,
   now it is included in the default dracut drivers
 
 -------------------------------------------------------------------
