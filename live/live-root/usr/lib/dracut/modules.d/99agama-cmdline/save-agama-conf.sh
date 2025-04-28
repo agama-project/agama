@@ -8,12 +8,13 @@ if [ -e /etc/hostname ]; then
   cp /etc/hostname "$NEWROOT/etc/hostname"
 fi
 
-# If there is some explicit network configuration provided through the ip= kernel cmdline option
-# then we set the config server configuration diabling the DHCP auto configuration for ethernet
-# devices and also copying the configuration persistently (bsc#1241224, bsc#122486, bsc#1239777,
-# bsc#1236885).
-if [ -e /run/agama/copy_network ]; then
-  if getargbool 1 inst.copy_network; then
+if getargbool 1 inst.copy_network; then
+  : >/run/agama/copy_network
+  # If there is some explicit network configuration provided through the ip= kernel cmdline option
+  # then we set the config server configuration diabling the DHCP auto configuration for ethernet
+  # devices and also copying the configuration persistently (bsc#1241224, bsc#122486, bsc#1239777,
+  # bsc#1236885).
+  if [ -e /run/agama/custom_dracut_network ]; then
     mkdir -p /run/NetworkManager/conf.d
     echo '[main]' >/run/NetworkManager/conf.d/00-agama-server.conf
     echo 'no-auto-default=*' >>/run/NetworkManager/conf.d/00-agama-server.conf
