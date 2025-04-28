@@ -72,6 +72,8 @@ pub enum StoreError {
     ScriptsClient(#[from] ScriptsClientError),
     #[error(transparent)]
     Manager(#[from] ManagerHTTPClientError),
+    #[error("Could not calculate the context")]
+    InvalidStoreContext,
 }
 
 /// Struct that loads/stores the settings from/to the D-Bus services.
@@ -142,16 +144,20 @@ impl Store {
         Ok(settings)
     }
 
-    /// Stores the given installation settings in the D-Bus service
+    /// Stores the given installation settings in the Agama service
     ///
     /// As part of the process it runs pre-scripts and forces a probe if the installation phase is
     /// "config". It causes the storage proposal to be reset. This behavior should be revisited in
     /// the future but it might be the storage service the responsible for dealing with this.
     ///
     /// * `settings`: installation settings.
-    pub async fn store(&self, settings: &InstallSettings) -> Result<(), StoreError> {
+    pub async fn store(
+        &self,
+        settings: &InstallSettings,
+        context: &StoreContext,
+    ) -> Result<(), StoreError> {
         if let Some(scripts) = &settings.scripts {
-            self.scripts.store(scripts).await?;
+            self.scripts.store(scripts, &context).await?;
 
             if scripts.pre.as_ref().is_some_and(|s| !s.is_empty()) {
                 self.run_pre_scripts().await?;
@@ -214,5 +220,20 @@ impl Store {
             self.manager_client.probe().await?;
         }
         Ok(())
+    }
+}
+
+// It contains context information for the store.
+#[derive(Debug, Default)]
+pub struct StoreContext {
+    pub source: Option<url::Url>,
+}
+
+impl StoreContext {
+    pub fn from_env() -> Result<Self, StoreError> {
+        let current_path = std::env::current_dir().map_err(|_| StoreError::InvalidStoreContext)?;
+        let url = format!("file://{}", current_path.as_path().display());
+        let url = url::Url::parse(&url).map_err(|_| StoreError::InvalidStoreContext)?;
+        Ok(Self { source: Some(url) })
     }
 }

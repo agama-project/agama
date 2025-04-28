@@ -27,6 +27,7 @@ use std::{
 use crate::show_progress;
 use agama_lib::{
     base_http_client::BaseHTTPClient, install_settings::InstallSettings, Store as SettingsStore,
+    StoreContext,
 };
 use anyhow::anyhow;
 use clap::Subcommand;
@@ -79,7 +80,7 @@ pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> any
             tokio::spawn(async move {
                 show_progress().await.unwrap();
             });
-            store.store(&result).await?;
+            store.store(&result, &StoreContext::from_env()?).await?;
             Ok(())
         }
         ConfigCommands::Edit { editor } => {
@@ -91,7 +92,7 @@ pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> any
             tokio::spawn(async move {
                 show_progress().await.unwrap();
             });
-            store.store(&result).await?;
+            store.store(&result, &StoreContext::default()).await?;
             Ok(())
         }
     }

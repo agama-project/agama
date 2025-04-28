@@ -65,7 +65,7 @@ pub mod dbus;
 pub mod progress;
 pub mod proxies;
 mod store;
-pub use store::Store;
+pub use store::{Store, StoreContext};
 pub mod openapi;
 pub mod questions;
 pub mod scripts;
