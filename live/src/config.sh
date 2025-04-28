@@ -98,7 +98,7 @@ echo 'add_dracutmodules+=" dracut-menu agama-cmdline "' >>/etc/dracut.conf.d/10-
 # decrease the kernel logging on the console, use a dracut module to do it early in the boot process
 echo 'add_dracutmodules+=" agama-logging "' > /etc/dracut.conf.d/10-agama-logging.conf
 
-# the ipmi drivers to the initrd (bsc#1237354)
+# add the ipmi drivers to the initrd (bsc#1237354)
 extra_drivers=(acpi_ipmi ipmi_devintf ipmi_poweroff ipmi_si ipmi_ssif ipmi_watchdog)
 
 for driver in "${extra_drivers[@]}"
