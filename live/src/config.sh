@@ -98,26 +98,17 @@ echo 'add_dracutmodules+=" dracut-menu agama-cmdline "' >>/etc/dracut.conf.d/10-
 # decrease the kernel logging on the console, use a dracut module to do it early in the boot process
 echo 'add_dracutmodules+=" agama-logging "' > /etc/dracut.conf.d/10-agama-logging.conf
 
-# add xhci-pci-renesas to initrd if available (workaround for bsc#1237235)
-# FIXME: remove when the module is included in the default driver list in
-# in /usr/lib/dracut/modules.d/90kernel-modules/module-setup.sh, see
-# https://github.com/openSUSE/dracut/blob/7559201e7480a65b0da050263d96a1cd8f15f50d/modules.d/90kernel-modules/module-setup.sh#L42-L46
-for file in /lib/modules/*/kernel/drivers/usb/host/xhci-pci-renesas.ko*
-do
-  if [ -f "$file" ]; then
-    echo "Adding xhci-pci-renesas driver to initrd..."
-    echo 'add_drivers+=" xhci-pci-renesas "' >> /etc/dracut.conf.d/10-extra-drivers.conf
-    break
-  fi
-done
+# add the ipmi drivers to the initrd (bsc#1237354)
+extra_drivers=(acpi_ipmi ipmi_devintf ipmi_poweroff ipmi_si ipmi_ssif ipmi_watchdog)
 
-# add ipmi drivers (bsc#1237354)
-for dir in /lib/modules/*/kernel/drivers/char/ipmi
+for driver in "${extra_drivers[@]}"
 do
-  if [ -d "$dir" ]; then
-    echo "Adding ipmi drivers to initrd..."
-    echo 'add_drivers+=" acpi_ipmi ipmi_devintf ipmi_poweroff ipmi_si ipmi_ssif ipmi_watchdog "' >> /etc/dracut.conf.d/10-extra-drivers.conf
-    break
+  # check if the driver is present (allow a suffix like .zstd or .xz for optionally compressed drivers)
+  if find /lib/modules -type f -name "$driver.ko*" -print0 | grep -qz .; then
+    echo "Adding $driver driver to initrd..."
+    echo "add_drivers+=\" $driver \"" >> /etc/dracut.conf.d/10-extra-drivers.conf
+  else
+    echo "Skipping driver $driver, not found in the system"
   fi
 done
 
