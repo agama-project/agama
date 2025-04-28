@@ -101,8 +101,8 @@ mod tests {
         let joined = url.join("test").unwrap();
         assert_eq!(&joined.to_string(), "https://example.com/test");
 
-        let joined = url.join("https://override.lan").unwrap();
-        assert_eq!(&joined.to_string(), "https://override.lan");
+        let joined = url.join("https://override.lan/").unwrap();
+        assert_eq!(&joined.to_string(), "https://override.lan/");
     }
 
     #[test]

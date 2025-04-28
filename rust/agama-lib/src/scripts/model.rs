@@ -27,8 +27,12 @@ use std::{
 };
 
 use serde::{Deserialize, Serialize};
+use serde_with::serde_as;
 
-use crate::utils::Transfer;
+use crate::{
+    url::{Url, UrlError},
+    utils::Transfer,
+};
 
 use super::ScriptError;
 
@@ -52,6 +56,9 @@ pub struct BaseScript {
 }
 
 impl BaseScript {
+    /// Writes the script to the given directory.
+    ///
+    /// * `workdir`: directory to write the script to.
     fn write<P: AsRef<Path>>(&self, workdir: P) -> Result<(), ScriptError> {
         let script_path = workdir.as_ref().join(&self.name);
         std::fs::create_dir_all(script_path.parent().unwrap())?;
@@ -65,20 +72,49 @@ impl BaseScript {
 
         match &self.source {
             ScriptSource::Text { content } => write!(file, "{}", &content)?,
-            ScriptSource::Remote { url } => Transfer::get(url, &mut file)?,
+            ScriptSource::Remote { url } => Transfer::get(&url.to_string(), &mut file)?,
         };
 
         Ok(())
     }
+
+    /// Returns the base script using an absolute URL if it was using a relative one.
+    ///
+    /// * `base`: base URL.
+    fn resolve_url(&self, base: &Url) -> Result<Self, UrlError> {
+        let mut clone = self.clone();
+        clone.source = self.source.resolve_url(base)?;
+        Ok(clone)
+    }
 }
 
+#[serde_as]
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(untagged)]
 pub enum ScriptSource {
     /// Script's content.
     Text { content: String },
     /// URL to get the script from.
-    Remote { url: String },
+    Remote { url: Url },
+}
+
+impl ScriptSource {
+    /// Returns a new source using an absolute URL if it was using a relative one.
+    ///
+    /// If it was not using a relative URL, it just returns a clone.
+    ///
+    /// * `base`: base URL.
+    pub fn resolve_url(&self, base: &Url) -> Result<ScriptSource, UrlError> {
+        let resolved = match self {
+            Self::Text { content } => Self::Text {
+                content: content.clone(),
+            },
+            Self::Remote { url } => Self::Remote {
+                url: base.join(&url.to_string())?,
+            },
+        };
+        Ok(resolved)
+    }
 }
 
 /// Represents a script to run as part of the installation process.
@@ -100,6 +136,15 @@ impl Script {
             Script::PostPartitioning(inner) => &inner.base,
             Script::Post(inner) => &inner.base,
             Script::Init(inner) => &inner.base,
+        }
+    }
+
+    fn base_mut(&mut self) -> &mut BaseScript {
+        match self {
+            Script::Pre(inner) => &mut inner.base,
+            Script::PostPartitioning(inner) => &mut inner.base,
+            Script::Post(inner) => &mut inner.base,
+            Script::Init(inner) => &mut inner.base,
         }
     }
 
@@ -128,6 +173,13 @@ impl Script {
         }
     }
 
+    /// Script's source.
+    ///
+    /// It returns the script source.
+    pub fn source(&self) -> &ScriptSource {
+        &self.base().source
+    }
+
     /// Runs the script in the given work directory.
     ///
     /// It saves the logs and the exit status of the execution.
@@ -151,6 +203,16 @@ impl Script {
         };
 
         runner.run(&path)
+    }
+
+    /// Resolves the URL of the script.
+    ///
+    /// This method returns a new `Script` instance with the resolved URL.
+    pub fn resolve_url(&self, base: &Url) -> Result<Script, UrlError> {
+        let mut clone = self.clone();
+        let clone_base = clone.base_mut();
+        *clone_base = self.base().resolve_url(base)?;
+        Ok(clone)
     }
 }
 
@@ -384,7 +446,10 @@ mod test {
     use tempfile::TempDir;
     use tokio::test;
 
-    use crate::scripts::{BaseScript, PreScript, Script, ScriptSource};
+    use crate::{
+        scripts::{BaseScript, PreScript, Script, ScriptSource},
+        url::Url,
+    };
 
     use super::{ScriptsGroup, ScriptsRepository};
 
@@ -453,5 +518,54 @@ mod test {
         assert!(script_path.exists());
         _ = repo.clear();
         assert!(!script_path.exists());
+    }
+
+    #[test]
+    async fn test_resolve_url_relative() {
+        let base_url = Url::parse("http://example.lan/sles").unwrap();
+
+        let relative = BaseScript {
+            name: "test".to_string(),
+            source: ScriptSource::Remote {
+                url: Url::parse("../agama/enable-sshd.sh").unwrap(),
+            },
+        };
+        let script = Script::Pre(PreScript { base: relative });
+        let resolved = script.resolve_url(&base_url).unwrap();
+        let expected_url = Url::parse("http://example.lan/agama/enable-sshd.sh").unwrap();
+
+        assert!(matches!(
+            resolved.source(),
+            ScriptSource::Remote { url } if url == &expected_url
+        ));
+
+        let absolute = BaseScript {
+            name: "test".to_string(),
+            source: ScriptSource::Remote {
+                url: Url::parse("http://example.orig").unwrap(),
+            },
+        };
+        let script = Script::Pre(PreScript { base: absolute });
+        let resolved = script.resolve_url(&base_url).unwrap();
+        let expected_url = Url::parse("http://example.orig").unwrap();
+
+        assert!(matches!(
+            resolved.source(),
+            ScriptSource::Remote { url } if url == &expected_url
+        ));
+
+        let text = BaseScript {
+            name: "test".to_string(),
+            source: ScriptSource::Text {
+                content: "#!/bin/bash\necho hello".to_string(),
+            },
+        };
+        let script = Script::Pre(PreScript { base: text });
+        let resolved = script.resolve_url(&base_url).unwrap();
+
+        assert!(matches!(
+            resolved.source(),
+            ScriptSource::Text { content: _ }
+        ));
     }
 }

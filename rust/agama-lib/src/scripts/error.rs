@@ -21,7 +21,7 @@
 use std::io;
 use thiserror::Error;
 
-use crate::utils::TransferError;
+use crate::{url::UrlError, utils::TransferError};
 
 #[derive(Error, Debug)]
 pub enum ScriptError {
@@ -31,4 +31,6 @@ pub enum ScriptError {
     InputOutputError(#[from] io::Error),
     #[error("Wrong script type")]
     WrongScriptType,
+    #[error("Invalid URL: {0}")]
+    InvalidUrl(#[from] UrlError),
 }
