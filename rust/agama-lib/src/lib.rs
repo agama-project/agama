@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -70,6 +70,7 @@ pub mod openapi;
 pub mod questions;
 pub mod scripts;
 pub mod security;
+pub mod url;
 pub mod utils;
 
 use crate::error::ServiceError;
