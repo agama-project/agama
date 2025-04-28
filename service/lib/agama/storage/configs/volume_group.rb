@@ -55,6 +55,10 @@ module Agama
           @physical_volumes = []
           @logical_volumes = []
         end
+
+        def logical_volume?(device_alias)
+          logical_volumes.find { |l| l.alias?(device_alias) }
+        end
       end
     end
   end

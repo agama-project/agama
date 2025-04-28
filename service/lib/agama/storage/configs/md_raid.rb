@@ -59,6 +59,7 @@ module Agama
 
         def initialize
           initialize_partitions
+          @devices = []
         end
       end
     end

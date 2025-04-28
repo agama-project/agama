@@ -67,32 +67,41 @@ module Agama
         drives.find { |d| d.alias?(boot.device.device_alias) }
       end
 
-      # Device config containing root.
-      #
-      # @return [Configs::Drive, Configs::VolumeGroup, nil]
-      def root_device
-        root_drive || root_volume_group
-      end
-
       # Drive config containing root.
       #
       # @return [Configs::Drive, nil]
       def root_drive
-        drives.find { |d| d.root? || d.partitions.any?(&:root?) }
+        drives.find { |d| root_device?(d) }
+      end
+
+      # MD RAID config containing root.
+      #
+      # @return [Configs::MdRaid, nil]
+      def root_md_raid
+        md_raids.find { |m| root_device?(m) }
       end
 
       # Volume group config containing a logical volume for root.
       #
       # @return [Configs::LogicalVolume, nil]
       def root_volume_group
-        volume_groups.find { |v| v.logical_volumes.any?(&:root?) }
+        volume_groups.find { |v| root_device?(v) }
       end
 
       # Drive with the given alias.
       #
+      # @param device_alias [String]
       # @return [Configs::Drive, nil]
       def drive(device_alias)
         drives.find { |d| d.alias?(device_alias) }
+      end
+
+      # MD RAID with the given alias.
+      #
+      # @param device_alias [String]
+      # @return [Configs::MdRaid, nil]
+      def md_raid(device_alias)
+        md_raids.find { |d| d.alias?(device_alias) }
       end
 
       # @return [Array<Configs::Partition>]

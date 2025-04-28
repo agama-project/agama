@@ -105,9 +105,9 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::MdRaid do
     context "if 'devices' is not specified" do
       let(:devices) { nil }
 
-      it "does not set #devices" do
+      it "sets #devices to the expected value" do
         md_raid = subject.convert
-        expect(md_raid.devices).to be_nil
+        expect(md_raid.devices).to eq([])
       end
     end
 

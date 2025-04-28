@@ -41,6 +41,10 @@ module Agama
         def partitions?
           partitions.any?
         end
+
+        def partition?(device_alias)
+          partitions.any? { |p| p.alias?(device_alias) }
+        end
       end
     end
   end

@@ -98,90 +98,6 @@ describe Agama::Storage::Config do
     end
   end
 
-  describe "#root_device" do
-    let(:config_json) do
-      {
-        drives:       [
-          { alias: "disk1" },
-          drive
-        ],
-        volumeGroups: [
-          { name: "vg1" },
-          volume_group
-        ]
-      }
-    end
-
-    let(:root_volume_group) do
-      {
-        name:           "vg2",
-        logicalVolumes: [
-          {
-            filesystem: { path: "/" }
-          }
-        ]
-      }
-    end
-
-    context "if there is a drive used for root" do
-      let(:drive) do
-        {
-          alias:      "disk2",
-          filesystem: { path: "/" }
-        }
-      end
-
-      let(:volume_group) { root_volume_group }
-
-      it "returns the drive" do
-        expect(subject.root_device).to be_a(Agama::Storage::Configs::Drive)
-        expect(subject.root_device.alias).to eq("disk2")
-      end
-    end
-
-    context "if there is a drive containing a partition used for root" do
-      let(:drive) do
-        {
-          alias:      "disk2",
-          partitions: [
-            {
-              alias:      "part1",
-              filesystem: { path: "/" }
-            }
-          ]
-        }
-      end
-
-      let(:volume_group) { root_volume_group }
-
-      it "returns the drive" do
-        expect(subject.root_device).to be_a(Agama::Storage::Configs::Drive)
-        expect(subject.root_device.alias).to eq("disk2")
-      end
-    end
-
-    context "if there is neither root drive nor root partition" do
-      let(:drive) { {} }
-
-      context "and there is not a volume group containing a logical volume used for root" do
-        let(:volume_group) { {} }
-
-        it "returns nil" do
-          expect(subject.root_device).to be_nil
-        end
-      end
-
-      context "and there is a volume group containing a logical volume used for root" do
-        let(:volume_group) { root_volume_group }
-
-        it "returns the volume group" do
-          expect(subject.root_device).to be_a(Agama::Storage::Configs::VolumeGroup)
-          expect(subject.root_device.name).to eq("vg2")
-        end
-      end
-    end
-  end
-
   describe "#root_drive" do
     let(:config_json) do
       {
@@ -240,6 +156,66 @@ describe Agama::Storage::Config do
 
       it "returns nil" do
         expect(subject.root_drive).to be_nil
+      end
+    end
+  end
+
+  describe "#root_md_raid" do
+    let(:config_json) do
+      {
+        drives:  [
+          {
+            alias:      "disk1",
+            partitions: [
+              {
+                filesystem: { path: "/" }
+              }
+            ]
+          }
+        ],
+        mdRaids: [
+          md_raid
+        ]
+      }
+    end
+
+    context "if there is a MD RAID used for root" do
+      let(:md_raid) do
+        {
+          alias:      "md1",
+          filesystem: { path: "/" }
+        }
+      end
+
+      it "returns the MD RAID" do
+        expect(subject.root_md_raid).to be_a(Agama::Storage::Configs::MdRaid)
+        expect(subject.root_md_raid.alias).to eq("md1")
+      end
+    end
+
+    context "if there is a MD RAID containing a partition used for root" do
+      let(:md_raid) do
+        {
+          alias:      "md1",
+          partitions: [
+            {
+              filesystem: { path: "/" }
+            }
+          ]
+        }
+      end
+
+      it "returns the MD RAID" do
+        expect(subject.root_md_raid).to be_a(Agama::Storage::Configs::MdRaid)
+        expect(subject.root_md_raid.alias).to eq("md1")
+      end
+    end
+
+    context "if there is neither root MD RAID nor root partition" do
+      let(:md_raid) { {} }
+
+      it "returns nil" do
+        expect(subject.root_md_raid).to be_nil
       end
     end
   end
@@ -311,7 +287,7 @@ describe Agama::Storage::Config do
           {
             alias:      "disk2",
             partitions: [
-              { alias: "disk1" }
+              { alias: "part2" }
             ]
           }
         ]
@@ -336,6 +312,48 @@ describe Agama::Storage::Config do
         drive = subject.drive(device_alias)
 
         expect(drive).to be_nil
+      end
+    end
+  end
+
+  describe "#md_raid" do
+    let(:config_json) do
+      {
+        mdRaids: [
+          {
+            alias:      "md1",
+            partitions: [
+              { alias: "part1" }
+            ]
+          },
+          {
+            alias:      "md2",
+            partitions: [
+              { alias: "part2" }
+            ]
+          }
+        ]
+      }
+    end
+
+    context "if there is a MD RAID with the given alias" do
+      let(:device_alias) { "md1" }
+
+      it "returns the MD RAID" do
+        md_raid = subject.md_raid(device_alias)
+
+        expect(md_raid).to be_a(Agama::Storage::Configs::MdRaid)
+        expect(md_raid.alias).to eq(device_alias)
+      end
+    end
+
+    context "if there is not a MD RAID with the given alias" do
+      let(:device_alias) { "part1" }
+
+      it "returns nil" do
+        md_raid = subject.md_raid(device_alias)
+
+        expect(md_raid).to be_nil
       end
     end
   end
