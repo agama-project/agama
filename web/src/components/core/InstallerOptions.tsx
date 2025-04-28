@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,24 +21,97 @@
  */
 
 import React, { useState } from "react";
-import { Flex, Form, FormGroup, FormSelect, FormSelectOption } from "@patternfly/react-core";
+import {
+  Checkbox,
+  Flex,
+  Form,
+  FormGroup,
+  FormSelect,
+  FormSelectOption,
+} from "@patternfly/react-core";
 import { Popup } from "~/components/core";
-import { _ } from "~/i18n";
+import { useQuery } from "@tanstack/react-query";
 import { localConnection } from "~/utils";
 import { useInstallerL10n } from "~/context/installerL10n";
+import { keymapsQuery, useConfigMutation, useL10n } from "~/queries/l10n";
 import supportedLanguages from "~/languages.json";
-import { useQuery } from "@tanstack/react-query";
-import { keymapsQuery } from "~/queries/l10n";
+import { _ } from "~/i18n";
+import { LocaleConfig } from "~/types/l10n";
 
 type InstallerOptionsProps = {
   isOpen: boolean;
   onClose?: () => void;
 };
 
+const LangaugeFormInput = ({ value, onChange }) => (
+  <FormGroup fieldId="language" label={_("Language")}>
+    <FormSelect
+      id="language"
+      name="language"
+      value={value}
+      onChange={(_, value) => onChange(value)}
+    >
+      {Object.keys(supportedLanguages)
+        .sort()
+        .map((id, index) => (
+          <FormSelectOption key={index} value={id} label={supportedLanguages[id]} />
+        ))}
+    </FormSelect>
+  </FormGroup>
+);
+
+const KeyboardFormInput = ({ value, onChange }) => {
+  const { isPending, data: keymaps } = useQuery(keymapsQuery());
+  if (isPending) return;
+
+  if (!localConnection()) {
+    return (
+      <FormGroup label={_("Keyboard layout")}>
+        {_("Cannot be changed in remote installation")}
+      </FormGroup>
+    );
+  }
+
+  return (
+    <FormGroup fieldId="keymap" label={_("Keyboard layout")}>
+      <FormSelect
+        id="keymap"
+        name="keymap"
+        label={_("Keyboard layout")}
+        value={value}
+        onChange={(_, value) => onChange(value)}
+      >
+        {keymaps.map((keymap, index) => (
+          <FormSelectOption key={index} value={keymap.id} label={keymap.name} />
+        ))}
+      </FormSelect>
+    </FormGroup>
+  );
+};
+
+const CopyToSystemInput = ({ value, onChange }) => {
+  const label = localConnection()
+    ? _("Use these same settings for the selected product")
+    : _("Use for selected product too");
+  const description = _(
+    "More language and keyboard layout options for the selected product may be available in Localization page.",
+  );
+
+  return (
+    <FormGroup fieldId="copy-to-system">
+      <Checkbox
+        id="copy-to-system"
+        label={label}
+        description={description}
+        isChecked={value}
+        onChange={onChange}
+      />
+    </FormGroup>
+  );
+};
+
 /**
  * Renders the installer options
- *
- * @todo Write documentation
  */
 export default function InstallerOptions({ isOpen = false, onClose }: InstallerOptionsProps) {
   const {
@@ -47,12 +120,14 @@ export default function InstallerOptions({ isOpen = false, onClose }: InstallerO
     changeLanguage,
     changeKeymap,
   } = useInstallerL10n();
+
+  const { mutate: updateSystemL10n } = useConfigMutation();
+  const { locales } = useL10n();
   const [language, setLanguage] = useState(initialLanguage);
   const [keymap, setKeymap] = useState(initialKeymap);
-  const { isPending, data: keymaps } = useQuery(keymapsQuery());
+  const [copyToSystem, setCopyToSystem] = useState(true);
   const [inProgress, setInProgress] = useState<boolean>(false);
-
-  if (isPending) return;
+  const toggleCopyToSystem = () => setCopyToSystem(!copyToSystem);
 
   const close = () => {
     setLanguage(initialLanguage);
@@ -63,52 +138,39 @@ export default function InstallerOptions({ isOpen = false, onClose }: InstallerO
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setInProgress(true);
-    await changeKeymap(keymap);
+
+    // FIXME: export and use languageToLocale from context/installerL10n
+    const systemLocale = locales.find((l) => l.id.startsWith(language.replace("-", "_")));
+    const systeml10n: Partial<LocaleConfig> = {
+      locales: [systemLocale.id],
+      keymap,
+    };
+
+    if (localConnection()) {
+      await changeKeymap(keymap);
+    } else {
+      delete systeml10n.keymap;
+    }
+
+    if (copyToSystem) {
+      updateSystemL10n(systeml10n);
+    }
+
     changeLanguage(language)
       .then(close)
       .catch(() => setInProgress(false));
   };
 
   return (
-    <Popup isOpen={isOpen} title={_("Installer options")}>
+    <Popup isOpen={isOpen} variant="small" title={_("Language & Keyboard")}>
       <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
         <Form id="installer-l10n" onSubmit={onSubmit}>
-          <FormGroup fieldId="language" label={_("Language")}>
-            <FormSelect
-              id="language"
-              name="language"
-              aria-label={_("Language")}
-              label={_("Language")}
-              value={language}
-              onChange={(_e, value) => setLanguage(value)}
-            >
-              {Object.keys(supportedLanguages)
-                .sort()
-                .map((id, index) => (
-                  <FormSelectOption key={index} value={id} label={supportedLanguages[id]} />
-                ))}
-            </FormSelect>
-          </FormGroup>
-
-          <FormGroup fieldId="keymap" label={_("Keyboard layout")}>
-            {localConnection() ? (
-              <FormSelect
-                id="keymap"
-                name="keymap"
-                label={_("Keyboard layout")}
-                value={keymap}
-                onChange={(_e, value) => setKeymap(value)}
-              >
-                {keymaps.map((keymap, index) => (
-                  <FormSelectOption key={index} value={keymap.id} label={keymap.name} />
-                ))}
-              </FormSelect>
-            ) : (
-              _("Cannot be changed in remote installation")
-            )}
-          </FormGroup>
+          <LangaugeFormInput value={language} onChange={setLanguage} />
+          <KeyboardFormInput value={keymap} onChange={setKeymap} />
+          <CopyToSystemInput value={copyToSystem} onChange={toggleCopyToSystem} />
         </Form>
       </Flex>
+
       <Popup.Actions>
         <Popup.Confirm
           form="installer-l10n"
