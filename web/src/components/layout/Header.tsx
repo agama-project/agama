@@ -41,7 +41,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { useMatches } from "react-router-dom";
+import { useLocation, useMatches } from "react-router-dom";
 import { Icon } from "~/components/layout";
 import { useProduct } from "~/queries/software";
 import { useInstallerL10n } from "~/context/installerL10n";
@@ -49,6 +49,8 @@ import { Route } from "~/types/routes";
 import { ChangeProductOption, InstallButton, InstallerOptions, SkipTo } from "~/components/core";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
+import { useInstallerStatus } from "~/queries/status";
+import { InstallationPhase } from "~/types/status";
 import supportedLanguages from "~/languages.json";
 
 export type HeaderProps = {
@@ -113,8 +115,16 @@ const Keyboard = ({ value }) => (
 );
 
 const LanguageAndKeyboardButton = () => {
+  const location = useLocation();
+  const { phase } = useInstallerStatus({ suspense: true });
   const { language, keymap } = useInstallerL10n();
   const [isOpen, setIsOpen] = useState(false);
+
+  const skip =
+    phase === InstallationPhase.Install ||
+    ["/login", "/products/progress"].includes(location.pathname);
+
+  if (skip) return;
 
   return (
     <>

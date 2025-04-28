@@ -62,13 +62,12 @@ jest.mock("~/queries/status", () => ({
   }),
 }));
 
-const doesNotRenderInstallerL10nOptions = () =>
-  it("does not render the installer localization options", async () => {
-    const { user } = installerRender(<Header />);
-    const toggler = screen.getByRole("button", { name: "Options toggle" });
-    await user.click(toggler);
-    const menu = screen.getByRole("menu");
-    expect(within(menu).queryByRole("menuitem", { name: "Installer Options" })).toBeNull();
+const doesNotRenderL10nAction = () =>
+  it("does not render the button for changing the language and keyboard", async () => {
+    installerRender(<Header />, { withL10n: true });
+    expect(
+      screen.queryByRole("button", { name: "Change display language and keyboard layout" }),
+    ).toBeNull();
   });
 
 describe("Header", () => {
@@ -78,7 +77,7 @@ describe("Header", () => {
   });
 
   it("renders the product name unless showProductName is set to false", () => {
-    const { rerender } = installerRender(<Header />);
+    const { rerender } = installerRender(<Header />, { withL10n: true });
     screen.getByRole("heading", { name: tumbleweed.name, level: 1 });
     rerender(<Header />);
     screen.getByRole("heading", { name: tumbleweed.name, level: 1 });
@@ -87,7 +86,7 @@ describe("Header", () => {
   });
 
   it("mounts the Install button", () => {
-    installerRender(<Header />);
+    installerRender(<Header />, { withL10n: true });
     screen.getByText("Install Button Mock");
   });
 
@@ -101,15 +100,23 @@ describe("Header", () => {
     expect(screen.queryByRole("link", { name: "Skip to content" })).toBeNull();
   });
 
+  it("renders button for changing language and keyboard", async () => {
+    const { user } = installerRender(<Header />, { withL10n: true });
+    const languageAndKeyboardButton = screen.getByRole("button", {
+      name: "Change display language and keyboard layout",
+    });
+    await user.click(languageAndKeyboardButton);
+    screen.getByText("Installer Options Mock");
+  });
+
   it("renders an options dropdown", async () => {
-    const { user } = installerRender(<Header />);
+    const { user } = installerRender(<Header />, { withL10n: true });
     expect(screen.queryByRole("menu")).toBeNull();
     const toggler = screen.getByRole("button", { name: "Options toggle" });
     await user.click(toggler);
     const menu = screen.getByRole("menu");
     within(menu).getByRole("menuitem", { name: "Change product" });
     within(menu).getByRole("menuitem", { name: "Download logs" });
-    within(menu).getByRole("menuitem", { name: "Installer Options" });
   });
 
   it.todo("allows downloading the logs");
@@ -119,7 +126,7 @@ describe("Header", () => {
       phase = InstallationPhase.Install;
     });
 
-    doesNotRenderInstallerL10nOptions();
+    doesNotRenderL10nAction();
   });
 
   describe("at /products/progress path", () => {
@@ -127,7 +134,7 @@ describe("Header", () => {
       mockRoutes("/products/progress");
     });
 
-    doesNotRenderInstallerL10nOptions();
+    doesNotRenderL10nAction();
   });
 
   describe("at /login path", () => {
@@ -135,6 +142,6 @@ describe("Header", () => {
       mockRoutes("/login");
     });
 
-    doesNotRenderInstallerL10nOptions();
+    doesNotRenderL10nAction();
   });
 });
