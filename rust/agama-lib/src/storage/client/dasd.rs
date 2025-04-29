@@ -98,7 +98,16 @@ impl<'a> DASDClient<'a> {
             .collect();
         self.enable(&to_activate).await?;
 
-        if !to_activate.is_empty() {
+        let pairs = self.config_pairs(config).await?;
+        let to_deactivate: Vec<&str> = pairs
+            .iter()
+            .filter(|(system, _config)| system.enabled == true)
+            .filter(|(_system, config)| config.state == Some(DASDDeviceState::Offline))
+            .map(|(system, _config)| system.id.as_str())
+            .collect();
+        self.disable(&to_deactivate).await?;
+
+        if !to_activate.is_empty() || !to_deactivate.is_empty() {
             // reprobe after calling enable. TODO: check if it is needed or callbacks take into action and update it automatically
             self.probe().await?;
         }
