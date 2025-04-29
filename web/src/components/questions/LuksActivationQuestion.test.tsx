@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { AnswerCallback, Question } from "~/types/questions";
 import LuksActivationQuestion from "~/components/questions/LuksActivationQuestion";
 
@@ -38,7 +38,9 @@ const questionMock: Question = {
 const answerFn: AnswerCallback = jest.fn();
 
 const renderQuestion = () =>
-  plainRender(<LuksActivationQuestion question={question} answerCallback={answerFn} />);
+  installerRender(<LuksActivationQuestion question={question} answerCallback={answerFn} />, {
+    withL10n: true,
+  });
 
 describe("LuksActivationQuestion", () => {
   beforeEach(() => {

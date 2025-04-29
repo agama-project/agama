@@ -22,20 +22,24 @@
 
 import React, { useState } from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import userEvent from "@testing-library/user-event";
 import PasswordInput, { PasswordInputProps } from "./PasswordInput";
 
 describe("PasswordInput Component", () => {
   it("renders a password input", () => {
-    plainRender(<PasswordInput id="password" name="password" aria-label="User password" />);
+    installerRender(<PasswordInput id="password" name="password" aria-label="User password" />, {
+      withL10n: true,
+    });
 
     const inputField = screen.getByLabelText("User password");
     expect(inputField).toHaveAttribute("type", "password");
   });
 
   it("allows revealing the password", async () => {
-    plainRender(<PasswordInput id="password" name="password" aria-label="User password" />);
+    installerRender(<PasswordInput id="password" name="password" aria-label="User password" />, {
+      withL10n: true,
+    });
 
     const passwordInput = screen.getByLabelText("User password");
     const button = screen.getByRole("button");
@@ -46,8 +50,9 @@ describe("PasswordInput Component", () => {
   });
 
   it("applies autoFocus behavior correctly", () => {
-    plainRender(
+    installerRender(
       <PasswordInput autoFocus id="password" name="password" aria-label="User password" />,
+      { withL10n: true },
     );
 
     const inputField = screen.getByLabelText("User password");
@@ -69,8 +74,9 @@ describe("PasswordInput Component", () => {
   };
 
   it("triggers onChange callback", async () => {
-    const { user } = plainRender(
+    const { user } = installerRender(
       <PasswordInputTest id="test-password" aria-label="Test password" />,
+      { withL10n: true },
     );
     const passwordInput = screen.getByLabelText("Test password");
 
