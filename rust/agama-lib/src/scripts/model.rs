@@ -84,15 +84,14 @@ impl BaseScript {
     }
 }
 
-#[serde_as]
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(untagged)]
 pub enum ScriptSource {
     /// Script's content.
     Text { content: String },
-    /// URL to get the script from.
+    /// URI or relative reference to get the script from.
     Remote {
-        #[schema(value_type = String)]
+        #[schema(value_type = String, examples("http://example.com/script.sh", "/script.sh"))]
         url: UriRef<String>,
     },
 }
