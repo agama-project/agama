@@ -21,6 +21,8 @@
 //! Load/store the settings from/to the D-Bus services.
 // TODO: quickly explain difference between FooSettings and FooStore, with an example
 
+use fluent_uri::Uri;
+
 use crate::{
     base_http_client::BaseHTTPClient,
     bootloader::store::{BootloaderStore, BootloaderStoreError},
@@ -226,14 +228,16 @@ impl Store {
 // It contains context information for the store.
 #[derive(Debug, Default)]
 pub struct StoreContext {
-    pub source: Option<url::Url>,
+    pub source: Option<Uri<String>>,
 }
 
 impl StoreContext {
     pub fn from_env() -> Result<Self, StoreError> {
         let current_path = std::env::current_dir().map_err(|_| StoreError::InvalidStoreContext)?;
         let url = format!("file://{}", current_path.as_path().display());
-        let url = url::Url::parse(&url).map_err(|_| StoreError::InvalidStoreContext)?;
-        Ok(Self { source: Some(url) })
+        let url = Uri::parse(url.as_str()).map_err(|_| StoreError::InvalidStoreContext)?;
+        Ok(Self {
+            source: Some(url.to_owned()),
+        })
     }
 }

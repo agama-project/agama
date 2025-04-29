@@ -18,10 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use fluent_uri::Uri;
+
 use crate::{
     base_http_client::BaseHTTPClient,
     software::{model::ResolvableType, SoftwareHTTPClient, SoftwareHTTPClientError},
-    url::Url,
     StoreContext,
 };
 
@@ -70,31 +71,33 @@ impl ScriptsStore {
         settings: &ScriptsConfig,
         context: &StoreContext,
     ) -> ScriptStoreResult<()> {
-        let base_url = context.source.as_ref().map(|u| Url::Absolute(u.clone()));
         self.scripts.delete_scripts().await?;
 
         if let Some(scripts) = &settings.pre {
             for pre in scripts {
-                self.add_script(pre.clone().into(), &base_url).await?;
+                self.add_script(pre.clone().into(), &context.source).await?;
             }
         }
 
         if let Some(scripts) = &settings.post_partitioning {
             for post in scripts {
-                self.add_script(post.clone().into(), &base_url).await?;
+                self.add_script(post.clone().into(), &context.source)
+                    .await?;
             }
         }
 
         if let Some(scripts) = &settings.post {
             for post in scripts {
-                self.add_script(post.clone().into(), &base_url).await?;
+                self.add_script(post.clone().into(), &context.source)
+                    .await?;
             }
         }
 
         let mut packages = vec![];
         if let Some(scripts) = &settings.init {
             for init in scripts {
-                self.add_script(init.clone().into(), &base_url).await?;
+                self.add_script(init.clone().into(), &context.source)
+                    .await?;
             }
             packages.push("agama-scripts");
         }
@@ -111,7 +114,11 @@ impl ScriptsStore {
     ///
     /// * `script`: script definition.
     /// * `base_url`: base URL to resolve the script URL against.
-    async fn add_script(&self, script: Script, base_url: &Option<Url>) -> ScriptStoreResult<()> {
+    async fn add_script(
+        &self,
+        script: Script,
+        base_url: &Option<Uri<String>>,
+    ) -> ScriptStoreResult<()> {
         let resolved = match base_url {
             Some(source) => script.resolve_url(&source).unwrap(),
             None => script,

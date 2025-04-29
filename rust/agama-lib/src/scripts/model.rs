@@ -26,13 +26,11 @@ use std::{
     process,
 };
 
+use fluent_uri::{Uri, UriRef};
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 
-use crate::{
-    url::{Url, UrlError},
-    utils::Transfer,
-};
+use crate::utils::Transfer;
 
 use super::ScriptError;
 
@@ -81,7 +79,7 @@ impl BaseScript {
     /// Returns the base script using an absolute URL if it was using a relative one.
     ///
     /// * `base`: base URL.
-    fn resolve_url(&self, base: &Url) -> Result<Self, UrlError> {
+    fn resolve_url(&self, base: &Uri<String>) -> Result<Self, ScriptError> {
         let mut clone = self.clone();
         clone.source = self.source.resolve_url(base)?;
         Ok(clone)
@@ -95,7 +93,10 @@ pub enum ScriptSource {
     /// Script's content.
     Text { content: String },
     /// URL to get the script from.
-    Remote { url: Url },
+    Remote {
+        #[schema(value_type = String)]
+        url: UriRef<String>,
+    },
 }
 
 impl ScriptSource {
@@ -104,14 +105,22 @@ impl ScriptSource {
     /// If it was not using a relative URL, it just returns a clone.
     ///
     /// * `base`: base URL.
-    pub fn resolve_url(&self, base: &Url) -> Result<ScriptSource, UrlError> {
+    pub fn resolve_url(&self, base: &Uri<String>) -> Result<ScriptSource, ScriptError> {
         let resolved = match self {
             Self::Text { content } => Self::Text {
                 content: content.clone(),
             },
-            Self::Remote { url } => Self::Remote {
-                url: base.join(&url.to_string())?,
-            },
+            Self::Remote { url } => {
+                let resolved_url = if url.has_scheme() {
+                    url.clone()
+                } else {
+                    let resolved = url
+                        .resolve_against(base)
+                        .map_err(|e| ScriptError::ResolveUrlError(url.to_string(), e))?;
+                    UriRef::parse(resolved.to_string()).unwrap()
+                };
+                Self::Remote { url: resolved_url }
+            }
         };
         Ok(resolved)
     }
@@ -208,7 +217,7 @@ impl Script {
     /// Resolves the URL of the script.
     ///
     /// This method returns a new `Script` instance with the resolved URL.
-    pub fn resolve_url(&self, base: &Url) -> Result<Script, UrlError> {
+    pub fn resolve_url(&self, base: &Uri<String>) -> Result<Script, ScriptError> {
         let mut clone = self.clone();
         let clone_base = clone.base_mut();
         *clone_base = self.base().resolve_url(base)?;
@@ -443,13 +452,11 @@ impl ScriptRunner {
 
 #[cfg(test)]
 mod test {
+    use fluent_uri::{Uri, UriRef};
     use tempfile::TempDir;
     use tokio::test;
 
-    use crate::{
-        scripts::{BaseScript, PreScript, Script, ScriptSource},
-        url::Url,
-    };
+    use crate::scripts::{BaseScript, PreScript, Script, ScriptSource};
 
     use super::{ScriptsGroup, ScriptsRepository};
 
@@ -522,17 +529,17 @@ mod test {
 
     #[test]
     async fn test_resolve_url_relative() {
-        let base_url = Url::parse("http://example.lan/sles").unwrap();
+        let base_url = Uri::parse("http://example.lan/sles").unwrap().to_owned();
 
         let relative = BaseScript {
             name: "test".to_string(),
             source: ScriptSource::Remote {
-                url: Url::parse("../agama/enable-sshd.sh").unwrap(),
+                url: UriRef::parse("../agama/enable-sshd.sh").unwrap().to_owned(),
             },
         };
         let script = Script::Pre(PreScript { base: relative });
         let resolved = script.resolve_url(&base_url).unwrap();
-        let expected_url = Url::parse("http://example.lan/agama/enable-sshd.sh").unwrap();
+        let expected_url = UriRef::parse("http://example.lan/agama/enable-sshd.sh").unwrap();
 
         assert!(matches!(
             resolved.source(),
@@ -542,12 +549,12 @@ mod test {
         let absolute = BaseScript {
             name: "test".to_string(),
             source: ScriptSource::Remote {
-                url: Url::parse("http://example.orig").unwrap(),
+                url: UriRef::parse("http://example.orig").unwrap().to_owned(),
             },
         };
         let script = Script::Pre(PreScript { base: absolute });
         let resolved = script.resolve_url(&base_url).unwrap();
-        let expected_url = Url::parse("http://example.orig").unwrap();
+        let expected_url = UriRef::parse("http://example.orig").unwrap().to_owned();
 
         assert!(matches!(
             resolved.source(),

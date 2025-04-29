@@ -18,10 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use fluent_uri::error::ResolveError;
 use std::io;
 use thiserror::Error;
 
-use crate::{url::UrlError, utils::TransferError};
+use crate::utils::TransferError;
 
 #[derive(Error, Debug)]
 pub enum ScriptError {
@@ -31,6 +32,6 @@ pub enum ScriptError {
     InputOutputError(#[from] io::Error),
     #[error("Wrong script type")]
     WrongScriptType,
-    #[error("Invalid URL: {0}")]
-    InvalidUrl(#[from] UrlError),
+    #[error("Could not resolve the URL: {0}")]
+    ResolveUrlError(String, #[source] ResolveError),
 }
