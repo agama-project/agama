@@ -47,6 +47,7 @@ pub mod auth;
 pub mod base_http_client;
 pub mod bootloader;
 pub mod error;
+pub mod file_source;
 pub mod files;
 pub mod hostname;
 pub mod install_settings;

@@ -20,17 +20,15 @@
 
 use std::{
     fs,
-    io::Write,
-    os::unix::fs::OpenOptionsExt,
     path::{Path, PathBuf},
     process,
 };
 
-use fluent_uri::{Uri, UriRef};
+use fluent_uri::Uri;
 use serde::{Deserialize, Serialize};
 
 use super::ScriptError;
-use crate::utils::Transfer;
+use crate::file_source::FileSource;
 
 #[derive(
     Debug, Clone, Copy, PartialEq, strum::Display, Serialize, Deserialize, utoipa::ToSchema,
@@ -48,7 +46,7 @@ pub enum ScriptsGroup {
 pub struct BaseScript {
     pub name: String,
     #[serde(flatten)]
-    pub source: ScriptSource,
+    pub source: FileSource,
 }
 
 impl BaseScript {
@@ -58,19 +56,7 @@ impl BaseScript {
     fn write<P: AsRef<Path>>(&self, workdir: P) -> Result<(), ScriptError> {
         let script_path = workdir.as_ref().join(&self.name);
         std::fs::create_dir_all(script_path.parent().unwrap())?;
-
-        let mut file = fs::OpenOptions::new()
-            .create(true)
-            .write(true)
-            .truncate(true)
-            .mode(0o500)
-            .open(&script_path)?;
-
-        match &self.source {
-            ScriptSource::Text { content } => write!(file, "{}", &content)?,
-            ScriptSource::Remote { url } => Transfer::get(&url.to_string(), &mut file)?,
-        };
-
+        self.source.write(&script_path, 0o500)?;
         Ok(())
     }
 
@@ -81,45 +67,6 @@ impl BaseScript {
         let mut clone = self.clone();
         clone.source = self.source.resolve_url(base)?;
         Ok(clone)
-    }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(untagged)]
-pub enum ScriptSource {
-    /// Script's content.
-    Text { content: String },
-    /// URI or relative reference to get the script from.
-    Remote {
-        #[schema(value_type = String, examples("http://example.com/script.sh", "/script.sh"))]
-        url: UriRef<String>,
-    },
-}
-
-impl ScriptSource {
-    /// Returns a new source using an absolute URL if it was using a relative one.
-    ///
-    /// If it was not using a relative URL, it just returns a clone.
-    ///
-    /// * `base`: base URL.
-    pub fn resolve_url(&self, base: &Uri<String>) -> Result<ScriptSource, ScriptError> {
-        let resolved = match self {
-            Self::Text { content } => Self::Text {
-                content: content.clone(),
-            },
-            Self::Remote { url } => {
-                let resolved_url = if url.has_scheme() {
-                    url.clone()
-                } else {
-                    let resolved = url
-                        .resolve_against(base)
-                        .map_err(|e| ScriptError::ResolveUrlError(url.to_string(), e))?;
-                    UriRef::parse(resolved.to_string()).unwrap()
-                };
-                Self::Remote { url: resolved_url }
-            }
-        };
-        Ok(resolved)
     }
 }
 
@@ -182,7 +129,7 @@ impl Script {
     /// Script's source.
     ///
     /// It returns the script source.
-    pub fn source(&self) -> &ScriptSource {
+    pub fn source(&self) -> &FileSource {
         &self.base().source
     }
 
@@ -453,7 +400,10 @@ mod test {
     use tempfile::TempDir;
     use tokio::test;
 
-    use crate::scripts::{BaseScript, PreScript, Script, ScriptSource};
+    use crate::{
+        file_source::FileSource,
+        scripts::{BaseScript, PreScript, Script},
+    };
 
     use super::{ScriptsGroup, ScriptsRepository};
 
@@ -464,7 +414,7 @@ mod test {
 
         let base = BaseScript {
             name: "test".to_string(),
-            source: ScriptSource::Text {
+            source: FileSource::Text {
                 content: "".to_string(),
             },
         };
@@ -486,7 +436,7 @@ mod test {
 
         let base = BaseScript {
             name: "test".to_string(),
-            source: ScriptSource::Text { content },
+            source: FileSource::Text { content },
         };
         let script = Script::Pre(PreScript { base });
         repo.add(script).unwrap();
@@ -513,7 +463,7 @@ mod test {
 
         let base = BaseScript {
             name: "test".to_string(),
-            source: ScriptSource::Text { content },
+            source: FileSource::Text { content },
         };
         let script = Script::Pre(PreScript { base });
         repo.add(script).expect("add the script to the repository");
@@ -530,7 +480,7 @@ mod test {
 
         let relative = BaseScript {
             name: "test".to_string(),
-            source: ScriptSource::Remote {
+            source: FileSource::Remote {
                 url: UriRef::parse("../agama/enable-sshd.sh").unwrap().to_owned(),
             },
         };
@@ -540,12 +490,12 @@ mod test {
 
         assert!(matches!(
             resolved.source(),
-            ScriptSource::Remote { url } if url == &expected_url
+            FileSource::Remote { url } if url == &expected_url
         ));
 
         let absolute = BaseScript {
             name: "test".to_string(),
-            source: ScriptSource::Remote {
+            source: FileSource::Remote {
                 url: UriRef::parse("http://example.orig").unwrap().to_owned(),
             },
         };
@@ -555,21 +505,18 @@ mod test {
 
         assert!(matches!(
             resolved.source(),
-            ScriptSource::Remote { url } if url == &expected_url
+            FileSource::Remote { url } if url == &expected_url
         ));
 
         let text = BaseScript {
             name: "test".to_string(),
-            source: ScriptSource::Text {
+            source: FileSource::Text {
                 content: "#!/bin/bash\necho hello".to_string(),
             },
         };
         let script = Script::Pre(PreScript { base: text });
         let resolved = script.resolve_url(&base_url).unwrap();
 
-        assert!(matches!(
-            resolved.source(),
-            ScriptSource::Text { content: _ }
-        ));
+        assert!(matches!(resolved.source(), FileSource::Text { content: _ }));
     }
 }
