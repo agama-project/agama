@@ -22,8 +22,10 @@
 
 use serde_json::value::RawValue;
 
-use crate::{base_http_client::{BaseHTTPClient, BaseHTTPClientError}, storage::StorageSettings};
-
+use crate::{
+    base_http_client::{BaseHTTPClient, BaseHTTPClientError},
+    storage::StorageSettings,
+};
 
 #[derive(Debug, thiserror::Error)]
 pub enum ISCSIHTTPClientError {

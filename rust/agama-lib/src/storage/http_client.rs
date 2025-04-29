@@ -20,8 +20,8 @@
 
 //! Implements a client to access Agama's storage service.
 
-pub mod iscsi;
 pub mod dasd;
+pub mod iscsi;
 
 use crate::{
     base_http_client::{BaseHTTPClient, BaseHTTPClientError},

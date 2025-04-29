@@ -27,7 +27,8 @@ use crate::hostname::model::HostnameSettings;
 use crate::security::settings::SecuritySettings;
 use crate::{
     localization::LocalizationSettings, network::NetworkSettings, product::ProductSettings,
-    scripts::ScriptsConfig, software::SoftwareSettings, users::UserSettings, storage::settings::dasd::DASDConfig
+    scripts::ScriptsConfig, software::SoftwareSettings, storage::settings::dasd::DASDConfig,
+    users::UserSettings,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;

@@ -20,7 +20,10 @@
 
 //! Implements a client to access Agama's iscsi service.
 
-use crate::{base_http_client::{BaseHTTPClient, BaseHTTPClientError}, storage::settings::dasd::DASDConfig};
+use crate::{
+    base_http_client::{BaseHTTPClient, BaseHTTPClientError},
+    storage::settings::dasd::DASDConfig,
+};
 
 #[derive(Debug, thiserror::Error)]
 pub enum DASDHTTPClientError {

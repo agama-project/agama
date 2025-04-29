@@ -117,7 +117,10 @@ async fn get_config(State(state): State<DASDState<'_>>) -> Result<Json<DASDConfi
         (status = OK, description = "Returns DASD config", body=DASDConfig)
     )
 )]
-async fn set_config(State(state): State<DASDState<'_>>, Json(config): Json<DASDConfig>) -> Result<(), Error> {
+async fn set_config(
+    State(state): State<DASDState<'_>>,
+    Json(config): Json<DASDConfig>,
+) -> Result<(), Error> {
     Ok(state.client.set_config(config).await?)
 }
 

@@ -35,7 +35,9 @@ use crate::{
     security::store::{SecurityStore, SecurityStoreError},
     software::{SoftwareStore, SoftwareStoreError},
     storage::{
-        http_client::iscsi::{ISCSIHTTPClient, ISCSIHTTPClientError}, store::dasd::{DASDStore, DASDStoreError}, StorageStore, StorageStoreError
+        http_client::iscsi::{ISCSIHTTPClient, ISCSIHTTPClientError},
+        store::dasd::{DASDStore, DASDStoreError},
+        StorageStore, StorageStoreError,
     },
     users::{UsersStore, UsersStoreError},
 };

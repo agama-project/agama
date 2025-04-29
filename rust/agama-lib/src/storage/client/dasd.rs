@@ -30,7 +30,11 @@ use zbus::{
 
 use crate::{
     error::ServiceError,
-    storage::{model::dasd::DASDDevice, proxies::dasd::ManagerProxy, settings::dasd::{DASDConfig, DASDDeviceConfig, DASDDeviceState}},
+    storage::{
+        model::dasd::DASDDevice,
+        proxies::dasd::ManagerProxy,
+        settings::dasd::{DASDConfig, DASDDeviceConfig, DASDDeviceState},
+    },
 };
 
 /// Client to connect to Agama's D-Bus API for DASD management.
@@ -84,9 +88,12 @@ impl<'a> DASDClient<'a> {
 
     async fn config_activate(&self, config: &DASDConfig) -> Result<(), ServiceError> {
         let pairs = self.config_pairs(config).await?;
-        let to_activate: Vec<&str> = pairs.iter()
-            .filter(|(system, _config)| system.enabled == false )
-            .filter(|(_system, config)| config.state.clone().unwrap_or_default() == DASDDeviceState::Active)
+        let to_activate: Vec<&str> = pairs
+            .iter()
+            .filter(|(system, _config)| system.enabled == false)
+            .filter(|(_system, config)| {
+                config.state.clone().unwrap_or_default() == DASDDeviceState::Active
+            })
             .map(|(system, _config)| system.id.as_str())
             .collect();
         self.enable(&to_activate).await?;
@@ -100,8 +107,9 @@ impl<'a> DASDClient<'a> {
 
     async fn config_format(&self, config: &DASDConfig) -> Result<(), ServiceError> {
         let pairs = self.config_pairs(config).await?;
-        let to_format: Vec<&str> = pairs.iter()
-            .filter(|(system, config)| 
+        let to_format: Vec<&str> = pairs
+            .iter()
+            .filter(|(system, config)| {
                 if config.format == Some(true) {
                     true
                 } else if config.format == None {
@@ -109,7 +117,7 @@ impl<'a> DASDClient<'a> {
                 } else {
                     false
                 }
-            )
+            })
             .map(|(system, _config)| system.id.as_str())
             .collect();
         self.format(&to_format).await?;
@@ -124,13 +132,15 @@ impl<'a> DASDClient<'a> {
 
     async fn config_set_diag(&self, config: &DASDConfig) -> Result<(), ServiceError> {
         let pairs = self.config_pairs(config).await?;
-        let to_enable: Vec<&str> = pairs.iter()
+        let to_enable: Vec<&str> = pairs
+            .iter()
             .filter(|(_system, config)| config.diag == Some(true))
             .map(|(system, _config)| system.id.as_str())
             .collect();
         self.set_diag(&to_enable, true).await?;
 
-        let to_disable: Vec<&str> = pairs.iter()
+        let to_disable: Vec<&str> = pairs
+            .iter()
             .filter(|(_system, config)| config.diag == Some(false))
             .map(|(system, _config)| system.id.as_str())
             .collect();
@@ -144,17 +154,28 @@ impl<'a> DASDClient<'a> {
         Ok(())
     }
 
-    async fn config_pairs(&self, config: &DASDConfig) -> Result<Vec<(DASDDevice, DASDDeviceConfig)>, ServiceError> {
+    async fn config_pairs(
+        &self,
+        config: &DASDConfig,
+    ) -> Result<Vec<(DASDDevice, DASDDeviceConfig)>, ServiceError> {
         let devices = self.devices().await?;
-        let devices_map: HashMap<&str, DASDDevice> = devices.iter()
-            .map( |d| (d.1.id.as_str(), d.1.clone()))
+        let devices_map: HashMap<&str, DASDDevice> = devices
+            .iter()
+            .map(|d| (d.1.id.as_str(), d.1.clone()))
             .collect();
-        config.devices.iter()
-        .map(|c| Ok((
-            devices_map.get(c.channel.as_str()).ok_or(ServiceError::DASDChannelNotFound(c.channel.clone()))?.clone(),
-            c.clone()
-        )))
-        .collect()
+        config
+            .devices
+            .iter()
+            .map(|c| {
+                Ok((
+                    devices_map
+                        .get(c.channel.as_str())
+                        .ok_or(ServiceError::DASDChannelNotFound(c.channel.clone()))?
+                        .clone(),
+                    c.clone(),
+                ))
+            })
+            .collect()
     }
 
     pub async fn probe(&self) -> Result<(), ServiceError> {

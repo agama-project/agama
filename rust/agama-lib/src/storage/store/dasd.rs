@@ -20,7 +20,13 @@
 
 //! Implements the store for the storage settings.
 
-use crate::{base_http_client::BaseHTTPClient, storage::{http_client::dasd::{DASDHTTPClient, DASDHTTPClientError}, settings::dasd::DASDConfig}};
+use crate::{
+    base_http_client::BaseHTTPClient,
+    storage::{
+        http_client::dasd::{DASDHTTPClient, DASDHTTPClientError},
+        settings::dasd::DASDConfig,
+    },
+};
 
 #[derive(Debug, thiserror::Error)]
 #[error("Error processing DASD settings: {0}")]

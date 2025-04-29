@@ -25,7 +25,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct DASDConfig {
-    pub devices: Vec<DASDDeviceConfig>
+    pub devices: Vec<DASDDeviceConfig>,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
