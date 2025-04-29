@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr 29 11:30:59 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Predefine some useful commands in the default bash history for
+  easier use. It can serve also as a hint how to save logs, etc...
+
+-------------------------------------------------------------------
 Tue Apr 29 11:08:16 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Add "/usr/bin/chroot" tool to the initrd to allow manually
