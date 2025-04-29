@@ -30,6 +30,7 @@ module Agama
         include WithFilesystem
         include WithPartitions
         include WithAlias
+        include WithSearch
 
         # MD RAID base name.
         #
