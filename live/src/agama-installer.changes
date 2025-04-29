@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr 29 11:08:16 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Add "/usr/bin/chroot" tool to the initrd to allow manually
+  running the tools from the root image before switching into it
+
+-------------------------------------------------------------------
 Thu Apr 28 16:40:41 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Ensure the persistent NetworkManager connections are copied if 
