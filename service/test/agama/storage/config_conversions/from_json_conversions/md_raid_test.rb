@@ -37,6 +37,7 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::MdRaid do
   describe "#convert" do
     let(:md_raid_json) do
       {
+        alias:      device_alias,
         name:       name,
         level:      level,
         parity:     parity,
@@ -49,6 +50,7 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::MdRaid do
       }
     end
 
+    let(:device_alias) { nil }
     let(:name) { nil }
     let(:level) { nil }
     let(:parity) { nil }
@@ -109,6 +111,7 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::MdRaid do
       end
     end
 
+    include_examples "without alias"
     include_examples "without encryption"
     include_examples "without filesystem"
     include_examples "without ptableType"
@@ -181,6 +184,7 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::MdRaid do
       end
     end
 
+    include_examples "with alias"
     include_examples "with encryption"
     include_examples "with filesystem"
     include_examples "with ptableType"
