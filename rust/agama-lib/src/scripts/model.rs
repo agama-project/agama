@@ -28,11 +28,9 @@ use std::{
 
 use fluent_uri::{Uri, UriRef};
 use serde::{Deserialize, Serialize};
-use serde_with::serde_as;
-
-use crate::utils::Transfer;
 
 use super::ScriptError;
+use crate::utils::Transfer;
 
 #[derive(
     Debug, Clone, Copy, PartialEq, strum::Display, Serialize, Deserialize, utoipa::ToSchema,
