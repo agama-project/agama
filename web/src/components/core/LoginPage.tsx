@@ -109,6 +109,7 @@ user privileges.",
 
             <FormGroup fieldId="password" label={_("Password")}>
               <PasswordInput
+                showKeyboardHint={false}
                 id="password"
                 name="password"
                 value={password}

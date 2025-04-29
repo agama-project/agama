@@ -46,6 +46,29 @@ export type PasswordInputProps = Omit<TextInputProps, "type"> & {
   showKeyboardHint?: boolean;
 };
 
+const KeyboardReminder = () => {
+  const { keymap } = useInstallerL10n();
+  const isCapsLockOn = useKeyLock("CapsLock");
+
+  const [keyboardHintStart, keyboard, keyboardHintEnd] = sprintf(
+    _("Remember you are using [%s] keyboard."),
+    keymap,
+  ).split(/[[\]]/);
+
+  return (
+    <HelperText>
+      <HelperTextItem variant="indeterminate">
+        {keyboardHintStart}{" "}
+        <code>
+          <b>{keyboard}</b>
+        </code>{" "}
+        {keyboardHintEnd}
+      </HelperTextItem>
+      {isCapsLockOn && <HelperTextItem variant="warning">{_("Caps lock is on")}</HelperTextItem>}
+    </HelperText>
+  );
+};
+
 /**
  * Renders a password input field and a toggle button that can be used to reveal
  * and hide the password
@@ -58,9 +81,7 @@ export default function PasswordInput({
   showKeyboardHint = true,
   ...props
 }: PasswordInputProps) {
-  const { keymap } = useInstallerL10n();
   const [showPassword, setShowPassword] = useState(false);
-  const isCapsLockOn = useKeyLock("CapsLock");
   const visibilityIconName = showPassword ? "visibility_off" : "visibility";
 
   if (!id) {
@@ -70,27 +91,9 @@ export default function PasswordInput({
     );
   }
 
-  const [keyboardHintStart, keyboard, keyboardHintEnd] = sprintf(
-    _("Remember you are using [%s] keyboard."),
-    keymap,
-  ).split(/[[\]]/);
-
   return (
     <Stack hasGutter>
-      {showKeyboardHint && (
-        <HelperText>
-          <HelperTextItem variant="indeterminate">
-            {keyboardHintStart}{" "}
-            <code>
-              <b>{keyboard}</b>
-            </code>{" "}
-            {keyboardHintEnd}
-          </HelperTextItem>
-          {isCapsLockOn && (
-            <HelperTextItem variant="warning">{_("Caps lock is on")}</HelperTextItem>
-          )}
-        </HelperText>
-      )}
+      {showKeyboardHint && <KeyboardReminder />}
       <InputGroup>
         <InputGroupItem isFill>
           <TextInput {...props} ref={inputRef} id={id} type={showPassword ? "text" : "password"} />
