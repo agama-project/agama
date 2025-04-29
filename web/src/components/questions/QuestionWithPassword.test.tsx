@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { Question } from "~/types/questions";
 import QuestionWithPassword from "~/components/questions/QuestionWithPassword";
 
@@ -36,7 +36,9 @@ const question: Question = {
 };
 
 const renderQuestion = () =>
-  plainRender(<QuestionWithPassword question={question} answerCallback={answerFn} />);
+  installerRender(<QuestionWithPassword question={question} answerCallback={answerFn} />, {
+    withL10n: true,
+  });
 
 describe("QuestionWithPassword", () => {
   it("renders the question text", () => {
