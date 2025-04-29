@@ -32,13 +32,13 @@ describe Agama::Network do
   let(:fixtures) { File.join(FIXTURES_PATH, "root_dir") }
   let(:hostname_path) { File.join(fixtures, "etc", "hostname") }
   let(:agama_dir) { File.join(rootdir, "run", "agama") }
-  let(:copy_network) { File.join(agama_dir, "copy_network") }
+  let(:not_copy_network) { File.join(agama_dir, "not_copy_network") }
 
   before do
     allow(Yast::Installation).to receive(:destdir).and_return(targetdir)
     stub_const("Agama::Network::HOSTNAME", hostname_path)
     stub_const("Agama::Network::RUN_NM_DIR", File.join(rootdir, "run", "NetworkManager"))
-    stub_const("Agama::Network::COPY_NETWORK", copy_network)
+    stub_const("Agama::Network::NOT_COPY_NETWORK", not_copy_network)
     FileUtils.mkdir_p(agama_dir)
   end
 
@@ -66,14 +66,7 @@ describe Agama::Network do
         FileUtils.touch(File.join(etcdir, "system-connections", "wired.nmconnection"))
       end
 
-      context "and the /run/agama/copy_network file exists" do
-        around do |block|
-          FileUtils.mkdir_p(agama_dir)
-          FileUtils.touch(copy_network)
-          block.call
-          FileUtils.rm_f(copy_network)
-        end
-
+      context "and the /run/agama/not_copy_network file does not exist" do
         it "copies the configuration files" do
           network.install
           expect(File).to exist(
@@ -82,7 +75,14 @@ describe Agama::Network do
         end
       end
 
-      context "and the /run/agama/copy_network file does not exist" do
+      context "and the /run/agama/not_copy_network file exists" do
+        around do |block|
+          FileUtils.mkdir_p(agama_dir)
+          FileUtils.touch(not_copy_network)
+          block.call
+          FileUtils.rm_f(not_copy_network)
+        end
+
         it "does not try to copy any file" do
           expect(FileUtils).to_not receive(:cp_r)
           network.install

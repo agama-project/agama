@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr 28 16:40:41 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Ensure the persistent NetworkManager connections are copied if 
+  not explicitlly disabled (related to gh#agama-project/agama#2291)
+
+-------------------------------------------------------------------
 Mon Apr 28 12:14:51 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed missing drivers in ppc64le initrd, fixes broken

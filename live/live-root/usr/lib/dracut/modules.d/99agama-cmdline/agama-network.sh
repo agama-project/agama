@@ -7,5 +7,5 @@
 
 if _val=$(getargs ip=); then
   mkdir -p /run/agama/
-  : >/run/agama/copy_network
+  : >/run/agama/custom_dracut_network
 fi
