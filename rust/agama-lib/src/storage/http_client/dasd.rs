@@ -41,10 +41,10 @@ impl DASDHTTPClient {
     }
 
     pub async fn get_config(&self) -> Result<Option<DASDConfig>, DASDHTTPClientError> {
-        Ok(self.client.get("/dasd/config").await?)
+        Ok(self.client.get("/storage/dasd/config").await?)
     }
 
     pub async fn set_config(&self, config: &DASDConfig) -> Result<(), DASDHTTPClientError> {
-        Ok(self.client.put_void("/dasd/config", config).await?)
+        Ok(self.client.put_void("/storage/dasd/config", config).await?)
     }
 }
