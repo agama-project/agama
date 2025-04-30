@@ -60,6 +60,8 @@ use handlers::{DeviceHandler, GenericHandler, HdHandler, LabelHandler};
 pub enum TransferError {
     #[error("Could not retrieve the file: {0}")]
     CurlError(#[from] curl::Error),
+    #[error("Could not retrieve '{0}': {1}")]
+    CurlTransferError(String, #[source] curl::Error),
     #[error("Could not parse the URL: {0}")]
     ParseError(#[from] url::ParseError),
     #[error("File not found: {0}")]
