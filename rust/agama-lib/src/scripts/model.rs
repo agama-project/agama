@@ -28,7 +28,7 @@ use fluent_uri::Uri;
 use serde::{Deserialize, Serialize};
 
 use super::ScriptError;
-use crate::file_source::FileSource;
+use crate::file_source::{FileSource, WithFileSource};
 
 #[derive(
     Debug, Clone, Copy, PartialEq, strum::Display, Serialize, Deserialize, utoipa::ToSchema,
@@ -58,15 +58,6 @@ impl BaseScript {
         std::fs::create_dir_all(script_path.parent().unwrap())?;
         self.source.write(&script_path, 0o500)?;
         Ok(())
-    }
-
-    /// Returns the base script using an absolute URL if it was using a relative one.
-    ///
-    /// * `base`: base URL.
-    fn resolve_url(&self, base: &Uri<String>) -> Result<Self, ScriptError> {
-        let mut clone = self.clone();
-        clone.source = self.source.resolve_url(base)?;
-        Ok(clone)
     }
 }
 
@@ -126,13 +117,6 @@ impl Script {
         }
     }
 
-    /// Script's source.
-    ///
-    /// It returns the script source.
-    pub fn source(&self) -> &FileSource {
-        &self.base().source
-    }
-
     /// Runs the script in the given work directory.
     ///
     /// It saves the logs and the exit status of the execution.
@@ -157,15 +141,17 @@ impl Script {
 
         runner.run(&path)
     }
+}
 
-    /// Resolves the URL of the script.
-    ///
-    /// This method returns a new `Script` instance with the resolved URL.
-    pub fn resolve_url(&self, base: &Uri<String>) -> Result<Script, ScriptError> {
-        let mut clone = self.clone();
-        let clone_base = clone.base_mut();
-        *clone_base = self.base().resolve_url(base)?;
-        Ok(clone)
+impl WithFileSource for Script {
+    /// Script's file source.
+    fn file_source(&self) -> &FileSource {
+        &self.base().source
+    }
+
+    /// Mutable script's file source.
+    fn file_source_mut(&mut self) -> &mut FileSource {
+        &mut self.base_mut().source
     }
 }
 
@@ -401,7 +387,7 @@ mod test {
     use tokio::test;
 
     use crate::{
-        file_source::FileSource,
+        file_source::{FileSource, WithFileSource},
         scripts::{BaseScript, PreScript, Script},
     };
 
@@ -489,7 +475,7 @@ mod test {
         let expected_url = UriRef::parse("http://example.lan/agama/enable-sshd.sh").unwrap();
 
         assert!(matches!(
-            resolved.source(),
+            resolved.file_source(),
             FileSource::Remote { url } if url == &expected_url
         ));
 
@@ -504,7 +490,7 @@ mod test {
         let expected_url = UriRef::parse("http://example.orig").unwrap().to_owned();
 
         assert!(matches!(
-            resolved.source(),
+            resolved.file_source(),
             FileSource::Remote { url } if url == &expected_url
         ));
 
@@ -517,6 +503,9 @@ mod test {
         let script = Script::Pre(PreScript { base: text });
         let resolved = script.resolve_url(&base_url).unwrap();
 
-        assert!(matches!(resolved.source(), FileSource::Text { content: _ }));
+        assert!(matches!(
+            resolved.file_source(),
+            FileSource::Text { content: _ }
+        ));
     }
 }

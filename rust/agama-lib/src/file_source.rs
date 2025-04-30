@@ -91,6 +91,25 @@ impl FileSource {
     }
 }
 
+/// Implements an API to work with a file source.
+pub trait WithFileSource: Clone {
+    /// File source.
+    fn file_source(&self) -> &FileSource;
+
+    /// Mutable file source.
+    fn file_source_mut(&mut self) -> &mut FileSource;
+
+    /// Returns a clone using an absolute URL for the file source.
+    ///
+    /// * `base`: base URL.
+    fn resolve_url(&self, base: &Uri<String>) -> Result<Self, FileSourceError> {
+        let mut clone = self.clone();
+        let source = clone.file_source_mut();
+        *source = self.file_source().resolve_url(base)?;
+        Ok(clone)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::{fs::File, io::Write};

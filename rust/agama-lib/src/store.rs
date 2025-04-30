@@ -159,7 +159,7 @@ impl Store {
         context: &StoreContext,
     ) -> Result<(), StoreError> {
         if let Some(scripts) = &settings.scripts {
-            self.scripts.store(scripts, &context).await?;
+            self.scripts.store(scripts, context).await?;
 
             if scripts.pre.as_ref().is_some_and(|s| !s.is_empty()) {
                 self.run_pre_scripts().await?;
@@ -167,7 +167,7 @@ impl Store {
         }
 
         if let Some(files) = &settings.files {
-            self.files.store(files).await?;
+            self.files.store(files, context).await?;
         }
 
         // import the users (esp. the root password) before initializing software,

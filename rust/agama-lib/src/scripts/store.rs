@@ -22,6 +22,7 @@ use fluent_uri::Uri;
 
 use crate::{
     base_http_client::BaseHTTPClient,
+    file_source::{FileSourceError, WithFileSource},
     software::{model::ResolvableType, SoftwareHTTPClient, SoftwareHTTPClientError},
     StoreContext,
 };
@@ -38,6 +39,8 @@ pub enum ScriptsStoreError {
     Script(#[from] ScriptsClientError),
     #[error("Error selecting software: {0}")]
     Software(#[from] SoftwareHTTPClientError),
+    #[error(transparent)]
+    FileSourceError(#[from] FileSourceError),
 }
 
 type ScriptStoreResult<T> = Result<T, ScriptsStoreError>;
@@ -120,7 +123,7 @@ impl ScriptsStore {
         base_url: &Option<Uri<String>>,
     ) -> ScriptStoreResult<()> {
         let resolved = match base_url {
-            Some(source) => script.resolve_url(&source).unwrap(),
+            Some(source) => script.resolve_url(&source)?,
             None => script,
         };
         self.scripts.add_script(resolved).await?;
