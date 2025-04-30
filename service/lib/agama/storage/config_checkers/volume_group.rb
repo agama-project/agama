@@ -35,10 +35,12 @@ module Agama
         # @param storage_config [Storage::Config]
         # @param product_config [Agama::Config]
         def initialize(config, storage_config, product_config)
-          super(storage_config, product_config)
+          super()
 
           textdomain "agama"
           @config = config
+          @storage_config = storage_config
+          @product_config = product_config
         end
 
         # Issues from a volume group config.
@@ -59,6 +61,12 @@ module Agama
         # @return [Configs::VolumeGroup]
         attr_reader :config
 
+        # @return [Storage::Config]
+        attr_reader :storage_config
+
+        # @return [Agama::Config]
+        attr_reader :product_config
+
         # Issue if the volume group name is missing.
         #
         # @return [Issue, nil]
@@ -74,7 +82,7 @@ module Agama
         def logical_volumes_issues
           config.logical_volumes.flat_map do |logical_volume|
             ConfigCheckers::LogicalVolume
-              .new(logical_volume, config, storage_config, product_config)
+              .new(logical_volume, config, product_config)
               .issues
           end
         end
@@ -131,7 +139,7 @@ module Agama
         # @return [Array<Issue>]
         def physical_volumes_encryption_issues
           ConfigCheckers::PhysicalVolumesEncryption
-            .new(config, storage_config, product_config)
+            .new(config)
             .issues
         end
       end

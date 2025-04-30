@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -31,13 +31,13 @@ module Agama
         include Yast::I18n
 
         # @param config [#filesystem]
-        # @param storage_config [Storage::Config]
         # @param product_config [Agama::Config]
-        def initialize(config, storage_config, product_config)
-          super(storage_config, product_config)
+        def initialize(config, product_config)
+          super()
 
           textdomain "agama"
           @config = config
+          @product_config = product_config
         end
 
         # Filesystem config issues.
@@ -56,6 +56,9 @@ module Agama
 
         # @return [#filesystem]
         attr_reader :config
+
+        # @return [Agama::Config]
+        attr_reader :product_config
 
         # @return [Configs::Filesystem, nil]
         def filesystem

@@ -31,9 +31,7 @@ module Agama
         include Yast::I18n
 
         # @param config [Configs::VolumeGroup]
-        # @param storage_config [Storage::Config]
-        # @param product_config [Agama::Config]
-        def initialize(config, storage_config, product_config)
+        def initialize(config)
           super
 
           textdomain "agama"

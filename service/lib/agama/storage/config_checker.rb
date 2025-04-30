@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -61,7 +61,7 @@ module Agama
       #
       # @return [Array<Issue>]
       def boot_issues
-        ConfigCheckers::Boot.new(storage_config, product_config).issues
+        ConfigCheckers::Boot.new(storage_config).issues
       end
 
       # Issues related to the list of filesystems (mount paths)
@@ -81,12 +81,12 @@ module Agama
       # @param config [Configs::Drive]
       # @return [Array<Issue>]
       def drive_issues(config)
-        ConfigCheckers::Drive.new(config, storage_config, product_config).issues
+        ConfigCheckers::Drive.new(config, product_config).issues
       end
 
       # @return [Array<Issue>]
       def volume_groups_issues
-        section_issues = ConfigCheckers::VolumeGroups.new(storage_config, product_config).issues
+        section_issues = ConfigCheckers::VolumeGroups.new(storage_config).issues
         issues = storage_config.volume_groups.flat_map { |v| volume_group_issues(v) }
 
         [

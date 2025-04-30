@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -29,7 +29,7 @@ module Agama
         # @return [Array<Issue>]
         def partitions_issues
           config.partitions.flat_map do |partition_config|
-            ConfigCheckers::Partition.new(partition_config, storage_config, product_config).issues
+            ConfigCheckers::Partition.new(partition_config, product_config).issues
           end
         end
       end
