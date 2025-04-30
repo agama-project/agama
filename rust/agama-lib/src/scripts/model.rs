@@ -55,7 +55,7 @@ impl BaseScript {
     fn write<P: AsRef<Path>>(&self, workdir: P) -> Result<(), ScriptError> {
         let script_path = workdir.as_ref().join(&self.name);
         std::fs::create_dir_all(script_path.parent().unwrap())?;
-        self.source.write(&script_path, 0o500)?;
+        self.source.write(&script_path, 0o700)?;
         Ok(())
     }
 }
