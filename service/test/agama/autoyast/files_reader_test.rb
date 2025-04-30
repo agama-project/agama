@@ -127,5 +127,18 @@ describe Agama::AutoYaST::FilesReader do
         expect(files[0]).to include("url" => file["file_location"])
       end
     end
+
+    context "when a relative location is given" do
+      let(:file) do
+        {
+          "file_location" => "relurl://file.txt"
+        }
+      end
+
+      it "includes the location without the \"relurl://\" prefix" do
+        files = subject.read["files"]
+        expect(files[0]).to include("url" => "file.txt")
+      end
+    end
   end
 end

@@ -74,7 +74,7 @@ module Agama
         return {} if file.nil? || file.empty?
 
         if file.key?("file_location")
-          { "url" => file["file_location"] }
+          { "url" => file["file_location"].delete_prefix("relurl://") }
         elsif file.key?("file_contents")
           { "content" => file["file_contents"] }
         else
