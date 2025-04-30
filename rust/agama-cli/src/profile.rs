@@ -21,10 +21,11 @@
 use crate::show_progress;
 use agama_lib::{
     base_http_client::BaseHTTPClient,
+    context::InstallationContext,
     install_settings::InstallSettings,
     profile::ValidationOutcome,
     utils::{FileFormat, Transfer},
-    Store as SettingsStore, StoreContext,
+    Store as SettingsStore,
 };
 use anyhow::Context;
 use clap::Subcommand;
@@ -245,7 +246,7 @@ async fn import(client: BaseHTTPClient, url_string: String) -> anyhow::Result<()
     // None means the profile is a script and it has been executed
     if let Some(profile_json) = profile_json {
         validate(&client, CliInput::Full(profile_json.clone())).await?;
-        let context = StoreContext {
+        let context = InstallationContext {
             source: url.to_owned(),
         };
         store_settings(client, &profile_json, &context).await?;
@@ -290,11 +291,11 @@ async fn pre_process_profile(
 async fn store_settings(
     client: BaseHTTPClient,
     profile_json: &str,
-    context: &StoreContext,
+    context: &InstallationContext,
 ) -> anyhow::Result<()> {
     let store = SettingsStore::new(client).await?;
-    let settings: InstallSettings = serde_json::from_str(profile_json)?;
-    store.store(&settings, context).await?;
+    let settings = InstallSettings::from_json(profile_json, context)?;
+    store.store(&settings).await?;
     Ok(())
 }
 

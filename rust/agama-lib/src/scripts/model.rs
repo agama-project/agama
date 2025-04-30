@@ -188,6 +188,18 @@ impl TryFrom<Script> for PreScript {
 
 impl WithRunner for PreScript {}
 
+impl WithFileSource for PreScript {
+    /// File source.
+    fn file_source(&self) -> &FileSource {
+        &self.base.source
+    }
+
+    /// Mutable file source.
+    fn file_source_mut(&mut self) -> &mut FileSource {
+        &mut self.base.source
+    }
+}
+
 /// Represents a script that runs after partitioning.
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct PostPartitioningScript {
@@ -213,6 +225,19 @@ impl TryFrom<Script> for PostPartitioningScript {
 }
 
 impl WithRunner for PostPartitioningScript {}
+
+impl WithFileSource for PostPartitioningScript {
+    /// File source.
+    fn file_source(&self) -> &FileSource {
+        &self.base.source
+    }
+
+    /// Mutable file source.
+    fn file_source_mut(&mut self) -> &mut FileSource {
+        &mut self.base.source
+    }
+}
+
 /// Represents a script that runs after the installation finishes.
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct PostScript {
@@ -246,6 +271,18 @@ impl WithRunner for PostScript {
     }
 }
 
+impl WithFileSource for PostScript {
+    /// File source.
+    fn file_source(&self) -> &FileSource {
+        &self.base.source
+    }
+
+    /// Mutable file source.
+    fn file_source_mut(&mut self) -> &mut FileSource {
+        &mut self.base.source
+    }
+}
+
 /// Represents a script that runs during the first boot of the target system,
 /// once the installation is finished.
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
@@ -275,6 +312,18 @@ impl WithRunner for InitScript {
     /// Returns the runner for the script if any.
     fn runner(&self) -> Option<ScriptRunner> {
         None
+    }
+}
+
+impl WithFileSource for InitScript {
+    /// File source.
+    fn file_source(&self) -> &FileSource {
+        &self.base.source
+    }
+
+    /// Mutable file source.
+    fn file_source_mut(&mut self) -> &mut FileSource {
+        &mut self.base.source
     }
 }
 
@@ -472,12 +521,12 @@ mod test {
                 url: UriRef::parse("../agama/enable-sshd.sh").unwrap().to_owned(),
             },
         };
-        let script = Script::Pre(PreScript { base: relative });
-        let resolved = script.resolve_url(&base_url).unwrap();
+        let mut script = Script::Pre(PreScript { base: relative });
+        script.resolve_url(&base_url).unwrap();
         let expected_url = UriRef::parse("http://example.lan/agama/enable-sshd.sh").unwrap();
 
         assert!(matches!(
-            resolved.file_source(),
+            script.file_source(),
             FileSource::Remote { url } if url == &expected_url
         ));
 
@@ -487,12 +536,12 @@ mod test {
                 url: UriRef::parse("http://example.orig").unwrap().to_owned(),
             },
         };
-        let script = Script::Pre(PreScript { base: absolute });
-        let resolved = script.resolve_url(&base_url).unwrap();
+        let mut script = Script::Pre(PreScript { base: absolute });
+        script.resolve_url(&base_url).unwrap();
         let expected_url = UriRef::parse("http://example.orig").unwrap().to_owned();
 
         assert!(matches!(
-            resolved.file_source(),
+            script.file_source(),
             FileSource::Remote { url } if url == &expected_url
         ));
 
@@ -502,11 +551,11 @@ mod test {
                 content: "#!/bin/bash\necho hello".to_string(),
             },
         };
-        let script = Script::Pre(PreScript { base: text });
-        let resolved = script.resolve_url(&base_url).unwrap();
+        let mut script = Script::Pre(PreScript { base: text });
+        script.resolve_url(&base_url).unwrap();
 
         assert!(matches!(
-            resolved.file_source(),
+            script.file_source(),
             FileSource::Text { content: _ }
         ));
     }

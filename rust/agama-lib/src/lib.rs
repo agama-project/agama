@@ -46,6 +46,7 @@
 pub mod auth;
 pub mod base_http_client;
 pub mod bootloader;
+pub mod context;
 pub mod error;
 pub mod file_source;
 pub mod files;
@@ -63,14 +64,14 @@ pub mod storage;
 pub mod users;
 // TODO: maybe expose only clients when we have it?
 pub mod dbus;
+pub mod openapi;
 pub mod progress;
 pub mod proxies;
-mod store;
-pub use store::{Store, StoreContext};
-pub mod openapi;
 pub mod questions;
 pub mod scripts;
 pub mod security;
+mod store;
+pub use store::Store;
 pub mod utils;
 
 use crate::error::ServiceError;

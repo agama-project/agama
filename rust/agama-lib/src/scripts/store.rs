@@ -18,13 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use fluent_uri::Uri;
-
 use crate::{
     base_http_client::BaseHTTPClient,
-    file_source::{FileSourceError, WithFileSource},
+    file_source::FileSourceError,
     software::{model::ResolvableType, SoftwareHTTPClient, SoftwareHTTPClientError},
-    StoreContext,
 };
 
 use super::{
@@ -69,38 +66,31 @@ impl ScriptsStore {
         })
     }
 
-    pub async fn store(
-        &self,
-        settings: &ScriptsConfig,
-        context: &StoreContext,
-    ) -> ScriptStoreResult<()> {
+    pub async fn store(&self, settings: &ScriptsConfig) -> ScriptStoreResult<()> {
         self.scripts.delete_scripts().await?;
 
         if let Some(scripts) = &settings.pre {
             for pre in scripts {
-                self.add_script(pre.clone().into(), &context.source).await?;
+                self.scripts.add_script(pre.clone().into()).await?;
             }
         }
 
         if let Some(scripts) = &settings.post_partitioning {
             for post in scripts {
-                self.add_script(post.clone().into(), &context.source)
-                    .await?;
+                self.scripts.add_script(post.clone().into()).await?;
             }
         }
 
         if let Some(scripts) = &settings.post {
             for post in scripts {
-                self.add_script(post.clone().into(), &context.source)
-                    .await?;
+                self.scripts.add_script(post.clone().into()).await?;
             }
         }
 
         let mut packages = vec![];
         if let Some(scripts) = &settings.init {
             for init in scripts {
-                self.add_script(init.clone().into(), &context.source)
-                    .await?;
+                self.scripts.add_script(init.clone().into()).await?;
             }
             packages.push("agama-scripts");
         }
@@ -108,19 +98,6 @@ impl ScriptsStore {
             .set_resolvables("agama-scripts", ResolvableType::Package, &packages, true)
             .await?;
 
-        Ok(())
-    }
-
-    /// Registers an script.
-    ///
-    /// If it uses a relative URL, it will be resolved against the base URL if given.
-    ///
-    /// * `script`: script definition.
-    /// * `base_url`: base URL to resolve the script URL against.
-    async fn add_script(&self, script: Script, base_url: &Uri<String>) -> ScriptStoreResult<()> {
-        self.scripts
-            .add_script(script.resolve_url(base_url)?)
-            .await?;
         Ok(())
     }
 

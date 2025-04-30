@@ -103,11 +103,10 @@ pub trait WithFileSource: Clone {
     /// Returns a clone using an absolute URL for the file source.
     ///
     /// * `base`: base URL.
-    fn resolve_url(&self, base: &Uri<String>) -> Result<Self, FileSourceError> {
-        let mut clone = self.clone();
-        let source = clone.file_source_mut();
-        *source = self.file_source().resolve_url(base)?;
-        Ok(clone)
+    fn resolve_url(&mut self, base: &Uri<String>) -> Result<(), FileSourceError> {
+        let source = self.file_source_mut();
+        *source = source.resolve_url(base)?;
+        Ok(())
     }
 }
 

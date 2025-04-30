@@ -24,18 +24,12 @@ use super::{
     client::{FilesClient, FilesHTTPClientError},
     model::UserFile,
 };
-use crate::{
-    base_http_client::BaseHTTPClient,
-    file_source::{FileSourceError, WithFileSource},
-    StoreContext,
-};
+use crate::base_http_client::BaseHTTPClient;
 
 #[derive(Debug, thiserror::Error)]
 pub enum FilesStoreError {
     #[error("Error processing files settings: {0}")]
     FilesHTTPClient(#[from] FilesHTTPClientError),
-    #[error(transparent)]
-    FileSourceError(#[from] FileSourceError),
 }
 
 type FilesStoreResult<T> = Result<T, FilesStoreError>;
@@ -63,15 +57,7 @@ impl FilesStore {
     }
 
     /// stores the list of user files via http API
-    pub async fn store(
-        &self,
-        files: &Vec<UserFile>,
-        context: &StoreContext,
-    ) -> FilesStoreResult<()> {
-        let resolved_files = files
-            .iter()
-            .map(|f| f.resolve_url(&context.source))
-            .collect::<Result<Vec<_>, _>>()?;
-        Ok(self.files_client.set_files(&resolved_files).await?)
+    pub async fn store(&self, files: &Vec<UserFile>) -> FilesStoreResult<()> {
+        Ok(self.files_client.set_files(files).await?)
     }
 }

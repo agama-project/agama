@@ -21,8 +21,6 @@
 //! Load/store the settings from/to the D-Bus services.
 // TODO: quickly explain difference between FooSettings and FooStore, with an example
 
-use fluent_uri::Uri;
-
 use crate::{
     base_http_client::BaseHTTPClient,
     bootloader::store::{BootloaderStore, BootloaderStoreError},
@@ -153,13 +151,9 @@ impl Store {
     /// the future but it might be the storage service the responsible for dealing with this.
     ///
     /// * `settings`: installation settings.
-    pub async fn store(
-        &self,
-        settings: &InstallSettings,
-        context: &StoreContext,
-    ) -> Result<(), StoreError> {
+    pub async fn store(&self, settings: &InstallSettings) -> Result<(), StoreError> {
         if let Some(scripts) = &settings.scripts {
-            self.scripts.store(scripts, context).await?;
+            self.scripts.store(scripts).await?;
 
             if scripts.pre.as_ref().is_some_and(|s| !s.is_empty()) {
                 self.run_pre_scripts().await?;
@@ -167,7 +161,7 @@ impl Store {
         }
 
         if let Some(files) = &settings.files {
-            self.files.store(files, context).await?;
+            self.files.store(files).await?;
         }
 
         // import the users (esp. the root password) before initializing software,
@@ -222,23 +216,5 @@ impl Store {
             self.manager_client.probe().await?;
         }
         Ok(())
-    }
-}
-
-// It contains context information for the store.
-#[derive(Debug)]
-pub struct StoreContext {
-    pub source: Uri<String>,
-}
-
-impl StoreContext {
-    /// Sets _source_ to the current directory
-    pub fn from_env() -> Result<Self, StoreError> {
-        let current_path = std::env::current_dir().map_err(|_| StoreError::InvalidStoreContext)?;
-        let url = format!("file://{}", current_path.as_path().display());
-        let url = Uri::parse(url.as_str()).map_err(|_| StoreError::InvalidStoreContext)?;
-        Ok(Self {
-            source: url.to_owned(),
-        })
     }
 }
