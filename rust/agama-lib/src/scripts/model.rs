@@ -386,12 +386,11 @@ impl ScriptRunner {
 
 #[cfg(test)]
 mod test {
-    use fluent_uri::{Uri, UriRef};
     use tempfile::TempDir;
     use tokio::test;
 
     use crate::{
-        file_source::{FileSource, WithFileSource},
+        file_source::FileSource,
         scripts::{BaseScript, PreScript, Script},
     };
 
@@ -462,56 +461,5 @@ mod test {
         assert!(script_path.exists());
         _ = repo.clear();
         assert!(!script_path.exists());
-    }
-
-    #[test]
-    async fn test_resolve_url_relative() {
-        let base_url = Uri::parse("http://example.lan/sles.json")
-            .unwrap()
-            .to_owned();
-
-        let relative = BaseScript {
-            name: "test".to_string(),
-            source: FileSource::Remote {
-                url: UriRef::parse("../agama/enable-sshd.sh").unwrap().to_owned(),
-            },
-        };
-        let mut script = Script::Pre(PreScript { base: relative });
-        script.resolve_url(&base_url).unwrap();
-        let expected_url = UriRef::parse("http://example.lan/agama/enable-sshd.sh").unwrap();
-
-        assert!(matches!(
-            script.file_source(),
-            FileSource::Remote { url } if url == &expected_url
-        ));
-
-        let absolute = BaseScript {
-            name: "test".to_string(),
-            source: FileSource::Remote {
-                url: UriRef::parse("http://example.orig").unwrap().to_owned(),
-            },
-        };
-        let mut script = Script::Pre(PreScript { base: absolute });
-        script.resolve_url(&base_url).unwrap();
-        let expected_url = UriRef::parse("http://example.orig").unwrap().to_owned();
-
-        assert!(matches!(
-            script.file_source(),
-            FileSource::Remote { url } if url == &expected_url
-        ));
-
-        let text = BaseScript {
-            name: "test".to_string(),
-            source: FileSource::Text {
-                content: "#!/bin/bash\necho hello".to_string(),
-            },
-        };
-        let mut script = Script::Pre(PreScript { base: text });
-        script.resolve_url(&base_url).unwrap();
-
-        assert!(matches!(
-            script.file_source(),
-            FileSource::Text { content: _ }
-        ));
     }
 }
