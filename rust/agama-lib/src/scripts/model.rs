@@ -29,6 +29,22 @@ use serde::{Deserialize, Serialize};
 use super::ScriptError;
 use crate::file_source::{FileSource, WithFileSource};
 
+macro_rules! impl_with_file_source {
+    ($struct:ident) => {
+        impl WithFileSource for $struct {
+            /// File source.
+            fn file_source(&self) -> &FileSource {
+                &self.base.source
+            }
+
+            /// Mutable file source.
+            fn file_source_mut(&mut self) -> &mut FileSource {
+                &mut self.base.source
+            }
+        }
+    };
+}
+
 #[derive(
     Debug, Clone, Copy, PartialEq, strum::Display, Serialize, Deserialize, utoipa::ToSchema,
 )]
@@ -142,18 +158,6 @@ impl Script {
     }
 }
 
-impl WithFileSource for Script {
-    /// Script's file source.
-    fn file_source(&self) -> &FileSource {
-        &self.base().source
-    }
-
-    /// Mutable script's file source.
-    fn file_source_mut(&mut self) -> &mut FileSource {
-        &mut self.base_mut().source
-    }
-}
-
 /// Trait to allow getting the runner for a script.
 trait WithRunner {
     /// Returns the runner for the script if any.
@@ -188,17 +192,7 @@ impl TryFrom<Script> for PreScript {
 
 impl WithRunner for PreScript {}
 
-impl WithFileSource for PreScript {
-    /// File source.
-    fn file_source(&self) -> &FileSource {
-        &self.base.source
-    }
-
-    /// Mutable file source.
-    fn file_source_mut(&mut self) -> &mut FileSource {
-        &mut self.base.source
-    }
-}
+impl_with_file_source!(PreScript);
 
 /// Represents a script that runs after partitioning.
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
@@ -226,17 +220,7 @@ impl TryFrom<Script> for PostPartitioningScript {
 
 impl WithRunner for PostPartitioningScript {}
 
-impl WithFileSource for PostPartitioningScript {
-    /// File source.
-    fn file_source(&self) -> &FileSource {
-        &self.base.source
-    }
-
-    /// Mutable file source.
-    fn file_source_mut(&mut self) -> &mut FileSource {
-        &mut self.base.source
-    }
-}
+impl_with_file_source!(PostPartitioningScript);
 
 /// Represents a script that runs after the installation finishes.
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
@@ -271,17 +255,7 @@ impl WithRunner for PostScript {
     }
 }
 
-impl WithFileSource for PostScript {
-    /// File source.
-    fn file_source(&self) -> &FileSource {
-        &self.base.source
-    }
-
-    /// Mutable file source.
-    fn file_source_mut(&mut self) -> &mut FileSource {
-        &mut self.base.source
-    }
-}
+impl_with_file_source!(PostScript);
 
 /// Represents a script that runs during the first boot of the target system,
 /// once the installation is finished.
@@ -315,17 +289,7 @@ impl WithRunner for InitScript {
     }
 }
 
-impl WithFileSource for InitScript {
-    /// File source.
-    fn file_source(&self) -> &FileSource {
-        &self.base.source
-    }
-
-    /// Mutable file source.
-    fn file_source_mut(&mut self) -> &mut FileSource {
-        &mut self.base.source
-    }
-}
+impl_with_file_source!(InitScript);
 
 /// Manages a set of installation scripts.
 ///
