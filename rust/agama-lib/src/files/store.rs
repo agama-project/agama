@@ -24,11 +24,19 @@ use super::{
     client::{FilesClient, FilesHTTPClientError},
     model::UserFile,
 };
-use crate::{base_http_client::BaseHTTPClient, file_source::WithFileSource, StoreContext};
+use crate::{
+    base_http_client::BaseHTTPClient,
+    file_source::{FileSourceError, WithFileSource},
+    StoreContext,
+};
 
 #[derive(Debug, thiserror::Error)]
-#[error("Error processing files settings: {0}")]
-pub struct FilesStoreError(#[from] FilesHTTPClientError);
+pub enum FilesStoreError {
+    #[error("Error processing files settings: {0}")]
+    FilesHTTPClient(#[from] FilesHTTPClientError),
+    #[error(transparent)]
+    FileSourceError(#[from] FileSourceError),
+}
 
 type FilesStoreResult<T> = Result<T, FilesStoreError>;
 
@@ -60,20 +68,10 @@ impl FilesStore {
         files: &Vec<UserFile>,
         context: &StoreContext,
     ) -> FilesStoreResult<()> {
-        let resolved_files = if let Some(base) = &context.source {
-            &files
-                .iter()
-                .filter_map(|file| {
-                    file.resolve_url(&base)
-                        .inspect_err(|e| {
-                            log::warn!("Error processing file {}: {e}", file.destination)
-                        })
-                        .ok()
-                })
-                .collect()
-        } else {
-            files
-        };
+        let resolved_files = files
+            .iter()
+            .map(|f| f.resolve_url(&context.source))
+            .collect::<Result<Vec<_>, _>>()?;
         Ok(self.files_client.set_files(&resolved_files).await?)
     }
 }

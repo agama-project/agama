@@ -226,9 +226,9 @@ impl Store {
 }
 
 // It contains context information for the store.
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct StoreContext {
-    pub source: Option<Uri<String>>,
+    pub source: Uri<String>,
 }
 
 impl StoreContext {
@@ -238,7 +238,7 @@ impl StoreContext {
         let url = format!("file://{}", current_path.as_path().display());
         let url = Uri::parse(url.as_str()).map_err(|_| StoreError::InvalidStoreContext)?;
         Ok(Self {
-            source: Some(url.to_owned()),
+            source: url.to_owned(),
         })
     }
 }

@@ -92,7 +92,7 @@ pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> any
             tokio::spawn(async move {
                 show_progress().await.unwrap();
             });
-            store.store(&result, &StoreContext::default()).await?;
+            store.store(&result, &StoreContext::from_env()?).await?;
             Ok(())
         }
     }

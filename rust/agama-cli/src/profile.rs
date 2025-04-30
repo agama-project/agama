@@ -246,7 +246,7 @@ async fn import(client: BaseHTTPClient, url_string: String) -> anyhow::Result<()
     if let Some(profile_json) = profile_json {
         validate(&client, CliInput::Full(profile_json.clone())).await?;
         let context = StoreContext {
-            source: Some(url.to_owned()),
+            source: url.to_owned(),
         };
         store_settings(client, &profile_json, &context).await?;
     }

@@ -117,22 +117,10 @@ impl ScriptsStore {
     ///
     /// * `script`: script definition.
     /// * `base_url`: base URL to resolve the script URL against.
-    async fn add_script(
-        &self,
-        script: Script,
-        base_url: &Option<Uri<String>>,
-    ) -> ScriptStoreResult<()> {
-        let resolved = match base_url {
-            Some(source) => match script.resolve_url(&source) {
-                Ok(resolved) => resolved,
-                Err(e) => {
-                    log::warn!("Error processing script {}: {e}", script.name());
-                    return Ok(());
-                }
-            },
-            None => script,
-        };
-        self.scripts.add_script(resolved).await?;
+    async fn add_script(&self, script: Script, base_url: &Uri<String>) -> ScriptStoreResult<()> {
+        self.scripts
+            .add_script(script.resolve_url(base_url)?)
+            .await?;
         Ok(())
     }
 
