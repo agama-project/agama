@@ -156,9 +156,6 @@ export default {
   "Authentication by target": [
     "Аутентифікація за ціллю"
   ],
-  "Authentication failed, please try again": [
-    "Помилка автентифікації, спробуйте ще раз"
-  ],
   "Auto LUNs Scan": [
     "Автоматичне сканування LUN"
   ],
@@ -294,12 +291,6 @@ export default {
   "Connect": [
     "З'єднати"
   ],
-  "Connect to a Wi-Fi network": [
-    "Підключитися до мережі Wi-Fi"
-  ],
-  "Connect to hidden network": [
-    "Підключитися до прихованої мережі"
-  ],
   "Connect to iSCSI targets": [
     "Підключення до об'єктів iSCSI"
   ],
@@ -308,12 +299,6 @@ export default {
   ],
   "Connected (%s)": [
     "З'єднано (%s)"
-  ],
-  "Connected to %s": [
-    "Під'єднано до %s"
-  ],
-  "Connecting": [
-    "З'єднання"
   ],
   "Connection actions": [
     "Дії при підключенні"
@@ -408,14 +393,14 @@ export default {
   "Details": [
     "Подробиці"
   ],
+  "Details will appear after the connection is successfully established.": [
+    ""
+  ],
   "Device": [
     "Пристрій"
   ],
   "Discard": [
     "Відмовитись"
-  ],
-  "Disconnect": [
-    "Роз'єднати"
   ],
   "Disconnected": [
     "Роз'єднано"
@@ -494,6 +479,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Excellent signal": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -588,6 +576,12 @@ export default {
   "GiB": [
     "ГіБ"
   ],
+  "Go to network page": [
+    ""
+  ],
+  "Good signal": [
+    ""
+  ],
   "Hide": [
     "Приховати"
   ],
@@ -619,6 +613,12 @@ export default {
   ],
   "IP addresses": [
     "IP-адреси"
+  ],
+  "IPv4": [
+    ""
+  ],
+  "IPv6": [
+    ""
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Якщо для запуску цієї програми використовувався локальний носій, витягніть його перед наступним завантаженням."
@@ -713,8 +713,17 @@ export default {
   "Ip prefix or netmask": [
     "Ip префікс або маска мережі"
   ],
+  "Issue date": [
+    ""
+  ],
+  "Issuer": [
+    ""
+  ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Неможливо встановити систему з поточною конфігурацією. Налаштуйте параметри нижче."
+  ],
+  "It may take some time.": [
+    ""
   ],
   "JFS": [
     "JFS"
@@ -781,6 +790,9 @@ export default {
   ],
   "Logout": [
     "Вихід"
+  ],
+  "MAC": [
+    ""
   ],
   "Main navigation": [
     "Навігація"
@@ -860,23 +872,20 @@ export default {
   "Network": [
     "Мережа"
   ],
+  "Network not found or lost": [
+    ""
+  ],
   "New": [
     "Новий"
   ],
   "No": [
     "Ні"
   ],
-  "No Wi-Fi supported": [
-    "Немає підтримки Wi-Fi"
-  ],
   "No additional partitions will be created": [
     "Додаткові розділи не створюватимуться"
   ],
   "No additional software was selected.": [
     "Додаткове програмне забезпечення не було обрано."
-  ],
-  "No connected yet": [
-    "Ще не під'єднано"
   ],
   "No content found": [
     "Вміст не знайдено"
@@ -901,12 +910,6 @@ export default {
   ],
   "No user defined yet.": [
     "Користувача ще не вказано."
-  ],
-  "No visible Wi-Fi networks found": [
-    "Мережі WiFi не знайдені"
-  ],
-  "No wired connections found": [
-    "Дротові з'єднання не знайдено"
   ],
   "No zFCP controllers found.": [
     "Контролери zFCP не знайдені."
@@ -1028,9 +1031,6 @@ export default {
   "Please, provide its password to log in to the system.": [
     "Будь ласка, вкажіть його пароль для входу в систему."
   ],
-  "Please, review provided settings and try again.": [
-    "Будь ласка, перегляньте надані налаштування та спробуйте ще раз."
-  ],
   "Please, try to activate a zFCP controller.": [
     "Будь ласка, спробуйте активувати контролер zFCP."
   ],
@@ -1121,8 +1121,17 @@ export default {
   "Root user": [
     "Користувач root"
   ],
+  "Routes": [
+    ""
+  ],
   "SD Card": [
     "SD-карта"
+  ],
+  "SHA1 fingerprint": [
+    ""
+  ],
+  "SHA256 fingerprint": [
+    ""
   ],
   "SSID": [
     "Назва мережі"
@@ -1132,6 +1141,9 @@ export default {
   ],
   "Search": [
     "Пошук"
+  ],
+  "Secured network": [
+    ""
   ],
   "Security": [
     "Захист"
@@ -1200,6 +1212,9 @@ export default {
   ],
   "Shrink existing partitions": [
     "Зменшення наявних розділів"
+  ],
+  "Signal strength": [
+    ""
   ],
   "Size": [
     "Розмір"
@@ -1387,9 +1402,6 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "Система не підтримує Wi-Fi з'єднання, ймовірно, через відсутність або відключення обладнання."
   ],
-  "The system has not been configured for connecting to a Wi-Fi network yet.": [
-    "Система ще не налаштована на підключення до мережі Wi-Fi."
-  ],
   "The system will use %s as its default language.": [
     "Система буде використовувати %s як типову мову."
   ],
@@ -1443,6 +1455,9 @@ export default {
   ],
   "Type": [
     "Тип"
+  ],
+  "URL": [
+    ""
   ],
   "Unable to modify the settings": [
     "Не вдається змінити налаштування"
@@ -1546,9 +1561,6 @@ export default {
   "Using transient hostname: %s": [
     "Використання перехідного імені хоста: %s"
   ],
-  "Visible Wi-Fi networks": [
-    "Видимі мережі WiFi"
-  ],
   "Volume group '%s' already exists. Enter a different name.": [
     ""
   ],
@@ -1567,17 +1579,11 @@ export default {
   "Waiting for information about storage configuration": [
     "Очікування інформації про конфігурацію сховища"
   ],
-  "Wi-Fi": [
-    "Wi-Fi"
-  ],
-  "WiFi connection form": [
-    "Форма WiFi з'єднання"
+  "Weak signal": [
+    ""
   ],
   "Will be supported in a future version.": [
     "Буде підтримуватися у наступній версії."
-  ],
-  "Wired": [
-    "Дротове"
   ],
   "XFS": [
     "XFS"
@@ -1597,6 +1603,9 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "Можливо, Ви захочете відкинути ці налаштування і почати з чистого аркуша з простою конфігурацією."
   ],
+  "You will connect to a public network without encryption. Your data may not be secure.": [
+    ""
+  ],
   "ZFCP": [
     "ZFCP"
   ],
@@ -1605,9 +1614,6 @@ export default {
   ],
   "auto selected": [
     "автоматичний вибір"
-  ],
-  "configured": [
-    "налаштовано"
   ],
   "hostname": [
     "ім'я хоста"

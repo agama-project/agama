@@ -174,9 +174,6 @@ export default {
   "Authentication by target": [
     "Authentifizierung durch das Ziel"
   ],
-  "Authentication failed, please try again": [
-    "Authentifizierung fehlgeschlagen, bitte versuchen Sie es erneut"
-  ],
   "Auto LUNs Scan": [
     ""
   ],
@@ -324,9 +321,6 @@ export default {
   "Connect": [
     "Verbinden"
   ],
-  "Connect to hidden network": [
-    "Mit verborgenem Netzwerk verbinden"
-  ],
   "Connect to iSCSI targets": [
     "Mit iSCSI-Zielen verbinden"
   ],
@@ -335,12 +329,6 @@ export default {
   ],
   "Connected (%s)": [
     "Verbunden (%s)"
-  ],
-  "Connected to %s": [
-    "Verbunden mit %s"
-  ],
-  "Connecting": [
-    "Wird verbunden"
   ],
   "Connection actions": [
     "Verbindungsaktionen"
@@ -441,14 +429,14 @@ export default {
   "Details": [
     "Details"
   ],
+  "Details will appear after the connection is successfully established.": [
+    ""
+  ],
   "Device": [
     "Gerät"
   ],
   "Discard": [
     "Verwerfen"
-  ],
-  "Disconnect": [
-    "Trennen"
   ],
   "Disconnected": [
     "Getrennt"
@@ -536,6 +524,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Excellent signal": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -633,6 +624,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Good signal": [
+    ""
+  ],
   "Hide": [
     "Ausblenden"
   ],
@@ -663,6 +657,12 @@ export default {
   ],
   "IP addresses": [
     "IP-Adressen"
+  ],
+  "IPv4": [
+    ""
+  ],
+  "IPv6": [
+    ""
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Wenn ein lokales Medium zur Ausführung dieses Installationsprogramms verwendet wurde, entfernen Sie es vor dem nächsten Start."
@@ -757,8 +757,17 @@ export default {
   "Ip prefix or netmask": [
     "IP-Präfix oder Netzmaske"
   ],
+  "Issue date": [
+    ""
+  ],
+  "Issuer": [
+    ""
+  ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Es ist nicht möglich, das System mit der aktuellen Konfiguration zu installieren. Passen Sie die Einstellungen unten an."
+  ],
+  "It may take some time.": [
+    ""
   ],
   "JFS": [
     "JFS"
@@ -834,6 +843,9 @@ export default {
   ],
   "Logout": [
     "Abmelden"
+  ],
+  "MAC": [
+    ""
   ],
   "Main navigation": [
     "Hauptnavigation"
@@ -919,23 +931,20 @@ export default {
   "Network": [
     "Netzwerk"
   ],
+  "Network not found or lost": [
+    ""
+  ],
   "New": [
     "Neu"
   ],
   "No": [
     "Nein"
   ],
-  "No Wi-Fi supported": [
-    "Kein Wi-Fi unterstützt"
-  ],
   "No additional partitions will be created": [
     "Es werden keine zusätzlichen Partitionen erstellt"
   ],
   "No additional software was selected.": [
     "Es wurde keine zusätzliche Software ausgewählt."
-  ],
-  "No connected yet": [
-    "Noch nicht verbunden"
   ],
   "No content found": [
     "Kein Inhalt gefunden"
@@ -966,9 +975,6 @@ export default {
   ],
   "No user defined yet.": [
     "Noch kein Benutzer definiert."
-  ],
-  "No wired connections found": [
-    "Keine kabelgebundenen Verbindungen gefunden"
   ],
   "No zFCP controllers found.": [
     "Keine zFCP-Controller gefunden."
@@ -1093,9 +1099,6 @@ export default {
   "Please, provide its password to log in to the system.": [
     "Bitte geben Sie das Passwort für die Anmeldung am System an."
   ],
-  "Please, review provided settings and try again.": [
-    "Bitte überprüfen Sie die bereitgestellten Einstellungen und versuchen Sie es erneut."
-  ],
   "Please, try to activate a zFCP controller.": [
     "Bitte versuchen Sie, einen zFCP-Controller zu aktivieren."
   ],
@@ -1186,8 +1189,17 @@ export default {
   "Root user": [
     "Root-Benutzer"
   ],
+  "Routes": [
+    ""
+  ],
   "SD Card": [
     "SD-Karte"
+  ],
+  "SHA1 fingerprint": [
+    ""
+  ],
+  "SHA256 fingerprint": [
+    ""
   ],
   "SSID": [
     "SSID"
@@ -1273,6 +1285,9 @@ export default {
   ],
   "Shrink existing partitions": [
     "Vorhandene Partitionen verkleinern"
+  ],
+  "Signal strength": [
+    ""
   ],
   "Size": [
     "Größe"
@@ -1529,6 +1544,9 @@ export default {
   "Type": [
     "Art"
   ],
+  "URL": [
+    ""
+  ],
   "Unable to modify the settings": [
     "Einstellungen können nicht geändert werden"
   ],
@@ -1655,11 +1673,14 @@ export default {
   "Waiting for information about storage configuration": [
     "Warten auf Informationen zur Speicherkonfiguration"
   ],
+  "Weak signal": [
+    ""
+  ],
   "Will be supported in a future version.": [
     "Wird in einer zukünftigen Version unterstützt werden."
   ],
-  "Wired": [
-    "Kabelgebunden"
+  "Wired connections": [
+    "Kabelgebundene Verbindungen"
   ],
   "XFS": [
     "XFS"
@@ -1679,6 +1700,9 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "Möglicherweise möchten Sie diese Einstellungen verwerfen und mit einer einfachen Konfiguration neu beginnen."
   ],
+  "You will connect to a public network without encryption. Your data may not be secure.": [
+    ""
+  ],
   "ZFCP": [
     "ZFCP"
   ],
@@ -1687,9 +1711,6 @@ export default {
   ],
   "auto selected": [
     "automatisch ausgewählt"
-  ],
-  "configured": [
-    "konfiguriert"
   ],
   "hostname": [
     "Hostname"
