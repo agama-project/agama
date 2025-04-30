@@ -35,6 +35,7 @@ pub enum FileSourceError {
 
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(untagged)]
+/// Text or URL Reference of a config file or a script
 pub enum FileSource {
     /// File content.
     Text { content: String },
@@ -82,7 +83,7 @@ impl FileSource {
             .open(path)?;
 
         match &self {
-            FileSource::Text { content } => write!(file, "{}", &content)?,
+            FileSource::Text { content } => file.write_all(content.as_bytes())?,
             FileSource::Remote { url } => Transfer::get(&url.to_string(), &mut file)?,
         }
 

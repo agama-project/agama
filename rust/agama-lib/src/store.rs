@@ -232,6 +232,7 @@ pub struct StoreContext {
 }
 
 impl StoreContext {
+    /// Sets _source_ to the current directory
     pub fn from_env() -> Result<Self, StoreError> {
         let current_path = std::env::current_dir().map_err(|_| StoreError::InvalidStoreContext)?;
         let url = format!("file://{}", current_path.as_path().display());
