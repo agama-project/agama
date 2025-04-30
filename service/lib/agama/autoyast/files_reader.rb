@@ -86,10 +86,11 @@ module Agama
         res = {}
         return res if file.nil? || file.empty? || !file["file_owner"]
 
-        user, group = file["file_owner"].split(".", 2)
+        # a colon if preferred, but the dot is documented too
+        user, group = file["file_owner"].split(/[:.]/, 2)
 
-        res["user"] = user if user
-        res["group"] = group if group
+        res["user"] = user unless user.to_s.empty?
+        res["group"] = group unless group.to_s.empty?
 
         res
       end
