@@ -220,6 +220,7 @@ pub struct PostScript {
     #[serde(flatten)]
     pub base: BaseScript,
     /// Whether the script should be run in a chroot environment.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub chroot: Option<bool>,
 }
 
