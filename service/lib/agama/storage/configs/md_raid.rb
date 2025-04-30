@@ -61,6 +61,30 @@ module Agama
           initialize_partitions
           @devices = []
         end
+
+        # Minimum number of member devices required by the MD RAID.
+        #
+        # FIXME: The information about the minimum number of devices is provided by the method
+        #   Y2Storage::Md#minimal_number_of_devices, which requires to create a Md instance.
+        #   This information should be available at class level.
+        #
+        # @note: Only raid0, raid1, raid5, raid6 and raid10 are meaningful for a MD RAID config.
+        #
+        # @return [Integer]
+        def min_devices
+          return 0 unless level
+
+          case level.to_sym
+          when :raid0, :raid1, :raid10
+            2
+          when :raid5
+            3
+          when :raid6
+            4
+          else
+            0
+          end
+        end
       end
     end
   end

@@ -32,12 +32,14 @@ describe Agama::Storage::ConfigChecker do
     {
       boot:         boot,
       drives:       drives,
+      mdRaids:      md_raids,
       volumeGroups: volume_groups
     }
   end
 
   let(:boot) { nil }
   let(:drives) { nil }
+  let(:md_raids) { nil }
   let(:volume_groups) { nil }
 
   describe "#issues" do
@@ -83,6 +85,44 @@ describe Agama::Storage::ConfigChecker do
 
     context "if a partition config from a drive is not valid" do
       let(:drives) do
+        [
+          {
+            partitions: [
+              { filesystem: { path: "/" } }
+            ]
+          }
+        ]
+      end
+
+      it "includes the partition issues" do
+        issues = subject.issues
+        expect(issues).to include an_object_having_attributes(
+          error?:      true,
+          kind:        :filesystem,
+          description: "Missing file system type for '/'"
+        )
+      end
+    end
+
+    context "if a MD RAID config is not valid" do
+      let(:md_raids) do
+        [
+          { devices: ["disk1"] }
+        ]
+      end
+
+      it "includes the MD RAID issues" do
+        issues = subject.issues
+        expect(issues).to include an_object_having_attributes(
+          error?:      true,
+          kind:        :no_such_alias,
+          description: /no MD RAID member device with alias 'disk1'/
+        )
+      end
+    end
+
+    context "if a partition config from a MD RAID is not valid" do
+      let(:md_raids) do
         [
           {
             partitions: [
@@ -282,6 +322,12 @@ describe Agama::Storage::ConfigChecker do
           drives:       [
             { alias: "vda" },
             { alias: "vdb" }
+          ],
+          mdRaids:      [
+            {
+              level:   "raid0",
+              devices: ["vda", "vdb"]
+            }
           ],
           volumeGroups: [
             {

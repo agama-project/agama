@@ -632,4 +632,41 @@ describe Agama::Storage::Config do
       expect(subject.with_size).to_not include(*subject.volume_groups)
     end
   end
+
+  describe "#potential_for_md_device" do
+    let(:config_json) do
+      {
+        drives:       [
+          {
+            alias:      "disk1",
+            partitions: [
+              { alias: "p1" },
+              { alias: "p2" }
+            ]
+          },
+          {
+            alias: "disk2"
+          }
+        ],
+        mdRaids:      [
+          {
+            alias:      "md1",
+            partitions: [
+              { alias: "p3" }
+            ]
+          }
+        ],
+        volumeGroups: [
+          logicalVolumes: [
+            { alias: "lv1" }
+          ]
+        ]
+      }
+    end
+
+    it "returns the drives and partitions from drives" do
+      configs = subject.potential_for_md_device
+      expect(configs.map(&:alias)).to contain_exactly("disk1", "disk2", "p1", "p2")
+    end
+  end
 end

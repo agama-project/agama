@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -24,6 +24,7 @@ require "agama/storage/config_checkers/drive"
 require "agama/storage/config_checkers/encryption"
 require "agama/storage/config_checkers/filesystem"
 require "agama/storage/config_checkers/logical_volume"
+require "agama/storage/config_checkers/md_raid"
 require "agama/storage/config_checkers/partition"
 require "agama/storage/config_checkers/physical_volumes_encryption"
 require "agama/storage/config_checkers/search"

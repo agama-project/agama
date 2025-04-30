@@ -156,6 +156,13 @@ module Agama
         drives + md_raids
       end
 
+      # Config objects that could act as MD RAID member devices.
+      #
+      # @return [Array<Configs::Drive, Configs::Partition>]
+      def potential_for_md_device
+        drives + drives.flat_map(&:partitions)
+      end
+
     private
 
       # Whether the device config contains root.
