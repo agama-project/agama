@@ -98,15 +98,6 @@ impl Script {
         }
     }
 
-    fn base_mut(&mut self) -> &mut BaseScript {
-        match self {
-            Script::Pre(inner) => &mut inner.base,
-            Script::PostPartitioning(inner) => &mut inner.base,
-            Script::Post(inner) => &mut inner.base,
-            Script::Init(inner) => &mut inner.base,
-        }
-    }
-
     /// Returns the name of the script.
     pub fn name(&self) -> &str {
         self.base().name.as_str()
