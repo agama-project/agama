@@ -24,7 +24,6 @@ use std::{
     process,
 };
 
-use fluent_uri::Uri;
 use serde::{Deserialize, Serialize};
 
 use super::ScriptError;
