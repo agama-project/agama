@@ -462,7 +462,9 @@ mod test {
 
     #[test]
     async fn test_resolve_url_relative() {
-        let base_url = Uri::parse("http://example.lan/sles.json").unwrap().to_owned();
+        let base_url = Uri::parse("http://example.lan/sles.json")
+            .unwrap()
+            .to_owned();
 
         let relative = BaseScript {
             name: "test".to_string(),

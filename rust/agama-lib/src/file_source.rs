@@ -64,7 +64,7 @@ impl FileSource {
                     let resolved = url
                         .resolve_against(base)
                         .map_err(|e| FileSourceError::ResolveUrlError(url.to_string(), e))?;
-                    UriRef::parse(resolved.to_string()).unwrap()
+                    UriRef::parse(resolved.to_string()).unwrap() // unwrap OK: resolved is already a Uri<String>
                 };
                 Self::Remote { url: resolved_url }
             }
