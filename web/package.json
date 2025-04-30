@@ -99,7 +99,7 @@
   },
   "dependencies": {
     "@date-fns/tz": "^1.1.2",
-    "@material-symbols/svg-400": "^0.29.2",
+    "@material-symbols/svg-400": "^0.31.2",
     "@patternfly/patternfly": "^6.2.3",
     "@patternfly/react-core": "^6.2.2",
     "@patternfly/react-table": "^6.2.2",
