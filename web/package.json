@@ -32,7 +32,7 @@
     "@babel/preset-env": "^7.23.3",
     "@babel/preset-react": "^7.23.3",
     "@eslint/js": "^9.10.0",
-    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.10",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.6.0",
     "@svgr/plugin-jsx": "^8.1.0",
     "@svgr/webpack": "^8.1.0",
     "@testing-library/dom": "^10.4.0",
