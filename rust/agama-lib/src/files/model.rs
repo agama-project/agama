@@ -21,7 +21,7 @@
 //! Implements a data model for Files configuration.
 
 use super::error::FileError;
-use crate::file_source::FileSource;
+use crate::file_source::{FileSource, WithFileSource};
 use serde::{Deserialize, Serialize};
 use std::{path::Path, process};
 
@@ -123,5 +123,17 @@ impl UserFile {
             ));
         }
         Ok(())
+    }
+}
+
+impl WithFileSource for UserFile {
+    /// File source.
+    fn file_source(&self) -> &FileSource {
+        &self.source
+    }
+
+    /// Mutable file source.
+    fn file_source_mut(&mut self) -> &mut FileSource {
+        &mut self.source
     }
 }

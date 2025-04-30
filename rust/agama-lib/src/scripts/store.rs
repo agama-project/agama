@@ -123,7 +123,13 @@ impl ScriptsStore {
         base_url: &Option<Uri<String>>,
     ) -> ScriptStoreResult<()> {
         let resolved = match base_url {
-            Some(source) => script.resolve_url(&source)?,
+            Some(source) => match script.resolve_url(&source) {
+                Ok(resolved) => resolved,
+                Err(e) => {
+                    log::warn!("Error processing script {}: {e}", script.name());
+                    return Ok(());
+                }
+            },
             None => script,
         };
         self.scripts.add_script(resolved).await?;
