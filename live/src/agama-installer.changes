@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr 30 11:14:55 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed locale cleanup to not delete all locales
+- Correctly handle the "zh-Hans" language (bsc#1238584)
+
+-------------------------------------------------------------------
 Tue Apr 29 11:30:59 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Predefine some useful commands in the default bash history for
