@@ -29,6 +29,7 @@ pub struct DASDConfig {
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub enum DASDDeviceState {
     #[default]
     Active,
