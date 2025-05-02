@@ -29,8 +29,6 @@
 //! `cd:`. The support for well-known URLs (e.g., `file:`, `http:`, `https:`, ! `ftp:`, `nfs:`,
 //!  etc.) is implemented using CURL.
 //!
-//! Support for `relurl:` and `repo:` are still missing.
-//!
 //! ## SSL
 //!
 //! YaST support for HTTPS used a custom certificate which was located in
