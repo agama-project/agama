@@ -13,9 +13,9 @@ agama-lib = { path = "../agama-lib" }
 log = "0.4"
 zbus = { version = "5", default-features = false, features = ["tokio"] }
 uuid = { version = "1.10.0", features = ["v4"] }
-thiserror = "1.0.64"
+thiserror = "2.0.12"
 serde = { version = "1.0.210", features = ["derive"] }
-cidr = { version = "0.2.3", features = ["serde"] }
+cidr = { version = "0.3.1", features = ["serde"] }
 tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread"] }
 tokio-stream = "0.1.16"
 gettext-rs = { version = "0.7.1", features = ["gettext-system"] }
@@ -24,7 +24,7 @@ macaddr = { version = "1.0", features = ["serde_std"] }
 async-trait = "0.1.83"
 axum = { version = "0.7.7", features = ["ws"] }
 serde_json = "1.0.128"
-tower-http = { version = "0.5.2", features = [
+tower-http = { version = "0.6.2", features = [
     "compression-br",
     "fs",
     "trace",
@@ -34,10 +34,10 @@ tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 tracing-journald = "0.3.0"
 tracing = "0.1.40"
 clap = { version = "4.5.19", features = ["derive", "wrap_help"] }
-tower = { version = "0.4.13", features = ["util"] }
+tower = { version = "0.5.2", features = ["util"] }
 utoipa = { version = "5.2.0", features = ["axum_extras", "uuid"] }
-config = "0.14.0"
-rand = "0.8.5"
+config = "0.15.11"
+rand = "0.9.1"
 axum-extra = { version = "0.9.4", features = ["cookie", "typed-header"] }
 pam = "0.8.0"
 serde_with = "3.10.0"
@@ -52,7 +52,7 @@ futures-util = { version = "0.3.30", default-features = false, features = [
 ] }
 libsystemd = "0.7.0"
 subprocess = "0.2.9"
-gethostname = "0.4.3"
+gethostname = "1.0.0"
 tokio-util = "0.7.12"
 tempfile = "3.13.0"
 url = "2.5.2"

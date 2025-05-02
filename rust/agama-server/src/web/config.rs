@@ -31,7 +31,7 @@
 //! take precedence.
 
 use config::{Config, ConfigError, File};
-use rand::distributions::{Alphanumeric, DistString};
+use rand::distr::{Alphanumeric, SampleString};
 use serde::Deserialize;
 
 /// Web service configuration.
@@ -44,8 +44,7 @@ pub struct ServiceConfig {
 impl ServiceConfig {
     pub fn load() -> Result<Self, ConfigError> {
         const JWT_SECRET_SIZE: usize = 30;
-        let jwt_secret: String =
-            Alphanumeric.sample_string(&mut rand::thread_rng(), JWT_SECRET_SIZE);
+        let jwt_secret: String = Alphanumeric.sample_string(&mut rand::rng(), JWT_SECRET_SIZE);
 
         let config = Config::builder()
             .set_default("jwt_secret", jwt_secret)?
