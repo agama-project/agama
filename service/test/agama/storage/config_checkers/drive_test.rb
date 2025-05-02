@@ -27,37 +27,55 @@ require "agama/storage/config_checkers/drive"
 describe Agama::Storage::ConfigCheckers::Drive do
   include_context "checker"
 
-  subject { described_class.new(drive_config, product_config) }
+  subject { described_class.new(drive_config, config, product_config) }
 
   let(:config_json) do
     {
-      drives: [
+      drives:       [
         {
+          alias:      device_alias,
           search:     search,
           filesystem: filesystem,
           encryption: encryption,
           partitions: partitions
         }
-      ]
+      ],
+      volumeGroups: volume_groups
     }
   end
 
+  let(:device_alias) { nil }
   let(:search) { nil }
   let(:filesystem) { nil }
   let(:encryption) { nil }
   let(:partitions) { nil }
+  let(:volume_groups) { nil }
 
   let(:drive_config) { config.drives.first }
 
   describe "#issues" do
+    include_examples "alias issues"
     include_examples "search issues"
     include_examples "filesystem issues"
     include_examples "encryption issues"
     include_examples "partitions issues"
 
     context "if the drive is valid" do
-      let(:search) { "/dev/vda" }
-      let(:filesystem) { { path: "/" } }
+      let(:config_json) do
+        {
+          drives:  [
+            {
+              alias: "disk1"
+            }
+          ],
+          mdRaids: [
+            {
+              level:   "raid0",
+              devices: ["disk1"]
+            }
+          ]
+        }
+      end
 
       before { solve_config }
 

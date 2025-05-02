@@ -95,3 +95,25 @@ shared_examples "partitions issues" do
     end
   end
 end
+
+shared_examples "alias issues" do
+  context "if the alias has issues" do
+    let(:device_alias) { "device1" }
+
+    let(:volume_groups) do
+      [
+        { physicalVolumes: [device_alias] },
+        { physicalVolumes: [device_alias] }
+      ]
+    end
+
+    it "includes the alias issues" do
+      issues = subject.issues
+      expect(issues).to include an_object_having_attributes(
+        error?:      true,
+        kind:        :overused_alias,
+        description: /alias '#{device_alias}' is used by more than one/
+      )
+    end
+  end
+end

@@ -27,31 +27,36 @@ require "agama/storage/config_checkers/partition"
 describe Agama::Storage::ConfigCheckers::Partition do
   include_context "checker"
 
-  subject { described_class.new(partition_config, product_config) }
+  subject { described_class.new(partition_config, config, product_config) }
 
   let(:config_json) do
     {
-      drives: [
+      drives:       [
         {
           partitions: [
             {
+              alias:      device_alias,
               search:     search,
               filesystem: filesystem,
               encryption: encryption
             }
           ]
         }
-      ]
+      ],
+      volumeGroups: volume_groups
     }
   end
 
+  let(:device_alias) { nil }
   let(:search) { nil }
   let(:filesystem) { nil }
   let(:encryption) { nil }
+  let(:volume_groups) { nil }
 
   let(:partition_config) { config.drives.first.partitions.first }
 
   describe "#issues" do
+    include_examples "alias issues"
     include_examples "search issues"
     include_examples "filesystem issues"
     include_examples "encryption issues"

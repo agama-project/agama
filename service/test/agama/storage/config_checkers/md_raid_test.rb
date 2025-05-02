@@ -31,30 +31,35 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
 
   let(:config_json) do
     {
-      drives:  [
+      drives:       [
         { alias: "disk1" }
       ],
-      mdRaids: [
+      mdRaids:      [
         {
+          alias:      device_alias,
           level:      level,
           filesystem: filesystem,
           encryption: encryption,
           partitions: partitions,
           devices:    devices
         }
-      ]
+      ],
+      volumeGroups: volume_groups
     }
   end
 
+  let(:device_alias) { nil }
   let(:level) { nil }
   let(:filesystem) { nil }
   let(:encryption) { nil }
   let(:partitions) { nil }
   let(:devices) { nil }
+  let(:volume_groups) { nil }
 
   let(:md_config) { config.md_raids.first }
 
   describe "#issues" do
+    include_examples "alias issues"
     include_examples "filesystem issues"
     include_examples "encryption issues"
     include_examples "partitions issues"
@@ -104,14 +109,21 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
     context "if the MD RAID is valid" do
       let(:config_json) do
         {
-          drives:  [
+          drives:       [
             { alias: "md-disk" },
             { alias: "md-disk" }
           ],
-          mdRaids: [
+          mdRaids:      [
             {
+              alias:   "md",
               level:   "raid0",
               devices: ["md-disk"]
+            }
+          ],
+          volumeGroups: [
+            {
+              name:            "vg",
+              physicalVolumes: ["md"]
             }
           ]
         }

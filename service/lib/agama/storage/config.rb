@@ -163,7 +163,40 @@ module Agama
         drives + drives.flat_map(&:partitions)
       end
 
+      # Configs directly using a device with the given alias.
+      #
+      # @note Devices using the given alias as a target device (e.g., for creating physical volumes)
+      #   are not considered as users because the device is not directly used.
+      #
+      # @param device_alias [String]
+      # @return [Array<Configs::MdRaid, Configs::VolumeGroup>]
+      def users(device_alias)
+        md_users(device_alias) + vg_users(device_alias)
+      end
+
     private
+
+      # MD RAIDs using the given alias as member device.
+      #
+      # @param device_alias [String]
+      # @return [Array<Configs::MdRaid>]
+      def md_users(device_alias)
+        device = potential_for_md_device.find { |d| d.alias?(device_alias) }
+        return [] unless device
+
+        md_raids.select { |m| m.devices.include?(device_alias) }
+      end
+
+      # Volume groups using the given alias as physical volume.
+      #
+      # @param device_alias [String]
+      # @return [Array<Configs::VolumeGroup>]
+      def vg_users(device_alias)
+        device = potential_for_pv.find { |d| d.alias?(device_alias) }
+        return [] unless device
+
+        volume_groups.select { |v| v.physical_volumes.include?(device_alias) }
+      end
 
       # Whether the device config contains root.
       #

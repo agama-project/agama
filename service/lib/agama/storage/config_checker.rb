@@ -83,7 +83,7 @@ module Agama
       # @param config [Configs::Drive]
       # @return [Array<Issue>]
       def drive_issues(config)
-        ConfigCheckers::Drive.new(config, product_config).issues
+        ConfigCheckers::Drive.new(config, storage_config, product_config).issues
       end
 
       # Issues from MD RAIDs.

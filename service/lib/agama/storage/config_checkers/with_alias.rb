@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,18 +19,16 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_checkers/partition"
+require "agama/storage/config_checkers/alias"
 
 module Agama
   module Storage
     module ConfigCheckers
-      # Mixin for partitions issues.
-      module WithPartitions
+      # Mixin for alias issues.
+      module WithAlias
         # @return [Array<Issue>]
-        def partitions_issues
-          config.partitions.flat_map do |partition_config|
-            ConfigCheckers::Partition.new(partition_config, storage_config, product_config).issues
-          end
+        def alias_issues
+          ConfigCheckers::Alias.new(config, storage_config).issues
         end
       end
     end

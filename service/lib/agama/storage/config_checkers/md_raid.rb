@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_checkers/base"
+require "agama/storage/config_checkers/with_alias"
 require "agama/storage/config_checkers/with_encryption"
 require "agama/storage/config_checkers/with_filesystem"
 require "agama/storage/config_checkers/with_partitions"
@@ -31,6 +32,7 @@ module Agama
       # Class for checking a MD RAID config.
       class MdRaid < Base
         include Yast::I18n
+        include WithAlias
         include WithEncryption
         include WithFilesystem
         include WithPartitions
@@ -52,6 +54,7 @@ module Agama
         # @return [Array<Issue>]
         def issues
           [
+            alias_issues,
             filesystem_issues,
             encryption_issues,
             partitions_issues,

@@ -669,4 +669,175 @@ describe Agama::Storage::Config do
       expect(configs.map(&:alias)).to contain_exactly("disk1", "disk2", "p1", "p2")
     end
   end
+
+  describe "#users" do
+    shared_examples "drive users" do |device_alias|
+      let(:config_json) do
+        {
+          drives:       [
+            drive,
+            { alias: "disk2" }
+          ],
+          mdRaids:      md_raids,
+          volumeGroups: volume_groups
+        }
+      end
+
+      let(:md_raids) { nil }
+      let(:volume_groups) { nil }
+
+      context "and it is used as MD member device" do
+        let(:md_raids) do
+          [
+            { devices: [device_alias] },
+            { devices: ["disk2"] }
+          ]
+        end
+
+        it "returns the MD RAID" do
+          users = subject.users(device_alias)
+          expect(users).to contain_exactly(subject.md_raids.first)
+        end
+      end
+
+      context "and it is used as physical volume" do
+        let(:volume_groups) do
+          [
+            { physicalVolumes: [device_alias] },
+            { physicalVolumes: ["disk2"] }
+          ]
+        end
+
+        it "returns the volume group" do
+          users = subject.users(device_alias)
+          expect(users).to contain_exactly(subject.volume_groups.first)
+        end
+      end
+
+      context "and it is used as MD RAID member and physical volume" do
+        let(:md_raids) do
+          [
+            { devices: [device_alias] },
+            { devices: ["disk2"] }
+          ]
+        end
+
+        let(:volume_groups) do
+          [
+            { physicalVolumes: [device_alias] },
+            { physicalVolumes: ["disk2"] }
+          ]
+        end
+
+        it "returns the MD RAID and the volume group" do
+          users = subject.users(device_alias)
+          expect(users).to contain_exactly(
+            subject.md_raids.first,
+            subject.volume_groups.first
+          )
+        end
+      end
+
+      context "and it is not used neither as MD RAID member nor physical volume" do
+        let(:md_raids) do
+          [
+            { devices: [] },
+            { devices: ["disk2"] }
+          ]
+        end
+
+        let(:volume_groups) do
+          [
+            { physicalVolumes: [] },
+            { physicalVolumes: ["disk2"] }
+          ]
+        end
+
+        it "returns an empty list" do
+          users = subject.users(device_alias)
+          expect(users).to eq([])
+        end
+      end
+    end
+
+    shared_examples "md users" do |device_alias|
+      let(:config_json) do
+        {
+          mdRaids:      [
+            md_raid,
+            { alias: "md2" }
+          ],
+          volumeGroups: volume_groups
+        }
+      end
+
+      let(:volume_groups) { nil }
+
+      context "and it is used as physical volume" do
+        let(:volume_groups) do
+          [
+            { physicalVolumes: [device_alias] },
+            { physicalVolumes: ["md2"] }
+          ]
+        end
+
+        it "returns the volume group" do
+          users = subject.users(device_alias)
+          expect(users).to contain_exactly(subject.volume_groups.first)
+        end
+      end
+
+      context "and it is used as MD member device" do
+        let(:config_json) do
+          {
+            mdRaids: [
+              md_raid,
+              { devices: [device_alias] }
+            ]
+          }
+        end
+
+        it "returns an empty list" do
+          users = subject.users(device_alias)
+          expect(users).to eq([])
+        end
+      end
+    end
+
+    context "if there is a drive with the given alias" do
+      let(:drive) { { alias: "disk1" } }
+
+      include_examples "drive users", "disk1"
+    end
+
+    context "if there is a drive with a partition with the given alias" do
+      let(:drive) do
+        {
+          partitions: [
+            { alias: "p1" }
+          ]
+        }
+      end
+
+      include_examples "drive users", "p1"
+    end
+
+    context "if there is a MD RAID with the given alias" do
+      let(:md_raid) { { alias: "md1" } }
+
+      include_examples "md users", "md1"
+    end
+
+    context "if there is a MD RAID with a partition with the given alias" do
+      let(:md_raid) do
+        {
+          partitions: [
+            { alias: "p1" }
+          ]
+        }
+      end
+
+      include_examples "md users", "p1"
+    end
+  end
 end
