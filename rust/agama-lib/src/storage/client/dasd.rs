@@ -138,6 +138,7 @@ impl<'a> DASDClient<'a> {
             .map(|(system, _config)| system.id.as_str())
             .collect();
 
+            eprintln!("DEBUG: to format: {:?}", to_format);
         if !to_format.is_empty() {
             let job_path = self.format(&to_format).await?;
             self.wait_for_format(job_path).await?;
@@ -161,9 +162,11 @@ impl<'a> DASDClient<'a> {
             // active polling with 1 sec sleep for jobs
             sleep(Duration::from_secs(1)).await;
             let jobs = jobs_client.jobs().await?;
+            eprintln!("DEBUG: jobs: {:?}", jobs);
             let job_pair = jobs
                 .iter()
                 .find(|(path, _job)| path.to_string() == job_path);
+            eprintln!("DEBUG: {:?}", job_pair);
             if let Some((_, job)) = job_pair {
                 finished = !job.running;
             } else {
