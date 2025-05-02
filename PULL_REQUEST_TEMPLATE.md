@@ -30,5 +30,13 @@
 *other times they need advertisement and explanation.*
 
 *Look for relevant sections and adjust:*
-- <https://agama-project.github.io/> ([source](https://github.com/agama-project/agama-project.github.io/))
+- The description parts of the [JSON schema][profile.schema.json]
+- Is the CLI affected? See [cli.md][] for a complete overview,
+  change the `///` comments (rust doc)
+  and update the .md with `cargo xtask markdown`
+- <https://agama-project.github.io/> ([source][gh.io])
 - Run: `git ls-files '*.md'`
+
+[cli.md]: https://github.com/agama-project/agama-project.github.io/blob/main/docs/user/cli.md
+[profile.schema.json]: https://github.com/agama-project/agama/blob/master/rust/agama-lib/share/profile.schema.json
+[gh.io]: https://github.com/agama-project/agama-project.github.io/
