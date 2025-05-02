@@ -20,8 +20,9 @@
 
 //! Implements a client to access Agama's D-Bus API related to DASD management.
 
-use std::collections::HashMap;
+use std::{collections::HashMap, time::Duration};
 
+use tokio::time::sleep;
 use zbus::{
     fdo::{IntrospectableProxy, ObjectManagerProxy},
     zvariant::{ObjectPath, OwnedObjectPath},
@@ -30,6 +31,7 @@ use zbus::{
 
 use crate::{
     error::ServiceError,
+    jobs::client::JobsClient,
     storage::{
         model::dasd::DASDDevice,
         proxies::dasd::ManagerProxy,
@@ -43,6 +45,7 @@ pub struct DASDClient<'a> {
     manager_proxy: ManagerProxy<'a>,
     object_manager_proxy: ObjectManagerProxy<'a>,
     introspectable_proxy: IntrospectableProxy<'a>,
+    connection: Connection,
 }
 
 impl<'a> DASDClient<'a> {
@@ -63,6 +66,7 @@ impl<'a> DASDClient<'a> {
             manager_proxy,
             object_manager_proxy,
             introspectable_proxy,
+            connection,
         })
     }
 
@@ -83,6 +87,7 @@ impl<'a> DASDClient<'a> {
         self.config_activate(&config).await?;
         self.config_format(&config).await?;
         self.config_set_diag(&config).await?;
+
         Ok(())
     }
 
@@ -129,13 +134,40 @@ impl<'a> DASDClient<'a> {
             })
             .map(|(system, _config)| system.id.as_str())
             .collect();
-        self.format(&to_format).await?;
 
         if !to_format.is_empty() {
+            let job_path = self.format(&to_format).await?;
+            self.wait_for_format(job_path).await?;
             // reprobe after calling format. TODO: check if it is needed or callbacks take into action and update it automatically
             // also do we need to wait here for finish of format progress?
             self.probe().await?;
         }
+        Ok(())
+    }
+
+    async fn wait_for_format(&self, job_path: String) -> Result<(), ServiceError> {
+        let mut finished = false;
+        let jobs_client = JobsClient::new(
+            self.connection.clone(),
+            "org.opensuse.Agama.Storage1",
+            "/org/opensuse/Agama/Storage1/jobs",
+        )
+        .await?;
+        while !finished {
+            // active polling with 1 sec sleep for jobs
+            sleep(Duration::from_secs(1)).await;
+            let jobs = jobs_client.jobs().await?;
+            let job_pair = jobs
+                .iter()
+                .find(|(path, _job)| path.to_string() == job_path);
+            if let Some((_, job)) = job_pair {
+                finished = !job.running;
+            } else {
+                // job does not exist, so probably finished
+                finished = true;
+            }
+        }
+
         Ok(())
     }
 
