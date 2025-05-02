@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri May  2 07:42:21 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update dependencies (gh#agama-project/agama#2317).
+
+-------------------------------------------------------------------
 Wed Apr 30 08:18:10 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support for relative URLs in files and scripts definitions
