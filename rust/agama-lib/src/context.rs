@@ -28,6 +28,7 @@ pub struct InstallationContextError(String);
 #[derive(Debug)]
 pub struct InstallationContext {
     /// Where the installation settings are from.
+    /// Used for resolving relative URL references.
     pub source: Uri<String>,
 }
 

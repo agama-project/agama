@@ -100,7 +100,8 @@ impl InstallSettings {
         Ok(Self::from_json(&content, context)?)
     }
 
-    /// Reads install settings from a JSON string.
+    /// Reads install settings from a JSON string,
+    /// also resolving relative URLs in the contents.
     ///
     /// - `json`: JSON string.
     /// - `context`: Store context.
