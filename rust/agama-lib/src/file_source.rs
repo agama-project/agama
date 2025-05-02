@@ -84,6 +84,7 @@ impl FileSource {
 
         match &self {
             FileSource::Text { content } => file.write_all(content.as_bytes())?,
+            // Transfer::get will fail if the URL is relative.
             FileSource::Remote { url } => Transfer::get(&url.to_string(), &mut file)?,
         }
 
