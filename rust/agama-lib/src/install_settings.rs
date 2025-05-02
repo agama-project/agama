@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -22,6 +22,8 @@
 //!
 //! This module implements the mechanisms to load and store the installation settings.
 use crate::bootloader::model::BootloaderSettings;
+use crate::context::InstallationContext;
+use crate::file_source::{FileSourceError, WithFileSource};
 use crate::files::model::UserFile;
 use crate::hostname::model::HostnameSettings;
 use crate::security::settings::SecuritySettings;
@@ -29,12 +31,21 @@ use crate::{
     localization::LocalizationSettings, network::NetworkSettings, product::ProductSettings,
     scripts::ScriptsConfig, software::SoftwareSettings, users::UserSettings,
 };
+use fluent_uri::Uri;
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
 use std::default::Default;
-use std::fs::File;
-use std::io::BufReader;
 use std::path::Path;
+
+#[derive(Debug, thiserror::Error)]
+pub enum InstallSettingsError {
+    #[error("I/O error: {0}")]
+    InputOuputError(#[from] std::io::Error),
+    #[error("Could not parse the settings: {0}")]
+    ParseError(#[from] serde_json::Error),
+    #[error(transparent)]
+    FileSourceError(#[from] FileSourceError),
+}
 
 /// Installation settings
 ///
@@ -80,10 +91,44 @@ pub struct InstallSettings {
 }
 
 impl InstallSettings {
-    pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Self, std::io::Error> {
-        let file = File::open(path)?;
-        let reader = BufReader::new(file);
-        let data = serde_json::from_reader(reader)?;
-        Ok(data)
+    /// Returns install settings from a file.
+    pub fn from_file<P: AsRef<Path>>(
+        path: P,
+        context: &InstallationContext,
+    ) -> Result<Self, InstallSettingsError> {
+        let content = std::fs::read_to_string(path)?;
+        Ok(Self::from_json(&content, context)?)
+    }
+
+    /// Reads install settings from a JSON string,
+    /// also resolving relative URLs in the contents.
+    ///
+    /// - `json`: JSON string.
+    /// - `context`: Store context.
+    pub fn from_json(
+        json: &str,
+        context: &InstallationContext,
+    ) -> Result<Self, InstallSettingsError> {
+        let mut settings: InstallSettings = serde_json::from_str(json)?;
+        settings.resolve_urls(&context.source).unwrap();
+        Ok(settings)
+    }
+
+    /// Resolves URLs in the settings.
+    ///
+    // Ideally, the context could be ready when deserializing the settings so
+    // the URLs can be resolved. One possible solution would be to use
+    // [DeserializeSeed](https://docs.rs/serde/1.0.219/serde/de/trait.DeserializeSeed.html).
+    fn resolve_urls(&mut self, source_uri: &Uri<String>) -> Result<(), InstallSettingsError> {
+        if let Some(ref mut scripts) = self.scripts {
+            scripts.resolve_urls(source_uri)?;
+        }
+
+        if let Some(ref mut files) = self.files {
+            for file in files.iter_mut() {
+                file.resolve_url(source_uri)?;
+            }
+        }
+        Ok(())
     }
 }

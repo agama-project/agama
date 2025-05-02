@@ -20,30 +20,16 @@
 
 //! Implements a data model for Files configuration.
 
-use serde::{Deserialize, Serialize};
-use std::fs::OpenOptions;
-use std::io::Write;
-use std::os::unix::fs::OpenOptionsExt;
-use std::path::Path;
-use std::process;
-
-use crate::utils::Transfer;
-
 use super::error::FileError;
-
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(untagged)]
-pub enum FileSource {
-    /// File body directly written
-    Text { content: String },
-    /// URL to get the file from.
-    Remote { url: String },
-}
+use crate::file_source::{FileSource, WithFileSource};
+use serde::{Deserialize, Serialize};
+use std::{path::Path, process};
 
 /// Represents individual settings for single file deployment
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct UserFile {
+    /// File content or URL.
     #[serde(flatten)]
     pub source: FileSource,
     /// Permissions for file
@@ -119,20 +105,7 @@ impl UserFile {
             ));
         }
         // cannot set owner here as user and group can exist only on target destination
-        let mut target = OpenOptions::new()
-            .mode(int_mode)
-            .write(true)
-            .create(true)
-            .open(path)?;
-        match &self.source {
-            FileSource::Remote { url } => {
-                Transfer::get(url, &mut target)?;
-            }
-            FileSource::Text { content } => {
-                target.write_all(content.as_bytes())?;
-            }
-        }
-        target.flush()?;
+        self.source.write(path, int_mode)?;
 
         let mut cmd2 = process::Command::new("chroot");
         cmd2.args([
@@ -150,5 +123,17 @@ impl UserFile {
             ));
         }
         Ok(())
+    }
+}
+
+impl WithFileSource for UserFile {
+    /// File source.
+    fn file_source(&self) -> &FileSource {
+        &self.source
+    }
+
+    /// Mutable file source.
+    fn file_source_mut(&mut self) -> &mut FileSource {
+        &mut self.source
     }
 }

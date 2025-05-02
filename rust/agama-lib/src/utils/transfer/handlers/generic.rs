@@ -23,7 +23,7 @@ use std::io::Write;
 use curl::easy::Easy;
 use url::Url;
 
-use crate::utils::TransferResult;
+use crate::utils::{TransferError, TransferResult};
 
 /// Generic handler to retrieve any URL.
 ///
@@ -40,7 +40,9 @@ impl GenericHandler {
 
         let mut transfer = handle.transfer();
         transfer.write_function(|buf| Ok(out_fd.write(buf).unwrap()))?;
-        transfer.perform()?;
+        transfer
+            .perform()
+            .map_err(|e| TransferError::CurlTransferError(url.to_string(), e))?;
         Ok(())
     }
 }

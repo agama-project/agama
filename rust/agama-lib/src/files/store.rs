@@ -27,8 +27,10 @@ use super::{
 use crate::base_http_client::BaseHTTPClient;
 
 #[derive(Debug, thiserror::Error)]
-#[error("Error processing files settings: {0}")]
-pub struct FilesStoreError(#[from] FilesHTTPClientError);
+pub enum FilesStoreError {
+    #[error("Error processing files settings: {0}")]
+    FilesHTTPClient(#[from] FilesHTTPClientError),
+}
 
 type FilesStoreResult<T> = Result<T, FilesStoreError>;
 
