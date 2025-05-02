@@ -76,11 +76,15 @@ impl<'a> DASDClient<'a> {
         Ok(introspect.contains("org.opensuse.Agama.Storage1.DASD.Manager"))
     }
 
+    /// Returns DASD configuration that can be used by set_config call
     pub async fn get_config(&self) -> Result<DASDConfig, ServiceError> {
         // TODO: implement
         Ok(DASDConfig::default())
     }
 
+    /// applies DASD configuration
+    ///
+    /// Note that it do actions immediatelly. So there is no write method there that apply it.
     pub async fn set_config(&self, config: DASDConfig) -> Result<(), ServiceError> {
         // at first probe to ensure we work on real system info
         self.probe().await?;
@@ -91,19 +95,17 @@ impl<'a> DASDClient<'a> {
         Ok(())
     }
 
+    /// Apply activation or deactivation from config
     async fn config_activate(&self, config: &DASDConfig) -> Result<(), ServiceError> {
         let pairs = self.config_pairs(config).await?;
         let to_activate: Vec<&str> = pairs
             .iter()
             .filter(|(system, _config)| system.enabled == false)
-            .filter(|(_system, config)| {
-                config.state.clone().unwrap_or_default() == DASDDeviceState::Active
-            })
+            .filter(|(_system, config)| config.state.unwrap_or_default() == DASDDeviceState::Active)
             .map(|(system, _config)| system.id.as_str())
             .collect();
         self.enable(&to_activate).await?;
 
-        let pairs = self.config_pairs(config).await?;
         let to_deactivate: Vec<&str> = pairs
             .iter()
             .filter(|(system, _config)| system.enabled == true)
@@ -119,6 +121,7 @@ impl<'a> DASDClient<'a> {
         Ok(())
     }
 
+    /// Apply request for device formatting from config
     async fn config_format(&self, config: &DASDConfig) -> Result<(), ServiceError> {
         let pairs = self.config_pairs(config).await?;
         let to_format: Vec<&str> = pairs
@@ -145,6 +148,7 @@ impl<'a> DASDClient<'a> {
         Ok(())
     }
 
+    /// Wait for format operation to finish
     async fn wait_for_format(&self, job_path: String) -> Result<(), ServiceError> {
         let mut finished = false;
         let jobs_client = JobsClient::new(
@@ -171,6 +175,7 @@ impl<'a> DASDClient<'a> {
         Ok(())
     }
 
+    /// Apply diag flag from config
     async fn config_set_diag(&self, config: &DASDConfig) -> Result<(), ServiceError> {
         let pairs = self.config_pairs(config).await?;
         let to_enable: Vec<&str> = pairs
@@ -195,12 +200,13 @@ impl<'a> DASDClient<'a> {
         Ok(())
     }
 
+    /// create vector with pairs of devices on system and devices specification in config
     async fn config_pairs(
         &self,
         config: &DASDConfig,
     ) -> Result<Vec<(DASDDevice, DASDDeviceConfig)>, ServiceError> {
         let devices = self.devices().await?;
-        let devices_map: HashMap<&str, DASDDevice> = devices
+        let mut devices_map: HashMap<&str, DASDDevice> = devices
             .iter()
             .map(|d| (d.1.id.as_str(), d.1.clone()))
             .collect();
@@ -210,9 +216,8 @@ impl<'a> DASDClient<'a> {
             .map(|c| {
                 Ok((
                     devices_map
-                        .get(c.channel.as_str())
-                        .ok_or(ServiceError::DASDChannelNotFound(c.channel.clone()))?
-                        .clone(),
+                        .remove(c.channel.as_str())
+                        .ok_or(ServiceError::DASDChannelNotFound(c.channel.clone()))?,
                     c.clone(),
                 ))
             })

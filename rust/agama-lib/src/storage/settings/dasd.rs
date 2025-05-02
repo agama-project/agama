@@ -28,7 +28,7 @@ pub struct DASDConfig {
     pub devices: Vec<DASDDeviceConfig>,
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum DASDDeviceState {
     #[default]
