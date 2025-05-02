@@ -46,7 +46,7 @@ impl ApiDocBuilder for ScriptsApiDocBuilder {
             .schema_from::<agama_lib::scripts::PostScript>()
             .schema_from::<agama_lib::scripts::PreScript>()
             .schema_from::<agama_lib::scripts::Script>()
-            .schema_from::<agama_lib::scripts::ScriptSource>()
+            .schema_from::<agama_lib::file_source::FileSource>()
             .build()
     }
 }

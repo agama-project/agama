@@ -59,7 +59,7 @@ pub enum ServiceError {
     // FIXME reroute the error to a better place
     #[error("Profile error: {0}")]
     Profile(#[from] ProfileError),
-    #[error("Unsupported SSL Fingeprint algorithm '#{0}'.")]
+    #[error("Unsupported SSL Fingerprint algorithm '#{0}'.")]
     UnsupportedSSLFingerprintAlgorithm(String),
     #[error("DASD with channel '#{0}' not found.")]
     DASDChannelNotFound(String),

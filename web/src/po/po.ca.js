@@ -174,9 +174,6 @@ export default {
   "Authentication by target": [
     "Autenticació per destinació"
   ],
-  "Authentication failed, please try again": [
-    "Hi ha hagut un error d'autenticació. Torneu-ho a provar."
-  ],
   "Auto LUNs Scan": [
     "Escaneig automàtic de LUN"
   ],
@@ -324,12 +321,6 @@ export default {
   "Connect": [
     "Connecta't"
   ],
-  "Connect to a Wi-Fi network": [
-    "Connecteu-vos a una xarxa Wi-Fi"
-  ],
-  "Connect to hidden network": [
-    "Connecta't a una xarxa oculta"
-  ],
   "Connect to iSCSI targets": [
     "Connecta amb objectius iSCSI"
   ],
@@ -338,12 +329,6 @@ export default {
   ],
   "Connected (%s)": [
     "Connectat (%s)"
-  ],
-  "Connected to %s": [
-    "Connectat amb %s"
-  ],
-  "Connecting": [
-    "Connectant"
   ],
   "Connection actions": [
     "Accions de connexió"
@@ -447,14 +432,14 @@ export default {
   "Details": [
     "Detalls"
   ],
+  "Details will appear after the connection is successfully established.": [
+    ""
+  ],
   "Device": [
     "Dispositiu"
   ],
   "Discard": [
     "Descarta'l"
-  ],
-  "Disconnect": [
-    "Desconnecta"
   ],
   "Disconnected": [
     "Desconnectat"
@@ -545,6 +530,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Excellent signal": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -642,6 +630,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Good signal": [
+    ""
+  ],
   "Hide": [
     "Amaga"
   ],
@@ -672,6 +663,12 @@ export default {
   ],
   "IP addresses": [
     "Adreces IP"
+  ],
+  "IPv4": [
+    ""
+  ],
+  "IPv6": [
+    ""
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Si s'ha usat un mitjà local per executar aquest instal·lador, traieu-lo abans de la propera arrencada."
@@ -766,8 +763,17 @@ export default {
   "Ip prefix or netmask": [
     "Prefix IP o màscara de xarxa"
   ],
+  "Issue date": [
+    ""
+  ],
+  "Issuer": [
+    ""
+  ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "No és possible instal·lar el sistema amb la configuració actual. Ajusteu els paràmetres que hi ha a continuació."
+  ],
+  "It may take some time.": [
+    ""
   ],
   "JFS": [
     "JFS"
@@ -843,6 +849,9 @@ export default {
   ],
   "Logout": [
     "Sortida"
+  ],
+  "MAC": [
+    ""
   ],
   "Main navigation": [
     "Navegació principal"
@@ -928,23 +937,20 @@ export default {
   "Network": [
     "Xarxa"
   ],
+  "Network not found or lost": [
+    ""
+  ],
   "New": [
     "Nova"
   ],
   "No": [
     "No"
   ],
-  "No Wi-Fi supported": [
-    "No és compatible amb Wi-Fi."
-  ],
   "No additional partitions will be created": [
     "No es crearan particions addicionals"
   ],
   "No additional software was selected.": [
     "No s'ha seleccionat cap programari addicional."
-  ],
-  "No connected yet": [
-    "Encara no s'ha connetat."
   ],
   "No content found": [
     "No s'ha trobat contingut."
@@ -975,12 +981,6 @@ export default {
   ],
   "No user defined yet.": [
     "Encara no s'ha definit cap usuari."
-  ],
-  "No visible Wi-Fi networks found": [
-    "No s'ha trobat cap xarxa Wi-Fi visible."
-  ],
-  "No wired connections found": [
-    "No s'ha trobat cap connexió amb fil."
   ],
   "No zFCP controllers found.": [
     "No s'ha trobat cap controlador de zFCP."
@@ -1108,9 +1108,6 @@ export default {
   "Please, provide its password to log in to the system.": [
     "Si us plau, proporcioneu-ne la contrasenya per iniciar sessió al sistema."
   ],
-  "Please, review provided settings and try again.": [
-    "Si us plau, reviseu la configuració proporcionada i torneu-ho a provar."
-  ],
   "Please, try to activate a zFCP controller.": [
     "Si us plau, proveu d'activar un controlador de zFCP."
   ],
@@ -1201,8 +1198,17 @@ export default {
   "Root user": [
     "Usuari d'arrel"
   ],
+  "Routes": [
+    ""
+  ],
   "SD Card": [
     "Targeta SD"
+  ],
+  "SHA1 fingerprint": [
+    ""
+  ],
+  "SHA256 fingerprint": [
+    ""
   ],
   "SSID": [
     "SSID"
@@ -1288,6 +1294,9 @@ export default {
   ],
   "Shrink existing partitions": [
     "Encongeix les particions existents"
+  ],
+  "Signal strength": [
+    ""
   ],
   "Size": [
     "Mida"
@@ -1496,9 +1505,6 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "El sistema no admet connexions de wifi, probablement a causa de maquinari que manca o que està inhabilitat."
   ],
-  "The system has not been configured for connecting to a Wi-Fi network yet.": [
-    "El sistema encara no s'ha configurat per connectar-se a una xarxa de wifi."
-  ],
   "The system will use %s as its default language.": [
     "El sistema usarà el %s com a llengua per defecte."
   ],
@@ -1552,6 +1558,9 @@ export default {
   ],
   "Type": [
     "Tipus"
+  ],
+  "URL": [
+    ""
   ],
   "Unable to modify the settings": [
     "No es pot modificar la configuració"
@@ -1661,9 +1670,6 @@ export default {
   "Using transient hostname: %s": [
     "S'usa un nom d'amfitrió transitori: %s"
   ],
-  "Visible Wi-Fi networks": [
-    "Xarxes Wi-Fi visibles"
-  ],
   "Volume group '%s' already exists. Enter a different name.": [
     "El grup de volums %s ja existeix. Introduïu un nom diferent."
   ],
@@ -1682,17 +1688,14 @@ export default {
   "Waiting for information about storage configuration": [
     "Esperant informació sobre la configuració de l'emmagatzematge"
   ],
-  "Wi-Fi": [
-    "Wifi"
-  ],
-  "WiFi connection form": [
-    "Formulari de connexió per WiFi"
+  "Weak signal": [
+    ""
   ],
   "Will be supported in a future version.": [
     "Serà compatible en una versió futura."
   ],
-  "Wired": [
-    "Amb fil"
+  "Wired connections": [
+    "Connexions amb fil"
   ],
   "XFS": [
     "XFS"
@@ -1712,6 +1715,9 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "És possible que vulgueu descartar aquests paràmetres i començar des de zero amb una configuració simple."
   ],
+  "You will connect to a public network without encryption. Your data may not be secure.": [
+    ""
+  ],
   "ZFCP": [
     "ZFCP"
   ],
@@ -1720,9 +1726,6 @@ export default {
   ],
   "auto selected": [
     "seleccionat automàticament"
-  ],
-  "configured": [
-    "configurat"
   ],
   "hostname": [
     "Nom d'amfitrió"

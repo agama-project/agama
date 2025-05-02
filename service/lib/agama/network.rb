@@ -73,7 +73,7 @@ module Agama
 
     HOSTNAME = "/etc/hostname"
     RESOLV = "/etc/resolv.conf"
-    COPY_NETWORK = "/run/agama/copy_network"
+    NOT_COPY_NETWORK = "/run/agama/not_copy_network"
     RESOLV_FLAG = "/run/agama/manage_resolv"
     ETC_NM_DIR = "/etc/NetworkManager"
     RUN_NM_DIR = "/run/NetworkManager"
@@ -94,7 +94,7 @@ module Agama
       copy(HOSTNAME)
 
       return unless Dir.exist?(ETC_NM_DIR)
-      return unless File.exist?(COPY_NETWORK)
+      return if File.exist?(NOT_COPY_NETWORK)
 
       copy_directory(
         File.join(ETC_NM_DIR, "system-connections"),

@@ -20,17 +20,30 @@
 
 use std::{
     fs,
-    io::Write,
-    os::unix::fs::OpenOptionsExt,
     path::{Path, PathBuf},
     process,
 };
 
 use serde::{Deserialize, Serialize};
 
-use crate::utils::Transfer;
-
 use super::ScriptError;
+use crate::file_source::{FileSource, WithFileSource};
+
+macro_rules! impl_with_file_source {
+    ($struct:ident) => {
+        impl WithFileSource for $struct {
+            /// File source.
+            fn file_source(&self) -> &FileSource {
+                &self.base.source
+            }
+
+            /// Mutable file source.
+            fn file_source_mut(&mut self) -> &mut FileSource {
+                &mut self.base.source
+            }
+        }
+    };
+}
 
 #[derive(
     Debug, Clone, Copy, PartialEq, strum::Display, Serialize, Deserialize, utoipa::ToSchema,
@@ -48,37 +61,19 @@ pub enum ScriptsGroup {
 pub struct BaseScript {
     pub name: String,
     #[serde(flatten)]
-    pub source: ScriptSource,
+    pub source: FileSource,
 }
 
 impl BaseScript {
+    /// Writes the script to the given directory.
+    ///
+    /// * `workdir`: directory to write the script to.
     fn write<P: AsRef<Path>>(&self, workdir: P) -> Result<(), ScriptError> {
         let script_path = workdir.as_ref().join(&self.name);
         std::fs::create_dir_all(script_path.parent().unwrap())?;
-
-        let mut file = fs::OpenOptions::new()
-            .create(true)
-            .write(true)
-            .truncate(true)
-            .mode(0o500)
-            .open(&script_path)?;
-
-        match &self.source {
-            ScriptSource::Text { content } => write!(file, "{}", &content)?,
-            ScriptSource::Remote { url } => Transfer::get(url, &mut file)?,
-        };
-
+        self.source.write(&script_path, 0o700)?;
         Ok(())
     }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(untagged)]
-pub enum ScriptSource {
-    /// Script's content.
-    Text { content: String },
-    /// URL to get the script from.
-    Remote { url: String },
 }
 
 /// Represents a script to run as part of the installation process.
@@ -188,6 +183,8 @@ impl TryFrom<Script> for PreScript {
 
 impl WithRunner for PreScript {}
 
+impl_with_file_source!(PreScript);
+
 /// Represents a script that runs after partitioning.
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct PostPartitioningScript {
@@ -213,12 +210,16 @@ impl TryFrom<Script> for PostPartitioningScript {
 }
 
 impl WithRunner for PostPartitioningScript {}
+
+impl_with_file_source!(PostPartitioningScript);
+
 /// Represents a script that runs after the installation finishes.
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct PostScript {
     #[serde(flatten)]
     pub base: BaseScript,
     /// Whether the script should be run in a chroot environment.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub chroot: Option<bool>,
 }
 
@@ -244,6 +245,8 @@ impl WithRunner for PostScript {
         Some(ScriptRunner::new().with_chroot(self.chroot.unwrap_or(true)))
     }
 }
+
+impl_with_file_source!(PostScript);
 
 /// Represents a script that runs during the first boot of the target system,
 /// once the installation is finished.
@@ -276,6 +279,8 @@ impl WithRunner for InitScript {
         None
     }
 }
+
+impl_with_file_source!(InitScript);
 
 /// Manages a set of installation scripts.
 ///
@@ -384,7 +389,10 @@ mod test {
     use tempfile::TempDir;
     use tokio::test;
 
-    use crate::scripts::{BaseScript, PreScript, Script, ScriptSource};
+    use crate::{
+        file_source::FileSource,
+        scripts::{BaseScript, PreScript, Script},
+    };
 
     use super::{ScriptsGroup, ScriptsRepository};
 
@@ -395,7 +403,7 @@ mod test {
 
         let base = BaseScript {
             name: "test".to_string(),
-            source: ScriptSource::Text {
+            source: FileSource::Text {
                 content: "".to_string(),
             },
         };
@@ -417,7 +425,7 @@ mod test {
 
         let base = BaseScript {
             name: "test".to_string(),
-            source: ScriptSource::Text { content },
+            source: FileSource::Text { content },
         };
         let script = Script::Pre(PreScript { base });
         repo.add(script).unwrap();
@@ -444,7 +452,7 @@ mod test {
 
         let base = BaseScript {
             name: "test".to_string(),
-            source: ScriptSource::Text { content },
+            source: FileSource::Text { content },
         };
         let script = Script::Pre(PreScript { base });
         repo.add(script).expect("add the script to the repository");

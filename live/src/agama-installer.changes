@@ -1,4 +1,31 @@
 -------------------------------------------------------------------
+Tue Apr 29 11:30:59 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Predefine some useful commands in the default bash history for
+  easier use. It can serve also as a hint how to save logs, etc...
+
+-------------------------------------------------------------------
+Thu Apr 28 16:40:41 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Ensure the persistent NetworkManager connections are copied if 
+  not explicitlly disabled (related to gh#agama-project/agama#2291)
+
+-------------------------------------------------------------------
+Mon Apr 28 12:14:51 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed missing drivers in ppc64le initrd, fixes broken
+  installation via PXE (bsc#1241887)
+- Removed the workaround for adding the xhci-pci-renesas driver,
+  now it is included in the default dracut drivers
+
+-------------------------------------------------------------------
+Fri Apr 25 14:10:04 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Display Firefox devtool in fullscreen window, display the
+  console by default after pressing F12, display timestamps
+  in console
+
+-------------------------------------------------------------------
 Thu Apr 24 16:40:41 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - bsc#1239777, bsc#1236885 gh#agama-project/agama#2291.

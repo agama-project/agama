@@ -639,8 +639,8 @@
           "type": "string"
         },
         "url": {
-          "title": "Script URL",
-          "description": "URL to fetch the script from"
+          "title": "Script URL reference",
+          "description": "Absolute or relative URL to fetch the script from"
         }
       },
       "required": ["name"],
@@ -667,8 +667,8 @@
           "type": "string"
         },
         "url": {
-          "title": "Script URL",
-          "description": "URL to fetch the script from"
+          "title": "Script URL reference",
+          "description": "Absolute or relative URL to fetch the script from."
         }
       },
       "required": ["name"],
@@ -695,8 +695,8 @@
           "type": "string"
         },
         "url": {
-          "title": "Script URL",
-          "description": "URL to fetch the script from"
+          "title": "Script URL reference",
+          "description": "Absolute or relative URL to fetch the script from."
         },
         "chroot": {
           "title": "Whether it should run in the installed system using a chroot environment",
@@ -728,8 +728,8 @@
           "type": "string"
         },
         "url": {
-          "title": "Script URL",
-          "description": "URL to fetch the script from"
+          "title": "Script URL reference",
+          "description": "Absolute or relative URL to fetch the script from."
         }
       },
       "required": ["name"],
@@ -750,8 +750,8 @@
           "type": "string"
         },
         "url": {
-          "title": "File URL",
-          "description": "URL to fetch the file from"
+          "title": "File URL reference",
+          "description": "Absolute or relative URL to fetch the file from."
         },
         "permissions": {
           "title": "File permissions",

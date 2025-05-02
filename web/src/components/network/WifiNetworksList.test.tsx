@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import WifiNetworksList from "~/components/network/WifiNetworksList";
 import {
@@ -120,31 +120,27 @@ describe("WifiNetworksList", () => {
     it("renders a list of available wifi networks", () => {
       // @ts-expect-error: you need to specify the aria-label
       installerRender(<WifiNetworksList />);
-      screen.getByRole("listitem", { name: "Secured network Network 1 Weak signal" });
-      screen.getByRole("listitem", { name: "Secured network Network 2 Excellent signal" });
-      screen.getByRole("listitem", { name: "Public network Network 3 Good signal" });
+      screen.getByLabelText("Secured network Network 1 Weak signal");
+      screen.getByLabelText("Secured network Network 2 Excellent signal");
+      screen.getByLabelText("Public network Network 3 Good signal");
     });
 
-    it("renders a spinner in network in connecting state", () => {
+    it("renders a spinner for network in connecting state", () => {
       // @ts-expect-error: you need to specify the aria-label
       installerRender(<WifiNetworksList />);
-      const network2 = screen.getByRole("listitem", {
-        name: "Secured network Network 2 Excellent signal",
-      });
-      within(network2).getByRole("progressbar", { name: "Connecting to Network 2" });
+      screen.getByLabelText("Secured network Network 2 Excellent signal");
+      screen.getByRole("progressbar", { name: "Connecting to Network 2" });
     });
 
     describe.skip("and user selects a connected network", () => {
       it("renders basic network information and actions instead of the connection form", async () => {
         // @ts-expect-error: you need to specify the aria-label
         const { user } = installerRender(<WifiNetworksList />);
-        const network1 = screen.getByRole("listitem", {
-          name: "Secured network Network 1 Weak signal",
-        });
+        const network1 = screen.getByLabelText("Secured network Network 1 Weak signal");
         await user.click(network1);
         screen.getByRole("heading", { name: "Connection details" });
         expect(screen.queryByRole("form", { name: "Wi-Fi connection form" })).toBeNull();
-        screen.getByText("192.168.69.201/24");
+        screen.getByLabelText("192.168.69.201/24");
       });
     });
 
@@ -152,9 +148,7 @@ describe("WifiNetworksList", () => {
       it("renders the connection form", async () => {
         // @ts-expect-error: you need to specify the aria-label
         const { user } = installerRender(<WifiNetworksList />);
-        const network2 = screen.getByRole("listitem", {
-          name: "Secured network Network 2 Excellent signal",
-        });
+        const network2 = screen.getByLabelText("Secured network Network 2 Excellent signal");
         await user.click(network2);
         screen.getByRole("heading", { name: "Connect to Network 2" });
         screen.queryByRole("form", { name: "Wi-Fi connection form" });
@@ -167,9 +161,7 @@ describe("WifiNetworksList", () => {
       it("renders the connection form", async () => {
         // @ts-expect-error: you need to specify the aria-label
         const { user } = installerRender(<WifiNetworksList />);
-        const network3 = screen.getByRole("listitem", {
-          name: "Public network Network 3 Good signal",
-        });
+        const network3 = screen.getByLabelText("Public network Network 3 Good signal");
         await user.click(network3);
         screen.getByRole("heading", { name: "Connect to Network 3" });
         screen.queryByRole("form", { name: "Wi-Fi connection form" });

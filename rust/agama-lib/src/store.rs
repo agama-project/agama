@@ -75,6 +75,8 @@ pub enum StoreError {
     ScriptsClient(#[from] ScriptsClientError),
     #[error(transparent)]
     Manager(#[from] ManagerHTTPClientError),
+    #[error("Could not calculate the context")]
+    InvalidStoreContext,
 }
 
 /// Struct that loads/stores the settings from/to the D-Bus services.
@@ -148,7 +150,7 @@ impl Store {
         Ok(settings)
     }
 
-    /// Stores the given installation settings in the D-Bus service
+    /// Stores the given installation settings in the Agama service
     ///
     /// As part of the process it runs pre-scripts and forces a probe if the installation phase is
     /// "config". It causes the storage proposal to be reset. This behavior should be revisited in

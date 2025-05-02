@@ -18,7 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use fluent_uri::Uri;
 use serde::{Deserialize, Serialize};
+
+use crate::file_source::{FileSourceError, WithFileSource};
 
 use super::{InitScript, PostPartitioningScript, PostScript, PreScript};
 
@@ -50,5 +53,28 @@ impl ScriptsConfig {
         } else {
             Some(self)
         }
+    }
+
+    /// Resolve relative URLs in the scripts.
+    ///
+    /// * `base_uri`: The base URI to resolve relative URLs against.
+    pub fn resolve_urls(&mut self, base_uri: &Uri<String>) -> Result<(), FileSourceError> {
+        Self::resolve_urls_for(&mut self.pre, base_uri)?;
+        Self::resolve_urls_for(&mut self.post_partitioning, base_uri)?;
+        Self::resolve_urls_for(&mut self.post, base_uri)?;
+        Self::resolve_urls_for(&mut self.init, base_uri)?;
+        Ok(())
+    }
+
+    fn resolve_urls_for<T: WithFileSource>(
+        scripts: &mut Option<Vec<T>>,
+        base_uri: &Uri<String>,
+    ) -> Result<(), FileSourceError> {
+        if let Some(ref mut scripts) = scripts {
+            for script in scripts {
+                script.resolve_url(&base_uri)?;
+            }
+        }
+        Ok(())
     }
 }

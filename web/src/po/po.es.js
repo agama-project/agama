@@ -174,9 +174,6 @@ export default {
   "Authentication by target": [
     "Autenticación por objetivo"
   ],
-  "Authentication failed, please try again": [
-    "Error de autenticación, inténtelo de nuevo"
-  ],
   "Auto LUNs Scan": [
     "Análisis automático de LUN"
   ],
@@ -324,12 +321,6 @@ export default {
   "Connect": [
     "Conectar"
   ],
-  "Connect to a Wi-Fi network": [
-    "Conectado a una red WIFI"
-  ],
-  "Connect to hidden network": [
-    "Conectar a una red oculta"
-  ],
   "Connect to iSCSI targets": [
     "Conectar a objetivos iSCSI"
   ],
@@ -338,12 +329,6 @@ export default {
   ],
   "Connected (%s)": [
     "Conectado (%s)"
-  ],
-  "Connected to %s": [
-    "Conectado a %s"
-  ],
-  "Connecting": [
-    "Conectando"
   ],
   "Connection actions": [
     "Acciones de conexión"
@@ -447,14 +432,14 @@ export default {
   "Details": [
     "Detalles"
   ],
+  "Details will appear after the connection is successfully established.": [
+    ""
+  ],
   "Device": [
     "Dispositivo"
   ],
   "Discard": [
     "Descartar"
-  ],
-  "Disconnect": [
-    "Desconectar"
   ],
   "Disconnected": [
     "Desconectado"
@@ -545,6 +530,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Excellent signal": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -642,6 +630,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Good signal": [
+    ""
+  ],
   "Hide": [
     "Ocultar"
   ],
@@ -672,6 +663,12 @@ export default {
   ],
   "IP addresses": [
     "Direcciones IP"
+  ],
+  "IPv4": [
+    ""
+  ],
+  "IPv6": [
+    ""
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Si se utilizó un medio local para ejecutar este instalador, expúlselo antes del próximo inicio."
@@ -766,8 +763,17 @@ export default {
   "Ip prefix or netmask": [
     "Prefijo IP o máscara de red"
   ],
+  "Issue date": [
+    ""
+  ],
+  "Issuer": [
+    ""
+  ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "No es posible instalar el sistema con la configuración actual. Ajuste las opciones a continuación."
+  ],
+  "It may take some time.": [
+    ""
   ],
   "JFS": [
     "JFS"
@@ -843,6 +849,9 @@ export default {
   ],
   "Logout": [
     "Cerrar sesión"
+  ],
+  "MAC": [
+    ""
   ],
   "Main navigation": [
     "Navegación principal"
@@ -928,23 +937,20 @@ export default {
   "Network": [
     "Red"
   ],
+  "Network not found or lost": [
+    ""
+  ],
   "New": [
     "Nuevo"
   ],
   "No": [
     "No"
   ],
-  "No Wi-Fi supported": [
-    "Wi-Fi no admitida"
-  ],
   "No additional partitions will be created": [
     "No será creada ninguna partición adicional"
   ],
   "No additional software was selected.": [
     "No se seleccionó software adicional."
-  ],
-  "No connected yet": [
-    "Aún no conectado"
   ],
   "No content found": [
     "No se encontró contenido"
@@ -975,12 +981,6 @@ export default {
   ],
   "No user defined yet.": [
     "Ningún usuario definido todavía."
-  ],
-  "No visible Wi-Fi networks found": [
-    "No se encontraron redes Wi-Fi visibles"
-  ],
-  "No wired connections found": [
-    "No se encontraron conexiones por cable"
   ],
   "No zFCP controllers found.": [
     "No se encontraron controladores zFCP."
@@ -1108,9 +1108,6 @@ export default {
   "Please, provide its password to log in to the system.": [
     "Por favor, proporcione su contraseña para iniciar sesión en el sistema."
   ],
-  "Please, review provided settings and try again.": [
-    "Por favor, revise la configuración proporcionada y vuelva a intentarlo."
-  ],
   "Please, try to activate a zFCP controller.": [
     "Por favor, intente activar un controlador zFCP."
   ],
@@ -1201,8 +1198,17 @@ export default {
   "Root user": [
     "Usuario root"
   ],
+  "Routes": [
+    ""
+  ],
   "SD Card": [
     "Tarjeta SD"
+  ],
+  "SHA1 fingerprint": [
+    ""
+  ],
+  "SHA256 fingerprint": [
+    ""
   ],
   "SSID": [
     "SSID"
@@ -1288,6 +1294,9 @@ export default {
   ],
   "Shrink existing partitions": [
     "Reducir las particiones existentes"
+  ],
+  "Signal strength": [
+    ""
   ],
   "Size": [
     "Tamaño"
@@ -1496,9 +1505,6 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "El sistema no admite conexiones WiFi, probablemente debido a que falta hardware o está deshabilitado."
   ],
-  "The system has not been configured for connecting to a Wi-Fi network yet.": [
-    "El sistema aún no se ha configurado para conectarse a una red WiFi."
-  ],
   "The system will use %s as its default language.": [
     "El sistema utilizará %s como su idioma predeterminado."
   ],
@@ -1552,6 +1558,9 @@ export default {
   ],
   "Type": [
     "Tipo"
+  ],
+  "URL": [
+    ""
   ],
   "Unable to modify the settings": [
     "No es capaz de modificar las opciones"
@@ -1661,9 +1670,6 @@ export default {
   "Using transient hostname: %s": [
     "Utilizando nombre de hospedaje transitivo: %s"
   ],
-  "Visible Wi-Fi networks": [
-    "Redes WIFI visibles"
-  ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Ya existe el grupo '%s' del volumen. Introduzca un nombre diferente."
   ],
@@ -1682,17 +1688,11 @@ export default {
   "Waiting for information about storage configuration": [
     "Esperando información sobre la configuración de almacenamiento"
   ],
-  "Wi-Fi": [
-    "WiFi"
-  ],
-  "WiFi connection form": [
-    "Formulario de conexión WiFi"
+  "Weak signal": [
+    ""
   ],
   "Will be supported in a future version.": [
     "Será compatible en una versión futura."
-  ],
-  "Wired": [
-    "Cableada"
   ],
   "XFS": [
     "XFS"
@@ -1712,6 +1712,9 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "Quizá desea descartar tales opciones y comenzar desde el principio con una configuración sencilla."
   ],
+  "You will connect to a public network without encryption. Your data may not be secure.": [
+    ""
+  ],
   "ZFCP": [
     "ZFCP"
   ],
@@ -1720,9 +1723,6 @@ export default {
   ],
   "auto selected": [
     "seleccionado automáticamente"
-  ],
-  "configured": [
-    "Configurado"
   ],
   "hostname": [
     "nombre-hospedaje"

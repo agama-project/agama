@@ -41,8 +41,9 @@ const DEFAULT_COMMANDS: [(&str, &str); 6] = [
     ("rpm -qa", "rpm-qa"),
 ];
 
-const DEFAULT_PATHS: [&str; 14] = [
+const DEFAULT_PATHS: [&str; 15] = [
     // logs
+    "/var/log/build",
     "/var/log/YaST2",
     "/var/log/zypper.log",
     "/var/log/pbl.log",

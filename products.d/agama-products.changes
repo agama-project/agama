@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Apr 29 14:07:48 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Bump openSUSE Leap 16.0 to Beta 
+
+-------------------------------------------------------------------
 Tue Apr 22 14:27:59 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Add NetworkManager-config-server package to SLES 16.0 and 

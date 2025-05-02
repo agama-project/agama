@@ -174,9 +174,6 @@ export default {
   "Authentication by target": [
     "ターゲットによる認証"
   ],
-  "Authentication failed, please try again": [
-    "認証が失敗しました、やり直してください"
-  ],
   "Auto LUNs Scan": [
     "自動 LUN 検出"
   ],
@@ -324,12 +321,6 @@ export default {
   "Connect": [
     "接続"
   ],
-  "Connect to a Wi-Fi network": [
-    "Wi-Fi ネットワークへの接続"
-  ],
-  "Connect to hidden network": [
-    "ステルスネットワークへの接続"
-  ],
   "Connect to iSCSI targets": [
     "iSCSI ターゲットへの接続"
   ],
@@ -338,12 +329,6 @@ export default {
   ],
   "Connected (%s)": [
     "接続済み (%s)"
-  ],
-  "Connected to %s": [
-    "%s に接続済み"
-  ],
-  "Connecting": [
-    "接続しています"
   ],
   "Connection actions": [
     "接続処理"
@@ -447,14 +432,14 @@ export default {
   "Details": [
     "詳細"
   ],
+  "Details will appear after the connection is successfully established.": [
+    ""
+  ],
   "Device": [
     "デバイス"
   ],
   "Discard": [
     "破棄"
-  ],
-  "Disconnect": [
-    "切断"
   ],
   "Disconnected": [
     "切断済み"
@@ -545,6 +530,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Excellent signal": [
+    ""
   ],
   "Ext2": [
     "ext2"
@@ -642,6 +630,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Good signal": [
+    ""
+  ],
   "Hide": [
     "隠す"
   ],
@@ -671,6 +662,12 @@ export default {
   ],
   "IP addresses": [
     "IP アドレス"
+  ],
+  "IPv4": [
+    ""
+  ],
+  "IPv6": [
+    ""
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "このインストーラの起動に際してローカルメディアを使用している場合は、次回の再起動までの間にメディアを取り出しておいてください。"
@@ -765,8 +762,17 @@ export default {
   "Ip prefix or netmask": [
     "IP プレフィクスもしくはネットマスク"
   ],
+  "Issue date": [
+    ""
+  ],
+  "Issuer": [
+    ""
+  ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "現在の設定ではシステムをインストールすることができません。下記の設定を調整してください。"
+  ],
+  "It may take some time.": [
+    ""
   ],
   "JFS": [
     "JFS"
@@ -842,6 +848,9 @@ export default {
   ],
   "Logout": [
     "ログアウト"
+  ],
+  "MAC": [
+    ""
   ],
   "Main navigation": [
     "メインナビゲーション"
@@ -927,23 +936,20 @@ export default {
   "Network": [
     "ネットワーク"
   ],
+  "Network not found or lost": [
+    ""
+  ],
   "New": [
     "新規"
   ],
   "No": [
     "いいえ"
   ],
-  "No Wi-Fi supported": [
-    "Wi-Fi サポートがありません"
-  ],
   "No additional partitions will be created": [
     "追加パーティションは作成しません"
   ],
   "No additional software was selected.": [
     "追加のソフトウエアは何も選択していません。"
-  ],
-  "No connected yet": [
-    "まだ接続していません"
   ],
   "No content found": [
     "ストレージには何も記録されていないようです"
@@ -974,12 +980,6 @@ export default {
   ],
   "No user defined yet.": [
     "ユーザを設定していません。"
-  ],
-  "No visible Wi-Fi networks found": [
-    "検出された Wi-Fi ネットワークはありません"
-  ],
-  "No wired connections found": [
-    "有線接続が見つかりませんでした"
   ],
   "No zFCP controllers found.": [
     "zFCP コントローラが見つかりませんでした。"
@@ -1107,9 +1107,6 @@ export default {
   "Please, provide its password to log in to the system.": [
     "システムにログインするためのパスワードを入力してください。"
   ],
-  "Please, review provided settings and try again.": [
-    "設定をご確認のうえやり直してください。"
-  ],
   "Please, try to activate a zFCP controller.": [
     "zFCP コントローラの有効化をお試しください。"
   ],
@@ -1200,8 +1197,17 @@ export default {
   "Root user": [
     "root ユーザ"
   ],
+  "Routes": [
+    ""
+  ],
   "SD Card": [
     "SD カード"
+  ],
+  "SHA1 fingerprint": [
+    ""
+  ],
+  "SHA256 fingerprint": [
+    ""
   ],
   "SSID": [
     "SSID"
@@ -1286,6 +1292,9 @@ export default {
   ],
   "Shrink existing partitions": [
     "既存のパーティションを縮小する"
+  ],
+  "Signal strength": [
+    ""
   ],
   "Size": [
     "サイズ"
@@ -1494,9 +1503,6 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "このシステムは WiFi 接続には対応していません。無線ハードウエアが存在していないか、無効化されているものと思われます。"
   ],
-  "The system has not been configured for connecting to a Wi-Fi network yet.": [
-    "このシステムでは、まだ WiFi ネットワークへの接続設定を実施していません。"
-  ],
   "The system will use %s as its default language.": [
     "システムは %s を既定の言語として使用します。"
   ],
@@ -1550,6 +1556,9 @@ export default {
   ],
   "Type": [
     "種類"
+  ],
+  "URL": [
+    ""
   ],
   "Unable to modify the settings": [
     "設定を変更できませんでした"
@@ -1659,9 +1668,6 @@ export default {
   "Using transient hostname: %s": [
     "暫定的なホスト名を使用しています: %s"
   ],
-  "Visible Wi-Fi networks": [
-    "検出された Wi-Fi ネットワーク"
-  ],
   "Volume group '%s' already exists. Enter a different name.": [
     "ボリュームグループ '%s' は既に存在しています。別の名前を入力してください。"
   ],
@@ -1680,17 +1686,14 @@ export default {
   "Waiting for information about storage configuration": [
     "ストレージ設定に関する情報を待機しています"
   ],
-  "Wi-Fi": [
-    "Wi-Fi"
-  ],
-  "WiFi connection form": [
-    "WiFi 接続フォーム"
+  "Weak signal": [
+    ""
   ],
   "Will be supported in a future version.": [
     "将来のバージョンでサポートされる予定です。"
   ],
-  "Wired": [
-    "有線"
+  "Wired connections": [
+    "有線接続"
   ],
   "XFS": [
     "XFS"
@@ -1710,6 +1713,9 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "これらの設定を破棄してシンプルな設定からやり直すこともできます。"
   ],
+  "You will connect to a public network without encryption. Your data may not be secure.": [
+    ""
+  ],
   "ZFCP": [
     "ZFCP"
   ],
@@ -1718,9 +1724,6 @@ export default {
   ],
   "auto selected": [
     "自動選択済み"
-  ],
-  "configured": [
-    "設定済み"
   ],
   "hostname": [
     "ホスト名"

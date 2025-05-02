@@ -174,9 +174,6 @@ export default {
   "Authentication by target": [
     "Autentisering av mål"
   ],
-  "Authentication failed, please try again": [
-    "Autentiseringen misslyckades, försök igen"
-  ],
   "Auto LUNs Scan": [
     "Automatisk LUN-skanning"
   ],
@@ -324,12 +321,6 @@ export default {
   "Connect": [
     "Anslut"
   ],
-  "Connect to a Wi-Fi network": [
-    "Anslut till ett Wi-Fi nätverk"
-  ],
-  "Connect to hidden network": [
-    "Anslut till ett dolt nätverk"
-  ],
   "Connect to iSCSI targets": [
     "Anslut till iSCSI mål"
   ],
@@ -338,12 +329,6 @@ export default {
   ],
   "Connected (%s)": [
     "Ansluten (%s)"
-  ],
-  "Connected to %s": [
-    "Ansluten till %s"
-  ],
-  "Connecting": [
-    "Ansluter"
   ],
   "Connection actions": [
     "Anslutningsåtgärder"
@@ -447,14 +432,14 @@ export default {
   "Details": [
     "Detaljer"
   ],
+  "Details will appear after the connection is successfully established.": [
+    ""
+  ],
   "Device": [
     "Enhet"
   ],
   "Discard": [
     "Kasta bort"
-  ],
-  "Disconnect": [
-    "Koppla ifrån"
   ],
   "Disconnected": [
     "Frånkopplad"
@@ -545,6 +530,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Excellent signal": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -642,6 +630,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Good signal": [
+    ""
+  ],
   "Hide": [
     "Dölj"
   ],
@@ -672,6 +663,12 @@ export default {
   ],
   "IP addresses": [
     "IP adresser"
+  ],
+  "IPv4": [
+    ""
+  ],
+  "IPv6": [
+    ""
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Om ett lokalt media användes för att köra det här installationsprogrammet, ta bort det före nästa uppstart."
@@ -766,8 +763,17 @@ export default {
   "Ip prefix or netmask": [
     "IP prefix eller nätmask"
   ],
+  "Issue date": [
+    ""
+  ],
+  "Issuer": [
+    ""
+  ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Det är inte möjligt att installera systemet med den aktuella konfigurationen. Justera inställningarna nedan."
+  ],
+  "It may take some time.": [
+    ""
   ],
   "JFS": [
     "JFS"
@@ -843,6 +849,9 @@ export default {
   ],
   "Logout": [
     "Logga ut"
+  ],
+  "MAC": [
+    ""
   ],
   "Main navigation": [
     "Huvudnavigering"
@@ -928,23 +937,20 @@ export default {
   "Network": [
     "Nätverk"
   ],
+  "Network not found or lost": [
+    ""
+  ],
   "New": [
     "Ny"
   ],
   "No": [
     "Nej"
   ],
-  "No Wi-Fi supported": [
-    "Inget Wi-Fi stöds"
-  ],
   "No additional partitions will be created": [
     "Inga ytterligare partitioner kommer att skapas"
   ],
   "No additional software was selected.": [
     "Ingen ytterligare programvara valdes."
-  ],
-  "No connected yet": [
-    "Inte ansluten ännu"
   ],
   "No content found": [
     "Inget innehåll hittades"
@@ -975,12 +981,6 @@ export default {
   ],
   "No user defined yet.": [
     "Ingen användare definierad ännu."
-  ],
-  "No visible Wi-Fi networks found": [
-    "Inga synliga WiFi nätverk hittades"
-  ],
-  "No wired connections found": [
-    "Inga trådbundna anslutningar hittades"
   ],
   "No zFCP controllers found.": [
     "Inga zFCP-kontroller hittades."
@@ -1108,9 +1108,6 @@ export default {
   "Please, provide its password to log in to the system.": [
     "Vänligen ange lösenordet för att logga in på systemet."
   ],
-  "Please, review provided settings and try again.": [
-    "Granska de angivna inställningarna och försök igen."
-  ],
   "Please, try to activate a zFCP controller.": [
     "Snälla, försök att aktivera en zFCP-kontroller."
   ],
@@ -1201,8 +1198,17 @@ export default {
   "Root user": [
     "Root användare"
   ],
+  "Routes": [
+    ""
+  ],
   "SD Card": [
     "SD-kort"
+  ],
+  "SHA1 fingerprint": [
+    ""
+  ],
+  "SHA256 fingerprint": [
+    ""
   ],
   "SSID": [
     "SSID"
@@ -1288,6 +1294,9 @@ export default {
   ],
   "Shrink existing partitions": [
     "Krymp existerande partitioner"
+  ],
+  "Signal strength": [
+    ""
   ],
   "Size": [
     "Storlek"
@@ -1496,9 +1505,6 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "Systemet stöder inte WiFi-anslutningar, förmodligen på grund av saknad eller inaktiverad hårdvara."
   ],
-  "The system has not been configured for connecting to a Wi-Fi network yet.": [
-    "Systemet har inte konfigurerats för att ansluta till ett WiFi-nätverk än."
-  ],
   "The system will use %s as its default language.": [
     "Systemet kommer att använda %s som dess standardspråk."
   ],
@@ -1552,6 +1558,9 @@ export default {
   ],
   "Type": [
     "Typ"
+  ],
+  "URL": [
+    ""
   ],
   "Unable to modify the settings": [
     "Det går inte att ändra inställningarna"
@@ -1661,9 +1670,6 @@ export default {
   "Using transient hostname: %s": [
     "Använder transient värdnamn: %s"
   ],
-  "Visible Wi-Fi networks": [
-    "Synliga WiFi nätverk"
-  ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Volymgrupp '%s' existerar redan. Ange ett annat namn."
   ],
@@ -1682,17 +1688,14 @@ export default {
   "Waiting for information about storage configuration": [
     "Väntar på information om lagringskonfiguration"
   ],
-  "Wi-Fi": [
-    "Wi-Fi"
-  ],
-  "WiFi connection form": [
-    "WiFi anslutningsformulär"
+  "Weak signal": [
+    ""
   ],
   "Will be supported in a future version.": [
     "Kommer att stödjas i en framtida version."
   ],
-  "Wired": [
-    "Trådbunden"
+  "Wired connections": [
+    "Trådanslutna anslutningar"
   ],
   "XFS": [
     "XFS"
@@ -1712,6 +1715,9 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "Du kanske vill slänga dessa inställningar och börja från början med en enkel konfiguration."
   ],
+  "You will connect to a public network without encryption. Your data may not be secure.": [
+    ""
+  ],
   "ZFCP": [
     "ZFCP"
   ],
@@ -1720,9 +1726,6 @@ export default {
   ],
   "auto selected": [
     "automatiskt vald"
-  ],
-  "configured": [
-    "konfigurerad"
   ],
   "hostname": [
     "värdnamn"
