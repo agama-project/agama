@@ -217,7 +217,7 @@ module Y2Storage
     # @param devicegraph [Devicegraph] the graph gets modified
     def create_devices(devicegraph)
       devices_creator = Proposal::AgamaDevicesCreator.new(devicegraph, issues_list)
-      result = devices_creator.populated_devicegraph(planned_devices, drives_names, space_maker)
+      result = devices_creator.populated_devicegraph(planned_devices, space_maker)
     end
 
     # Name of the boot device.

@@ -46,20 +46,17 @@ module Y2Storage
       # Devicegraph including all the specified planned devices
       #
       # @param planned_devices [Planned::DevicesCollection] Devices to create/reuse
-      # @param disk_names [Array<String>] Disks to consider
       # @param space_maker [SpaceMaker]
       #
       # @return [CreatorResult] Result with new devicegraph in which all the
       #   planned devices have been allocated
-      def populated_devicegraph(planned_devices, disk_names, space_maker)
+      def populated_devicegraph(planned_devices, space_maker)
         # Process planned partitions
         log.info "planned devices = #{planned_devices.to_a.inspect}"
-        log.info "disk names = #{disk_names.inspect}"
 
         reset
 
         @planned_devices = planned_devices
-        @disk_names = disk_names
         @space_maker = space_maker
 
         process_devices
@@ -72,9 +69,6 @@ module Y2Storage
 
       # @return [Planned::DevicesCollection] Devices to create/reuse
       attr_reader :planned_devices
-
-      # @return [Array<String>] Disks to consider
-      attr_reader :disk_names
 
       # @return [SpaceMaker] space maker to use during operation
       attr_reader :space_maker
