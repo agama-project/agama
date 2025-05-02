@@ -69,12 +69,8 @@ describe("SoftwarePatternsSelection", () => {
     expect(headingsText).toEqual(["Desktop Functions"]);
 
     const desktopGroup = screen.getByRole("list", { name: "Desktop Functions" });
-    expect(
-      within(desktopGroup).queryByRole("listitem", { name: /Multimedia/ }),
-    ).toBeInTheDocument();
-    expect(
-      within(desktopGroup).queryByRole("listitem", { name: /Office Software/ }),
-    ).not.toBeInTheDocument();
+    expect(within(desktopGroup).queryByText(/Multimedia$/)).toBeInTheDocument();
+    expect(within(desktopGroup).queryByText(/Office Software/)).not.toBeInTheDocument();
   });
 
   it("displays the checkbox reflecting the current pattern selection status", async () => {
@@ -83,12 +79,14 @@ describe("SoftwarePatternsSelection", () => {
     // the "Base Technologies" pattern group
     const baseGroup = await screen.findByRole("list", { name: "Base Technologies" });
 
-    const basisItem = within(baseGroup).getByRole("listitem", { name: /YaST Base/ });
-    const basisCheckbox = await within(basisItem).findByRole("checkbox");
+    const basisCheckbox = await within(baseGroup).findByRole("checkbox", {
+      name: /Unselect YaST Base/,
+    });
     expect(basisCheckbox).toBeChecked();
 
-    const serverItem = within(baseGroup).getByRole("listitem", { name: /YaST Server/ });
-    const serverCheckbox = await within(serverItem).findByRole("checkbox");
+    const serverCheckbox = await within(baseGroup).findByRole("checkbox", {
+      name: /Select YaST Server/,
+    });
     expect(serverCheckbox).not.toBeChecked();
   });
 
@@ -96,8 +94,9 @@ describe("SoftwarePatternsSelection", () => {
     const { user } = installerRender(<SoftwarePatternsSelection />);
     const y2BasisPattern = testingPatterns.find((p) => p.name === "yast2_basis");
 
-    const basisItem = screen.getByRole("listitem", { name: y2BasisPattern.summary });
-    const basisCheckbox = await within(basisItem).findByRole("checkbox");
+    const basisCheckbox = await screen.findByRole("checkbox", {
+      name: `Unselect ${y2BasisPattern.summary}`,
+    });
     expect(basisCheckbox).toBeChecked();
 
     await user.click(basisCheckbox);

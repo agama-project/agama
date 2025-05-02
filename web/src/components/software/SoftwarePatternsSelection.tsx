@@ -146,7 +146,7 @@ function SoftwarePatternsSelection(): React.ReactNode {
             const nextActionId = `${option.name}-next-action`;
 
             return (
-              <DataListItem key={option.name} aria-labelledby={titleId} aria-describedby={descId}>
+              <DataListItem key={option.name}>
                 <DataListItemRow>
                   <DataListCheck
                     onChange={() => onToggle(option.name)}
