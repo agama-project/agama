@@ -155,7 +155,7 @@ impl<'a> DASDClient<'a> {
         let jobs_client = JobsClient::new(
             self.connection.clone(),
             "org.opensuse.Agama.Storage1",
-            "/org/opensuse/Agama/Storage1/jobs",
+            "/org/opensuse/Agama/Storage1",
         )
         .await?;
         while !finished {
