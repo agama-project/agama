@@ -40,16 +40,92 @@ module Agama
       #
       # @return [Hash] Agama "scripts" section
       def read
+        return {} if services_section.empty?
+
         # 1) create "post" => [... list of hashes defining a scipt ...]"
         # 2) each script has to contain name ("randomized/indexed" one or e.g. based on service name) and chroot option
         # 3) script body is one or two lines per service, particular command depends on AY's service type
-        return {}
+        {
+          scripts: {
+            post: [
+              script(target_to_cmd),
+              script(disabled_to_cmd),
+              script(enabled_to_cmd),
+              script(ondemand_to_cmd),
+            ].compact
+          }
+        }
       end
 
     private
 
       attr_reader :profile
 
+      SYSTEMD_MULTIUSER_TARGET = "systemctl set-default multi-user.target".freeze
+      SYSTEMD_GRAPHICAL_TARGET = "systemctl set-default graphical.target".freeze
+
+      def services_manager_section
+        @services_manager_section ||= profile.fetch("services-manager", {})
+      end
+
+      def services_section
+        @services_section ||= services_manager_section.fetch("services", {})
+      end
+
+      def disabled_services
+        services_section.fetch("disable", [])
+      end
+
+      def enabled_services
+        services_section.fetch("enable", [])
+      end
+
+      def ondemand_services
+        services_section.fetch("on_demand", [])
+      end
+
+      def script(body)
+        return nil if body.nil? || body.empty?
+
+        @index = @index+1;
+
+        {
+          name: "agama-services-manager-#{@index}",
+          chroot: true,
+          body: "|||
+            #!/bin/bash
+            #{body}"
+        }
+      end
+
+      def target_to_cmd
+        if services_manager_section["default_target"] == "muti_user"
+          SYSTEMD_MULTIUSER_TARGET
+        elsif services_manager_section["default_target"] == "graphical"
+          SYSTEMD_GRAPHICAL_TARGET
+        else
+          # We may raise an exception because no other possibility is defined in the documentation
+          nil
+        end
+      end
+
+      def disabled_to_cmd
+        disabled_services.map do |service|
+          "systemctl disable #{service}"
+        end.join("\n")
+      end
+
+      def enabled_to_cmd
+        enabled_services.map do |service|
+          "systemctl enable #{service}"
+        end.join("\n")
+      end
+
+      def ondemand_to_cmd
+        enabled_services.map do |service|
+          "systemctl enable #{service}.socket"
+        end.join("\n")
+      end
     end
   end
 end
