@@ -73,8 +73,9 @@ module Agama
       # @return [Hash] Agama profile
       def to_agama(profile)
         SECTIONS.reduce({}) do |result, section|
-          require "agama/autoyast/#{section}_reader"
-          klass = "#{section.sub("-", "_")}_reader".split("_").map(&:capitalize).join
+          name = section.sub("-", "_")
+          require "agama/autoyast/#{name}_reader"
+          klass = "#{name}_reader".split("_").map(&:capitalize).join
           reader = Agama::AutoYaST.const_get(klass).new(profile)
           result.merge(reader.read)
         end
