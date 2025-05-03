@@ -25,10 +25,11 @@ Yast.import "URL"
 # :nodoc:
 module Agama
   module AutoYaST
-    # Converts AutoYaST's <services-manager> section into post-install script(s). See the ScriptsReader
-    # for a details.
+    # Converts AutoYaST's <services-manager> section into post-install script(s). See the
+    # ScriptsReader for a details.
     #
-    # Conversion is not done in one-to-one manner. Several services can be joined into one post script.
+    # Conversion is not done in one-to-one manner. Several services can be joined into one
+    # post script.
     class ServicesManagerReader
       # @param profile [ProfileHash] AutoYaST profile
       def initialize(profile)
@@ -43,15 +44,17 @@ module Agama
         return {} if services_section.empty?
 
         # 1) create "post" => [... list of hashes defining a scipt ...]"
-        # 2) each script has to contain name ("randomized/indexed" one or e.g. based on service name) and chroot option
-        # 3) script body is one or two lines per service, particular command depends on AY's service type
+        # 2) each script has to contain name ("randomized/indexed" one or e.g. based on service
+        #    name) and chroot option
+        # 3) script body is one or two lines per service, particular command depends on AY's service
+        #    type
         {
           scripts: {
             post: [
               script(target_to_cmd),
               script(disabled_to_cmd),
               script(enabled_to_cmd),
-              script(ondemand_to_cmd),
+              script(ondemand_to_cmd)
             ].compact
           }
         }
@@ -61,8 +64,8 @@ module Agama
 
       attr_reader :profile
 
-      SYSTEMD_MULTIUSER_TARGET = "systemctl set-default multi-user.target".freeze
-      SYSTEMD_GRAPHICAL_TARGET = "systemctl set-default graphical.target".freeze
+      SYSTEMD_MULTIUSER_TARGET = "systemctl set-default multi-user.target"
+      SYSTEMD_GRAPHICAL_TARGET = "systemctl set-default graphical.target"
 
       def services_manager_section
         @services_manager_section ||= profile.fetch("services-manager", {})
@@ -87,25 +90,24 @@ module Agama
       def script(body)
         return nil if body.nil? || body.empty?
 
-        @index = @index+1;
+        @index += 1
 
         {
-          name: "agama-services-manager-#{@index}",
+          name:   "agama-services-manager-#{@index}",
           chroot: true,
-          body: "|||
+          body:   "|||
             #!/bin/bash
             #{body}"
         }
       end
 
       def target_to_cmd
-        if services_manager_section["default_target"] == "muti_user"
+        # May we raise an exception if nothing matches?
+        case services_manager_section["default_target"]
+        when "muti_user"
           SYSTEMD_MULTIUSER_TARGET
-        elsif services_manager_section["default_target"] == "graphical"
+        when "graphical"
           SYSTEMD_GRAPHICAL_TARGET
-        else
-          # We may raise an exception because no other possibility is defined in the documentation
-          nil
         end
       end
 

@@ -27,7 +27,7 @@ require "agama/autoyast/product_reader"
 require "agama/autoyast/root_reader"
 require "agama/autoyast/scripts_reader"
 require "agama/autoyast/security_reader"
-require "agama/autoyast/services-manager_reader"
+require "agama/autoyast/services_manager_reader"
 require "agama/autoyast/software_reader"
 require "agama/autoyast/storage_reader"
 require "agama/autoyast/user_reader"
@@ -74,7 +74,7 @@ module Agama
       def to_agama(profile)
         SECTIONS.reduce({}) do |result, section|
           require "agama/autoyast/#{section}_reader"
-          klass = "#{section}_reader".sub("-", "_").split("_").map(&:capitalize).join
+          klass = "#{section.sub("-", "_")}_reader".split("_").map(&:capitalize).join
           reader = Agama::AutoYaST.const_get(klass).new(profile)
           result.merge(reader.read)
         end
