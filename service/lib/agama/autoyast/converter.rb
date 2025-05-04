@@ -77,7 +77,13 @@ module Agama
           require "agama/autoyast/#{name}_reader"
           klass = "#{name}_reader".split("_").map(&:capitalize).join
           reader = Agama::AutoYaST.const_get(klass).new(profile)
-          result.merge(reader.read)
+          result.merge(reader.read) do |key, value1, value2|
+            # scripts and services-manager readers both produce a hash with
+            # the "scripts" key. This should currently be the only one such case.
+            raise IOError, "AutoYaST conversion failed" if key != "scripts"
+
+            value1.merge(value2) { |_, sl1, sl2| sl1 + sl2 }
+          end
         end
       end
     end
