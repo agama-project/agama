@@ -88,8 +88,8 @@ export default function ProposalFailedInfo() {
   const configErrors = useConfigErrors("storage");
   const errors = useIssues("storage").filter((s) => s.severity === IssueSeverity.Error);
 
-  if (configErrors.length) return;
-  if (!errors.length) return;
+  if (configErrors.length !== 0) return;
+  if (errors.length === 0) return;
 
   return (
     <Alert variant="warning" title={_("Failed to calculate a storage layout")}>

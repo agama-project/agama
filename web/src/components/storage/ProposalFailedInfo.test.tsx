@@ -21,15 +21,114 @@
  */
 
 import React from "react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import ProposalFailedInfo from "./ProposalFailedInfo";
 import { LogicalVolume } from "~/types/storage/data";
+import { Issue, IssueSeverity, IssueSource } from "~/types/issues";
+import { apiModel } from "~/api/storage/types";
 
-const mockApiModel = jest.fn();
+const mockUseConfigErrorsFn = jest.fn();
+let mockUseIssues = [];
+
+const configError: Issue = {
+  description: "Config error",
+  kind: "storage",
+  details: "",
+  source: 2,
+  severity: 1,
+};
+
+const storageIssue: Issue = {
+  description: "Fake Storage Issue",
+  details: "",
+  kind: "storage_issue",
+  source: IssueSource.Unknown,
+  severity: IssueSeverity.Error,
+};
+
+const mockApiModel: apiModel.Config = {
+  boot: {
+    configure: false,
+  },
+  drives: [
+    {
+      name: "/dev/vdb",
+      spacePolicy: "delete",
+      partitions: [
+        {
+          mountPath: "/",
+          filesystem: {
+            reuse: false,
+            default: true,
+            type: "btrfs",
+            snapshots: true,
+          },
+          size: {
+            default: true,
+            min: 13421772800,
+          },
+          delete: false,
+          deleteIfNeeded: false,
+          resize: false,
+          resizeIfNeeded: false,
+        },
+        {
+          mountPath: "swap",
+          filesystem: {
+            reuse: false,
+            default: true,
+            type: "swap",
+          },
+          size: {
+            default: true,
+            min: 1073741824,
+            max: 2147483648,
+          },
+          delete: false,
+          deleteIfNeeded: false,
+          resize: false,
+          resizeIfNeeded: false,
+        },
+        {
+          name: "/dev/vdb1",
+          size: {
+            default: true,
+            min: 6430916608,
+            max: 6430916608,
+          },
+          delete: true,
+          deleteIfNeeded: false,
+          resize: false,
+          resizeIfNeeded: false,
+        },
+        {
+          name: "/dev/vdb2",
+          size: {
+            default: true,
+            min: 4305436160,
+            max: 4305436160,
+          },
+          delete: true,
+          deleteIfNeeded: false,
+          resize: false,
+          resizeIfNeeded: false,
+        },
+      ],
+    },
+  ],
+  volumeGroups: [],
+};
 
 jest.mock("~/hooks/storage/api-model", () => ({
   ...jest.requireActual("~/hooks/storage/api-model"),
   useApiModel: () => mockApiModel,
+}));
+
+jest.mock("~/queries/issues", () => ({
+  ...jest.requireActual("~/queries/issues"),
+  useConfigErrors: () => mockUseConfigErrorsFn(),
+  useIssues: () => mockUseIssues,
 }));
 
 // eslint-disable-next-line
@@ -45,29 +144,45 @@ const fakeLogicalVolume: LogicalVolume = {
 };
 
 describe("ProposalFailedInfo", () => {
-  it("renders nothing if there are no config errors", () => {
-    const { container } = installerRender(<ProposalFailedInfo />);
-    expect(container).toBeEmptyDOMElement();
+  beforeEach(() => {
+    mockUseIssues = [];
+    mockUseConfigErrorsFn.mockReturnValue([]);
   });
 
-  it("renders nothing if there are no storage errors", () => {
-    const { container } = installerRender(<ProposalFailedInfo />);
-    expect(container).toBeEmptyDOMElement();
+  describe("when proposal can't be created due to configuration errors", () => {
+    beforeEach(() => {
+      mockUseConfigErrorsFn.mockReturnValue([configError]);
+    });
+
+    it("renders nothing", () => {
+      const { container } = installerRender(<ProposalFailedInfo />);
+      expect(container).toBeEmptyDOMElement();
+    });
   });
 
-  describe("when there are neither, new partitions nor new logical volumes", () => {
-    it.todo("renders a generic warning");
-  });
+  describe("when proposal is valid", () => {
+    describe("and has no errors", () => {
+      beforeEach(() => {
+        mockUseIssues = [];
+      });
 
-  describe("when there are only new partitions", () => {
-    it.todo("renders an specific warning refering to partitions");
-  });
+      it("renders nothing", () => {
+        const { container } = installerRender(<ProposalFailedInfo />);
+        expect(container).toBeEmptyDOMElement();
+      });
+    });
 
-  describe("when there are only new logical volumes", () => {
-    it.todo("renders specific warning refering to volumes");
-  });
+    describe("but has errors", () => {
+      beforeEach(() => {
+        mockUseIssues = [storageIssue];
+      });
 
-  describe("when there are both, new partitions and new logical volumes", () => {
-    it.todo("renders more generic warning refering to file systems");
+      it("renders a warning alert with hints about the failure", () => {
+        installerRender(<ProposalFailedInfo />);
+        screen.getByText("Warning alert:");
+        screen.getByText("Failed to calculate a storage layout");
+        screen.getByText(/It is not possible to allocate space for/);
+      });
+    });
   });
 });
