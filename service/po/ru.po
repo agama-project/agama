@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-20 02:39+0000\n"
-"PO-Revision-Date: 2024-06-26 10:46+0000\n"
+"PO-Revision-Date: 2025-05-01 13:59+0000\n"
 "Last-Translator: Aleksey Fedorov <Aleksejfedorov963@gmail.com>\n"
-"Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/ru/>\n"
+"Language-Team: Russian <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.6\n"
+"X-Generator: Weblate 5.11.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -26,7 +26,7 @@ msgstr ""
 #: service/lib/agama/autoyast/profile_reporter.rb:51
 #, perl-brace-format
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
-msgstr ""
+msgstr "Найдены неподдерживаемые элементы в профиле AutoYaST: %{keys}."
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:94
@@ -54,26 +54,26 @@ msgstr "Настройка системы"
 #. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 #: service/lib/agama/manager.rb:159
 msgid "Load software translations"
-msgstr ""
+msgstr "Загрузка переводов программ"
 
 #: service/lib/agama/manager.rb:160
 msgid "Load storage translations"
-msgstr ""
+msgstr "Загрузка переводов хранения"
 
 #. TRANSLATORS: button label, try downloading the failed package again
 #: service/lib/agama/software/callbacks/base.rb:39
 msgid "Try again"
-msgstr ""
+msgstr "Повторить попытку"
 
 #. TRANSLATORS: button label, ignore the failed download, skip package installation
 #: service/lib/agama/software/callbacks/base.rb:45
 msgid "Continue anyway"
-msgstr ""
+msgstr "Всё равно продолжить"
 
 #. TRANSLATORS: button label, abort the installation completely after an error
 #: service/lib/agama/software/callbacks/base.rb:51
 msgid "Abort installation"
-msgstr ""
+msgstr "Прервать установку"
 
 #. DoneProvide callback
 #.
@@ -82,7 +82,7 @@ msgstr ""
 #. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
 #: service/lib/agama/software/callbacks/script.rb:59
 msgid "There was a problem running a package script."
-msgstr ""
+msgstr "Возникла проблема с запуском скрипта пакета."
 
 #. Callback to handle unsigned files
 #.
@@ -171,25 +171,24 @@ msgstr "Найдено %s проблем с зависимостями."
 #. @return [Agama::Issue]
 #: service/lib/agama/storage/config_checker.rb:87
 msgid "No device found for a mandatory drive"
-msgstr ""
+msgstr "Не найдено устройство для обязательного диска"
 
 #: service/lib/agama/storage/config_checker.rb:89
-#, fuzzy
 msgid "No device found for a mandatory partition"
-msgstr "Не выбрано устройство для установки"
+msgstr "Не найдено устройство для обязательного раздела"
 
 #. TRANSLATORS: %s is the replaced by a mount path (e.g., "/home").
 #: service/lib/agama/storage/config_checker.rb:118
 #, c-format
 msgid "Missing file system type for '%s'"
-msgstr ""
+msgstr "Отсутствует тип файловой системы для '%s'"
 
 #. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
 #. %{path} is replaced by a mount path (e.g., "/home").
 #: service/lib/agama/storage/config_checker.rb:145
 #, perl-brace-format
 msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
-msgstr ""
+msgstr "Тип файловой системы „%{filesystem}“ не подходит для '%{path}'"
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
@@ -198,13 +197,15 @@ msgstr ""
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr ""
+"Не указана парольная фраза (требуется для использования метода "
+"„%{crypt_method}“)."
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
 #: service/lib/agama/storage/config_checker.rb:196
 #, perl-brace-format
 msgid "Encryption method '%{crypt_method}' is not available in this system."
-msgstr ""
+msgstr "Метод шифрования „%{crypt_method}“ недоступен в этой системе."
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
@@ -212,6 +213,7 @@ msgstr ""
 #, perl-brace-format
 msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
 msgstr ""
+"'%{crypt_method}' не является подходящим методом для шифрования устройства."
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checker.rb:276
@@ -219,24 +221,27 @@ msgstr ""
 msgid ""
 "The device '%s' is used several times as target device for physical volumes"
 msgstr ""
+"Устройство „%s“ несколько раз использовалось в качестве целевого устройства "
+"для физических томов"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
 #: service/lib/agama/storage/config_checker.rb:350
 #, c-format
 msgid "There is no LVM thin pool volume with alias '%s'"
-msgstr ""
+msgstr "Не существует тома LVM thin pool с псевдонимом '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
 #: service/lib/agama/storage/config_checker.rb:375
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
-msgstr ""
+msgstr "Не существует физического тома LVM с псевдонимом '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checker.rb:401
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
 msgstr ""
+"Не существует целевого устройства для физических томов LVM с псевдонимом '%s'"
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1').
@@ -245,6 +250,8 @@ msgstr ""
 msgid ""
 "'%{crypt_method}' is not a suitable method to encrypt the physical volumes."
 msgstr ""
+"'%{crypt_method}' не является подходящим методом для шифрования физических "
+"томов."
 
 #. Text of the reason preventing to shrink because there is no content.
 #.
@@ -255,13 +262,17 @@ msgid ""
 "case the device does contain a file system or a storage system that is not "
 "supported, resizing will most likely cause data loss."
 msgstr ""
+"На устройстве не обнаружено ни файловой системы, ни системы хранения данных. "
+"Если устройство содержит файловую систему или систему хранения данных, "
+"которая не поддерживается, изменение размера, скорее всего, приведет к "
+"потере данных."
 
 #. Text of the reason preventing to shrink because there is no valid minimum size.
 #.
 #. @return [String, nil] nil if there is a minimum size or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:162
 msgid "Shrinking is not supported by this device"
-msgstr ""
+msgstr "Уменьшение размера не поддерживается этим устройством"
 
 #. Probes storage devices and performs an initial proposal
 #: service/lib/agama/storage/manager.rb:120
