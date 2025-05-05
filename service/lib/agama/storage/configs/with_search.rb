@@ -56,6 +56,15 @@ module Agama
 
           search&.name unless search&.create_device?
         end
+
+        # Whether the device is going to be created.
+        #
+        # @return [Boolean]
+        def create?
+          return true unless search
+
+          search.create_device?
+        end
       end
     end
   end

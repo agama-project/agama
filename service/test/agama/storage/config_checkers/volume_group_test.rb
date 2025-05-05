@@ -175,6 +175,83 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
       end
     end
 
+    context "if the volume group has several target devices for physical volumes" do
+      let(:scenario) { "disks.yaml" }
+
+      let(:config_json) do
+        {
+          drives:       [
+            {
+              alias:  "vda",
+              search: "/dev/vda"
+            },
+            {
+              alias:  "vdb",
+              search: "/dev/vdb"
+            }
+          ],
+          mdRaids:      [
+            {
+              alias:  "md1",
+              search: {
+                condition:  { name: "/dev/md1" },
+                ifNotFound: "error"
+              }
+            },
+            {
+              alias:  "md2",
+              search: {
+                condition:  { name: "/dev/md2" },
+                ifNotFound: "create"
+              }
+            },
+            { alias: "md3" }
+          ],
+          volumeGroups: [
+            {
+              name:            "system",
+              physicalVolumes: [
+                { generate: target_devices }
+              ]
+            }
+          ]
+        }
+      end
+
+      before { solve_config }
+
+      context "and mixes new and reused devices" do
+        let(:target_devices) { ["vda", "md2"] }
+
+        it "includes the expected issue" do
+          issues = subject.issues
+          expect(issues).to include an_object_having_attributes(
+            error?:      true,
+            kind:        :incompatible_pv_targets,
+            description: /'system' is mixing reused devices and new devices/
+          )
+        end
+      end
+
+      context "and all the devices are new" do
+        let(:target_devices) { ["md2", "md3"] }
+
+        it "does not include an incompatible targets issue" do
+          issues = subject.issues
+          expect(issues).to_not include an_object_having_attributes(kind: :incompatible_pv_targets)
+        end
+      end
+
+      context "and all the devices are reused" do
+        let(:target_devices) { ["vda", "vdb", "md1"] }
+
+        it "does not include an incompatible targets issue" do
+          issues = subject.issues
+          expect(issues).to_not include an_object_having_attributes(kind: :incompatible_pv_targets)
+        end
+      end
+    end
+
     context "if the volume group is valid" do
       let(:name) { "vg0" }
 
