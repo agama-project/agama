@@ -100,6 +100,7 @@ module Agama
         #
         # @return [Issue, nil]
         def level_issue
+          return if config.search && !config.search.create_device?
           return if config.level
 
           error(format(_("There is a MD RAID without level")), kind: :md_raid)
