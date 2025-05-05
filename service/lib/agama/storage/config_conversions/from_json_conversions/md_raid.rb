@@ -37,6 +37,7 @@ module Agama
         class MdRaid < Base
         private
 
+          include WithSearch
           include WithEncryption
           include WithFilesystem
           include WithPtableType
@@ -55,6 +56,7 @@ module Agama
           def conversions
             {
               name:        md_raid_json[:name],
+              search:      convert_search,
               alias:       md_raid_json[:alias],
               level:       convert_level,
               parity:      convert_parity,
