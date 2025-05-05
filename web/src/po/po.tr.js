@@ -1,10 +1,10 @@
 export default {
   "": {
     "plural-forms": (n) => n != 1,
-    "language": "sv"
+    "language": "tr"
   },
   " Timezone selection": [
-    " Tidszon val"
+    " Zaman dilimi seçimi"
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -13,214 +13,214 @@ export default {
     "%1$s - %2$s"
   ],
   "%1$s at %2$s": [
-    "%1$s på %2$s"
+    "%1$s %2$s'de"
   ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
-    "%1$s kommer fortfarande att innehålla LVM-gruppen '%2$s' och eventuell partition som behövs för att starta systemet"
+    "%1$s hala '%2$s' LVM grubunu ve önyükleme için gereken herhangi bir bölümü içerecektir"
   ],
   "%s - %s": [
     "%s - %s"
   ],
   "%s [must be registered].": [
-    "%s [måste registreras]."
+    "%s [kayıtlı olmalı]."
   ],
   "%s disk": [
-    "%s disk"
+    "disk %s"
   ],
   "%s has been registered with below information.": [
-    "%s har registrerats med uppgifterna nedan."
+    "%s aşağıdaki bilgilerle kayıt edildi."
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s är ett oföränderligt system med atomära uppdateringar. Det använder ett skrivskyddat Btrfs filsystem som uppdateras via ögonblicksavbilder."
+    "%s atomik güncellemelere sahip değişmez bir sistemdir. Anlık imajlar aracılığıyla güncellenen salt okunur bir Btrfs dosya sistemi kullanır."
   ],
   "%s logo": [
-    "%s logotyp"
+    "%s logosu"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
-    "%s kommer fortfarande att innehålla de konfigurerade LVM-grupperna och alla partitioner som behövs för att starta systemet"
+    "%s hala yapılandırılmış LVM gruplarını ve önyükleme için gereken tüm bölümleri içerecektir"
   ],
   "%s with %d partitions": [
-    "%s med %d partitioner"
+    "%s ile %d bölümler"
   ],
   "A %1$s of %2$s will be created for %3$s": [
-    "En %1$s av %2$s kommer att skapas för %3$s"
+    "%3$s için %2$s'nin %1$s'i oluşturulacak"
   ],
   "A %1$s of at least %2$s will be created for %3$s": [
-    "En %1$s på minst %2$s kommer att skapas för %3$s"
+    "En az %2$s'lik bir %1$s %3$s için oluşturulacak"
   ],
   "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "En %1$s med en storlek mellan %2$s och %3$s kommer att skapas för %4$s"
+    "%4$s için %2$s ile %3$s arasında bir boyuta sahip %1$s oluşturulacak"
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
-    "En generisk minimistorlek av%1$s kommer att användas för den nya %2$s"
+    "Yeni %2$s için genel bir asgari %1$s boyutu kullanılacak"
   ],
   "A generic size of %s will be used for the new %2$s": [
-    "En generisk storlek av %s kommer att användas för den nya %2$s"
+    "Yeni %2$s için genel bir %s boyutu kullanılacak"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
-    "Ett generiskt storleksintervall mellan %1$s och %2$s kommer att användas för den nya %3$s"
+    "Yeni %3$s için %1$s ile %2$s arasında genel bir boyut aralığı kullanılacak"
   ],
   "A partition may be deleted": [
-    "En partition kan tas bort"
+    "Bir bölüm silinebilir"
   ],
   "A partition may be shrunk": [
-    "En partition kan krympas"
+    "Bir bölüm küçültülebilir"
   ],
   "A partition will be deleted": [
-    "En partition kommer att raderas"
+    "Bir bölüm silinecek"
   ],
   "Accept": [
-    "Acceptera"
+    "Kabul Et"
   ],
   "Action": [
-    "Åtgärd"
+    "Eylem"
   ],
   "Actions": [
-    "Åtgärder"
+    "Eylemler"
   ],
   "Actions for connection %s": [
-    "Åtgärder för anslutning %s"
+    "%s bağlantısı için eylemler"
   ],
   "Activate": [
-    "Aktivera"
+    "Etkinleştir"
   ],
   "Activate and format DASD devices": [
-    "Aktivera och formatera DASD-enheter"
+    "DASD cihazlarını etkinleştirin ve biçimlendirin"
   ],
   "Activate new disk": [
-    "Aktivera ny disk"
+    "Yeni diski etkinleştir"
   ],
   "Activate zFCP disk": [
-    "Aktivera en zFCP-disk"
+    "zFCP diskini etkinleştir"
   ],
   "Activate zFCP disks": [
-    "Aktivera zFCP-diskar"
+    "zFCP disklerini etkinleştirin"
   ],
   "Activated": [
-    "Aktiverad"
+    "Aktifleştirildi"
   ],
   "Add": [
-    "Lägg till"
+    "Ekle"
   ],
   "Add DNS": [
-    "Lägg till DNS"
+    "DNS Ekle"
   ],
   "Add LVM volume group": [
-    "Lägg till LVM volymgrupp"
+    "LVM disk grubu ekle"
   ],
   "Add an address": [
-    "Lägg till en adress"
+    "Adres ekle"
   ],
   "Add another DNS": [
-    "Lägg till en annan DNS"
+    "Başka bir DNS ekle"
   ],
   "Add another address": [
-    "Lägg till en annan adress"
+    "Başka Bir Adres Ekle"
   ],
   "Add another partition or mount an existing one": [
-    "Lägg till ytterligare en partition eller montera en befintlig"
+    "Başka bir bölüm ekleyin veya mevcut bir bölümü bağlayın"
   ],
   "Add device menu": [
-    "Lägg till enhetsmeny"
+    "Cihaz menüsü ekle"
   ],
   "Add logical volume": [
-    "Lägg till logisk volym"
+    "Mantıksal birim ekle"
   ],
   "Add or use partition": [
-    "Lägg till eller använd en partition"
+    "Bölüm ekle veya kullan"
   ],
   "Address": [
-    "Adresser"
+    "Adres"
   ],
   "Addresses": [
-    "Adresser"
+    "Adresler"
   ],
   "Addresses data list": [
-    "Adresser data lista"
+    "Adres veri listesi"
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
-    "Justera inställningarna nedan för att få det nya systemet att passa in i det tillgängliga utrymmet."
+    "Yeni sistemin mevcut alana sığması için aşağıdaki ayarları düzenleyin."
   ],
   "All content will be deleted": [
-    "Allt innehåll kommer att raderas"
+    "Tüm içerik silinecek"
   ],
   "All fields are required": [
-    "Alla fält krävs"
+    "Tüm alanlar zorunludur"
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
-    "Förutom att definiera den första användaren kan autentiseringsmetoder för rootanvändaren konfigureras."
+    "İlk kullanıcıyı tanımlamanın yanı sıra, root kullanıcı için kimlik doğrulama yöntemleri de yapılandırılabilir."
   ],
   "Already using all available disks": [
-    "Använder redan alla tillgängliga diskar"
+    "Zaten tüm kullanılabilir diskler kullanılıyor"
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
-    "Alla befintliga partitioner kommer att tas bort och all data på disken kommer att gå förlorad."
+    "Mevcut herhangi bir bölüm kaldırılacak ve diskteki tüm veriler kaybolacaktır."
   ],
   "As a new partition on %s": [
-    "Som en ny partition på %s"
+    "%s üzerinde yeni bir bölüm olarak"
   ],
   "At least one address must be provided for selected mode": [
-    "Minst en adress måste tillhandahållas för valt läge"
+    "Seçilen mod için en az bir adres sağlanmalıdır"
   ],
   "At least one partition will be deleted": [
-    "Minst en partition kommer att tas bort"
+    "En az bir bölüm silinecek"
   ],
   "At this point you can power off the machine.": [
-    "Vid det här laget kan du stänga av maskinen."
+    "Bu noktada makineyi kapatabilirsiniz."
   ],
   "At this point you can reboot the machine to log in to the new system.": [
-    "Vid det här laget kan du starta om maskinen för att logga in till det nya systemet."
+    "Bu noktada yeni sisteme giriş yapmak için makineyi yeniden başlatabilirsiniz."
   ],
   "Authentication": [
-    "Autentisering"
+    "Kimlik doğrulama"
   ],
   "Authentication by initiator": [
-    "Autentisering av initiativtagare"
+    "Başlatıcıya göre kimlik doğrulama"
   ],
   "Authentication by target": [
-    "Autentisering av mål"
+    "Hedefe göre kimlik doğrulama"
   ],
   "Auto LUNs Scan": [
-    "Automatisk LUN-skanning"
+    "Otomatik LUN Taraması"
   ],
   "Automatic": [
-    "Automatisk"
+    "Otomatik"
   ],
   "Automatic (DHCP)": [
-    "Automatisk (DHCP)"
+    "Otomatik (DHCP)"
   ],
   "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    "Automatisk LUN-skanning är [avaktiverad]. LUN kommer att behöva vara manuellt       konfigurerat efter aktivering av en styrenhet."
+    "Otomatik LUN taraması [devre dışı]. LUN'ların manuel olarak taranması gerekir       Bir kontrol cihazı etkinleştirildikten sonra yapılandırılır."
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    "Automatisk LUN-skanning är [aktiverad]. Aktiverar en styrenhet som är       körande i NPIV läge kommer att automatiskt konfigurera alla dess LUN."
+    "Otomatik LUN taraması [etkin]. Bir denetleyiciyi etkinleştirme       NPIV modunda çalıştırıldığında tüm LUN'lar otomatik olarak yapılandırılır."
   ],
   "Available products": [
-    "Tillgängliga produkter"
+    "Mevcut ürünler"
   ],
   "Back": [
-    "Bakåt"
+    "Geri"
   ],
   "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "Baserat på mängden RAM i systemet kommer en $1s$ av %2$s att skapas för %3$s"
+    "Sistemdeki RAM miktarına bağlı olarak, %3$s için %2$s'lik bir %1s$ oluşturulacak"
   ],
   "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "Baserat på mängden RAM i systemet kommer en %1s$ på minst %2$s att skapas för %3$s"
+    "Sistemdeki RAM miktarına bağlı olarak, %3$s için en az %2$s'lik bir %1s$ oluşturulacak"
   ],
   "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "Baserat på mängden RAM i systemet kommer en %1s$ med en storlek mellan %2$s och %3$s att skapas för %4$s"
+    "Sistemdeki RAM miktarına bağlı olarak, %4$s için %2$s ile %3$s arasında bir boyutta %1s$ oluşturulacak"
   ],
   "Bcachefs": [
     "Bcachefs"
   ],
   "Before %s": [
-    "Före %s"
+    "Önce %s"
   ],
   "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "Innan du installerar måste du fatta vissa beslut. Klicka på varje avsnitt för att granska inställningarna."
+    "Kurulumdan önce, bazı seçimler yapmanız gerekiyor. Her bölümdeki ayarları gözden geçirin."
   ],
   "Before starting the installation, you need to address the following problems:": [
-    "Innan du startar installationen måste du åtgärda följande problem:"
+    "Kuruluma başlamadan önce aşağıdaki sorunları gidermeniz gerekmektedir:"
   ],
   "Beta": [
     "Beta"
@@ -229,178 +229,178 @@ export default {
     "BitLocker"
   ],
   "Boot options": [
-    "Uppstartsalternativ"
+    "Önyükleme seçenekleri"
   ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
-    "Btrfs med ögonblicksavbilder"
+    "Anlık imajlarla Btrfs"
   ],
   "Calculated automatically": [
-    "Beräknas automatiskt"
+    "Otomatik olarak hesaplandı"
   ],
   "Cancel": [
-    "Avbryt"
+    "İptal"
   ],
   "Cannot be changed in remote installation": [
-    "Kan inte ändras i fjärrinstallation"
+    "Uzaktan kurulumda değiştirilemez"
   ],
   "Cannot connect to Agama server": [
-    "Kan inte ansluta till Agama server"
+    "Agama sunucusuna bağlanılamıyor"
   ],
   "Cannot format all selected devices": [
-    "Kan inte formatera alla valda enheter"
+    "Seçilen tüm aygıtlar biçimlendirilemiyor"
   ],
   "Change": [
-    "Ändra"
+    "Değiştir"
   ],
   "Change boot options": [
-    "Ändra uppstartsalternativ"
+    "Önyükleme seçeneklerini değiştir"
   ],
   "Change device menu": [
-    "Ändra enhetsmeny"
+    "Cihaz menüsünü değiştir"
   ],
   "Change product": [
-    "Ändra produkt"
+    "Ürünü değiştir"
   ],
   "Change selection": [
-    "Ändra val"
+    "Seçimi değiştir"
   ],
   "Channel ID": [
-    "Kanal-ID"
+    "Kanal Kimliği"
   ],
   "Check the %d planned actions": [
-    "Kontrollera det %d planerade åtgärderna"
+    "%d planlanan eylemi kontrol edin"
   ],
   "Check the authentication parameters.": [
-    "Kontrollera autentiseringsparametrarna."
+    "Kimlik doğrulama parametrelerini kontrol edin."
   ],
   "Check the following before continuing": [
-    "Kontrollera följande innan du fortsätter"
+    "Devam etmeden önce aşağıdakileri kontrol edin"
   ],
   "Choose a disk for placing the boot loader": [
-    "Välj en disk för att placera uppstartsladdaren"
+    "Önyükleme yükleyicisini yerleştirmek için bir disk seçin"
   ],
   "Choose what to with current content": [
-    "Välj vad du vill ska hända med aktuellt innehåll"
+    "Mevcut içerikle ne yapacağınızı seçin"
   ],
   "Clear": [
-    "Rensa"
+    "Temizle"
   ],
   "Clear selected mount point": [
-    "Rensa vald monteringspunkt"
+    "Seçilen bağlama noktasını temizle"
   ],
   "Close": [
-    "Stäng"
+    "Kapat"
   ],
   "Collapse the list of planned actions": [
-    "Dölj listan över planerade åtgärder"
+    "Planlanan eylemlerin listesini daraltın"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "Konfiguration läst från iSCSI Boot Firmware Table (iBFT)."
+    "Yapılandırma iSCSI Önyükleme Ürün Yazılımı Tablosu'ndan (iBFT) okundu."
   ],
   "Configure DASD": [
-    "Konfigurera DASD"
+    "DASD'yi yapılandırın"
   ],
   "Configure LVM Volume Group": [
-    "Konfigurera LVM volymgrupp"
+    "LVM Birim Grubunu Yapılandırın"
   ],
   "Configure LVM logical volume at %s volume group": [
-    "Konfigurera LVM logisk volym på %s volymgrupp"
+    "LVM mantıksal birimini %s birim grubunda yapılandırın"
   ],
   "Configure device menu": [
-    "Konfigurera enhetsmeny"
+    "Cihaz yapılandırma menüsü"
   ],
   "Configure iSCSI": [
-    "Konfigurera iSCSI"
+    "iSCSI'yi yapılandırın"
   ],
   "Configure partition at %s": [
-    "Konfigurera partition på %s"
+    "Bölmeyi %s konumunda yapılandır"
   ],
   "Configure zFCP": [
-    "Konfigurera zFCP"
+    "zFCP'yi yapılandırın"
   ],
   "Configuring the product, please wait ...": [
-    "Konfigurerar produkten, vänta..."
+    "Ürün yapılandırılıyor, lütfen bekleyin..."
   ],
   "Confirm": [
-    "Bekräfta"
+    "Onayla"
   ],
   "Confirm Installation": [
-    "Bekräfta Installation"
+    "Kurulumu Onayla"
   ],
   "Congratulations!": [
-    "Grattis!"
+    "Tebrikler!"
   ],
   "Connect": [
-    "Anslut"
+    "Bağlan"
   ],
   "Connect to %s": [
-    "Anslut till %s"
+    "%s'ye bağlan"
   ],
   "Connect to iSCSI targets": [
-    "Anslut till iSCSI mål"
+    "iSCSI hedeflerine bağlanın"
   ],
   "Connected": [
-    "Ansluten"
+    "Bağlı"
   ],
   "Connected (%s)": [
-    "Ansluten (%s)"
+    "Bağlandı (%s)"
   ],
   "Connecting to %s": [
-    "Ansluter till %s"
+    "%s'ye bağlanılıyor"
   ],
   "Connection actions": [
-    "Anslutningsåtgärder"
+    "Bağlantı eylemleri"
   ],
   "Connection details": [
-    "Anslutningsdetaljer"
+    "Bağlantı detayları"
   ],
   "Connection not found or lost": [
-    "Anslutningen hittades inte eller förlorades"
+    "Bağlantı bulunamadı veya kayboldu"
   ],
   "Content will be kept": [
-    "Innehåll kommer att behållas"
+    "İçerik saklanacak"
   ],
   "Continue": [
-    "Fortsätt"
+    "Devam et"
   ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
-    "Att fortsätta utan att installera paketet kan resultera i ett trasigt system. I vissa fall kanske systemet inte ens startar."
+    "Paketi yüklemeden devam etmek bozuk bir sisteme neden olabilir. Bazı durumlarda sistem önyükleme bile yapmayabilir."
   ],
   "Controllers": [
-    "Styrenheter"
+    "Kontrolörler"
   ],
   "Could not authenticate against the server, please check it.": [
-    "Kunde inte autentisera mot servern, vänligen kontrollera det."
+    "Sunucuya karşı kimlik doğrulaması yapılamadı, lütfen kontrol edin."
   ],
   "Could not connect to %s": [
-    "Kan inte ansluta till %s"
+    "%s'ye bağlanılamadı"
   ],
   "Could not log in. Please, make sure that the password is correct.": [
-    "Kunde inte logga in. Kontrollera att lösenordet är korrekt."
+    "Giriş yapılamadı. Lütfen şifrenin doğru olduğundan emin olun."
   ],
   "Create LVM volume group %s": [
-    "Skapa LVM volymgrupp %s"
+    "LVM birim grubu %s'yi oluştur"
   ],
   "Create LVM volume group on %s": [
-    "Skapa LVM volymgrupp på %s"
+    "%s üzerinde LVM disk grubu oluştur"
   ],
   "Create another LVM volume group on %s": [
-    "Skapa LVM volymgrupp på %s"
+    "%s üzerinde başka bir LVM disk grubu oluştur"
   ],
   "Create user": [
-    "Skapa användare"
+    "Kullanıcı oluştur"
   ],
   "Current %1$s at %2$s": [
-    "Nuvarande %1$s på %2$s"
+    "Mevcut %1$s %2$s'de"
   ],
   "Current %s": [
-    "Nuvarande %s"
+    "Mevcut %s"
   ],
   "Custom": [
-    "Anpassad"
+    "Özel"
   ],
   "DASD": [
     "DASD"
@@ -409,10 +409,10 @@ export default {
     "DASD %s"
   ],
   "DASD devices selection table": [
-    "DASD-enhetsvalstabell"
+    "DASD aygıtları seçim tablosu"
   ],
   "DASDs table section": [
-    "DASDs tabellsektion"
+    "DASDs tablo bölümü"
   ],
   "DIAG": [
     "DIAG"
@@ -421,163 +421,163 @@ export default {
     "DNS"
   ],
   "Deactivate": [
-    "Inaktivera"
+    "Devre dışı bırak"
   ],
   "Deactivated": [
-    "Inaktiverad"
+    "Devre dışı bırakıldı"
   ],
   "Default file system for %s": [
-    "Standard filsystem för %s"
+    "%s için varsayılan dosya sistemi"
   ],
   "Default file system for generic logical volumes": [
-    "Standardfilsystem för generiska logiska volymer"
+    "Genel mantıksal birimler için varsayılan dosya sistemi"
   ],
   "Default file system for generic partitions": [
-    "Standardfilsystem för generiska partitioner"
+    "Genel bölümler için varsayılan dosya sistemi"
   ],
   "Define a custom size or a range": [
-    "Definiera en anpassad storlek eller ett intervall"
+    "Özel bir boyut veya aralık tanımlayın"
   ],
   "Define a new LVM on the disk": [
-    "Definiera en ny LVM på disken"
+    "Diskte yeni bir LVM tanımlayın"
   ],
   "Define a new LVM on top of one or several disks": [
-    "Definiera en ny LVM ovanpå en eller flera diskar"
+    "Bir veya birkaç diskin üzerine yeni bir LVM tanımlayın"
   ],
   "Define a user now": [
-    "Definera en användare nu"
+    "Şimdi bir kullanıcı tanımlayın"
   ],
   "Define the first user with admin (sudo) privileges for system management.": [
-    "Definiera den första användaren med admin (sudo) privilegier för systemhantering."
+    "Sistem yönetimi için ilk kullanıcıyı admin (sudo) ayrıcalıklarıyla tanımlayın."
   ],
   "Defined (hidden)": [
-    "Definerad (dold)"
+    "Tanımlı (gizli)"
   ],
   "Delete": [
-    "Ta bort"
+    "Sil"
   ],
   "Delete current content": [
-    "Radera nuvarande innehåll"
+    "Mevcut içeriği sil"
   ],
   "Delete volume group": [
-    "Ta bort volymgrupp"
+    "Birim grubunu sil"
   ],
   "Destroy current data and format partition as": [
-    "Förstör nuvarande data och formatera partition som"
+    "Mevcut verileri yok edin ve bölümü şu şekilde biçimlendirin"
   ],
   "Details": [
-    "Detaljer"
+    "Detaylar"
   ],
   "Details will appear after the connection is successfully established.": [
-    "Detaljer kommer att visas efter att anslutningen har upprättats."
+    "Bağlantı başarıyla kurulduktan sonra detaylar görünecektir."
   ],
   "Device": [
-    "Enhet"
+    "Cihaz"
   ],
   "Device %s menu": [
-    "Enhets %s-meny"
+    "Cihaz %s menüsü"
   ],
   "Device details": [
-    "Enhetsdetaljer"
+    "Cihaz detayları"
   ],
   "Discard": [
-    "Kasta bort"
+    "At"
   ],
   "Disconnected": [
-    "Frånkopplad"
+    "Bağlantısı Kesildi"
   ],
   "Discover": [
-    "Upptäck"
+    "Keşfet"
   ],
   "Discover and connect to iSCSI targets": [
-    "Upptäck och anslut till iSCSI mål"
+    "iSCSI hedeflerini keşfedin ve onlara bağlanın"
   ],
   "Discover iSCSI Targets": [
-    "Upptäck iSCSI mål"
+    "iSCSI Hedeflerini Keşfedin"
   ],
   "Discover iSCSI targets": [
-    "Upptäck iSCSI-mål"
+    "iSCSI hedeflerini keşfedin"
   ],
   "Disk": [
     "Disk"
   ],
   "Disks": [
-    "Diskar"
+    "Diskler"
   ],
   "Do not configure": [
-    "Konfigurera inte"
+    "Yapılandırmayın"
   ],
   "Do not format %s and keep the data": [
-    "Formatera inte %s och behåll data"
+    "%s'yi biçimlendirmeyin ve verileri saklayın"
   ],
   "Do not use": [
-    "Använd inte"
+    "Kullanma"
   ],
   "Download logs": [
-    "Ladda ner loggar"
+    "Günlükleri indir"
   ],
   "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Under installationen kommer flera åtgärder att utföras för att ställa in layouten som visas i tabellen nedan."
+    "Kurulum sırasında aşağıdaki tabloda gösterilen düzeni oluşturmak için çeşitli işlemler gerçekleştirilecektir."
   ],
   "Edit": [
-    "Redigera"
+    "Düzenle"
   ],
   "Edit %s": [
-    "Redigera %s"
+    "%s'yi düzenle"
   ],
   "Edit connection %s": [
-    "Redigera anslutning %s"
+    "Bağlantıyı düzenle %s"
   ],
   "Edit user": [
-    "Redigera användare"
+    "Kullanıcıyı düzenle"
   ],
   "Edit volume group": [
-    "Redigera volymgrupp"
+    "Birim grubunu düzenle"
   ],
   "Empty LVM volume group %s": [
-    "Tom LVM volymgrupp %s"
+    "Boş LVM birim grubu %s"
   ],
   "Encrypt the system": [
-    "Kryptera systemet"
+    "Sistemi şifrele"
   ],
   "Encrypted Device": [
-    "Krypterad enhet"
+    "Şifrelenmiş Aygıt"
   ],
   "Encryption": [
-    "Kryptering"
+    "Şifreleme"
   ],
   "Encryption Password": [
-    "Krypteringslösenord"
+    "Şifreleme Şifresi"
   ],
   "Encryption is disabled": [
-    "Kryptering är inaktiverat"
+    "Şifreleme devre dışı bırakıldı"
   ],
   "Encryption is enabled": [
-    "Kryptering är aktiverat"
+    "Şifreleme etkinleştirildi"
   ],
   "Encryption is enabled using TPM unlocking": [
-    "Kryptering är aktiverad med TPM-upplåsning"
+    "Şifreleme, TPM kilidini açma kullanılarak etkinleştirildi"
   ],
   "Encryption settings": [
-    "Krypteringsinställningar"
+    "Şifreleme ayarları"
   ],
   "Enter a hostname.": [
-    "Ange ett värdnamn."
+    "Bir ana bilgisayar adı girin."
   ],
   "Enter a name": [
-    "Ange ett namn"
+    "Bir isim girin"
   ],
   "Enter a name for the volume group.": [
-    "Ange ett namn för volymgrupp."
+    "Birim grubu için bir ad girin."
   ],
   "ExFAT": [
     "ExFAT"
   ],
   "Excellent signal": [
-    "Utmärkt signal"
+    "Mükemmel sinyal"
   ],
   "Expiration date": [
-    "Utgångsdatum"
+    "Son kullanma tarihi"
   ],
   "Ext2": [
     "Ext2"
@@ -589,7 +589,7 @@ export default {
     "Ext4"
   ],
   "Extensions": [
-    "Tillägg"
+    "Uzantılar"
   ],
   "F2FS": [
     "F2FS"
@@ -598,125 +598,125 @@ export default {
     "FAT"
   ],
   "Failed to calculate a storage layout": [
-    "Misslyckades att beräkna en lagringslayout"
+    "Depolama düzeni hesaplanamadı"
   ],
   "File system": [
-    "Filsystem"
+    "Dosya sistemi"
   ],
   "File system label": [
-    "Filsystem etikett"
+    "Dosya sistemi etiketi"
   ],
   "Filter by description or keymap code": [
-    "Filtrera efter beskrivning eller tangentbordskod"
+    "Açıklamaya veya tuş haritası koduna göre filtreleyin"
   ],
   "Filter by language, territory or locale code": [
-    "Filtrera efter språk, territorium eller lokalkod"
+    "Dile, bölgeye veya yerel ayar koduna göre filtreleyin"
   ],
   "Filter by max channel": [
-    "Filtrera efter maximal kanal"
+    "Maksimum kanala göre filtrele"
   ],
   "Filter by min channel": [
-    "Filtrera efter minimum kanal"
+    "Minimum kanala göre filtrele"
   ],
   "Filter by pattern title or description": [
-    "Filtrera efter mönstertitel eller beskrivning"
+    "Desen başlığına veya açıklamasına göre filtrele"
   ],
   "Filter by territory, time zone code or UTC offset": [
-    "Filtrera efter område, tidszonskod eller UTC-förskjutning"
+    "Bölgeye, saat dilimi koduna veya UTC farkına göre filtreleyin"
   ],
   "Find space in %s": [
-    "Hitta utrymme på %s"
+    "%s'de boşluk bul"
   ],
   "Finish": [
-    "Slutför"
+    "Bitti"
   ],
   "Finished": [
-    "Slutförd"
+    "Bitti"
   ],
   "First user": [
-    "Första användare"
+    "İlk kullanıcı"
   ],
   "Forget": [
-    "Glöm"
+    "Unut"
   ],
   "Forget connection %s": [
-    "Glöm anslutning %s"
+    "Bağlantıyı unut %s"
   ],
   "Format": [
-    "Formatera"
+    "Biçim"
   ],
   "Format logical volume as": [
-    "Formatera logisk volym som"
+    "Mantıksal birimi şu şekilde biçimlendir"
   ],
   "Format partition as": [
-    "Formatera partition som"
+    "Bölümü şu şekilde biçimlendir"
   ],
   "Format selected devices?": [
-    "Formatera valda enheter?"
+    "Seçili cihazlar biçimlendirilsin mi?"
   ],
   "Formatted": [
-    "Formaterad"
+    "Biçimlendirilmiş"
   ],
   "Formatting DASD devices": [
-    "Formaterar DASD-enheter"
+    "DASD aygıtlarının biçimlendirilmesi"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
-    "Heldiskkryptering (FDE) gör det möjligt att skydda informationen som lagras i de nya filsystemen, inklusive data, program och systemfiler."
+    "Tam Disk Şifrelemesi (FDE), veriler, programlar ve sistem dosyaları da dahil olmak üzere yeni dosya sistemlerinde depolanan bilgilerin korunmasına olanak tanır."
   ],
   "Full name": [
-    "Fullständigt namn"
+    "Tam isim"
   ],
   "Gateway": [
-    "Gateway"
+    "Ağ Geçidi"
   ],
   "Gateway can be defined only in 'Manual' mode": [
-    "Gateway kan endast definieras i \"Manuellt\" läge"
+    "Ağ geçidi yalnızca 'Manuel' modda tanımlanabilir"
   ],
   "GiB": [
-    "GiB"
+    "GB"
   ],
   "Go to network page": [
-    "Gå till nätverkssidan"
+    "Ağ sayfasına git"
   ],
   "Good signal": [
-    "Bra signal"
+    "İyi sinyal"
   ],
   "Hide": [
-    "Dölj"
+    "Gizle"
   ],
   "Hide %d subvolume action": [
-    "Dölj %d undervolym åtgärd",
-    "Dölj %d undervolymer åtgärder"
+    "%d alt birim eylemini gizle",
+    "%d alt birim eylemlerini gizle"
   ],
   "Hide details": [
-    "Dölj detaljer"
+    "Detayları gizle"
   ],
   "Hostname": [
-    "Värdnamn"
+    "Ana bilgisayar adı"
   ],
   "Hostname could not be updated": [
-    "Värdnamnet kunde inte uppdateras"
+    "Ana bilgisayar adı güncellenemedi"
   ],
   "Hostname successfully updated": [
-    "Värdnamnet har uppdaterats"
+    "Ana bilgisayar adı başarıyla güncellendi"
   ],
   "I have read and accept the [license] for %s": [
-    "Jag har läst och accepterar [licensen] för %s"
+    "%s için [lisansı] okudum ve kabul ediyorum"
   ],
   "IP Address": [
-    "IP address"
+    "IP Adres"
   ],
   "IP Addresses": [
-    "IP-adresser"
+    "IP Adresleri"
   ],
   "IP address": [
-    "IP address"
+    "IP adresi"
   ],
   "IP addresses": [
-    "IP adresser"
+    "IP adresleri"
   ],
   "IP settings": [
-    "IP inställningar"
+    "IP ayarları"
   ],
   "IPv4": [
     "IPv4"
@@ -725,259 +725,259 @@ export default {
     "IPv6"
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
-    "Om ett lokalt media användes för att köra det här installationsprogrammet, ta bort det före nästa uppstart."
+    "Bu yükleyiciyi çalıştırmak için yerel medya kullanıldıysa bir sonraki önyüklemeden önce bunu kaldırın."
   ],
   "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "Om enheten utelämnas kommer byte (B) att användas. Större enheter kan vara av              formen av GiB (effekt av 2) eller GB (effekt av 10)."
+    "Birim atlanırsa, bayt (B) kullanılacaktır. Daha büyük birimler GiB                (2'nin kuvveti) veya GB (10'un kuvveti) biçiminde olabilir."
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Om du fortsätter kommer partitionerna på din hårddisk att modifieras enligt de medföljande installationsinställningarna."
+    "Devam ederseniz sabit diskinizdeki bölümler, sağlanan kurulum ayarlarına göre değiştirilecektir."
   ],
   "In progress": [
-    "Pågår"
+    "Devam ediyor"
   ],
   "Incorrect IP address": [
-    "Felaktig IP adress"
+    "Yanlış IP adresi"
   ],
   "Incorrect password": [
-    "Felaktigt lösenord"
+    "Yanlış şifre"
   ],
   "Incorrect port": [
-    "Felaktig port"
+    "Yanlış port"
   ],
   "Incorrect user name": [
-    "Felaktigt användarnamn"
+    "Yanlış kullanıcı adı"
   ],
   "Initiator": [
-    "Initiativtagare"
+    "Başlatıcı"
   ],
   "Initiator details": [
-    "Initiator detaljer"
+    "Başlatıcı detayları"
   ],
   "Initiator name": [
-    "Initiativtagarens namn"
+    "Başlatıcı adı"
   ],
   "Initiator name could not be updated": [
-    "Initiatornamnet kunde inte uppdateras"
+    "Başlatıcı adı güncellenemedi"
   ],
   "Initiator name successfully updated": [
-    "Initiatornamnet har uppdaterats"
+    "Başlatıcı adı başarıyla güncellendi"
   ],
   "Install": [
-    "Installera"
+    "Yükle"
   ],
   "Install using an advanced configuration.": [
-    "Installera med en avancerad konfiguration."
+    "Gelişmiş seçenekler ile kurulum yapın."
   ],
   "Install using device %s and deleting all its content.": [
-    "Installerar på enhet %s och raderar allt innehåll."
+    "%s aygıtını kullanarak yükleyin ve tüm içeriğini silin."
   ],
   "Install using device %s shrinking existing partitions as needed.": [
-    "Installera på enhet %s som krymper befintliga partitioner efter behov."
+    "%s aygıtını kullanarak kurulum yapın ve gerektiğinde mevcut bölümleri küçültün."
   ],
   "Install using device %s with a custom strategy to find the needed space.": [
-    "Installera på enhet %s med en anpassad strategi för att hitta det utrymme som behövs."
+    "Gerekli alanı bulmak için özel bir stratejiyle %s cihazını kullanarak yükleyin."
   ],
   "Install using device %s without modifying existing partitions.": [
-    "Installera på enhet %s utan att ändra befintliga partitioner."
+    "Mevcut bölümleri değiştirmeden, %s cihazını kullanarak yükleyin."
   ],
   "Install using several devices and deleting all its content.": [
-    "Installera med flera enheter och ta bort allt innehåll."
+    "%s aygıtını kullanarak yükleyin ve tüm içeriğini silin."
   ],
   "Install using several devices shrinking existing partitions as needed.": [
-    "Installera med flera enheter som krymper befintliga partitioner efter behov."
+    "%s aygıtını kullanarak kurulum yapın ve gerektiğinde mevcut bölümleri küçültün."
   ],
   "Install using several devices with a custom strategy to find the needed space.": [
-    "Installera med flera enheter med en anpassad strategi för att hitta det utrymme som behövs."
+    "İhtiyaç duyduğunuz alanı bulmak için özel bir stratejiyle birden fazla cihaz kullanarak kurulum yapın."
   ],
   "Install using several devices without modifying existing partitions.": [
-    "Installera med flera enheter utan att ändra befintliga partitioner."
+    "Mevcut bölümleri değiştirmeden %s aygıtını kullanarak yükleyin."
   ],
   "Installation Devices": [
-    "Installationsenheter"
+    "Kurulum Cihazları"
   ],
   "Installation will take %s.": [
-    "Installationen kommer att ta %s."
+    "Kurulum %s kadar olacak."
   ],
   "Installer Options": [
-    "Installationsalternativ"
+    "Yükleyici Seçenekleri"
   ],
   "Installer options": [
-    "Installationsalternativ"
+    "Kurulum seçenekleri"
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
-    "Att installera ett trasigt paket påverkar systemets stabilitet och är en stor säkerhetsrisk!"
+    "Bozuk bir paketin kurulumu sistem kararlılığını etkiler ve büyük bir güvenlik riski oluşturur!"
   ],
   "Installing the system, please wait...": [
-    "Installerar systemet, vänligen vänta ..."
+    "Sistem kuruluyor, lütfen bekleyin..."
   ],
   "Interface": [
-    "Gränssnitt"
+    "Arayüz"
   ],
   "Invalid storage settings": [
-    "Ogiltiga lagringsinställningar"
+    "Geçersiz depolama ayarları"
   ],
   "Ip prefix or netmask": [
-    "IP prefix eller nätmask"
+    "IP öneki veya ağ maskesi"
   ],
   "Issue date": [
-    "Utgivningsdatum"
+    "Düzenleme tarihi"
   ],
   "Issuer": [
-    "Utfärdare"
+    "Yayıncı"
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
-    "Det är inte möjligt att installera systemet med den aktuella konfigurationen. Justera inställningarna nedan."
+    "Mevcut yapılandırma ile sistemi kurmak mümkün değildir. Aşağıdaki ayarları düzenleyin."
   ],
   "It may take some time.": [
-    "Det kan ta lite tid."
+    "Biraz zaman alabilir."
   ],
   "JFS": [
     "JFS"
   ],
   "Keep size of %s": [
-    "Behåll storleken på %s"
+    "%s boyutunu koru"
   ],
   "Keyboard": [
-    "Tangentbord"
+    "Klavye"
   ],
   "Keyboard layout": [
-    "Tangentbordslayout"
+    "Klavye düzeni"
   ],
   "Keyboard selection": [
-    "Tangentbordsval"
+    "Klavye seçimi"
   ],
   "KiB": [
-    "KiB"
+    "KB"
   ],
   "LUN": [
     "LUN"
   ],
   "Label": [
-    "Etikett"
+    "Etiket"
   ],
   "Language": [
-    "Språk"
+    "Dil"
   ],
   "Let the installer propose a sensible range of sizes": [
-    "Låt installationsprogrammet föreslå ett vettigt utbud av storlekar"
+    "Kurulumcunun makul bir boyut aralığı önermesine izin verin"
   ],
   "License language": [
-    "Licens språk"
+    "Lisans dili"
   ],
   "Limited": [
-    "Begränsad"
+    "Sınırlı"
   ],
   "Loading": [
-    "Laddar"
+    "Yükleniyor"
   ],
   "Loading data...": [
-    "Laddar data..."
+    "Veri yükleniyor..."
   ],
   "Loading the installation repositories...": [
-    "Laddar installationsförråd..."
+    "Kurulum depoları yükleniyor..."
   ],
   "Locale selection": [
-    "Lokal val"
+    "Yerelleştirme seçimi"
   ],
   "Localization": [
-    "Lokalisering"
+    "Yerelleştirme"
   ],
   "Log in": [
-    "Logga in"
+    "Giriş Yap"
   ],
   "Log in as %s": [
-    "Logga in som %s"
+    "%s olarak oturum açın"
   ],
   "Logical volume name": [
-    "Logisk volym namn"
+    "Mantıksal birim adı"
   ],
   "Logical volumes": [
-    "Logiska volymer"
+    "Mantıksal birimler"
   ],
   "Login": [
-    "Logga in"
+    "Oturum aç"
   ],
   "Login %s": [
-    "Inloggning %s"
+    "Giriş %s"
   ],
   "Login form": [
-    "Inloggningsformulär"
+    "Giriş Formu"
   ],
   "Logout": [
-    "Logga ut"
+    "Oturumu kapat"
   ],
   "MAC": [
     "MAC"
   ],
   "Main navigation": [
-    "Huvudnavigering"
+    "Ana gezinme"
   ],
   "Make sure you provide the correct values": [
-    "Se till att du anger rätt värden"
+    "Doğru değerleri sağladığınızdan emin olun"
   ],
   "Manage DASD devices": [
-    "Hantera DASD-enheter"
+    "DASD cihazlarını yönetin"
   ],
   "Manual": [
-    "Manuell"
+    "Manuel"
   ],
   "Maximum": [
-    "Maximal"
+    "Maksimum"
   ],
   "Maximum size mode": [
-    "Läget för maximal storlek"
+    "Maksimum boyut modu"
   ],
   "Maximum size options": [
-    "Största storleksalternativ"
+    "Maksimum boyut seçenekleri"
   ],
   "Maximum size value": [
-    "Maximalt storleksvärde"
+    "Maksimum boyut değeri"
   ],
   "MiB": [
-    "MiB"
+    "MB"
   ],
   "Minimum": [
-    "Minst"
+    "Minimum"
   ],
   "Minimum size value": [
-    "Minsta storleksvärde"
+    "Minimum boyut değeri"
   ],
   "Mode": [
-    "Läge"
+    "Mod"
   ],
   "Modify settings and physical volumes": [
-    "Modifiera inställningar och fysiska volymer"
+    "Ayarları ve fiziksel birimleri değiştirin"
   ],
   "More actions": [
-    "Mer åtgärder"
+    "Daha fazla eylem"
   ],
   "More devices": [
-    "Mer enheter"
+    "Daha fazla cihaz"
   ],
   "Mount Point": [
-    "Monteringspunkt"
+    "Bağlantı Noktası"
   ],
   "Mount point": [
-    "Monteringspunkt"
+    "Bağlantı noktası"
   ],
   "Mount point mode": [
-    "Monteringspunkt läge"
+    "Bağlantı noktası modu"
   ],
   "Mount point options": [
-    "Monteringspunktsalternativ"
+    "Bağlantı noktası seçenekleri"
   ],
   "Mount point toggle": [
-    "Monteringspunkt växel"
+    "Bağlantı noktası değişimi"
   ],
   "Move mount points": [
-    "Flytta monteringspunkter"
+    "Bağlantı noktalarını taşı"
   ],
   "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    "Flytta monteringspunkterna som för närvarande är konfigurerade på de valda diskarna till logiska                   volymer på denna volymgrupp."
+    "Seçili disklerde şu anda yapılandırılmış olan bağlama noktalarını bu                    birim grubunun mantıksal birimlerine taşıyın."
   ],
   "Multipath": [
-    "Flervägs"
+    "Çoklu yol"
   ],
   "NFS": [
     "NFS"
@@ -989,202 +989,202 @@ export default {
     "NTFS"
   ],
   "Name": [
-    "Namn"
+    "İsim"
   ],
   "Network": [
-    "Nätverk"
+    "Ağ"
   ],
   "Network details": [
-    "Nätverksdetaljer"
+    "Ağ detayları"
   ],
   "Network not found or lost": [
-    "Nätverket hittades inte eller förlorades"
+    "Ağ bulunamadı veya kaybedildi"
   ],
   "New": [
-    "Ny"
+    "Yeni"
   ],
   "No": [
-    "Nej"
+    "Hayır"
   ],
   "No Wi-Fi networks were found": [
-    "Inga Wi-Fi-nätverk hittades"
+    "Hiçbir Wi-Fi ağı bulunamadı"
   ],
   "No additional partitions will be created": [
-    "Inga ytterligare partitioner kommer att skapas"
+    "Ek bölüm oluşturulmayacak"
   ],
   "No additional software was selected.": [
-    "Ingen ytterligare programvara valdes."
+    "Hiçbir ek yazılım seçilmedi."
   ],
   "No content found": [
-    "Inget innehåll hittades"
+    "İçerik bulunamadı"
   ],
   "No device selected yet": [
-    "Ingen enhet vald ännu"
+    "Henüz hiçbir cihaz seçilmedi"
   ],
   "No devices configured yet": [
-    "Inga enheter har konfigurerats ännu"
+    "Henüz hiçbir cihaz yapılandırılmadı"
   ],
   "No devices found": [
-    "Inga enheter hittades"
+    "Hiçbir cihaz bulunamadı"
   ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "Ingen iSCSI Boot Firmware Table (iBFT) hittades. Initieraren kan konfigureras manuellt."
+    "iSCSI Önyükleme Ürün Yazılımı Tablosu (iBFT) bulunamadı. Başlatıcı manuel olarak yapılandırılabilir."
   ],
   "No iSCSI targets found.": [
-    "Inga iSCSI mål hittades."
+    "Hiçbir iSCSI hedefi bulunamadı."
   ],
   "No logical volumes are defined yet": [
-    "Inga logiska volymer är definierade ännu"
+    "Henüz mantıksal birimler tanımlanmadı"
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
-    "Inga partitioner kommer att konfigureras automatiskt för uppstart. Använd med försiktighet."
+    "Önyükleme için hiçbir bölüm otomatik olarak yapılandırılmayacak. Dikkatli kullanın."
   ],
   "No support is planned.": [
-    "Inget stöd är planerat."
+    "Herhangi bir destek planlanmamaktadır."
   ],
   "No user defined yet.": [
-    "Ingen användare definierad ännu."
+    "Henüz kullanıcı tanımlı değil."
   ],
   "No wired connections were found": [
-    "Inga trådbundna anslutningar hittades"
+    "Kablolu bağlantı bulunamadı"
   ],
   "No zFCP controllers found.": [
-    "Inga zFCP-kontroller hittades."
+    "Hiçbir zFCP denetleyicisi bulunamadı."
   ],
   "No zFCP disks found.": [
-    "Inga zFCP-diskar hittades."
+    "zFCP diski bulunamadı."
   ],
   "None": [
-    "Ingen"
+    "Yok"
   ],
   "None of the keymaps match the filter.": [
-    "Ingen av tangentmapparna matchar filtret."
+    "Hiçbir tuş haritası filtreye uymuyor."
   ],
   "None of the locales match the filter.": [
-    "Inget av lokalerna matchar filtret."
+    "Hiçbir yerel ayar filtreye uymuyor."
   ],
   "None of the patterns match the filter.": [
-    "Inget av mönstren matchar filtret."
+    "Desenlerin hiçbiri filtreyle eşleşmiyor."
   ],
   "None of the time zones match the filter.": [
-    "Inget av tidszonerna matchar filtret."
+    "Hiçbir zaman dilimi filtreye uymuyor."
   ],
   "Not available": [
-    "Inte tillgänglig"
+    "Müsait değil"
   ],
   "Not defined": [
-    "Inte definerad"
+    "Tanımlanmamış"
   ],
   "Not implemented yet (%s)": [
-    "Inte implementerat ännu (%s)"
+    "Henüz uygulanmadı (%s)"
   ],
   "Not possible with the current setup. Click to know more.": [
-    "Inte möjligt med den aktuella konfigurationen. Klicka för att veta mer."
+    "Mevcut kurulum mümkün değil. Daha fazlasını öğrenmek için tıklayın."
   ],
   "Not protected network": [
-    "Inte skyddat nätverk"
+    "Korunmayan ağ"
   ],
   "Not selected yet": [
-    "Inte valt ännu"
+    "Henüz seçilmedi"
   ],
   "Not supported (%s)": [
-    "Stöds inte (%s)"
+    "Desteklenmiyor (%s)"
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Offlineenheter måste aktiveras innan de formateras. Vänligen avmarkera eller aktivera enheterna listade nedan och försök igen"
+    "Çevrimdışı cihazlar biçimlendirilmeden önce etkinleştirilmelidir. Lütfen aşağıda listelenen cihazların seçimini kaldırın veya etkinleştirin ve tekrar deneyin"
   ],
   "On boot": [
-    "Vid uppstart"
+    "Önyüklemede"
   ],
   "Only available if authentication by target is provided": [
-    "Endast tillgängligt om autentisering via mål tillhandahålls"
+    "Yalnızca hedef tarafından kimlik doğrulaması sağlandığında kullanılabilir"
   ],
   "Options toggle": [
-    "Växla mellan alternativ"
+    "Seçenekler geçişi"
   ],
   "Other options": [
-    "Andra alternativ"
+    "Diğer seçenekler"
   ],
   "Other options toggle": [
-    "Andra alternativ växel"
+    "Diğer seçenekler arasında geçiş"
   ],
   "Overview": [
-    "Översikt"
+    "Genel bakış"
   ],
   "Package installation failed": [
-    "Paket installation misslyckades"
+    "Paket kurulumu başarısız oldu"
   ],
   "Partition Info": [
-    "Partitionsinformation"
+    "Bölüm Bilgisi"
   ],
   "Partitions": [
-    "Partitioner"
+    "Bölümler"
   ],
   "Partitions needed for booting will also be adapted": [
-    "Partitioner som behövs för uppstart kommer också att anpassas"
+    "Önyükleme için gereken bölümler de uyarlanacak"
   ],
   "Partitions needed for booting will remain at %s": [
-    "Partitioner för uppstart kommer att finnas kvar på %s"
+    "Önyükleme için gereken bölümler %s konumunda kalacak"
   ],
   "Partitions to boot will be allocated at the following device.": [
-    "Partitioner för att uppstart kommer att tilldelas på följande enhet."
+    "Önyükleme için bölümler aşağıdaki aygıta tahsis edilecektir."
   ],
   "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Partitioner som ska startas upp kommer att tilldelas på installationsdisken (%s)."
+    "Önyükleme için bölümler kurulum diskinde (%s) tahsis edilecektir."
   ],
   "Partitions to boot will be allocated at the installation disk.": [
-    "Partitioner som ska startas upp kommer att tilldelas på installationsdisken."
+    "Önyükleme için gerekli bölümler kurulum diskinde tahsis edilecektir."
   ],
   "Partitions will be used and created for %s": [
-    "Partitioner kommer att användas och skapas för %s"
+    "Bölümler %s için kullanılacak ve oluşturulacak"
   ],
   "Password": [
-    "Lösenord"
+    "Parola"
   ],
   "Password Required": [
-    "Lösenord krävs"
+    "Parola Gerekli"
   ],
   "Password confirmation": [
-    "Lösenordsbekräftelse"
+    "Parola onayı"
   ],
   "Password input": [
-    "Lösenordsinmatning"
+    "Şifre girişi"
   ],
   "Password is empty.": [
-    "Lösenord är tomt."
+    "Şifre boş."
   ],
   "Password visibility button": [
-    "Knapp för lösenordssynlighet"
+    "Parola görünürlük düğmesi"
   ],
   "Passwords do not match": [
-    "Lösenorden matchar inte"
+    "Parolalar uyuşmuyor"
   ],
   "Pending": [
-    "Väntar"
+    "Bekliyor"
   ],
   "Perform an action": [
-    "Utför en åtgärd"
+    "Bir eylem gerçekleştir"
   ],
   "PiB": [
-    "PiB"
+    "PB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
-    "Vänligen, avbryt och kontrollera inställningarna om du är osäker."
+    "Emin değilseniz lütfen iptal edin ve ayarları kontrol edin."
   ],
   "Please, check whether it is running.": [
-    "Vänligen kontrollera om den är igång."
+    "Çalışıp çalışmadığını kontrol edin lütfen."
   ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Vänligen utför en iSCSI-upptäckt för att hitta tillgängliga iSCSI-mål."
+    "Lütfen kullanılabilir iSCSI hedeflerini bulmak için bir iSCSI keşfi gerçekleştirin."
   ],
   "Please, provide its password to log in to the system.": [
-    "Vänligen ange lösenordet för att logga in på systemet."
+    "Lütfen sisteme giriş yapabilmek için şifrenizi giriniz."
   ],
   "Please, try to activate a zFCP controller.": [
-    "Snälla, försök att aktivera en zFCP-kontroller."
+    "Lütfen bir zFCP denetleyicisi etkinleştirmeyi deneyin."
   ],
   "Please, try to activate a zFCP disk.": [
-    "Snälla, försök att aktivera en zFCP-disk."
+    "Lütfen bir zFCP diski etkinleştirmeyi deneyin."
   ],
   "Port": [
     "Port"
@@ -1193,677 +1193,677 @@ export default {
     "Portal"
   ],
   "Pre-installation checks": [
-    "Förinstallationskontroller"
+    "Ön kurulum kontrolleri"
   ],
   "Prefix length or netmask": [
-    "Prefix längd eller nätmask"
+    "Önek uzunluğu veya ağ maskesi"
   ],
   "Product is already registered": [
-    "Produkten är redan registrerad"
+    "Ürün zaten kayıtlı"
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Skydd för informationen som lagras i de nya filsystemen, inklusive data, program och systemfiler."
+    "Veriler, programlar ve sistem dosyaları dahil olmak üzere yeni dosya sistemlerinde depolanan bilgilerin korunması."
   ],
   "Provide email address": [
-    "Ange en e-postadress"
+    "E-posta adresini belirtin"
   ],
   "Public SSH Key": [
-    "Publik SSH nyckel"
+    "Genel SSH Anahtarı"
   ],
   "Public SSH Key is empty.": [
-    "Publik SSH nyckel är tom."
+    "Genel SSH Anahtarı boş."
   ],
   "Public network": [
-    "Publikt nätverk"
+    "Herkese açık ağ"
   ],
   "Question": [
-    "Fråga"
+    "Soru"
   ],
   "Read zFCP devices": [
-    "Läs zFCP-enheter"
+    "zFCP aygıtlarını oku"
   ],
   "Reboot": [
-    "Starta om"
+    "Yeniden Başlat"
   ],
   "Recommended": [
-    "Rekommenderad"
+    "Tavsiye edilen"
   ],
   "Register": [
-    "Registrera"
+    "Kaydol"
   ],
   "Registration": [
-    "Registrering"
+    "Kayıt"
   ],
   "Registration certificate": [
-    "Registreringscertifikat"
+    "Kayıt sertifikası"
   ],
   "Registration code": [
-    "Registreringskod"
+    "Kayıt kodu"
   ],
   "ReiserFS": [
     "ReiserFS"
   ],
   "Reload": [
-    "Ladda om"
+    "Yenile"
   ],
   "Reloading data, please wait...": [
-    "Laddar om data, vänligen vänta..."
+    "Veriler yeniden yükleniyor, lütfen bekleyin..."
   ],
   "Remove": [
-    "Ta bort"
+    "Kaldır"
   ],
   "Remove max channel filter": [
-    "Ta bort maximum kanal filter"
+    "Maksimum kanal filtresini kaldır"
   ],
   "Remove min channel filter": [
-    "Ta bort minimum kanal filter"
+    "Min kanal filtresini kaldır"
   ],
   "Remove the configuration for this disk": [
-    "Ta bort konfigurationen för den här disken"
+    "Bu disk için yapılandırmayı kaldırın"
   ],
   "Repository load failed": [
-    "Det gick inte att ladda förråd"
+    "Depo yüklemesi başarısız oldu"
   ],
   "Reset to defaults": [
-    "Återställ till standard"
+    "Varsayılanlara sıfırla"
   ],
   "Reset to the default configuration": [
-    "Återställ till standardkonfiguration"
+    "Varsayılan yapılandırmaya sıfırla"
   ],
   "Result": [
-    "Resultat"
+    "Sonuç"
   ],
   "Root authentication methods": [
-    "Rotautentiseringsmetoder"
+    "Root kimlik doğrulama yöntemleri"
   ],
   "Root user": [
-    "Root användare"
+    "Root kullanıcısı"
   ],
   "Routes": [
-    "Rutter"
+    "Rotalar"
   ],
   "SD Card": [
-    "SD-kort"
+    "SD Kart"
   ],
   "SHA1 fingerprint": [
-    "SHA1-fingeravtryck"
+    "SHA1 parmak izi"
   ],
   "SHA256 fingerprint": [
-    "SHA256-fingeravtryck"
+    "SHA256 parmak izi"
   ],
   "SSID": [
     "SSID"
   ],
   "Same as minimum": [
-    "Samma som minimum"
+    "Minimum ile aynı"
   ],
   "Search": [
-    "Sök"
+    "Arama"
   ],
   "Secured network": [
-    "Säkert nätverk"
+    "Güvenli ağ"
   ],
   "Security": [
-    "Säkerhet"
+    "Güvenlik"
   ],
   "See more details": [
-    "Se mer detaljer"
+    "Daha fazla ayrıntı görün"
   ],
   "Select": [
-    "Välj"
+    "Seç"
   ],
   "Select a disk": [
-    "Välj en disk"
+    "Bir disk seçin"
   ],
   "Select a disk to configure": [
-    "Välj en disk att konfigurera"
+    "Yapılandırılacak bir disk seçin"
   ],
   "Select a disk to create %s": [
-    "Välj en disk för att skapa %s"
+    "%s oluşturmak için bir disk seçin"
   ],
   "Select a disk to define partitions": [
-    "Välj en disk för att definiera partitioner"
+    "Bölümleri tanımlamak için bir disk seçin"
   ],
   "Select a disk to install the system": [
-    "Välj en disk för att installera systemet"
+    "Sistemi kurmak için bir disk seçin"
   ],
   "Select a product": [
-    "Välj en produkt"
+    "Bir ürün seçin"
   ],
   "Select another disk to define partitions": [
-    "Välj en annan disk för att definiera partitioner"
+    "Bölümleri tanımlamak için başka bir disk seçin"
   ],
   "Select at least one disk.": [
-    "Välj åtminstone en disk."
+    "En az bir disk seçin."
   ],
   "Select or enter a mount point": [
-    "Välj eller ange en monteringspunkt"
+    "Bir bağlama noktası seçin veya girin"
   ],
   "Select or enter a mount point that is not already assigned to another device": [
-    "Välj eller ange en monteringspunkt som inte redan är tilldelad en annan enhet"
+    "Başka bir cihaza henüz atanmamış bir bağlama noktası seçin veya girin"
   ],
   "Select or enter a valid mount point": [
-    "Välj eller ange en giltig monteringspunkt"
+    "Geçerli bir bağlama noktası seçin veya girin"
   ],
   "Select the disk to configure partitions for booting": [
-    "Välj disk för att konfigurera partitionerna för uppstart"
+    "Önyükleme için bölümleri yapılandırmak üzere diski seçin"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
-    "Välj vad som ska göras med varje partition för att hitta utrymme för att allokera det nya systemet."
+    "Yeni sisteme yer açmak için her bölümle ne yapılacağını seçin."
   ],
   "Select what to do with each partition.": [
-    "Välj vad som ska göras med varje partition."
+    "Her bölümle ne yapılacağını seçin."
   ],
   "Selected disk (cannot be changed)": [
-    "Vald disk (kan inte ändras)"
+    "Seçili disk (değiştirilemez)"
   ],
   "Selected patterns": [
-    "Valda mönster"
+    "Seçilmiş desenler"
   ],
   "Server IP": [
-    "Server IP"
+    "Sunucu IP'si"
   ],
   "Set DIAG Off": [
-    "Sätt DIAGNOS till av"
+    "DIAG'ı Kapalı Olarak Ayarla"
   ],
   "Set DIAG On": [
-    "Sätt DIAGNOS till på"
+    "DIAG'ı Açık olarak ayarlayın"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
-    "Ställ in ett permanent värdnamn som inte ändras med nätverksuppdateringar."
+    "Ağ güncellemeleriyle değişmeyecek kalıcı bir ana bilgisayar adı ayarlayın."
   ],
   "Setting up connection": [
-    "Sätter upp anslutning"
+    "Bağlantı kuruluyor"
   ],
   "Several partitions will be deleted": [
-    "Flera partitioner kommer att tas bort"
+    "Birkaç bölüm silinecek"
   ],
   "Show": [
-    "Visa"
+    "Göster"
   ],
   "Show %d subvolume action": [
-    "Visa %d undervolym åtgärd",
-    "Visa %d undervolymer åtgärder"
+    "%d alt birim eylemini göster",
+    "%d alt birim eylemlerini göster"
   ],
   "Show information about %s": [
-    "Visa information om %s"
+    "%s hakkında bilgi göster"
   ],
   "Shrink existing partitions": [
-    "Krymp existerande partitioner"
+    "Mevcut bölümleri küçült"
   ],
   "Signal strength": [
-    "Signalstyrka"
+    "Sinyal gücü"
   ],
   "Size": [
-    "Storlek"
+    "Boyut"
   ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
-    "Storleksgränser måste vara siffror, eventuellt följt av en enhet som GiB eller GB"
+    "Boyut sınırları, isteğe bağlı olarak GiB veya GB gibi bir birimin takip ettiği sayılar olmalıdır"
   ],
   "Size options": [
-    "Storleksalternativ"
+    "Boyut seçenekleri"
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "Storlekar måste anges som siffror, eventuellt följt av en enhet."
+    "Boyutlar sayı olarak girilmeli, isteğe bağlı olarak birim eklenmelidir."
   ],
   "Software": [
-    "Programvara"
+    "Yazılım"
   ],
   "Software %s": [
-    "Programvara %s"
+    "Yazılım %s"
   ],
   "Software selection": [
-    "Val av programvara"
+    "Yazılım seçimi"
   ],
   "Some existing partitions may be shrunk": [
-    "Vissa befintliga partitioner kan krympas"
+    "Mevcut bazı bölümler küçültülebilir"
   ],
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "Vissa installationsförråd kunde inte laddas. Utan dem kan systemet inte installeras."
+    "Bazı kurulum depoları yüklenemedi. Sistem bunlar olmadan yüklenemez."
   ],
   "Some of the elements in your AutoYaST profile are not supported.": [
-    "En del av elementen i din AutoYaST-profil stöds inte."
+    "AutoYaST profilinizdeki bazı öğeler desteklenmiyor."
   ],
   "Some partitions may be deleted": [
-    "Vissa partitioner kan tas bort"
+    "Bazı bölümler silinebilir"
   ],
   "Some partitions may be shrunk": [
-    "Vissa partitioner kan krympas"
+    "Bazı bölümler küçültülebilir"
   ],
   "Something went wrong": [
-    "Något gick fel"
+    "Bir şeyler ters gitti"
   ],
   "Start configuring a basic installation": [
-    "Börja konfigurera en grundläggande installation"
+    "Bir temel bir kurulumu yapılandırmaya başlayın"
   ],
   "Start from scratch with the default configuration": [
-    "Börja från början med standardkonfigurationen"
+    "Varsayılan yapılandırmayla sıfırdan başlayın"
   ],
   "Startup": [
-    "Uppstart"
+    "Başlangıç"
   ],
   "Static hostname": [
-    "Statiskt värdnamn"
+    "Statik ana bilgisayar adı"
   ],
   "Status": [
-    "Status"
+    "Durum"
   ],
   "Storage": [
-    "Lagring"
+    "Depolama"
   ],
   "Structure of the new system, including disks to use and additional devices like LVM volume groups.": [
-    "Det nya systemets struktur, inklusive diskar att använda och ytterligare enheter som LVM-volymgrupper."
+    "Kullanılacak diskler ve LVM birim grupları gibi ek cihazlar da dahil olmak üzere yeni sistemin yapısı."
   ],
   "Suggested mount points": [
-    "Föreslagna monteringspunkter"
+    "Önerilen bağlama noktaları"
   ],
   "Swap": [
     "Swap"
   ],
   "TPM sealing requires the new system to be booted directly.": [
-    "TPM-försegling kräver att det nya systemet startas upp direkt."
+    "TPM yalıtımıyla yeni sistemin doğrudan başlatılması gerekir."
   ],
   "Target Password": [
-    "Mål lösenord"
+    "Hedef Şifre"
   ],
   "Targets": [
-    "Mål"
+    "Hedefler"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
-    "LVM-gruppen '%1$s' kommer att vara kvar på %2$s"
+    "LVM grubu '%1$s' %2$s konumunda kalacak"
   ],
   "The configured LVM groups will remain at %s": [
-    "De konfigurerade LVM-grupperna kommer att finnas kvar på %s"
+    "Yapılandırılan LVM grupları %s konumunda kalacaktır"
   ],
   "The content may be deleted": [
-    "Innehållet kan komma att raderas"
+    "İçerik silinmiş olabilir"
   ],
   "The current configuration will result in a %1$s of %2$s.": [
-    "Den aktuella konfigurationen kommer att resultera i en %1$s på %2$s."
+    "Mevcut yapılandırma %1$s veya %2$s sonucunu verecektir."
   ],
   "The current configuration will result in a %1$s of at least %2$s.": [
-    "Den aktuella konfigurationen kommer att resultera i en %1$s på minst %2$s."
+    "Mevcut yapılandırma en az %2$s değerinde bir %1$s ile sonuçlanacaktır."
   ],
   "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "Den aktuella konfigurationen kommer att resultera i en %1$s med en storlek mellan %2$s och %3$s."
+    "Mevcut yapılandırma, %2$s ile %3$s arasında bir boyuta sahip %1$s ile sonuçlanacaktır."
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
-    "Data bevaras, men storleken på de aktuella partitionerna kommer att ändras efter behov."
+    "Veriler tutulacak, ancak mevcut bölümler ihtiyaç halinde yeniden boyutlandırılacak."
   ],
   "The data is kept. Only the space not assigned to any partition will be used.": [
-    "Data bevaras. Endast det utrymme som inte är tilldelat någon partition kommer att användas."
+    "Veriler tutulur. Sadece herhangi bir bölüme atanmamış alan kullanılacaktır."
   ],
   "The device cannot be shrunk:": [
-    "Enheten kan inte krympas:"
+    "Cihaz daraltılamaz:"
   ],
   "The device will be mounted at %s.": [
-    "Enheten kommer att monteras på %s."
+    "Cihaz %s konumuna bağlanacak."
   ],
   "The device will be used by the new system.": [
-    "Enheten kommer att användas av det nya systemet."
+    "Cihaz yeni sistemde kullanılacak."
   ],
   "The disk is used for LVM": [
-    "Disken används för LVM"
+    "Disk LVM için kullanılır"
   ],
   "The disk is used for LVM and boot": [
-    "Disken används för LVM och uppstart"
+    "Disk LVM ve önyükleme için kullanılır"
   ],
   "The disk is used for booting": [
-    "Disken används för uppstart"
+    "Disk önyükleme için kullanılır"
   ],
   "The encryption password did not work": [
-    "Krypteringslösenordet fungerade inte"
+    "Şifreleme şifresi işe yaramadı"
   ],
   "The extension has been registered with key %s.": [
-    "Tillägget har registrerats med nyckeln %s."
+    "Uzantı %s anahtarıyla kaydedildi."
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
-    "Det sista steget för att konfigurera Trusted Platform Module (TPM) för att automatiskt öppna krypterade enheter kommer att ske under den första uppstarten av det nya systemet. För att det ska fungera måste maskinen startas direkt till den nya uppstartshanteraren."
+    "Güvenilir Platform Modülünü (Trusted Platform Module) (TPM) şifrelenmiş cihazları otomatik olarak açacak şekilde yapılandırmanın son adımı, yeni sistemin ilk önyüklemesi sırasında gerçekleştirilecektir. Bunun çalışması için makinenin doğrudan yeni önyükleyiciye önyükleme yapması gerekir."
   ],
   "The following software patterns are selected for installation:": [
-    "Följande programvarumönster är valda för installation:"
+    "Kurulum için aşağıdaki yazılım desenleri seçilmiştir:"
   ],
   "The initiator name cannot be blank": [
-    "Initiatornamnet kan inte vara tomt"
+    "Başlatıcı adı boş olamaz"
   ],
   "The installation on your machine is complete.": [
-    "Installationen på din maskin har slutförts."
+    "Makinenize kurulum tamamlanmıştır."
   ],
   "The installation will take": [
-    "Installationen kommer att ta"
+    "Kurulum yapılacak"
   ],
   "The installation will take %s including:": [
-    "Installationen kommer att ta upp %s inklusive:"
+    "Kurulum %s kadar olacaktır ve şunları içerecektir:"
   ],
   "The installer requires [root] user privileges.": [
-    "Installationsprogrammet kräver [root] användarrättigheter."
+    "Yükleyici [root] kullanıcı ayrıcalıklarını gerektirir."
   ],
   "The logical volume can grow to use all the contiguous free space": [
-    "Den logiska volymen kan växa för att använda allt angränsande ledigt utrymme"
+    "Mantıksal birim, bitişikteki tüm boş alanı kullanacak şekilde büyüyebilir"
   ],
   "The logical volume can grow until a given limit size": [
-    "Den logiska volymen kan växa tills en given gränsstorlek"
+    "Mantıksal hacim, belirli bir sınır boyutuna kadar büyüyebilir"
   ],
   "The logical volume is created exactly with the given size": [
-    "Den logiska volymen skapas exakt med den givna storleken"
+    "Mantıksal birim tam olarak verilen boyutta oluşturulur"
   ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
-    "Det maximala måste vara ett tal, eventuellt följt av en enhet som GiB eller GB"
+    "Maksimum, isteğe bağlı olarak GiB veya GB gibi bir birim tarafından takip edilen bir sayı olmalıdır"
   ],
   "The minimum cannot be greater than the maximum": [
-    "Minimum kan inte vara större än maximum"
+    "Minimum, maksimumdan büyük olamaz"
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
-    "Det minsta måste vara ett nummer, eventuellt följt av en enhet som GiB eller GB"
+    "Minimum, isteğe bağlı olarak GiB veya GB gibi bir birimin izlediği bir sayı olmalıdır"
   ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    "De fysiska LVM-volymerna som behövs kommer att läggas till som partitioner på de valda diskarna,                 baserat på storleken på de logiska volymerna. Om du väljer mer än en disk så kan,                 fysiska volymer vara fördelade på flera diskar."
+    "Gerekli LVM fiziksel birimleri, mantıksal birimlerin boyutlarına göre seçilen disklere bölümler                  halinde eklenecektir. Birden fazla disk                  seçerseniz, fiziksel birimler birkaç diske dağıtılabilir."
   ],
   "The partition can grow to use all the contiguous free space": [
-    "Partitionen kan växa för att använda allt angränsande ledigt utrymme"
+    "Bölüm, bitişikteki tüm boş alanı kullanacak şekilde büyüyebilir"
   ],
   "The partition can grow until a given limit size": [
-    "Partitionen kan växa till en given storleksgräns"
+    "Bölüm, belirli bir sınır boyutuna kadar büyüyebilir"
   ],
   "The partition is created exactly with the given size": [
-    "Partitionen skapas exakt med den angivna storleken"
+    "Bölüm tam olarak belirtilen boyutta oluşturulur"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
-    "Lösenordet kommer inte att behövas för att starta och komma åt data om TPM kan verifiera systemets integritet. TPM-försegling kräver att det nya systemet startas upp direkt vid första körningen."
+    "TPM sistemin bütünlüğünü doğrulayabiliyorsa, verileri başlatmak ve erişmek için parolaya gerek kalmayacaktır. TPM yalıtımı, yeni sistemin ilk çalıştırmada doğrudan başlatılmasını gerektirir."
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet och närvaro av ett separat filsystem för %2$s."
+    "%1$s için boyut aralığı, sistemdeki RAM miktarına ve %2$s için ayrı bir dosya sisteminin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet och närvaro av separata filsystem för %2$s."
+    "%1$s için boyut aralığı, sistemdeki RAM miktarına ve %2$s için ayrı dosya sistemlerinin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet, användningen av Btrfs-ögonblicksavbilder och närvaro av ett separat filsystem för %2$s."
+    "%1$s için boyut aralığı, sistemdeki RAM miktarına, Btrfs anlık görüntülerinin kullanımına ve %2$s için ayrı bir dosya sisteminin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet, användningen av Btrfs-ögonblicksavbilder och närvaro av separata filsystem för %2$s."
+    "%1$s için boyut aralığı, sistemdeki RAM miktarına, Btrfs anlık görüntülerinin kullanımına ve %2$s için ayrı dosya sistemlerinin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
   ],
   "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på närvaro av ett separat filsystem för %2$s."
+    "%1$s için boyut aralığı, %2$s için ayrı bir dosya sisteminin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
   ],
   "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på närvaro av separata filsystem för %2$s."
+    "%1$s için boyut aralığı, %2$s için ayrı dosya sistemlerinin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
   ],
   "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på användningen av Btrfs-ögonblicksavbilder och närvaro av ett separat filsystem för %2$s."
+    "%1$s için boyut aralığı, Btrfs anlık görüntülerinin kullanımına ve %2$s için ayrı bir dosya sisteminin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
   ],
   "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på användningen av Btrfs-ögonblicksavbilder och närvaro av separata filsystem för %2$s."
+    "%1$s için boyut aralığı, Btrfs anlık görüntülerinin kullanımı ve %2$s için ayrı dosya sistemlerinin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
   ],
   "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "Storleksintervallet för %s kommer att justeras dynamiskt baserat på mängden RAM i systemet och användningen av Btrfs ögonblicksavbilder."
+    "%s için boyut aralığı, sistemdeki RAM miktarına ve Btrfs anlık görüntülerinin kullanımına bağlı olarak dinamik olarak ayarlanacaktır."
   ],
   "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "Storleksintervallet för %s kommer att justeras dynamiskt baserat på användningen av Btrfs ögonblicksavbilder."
+    "%s için boyut aralığı, Btrfs anlık görüntülerinin kullanımına bağlı olarak dinamik olarak ayarlanacaktır."
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
-    "Lagringskonfigurationen är giltig (se resultat nedan) men använder element som inte stöds av detta gränssnitt."
+    "Depolama yapılandırması geçerli (aşağıdaki sonucu görün) ancak bu arayüz tarafından desteklenmeyen öğeler kullanıyor."
   ],
   "The storage configuration uses elements not supported by this interface.": [
-    "Lagringskonfigurationen använder element som inte stöds av detta gränssnitt."
+    "Depolama yapılandırması bu arayüz tarafından desteklenmeyen öğeler kullanıyor."
   ],
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
-    "Systemet stöder inte WiFi-anslutningar, förmodligen på grund av saknad eller inaktiverad hårdvara."
+    "Sistem muhtemelen eksik veya devre dışı donanım nedeniyle Wi-Fi bağlantılarını desteklemiyor."
   ],
   "The system will use %s as its default language.": [
-    "Systemet kommer att använda %s som dess standardspråk."
+    "Sistem varsayılan dil olarak %s dilini kullanacaktır."
   ],
   "The zFCP disk was not activated.": [
-    "zFCP disken var inte aktiverad."
+    "zFCP diski etkinleştirilmedi."
   ],
   "There are no disks available for the installation.": [
-    "Det finns inga tillgängliga diskar för installation."
+    "Kurulum için kullanılabilir bir disk yok."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
-    "Det finns inga diskar tillgängliga för installationen. Du kan behöva konfigurera någon enhet."
+    "Kurulum için kullanılabilir disk yok. Bazı cihazları yapılandırmanız gerekebilir."
   ],
   "There are not usable partitions": [
-    "Det finns inte några användbara partitioner"
+    "Kullanılabilir bölüm yok"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Dessa är de mest relevanta installationsinställningarna. Bläddra gärna igenom avsnitten i menyn för ytterligare detaljer."
+    "Bunlar en alakalı kurulum ayarlarıdır. Daha fazla ayrıntı için menüdeki bölümlere göz atmaktan çekinmeyin."
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Denna åtgärd kan förstöra all data som lagras på enheterna som anges nedan. Vänligen bekräfta att du verkligen vill fortsätta."
+    "Bu eylem aşağıda listelenen cihazlarda depolanan tüm verileri yok edebilir. Lütfen devam etmek istediğinizi onaylayın."
   ],
   "This disk will contain any partition needed for booting": [
-    "Den här disken kommer att innehålla alla partitioner som behövs för uppstart"
+    "Bu disk, önyükleme için gereken tüm bölümleri içerecektir"
   ],
   "This disk will contain the LVM group '%s'": [
-    "Den här disken kommer att innehålla LVM-gruppen '%s'"
+    "Bu disk '%s' LVM grubunu içerecektir"
   ],
   "This disk will contain the LVM group '%s' and any partition needed to boot": [
-    "Den här disken kommer att innehålla LVM-gruppen '%s' och vilken partition som helst som behövs för att starta systemet"
+    "Bu disk, '%s' LVM grubunu ve önyükleme için gereken herhangi bir bölümü içerecektir"
   ],
   "This disk will contain the configured LVM groups": [
-    "Den här disken kommer att innehålla de konfigurerade LVM-grupperna"
+    "Bu disk yapılandırılmış LVM gruplarını içerecektir"
   ],
   "This disk will contain the configured LVM groups and any partition needed to boot": [
-    "Den här disken kommer att innehålla de konfigurerade LVM-grupperna och eventuella partitioner som behövs för att starta"
+    "Bu disk, yapılandırılmış LVM gruplarını ve önyükleme için gereken tüm bölümleri içerecektir"
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
-    "Det här tillägget är inte tillgängligt på servern. Be serveradministratören att spegla tillägget."
+    "Bu uzantı sunucuda mevcut değil. Sunucu yöneticisinden uzantıyı yansıtmasını isteyin."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    "Detta värdnamn är dynamiskt och kan ändras efter en omstart eller nätverksuppdatering, som konfigurerats av den lokala nätverksadministratören."
+    "Bu ana bilgisayar adı dinamiktir ve yerel ağ yöneticisi tarafından yapılandırıldığı şekilde yeniden başlatma veya ağ güncellemesinden sonra değişebilir."
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
-    "Denna produkten tillåter inte att välja programvarumönster under installationen. Du kan dock lägga till ytterligare programvara när installationen är klar."
+    "Bu ürün kurulum sırasında yazılım desenlerinin seçilmesine izin vermez. Ancak kurulum tamamlandıktan sonra ek yazılım ekleyebilirsiniz."
   ],
   "This space includes the base system and the selected software patterns, if any.": [
-    "Detta utrymme inkluderar bassystemet och de valda programvarumönsterna, om några."
+    "Bu alan, varsa temel sistemi ve seçili yazılım desenlerini içerir."
   ],
   "This uses existing partitions at the disk": [
-    "Detta använder befintliga partitioner på disken"
+    "Bu, diskteki mevcut bölümleri kullanır"
   ],
   "TiB": [
-    "TiB"
+    "TB"
   ],
   "Time zone": [
-    "Tidszon"
+    "Saat dilimi"
   ],
   "Tmpfs": [
     "Tmpfs"
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
-    "För att säkerställa att det nya systemet kan starta kan installationsprogrammet behöva skapa eller konfigurera vissa partitioner på lämplig disk."
+    "Yeni sistemin önyükleme yapabilmesini sağlamak için yükleyicinin uygun diskte bazı bölümler oluşturması veya yapılandırması gerekebilir."
   ],
   "Transactional root file system": [
-    "Transaktionellt root filsystem"
+    "İşlemsel kök dosya sistemi"
   ],
   "Try again": [
-    "Försök igen"
+    "Tekrar deneyin"
   ],
   "Type": [
-    "Typ"
+    "Tip"
   ],
   "URL": [
     "URL"
   ],
   "Unable to modify the settings": [
-    "Det går inte att ändra inställningarna"
+    "Ayarlar değiştirilemiyor"
   ],
   "Unselect": [
-    "Avmarkera"
+    "Seçimi kaldır"
   ],
   "Unsupported AutoYaST elements": [
-    "Ostödda AutoYaST-element"
+    "Desteklenmeyen AutoYaST öğeleri"
   ],
   "Unused space": [
-    "Oanvänt utrymme"
+    "Kullanılmayan alan"
   ],
   "Up to %s can be recovered by shrinking the device.": [
-    "Upp till %s kan återställas genom att krympa enheten."
+    "Cihazın küçültülmesiyle %s'ye kadar geri kazanılabilir."
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
-    "Att uppdatera värdnamnet nu eller senare kommer inte att ändra det för närvarande registrerade värdnamnet."
+    "Ana bilgisayar adını şimdi veya daha sonra güncellemeniz, şu anda kayıtlı olan ana bilgisayar adını değiştirmeyecektir."
   ],
   "Updating the initiator name": [
-    "Uppdaterar initiatornamnet"
+    "Başlatıcı adının güncellenmesi"
   ],
   "Upload": [
-    "Ladda upp"
+    "Yükle"
   ],
   "Upload, paste, or drop an SSH public key": [
-    "Ladda upp, klistra in eller dra in och släpp en SSH publik nyckel"
+    "Bir SSH genel anahtarını yükleyin, yapıştırın veya bırakın"
   ],
   "Use": [
-    "Använd"
+    "Kullan"
   ],
   "Use %s": [
-    "Använd %s"
+    "%s kullan"
   ],
   "Use %s for LVM and additional partitions": [
-    "Använd %s för LVM och ytterligare partitioner"
+    "LVM ve ek bölümler için %s kullanın"
   ],
   "Use %s for LVM, additional partitions and booting": [
-    "Använd %s för LVM, ytterligare partitioner och uppstart"
+    "LVM, ek bölümler ve önyükleme için %s kullanın"
   ],
   "Use %s for additional partitions": [
-    "Använd %s för ytterligare partitioner"
+    "Ek bölümler için %s kullanın"
   ],
   "Use %s for additional partitions and booting": [
-    "Används %s för ytterligare partitioner och uppstart"
+    "Ek bölümler ve önyükleme için %s kullanın"
   ],
   "Use %s to configure boot partitions": [
-    "Använd %s för att konfigurera uppstartspartitioner"
+    "Önyükleme bölümlerini yapılandırmak için %s kullanın"
   ],
   "Use %s to host LVM": [
-    "Använd %s för att vara värd för LVM"
+    "LVM'yi barındırmak için %s kullanın"
   ],
   "Use %s to host LVM and boot": [
-    "Använd %s för att vara värd för LVM och uppstart"
+    "LVM'yi barındırmak ve önyüklemek için %s kullanın"
   ],
   "Use %s to install": [
-    "Använd %s för att installera"
+    "Yüklemek için %s kullanın"
   ],
   "Use %s to install and boot": [
-    "Använd %s för installation och uppstart"
+    "Yüklemek ve önyüklemek için %s kullanın"
   ],
   "Use %s to install and host LVM": [
-    "Använd %s för att installera och vara värd för LVM"
+    "LVM'yi yüklemek ve barındırmak için %s kullanın"
   ],
   "Use %s to install, host LVM and boot": [
-    "Använd %s för att installera, värd LVM och uppstart"
+    "LVM'yi yüklemek, barındırmak ve önyüklemek için %s kullanın"
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
-    "Använd åtgärderna nedan för att ställa in dina enheter eller klicka på %s för att börja från början med standardkonfigurationen."
+    "Aygıtlarınızı ayarlamak için aşağıdaki eylemleri kullanın veya varsayılan yapılandırmayla sıfırdan başlamak için %s öğesine tıklayın."
   ],
   "Use available space": [
-    "Använd tillgängligt utrymme"
+    "Mevcut alanı kullan"
   ],
   "Use password": [
-    "Använd lösenord"
+    "Şifre kullan"
   ],
   "Use public SSH Key": [
-    "Använd publik SSH nyckel"
+    "Genel SSH Anahtarını Kullan"
   ],
   "Use static hostname": [
-    "Använd statiskt värdnamn"
+    "Statik ana bilgisayar adını kullan"
   ],
   "Use suggested username": [
-    "Använd föreslaget användarnamn"
+    "Önerilen kullanıcı adını kullan"
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
-    "Använd Trusted Platform Module (TPM) för att dekryptera automatiskt vid varje uppstart"
+    "Her önyüklemede otomatik olarak şifre çözmek için Güvenilir Platform Modülünü (TPM) kullanın"
   ],
   "Used space": [
-    "Använt utrymme"
+    "Kullanılan alan"
   ],
   "User name": [
-    "Användarnamn"
+    "Kullanıcı adı"
   ],
   "Username": [
-    "Användarnamn"
+    "Kullanıcı adı"
   ],
   "Username suggestion dropdown": [
-    "Rullgardinsmeny för användarnamnsförslag"
+    "Kullanıcı adı önerisi açılır listesi"
   ],
   "Using a hashed password.": [
-    "Använder ett hashat lösenord."
+    "Karma şifre kullanımı."
   ],
   "Using an existing partition": [
-    "Använd en befintlig partition"
+    "Mevcut bir bölümü kullan"
   ],
   "Using partition %s": [
-    "Använder partition %s"
+    "%s bölümü kullanılıyor"
   ],
   "Using transient hostname: %s": [
-    "Använder transient värdnamn: %s"
+    "Geçici ana bilgisayar adı kullanılıyor: %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
-    "Volymgrupp '%s' existerar redan. Ange ett annat namn."
+    "'%s' birim grubu zaten mevcut. Farklı bir ad girin."
   ],
   "WPA & WPA2 Personal": [
-    "WPA & WPA2 Personal"
+    "WPA ve WPA2 Kişisel"
   ],
   "WPA Password": [
-    "WPA lösenord"
+    "WPA Şifresi"
   ],
   "WWPN": [
     "WWPN"
   ],
   "Waiting for a mount point": [
-    "Väntar på en monteringspunkt"
+    "Bir bağlama noktası bekleniyor"
   ],
   "Waiting for information about storage configuration": [
-    "Väntar på information om lagringskonfiguration"
+    "Depolama yapılandırması hakkında bilgi bekleniyor"
   ],
   "Weak signal": [
-    "Svag signal"
+    "Zayıf sinyal"
   ],
   "Wi-Fi connection form": [
-    "WiFi anslutningsformulär"
+    "Wi-Fi bağlantı formu"
   ],
   "Wi-Fi networks": [
-    "Wi-Fi nätverk"
+    "Wi-Fi ağları"
   ],
   "Wi-Fi not supported": [
-    "Wi-Fi stöds inte"
+    "Wi-Fi desteklenmiyor"
   ],
   "Will be supported in a future version.": [
-    "Kommer att stödjas i en framtida version."
+    "Gelecekteki bir sürümde desteklenecektir."
   ],
   "Wired connections": [
-    "Trådanslutna anslutningar"
+    "Kablolu bağlantılar"
   ],
   "XFS": [
     "XFS"
   ],
   "Yes": [
-    "Ja"
+    "Evet"
   ],
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
-    "Du kan fortsätta att installera med de aktuella inställningarna eller så kanske du vill kasta konfigurationen och börja från början med en enkel konfiguration."
+    "Mevcut ayarlarla kuruluma devam edebilir veya yapılandırmayı iptal edip daha basit bir yapılandırmayla sıfırdan kuruluma başlayabilirsiniz."
   ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "Du kan inte ändra den senare. Gå till avsnittet %s om du vill ändra den innan du fortsätter med registreringen."
+    "Daha sonra değiştiremezsiniz. Kayıt işlemine devam etmeden önce değiştirmek istiyorsanız %s bölümüne gidin."
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
-    "Du kanske vill ignorera de nuvarande inställningarna och börja från början med en enkel konfiguration."
+    "Mevcut ayarları atıp, basit bir yapılandırmayla sıfırdan başlamak isteyebilirsiniz."
   ],
   "You may want to discard those settings and start from scratch with a simple configuration.": [
-    "Du kanske vill slänga dessa inställningar och börja från början med en enkel konfiguration."
+    "Bu ayarları atıp, basit bir yapılandırmayla sıfırdan başlamak isteyebilirsiniz."
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
-    "Du kommer att ansluta till ett offentligt nätverk utan kryptering. Dina data kanske inte är säkra."
+    "Şifreleme olmadan halka açık bir ağa bağlanacaksınız. Verileriniz güvenli olmayabilir."
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "at least %s": [
-    "åtminstone %s"
+    "en az %s"
   ],
   "auto selected": [
-    "automatiskt vald"
+    "otomatik seçildi"
   ],
   "hostname": [
-    "värdnamn"
+    "ana bilgisayar adı"
   ],
   "iBFT": [
     "iBFT"
@@ -1872,21 +1872,21 @@ export default {
     "iSCSI"
   ],
   "logical volume": [
-    "logisk volym"
+    "mantıksal alan"
   ],
   "partition": [
-    "partition"
+    "bölüm"
   ],
   "reset to defaults": [
-    "återställ till standard"
+    "varsayılanlara sıfırla"
   ],
   "zFCP": [
     "zFCP"
   ],
   "zFCP Disk Activation": [
-    "zFCP-diskaktivering"
+    "zFCP Disk Etkinleştirme"
   ],
   "zFCP Disk activation form": [
-    "zFCP-diskaktiveringsformulär"
+    "zFCP Disk aktivasyon formu"
   ]
 };
