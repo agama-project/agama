@@ -1,7 +1,7 @@
 export default {
   "": {
     "plural-forms": (n) => n > 1,
-    "language": "pt_BR"
+    "language": "pt-BR"
   },
   " Timezone selection": [
     " Seleção de fuso horário"

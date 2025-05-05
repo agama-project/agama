@@ -1,10 +1,10 @@
 export default {
   "": {
-    "plural-forms": (n) => n != 1,
-    "language": "nb_NO"
+    "plural-forms": (n) => 0,
+    "language": "zh-CN"
   },
   " Timezone selection": [
-    " Valg av tidssone"
+    " 时区选择"
   ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     ""
@@ -13,13 +13,13 @@ export default {
     ""
   ],
   "%s disk": [
-    "%s disk"
+    "%s 磁盘"
   ],
   "%s has been registered with below information.": [
     ""
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s er et uforanderlig system med atomiske oppdateringer. Den bruker et skrivebeskyttet Btrfs filsystem oppdatert via øyeblikksbilder."
+    "%s 是具备原子更新特性的不可变系统。它使用只读的 Btrfs 文件系统并通过快照保持更新。"
   ],
   "%s logo": [
     ""
@@ -28,7 +28,7 @@ export default {
     ""
   ],
   "%s with %d partitions": [
-    "%s med %d partisjoner"
+    "%s （包含 %d 个分区）"
   ],
   "A %1$s of at least %2$s will be created for %3$s": [
     ""
@@ -43,97 +43,94 @@ export default {
     ""
   ],
   "Accept": [
-    "Aksepter"
+    "接受"
   ],
   "Action": [
-    "Handling"
+    "操作"
   ],
   "Actions": [
-    "Handlinger"
+    "操作"
   ],
   "Actions for connection %s": [
-    "Handlinger for tilkobling %s"
+    "对连接 %s 的操作"
   ],
   "Activate": [
-    "Aktiver"
+    "激活"
   ],
   "Activate new disk": [
-    "Aktiver ny disk"
+    "激活新磁盘"
   ],
   "Activate zFCP disk": [
-    "Aktiver zFCP disk"
+    "激活 zFCP 磁盘"
   ],
   "Activated": [
-    "Aktivert"
+    "已激活"
   ],
   "Add DNS": [
-    "Legg til DNS"
+    "添加 DNS"
   ],
   "Add an address": [
-    "Legg til en addresse"
+    "添加地址"
   ],
   "Add another DNS": [
-    "Legg til en annen DNS"
+    "添加另一个 DNS"
   ],
   "Add another address": [
-    "Legg til en annen adresse"
+    "添加另一个地址"
   ],
   "Add another partition or mount an existing one": [
     ""
   ],
-  "Add logical volume": [
-    ""
-  ],
   "Address": [
-    "Addresse"
+    "地址"
   ],
   "Addresses": [
-    "Addresser"
+    "地址"
   ],
   "Addresses data list": [
-    "Adresser dataliste"
+    "地址数据列表"
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
     ""
   ],
   "All fields are required": [
-    "Alle feltene er påkrevd"
+    "需要填写全部字段"
   ],
   "Already using all available disks": [
     ""
   ],
   "At least one address must be provided for selected mode": [
-    "Minst en adresse må oppgis for valgt modus"
+    "所选模式要求至少提供一个地址"
   ],
   "At least one partition will be deleted": [
     ""
   ],
   "At this point you can power off the machine.": [
-    "På dette tidspunktet kan du slå av maskinen."
+    "现在您可以关闭机器电源了。"
   ],
   "At this point you can reboot the machine to log in to the new system.": [
-    "På dette tidspunktet kan du starte om maskinen for å logge inn i det nye systemet."
+    "现在您可以重启机器并登录到新系统。"
   ],
   "Authentication by initiator": [
-    "Autentisering av initiativtaker"
+    "发起者身份认证"
   ],
   "Authentication by target": [
-    "Autentisering av målet"
+    "目标身份认证"
   ],
   "Auto LUNs Scan": [
-    "Automatisk LUNs skanning"
+    "自动扫描 LUN"
   ],
   "Automatic": [
-    "Automatisk"
+    "自动"
   ],
   "Automatic (DHCP)": [
-    "Automatisk (DHCP)"
+    "自动（DHCP）"
   ],
   "Available products": [
-    "Tilgjengelige produkter"
+    "可用产品"
   ],
   "Back": [
-    "Tilbake"
+    "返回"
   ],
   "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
     ""
@@ -148,13 +145,13 @@ export default {
     ""
   ],
   "Before %s": [
-    "Før %s"
+    "变更前为 %s"
   ],
   "Before installing, you have to make some decisions. Click on each section to review the settings.": [
     ""
   ],
   "Before starting the installation, you need to address the following problems:": [
-    "Før du starter installasjonen, må du løse følgende problemer:"
+    "在开始安装前，您需要解决下列问题："
   ],
   "Beta": [
     ""
@@ -166,85 +163,79 @@ export default {
     ""
   ],
   "Btrfs with snapshots": [
-    "Btrfs med øyeblikksbilder"
+    "带快照的 Btrfs"
   ],
   "Calculated automatically": [
     ""
   ],
   "Cancel": [
-    "Avbryt"
+    "取消"
   ],
   "Cannot be changed in remote installation": [
-    "Kan ikke endres i fjerninstallasjonen"
+    "无法在远程安装中更改"
   ],
   "Cannot connect to Agama server": [
-    "Kan ikke koble til Agama server"
-  ],
-  "Cannot format all selected devices": [
-    ""
+    "无法连接到 Agama 服务器"
   ],
   "Change": [
-    "Endre"
+    "更改"
   ],
   "Change boot options": [
-    "Endre oppstartalternativer"
+    "更改启动选项"
   ],
   "Change product": [
-    "Endre produkt"
+    "更改产品"
   ],
   "Change selection": [
-    "Endre valg"
+    "修改选择"
   ],
   "Channel ID": [
-    "Kanal ID"
+    "通道 ID"
   ],
   "Check the following before continuing": [
     ""
   ],
   "Choose a disk for placing the boot loader": [
-    "Velg en disk for å plassere oppstartslasteren"
+    "选择一个放置引导加载器的磁盘"
   ],
   "Clear": [
-    "Tøm"
+    "清除"
   ],
   "Close": [
-    "Lukk"
+    "关闭"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     ""
   ],
-  "Configure LVM logical volume at %s volume group": [
-    ""
-  ],
   "Configuring the product, please wait ...": [
-    "Konfigurerer produktet, vennligst vent..."
+    "正在配置产品，请稍候……"
   ],
   "Confirm": [
-    "Bekreft"
+    "确认"
   ],
   "Confirm Installation": [
-    "Bekreft Installasjon"
+    "确认安装"
   ],
   "Congratulations!": [
-    "Gratulerer!"
+    "恭喜！"
   ],
   "Connect": [
-    "Koble til"
+    "连接"
   ],
   "Connect to iSCSI targets": [
-    "Koble til iSCSI mål"
+    "连接到 iSCSI 目标"
   ],
   "Connected": [
-    "Tilkoblet"
+    "已连接"
   ],
   "Connected (%s)": [
-    "Tilkoblet (%s)"
+    "已连接（%s）"
   ],
   "Content will be kept": [
     ""
   ],
   "Continue": [
-    "Fortsett"
+    "继续"
   ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     ""
@@ -253,19 +244,16 @@ export default {
     ""
   ],
   "Could not authenticate against the server, please check it.": [
-    "Kunne ikke autentisere mot serveren, vennligst sjekk det."
+    "无法对服务器进行身份验证，请检查。"
   ],
   "Could not log in. Please, make sure that the password is correct.": [
-    "Kunne ikke logge på, Vennligst, sjekk at passordet er korrekt."
+    "无法登录。请确保密码输入正确。"
   ],
   "Create user": [
-    "Opprett bruker"
-  ],
-  "Current %s": [
-    ""
+    "创建用户"
   ],
   "Custom": [
-    "Tilpasset"
+    "自定义"
   ],
   "DASD %s": [
     "DASD %s"
@@ -277,10 +265,10 @@ export default {
     "DNS"
   ],
   "Deactivate": [
-    "Deaktivere"
+    "停用"
   ],
   "Deactivated": [
-    "Deaktivert"
+    "已停用"
   ],
   "Define a new LVM on the disk": [
     ""
@@ -289,7 +277,7 @@ export default {
     ""
   ],
   "Define a user now": [
-    "Definer en bruker nå"
+    "现在设定用户"
   ],
   "Define the first user with admin (sudo) privileges for system management.": [
     ""
@@ -298,76 +286,79 @@ export default {
     ""
   ],
   "Delete": [
-    "Slett"
+    "删除"
   ],
   "Delete current content": [
-    "Slett gjeldende innhold"
+    "删除当前内容"
   ],
   "Destroy current data and format partition as": [
     ""
   ],
   "Details": [
-    "Detaljer"
+    "细节"
   ],
   "Details will appear after the connection is successfully established.": [
     ""
   ],
   "Device": [
-    "Enhet"
+    "设备"
   ],
   "Discard": [
-    "Forkast"
+    "丢弃"
   ],
   "Disconnected": [
-    "Koblet fra"
+    "已断开连接"
   ],
   "Discover": [
-    "Oppdag"
+    "发现"
   ],
   "Discover iSCSI Targets": [
-    "Oppdag iSCSI mål"
+    "发现 iSCSI 目标"
   ],
   "Discover iSCSI targets": [
-    "Oppdag iSCSI mål"
+    "发现 iSCSI 目标"
   ],
   "Disk": [
-    "Disk"
+    "磁盘"
   ],
   "Disks": [
-    "Disker"
+    "磁盘"
   ],
   "Do not configure": [
-    "Ikke konfigurer"
+    "不要配置"
   ],
   "Do not format %s and keep the data": [
     ""
   ],
   "Download logs": [
-    "Last ned loggfiler"
+    "下载日志"
   ],
   "Edit": [
-    "Redigere"
+    "编辑"
   ],
   "Edit %s": [
-    "Rediger %s"
+    "编辑 %s"
   ],
   "Edit connection %s": [
-    "Rediger tilkobling %s"
+    "编辑连接 %s"
   ],
   "Edit user": [
-    "Rediger bruker"
+    "编辑用户"
   ],
   "Encrypt the system": [
-    "Krypter systemet"
+    "加密系统"
   ],
   "Encrypted Device": [
-    "Kryptert Enhet"
+    "已加密设备"
   ],
   "Encryption": [
-    "Kryptering"
+    "加密"
   ],
   "Encryption Password": [
-    "Krypteringspassord"
+    "加密密码"
+  ],
+  "Encryption settings": [
+    "加密设置"
   ],
   "ExFAT": [
     ""
@@ -397,55 +388,55 @@ export default {
     ""
   ],
   "Filter by description or keymap code": [
-    "Filtrer etter beskrivelse eller tastaturkode"
+    "按描述或键盘映射代码过滤"
   ],
   "Filter by language, territory or locale code": [
-    "Filtrer etter språk, territorium eller lokalkode"
+    "按语言、地区或区域设定代码过滤"
   ],
   "Filter by max channel": [
-    "Filtrer etter maksimal kanal"
+    "按最大通道过滤"
   ],
   "Filter by min channel": [
-    "Filtrer etter minimum kanal"
+    "按最小通道过滤"
   ],
   "Filter by pattern title or description": [
-    "Filtrer etter mønstertittel eller beskrivelse"
+    "按合集名称或描述筛选"
   ],
   "Filter by territory, time zone code or UTC offset": [
-    "Filtrer etter territorium, tidssonekode eller UTC forskyvning"
+    "按地区、时区代码或 UTC 偏移量过滤"
   ],
   "Finish": [
-    "Fullfør"
+    "完成"
   ],
   "Finished": [
-    "Fullført"
+    "已完成"
   ],
   "First user": [
-    "Første bruker"
+    "首个用户"
   ],
   "Forget": [
-    "Glem"
+    "忘掉"
   ],
   "Forget connection %s": [
-    "Glem tilkoblingen %s"
+    "忘掉连接 %s"
   ],
   "Format": [
-    "Formater"
+    "格式化"
   ],
   "Formatted": [
-    "Formatert"
+    "已格式化"
   ],
   "Formatting DASD devices": [
-    "Formaterer DASD enheter"
+    "正在格式化 DASD 设备"
   ],
   "Full name": [
-    "Fullt navn"
+    "全名"
   ],
   "Gateway": [
-    "Gateway"
+    "网关"
   ],
   "Gateway can be defined only in 'Manual' mode": [
-    "Gateway kan bare defineres i 'Manuelt' modus"
+    "网关只能在“手动”模式下配置"
   ],
   "GiB": [
     "GiB"
@@ -457,11 +448,10 @@ export default {
     ""
   ],
   "Hide %d subvolume action": [
-    "Skjul %d undervolum handling",
-    "Skjul %d undervolumers handlinger"
+    "隐藏 %d 个子卷操作"
   ],
   "Hide details": [
-    "Skjul detaljer"
+    "隐藏细节"
   ],
   "Hostname could not be updated": [
     ""
@@ -473,13 +463,13 @@ export default {
     ""
   ],
   "IP Address": [
-    "IP Addresse"
+    "IP 地址"
   ],
   "IP address": [
-    "IP addresse"
+    "IP 地址"
   ],
   "IP addresses": [
-    "IP addresser"
+    "IP 地址"
   ],
   "IPv4": [
     ""
@@ -488,34 +478,34 @@ export default {
     ""
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
-    "Hvis ett lokalt media ble brukt til å kjøre dette installajonsprogrammet, så fjern det før neste oppstart."
+    "如果运行此次安装时使用了本地介质，请在下次启动前移除。"
   ],
   "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
     ""
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Hvis du fortsetter, så vil partisjonene på harddisken bli modifisert i tråd med de oppgitte installasjons innstillingene."
+    "如果继续，硬盘上的分区将会根据已提供的安装设置进行修改。"
   ],
   "In progress": [
-    "Pågår"
+    "进行中"
   ],
   "Incorrect IP address": [
-    "Feil IP addresse"
+    "不正确的 IP 地址"
   ],
   "Incorrect password": [
-    "Feil passord"
+    "密码不正确"
   ],
   "Incorrect port": [
-    "Feil port"
+    "不正确的端口"
   ],
   "Incorrect user name": [
-    "feil brukernavn"
+    "用户名不正确"
   ],
   "Initiator": [
-    "Initiativtaker"
+    "发起者"
   ],
   "Initiator name": [
-    "Initiativtakers navn"
+    "发起者名称"
   ],
   "Initiator name could not be updated": [
     ""
@@ -524,22 +514,19 @@ export default {
     ""
   ],
   "Install": [
-    "Installere"
-  ],
-  "Install using an advanced configuration.": [
-    ""
+    "安装"
   ],
   "Installation will take %s.": [
-    "Installasjonen vil ta %s."
+    "安装将会占用 %s。"
   ],
   "Installer options": [
-    "Installasjonsalternativer"
+    "安装程序选项"
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
     ""
   ],
   "Interface": [
-    "Grensesnitt"
+    "界面"
   ],
   "Invalid storage settings": [
     ""
@@ -563,13 +550,13 @@ export default {
     ""
   ],
   "Keyboard": [
-    "Tastatur"
+    "键盘"
   ],
   "Keyboard layout": [
-    "Tastaturoppsett"
+    "键盘布局"
   ],
   "Keyboard selection": [
-    "Valg av tastatur"
+    "键盘选择"
   ],
   "KiB": [
     "KiB"
@@ -581,7 +568,7 @@ export default {
     ""
   ],
   "Language": [
-    "Språk"
+    "语言"
   ],
   "Let the installer propose a sensible range of sizes": [
     ""
@@ -590,31 +577,31 @@ export default {
     ""
   ],
   "Loading data...": [
-    "Laster data..."
+    "正在读取数据……"
   ],
   "Locale selection": [
-    "Valg av lokalisering"
+    "区域选择"
   ],
   "Localization": [
-    "Lokalisering"
+    "本地化"
   ],
   "Log in": [
-    "Logg inn"
+    "登录"
   ],
   "Log in as %s": [
-    "Logg på som %s"
+    "登录为 %s"
   ],
   "Login": [
-    "Logg inn"
+    "登录"
   ],
   "Login %s": [
-    "Logg på %s"
+    "登录 %s"
   ],
   "Login form": [
-    "Innloggingsskjema"
+    "登录表单"
   ],
   "Logout": [
-    "Logg ut"
+    "登出"
   ],
   "MAC": [
     ""
@@ -623,37 +610,37 @@ export default {
     ""
   ],
   "Make sure you provide the correct values": [
-    "Pass på at du oppgir riktige verdier"
+    "确保提供了正确的值"
   ],
   "Manual": [
-    "Manuell"
+    "手动"
   ],
   "Maximum": [
-    "Maksimum"
+    "最大"
   ],
   "MiB": [
     "MiB"
   ],
   "Minimum": [
-    "Minimum"
+    "最小"
   ],
   "Mode": [
-    "Modus"
+    "模式"
   ],
   "Modify settings and physical volumes": [
     ""
   ],
   "Mount Point": [
-    "Monteringspunkt"
+    "挂载点"
   ],
   "Mount point": [
-    "Monteringspunkt"
+    "挂载点"
   ],
   "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
     ""
   ],
   "Multipath": [
-    "Flerveis"
+    "多路径"
   ],
   "NILFS2": [
     ""
@@ -662,202 +649,202 @@ export default {
     ""
   ],
   "Name": [
-    "Navn"
+    "名称"
   ],
   "Network": [
-    "Nettverk"
+    "网络"
   ],
   "Network not found or lost": [
     ""
   ],
   "New": [
-    "Ny"
+    "新建"
   ],
   "No": [
-    "Nei"
+    "否"
   ],
   "No additional software was selected.": [
-    "Ingen ytterligere programvare ble valgt."
+    "没有选择附加软件。"
   ],
   "No content found": [
-    "Ingen innhold funnet"
+    "未找到内容"
   ],
   "No device selected yet": [
-    "Ingen enhet er valgt ennå"
+    "尚未选择设备"
   ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
     ""
   ],
   "No iSCSI targets found.": [
-    "Ingen iSCSI mål funnet."
+    "未找到 iSCSI 目标。"
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
-    "Ingen partisjoner vil bli automatisk konfigurert for oppstart. Bruk med varsomhet."
+    "不会自动配置任何用于启动的分区。请谨慎使用。"
   ],
   "No user defined yet.": [
-    "Ingen bruker definert ennå."
+    "尚未设定用户。"
   ],
   "No zFCP controllers found.": [
-    "Ingen zFCP kontrollere funnet."
+    "未找到 zFCP 控制器。"
   ],
   "No zFCP disks found.": [
-    "Ingen zFCP disker funnet."
+    "未发现 zFCP 磁盘。"
   ],
   "None": [
-    "Ingen"
+    "无"
   ],
   "None of the keymaps match the filter.": [
-    "Ingen av tastene passer sammen med filteret."
+    "没有符合此过滤器的键位映射。"
   ],
   "None of the locales match the filter.": [
-    "Ingen av lokaliseringene passer sammen med filteret."
+    "没有符合过滤器的区域设置。"
   ],
   "None of the patterns match the filter.": [
-    "Ingen av mønstrene passer sammen med filteret."
+    "没有合集与筛选器匹配。"
   ],
   "None of the time zones match the filter.": [
-    "Ingen av tidssonene passer sammen med filteret."
+    "没有符合过滤器的时区。"
   ],
   "Not possible with the current setup. Click to know more.": [
     ""
   ],
   "Not selected yet": [
-    "Ikke valgt ennå"
+    "尚未选择"
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
     ""
   ],
   "On boot": [
-    "På oppstart"
+    "开机时"
   ],
   "Only available if authentication by target is provided": [
-    "Bare tilgjengelig hvis autentisering av målet er gitt"
+    "仅当目标提供身份认证时可用"
   ],
   "Options toggle": [
     ""
   ],
   "Overview": [
-    "Oversikt"
+    "概览"
   ],
   "Partition Info": [
-    "Partisjon Info"
+    "分区信息"
   ],
   "Partitions to boot will be allocated at the following device.": [
-    "Partisjoner for oppstart vil bli tildelt på følgende enhet."
+    "引导分区将在以下设备上分配。"
   ],
   "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Partisjoner for oppstart vil bli tildelt på installasjonsdisken (%s)."
+    "引导分区将在安装磁盘（%s）上进行分配。"
   ],
   "Partitions to boot will be allocated at the installation disk.": [
-    "Partisjoner for oppstart vil bli tildelt på installasjonsdisken."
+    "引导分区将会分配在安装磁盘上。"
   ],
   "Partitions will be used and created for %s": [
     ""
   ],
   "Password": [
-    "Passord"
+    "密码"
   ],
   "Password confirmation": [
-    "Passord bekreftelse"
+    "确认密码"
   ],
   "Password input": [
-    "Passord inntasting"
+    "密码输入"
   ],
   "Password visibility button": [
-    "Passord synlighetsknapp"
+    "密码可见性按钮"
   ],
   "Passwords do not match": [
-    "Passordene er ikke like"
+    "密码不匹配"
   ],
   "Pending": [
-    "Avventer"
+    "等待中"
   ],
   "Perform an action": [
-    "Utfør en handling"
+    "执行操作"
   ],
   "PiB": [
     "PiB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
-    "Vennligst, avbryt og sjekk innstillingene hvis du er usikker."
+    "如果不确定任何事项，请务必取消并检查已进行的设置。"
   ],
   "Please, check whether it is running.": [
-    "Vennligst, sjekk om den kjører."
+    "请检查它是否在运行。"
   ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Vennligst, utfør en iSCSI oppdagelse for å finne tilgjengelige iSCSI mål."
+    "请执行 iSCSI 发现以查找可用的 iSCSI 目标。"
   ],
   "Please, provide its password to log in to the system.": [
-    "Vennligst, oppgi passordet for å logge på systemet."
+    "请提供其密码以登录系统。"
   ],
   "Please, try to activate a zFCP controller.": [
-    "Vennligst, prøv å aktivere en zFCP kontroller."
+    "请尝试激活 zFCP 控制器。"
   ],
   "Please, try to activate a zFCP disk.": [
-    "Vennligst, prøv å aktivere en zFCP disk."
+    "请尝试激活 zFCP 磁盘。"
   ],
   "Port": [
-    "Port"
+    "端口"
   ],
   "Portal": [
-    "Portal"
+    "门户"
   ],
   "Prefix length or netmask": [
-    "Prefikslengde eller nettmaske"
+    "前缀长度或掩码"
   ],
   "Public SSH Key is empty.": [
     ""
   ],
   "Question": [
-    "Spørsmål"
+    "问题"
   ],
   "Read zFCP devices": [
-    "Les zFCP enheter"
+    "读取 zFCP 设备"
   ],
   "Reboot": [
-    "Start om"
+    "重启"
   ],
   "Recommended": [
     ""
   ],
   "Register": [
-    "Registrer"
+    "注册"
   ],
   "Registration": [
-    "Registrering"
+    "注册"
   ],
   "Registration code": [
-    "Registrerings kode"
+    "注册码"
   ],
   "ReiserFS": [
     ""
   ],
   "Reload": [
-    "Last på nytt"
+    "重载"
   ],
   "Remove": [
-    "Fjerne"
+    "移除"
   ],
   "Remove max channel filter": [
-    "Fjern maksimal kanal filter"
+    "移除最大通道过滤器"
   ],
   "Remove min channel filter": [
-    "Fjern minimum kanal filter"
+    "移除最小通道过滤器"
   ],
   "Repository load failed": [
     ""
   ],
   "Reset to defaults": [
-    "Tilbakestill til standard"
+    "重设为默认"
   ],
   "Result": [
-    "Resultat"
+    "结果"
   ],
   "Routes": [
     ""
   ],
   "SD Card": [
-    "SD Kort"
+    "SD 卡"
   ],
   "SHA1 fingerprint": [
     ""
@@ -872,19 +859,19 @@ export default {
     ""
   ],
   "Search": [
-    "Søk"
+    "搜索"
   ],
   "Security": [
-    "Sikkerhet"
+    "安全性"
   ],
   "See more details": [
-    "Se flere detaljer"
+    "查看更多细节"
   ],
   "Select": [
-    "Velg"
+    "选择"
   ],
   "Select a disk": [
-    "Velg en disk"
+    "选择一个磁盘"
   ],
   "Select or enter a mount point that is not already assigned to another device": [
     ""
@@ -896,41 +883,37 @@ export default {
     ""
   ],
   "Select what to do with each partition.": [
-    "Velg hva som skal skje med hver partisjon."
+    "选择对每个分区执行的操作。"
   ],
   "Selected disk (cannot be changed)": [
     ""
   ],
   "Selected patterns": [
-    "Valgte mønstre"
+    "已选择合集"
   ],
   "Server IP": [
-    "Server IP"
+    "服务器 IP"
   ],
   "Set DIAG Off": [
-    "Sett DIAG av"
+    "关闭 DIAG"
   ],
   "Set DIAG On": [
-    "Sett DIAG på"
+    "开启 DIAG"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
     ""
   ],
   "Show %d subvolume action": [
-    "Vis %d undervolum handling",
-    "Vis %d undervolum handlinger"
-  ],
-  "Show information about %s": [
-    ""
+    "显示 %d 个子卷操作"
   ],
   "Shrink existing partitions": [
-    "Krymp eksisterende partisjoner"
+    "缩小现有分区"
   ],
   "Signal strength": [
     ""
   ],
   "Size": [
-    "Størrelse"
+    "大小"
   ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     ""
@@ -939,13 +922,13 @@ export default {
     ""
   ],
   "Software": [
-    "Programvare"
+    "软件"
   ],
   "Software %s": [
-    "Programvare %s"
+    "软件 %s"
   ],
   "Software selection": [
-    "Valg av programvare"
+    "软件选择"
   ],
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
     ""
@@ -954,34 +937,34 @@ export default {
     ""
   ],
   "Something went wrong": [
-    "Noe gikk galt"
+    "出了点问题"
   ],
   "Start from scratch with the default configuration": [
     ""
   ],
   "Startup": [
-    "Oppstart"
+    "启动"
   ],
   "Static hostname": [
     ""
   ],
   "Status": [
-    "Status"
+    "状态"
   ],
   "Storage": [
-    "Lagring"
+    "存储"
   ],
   "Swap": [
     ""
   ],
   "TPM sealing requires the new system to be booted directly.": [
-    "TPM forsegling krever at det nye systemet startes opp direkte."
+    "TPM 密封过程要求新系统直接启动。"
   ],
   "Target Password": [
-    "Målets Passord"
+    "目标密码"
   ],
   "Targets": [
-    "Mål"
+    "目标"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
     ""
@@ -990,7 +973,7 @@ export default {
     ""
   ],
   "The content may be deleted": [
-    "Innholdet kan bli slettet"
+    "内容可能会被删除"
   ],
   "The current configuration will result in a %1$s of %2$s.": [
     ""
@@ -1002,10 +985,10 @@ export default {
     ""
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
-    "Dataene beholdes, med de gjeldene partisjonene vil bli endret etter behov."
+    "数据将被保留，但当前分区的大小将会按需调整。"
   ],
   "The data is kept. Only the space not assigned to any partition will be used.": [
-    "Dataene beholdes. Bare lagringsplassen som ikke er tilordnet noen partisjon vil bli brukt."
+    "数据将被保留。仅使用未分配给任何分区的空间。"
   ],
   "The device cannot be shrunk:": [
     ""
@@ -1023,25 +1006,25 @@ export default {
     ""
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
-    "Det siste steget er å konfigurere Trusted Platform Module (TPM) for å automatisk åpne krypterte enheter vil ta plass under første oppstart av det nye systemet. For at det skal fungere, så må maskinen starte direkte med den nye oppstartslasteren."
+    "配置可信平台模块 (TPM) 以自动开启加密设备的最后一步将在新系统首次启动时进行。为此，本机需要直接启动到新的引导加载程序。"
   ],
   "The following software patterns are selected for installation:": [
-    "Følgende programvare mønstre er valgt for installasjon:"
+    "下列软件合集已被选择以进行安装："
   ],
   "The initiator name cannot be blank": [
     ""
   ],
   "The installation on your machine is complete.": [
-    "Installasjonen på din maskin er fullført."
+    "在您机器上的安装过程已完成。"
   ],
   "The installation will take": [
-    "Installasjonen vil ta"
+    "安装将会占用"
   ],
   "The installation will take %s including:": [
-    "Installasjonen vil ta %s inkludert:"
+    "安装将会占用 %s ，包括："
   ],
   "The installer requires [root] user privileges.": [
-    "Installasjonen krever [root] bruker privilegier."
+    "安装程序要求 [root] 用户权限。"
   ],
   "The logical volume can grow to use all the contiguous free space": [
     ""
@@ -1071,7 +1054,7 @@ export default {
     ""
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
-    "Passordet vil ikke være nødvendig for oppstart og for tilgang til data hvis TPM kan verifisere integriteten til systemet. TPM forsegling krever at det nye systemet startes opp direkte ved første oppstart."
+    "若 TPM 可以验证系统的完整性，启动和访问数据的时候将无需使用密码。 TPM 密封要求新系统在首次启动时直接开始引导。"
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     ""
@@ -1110,19 +1093,19 @@ export default {
     ""
   ],
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
-    "Systemet støtter ikke Wi-Fi tilkoblinger, sannsynligvis på grunn av manglende eller deaktivert maskinvare."
+    "系统不支持 WiFi 连接，可能由于硬件缺失或已被禁用。"
   ],
   "The system will use %s as its default language.": [
-    "Systemet vil bruke %s som standardspråk."
+    "系统会使用 %s 作为默认语言。"
   ],
   "The zFCP disk was not activated.": [
-    "zFCP disken ble ikke aktivert."
+    "zFCP 磁盘未激活。"
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     ""
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Disse er de mest relevante installasjonsinnstillingene, Bla gjerne gjennom seksjonene i menyen for ytterligere detaljer."
+    "这些是最主要的安装设置。如需获取更详细的信息，请随意浏览菜单中的各节。"
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     ""
@@ -1146,22 +1129,19 @@ export default {
     "TiB"
   ],
   "Time zone": [
-    "Tidssone"
+    "时区"
   ],
   "Tmpfs": [
     ""
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
-    "For å sikre at det nye systemet er i stand til oppstart, så må kanskje installasjonsprogrammet opprette eller konfigurere noen partisjoner på riktig disk."
+    "为确保新系统能够启动，安装程序将需要在适当的磁盘中创建或配置一些分区。"
   ],
   "Transactional root file system": [
-    "Transaksjonell root filsystem"
-  ],
-  "Try again": [
-    ""
+    "事务性根文件系统"
   ],
   "Type": [
-    "Type"
+    "类型"
   ],
   "URL": [
     ""
@@ -1173,7 +1153,7 @@ export default {
     ""
   ],
   "Unused space": [
-    "Ubrukt plass"
+    "未使用的空间"
   ],
   "Up to %s can be recovered by shrinking the device.": [
     ""
@@ -1182,10 +1162,10 @@ export default {
     ""
   ],
   "Upload": [
-    "Last opp"
+    "上传"
   ],
   "Upload, paste, or drop an SSH public key": [
-    "Last opp, lim inn, eller slipp en offentlig SSH nøkkel"
+    "上传、粘贴或拖入 SSH 公钥"
   ],
   "Use %s": [
     ""
@@ -1218,43 +1198,40 @@ export default {
     ""
   ],
   "Use available space": [
-    "Bruk tilgjengelig plass"
+    "使用可用空间"
   ],
   "Use static hostname": [
     ""
   ],
   "Use suggested username": [
-    "Bruk foreslått brukernavn"
+    "使用建议的用户名"
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
-    "Bruk Trusted Platform Module (TPM) for å dekryptere automatisk ved hver oppstart"
+    "使用可信平台模块 (TPM) 在每次启动时自动解密"
   ],
   "User name": [
-    "Brukernavn"
+    "用户名"
   ],
   "Username": [
-    "Brukernavn"
+    "用户名"
   ],
   "Username suggestion dropdown": [
-    "Rullegardinmeny for forslag til brukernavn"
-  ],
-  "Using a hashed password.": [
-    ""
+    "建议用户名下拉列表"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     ""
   ],
   "WPA & WPA2 Personal": [
-    "WPA & WPA2 Personlig"
+    "WPA 与 WPA2 个人版"
   ],
   "WPA Password": [
-    "WPA Passord"
+    "WPA 密码"
   ],
   "WWPN": [
     "WWPN"
   ],
   "Waiting for information about storage configuration": [
-    "Venter på informasjon om lagringskonfigurasjon"
+    "正在等待存储配置信息"
   ],
   "Weak signal": [
     ""
@@ -1263,13 +1240,13 @@ export default {
     ""
   ],
   "Wired connections": [
-    "Kablede tilkoblinger"
+    "有线连接"
   ],
   "XFS": [
     ""
   ],
   "Yes": [
-    "Ja"
+    "是"
   ],
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
     ""
@@ -1290,16 +1267,19 @@ export default {
     ""
   ],
   "at least %s": [
-    "minst %s"
+    "至少 %s"
   ],
   "auto selected": [
-    "Automatisk valgt"
+    "自动选择"
   ],
   "iBFT": [
     "iBFT"
   ],
   "iSCSI": [
     "iSCSI"
+  ],
+  "logical volume": [
+    "逻辑卷"
   ],
   "zFCP": [
     "zFCP"

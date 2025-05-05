@@ -107,7 +107,7 @@ function buildFile(po_file) {
 
 const supported = supportedLanguages();
 const files = poFiles().filter((f) => {
-  const base = path.basename(f, ".po");
+  const base = path.basename(f, ".po").replace("_", "-");
   // full match or language match
   return supported.includes(base) || supported.some((s) => s.split("-")[0] === base);
 });
