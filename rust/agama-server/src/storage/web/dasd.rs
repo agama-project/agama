@@ -100,8 +100,9 @@ async fn supported(State(state): State<DASDState<'_>>) -> Result<Json<bool>, Err
     get,
     path="/config",
     context_path="/api/storage/dasd",
+    operation_id = "dasd_get_config",
     responses(
-        (status = OK, description = "Returns DASD config")
+        (status = OK, description = "Returns DASD config", body=DASDConfig)
     )
 )]
 async fn get_config(State(state): State<DASDState<'_>>) -> Result<Json<DASDConfig>, Error> {
@@ -113,8 +114,9 @@ async fn get_config(State(state): State<DASDState<'_>>) -> Result<Json<DASDConfi
     put,
     path="/config",
     context_path="/api/storage/dasd",
+    operation_id = "dasd_set_config",
     responses(
-        (status = OK, description = "Returns DASD config", body=DASDConfig)
+        (status = OK, description = "Sets DASD config")
     )
 )]
 async fn set_config(
