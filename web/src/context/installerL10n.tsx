@@ -127,12 +127,7 @@ function languageFromLocale(locale: string): string {
  * @see https://www.rfc-editor.org/info/bcp78
  */
 function languageToLocale(language: string): string {
-  let [lang, country] = language.split("-");
-
-  // glibc does not know the "zh_HANS.UTF-8" locale, change it to "zh_CN.UTF-8"
-  if (country === "Hans") {
-    country = "CN";
-  }
+  const [lang, country] = language.split("-");
 
   const locale = country ? `${lang}_${country.toUpperCase()}` : lang;
   return `${locale}.UTF-8`;
