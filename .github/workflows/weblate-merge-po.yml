@@ -69,7 +69,7 @@ jobs:
           find web/src/po -name '*.js' -exec git rm '{}' ';'
 
           # update the list of supported languages, it is used by the PO->JS converter in the next step
-          web/share/update-languages.py --po-directory ../agama-weblate/web > web/src/languages.json
+          web/share/update-languages.py --threshold 30 --po-directory ../agama-weblate/web > web/src/languages.json
 
           # rebuild the JS files
           (cd web/src/po && SRCDIR=../../../../agama-weblate/web ../../share/po/po-converter.js)
