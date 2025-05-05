@@ -29,7 +29,8 @@ use crate::hostname::model::HostnameSettings;
 use crate::security::settings::SecuritySettings;
 use crate::{
     localization::LocalizationSettings, network::NetworkSettings, product::ProductSettings,
-    scripts::ScriptsConfig, software::SoftwareSettings, users::UserSettings,
+    scripts::ScriptsConfig, software::SoftwareSettings, storage::settings::dasd::DASDConfig,
+    users::UserSettings,
 };
 use fluent_uri::Uri;
 use serde::{Deserialize, Serialize};
@@ -57,6 +58,9 @@ pub struct InstallSettings {
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bootloader: Option<BootloaderSettings>,
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dasd: Option<DASDConfig>,
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub files: Option<Vec<UserFile>>,

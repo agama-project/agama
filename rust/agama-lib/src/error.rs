@@ -61,6 +61,8 @@ pub enum ServiceError {
     Profile(#[from] ProfileError),
     #[error("Unsupported SSL Fingerprint algorithm '#{0}'.")]
     UnsupportedSSLFingerprintAlgorithm(String),
+    #[error("DASD with channel '#{0}' not found.")]
+    DASDChannelNotFound(String),
 }
 
 #[derive(Error, Debug)]
