@@ -49,47 +49,17 @@ const storageIssue: Issue = {
 
 const mockApiModel: apiModel.Config = {
   boot: {
-    configure: false,
+    configure: true,
+    device: {
+      default: true,
+      name: "/dev/vdb",
+    },
   },
   drives: [
     {
       name: "/dev/vdb",
       spacePolicy: "delete",
       partitions: [
-        {
-          mountPath: "/",
-          filesystem: {
-            reuse: false,
-            default: true,
-            type: "btrfs",
-            snapshots: true,
-          },
-          size: {
-            default: true,
-            min: 13421772800,
-          },
-          delete: false,
-          deleteIfNeeded: false,
-          resize: false,
-          resizeIfNeeded: false,
-        },
-        {
-          mountPath: "swap",
-          filesystem: {
-            reuse: false,
-            default: true,
-            type: "swap",
-          },
-          size: {
-            default: true,
-            min: 1073741824,
-            max: 2147483648,
-          },
-          delete: false,
-          deleteIfNeeded: false,
-          resize: false,
-          resizeIfNeeded: false,
-        },
         {
           name: "/dev/vdb1",
           size: {
@@ -116,8 +86,66 @@ const mockApiModel: apiModel.Config = {
         },
       ],
     },
+    {
+      name: "/dev/vdc",
+      spacePolicy: "delete",
+      partitions: [
+        {
+          mountPath: "/documents",
+          filesystem: {
+            reuse: false,
+            default: false,
+            type: "xfs",
+            label: "",
+          },
+          size: {
+            default: false,
+            min: 136365211648,
+          },
+          delete: false,
+          deleteIfNeeded: false,
+          resize: false,
+          resizeIfNeeded: false,
+        },
+      ],
+    },
   ],
-  volumeGroups: [],
+  volumeGroups: [
+    {
+      vgName: "system",
+      targetDevices: ["/dev/vdb"],
+      logicalVolumes: [
+        {
+          lvName: "root",
+          mountPath: "/",
+          filesystem: {
+            reuse: false,
+            default: true,
+            type: "btrfs",
+            snapshots: true,
+          },
+          size: {
+            default: true,
+            min: 13421772800,
+          },
+        },
+        {
+          lvName: "swap",
+          mountPath: "swap",
+          filesystem: {
+            reuse: false,
+            default: true,
+            type: "swap",
+          },
+          size: {
+            default: true,
+            min: 1073741824,
+            max: 2147483648,
+          },
+        },
+      ],
+    },
+  ],
 };
 
 jest.mock("~/hooks/storage/api-model", () => ({
