@@ -80,6 +80,7 @@
       "additionalProperties": false,
       "required": ["level", "filesystem"],
       "properties": {
+        "search": { "$ref": "#/$defs/searchElement" },
         "alias": { "$ref": "#/$defs/alias" },
         "name": { "$ref": "#/$defs/mdRaidName" },
         "level": { "$ref": "#/$defs/mdRaidLevel" },
@@ -95,6 +96,7 @@
       "additionalProperties": false,
       "required": ["level"],
       "properties": {
+        "search": { "$ref": "#/$defs/searchElement" },
         "alias": { "$ref": "#/$defs/alias" },
         "name": { "$ref": "#/$defs/mdRaidName" },
         "level": { "$ref": "#/$defs/mdRaidLevel" },

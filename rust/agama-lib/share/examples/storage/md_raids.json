@@ -77,6 +77,12 @@
           "type": "xfs",
           "path": "/home"
         }
+      },
+      {
+        "search": "/dev/md1",
+        "name": "data",
+        "level": "raid1",
+        "filesystem": {"path": "/data" }
       }
     ]
   }
