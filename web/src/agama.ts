@@ -105,8 +105,7 @@ const agama = {
    */
   formatList: (list: string[], options: object): string => {
     try {
-      // convert the locale string ("_" separator) to HTTP language code ("-" separator)
-      const formatter = new Intl.ListFormat(agama.language.replace("_", "-"), options);
+      const formatter = new Intl.ListFormat(agama.language, options);
       return formatter.format(list);
     } catch (e) {
       // use a trivial formatting with commas when the locale formatting fails for whatever reason

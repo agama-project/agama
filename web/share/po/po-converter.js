@@ -33,7 +33,7 @@ function poFiles() {
 function supportedLanguages() {
   const langs = path.resolve(__dirname, "../../src/languages.json");
   const data = JSON.parse(fs.readFileSync(langs, "utf8"));
-  return Object.keys(data).map((l) => l.replace("-", "_"));
+  return Object.keys(data);
 }
 
 // extract the plural form function
@@ -62,7 +62,7 @@ function pluralForm(statement) {
 function buildFile(po_file) {
   return new Promise((resolve, _reject) => {
     const parsed = gettext_parser.po.parse(fs.readFileSync(po_file), "utf8");
-    const language = parsed.headers.Language;
+    const language = parsed.headers.Language.replace("_", "-");
     // remove the second header copy
     delete parsed.translations[""][""];
 
@@ -109,7 +109,7 @@ const supported = supportedLanguages();
 const files = poFiles().filter((f) => {
   const base = path.basename(f, ".po");
   // full match or language match
-  return supported.includes(base) || supported.some((s) => s.split("_")[0] === base);
+  return supported.includes(base) || supported.some((s) => s.split("-")[0] === base);
 });
 
 Promise.all(files.map((f) => buildFile(f)));

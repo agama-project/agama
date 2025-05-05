@@ -200,7 +200,7 @@ ls -1 -d /usr/lib/locale/*.utf8 | sed -e "s#/usr/lib/locale/##" -e "s#utf8#UTF-8
 
 # delete translations and unsupported languages (makes ISO about 22MiB smaller)
 # build list of ignore options for "ls" with supported languages like "-I cs* -I de* -I es* ..."
-readarray -t IGNORE_OPTS < <(ls /usr/share/agama/web_ui/po-*.js.gz | sed -e "s#/usr/share/agama/web_ui/po-\(.*\)\.js\.gz#-I\n\\1*#")
+readarray -t IGNORE_OPTS < <(ls /usr/share/agama/web_ui/po-*.js.gz | sed -e "s#/usr/share/agama/web_ui/po-\(.*\)\.js\.gz#-I\n\\1*#" -e "s/-/_/")
 # additionally keep the en_US translations
 ls -1 "${IGNORE_OPTS[@]}" -I en_US /usr/share/locale/ | xargs -I% sh -c "echo 'Removing translations %...' && rm -rf /usr/share/locale/%"
 
