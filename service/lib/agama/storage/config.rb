@@ -106,7 +106,7 @@ module Agama
 
       # @return [Array<Configs::Partition>]
       def partitions
-        (drives + md_raids).flat_map(&:partitions)
+        with_partitions.flat_map(&:partitions)
       end
 
       # @return [Array<Configs::LogicalVolume>]
@@ -116,9 +116,7 @@ module Agama
 
       # @return [Array<Configs::Filesystem>]
       def filesystems
-        (drives + md_raids + partitions + logical_volumes)
-          .map(&:filesystem)
-          .compact
+        with_filesystem.map(&:filesystem).compact
       end
 
       # Configs with configurable encryption.
@@ -140,6 +138,13 @@ module Agama
       # @return [Array<#size>]
       def with_size
         partitions + logical_volumes
+      end
+
+      # Configs with configurable partitions.
+      #
+      # @return [#partitions]
+      def with_partitions
+        drives + md_raids
       end
 
       # Config objects that could act as physical volume
@@ -174,6 +179,14 @@ module Agama
         md_users(device_alias) + vg_users(device_alias)
       end
 
+      # Configs directly using the given alias as target device.
+      #
+      # @param device_alias [String]
+      # @return [Array<Configs::VolumeGroup>]
+      def target_users(device_alias)
+        vg_target_users(device_alias)
+      end
+
     private
 
       # MD RAIDs using the given alias as member device.
@@ -196,6 +209,17 @@ module Agama
         return [] unless device
 
         volume_groups.select { |v| v.physical_volumes.include?(device_alias) }
+      end
+
+      # Volume groups using the given alias as target for physical volumes.
+      #
+      # @param device_alias [String]
+      # @return [Array<Configs::VolumeGroup>]
+      def vg_target_users(device_alias)
+        device = potential_for_pv_device.find { |d| d.alias?(device_alias) }
+        return [] unless device
+
+        volume_groups.select { |v| v.physical_volumes_devices.include?(device_alias) }
       end
 
       # Whether the device config contains root.

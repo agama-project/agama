@@ -633,6 +633,49 @@ describe Agama::Storage::Config do
     end
   end
 
+  describe "#with_partitions" do
+    let(:config_json) do
+      {
+        drives:       [
+          {},
+          {
+            partitions: [
+              {}
+            ]
+          }
+        ],
+        volumeGroups: [
+          {
+            logicalVolumes: [
+              {}
+            ]
+          }
+        ],
+        mdRaids:      [
+          {},
+          {
+            partitions: [
+              {}
+            ]
+          }
+        ]
+      }
+    end
+
+    it "returns all configs with configurable partitions" do
+      configs = subject.with_partitions
+      expect(configs.size).to eq(4)
+    end
+
+    it "includes all drives" do
+      expect(subject.with_partitions).to include(*subject.drives)
+    end
+
+    it "includes all MD RAIDs" do
+      expect(subject.with_partitions).to include(*subject.md_raids)
+    end
+  end
+
   describe "#potential_for_md_device" do
     let(:config_json) do
       {
@@ -838,6 +881,76 @@ describe Agama::Storage::Config do
       end
 
       include_examples "md users", "p1"
+    end
+  end
+
+  describe "#target_users" do
+    shared_examples "target users" do |device_alias|
+      context "and it is used as target for physical volumes" do
+        let(:volume_groups) do
+          [
+            {
+              name:            "vg1",
+              physicalVolumes: [{ generate: [device_alias] }]
+            },
+            { name: "vg2" },
+            {
+              name:            "vg3",
+              physicalVolumes: [{ generate: [device_alias] }]
+            }
+          ]
+        end
+
+        it "returns the volume groups" do
+          users = subject.target_users(device_alias)
+          expect(users).to contain_exactly(subject.volume_groups[0], subject.volume_groups[2])
+        end
+      end
+
+      context "and it is not used as target for physical volumes" do
+        let(:volume_groups) do
+          [
+            { name: "vg1" }
+          ]
+        end
+
+        it "returns an empty list" do
+          users = subject.target_users(device_alias)
+          expect(users).to eq([])
+        end
+      end
+    end
+
+    let(:config_json) do
+      {
+        drives:       drives,
+        mdRaids:      md_raids,
+        volumeGroups: volume_groups
+      }
+    end
+
+    let(:drives) { nil }
+    let(:md_raids) { nil }
+    let(:volume_groups) { nil }
+
+    context "if there is a drive with the given alias" do
+      let(:drives) do
+        [
+          { alias: "disk1" }
+        ]
+      end
+
+      include_examples "target users", "disk1"
+    end
+
+    context "if there is a MD RAID with the given alias" do
+      let(:md_raids) do
+        [
+          { alias: "md1" }
+        ]
+      end
+
+      include_examples "target users", "md1"
     end
   end
 end

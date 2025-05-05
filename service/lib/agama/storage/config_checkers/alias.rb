@@ -43,7 +43,11 @@ module Agama
         #
         # @return [Array<Issue>]
         def issues
-          [overused_alias_issue].compact
+          [
+            overused_alias_issue,
+            formatted_issue,
+            partitioned_issue
+          ].compact
         end
 
       private
@@ -54,6 +58,9 @@ module Agama
         # @return [Storage::Config]
         attr_reader :storage_config
 
+        # Issue when the device has several users.
+        #
+        # @return [Issue, nil]
         def overused_alias_issue
           return unless config.alias
           return unless storage_config.users(config.alias).size > 1
@@ -61,6 +68,56 @@ module Agama
           error(
             format(_("The device with alias '%s' is used by more than one device"), config.alias),
             kind: :overused_alias
+          )
+        end
+
+        # Issue when the device has both filesystem and a user.
+        #
+        # @return [Issue, nil]
+        def formatted_issue
+          return unless config.alias && storage_config.with_filesystem.include?(config)
+
+          return unless config.filesystem
+
+          users = storage_config.users(config.alias)
+          target_users = storage_config.target_users(config.alias)
+          any_user = (users + target_users).any?
+
+          return unless users.any? || target_users.any?
+
+          error(
+            format(
+              _(
+                # TRANSLATORS: %s is replaced by a device alias (e.g., "disk1").
+                "The device with alias '%s' cannot be formatted because it is used by other device"
+              ),
+              config.alias
+            ),
+            kind: :formatted_with_user
+          )
+        end
+
+        # Issue when the device has both partitions and a user.
+        #
+        # @return [Issue, nil]
+        def partitioned_issue
+          return unless config.alias && storage_config.with_partitions.include?(config)
+
+          return unless config.partitions.any?
+
+          users = storage_config.users(config.alias)
+          return unless users.any?
+
+          error(
+            format(
+              _(
+                # TRANSLATORS: %s is replaced by a device alias (e.g., "disk1").
+                "The device with alias '%s' cannot be partitioned because it is used by other " \
+                "device"
+              ),
+              config.alias
+            ),
+            kind: :partitioned_with_user
           )
         end
       end
