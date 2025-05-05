@@ -61,11 +61,14 @@ const Description = () => {
     <>
       <Content component="p">
         {sprintf(
-          // TRANSLATORS: %s is a list that includes "boot partition" and one or
-          // more formatted mount points with size like: '"/" (at least 10 GiB),
-          // "/var" (20 GiB), and "swap" (2 GiB)'.
-          _("It is not possible to allocate space for %s."),
-          formatList(isBootConfigured ? [_("boot partition"), ...mountPaths] : mountPaths),
+          isBootConfigured
+            ? // TRANSLATORS: %s is a list of formatted mount points with a partition size like
+              // '"/" (at least 10 GiB), "/var" (20 GiB) and "swap" (2 GiB)'
+              _("It is not possible to allocate space for the boot partition and for %s.")
+            : // TRANSLATORS: %s is a list of formatted mount points with a partition size like
+              // '"/" (at least 10 GiB), "/var" (20 GiB) and "swap" (2 GiB)'
+              _("It is not possible to allocate space for %s."),
+          formatList(mountPaths),
         )}
       </Content>
       <Content component="p">
@@ -80,7 +83,7 @@ const Description = () => {
  * could not be generated with the current configuration.
  *
  * Renders nothing if:
- *   - The proposal could not be generated at all (known by the presense of
+ *   - The proposal could not be generated at all (known by the presence of
  *     configuration errors in the storage scope)
  *   - The generated proposal contains no errors.
  */
