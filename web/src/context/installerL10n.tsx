@@ -128,7 +128,6 @@ function languageFromLocale(locale: string): string {
  */
 function languageToLocale(language: string): string {
   const [lang, country] = language.split("-");
-
   const locale = country ? `${lang}_${country.toUpperCase()}` : lang;
   return `${locale}.UTF-8`;
 }

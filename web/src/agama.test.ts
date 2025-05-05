@@ -30,7 +30,7 @@ describe("agama", () => {
     });
 
     it("it accepts a locale with underscore", () => {
-      agama.language = "zh_Hans";
+      agama.language = "zh_CN";
       const list = agama.formatList(["1", "2", "3"], {});
       expect(list).toEqual("1、2和3");
     });
