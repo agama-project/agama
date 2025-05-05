@@ -22,6 +22,7 @@
 require "agama/storage/config_checkers/base"
 require "agama/storage/configs/drive"
 require "agama/storage/configs/logical_volume"
+require "agama/storage/configs/md_raid"
 require "agama/storage/configs/partition"
 require "yast/i18n"
 
@@ -82,6 +83,8 @@ module Agama
           case config
           when Agama::Storage::Configs::Drive
             _("drive")
+          when Agama::Storage::Configs::MdRaid
+            _("MD RAID")
           when Agama::Storage::Configs::Partition
             _("partition")
           when Agama::Storage::Configs::LogicalVolume

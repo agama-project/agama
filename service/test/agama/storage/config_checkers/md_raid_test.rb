@@ -37,6 +37,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
       mdRaids:      [
         {
           alias:      device_alias,
+          search:     search,
           level:      level,
           filesystem: filesystem,
           encryption: encryption,
@@ -49,6 +50,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
   end
 
   let(:device_alias) { nil }
+  let(:search) { nil }
   let(:level) { nil }
   let(:filesystem) { nil }
   let(:encryption) { nil }
@@ -60,6 +62,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
 
   describe "#issues" do
     include_examples "alias issues"
+    include_examples "search issues"
     include_examples "filesystem issues"
     include_examples "encryption issues"
     include_examples "partitions issues"

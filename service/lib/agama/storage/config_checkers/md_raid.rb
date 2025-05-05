@@ -24,6 +24,7 @@ require "agama/storage/config_checkers/with_alias"
 require "agama/storage/config_checkers/with_encryption"
 require "agama/storage/config_checkers/with_filesystem"
 require "agama/storage/config_checkers/with_partitions"
+require "agama/storage/config_checkers/with_search"
 require "yast/i18n"
 
 module Agama
@@ -36,6 +37,7 @@ module Agama
         include WithEncryption
         include WithFilesystem
         include WithPartitions
+        include WithSearch
 
         # @param config [Configs::MdRaid]
         # @param storage_config [Storage::Config]
@@ -55,6 +57,7 @@ module Agama
         def issues
           [
             alias_issues,
+            search_issues,
             filesystem_issues,
             encryption_issues,
             partitions_issues,
