@@ -3,7 +3,6 @@ Wed Apr 30 11:45:08 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Use the correct locale format in the Intl.ListFormat.format call
   (bsc#1238584)
-- Set the "zh_CN" locale in backend for the "zh-Hans" language
 
 -------------------------------------------------------------------
 Tue Apr 22 14:14:53 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
