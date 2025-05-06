@@ -78,7 +78,7 @@ describe Agama::Storage::Finisher do
     subject { copy_files }
     before do
       allow(Yast::Installation).to receive(:destdir).and_return(destdir)
-      allow(subject).to receive(:root_dir).and_return(File.join(FIXTURES_PATH, "root_dir"))
+      allow(subject).to receive(:root_dir).and_return(File.join(FIXTURES_PATH, "root_dir/"))
     end
 
     around do |block|
