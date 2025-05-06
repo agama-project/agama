@@ -206,6 +206,8 @@ ls -1 "${IGNORE_OPTS[@]}" -I en_US /usr/share/locale/ | xargs -I% sh -c "echo 'R
 
 # delete locale definitions for unsupported languages (explicitly keep the C and en_US locales)
 ls -1 "${IGNORE_OPTS[@]}" -I "en_US*" -I "C.*" /usr/lib/locale/ | xargs -I% sh -c "echo 'Removing locale %...' && rm -rf /usr/lib/locale/%"
+# keep only the UTF-8 locales, non-UTF-8 is not supported
+ls -1 /usr/lib/locale/ | grep -v utf8 | xargs -I% sh -c "echo 'Removing locale %...' && rm -rf /usr/lib/locale/%"
 
 # delete unused translations (MO files)
 for t in zypper gettext-runtime p11-kit; do
