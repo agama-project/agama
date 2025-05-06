@@ -3,7 +3,7 @@ require "tmpdir"
 require "cheetah"
 
 describe "info-cmdline-conf.sh" do
-  let(:script_path) { File.expand_path("../root/usr/bin/info-cmdline-conf.sh", __dir__, ) }
+  let(:script_path) { File.expand_path("../live-root/usr/bin/info-cmdline-conf.sh", __dir__, ) }
 
   context "There is no info parameter" do
     let(:source_path) { File.expand_path("fixtures/source/cmdline", __dir__, ) }

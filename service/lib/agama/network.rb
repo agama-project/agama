@@ -73,6 +73,7 @@ module Agama
 
     HOSTNAME = "/etc/hostname"
     RESOLV = "/etc/resolv.conf"
+    NOT_COPY_NETWORK = "/run/agama/not_copy_network"
     RESOLV_FLAG = "/run/agama/manage_resolv"
     ETC_NM_DIR = "/etc/NetworkManager"
     RUN_NM_DIR = "/run/NetworkManager"
@@ -93,13 +94,7 @@ module Agama
       copy(HOSTNAME)
 
       return unless Dir.exist?(ETC_NM_DIR)
-
-      # runtime configuration is copied first, so in case of later modification
-      # on same interface it gets overwriten (bsc#1210541).
-      copy_directory(
-        File.join(RUN_NM_DIR, "system-connections"),
-        File.join(Yast::Installation.destdir, ETC_NM_DIR, "system-connections")
-      )
+      return if File.exist?(NOT_COPY_NETWORK)
 
       copy_directory(
         File.join(ETC_NM_DIR, "system-connections"),

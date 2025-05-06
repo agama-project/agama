@@ -126,6 +126,16 @@ impl<'a> ProductClient<'a> {
         Ok(self.registration_proxy.email().await?)
     }
 
+    /// URL of the registration server
+    pub async fn registration_url(&self) -> Result<String, ServiceError> {
+        Ok(self.registration_proxy.url().await?)
+    }
+
+    /// set registration url
+    pub async fn set_registration_url(&self, url: &str) -> Result<(), ServiceError> {
+        Ok(self.registration_proxy.set_url(url).await?)
+    }
+
     /// list of already registered addons
     pub async fn registered_addons(&self) -> Result<Vec<AddonParams>, ServiceError> {
         let addons: Vec<AddonParams> = self

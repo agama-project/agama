@@ -18,14 +18,20 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::software::model::AddonParams;
-use crate::software::model::RegistrationError;
-use crate::software::model::RegistrationInfo;
-use crate::software::model::RegistrationParams;
-use crate::software::model::SoftwareConfig;
-use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
+use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
+use crate::software::model::{
+    AddonParams, RegistrationError, RegistrationInfo, RegistrationParams, SoftwareConfig,
+};
 
 use super::settings::AddonSettings;
+
+#[derive(Debug, thiserror::Error)]
+pub enum ProductHTTPClientError {
+    #[error(transparent)]
+    HTTP(#[from] BaseHTTPClientError),
+    #[error("Registration failed: {0}")]
+    FailedRegistration(String),
+}
 
 pub struct ProductHTTPClient {
     client: BaseHTTPClient,
@@ -36,16 +42,19 @@ impl ProductHTTPClient {
         Self { client: base }
     }
 
-    pub async fn get_software(&self) -> Result<SoftwareConfig, ServiceError> {
-        self.client.get("/software/config").await
+    pub async fn get_software(&self) -> Result<SoftwareConfig, ProductHTTPClientError> {
+        Ok(self.client.get("/software/config").await?)
     }
 
-    pub async fn set_software(&self, config: &SoftwareConfig) -> Result<(), ServiceError> {
-        self.client.put_void("/software/config", config).await
+    pub async fn set_software(
+        &self,
+        config: &SoftwareConfig,
+    ) -> Result<(), ProductHTTPClientError> {
+        Ok(self.client.put_void("/software/config", config).await?)
     }
 
     /// Returns the id of the selected product to install
-    pub async fn product(&self) -> Result<String, ServiceError> {
+    pub async fn product(&self) -> Result<String, ProductHTTPClientError> {
         let config = self.get_software().await?;
         if let Some(product) = config.product {
             Ok(product)
@@ -55,7 +64,7 @@ impl ProductHTTPClient {
     }
 
     /// Selects the product to install
-    pub async fn select_product(&self, product_id: &str) -> Result<(), ServiceError> {
+    pub async fn select_product(&self, product_id: &str) -> Result<(), ProductHTTPClientError> {
         let config = SoftwareConfig {
             product: Some(product_id.to_owned()),
             patterns: None,
@@ -64,19 +73,30 @@ impl ProductHTTPClient {
         self.set_software(&config).await
     }
 
-    pub async fn get_registration(&self) -> Result<RegistrationInfo, ServiceError> {
-        self.client.get("/software/registration").await
+    pub async fn get_registration(&self) -> Result<RegistrationInfo, ProductHTTPClientError> {
+        Ok(self.client.get("/software/registration").await?)
+    }
+
+    pub async fn set_registration_url(&self, url: &String) -> Result<(), ProductHTTPClientError> {
+        self.client
+            .put_void("/software/registration/url", url)
+            .await?;
+        Ok(())
     }
 
     // get list of registered addons
-    pub async fn get_registered_addons(&self) -> Result<Vec<AddonSettings>, ServiceError> {
-        self.client
+    pub async fn get_registered_addons(
+        &self,
+    ) -> Result<Vec<AddonSettings>, ProductHTTPClientError> {
+        let addons = self
+            .client
             .get("/software/registration/addons/registered")
-            .await
+            .await?;
+        Ok(addons)
     }
 
     /// register product
-    pub async fn register(&self, key: &str, email: &str) -> Result<(), ServiceError> {
+    pub async fn register(&self, key: &str, email: &str) -> Result<(), ProductHTTPClientError> {
         // note RegistrationParams != RegistrationInfo, fun!
         let params = RegistrationParams {
             key: key.to_owned(),
@@ -92,18 +112,21 @@ impl ProductHTTPClient {
         };
 
         let message = match error {
-            ServiceError::BackendError(_, details) => {
+            BaseHTTPClientError::BackendError(_, details) => {
                 let details: RegistrationError = serde_json::from_str(&details).unwrap();
                 format!("{} (error code: {})", details.message, details.id)
             }
             _ => format!("Could not register the product: #{error:?}"),
         };
 
-        Err(ServiceError::FailedRegistration(message))
+        Err(ProductHTTPClientError::FailedRegistration(message))
     }
 
     /// register addon
-    pub async fn register_addon(&self, addon: &AddonSettings) -> Result<(), ServiceError> {
+    pub async fn register_addon(
+        &self,
+        addon: &AddonSettings,
+    ) -> Result<(), ProductHTTPClientError> {
         let addon_params = AddonParams {
             id: addon.id.to_owned(),
             version: addon.version.to_owned(),
@@ -119,7 +142,7 @@ impl ProductHTTPClient {
         };
 
         let message = match error {
-            ServiceError::BackendError(_, details) => {
+            BaseHTTPClientError::BackendError(_, details) => {
                 println!("Details: {:?}", details);
                 let details: RegistrationError = serde_json::from_str(&details).unwrap();
                 format!("{} (error code: {})", details.message, details.id)
@@ -127,6 +150,6 @@ impl ProductHTTPClient {
             _ => format!("Could not register the addon: #{error:?}"),
         };
 
-        Err(ServiceError::FailedRegistration(message))
+        Err(ProductHTTPClientError::FailedRegistration(message))
     }
 }

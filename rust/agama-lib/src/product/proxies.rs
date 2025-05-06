@@ -72,6 +72,12 @@ pub trait Registration {
     #[zbus(property)]
     fn reg_code(&self) -> zbus::Result<String>;
 
+    /// Url property
+    #[zbus(property)]
+    fn url(&self) -> zbus::Result<String>;
+    #[zbus(property)]
+    fn set_url(&self, value: &str) -> zbus::Result<()>;
+
     /// registered addons property, list of tuples (name, version, reg_code))
     #[zbus(property)]
     fn registered_addons(&self) -> zbus::Result<Vec<(String, String, String)>>;

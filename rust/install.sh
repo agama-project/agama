@@ -40,6 +40,7 @@ install -D -t "${DESTDIR}${bindir}" "${SRCDIR}"/target/${RUST_TARGET}/agama-web-
 
 install6 -D -p "${SRCDIR}"/share/agama.pam "${DESTDIR}${pamvendordir}"/agama
 
+install6 -D -t "${DESTDIR}${datadir}"/agama-cli "${SRCDIR}"/agama-lib/share/iscsi.schema.json
 install6 -D -t "${DESTDIR}${datadir}"/agama-cli "${SRCDIR}"/agama-lib/share/profile.schema.json
 install6 -D -t "${DESTDIR}${datadir}"/agama-cli "${SRCDIR}"/agama-lib/share/storage.schema.json
 install6 -D -t "${DESTDIR}${datadir}"/agama-cli "${SRCDIR}"/agama-lib/share/storage.model.schema.json

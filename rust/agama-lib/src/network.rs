@@ -25,6 +25,6 @@ pub mod settings;
 mod store;
 pub mod types;
 
-pub use client::NetworkClient;
+pub use client::{NetworkClient, NetworkClientError};
 pub use settings::NetworkSettings;
-pub use store::NetworkStore;
+pub use store::{NetworkStore, NetworkStoreError};

@@ -22,17 +22,32 @@
 
 import React from "react";
 import { Alert, Content } from "@patternfly/react-core";
-import { _, n_, formatList } from "~/i18n";
-import { useIssues, useConfigErrors } from "~/queries/issues";
-import { useConfigModel } from "~/queries/storage/config-model";
 import { IssueSeverity } from "~/types/issues";
+import { useApiModel } from "~/hooks/storage/api-model";
+import { useIssues, useConfigErrors } from "~/queries/issues";
 import * as partitionUtils from "~/components/storage/utils/partition";
+import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
 
-function Description({ partitions, booting }) {
+const Description = () => {
+  const model = useApiModel({ suspense: true });
+  const partitions = model.drives.flatMap((d) => d.partitions || []);
+  const logicalVolumes = model.volumeGroups.flatMap((vg) => vg.logicalVolumes || []);
+
   const newPartitions = partitions.filter((p) => !p.name);
 
-  if (!newPartitions.length) {
+  // FIXME: Currently, it's not possible to reuse a logical volume, so all
+  // volumes are treated as new. This code cannot be made future-proof due to an
+  // internal decision not to expose unused properties, even though "#name" is
+  // used to infer whether a "device" is new or not.
+  // const newLogicalVolumes = logicalVolumes.filter((lv) => !lv.name);
+
+  const isBootConfigured = !!model.boot?.configure;
+  const mountPaths = [newPartitions, logicalVolumes]
+    .flat()
+    .map((d) => partitionUtils.pathWithSize(d));
+
+  if (mountPaths.length === 0) {
     return (
       <Content component="p">
         {_(
@@ -42,59 +57,46 @@ function Description({ partitions, booting }) {
     );
   }
 
-  const mountPaths = newPartitions.map((p) => partitionUtils.pathWithSize(p));
-  const msg1 = booting
-    ? sprintf(
-        // TRANSLATORS: %s is a list of formatted mount points with a partition size like
-        // '"/" (at least 10 GiB), "/var" (20 GiB) and "swap" (2 GiB)'
-        // (or a single mount point in the singular case).
-        n_(
-          "It is not possible to allocate the requested partitions for booting and for %s.",
-          "It is not possible to allocate the requested partitions for booting, %s.",
-          mountPaths.length,
-        ),
-        formatList(mountPaths),
-      )
-    : sprintf(
-        // TRANSLATORS: %s is a list of formatted mount points with a partition size like
-        // '"/" (at least 10 GiB), "/var" (20 GiB) and "swap" (2 GiB)'
-        // (or a single mount point in the singular case).
-        n_(
-          "It is not possible to allocate the requested partition for %s.",
-          "It is not possible to allocate the requested partitions for %s.",
-          mountPaths.length,
-        ),
-        formatList(mountPaths),
-      );
-
   return (
     <>
-      <Content component="p">{msg1}</Content>
+      <Content component="p">
+        {sprintf(
+          isBootConfigured
+            ? // TRANSLATORS: %s is a list of formatted mount points with a partition size like
+              // '"/" (at least 10 GiB), "/var" (20 GiB) and "swap" (2 GiB)'
+              _("It is not possible to allocate space for the boot partition and for %s.")
+            : // TRANSLATORS: %s is a list of formatted mount points with a partition size like
+              // '"/" (at least 10 GiB), "/var" (20 GiB) and "swap" (2 GiB)'
+              _("It is not possible to allocate space for %s."),
+          formatList(mountPaths),
+        )}
+      </Content>
       <Content component="p">
         {_("Adjust the settings below to make the new system fit into the available space.")}
       </Content>
     </>
   );
-}
+};
 
 /**
- * Information about a failed storage proposal
+ * Displays information to help users understand why a storage proposal
+ * could not be generated with the current configuration.
  *
+ * Renders nothing if:
+ *   - The proposal could not be generated at all (known by the presence of
+ *     configuration errors in the storage scope)
+ *   - The generated proposal contains no errors.
  */
 export default function ProposalFailedInfo() {
   const configErrors = useConfigErrors("storage");
   const errors = useIssues("storage").filter((s) => s.severity === IssueSeverity.Error);
-  const model = useConfigModel({ suspense: true });
 
-  if (configErrors.length) return;
-  if (!errors.length) return;
-
-  const modelPartitions = model.drives.flatMap((d) => d.partitions || []);
-  const booting = !!model.boot?.configure;
+  if (configErrors.length !== 0) return;
+  if (errors.length === 0) return;
 
   return (
     <Alert variant="warning" title={_("Failed to calculate a storage layout")}>
-      <Description partitions={modelPartitions} booting={booting} />
+      <Description />
     </Alert>
   );
 }

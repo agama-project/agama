@@ -24,8 +24,8 @@ pub mod client;
 pub mod http_client;
 pub mod model;
 pub mod proxies;
-mod settings;
-mod store;
+pub mod settings;
+pub(crate) mod store;
 
 pub use client::{
     iscsi::{ISCSIAuth, ISCSIClient, ISCSIInitiator, ISCSINode},
@@ -33,4 +33,4 @@ pub use client::{
     StorageClient,
 };
 pub use settings::StorageSettings;
-pub use store::StorageStore;
+pub use store::{StorageStore, StorageStoreError};

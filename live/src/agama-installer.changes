@@ -1,4 +1,69 @@
 -------------------------------------------------------------------
+Tue Apr 29 11:30:59 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Predefine some useful commands in the default bash history for
+  easier use. It can serve also as a hint how to save logs, etc...
+
+-------------------------------------------------------------------
+Thu Apr 28 16:40:41 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Ensure the persistent NetworkManager connections are copied if 
+  not explicitlly disabled (related to gh#agama-project/agama#2291)
+
+-------------------------------------------------------------------
+Mon Apr 28 12:14:51 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed missing drivers in ppc64le initrd, fixes broken
+  installation via PXE (bsc#1241887)
+- Removed the workaround for adding the xhci-pci-renesas driver,
+  now it is included in the default dracut drivers
+
+-------------------------------------------------------------------
+Fri Apr 25 14:10:04 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Display Firefox devtool in fullscreen window, display the
+  console by default after pressing F12, display timestamps
+  in console
+
+-------------------------------------------------------------------
+Thu Apr 24 16:40:41 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- bsc#1239777, bsc#1236885 gh#agama-project/agama#2291.
+  - Persist the NetworkManager runtime config created by 
+    nm-initrd-generator when given explicitlly with the 'ip=' 
+    kernel cmdline argument.
+  - Allow to disable the copy of the persistent configuration with
+    the inst.copy_network kernel cmdline argument.
+  - Do not copy the NetworkManager runtime configuration to the 
+    target system anymore.
+
+-------------------------------------------------------------------
+Thu Apr 24 15:11:35 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Filter out the special PXE boot parameters, do not pass them
+  to the installed system. Remove also most of the network
+  settings (gh#agama-project/agama#2280)
+
+-------------------------------------------------------------------
+Wed Apr 23 08:39:34 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Rename "root" source directory to "live-root" to avoid confusion
+  with root/root directory
+- Removed duplicate files which are located in root/root
+  (live-root/root now)
+
+-------------------------------------------------------------------
+Wed Apr 23 05:47:23 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Include the kernel-default-optional package in the Live ISO
+  to support more hardware (bsc#1241099)
+
+-------------------------------------------------------------------
+Tue Apr 22 14:14:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 14
+
+-------------------------------------------------------------------
 Thu Apr 10 05:20:55 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add a new SUSE_SLE_16_PXE_MINI that only includes the software

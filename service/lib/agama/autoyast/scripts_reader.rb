@@ -118,7 +118,7 @@ module Agama
         }
 
         if section["location"] && !section["location"].empty?
-          script["url"] = section["location"]
+          script["url"] = section["location"].delete_prefix("relurl://")
         elsif section["source"]
           script["content"] = section["source"]
         end

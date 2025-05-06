@@ -19,10 +19,12 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::auth::AuthToken;
+use agama_lib::context::InstallationContext;
 use agama_lib::manager::FinishMethod;
 use anyhow::Context;
 use auth_tokens_file::AuthTokensFile;
 use clap::{Args, Parser};
+use fluent_uri::UriRef;
 
 mod auth;
 mod auth_tokens_file;
@@ -185,15 +187,24 @@ async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
     Ok(ManagerClient::new(conn).await?)
 }
 
-pub fn download_file(url: &str, path: &PathBuf) -> Result<(), ServiceError> {
+pub fn download_file(url: &str, path: &PathBuf) -> anyhow::Result<()> {
     let mut file = fs::OpenOptions::new()
         .create(true)
         .write(true)
-        .mode(0o400)
+        .truncate(true)
+        .mode(0o600)
         .open(path)
         .context(format!("Cannot write the file '{}'", path.display()))?;
 
-    match Transfer::get(url, &mut file) {
+    let context = InstallationContext::from_env().unwrap();
+    let uri = UriRef::parse(url).context("Invalid URL")?;
+    let absolute_url = if uri.has_scheme() {
+        uri.to_string()
+    } else {
+        uri.resolve_against(&context.source)?.to_string()
+    };
+
+    match Transfer::get(&absolute_url, &mut file) {
         Ok(()) => println!("File saved to {}", path.display()),
         Err(e) => eprintln!("Could not retrieve the file: {e}"),
     }
@@ -204,7 +215,7 @@ async fn build_http_client(
     api_url: Url,
     insecure: bool,
     authenticated: bool,
-) -> Result<BaseHTTPClient, ServiceError> {
+) -> anyhow::Result<BaseHTTPClient> {
     let mut client = BaseHTTPClient::new(api_url)?;
 
     if insecure {
@@ -216,11 +227,11 @@ async fn build_http_client(
     if authenticated {
         // this deals with authentication need inside
         if let Some(token) = find_client_token(&client.base_url) {
-            return client.authenticated(&token);
+            return Ok(client.authenticated(&token)?);
         }
-        return Err(ServiceError::NotAuthenticated);
+        return Err(ServiceError::NotAuthenticated.into());
     } else {
-        client.unauthenticated()
+        Ok(client.unauthenticated()?)
     }
 }
 

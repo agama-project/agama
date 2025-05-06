@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,10 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::settings::NetworkConnection;
-use crate::base_http_client::BaseHTTPClient;
-use crate::error::ServiceError;
-use crate::network::{NetworkClient, NetworkSettings};
+use super::{settings::NetworkConnection, NetworkClientError};
+use crate::{
+    base_http_client::BaseHTTPClient,
+    network::{NetworkClient, NetworkSettings},
+};
+
+#[derive(Debug, thiserror::Error)]
+#[error("Error processing network settings: {0}")]
+pub struct NetworkStoreError(#[from] NetworkClientError);
+
+type NetworkStoreResult<T> = Result<T, NetworkStoreError>;
 
 /// Loads and stores the network settings from/to the D-Bus service.
 pub struct NetworkStore {
@@ -29,20 +36,19 @@ pub struct NetworkStore {
 }
 
 impl NetworkStore {
-    pub async fn new(client: BaseHTTPClient) -> Result<NetworkStore, ServiceError> {
-        Ok(Self {
-            network_client: NetworkClient::new(client).await?,
-        })
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self {
+            network_client: NetworkClient::new(client),
+        }
     }
 
     // TODO: read the settings from the service
-    pub async fn load(&self) -> Result<NetworkSettings, ServiceError> {
+    pub async fn load(&self) -> NetworkStoreResult<NetworkSettings> {
         let connections = self.network_client.connections().await?;
-
         Ok(NetworkSettings { connections })
     }
 
-    pub async fn store(&self, settings: &NetworkSettings) -> Result<(), ServiceError> {
+    pub async fn store(&self, settings: &NetworkSettings) -> NetworkStoreResult<()> {
         for id in ordered_connections(&settings.connections) {
             let id = id.as_str();
             let fallback = default_connection(id);

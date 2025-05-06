@@ -200,6 +200,7 @@ echo $PATH
 %{_bindir}/agama
 %dir %{_datadir}/agama-cli
 %{_datadir}/agama-cli/agama.libsonnet
+%{_datadir}/agama-cli/iscsi.schema.json
 %{_datadir}/agama-cli/profile.schema.json
 %{_datadir}/agama-cli/storage.schema.json
 %{_datadir}/agama-cli/storage.model.schema.json

@@ -84,6 +84,45 @@
 
       ]
     },
+    "dasd": {
+      "title": "DASD device actiation (s390x only)",
+      "type": "object",
+      "properties": {
+        "devices": {
+          "title": "List of DASD devices",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "channel": {
+                "title": "DASD device channel",
+                "type": "string"
+              },
+              "state": {
+                "title": "Specify target state of device. Either activate it or deactivate it.",
+                "type": "string",
+                "enum": [
+                  "active",
+                  "offline"
+                ],
+                "default": "active"
+              },
+              "format": {
+                "title": "If device should be formatted. If not specified then it format device only if not already formatted.",
+                "type": "boolean"
+              },
+              "diag": {
+                "title": "If device have set diag flag. If not specified then it keep what device has before.",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "channel"
+            ]
+          }
+        }
+      }
+    },
     "hostname": {
       "title": "Hostname settings",
       "type": "object",
@@ -95,6 +134,33 @@
         "transient": {
           "title": "System transient hostname.",
           "type": "string"
+        }
+      }
+    },
+    "security": {
+      "title": "Security settings",
+      "type": "object",
+      "properties": {
+        "sslCertificates": {
+          "title": "List of SSL certificates to add to system",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "fingerprint": {
+                "title": "fingerprint of ssl certificate",
+                "type": "string",
+                "examples": ["A8:DE:08:B1:57:52:FE:70:DF:D5:31:EA:E3:53:BB:39:EE:01:FF:B9"] 
+              },
+              "algorithm": {
+                "title": "Fingerprint algorithm used to compute it",
+                "type": "string",
+                "enum": ["SHA1", "SHA256"],
+                "examples": ["SHA1"] 
+              }
+            },
+            "required": ["fingerprint", "algorithm"]
+          }
         }
       }
     },
@@ -138,6 +204,10 @@
         },
         "registrationEmail": {
           "title": "Product registration email",
+          "type": "string"
+        },
+        "registrationUrl": {
+          "title": "URL of the registration server",
           "type": "string"
         }
       }
@@ -569,8 +639,8 @@
           "type": "string"
         },
         "url": {
-          "title": "Script URL",
-          "description": "URL to fetch the script from"
+          "title": "Script URL reference",
+          "description": "Absolute or relative URL to fetch the script from"
         }
       },
       "required": ["name"],
@@ -597,8 +667,8 @@
           "type": "string"
         },
         "url": {
-          "title": "Script URL",
-          "description": "URL to fetch the script from"
+          "title": "Script URL reference",
+          "description": "Absolute or relative URL to fetch the script from."
         }
       },
       "required": ["name"],
@@ -625,8 +695,8 @@
           "type": "string"
         },
         "url": {
-          "title": "Script URL",
-          "description": "URL to fetch the script from"
+          "title": "Script URL reference",
+          "description": "Absolute or relative URL to fetch the script from."
         },
         "chroot": {
           "title": "Whether it should run in the installed system using a chroot environment",
@@ -658,8 +728,8 @@
           "type": "string"
         },
         "url": {
-          "title": "Script URL",
-          "description": "URL to fetch the script from"
+          "title": "Script URL reference",
+          "description": "Absolute or relative URL to fetch the script from."
         }
       },
       "required": ["name"],
@@ -680,8 +750,8 @@
           "type": "string"
         },
         "url": {
-          "title": "File URL",
-          "description": "URL to fetch the file from"
+          "title": "File URL reference",
+          "description": "Absolute or relative URL to fetch the file from."
         },
         "permissions": {
           "title": "File permissions",

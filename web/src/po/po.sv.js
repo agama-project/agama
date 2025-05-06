@@ -120,6 +120,9 @@ export default {
   "Add another partition or mount an existing one": [
     "Lägg till ytterligare en partition eller montera en befintlig"
   ],
+  "Add device menu": [
+    "Lägg till enhetsmeny"
+  ],
   "Add logical volume": [
     "Lägg till logisk volym"
   ],
@@ -153,6 +156,9 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Alla befintliga partitioner kommer att tas bort och all data på disken kommer att gå förlorad."
   ],
+  "As a new partition on %s": [
+    "Som en ny partition på %s"
+  ],
   "At least one address must be provided for selected mode": [
     "Minst en adress måste tillhandahållas för valt läge"
   ],
@@ -173,9 +179,6 @@ export default {
   ],
   "Authentication by target": [
     "Autentisering av mål"
-  ],
-  "Authentication failed, please try again": [
-    "Autentiseringen misslyckades, försök igen"
   ],
   "Auto LUNs Scan": [
     "Automatisk LUN-skanning"
@@ -220,7 +223,7 @@ export default {
     "Innan du startar installationen måste du åtgärda följande problem:"
   ],
   "Beta": [
-    ""
+    "Beta"
   ],
   "BitLocker": [
     "BitLocker"
@@ -255,6 +258,9 @@ export default {
   "Change boot options": [
     "Ändra uppstartsalternativ"
   ],
+  "Change device menu": [
+    "Ändra enhetsmeny"
+  ],
   "Change product": [
     "Ändra produkt"
   ],
@@ -266,6 +272,9 @@ export default {
   ],
   "Check the %d planned actions": [
     "Kontrollera det %d planerade åtgärderna"
+  ],
+  "Check the authentication parameters.": [
+    "Kontrollera autentiseringsparametrarna."
   ],
   "Check the following before continuing": [
     "Kontrollera följande innan du fortsätter"
@@ -289,7 +298,7 @@ export default {
     "Dölj listan över planerade åtgärder"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    ""
+    "Konfiguration läst från iSCSI Boot Firmware Table (iBFT)."
   ],
   "Configure DASD": [
     "Konfigurera DASD"
@@ -299,6 +308,9 @@ export default {
   ],
   "Configure LVM logical volume at %s volume group": [
     "Konfigurera LVM logisk volym på %s volymgrupp"
+  ],
+  "Configure device menu": [
+    "Konfigurera enhetsmeny"
   ],
   "Configure iSCSI": [
     "Konfigurera iSCSI"
@@ -324,11 +336,8 @@ export default {
   "Connect": [
     "Anslut"
   ],
-  "Connect to a Wi-Fi network": [
-    "Anslut till ett Wi-Fi nätverk"
-  ],
-  "Connect to hidden network": [
-    "Anslut till ett dolt nätverk"
+  "Connect to %s": [
+    "Anslut till %s"
   ],
   "Connect to iSCSI targets": [
     "Anslut till iSCSI mål"
@@ -339,14 +348,17 @@ export default {
   "Connected (%s)": [
     "Ansluten (%s)"
   ],
-  "Connected to %s": [
-    "Ansluten till %s"
-  ],
-  "Connecting": [
-    "Ansluter"
+  "Connecting to %s": [
+    "Ansluter till %s"
   ],
   "Connection actions": [
     "Anslutningsåtgärder"
+  ],
+  "Connection details": [
+    "Anslutningsdetaljer"
+  ],
+  "Connection not found or lost": [
+    "Anslutningen hittades inte eller förlorades"
   ],
   "Content will be kept": [
     "Innehåll kommer att behållas"
@@ -363,11 +375,20 @@ export default {
   "Could not authenticate against the server, please check it.": [
     "Kunde inte autentisera mot servern, vänligen kontrollera det."
   ],
+  "Could not connect to %s": [
+    "Kan inte ansluta till %s"
+  ],
   "Could not log in. Please, make sure that the password is correct.": [
     "Kunde inte logga in. Kontrollera att lösenordet är korrekt."
   ],
   "Create LVM volume group %s": [
     "Skapa LVM volymgrupp %s"
+  ],
+  "Create LVM volume group on %s": [
+    "Skapa LVM volymgrupp på %s"
+  ],
+  "Create another LVM volume group on %s": [
+    "Skapa LVM volymgrupp på %s"
   ],
   "Create user": [
     "Skapa användare"
@@ -447,14 +468,20 @@ export default {
   "Details": [
     "Detaljer"
   ],
+  "Details will appear after the connection is successfully established.": [
+    "Detaljer kommer att visas efter att anslutningen har upprättats."
+  ],
   "Device": [
     "Enhet"
   ],
+  "Device %s menu": [
+    "Enhets %s-meny"
+  ],
+  "Device details": [
+    "Enhetsdetaljer"
+  ],
   "Discard": [
     "Kasta bort"
-  ],
-  "Disconnect": [
-    "Koppla ifrån"
   ],
   "Disconnected": [
     "Frånkopplad"
@@ -546,6 +573,12 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
+  "Excellent signal": [
+    "Utmärkt signal"
+  ],
+  "Expiration date": [
+    "Utgångsdatum"
+  ],
   "Ext2": [
     "Ext2"
   ],
@@ -556,7 +589,7 @@ export default {
     "Ext4"
   ],
   "Extensions": [
-    ""
+    "Tillägg"
   ],
   "F2FS": [
     "F2FS"
@@ -642,6 +675,12 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go to network page": [
+    "Gå till nätverkssidan"
+  ],
+  "Good signal": [
+    "Bra signal"
+  ],
   "Hide": [
     "Dölj"
   ],
@@ -656,10 +695,10 @@ export default {
     "Värdnamn"
   ],
   "Hostname could not be updated": [
-    ""
+    "Värdnamnet kunde inte uppdateras"
   ],
   "Hostname successfully updated": [
-    ""
+    "Värdnamnet har uppdaterats"
   ],
   "I have read and accept the [license] for %s": [
     "Jag har läst och accepterar [licensen] för %s"
@@ -667,11 +706,23 @@ export default {
   "IP Address": [
     "IP address"
   ],
+  "IP Addresses": [
+    "IP-adresser"
+  ],
   "IP address": [
     "IP address"
   ],
   "IP addresses": [
     "IP adresser"
+  ],
+  "IP settings": [
+    "IP inställningar"
+  ],
+  "IPv4": [
+    "IPv4"
+  ],
+  "IPv6": [
+    "IPv6"
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Om ett lokalt media användes för att köra det här installationsprogrammet, ta bort det före nästa uppstart."
@@ -700,14 +751,17 @@ export default {
   "Initiator": [
     "Initiativtagare"
   ],
+  "Initiator details": [
+    "Initiator detaljer"
+  ],
   "Initiator name": [
     "Initiativtagarens namn"
   ],
   "Initiator name could not be updated": [
-    ""
+    "Initiatornamnet kunde inte uppdateras"
   ],
   "Initiator name successfully updated": [
-    ""
+    "Initiatornamnet har uppdaterats"
   ],
   "Install": [
     "Installera"
@@ -766,8 +820,17 @@ export default {
   "Ip prefix or netmask": [
     "IP prefix eller nätmask"
   ],
+  "Issue date": [
+    "Utgivningsdatum"
+  ],
+  "Issuer": [
+    "Utfärdare"
+  ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Det är inte möjligt att installera systemet med den aktuella konfigurationen. Justera inställningarna nedan."
+  ],
+  "It may take some time.": [
+    "Det kan ta lite tid."
   ],
   "JFS": [
     "JFS"
@@ -843,6 +906,9 @@ export default {
   ],
   "Logout": [
     "Logga ut"
+  ],
+  "MAC": [
+    "MAC"
   ],
   "Main navigation": [
     "Huvudnavigering"
@@ -928,23 +994,26 @@ export default {
   "Network": [
     "Nätverk"
   ],
+  "Network details": [
+    "Nätverksdetaljer"
+  ],
+  "Network not found or lost": [
+    "Nätverket hittades inte eller förlorades"
+  ],
   "New": [
     "Ny"
   ],
   "No": [
     "Nej"
   ],
-  "No Wi-Fi supported": [
-    "Inget Wi-Fi stöds"
+  "No Wi-Fi networks were found": [
+    "Inga Wi-Fi-nätverk hittades"
   ],
   "No additional partitions will be created": [
     "Inga ytterligare partitioner kommer att skapas"
   ],
   "No additional software was selected.": [
     "Ingen ytterligare programvara valdes."
-  ],
-  "No connected yet": [
-    "Inte ansluten ännu"
   ],
   "No content found": [
     "Inget innehåll hittades"
@@ -959,7 +1028,7 @@ export default {
     "Inga enheter hittades"
   ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    ""
+    "Ingen iSCSI Boot Firmware Table (iBFT) hittades. Initieraren kan konfigureras manuellt."
   ],
   "No iSCSI targets found.": [
     "Inga iSCSI mål hittades."
@@ -976,10 +1045,7 @@ export default {
   "No user defined yet.": [
     "Ingen användare definierad ännu."
   ],
-  "No visible Wi-Fi networks found": [
-    "Inga synliga WiFi nätverk hittades"
-  ],
-  "No wired connections found": [
+  "No wired connections were found": [
     "Inga trådbundna anslutningar hittades"
   ],
   "No zFCP controllers found.": [
@@ -1003,6 +1069,9 @@ export default {
   "None of the time zones match the filter.": [
     "Inget av tidszonerna matchar filtret."
   ],
+  "Not available": [
+    "Inte tillgänglig"
+  ],
   "Not defined": [
     "Inte definerad"
   ],
@@ -1011,6 +1080,9 @@ export default {
   ],
   "Not possible with the current setup. Click to know more.": [
     "Inte möjligt med den aktuella konfigurationen. Klicka för att veta mer."
+  ],
+  "Not protected network": [
+    "Inte skyddat nätverk"
   ],
   "Not selected yet": [
     "Inte valt ännu"
@@ -1108,9 +1180,6 @@ export default {
   "Please, provide its password to log in to the system.": [
     "Vänligen ange lösenordet för att logga in på systemet."
   ],
-  "Please, review provided settings and try again.": [
-    "Granska de angivna inställningarna och försök igen."
-  ],
   "Please, try to activate a zFCP controller.": [
     "Snälla, försök att aktivera en zFCP-kontroller."
   ],
@@ -1144,6 +1213,9 @@ export default {
   "Public SSH Key is empty.": [
     "Publik SSH nyckel är tom."
   ],
+  "Public network": [
+    "Publikt nätverk"
+  ],
   "Question": [
     "Fråga"
   ],
@@ -1154,13 +1226,16 @@ export default {
     "Starta om"
   ],
   "Recommended": [
-    ""
+    "Rekommenderad"
   ],
   "Register": [
     "Registrera"
   ],
   "Registration": [
     "Registrering"
+  ],
+  "Registration certificate": [
+    "Registreringscertifikat"
   ],
   "Registration code": [
     "Registreringskod"
@@ -1183,6 +1258,9 @@ export default {
   "Remove min channel filter": [
     "Ta bort minimum kanal filter"
   ],
+  "Remove the configuration for this disk": [
+    "Ta bort konfigurationen för den här disken"
+  ],
   "Repository load failed": [
     "Det gick inte att ladda förråd"
   ],
@@ -1201,8 +1279,17 @@ export default {
   "Root user": [
     "Root användare"
   ],
+  "Routes": [
+    "Rutter"
+  ],
   "SD Card": [
     "SD-kort"
+  ],
+  "SHA1 fingerprint": [
+    "SHA1-fingeravtryck"
+  ],
+  "SHA256 fingerprint": [
+    "SHA256-fingeravtryck"
   ],
   "SSID": [
     "SSID"
@@ -1212,6 +1299,9 @@ export default {
   ],
   "Search": [
     "Sök"
+  ],
+  "Secured network": [
+    "Säkert nätverk"
   ],
   "Security": [
     "Säkerhet"
@@ -1225,8 +1315,17 @@ export default {
   "Select a disk": [
     "Välj en disk"
   ],
+  "Select a disk to configure": [
+    "Välj en disk att konfigurera"
+  ],
+  "Select a disk to create %s": [
+    "Välj en disk för att skapa %s"
+  ],
   "Select a disk to define partitions": [
     "Välj en disk för att definiera partitioner"
+  ],
+  "Select a disk to install the system": [
+    "Välj en disk för att installera systemet"
   ],
   "Select a product": [
     "Välj en produkt"
@@ -1256,7 +1355,7 @@ export default {
     "Välj vad som ska göras med varje partition."
   ],
   "Selected disk (cannot be changed)": [
-    ""
+    "Vald disk (kan inte ändras)"
   ],
   "Selected patterns": [
     "Valda mönster"
@@ -1273,6 +1372,9 @@ export default {
   "Set a permanent hostname that won’t change with network updates.": [
     "Ställ in ett permanent värdnamn som inte ändras med nätverksuppdateringar."
   ],
+  "Setting up connection": [
+    "Sätter upp anslutning"
+  ],
   "Several partitions will be deleted": [
     "Flera partitioner kommer att tas bort"
   ],
@@ -1288,6 +1390,9 @@ export default {
   ],
   "Shrink existing partitions": [
     "Krymp existerande partitioner"
+  ],
+  "Signal strength": [
+    "Signalstyrka"
   ],
   "Size": [
     "Storlek"
@@ -1398,19 +1503,28 @@ export default {
     "Enheten kommer att användas av det nya systemet."
   ],
   "The disk is used for LVM": [
-    ""
+    "Disken används för LVM"
+  ],
+  "The disk is used for LVM and boot": [
+    "Disken används för LVM och uppstart"
   ],
   "The disk is used for booting": [
-    ""
+    "Disken används för uppstart"
   ],
   "The encryption password did not work": [
     "Krypteringslösenordet fungerade inte"
+  ],
+  "The extension has been registered with key %s.": [
+    "Tillägget har registrerats med nyckeln %s."
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Det sista steget för att konfigurera Trusted Platform Module (TPM) för att automatiskt öppna krypterade enheter kommer att ske under den första uppstarten av det nya systemet. För att det ska fungera måste maskinen startas direkt till den nya uppstartshanteraren."
   ],
   "The following software patterns are selected for installation:": [
     "Följande programvarumönster är valda för installation:"
+  ],
+  "The initiator name cannot be blank": [
+    "Initiatornamnet kan inte vara tomt"
   ],
   "The installation on your machine is complete.": [
     "Installationen på din maskin har slutförts."
@@ -1496,9 +1610,6 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "Systemet stöder inte WiFi-anslutningar, förmodligen på grund av saknad eller inaktiverad hårdvara."
   ],
-  "The system has not been configured for connecting to a Wi-Fi network yet.": [
-    "Systemet har inte konfigurerats för att ansluta till ett WiFi-nätverk än."
-  ],
   "The system will use %s as its default language.": [
     "Systemet kommer att använda %s som dess standardspråk."
   ],
@@ -1520,8 +1631,23 @@ export default {
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Denna åtgärd kan förstöra all data som lagras på enheterna som anges nedan. Vänligen bekräfta att du verkligen vill fortsätta."
   ],
+  "This disk will contain any partition needed for booting": [
+    "Den här disken kommer att innehålla alla partitioner som behövs för uppstart"
+  ],
+  "This disk will contain the LVM group '%s'": [
+    "Den här disken kommer att innehålla LVM-gruppen '%s'"
+  ],
+  "This disk will contain the LVM group '%s' and any partition needed to boot": [
+    "Den här disken kommer att innehålla LVM-gruppen '%s' och vilken partition som helst som behövs för att starta systemet"
+  ],
+  "This disk will contain the configured LVM groups": [
+    "Den här disken kommer att innehålla de konfigurerade LVM-grupperna"
+  ],
+  "This disk will contain the configured LVM groups and any partition needed to boot": [
+    "Den här disken kommer att innehålla de konfigurerade LVM-grupperna och eventuella partitioner som behövs för att starta"
+  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
-    ""
+    "Det här tillägget är inte tillgängligt på servern. Be serveradministratören att spegla tillägget."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "Detta värdnamn är dynamiskt och kan ändras efter en omstart eller nätverksuppdatering, som konfigurerats av den lokala nätverksadministratören."
@@ -1531,6 +1657,9 @@ export default {
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "Detta utrymme inkluderar bassystemet och de valda programvarumönsterna, om några."
+  ],
+  "This uses existing partitions at the disk": [
+    "Detta använder befintliga partitioner på disken"
   ],
   "TiB": [
     "TiB"
@@ -1553,6 +1682,9 @@ export default {
   "Type": [
     "Typ"
   ],
+  "URL": [
+    "URL"
+  ],
   "Unable to modify the settings": [
     "Det går inte att ändra inställningarna"
   ],
@@ -1570,6 +1702,9 @@ export default {
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Att uppdatera värdnamnet nu eller senare kommer inte att ändra det för närvarande registrerade värdnamnet."
+  ],
+  "Updating the initiator name": [
+    "Uppdaterar initiatornamnet"
   ],
   "Upload": [
     "Ladda upp"
@@ -1661,9 +1796,6 @@ export default {
   "Using transient hostname: %s": [
     "Använder transient värdnamn: %s"
   ],
-  "Visible Wi-Fi networks": [
-    "Synliga WiFi nätverk"
-  ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Volymgrupp '%s' existerar redan. Ange ett annat namn."
   ],
@@ -1682,17 +1814,23 @@ export default {
   "Waiting for information about storage configuration": [
     "Väntar på information om lagringskonfiguration"
   ],
-  "Wi-Fi": [
-    "Wi-Fi"
+  "Weak signal": [
+    "Svag signal"
   ],
-  "WiFi connection form": [
+  "Wi-Fi connection form": [
     "WiFi anslutningsformulär"
+  ],
+  "Wi-Fi networks": [
+    "Wi-Fi nätverk"
+  ],
+  "Wi-Fi not supported": [
+    "Wi-Fi stöds inte"
   ],
   "Will be supported in a future version.": [
     "Kommer att stödjas i en framtida version."
   ],
-  "Wired": [
-    "Trådbunden"
+  "Wired connections": [
+    "Trådanslutna anslutningar"
   ],
   "XFS": [
     "XFS"
@@ -1712,6 +1850,9 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "Du kanske vill slänga dessa inställningar och börja från början med en enkel konfiguration."
   ],
+  "You will connect to a public network without encryption. Your data may not be secure.": [
+    "Du kommer att ansluta till ett offentligt nätverk utan kryptering. Dina data kanske inte är säkra."
+  ],
   "ZFCP": [
     "ZFCP"
   ],
@@ -1720,9 +1861,6 @@ export default {
   ],
   "auto selected": [
     "automatiskt vald"
-  ],
-  "configured": [
-    "konfigurerad"
   ],
   "hostname": [
     "värdnamn"

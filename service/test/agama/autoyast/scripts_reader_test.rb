@@ -41,6 +41,17 @@ RSpec.shared_examples "a script reader" do |ay_section, section|
       expect(scripts.first).to include("url" => "https://example.com/script.sh")
     end
 
+    context "when the script uses a relative URL" do
+      let(:script) do
+        { "location" => "relurl://script.sh" }
+      end
+
+      it "removes the \"relurl\" from the \"location\"" do
+        scripts = subject.read["scripts"][section]
+        expect(scripts.first).to include("url" => "script.sh")
+      end
+    end
+
     context "and the script filename is not specified" do
       let(:script) do
         { "location" => "https://example.com/script.sh" }

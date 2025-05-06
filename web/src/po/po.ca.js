@@ -120,6 +120,9 @@ export default {
   "Add another partition or mount an existing one": [
     "Afegiu-hi una altra partició o munteu-ne una d'existent"
   ],
+  "Add device menu": [
+    "Afegeix el menú del dispositiu"
+  ],
   "Add logical volume": [
     "Afegeix un volum lògic"
   ],
@@ -153,6 +156,9 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Se suprimirà qualsevol partició existent i es perdran totes les dades del disc."
   ],
+  "As a new partition on %s": [
+    "Com a partició nova a %s"
+  ],
   "At least one address must be provided for selected mode": [
     "S'ha de proporcionar almenys una adreça per al mode seleccionat."
   ],
@@ -173,9 +179,6 @@ export default {
   ],
   "Authentication by target": [
     "Autenticació per destinació"
-  ],
-  "Authentication failed, please try again": [
-    "Hi ha hagut un error d'autenticació. Torneu-ho a provar."
   ],
   "Auto LUNs Scan": [
     "Escaneig automàtic de LUN"
@@ -220,7 +223,7 @@ export default {
     "Abans de començar la instal·lació, heu de resoldre els problemes següents:"
   ],
   "Beta": [
-    ""
+    "Beta"
   ],
   "BitLocker": [
     "BitLocker"
@@ -255,6 +258,9 @@ export default {
   "Change boot options": [
     "Canvia les opcions d'arrencada"
   ],
+  "Change device menu": [
+    "Canvia el menú del dispositiu"
+  ],
   "Change product": [
     "Canvia el producte"
   ],
@@ -266,6 +272,9 @@ export default {
   ],
   "Check the %d planned actions": [
     "Comproveu les %d accions planificades"
+  ],
+  "Check the authentication parameters.": [
+    "Comproveu els paràmetres d'autenticació."
   ],
   "Check the following before continuing": [
     "Comproveu el següent abans de continuar:"
@@ -289,7 +298,7 @@ export default {
     "Replega la llista d'accions previstes"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    ""
+    "Configuració llegida a la taula del microprogramari d'arrencada iSCSI (iBFT)."
   ],
   "Configure DASD": [
     "Configuració de DASD"
@@ -299,6 +308,9 @@ export default {
   ],
   "Configure LVM logical volume at %s volume group": [
     "Configura el volum lògic d'LVM al grup de volums %s"
+  ],
+  "Configure device menu": [
+    "Configura el menú del dispositiu"
   ],
   "Configure iSCSI": [
     "Configuració d'iSCSI"
@@ -324,11 +336,8 @@ export default {
   "Connect": [
     "Connecta't"
   ],
-  "Connect to a Wi-Fi network": [
-    "Connecteu-vos a una xarxa Wi-Fi"
-  ],
-  "Connect to hidden network": [
-    "Connecta't a una xarxa oculta"
+  "Connect to %s": [
+    "Connecta amb %s"
   ],
   "Connect to iSCSI targets": [
     "Connecta amb objectius iSCSI"
@@ -339,14 +348,17 @@ export default {
   "Connected (%s)": [
     "Connectat (%s)"
   ],
-  "Connected to %s": [
-    "Connectat amb %s"
-  ],
-  "Connecting": [
-    "Connectant"
+  "Connecting to %s": [
+    "Es connecta amb %s"
   ],
   "Connection actions": [
     "Accions de connexió"
+  ],
+  "Connection details": [
+    "Detalls de la connexió"
+  ],
+  "Connection not found or lost": [
+    "Connexió no trobada o perduda"
   ],
   "Content will be kept": [
     "El contingut es mantindrà"
@@ -363,11 +375,20 @@ export default {
   "Could not authenticate against the server, please check it.": [
     "No s'ha pogut autenticar amb el servidor. Si us plau, reviseu-ho."
   ],
+  "Could not connect to %s": [
+    "No s'ha pogut connectar amb %s"
+  ],
   "Could not log in. Please, make sure that the password is correct.": [
     "No s'ha pogut iniciar la sessió. Si us plau, assegureu-vos que la contrasenya sigui correcta."
   ],
   "Create LVM volume group %s": [
     "Crea el grup de volums d'LVM %s"
+  ],
+  "Create LVM volume group on %s": [
+    "Crea un grup de volums d'LVM a %s"
+  ],
+  "Create another LVM volume group on %s": [
+    "Crea un altre grup de volums d'LVM a %s"
   ],
   "Create user": [
     "Crea un usuari"
@@ -447,14 +468,20 @@ export default {
   "Details": [
     "Detalls"
   ],
+  "Details will appear after the connection is successfully established.": [
+    "Els detalls apareixeran quan la connexió s'hagi establert correctament."
+  ],
   "Device": [
     "Dispositiu"
   ],
+  "Device %s menu": [
+    "Menú del dispositiu %s"
+  ],
+  "Device details": [
+    "Detalls del dispositiu"
+  ],
   "Discard": [
     "Descarta'l"
-  ],
-  "Disconnect": [
-    "Desconnecta"
   ],
   "Disconnected": [
     "Desconnectat"
@@ -546,6 +573,12 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
+  "Excellent signal": [
+    "Senyal excel·lent"
+  ],
+  "Expiration date": [
+    "Data de venciment"
+  ],
   "Ext2": [
     "Ext2"
   ],
@@ -556,7 +589,7 @@ export default {
     "Ext4"
   ],
   "Extensions": [
-    ""
+    "Extensions"
   ],
   "F2FS": [
     "F2FS"
@@ -642,6 +675,12 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go to network page": [
+    "Ves a la pàgina de la xarxa"
+  ],
+  "Good signal": [
+    "Senyal bo"
+  ],
   "Hide": [
     "Amaga"
   ],
@@ -656,10 +695,10 @@ export default {
     "Nom d'amfitrió"
   ],
   "Hostname could not be updated": [
-    ""
+    "No s'ha pogut actualitzar el nom d'amfitrió"
   ],
   "Hostname successfully updated": [
-    ""
+    "El nom d'amfitrió s'ha actualitzat correctament"
   ],
   "I have read and accept the [license] for %s": [
     "He llegit i accepto la [llicència] de %s"
@@ -667,11 +706,23 @@ export default {
   "IP Address": [
     "Adreça IP"
   ],
+  "IP Addresses": [
+    "Adreces IP"
+  ],
   "IP address": [
     "Adreça IP"
   ],
   "IP addresses": [
     "Adreces IP"
+  ],
+  "IP settings": [
+    "Paràmetres d'IP"
+  ],
+  "IPv4": [
+    "IPv4"
+  ],
+  "IPv6": [
+    "IPv6"
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Si s'ha usat un mitjà local per executar aquest instal·lador, traieu-lo abans de la propera arrencada."
@@ -700,14 +751,17 @@ export default {
   "Initiator": [
     "Iniciador"
   ],
+  "Initiator details": [
+    "Detalls de l'iniciador"
+  ],
   "Initiator name": [
     "Nom de l'iniciador"
   ],
   "Initiator name could not be updated": [
-    ""
+    "El nom de l'iniciador s'ha actualitzat correctament"
   ],
   "Initiator name successfully updated": [
-    ""
+    "El nom de l'iniciador s'ha actualitzat correctament"
   ],
   "Install": [
     "Instal·la"
@@ -766,8 +820,17 @@ export default {
   "Ip prefix or netmask": [
     "Prefix IP o màscara de xarxa"
   ],
+  "Issue date": [
+    "Data d'emissió"
+  ],
+  "Issuer": [
+    "Emissor"
+  ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "No és possible instal·lar el sistema amb la configuració actual. Ajusteu els paràmetres que hi ha a continuació."
+  ],
+  "It may take some time.": [
+    "Pot trigar una mica."
   ],
   "JFS": [
     "JFS"
@@ -843,6 +906,9 @@ export default {
   ],
   "Logout": [
     "Sortida"
+  ],
+  "MAC": [
+    "MAC"
   ],
   "Main navigation": [
     "Navegació principal"
@@ -928,23 +994,26 @@ export default {
   "Network": [
     "Xarxa"
   ],
+  "Network details": [
+    "Detalls de la xarxa"
+  ],
+  "Network not found or lost": [
+    "Xarxa no trobada o perduda"
+  ],
   "New": [
     "Nova"
   ],
   "No": [
     "No"
   ],
-  "No Wi-Fi supported": [
-    "No és compatible amb Wi-Fi."
+  "No Wi-Fi networks were found": [
+    "No s'ha trobat cap xarxa sense fil"
   ],
   "No additional partitions will be created": [
     "No es crearan particions addicionals"
   ],
   "No additional software was selected.": [
     "No s'ha seleccionat cap programari addicional."
-  ],
-  "No connected yet": [
-    "Encara no s'ha connetat."
   ],
   "No content found": [
     "No s'ha trobat contingut."
@@ -959,7 +1028,7 @@ export default {
     "No s'ha trobat cap dispositiu"
   ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    ""
+    "No s'ha trobat cap taula de microprogramari d'arrencada iSCSI (iBFT). L'iniciador es pot configurar manualment."
   ],
   "No iSCSI targets found.": [
     "No s'ha trobat cap destinació iSCSI."
@@ -976,11 +1045,8 @@ export default {
   "No user defined yet.": [
     "Encara no s'ha definit cap usuari."
   ],
-  "No visible Wi-Fi networks found": [
-    "No s'ha trobat cap xarxa Wi-Fi visible."
-  ],
-  "No wired connections found": [
-    "No s'ha trobat cap connexió amb fil."
+  "No wired connections were found": [
+    "No s'ha trobat cap connexió amb fil"
   ],
   "No zFCP controllers found.": [
     "No s'ha trobat cap controlador de zFCP."
@@ -1003,6 +1069,9 @@ export default {
   "None of the time zones match the filter.": [
     "Cap de les zones horàries coincideix amb el filtre."
   ],
+  "Not available": [
+    "No disponible"
+  ],
   "Not defined": [
     "No definit"
   ],
@@ -1011,6 +1080,9 @@ export default {
   ],
   "Not possible with the current setup. Click to know more.": [
     "No és possible amb la configuració actual. Feu clic per saber-ne més."
+  ],
+  "Not protected network": [
+    "Xarxa no protegida"
   ],
   "Not selected yet": [
     "Encara no s'ha seleccionat."
@@ -1108,9 +1180,6 @@ export default {
   "Please, provide its password to log in to the system.": [
     "Si us plau, proporcioneu-ne la contrasenya per iniciar sessió al sistema."
   ],
-  "Please, review provided settings and try again.": [
-    "Si us plau, reviseu la configuració proporcionada i torneu-ho a provar."
-  ],
   "Please, try to activate a zFCP controller.": [
     "Si us plau, proveu d'activar un controlador de zFCP."
   ],
@@ -1144,6 +1213,9 @@ export default {
   "Public SSH Key is empty.": [
     "La clau SSH pública és buida."
   ],
+  "Public network": [
+    "Xarxa pública"
+  ],
   "Question": [
     "Pregunta"
   ],
@@ -1154,13 +1226,16 @@ export default {
     "Reinicia"
   ],
   "Recommended": [
-    ""
+    "Recomanat"
   ],
   "Register": [
     "Registra"
   ],
   "Registration": [
     "Registre"
+  ],
+  "Registration certificate": [
+    "Certificat de registre"
   ],
   "Registration code": [
     "Codi de registre"
@@ -1183,6 +1258,9 @@ export default {
   "Remove min channel filter": [
     "Suprimeix el filtre del canal mínim"
   ],
+  "Remove the configuration for this disk": [
+    "Suprimeix la configuració d'aquest disc"
+  ],
   "Repository load failed": [
     "Ha fallat carregar el repositori."
   ],
@@ -1201,8 +1279,17 @@ export default {
   "Root user": [
     "Usuari d'arrel"
   ],
+  "Routes": [
+    "Camins"
+  ],
   "SD Card": [
     "Targeta SD"
+  ],
+  "SHA1 fingerprint": [
+    "Empremta digital SHA1"
+  ],
+  "SHA256 fingerprint": [
+    "Empremta digital SHA256"
   ],
   "SSID": [
     "SSID"
@@ -1212,6 +1299,9 @@ export default {
   ],
   "Search": [
     "Cerca"
+  ],
+  "Secured network": [
+    "Xarxa amb seguretat"
   ],
   "Security": [
     "Seguretat"
@@ -1225,8 +1315,17 @@ export default {
   "Select a disk": [
     "Seleccioneu un disc"
   ],
+  "Select a disk to configure": [
+    "Seleccioneu un disc per configurar-lo"
+  ],
+  "Select a disk to create %s": [
+    "Seleccioneu un disc per crear-hi el punt de muntatge %s"
+  ],
   "Select a disk to define partitions": [
     "Seleccioneu un disc per definir-ne les particions"
+  ],
+  "Select a disk to install the system": [
+    "Seleccioneu un disc per instal·lar-hi el sistema"
   ],
   "Select a product": [
     "Seleccioneu un producte"
@@ -1256,7 +1355,7 @@ export default {
     "Seleccioneu què voleu fer amb cada partició."
   ],
   "Selected disk (cannot be changed)": [
-    ""
+    "Disc seleccionat (no es pot canviar)"
   ],
   "Selected patterns": [
     "Patrons seleccionats"
@@ -1273,6 +1372,9 @@ export default {
   "Set a permanent hostname that won’t change with network updates.": [
     "Estableix un nom d'amfitrió permanent que no canviarà amb les actualitzacions per xarxa."
   ],
+  "Setting up connection": [
+    "Establiment de la connexió"
+  ],
   "Several partitions will be deleted": [
     "Se suprimiran diverses particions"
   ],
@@ -1288,6 +1390,9 @@ export default {
   ],
   "Shrink existing partitions": [
     "Encongeix les particions existents"
+  ],
+  "Signal strength": [
+    "Força del senyal"
   ],
   "Size": [
     "Mida"
@@ -1398,19 +1503,28 @@ export default {
     "El sistema nou usarà el dispositiu."
   ],
   "The disk is used for LVM": [
-    ""
+    "El disc s'usa per a l'LVM"
+  ],
+  "The disk is used for LVM and boot": [
+    "El disc s'usa per a l'LVM i l'arrencada"
   ],
   "The disk is used for booting": [
-    ""
+    "El disc s'usa per a l'arrencada"
   ],
   "The encryption password did not work": [
     "La contrasenya d'encriptació no ha funcionat."
+  ],
+  "The extension has been registered with key %s.": [
+    "L'extensió s'ha registrat amb la clau %s."
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "El pas final per configurar el Mòdul de plataforma de confiança (TPM) per obrir automàticament dispositius encriptats es farà durant la primera arrencada del nou sistema. Perquè això funcioni, la màquina ha d'arrencar directament amb el carregador d'arrencada nou."
   ],
   "The following software patterns are selected for installation:": [
     "S'han seleccionat els patrons de programari següents per a la instal·lació:"
+  ],
+  "The initiator name cannot be blank": [
+    "El nom de l'iniciador no pot estar en blanc"
   ],
   "The installation on your machine is complete.": [
     "La instal·lació a la màquina s'ha completat."
@@ -1496,9 +1610,6 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "El sistema no admet connexions de wifi, probablement a causa de maquinari que manca o que està inhabilitat."
   ],
-  "The system has not been configured for connecting to a Wi-Fi network yet.": [
-    "El sistema encara no s'ha configurat per connectar-se a una xarxa de wifi."
-  ],
   "The system will use %s as its default language.": [
     "El sistema usarà el %s com a llengua per defecte."
   ],
@@ -1520,8 +1631,23 @@ export default {
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Aquesta acció podria destruir qualsevol dada emmagatzemada als dispositius que s'indiquen a continuació. Si us plau, confirmeu que realment voleu continuar."
   ],
+  "This disk will contain any partition needed for booting": [
+    "Aquest disc contindrà qualsevol partició necessària per a arrencar"
+  ],
+  "This disk will contain the LVM group '%s'": [
+    "Aquest disc contindrà el grup d'LVM %s"
+  ],
+  "This disk will contain the LVM group '%s' and any partition needed to boot": [
+    "Aquest disc contindrà el grup d'LVM %s i qualsevol partició necessària per a arrencar"
+  ],
+  "This disk will contain the configured LVM groups": [
+    "Aquest disc contindrà els grups d'LVM configurats"
+  ],
+  "This disk will contain the configured LVM groups and any partition needed to boot": [
+    "Aquest disc contindrà els grups d'LVM configurats i qualsevol partició necessària per a arrencar"
+  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
-    ""
+    "Aquesta extensió no està disponible al servidor. Demaneu a l'administrador del servidor que repliqui l'extensió."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "Aquest nom d'amfitrió és dinàmic i pot canviar després d'un reinici o una actualització per xarxa, tal com el configura l'administrador de la xarxa local."
@@ -1531,6 +1657,9 @@ export default {
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "Aquest espai inclou el sistema de base i els patrons de programari seleccionats, si n'hi ha."
+  ],
+  "This uses existing partitions at the disk": [
+    "Això usa les particions existents al dispositiu"
   ],
   "TiB": [
     "TiB"
@@ -1553,6 +1682,9 @@ export default {
   "Type": [
     "Tipus"
   ],
+  "URL": [
+    "URL"
+  ],
   "Unable to modify the settings": [
     "No es pot modificar la configuració"
   ],
@@ -1570,6 +1702,9 @@ export default {
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Actualitzar el nom d'amfitrió ara o més tard no canviarà el nom d'amfitrió registrat actualment."
+  ],
+  "Updating the initiator name": [
+    "Actualitzant el nom de l'iniciador"
   ],
   "Upload": [
     "Carrega"
@@ -1661,9 +1796,6 @@ export default {
   "Using transient hostname: %s": [
     "S'usa un nom d'amfitrió transitori: %s"
   ],
-  "Visible Wi-Fi networks": [
-    "Xarxes Wi-Fi visibles"
-  ],
   "Volume group '%s' already exists. Enter a different name.": [
     "El grup de volums %s ja existeix. Introduïu un nom diferent."
   ],
@@ -1682,17 +1814,23 @@ export default {
   "Waiting for information about storage configuration": [
     "Esperant informació sobre la configuració de l'emmagatzematge"
   ],
-  "Wi-Fi": [
-    "Wifi"
+  "Weak signal": [
+    "Senyal dèbil"
   ],
-  "WiFi connection form": [
+  "Wi-Fi connection form": [
     "Formulari de connexió per WiFi"
+  ],
+  "Wi-Fi networks": [
+    "Connexions sense fil"
+  ],
+  "Wi-Fi not supported": [
+    "Wi-Fi no compatible"
   ],
   "Will be supported in a future version.": [
     "Serà compatible en una versió futura."
   ],
-  "Wired": [
-    "Amb fil"
+  "Wired connections": [
+    "Connexions amb fil"
   ],
   "XFS": [
     "XFS"
@@ -1712,6 +1850,9 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "És possible que vulgueu descartar aquests paràmetres i començar des de zero amb una configuració simple."
   ],
+  "You will connect to a public network without encryption. Your data may not be secure.": [
+    "Us connectareu a una xarxa pública sense encriptació. És possible que les vostres dades no estiguin segures."
+  ],
   "ZFCP": [
     "ZFCP"
   ],
@@ -1720,9 +1861,6 @@ export default {
   ],
   "auto selected": [
     "seleccionat automàticament"
-  ],
-  "configured": [
-    "configurat"
   ],
   "hostname": [
     "Nom d'amfitrió"

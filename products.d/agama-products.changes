@@ -1,4 +1,20 @@
 -------------------------------------------------------------------
+Tue Apr 29 14:07:48 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Bump openSUSE Leap 16.0 to Beta 
+
+-------------------------------------------------------------------
+Tue Apr 22 14:27:59 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Add NetworkManager-config-server package to SLES 16.0 and 
+  SLES_SAP 16.0 as mandatory (bsc#1241224, bsc#1224868).
+
+-------------------------------------------------------------------
+Tue Apr 22 14:14:53 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 14
+
+-------------------------------------------------------------------
 Fri Apr 11 13:02:30 UTC 2025 - Frederic Crozat <fcrozat@suse.com>
 
 - Ensure bootloader pattern is always installed on SLES 16.0

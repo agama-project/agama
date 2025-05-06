@@ -19,22 +19,31 @@
 // find current contact information at www.suse.com.
 
 use super::model::LocaleConfig;
-use crate::{base_http_client::BaseHTTPClient, error::ServiceError};
+use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
+
+#[derive(Debug, thiserror::Error)]
+pub enum LocalizationHTTPClientError {
+    #[error(transparent)]
+    HTTP(#[from] BaseHTTPClientError),
+}
 
 pub struct LocalizationHTTPClient {
     client: BaseHTTPClient,
 }
 
 impl LocalizationHTTPClient {
-    pub fn new(base: BaseHTTPClient) -> Result<Self, ServiceError> {
-        Ok(Self { client: base })
+    pub fn new(base: BaseHTTPClient) -> Self {
+        Self { client: base }
     }
 
-    pub async fn get_config(&self) -> Result<LocaleConfig, ServiceError> {
-        self.client.get("/l10n/config").await
+    pub async fn get_config(&self) -> Result<LocaleConfig, LocalizationHTTPClientError> {
+        Ok(self.client.get("/l10n/config").await?)
     }
 
-    pub async fn set_config(&self, config: &LocaleConfig) -> Result<(), ServiceError> {
-        self.client.patch_void("/l10n/config", config).await
+    pub async fn set_config(
+        &self,
+        config: &LocaleConfig,
+    ) -> Result<(), LocalizationHTTPClientError> {
+        Ok(self.client.patch_void("/l10n/config", config).await?)
     }
 }

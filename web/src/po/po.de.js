@@ -120,6 +120,9 @@ export default {
   "Add another partition or mount an existing one": [
     "Eine weitere Partition hinzufügen oder eine vorhandene Partition einhängen"
   ],
+  "Add device menu": [
+    "Gerätemenü hinzufügen"
+  ],
   "Add logical volume": [
     "Logisches Volume hinzufügen"
   ],
@@ -153,6 +156,9 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Alle vorhandenen Partitionen werden entfernt und alle Daten auf der Festplatte gehen verloren."
   ],
+  "As a new partition on %s": [
+    "Als eine neue Partition auf %s"
+  ],
   "At least one address must be provided for selected mode": [
     "Für den ausgewählten Modus muss mindestens eine Adresse angegeben werden"
   ],
@@ -173,9 +179,6 @@ export default {
   ],
   "Authentication by target": [
     "Authentifizierung durch das Ziel"
-  ],
-  "Authentication failed, please try again": [
-    "Authentifizierung fehlgeschlagen, bitte versuchen Sie es erneut"
   ],
   "Auto LUNs Scan": [
     ""
@@ -220,7 +223,7 @@ export default {
     "Bevor Sie mit der Installation beginnen, müssen Sie sich mit folgenden Problemen befassen:"
   ],
   "Beta": [
-    ""
+    "Beta"
   ],
   "BitLocker": [
     "BitLocker"
@@ -255,6 +258,9 @@ export default {
   "Change boot options": [
     "Boot-Optionen ändern"
   ],
+  "Change device menu": [
+    "Gerätemenü ändern"
+  ],
   "Change product": [
     "Produkt ändern"
   ],
@@ -266,6 +272,9 @@ export default {
   ],
   "Check the %d planned actions": [
     "%d geplante Aktionen prüfen"
+  ],
+  "Check the authentication parameters.": [
+    "Überprüfen Sie die Authentifizierungsparameter."
   ],
   "Check the following before continuing": [
     "Überprüfen Sie Folgendes, bevor Sie fortfahren"
@@ -289,7 +298,7 @@ export default {
     "Liste der geplanten Aktionen einklappen"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    ""
+    "Konfiguration aus der iSCSI Boot-Firmware-Tabelle (iBFT) gelesen."
   ],
   "Configure DASD": [
     "DASD konfigurieren"
@@ -299,6 +308,9 @@ export default {
   ],
   "Configure LVM logical volume at %s volume group": [
     ""
+  ],
+  "Configure device menu": [
+    "Gerätemenü konfigurieren"
   ],
   "Configure iSCSI": [
     "iSCSI konfigurieren"
@@ -324,8 +336,8 @@ export default {
   "Connect": [
     "Verbinden"
   ],
-  "Connect to hidden network": [
-    "Mit verborgenem Netzwerk verbinden"
+  "Connect to %s": [
+    "Mit %s verbinden"
   ],
   "Connect to iSCSI targets": [
     "Mit iSCSI-Zielen verbinden"
@@ -336,14 +348,17 @@ export default {
   "Connected (%s)": [
     "Verbunden (%s)"
   ],
-  "Connected to %s": [
-    "Verbunden mit %s"
-  ],
-  "Connecting": [
-    "Wird verbunden"
+  "Connecting to %s": [
+    "Verbindung zu %s wird hergestellt"
   ],
   "Connection actions": [
     "Verbindungsaktionen"
+  ],
+  "Connection details": [
+    "Verbindungsdetails"
+  ],
+  "Connection not found or lost": [
+    "Verbindung nicht gefunden oder verloren"
   ],
   "Content will be kept": [
     "Inhalt wird beibehalten"
@@ -360,11 +375,20 @@ export default {
   "Could not authenticate against the server, please check it.": [
     "Der Server konnte nicht authentifiziert werden, bitte überprüfen Sie dies."
   ],
+  "Could not connect to %s": [
+    "Konnte keine Verbindung zu %s herstellen"
+  ],
   "Could not log in. Please, make sure that the password is correct.": [
     "Die Anmeldung ist fehlgeschlagen. Bitte stellen Sie sicher, dass das Passwort korrekt ist."
   ],
   "Create LVM volume group %s": [
     "LVM-Volume-Gruppe %s erstellen"
+  ],
+  "Create LVM volume group on %s": [
+    "LVM-Volume-Gruppe auf %s erstellen"
+  ],
+  "Create another LVM volume group on %s": [
+    "Weitere LVM-Volume-Gruppe auf %s erstellen"
   ],
   "Create user": [
     "Benutzer erstellen"
@@ -441,14 +465,20 @@ export default {
   "Details": [
     "Details"
   ],
+  "Details will appear after the connection is successfully established.": [
+    "Nachdem die Verbindung erfolgreich hergestellt wurde, werden Details angezeigt."
+  ],
   "Device": [
     "Gerät"
   ],
+  "Device %s menu": [
+    "Menü von Gerät %s"
+  ],
+  "Device details": [
+    "Gerätedetails"
+  ],
   "Discard": [
     "Verwerfen"
-  ],
-  "Disconnect": [
-    "Trennen"
   ],
   "Disconnected": [
     "Getrennt"
@@ -537,6 +567,12 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
+  "Excellent signal": [
+    "Ausgezeichnetes Signal"
+  ],
+  "Expiration date": [
+    "Ablaufdatum"
+  ],
   "Ext2": [
     "Ext2"
   ],
@@ -547,7 +583,7 @@ export default {
     "Ext4"
   ],
   "Extensions": [
-    ""
+    "Erweiterungen"
   ],
   "F2FS": [
     "F2FS"
@@ -633,6 +669,12 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go to network page": [
+    "Zur Netzwerkseite gehen"
+  ],
+  "Good signal": [
+    "Gutes Signal"
+  ],
   "Hide": [
     "Ausblenden"
   ],
@@ -647,10 +689,10 @@ export default {
     "Hostname"
   ],
   "Hostname could not be updated": [
-    ""
+    "Hostname konnte nicht aktualisiert werden"
   ],
   "Hostname successfully updated": [
-    ""
+    "Hostname erfolgreich aktualisiert"
   ],
   "I have read and accept the [license] for %s": [
     "Ich habe die [Lizenz] für %s gelesen und akzeptiere sie."
@@ -658,11 +700,23 @@ export default {
   "IP Address": [
     "IP-Adresse"
   ],
+  "IP Addresses": [
+    "IP-Adressen"
+  ],
   "IP address": [
     "IP-Adresse"
   ],
   "IP addresses": [
     "IP-Adressen"
+  ],
+  "IP settings": [
+    "IP-Einstellungen"
+  ],
+  "IPv4": [
+    "IPv4"
+  ],
+  "IPv6": [
+    "IPv6"
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Wenn ein lokales Medium zur Ausführung dieses Installationsprogramms verwendet wurde, entfernen Sie es vor dem nächsten Start."
@@ -691,14 +745,17 @@ export default {
   "Initiator": [
     "Initiator"
   ],
+  "Initiator details": [
+    "Initiatordetails"
+  ],
   "Initiator name": [
     "Name des Initiators"
   ],
   "Initiator name could not be updated": [
-    ""
+    "Initiatorname konnte nicht aktualisiert werden"
   ],
   "Initiator name successfully updated": [
-    ""
+    "Initiatorname erfolgreich aktualisiert"
   ],
   "Install": [
     "Installieren"
@@ -757,8 +814,17 @@ export default {
   "Ip prefix or netmask": [
     "IP-Präfix oder Netzmaske"
   ],
+  "Issue date": [
+    "Ausstellungsdatum"
+  ],
+  "Issuer": [
+    "Aussteller"
+  ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Es ist nicht möglich, das System mit der aktuellen Konfiguration zu installieren. Passen Sie die Einstellungen unten an."
+  ],
+  "It may take some time.": [
+    "Es könnte einige Zeit dauern."
   ],
   "JFS": [
     "JFS"
@@ -834,6 +900,9 @@ export default {
   ],
   "Logout": [
     "Abmelden"
+  ],
+  "MAC": [
+    "MAC"
   ],
   "Main navigation": [
     "Hauptnavigation"
@@ -919,23 +988,23 @@ export default {
   "Network": [
     "Netzwerk"
   ],
+  "Network details": [
+    "Netzwerkdetails"
+  ],
+  "Network not found or lost": [
+    "Netzwerk nicht gefunden oder verloren"
+  ],
   "New": [
     "Neu"
   ],
   "No": [
     "Nein"
   ],
-  "No Wi-Fi supported": [
-    "Kein Wi-Fi unterstützt"
-  ],
   "No additional partitions will be created": [
     "Es werden keine zusätzlichen Partitionen erstellt"
   ],
   "No additional software was selected.": [
     "Es wurde keine zusätzliche Software ausgewählt."
-  ],
-  "No connected yet": [
-    "Noch nicht verbunden"
   ],
   "No content found": [
     "Kein Inhalt gefunden"
@@ -950,7 +1019,7 @@ export default {
     "Keine Geräte gefunden"
   ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    ""
+    "Keine iSCSI Boot-Firmware-Tabelle (iBFT) gefunden. Der Initiator kann manuell konfiguriert werden."
   ],
   "No iSCSI targets found.": [
     "Keine iSCSI-Ziele gefunden."
@@ -966,9 +1035,6 @@ export default {
   ],
   "No user defined yet.": [
     "Noch kein Benutzer definiert."
-  ],
-  "No wired connections found": [
-    "Keine kabelgebundenen Verbindungen gefunden"
   ],
   "No zFCP controllers found.": [
     "Keine zFCP-Controller gefunden."
@@ -991,6 +1057,9 @@ export default {
   "None of the time zones match the filter.": [
     "Keine der Zeitzonen entspricht dem Filter."
   ],
+  "Not available": [
+    "Nicht verfügbar"
+  ],
   "Not defined": [
     "Nicht definiert"
   ],
@@ -999,6 +1068,9 @@ export default {
   ],
   "Not possible with the current setup. Click to know more.": [
     "Mit dem derzeitigen System ist das nicht möglich. Klicken Sie, um mehr zu erfahren."
+  ],
+  "Not protected network": [
+    "Nicht geschütztes Netzwerk"
   ],
   "Not selected yet": [
     "Noch nicht ausgewählt"
@@ -1093,9 +1165,6 @@ export default {
   "Please, provide its password to log in to the system.": [
     "Bitte geben Sie das Passwort für die Anmeldung am System an."
   ],
-  "Please, review provided settings and try again.": [
-    "Bitte überprüfen Sie die bereitgestellten Einstellungen und versuchen Sie es erneut."
-  ],
   "Please, try to activate a zFCP controller.": [
     "Bitte versuchen Sie, einen zFCP-Controller zu aktivieren."
   ],
@@ -1129,6 +1198,9 @@ export default {
   "Public SSH Key is empty.": [
     "Öffentlicher SSH-Schlüssel ist leer."
   ],
+  "Public network": [
+    "Öffentliches Netzwerk"
+  ],
   "Question": [
     "Frage"
   ],
@@ -1139,13 +1211,16 @@ export default {
     "Neustart"
   ],
   "Recommended": [
-    ""
+    "Empfohlen"
   ],
   "Register": [
     "Registrieren"
   ],
   "Registration": [
     "Registrierung"
+  ],
+  "Registration certificate": [
+    "Registrierungszertifikat"
   ],
   "Registration code": [
     "Registrierungscode"
@@ -1168,6 +1243,9 @@ export default {
   "Remove min channel filter": [
     ""
   ],
+  "Remove the configuration for this disk": [
+    "Konfiguration für diese Festplatte entfernen"
+  ],
   "Repository load failed": [
     "Laden des Repositoriums ist fehlgeschlagen"
   ],
@@ -1186,8 +1264,17 @@ export default {
   "Root user": [
     "Root-Benutzer"
   ],
+  "Routes": [
+    "Routen"
+  ],
   "SD Card": [
     "SD-Karte"
+  ],
+  "SHA1 fingerprint": [
+    "SHA1-Fingerabdruck"
+  ],
+  "SHA256 fingerprint": [
+    "SHA256-Fingerabdruck"
   ],
   "SSID": [
     "SSID"
@@ -1197,6 +1284,9 @@ export default {
   ],
   "Search": [
     "Suchen"
+  ],
+  "Secured network": [
+    "Gesichertes Netzwerk"
   ],
   "Security": [
     "Sicherheit"
@@ -1210,8 +1300,17 @@ export default {
   "Select a disk": [
     "Festplatte auswählen"
   ],
+  "Select a disk to configure": [
+    "Festplatte zum Konfigurieren auswählen"
+  ],
+  "Select a disk to create %s": [
+    "Festplatte zum Erstellen von %s auswählen"
+  ],
   "Select a disk to define partitions": [
     "Wählen Sie eine Festplatte, um Partitionen zu definieren"
+  ],
+  "Select a disk to install the system": [
+    "Festplatte für die Installation des Systems auswählen"
   ],
   "Select a product": [
     "Wählen Sie ein Produkt aus"
@@ -1241,7 +1340,7 @@ export default {
     "Wählen Sie aus, was mit jeder Partition gemacht werden soll."
   ],
   "Selected disk (cannot be changed)": [
-    ""
+    "Ausgewählte Festplatte (kann nicht geändert werden)"
   ],
   "Selected patterns": [
     "Ausgewählte Muster"
@@ -1258,6 +1357,9 @@ export default {
   "Set a permanent hostname that won’t change with network updates.": [
     "Legen Sie einen permanenten Hostnamen fest, der sich bei Netzwerkaktualisierungen nicht ändert."
   ],
+  "Setting up connection": [
+    "Verbindung herstellen"
+  ],
   "Several partitions will be deleted": [
     "Mehrere Partitionen werden gelöscht"
   ],
@@ -1273,6 +1375,9 @@ export default {
   ],
   "Shrink existing partitions": [
     "Vorhandene Partitionen verkleinern"
+  ],
+  "Signal strength": [
+    "Signalstärke"
   ],
   "Size": [
     "Größe"
@@ -1380,19 +1485,28 @@ export default {
     "Das Gerät wird von dem neuen System verwendet."
   ],
   "The disk is used for LVM": [
-    ""
+    "Die Festplatte wird für LVM verwendet"
+  ],
+  "The disk is used for LVM and boot": [
+    "Die Festplatte wird für LVM und Boot verwendet"
   ],
   "The disk is used for booting": [
-    ""
+    "Die Festplatte wird zum Booten verwendet"
   ],
   "The encryption password did not work": [
     "Das Verschlüsselungspasswort hat nicht funktioniert"
+  ],
+  "The extension has been registered with key %s.": [
+    "Die Erweiterung wurde mit dem Schlüssel %s registriert."
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Der letzte Schritt zur Konfiguration des Trusted Platform Module (TPM) zum automatischen Öffnen verschlüsselter Geräte erfolgt beim ersten Booten des neuen Systems. Damit dies funktioniert, muss der Rechner direkt mit dem neuen Bootloader booten."
   ],
   "The following software patterns are selected for installation:": [
     "Die folgenden Softwaremuster werden für die Installation ausgewählt:"
+  ],
+  "The initiator name cannot be blank": [
+    "Der Initiatorname darf nicht leer sein"
   ],
   "The installation on your machine is complete.": [
     "Die Installation auf Ihrem Rechner ist abgeschlossen."
@@ -1496,8 +1610,23 @@ export default {
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Diese Aktion könnte alle Daten zerstören, die auf den unten aufgeführten Geräten gespeichert sind. Bitte bestätigen Sie, dass Sie wirklich fortfahren möchten."
   ],
+  "This disk will contain any partition needed for booting": [
+    "Diese Festplatte wird jede zum Booten benötigte Partition enthalten"
+  ],
+  "This disk will contain the LVM group '%s'": [
+    "Diese Festplatte wird die LVM-Gruppe ‚%s‘ enthalten"
+  ],
+  "This disk will contain the LVM group '%s' and any partition needed to boot": [
+    "Diese Festplatte wird die LVM-Gruppe ‚%s‘ und jede zum Booten benötigte Partition enthalten"
+  ],
+  "This disk will contain the configured LVM groups": [
+    "Diese Festplatte wird die konfigurierten LVM-Gruppen enthalten"
+  ],
+  "This disk will contain the configured LVM groups and any partition needed to boot": [
+    "Diese Festplatte wird die konfigurierten LVM-Gruppen und alle zum Booten benötigten Partitionen enthalten"
+  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
-    ""
+    "Diese Erweiterung ist auf dem Server nicht verfügbar. Bitten Sie den Serveradministrator, die Erweiterung zu spiegeln."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "Dieser Hostname ist dynamisch und kann sich nach einem Neustart oder einer Netzwerkaktualisierung ändern, wie vom lokalen Netzwerkadministrator konfiguriert."
@@ -1507,6 +1636,9 @@ export default {
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "Dieser Bereich umfasst das Basissystem und die ausgewählten Softwaremuster, falls vorhanden."
+  ],
+  "This uses existing partitions at the disk": [
+    "Dies verwendet vorhandene Partitionen auf der Festplatte"
   ],
   "TiB": [
     "TiB"
@@ -1529,6 +1661,9 @@ export default {
   "Type": [
     "Art"
   ],
+  "URL": [
+    "URL"
+  ],
   "Unable to modify the settings": [
     "Einstellungen können nicht geändert werden"
   ],
@@ -1546,6 +1681,9 @@ export default {
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Wenn Sie den Hostnamen jetzt oder später aktualisieren, wird der aktuell registrierte Hostname nicht geändert."
+  ],
+  "Updating the initiator name": [
+    "Aktualisieren des Initiatornamens"
   ],
   "Upload": [
     "Hochladen"
@@ -1655,11 +1793,14 @@ export default {
   "Waiting for information about storage configuration": [
     "Warten auf Informationen zur Speicherkonfiguration"
   ],
+  "Weak signal": [
+    "Schwaches Signal"
+  ],
   "Will be supported in a future version.": [
     "Wird in einer zukünftigen Version unterstützt werden."
   ],
-  "Wired": [
-    "Kabelgebunden"
+  "Wired connections": [
+    "Kabelgebundene Verbindungen"
   ],
   "XFS": [
     "XFS"
@@ -1679,6 +1820,9 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "Möglicherweise möchten Sie diese Einstellungen verwerfen und mit einer einfachen Konfiguration neu beginnen."
   ],
+  "You will connect to a public network without encryption. Your data may not be secure.": [
+    "Sie stellen eine Verbindung zu einem öffentlichen Netzwerk ohne Verschlüsselung her. Ihre Daten sind möglicherweise nicht sicher."
+  ],
   "ZFCP": [
     "ZFCP"
   ],
@@ -1688,9 +1832,6 @@ export default {
   "auto selected": [
     "automatisch ausgewählt"
   ],
-  "configured": [
-    "konfiguriert"
-  ],
   "hostname": [
     "Hostname"
   ],
@@ -1699,6 +1840,9 @@ export default {
   ],
   "iSCSI": [
     "iSCSI"
+  ],
+  "logical volume": [
+    "logisches Volume"
   ],
   "partition": [
     "Partition"

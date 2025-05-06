@@ -20,12 +20,17 @@
 
 use crate::show_progress;
 use agama_lib::{
-    base_http_client::BaseHTTPClient, install_settings::InstallSettings,
-    profile::ValidationOutcome, utils::FileFormat, utils::Transfer, Store as SettingsStore,
+    base_http_client::BaseHTTPClient,
+    context::InstallationContext,
+    install_settings::InstallSettings,
+    profile::ValidationOutcome,
+    utils::{FileFormat, Transfer},
+    Store as SettingsStore,
 };
 use anyhow::Context;
 use clap::Subcommand;
 use console::style;
+use fluent_uri::Uri;
 use std::{
     io,
     io::Read,
@@ -228,11 +233,11 @@ async fn import(client: BaseHTTPClient, url_string: String) -> anyhow::Result<()
         }
     });
 
-    let url = Url::parse(&url_string)?;
-    let path = url.path();
+    let url = Uri::parse(url_string.as_str())?;
+    let path = url.path().to_string();
     let profile_json = if path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/') {
         // AutoYaST specific download and convert to JSON
-        let config_string = autoyast_client(&client, &url).await?;
+        let config_string = autoyast_client(&client, &url.to_owned()).await?;
         Some(config_string)
     } else {
         pre_process_profile(&client, &url_string).await?
@@ -241,7 +246,10 @@ async fn import(client: BaseHTTPClient, url_string: String) -> anyhow::Result<()
     // None means the profile is a script and it has been executed
     if let Some(profile_json) = profile_json {
         validate(&client, CliInput::Full(profile_json.clone())).await?;
-        store_settings(client, &profile_json).await?;
+        let context = InstallationContext {
+            source: url.to_owned(),
+        };
+        store_settings(client, &profile_json, &context).await?;
     }
     Ok(())
 }
@@ -280,9 +288,13 @@ async fn pre_process_profile(
     }
 }
 
-async fn store_settings(client: BaseHTTPClient, profile_json: &str) -> anyhow::Result<()> {
+async fn store_settings(
+    client: BaseHTTPClient,
+    profile_json: &str,
+    context: &InstallationContext,
+) -> anyhow::Result<()> {
     let store = SettingsStore::new(client).await?;
-    let settings: InstallSettings = serde_json::from_str(profile_json)?;
+    let settings = InstallSettings::from_json(profile_json, context)?;
     store.store(&settings).await?;
     Ok(())
 }
@@ -291,7 +303,7 @@ async fn store_settings(client: BaseHTTPClient, profile_json: &str) -> anyhow::R
 /// Note that this client does not act on this *url*, it passes it as a parameter
 /// to our web backend.
 /// Return well-formed Agama JSON on success.
-async fn autoyast_client(client: &BaseHTTPClient, url: &Url) -> anyhow::Result<String> {
+async fn autoyast_client(client: &BaseHTTPClient, url: &Uri<String>) -> anyhow::Result<String> {
     // FIXME: how to escape it?
     let api_url = format!("/profile/autoyast?url={}", url);
     let output: Box<serde_json::value::RawValue> = client.post(&api_url, &()).await?;
@@ -300,8 +312,8 @@ async fn autoyast_client(client: &BaseHTTPClient, url: &Url) -> anyhow::Result<S
 }
 
 async fn autoyast(client: BaseHTTPClient, url_string: String) -> anyhow::Result<()> {
-    let url = Url::parse(&url_string)?;
-    let output = autoyast_client(&client, &url).await?;
+    let url = Uri::parse(url_string.as_str())?;
+    let output = autoyast_client(&client, &url.to_owned()).await?;
     println!("{}", output);
     Ok(())
 }

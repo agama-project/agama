@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -20,10 +20,16 @@
 
 //! Implements the store for the storage settings.
 
-use super::StorageSettings;
-use crate::base_http_client::BaseHTTPClient;
-use crate::error::ServiceError;
-use crate::storage::http_client::StorageHTTPClient;
+pub mod dasd;
+
+use super::{http_client::StorageHTTPClientError, StorageSettings};
+use crate::{base_http_client::BaseHTTPClient, storage::http_client::StorageHTTPClient};
+
+#[derive(Debug, thiserror::Error)]
+#[error("Error processing storage settings: {0}")]
+pub struct StorageStoreError(#[from] StorageHTTPClientError);
+
+type StorageStoreResult<T> = Result<T, StorageStoreError>;
 
 /// Loads and stores the storage settings from/to the HTTP service.
 pub struct StorageStore {
@@ -31,17 +37,17 @@ pub struct StorageStore {
 }
 
 impl StorageStore {
-    pub fn new(client: BaseHTTPClient) -> Result<StorageStore, ServiceError> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> StorageStore {
+        Self {
             storage_client: StorageHTTPClient::new(client),
-        })
+        }
     }
 
-    pub async fn load(&self) -> Result<Option<StorageSettings>, ServiceError> {
-        self.storage_client.get_config().await
+    pub async fn load(&self) -> StorageStoreResult<Option<StorageSettings>> {
+        Ok(self.storage_client.get_config().await?)
     }
 
-    pub async fn store(&self, settings: &StorageSettings) -> Result<(), ServiceError> {
+    pub async fn store(&self, settings: &StorageSettings) -> StorageStoreResult<()> {
         self.storage_client.set_config(settings).await?;
         Ok(())
     }

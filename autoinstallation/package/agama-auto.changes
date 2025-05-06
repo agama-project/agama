@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Apr 22 14:14:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 14
+
+-------------------------------------------------------------------
 Fri Mar 21 16:10:56 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Start the autoinstallation if a profile is found in a predefined

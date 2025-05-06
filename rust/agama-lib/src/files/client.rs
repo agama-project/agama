@@ -20,10 +20,14 @@
 
 //! Implements a client to access Agama's HTTP API related to Bootloader management.
 
-use crate::base_http_client::BaseHTTPClient;
-use crate::ServiceError;
-
 use super::model::UserFile;
+use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
+
+#[derive(Debug, thiserror::Error)]
+pub enum FilesHTTPClientError {
+    #[error(transparent)]
+    HTTP(#[from] BaseHTTPClientError),
+}
 
 pub struct FilesClient {
     client: BaseHTTPClient,
@@ -35,17 +39,17 @@ impl FilesClient {
     }
 
     /// returns list of files that will be manually deployed
-    pub async fn get_files(&self) -> Result<Vec<UserFile>, ServiceError> {
-        self.client.get("/files").await
+    pub async fn get_files(&self) -> Result<Vec<UserFile>, FilesHTTPClientError> {
+        Ok(self.client.get("/files").await?)
     }
 
     /// Sets the list of files that will be manually deployed
-    pub async fn set_files(&self, config: &Vec<UserFile>) -> Result<(), ServiceError> {
-        self.client.put_void("/files", config).await
+    pub async fn set_files(&self, config: &Vec<UserFile>) -> Result<(), FilesHTTPClientError> {
+        Ok(self.client.put_void("/files", config).await?)
     }
 
     /// writes the files to target
-    pub async fn write_files(&self) -> Result<(), ServiceError> {
-        self.client.post_void("/files/write", &()).await
+    pub async fn write_files(&self) -> Result<(), FilesHTTPClientError> {
+        Ok(self.client.post_void("/files/write", &()).await?)
     }
 }

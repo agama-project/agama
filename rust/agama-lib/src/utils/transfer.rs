@@ -29,8 +29,6 @@
 //! `cd:`. The support for well-known URLs (e.g., `file:`, `http:`, `https:`, ! `ftp:`, `nfs:`,
 //!  etc.) is implemented using CURL.
 //!
-//! Support for `relurl:` and `repo:` are still missing.
-//!
 //! ## SSL
 //!
 //! YaST support for HTTPS used a custom certificate which was located in
@@ -60,6 +58,8 @@ use handlers::{DeviceHandler, GenericHandler, HdHandler, LabelHandler};
 pub enum TransferError {
     #[error("Could not retrieve the file: {0}")]
     CurlError(#[from] curl::Error),
+    #[error("Could not retrieve '{0}': {1}")]
+    CurlTransferError(String, #[source] curl::Error),
     #[error("Could not parse the URL: {0}")]
     ParseError(#[from] url::ParseError),
     #[error("File not found: {0}")]

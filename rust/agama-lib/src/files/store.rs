@@ -18,27 +18,36 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements the store for the bootloader settings.
+//! Implements the store for the files settings.
 
+use super::{
+    client::{FilesClient, FilesHTTPClientError},
+    model::UserFile,
+};
 use crate::base_http_client::BaseHTTPClient;
-use crate::error::ServiceError;
 
-use super::client::FilesClient;
-use super::model::UserFile;
+#[derive(Debug, thiserror::Error)]
+pub enum FilesStoreError {
+    #[error("Error processing files settings: {0}")]
+    FilesHTTPClient(#[from] FilesHTTPClientError),
+}
+
+type FilesStoreResult<T> = Result<T, FilesStoreError>;
+
 /// Loads and stores the files settings from/to the HTTP service.
 pub struct FilesStore {
     files_client: FilesClient,
 }
 
 impl FilesStore {
-    pub fn new(client: BaseHTTPClient) -> Result<Self, ServiceError> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self {
             files_client: FilesClient::new(client),
-        })
+        }
     }
 
     /// loads the list of user files from http API
-    pub async fn load(&self) -> Result<Option<Vec<UserFile>>, ServiceError> {
+    pub async fn load(&self) -> FilesStoreResult<Option<Vec<UserFile>>> {
         let res = self.files_client.get_files().await?;
         if res.is_empty() {
             Ok(None)
@@ -48,8 +57,7 @@ impl FilesStore {
     }
 
     /// stores the list of user files via http API
-    pub async fn store(&self, files: &Vec<UserFile>) -> Result<(), ServiceError> {
-        self.files_client.set_files(files).await?;
-        Ok(())
+    pub async fn store(&self, files: &Vec<UserFile>) -> FilesStoreResult<()> {
+        Ok(self.files_client.set_files(files).await?)
     }
 }

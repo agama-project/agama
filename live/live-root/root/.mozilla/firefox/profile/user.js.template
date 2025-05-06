@@ -1,0 +1,34 @@
+// Mozilla User Preferences
+
+// do not remember or generate passwords
+user_pref("signon.management.page.breach-alerts.enabled", false);
+user_pref("signon.rememberSignons", false);
+user_pref("signon.generation.enabled", false);
+
+// disable the initial configuration workflow
+user_pref("browser.aboutwelcome.enabled", false);
+
+// do not ask to restore the session after restarting the browser
+// via "systemctl restart x11-autologin"
+user_pref("browser.sessionstore.resume_from_crash", false);
+user_pref("browser.startup.couldRestoreSession.count", 0);
+
+// disable homepage override on updates
+user_pref("browser.startup.homepage_override.mstone", "ignore");
+
+// workaround for non working file picker, disable XDG portal, use the FF native popup
+// TODO: make the XDG portal working again, it has more features (mounting USB flash)
+user_pref("widget.use-xdg-desktop-portal.file-picker", 0);
+
+// configure devtools
+// show devtools in a separate window
+user_pref("devtools.toolbox.host", "window");
+// show the console tab instead of the page inspector after pressing F12
+user_pref("devtools.toolbox.selectedTool", "console");
+// show time stamps in the console
+user_pref("devtools.webconsole.timestampMessages", true);
+
+// start always in the custom homepage
+user_pref("browser.startup.page", 1);
+// custom homepage: the value is expected to be replaced with the login URL by the startup script
+user_pref("browser.startup.homepage", "__HOMEPAGE__");
