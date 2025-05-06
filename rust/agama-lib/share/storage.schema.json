@@ -39,15 +39,14 @@
     },
     "driveElement": {
       "anyOf": [
-        { "$ref": "#/$defs/formattedDrive" },
+        { "$ref": "#/$defs/nonPartitionedDrive" },
         { "$ref": "#/$defs/partitionedDrive" }
       ]
     },
-    "formattedDrive": {
-      "description": "Drive without a partition table (directly formatted).",
+    "nonPartitionedDrive": {
+      "description": "Drive without a partition table (e.g., directly formatted).",
       "type": "object",
       "additionalProperties": false,
-      "required": ["filesystem"],
       "properties": {
         "search": { "$ref": "#/$defs/searchElement" },
         "alias": { "$ref": "#/$defs/alias" },
@@ -58,6 +57,7 @@
     "partitionedDrive": {
       "type": "object",
       "additionalProperties": false,
+      "required": ["partitions"],
       "properties": {
         "search": { "$ref": "#/$defs/searchElement" },
         "alias": { "$ref": "#/$defs/alias" },
@@ -70,15 +70,14 @@
     },
     "mdRaidElement": {
       "anyOf": [
-        { "$ref": "#/$defs/formattedMdRaid" },
+        { "$ref": "#/$defs/nonPartitionedMdRaid" },
         { "$ref": "#/$defs/partitionedMdRaid" }
       ]
     },
-    "formattedMdRaid": {
-      "description": "MD RAID without a partition table (directly formatted).",
+    "nonPartitionedMdRaid": {
+      "description": "MD RAID without a partition table (e.g., directly formatted).",
       "type": "object",
       "additionalProperties": false,
-      "required": ["filesystem"],
       "properties": {
         "search": { "$ref": "#/$defs/searchElement" },
         "alias": { "$ref": "#/$defs/alias" },
@@ -94,6 +93,7 @@
     "partitionedMdRaid": {
       "type": "object",
       "additionalProperties": false,
+      "required": ["partitions"],
       "properties": {
         "search": { "$ref": "#/$defs/searchElement" },
         "alias": { "$ref": "#/$defs/alias" },
