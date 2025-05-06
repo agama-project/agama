@@ -109,7 +109,10 @@ const agama = {
       return formatter.format(list);
     } catch (e) {
       // use a trivial formatting with commas when the locale formatting fails for whatever reason
-      console.warn("Using fallback function for formatting localized array:", e);
+      console.warn(
+        `Using fallback list formatting function for language "${agama.language}", details:`,
+        e,
+      );
       return list.join(", ");
     }
   },
