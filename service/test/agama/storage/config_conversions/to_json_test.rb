@@ -49,8 +49,22 @@ describe Agama::Storage::ConfigConversions::ToJSON do
               {
                 alias: "p1",
                 size:  "5 GiB"
+              },
+              {
+                alias: "p2",
+                size:  "10 GiB"
+              },
+              {
+                alias: "p3",
+                size:  "10 GiB"
               }
             ]
+          }
+        ],
+        mdRaids:      [
+          {
+            level:   "raid0",
+            devices: ["p2", "p3"]
           }
         ],
         volumeGroups: [
@@ -89,8 +103,29 @@ describe Agama::Storage::ConfigConversions::ToJSON do
                     min: 5.GiB.to_i,
                     max: 5.GiB.to_i
                   }
+                },
+                {
+                  alias: "p2",
+                  size:  {
+                    min: 10.GiB.to_i,
+                    max: 10.GiB.to_i
+                  }
+                },
+                {
+                  alias: "p3",
+                  size:  {
+                    min: 10.GiB.to_i,
+                    max: 10.GiB.to_i
+                  }
                 }
               ]
+            }
+          ],
+          mdRaids:      [
+            {
+              level:      "raid0",
+              devices:    ["p2", "p3"],
+              partitions: []
             }
           ],
           volumeGroups: [

@@ -184,6 +184,7 @@ describe Agama::Storage::Proposal do
                   ]
                 }
               ],
+              mdRaids:      [],
               volumeGroups: []
             }
           }

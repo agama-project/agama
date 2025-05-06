@@ -36,12 +36,14 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Config do
     {
       boot:         boot,
       drives:       drives,
+      mdRaids:      md_raids,
       volumeGroups: volume_groups
     }
   end
 
   let(:boot) { nil }
   let(:drives) { nil }
+  let(:md_raids) { nil }
   let(:volume_groups) { nil }
 
   describe "#convert" do
@@ -53,6 +55,7 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Config do
               configure: true
             },
             drives:       [],
+            mdRaids:      [],
             volumeGroups: []
           }
         )
@@ -111,6 +114,30 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Config do
                 path:            "/",
                 reuseIfPossible: false
               },
+              partitions: []
+            }
+          ]
+        )
+      end
+    end
+
+    context "if #md_raids is configured" do
+      let(:md_raids) do
+        [
+          {
+            level:   "raid1",
+            devices: ["disk1", "disk2"]
+          }
+        ]
+      end
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:mdRaids]).to eq(
+          [
+            {
+              level:      "raid1",
+              devices:    ["disk1", "disk2"],
               partitions: []
             }
           ]
