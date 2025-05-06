@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
 Wed Apr 30 11:45:08 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
-- Use the correct locale format in the Intl.ListFormat.format call
+- Use the correct locale format in the Intl.ListFormat.format call,
+  if it fails use a fallback formatting function to avoid a crash
   (bsc#1238584)
 
 -------------------------------------------------------------------
