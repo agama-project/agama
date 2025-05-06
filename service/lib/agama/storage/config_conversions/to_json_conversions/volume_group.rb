@@ -47,14 +47,6 @@ module Agama
             }
           end
 
-          # @return [Integer, nil]
-          def convert_extent_size
-            extent_size = config.extent_size
-            return unless extent_size
-
-            extent_size.to_i
-          end
-
           # @return [Array<String, Hash>]
           def convert_physical_volumes
             [
