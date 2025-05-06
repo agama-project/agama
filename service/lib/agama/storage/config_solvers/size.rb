@@ -106,13 +106,13 @@ module Agama
 
         # @return [Array<#size>]
         def configs_with_size
-          configs = config.with_size
+          configs = config.supporting_size
           configs.select { |c| valid?(c) }
         end
 
         # @return [Array<#filesystem>]
         def configs_with_filesystem
-          configs = config.with_filesystem
+          configs = config.supporting_filesystem
           configs.select { |c| valid?(c) }
         end
 

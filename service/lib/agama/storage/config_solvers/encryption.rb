@@ -44,7 +44,7 @@ module Agama
       private
 
         def solve_encryptions
-          config.with_encryption.each { |c| solve_encryption(c) }
+          config.supporting_encryption.each { |c| solve_encryption(c) }
         end
 
         # @param config [#encryption]

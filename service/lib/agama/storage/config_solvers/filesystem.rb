@@ -37,7 +37,7 @@ module Agama
         def solve(config)
           @config = config
 
-          config.with_filesystem.each { |c| solve_filesystem(c) }
+          config.supporting_filesystem.each { |c| solve_filesystem(c) }
         end
 
       private

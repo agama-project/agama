@@ -75,7 +75,7 @@ module Agama
         #
         # @return [Issue, nil]
         def formatted_issue
-          return unless config.alias && storage_config.with_filesystem.include?(config)
+          return unless config.alias && storage_config.supporting_filesystem.include?(config)
 
           return unless config.filesystem
 
@@ -101,7 +101,7 @@ module Agama
         #
         # @return [Issue, nil]
         def partitioned_issue
-          return unless config.alias && storage_config.with_partitions.include?(config)
+          return unless config.alias && storage_config.supporting_partitions.include?(config)
 
           return unless config.partitions.any?
 

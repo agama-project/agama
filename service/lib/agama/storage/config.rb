@@ -106,7 +106,7 @@ module Agama
 
       # @return [Array<Configs::Partition>]
       def partitions
-        with_partitions.flat_map(&:partitions)
+        supporting_partitions.flat_map(&:partitions)
       end
 
       # @return [Array<Configs::LogicalVolume>]
@@ -116,34 +116,34 @@ module Agama
 
       # @return [Array<Configs::Filesystem>]
       def filesystems
-        with_filesystem.map(&:filesystem).compact
+        supporting_filesystem.map(&:filesystem).compact
       end
 
       # Configs with configurable encryption.
       #
       # @return [Array<#encryption>]
-      def with_encryption
+      def supporting_encryption
         drives + md_raids + partitions + logical_volumes
       end
 
       # Configs with configurable filesystem.
       #
       # @return [Array<#filesystem>]
-      def with_filesystem
+      def supporting_filesystem
         drives + md_raids + partitions + logical_volumes
       end
 
       # Configs with configurable size.
       #
       # @return [Array<#size>]
-      def with_size
+      def supporting_size
         partitions + logical_volumes
       end
 
       # Configs with configurable partitions.
       #
       # @return [#partitions]
-      def with_partitions
+      def supporting_partitions
         drives + md_raids
       end
 

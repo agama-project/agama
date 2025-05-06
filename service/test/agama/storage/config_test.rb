@@ -468,7 +468,7 @@ describe Agama::Storage::Config do
     end
   end
 
-  describe "#with_encryption" do
+  describe "#supporting_encryption" do
     let(:config_json) do
       {
         drives:       [
@@ -498,32 +498,32 @@ describe Agama::Storage::Config do
     end
 
     it "returns all configs with configurable encryption" do
-      configs = subject.with_encryption
+      configs = subject.supporting_encryption
       expect(configs.size).to eq(7)
     end
 
     it "includes all drives" do
-      expect(subject.with_encryption).to include(*subject.drives)
+      expect(subject.supporting_encryption).to include(*subject.drives)
     end
 
     it "includes all MD RAIDs" do
-      expect(subject.with_encryption).to include(*subject.md_raids)
+      expect(subject.supporting_encryption).to include(*subject.md_raids)
     end
 
     it "includes all partitions" do
-      expect(subject.with_encryption).to include(*subject.partitions)
+      expect(subject.supporting_encryption).to include(*subject.partitions)
     end
 
     it "includes all logical volumes" do
-      expect(subject.with_encryption).to include(*subject.logical_volumes)
+      expect(subject.supporting_encryption).to include(*subject.logical_volumes)
     end
 
     it "does not include volume groups" do
-      expect(subject.with_encryption).to_not include(*subject.volume_groups)
+      expect(subject.supporting_encryption).to_not include(*subject.volume_groups)
     end
   end
 
-  describe "#with_filesystem" do
+  describe "#supporting_filesystem" do
     let(:config_json) do
       {
         drives:       [
@@ -553,32 +553,32 @@ describe Agama::Storage::Config do
     end
 
     it "returns all configs with configurable filesystem" do
-      configs = subject.with_filesystem
+      configs = subject.supporting_filesystem
       expect(configs.size).to eq(7)
     end
 
     it "includes all drives" do
-      expect(subject.with_filesystem).to include(*subject.drives)
+      expect(subject.supporting_filesystem).to include(*subject.drives)
     end
 
     it "includes all MD RAIDs" do
-      expect(subject.with_filesystem).to include(*subject.md_raids)
+      expect(subject.supporting_filesystem).to include(*subject.md_raids)
     end
 
     it "includes all partitions" do
-      expect(subject.with_filesystem).to include(*subject.partitions)
+      expect(subject.supporting_filesystem).to include(*subject.partitions)
     end
 
     it "includes all logical volumes" do
-      expect(subject.with_filesystem).to include(*subject.logical_volumes)
+      expect(subject.supporting_filesystem).to include(*subject.logical_volumes)
     end
 
     it "does not include volume groups" do
-      expect(subject.with_filesystem).to_not include(*subject.volume_groups)
+      expect(subject.supporting_filesystem).to_not include(*subject.volume_groups)
     end
   end
 
-  describe "#with_size" do
+  describe "#supporting_size" do
     let(:config_json) do
       {
         drives:       [
@@ -608,32 +608,32 @@ describe Agama::Storage::Config do
     end
 
     it "returns all configs with configurable size" do
-      configs = subject.with_size
+      configs = subject.supporting_size
       expect(configs.size).to eq(3)
     end
 
     it "includes all partitions" do
-      expect(subject.with_size).to include(*subject.partitions)
+      expect(subject.supporting_size).to include(*subject.partitions)
     end
 
     it "includes all logical volumes" do
-      expect(subject.with_size).to include(*subject.logical_volumes)
+      expect(subject.supporting_size).to include(*subject.logical_volumes)
     end
 
     it "does not include drives" do
-      expect(subject.with_size).to_not include(*subject.drives)
+      expect(subject.supporting_size).to_not include(*subject.drives)
     end
 
     it "does not include MD RAIDs" do
-      expect(subject.with_size).to_not include(*subject.md_raids)
+      expect(subject.supporting_size).to_not include(*subject.md_raids)
     end
 
     it "does not include volume groups" do
-      expect(subject.with_size).to_not include(*subject.volume_groups)
+      expect(subject.supporting_size).to_not include(*subject.volume_groups)
     end
   end
 
-  describe "#with_partitions" do
+  describe "#supporting_partitions" do
     let(:config_json) do
       {
         drives:       [
@@ -663,16 +663,16 @@ describe Agama::Storage::Config do
     end
 
     it "returns all configs with configurable partitions" do
-      configs = subject.with_partitions
+      configs = subject.supporting_partitions
       expect(configs.size).to eq(4)
     end
 
     it "includes all drives" do
-      expect(subject.with_partitions).to include(*subject.drives)
+      expect(subject.supporting_partitions).to include(*subject.drives)
     end
 
     it "includes all MD RAIDs" do
-      expect(subject.with_partitions).to include(*subject.md_raids)
+      expect(subject.supporting_partitions).to include(*subject.md_raids)
     end
   end
 
