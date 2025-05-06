@@ -120,6 +120,9 @@ export default {
   "Add another partition or mount an existing one": [
     "他のパーティションの追加または既存のパーティションのマウント"
   ],
+  "Add device menu": [
+    "デバイスメニューの追加"
+  ],
   "Add logical volume": [
     "論理ボリュームの追加"
   ],
@@ -152,6 +155,9 @@ export default {
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "全てのパーティションを削除し、ディスク内に存在するデータを全て消去します。"
+  ],
+  "As a new partition on %s": [
+    "%s に新しいパーティションとして"
   ],
   "At least one address must be provided for selected mode": [
     "選択しているモードの場合、 1 つ以上のアドレスを設定しなければなりません"
@@ -217,7 +223,7 @@ export default {
     "インストールを開始する前に、下記の問題に対応する必要があります:"
   ],
   "Beta": [
-    ""
+    "ベータ"
   ],
   "BitLocker": [
     "BitLocker"
@@ -252,6 +258,9 @@ export default {
   "Change boot options": [
     "起動オプションの変更"
   ],
+  "Change device menu": [
+    "デバイスメニューの変更"
+  ],
   "Change product": [
     "製品の変更"
   ],
@@ -263,6 +272,9 @@ export default {
   ],
   "Check the %d planned actions": [
     "%d 個の処理計画を確認する"
+  ],
+  "Check the authentication parameters.": [
+    "認証パラメータをご確認ください。"
   ],
   "Check the following before continuing": [
     "続行する前に下記をご確認ください"
@@ -286,7 +298,7 @@ export default {
     "処理計画の一覧を巻き取る"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    ""
+    "iSCSI Boot Firmware Table (iBFT) から読み込んだ設定です。"
   ],
   "Configure DASD": [
     "DASD の設定"
@@ -296,6 +308,9 @@ export default {
   ],
   "Configure LVM logical volume at %s volume group": [
     "ボリュームグループ %s に対する LVM 論理ボリュームの設定"
+  ],
+  "Configure device menu": [
+    "デバイスメニューの設定"
   ],
   "Configure iSCSI": [
     "iSCSI の設定"
@@ -321,6 +336,9 @@ export default {
   "Connect": [
     "接続"
   ],
+  "Connect to %s": [
+    "%s に接続"
+  ],
   "Connect to iSCSI targets": [
     "iSCSI ターゲットへの接続"
   ],
@@ -330,8 +348,17 @@ export default {
   "Connected (%s)": [
     "接続済み (%s)"
   ],
+  "Connecting to %s": [
+    "%s に接続しています"
+  ],
   "Connection actions": [
     "接続処理"
+  ],
+  "Connection details": [
+    "接続の詳細"
+  ],
+  "Connection not found or lost": [
+    "接続が見つからないか、接続が失われています"
   ],
   "Content will be kept": [
     "内容を維持する"
@@ -348,11 +375,20 @@ export default {
   "Could not authenticate against the server, please check it.": [
     "サーバに対して認証できませんでした。ご確認ください。"
   ],
+  "Could not connect to %s": [
+    "%s に接続できませんでした"
+  ],
   "Could not log in. Please, make sure that the password is correct.": [
     "ログインできませんでした。入力したパスワードが正しいかどうか、もう一度ご確認ください。"
   ],
   "Create LVM volume group %s": [
     "LVM ボリュームグループ %s の作成"
+  ],
+  "Create LVM volume group on %s": [
+    "%s 内に LVM ボリュームグループを作成"
+  ],
+  "Create another LVM volume group on %s": [
+    "%s 内に他の LVM ボリュームグループを作成"
   ],
   "Create user": [
     "ユーザの作成"
@@ -433,10 +469,16 @@ export default {
     "詳細"
   ],
   "Details will appear after the connection is successfully established.": [
-    ""
+    "詳細は接続成功後に表示されます。"
   ],
   "Device": [
     "デバイス"
+  ],
+  "Device %s menu": [
+    "デバイス %s メニュー"
+  ],
+  "Device details": [
+    "デバイスの詳細"
   ],
   "Discard": [
     "破棄"
@@ -532,7 +574,10 @@ export default {
     "ExFAT"
   ],
   "Excellent signal": [
-    ""
+    "優良な信号強度"
+  ],
+  "Expiration date": [
+    "有効期限"
   ],
   "Ext2": [
     "ext2"
@@ -544,7 +589,7 @@ export default {
     "ext4"
   ],
   "Extensions": [
-    ""
+    "拡張"
   ],
   "F2FS": [
     "f2fs"
@@ -630,8 +675,11 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go to network page": [
+    "ネットワークページに移動"
+  ],
   "Good signal": [
-    ""
+    "良好な信号強度"
   ],
   "Hide": [
     "隠す"
@@ -646,15 +694,18 @@ export default {
     "ホスト名"
   ],
   "Hostname could not be updated": [
-    ""
+    "ホスト名を更新できませんでした"
   ],
   "Hostname successfully updated": [
-    ""
+    "ホスト名を更新しました"
   ],
   "I have read and accept the [license] for %s": [
     "%s に対する [ライセンス] を受け入れます"
   ],
   "IP Address": [
+    "IP アドレス"
+  ],
+  "IP Addresses": [
     "IP アドレス"
   ],
   "IP address": [
@@ -663,11 +714,14 @@ export default {
   "IP addresses": [
     "IP アドレス"
   ],
+  "IP settings": [
+    "IP 設定"
+  ],
   "IPv4": [
-    ""
+    "IPv4"
   ],
   "IPv6": [
-    ""
+    "IPv6"
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "このインストーラの起動に際してローカルメディアを使用している場合は、次回の再起動までの間にメディアを取り出しておいてください。"
@@ -696,14 +750,17 @@ export default {
   "Initiator": [
     "イニシエータ"
   ],
+  "Initiator details": [
+    "イニシエータの詳細"
+  ],
   "Initiator name": [
     "イニシエータ名"
   ],
   "Initiator name could not be updated": [
-    ""
+    "イニシエータ名を更新できませんでした"
   ],
   "Initiator name successfully updated": [
-    ""
+    "イニシエータ名の更新に成功しました"
   ],
   "Install": [
     "インストール"
@@ -763,16 +820,16 @@ export default {
     "IP プレフィクスもしくはネットマスク"
   ],
   "Issue date": [
-    ""
+    "発行日"
   ],
   "Issuer": [
-    ""
+    "発行者"
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "現在の設定ではシステムをインストールすることができません。下記の設定を調整してください。"
   ],
   "It may take some time.": [
-    ""
+    "しばらくお待ちください。"
   ],
   "JFS": [
     "JFS"
@@ -850,7 +907,7 @@ export default {
     "ログアウト"
   ],
   "MAC": [
-    ""
+    "MAC"
   ],
   "Main navigation": [
     "メインナビゲーション"
@@ -936,14 +993,20 @@ export default {
   "Network": [
     "ネットワーク"
   ],
+  "Network details": [
+    "ネットワークの詳細"
+  ],
   "Network not found or lost": [
-    ""
+    "ネットワークが見つからないか、通信が切れています"
   ],
   "New": [
     "新規"
   ],
   "No": [
     "いいえ"
+  ],
+  "No Wi-Fi networks were found": [
+    "検出された Wi-Fi ネットワークはありません"
   ],
   "No additional partitions will be created": [
     "追加パーティションは作成しません"
@@ -964,7 +1027,7 @@ export default {
     "デバイスが見つかりませんでした"
   ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    ""
+    "iSCSI Boot Firmware Table (iBFT) が見つかりませんでした。イニシエータの設定は手作業で実施できます。"
   ],
   "No iSCSI targets found.": [
     "iSCSI ターゲットが見つかりませんでした。"
@@ -980,6 +1043,9 @@ export default {
   ],
   "No user defined yet.": [
     "ユーザを設定していません。"
+  ],
+  "No wired connections were found": [
+    "有線接続が見つかりませんでした"
   ],
   "No zFCP controllers found.": [
     "zFCP コントローラが見つかりませんでした。"
@@ -1002,6 +1068,9 @@ export default {
   "None of the time zones match the filter.": [
     "フィルタに該当するタイムゾーンがありません。"
   ],
+  "Not available": [
+    "利用不可"
+  ],
   "Not defined": [
     "未設定"
   ],
@@ -1010,6 +1079,9 @@ export default {
   ],
   "Not possible with the current setup. Click to know more.": [
     "現在の設定ではインストールできません。詳しく表示したい場合は、ここを押してください。"
+  ],
+  "Not protected network": [
+    "保護されていないネットワーク"
   ],
   "Not selected yet": [
     "まだ何も選択していません"
@@ -1140,6 +1212,9 @@ export default {
   "Public SSH Key is empty.": [
     "公開 SSH 鍵が設定されていません。"
   ],
+  "Public network": [
+    "公衆ネットワーク"
+  ],
   "Question": [
     "質問"
   ],
@@ -1150,13 +1225,16 @@ export default {
     "再起動"
   ],
   "Recommended": [
-    ""
+    "推奨"
   ],
   "Register": [
     "登録"
   ],
   "Registration": [
     "登録"
+  ],
+  "Registration certificate": [
+    "登録証明書"
   ],
   "Registration code": [
     "登録コード"
@@ -1179,6 +1257,9 @@ export default {
   "Remove min channel filter": [
     "最小チャネルのフィルタを削除"
   ],
+  "Remove the configuration for this disk": [
+    "このディスクに対する設定を削除"
+  ],
   "Repository load failed": [
     "リポジトリ読み込み失敗"
   ],
@@ -1198,16 +1279,16 @@ export default {
     "root ユーザ"
   ],
   "Routes": [
-    ""
+    "ルート"
   ],
   "SD Card": [
     "SD カード"
   ],
   "SHA1 fingerprint": [
-    ""
+    "SHA1 フィンガープリント"
   ],
   "SHA256 fingerprint": [
-    ""
+    "SHA256 フィンガープリント"
   ],
   "SSID": [
     "SSID"
@@ -1217,6 +1298,9 @@ export default {
   ],
   "Search": [
     "検索"
+  ],
+  "Secured network": [
+    "保護されたネットワーク"
   ],
   "Security": [
     "セキュリティ"
@@ -1230,8 +1314,17 @@ export default {
   "Select a disk": [
     "ディスクの選択"
   ],
+  "Select a disk to configure": [
+    "設定したいディスクの選択"
+  ],
+  "Select a disk to create %s": [
+    "%s を作成するディスクの選択"
+  ],
   "Select a disk to define partitions": [
     "パーティションの設定作業を行うディスクを選択"
+  ],
+  "Select a disk to install the system": [
+    "システムのインストール先となるディスクの選択"
   ],
   "Select a product": [
     "製品の選択"
@@ -1261,7 +1354,7 @@ export default {
     "パーティションの設定作業を独自に実施します。"
   ],
   "Selected disk (cannot be changed)": [
-    ""
+    "選択済みのディスク (変更できません)"
   ],
   "Selected patterns": [
     "パターンの選択"
@@ -1277,6 +1370,9 @@ export default {
   ],
   "Set a permanent hostname that won’t change with network updates.": [
     "ネットワーク側から指定された場合でも変化しない、固定のホスト名を設定します。"
+  ],
+  "Setting up connection": [
+    "接続の設定"
   ],
   "Several partitions will be deleted": [
     "いくつかのパーティションを削除します"
@@ -1294,7 +1390,7 @@ export default {
     "既存のパーティションを縮小する"
   ],
   "Signal strength": [
-    ""
+    "信号強度"
   ],
   "Size": [
     "サイズ"
@@ -1405,19 +1501,28 @@ export default {
     "デバイスは新しいシステムで使用されます。"
   ],
   "The disk is used for LVM": [
-    ""
+    "このディスクは LVM 用に使用されます"
+  ],
+  "The disk is used for LVM and boot": [
+    "このディスクは LVM の配置と起動用に使用されます"
   ],
   "The disk is used for booting": [
-    ""
+    "このディスクは起動用に使用されます"
   ],
   "The encryption password did not work": [
     "暗号化パスワードが正しくありません"
+  ],
+  "The extension has been registered with key %s.": [
+    "拡張を %s の鍵で登録しました。"
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Trusted Platform Module (TPM) の設定の最後では、新しいシステムの初回起動時に暗号化されたデバイスを自動で解除するよう設定します。これを動作させるためには、マシンが新しいブートローダを直接起動するように設定しておく必要があります。"
   ],
   "The following software patterns are selected for installation:": [
     "下記のソフトウエアパターンをインストールするよう選択しています:"
+  ],
+  "The initiator name cannot be blank": [
+    "何らかのイニシエータ名を指定する必要があります"
   ],
   "The installation on your machine is complete.": [
     "お使いのマシンへのインストールが完了しました。"
@@ -1524,8 +1629,23 @@ export default {
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "この処理により、下記に示したデバイス内のデータが全て消去されます。続行して問題ないかどうか、ご確認ください。"
   ],
+  "This disk will contain any partition needed for booting": [
+    "このディスクには起動に必要なパーティションが含まれています"
+  ],
+  "This disk will contain the LVM group '%s'": [
+    "このディスクには LVM グループ '%s' が含まれています"
+  ],
+  "This disk will contain the LVM group '%s' and any partition needed to boot": [
+    "このディスクには起動に必要な設定済み LVM グループ '%s' とパーティションが含まれています"
+  ],
+  "This disk will contain the configured LVM groups": [
+    "このディスクには設定済みの LVM グループが含まれています"
+  ],
+  "This disk will contain the configured LVM groups and any partition needed to boot": [
+    "このディスクには起動に必要な設定済み LVM グループとパーティションが含まれています"
+  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
-    ""
+    "この拡張はサーバ内にはありません。拡張の追加についてはサーバ管理者にお尋ねください。"
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "ホスト名は動的なものとなります。ご利用のネットワークの設定に依存しますが、再起動やネットワーク側の変更によって変わってしまう場合があります。"
@@ -1535,6 +1655,9 @@ export default {
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "この容量にはシステムの基本部分のほか、選択したソフトウエアパターンが含まれます。"
+  ],
+  "This uses existing partitions at the disk": [
+    "これはディスク内の既存パーティションを使用します"
   ],
   "TiB": [
     "TiB"
@@ -1558,7 +1681,7 @@ export default {
     "種類"
   ],
   "URL": [
-    ""
+    "URL"
   ],
   "Unable to modify the settings": [
     "設定を変更できませんでした"
@@ -1577,6 +1700,9 @@ export default {
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "ここでホスト名を変更した場合も後から変更した場合も、登録済みのホスト名は変更されないことに注意してください。"
+  ],
+  "Updating the initiator name": [
+    "イニシエータ名を更新しています"
   ],
   "Upload": [
     "アップロード"
@@ -1687,7 +1813,16 @@ export default {
     "ストレージ設定に関する情報を待機しています"
   ],
   "Weak signal": [
-    ""
+    "弱い信号強度"
+  ],
+  "Wi-Fi connection form": [
+    "WiFi 接続フォーム"
+  ],
+  "Wi-Fi networks": [
+    "Wi-Fi ネットワーク"
+  ],
+  "Wi-Fi not supported": [
+    "Wi-Fi に対応していません"
   ],
   "Will be supported in a future version.": [
     "将来のバージョンでサポートされる予定です。"
@@ -1714,7 +1849,7 @@ export default {
     "これらの設定を破棄してシンプルな設定からやり直すこともできます。"
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
-    ""
+    "暗号化されていない公衆ネットワークに接続しようとしています。通信の安全性が保てないかもしれません。"
   ],
   "ZFCP": [
     "ZFCP"
