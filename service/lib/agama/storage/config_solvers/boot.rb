@@ -56,11 +56,11 @@ module Agama
           config.boot.device.device_alias = device.alias
         end
 
-        # Config of the device used for allocating root, directly or inderectly.
+        # Config of the device used for allocating root, directly or indirectly.
         #
         # The boot device has to be a partitioned drive. If root is not directly created as a
         # partition of a drive (e.g., as logical volume, as partition of a MD RAID, etc), then the
-        # first partitioned drive used for allocating the device (physcical volume or MD member
+        # first partitioned drive used for allocating the device (physical volume or MD member
         # device) is considered as boot device.
         #
         # The boot device is recursively searched until reaching a drive.
