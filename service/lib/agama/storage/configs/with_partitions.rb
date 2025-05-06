@@ -42,6 +42,10 @@ module Agama
           partitions.any?
         end
 
+        # Whether the config contains a partition with the given alias.
+        #
+        # @param device_alias [String]
+        # @return [Boolean]
         def partition?(device_alias)
           partitions.any? { |p| p.alias?(device_alias) }
         end
