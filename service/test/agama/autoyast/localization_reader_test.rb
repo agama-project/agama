@@ -54,6 +54,17 @@ describe Agama::AutoYaST::LocalizationReader do
       end
     end
 
+    context "when a YaST-specific keymap is defined" do
+      let(:profile) do
+        { "keyboard" => { "keymap" => "english-uk" } }
+      end
+
+      it "includes a 'keyboard' key with the new identifier" do
+        localization = subject.read["localization"]
+        expect(localization["keyboard"]).to eq("gb")
+      end
+    end
+
     context "when there are primary and secondary languages" do
       let(:profile) do
         {

@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "json"
 
 # :nodoc:
 module Agama
@@ -49,9 +50,15 @@ module Agama
       attr_reader :profile
 
       def keyboard
-        section = profile.fetch_as_hash("keyboard")
-        keymap = section["keymap"]
-        return {} if keymap.nil?
+        ay_keymap = profile.fetch_as_hash("keyboard")["keymap"]
+        return {} if ay_keymap.nil?
+
+        keyboard = yast_keyboards.find { |k| k["alias"] == ay_keymap }
+        keymap = if keyboard
+          keyboard["code"]
+        else
+          ay_keymap
+        end
 
         { "keyboard" => keymap.to_s }
       end
@@ -78,6 +85,22 @@ module Agama
         return {} if timezone.nil?
 
         { "timezone" => timezone.to_s }
+      end
+
+      YAST_KEYBOARDS_MAP = "/usr/share/agama/yast-keyboards.json"
+
+      def yast_keyboards
+        return @keymaps_map if @keymaps_map
+
+        local_path = File.expand_path("../../../share/yast-keyboards.json", __dir__)
+        puts local_path
+        path = if File.exist?(local_path)
+          local_path
+        else
+          "/usr/share/agama/yast-keyboards.json"
+        end
+
+        @keymaps_map = JSON.parse(File.read(path))
       end
     end
   end
