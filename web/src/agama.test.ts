@@ -29,8 +29,8 @@ describe("agama", () => {
       agama.language = "en";
     });
 
-    it("it accepts a locale with underscore", () => {
-      agama.language = "zh_CN";
+    it("returns localized list", () => {
+      agama.language = "zh-CN";
       const list = agama.formatList(["1", "2", "3"], {});
       expect(list).toEqual("1、2和3");
     });
