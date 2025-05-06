@@ -70,13 +70,33 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
     context "if the MD RAID has no level" do
       let(:level) { nil }
 
-      it "includes the expected issue" do
-        issues = subject.issues
-        expect(issues).to include an_object_having_attributes(
-          error?:      true,
-          kind:        :md_raid,
-          description: /MD RAID without level/
-        )
+      before { solve_config }
+
+      context "and the device is going to be created" do
+        let(:search) { nil }
+
+        it "includes the expected issue" do
+          issues = subject.issues
+          expect(issues).to include an_object_having_attributes(
+            error?:      true,
+            kind:        :md_raid,
+            description: /MD RAID without level/
+          )
+        end
+      end
+
+      context "and the device is not going to be created" do
+        let(:search) do
+          {
+            condition:  { name: "/dev/md1" },
+            ifNotFound: "error"
+          }
+        end
+
+        it "does not include the issue" do
+          issues = subject.issues
+          expect(issues).to_not include an_object_having_attributes(kind: :md_raid)
+        end
       end
     end
 

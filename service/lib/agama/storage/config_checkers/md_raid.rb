@@ -99,12 +99,12 @@ module Agama
           )
         end
 
-        # Issue if the MD RAID level is missing.
+        # Issue if the MD RAID level is missing and the device is not reused.
         #
         # @return [Issue, nil]
         def level_issue
-          return if config.search && !config.search.create_device?
           return if config.level
+          return unless config.create?
 
           error(format(_("There is a MD RAID without level")), kind: :md_raid)
         end

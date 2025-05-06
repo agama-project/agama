@@ -78,7 +78,7 @@
       "description": "MD RAID without a partition table (directly formatted).",
       "type": "object",
       "additionalProperties": false,
-      "required": ["level", "filesystem"],
+      "required": ["filesystem"],
       "properties": {
         "search": { "$ref": "#/$defs/searchElement" },
         "alias": { "$ref": "#/$defs/alias" },
@@ -94,7 +94,6 @@
     "partitionedMdRaid": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["level"],
       "properties": {
         "search": { "$ref": "#/$defs/searchElement" },
         "alias": { "$ref": "#/$defs/alias" },
