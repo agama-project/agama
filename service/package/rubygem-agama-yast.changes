@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue May  6 06:09:24 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix the target path for copying the udev rules and nvme files
+  introduced by (bsc#123808, gh#agama-project/agama#2257).
+  (bsc#1241868, gh#agama-project/agama#2328).
+
+-------------------------------------------------------------------
 Tue Apr 22 14:14:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 14
