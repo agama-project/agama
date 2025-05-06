@@ -49,8 +49,8 @@ module Agama
         # 3) script body is one or two lines per service, particular command depends on AY's service
         #    type
         {
-          scripts: {
-            post: [
+          "scripts" => {
+            "post" => [
               script(target_to_cmd),
               script(disabled_to_cmd),
               script(enabled_to_cmd),
@@ -93,9 +93,9 @@ module Agama
         @index += 1
 
         {
-          name:   "agama-services-manager-#{@index}",
-          chroot: true,
-          body:   "|||
+          "name"   => "agama-services-manager-#{@index}",
+          "chroot" => true,
+          "body"   => "|||
             #!/bin/bash
             #{body}"
         }
@@ -124,7 +124,7 @@ module Agama
       end
 
       def ondemand_to_cmd
-        enabled_services.map do |service|
+        ondemand_services.map do |service|
           "systemctl enable #{service}.socket"
         end.join("\n")
       end
