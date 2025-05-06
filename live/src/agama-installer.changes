@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue May  6 14:14:50 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add perl-XML-Simple for backward compatibility (gh#agama-project/agama#2331).
+
+-------------------------------------------------------------------
 Tue Apr 29 11:30:59 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Predefine some useful commands in the default bash history for
