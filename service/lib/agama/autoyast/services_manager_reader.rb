@@ -39,25 +39,21 @@ module Agama
 
       # Returns a hash with list of post-install script(s).
       #
-      # @return [Hash] Agama "scripts" section
+      # @return [Array] list of scripts. See Agama scripts definition
       def read
-        return {} if services_section.empty?
+        return [] if services_section.empty?
 
         # 1) create "post" => [... list of hashes defining a scipt ...]"
         # 2) each script has to contain name ("randomized/indexed" one or e.g. based on service
         #    name) and chroot option
         # 3) script body is one or two lines per service, particular command depends on AY's service
         #    type
-        {
-          "scripts" => {
-            "post" => [
-              script(target_to_cmd),
-              script(disabled_to_cmd),
-              script(enabled_to_cmd),
-              script(ondemand_to_cmd)
-            ].compact
-          }
-        }
+        [
+          script(target_to_cmd),
+          script(disabled_to_cmd),
+          script(enabled_to_cmd),
+          script(ondemand_to_cmd)
+        ].compact
       end
 
     private

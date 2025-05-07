@@ -53,7 +53,7 @@ describe Agama::AutoYaST::Converter do
 
         expect(result).to have_key("scripts")
         expect(result["scripts"]).to have_key("post")
-        expect(result["scripts"]["post"].length).to eq 2
+        expect(result["scripts"]["post"].length).to eq 4
       end
     end
 

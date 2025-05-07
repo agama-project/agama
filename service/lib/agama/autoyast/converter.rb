@@ -27,7 +27,6 @@ require "agama/autoyast/product_reader"
 require "agama/autoyast/root_reader"
 require "agama/autoyast/scripts_reader"
 require "agama/autoyast/security_reader"
-require "agama/autoyast/services_manager_reader"
 require "agama/autoyast/software_reader"
 require "agama/autoyast/storage_reader"
 require "agama/autoyast/user_reader"
@@ -60,7 +59,6 @@ module Agama
         "root",
         "scripts",
         "security",
-        "services-manager",
         "software",
         "storage",
         "user"
@@ -73,17 +71,10 @@ module Agama
       # @return [Hash] Agama profile
       def to_agama(profile)
         SECTIONS.reduce({}) do |result, section|
-          name = section.sub("-", "_")
-          require "agama/autoyast/#{name}_reader"
-          klass = "#{name}_reader".split("_").map(&:capitalize).join
+          require "agama/autoyast/#{section}_reader"
+          klass = "#{section}_reader".split("_").map(&:capitalize).join
           reader = Agama::AutoYaST.const_get(klass).new(profile)
-          result.merge(reader.read) do |key, value1, value2|
-            # scripts and services-manager readers both produce a hash with
-            # the "scripts" key. This should currently be the only one such case.
-            raise IOError, "AutoYaST conversion failed" if key != "scripts"
-
-            value1.merge(value2) { |_, sl1, sl2| sl1 + sl2 }
-          end
+          result.merge(reader.read)
         end
       end
     end

@@ -33,7 +33,7 @@
   </services-manager>
 
   <scripts>
-    <post-scripts config:type="list">
+    <chroot-scripts config:type="list">
       <script>
         <filename>hello.sh</filename>
         <interpreter>shell</interpreter>
@@ -42,6 +42,6 @@ echo "Hello world"
 ]]>
         </source>
       </script>
-    </post-scripts>
+    </chroot-scripts>
   </scripts>
 </profile>
