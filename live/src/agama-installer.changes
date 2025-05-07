@@ -3,8 +3,7 @@ Wed May  7 07:07:33 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed locale cleanup to not delete all locales
   (related to bsc#1238584)
-- Delete the non-UTF-8 locales, this saves some space, they are not
-  supported anyway
+- Keep only the UTF-8 locales, non-UTF-8 are not supported
 
 -------------------------------------------------------------------
 Tue May  6 14:14:50 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
