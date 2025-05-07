@@ -193,10 +193,9 @@ function reload(newLanguage: string) {
  */
 async function loadTranslations(locale: string) {
   // load the translations dynamically, first try the language + territory
-  const po = locale.replace("-", "_");
   return import(
     /* webpackChunkName: "[request]" */
-    `../po/po.${po}`
+    `../po/po.${locale}`
   )
     .then((m) => agama.locale(m.default))
     .catch(async () => {

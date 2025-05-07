@@ -199,19 +199,26 @@ mkdir -p /etc/agama.d
 ls -1 -d /usr/lib/locale/*.utf8 | sed -e "s#/usr/lib/locale/##" -e "s#utf8#UTF-8#" >/etc/agama.d/locales
 
 # delete translations and unsupported languages (makes ISO about 22MiB smaller)
-# build list of ignore options for "ls" with supported languages like "-I cs* -I de* -I es* ..."
-readarray -t IGNORE_OPTS < <(ls /usr/share/agama/web_ui/po.*.js.gz | sed -e "s#/usr/share/agama/web_ui/po\.\(.*\)\.js\.gz#-I\n\\1*#")
+# build list of ignore options for "ls" with supported languages like "-I cs -I cs_CZ ..."
+# languages.json is like: { "ca-ES": "Català", "de-DE": "Deutsch", ...}
+# jq prints ca-ES\nde-DE\n...
+readarray -t IGNORE_OPTS < <(jq -r keys[] < /usr/share/agama/web_ui/languages.json | sed -e "s/\(.*\)-\(.*\)/-I\n\\1\n-I\n\1_\2/")
 # additionally keep the en_US translations
 ls -1 "${IGNORE_OPTS[@]}" -I en_US /usr/share/locale/ | xargs -I% sh -c "echo 'Removing translations %...' && rm -rf /usr/share/locale/%"
 
 # delete locale definitions for unsupported languages (explicitly keep the C and en_US locales)
-ls -1 "${IGNORE_OPTS[@]}" -I "en_US*" -I "C.*" /usr/lib/locale/ | xargs -I% sh -c "echo 'Removing locale %...' && rm -rf /usr/lib/locale/%"
+readarray -t IGNORE_OPTS < <(jq -r keys[] < /usr/share/agama/web_ui/languages.json | sed -e "s/-/_/" -e "s/$/.utf8/" -e "s/^/-I\n/")
+ls -1 "${IGNORE_OPTS[@]}" -I "en_US.utf8" -I "C.utf8" /usr/lib/locale/ | xargs -I% sh -c "echo 'Removing locale %...' && rm -rf /usr/lib/locale/%"
 
 # delete unused translations (MO files)
 for t in zypper gettext-runtime p11-kit; do
   rm -f /usr/share/locale/*/LC_MESSAGES/$t.mo
 done
 du -h -s /usr/{share,lib}/locale/
+
+# remove printing support from GTK
+rm -rf /usr/lib64/gtk-3*/*/printbackends
+rpm -e --nodeps libcups2 cups-config || true
 
 # remove documentation
 du -h -s /usr/share/doc/packages/
