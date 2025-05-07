@@ -220,8 +220,8 @@ impl Questions {
         let mut question = questions::WithPassword::new(base);
         let object_path = ObjectPath::try_from(question.base.object_path()).unwrap();
 
-        let base_question = question.base.clone();
         self.fill_answer_with_password(&mut question);
+        let base_question = question.base.clone();
         let base_object = GenericQuestionObject(base_question);
 
         self.connection
