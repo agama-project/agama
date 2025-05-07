@@ -60,6 +60,8 @@ export type HeaderProps = {
   showSidebarToggle?: boolean;
   /** Whether the selected product name should be shown */
   showProductName?: boolean;
+  /** Whether the "Skip to content" link should be mounted */
+  showSkipToContent?: boolean;
   /** Whether the installer options link should be mounted */
   showInstallerOptions?: boolean;
   /** Callback to be triggered for toggling the IssuesDrawer visibility */
@@ -130,6 +132,7 @@ const OptionsDropdown = ({ showInstallerOptions }) => {
 export default function Header({
   showSidebarToggle = true,
   showProductName = true,
+  showSkipToContent = true,
   toggleIssuesDrawer,
   isSidebarOpen,
   toggleSidebar,
@@ -150,7 +153,7 @@ export default function Header({
   return (
     <Masthead>
       <MastheadMain>
-        <SkipToContentLink />
+        {showSkipToContent && <SkipToContentLink />}
         {showSidebarToggle && (
           <MastheadToggle>
             <PageToggleButton

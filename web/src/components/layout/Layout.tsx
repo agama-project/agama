@@ -34,6 +34,7 @@ export type LayoutProps = React.PropsWithChildren<{
   className?: string;
   mountHeader?: boolean;
   mountSidebar?: boolean;
+  mountSkipToContent?: boolean;
   headerOptions?: HeaderProps;
 }>;
 
@@ -56,6 +57,7 @@ const focusDrawer = (drawer: HTMLElement | null) => {
 const Layout = ({
   mountHeader = true,
   mountSidebar = true,
+  mountSkipToContent = true,
   headerOptions = {},
   children,
   ...props
@@ -86,6 +88,7 @@ const Layout = ({
         toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         showSidebarToggle={mountSidebar}
         toggleIssuesDrawer={toggleIssuesDrawer}
+        showSkipToContent={mountSkipToContent}
         {...headerOptions}
       />
     );
@@ -97,11 +100,7 @@ const Layout = ({
     // FIXME: render an empty Masthead instead of nothing, in order to have
     // everything working as designed by PatternFly (there are some CSS rules
     // that expect the masthead to be there :shrug:)
-    pageProps.masthead = (
-      <Masthead>
-        <SkipToContentLink />
-      </Masthead>
-    );
+    pageProps.masthead = <Masthead>{mountSkipToContent && <SkipToContentLink />}</Masthead>;
   }
 
   return (
