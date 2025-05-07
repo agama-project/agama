@@ -39,8 +39,9 @@ module Agama
         return {} if networking.empty?
 
         section = Y2Network::AutoinstProfile::NetworkingSection.new_from_hashes(networking)
+        dns = read_dns_settings(section.dns)
         connections_reader = Agama::AutoYaST::ConnectionsReader.new(
-          section.interfaces, ipv6: ipv6?
+          section.interfaces, ipv6: ipv6?, dns: dns
         )
         connections = connections_reader.read
         return {} if connections.empty?
@@ -54,6 +55,17 @@ module Agama
 
       def ipv6?
         profile.fetch_as_hash("networking").fetch("ipv6", false)
+      end
+
+      # Reads an AutoYaST DNS section and builds its equivalent hash.
+      #
+      # @param dns_section [Y2Network::AutoinstProfile::DNSSection] DNS section.
+      # @return [Hash]
+      def read_dns_settings(dns_section)
+        dns = {}
+        dns["dns_searchlist"] = dns_section.searchlist unless dns_section.searchlist.empty?
+        dns["nameservers"] = dns_section.nameservers unless dns_section.nameservers.empty?
+        dns
       end
     end
   end

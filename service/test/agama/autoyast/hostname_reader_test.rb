@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,18 +21,16 @@
 
 require_relative "../../test_helper"
 require "yast"
-require "agama/autoyast/network_reader"
+require "agama/autoyast/hostname_reader"
 
 Yast.import "Profile"
 
-describe Agama::AutoYaST::NetworkReader do
+describe Agama::AutoYaST::HostnameReader do
   let(:profile) do
     {
       "networking" => {
-        "interfaces" => [{ "name" => "eth0" }],
-        "dns"        => {
-          "nameservers" => ["1.1.1.1"],
-          "searchlist"  => ["example.lan"]
+        "dns" => {
+          "hostname" => "host.example.lan"
         }
       }
     }
@@ -51,16 +49,16 @@ describe Agama::AutoYaST::NetworkReader do
       end
     end
 
-    context "when there is a 'connections' list" do
-      it "returns a section with the 'connections' list" do
-        network = subject.read
-        expect(network["network"].keys).to include("connections")
-        network["network"]["connections"].each do |conn|
-          expect(conn).to include(
-            "nameservers" => ["1.1.1.1"], "dns_searchlist" => ["example.lan"]
-          )
-        end
+    context "when there is no 'hostname' property" do
+      let(:profile) { { "networking" => {} } }
+
+      it "returns an empty hash" do
+        expect(subject.read).to be_empty
       end
+    end
+
+    it "returns a hash containing the hostname" do
+      expect(subject.read["hostname"]).to eq("static" => "host.example.lan")
     end
   end
 end

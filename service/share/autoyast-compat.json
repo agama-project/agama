@@ -1,5 +1,5 @@
 [
-  { "key": "add-on", "support": "no" },
+  { "key": "add-on", "support": "planned" },
   { "key": "audit-laf", "support": "no" },
   { "key": "auth-client", "support": "no" },
   { "key": "configuration_management", "support": "no" },
@@ -7,13 +7,22 @@
   { "key": "dhcp-server", "support": "no" },
   { "key": "dns-server", "support": "no" },
   { "key": "fcoe-client", "support": "no" },
-  { 
+  {
     "key": "files",
     "children": [
-      { "key": "file_path", "support": "yes", "agama": "files.destination", "notes": "Creating directories by using trailing slash is not yet supported."},
+      {
+        "key": "file_path",
+        "support": "yes",
+        "agama": "files.destination",
+        "notes": "Creating directories by using trailing slash is not yet supported."
+      },
       { "key": "file_contents", "support": "yes", "agama": "files.content" },
       { "key": "file_location", "support": "yes", "agama": "files.url" },
-      { "key": "file_owner", "support": "yes", "notes": "In agama it is split to files.user and files.group" },
+      {
+        "key": "file_owner",
+        "support": "yes",
+        "notes": "In agama it is split to files.user and files.group"
+      },
       { "key": "file_permissions", "support": "yes" },
       { "key": "file_script", "support": "planned" }
     ]
@@ -54,7 +63,36 @@
         "notes": "Only NetworkManager is supported."
       },
       { "key": "dhcp_options", "support": "no" },
-      { "key": "dns", "support": "no" },
+      {
+        "key": "dns",
+        "children": [
+          {
+            "key": "dhcp_hostname",
+            "support": "no"
+          },
+          {
+            "key": "hostname",
+            "support": "yes",
+            "agama": "hostname.static"
+          },
+          {
+            "key": "nameservers",
+            "support": "yes",
+            "agama": "network.connections[].nameservers",
+            "notes": "Copied to each connection."
+          },
+          {
+            "key": "resolv_conf_policy",
+            "support": "no"
+          },
+          {
+            "key": "searchlist",
+            "support": "yes",
+            "agama": "network.connections[].dns_searchlist",
+            "notes": "Copied to each connection."
+          }
+        ]
+      },
       {
         "key": "ipv6",
         "support": "yes",
@@ -262,7 +300,11 @@
             "agama": "scripts.pre[].name"
           },
           { "key": "location", "support": "yes", "agama": "scripts.pre[].url" },
-          { "key": "source", "support": "yes", "agama": "scripts.pre[].content" },
+          {
+            "key": "source",
+            "support": "yes",
+            "agama": "scripts.pre[].content"
+          },
           {
             "key": "interpreter",
             "support": "no",
@@ -353,7 +395,11 @@
             "support": "yes",
             "agama": "scripts.init[].url"
           },
-          { "key": "source", "support": "yes", "agama": "scripts.init[].content" },
+          {
+            "key": "source",
+            "support": "yes",
+            "agama": "scripts.init[].content"
+          },
           {
             "key": "interpreter",
             "support": "no",
@@ -381,7 +427,11 @@
             "support": "yes",
             "agama": "scripts.init[].url"
           },
-          { "key": "source", "support": "yes", "agama": "scripts.init[].content" },
+          {
+            "key": "source",
+            "support": "yes",
+            "agama": "scripts.init[].content"
+          },
           { "key": "rerun", "support": "no" }
         ]
       }
