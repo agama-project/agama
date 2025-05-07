@@ -320,7 +320,11 @@ const Page = ({
   children,
   ...pageGroupProps
 }: React.PropsWithChildren<PageGroupProps>): React.ReactNode => {
-  return <PageGroup {...pageGroupProps}>{children}</PageGroup>;
+  return (
+    <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
+      {children}
+    </PageGroup>
+  );
 };
 
 Page.displayName = "agama/core/Page";

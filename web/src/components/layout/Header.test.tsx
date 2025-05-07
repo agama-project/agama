@@ -91,6 +91,16 @@ describe("Header", () => {
     screen.getByText("Install Button Mock");
   });
 
+  it("renders skip to content link", async () => {
+    installerRender(<Header />);
+    screen.getByRole("link", { name: "Skip to content" });
+  });
+
+  it("does not render skip to content link when showSkipToContent is false", async () => {
+    installerRender(<Header showSkipToContent={false} />);
+    expect(screen.queryByRole("link", { name: "Skip to content" })).toBeNull();
+  });
+
   it("renders an options dropdown", async () => {
     const { user } = installerRender(<Header />);
     expect(screen.queryByRole("menu")).toBeNull();
