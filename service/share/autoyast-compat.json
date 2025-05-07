@@ -54,7 +54,36 @@
         "notes": "Only NetworkManager is supported."
       },
       { "key": "dhcp_options", "support": "no" },
-      { "key": "dns", "support": "no" },
+      {
+        "key": "dns",
+        "children": [
+          {
+            "key": "dhcp_hostname",
+            "support": "no"
+          },
+          {
+            "key": "hostname",
+            "support": "yes",
+            "agama": "hostname.static"
+          },
+          {
+            "key": "nameservers",
+            "support": "yes",
+            "agama": "network.connections[].nameservers",
+            "notes": "Copied to each connection."
+          },
+          {
+            "key": "resolv_conf_policy",
+            "support": "no"
+          },
+          {
+            "key": "searchlist",
+            "support": "yes",
+            "agama": "network.connections[].dns_searchlist",
+            "notes": "Copied to each connection."
+          }
+        ]
+      },
       {
         "key": "ipv6",
         "support": "yes",
