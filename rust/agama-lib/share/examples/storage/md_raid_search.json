@@ -1,0 +1,43 @@
+{
+  "storage": {
+    "mdRaids": [
+      { "search": "*" },
+      { "search": "/dev/md1" },
+      {
+        "search": {
+          "condition": { "name": "/dev/md2" },
+          "ifNotFound": "skip"
+        }
+      },
+      {
+        "search": {
+          "condition": { "size": "10 GiB" },
+          "ifNotFound": "error",
+          "max": 2
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "size": { "equal": "10 GiB" }
+          },
+          "ifNotFound": "create"
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "size": { "greater": "10 GiB" }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "size": { "less": "10 GiB" }
+          }
+        }
+      }
+    ]
+  }
+}
