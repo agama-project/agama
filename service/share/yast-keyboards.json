@@ -1,0 +1,342 @@
+[
+  {
+    "description": "English (US)",
+    "alias": "english-us",
+    "code": "us",
+    "suggested_for_lang": [
+      "ar_eg",
+      "en",
+      "nl_BE"
+    ]
+  },
+  {
+    "description": "English (UK)",
+    "alias": "english-uk",
+    "code": "gb",
+    "legacy_code": "uk"
+  },
+  {
+    "description": "German",
+    "alias": "german",
+    "code": "de-nodeadkeys",
+    "legacy_code": "de-latin1-nodeadkeys",
+    "suggested_for_lang": [
+      "de"
+    ]
+  },
+  {
+    "description": "German (with deadkeys)",
+    "alias": "german-deadkey",
+    "code": "de",
+    "legacy_code": "de-latin1"
+  },
+  {
+    "description": "German (Switzerland)",
+    "alias": "german-ch",
+    "code": "ch",
+    "legacy_code": "sg-latin1",
+    "suggested_for_lang": [
+      "de_CH"
+    ]
+  },
+  {
+    "description": "French",
+    "alias": "french",
+    "code": "fr",
+    "legacy_code": "fr-latin1",
+    "suggested_for_lang": [
+      "br_FR",
+      "fr",
+      "fr_BE"
+    ]
+  },
+  {
+    "description": "French (Switzerland)",
+    "alias": "french-ch",
+    "code": "ch-fr",
+    "legacy_code": "fr_CH-latin1",
+    "suggested_for_lang": [
+      "fr_CH"
+    ]
+  },
+  {
+    "description": "French (Canada)",
+    "alias": "french-ca",
+    "code": "ca",
+    "legacy_code": "cf"
+  },
+  {
+    "description": "Canadian (CSA)",
+    "alias": "cn-latin1",
+    "code": "ca-multix",
+    "legacy_code": "cn-latin1",
+    "suggested_for_lang": [
+      "fr_CA"
+    ]
+  },
+  {
+    "description": "Spanish",
+    "alias": "spanish",
+    "code": "es",
+    "suggested_for_lang": [
+      "es"
+    ]
+  },
+  {
+    "description": "Spanish (Latin America)",
+    "alias": "spanish-lat",
+    "code": "latam",
+    "legacy_code": "la-latin1"
+  },
+  {
+    "description": "Spanish (Asturian variant)",
+    "alias": "spanish-ast",
+    "code": "es-ast"
+  },
+  {
+    "description": "Italian",
+    "alias": "italian",
+    "code": "it",
+    "suggested_for_lang": [
+      "it"
+    ]
+  },
+  {
+    "description": "Persian",
+    "alias": "persian",
+    "code": "ir",
+    "suggested_for_lang": [
+      "fa_IR"
+    ]
+  },
+  {
+    "description": "Portuguese",
+    "alias": "portugese",
+    "code": "pt",
+    "legacy_code": "pt-latin1"
+  },
+  {
+    "description": "Portuguese (Brazil)",
+    "alias": "portugese-br",
+    "code": "br",
+    "legacy_code": "br-abnt2"
+  },
+  {
+    "description": "Portuguese (Brazil -- US accents)",
+    "alias": "portugese-br-usa",
+    "code": "br-nativo-us",
+    "legacy_code": "us-acentos"
+  },
+  {
+    "description": "Greek",
+    "alias": "greek",
+    "code": "gr"
+  },
+  {
+    "description": "Dutch",
+    "alias": "dutch",
+    "code": "nl"
+  },
+  {
+    "description": "Danish",
+    "alias": "danish",
+    "code": "dk",
+    "legacy_code": "dk-latin1"
+  },
+  {
+    "description": "Norwegian",
+    "alias": "norwegian",
+    "code": "no",
+    "legacy_code": "no-latin1",
+    "suggested_for_lang": [
+      "no_NO",
+      "nn_NO"
+    ]
+  },
+  {
+    "description": "Swedish",
+    "alias": "swedish",
+    "code": "se",
+    "legacy_code": "sv-latin1"
+  },
+  {
+    "description": "Finnish",
+    "alias": "finnish",
+    "code": "fi-kotoistus",
+    "legacy_code": "fi"
+  },
+  {
+    "description": "Czech",
+    "alias": "czech",
+    "code": "cz",
+    "legacy_code": "cz-us-qwertz"
+  },
+  {
+    "description": "Czech (qwerty)",
+    "alias": "czech-qwerty",
+    "code": "cz-qwerty",
+    "legacy_code": "cz-lat2-us"
+  },
+  {
+    "description": "Slovak",
+    "alias": "slovak",
+    "code": "sk",
+    "legacy_code": "sk-qwertz"
+  },
+  {
+    "description": "Slovak (qwerty)",
+    "alias": "slovak-qwerty",
+    "code": "sk-qwerty"
+  },
+  {
+    "description": "Slovene",
+    "alias": "slovene",
+    "code": "si",
+    "legacy_code": "slovene"
+  },
+  {
+    "description": "Hungarian",
+    "alias": "hungarian",
+    "code": "hu"
+  },
+  {
+    "description": "Polish",
+    "alias": "polish",
+    "code": "pl",
+    "legacy_code": "Pl02"
+  },
+  {
+    "description": "Russian",
+    "alias": "russian",
+    "code": "ru",
+    "suggested_for_lang": [
+      "ru",
+      "ru_RU.KOI8-R"
+    ]
+  },
+  {
+    "description": "Serbian",
+    "alias": "serbian",
+    "code": "rs-latin",
+    "legacy_code": "sr-cy",
+    "suggested_for_lang": [
+      "sr_YU"
+    ]
+  },
+  {
+    "description": "Estonian",
+    "alias": "estonian",
+    "code": "ee",
+    "legacy_code": "et"
+  },
+  {
+    "description": "Lithuanian",
+    "alias": "lithuanian",
+    "code": "lt",
+    "legacy_code": "lt.baltic"
+  },
+  {
+    "description": "Turkish",
+    "alias": "turkish",
+    "code": "tr",
+    "legacy_code": "trq"
+  },
+  {
+    "description": "Croatian",
+    "alias": "croatian",
+    "code": "hr",
+    "legacy_code": "croat"
+  },
+  {
+    "description": "Japanese",
+    "alias": "japanese",
+    "code": "jp",
+    "legacy_code": "jp106"
+  },
+  {
+    "description": "Belgian",
+    "alias": "belgian",
+    "code": "be",
+    "legacy_code": "be-latin1",
+    "suggested_for_lang": [
+      "be_BY"
+    ]
+  },
+  {
+    "description": "Dvorak",
+    "alias": "dvorak",
+    "code": "us-dvorak",
+    "legacy_code": "dvorak"
+  },
+  {
+    "description": "Dvorak (programmer)",
+    "alias": "dvp",
+    "code": "us-dvp"
+  },
+  {
+    "description": "Icelandic",
+    "alias": "icelandic",
+    "code": "is",
+    "legacy_code": "is-latin1",
+    "suggested_for_lang": [
+      "is_IS"
+    ]
+  },
+  {
+    "description": "Ukrainian",
+    "alias": "ukrainian",
+    "code": "ua-utf"
+  },
+  {
+    "description": "Khmer",
+    "alias": "khmer",
+    "code": "khmer"
+  },
+  {
+    "description": "Korean",
+    "alias": "korean",
+    "code": "kr",
+    "legacy_code": "korean"
+  },
+  {
+    "description": "Arabic",
+    "alias": "arabic",
+    "code": "arabic"
+  },
+  {
+    "description": "Tajik",
+    "alias": "tajik",
+    "code": "tj_alt-UTF8"
+  },
+  {
+    "description": "Traditional Chinese",
+    "alias": "taiwanese",
+    "code": "tw"
+  },
+  {
+    "description": "Simplified Chinese",
+    "alias": "chinese",
+    "code": "cn"
+  },
+  {
+    "description": "Romanian",
+    "alias": "romanian",
+    "code": "ro"
+  },
+  {
+    "description": "US International",
+    "alias": "us-int",
+    "code": "us-intl",
+    "legacy_code": "us-acentos"
+  },
+  {
+    "description": "French (AFNOR)",
+    "alias": "french-afnor",
+    "code": "fr-afnor",
+    "suggested_for_lang": [
+      "br_FR",
+      "fr",
+      "fr_BE"
+    ]
+  }
+]

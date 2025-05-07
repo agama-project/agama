@@ -156,6 +156,8 @@
         <package name="qrencode"/>
         <package name="qemu-guest-agent" />
         <package name="aaa_base-extras"/>
+        <!-- it can be used by users in AutoYaST pre-scripts -->
+        <package name="perl-XML-Simple"/>
         <archive name="live-root.tar.xz"/>
     </packages>
 
