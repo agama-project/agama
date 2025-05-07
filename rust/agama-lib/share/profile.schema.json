@@ -209,6 +209,30 @@
         "registrationUrl": {
           "title": "URL of the registration server",
           "type": "string"
+        },
+        "addons": {
+          "title": "List of add-ons to activate",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id"],
+            "properties": {
+              "id": {
+                "title": "Add-on identifier",
+                "type": "string",
+                "examples": ["sle-ha"]
+              },
+              "version": {
+                "title": "Version of the add-on",
+                "type": "string"
+              },
+              "registrationCode": {
+                "title": "Add-on registration code",
+                "type": "string"
+              }
+            }
+          }
         }
       }
     },
