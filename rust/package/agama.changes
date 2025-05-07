@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed May  7 21:04:24 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix automatic answer of questions with password (gh#agama-project/agama#2332).
+
+-------------------------------------------------------------------
+Wed May  7 15:08:36 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix agama-dbus-server to write to journald logs (gh#agama-project/agama#2339).
+
+-------------------------------------------------------------------
 Wed May  7 12:52:42 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add validation of the product/addons section (gh#agama-project/agama#2336).
