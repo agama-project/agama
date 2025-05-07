@@ -200,6 +200,8 @@ ls -1 -d /usr/lib/locale/*.utf8 | sed -e "s#/usr/lib/locale/##" -e "s#utf8#UTF-8
 
 # delete translations and unsupported languages (makes ISO about 22MiB smaller)
 # build list of ignore options for "ls" with supported languages like "-I cs -I cs_CZ ..."
+# languages.json is like: { "ca-ES": "Català", "de-DE": "Deutsch", ...}
+# jq prints ca-ES\nde-DE\n...
 readarray -t IGNORE_OPTS < <(jq -r keys[] < /usr/share/agama/web_ui/languages.json | sed -e "s/\(.*\)-\(.*\)/-I\n\\1\n-I\n\1_\2/")
 # additionally keep the en_US translations
 ls -1 "${IGNORE_OPTS[@]}" -I en_US /usr/share/locale/ | xargs -I% sh -c "echo 'Removing translations %...' && rm -rf /usr/share/locale/%"
