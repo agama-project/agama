@@ -1,5 +1,5 @@
 [
-  { "key": "add-on", "support": "no" },
+  { "key": "add-on", "support": "planned" },
   { "key": "audit-laf", "support": "no" },
   { "key": "auth-client", "support": "no" },
   { "key": "configuration_management", "support": "no" },
