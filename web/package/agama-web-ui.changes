@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May  7 13:46:05 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Add "Skip to content" link for easing navigation for keyboard-only
+  users (gh#agama-project/agama#1521, gh#agama-project/agama#2337).
+
+-------------------------------------------------------------------
 Wed May  7 07:07:10 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Use the correct locale format in the Intl.ListFormat.format call,
