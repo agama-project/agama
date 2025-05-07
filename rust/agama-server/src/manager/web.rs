@@ -74,7 +74,7 @@ pub async fn manager_stream(
                 match InstallationPhase::try_from(phase) {
                     Ok(phase) => Some(Event::InstallationPhaseChanged { phase }),
                     Err(error) => {
-                        log::warn!("Ignoring the installation phase change. Error: {}", error);
+                        tracing::warn!("Ignoring the installation phase change. Error: {}", error);
                         None
                     }
                 }

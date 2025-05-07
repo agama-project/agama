@@ -70,7 +70,7 @@ pub fn connection_to_dbus<'a>(
             ConnectionConfig::Bond(_) => BOND_KEY,
             ConnectionConfig::Bridge(_) => BRIDGE_KEY,
             _ => {
-                log::error!("Controller {} has unhandled config type", controller.id);
+                tracing::error!("Controller {} has unhandled config type", controller.id);
                 ""
             }
         };

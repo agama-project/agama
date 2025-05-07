@@ -175,7 +175,7 @@ async fn set_config(
     }
 
     if let Err(e) = update_dbus(&state.proxy, &changes).await {
-        log::warn!("Could not synchronize settings in the localization D-Bus service: {e}");
+        tracing::warn!("Could not synchronize settings in the localization D-Bus service: {e}");
     }
     _ = state.events.send(Event::L10nConfigChanged(changes));
 
