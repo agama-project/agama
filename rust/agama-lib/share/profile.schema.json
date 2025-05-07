@@ -225,6 +225,7 @@
               },
               "version": {
                 "title": "Version of the add-on",
+                "description": "It is mandatory if there are multiple available versions",
                 "type": "string"
               },
               "registrationCode": {
