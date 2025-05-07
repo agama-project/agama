@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -23,6 +23,7 @@ require "agama/config"
 require "agama/storage/config_checkers/boot"
 require "agama/storage/config_checkers/filesystems"
 require "agama/storage/config_checkers/drive"
+require "agama/storage/config_checkers/md_raid"
 require "agama/storage/config_checkers/volume_group"
 require "agama/storage/config_checkers/volume_groups"
 
@@ -45,6 +46,7 @@ module Agama
           filesystems_issues,
           boot_issues,
           drives_issues,
+          md_raids_issues,
           volume_groups_issues
         ].flatten
       end
@@ -61,7 +63,7 @@ module Agama
       #
       # @return [Array<Issue>]
       def boot_issues
-        ConfigCheckers::Boot.new(storage_config, product_config).issues
+        ConfigCheckers::Boot.new(storage_config).issues
       end
 
       # Issues related to the list of filesystems (mount paths)
@@ -84,9 +86,22 @@ module Agama
         ConfigCheckers::Drive.new(config, storage_config, product_config).issues
       end
 
+      # Issues from MD RAIDs.
+      #
+      # @return [Array<Issue>]
+      def md_raids_issues
+        storage_config.md_raids.flat_map { |m| md_raid_issues(m) }
+      end
+
+      # @param config [Configs::MdRaid]
+      # @return [Array<Issue>]
+      def md_raid_issues(config)
+        ConfigCheckers::MdRaid.new(config, storage_config, product_config).issues
+      end
+
       # @return [Array<Issue>]
       def volume_groups_issues
-        section_issues = ConfigCheckers::VolumeGroups.new(storage_config, product_config).issues
+        section_issues = ConfigCheckers::VolumeGroups.new(storage_config).issues
         issues = storage_config.volume_groups.flat_map { |v| volume_group_issues(v) }
 
         [

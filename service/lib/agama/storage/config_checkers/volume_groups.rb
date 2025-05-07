@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -29,6 +29,14 @@ module Agama
       class VolumeGroups < Base
         include Yast::I18n
 
+        # @param storage_config [Storage::Config]
+        def initialize(storage_config)
+          super()
+
+          textdomain "agama"
+          @storage_config = storage_config
+        end
+
         # Volume groups issues.
         #
         # @return [Array<Issue>]
@@ -37,6 +45,9 @@ module Agama
         end
 
       private
+
+        # @return [Storage::Config]
+        attr_reader :storage_config
 
         # Issues for overused target devices for physical volumes.
         #

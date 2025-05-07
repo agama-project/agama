@@ -30,6 +30,16 @@ module Agama
       class Filesystems < Base
         include Yast::I18n
 
+        # @param storage_config [Storage::Config]
+        # @param product_config [Agama::Config]
+        def initialize(storage_config, product_config)
+          super()
+
+          textdomain "agama"
+          @storage_config = storage_config
+          @product_config = product_config
+        end
+
         # Issues related to the configured set of filesystems.
         #
         # @return [Array<Issue>]
@@ -38,6 +48,12 @@ module Agama
         end
 
       private
+
+        # @return [Storage::Config]
+        attr_reader :storage_config
+
+        # @return [Agama::Config]
+        attr_reader :product_config
 
         # @return [Issue, nil]
         def missing_paths_issue

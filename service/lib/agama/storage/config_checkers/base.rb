@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -26,13 +26,6 @@ module Agama
     module ConfigCheckers
       # Base class for checking a config.
       class Base
-        # @param storage_config [Storage::Config]
-        # @param product_config [Agama::Config]
-        def initialize(storage_config, product_config)
-          @storage_config = storage_config
-          @product_config = product_config
-        end
-
         # List of issues (implemented by derived classes).
         #
         # @return [Array<Issue>]
@@ -41,12 +34,6 @@ module Agama
         end
 
       private
-
-        # @return [Storage::Config]
-        attr_reader :storage_config
-
-        # @return [Agama::Config]
-        attr_reader :product_config
 
         # Creates an error issue.
         #

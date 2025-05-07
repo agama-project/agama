@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -32,10 +32,8 @@ module Agama
         include Yast::I18n
 
         # @param config [#encryption]
-        # @param storage_config [Storage::Config]
-        # @param product_config [Agama::Config]
-        def initialize(config, storage_config, product_config)
-          super(storage_config, product_config)
+        def initialize(config)
+          super()
 
           textdomain "agama"
           @config = config

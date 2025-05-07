@@ -44,6 +44,9 @@ module Agama
         def solve(config)
           @sids = []
           config.drives = config.drives.flat_map { |d| solve_drive(d) }
+          config.md_raids = config.md_raids.flat_map do |raid|
+            raid.search ? solve_raid(raid) : raid
+          end
         end
 
       private
@@ -65,11 +68,27 @@ module Agama
         # @param original_drive [Configs::Drive]
         # @return [Configs::Drive, Array<Configs::Drive>]
         def solve_drive(original_drive)
-          devices = find_drives(original_drive.search)
-          return without_device(original_drive) if devices.empty?
+          solve_partitionable(original_drive, :find_drives)
+        end
+
+        # @see #solve
+        #
+        # @note The given mdRaid object can be modified
+        #
+        # @param original_raid [Configs::MdRaid]
+        # @return [Configs::MdRaid, Array<Configs::MdRaid>]
+        def solve_raid(original_raid)
+          solve_partitionable(original_raid, :find_raids)
+        end
+
+        # @see #solve_drive
+        # @see #solve_raid
+        def solve_partitionable(original_config, find_method)
+          devices = send(find_method, original_config.search)
+          return without_device(original_config) if devices.empty?
 
           devices.map do |device|
-            drive_copy(original_drive, device)
+            partitionable_copy(original_config, device)
           end
         end
 
@@ -77,29 +96,29 @@ module Agama
         #
         # @note The config object is modified.
         #
-        # @param config [Configs::Drive, Configs::Partition]
-        # @return [Configs::Drive, Configs::Partition]
+        # @param config [Configs::Drive, Configs::MdRaid, Configs::Partition]
+        # @return [Configs::Drive, Configs::MdRaid, Configs::Partition]
         def without_device(config)
           config.search.solve
           config
         end
 
-        # see #solve_drive
-        def drive_copy(original_drive, device)
-          drive_config = original_drive.copy
-          drive_config.search.solve(device)
-          add_found(drive_config)
+        # see #solve_partitionable
+        def partitionable_copy(original_config, device)
+          config = original_config.copy
+          config.search.solve(device)
+          add_found(config)
 
-          return drive_config unless drive_config.partitions?
+          return config unless config.partitions?
 
-          drive_config.partitions = drive_config.partitions.flat_map do |partition_config|
+          config.partitions = config.partitions.flat_map do |partition_config|
             solve_partition(partition_config, device)
           end
 
-          drive_config
+          config
         end
 
-        # see #solve_drive
+        # see #solve_partitionable
         #
         # @note The given partition object can be modified
         #
@@ -150,6 +169,15 @@ module Agama
         def find_partitions(search_config, device)
           candidates = candidate_devices(search_config, default: device.partitions)
           candidates.select! { |d| d.is?(:partition) }
+          next_unassigned_devices(candidates, search_config)
+        end
+
+        # Finds the MD Raids matching the given search config.
+        #
+        # @param search_config [Agama::Storage::Configs::Search]
+        # @return [Y2Storage::Device, nil]
+        def find_raids(search_config)
+          candidates = candidate_devices(search_config, default: devicegraph.software_raids)
           next_unassigned_devices(candidates, search_config)
         end
 

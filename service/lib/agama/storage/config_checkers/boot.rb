@@ -29,6 +29,14 @@ module Agama
       class Boot < Base
         include Yast::I18n
 
+        # @param storage_config [Storage::Config]
+        def initialize(storage_config)
+          super()
+
+          textdomain "agama"
+          @storage_config = storage_config
+        end
+
         # Boot config issues.
         #
         # @return [Array<Issue>]
@@ -40,6 +48,9 @@ module Agama
         end
 
       private
+
+        # @return [Storage::Config]
+        attr_reader :storage_config
 
         # @return [Boolean]
         def configure?

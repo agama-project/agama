@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -28,7 +28,7 @@ module Agama
       module WithSearch
         # @return [Array<Issue>]
         def search_issues
-          ConfigCheckers::Search.new(config, storage_config, product_config).issues
+          ConfigCheckers::Search.new(config).issues
         end
       end
     end

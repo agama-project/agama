@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -27,6 +27,7 @@ require "agama/storage/config_conversions/from_json_conversions/encryption"
 require "agama/storage/config_conversions/from_json_conversions/filesystem"
 require "agama/storage/config_conversions/from_json_conversions/filesystem_type"
 require "agama/storage/config_conversions/from_json_conversions/logical_volume"
+require "agama/storage/config_conversions/from_json_conversions/md_raid"
 require "agama/storage/config_conversions/from_json_conversions/partition"
 require "agama/storage/config_conversions/from_json_conversions/search"
 require "agama/storage/config_conversions/from_json_conversions/size"

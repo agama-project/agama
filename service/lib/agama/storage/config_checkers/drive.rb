@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_checkers/base"
+require "agama/storage/config_checkers/with_alias"
 require "agama/storage/config_checkers/with_encryption"
 require "agama/storage/config_checkers/with_filesystem"
 require "agama/storage/config_checkers/with_partitions"
@@ -30,6 +31,7 @@ module Agama
     module ConfigCheckers
       # Class for checking a drive config.
       class Drive < Base
+        include WithAlias
         include WithEncryption
         include WithFilesystem
         include WithPartitions
@@ -39,9 +41,11 @@ module Agama
         # @param storage_config [Storage::Config]
         # @param product_config [Agama::Config]
         def initialize(config, storage_config, product_config)
-          super(storage_config, product_config)
+          super()
 
           @config = config
+          @storage_config = storage_config
+          @product_config = product_config
         end
 
         # Drive config issues.
@@ -49,6 +53,7 @@ module Agama
         # @return [Array<Issue>]
         def issues
           [
+            alias_issues,
             search_issues,
             filesystem_issues,
             encryption_issues,
@@ -60,6 +65,12 @@ module Agama
 
         # @return [Configs::Drive]
         attr_reader :config
+
+        # @return [Storage::Config]
+        attr_reader :storage_config
+
+        # @return [Agama::Config]
+        attr_reader :product_config
       end
     end
   end
