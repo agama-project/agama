@@ -29,7 +29,15 @@ type SkipToContentLinkProps = Omit<SkipToContentProps, "href" | "onClick"> & {
 };
 
 /**
- * Skip to content
+ * A wrapper around PatternFly's SkipToContent component.
+ *
+ * Renders a "Skip to content" link to help screen reader and keyboard-only users
+ * bypass navigation and other non-essential focusable elements, allowing them to
+ * jump directly to the main content of the page.
+ *
+ * The link becomes visible only when the User Agent applies the :focus-visible
+ * pseudo-class, ensuring it appears only during keyboard navigation or when
+ * focus visibility is explicitly required.
  */
 export default function SkipToContentLink({
   children,
