@@ -444,3 +444,10 @@ input[type="checkbox"] {
   inline-size: var(--pf-t--global--font--size--md);
   block-size: var(--pf-t--global--font--size--md);
 }
+
+// Custom style for :focus-visible appearance
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--agm-t--color--waterhole);
+  outline-offset: 3px;
+}
