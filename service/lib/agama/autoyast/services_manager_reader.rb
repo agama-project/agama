@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -91,8 +91,7 @@ module Agama
         {
           "name"   => "agama-services-manager-#{@index}",
           "chroot" => true,
-          "body"   => "|||
-            #!/bin/bash
+          "body"   => "#!/bin/bash
             #{body}"
         }
       end

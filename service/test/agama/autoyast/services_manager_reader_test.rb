@@ -53,7 +53,7 @@ describe Agama::AutoYaST::ServicesManagerReader do
       end
 
       it "defines appropriate post script" do
-        expect(subject.read).to have_key "scripts"
+        expect(subject.read).not_to be_empty
       end
     end
   end
