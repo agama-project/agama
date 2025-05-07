@@ -420,6 +420,17 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   gap: inherit;
 }
 
+.pf-v6-c-skip-to-content {
+  --pf-v6-c-skip-to-content--focus--InsetInlineStart: var(
+    --pf-t--global--spacer--inset--page-chrome
+  );
+
+  a.pf-m-primary {
+    background: var(--agm-t--color--waterhole);
+    font-size: var(--pf-t--global--font--size--md);
+  }
+}
+
 // Some utilities not found at PF
 .w-14ch {
   inline-size: 14ch;
