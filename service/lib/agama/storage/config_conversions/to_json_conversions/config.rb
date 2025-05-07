@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 require "agama/storage/config_conversions/to_json_conversions/base"
 require "agama/storage/config_conversions/to_json_conversions/boot"
 require "agama/storage/config_conversions/to_json_conversions/drive"
+require "agama/storage/config_conversions/to_json_conversions/md_raid"
 require "agama/storage/config_conversions/to_json_conversions/volume_group"
 
 module Agama
@@ -43,7 +44,8 @@ module Agama
             {
               boot:         convert_boot,
               drives:       convert_drives,
-              volumeGroups: convert_volume_groups
+              volumeGroups: convert_volume_groups,
+              mdRaids:      convert_md_raids
             }
           end
 
@@ -60,6 +62,11 @@ module Agama
           # @return [Array<Hash>]
           def convert_volume_groups
             config.volume_groups.map { |v| ToJSONConversions::VolumeGroup.new(v).convert }
+          end
+
+          # @return [Array<Hash>]
+          def convert_md_raids
+            config.md_raids.map { |m| ToJSONConversions::MdRaid.new(m).convert }
           end
         end
       end

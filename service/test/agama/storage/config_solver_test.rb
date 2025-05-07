@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -118,904 +118,673 @@ describe Agama::Storage::ConfigSolver do
     context "if a config does not specify the boot device alias" do
       let(:config_json) do
         {
-          boot:         { configure: configure_boot },
-          drives:       drives,
-          volumeGroups: volume_groups
+          boot:   { configure: true },
+          drives: [
+            {
+              alias:      "root",
+              partitions: [
+                {
+                  filesystem: { path: "/" }
+                }
+              ]
+            }
+          ]
         }
       end
 
-      let(:drives) { [] }
-      let(:volume_groups) { [] }
+      it "solves the boot device" do
+        subject.solve(config)
+        expect(config.boot.device.device_alias).to eq("root")
+      end
+    end
 
-      context "and boot is not set to be configured" do
-        let(:configure_boot) { false }
+    shared_examples "encryption" do |encryption_proc|
+      context "if some encryption properties are missing" do
+        let(:encryption) do
+          {
+            luks2: { password: "12345" }
+          }
+        end
 
-        it "does not set a boot device alias" do
+        it "completes the encryption config according to the product info" do
           subject.solve(config)
-          expect(config.boot.device.device_alias).to be_nil
-        end
-      end
 
-      context "and boot is set to be configured" do
-        let(:configure_boot) { true }
-
-        context "and the boot device is not set to default" do
-          before do
-            config.boot.device.default = false
-          end
-
-          it "does not set a boot device alias" do
-            subject.solve(config)
-            expect(config.boot.device.device_alias).to be_nil
-          end
-        end
-
-        context "and the boot device is set to default" do
-          before do
-            config.boot.device.default = true
-          end
-
-          context "and there is a root partition" do
-            let(:drives) do
-              [
-                {
-                  alias:      device_alias,
-                  partitions: [
-                    {
-                      filesystem: { path: "/" }
-                    }
-                  ]
-                }
-              ]
-            end
-
-            let(:device_alias) { "root" }
-
-            it "sets the alias of the root device as boot device alias" do
-              subject.solve(config)
-              expect(config.boot.device.device_alias).to eq("root")
-            end
-
-            context "and the root device has no alias" do
-              let(:device_alias) { nil }
-
-              it "sets an alias to the root device" do
-                subject.solve(config)
-                drive = config.drives.first
-                expect(drive.alias).to_not be_nil
-              end
-
-              it "sets the alias of the root device as boot device alias" do
-                subject.solve(config)
-                drive = config.drives.first
-                expect(config.boot.device.device_alias).to eq(drive.alias)
-              end
-            end
-          end
-
-          context "and there is a root logical volume" do
-            let(:volume_groups) do
-              [
-                {
-                  name:            "system",
-                  physicalVolumes: physical_volumes,
-                  logicalVolumes:  [
-                    {
-                      filesystem: { path: "/" }
-                    }
-                  ]
-                }
-              ]
-            end
-
-            context "and there are target devices for physical volumes" do
-              let(:drives) do
-                [
-                  { alias: "disk1" },
-                  { alias: "disk2" }
-                ]
-              end
-
-              let(:physical_volumes) { [{ generate: ["disk2", "disk1"] }] }
-
-              it "sets the alias of the first target device as boot device alias" do
-                subject.solve(config)
-                expect(config.boot.device.device_alias).to eq("disk2")
-              end
-            end
-
-            context "and there is no target device for physical volumes" do
-              let(:drives) do
-                [
-                  {
-                    alias:      "disk1",
-                    partitions: [
-                      { alias: "p1" }
-                    ]
-                  },
-                  {
-                    alias:      device_alias,
-                    partitions: [
-                      { alias: "p2" }
-                    ]
-                  },
-                  { alias: "disk3" }
-                ]
-              end
-
-              let(:device_alias) { "disk2" }
-
-              context "and there is any partition as physical volume" do
-                let(:physical_volumes) { ["disk3", "p2", "p1"] }
-
-                it "sets the alias of the device of the first partition as boot device alias" do
-                  subject.solve(config)
-                  expect(config.boot.device.device_alias).to eq("disk2")
-                end
-
-                context "and the device of the first partition has no alias" do
-                  let(:device_alias) { nil }
-
-                  it "sets an alias to the device" do
-                    subject.solve(config)
-                    drive = config.drives[1]
-                    expect(drive.alias).to_not be_nil
-                  end
-
-                  it "sets the alias of the device as boot device alias" do
-                    subject.solve(config)
-                    drive = config.drives[1]
-                    expect(config.boot.device.device_alias).to eq(drive.alias)
-                  end
-                end
-              end
-
-              context "and there is no partition as physical volume" do
-                let(:physical_volumes) { ["disk1", "disk2"] }
-
-                it "does not set a boot device alias" do
-                  subject.solve(config)
-                  expect(config.boot.device.device_alias).to be_nil
-                end
-              end
-            end
-          end
-
-          context "and there is neither a partition nor a logical volume for root" do
-            let(:drives) do
-              [
-                {
-                  alias:      "disk1",
-                  partitions: [
-                    {
-                      filesystem: { path: "/test1" }
-                    }
-                  ]
-                }
-              ]
-            end
-
-            let(:volume_groups) do
-              [
-                {
-                  name:            "system",
-                  physicalVolumes: [{ generate: ["disk1"] }],
-                  logicalVolumes:  [
-                    {
-                      filesystem: { path: "/test2" }
-                    }
-                  ]
-                }
-              ]
-            end
-
-            it "does not set a boot device alias" do
-              subject.solve(config)
-              expect(config.boot.device.device_alias).to be_nil
-            end
-          end
+          encryption = encryption_proc.call(config)
+          expect(encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS2)
+          expect(encryption.password).to eq("12345")
+          expect(encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::ARGON2I)
         end
       end
     end
 
-    context "if a config does not specify all the encryption properties" do
-      let(:config_json) do
-        {
-          drives: [
-            {
-              encryption: {
-                luks2: { password: "12345" }
+    shared_examples "filesystem" do |filesystem_proc|
+      context "if some filesystem properties are missing" do
+        let(:filesystem) { { path: "/" } }
+
+        it "completes the filesystem config according to the product info" do
+          subject.solve(config)
+
+          filesystem = filesystem_proc.call(config)
+          expect(filesystem.type).to be_a(Agama::Storage::Configs::FilesystemType)
+          expect(filesystem.type.default?).to eq(true)
+          expect(filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
+          expect(filesystem.type.btrfs).to be_a(Agama::Storage::Configs::Btrfs)
+          expect(filesystem.type.btrfs.snapshots?).to eq(true)
+          expect(filesystem.type.btrfs.read_only?).to eq(true)
+          expect(filesystem.type.btrfs.default_subvolume).to eq("@")
+          expect(filesystem.type.btrfs.subvolumes).to all(be_a(Y2Storage::SubvolSpecification))
+        end
+      end
+
+      context "if some btrfs properties are missing" do
+        let(:filesystem) do
+          {
+            path: "/",
+            type: {
+              btrfs: {
+                snapshots: false
               }
             }
-          ]
-        }
-      end
+          }
+        end
 
-      it "completes the encryption config according to the product info" do
-        subject.solve(config)
+        it "completes the btrfs config according to the product info" do
+          subject.solve(config)
 
-        drive = config.drives.first
-        encryption = drive.encryption
-        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS2)
-        expect(encryption.password).to eq("12345")
-        expect(encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::ARGON2I)
-      end
-    end
-
-    context "if a volume group does not specify all the pv encryption properties" do
-      let(:config_json) do
-        {
-          volumeGroups: [
-            {
-              physicalVolumes: [
-                {
-                  generate: {
-                    encryption: {
-                      luks2: { password: "12345" }
-                    }
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      it "completes the encryption config according to the product info" do
-        subject.solve(config)
-
-        volume_group = config.volume_groups.first
-        encryption = volume_group.physical_volumes_encryption
-        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS2)
-        expect(encryption.password).to eq("12345")
-        expect(encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::ARGON2I)
+          filesystem = filesystem_proc.call(config)
+          btrfs = filesystem.type.btrfs
+          expect(btrfs.snapshots?).to eq(false)
+          expect(btrfs.read_only?).to eq(true)
+          expect(btrfs.default_subvolume).to eq("@")
+          expect(btrfs.subvolumes).to all(be_a(Y2Storage::SubvolSpecification))
+        end
       end
     end
 
-    context "if a config does not specify all the filesystem properties" do
-      let(:config_json) do
-        {
-          drives: [
-            {
-              filesystem: { path: "/" }
-            }
-          ]
-        }
-      end
+    shared_examples "block device" do |device_proc|
+      encryption_proc = proc { |c| device_proc.call(c).encryption }
+      include_examples "encryption", encryption_proc
 
-      it "completes the filesystem config according to the product info" do
-        subject.solve(config)
-
-        drive = config.drives.first
-        filesystem = drive.filesystem
-        expect(filesystem.type).to be_a(Agama::Storage::Configs::FilesystemType)
-        expect(filesystem.type.default?).to eq(true)
-        expect(filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
-        expect(filesystem.type.btrfs).to be_a(Agama::Storage::Configs::Btrfs)
-        expect(filesystem.type.btrfs.snapshots?).to eq(true)
-        expect(filesystem.type.btrfs.read_only?).to eq(true)
-        expect(filesystem.type.btrfs.default_subvolume).to eq("@")
-        expect(filesystem.type.btrfs.subvolumes).to all(be_a(Y2Storage::SubvolSpecification))
-      end
+      filesystem_proc = proc { |c| device_proc.call(c).filesystem }
+      include_examples "filesystem", filesystem_proc
     end
 
-    context "if a config does not specify all the btrfs properties" do
-      let(:config_json) do
-        {
-          drives: [
-            {
-              filesystem: {
-                path: "/",
-                type: {
-                  btrfs: {
-                    snapshots: false
-                  }
-                }
-              }
-            }
-          ]
-        }
-      end
-
-      it "completes the btrfs config according to the product info" do
-        subject.solve(config)
-
-        drive = config.drives.first
-        btrfs = drive.filesystem.type.btrfs
-        expect(btrfs.snapshots?).to eq(false)
-        expect(btrfs.read_only?).to eq(true)
-        expect(btrfs.default_subvolume).to eq("@")
-        expect(btrfs.subvolumes).to all(be_a(Y2Storage::SubvolSpecification))
-      end
-    end
-
-    partition_proc = proc { |c| c.drives.first.partitions.first }
-
-    context "if a config does not specify size" do
-      let(:config_json) do
-        {
-          drives: [
-            {
-              partitions: partitions
-            }
-          ]
-        }
-      end
-
-      let(:partitions) do
-        [
-          {
-            filesystem: { path: "/" }
-          },
-          {
-            filesystem: { path: "/home" }
-          },
-          {}
-        ]
-      end
-
+    shared_examples "new volume size" do |volumes_proc|
       let(:scenario) { "disks.yaml" }
 
-      it "sets a size according to the product info" do
-        subject.solve(config)
+      let(:min_fallbacks) { ["/home"] }
+      let(:max_fallbacks) { ["/home"] }
+      let(:snapshots_increment) { "300%" }
 
-        drive = config.drives.first
-        p1, p2, p3 = drive.partitions
+      let(:volumes) { [volume] }
 
-        expect(p1.size.default?).to eq(true)
-        expect(p1.size.min).to eq(5.GiB)
-        expect(p1.size.max).to eq(10.GiB)
-
-        expect(p2.size.default?).to eq(true)
-        expect(p2.size.min).to eq(5.GiB)
-        expect(p2.size.max).to eq(Y2Storage::DiskSize.unlimited)
-
-        expect(p3.size.default?).to eq(true)
-        expect(p3.size.min).to eq(100.MiB)
-        expect(p3.size.max).to eq(Y2Storage::DiskSize.unlimited)
+      let(:volume) do
+        {
+          filesystem: {
+            type: volume_filesystem,
+            path: "/"
+          },
+          size:       size
+        }
       end
 
-      context "and there is a device assigned" do
+      let(:volume_filesystem) { "xfs" }
+
+      context "if size is missing" do
+        let(:size) { nil }
+
+        context "and some paths are missing" do
+          it "sets a size adding the fallback sizes" do
+            subject.solve(config)
+            volume = volumes_proc.call(config).first
+            expect(volume.size.default?).to eq(true)
+            expect(volume.size.min).to eq(10.GiB)
+            expect(volume.size.max).to eq(Y2Storage::DiskSize.unlimited)
+          end
+
+          context "and snapshots are enabled" do
+            let(:volume_filesystem) { "btrfs" }
+
+            it "sets a size adding the fallback and snapshots sizes" do
+              subject.solve(config)
+              volume = volumes_proc.call(config).first
+              expect(volume.size.default?).to eq(true)
+              expect(volume.size.min).to eq(40.GiB)
+              expect(volume.size.max).to eq(Y2Storage::DiskSize.unlimited)
+            end
+          end
+
+          context "and no paths are missing" do
+            let(:volumes) do
+              [
+                volume,
+                {
+                  filesystem: { path: "/home" }
+                }
+              ]
+            end
+
+            it "sets a size ignoring the fallback sizes" do
+              subject.solve(config)
+              volume = volumes_proc.call(config).first
+              expect(volume.size.default?).to eq(true)
+              expect(volume.size.min).to eq(5.GiB)
+              expect(volume.size.max).to eq(10.GiB)
+            end
+
+            context "and snapshots are enabled" do
+              let(:volume_filesystem) { "btrfs" }
+
+              it "sets a size adding the snapshots size" do
+                subject.solve(config)
+                volume = volumes_proc.call(config).first
+                expect(volume.size.default?).to eq(true)
+                expect(volume.size.min).to eq(20.GiB)
+                expect(volume.size.max).to eq(40.GiB)
+              end
+            end
+          end
+        end
+
+        context "and has to be enlarged according to RAM size" do
+          before do
+            allow_any_instance_of(Y2Storage::Arch).to receive(:ram_size).and_return(8.GiB)
+          end
+
+          let(:volume) do
+            { filesystem: { path: "swap" } }
+          end
+
+          it "sets the RAM size" do
+            subject.solve(config)
+            volume = volumes_proc.call(config).first
+            expect(volume.size.default?).to eq(true)
+            expect(volume.size.min).to eq(8.GiB)
+            expect(volume.size.max).to eq(8.GiB)
+          end
+        end
+      end
+
+      context "if size is not missing" do
+        let(:size) { { min: "10 GiB", max: "15 GiB" } }
+
+        it "sets the given size" do
+          subject.solve(config)
+          volume = volumes_proc.call(config).first
+          expect(volume.size.default?).to eq(false)
+          expect(volume.size.min).to eq(10.GiB)
+          expect(volume.size.max).to eq(15.GiB)
+        end
+      end
+
+      context "if min size is 'current'" do
+        let(:size) { { min: "current", max: "15 GiB" } }
+
+        let(:min_fallbacks) { [] }
+        let(:max_fallbacks) { [] }
+
+        it "sets a size according to the product info" do
+          subject.solve(config)
+          volume = volumes_proc.call(config).first
+          expect(volume.size.default?).to eq(true)
+          expect(volume.size.min).to eq(5.GiB)
+          expect(volume.size.max).to eq(10.GiB)
+        end
+      end
+
+      context "if max size is 'current" do
+        let(:size) { { min: "10 GiB", max: "current" } }
+
+        let(:min_fallbacks) { [] }
+        let(:max_fallbacks) { [] }
+
+        it "sets a size according to the product info" do
+          subject.solve(config)
+          volume = volumes_proc.call(config).first
+          expect(volume.size.default?).to eq(true)
+          expect(volume.size.min).to eq(5.GiB)
+          expect(volume.size.max).to eq(10.GiB)
+        end
+      end
+
+      context "if max size is missing" do
+        let(:size) { { min: "10 GiB" } }
+
+        it "sets max size to unlimited" do
+          subject.solve(config)
+          volume = volumes_proc.call(config).first
+          expect(volume.size.default?).to eq(false)
+          expect(volume.size.min).to eq(10.GiB)
+          expect(volume.size.max).to eq(Y2Storage::DiskSize.unlimited)
+        end
+      end
+    end
+
+    shared_examples "partition" do |partitions_proc|
+      context "for a partition" do
         let(:partitions) do
           [
             {
-              search:     "/dev/vda2",
-              filesystem: { path: "/" }
+              encryption: encryption,
+              filesystem: filesystem
             }
           ]
         end
+
+        let(:encryption) { nil }
+        let(:filesystem) { nil }
+
+        partition_proc = proc { |c| partitions_proc.call(c).first }
+        include_examples "block device", partition_proc
+      end
+    end
+
+    shared_examples "new partition size" do |partitions_proc|
+      context "for a new partition" do
+        let(:partitions) { volumes }
+        include_examples "new volume size", partitions_proc
+      end
+    end
+
+    shared_examples "reused partition size" do |partitions_proc|
+      context "for a reused partition" do
+        let(:scenario) { "disks.yaml" }
 
         # Enable fallbacks and snapshots to check they don't affect in this case.
         let(:min_fallbacks) { ["/home"] }
         let(:max_fallbacks) { ["/home"] }
         let(:snapshots_increment) { "300%" }
 
-        it "sets the device size" do
-          subject.solve(config)
-          partition = partition_proc.call(config)
-          expect(partition.size.default?).to eq(true)
-          expect(partition.size.min).to eq(20.GiB)
-          expect(partition.size.max).to eq(20.GiB)
-        end
-      end
-
-      context "and the product defines size fallbacks" do
-        let(:min_fallbacks) { ["/home"] }
-        let(:max_fallbacks) { ["/home"] }
-        let(:snapshots_increment) { "300%" }
-
-        context "and the config does not specify some of the paths" do
-          let(:partitions) do
-            [
-              {
-                filesystem: {
-                  type: "xfs",
-                  path: "/"
-                }
-              }
-            ]
-          end
-
-          it "sets a size adding the fallback sizes" do
-            subject.solve(config)
-            partition = partition_proc.call(config)
-            expect(partition.size.default?).to eq(true)
-            expect(partition.size.min).to eq(10.GiB)
-            expect(partition.size.max).to eq(Y2Storage::DiskSize.unlimited)
-          end
-
-          context "and snapshots are enabled" do
-            let(:partitions) do
-              [
-                {
-                  filesystem: {
-                    type: "btrfs",
-                    path: "/"
-                  }
-                }
-              ]
-            end
-
-            it "sets a size adding the fallback and snapshots sizes" do
-              subject.solve(config)
-              partition = partition_proc.call(config)
-              expect(partition.size.default?).to eq(true)
-              expect(partition.size.min).to eq(40.GiB)
-              expect(partition.size.max).to eq(Y2Storage::DiskSize.unlimited)
-            end
-          end
-        end
-
-        context "and the config specifies the fallback paths" do
-          let(:partitions) do
-            [
-              {
-                filesystem: {
-                  type: filesystem,
-                  path: "/"
-                }
-              },
-              {
-                filesystem: { path: "/home" }
-              }
-            ]
-          end
-
-          let(:filesystem) { "xfs" }
-
-          it "sets a size ignoring the fallback sizes" do
-            subject.solve(config)
-            partition = partition_proc.call(config)
-            expect(partition.size.default?).to eq(true)
-            expect(partition.size.min).to eq(5.GiB)
-            expect(partition.size.max).to eq(10.GiB)
-          end
-
-          context "and snapshots are enabled" do
-            let(:filesystem) { "btrfs" }
-
-            it "sets a size adding the snapshots size" do
-              subject.solve(config)
-              partition = partition_proc.call(config)
-              expect(partition.size.default?).to eq(true)
-              expect(partition.size.min).to eq(20.GiB)
-              expect(partition.size.max).to eq(40.GiB)
-            end
-          end
-        end
-      end
-
-      context "and the volume has to be enlarged according to RAM size" do
-        before do
-          allow_any_instance_of(Y2Storage::Arch).to receive(:ram_size).and_return(8.GiB)
-        end
-
         let(:partitions) do
           [
             {
-              filesystem: { path: "swap" }
+              search:     "/dev/vda2",
+              filesystem: { path: "/" },
+              size:       size
             }
           ]
         end
 
-        it "sets the RAM size" do
-          subject.solve(config)
-          partition = partition_proc.call(config)
-          expect(partition.size.default?).to eq(true)
-          expect(partition.size.min).to eq(8.GiB)
-          expect(partition.size.max).to eq(8.GiB)
+        context "if size is missing" do
+          let(:size) { nil }
+
+          it "sets the device size" do
+            subject.solve(config)
+            partition = partitions_proc.call(config).first
+            expect(partition.size.default?).to eq(true)
+            expect(partition.size.min).to eq(20.GiB)
+            expect(partition.size.max).to eq(20.GiB)
+          end
+        end
+
+        context "if size is not missing" do
+          let(:size) { { min: "10 GiB", max: "15 GiB" } }
+
+          it "sets the given size" do
+            subject.solve(config)
+            partition = partitions_proc.call(config).first
+            expect(partition.size.default?).to eq(false)
+            expect(partition.size.min).to eq(10.GiB)
+            expect(partition.size.max).to eq(15.GiB)
+          end
+        end
+
+        context "if min size is 'current'" do
+          let(:size) { { min: "current", max: "40 GiB" } }
+
+          it "sets the device size as min size" do
+            subject.solve(config)
+            partition = partitions_proc.call(config).first
+            expect(partition.size.default?).to eq(false)
+            expect(partition.size.min).to eq(20.GiB)
+            expect(partition.size.max).to eq(40.GiB)
+          end
+        end
+
+        context "if max size is 'current'" do
+          let(:size) { { min: "10 GiB", max: "current" } }
+
+          it "sets the device size as max size" do
+            subject.solve(config)
+            partition = partitions_proc.call(config).first
+            expect(partition.size.default?).to eq(false)
+            expect(partition.size.min).to eq(10.GiB)
+            expect(partition.size.max).to eq(20.GiB)
+          end
+        end
+
+        context "if max size is missing" do
+          let(:size) { { min: "10 GiB" } }
+
+          it "sets max size to unlimited" do
+            subject.solve(config)
+            partition = partitions_proc.call(config).first
+            expect(partition.size.default?).to eq(false)
+            expect(partition.size.min).to eq(10.GiB)
+            expect(partition.size.max).to eq(Y2Storage::DiskSize.unlimited)
+          end
         end
       end
     end
 
-    context "if a config specifies a size" do
-      let(:config_json) do
-        {
-          drives: [
-            {
-              partitions: [
-                {
-                  search:     search,
-                  filesystem: { path: "/" },
-                  size:       {
-                    min: "10 GiB",
-                    max: "15 GiB"
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
+    context "for a drive" do
+      let(:config_json) { { drives: drives } }
 
-      let(:scenario) { "disks.yaml" }
-
-      # Enable fallbacks and snapshots to check they don't affect in this case.
-      let(:min_fallbacks) { ["/home"] }
-      let(:max_fallbacks) { ["/home"] }
-      let(:snapshots_increment) { "300%" }
-
-      context "and there is no device assigned" do
-        let(:search) { nil }
-
-        it "sets the given size" do
-          subject.solve(config)
-          partition = partition_proc.call(config)
-          expect(partition.size.default?).to eq(false)
-          expect(partition.size.min).to eq(10.GiB)
-          expect(partition.size.max).to eq(15.GiB)
-        end
-      end
-
-      context "and there is a device assigned" do
-        let(:search) { "/dev/vda2" }
-
-        it "sets the given size" do
-          subject.solve(config)
-          partition = partition_proc.call(config)
-          expect(partition.size.default?).to eq(false)
-          expect(partition.size.min).to eq(10.GiB)
-          expect(partition.size.max).to eq(15.GiB)
-        end
-      end
-    end
-
-    context "if a config specifies 'current' for min size" do
-      let(:config_json) do
-        {
-          drives: [
-            {
-              partitions: [
-                {
-                  search:     search,
-                  filesystem: { path: "/" },
-                  size:       {
-                    min: "current",
-                    max: "40 GiB"
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      context "and there is no device assigned" do
-        let(:search) { nil }
-
-        it "sets a size according to the product info" do
-          subject.solve(config)
-          partition = partition_proc.call(config)
-          expect(partition.size.default?).to eq(true)
-          expect(partition.size.min).to eq(5.GiB)
-          expect(partition.size.max).to eq(10.GiB)
-        end
-      end
-
-      context "and there is a device assigned" do
-        let(:scenario) { "disks.yaml" }
-
-        let(:search) { "/dev/vda2" }
-
-        it "sets the device size as min size" do
-          subject.solve(config)
-          partition = partition_proc.call(config)
-          expect(partition.size.default?).to eq(false)
-          expect(partition.size.min).to eq(20.GiB)
-          expect(partition.size.max).to eq(40.GiB)
-        end
-      end
-    end
-
-    context "if a config specifies 'current' for max size" do
-      let(:config_json) do
-        {
-          drives: [
-            {
-              partitions: [
-                {
-                  search:     search,
-                  filesystem: { path: "/" },
-                  size:       {
-                    min: "10 GiB",
-                    max: "current"
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      context "and there is no device assigned" do
-        let(:search) { nil }
-
-        it "sets a size according to the product info" do
-          subject.solve(config)
-          partition = partition_proc.call(config)
-          expect(partition.size.default?).to eq(true)
-          expect(partition.size.min).to eq(5.GiB)
-          expect(partition.size.max).to eq(10.GiB)
-        end
-      end
-
-      context "and there is a device assigned" do
-        let(:scenario) { "disks.yaml" }
-
-        let(:search) { "/dev/vda2" }
-
-        it "sets the device size as max size" do
-          subject.solve(config)
-          partition = partition_proc.call(config)
-          expect(partition.size.default?).to eq(false)
-          expect(partition.size.min).to eq(10.GiB)
-          expect(partition.size.max).to eq(20.GiB)
-        end
-      end
-    end
-
-    context "if a config does not specify max size" do
-      let(:config_json) do
-        {
-          drives: [
-            {
-              partitions: [
-                {
-                  search:     search,
-                  filesystem: { path: "/" },
-                  size:       {
-                    min: "10 GiB"
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      end
-
-      context "and there is no device assigned" do
-        let(:search) { nil }
-
-        it "sets max size to unlimited" do
-          subject.solve(config)
-          partition = partition_proc.call(config)
-          expect(partition.size.default?).to eq(false)
-          expect(partition.size.min).to eq(10.GiB)
-          expect(partition.size.max).to eq(Y2Storage::DiskSize.unlimited)
-        end
-      end
-
-      context "and there is a device assigned" do
-        let(:scenario) { "disks.yaml" }
-
-        let(:search) { "/dev/vda2" }
-
-        it "sets max size to unlimited" do
-          subject.solve(config)
-          partition = partition_proc.call(config)
-          expect(partition.size.default?).to eq(false)
-          expect(partition.size.min).to eq(10.GiB)
-          expect(partition.size.max).to eq(Y2Storage::DiskSize.unlimited)
-        end
-      end
-    end
-  end
-
-  context "if a drive omits the search" do
-    let(:config_json) { { drives: drives } }
-
-    let(:drives) do
-      [
-        {},
-        {},
-        {}
-      ]
-    end
-
-    let(:scenario) { "disks.yaml" }
-
-    it "sets the first unassigned device to the drive" do
-      subject.solve(config)
-      search1, search2, search3 = config.drives.map(&:search)
-      expect(search1.solved?).to eq(true)
-      expect(search1.device.name).to eq("/dev/vda")
-      expect(search2.solved?).to eq(true)
-      expect(search2.device.name).to eq("/dev/vdb")
-      expect(search3.solved?).to eq(true)
-      expect(search3.device.name).to eq("/dev/vdc")
-    end
-
-    context "and any of the devices are excluded from the list of candidate devices" do
-      let(:disk_analyzer) { instance_double(Y2Storage::DiskAnalyzer) }
-      before do
-        allow(disk_analyzer).to receive(:candidate_disks).and_return [
-          devicegraph.find_by_name("/dev/vdb"), devicegraph.find_by_name("/dev/vdc")
-        ]
-      end
-
-      it "sets the first unassigned candidate devices to the drive" do
-        subject.solve(config)
-        searches = config.drives.map(&:search)
-        expect(searches[0].solved?).to eq(true)
-        expect(searches[0].device.name).to eq("/dev/vdb")
-        expect(searches[1].solved?).to eq(true)
-        expect(searches[1].device.name).to eq("/dev/vdc")
-      end
-
-      it "does not set devices that are not installation candidates" do
-        subject.solve(config)
-        searches = config.drives.map(&:search)
-        expect(searches[2].solved?).to eq(true)
-        expect(searches[2].device).to be_nil
-      end
-    end
-
-    context "and there is not unassigned device" do
       let(:drives) do
         [
-          {},
-          {},
-          {},
-          {}
+          {
+            encryption: encryption,
+            filesystem: filesystem,
+            partitions: partitions
+          }
         ]
       end
 
-      it "does not set a device to the drive" do
-        subject.solve(config)
-        search = config.drives[3].search
-        expect(search.solved?).to eq(true)
-        expect(search.device).to be_nil
-      end
-    end
-  end
+      let(:encryption) { nil }
+      let(:filesystem) { nil }
+      let(:partitions) { [] }
 
-  context "if a drive contains an empty search" do
-    let(:config_json) { { drives: drives } }
+      encryption_proc = proc { |c| c.drives.first.encryption }
+      include_examples "encryption", encryption_proc
 
-    let(:drives) do
-      [
-        { search: {} }
-      ]
-    end
+      filesystem_proc = proc { |c| c.drives.first.filesystem }
+      include_examples "filesystem", filesystem_proc
 
-    let(:scenario) { "disks.yaml" }
+      partitions_proc = proc { |c| c.drives.first.partitions }
+      include_examples "partition", partitions_proc
+      include_examples "new partition size", partitions_proc
+      include_examples "reused partition size", partitions_proc
 
-    it "expands the number of drives to match all the existing disks" do
-      subject.solve(config)
-      expect(config.drives.size).to eq 3
-      search1, search2, search3 = config.drives.map(&:search)
-      expect(search1.solved?).to eq(true)
-      expect(search1.device.name).to eq("/dev/vda")
-      expect(search2.solved?).to eq(true)
-      expect(search2.device.name).to eq("/dev/vdb")
-      expect(search3.solved?).to eq(true)
-      expect(search3.device.name).to eq("/dev/vdc")
-    end
-  end
+      context "if a drive omits the search" do
+        let(:drives) do
+          [
+            {},
+            {},
+            {}
+          ]
+        end
 
-  context "if a drive contains a search with '*'" do
-    let(:config_json) { { drives: drives } }
+        let(:scenario) { "disks.yaml" }
 
-    let(:drives) do
-      [
-        { search: "*" }
-      ]
-    end
+        it "sets the first unassigned device to the drive" do
+          subject.solve(config)
+          search1, search2, search3 = config.drives.map(&:search)
+          expect(search1.solved?).to eq(true)
+          expect(search1.device.name).to eq("/dev/vda")
+          expect(search2.solved?).to eq(true)
+          expect(search2.device.name).to eq("/dev/vdb")
+          expect(search3.solved?).to eq(true)
+          expect(search3.device.name).to eq("/dev/vdc")
+        end
 
-    let(:scenario) { "disks.yaml" }
+        context "and any of the devices are excluded from the list of candidate devices" do
+          let(:disk_analyzer) { instance_double(Y2Storage::DiskAnalyzer) }
+          before do
+            allow(disk_analyzer).to receive(:candidate_disks).and_return [
+              devicegraph.find_by_name("/dev/vdb"), devicegraph.find_by_name("/dev/vdc")
+            ]
+          end
 
-    it "expands the number of drives to match all the existing disks" do
-      subject.solve(config)
-      expect(config.drives.size).to eq 3
-      expect(config.drives.map(&:search).map(&:solved?)).to all(eq(true))
-      expect(config.drives.map(&:search).map(&:device).map(&:name))
-        .to eq ["/dev/vda", "/dev/vdb", "/dev/vdc"]
-    end
-  end
+          it "sets the first unassigned candidate devices to the drive" do
+            subject.solve(config)
+            searches = config.drives.map(&:search)
+            expect(searches[0].solved?).to eq(true)
+            expect(searches[0].device.name).to eq("/dev/vdb")
+            expect(searches[1].solved?).to eq(true)
+            expect(searches[1].device.name).to eq("/dev/vdc")
+          end
 
-  context "if a drive contains a search with no conditions but with a max" do
-    let(:config_json) { { drives: drives } }
+          it "does not set devices that are not installation candidates" do
+            subject.solve(config)
+            searches = config.drives.map(&:search)
+            expect(searches[2].solved?).to eq(true)
+            expect(searches[2].device).to be_nil
+          end
+        end
 
-    let(:drives) do
-      [
-        { search: { max: max } }
-      ]
-    end
+        context "and there is not unassigned device" do
+          let(:drives) do
+            [
+              {},
+              {},
+              {},
+              {}
+            ]
+          end
 
-    let(:scenario) { "disks.yaml" }
-
-    context "and the max is equal or smaller than the number of disks" do
-      let(:max) { 2 }
-
-      it "expands the number of drives to match the max" do
-        subject.solve(config)
-        expect(config.drives.size).to eq 2
-        expect(config.drives.map(&:search).map(&:solved?)).to all(eq(true))
-        expect(config.drives.map(&:search).map(&:device).map(&:name))
-          .to eq ["/dev/vda", "/dev/vdb"]
-      end
-    end
-
-    context "and the max is bigger than the number of disks" do
-      let(:max) { 20 }
-
-      it "expands the number of drives to match all the existing disks" do
-        subject.solve(config)
-        expect(config.drives.size).to eq 3
-        expect(config.drives.map(&:search).map(&:solved?)).to all(eq(true))
-        expect(config.drives.map(&:search).map(&:device).map(&:name))
-          .to eq ["/dev/vda", "/dev/vdb", "/dev/vdc"]
-      end
-    end
-  end
-
-  context "if a drive has a search with a device name" do
-    let(:config_json) { { drives: drives } }
-
-    let(:drives) do
-      [
-        { search: search }
-      ]
-    end
-
-    let(:scenario) { "disks.yaml" }
-
-    context "and the device is found" do
-      let(:search) { "/dev/vdb" }
-
-      it "sets the device to the drive" do
-        subject.solve(config)
-        search = config.drives.first.search
-        expect(search.solved?).to eq(true)
-        expect(search.device.name).to eq("/dev/vdb")
-      end
-    end
-
-    context "and the device is not found" do
-      let(:search) { "/dev/vdd" }
-
-      # Speed-up fallback search (and make sure it fails)
-      before { allow(Y2Storage::BlkDevice).to receive(:find_by_any_name) }
-
-      it "does not set a device to the drive" do
-        subject.solve(config)
-        search = config.drives.first.search
-        expect(search.solved?).to eq(true)
-        expect(search.device).to be_nil
-      end
-    end
-
-    context "and the device was already assigned" do
-      let(:drives) do
-        [
-          {},
-          { search: "/dev/vda" }
-        ]
+          it "does not set a device to the drive" do
+            subject.solve(config)
+            search = config.drives[3].search
+            expect(search.solved?).to eq(true)
+            expect(search.device).to be_nil
+          end
+        end
       end
 
-      it "does not set a device to the drive" do
-        subject.solve(config)
-        search = config.drives[1].search
-        expect(search.solved?).to eq(true)
-        expect(search.device).to be_nil
+      context "if a drive contains an empty search" do
+        let(:drives) do
+          [
+            { search: {} }
+          ]
+        end
+
+        let(:scenario) { "disks.yaml" }
+
+        it "expands the number of drives to match all the existing disks" do
+          subject.solve(config)
+          expect(config.drives.size).to eq 3
+          search1, search2, search3 = config.drives.map(&:search)
+          expect(search1.solved?).to eq(true)
+          expect(search1.device.name).to eq("/dev/vda")
+          expect(search2.solved?).to eq(true)
+          expect(search2.device.name).to eq("/dev/vdb")
+          expect(search3.solved?).to eq(true)
+          expect(search3.device.name).to eq("/dev/vdc")
+        end
+      end
+
+      context "if a drive contains a search with '*'" do
+        let(:drives) do
+          [
+            { search: "*" }
+          ]
+        end
+
+        let(:scenario) { "disks.yaml" }
+
+        it "expands the number of drives to match all the existing disks" do
+          subject.solve(config)
+          expect(config.drives.size).to eq 3
+          expect(config.drives.map(&:search).map(&:solved?)).to all(eq(true))
+          expect(config.drives.map(&:search).map(&:device).map(&:name))
+            .to eq ["/dev/vda", "/dev/vdb", "/dev/vdc"]
+        end
+      end
+
+      context "if a drive contains a search with no conditions but with a max" do
+        let(:drives) do
+          [
+            { search: { max: max } }
+          ]
+        end
+
+        let(:scenario) { "disks.yaml" }
+
+        context "and the max is equal or smaller than the number of disks" do
+          let(:max) { 2 }
+
+          it "expands the number of drives to match the max" do
+            subject.solve(config)
+            expect(config.drives.size).to eq 2
+            expect(config.drives.map(&:search).map(&:solved?)).to all(eq(true))
+            expect(config.drives.map(&:search).map(&:device).map(&:name))
+              .to eq ["/dev/vda", "/dev/vdb"]
+          end
+        end
+
+        context "and the max is bigger than the number of disks" do
+          let(:max) { 20 }
+
+          it "expands the number of drives to match all the existing disks" do
+            subject.solve(config)
+            expect(config.drives.size).to eq 3
+            expect(config.drives.map(&:search).map(&:solved?)).to all(eq(true))
+            expect(config.drives.map(&:search).map(&:device).map(&:name))
+              .to eq ["/dev/vda", "/dev/vdb", "/dev/vdc"]
+          end
+        end
+      end
+
+      context "if a drive has a search with a device name" do
+        let(:drives) do
+          [
+            { search: search }
+          ]
+        end
+
+        let(:scenario) { "disks.yaml" }
+
+        context "and the device is found" do
+          let(:search) { "/dev/vdb" }
+
+          it "sets the device to the drive" do
+            subject.solve(config)
+            search = config.drives.first.search
+            expect(search.solved?).to eq(true)
+            expect(search.device.name).to eq("/dev/vdb")
+          end
+        end
+
+        context "and the device is not found" do
+          let(:search) { "/dev/vdd" }
+
+          # Speed-up fallback search (and make sure it fails)
+          before { allow(Y2Storage::BlkDevice).to receive(:find_by_any_name) }
+
+          it "does not set a device to the drive" do
+            subject.solve(config)
+            search = config.drives.first.search
+            expect(search.solved?).to eq(true)
+            expect(search.device).to be_nil
+          end
+        end
+
+        context "and the device was already assigned" do
+          let(:drives) do
+            [
+              {},
+              { search: "/dev/vda" }
+            ]
+          end
+
+          it "does not set a device to the drive" do
+            subject.solve(config)
+            search = config.drives[1].search
+            expect(search.solved?).to eq(true)
+            expect(search.device).to be_nil
+          end
+        end
+
+        context "and there is other drive with the same device" do
+          let(:drives) do
+            [
+              { search: "/dev/vdb" },
+              { search: "/dev/vdb" }
+            ]
+          end
+
+          it "only sets the device to the first drive" do
+            subject.solve(config)
+            search1, search2 = config.drives.map(&:search)
+            expect(search1.solved?).to eq(true)
+            expect(search1.device.name).to eq("/dev/vdb")
+            expect(search2.solved?).to eq(true)
+            expect(search2.device).to be_nil
+          end
+        end
       end
     end
 
-    context "and there is other drive with the same device" do
-      let(:drives) do
-        [
-          { search: "/dev/vdb" },
-          { search: "/dev/vdb" }
-        ]
+    context "for a MD RAID" do
+      let(:config_json) do
+        {
+          mdRaids: [
+            {
+              encryption: encryption,
+              filesystem: filesystem,
+              partitions: partitions
+            }
+          ]
+        }
       end
 
-      it "only sets the device to the first drive" do
-        subject.solve(config)
-        search1, search2 = config.drives.map(&:search)
-        expect(search1.solved?).to eq(true)
-        expect(search1.device.name).to eq("/dev/vdb")
-        expect(search2.solved?).to eq(true)
-        expect(search2.device).to be_nil
+      let(:encryption) { nil }
+      let(:filesystem) { nil }
+      let(:partitions) { [] }
+
+      encryption_proc = proc { |c| c.md_raids.first.encryption }
+      include_examples "encryption", encryption_proc
+
+      filesystem_proc = proc { |c| c.md_raids.first.filesystem }
+      include_examples "filesystem", filesystem_proc
+
+      partitions_proc = proc { |c| c.md_raids.first.partitions }
+      include_examples "partition", partitions_proc
+      include_examples "new partition size", partitions_proc
+    end
+
+    context "for a volume group" do
+      let(:config_json) do
+        {
+          volumeGroups: [
+            {
+              physicalVolumes: physical_volumes,
+              logicalVolumes:  logical_volumes
+            }
+          ]
+        }
+      end
+
+      let(:physical_volumes) { [] }
+      let(:logical_volumes) { [] }
+
+      context "if encryption is specified for physical volumes" do
+        let(:physical_volumes) do
+          [
+            {
+              generate: {
+                encryption: encryption
+              }
+            }
+          ]
+        end
+
+        encryption_proc = proc { |c| c.volume_groups.first.physical_volumes_encryption }
+        include_examples "encryption", encryption_proc
+      end
+
+      context "for a logical volume" do
+        let(:logical_volumes) do
+          [
+            {
+              encryption: encryption,
+              filesystem: filesystem
+            }
+          ]
+        end
+
+        let(:encryption) { nil }
+        let(:filesystem) { nil }
+
+        logical_volume_proc = proc { |c| c.volume_groups.first.logical_volumes.first }
+        include_examples "block device", logical_volume_proc
+      end
+
+      context "for a new logical volume" do
+        let(:logical_volumes) { volumes }
+
+        logical_volumes_proc = proc { |c| c.volume_groups.first.logical_volumes }
+        include_examples "new volume size", logical_volumes_proc
       end
     end
   end

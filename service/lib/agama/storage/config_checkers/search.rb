@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 require "agama/storage/config_checkers/base"
 require "agama/storage/configs/drive"
 require "agama/storage/configs/logical_volume"
+require "agama/storage/configs/md_raid"
 require "agama/storage/configs/partition"
 require "yast/i18n"
 
@@ -33,10 +34,8 @@ module Agama
         include Yast::I18n
 
         # @param config [#search]
-        # @param storage_config [Storage::Config]
-        # @param product_config [Agama::Config]
-        def initialize(config, storage_config, product_config)
-          super(storage_config, product_config)
+        def initialize(config)
+          super()
 
           textdomain "agama"
           @config = config
@@ -84,6 +83,8 @@ module Agama
           case config
           when Agama::Storage::Configs::Drive
             _("drive")
+          when Agama::Storage::Configs::MdRaid
+            _("MD RAID")
           when Agama::Storage::Configs::Partition
             _("partition")
           when Agama::Storage::Configs::LogicalVolume

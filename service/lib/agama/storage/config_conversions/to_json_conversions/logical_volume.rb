@@ -52,7 +52,7 @@ module Agama
               name:       config.name,
               stripes:    config.stripes,
               stripeSize: config.stripe_size&.to_i,
-              pool:       config.pool?,
+              pool:       config.pool? ? true : nil,
               usedPool:   config.used_pool
             }
           end

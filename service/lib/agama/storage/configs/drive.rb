@@ -22,39 +22,28 @@
 require "agama/storage/configs/search"
 require "agama/storage/configs/with_alias"
 require "agama/storage/configs/with_filesystem"
+require "agama/storage/configs/with_partitions"
 require "agama/storage/configs/with_search"
 
 module Agama
   module Storage
     module Configs
-      # Section of the configuration representing a device that is expected to exist in the target
-      # system and that can be used as a regular disk.
+      # Configuration representing a drive.
+      #
+      # The device is expected to exist in the target system and can be used as a regular disk.
       class Drive
         include WithAlias
         include WithFilesystem
+        include WithPartitions
         include WithSearch
 
         # @return [Encryption, nil]
         attr_accessor :encryption
 
-        # @return [Y2Storage::PartitionTables::Type, nil]
-        attr_accessor :ptable_type
-
-        # @return [Array<Partition>]
-        attr_accessor :partitions
-
-        # Constructor
         def initialize
-          @partitions = []
+          initialize_partitions
           # All drives are expected to match a real device in the system, so let's ensure a search.
           @search = Search.new.tap { |s| s.max = 1 }
-        end
-
-        # Whether the drive definition contains partition definitions
-        #
-        # @return [Boolean]
-        def partitions?
-          partitions.any?
         end
       end
     end

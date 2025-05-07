@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_checkers/base"
+require "agama/storage/config_checkers/with_alias"
 require "agama/storage/config_checkers/with_encryption"
 require "agama/storage/config_checkers/with_filesystem"
 require "agama/storage/config_checkers/with_search"
@@ -29,6 +30,7 @@ module Agama
     module ConfigCheckers
       # Class for checking the partition config.
       class Partition < Base
+        include WithAlias
         include WithEncryption
         include WithFilesystem
         include WithSearch
@@ -37,9 +39,11 @@ module Agama
         # @param storage_config [Storage::Config]
         # @param product_config [Agama::Config]
         def initialize(config, storage_config, product_config)
-          super(storage_config, product_config)
+          super()
 
           @config = config
+          @storage_config = storage_config
+          @product_config = product_config
         end
 
         # Partition config issues.
@@ -47,6 +51,7 @@ module Agama
         # @return [Array<Issue>]
         def issues
           [
+            alias_issues,
             search_issues,
             filesystem_issues,
             encryption_issues
@@ -57,6 +62,12 @@ module Agama
 
         # @return [Configs::Partition]
         attr_reader :config
+
+        # @return [Storage::Config]
+        attr_reader :storage_config
+
+        # @return [Agama::Config]
+        attr_reader :product_config
       end
     end
   end

@@ -116,7 +116,7 @@ module Y2Storage
       # @param config [Agama::Storage::Config]
       # @return [Array<Agama::Storage::Configs::Partition>]
       def partitions(config)
-        config.drives.flat_map(&:partitions)
+        config.partitions
       end
 
       # Device names from the given configs.

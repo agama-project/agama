@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -35,14 +35,14 @@ module Agama
 
         # @param config [Configs::LogicalVolume]
         # @param volume_group_config [Configs::VolumeGroup]
-        # @param storage_config [Storage::Config]
         # @param product_config [Agama::Config]
-        def initialize(config, volume_group_config, storage_config, product_config)
-          super(storage_config, product_config)
+        def initialize(config, volume_group_config, product_config)
+          super()
 
           textdomain "agama"
           @config = config
           @volume_group_config = volume_group_config
+          @product_config = product_config
         end
 
         # Logical volume config issues.
@@ -63,6 +63,9 @@ module Agama
 
         # @return [Configs::VolumeGroup]
         attr_reader :volume_group_config
+
+        # @return [Agama::Config]
+        attr_reader :product_config
 
         # @return [Issue, nil]
         def missing_thin_pool_issue

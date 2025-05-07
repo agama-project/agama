@@ -35,10 +35,12 @@ module Agama
         # @param storage_config [Storage::Config]
         # @param product_config [Agama::Config]
         def initialize(config, storage_config, product_config)
-          super(storage_config, product_config)
+          super()
 
           textdomain "agama"
           @config = config
+          @storage_config = storage_config
+          @product_config = product_config
         end
 
         # Issues from a volume group config.
@@ -59,6 +61,12 @@ module Agama
         # @return [Configs::VolumeGroup]
         attr_reader :config
 
+        # @return [Storage::Config]
+        attr_reader :storage_config
+
+        # @return [Agama::Config]
+        attr_reader :product_config
+
         # Issue if the volume group name is missing.
         #
         # @return [Issue, nil]
@@ -74,7 +82,7 @@ module Agama
         def logical_volumes_issues
           config.logical_volumes.flat_map do |logical_volume|
             ConfigCheckers::LogicalVolume
-              .new(logical_volume, config, storage_config, product_config)
+              .new(logical_volume, config, product_config)
               .issues
           end
         end
@@ -91,8 +99,7 @@ module Agama
         # @param pv_alias [String]
         # @return [Issue, nil]
         def missing_physical_volume_issue(pv_alias)
-          configs = storage_config.drives + storage_config.drives.flat_map(&:partitions)
-          return if configs.any? { |c| c.alias == pv_alias }
+          return if storage_config.potential_for_pv.any? { |c| c.alias == pv_alias }
 
           error(
             # TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
@@ -105,9 +112,32 @@ module Agama
         #
         # @return [Array<Issue>]
         def physical_volumes_devices_issues
-          config.physical_volumes_devices
+          issues = config.physical_volumes_devices
             .map { |d| missing_physical_volumes_device_issue(d) }
             .compact
+
+          [issues, incompatible_physical_volumes_devices_issue].flatten.compact
+        end
+
+        # Issue when the target devices mix reused and new devices.
+        #
+        # @return [Issue, nil]
+        def incompatible_physical_volumes_devices_issue
+          devices = config.physical_volumes_devices.map { |d| physical_volume_device(d) }.compact
+          return if devices.all?(&:create?)
+          return if devices.none?(&:create?)
+
+          error(
+            # TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+            format(
+              _(
+                "The list of target devices for the volume group '%s' is mixing reused devices " \
+                "and new devices"
+              ),
+              config.name
+            ),
+            kind: :incompatible_pv_targets
+          )
         end
 
         # @see #physical_volumes_devices_issue
@@ -115,7 +145,7 @@ module Agama
         # @param device_alias [String]
         # @return [Issue, nil]
         def missing_physical_volumes_device_issue(device_alias)
-          return if storage_config.drives.any? { |d| d.alias == device_alias }
+          return if physical_volume_device(device_alias)
 
           error(
             format(
@@ -132,8 +162,16 @@ module Agama
         # @return [Array<Issue>]
         def physical_volumes_encryption_issues
           ConfigCheckers::PhysicalVolumesEncryption
-            .new(config, storage_config, product_config)
+            .new(config)
             .issues
+        end
+
+        # Config of the device used as target for physical volumes.
+        #
+        # @param device_alias [String]
+        # @return [Configs::Drive, Configs::MdRaid, nil]
+        def physical_volume_device(device_alias)
+          storage_config.potential_for_pv_device.find { |d| d.alias?(device_alias) }
         end
       end
     end
