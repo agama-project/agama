@@ -35,7 +35,8 @@ use crate::{
     security::store::{SecurityStore, SecurityStoreError},
     software::{SoftwareStore, SoftwareStoreError},
     storage::{
-        http_client::{ISCSIHTTPClient, ISCSIHTTPClientError},
+        http_client::iscsi::{ISCSIHTTPClient, ISCSIHTTPClientError},
+        store::dasd::{DASDStore, DASDStoreError},
         StorageStore, StorageStoreError,
     },
     users::{UsersStore, UsersStoreError},
@@ -45,6 +46,8 @@ use crate::{
 pub enum StoreError {
     #[error(transparent)]
     Bootloader(#[from] BootloaderStoreError),
+    #[error(transparent)]
+    DASD(#[from] DASDStoreError),
     #[error(transparent)]
     Files(#[from] FilesStoreError),
     #[error(transparent)]
@@ -72,6 +75,8 @@ pub enum StoreError {
     ScriptsClient(#[from] ScriptsClientError),
     #[error(transparent)]
     Manager(#[from] ManagerHTTPClientError),
+    #[error("Could not calculate the context")]
+    InvalidStoreContext,
 }
 
 /// Struct that loads/stores the settings from/to the D-Bus services.
@@ -82,6 +87,7 @@ pub enum StoreError {
 /// This struct uses the default connection built by [connection function](super::connection).
 pub struct Store {
     bootloader: BootloaderStore,
+    dasd: DASDStore,
     files: FilesStore,
     hostname: HostnameStore,
     users: UsersStore,
@@ -101,6 +107,7 @@ impl Store {
     pub async fn new(http_client: BaseHTTPClient) -> Result<Store, StoreError> {
         Ok(Self {
             bootloader: BootloaderStore::new(http_client.clone()),
+            dasd: DASDStore::new(http_client.clone()),
             files: FilesStore::new(http_client.clone()),
             hostname: HostnameStore::new(http_client.clone()),
             localization: LocalizationStore::new(http_client.clone()),
@@ -121,6 +128,7 @@ impl Store {
     pub async fn load(&self) -> Result<InstallSettings, StoreError> {
         let mut settings = InstallSettings {
             bootloader: self.bootloader.load().await?,
+            dasd: self.dasd.load().await?,
             files: self.files.load().await?,
             hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),
@@ -142,7 +150,7 @@ impl Store {
         Ok(settings)
     }
 
-    /// Stores the given installation settings in the D-Bus service
+    /// Stores the given installation settings in the Agama service
     ///
     /// As part of the process it runs pre-scripts and forces a probe if the installation phase is
     /// "config". It causes the storage proposal to be reset. This behavior should be revisited in
@@ -190,6 +198,10 @@ impl Store {
         // iscsi has to be done before storage
         if let Some(iscsi) = &settings.iscsi {
             self.iscsi_client.set_config(iscsi).await?
+        }
+        // dasd devices has to be activated before storage
+        if let Some(dasd) = &settings.dasd {
+            self.dasd.store(dasd).await?
         }
         if settings.storage.is_some() || settings.storage_autoyast.is_some() {
             self.storage.store(&settings.into()).await?

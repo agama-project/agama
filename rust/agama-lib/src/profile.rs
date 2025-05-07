@@ -20,7 +20,6 @@
 
 use crate::error::ProfileError;
 use anyhow::Context;
-use jsonschema::JSONSchema;
 use log::info;
 use serde_json;
 use std::{fs, io::Write, path::Path, process::Command};
@@ -109,7 +108,7 @@ impl std::fmt::Display for ValidationOutcome {
 /// assert!(matches!(ValidationOutcome::Valid, result));
 /// ```
 pub struct ProfileValidator {
-    schema: JSONSchema,
+    validator: jsonschema::Validator,
 }
 
 impl ProfileValidator {
@@ -137,8 +136,8 @@ impl ProfileValidator {
             .as_object_mut()
             .and_then(|s| s.insert("$id".to_string(), serde_json::json!(id)));
 
-        let schema = JSONSchema::compile(&schema).expect("A valid schema");
-        Ok(Self { schema })
+        let validator = jsonschema::validator_for(&schema).expect("A valid schema");
+        Ok(Self { validator })
     }
 
     pub fn validate_file(&self, profile_path: &Path) -> Result<ValidationOutcome, ProfileError> {
@@ -148,14 +147,17 @@ impl ProfileValidator {
 
     pub fn validate_str(&self, profile: &str) -> Result<ValidationOutcome, ProfileError> {
         let contents = serde_json::from_str(profile)?;
-        let result = self.schema.validate(&contents);
-        if let Err(errors) = result {
-            let messages: Vec<String> = errors
-                .map(|e| format!("{}. {}", e, e.instance_path))
-                .collect();
-            return Ok(ValidationOutcome::NotValid(messages));
+        let messages: Vec<String> = self
+            .validator
+            .iter_errors(&contents)
+            .map(|e| format!("{}. {}", e, e.instance_path))
+            .collect();
+
+        if messages.is_empty() {
+            Ok(ValidationOutcome::Valid)
+        } else {
+            Ok(ValidationOutcome::NotValid(messages))
         }
-        Ok(ValidationOutcome::Valid)
     }
 }
 

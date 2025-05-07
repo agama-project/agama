@@ -20,6 +20,8 @@
 
 //! Implements the store for the storage settings.
 
+pub mod dasd;
+
 use super::{http_client::StorageHTTPClientError, StorageSettings};
 use crate::{base_http_client::BaseHTTPClient, storage::http_client::StorageHTTPClient};
 

@@ -1,9 +1,15 @@
 -------------------------------------------------------------------
-Wed Apr 30 11:45:08 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+Wed May  7 07:07:10 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Use the correct locale format in the Intl.ListFormat.format call,
   if it fails use a fallback formatting function to avoid a crash
   (bsc#1238584)
+
+-------------------------------------------------------------------
+Mon May  5 14:50:48 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Improve storage proposal warning to mention mount paths when
+  logical volume space allocation fails (gh#agama-project/agama#2323).
 
 -------------------------------------------------------------------
 Tue Apr 22 14:14:53 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

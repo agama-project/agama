@@ -20,6 +20,9 @@
 
 //! Implements a client to access Agama's D-Bus API related to DASD management.
 
+use std::{collections::HashMap, time::Duration};
+
+use tokio::time::sleep;
 use zbus::{
     fdo::{IntrospectableProxy, ObjectManagerProxy},
     zvariant::{ObjectPath, OwnedObjectPath},
@@ -28,7 +31,12 @@ use zbus::{
 
 use crate::{
     error::ServiceError,
-    storage::{model::dasd::DASDDevice, proxies::dasd::ManagerProxy},
+    jobs::client::JobsClient,
+    storage::{
+        model::dasd::DASDDevice,
+        proxies::dasd::ManagerProxy,
+        settings::dasd::{DASDConfig, DASDDeviceConfig, DASDDeviceState},
+    },
 };
 
 /// Client to connect to Agama's D-Bus API for DASD management.
@@ -37,6 +45,7 @@ pub struct DASDClient<'a> {
     manager_proxy: ManagerProxy<'a>,
     object_manager_proxy: ObjectManagerProxy<'a>,
     introspectable_proxy: IntrospectableProxy<'a>,
+    connection: Connection,
 }
 
 impl<'a> DASDClient<'a> {
@@ -57,6 +66,7 @@ impl<'a> DASDClient<'a> {
             manager_proxy,
             object_manager_proxy,
             introspectable_proxy,
+            connection,
         })
     }
 
@@ -64,6 +74,155 @@ impl<'a> DASDClient<'a> {
         let introspect = self.introspectable_proxy.introspect().await?;
         // simply check if introspection contain given interface
         Ok(introspect.contains("org.opensuse.Agama.Storage1.DASD.Manager"))
+    }
+
+    /// Returns DASD configuration that can be used by set_config call
+    pub async fn get_config(&self) -> Result<DASDConfig, ServiceError> {
+        // TODO: implement
+        Ok(DASDConfig::default())
+    }
+
+    /// applies DASD configuration
+    ///
+    /// Note that it do actions immediatelly. So there is no write method there that apply it.
+    pub async fn set_config(&self, config: DASDConfig) -> Result<(), ServiceError> {
+        // at first probe to ensure we work on real system info
+        self.probe().await?;
+        self.config_activate(&config).await?;
+        self.config_format(&config).await?;
+        self.config_set_diag(&config).await?;
+
+        Ok(())
+    }
+
+    /// Apply activation or deactivation from config
+    async fn config_activate(&self, config: &DASDConfig) -> Result<(), ServiceError> {
+        let pairs = self.config_pairs(config).await?;
+        let to_activate: Vec<&str> = pairs
+            .iter()
+            .filter(|(system, _config)| system.enabled == false)
+            .filter(|(_system, config)| config.state.unwrap_or_default() == DASDDeviceState::Active)
+            .map(|(system, _config)| system.id.as_str())
+            .collect();
+        self.enable(&to_activate).await?;
+
+        let to_deactivate: Vec<&str> = pairs
+            .iter()
+            .filter(|(system, _config)| system.enabled == true)
+            .filter(|(_system, config)| config.state == Some(DASDDeviceState::Offline))
+            .map(|(system, _config)| system.id.as_str())
+            .collect();
+        self.disable(&to_deactivate).await?;
+
+        if !to_activate.is_empty() || !to_deactivate.is_empty() {
+            // reprobe after calling enable. TODO: check if it is needed or callbacks take into action and update it automatically
+            self.probe().await?;
+        }
+        Ok(())
+    }
+
+    /// Apply request for device formatting from config
+    async fn config_format(&self, config: &DASDConfig) -> Result<(), ServiceError> {
+        let pairs = self.config_pairs(config).await?;
+        let to_format: Vec<&str> = pairs
+            .iter()
+            .filter(|(system, config)| {
+                if config.format == Some(true) {
+                    true
+                } else if config.format == None {
+                    !system.formatted
+                } else {
+                    false
+                }
+            })
+            .map(|(system, _config)| system.id.as_str())
+            .collect();
+
+        if !to_format.is_empty() {
+            let job_path = self.format(&to_format).await?;
+            self.wait_for_format(job_path).await?;
+            // reprobe after calling format. TODO: check if it is needed or callbacks take into action and update it automatically
+            // also do we need to wait here for finish of format progress?
+            self.probe().await?;
+        }
+        Ok(())
+    }
+
+    /// Wait for format operation to finish
+    async fn wait_for_format(&self, job_path: String) -> Result<(), ServiceError> {
+        let mut finished = false;
+        let jobs_client = JobsClient::new(
+            self.connection.clone(),
+            "org.opensuse.Agama.Storage1",
+            "/org/opensuse/Agama/Storage1",
+        )
+        .await?;
+        while !finished {
+            // active polling with 1 sec sleep for jobs
+            sleep(Duration::from_secs(1)).await;
+            let jobs = jobs_client.jobs().await?;
+            let job_pair = jobs
+                .iter()
+                .find(|(path, _job)| path.to_string() == job_path);
+
+            if let Some((_, job)) = job_pair {
+                finished = !job.running;
+            } else {
+                // job does not exist, so probably finished
+                finished = true;
+            }
+        }
+
+        Ok(())
+    }
+
+    /// Apply diag flag from config
+    async fn config_set_diag(&self, config: &DASDConfig) -> Result<(), ServiceError> {
+        let pairs = self.config_pairs(config).await?;
+        let to_enable: Vec<&str> = pairs
+            .iter()
+            .filter(|(_system, config)| config.diag == Some(true))
+            .map(|(system, _config)| system.id.as_str())
+            .collect();
+        self.set_diag(&to_enable, true).await?;
+
+        let to_disable: Vec<&str> = pairs
+            .iter()
+            .filter(|(_system, config)| config.diag == Some(false))
+            .map(|(system, _config)| system.id.as_str())
+            .collect();
+        self.set_diag(&to_disable, false).await?;
+
+        if !to_enable.is_empty() || !to_disable.is_empty() {
+            // reprobe after calling format. TODO: check if it is needed or callbacks take into action and update it automatically
+            // also do we need to wait here for finish of format progress?
+            self.probe().await?;
+        }
+        Ok(())
+    }
+
+    /// create vector with pairs of devices on system and devices specification in config
+    async fn config_pairs(
+        &self,
+        config: &DASDConfig,
+    ) -> Result<Vec<(DASDDevice, DASDDeviceConfig)>, ServiceError> {
+        let devices = self.devices().await?;
+        let mut devices_map: HashMap<&str, DASDDevice> = devices
+            .iter()
+            .map(|d| (d.1.id.as_str(), d.1.clone()))
+            .collect();
+        config
+            .devices
+            .iter()
+            .map(|c| {
+                Ok((
+                    devices_map
+                        .remove(c.channel.as_str())
+                        .ok_or(ServiceError::DASDChannelNotFound(c.channel.clone()))?,
+                    c.clone(),
+                ))
+            })
+            .collect()
     }
 
     pub async fn probe(&self) -> Result<(), ServiceError> {

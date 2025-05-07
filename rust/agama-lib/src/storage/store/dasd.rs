@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,36 +18,40 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements a client to access Agama's storage service.
-
-pub mod dasd;
-pub mod iscsi;
+//! Implements the store for the storage settings.
 
 use crate::{
-    base_http_client::{BaseHTTPClient, BaseHTTPClientError},
-    storage::StorageSettings,
+    base_http_client::BaseHTTPClient,
+    storage::{
+        http_client::dasd::{DASDHTTPClient, DASDHTTPClientError},
+        settings::dasd::DASDConfig,
+    },
 };
 
 #[derive(Debug, thiserror::Error)]
-pub enum StorageHTTPClientError {
-    #[error(transparent)]
-    Storage(#[from] BaseHTTPClientError),
+#[error("Error processing DASD settings: {0}")]
+pub struct DASDStoreError(#[from] DASDHTTPClientError);
+
+type DASDStoreResult<T> = Result<T, DASDStoreError>;
+
+/// Loads and stores the storage settings from/to the HTTP service.
+pub struct DASDStore {
+    client: DASDHTTPClient,
 }
 
-pub struct StorageHTTPClient {
-    client: BaseHTTPClient,
-}
-
-impl StorageHTTPClient {
+impl DASDStore {
     pub fn new(client: BaseHTTPClient) -> Self {
-        Self { client }
+        Self {
+            client: DASDHTTPClient::new(client),
+        }
     }
 
-    pub async fn get_config(&self) -> Result<Option<StorageSettings>, StorageHTTPClientError> {
-        Ok(self.client.get("/storage/config").await?)
+    pub async fn load(&self) -> DASDStoreResult<Option<DASDConfig>> {
+        Ok(self.client.get_config().await?)
     }
 
-    pub async fn set_config(&self, config: &StorageSettings) -> Result<(), StorageHTTPClientError> {
-        Ok(self.client.put_void("/storage/config", config).await?)
+    pub async fn store(&self, settings: &DASDConfig) -> DASDStoreResult<()> {
+        self.client.set_config(settings).await?;
+        Ok(())
     }
 }

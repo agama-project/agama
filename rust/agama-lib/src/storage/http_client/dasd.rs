@@ -18,12 +18,33 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::model::UserFile;
-use serde::{Deserialize, Serialize};
+//! Implements a client to access Agama's iscsi service.
 
-#[derive(Debug, Default, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct FilesConfig {
-    /// list of target files to deploy
-    pub files: Vec<UserFile>,
+use crate::{
+    base_http_client::{BaseHTTPClient, BaseHTTPClientError},
+    storage::settings::dasd::DASDConfig,
+};
+
+#[derive(Debug, thiserror::Error)]
+pub enum DASDHTTPClientError {
+    #[error(transparent)]
+    DASD(#[from] BaseHTTPClientError),
+}
+
+pub struct DASDHTTPClient {
+    client: BaseHTTPClient,
+}
+
+impl DASDHTTPClient {
+    pub fn new(base: BaseHTTPClient) -> Self {
+        Self { client: base }
+    }
+
+    pub async fn get_config(&self) -> Result<Option<DASDConfig>, DASDHTTPClientError> {
+        Ok(self.client.get("/storage/dasd/config").await?)
+    }
+
+    pub async fn set_config(&self, config: &DASDConfig) -> Result<(), DASDHTTPClientError> {
+        Ok(self.client.put_void("/storage/dasd/config", config).await?)
+    }
 }

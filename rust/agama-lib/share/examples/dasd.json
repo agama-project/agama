@@ -1,0 +1,16 @@
+{
+    "dasd": {
+        "devices": [
+            {
+                "channel": "0.0.0200",
+                "format": true,
+                "diag": true,
+                "state": "active"
+            },
+            {
+                "channel": "0.0.0201",
+                "state": "offline"
+            }
+        ]
+    }
+}

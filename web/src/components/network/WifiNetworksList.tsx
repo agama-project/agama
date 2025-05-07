@@ -113,18 +113,19 @@ const NetworkListItem = ({ network, connection, showIp }: NetworkListItemProps) 
   const ipId = useId();
 
   return (
-    <DataListItem
-      id={network.ssid}
-      aria-labelledby={`${securityId} ${nameId} ${signalId}`}
-      aria-describedby={ipId}
-    >
+    <DataListItem>
       <DataListItemRow>
         <DataListItemCells
           dataListCells={[
             <DataListCell key="ssid-status-and-ip">
               <Flex gap={{ default: "gapXs" }} direction={{ default: "column" }}>
                 <Flex columnGap={{ default: "columnGapXs" }}>
-                  <Content id={nameId} isEditorial>
+                  <Content
+                    id={nameId}
+                    isEditorial
+                    aria-labelledby={`${securityId} ${nameId} ${signalId}`}
+                    aria-describedby={ipId}
+                  >
                     {network.ssid}
                   </Content>
                   {connection?.state === ConnectionState.activated && (

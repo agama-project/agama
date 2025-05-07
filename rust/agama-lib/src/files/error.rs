@@ -21,7 +21,7 @@
 use std::{io, num::ParseIntError};
 use thiserror::Error;
 
-use crate::utils::TransferError;
+use crate::{file_source::FileSourceError, utils::TransferError};
 
 #[derive(Error, Debug)]
 pub enum FileError {
@@ -35,4 +35,6 @@ pub enum FileError {
     OwnerChangeError(String, String),
     #[error("Failed to create directories: command '{0}' stderr '{1}'")]
     MkdirError(String, String),
+    #[error(transparent)]
+    FileSourceError(#[from] FileSourceError),
 }

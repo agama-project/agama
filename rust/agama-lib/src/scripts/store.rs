@@ -20,6 +20,7 @@
 
 use crate::{
     base_http_client::BaseHTTPClient,
+    file_source::FileSourceError,
     software::{model::ResolvableType, SoftwareHTTPClient, SoftwareHTTPClientError},
 };
 
@@ -35,6 +36,8 @@ pub enum ScriptsStoreError {
     Script(#[from] ScriptsClientError),
     #[error("Error selecting software: {0}")]
     Software(#[from] SoftwareHTTPClientError),
+    #[error(transparent)]
+    FileSourceError(#[from] FileSourceError),
 }
 
 type ScriptStoreResult<T> = Result<T, ScriptsStoreError>;
