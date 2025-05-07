@@ -102,7 +102,7 @@ const router = () =>
     {
       path: PATHS.login,
       element: (
-        <PlainLayout mountHeader={false}>
+        <PlainLayout mountHeader={false} mountSkipToContent={false}>
           <LoginPage />
         </PlainLayout>
       ),
