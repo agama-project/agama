@@ -1,20 +1,11 @@
 {
   "ca-ES": "Català",
-  "cs-CZ": "Čeština",
   "de-DE": "Deutsch",
   "en-US": "English",
   "es-ES": "Español",
-  "fr-FR": "Français",
-  "id-ID": "Indonesia",
-  "it-IT": "Italiano",
   "ja-JP": "日本語",
-  "ka-KZ": "ქართული",
-  "nb-NO": "Norsk bokmål",
-  "nl-NL": "Nederlands",
-  "pt-BR": "Português",
   "ru-RU": "Русский",
   "sv-SE": "Svenska",
   "tr-TR": "Türkçe",
-  "uk-UA": "Українська",
-  "zh-CN": "中文"
+  "uk-UA": "Українська"
 }

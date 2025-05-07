@@ -55,7 +55,7 @@ export default {
     "Для нового раздела %2$s будет использоваться минимум %1$s"
   ],
   "A generic size of %s will be used for the new %2$s": [
-    "Для нового раздела %2$s будет использовано %s"
+    "Для нового раздела %2$s будет использовано %s."
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Для нового раздела %3$s будет использовано пространство в диапазоне между %1$s и %2$s"
