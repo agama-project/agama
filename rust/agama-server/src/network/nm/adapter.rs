@@ -27,7 +27,6 @@ use crate::network::{
 use agama_lib::error::ServiceError;
 use async_trait::async_trait;
 use core::time;
-use log;
 use std::thread;
 
 /// An adapter for NetworkManager
@@ -109,7 +108,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
             .await
             .map_err(NetworkAdapterError::Checkpoint)?;
 
-        log::info!("Updating the general state {:?}", &network.general_state);
+        tracing::info!("Updating the general state {:?}", &network.general_state);
 
         let result = self
             .client
@@ -122,7 +121,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
                 .await
                 .map_err(NetworkAdapterError::Checkpoint)?;
 
-            log::error!(
+            tracing::error!(
                 "Could not update the general state {:?}: {}",
                 &network.general_state,
                 &e
@@ -136,7 +135,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
                     continue;
                 }
             } else if conn.is_removed() {
-                log::info!(
+                tracing::info!(
                     "Connection {} ({}) does not need to be removed",
                     conn.id,
                     conn.uuid
@@ -144,7 +143,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
                 continue;
             }
 
-            log::info!("Updating connection {} ({})", conn.id, conn.uuid);
+            tracing::info!("Updating connection {} ({})", conn.id, conn.uuid);
             let result = if conn.is_removed() {
                 self.client.remove_connection(conn.uuid).await
             } else {
@@ -159,7 +158,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
                     .rollback_checkpoint(&checkpoint.as_ref())
                     .await
                     .map_err(NetworkAdapterError::Checkpoint)?;
-                log::error!("Could not process the connection {}: {}", conn.id, &e);
+                tracing::error!("Could not process the connection {}: {}", conn.id, &e);
                 return Err(NetworkAdapterError::Write(e));
             }
         }

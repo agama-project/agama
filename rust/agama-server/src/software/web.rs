@@ -120,7 +120,7 @@ async fn patterns_changed_stream(
                 return match reason_to_selected_by(patterns) {
                     Ok(patterns) => Some(patterns),
                     Err(error) => {
-                        log::warn!("Ignoring the list of changed patterns. Error: {}", error);
+                        tracing::warn!("Ignoring the list of changed patterns. Error: {}", error);
                         None
                     }
                 };

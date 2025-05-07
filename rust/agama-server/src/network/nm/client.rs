@@ -37,7 +37,6 @@ use crate::network::model::{
 use agama_lib::dbus::get_optional_property;
 use agama_lib::error::ServiceError;
 use agama_lib::network::types::{DeviceType, SSID};
-use log;
 use uuid::Uuid;
 use zbus;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
@@ -199,7 +198,7 @@ impl<'a> NetworkManagerClient<'a> {
             let flags = proxy.flags().await?;
             // https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMSettingsConnectionFlags
             if flags & 8 != 0 {
-                log::warn!("Skipped connection because of flags: {}", flags);
+                tracing::warn!("Skipped connection because of flags: {}", flags);
                 continue;
             }
 
@@ -241,7 +240,7 @@ impl<'a> NetworkManagerClient<'a> {
             if let Some(uuid) = uuids_map.get(interface_name) {
                 conn.controller = Some(*uuid);
             } else {
-                log::warn!(
+                tracing::warn!(
                     "Could not found a connection for the interface '{}' (required by connection '{}')",
                     interface_name,
                     conn.id

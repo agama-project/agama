@@ -88,7 +88,7 @@ async fn initiator_stream(
         .filter_map(|change| match handle_initiator_change(change) {
             Ok(event) => event,
             Err(error) => {
-                log::warn!("Could not read the initiator change: {}", error);
+                tracing::warn!("Could not read the initiator change: {}", error);
                 None
             }
         });

@@ -101,7 +101,7 @@ fn get_keymaps() -> anyhow::Result<Vec<Keymap>> {
         if let Some(description) = xkb_descriptions.get(&keymap_id_str) {
             keymaps.push(Keymap::new(keymap_id, description));
         } else {
-            log::debug!("Keyboard '{}' not found in xkb database", keymap_id_str);
+            tracing::debug!("Keyboard '{}' not found in xkb database", keymap_id_str);
         }
     }
 

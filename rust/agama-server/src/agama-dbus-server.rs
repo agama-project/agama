@@ -42,9 +42,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // When adding more services here, the order might be important.
     questions::export_dbus_objects(&connection).await?;
-    log::info!("Started questions interface");
+    tracing::info!("Started questions interface");
     l10n::export_dbus_objects(&connection, &locale).await?;
-    log::info!("Started locale interface");
+    tracing::info!("Started locale interface");
 
     connection
         .request_name(SERVICE_NAME)

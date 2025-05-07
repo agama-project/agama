@@ -229,7 +229,7 @@ impl<'a> DeviceFromProxyBuilder<'a> {
         match MacAddress::from_str(mac) {
             Ok(mac) => mac,
             Err(_) => {
-                log::warn!("Unable to parse mac {}", &mac);
+                tracing::warn!("Unable to parse mac {}", &mac);
                 MacAddress::Unset
             }
         }
