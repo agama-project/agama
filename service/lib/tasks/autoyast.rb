@@ -30,13 +30,30 @@ module Agama
     class AutoYaSTCompatGenerator
       attr_reader :description
 
+      INTRO = <<~INTRO
+        # AutoYaST compatibility reference
+
+        Let's describe which sections and elements from an AutoYaST profile are (or will be) supported in
+        Agama. In some cases, you might find a table with the following columns:
+
+        - AutoYaST: name of the AutoYaST element.
+        - Supported: whether it is (or will be) supported. The meaning of each value is:
+          - Yes: fully supported.
+          - Planned: not supported yet, but there are plans to support it.
+          - Undecided: no decision about whether it should be supported.
+          - No: there are no plans for supporting that element.
+        - Agama: name of the Agama element.
+        - Comment: any comment or reason about the element.
+
+      INTRO
+
       def initialize
         @description = Agama::AutoYaST::ProfileDescription.load
       end
 
       # Generates the document in Markdown format
       def generate
-        lines = ["# AutoYaST compatibility reference"]
+        lines = [INTRO]
 
         top_level = description.elements.select(&:top_level?)
           .sort_by(&:short_key)
@@ -45,8 +62,6 @@ module Agama
         rest.each do |e|
           lines.concat(section(e))
         end
-
-        lines.join("\n")
 
         lines.concat(unsupported_elements(unsupported))
       end
