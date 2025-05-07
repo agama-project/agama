@@ -33,9 +33,11 @@ module Agama
     class ConnectionsReader
       # @param section [Y2Network::AutoinstProfile::Interfaces] AutoYaST interfaces section.
       # @param ipv6 [boolean] Whether IPv6 is wanted or not.
-      def initialize(section, ipv6: false)
+      # @param dns [Hash] Agama DNS settings.
+      def initialize(section, ipv6: false, dns: {})
         @section = section
         @ipv6 = ipv6
+        @dns = dns
       end
 
       # Returns a hash that contains the list of Agama connections
@@ -51,7 +53,7 @@ module Agama
 
     private
 
-      attr_reader :section
+      attr_reader :section, :dns
 
       def ipv6?
         @ipv6
@@ -75,6 +77,7 @@ module Agama
         conn["wireless"] = wireless unless wireless.empty?
         bond = Agama::AutoYaST::BondReader.new(interface).read
         conn["bond"] = bond unless bond.empty?
+        conn.merge!(dns)
 
         conn
       end
