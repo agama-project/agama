@@ -26,7 +26,7 @@ import { Masthead, Page, PageProps } from "@patternfly/react-core";
 import { Questions } from "~/components/questions";
 import Header, { HeaderProps } from "~/components/layout/Header";
 import { Loading, Sidebar } from "~/components/layout";
-import { IssuesDrawer } from "~/components/core";
+import { IssuesDrawer, SkipToContentLink } from "~/components/core";
 import { ROOT } from "~/routes/paths";
 import { agamaWidthBreakpoints, getBreakpoint } from "~/utils";
 
@@ -95,9 +95,13 @@ const Layout = ({
     pageProps.isNotificationDrawerExpanded = issuesDrawerVisible;
   } else {
     // FIXME: render an empty Masthead instead of nothing, in order to have
-    // everything working as designed by PatternfFly (there are some CSS rules
+    // everything working as designed by PatternFly (there are some CSS rules
     // that expect the masthead to be there :shrug:)
-    pageProps.masthead = <Masthead />;
+    pageProps.masthead = (
+      <Masthead>
+        <SkipToContentLink />
+      </Masthead>
+    );
   }
 
   return (

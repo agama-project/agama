@@ -42,13 +42,18 @@ import {
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { useProduct } from "~/queries/software";
-import { _ } from "~/i18n";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerStatus } from "~/queries/status";
 import { Route } from "~/types/routes";
-import { ChangeProductOption, InstallButton, InstallerOptions } from "~/components/core";
+import {
+  ChangeProductOption,
+  InstallButton,
+  InstallerOptions,
+  SkipToContentLink,
+} from "~/components/core";
 import { useLocation, useMatches } from "react-router-dom";
 import { ROOT } from "~/routes/paths";
+import { _ } from "~/i18n";
 
 export type HeaderProps = {
   /** Whether the application sidebar should be mounted or not */
@@ -145,6 +150,7 @@ export default function Header({
   return (
     <Masthead>
       <MastheadMain>
+        <SkipToContentLink />
         {showSidebarToggle && (
           <MastheadToggle>
             <PageToggleButton
