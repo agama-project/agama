@@ -23,11 +23,11 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import SkipToContentLink from "./SkipToContentLink";
+import SkipTo from "./SkipTo";
 
 const scrollIntoViewMock = jest.fn();
 
-describe("SkipToContent", () => {
+describe("SkipTo", () => {
   beforeAll(() => {
     // .scrollIntoView is not yet implemented at jsdom, https://github.com/jsdom/jsdom/issues/1695
     HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
@@ -38,13 +38,13 @@ describe("SkipToContent", () => {
   });
 
   it("renders with default label and contentId", () => {
-    plainRender(<SkipToContentLink />);
+    plainRender(<SkipTo />);
     const link = screen.getByRole("link", { name: "Skip to content" });
     expect(link).toHaveAttribute("href", "#main-content");
   });
 
   it("renders with custom label and contentId", () => {
-    plainRender(<SkipToContentLink contentId="navigation">Skip to navigation</SkipToContentLink>);
+    plainRender(<SkipTo contentId="navigation">Skip to navigation</SkipTo>);
     const skipToNavigationLink = screen.getByRole("link", { name: "Skip to navigation" });
     expect(skipToNavigationLink).toHaveAttribute("href", "#navigation");
   });
@@ -52,7 +52,7 @@ describe("SkipToContent", () => {
   it("focuses and scrolls to target element on [Enter]", async () => {
     const { user } = plainRender(
       <>
-        <SkipToContentLink />
+        <SkipTo />
         <a href="https://agama-project.github.io/docs">Agama documentation</a>
         <a href="#fake-anchor">Link to elsewhere</a>
         <div id="main-content" tabIndex={-1}>
@@ -77,7 +77,7 @@ describe("SkipToContent", () => {
   it("focuses and scrolls to target element on click", async () => {
     const { user } = plainRender(
       <>
-        <SkipToContentLink />
+        <SkipTo />
         <a href="https://agama-project.github.io/docs">Agama documentation</a>
         <a href="#fake-anchor">Link to elsewhere</a>
         <div id="main-content" tabIndex={-1}>

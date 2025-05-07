@@ -24,26 +24,40 @@ import React from "react";
 import { SkipToContent, SkipToContentProps } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 
-type SkipToContentLinkProps = Omit<SkipToContentProps, "href" | "onClick"> & {
+type SkipToProps = Omit<SkipToContentProps, "href" | "onClick"> & {
+  /**
+   * The ID (without the "#" prefix) of the element to jump to when the link is activated.
+   *
+   * The target element must be focusable — either natively (like a <button> or <a>)
+   * or by adding `tabIndex={-1}`. Avoid using `tabIndex={0}` to prevent creating an
+   * unwanted tab stop in the page’s focus order.
+   *
+   * Learn more about `tabIndex`:
+   * - https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
+   * - https://allyant.com/blog/mastering-the-aria-tabindex-attribute-for-enhanced-web-accessibility/
+   */
   contentId?: string;
 };
 
 /**
  * A wrapper around PatternFly's SkipToContent component.
  *
- * Renders a "Skip to content" link to help screen reader and keyboard-only users
- * bypass navigation and other non-essential focusable elements, allowing them to
- * jump directly to the main content of the page.
+ * Provides an accessible link that helps screen reader and keyboard-only users
+ * bypass navigation and other non-essential focusable elements, allowing them
+ * to jump directly to the main content of the page by default.
  *
- * The link becomes visible only when the User Agent applies the :focus-visible
- * pseudo-class, ensuring it appears only during keyboard navigation or when
- * focus visibility is explicitly required.
+ * The target section and link text can be customized to support navigation to
+ * different parts of the page.
+ *
+ * The link is only visible when the user agent applies the `:focus-visible`
+ * pseudo-class, ensuring it appears during keyboard navigation or when
+ * visible focus is explicitly required.
  */
 export default function SkipToContentLink({
   children,
   contentId = "main-content",
   ...props
-}: SkipToContentLinkProps) {
+}: SkipToProps) {
   const onClick = (e) => {
     e.preventDefault();
 

@@ -45,12 +45,7 @@ import { useProduct } from "~/queries/software";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerStatus } from "~/queries/status";
 import { Route } from "~/types/routes";
-import {
-  ChangeProductOption,
-  InstallButton,
-  InstallerOptions,
-  SkipToContentLink,
-} from "~/components/core";
+import { ChangeProductOption, InstallButton, InstallerOptions, SkipTo } from "~/components/core";
 import { useLocation, useMatches } from "react-router-dom";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
@@ -153,7 +148,7 @@ export default function Header({
   return (
     <Masthead>
       <MastheadMain>
-        {showSkipToContent && <SkipToContentLink />}
+        {showSkipToContent && <SkipTo />}
         {showSidebarToggle && (
           <MastheadToggle>
             <PageToggleButton
