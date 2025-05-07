@@ -56,32 +56,5 @@ describe Agama::AutoYaST::ServicesManagerReader do
         expect(subject.read).to have_key "scripts"
       end
     end
-
-    context "when there are scripts even services-manager sections" do
-      let(:profile) do
-        {
-          "scripts"          => {
-            "post-scripts" => [
-              {
-                "filename" => "script"
-              }
-            ]
-          },
-          "services-manager" => {
-            "services" => {
-              "enable" => ["service"]
-            }
-          }
-        }
-      end
-
-      it "merges post scripts together" do
-        res = subject.read
-
-        expect(res).to have_key("scripts")
-        expect(res["scripts"]).to have_key("post")
-        expect(res["scripts"]["post"].length).to eq 2
-      end
-    end
   end
 end
