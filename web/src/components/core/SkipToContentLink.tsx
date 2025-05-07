@@ -21,24 +21,21 @@
  */
 
 import React from "react";
-import {
-  SkipToContent as PFSkipToContent,
-  SkipToContentProps as PFSkipToContentProps,
-} from "@patternfly/react-core";
+import { SkipToContent, SkipToContentProps } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 
-type SkipToContentProps = Omit<PFSkipToContentProps, "href" | "onClick"> & {
+type SkipToContentLinkProps = Omit<SkipToContentProps, "href" | "onClick"> & {
   contentId?: string;
 };
 
 /**
  * Skip to content
  */
-export default function SkipToContent({
+export default function SkipToContentLink({
   children,
   contentId = "main-content",
   ...props
-}: SkipToContentProps) {
+}: SkipToContentLinkProps) {
   const onClick = (e) => {
     e.preventDefault();
 
@@ -49,8 +46,8 @@ export default function SkipToContent({
     }
   };
   return (
-    <PFSkipToContent href={`#${contentId}`} onClick={onClick} {...props}>
+    <SkipToContent href={`#${contentId}`} onClick={onClick} {...props}>
       {children || _("Skip to content")}
-    </PFSkipToContent>
+    </SkipToContent>
   );
 }

@@ -49,4 +49,4 @@ export { default as NestedContent } from "./NestedContent";
 export { default as SubtleContent } from "./SubtleContent";
 export { default as MenuHeader } from "./MenuHeader";
 export { default as SplitButton } from "./SplitButton";
-export { default as SkipToContent } from "./SkipToContent";
+export { default as SkipToContentLink } from "./SkipToContentLink";

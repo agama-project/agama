@@ -23,7 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import SkipToContent from "./SkipToContent";
+import SkipToContentLink from "./SkipToContentLink";
 
 const scrollIntoViewMock = jest.fn();
 
@@ -38,13 +38,13 @@ describe("SkipToContent", () => {
   });
 
   it("renders with default label and contentId", () => {
-    plainRender(<SkipToContent />);
+    plainRender(<SkipToContentLink />);
     const link = screen.getByRole("link", { name: "Skip to content" });
     expect(link).toHaveAttribute("href", "#main-content");
   });
 
   it("renders with custom label and contentId", () => {
-    plainRender(<SkipToContent contentId="navigation">Skip to navigation</SkipToContent>);
+    plainRender(<SkipToContentLink contentId="navigation">Skip to navigation</SkipToContentLink>);
     const skipToNavigationLink = screen.getByRole("link", { name: "Skip to navigation" });
     expect(skipToNavigationLink).toHaveAttribute("href", "#navigation");
   });
@@ -52,7 +52,7 @@ describe("SkipToContent", () => {
   it("focuses and scrolls to target element on [Enter]", async () => {
     const { user } = plainRender(
       <>
-        <SkipToContent />
+        <SkipToContentLink />
         <a href="https://agama-project.github.io/docs">Agama documentation</a>
         <a href="#fake-anchor">Link to elsewhere</a>
         <div id="main-content" tabIndex={-1}>
@@ -77,7 +77,7 @@ describe("SkipToContent", () => {
   it("focuses and scrolls to target element on click", async () => {
     const { user } = plainRender(
       <>
-        <SkipToContent />
+        <SkipToContentLink />
         <a href="https://agama-project.github.io/docs">Agama documentation</a>
         <a href="#fake-anchor">Link to elsewhere</a>
         <div id="main-content" tabIndex={-1}>
