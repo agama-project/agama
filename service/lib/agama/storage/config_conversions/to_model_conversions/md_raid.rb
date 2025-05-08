@@ -20,53 +20,41 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/to_model_conversions/base"
-require "agama/storage/config_conversions/to_model_conversions/logical_volume"
+require "agama/storage/config_conversions/to_model_conversions/with_filesystem"
+require "agama/storage/config_conversions/to_model_conversions/with_partitions"
+require "agama/storage/config_conversions/to_model_conversions/with_space_policy"
 
 module Agama
   module Storage
     module ConfigConversions
       module ToModelConversions
-        # LVM volume group conversion to model according to the JSON schema.
-        class VolumeGroup < Base
+        # MD RAID conversion to model according to the JSON schema.
+        #
+        # So far, only reused RAIDs are supported (ie. those that previously exist in the
+        # system and are succesfully searched at the config).
+        class MdRaid < Base
           include WithFilesystem
+          include WithPartitions
+          include WithSpacePolicy
 
-          # @param config [Configs::VolumeGroup]
-          # @param storage_config [Storage::Config]
-          def initialize(config, storage_config)
+          # @param config [Configs::MdRaid]
+          def initialize(config)
             super()
             @config = config
-            @storage_config = storage_config
           end
 
         private
 
-          # @return [Storage::Config]
-          attr_reader :storage_config
-
           # @see Base#conversions
           def conversions
             {
-              vgName:         config.name,
-              extentSize:     config.extent_size&.to_i,
-              targetDevices:  convert_target_devices,
-              logicalVolumes: convert_logical_volumes
+              name:        config.device_name,
+              mountPath:   config.filesystem&.path,
+              filesystem:  convert_filesystem,
+              spacePolicy: convert_space_policy,
+              ptableType:  config.ptable_type&.to_s,
+              partitions:  convert_partitions
             }
-          end
-
-          # Name of the target devices.
-          #
-          # @return [Array<String>]
-          def convert_target_devices
-            config.physical_volumes_devices
-              .map { |a| storage_config.partitionable(a)&.device_name }
-              .compact
-          end
-
-          # @return [Array<Hash>]
-          def convert_logical_volumes
-            config.logical_volumes.map do |logical_volume|
-              ToModelConversions::LogicalVolume.new(logical_volume).convert
-            end
           end
         end
       end

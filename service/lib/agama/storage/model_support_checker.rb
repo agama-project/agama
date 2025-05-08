@@ -52,8 +52,8 @@ module Agama
       # @return [Boolean]
       def unsupported_config? # rubocop:disable Metrics/CyclomaticComplexity
         any_unsupported_device? ||
-          any_drive_without_name? ||
-          any_drive_with_encryption? ||
+          any_partitionable_without_name? ||
+          any_partitionable_with_encryption? ||
           any_volume_group_without_name? ||
           any_volume_group_with_pvs? ||
           any_partition_without_mount_path? ||
@@ -69,7 +69,6 @@ module Agama
         thin_volumes = config.logical_volumes.select(&:thin_volume?)
 
         [
-          config.md_raids,
           config.btrfs_raids,
           config.nfs_mounts,
           thin_pools,
@@ -77,22 +76,22 @@ module Agama
         ].flatten.any?
       end
 
-      # Whether there is any mandatory drive without a name.
+      # Whether there is any mandatory drive or reused RAID without a name.
       #
       # @return [Boolean]
-      def any_drive_without_name?
-        config.drives.any? do |drive|
-          !drive.found_device &&
-            !drive.search&.skip_device? &&
-            !drive.search&.name
+      def any_partitionable_without_name?
+        config.supporting_partitions.any? do |entry|
+          !entry.found_device &&
+            !entry.search&.skip_device? &&
+            !entry.search&.name
         end
       end
 
       # Whether there is any mandatory drive with encryption.
       #
       # @return [Boolean]
-      def any_drive_with_encryption?
-        config.drives.any? { |d| !d.search&.skip_device? && !d.encryption.nil? }
+      def any_partitionable_with_encryption?
+        config.supporting_partitions.any? { |d| !d.search&.skip_device? && !d.encryption.nil? }
       end
 
       # Whether there is any volume group without a name.
