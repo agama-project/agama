@@ -134,9 +134,13 @@ export default function MenuButton({
     if (!isOpen) setMenuHeights({ ...menuHeights, [rootId]: undefined });
   };
 
+  const onOpenChange = (nextState) => {
+    setIsOpen(nextState);
+  };
+
   const toggle = () => {
-    setIsOpen(!isOpen);
     resetState();
+    setIsOpen(!isOpen);
   };
 
   const drillIn = (
@@ -176,7 +180,7 @@ export default function MenuButton({
   return (
     <MenuContainer
       isOpen={isOpen}
-      onOpenChange={toggle}
+      onOpenChange={onOpenChange}
       toggleRef={toggleRef}
       popperProps={{ direction: "down", enableFlip: false, ...menuProps.popperProps }}
       toggle={
