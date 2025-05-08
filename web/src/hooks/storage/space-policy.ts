@@ -20,34 +20,19 @@
  * find current contact information at www.suse.com.
  */
 
-/**
- * Data types.
- *
- * Types that represent the data used for managing (add, edit) config devices. These types are
- * typically used by forms and mutation hooks.
- */
+import { useApiModel, useUpdateApiModel } from "~/hooks/storage/api-model";
+import { QueryHookOptions } from "~/types/queries";
+import { data } from "~/types/storage";
+import { setSpacePolicy } from "~/helpers/storage/space-policy";
 
-import { apiModel } from "~/api/storage/types";
+type setSpacePolicyFn = (deviceName: string, data: data.SpacePolicy) => void;
 
-type VolumeGroup = Partial<Omit<apiModel.VolumeGroup, "logicalVolumes">>;
-
-interface LogicalVolume extends Partial<Omit<apiModel.LogicalVolume, "filesystem" | "size">> {
-  filesystem?: Filesystem;
-  size?: Size;
+function useSetSpacePolicy(options?: QueryHookOptions): setSpacePolicyFn {
+  const apiModel = useApiModel(options);
+  const updateApiModel = useUpdateApiModel();
+  return (deviceName: string, data: data.SpacePolicy) => {
+    updateApiModel(setSpacePolicy(apiModel, deviceName, data));
+  };
 }
 
-type Filesystem = Partial<Omit<apiModel.Filesystem, "default">>;
-
-type Size = Partial<Omit<apiModel.Size, "default">>;
-
-type SpacePolicyAction = {
-  deviceName: string;
-  value: "delete" | "resizeIfNeeded";
-};
-
-type SpacePolicy = {
-  type: apiModel.SpacePolicy,
-  actions?: SpacePolicyAction[],
-};
-
-export type { VolumeGroup, LogicalVolume, Filesystem, Size, SpacePolicy, SpacePolicyAction };
+export { useSetSpacePolicy };
