@@ -39,7 +39,10 @@ interface Drive extends apiModel.Drive {
   isAddingPartitions: boolean;
   getMountPaths: () => string[];
   getVolumeGroups: () => VolumeGroup[];
+  getPartition: (path: string) => Partition | undefined;
 }
+
+type Partition = apiModel.Partition;
 
 interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logicalVolumes"> {
   logicalVolumes: LogicalVolume[];
@@ -49,4 +52,4 @@ interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logi
 
 type LogicalVolume = apiModel.LogicalVolume;
 
-export type { Model, Drive, VolumeGroup, LogicalVolume };
+export type { Model, Drive, Partition, VolumeGroup, LogicalVolume };

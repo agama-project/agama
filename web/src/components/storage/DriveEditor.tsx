@@ -21,30 +21,17 @@
  */
 
 import React from "react";
-import { useNavigate, generatePath } from "react-router-dom";
 import { _ } from "~/i18n";
-import { baseName } from "~/components/storage/utils";
 import { apiModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
-import { STORAGE as PATHS } from "~/routes/paths";
 import { useDrive as legacyUseDrive } from "~/queries/storage/config-model";
 import { useDrive } from "~/hooks/storage/drive";
 import * as driveUtils from "~/components/storage/utils/drive";
 import DriveDeviceMenu from "~/components/storage/DriveDeviceMenu";
-import DeviceMenu from "~/components/storage/DeviceMenu";
 import DeviceHeader from "~/components/storage/DeviceHeader";
-import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
+import PartitionsMenu from "~/components/storage/PartitionsMenu";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
-  Divider,
-  Flex,
-  MenuItem,
-  MenuList,
-} from "@patternfly/react-core";
+import { Card, CardBody, CardHeader, CardTitle, Flex } from "@patternfly/react-core";
 
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
@@ -114,91 +101,6 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
   );
 };
 
-const PartitionsNoContentSelector = ({ drive, toggleAriaLabel }) => {
-  const navigate = useNavigate();
-
-  return (
-    <DeviceMenu
-      title={<span aria-hidden>{_("No additional partitions will be created")}</span>}
-      ariaLabel={toggleAriaLabel}
-    >
-      <MenuList>
-        <MenuItem
-          key="add-partition"
-          itemId="add-partition"
-          description={_("Add another partition or mount an existing one")}
-          role="menuitem"
-          onClick={() =>
-            navigate(generatePath(PATHS.drive.partition.add, { id: baseName(drive.name) }))
-          }
-        >
-          <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
-            <span>{_("Add or use partition")}</span>
-          </Flex>
-        </MenuItem>
-      </MenuList>
-    </DeviceMenu>
-  );
-};
-
-const PartitionMenuItem = ({ driveName, mountPath }) => {
-  const drive = legacyUseDrive(driveName);
-  const partition = drive.getPartition(mountPath);
-  const editPath = generatePath(PATHS.drive.partition.edit, {
-    id: baseName(driveName),
-    partitionId: encodeURIComponent(mountPath),
-  });
-  const deletePartition = () => drive.deletePartition(mountPath);
-
-  return <MountPathMenuItem device={partition} editPath={editPath} deleteFn={deletePartition} />;
-};
-
-const PartitionsWithContentSelector = ({ drive, toggleAriaLabel }) => {
-  const navigate = useNavigate();
-
-  return (
-    <DeviceMenu
-      title={<span aria-hidden>{driveUtils.contentDescription(drive)}</span>}
-      ariaLabel={toggleAriaLabel}
-    >
-      <MenuList>
-        {drive.partitions
-          .filter((p) => p.mountPath)
-          .map((partition) => {
-            return (
-              <PartitionMenuItem
-                key={partition.mountPath}
-                driveName={drive.name}
-                mountPath={partition.mountPath}
-              />
-            );
-          })}
-        <Divider component="li" />
-        <MenuItem
-          key="add-partition"
-          itemId="add-partition"
-          description={_("Add another partition or mount an existing one")}
-          onClick={() =>
-            navigate(generatePath(PATHS.drive.partition.add, { id: baseName(drive.name) }))
-          }
-        >
-          <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
-            <span>{_("Add or use partition")}</span>
-          </Flex>
-        </MenuItem>
-      </MenuList>
-    </DeviceMenu>
-  );
-};
-
-const PartitionsSelector = ({ drive }) => {
-  if (drive.partitions.some((p) => p.mountPath)) {
-    return <PartitionsWithContentSelector drive={drive} toggleAriaLabel={_("Partitions")} />;
-  }
-
-  return <PartitionsNoContentSelector drive={drive} toggleAriaLabel={_("Partitions")} />;
-};
-
 export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
   const driveModel = useDrive(drive.name);
 
@@ -212,7 +114,7 @@ export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
       <CardBody className={spacingStyles.plLg}>
         <Flex direction={{ default: "column" }}>
           <SpacePolicyMenu modelDevice={driveModel} device={driveDevice} />
-          <PartitionsSelector drive={drive} />
+          <PartitionsMenu device={driveModel} />
         </Flex>
       </CardBody>
     </Card>

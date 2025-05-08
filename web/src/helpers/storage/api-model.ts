@@ -59,6 +59,14 @@ function buildLogicalVolume(data: data.LogicalVolume): apiModel.LogicalVolume {
   };
 }
 
+function buildPartition(data: data.Partition): apiModel.Partition {
+  return {
+    ...data,
+    filesystem: buildFilesystem(data.filesystem),
+    size: buildSize(data.size),
+  };
+}
+
 function buildLogicalVolumeName(mountPath?: string): string | undefined {
   if (!mountPath) return;
 
@@ -82,6 +90,7 @@ function buildPartitionFromLogicalVolume(lv: apiModel.LogicalVolume): apiModel.P
 
 export {
   copyApiModel,
+  buildPartition,
   buildVolumeGroup,
   buildLogicalVolume,
   buildLogicalVolumeName,
