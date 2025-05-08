@@ -25,22 +25,66 @@ import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 
-it("renders a button", () => {
-  plainRender(<MenuButton>{"test"}</MenuButton>);
-  const button = screen.getByRole("button", { name: "test" });
-  expect(button).toBeInTheDocument();
-});
-
-it("opens a menu on click", async () => {
+it("toggles the menu state on click", async () => {
   const { user } = plainRender(
     <MenuButton menuProps={{ "aria-label": "test menu" }}>{"test"}</MenuButton>,
   );
 
   const button = screen.getByRole("button", { name: "test" });
+  expect(button).toHaveAttribute("aria-expanded", "false");
+  await user.click(button);
+  expect(button).toHaveAttribute("aria-expanded", "true");
+  await user.click(button);
+  expect(button).toHaveAttribute("aria-expanded", "false");
+});
+
+it("toggles the menu state on [Enter]", async () => {
+  const { user } = plainRender(
+    <MenuButton menuProps={{ "aria-label": "test menu" }}>{"test"}</MenuButton>,
+  );
+
+  const button = screen.getByRole("button", { name: "test" });
+  expect(button).toHaveAttribute("aria-expanded", "false");
+  await user.tab();
+  expect(button).toHaveFocus();
+  await user.keyboard("[Enter]");
+  expect(button).toHaveAttribute("aria-expanded", "true");
+  await user.keyboard("[Enter]");
+  expect(button).toHaveAttribute("aria-expanded", "false");
+});
+
+it("closes menu on [Escape]", async () => {
+  const { user } = plainRender(
+    <MenuButton menuProps={{ "aria-label": "test menu" }}>{"test"}</MenuButton>,
+  );
+
+  const button = screen.getByRole("button", { name: "test" });
+  expect(button).toHaveAttribute("aria-expanded", "false");
+  await user.click(button);
+  expect(button).toHaveAttribute("aria-expanded", "true");
+  await user.keyboard("[Escape]");
+  expect(button).toHaveAttribute("aria-expanded", "false");
+});
+
+// Regression test to ensure MenuButton does not open due to unintended keyboard events.
+// This issue was caused by reusing the `toggle` callback for the `onOpenChange` prop.
+// The `toggle` function is meant for handling onClick events on the menu button,
+// while `onOpenChange` is intended for automatically managing the open state.
+// Additionally, the two functions receive different argument types:
+// `toggle` receives a SyntheticEvent, whereas `onOpenChange` expects a boolean
+// representing the next `isOpen` state.
+it("does not open the menu on [Tab] when focused", async () => {
+  const { user } = plainRender(
+    <MenuButton menuProps={{ "aria-label": "test menu" }}>{"test"}</MenuButton>,
+  );
+
+  const button = screen.getByRole("button", { name: "test" });
+  await user.tab();
+  expect(button).toHaveFocus();
+  await user.tab();
+  expect(button).not.toHaveFocus();
   const menu = screen.queryByRole("menu", { name: "test menu" });
   expect(menu).not.toBeInTheDocument();
-  await user.click(button);
-  screen.getByRole("menu", { name: "test menu" });
 });
 
 it("renders all the given menu items", async () => {

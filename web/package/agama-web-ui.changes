@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May  8 13:43:53 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- MenuButton no longer opens unexpectedly when navigating
+  with the keyboard (gh#agama-project/agama#2345).
+
+-------------------------------------------------------------------
 Wed May  7 13:46:05 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Add "Skip to content" link for easing navigation for keyboard-only
