@@ -47,14 +47,17 @@ import { NestedContent, Page, SelectWrapper as Select, SubtleContent } from "~/c
 import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import AutoSizeText from "~/components/storage/AutoSizeText";
+import { useAddPartition, useEditPartition } from "~/hooks/storage/partition";
+import {
+  addPartition as addPartitionHelper,
+  editPartition as editPartitionHelper,
+} from "~/helpers/storage/partition";
 import { useDevices, useVolume } from "~/queries/storage";
 import {
   useModel,
   useDrive,
   useConfigModel,
   useSolvedConfigModel,
-  addPartition,
-  editPartition,
 } from "~/queries/storage/config-model";
 import { StorageDevice } from "~/types/storage";
 import {
@@ -403,14 +406,14 @@ function useSolvedModel(value: FormValue): apiModel.Config | null {
      * const { model, addPartition } = useEditableModel();
      */
     if (initialPartitionConfig) {
-      sparseModel = editPartition(
+      sparseModel = editPartitionHelper(
         model,
         device.name,
         initialPartitionConfig.mountPath,
         partitionConfig,
       );
     } else {
-      sparseModel = addPartition(model, device.name, partitionConfig);
+      sparseModel = addPartitionHelper(model, device.name, partitionConfig);
     }
   }
 
@@ -902,8 +905,10 @@ export default function PartitionPage() {
   const { errors, getVisibleError } = useErrors(value);
 
   const device = useDevice();
-  const drive = useDrive(device?.name);
   const unusedMountPoints = useUnusedMountPoints();
+
+  const addPartition = useAddPartition();
+  const editPartition = useEditPartition();
 
   // Initializes the form values if there is an initial value (i.e., when editing a partition).
   React.useEffect(() => {
@@ -975,8 +980,8 @@ export default function PartitionPage() {
   const onSubmit = () => {
     const partitionConfig = toPartitionConfig(value);
 
-    if (initialValue) drive.editPartition(initialValue.mountPoint, partitionConfig);
-    else drive.addPartition(partitionConfig);
+    if (initialValue) editPartition(device.name, initialValue.mountPoint, partitionConfig);
+    else addPartition(device.name, partitionConfig);
 
     navigate(PATHS.root);
   };

@@ -162,61 +162,6 @@ function disableEncryption(originalModel: apiModel.Config): apiModel.Config {
   return model;
 }
 
-function deletePartition(
-  originalModel: apiModel.Config,
-  driveName: string,
-  mountPath: string,
-): apiModel.Config {
-  const model = copyModel(originalModel);
-  const drive = findDrive(model, driveName);
-  if (drive === undefined) return;
-
-  const partitions = (drive.partitions || []).filter((p) => p.mountPath !== mountPath);
-  drive.partitions = partitions;
-  return model;
-}
-
-/**
- * Adds a new partition.
- *
- * If a partition already exists in the model (e.g., as effect of using the custom policy), then
- * the partition is replaced.
- * */
-export function addPartition(
-  originalModel: apiModel.Config,
-  driveName: string,
-  partition: apiModel.Partition,
-): apiModel.Config {
-  const model = copyModel(originalModel);
-  const drive = findDrive(model, driveName);
-  if (drive === undefined) return;
-
-  drive.partitions ||= [];
-  const index = drive.partitions.findIndex((p) => p.name && p.name === partition.name);
-
-  if (index === -1) drive.partitions.push(partition);
-  else drive.partitions[index] = partition;
-
-  return model;
-}
-
-export function editPartition(
-  originalModel: apiModel.Config,
-  driveName: string,
-  mountPath: string,
-  partition: apiModel.Partition,
-): apiModel.Config {
-  const model = copyModel(originalModel);
-  const drive = findDrive(model, driveName);
-  const partitions = drive?.partitions || [];
-  const index = partitions.findIndex((p) => p.mountPath === mountPath);
-
-  if (index === -1) return;
-  else drive.partitions[index] = partition;
-
-  return model;
-}
-
 function switchDrive(
   originalModel: apiModel.Config,
   driveName: string,
@@ -380,9 +325,6 @@ export type DriveHook = {
   configuredExistingPartitions: apiModel.Partition[];
   switch: (newName: string) => void;
   getPartition: (mountPath: string) => apiModel.Partition | undefined;
-  addPartition: (partition: apiModel.Partition) => void;
-  editPartition: (mountPath: string, partition: apiModel.Partition) => void;
-  deletePartition: (mountPath: string) => void;
   delete: () => void;
 };
 
@@ -402,10 +344,6 @@ export function useDrive(name: string): DriveHook | null {
     switch: (newName) => mutate(switchDrive(model, name, newName)),
     delete: () => mutate(removeDrive(model, name)),
     getPartition: (mountPath: string) => findPartition(model, name, mountPath),
-    addPartition: (partition: apiModel.Partition) => mutate(addPartition(model, name, partition)),
-    editPartition: (mountPath: string, partition: apiModel.Partition) =>
-      mutate(editPartition(model, name, mountPath, partition)),
-    deletePartition: (mountPath: string) => mutate(deletePartition(model, name, mountPath)),
   };
 }
 
