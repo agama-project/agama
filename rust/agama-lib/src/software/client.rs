@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use super::{
-    model::{Repository, ResolvableType},
+    model::{Conflict, ConflictSolve, Repository, ResolvableType},
     proxies::{ProposalProxy, Software1Proxy},
 };
 use crate::error::ServiceError;
@@ -167,6 +167,21 @@ impl<'a> SoftwareClient<'a> {
             })
             .collect();
         Ok(patterns)
+    }
+
+    /// returns current list of conflicts
+    pub async fn get_conflicts(&self) -> Result<Vec<Conflict>, ServiceError> {
+        let conflicts = self.software_proxy.conflicts().await?;
+        let conflicts = conflicts.into_iter().map( |c| Conflict::from_dbus(c)).collect();
+
+        Ok(conflicts)
+    }
+
+    /// returns current list of conflicts
+    pub async fn solve_conflicts(&self, solutions: Vec<ConflictSolve>) -> Result<(), ServiceError> {
+        let solutions: Vec<(u32, u32)> = solutions.into_iter().map(|s| s.into()).collect();
+
+        self.software_proxy.solve_conflicts(&solutions).await.map_err(|e| e.into())
     }
 
     /// Selects patterns by user
