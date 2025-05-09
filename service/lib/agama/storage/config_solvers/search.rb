@@ -43,7 +43,7 @@ module Agama
         # @param config [Agama::Storage::Config]
         def solve(config)
           @sids = []
-          config.drives = config.drives.flat_map { |d| solve_drive(d) }
+          # config.drives = config.drives.flat_map { |d| solve_drive(d) }
           config.md_raids = config.md_raids.flat_map do |raid|
             raid.search ? solve_raid(raid) : raid
           end

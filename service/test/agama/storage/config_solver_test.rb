@@ -520,7 +520,7 @@ describe Agama::Storage::ConfigSolver do
         context "and any of the devices are excluded from the list of candidate devices" do
           let(:disk_analyzer) { instance_double(Y2Storage::DiskAnalyzer) }
           before do
-            allow(disk_analyzer).to receive(:candidate_disks).and_return [
+            allow_any_instance_of(Y2Storage::DiskAnalyzer).to receive(:candidate_disks).and_return [
               devicegraph.find_by_name("/dev/vdb"), devicegraph.find_by_name("/dev/vdc")
             ]
           end
