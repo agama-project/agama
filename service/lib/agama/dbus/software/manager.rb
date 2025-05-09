@@ -210,7 +210,7 @@ module Agama
             self.selected_patterns = compute_patterns
           end
 
-          backend.on_conflicts_change do |conflicts|
+          backend.proposal.on_conflicts_change do |conflicts|
             self.conflicts = conflicts
           end
 
