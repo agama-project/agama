@@ -65,7 +65,7 @@ module Agama
       # @return [Hash]
       def read_connection(interface)
         conn = {}
-        conn["interface"] = interface.device if interface.device
+        conn["interface"] = interface.device unless interface.device.to_s.empty?
         conn["id"] = interface.name if interface.name
 
         addresses = read_addresses(interface)
