@@ -38,7 +38,9 @@ use agama_lib::{
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
         model::{
-            AddonParams, AddonProperties, Conflict, ConflictSolve, License, LicenseContent, LicensesRepo, RegistrationError, RegistrationInfo, RegistrationParams, Repository, ResolvableParams, SoftwareConfig
+            AddonParams, AddonProperties, Conflict, ConflictSolve, License, LicenseContent,
+            LicensesRepo, RegistrationError, RegistrationInfo, RegistrationParams, Repository,
+            ResolvableParams, SoftwareConfig,
         },
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
@@ -143,11 +145,12 @@ async fn conflicts_changed_stream(
         .await
         .then(|change| async move {
             if let Ok(conflicts) = change.get().await {
-                return Some(conflicts
-                    .into_iter()
-                    .map(|c| Conflict::from_dbus(c))
-                    .collect()
-                )
+                return Some(
+                    conflicts
+                        .into_iter()
+                        .map(|c| Conflict::from_dbus(c))
+                        .collect(),
+                );
             }
             None
         })
@@ -329,7 +332,11 @@ async fn solve_conflicts(
     State(state): State<SoftwareState<'_>>,
     Json(solutions): Json<Vec<ConflictSolve>>,
 ) -> Result<(), Error> {
-    state.software.solve_conflicts(solutions).await.map_err(|e| e.into())
+    state
+        .software
+        .solve_conflicts(solutions)
+        .await
+        .map_err(|e| e.into())
 }
 
 /// returns registration info

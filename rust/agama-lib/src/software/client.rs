@@ -172,7 +172,10 @@ impl<'a> SoftwareClient<'a> {
     /// returns current list of conflicts
     pub async fn get_conflicts(&self) -> Result<Vec<Conflict>, ServiceError> {
         let conflicts = self.software_proxy.conflicts().await?;
-        let conflicts = conflicts.into_iter().map( |c| Conflict::from_dbus(c)).collect();
+        let conflicts = conflicts
+            .into_iter()
+            .map(|c| Conflict::from_dbus(c))
+            .collect();
 
         Ok(conflicts)
     }
@@ -181,7 +184,10 @@ impl<'a> SoftwareClient<'a> {
     pub async fn solve_conflicts(&self, solutions: Vec<ConflictSolve>) -> Result<(), ServiceError> {
         let solutions: Vec<(u32, u32)> = solutions.into_iter().map(|s| s.into()).collect();
 
-        self.software_proxy.solve_conflicts(&solutions).await.map_err(|e| e.into())
+        self.software_proxy
+            .solve_conflicts(&solutions)
+            .await
+            .map_err(|e| e.into())
     }
 
     /// Selects patterns by user

@@ -220,7 +220,7 @@ module Agama
           Issue.new(msg,
             source:   Issue::Source::CONFIG,
             severity: Issue::Severity::ERROR,
-            kind: :solver)
+            kind:     :solver)
         end
 
         self.issues = issues + solver_issues
@@ -276,10 +276,10 @@ module Agama
           conflict = @conflicts[con_id] or raise "Unknown conflict id #{con_id.inspect}"
           solution = conflict["solutions"][sol_id] or raise "unknown solution id #{sol_id.inspect}"
           {
-            "description" => conflict["description"],
-            "details" => conflict["details"],
+            "description"          => conflict["description"],
+            "details"              => conflict["details"],
             "solution_description" => conflict["description"],
-            "solution_details" => conflict["details"]
+            "solution_details"     => conflict["details"]
           }
         end
 
