@@ -56,7 +56,7 @@ describe Agama::AutoYaST::ServicesManagerReader do
         result = subject.read
 
         expect(result).not_to be_empty
-        expect(result.first["body"]).to match(/service/)
+        expect(result.first["content"]).to match(/service/)
       end
     end
   end

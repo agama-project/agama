@@ -89,10 +89,9 @@ module Agama
         @index += 1
 
         {
-          "name"   => "agama-services-manager-#{@index}",
-          "chroot" => true,
-          "body"   => "#!/bin/bash
-            #{body}"
+          "name"    => "agama-services-manager-#{@index}",
+          "chroot"  => true,
+          "content" => "#!/bin/bash\n#{body}"
         }
       end
 
