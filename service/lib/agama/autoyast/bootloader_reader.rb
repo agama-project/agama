@@ -26,16 +26,16 @@ require "y2users/autoinst/reader"
 # :nodoc:
 module Agama
   module AutoYaST
-    # Builds the Agama "root" section from an AutoYaST profile.
+    # Builds the Agama "bootloader" section from an AutoYaST profile.
     class BootloaderReader
       # @param profile [ProfileHash] AutoYaST profile
       def initialize(profile)
         @profile = profile
       end
 
-      # Returns a hash that corresponds to Agama "root" section.
+      # Returns a hash that corresponds to Agama "bootloader" section.
       #
-      # @return [Hash] Agama "root" section
+      # @return [Hash] Agama "bootloader" section
       def read
         global = profile.fetch_as_hash("bootloader")
           .fetch_as_hash("global")
