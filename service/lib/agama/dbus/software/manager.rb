@@ -56,6 +56,7 @@ module Agama
           register_progress_callbacks
           register_service_status_callbacks
           @selected_patterns = {}
+          @conflicts = []
         end
 
         # List of software related issues, see {DBus::Interfaces::Issues}
@@ -113,6 +114,12 @@ module Agama
           dbus_method(:RemovePattern, "in id:s, out result:b") { |p| backend.remove_pattern(p) }
           dbus_method(:SetUserPatterns, "in add:as, in remove:as, out wrong:as") do |add, remove|
             [backend.assign_patterns(add, remove)]
+          end
+
+          dbus_reader_attr_accessor :conflicts, "a(ussa(uss))"
+
+          dbus_method :SolveConflicts, "in solutions:a(uu)" do |solutions|
+            backend.proposal.solve_conflicts(solutions)
           end
 
           dbus_method :ProvisionsSelected, "in Provisions:as, out Result:ab" do |provisions|
@@ -201,6 +208,10 @@ module Agama
 
           backend.on_selected_patterns_change do
             self.selected_patterns = compute_patterns
+          end
+
+          backend.on_conflicts_change do |conflicts|
+            self.conflicts = conflicts
           end
 
           backend.on_issues_change { issues_properties_changed }
