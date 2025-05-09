@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -34,12 +34,9 @@ module Agama
     class ConfigSolver
       # @param product_config [Agama::Config] configuration of the product to install
       # @param devicegraph [Y2Storage::Devicegraph] initial layout of the system
-      # @param disk_analyzer [Y2Storage::DiskAnalyzer, nil] optional extra information about the
-      #   initial layout of the system
-      def initialize(product_config, devicegraph, disk_analyzer: nil)
+      def initialize(product_config, devicegraph)
         @product_config = product_config
         @devicegraph = devicegraph
-        @disk_analyzer = disk_analyzer
       end
 
       # Solves the config according to the product and the system.
@@ -51,7 +48,8 @@ module Agama
         ConfigSolvers::Boot.new(product_config).solve(config)
         ConfigSolvers::Encryption.new(product_config).solve(config)
         ConfigSolvers::Filesystem.new(product_config).solve(config)
-        ConfigSolvers::Search.new(product_config, devicegraph, disk_analyzer).solve(config)
+        ConfigSolvers::DrivesSearch.new(devicegraph).solve(config)
+        ConfigSolvers::MdRaidsSearch.new(devicegraph).solve(config)
         # Sizes must be solved once the searches are solved.
         ConfigSolvers::Size.new(product_config, devicegraph).solve(config)
       end
@@ -63,9 +61,6 @@ module Agama
 
       # @return [Y2Storage::Devicegraph]
       attr_reader :devicegraph
-
-      # @return [Y2Storage::DiskAnalyzer, nil]
-      attr_reader :disk_analyzer
     end
   end
 end
