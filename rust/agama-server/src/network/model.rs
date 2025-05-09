@@ -222,28 +222,29 @@ impl NetworkState {
         controller: &Connection,
         ports: Vec<String>,
     ) -> Result<(), NetworkStateError> {
-        if let ConnectionConfig::Bond(_) = &controller.config {
-            let mut controlled = vec![];
-            for port in ports {
-                let connection = self
-                    .get_connection_by_interface(&port)
-                    .or_else(|| self.get_connection(&port))
-                    .ok_or(NetworkStateError::UnknownConnection(port))?;
-                controlled.push(connection.uuid);
-            }
-
-            for conn in self.connections.iter_mut() {
-                if controlled.contains(&conn.uuid) {
-                    conn.controller = Some(controller.uuid);
-                } else if conn.controller == Some(controller.uuid) {
-                    conn.controller = None;
+        match &controller.config {
+            ConnectionConfig::Bond(_) | ConnectionConfig::Bridge(_) => {
+                let mut controlled = vec![];
+                for port in ports {
+                    let connection = self
+                        .get_connection_by_interface(&port)
+                        .or_else(|| self.get_connection(&port))
+                        .ok_or(NetworkStateError::UnknownConnection(port))?;
+                    controlled.push(connection.uuid);
                 }
+
+                for conn in self.connections.iter_mut() {
+                    if controlled.contains(&conn.uuid) {
+                        conn.controller = Some(controller.uuid);
+                    } else if conn.controller == Some(controller.uuid) {
+                        conn.controller = None;
+                    }
+                }
+                Ok(())
             }
-            Ok(())
-        } else {
-            Err(NetworkStateError::NotControllerConnection(
+            _ => Err(NetworkStateError::NotControllerConnection(
                 controller.id.to_owned(),
-            ))
+            )),
         }
     }
 }
