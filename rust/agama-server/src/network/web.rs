@@ -32,6 +32,7 @@ use axum::{
     routing::{delete, get, patch, post},
     Json, Router,
 };
+use uuid::Uuid;
 
 use super::{
     error::NetworkStateError,
@@ -214,19 +215,37 @@ async fn connections(
     State(state): State<NetworkServiceState>,
 ) -> Result<Json<Vec<NetworkConnectionWithState>>, NetworkError> {
     let connections = state.network.get_connections().await?;
-    let mut result = vec![];
 
-    for conn in connections {
-        let state = conn.state.clone();
-        let network_connection = NetworkConnection::try_from(conn)?;
-        let connection_with_state = NetworkConnectionWithState {
-            connection: network_connection,
-            state,
-        };
-        result.push(connection_with_state);
-    }
+    let network_connections = connections
+        .iter()
+        .filter(|c| c.controller.is_none())
+        .map(|c| {
+            let state = c.state.clone();
+            let mut conn = NetworkConnection::try_from(c.clone()).unwrap();
+            if let Some(ref mut bond) = conn.bond {
+                bond.ports = ports_for(connections.to_owned(), c.uuid);
+            }
+            if let Some(ref mut bridge) = conn.bridge {
+                bridge.ports = ports_for(connections.to_owned(), c.uuid);
+            };
+            let connection_with_state = NetworkConnectionWithState {
+                connection: conn,
+                state,
+            };
 
-    Ok(Json(result))
+            return connection_with_state;
+        })
+        .collect();
+
+    Ok(Json(network_connections))
+}
+
+fn ports_for(connections: Vec<Connection>, uuid: Uuid) -> Vec<String> {
+    return connections
+        .iter()
+        .filter(|c| c.controller == Some(uuid) && c.interface.is_some())
+        .map(|c| c.interface.to_owned().unwrap_or_default())
+        .collect();
 }
 
 #[utoipa::path(
@@ -239,15 +258,26 @@ async fn connections(
 )]
 async fn add_connection(
     State(state): State<NetworkServiceState>,
-    Json(conn): Json<NetworkConnection>,
+    Json(net_conn): Json<NetworkConnection>,
 ) -> Result<Json<Connection>, NetworkError> {
-    let conn = Connection::try_from(conn)?;
+    let bond = net_conn.clone().bond;
+    let bridge = net_conn.clone().bridge;
+    let conn = Connection::try_from(net_conn)?;
     let id = conn.id.clone();
 
     state.network.add_connection(conn).await?;
+
     match state.network.get_connection(&id).await? {
         None => Err(NetworkError::CannotAddConnection(id.clone())),
-        Some(conn) => Ok(Json(conn)),
+        Some(conn) => {
+            if let Some(bond) = bond {
+                state.network.set_ports(conn.clone(), bond.ports).await?;
+            }
+            if let Some(bridge) = bridge {
+                state.network.set_ports(conn.clone(), bridge.ports).await?;
+            }
+            Ok(Json(conn))
+        }
     }
 }
 

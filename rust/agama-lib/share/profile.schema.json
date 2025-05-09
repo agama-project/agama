@@ -434,6 +434,45 @@
                   }
                 }
               },
+              "bridge": {
+                "type": "object",
+                "title": "Bridge configuration",
+                "additionalProperties": false,
+                "properties": {
+                  "stp": {
+                    "title": "whether the Spanning Tree Protocol is enabled or not",
+                    "type": "boolean"
+                  },
+                  "forwardDelay": {
+                    "title": "Spanning Tree Protocol forward delay, in seconds",
+                    "type": "integer",
+                    "minimum": "0"
+                  },
+                  "priority": {
+                    "title": "Spanning Tree Protocol priority. Lower values are 'better'",
+                    "type": "integer",
+                    "minimum": "0"
+                  },
+                  "maxAge": {
+                    "title": "Spanning Tree Protocol maximum message age, in seconds",
+                    "type": "integer",
+                    "minimum": "0"
+                  },
+                  "helloTime": {
+                    "title": "Spanning Tree Protocol hello time, in seconds",
+                    "type": "integer",
+                    "minimum": "0"
+                  },
+                  "ports": {
+                    "type": "array",
+                    "items": {
+                      "title": "A list of the interfaces or connections to be part of the bridge",
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+
               "match": {
                 "type": "object",
                 "title": "Match settings",
@@ -669,7 +708,11 @@
         }
       },
       "required": ["name"],
-      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }, { "required": ["content"]}]
+      "oneOf": [
+        { "required": ["body"] },
+        { "required": ["url"] },
+        { "required": ["content"] }
+      ]
     },
     "postPartitioning": {
       "title": "User-defined installation script that runs after the partitioning finishes",
@@ -697,7 +740,11 @@
         }
       },
       "required": ["name"],
-      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }, { "required": ["content"]}]
+      "oneOf": [
+        { "required": ["body"] },
+        { "required": ["url"] },
+        { "required": ["content"] }
+      ]
     },
     "postScript": {
       "title": "User-defined installation script that runs after the installation finishes",
@@ -730,7 +777,11 @@
         }
       },
       "required": ["name"],
-      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }, { "required": ["content"]}]
+      "oneOf": [
+        { "required": ["body"] },
+        { "required": ["url"] },
+        { "required": ["content"] }
+      ]
     },
     "initScript": {
       "title": "User-defined installation script that runs during the first boot of the target system, once the installation is finished",
@@ -758,7 +809,11 @@
         }
       },
       "required": ["name"],
-      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }, { "required": ["content"]}]
+      "oneOf": [
+        { "required": ["body"] },
+        { "required": ["url"] },
+        { "required": ["content"] }
+      ]
     },
     "file": {
       "title": "User-defined file to deploy",
@@ -795,7 +850,7 @@
         }
       },
       "required": ["destination"],
-      "oneOf": [{ "required": ["url"] }, { "required": ["content"]}]
+      "oneOf": [{ "required": ["url"] }, { "required": ["content"] }]
     }
   }
 }
