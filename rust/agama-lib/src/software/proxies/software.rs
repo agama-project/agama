@@ -97,12 +97,20 @@ pub trait Software1 {
     /// SetUserPatterns method
     fn set_user_patterns(&self, add: &[&str], remove: &[&str]) -> zbus::Result<Vec<String>>;
 
+    /// SolveConflicts method
+    fn solve_conflicts(&self, solutions: &[(u32, u32)]) -> zbus::Result<()>;
+
     /// UsedDiskSpace method
     fn used_disk_space(&self) -> zbus::Result<String>;
 
     /// ProbeFinished signal
     #[zbus(signal)]
     fn probe_finished(&self) -> zbus::Result<()>;
+
+    /// Conflicts property
+    #[zbus(property)]
+    #[allow(clippy::type_complexity)]
+    fn conflicts(&self) -> zbus::Result<Vec<(u32, String, String, Vec<(u32, String, String)>)>>;
 
     /// SelectedPatterns property
     #[zbus(property)]
