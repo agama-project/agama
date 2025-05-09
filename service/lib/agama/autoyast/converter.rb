@@ -55,7 +55,9 @@ module Agama
       SECTIONS = [
         "bootloader",
         "files",
+        "hostname",
         "localization",
+        "network",
         "product",
         "root",
         "scripts",
