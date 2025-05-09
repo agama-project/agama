@@ -53,6 +53,7 @@ module Agama
       # Sections which have a corresponding reader. The reader is expected to be
       # named in Pascal case and adding "Reader" as suffix (e.g., "L10nReader").
       SECTIONS = [
+        "bootloader",
         "files",
         "localization",
         "product",
