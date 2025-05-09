@@ -23,6 +23,10 @@
 import { apiModel } from "~/api/storage/types";
 import { model } from "~/types/storage";
 
+function buildPartition(partitionData: apiModel.Partition): model.Partition {
+  return { ...partitionData };
+}
+
 const findDrive = (model: model.Model, name: string): model.Drive | undefined => {
   return model.drives.find((d) => d.name === name);
 };
@@ -32,6 +36,12 @@ function buildDrive(
   apiModel: apiModel.Config,
   model: model.Model,
 ): model.Drive {
+  const buildPartitions = (): model.Partition[] => {
+    return (apiDrive.partitions || []).map(buildPartition);
+  };
+
+  const partitions = buildPartitions();
+
   const getMountPaths = (): string[] => {
     const mountPaths = (apiDrive.partitions || []).map((p) => p.mountPath);
     return [apiDrive.mountPath, ...mountPaths].filter((p) => p);
@@ -41,6 +51,10 @@ function buildDrive(
     return model.volumeGroups.filter((v) =>
       v.getTargetDevices().some((d) => d.name === apiDrive.name),
     );
+  };
+
+  const getPartition = (path: string): model.Partition | undefined => {
+    return partitions.find((p) => p.mountPath === path);
   };
 
   const isExplicitBoot = (): boolean => {
@@ -73,8 +87,10 @@ function buildDrive(
     ...apiDrive,
     isUsed: isUsed(),
     isAddingPartitions: isAddingPartitions(),
+    partitions,
     getMountPaths,
     getVolumeGroups,
+    getPartition,
   };
 }
 

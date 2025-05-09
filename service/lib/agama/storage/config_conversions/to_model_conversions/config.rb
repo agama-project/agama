@@ -23,6 +23,7 @@ require "agama/storage/config_conversions/to_model_conversions/base"
 require "agama/storage/config_conversions/to_model_conversions/boot"
 require "agama/storage/config_conversions/to_model_conversions/encryption"
 require "agama/storage/config_conversions/to_model_conversions/drive"
+require "agama/storage/config_conversions/to_model_conversions/md_raid"
 require "agama/storage/config_conversions/to_model_conversions/volume_group"
 
 module Agama
@@ -45,6 +46,7 @@ module Agama
               boot:         convert_boot,
               encryption:   convert_encryption,
               drives:       convert_drives,
+              mdRaids:      convert_md_raids,
               volumeGroups: convert_volume_groups
             }
           end
@@ -68,6 +70,11 @@ module Agama
           end
 
           # @return [Array<Hash>]
+          def convert_md_raids
+            valid_md_raids.map { |r| ToModelConversions::MdRaid.new(r).convert }
+          end
+
+          # @return [Array<Hash>]
           def convert_volume_groups
             config.volume_groups.map { |v| ToModelConversions::VolumeGroup.new(v, config).convert }
           end
@@ -75,6 +82,11 @@ module Agama
           # @return [Array<Configs::Drive>]
           def valid_drives
             config.drives.reject { |d| d.search&.skip_device? }
+          end
+
+          # @return [Array<Configs::MdRaid>]
+          def valid_md_raids
+            config.md_raids.reject { |r| r.search&.skip_device? }
           end
 
           # TODO: proper support for a base encryption.
