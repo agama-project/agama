@@ -58,7 +58,7 @@ module Agama
               elements_from(e, "#{parent}#{ProfileDescription::SEPARATOR}#{k}[#{i}]")
             end
           else
-            elements_from(v, k)
+            elements_from(v, current)
           end
 
           [current, *children]
