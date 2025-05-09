@@ -2,6 +2,44 @@
   { "key": "add-on", "support": "planned" },
   { "key": "audit-laf", "support": "no" },
   { "key": "auth-client", "support": "no" },
+  {
+    "key": "bootloader",
+    "children": [
+      { "key": "device_map", "support": "no" },
+      {
+        "key": "global",
+        "children": [
+          { "key": "activate", "support": "no" },
+          {
+            "key": "append",
+            "support": "yes",
+            "agama": "bootloader.extraKernelParams"
+          },
+          { "key": "boot_boot", "support": "no" },
+          { "key": "boot_custom", "support": "no" },
+          { "key": "boot_extended", "support": "no" },
+          { "key": "boot_mbr", "support": "no" },
+          { "key": "boot_root", "support": "no" },
+          { "key": "cpu_mitigations", "support": "no" },
+          { "key": "generic_mbr", "support": "no" },
+          { "key": "gfxmode", "support": "no" },
+          { "key": "os_prober", "support": "no" },
+          { "key": "password", "support": "no" },
+          { "key": "suse_btrfs", "support": "no" },
+          { "key": "serial", "support": "no" },
+          { "key": "secure_boot", "support": "no" },
+          { "key": "terminal", "support": "no" },
+          { "key": "timeout", "support": "yes", "agama": "bootloader.timeout" },
+          { "key": "trusted_boot", "support": "no" },
+          { "key": "update_nvram", "support": "no" },
+          { "key": "vgamode", "support": "no" },
+          { "key": "xen_append", "support": "no" },
+          { "key": "xen_kernel_append", "support": "no" }
+        ]
+      },
+      { "key": "loader_type", "support": "no" }
+    ]
+  },
   { "key": "configuration_management", "support": "no" },
   { "key": "deploy_image", "support": "no" },
   { "key": "dhcp-server", "support": "no" },
