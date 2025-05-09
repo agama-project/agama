@@ -53,7 +53,10 @@ describe Agama::AutoYaST::ServicesManagerReader do
       end
 
       it "defines appropriate post script" do
-        expect(subject.read).not_to be_empty
+        result = subject.read
+
+        expect(result).not_to be_empty
+        expect(result.first["body"]).to match(/service/)
       end
     end
   end
