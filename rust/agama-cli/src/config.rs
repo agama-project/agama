@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use std::{
-    io::{self, Read},
+    io::{self, Read, Write},
     path::PathBuf,
     process::Command,
 };
@@ -29,12 +29,50 @@ use agama_lib::{
     base_http_client::BaseHTTPClient, context::InstallationContext,
     install_settings::InstallSettings, Store as SettingsStore,
 };
-use anyhow::anyhow;
+use anyhow::{anyhow, Context};
 use clap::Subcommand;
-use std::io::Write;
 use tempfile::Builder;
 
 const DEFAULT_EDITOR: &str = "/usr/bin/vi";
+
+/// Represents the ways user can specify the output for the command line.
+#[derive(Clone, Debug)]
+pub enum CliOutput {
+    Path(PathBuf),
+    /// Specified as `-` by the user
+    Stdout,
+}
+
+impl From<String> for CliOutput {
+    fn from(path: String) -> Self {
+        if path == "-" {
+            Self::Stdout
+        } else {
+            Self::Path(path.into())
+        }
+    }
+}
+
+impl CliOutput {
+    pub fn write(&self, contents: &str) -> anyhow::Result<()> {
+        match self {
+            Self::Stdout => {
+                let mut stdout = io::stdout().lock();
+                stdout.write_all(contents.as_bytes())?
+            }
+            Self::Path(path) => {
+                let mut file = std::fs::OpenOptions::new()
+                    .create(true)
+                    .truncate(true)
+                    .write(true)
+                    .open(path)
+                    .context(format!("Writing to {:?}", path))?;
+                file.write_all(contents.as_bytes())?
+            }
+        }
+        Ok(())
+    }
+}
 
 #[derive(Subcommand, Debug)]
 pub enum ConfigCommands {
@@ -44,7 +82,11 @@ pub enum ConfigCommands {
     /// are not included in the output.
     ///
     /// The output of command can be used as input for the "agama config load".
-    Show,
+    Show {
+        /// Save the output here (goes to stdout if not given)
+        #[arg(short, long)]
+        output: Option<CliOutput>,
+    },
 
     /// Read and load a profile from the standard input.
     Load,
@@ -66,10 +108,12 @@ pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> any
     let store = SettingsStore::new(http_client).await?;
 
     match subcommand {
-        ConfigCommands::Show => {
+        ConfigCommands::Show { output } => {
             let model = store.load().await?;
             let json = serde_json::to_string_pretty(&model)?;
-            println!("{}", json);
+
+            let destination = output.unwrap_or(CliOutput::Stdout);
+            destination.write(&json)?;
             Ok(())
         }
         ConfigCommands::Load => {

@@ -77,8 +77,8 @@ pub enum ProfileCommands {
     },
 }
 
-// Represents the ways user can specify the input on the command line
-// and passes appropriate representations to the web API
+/// Represents the ways user can specify the input on the command line
+/// and passes appropriate representations to the web API
 #[derive(Clone, Debug)]
 pub enum CliInput {
     // TODO: Url(Url) would be nice here
