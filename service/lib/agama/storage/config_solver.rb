@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -51,6 +51,7 @@ module Agama
         ConfigSolvers::Boot.new(product_config).solve(config)
         ConfigSolvers::Encryption.new(product_config).solve(config)
         ConfigSolvers::Filesystem.new(product_config).solve(config)
+        ConfigSolvers::DrivesSearch.new(devicegraph).solve(config)
         ConfigSolvers::Search.new(product_config, devicegraph, disk_analyzer).solve(config)
         # Sizes must be solved once the searches are solved.
         ConfigSolvers::Size.new(product_config, devicegraph).solve(config)

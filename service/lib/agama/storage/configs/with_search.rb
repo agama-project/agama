@@ -35,7 +35,7 @@ module Agama
 
         # Assigned device according to the search.
         #
-        # @see Y2Storage::Proposal::AgamaSearcher
+        # @see ConfigSolvers::Search
         #
         # @return [Y2Storage::Device, nil]
         def found_device

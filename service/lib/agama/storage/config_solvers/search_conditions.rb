@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,18 +19,31 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_solvers/boot"
-require "agama/storage/config_solvers/drives_search"
-require "agama/storage/config_solvers/encryption"
-require "agama/storage/config_solvers/filesystem"
-require "agama/storage/config_solvers/partitions_search"
-require "agama/storage/config_solvers/search"
-require "agama/storage/config_solvers/size"
-
 module Agama
   module Storage
-    # Name space for config solvers.
     module ConfigSolvers
+      # Conditions for searching devices.
+      module SearchConditions
+        # Search by name condition.
+        #
+        # @param search [Configs::Search]
+        # @return [Proc] Accepts a device and returns whether the device matches.
+        def name_condition(search)
+          return proc { true } unless search.name
+
+          device = devicegraph.find_by_any_name(search.name)
+          proc { |d| d.sid == device&.sid }
+        end
+
+        # Search by size condition.
+        #
+        # @param _search [Configs::Search]
+        # @return [Proc] Accepts a device and returns whether the device matches.
+        def size_condition(_search)
+          # TODO
+          proc { true }
+        end
+      end
     end
   end
 end

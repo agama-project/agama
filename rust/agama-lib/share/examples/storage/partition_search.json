@@ -1,0 +1,120 @@
+{
+  "storage": {
+    "drives": [
+      {
+        "search": "/dev/vda",
+        "partitions": [
+          { "search": "*" },
+          { "search": "/dev/vda1" },
+          {
+            "search": {
+              "condition": { "name": "/dev/vda2" },
+              "ifNotFound": "skip"
+            }
+          },
+          {
+            "search": {
+              "condition": { "size": "10 GiB" },
+              "ifNotFound": "error",
+              "max": 2
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "size": { "equal": "10 GiB" }
+              },
+              "ifNotFound": "create"
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "size": { "greater": "10 GiB" }
+              }
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "size": { "less": "10 GiB" }
+              }
+            }
+          },
+          {
+            "search": {
+              "max": 1,
+              "ifNotFound": "error"
+            },
+            "delete": true
+          },
+          {
+            "search": {
+              "max": 1,
+              "ifNotFound": "skip"
+            },
+            "deleteIfNeeded": true
+          }
+        ]
+      }
+    ],
+    "mdRaids": [
+      {
+        "search": "/dev/md1",
+        "partitions": [
+          { "search": "*" },
+          { "search": "/dev/md1-p1" },
+          {
+            "search": {
+              "condition": { "name": "/dev/md1-p2" },
+              "ifNotFound": "skip"
+            }
+          },
+          {
+            "search": {
+              "condition": { "size": "10 GiB" },
+              "ifNotFound": "error",
+              "max": 2
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "size": { "equal": "10 GiB" }
+              },
+              "ifNotFound": "create"
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "size": { "greater": "10 GiB" }
+              }
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "size": { "less": "10 GiB" }
+              }
+            }
+          },
+          {
+            "search": {
+              "max": 1,
+              "ifNotFound": "error"
+            },
+            "delete": true
+          },
+          {
+            "search": {
+              "max": 1,
+              "ifNotFound": "skip"
+            },
+            "deleteIfNeeded": true
+          }
+        ]
+      }
+    ]
+  }
+}
