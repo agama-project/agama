@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "agama/autoyast/services_manager_reader"
 Yast.import "URL"
 
 # :nodoc:
@@ -85,6 +86,8 @@ module Agama
         scripts = scripts_section.fetch("chroot-scripts", []).map do |script|
           read_post_script(script)
         end
+        scripts += ServicesManagerReader.new(profile).read
+
         return {} if scripts.empty?
 
         { "post" => scripts }
