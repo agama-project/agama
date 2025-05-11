@@ -66,7 +66,7 @@ pub fn connection_to_dbus<'a>(
     }
 
     if let Some(controller) = controller {
-        let slave_type = match controller.config {
+        let port_type = match controller.config {
             ConnectionConfig::Bond(_) => BOND_KEY,
             ConnectionConfig::Bridge(_) => BRIDGE_KEY,
             _ => {
@@ -74,14 +74,14 @@ pub fn connection_to_dbus<'a>(
                 ""
             }
         };
-        connection_dbus.insert("slave-type", slave_type.into());
+        connection_dbus.insert("port-type", port_type.into());
         let master = controller
             .interface
             .as_deref()
             .unwrap_or(controller.id.as_str());
         connection_dbus.insert("master", master.into());
     } else {
-        connection_dbus.insert("slave-type", "".into());
+        connection_dbus.insert("port-type", "".into());
         connection_dbus.insert("master", "".into());
     }
 
@@ -256,6 +256,18 @@ pub fn merge_dbus_connections<'a>(
     Ok(merged)
 }
 
+fn is_bridge(conn: NestedHash) -> bool {
+    if let Some(connection) = conn.get("connection") {
+        if let Some(port_type) = connection.get("port-type") {
+            if port_type.to_string().as_str() == "bridge" {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 /// Cleans up the NestedHash that represents a connection.
 ///
 /// By now it just removes the "addresses" key from the "ipv4" and "ipv6" objects, which is
@@ -263,6 +275,10 @@ pub fn merge_dbus_connections<'a>(
 ///
 /// * `conn`: connection represented as a NestedHash.
 pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
+    if !is_bridge(conn.to_owned()) {
+        conn.remove("bridge-port");
+    }
+
     if let Some(connection) = conn.get_mut("connection") {
         if connection.get("interface-name").is_some_and(is_empty_value) {
             connection.remove("interface-name");
@@ -272,8 +288,12 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
             connection.remove("master");
         }
 
-        if connection.get("slave-type").is_some_and(is_empty_value) {
+        if connection.get("slave-type").is_some() {
             connection.remove("slave-type");
+        }
+
+        if connection.get("port-type").is_some_and(is_empty_value) {
+            connection.remove("port-type");
         }
     }
 
