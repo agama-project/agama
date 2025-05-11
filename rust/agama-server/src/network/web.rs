@@ -261,7 +261,7 @@ async fn add_connection(
     let conn = Connection::try_from(net_conn)?;
     let id = conn.id.clone();
 
-    state.network.add_connection(conn).await?;
+    state.network.add_connection(conn.clone()).await?;
 
     match state.network.get_connection(&id).await? {
         None => Err(NetworkError::CannotAddConnection(id.clone())),
@@ -337,6 +337,9 @@ async fn update_connection(
         .get_connection(&id)
         .await?
         .ok_or_else(|| NetworkError::UnknownConnection(id.clone()))?;
+    let bond = conn.clone().bond;
+    let bridge = conn.clone().bridge;
+
     let mut conn = Connection::try_from(conn)?;
     if orig_conn.id != id {
         // FIXME: why?
@@ -345,7 +348,15 @@ async fn update_connection(
         conn.uuid = orig_conn.uuid;
     }
 
-    state.network.update_connection(conn).await?;
+    state.network.update_connection(conn.clone()).await?;
+
+    if let Some(bond) = bond {
+        state.network.set_ports(conn.clone(), bond.ports).await?;
+    }
+    if let Some(bridge) = bridge {
+        state.network.set_ports(conn.clone(), bridge.ports).await?;
+    }
+
     Ok(StatusCode::NO_CONTENT)
 }
 

@@ -231,16 +231,16 @@ impl<'a> NetworkManagerClient<'a> {
         }
 
         for conn in connections.iter_mut() {
-            let Some(conn_uuid) = controlled_by.get(&conn.uuid) else {
+            let Some(id) = controlled_by.get(&conn.uuid) else {
                 continue;
             };
 
-            if let Ok(controller) = Uuid::parse_str(&conn_uuid) {
+            if let controller = conn.uuid {
                 conn.controller = Some(controller);
             } else {
                 tracing::warn!(
                     "Could not found a connection for the interface '{}' (required by connection '{}')",
-                    conn_uuid,
+                    conn.uuid,
                     conn.id
                 );
             }
