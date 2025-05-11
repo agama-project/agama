@@ -78,9 +78,6 @@ export default {
   "Actions": [
     "Åtgärder"
   ],
-  "Actions for connection %s": [
-    "Åtgärder för anslutning %s"
-  ],
   "Activate": [
     "Aktivera"
   ],
@@ -350,9 +347,6 @@ export default {
   ],
   "Connecting to %s": [
     "Ansluter till %s"
-  ],
-  "Connection actions": [
-    "Anslutningsåtgärder"
   ],
   "Connection details": [
     "Anslutningsdetaljer"
@@ -636,12 +630,6 @@ export default {
   "First user": [
     "Första användare"
   ],
-  "Forget": [
-    "Glöm"
-  ],
-  "Forget connection %s": [
-    "Glöm anslutning %s"
-  ],
   "Format": [
     "Formatera"
   ],
@@ -825,6 +813,12 @@ export default {
   ],
   "Issuer": [
     "Utfärdare"
+  ],
+  "It is not possible to allocate space for %s.": [
+    "Det går inte att allokera utrymme för %s."
+  ],
+  "It is not possible to allocate space for the boot partition and for %s.": [
+    "Det går inte att allokera utrymme för uppstartspartitionen och för %s."
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Det är inte möjligt att installera systemet med den aktuella konfigurationen. Justera inställningarna nedan."
@@ -1405,6 +1399,9 @@ export default {
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     "Storlekar måste anges som siffror, eventuellt följt av en enhet."
+  ],
+  "Skip to content": [
+    "Hoppa till innehåll"
   ],
   "Software": [
     "Programvara"

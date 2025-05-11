@@ -78,9 +78,6 @@ export default {
   "Actions": [
     "Eylemler"
   ],
-  "Actions for connection %s": [
-    "%s bağlantısı için eylemler"
-  ],
   "Activate": [
     "Etkinleştir"
   ],
@@ -350,9 +347,6 @@ export default {
   ],
   "Connecting to %s": [
     "%s'ye bağlanılıyor"
-  ],
-  "Connection actions": [
-    "Bağlantı eylemleri"
   ],
   "Connection details": [
     "Bağlantı detayları"
@@ -636,12 +630,6 @@ export default {
   "First user": [
     "İlk kullanıcı"
   ],
-  "Forget": [
-    "Unut"
-  ],
-  "Forget connection %s": [
-    "Bağlantıyı unut %s"
-  ],
   "Format": [
     "Biçim"
   ],
@@ -825,6 +813,12 @@ export default {
   ],
   "Issuer": [
     "Yayıncı"
+  ],
+  "It is not possible to allocate space for %s.": [
+    ""
+  ],
+  "It is not possible to allocate space for the boot partition and for %s.": [
+    ""
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Mevcut yapılandırma ile sistemi kurmak mümkün değildir. Aşağıdaki ayarları düzenleyin."
@@ -1405,6 +1399,9 @@ export default {
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     "Boyutlar sayı olarak girilmeli, isteğe bağlı olarak birim eklenmelidir."
+  ],
+  "Skip to content": [
+    ""
   ],
   "Software": [
     "Yazılım"
