@@ -78,9 +78,6 @@ export default {
   "Actions": [
     "Accions"
   ],
-  "Actions for connection %s": [
-    "Accions per a la connexió %s"
-  ],
   "Activate": [
     "Activa"
   ],
@@ -350,9 +347,6 @@ export default {
   ],
   "Connecting to %s": [
     "Es connecta amb %s"
-  ],
-  "Connection actions": [
-    "Accions de connexió"
   ],
   "Connection details": [
     "Detalls de la connexió"
@@ -636,12 +630,6 @@ export default {
   "First user": [
     "Usuari primer"
   ],
-  "Forget": [
-    "Oblida-la"
-  ],
-  "Forget connection %s": [
-    "Oblida la connexió %s"
-  ],
   "Format": [
     "Formata"
   ],
@@ -825,6 +813,12 @@ export default {
   ],
   "Issuer": [
     "Emissor"
+  ],
+  "It is not possible to allocate space for %s.": [
+    "No és possible assignar espai per a %s."
+  ],
+  "It is not possible to allocate space for the boot partition and for %s.": [
+    "No és possible assignar espai per a la partició d'arrencada i per a %s."
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "No és possible instal·lar el sistema amb la configuració actual. Ajusteu els paràmetres que hi ha a continuació."
@@ -1405,6 +1399,9 @@ export default {
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     "Les mides s'han d'introduir com a números opcionalment seguits d'una unitat."
+  ],
+  "Skip to content": [
+    "Omet i ves al contingut"
   ],
   "Software": [
     "Programari"
