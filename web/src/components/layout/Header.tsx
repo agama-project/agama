@@ -104,7 +104,7 @@ const OptionsDropdown = () => {
 
 const Language = ({ value }) => (
   <>
-    <Icon name="language" /> {value}
+    <Icon name="translate" /> {value}
   </>
 );
 
