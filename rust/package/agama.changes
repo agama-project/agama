@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May 12 12:55:40 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Remove the delay between selecting the product and registering it,
+  the problem has been fixed in the web UI
+  (removed workaround for gh#agama-project/agama#2274)
+
+-------------------------------------------------------------------
 Wed May  7 21:04:24 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix automatic answer of questions with password (gh#agama-project/agama#2332).
