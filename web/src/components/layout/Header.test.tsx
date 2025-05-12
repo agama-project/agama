@@ -91,12 +91,12 @@ describe("Header", () => {
   });
 
   it("renders skip to content link", async () => {
-    installerRender(<Header />);
+    installerRender(<Header />, { withL10n: true });
     screen.getByRole("link", { name: "Skip to content" });
   });
 
   it("does not render skip to content link when showSkipToContent is false", async () => {
-    installerRender(<Header showSkipToContent={false} />);
+    installerRender(<Header showSkipToContent={false} />, { withL10n: true });
     expect(screen.queryByRole("link", { name: "Skip to content" })).toBeNull();
   });
 

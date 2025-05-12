@@ -22,12 +22,10 @@
 
 import React, { useState } from "react";
 import {
-  Button,
   Content,
   Dropdown,
   DropdownItem,
   DropdownList,
-  Flex,
   Masthead,
   MastheadContent,
   MastheadLogo,
@@ -41,17 +39,13 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { useLocation, useMatches } from "react-router-dom";
+import { useMatches } from "react-router-dom";
 import { Icon } from "~/components/layout";
 import { useProduct } from "~/queries/software";
-import { useInstallerL10n } from "~/context/installerL10n";
 import { Route } from "~/types/routes";
-import { ChangeProductOption, InstallButton, InstallerOptions, SkipTo } from "~/components/core";
+import { ChangeProductOption, InstallButton, LanguageAndKeyboard, SkipTo } from "~/components/core";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
-import { useInstallerStatus } from "~/queries/status";
-import { InstallationPhase } from "~/types/status";
-import supportedLanguages from "~/languages.json";
 
 export type HeaderProps = {
   /** Whether the application sidebar should be mounted or not */
@@ -99,53 +93,6 @@ const OptionsDropdown = () => {
         </DropdownItem>
       </DropdownList>
     </Dropdown>
-  );
-};
-
-const Language = ({ value }) => (
-  <>
-    <Icon name="translate" /> {value}
-  </>
-);
-
-const Keyboard = ({ value }) => (
-  <>
-    <Icon name="keyboard" /> {value}
-  </>
-);
-
-const LanguageAndKeyboardButton = () => {
-  const location = useLocation();
-  const { phase } = useInstallerStatus({ suspense: true });
-  const { language, keymap } = useInstallerL10n();
-  const [isOpen, setIsOpen] = useState(false);
-
-  const skip =
-    phase === InstallationPhase.Install ||
-    ["/login", "/products/progress"].includes(location.pathname);
-
-  if (skip) return;
-
-  return (
-    <>
-      <Button
-        id="language-and-keyboard"
-        onClick={() => setIsOpen(true)}
-        aria-label={_("Change display language and keyboard layout")}
-        variant="plain"
-        icon={
-          <Flex
-            gap={{ default: "gapXs" }}
-            alignContent={{ default: "alignContentCenter" }}
-            alignItems={{ default: "alignItemsCenter" }}
-          >
-            <Language value={supportedLanguages[language]} />
-            <Keyboard value={keymap} />
-          </Flex>
-        }
-      />
-      <InstallerOptions isOpen={isOpen} onClose={() => setIsOpen(false)} />
-    </>
   );
 };
 
@@ -197,7 +144,7 @@ export default function Header({
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
               <ToolbarItem>
-                <LanguageAndKeyboardButton />
+                <LanguageAndKeyboard />
               </ToolbarItem>
               <ToolbarItem>
                 <InstallButton onClickWithIssues={toggleIssuesDrawer} />
