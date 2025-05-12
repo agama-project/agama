@@ -211,7 +211,14 @@ module Agama
           end
 
           backend.proposal.on_conflicts_change do |conflicts|
-            self.conflicts = conflicts
+            self.conflicts = conflicts.map do |conflict|
+              [
+                conflict["id"], conflict["description"], conflict["details"] || "",
+                conflict["solutions"].map do |solution|
+                  [solution["id"], solution["description"], solution["details"] || ""]
+                end
+              ]
+            end
           end
 
           backend.on_issues_change { issues_properties_changed }
