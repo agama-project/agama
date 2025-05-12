@@ -21,7 +21,7 @@
 //! Implements the store for the security settings.
 
 use super::{settings::SecuritySettings, SecurityHTTPClient, SecurityHTTPClientError};
-use crate::base_http_client::BaseHTTPClient;
+use crate::http::BaseHTTPClient;
 
 #[derive(Debug, thiserror::Error)]
 #[error("Error processing security settings: {0}")]

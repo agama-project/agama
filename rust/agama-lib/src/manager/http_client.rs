@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    base_http_client::{BaseHTTPClient, BaseHTTPClientError},
+    http::{BaseHTTPClient, BaseHTTPClientError},
     logs::LogsLists,
     manager::InstallerStatus,
 };

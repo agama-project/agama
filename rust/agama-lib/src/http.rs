@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,32 +18,5 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::model::LocaleConfig;
-use crate::http::{BaseHTTPClient, BaseHTTPClientError};
-
-#[derive(Debug, thiserror::Error)]
-pub enum LocalizationHTTPClientError {
-    #[error(transparent)]
-    HTTP(#[from] BaseHTTPClientError),
-}
-
-pub struct LocalizationHTTPClient {
-    client: BaseHTTPClient,
-}
-
-impl LocalizationHTTPClient {
-    pub fn new(base: BaseHTTPClient) -> Self {
-        Self { client: base }
-    }
-
-    pub async fn get_config(&self) -> Result<LocaleConfig, LocalizationHTTPClientError> {
-        Ok(self.client.get("/l10n/config").await?)
-    }
-
-    pub async fn set_config(
-        &self,
-        config: &LocaleConfig,
-    ) -> Result<(), LocalizationHTTPClientError> {
-        Ok(self.client.patch_void("/l10n/config", config).await?)
-    }
-}
+mod base_http_client;
+pub use base_http_client::{BaseHTTPClient, BaseHTTPClientError};

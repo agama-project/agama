@@ -37,7 +37,7 @@ mod progress;
 mod questions;
 
 use crate::error::CliError;
-use agama_lib::base_http_client::BaseHTTPClient;
+use agama_lib::http::BaseHTTPClient;
 use agama_lib::{
     error::ServiceError, manager::ManagerClient, progress::ProgressMonitor, utils::Transfer,
 };

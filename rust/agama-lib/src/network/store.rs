@@ -20,7 +20,7 @@
 
 use super::{settings::NetworkConnection, NetworkClientError};
 use crate::{
-    base_http_client::BaseHTTPClient,
+    http::BaseHTTPClient,
     network::{NetworkClient, NetworkSettings},
 };
 

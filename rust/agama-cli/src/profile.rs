@@ -20,8 +20,8 @@
 
 use crate::show_progress;
 use agama_lib::{
-    base_http_client::BaseHTTPClient,
     context::InstallationContext,
+    http::BaseHTTPClient,
     install_settings::InstallSettings,
     profile::ValidationOutcome,
     utils::{FileFormat, Transfer},
