@@ -149,17 +149,44 @@ impl CliInput {
     /// if self is `Stdin`
     fn body_for_web(self) -> std::io::Result<String> {
         match self {
-            Self::Stdin => {
-                let mut slurp = String::new();
-                let stdin = std::io::stdin();
-                {
-                    let mut handle = stdin.lock();
-                    handle.read_to_string(&mut slurp)?;
-                }
-                Ok(slurp)
-            }
+            Self::Stdin => Self::stdin_to_string(),
             Self::Full(s) => Ok(s),
             _ => Ok("".to_owned()),
+        }
+    }
+
+    /// Consume standard input and return it as String.
+    fn stdin_to_string() -> std::io::Result<String> {
+        let mut slurp = String::new();
+        let stdin = std::io::stdin();
+        {
+            let mut handle = stdin.lock();
+            handle.read_to_string(&mut slurp)?;
+        }
+        Ok(slurp)
+    }
+
+    /// Read the specified input (stdin, path, or URL) and return a String
+    // Does it belong here?
+    // vs the downloading code in web ProfileQuery::retrieve_profile
+    // put it in agama-lib?
+    pub fn read_to_string(self) -> anyhow::Result<String> {
+        match self {
+            Self::Full(s) => Ok(s),
+            Self::Stdin => Self::stdin_to_string().map_err(|e| e.into()),
+            Self::Path(pathbuf) => {
+                let s = std::fs::read_to_string(&pathbuf)
+                    .context(format!("Reading from file {:?}", pathbuf))?;
+                Ok(s)
+            }
+            Self::Url(url_string) => {
+                let mut bytebuf = Vec::new();
+                Transfer::get(&url_string, &mut bytebuf)
+                    .context(format!("Retrieving data from URL {}", url_string))?;
+                let s = String::from_utf8(bytebuf)
+                    .context(format!("Invalid UTF-8 data at URL {}", url_string))?;
+                Ok(s)
+            }
         }
     }
 }

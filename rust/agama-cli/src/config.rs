@@ -19,12 +19,12 @@
 // find current contact information at www.suse.com.
 
 use std::{
-    io::{self, Read, Write},
+    io::{self, Write},
     path::PathBuf,
     process::Command,
 };
 
-use crate::show_progress;
+use crate::{profile::CliInput, show_progress};
 use agama_lib::{
     base_http_client::BaseHTTPClient, context::InstallationContext,
     install_settings::InstallSettings, Store as SettingsStore,
@@ -88,8 +88,11 @@ pub enum ConfigCommands {
         output: Option<CliOutput>,
     },
 
-    /// Read and load a profile from the standard input.
-    Load,
+    /// Read and load a profile
+    Load {
+        /// JSON file: URL or path or `-` for standard input
+        url_or_path: Option<CliInput>,
+    },
 
     /// Edit and update installation option using an external editor.
     ///
@@ -116,10 +119,9 @@ pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> any
             destination.write(&json)?;
             Ok(())
         }
-        ConfigCommands::Load => {
-            let mut stdin = io::stdin();
-            let mut contents = String::new();
-            stdin.read_to_string(&mut contents)?;
+        ConfigCommands::Load { url_or_path } => {
+            let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
+            let contents = url_or_path.read_to_string()?;
             let result = InstallSettings::from_json(&contents, &InstallationContext::from_env()?)?;
             tokio::spawn(async move {
                 show_progress().await.unwrap();
