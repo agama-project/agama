@@ -54,7 +54,7 @@ module Agama
         profile.fetch_as_hash("networking").fetch("ipv6", false)
       end
 
-      # @param section [Y2Network::AutoinstProfile::Interfaces, nil] AutoYaST interfaces section.
+      # @param interfaces [Y2Network::AutoinstProfile::Interfaces, nil] AutoYaST interfaces section.
       # @param dns [Hash] Agama DNS settings.
       def read_connections(interfaces, dns)
         return [] if interfaces.nil?
