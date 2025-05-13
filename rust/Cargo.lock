@@ -138,6 +138,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "agama-utils"
+version = "0.1.0"
+
+[[package]]
 name = "ahash"
 version = "0.8.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
