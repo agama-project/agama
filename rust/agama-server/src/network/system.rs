@@ -18,14 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::{
+use agama_lib::network::{
+    action::Action,
     error::NetworkStateError,
-    model::{AccessPoint, Device, NetworkChange, StateConfig},
-    NetworkAdapterError,
-};
-use crate::network::{
-    model::{Connection, GeneralState},
-    Action, Adapter, NetworkState,
+    model::{
+        AccessPoint, Connection, Device, GeneralState, NetworkChange, NetworkState, StateConfig,
+    },
+    Adapter, NetworkAdapterError,
 };
 use agama_lib::{error::ServiceError, network::types::DeviceType};
 use std::error::Error;
