@@ -62,7 +62,7 @@ describe "agama profile" do
   end
 
   describe "validate:" do
-    let(:command) { ["agama", "profile", "validate"] }
+    let(:command) { ["agama", "config", "validate"] }
     context "valid profile" do
       include_examples \
         "accepts input in 3 ways", \

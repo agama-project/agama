@@ -27,10 +27,11 @@ use std::{
 use crate::{profile::CliInput, show_progress};
 use agama_lib::{
     base_http_client::BaseHTTPClient, context::InstallationContext,
-    install_settings::InstallSettings, Store as SettingsStore,
+    install_settings::InstallSettings, profile::ValidationOutcome, Store as SettingsStore,
 };
 use anyhow::{anyhow, Context};
 use clap::Subcommand;
+use console::style;
 use tempfile::Builder;
 
 const DEFAULT_EDITOR: &str = "/usr/bin/vi";
@@ -94,6 +95,15 @@ pub enum ConfigCommands {
         url_or_path: Option<CliInput>,
     },
 
+    /// Validate a profile using JSON Schema
+    ///
+    /// Schema is available at /usr/share/agama-cli/profile.schema.json
+    /// TODO: Validation is automatic
+    Validate {
+        /// JSON file, URL or path or `-` for standard input
+        url_or_path: CliInput,
+    },
+
     /// Edit and update installation option using an external editor.
     ///
     /// The changes are not applied if the editor exits with an error code.
@@ -108,7 +118,7 @@ pub enum ConfigCommands {
 }
 
 pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> anyhow::Result<()> {
-    let store = SettingsStore::new(http_client).await?;
+    let store = SettingsStore::new(http_client.clone()).await?;
 
     match subcommand {
         ConfigCommands::Show { output } => {
@@ -129,6 +139,7 @@ pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> any
             store.store(&result).await?;
             Ok(())
         }
+        ConfigCommands::Validate { url_or_path } => validate(&http_client, url_or_path).await,
         ConfigCommands::Edit { editor } => {
             let model = store.load().await?;
             let editor = editor
@@ -142,6 +153,41 @@ pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> any
             Ok(())
         }
     }
+}
+
+/// Validate a JSON profile, by doing a HTTP client request.
+async fn validate_client(
+    client: &BaseHTTPClient,
+    url_or_path: CliInput,
+) -> anyhow::Result<ValidationOutcome> {
+    let mut url = client.base_url.join("profile/validate").unwrap();
+    url_or_path.add_query(&mut url)?;
+
+    let body = url_or_path.body_for_web()?;
+    // we use plain text .body instead of .json
+    let response: Result<reqwest::Response, agama_lib::error::ServiceError> = client
+        .client
+        .request(reqwest::Method::POST, url)
+        .body(body)
+        .send()
+        .await
+        .map_err(|e| e.into());
+
+    let result = client.deserialize_or_error(response?).await;
+    result.map_err(|e| e.into())
+}
+
+async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<()> {
+    let validity = validate_client(client, url_or_path).await?;
+    match validity {
+        ValidationOutcome::Valid => {
+            println!("{} {}", style("\u{2713}").bold().green(), validity);
+        }
+        ValidationOutcome::NotValid(_) => {
+            println!("{} {}", style("\u{2717}").bold().red(), validity);
+        }
+    }
+    Ok(())
 }
 
 /// Edit the installation settings using an external editor.
