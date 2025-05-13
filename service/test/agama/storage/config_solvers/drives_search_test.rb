@@ -173,6 +173,52 @@ describe Agama::Storage::ConfigSolvers::DrivesSearch do
       end
     end
 
+    context "if a drive config has a search with condition" do
+      let(:drives) do
+        [
+          { search: search }
+        ]
+      end
+
+      context "and the device was already assigned" do
+        let(:drives) do
+          [
+            {},
+            { search: "/dev/vda" }
+          ]
+        end
+
+        it "does not set a device to the drive config" do
+          subject.solve(config)
+          expect(config.drives.size).to eq(2)
+
+          _, drive2 = config.drives
+          expect(drive2.search.solved?).to eq(true)
+          expect(drive2.search.device).to be_nil
+        end
+      end
+
+      context "and there is other drive config with the same condition" do
+        let(:drives) do
+          [
+            { search: "/dev/vdb" },
+            { search: "/dev/vdb" }
+          ]
+        end
+
+        it "only sets the device to the first drive config" do
+          subject.solve(config)
+          expect(config.drives.size).to eq(2)
+
+          drive1, drive2 = config.drives
+          expect(drive1.search.solved?).to eq(true)
+          expect(drive1.search.device.name).to eq("/dev/vdb")
+          expect(drive2.search.solved?).to eq(true)
+          expect(drive2.search.device).to be_nil
+        end
+      end
+    end
+
     context "if a drive config has a search with a device name" do
       let(:drives) do
         [
@@ -208,42 +254,82 @@ describe Agama::Storage::ConfigSolvers::DrivesSearch do
           expect(drive1.search.device).to be_nil
         end
       end
+    end
 
-      context "and the device was already assigned" do
-        let(:drives) do
-          [
-            {},
-            { search: "/dev/vda" }
-          ]
-        end
+    context "if a drive config has a search with a size" do
+      let(:scenario) { "sizes.yaml" }
 
-        it "does not set a device to the drive config" do
+      let(:drives) do
+        [
+          {
+            search: {
+              condition: { size: size }
+            }
+          }
+        ]
+      end
+
+      shared_examples "find device" do |device|
+        it "sets the device to the drive config" do
           subject.solve(config)
-          expect(config.drives.size).to eq(2)
+          expect(config.drives.size).to eq(1)
 
-          _, drive2 = config.drives
-          expect(drive2.search.solved?).to eq(true)
-          expect(drive2.search.device).to be_nil
+          drive1 = config.drives.first
+          expect(drive1.search.solved?).to eq(true)
+          expect(drive1.search.device.name).to eq(device)
         end
       end
 
-      context "and there is other drive config with the same device" do
-        let(:drives) do
-          [
-            { search: "/dev/vdb" },
-            { search: "/dev/vdb" }
-          ]
+      shared_examples "do not find device" do
+        it "does not set a device to the drive config" do
+          subject.solve(config)
+          expect(config.drives.size).to eq(1)
+
+          drive1 = config.drives.first
+          expect(drive1.search.solved?).to eq(true)
+          expect(drive1.search.device).to be_nil
+        end
+      end
+
+      context "and the operator is :equal" do
+        let(:size) { { equal: value } }
+
+        context "and there is a disk with equal size" do
+          let(:value) { "200 GiB" }
+          include_examples "find device", "/dev/vdb"
         end
 
-        it "only sets the device to the first drive config" do
-          subject.solve(config)
-          expect(config.drives.size).to eq(2)
+        context "and there is no disk with equal size" do
+          let(:size) { "20 GiB" }
+          include_examples "do not find device"
+        end
+      end
 
-          drive1, drive2 = config.drives
-          expect(drive1.search.solved?).to eq(true)
-          expect(drive1.search.device.name).to eq("/dev/vdb")
-          expect(drive2.search.solved?).to eq(true)
-          expect(drive2.search.device).to be_nil
+      context "and the operator is :greater" do
+        let(:size) { { greater: value } }
+
+        context "and there is a disk with greater size" do
+          let(:value) { "100 GiB" }
+          include_examples "find device", "/dev/vdb"
+        end
+
+        context "and there is no disk with greater size" do
+          let(:value) { "200 GiB" }
+          include_examples "do not find device"
+        end
+      end
+
+      context "and the operator is :less" do
+        let(:size) { { less: value } }
+
+        context "and there is a disk with less size" do
+          let(:value) { "200 GiB" }
+          include_examples "find device", "/dev/vda"
+        end
+
+        context "and there is no disk with less size" do
+          let(:value) { "100 GiB" }
+          include_examples "do not find device"
         end
       end
     end

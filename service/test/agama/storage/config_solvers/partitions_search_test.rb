@@ -167,6 +167,50 @@ describe Agama::Storage::ConfigSolvers::PartitionsSearch do
         end
       end
 
+      context "if a partition config has a search with condition" do
+        let(:partitions) do
+          [
+            { search: search }
+          ]
+        end
+
+        context "and the device was already assigned" do
+          let(:partitions) do
+            [
+              { search: {} },
+              { search: "/dev/vda1" }
+            ]
+          end
+
+          it "does not set a partition to the config" do
+            subject.solve(drive)
+            p = drive.partitions.last
+            expect(p.search.solved?).to eq(true)
+            expect(p.search.device).to be_nil
+          end
+        end
+
+        context "and there is other partition with the same device" do
+          let(:partitions) do
+            [
+              { search: "/dev/vda2" },
+              { search: "/dev/vda2" }
+            ]
+          end
+
+          it "only sets the partition to the first partition config" do
+            subject.solve(drive)
+            expect(partitions.size).to eq(2)
+
+            p1, p2 = drive.partitions
+            expect(p1.search.solved?).to eq(true)
+            expect(p1.search.device.name).to eq("/dev/vda2")
+            expect(p2.search.solved?).to eq(true)
+            expect(p2.search.device).to be_nil
+          end
+        end
+      end
+
       context "if a partition config has a search with a device name" do
         let(:partitions) do
           [
@@ -204,40 +248,84 @@ describe Agama::Storage::ConfigSolvers::PartitionsSearch do
             expect(p1.search.device).to be_nil
           end
         end
+      end
 
-        context "and the device was already assigned" do
-          let(:partitions) do
-            [
-              { search: {} },
-              { search: "/dev/vda1" }
-            ]
-          end
+      context "if a partition config has a search with a size" do
+        let(:scenario) { "sizes.yaml" }
 
-          it "does not set a partition to the config" do
+        let(:partitions) do
+          [
+            {
+              search: {
+                condition: { size: size }
+              }
+            }
+          ]
+        end
+
+        shared_examples "find device" do |device|
+          it "sets the device to the partition config" do
             subject.solve(drive)
-            p = drive.partitions.last
-            expect(p.search.solved?).to eq(true)
-            expect(p.search.device).to be_nil
+            partitions = drive.partitions
+            expect(partitions.size).to eq(1)
+
+            p1 = partitions.first
+            expect(p1.search.solved?).to eq(true)
+            expect(p1.search.device.name).to eq(device)
           end
         end
 
-        context "and there is other partition with the same device" do
-          let(:partitions) do
-            [
-              { search: "/dev/vda2" },
-              { search: "/dev/vda2" }
-            ]
+        shared_examples "do not find device" do
+          it "does not set a device to the partition config" do
+            subject.solve(drive)
+            partitions = drive.partitions
+            expect(partitions.size).to eq(1)
+
+            p1 = partitions.first
+            expect(p1.search.solved?).to eq(true)
+            expect(p1.search.device).to be_nil
+          end
+        end
+
+        context "and the operator is :equal" do
+          let(:size) { { equal: value } }
+
+          context "and there is a partition with equal size" do
+            let(:value) { "20 GiB" }
+            include_examples "find device", "/dev/vda2"
           end
 
-          it "only sets the partition to the first partition config" do
-            subject.solve(drive)
-            expect(partitions.size).to eq(2)
+          context "and there is no partition with equal size" do
+            let(:size) { "21 GiB" }
+            include_examples "do not find device"
+          end
+        end
 
-            p1, p2 = drive.partitions
-            expect(p1.search.solved?).to eq(true)
-            expect(p1.search.device.name).to eq("/dev/vda2")
-            expect(p2.search.solved?).to eq(true)
-            expect(p2.search.device).to be_nil
+        context "and the operator is :greater" do
+          let(:size) { { greater: value } }
+
+          context "and there is a partition with greater size" do
+            let(:value) { "20 GiB" }
+            include_examples "find device", "/dev/vda3"
+          end
+
+          context "and there is no partition with greater size" do
+            let(:value) { "200 GiB" }
+            include_examples "do not find device"
+          end
+        end
+
+        context "and the operator is :less" do
+          let(:size) { { less: value } }
+
+          context "and there is a partition with less size" do
+            let(:value) { "20 GiB" }
+            include_examples "find device", "/dev/vda1"
+          end
+
+          context "and there is no partition with less size" do
+            let(:value) { "1 GiB" }
+            include_examples "do not find device"
           end
         end
       end

@@ -40,13 +40,24 @@ module Agama
 
         # Whether the size of the given device matches the search condition.
         #
-        # @param _config [#search]
-        # @param _device [Y2Storage::Device]
+        # @param config [#search]
+        # @param device [Y2Storage::Device]
         #
         # @return [Boolean]
-        def match_size?(_config, _device)
-          # TODO
-          true
+        def match_size?(config, device)
+          size = config.search&.size
+          return true unless size&.value
+
+          case size.operator
+          when :equal
+            device.size == size.value
+          when :greater
+            device.size > size.value
+          when :less
+            device.size < size.value
+          else
+            false
+          end
         end
       end
     end

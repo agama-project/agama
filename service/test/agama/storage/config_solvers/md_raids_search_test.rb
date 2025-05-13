@@ -147,40 +147,11 @@ describe Agama::Storage::ConfigSolvers::MdRaidsSearch do
       end
     end
 
-    context "if a MD RAID config has a search with a device name" do
+    context "if a MD RAID config has a search with condition" do
       let(:md_raids) do
         [
           { search: search }
         ]
-      end
-
-      context "and the device is found" do
-        let(:search) { "/dev/md1" }
-
-        it "sets the device to the MD RAID config" do
-          subject.solve(config)
-          expect(config.md_raids.size).to eq(1)
-
-          md1 = config.md_raids.first
-          expect(md1.search.solved?).to eq(true)
-          expect(md1.search.device.name).to eq("/dev/md1")
-        end
-      end
-
-      context "and the device is not found" do
-        let(:search) { "/dev/md3" }
-
-        # Speed-up fallback search (and make sure it fails)
-        before { allow(Y2Storage::BlkDevice).to receive(:find_by_any_name) }
-
-        it "does not set a device to the MD RAID config" do
-          subject.solve(config)
-          expect(config.md_raids.size).to eq(1)
-
-          md1 = config.md_raids.first
-          expect(md1.search.solved?).to eq(true)
-          expect(md1.search.device).to be_nil
-        end
       end
 
       context "and the device was already assigned" do
@@ -218,6 +189,121 @@ describe Agama::Storage::ConfigSolvers::MdRaidsSearch do
           expect(md1.search.device.name).to eq("/dev/md1")
           expect(md2.search.solved?).to eq(true)
           expect(md2.search.device).to be_nil
+        end
+      end
+    end
+
+    context "if a MD RAID config has a search with a device name" do
+      let(:md_raids) do
+        [
+          { search: search }
+        ]
+      end
+
+      context "and the device is found" do
+        let(:search) { "/dev/md1" }
+
+        it "sets the device to the MD RAID config" do
+          subject.solve(config)
+          expect(config.md_raids.size).to eq(1)
+
+          md1 = config.md_raids.first
+          expect(md1.search.solved?).to eq(true)
+          expect(md1.search.device.name).to eq("/dev/md1")
+        end
+      end
+
+      context "and the device is not found" do
+        let(:search) { "/dev/md3" }
+
+        # Speed-up fallback search (and make sure it fails)
+        before { allow(Y2Storage::BlkDevice).to receive(:find_by_any_name) }
+
+        it "does not set a device to the MD RAID config" do
+          subject.solve(config)
+          expect(config.md_raids.size).to eq(1)
+
+          md1 = config.md_raids.first
+          expect(md1.search.solved?).to eq(true)
+          expect(md1.search.device).to be_nil
+        end
+      end
+    end
+
+    context "if a MD RAID config has a search with a size" do
+      let(:scenario) { "sizes.yaml" }
+
+      let(:md_raids) do
+        [
+          {
+            search: {
+              condition: { size: size }
+            }
+          }
+        ]
+      end
+
+      shared_examples "find device" do |device|
+        it "sets the device to the MD RAID config" do
+          subject.solve(config)
+          expect(config.md_raids.size).to eq(1)
+
+          md1 = config.md_raids.first
+          expect(md1.search.solved?).to eq(true)
+          expect(md1.search.device.name).to eq(device)
+        end
+      end
+
+      shared_examples "do not find device" do
+        it "does not set a device to the MD RAID config" do
+          subject.solve(config)
+          expect(config.md_raids.size).to eq(1)
+
+          md1 = config.md_raids.first
+          expect(md1.search.solved?).to eq(true)
+          expect(md1.search.device).to be_nil
+        end
+      end
+
+      context "and the operator is :equal" do
+        let(:size) { { equal: value } }
+
+        context "and there is a MD RAID with equal size" do
+          let(:value) { devicegraph.find_by_name("/dev/md2").size }
+          include_examples "find device", "/dev/md2"
+        end
+
+        context "and there is no MD RAID with equal size" do
+          let(:size) { "20 GiB" }
+          include_examples "do not find device"
+        end
+      end
+
+      context "and the operator is :greater" do
+        let(:size) { { greater: value } }
+
+        context "and there is a MD RAID with greater size" do
+          let(:value) { "50 GiB" }
+          include_examples "find device", "/dev/md2"
+        end
+
+        context "and there is no MD RAID with greater size" do
+          let(:value) { "200 GiB" }
+          include_examples "do not find device"
+        end
+      end
+
+      context "and the operator is :less" do
+        let(:size) { { less: value } }
+
+        context "and there is a MD RAID with less size" do
+          let(:value) { "20 GiB" }
+          include_examples "find device", "/dev/md0"
+        end
+
+        context "and there is no MD RAID with less size" do
+          let(:value) { "10 GiB" }
+          include_examples "do not find device"
         end
       end
     end
