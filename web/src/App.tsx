@@ -62,7 +62,8 @@ function App() {
       return <Navigate to={ROOT.installationFinished} />;
     }
 
-    if (!products || !connected) return <Loading listenQuestions />;
+    if (!products || !connected || (selectedProduct === undefined && isBusy))
+      return <Loading listenQuestions />;
 
     if (phase === InstallationPhase.Startup && isBusy) {
       return <Loading listenQuestions />;

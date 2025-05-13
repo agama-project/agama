@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon May 12 12:47:46 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed navigation to avoid quickly switching between two paths
+  in a loop causing "Too many calls to Location or  History APIs
+  within a short timeframe" error in Firefox and crashing the UI
+  (the proper fix for gh#agama-project/agama#2274)
+
+-------------------------------------------------------------------
 Thu May  8 13:43:53 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - MenuButton no longer opens unexpectedly when navigating
