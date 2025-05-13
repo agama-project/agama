@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue May 13 09:28:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix setting the mode for questions (bsc#1242441).
+
+-------------------------------------------------------------------
 Mon May 12 12:55:40 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Remove the delay between selecting the product and registering it,

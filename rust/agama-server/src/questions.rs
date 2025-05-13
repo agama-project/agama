@@ -281,7 +281,7 @@ impl Questions {
 
     #[zbus(property)]
     fn set_interactive(&mut self, value: bool) {
-        if value != self.interactive() {
+        if value == self.interactive() {
             tracing::info!("interactive value unchanged - {}", value);
             return;
         }
