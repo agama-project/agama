@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May 12 08:46:38 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- Switched live ISO to use Wayland (gh#agama-project/agama#1781)
+
+-------------------------------------------------------------------
 Wed May  7 07:07:33 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed locale cleanup to not delete all locales
