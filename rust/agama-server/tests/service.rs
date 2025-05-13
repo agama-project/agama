@@ -100,6 +100,6 @@ async fn test_access_protected_route() -> Result<(), Box<dyn Error>> {
 async fn test_access_protected_route_failed() -> Result<(), Box<dyn Error>> {
     let token = AuthToken::generate("nots3cr3t")?;
     let response = access_protected_route(token.as_str(), "wrong").await;
-    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
+    assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
     Ok(())
 }
