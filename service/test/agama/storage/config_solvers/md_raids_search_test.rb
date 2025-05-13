@@ -65,6 +65,26 @@ describe Agama::Storage::ConfigSolvers::MdRaidsSearch do
         expect(md2.search.device.name).to eq("/dev/md1")
       end
 
+      context "and any of the devices is not a candidate device" do
+        let(:disk_analyzer) { instance_double(Y2Storage::DiskAnalyzer) }
+
+        before do
+          allow(Y2Storage::DiskAnalyzer).to receive(:new).and_return(disk_analyzer)
+          allow(disk_analyzer).to receive(:candidate_device?) { |d| d.name != "/dev/md0" }
+        end
+
+        it "sets the first unassigned candidate device to the MD RAID config" do
+          subject.solve(config)
+          expect(config.md_raids.size).to eq(2)
+
+          md1, md2 = config.md_raids
+          expect(md1.search.solved?).to eq(true)
+          expect(md1.search.device.name).to eq("/dev/md1")
+          expect(md2.search.solved?).to eq(true)
+          expect(md2.search.device.name).to eq("/dev/md2")
+        end
+      end
+
       context "and there is not unassigned device" do
         let(:md_raids) do
           [

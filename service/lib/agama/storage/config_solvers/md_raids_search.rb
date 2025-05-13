@@ -67,7 +67,8 @@ module Agama
         #
         # @return [Array<Y2Storage::Md]
         def candidate_md_raids
-          devicegraph.md_raids
+          disk_analyzer = Y2Storage::DiskAnalyzer.new(devicegraph)
+          devicegraph.md_raids.select { |d| disk_analyzer.candidate_device?(d) }
         end
       end
     end

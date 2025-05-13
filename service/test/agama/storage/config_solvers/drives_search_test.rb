@@ -68,13 +68,12 @@ describe Agama::Storage::ConfigSolvers::DrivesSearch do
         expect(drive3.search.device.name).to eq("/dev/vdc")
       end
 
-      context "and any of the devices are excluded from the list of candidate devices" do
+      context "and any of the devices is not a candidate device" do
+        let(:disk_analyzer) { instance_double(Y2Storage::DiskAnalyzer) }
+
         before do
-          allow_any_instance_of(Y2Storage::DiskAnalyzer)
-            .to(receive(:candidate_disks))
-            .and_return(
-              [devicegraph.find_by_name("/dev/vdb"), devicegraph.find_by_name("/dev/vdc")]
-            )
+          allow(Y2Storage::DiskAnalyzer).to receive(:new).and_return(disk_analyzer)
+          allow(disk_analyzer).to receive(:candidate_device?) { |d| d.name != "/dev/vda" }
         end
 
         it "sets the first unassigned candidate device to the drive config" do

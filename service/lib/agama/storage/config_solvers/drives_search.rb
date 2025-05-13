@@ -69,10 +69,8 @@ module Agama
         # @return [Array<Y2Storage::Drive, Y2Storage::StrayBlkDevice>]
         def candidate_drives
           disk_analyzer = Y2Storage::DiskAnalyzer.new(devicegraph)
-          candidate_sids = disk_analyzer.candidate_disks.map(&:sid)
-
           drives = devicegraph.disk_devices + devicegraph.stray_blk_devices
-          drives.select { |d| candidate_sids.include?(d.sid) }
+          drives.select { |d| disk_analyzer.candidate_device?(d) }
         end
       end
     end
