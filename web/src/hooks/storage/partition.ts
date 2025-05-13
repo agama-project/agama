@@ -25,33 +25,38 @@ import { QueryHookOptions } from "~/types/queries";
 import { data } from "~/types/storage";
 import { addPartition, editPartition, deletePartition } from "~/helpers/storage/partition";
 
-type AddPartitionFn = (deviceName: string, data: data.Partition) => void;
+type AddPartitionFn = (list: string, listIndex: number | string, data: data.Partition) => void;
 
 function useAddPartition(options?: QueryHookOptions): AddPartitionFn {
   const apiModel = useApiModel(options);
   const updateApiModel = useUpdateApiModel();
-  return (deviceName: string, data: data.Partition) => {
-    updateApiModel(addPartition(apiModel, deviceName, data));
+  return (list: string, listIndex: number | string, data: data.Partition) => {
+    updateApiModel(addPartition(apiModel, list, listIndex, data));
   };
 }
 
-type EditPartitionFn = (deviceName: string, mountPath: string, data: data.Partition) => void;
+type EditPartitionFn = (
+  list: string,
+  listIndex: number | string,
+  mountPath: string,
+  data: data.Partition,
+) => void;
 
 function useEditPartition(options?: QueryHookOptions): EditPartitionFn {
   const apiModel = useApiModel(options);
   const updateApiModel = useUpdateApiModel();
-  return (deviceName: string, mountPath: string, data: data.Partition) => {
-    updateApiModel(editPartition(apiModel, deviceName, mountPath, data));
+  return (list: string, listIndex: number | string, mountPath: string, data: data.Partition) => {
+    updateApiModel(editPartition(apiModel, list, listIndex, mountPath, data));
   };
 }
 
-type DeletePartitionFn = (deviceName: string, mountPath: string) => void;
+type DeletePartitionFn = (list: string, listIndex: number | string, mountPath: string) => void;
 
 function useDeletePartition(options?: QueryHookOptions): DeletePartitionFn {
   const apiModel = useApiModel(options);
   const updateApiModel = useUpdateApiModel();
-  return (deviceName: string, mountPath: string) =>
-    updateApiModel(deletePartition(apiModel, deviceName, mountPath));
+  return (list: string, listIndex: number | string, mountPath: string) =>
+    updateApiModel(deletePartition(apiModel, list, listIndex, mountPath));
 }
 
 export { useAddPartition, useEditPartition, useDeletePartition };

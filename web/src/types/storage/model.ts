@@ -35,6 +35,8 @@ type Model = {
 };
 
 interface Drive extends apiModel.Drive {
+  list: string;
+  listIndex: number;
   isUsed: boolean;
   isAddingPartitions: boolean;
   getMountPaths: () => string[];
@@ -45,6 +47,8 @@ interface Drive extends apiModel.Drive {
 type Partition = apiModel.Partition;
 
 interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logicalVolumes"> {
+  list: string;
+  listIndex: number;
   logicalVolumes: LogicalVolume[];
   getTargetDevices: () => Drive[];
   getMountPaths: () => string[];

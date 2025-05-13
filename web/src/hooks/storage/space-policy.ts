@@ -25,13 +25,13 @@ import { QueryHookOptions } from "~/types/queries";
 import { data } from "~/types/storage";
 import { setSpacePolicy } from "~/helpers/storage/space-policy";
 
-type setSpacePolicyFn = (deviceName: string, data: data.SpacePolicy) => void;
+type setSpacePolicyFn = (list: string, listIndex: number | string, data: data.SpacePolicy) => void;
 
 function useSetSpacePolicy(options?: QueryHookOptions): setSpacePolicyFn {
   const apiModel = useApiModel(options);
   const updateApiModel = useUpdateApiModel();
-  return (deviceName: string, data: data.SpacePolicy) => {
-    updateApiModel(setSpacePolicy(apiModel, deviceName, data));
+  return (list: string, listIndex: number | string, data: data.SpacePolicy) => {
+    updateApiModel(setSpacePolicy(apiModel, list, listIndex, data));
   };
 }
 

@@ -46,8 +46,8 @@ type SpacePolicyAction = {
 };
 
 type SpacePolicy = {
-  type: apiModel.SpacePolicy,
-  actions?: SpacePolicyAction[],
+  type: apiModel.SpacePolicy;
+  actions?: SpacePolicyAction[];
 };
 
 export type { VolumeGroup, LogicalVolume, Filesystem, Size, SpacePolicy, SpacePolicyAction };

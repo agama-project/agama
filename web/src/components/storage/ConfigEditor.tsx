@@ -23,7 +23,7 @@
 import React from "react";
 import { _ } from "~/i18n";
 import { useDevices, useResetConfigMutation } from "~/queries/storage";
-import { useConfigModel } from "~/queries/storage/config-model";
+import { useModel } from "~/hooks/storage/model";
 import DriveEditor from "~/components/storage/DriveEditor";
 import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
 import { Alert, Button, List, ListItem } from "@patternfly/react-core";
@@ -54,10 +54,10 @@ const NoDevicesConfiguredAlert = () => {
 };
 
 export default function ConfigEditor() {
-  const model = useConfigModel({ suspense: true });
+  const model = useModel();
   const devices = useDevices("system", { suspense: true });
-  const drives = model.drives || [];
-  const volumeGroups = model.volumeGroups || [];
+  const drives = model.drives;
+  const volumeGroups = model.volumeGroups;
 
   if (!drives.length && !volumeGroups.length) {
     return <NoDevicesConfiguredAlert />;
@@ -65,14 +65,14 @@ export default function ConfigEditor() {
 
   return (
     <List isPlain>
-      {model.volumeGroups?.map((vg, i) => {
+      {volumeGroups.map((vg, i) => {
         return (
           <ListItem key={`vg-${i}`}>
             <VolumeGroupEditor vg={vg} />
           </ListItem>
         );
       })}
-      {model.drives?.map((drive, i) => {
+      {drives.map((drive, i) => {
         const device = devices.find((d) => d.name === drive.name);
 
         /**

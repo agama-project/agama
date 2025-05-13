@@ -27,6 +27,15 @@ function copyApiModel(apiModel: apiModel.Config): apiModel.Config {
   return JSON.parse(JSON.stringify(apiModel));
 }
 
+function findDevice(
+  apiModel: apiModel.Config,
+  list: string,
+  index: number | string,
+): apiModel.Drive | apiModel.VolumeGroup | undefined {
+  const collection = apiModel[list] || [];
+  return collection.at(index);
+}
+
 function buildFilesystem(data?: data.Filesystem): apiModel.Filesystem | undefined {
   if (!data) return;
 
@@ -90,6 +99,7 @@ function buildPartitionFromLogicalVolume(lv: apiModel.LogicalVolume): apiModel.P
 
 export {
   copyApiModel,
+  findDevice,
   buildPartition,
   buildVolumeGroup,
   buildLogicalVolume,

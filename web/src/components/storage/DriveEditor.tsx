@@ -25,7 +25,6 @@ import { _ } from "~/i18n";
 import { apiModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
 import { useDrive as legacyUseDrive } from "~/queries/storage/config-model";
-import { useDrive } from "~/hooks/storage/drive";
 import * as driveUtils from "~/components/storage/utils/drive";
 import DriveDeviceMenu from "~/components/storage/DriveDeviceMenu";
 import DeviceHeader from "~/components/storage/DeviceHeader";
@@ -102,8 +101,6 @@ const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
 };
 
 export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
-  const driveModel = useDrive(drive.name);
-
   return (
     <Card isCompact>
       <CardHeader>
@@ -113,8 +110,8 @@ export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
       </CardHeader>
       <CardBody className={spacingStyles.plLg}>
         <Flex direction={{ default: "column" }}>
-          <SpacePolicyMenu modelDevice={driveModel} device={driveDevice} />
-          <PartitionsMenu device={driveModel} />
+          <SpacePolicyMenu modelDevice={drive} device={driveDevice} />
+          <PartitionsMenu device={drive} />
         </Flex>
       </CardBody>
     </Card>

@@ -24,7 +24,7 @@ import React from "react";
 import { useNavigate, generatePath } from "react-router-dom";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { _ } from "~/i18n";
-import { baseName, SPACE_POLICIES } from "~/components/storage/utils";
+import { SPACE_POLICIES } from "~/components/storage/utils";
 import { apiModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
@@ -58,14 +58,13 @@ const SpacePolicySelectorIntro = ({ device }) => {
 
 export default function SpacePolicyMenu({ modelDevice, device }) {
   const navigate = useNavigate();
+  const { list, listIndex } = modelDevice;
   const setSpacePolicy = useSetSpacePolicy();
   const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
-      return navigate(
-        generatePath(PATHS.drive.editSpacePolicy, { id: baseName(modelDevice.name) }),
-      );
+      return navigate(generatePath(PATHS.editSpacePolicy, { list, listIndex }));
     } else {
-      setSpacePolicy(modelDevice.name, { type: spacePolicy });
+      setSpacePolicy(list, listIndex, { type: spacePolicy });
     }
   };
 

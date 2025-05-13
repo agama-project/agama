@@ -21,13 +21,8 @@
  */
 
 import { apiModel } from "~/api/storage/types";
-import { copyApiModel } from "~/helpers/storage/api-model";
+import { copyApiModel, findDevice } from "~/helpers/storage/api-model";
 import { data } from "~/types/storage";
-
-function findDevice(model: apiModel.Config, deviceName: string): apiModel.Drive | undefined {
-  const drives = model?.drives || [];
-  return drives.find((d) => d.name === deviceName);
-}
 
 function setActions(device: apiModel.Drive, actions: SpacePolicyAction[]) {
   device.partitions ||= [];
@@ -63,16 +58,17 @@ function setActions(device: apiModel.Drive, actions: SpacePolicyAction[]) {
 
 function setSpacePolicy(
   apiModel: apiModel.Config,
-  deviceName: string,
+  list: string,
+  listIndex: number | string,
   data: data.SpacePolicy,
 ): apiModel.Config {
   apiModel = copyApiModel(apiModel);
-  const device = findDevice(apiModel, deviceName);
+  const apiDevice = findDevice(apiModel, list, listIndex);
 
-  if (device === undefined) return apiModel;
+  if (apiDevice === undefined) return apiModel;
 
-  device.spacePolicy = data.type;
-  if (data.type === "custom") setActions(device, data.actions || []);
+  apiDevice.spacePolicy = data.type;
+  if (data.type === "custom") setActions(apiDevice, data.actions || []);
 
   return apiModel;
 }

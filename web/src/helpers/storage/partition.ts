@@ -21,13 +21,8 @@
  */
 
 import { apiModel } from "~/api/storage/types";
-import { copyApiModel, buildPartition } from "~/helpers/storage/api-model";
+import { copyApiModel, findDevice, buildPartition } from "~/helpers/storage/api-model";
 import { data } from "~/types/storage";
-
-function findDevice(model: apiModel.Config, deviceName: string): apiModel.Drive | undefined {
-  const drives = model?.drives || [];
-  return drives.find((d) => d.name === deviceName);
-}
 
 function indexByName(device: apiModel.Drive, name): number {
   return (device.partitions || []).findIndex((p) => p.name && p.name === name);
@@ -45,12 +40,13 @@ function indexByPath(device: apiModel.Drive, path): number {
  * */
 function addPartition(
   apiModel: apiModel.Config,
-  deviceName: string,
+  list: string,
+  listIndex: number | string,
   data: data.Partition,
 ): apiModel.Config {
   apiModel = copyApiModel(apiModel);
+  const device = findDevice(apiModel, list, listIndex);
 
-  const device = findDevice(apiModel, deviceName);
   if (device === undefined) return apiModel;
 
   const partition = buildPartition(data);
@@ -64,13 +60,14 @@ function addPartition(
 
 function editPartition(
   apiModel: apiModel.Config,
-  deviceName: string,
+  list: string,
+  listIndex: number | string,
   mountPath: string,
   data: data.Partition,
 ): apiModel.Config {
   apiModel = copyApiModel(apiModel);
+  const device = findDevice(apiModel, list, listIndex);
 
-  const device = findDevice(apiModel, deviceName);
   if (device === undefined) return apiModel;
 
   const index = indexByPath(device, mountPath);
@@ -85,12 +82,13 @@ function editPartition(
 
 function deletePartition(
   apiModel: apiModel.Config,
-  deviceName: string,
+  list: string,
+  listIndex: number | string,
   mountPath: string,
 ): apiModel.Config {
   apiModel = copyApiModel(apiModel);
+  const device = findDevice(apiModel, list, listIndex);
 
-  const device = findDevice(apiModel, deviceName);
   if (device === undefined) return apiModel;
 
   const index = indexByPath(device, mountPath);

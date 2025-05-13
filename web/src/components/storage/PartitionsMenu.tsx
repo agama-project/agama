@@ -23,7 +23,6 @@
 import React from "react";
 import { useNavigate, generatePath } from "react-router-dom";
 import { _ } from "~/i18n";
-import { baseName } from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useDeletePartition } from "~/hooks/storage/partition";
 import * as driveUtils from "~/components/storage/utils/drive";
@@ -33,6 +32,7 @@ import { Divider, Flex, MenuItem, MenuList } from "@patternfly/react-core";
 
 const PartitionsNoContentSelector = ({ device, toggleAriaLabel }) => {
   const navigate = useNavigate();
+  const { list, listIndex } = device;
 
   return (
     <DeviceMenu
@@ -45,9 +45,7 @@ const PartitionsNoContentSelector = ({ device, toggleAriaLabel }) => {
           itemId="add-partition"
           description={_("Add another partition or mount an existing one")}
           role="menuitem"
-          onClick={() =>
-            navigate(generatePath(PATHS.drive.partition.add, { id: baseName(device.name) }))
-          }
+          onClick={() => navigate(generatePath(PATHS.addPartition, { list, listIndex }))}
         >
           <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
             <span>{_("Add or use partition")}</span>
@@ -60,23 +58,23 @@ const PartitionsNoContentSelector = ({ device, toggleAriaLabel }) => {
 
 const PartitionMenuItem = ({ device, mountPath }) => {
   const partition = device.getPartition(mountPath);
-  const editPath = generatePath(PATHS.drive.partition.edit, {
-    id: baseName(device.name),
-    partitionId: encodeURIComponent(mountPath),
-  });
+  const { list, listIndex } = device;
+  const partitionId = encodeURIComponent(mountPath);
+  const editPath = generatePath(PATHS.editPartition, { list, listIndex, partitionId });
   const deletePartition = useDeletePartition();
 
   return (
     <MountPathMenuItem
       device={partition}
       editPath={editPath}
-      deleteFn={() => deletePartition(device.name, mountPath)}
+      deleteFn={() => deletePartition(list, listIndex, mountPath)}
     />
   );
 };
 
 const PartitionsWithContentSelector = ({ device, toggleAriaLabel }) => {
   const navigate = useNavigate();
+  const { list, listIndex } = device;
 
   return (
     <DeviceMenu
@@ -100,9 +98,7 @@ const PartitionsWithContentSelector = ({ device, toggleAriaLabel }) => {
           key="add-partition"
           itemId="add-partition"
           description={_("Add another partition or mount an existing one")}
-          onClick={() =>
-            navigate(generatePath(PATHS.drive.partition.add, { id: baseName(device.name) }))
-          }
+          onClick={() => navigate(generatePath(PATHS.addPartition, { list, listIndex }))}
         >
           <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
             <span>{_("Add or use partition")}</span>

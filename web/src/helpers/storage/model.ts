@@ -31,25 +31,25 @@ const findDrive = (model: model.Model, name: string): model.Drive | undefined =>
   return model.drives.find((d) => d.name === name);
 };
 
-function buildDrive(
-  apiDrive: apiModel.Drive,
+function partitionableProperties(
+  apiDevice: apiModel.Drive,
   apiModel: apiModel.Config,
   model: model.Model,
-): model.Drive {
+) {
   const buildPartitions = (): model.Partition[] => {
-    return (apiDrive.partitions || []).map(buildPartition);
+    return (apiDevice.partitions || []).map(buildPartition);
   };
 
   const partitions = buildPartitions();
 
   const getMountPaths = (): string[] => {
-    const mountPaths = (apiDrive.partitions || []).map((p) => p.mountPath);
-    return [apiDrive.mountPath, ...mountPaths].filter((p) => p);
+    const mountPaths = (apiDevice.partitions || []).map((p) => p.mountPath);
+    return [apiDevice.mountPath, ...mountPaths].filter((p) => p);
   };
 
   const getVolumeGroups = (): model.VolumeGroup[] => {
     return model.volumeGroups.filter((v) =>
-      v.getTargetDevices().some((d) => d.name === apiDrive.name),
+      v.getTargetDevices().some((d) => d.name === apiDevice.name),
     );
   };
 
@@ -61,30 +61,29 @@ function buildDrive(
     return (
       apiModel.boot?.configure &&
       !apiModel.boot.device?.default &&
-      apiModel.boot.device?.name === apiDrive.name
+      apiModel.boot.device?.name === apiDevice.name
     );
   };
 
   const isTargetDevice = (): boolean => {
     const targetDevices = (apiModel.volumeGroups || []).flatMap((v) => v.targetDevices || []);
-    return targetDevices.includes(apiDrive.name);
+    return targetDevices.includes(apiDevice.name);
   };
 
   const isUsed = (): boolean => {
     return (
       isExplicitBoot() ||
       isTargetDevice() ||
-      apiDrive.mountPath !== undefined ||
-      apiDrive.partitions?.some((p) => p.mountPath)
+      apiDevice.mountPath !== undefined ||
+      apiDevice.partitions?.some((p) => p.mountPath)
     );
   };
 
   const isAddingPartitions = (): boolean => {
-    return (apiDrive.partitions || []).some((p) => p.mountPath && !p.name);
+    return (apiDevice.partitions || []).some((p) => p.mountPath && !p.name);
   };
 
   return {
-    ...apiDrive,
     isUsed: isUsed(),
     isAddingPartitions: isAddingPartitions(),
     partitions,
@@ -94,14 +93,33 @@ function buildDrive(
   };
 }
 
+function buildDrive(
+  apiDrive: apiModel.Drive,
+  listIndex: number,
+  apiModel: apiModel.Config,
+  model: model.Model,
+): model.Drive {
+  const list = "drives";
+
+  return {
+    ...apiDrive,
+    list,
+    listIndex,
+    ...partitionableProperties(apiDrive, listIndex, apiModel, model),
+  };
+}
+
 function buildLogicalVolume(logicalVolumeData: apiModel.LogicalVolume): model.LogicalVolume {
   return { ...logicalVolumeData };
 }
 
 function buildVolumeGroup(
   apiVolumeGroup: apiModel.VolumeGroup,
+  listIndex,
   model: model.Model,
 ): model.VolumeGroup {
+  const list = "volumeGroups";
+
   const getMountPaths = (): string[] => {
     return (apiVolumeGroup.logicalVolumes || []).map((l) => l.mountPath).filter((p) => p);
   };
@@ -117,6 +135,8 @@ function buildVolumeGroup(
   return {
     ...apiVolumeGroup,
     logicalVolumes: buildLogicalVolumes(),
+    list,
+    listIndex,
     getMountPaths,
     getTargetDevices,
   };
@@ -130,11 +150,11 @@ function buildModel(apiModel: apiModel.Config): model.Model {
   };
 
   const buildDrives = (): model.Drive[] => {
-    return (apiModel.drives || []).map((d) => buildDrive(d, apiModel, model));
+    return (apiModel.drives || []).map((d, i) => buildDrive(d, i, apiModel, model));
   };
 
   const buildVolumeGroups = (): model.VolumeGroup[] => {
-    return (apiModel.volumeGroups || []).map((v) => buildVolumeGroup(v, model));
+    return (apiModel.volumeGroups || []).map((v, i) => buildVolumeGroup(v, i, model));
   };
 
   const getMountPaths = (): string[] => {
