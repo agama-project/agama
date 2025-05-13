@@ -56,7 +56,7 @@ impl IntoResponse for AuthError {
         let body = json!({
             "error": self.to_string()
         });
-        (StatusCode::BAD_REQUEST, Json(body)).into_response()
+        (StatusCode::UNAUTHORIZED, Json(body)).into_response()
     }
 }
 
