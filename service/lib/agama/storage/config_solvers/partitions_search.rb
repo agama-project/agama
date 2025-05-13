@@ -49,7 +49,22 @@ module Agama
         #
         # @return [Boolean]
         def match_condition?(partition_config, partition)
-          match_name?(partition_config, partition) && match_size?(partition_config, partition)
+          match_name?(partition_config, partition) &&
+            match_size?(partition_config, partition) &&
+            match_number?(partition_config, partition)
+        end
+
+        # Whether the number of the given partition matches the search condition.
+        #
+        # @param partition_config [Configs::Partition]
+        # @param partition [Y2Storage::Partition]
+        #
+        # @return [Boolean]
+        def match_number?(partition_config, partition)
+          search = partition_config.search
+          return true unless search&.partition_number
+
+          partition.number == search.partition_number
         end
       end
     end

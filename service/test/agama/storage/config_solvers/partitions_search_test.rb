@@ -211,6 +211,30 @@ describe Agama::Storage::ConfigSolvers::PartitionsSearch do
         end
       end
 
+      shared_examples "find device" do |device|
+        it "sets the device to the partition config" do
+          subject.solve(drive)
+          partitions = drive.partitions
+          expect(partitions.size).to eq(1)
+
+          p1 = partitions.first
+          expect(p1.search.solved?).to eq(true)
+          expect(p1.search.device.name).to eq(device)
+        end
+      end
+
+      shared_examples "do not find device" do
+        it "does not set a device to the partition config" do
+          subject.solve(drive)
+          partitions = drive.partitions
+          expect(partitions.size).to eq(1)
+
+          p1 = partitions.first
+          expect(p1.search.solved?).to eq(true)
+          expect(p1.search.device).to be_nil
+        end
+      end
+
       context "if a partition config has a search with a device name" do
         let(:partitions) do
           [
@@ -220,33 +244,15 @@ describe Agama::Storage::ConfigSolvers::PartitionsSearch do
 
         context "and the partition is found" do
           let(:search) { "/dev/vda2" }
-
-          it "sets the partition to the partition config" do
-            subject.solve(drive)
-            partitions = drive.partitions
-            expect(partitions.size).to eq(1)
-
-            p1 = partitions.first
-            expect(p1.search.solved?).to eq(true)
-            expect(p1.search.device.name).to eq("/dev/vda2")
-          end
+          include_examples "find device", "/dev/vda2"
         end
 
         context "and the device is not found" do
-          let(:search) { "/dev/vdb1" }
-
           # Speed-up fallback search (and make sure it fails)
           before { allow(Y2Storage::BlkDevice).to receive(:find_by_any_name) }
 
-          it "does not set a partition to the partition config" do
-            subject.solve(drive)
-            partitions = drive.partitions
-            expect(partitions.size).to eq(1)
-
-            p1 = partitions.first
-            expect(p1.search.solved?).to eq(true)
-            expect(p1.search.device).to be_nil
-          end
+          let(:search) { "/dev/vdb1" }
+          include_examples "do not find device"
         end
       end
 
@@ -261,30 +267,6 @@ describe Agama::Storage::ConfigSolvers::PartitionsSearch do
               }
             }
           ]
-        end
-
-        shared_examples "find device" do |device|
-          it "sets the device to the partition config" do
-            subject.solve(drive)
-            partitions = drive.partitions
-            expect(partitions.size).to eq(1)
-
-            p1 = partitions.first
-            expect(p1.search.solved?).to eq(true)
-            expect(p1.search.device.name).to eq(device)
-          end
-        end
-
-        shared_examples "do not find device" do
-          it "does not set a device to the partition config" do
-            subject.solve(drive)
-            partitions = drive.partitions
-            expect(partitions.size).to eq(1)
-
-            p1 = partitions.first
-            expect(p1.search.solved?).to eq(true)
-            expect(p1.search.device).to be_nil
-          end
         end
 
         context "and the operator is :equal" do
@@ -327,6 +309,30 @@ describe Agama::Storage::ConfigSolvers::PartitionsSearch do
             let(:value) { "1 GiB" }
             include_examples "do not find device"
           end
+        end
+      end
+
+      context "if a partition config has a search with a partition number" do
+        let(:scenario) { "sizes.yaml" }
+
+        let(:partitions) do
+          [
+            {
+              search: {
+                condition: { number: number }
+              }
+            }
+          ]
+        end
+
+        context "and the partition is found" do
+          let(:number) { 2 }
+          include_examples "find device", "/dev/vda2"
+        end
+
+        context "and the device is not found" do
+          let(:number) { 20 }
+          include_examples "do not find device"
         end
       end
     end
