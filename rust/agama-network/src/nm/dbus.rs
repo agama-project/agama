@@ -23,8 +23,8 @@
 //! Working with hash maps coming from D-Bus is rather tedious and it is even worse when working
 //! with nested hash maps (see [NestedHash] and [OwnedNestedHash]).
 use super::{error::NmError, model::*};
-use crate::network::model::*;
-use agama_lib::network::types::{BondMode, SSID};
+use crate::model::*;
+use crate::types::{BondMode, SSID};
 use agama_utils::dbus::{
     get_optional_property, get_property, to_owned_hash, NestedHash, OwnedNestedHash,
 };
@@ -1298,14 +1298,14 @@ mod test {
         connection_from_dbus, connection_to_dbus, merge_dbus_connections, NestedHash,
         OwnedNestedHash,
     };
-    use crate::network::{
+    use crate::types::{BondMode, SSID};
+    use crate::{
         model::*,
         nm::{
             dbus::{BOND_KEY, ETHERNET_KEY, INFINIBAND_KEY, WIRELESS_KEY, WIRELESS_SECURITY_KEY},
             error::NmError,
         },
     };
-    use agama_lib::network::types::{BondMode, SSID};
     use cidr::IpInet;
     use std::{collections::HashMap, net::IpAddr, str::FromStr};
     use uuid::Uuid;

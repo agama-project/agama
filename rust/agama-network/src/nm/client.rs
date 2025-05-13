@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -26,16 +26,16 @@ use super::dbus::{
     cleanup_dbus_connection, connection_from_dbus, connection_to_dbus, controller_from_dbus,
     merge_dbus_connections,
 };
+use super::error::NmError;
 use super::model::{NmConnectionState, NmDeviceType};
 use super::proxies::{
     AccessPointProxy, ActiveConnectionProxy, ConnectionProxy, DeviceProxy, NetworkManagerProxy,
     SettingsProxy, WirelessProxy,
 };
-use crate::network::model::{
+use crate::model::{
     AccessPoint, Connection, ConnectionConfig, Device, GeneralState, SecurityProtocol,
 };
-use agama_lib::error::ServiceError;
-use agama_lib::network::types::{DeviceType, SSID};
+use crate::types::{DeviceType, SSID};
 use agama_utils::dbus::get_optional_property;
 use uuid::Uuid;
 use zbus;
@@ -54,16 +54,14 @@ impl<'a> NetworkManagerClient<'a> {
     /// Creates a NetworkManagerClient using the given D-Bus connection.
     ///
     /// * `connection`: D-Bus connection.
-    pub async fn new(
-        connection: zbus::Connection,
-    ) -> Result<NetworkManagerClient<'a>, ServiceError> {
+    pub async fn new(connection: zbus::Connection) -> Result<NetworkManagerClient<'a>, NmError> {
         Ok(Self {
             nm_proxy: NetworkManagerProxy::new(&connection).await?,
             connection,
         })
     }
     /// Returns the general state
-    pub async fn general_state(&self) -> Result<GeneralState, ServiceError> {
+    pub async fn general_state(&self) -> Result<GeneralState, NmError> {
         let proxy = SettingsProxy::new(&self.connection).await?;
         let hostname = proxy.hostname().await?;
         let wireless_enabled = self.nm_proxy.wireless_enabled().await?;
@@ -82,7 +80,7 @@ impl<'a> NetworkManagerClient<'a> {
     }
 
     /// Updates the general state
-    pub async fn update_general_state(&self, state: &GeneralState) -> Result<(), ServiceError> {
+    pub async fn update_general_state(&self, state: &GeneralState) -> Result<(), NmError> {
         let wireless_enabled = self.nm_proxy.wireless_enabled().await?;
 
         if wireless_enabled != state.wireless_enabled {
@@ -95,7 +93,7 @@ impl<'a> NetworkManagerClient<'a> {
     }
 
     /// Returns the list of access points.
-    pub async fn request_scan(&self) -> Result<(), ServiceError> {
+    pub async fn request_scan(&self) -> Result<(), NmError> {
         for path in &self.nm_proxy.get_devices().await? {
             let proxy = DeviceProxy::builder(&self.connection)
                 .path(path.as_str())?
@@ -116,7 +114,7 @@ impl<'a> NetworkManagerClient<'a> {
     }
 
     /// Returns the list of access points.
-    pub async fn access_points(&self) -> Result<Vec<AccessPoint>, ServiceError> {
+    pub async fn access_points(&self) -> Result<Vec<AccessPoint>, NmError> {
         let mut points = vec![];
         for path in &self.nm_proxy.get_devices().await? {
             let proxy = DeviceProxy::builder(&self.connection)
@@ -160,7 +158,7 @@ impl<'a> NetworkManagerClient<'a> {
     }
 
     /// Returns the list of network devices.
-    pub async fn devices(&self) -> Result<Vec<Device>, ServiceError> {
+    pub async fn devices(&self) -> Result<Vec<Device>, NmError> {
         let mut devs = vec![];
         for path in &self.nm_proxy.get_all_devices().await? {
             let proxy = DeviceProxy::builder(&self.connection)
@@ -182,7 +180,7 @@ impl<'a> NetworkManagerClient<'a> {
     }
 
     /// Returns the list of network connections.
-    pub async fn connections(&self) -> Result<Vec<Connection>, ServiceError> {
+    pub async fn connections(&self) -> Result<Vec<Connection>, NmError> {
         let mut controlled_by: HashMap<Uuid, String> = HashMap::new();
         let mut uuids_map: HashMap<String, Uuid> = HashMap::new();
 
@@ -251,7 +249,7 @@ impl<'a> NetworkManagerClient<'a> {
         Ok(connections)
     }
 
-    pub async fn connection_states(&self) -> Result<HashMap<String, u32>, ServiceError> {
+    pub async fn connection_states(&self) -> Result<HashMap<String, u32>, NmError> {
         let mut states = HashMap::new();
 
         for active_path in &self.nm_proxy.active_connections().await? {
@@ -272,7 +270,7 @@ impl<'a> NetworkManagerClient<'a> {
         &self,
         conn: &Connection,
         controller: Option<&Connection>,
-    ) -> Result<(), ServiceError> {
+    ) -> Result<(), NmError> {
         let mut new_conn = connection_to_dbus(conn, controller);
 
         let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid).await {
@@ -295,14 +293,14 @@ impl<'a> NetworkManagerClient<'a> {
     }
 
     /// Removes a network connection.
-    pub async fn remove_connection(&self, uuid: Uuid) -> Result<(), ServiceError> {
+    pub async fn remove_connection(&self, uuid: Uuid) -> Result<(), NmError> {
         let proxy = self.get_connection_proxy(uuid).await?;
         proxy.delete().await?;
         Ok(())
     }
 
     /// Creates a checkpoint.
-    pub async fn create_checkpoint(&self) -> Result<OwnedObjectPath, ServiceError> {
+    pub async fn create_checkpoint(&self) -> Result<OwnedObjectPath, NmError> {
         let path = self.nm_proxy.checkpoint_create(&[], 0, 0).await?;
         Ok(path)
     }
@@ -310,10 +308,7 @@ impl<'a> NetworkManagerClient<'a> {
     /// Destroys a checkpoint.
     ///
     /// * `checkpoint`: checkpoint's D-Bus path.
-    pub async fn destroy_checkpoint(
-        &self,
-        checkpoint: &ObjectPath<'_>,
-    ) -> Result<(), ServiceError> {
+    pub async fn destroy_checkpoint(&self, checkpoint: &ObjectPath<'_>) -> Result<(), NmError> {
         self.nm_proxy.checkpoint_destroy(checkpoint).await?;
         Ok(())
     }
@@ -321,10 +316,7 @@ impl<'a> NetworkManagerClient<'a> {
     /// Rolls the configuration back to the given checkpoint.
     ///
     /// * `checkpoint`: checkpoint's D-Bus path.
-    pub async fn rollback_checkpoint(
-        &self,
-        checkpoint: &ObjectPath<'_>,
-    ) -> Result<(), ServiceError> {
+    pub async fn rollback_checkpoint(&self, checkpoint: &ObjectPath<'_>) -> Result<(), NmError> {
         self.nm_proxy.checkpoint_rollback(checkpoint).await?;
         Ok(())
     }
@@ -332,7 +324,7 @@ impl<'a> NetworkManagerClient<'a> {
     /// Activates a NetworkManager connection.
     ///
     /// * `path`: D-Bus patch of the connection.
-    async fn activate_connection(&self, path: OwnedObjectPath) -> Result<(), ServiceError> {
+    async fn activate_connection(&self, path: OwnedObjectPath) -> Result<(), NmError> {
         let proxy = NetworkManagerProxy::new(&self.connection).await?;
         let root = ObjectPath::try_from("/").unwrap();
         proxy
@@ -344,7 +336,7 @@ impl<'a> NetworkManagerClient<'a> {
     /// Deactivates a NetworkManager connection.
     ///
     /// * `path`: D-Bus patch of the connection.
-    async fn deactivate_connection(&self, path: OwnedObjectPath) -> Result<(), ServiceError> {
+    async fn deactivate_connection(&self, path: OwnedObjectPath) -> Result<(), NmError> {
         let proxy = NetworkManagerProxy::new(&self.connection).await?;
 
         if let Some(active_connection) = self.settings_active_connection(path.clone()).await? {
@@ -354,14 +346,14 @@ impl<'a> NetworkManagerClient<'a> {
             {
                 // Ignore ConnectionNotActive error since this just means the state is already correct
                 if !e.to_string().contains("ConnectionNotActive") {
-                    return Err(ServiceError::DBus(e));
+                    return Err(NmError::DBus(e));
                 }
             }
         }
         Ok(())
     }
 
-    async fn get_connection_proxy(&self, uuid: Uuid) -> Result<ConnectionProxy, ServiceError> {
+    async fn get_connection_proxy(&self, uuid: Uuid) -> Result<ConnectionProxy, NmError> {
         let proxy = SettingsProxy::new(&self.connection).await?;
         let uuid_s = uuid.to_string();
         let path = proxy.get_connection_by_uuid(uuid_s.as_str()).await?;
@@ -375,7 +367,7 @@ impl<'a> NetworkManagerClient<'a> {
     async fn settings_active_connection(
         &self,
         path: OwnedObjectPath,
-    ) -> Result<Option<OwnedObjectPath>, ServiceError> {
+    ) -> Result<Option<OwnedObjectPath>, NmError> {
         for active_path in &self.nm_proxy.active_connections().await? {
             let proxy = ActiveConnectionProxy::builder(&self.connection)
                 .path(active_path.as_str())?
@@ -397,7 +389,7 @@ impl<'a> NetworkManagerClient<'a> {
     pub async fn add_secrets(
         config: &mut ConnectionConfig,
         proxy: &ConnectionProxy<'_>,
-    ) -> Result<(), ServiceError> {
+    ) -> Result<(), NmError> {
         let ConnectionConfig::Wireless(ref mut wireless) = config else {
             return Ok(());
         };

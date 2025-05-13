@@ -22,12 +22,10 @@
 //!
 //! * This module contains the types that represent the network concepts. They are supposed to be
 //!   agnostic from the real network service (e.g., NetworkManager).
-use crate::network::error::NetworkStateError;
-use agama_lib::network::settings::{
-    BondSettings, IEEE8021XSettings, NetworkConnection, WirelessSettings,
-};
-use agama_lib::network::types::{BondMode, ConnectionState, DeviceState, DeviceType, Status, SSID};
-use agama_lib::openapi::schemas;
+use crate::error::NetworkStateError;
+use crate::settings::{BondSettings, IEEE8021XSettings, NetworkConnection, WirelessSettings};
+use crate::types::{BondMode, ConnectionState, DeviceState, DeviceType, Status, SSID};
+use agama_utils::openapi::schemas;
 use cidr::IpInet;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
@@ -251,7 +249,7 @@ impl NetworkState {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::network::error::NetworkStateError;
+    use crate::error::NetworkStateError;
     use uuid::Uuid;
 
     #[test]
@@ -1608,13 +1606,13 @@ impl fmt::Display for WirelessBand {
 }
 
 impl TryFrom<&str> for WirelessBand {
-    type Error = anyhow::Error;
+    type Error = NetworkStateError;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
             "a" => Ok(WirelessBand::A),
             "bg" => Ok(WirelessBand::BG),
-            _ => Err(anyhow::anyhow!("Invalid band: {}", value)),
+            _ => Err(NetworkStateError::InvalidWirelessBand(value.to_string())),
         }
     }
 }

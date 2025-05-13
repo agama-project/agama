@@ -44,6 +44,7 @@ dependencies = [
 name = "agama-lib"
 version = "1.0.0"
 dependencies = [
+ "agama-network",
  "agama-utils",
  "anyhow",
  "async-trait",
@@ -87,6 +88,29 @@ dependencies = [
  "serde",
  "thiserror 2.0.12",
  "utoipa",
+]
+
+[[package]]
+name = "agama-network"
+version = "0.1.0"
+dependencies = [
+ "agama-utils",
+ "anyhow",
+ "async-trait",
+ "cidr",
+ "futures-util",
+ "macaddr",
+ "pin-project",
+ "serde",
+ "serde_with",
+ "strum",
+ "thiserror 2.0.12",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+ "utoipa",
+ "uuid",
+ "zbus",
 ]
 
 [[package]]
