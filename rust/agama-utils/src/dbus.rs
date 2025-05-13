@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use std::collections::HashMap;
-use zbus::zvariant::{self, OwnedObjectPath, OwnedValue, Value};
+use zvariant::{self, OwnedObjectPath, OwnedValue, Value};
 
 /// Nested hash to send to D-Bus.
 pub type NestedHash<'a> = HashMap<&'a str, HashMap<&'a str, zvariant::Value<'a>>>;
@@ -30,14 +30,14 @@ pub type OwnedNestedHash = HashMap<String, HashMap<String, zvariant::OwnedValue>
 pub fn get_property<'a, T>(
     properties: &'a HashMap<String, OwnedValue>,
     name: &str,
-) -> Result<T, zbus::zvariant::Error>
+) -> Result<T, zvariant::Error>
 where
     T: TryFrom<Value<'a>>,
-    <T as TryFrom<Value<'a>>>::Error: Into<zbus::zvariant::Error>,
+    <T as TryFrom<Value<'a>>>::Error: Into<zvariant::Error>,
 {
     let value: Value = properties
         .get(name)
-        .ok_or(zbus::zvariant::Error::Message(format!(
+        .ok_or(zvariant::Error::Message(format!(
             "Failed to find property '{}'",
             name
         )))?
@@ -51,10 +51,10 @@ where
 pub fn get_optional_property<'a, T>(
     properties: &'a HashMap<String, OwnedValue>,
     name: &str,
-) -> Result<Option<T>, zbus::zvariant::Error>
+) -> Result<Option<T>, zvariant::Error>
 where
     T: TryFrom<Value<'a>>,
-    <T as TryFrom<Value<'a>>>::Error: Into<zbus::zvariant::Error>,
+    <T as TryFrom<Value<'a>>>::Error: Into<zvariant::Error>,
 {
     if let Some(value) = properties.get(name) {
         let value: Value = value.try_into()?;
@@ -78,7 +78,7 @@ macro_rules! property_from_dbus {
 /// NOTE: we could follow a different approach like building our own type (e.g.
 /// using the newtype idiom) and offering a better API.
 ///
-/// * `source`: hash map containing non-onwed values ([enum@zbus::zvariant::Value]).
+/// * `source`: hash map containing non-onwed values ([enum@zvariant::Value]).
 pub fn to_owned_hash<T: ToString>(
     source: &HashMap<T, Value<'_>>,
 ) -> Result<HashMap<String, OwnedValue>, zvariant::Error> {
@@ -105,7 +105,7 @@ pub fn extract_id_from_path(path: &OwnedObjectPath) -> Result<u32, zvariant::Err
 mod tests {
     use std::collections::HashMap;
 
-    use zbus::zvariant::{self, OwnedValue, Str};
+    use zvariant::{self, OwnedValue, Str};
 
     use crate::dbus::{get_optional_property, get_property};
 
