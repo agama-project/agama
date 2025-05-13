@@ -4,6 +4,7 @@ members = [
     "agama-server",
     "agama-lib",
     "agama-locale-data",
+    "agama-network",
     "agama-utils",
     "xtask",
 ]
