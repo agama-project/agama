@@ -20,9 +20,23 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer, useState } from "react";
+/**
+ * This module defines the InstallerOptions component, which allows users to
+ * configure installer localization settings, with the option to copy them, when
+ * applicable, to the product's localization settings.
+ *
+ * It supports multiple UI variants (language-only, keyboard-only, or both), and
+ * manages both form and dialog state. To avoid scattering complex conditional
+ * logic throughout the main component, the implementation is split into several
+ * small internal components.
+ */
+
+import React, { useReducer } from "react";
+import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
+  Button,
+  ButtonProps,
   Checkbox,
   Flex,
   Form,
@@ -32,12 +46,16 @@ import {
   FormSelectProps,
 } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
-import { localConnection } from "~/utils";
+import { Icon } from "~/components/layout";
+import { LocaleConfig } from "~/types/l10n";
+import { InstallationPhase } from "~/types/status";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { keymapsQuery, useConfigMutation, useL10n } from "~/queries/l10n";
-import { LocaleConfig } from "~/types/l10n";
+import { useInstallerStatus } from "~/queries/status";
+import { localConnection } from "~/utils";
 import { _ } from "~/i18n";
 import supportedLanguages from "~/languages.json";
+import { PRODUCT, ROOT } from "~/routes/paths";
 
 /**
  * Props for select inputs
@@ -107,6 +125,7 @@ type FormState = {
   /** Whether reuse these settings for the product localization settings too */
   copyToSystem: boolean;
 };
+
 /**
  * Supported form actions.
  */
@@ -140,6 +159,46 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
 };
 
 /**
+ * Supported dialog actions.
+ */
+type DialogAction =
+  | { type: "OPEN" }
+  | { type: "CLOSE" }
+  | { type: "SET_BUSY" }
+  | { type: "SET_IDDLE" };
+
+/**
+ * Represents the dialog state
+ */
+type DialogState = {
+  isOpen: boolean;
+  isBusy: boolean;
+};
+
+/**
+ * Reducer for form state updates.
+ */
+const dialogReducer = (state: DialogState, action: DialogAction): DialogState => {
+  switch (action.type) {
+    case "OPEN": {
+      return { ...state, isOpen: true };
+    }
+
+    case "CLOSE": {
+      return { isOpen: false, isBusy: false };
+    }
+
+    case "SET_BUSY": {
+      return { ...state, isBusy: true };
+    }
+
+    case "SET_IDDLE": {
+      return { ...state, isBusy: false };
+    }
+  }
+};
+
+/**
  * Available actions for handling dialog and form events.
  */
 type Actions = {
@@ -148,14 +207,6 @@ type Actions = {
   handleCopyToSystemToggle: (_, v: boolean) => void;
   handleSubmitForm: (e: React.FormEvent<HTMLFormElement>) => void;
   handleCloseDialog: () => void;
-};
-
-/**
- * Represents the dialog state
- */
-type DialogState = {
-  isOpen: boolean;
-  isBusy: boolean;
 };
 
 /**
@@ -287,33 +338,99 @@ const KeyboardOnlyDialog = ({ state, formState, actions }: DialogProps) => {
   );
 };
 
+/** Icon representing the language settings. Used in toggle buttons. */
+const LanguageIcon = () => <Icon name="translate" />;
+
+/** Icon representing the keyboard settings. Used in toggle buttons. */
+const KeyboardIcon = () => <Icon name="keyboard" />;
+
+/** A layout helper that centers its children with spacing. Used in toggle buttons. */
+const CenteredContent = ({ children }: React.PropsWithChildren) => (
+  <Flex
+    gap={{ default: "gapXs" }}
+    alignContent={{ default: "alignContentCenter" }}
+    alignItems={{ default: "alignItemsCenter" }}
+  >
+    {children}
+  </Flex>
+);
+
+/** Toggle button for accessing both language and keyboard layout settings. */
+const AllSettingsToggle = ({ size, onClick, language, keymap }) => (
+  <Button
+    size={size}
+    onClick={onClick}
+    aria-label={_("Change display language and keyboard layout")}
+    variant="plain"
+  >
+    <CenteredContent>
+      <LanguageIcon /> {language} <KeyboardIcon /> {keymap}
+    </CenteredContent>
+  </Button>
+);
+
+/** Toggle button for accessing only language settings. */
+const LanguageOnlyToggle = ({ size, onClick, language }) => (
+  <Button size={size} onClick={onClick} aria-label={_("Change display language")} variant="plain">
+    <CenteredContent>
+      <LanguageIcon /> {language}
+    </CenteredContent>
+  </Button>
+);
+
+/** Toggle button for accessing only keymap settings. */
+const KeyboardOnlyToggle = ({ size, onClick, keymap }) => (
+  <Button size={size} onClick={onClick} aria-label={_("Change keyboard layout")} variant="plain">
+    <CenteredContent>
+      <KeyboardIcon /> {keymap}
+    </CenteredContent>
+  </Button>
+);
+
 /**
- * Defines the available dialog modes:
- *   "all": Show both language and keyboard layout options.
- *   "language": Show only language selection.
- *   "keyboard": Show only keyboard layout selection.
+ * Defines the available installer options modes:
+ *   "all": Allow settings both language and keyboard layout.
+ *   "language": Allow setting only language.
+ *   "keyboard": Allow settings only keyboard layout.
  */
-type DialogVariants = "all" | "language" | "keyboard";
+type InstallerOptionsVariant = "all" | "language" | "keyboard";
 
 /**
  * Maps each dialog variant to its corresponding React component.
  */
-const dialogs: { [key in DialogVariants]: React.FC<DialogProps> } = {
+const dialogs: { [key in InstallerOptionsVariant]: React.FC<DialogProps> } = {
   all: AllSettingsDialog,
   language: LanguageOnlyDialog,
   keyboard: KeyboardOnlyDialog,
 };
 
 /**
+ * Props passed to each toggle variant.
+ */
+type ToggleProps = Pick<ButtonProps, "size" | "onClick"> & {
+  language?: string;
+  keymap?: string;
+};
+
+/**
+ * Maps each toggle variant to its corresponding React component.
+ */
+const toggles: { [key in InstallerOptionsVariant]: React.FC<ToggleProps> } = {
+  all: AllSettingsToggle,
+  language: LanguageOnlyToggle,
+  keyboard: KeyboardOnlyToggle,
+};
+
+/**
  * Props for the main InstallerOptions component.
  */
-type InstallerOptionsProps = {
-  /** Whether the dialog is currently open. */
-  isOpen: boolean;
+export type InstallerOptionsProps = {
   /** Determines which dialog variant to render. */
-  variant?: DialogVariants;
+  variant?: InstallerOptionsVariant;
   /** Optional callback when the dialog is closed. */
   onClose?: () => void;
+  /** The button toggle size. See PF/Button documentation. */
+  toggleSize?: ButtonProps["size"];
 };
 
 /**
@@ -324,29 +441,38 @@ type InstallerOptionsProps = {
  *
  */
 export default function InstallerOptions({
-  isOpen = false,
   variant = "all",
+  toggleSize = "default",
   onClose,
 }: InstallerOptionsProps) {
-  const {
-    language: initialLanguage,
-    keymap: initialKeymap,
-    changeLanguage,
-    changeKeymap,
-  } = useInstallerL10n();
-
-  const initialState = {
-    language: initialLanguage,
-    keymap: initialKeymap,
-    copyToSystem: true,
-  };
-
-  const { mutate: updateSystemL10n } = useConfigMutation();
+  const location = useLocation();
   const { locales } = useL10n();
-  const [isBusy, setIsBusy] = useState(false);
-  const [formState, dispatch] = useReducer(formReducer, initialState);
-  const dialogState: DialogState = { isOpen, isBusy };
+  const { mutate: updateSystemL10n } = useConfigMutation();
+  const { language, keymap, changeLanguage, changeKeymap } = useInstallerL10n();
+  const { phase } = useInstallerStatus({ suspense: true });
+  const initialFormState = { language, keymap, copyToSystem: true };
+  const [formState, dispatch] = useReducer(formReducer, initialFormState);
+  const [dialogState, dispatchDialogAction] = useReducer(dialogReducer, {
+    isOpen: false,
+    isBusy: false,
+  });
 
+  // Skip rendering if any of the following conditions are met
+  const skip =
+    (variant === "keyboard" && !localConnection()) ||
+    phase === InstallationPhase.Install ||
+    // FIXME: below condition could be a problem for a question appearing while
+    // product progress
+    [ROOT.login, ROOT.installationProgress, ROOT.installationFinished, PRODUCT.progress].includes(
+      location.pathname,
+    );
+
+  if (skip) return;
+
+  /**
+   * Copies selected localization settings to the product to install settings,
+   * if applicable.
+   **/
   const copyToSystem = () => {
     // FIXME: export and use languageToLocale from context/installerL10n
     const systemLocale = locales.find((l) => l.id.startsWith(formState.language.replace("-", "_")));
@@ -359,15 +485,14 @@ export default function InstallerOptions({
   };
 
   const close = () => {
-    formState.copyToSystem && copyToSystem();
-    dispatch({ type: "RESET", state: initialState });
-    setIsBusy(false);
+    dispatch({ type: "RESET", state: initialFormState });
+    dispatchDialogAction({ type: "CLOSE" });
     typeof onClose === "function" && onClose();
   };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsBusy(true);
+    dispatchDialogAction({ type: "SET_BUSY" });
 
     try {
       if (variant !== "language" && localConnection()) {
@@ -377,9 +502,11 @@ export default function InstallerOptions({
       if (variant !== "keyboard") {
         await changeLanguage(formState.language);
       }
+
+      formState.copyToSystem && copyToSystem();
     } catch (e) {
       console.error(e);
-      setIsBusy(false);
+      dispatchDialogAction({ type: "SET_IDDLE" });
     } finally {
       close();
     }
@@ -393,7 +520,18 @@ export default function InstallerOptions({
     handleCloseDialog: close,
   };
 
+  const Toggle = toggles[variant];
   const Dialog = dialogs[variant];
 
-  return <Dialog state={dialogState} formState={formState} actions={actions} />;
+  return (
+    <>
+      <Toggle
+        size={toggleSize}
+        language={supportedLanguages[language]}
+        keymap={keymap}
+        onClick={() => dispatchDialogAction({ type: "OPEN" })}
+      />
+      <Dialog state={dialogState} formState={formState} actions={actions} />
+    </>
+  );
 }

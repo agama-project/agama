@@ -49,4 +49,3 @@ export { default as SubtleContent } from "./SubtleContent";
 export { default as MenuHeader } from "./MenuHeader";
 export { default as SplitButton } from "./SplitButton";
 export { default as SkipTo } from "./SkipTo";
-export { default as LanguageAndKeyboard } from "./LanguageAndKeyboard";

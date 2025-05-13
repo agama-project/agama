@@ -43,7 +43,7 @@ import { useMatches } from "react-router-dom";
 import { Icon } from "~/components/layout";
 import { useProduct } from "~/queries/software";
 import { Route } from "~/types/routes";
-import { ChangeProductOption, InstallButton, LanguageAndKeyboard, SkipTo } from "~/components/core";
+import { ChangeProductOption, InstallButton, InstallerOptions, SkipTo } from "~/components/core";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
 
@@ -144,7 +144,7 @@ export default function Header({
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
               <ToolbarItem>
-                <LanguageAndKeyboard />
+                <InstallerOptions />
               </ToolbarItem>
               <ToolbarItem>
                 <InstallButton onClickWithIssues={toggleIssuesDrawer} />
