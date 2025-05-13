@@ -24,9 +24,9 @@
 //! with nested hash maps (see [NestedHash] and [OwnedNestedHash]).
 use super::{error::NmError, model::*};
 use crate::network::model::*;
-use agama_lib::{
-    dbus::{get_optional_property, get_property, to_owned_hash, NestedHash, OwnedNestedHash},
-    network::types::{BondMode, SSID},
+use agama_lib::network::types::{BondMode, SSID};
+use agama_utils::dbus::{
+    get_optional_property, get_property, to_owned_hash, NestedHash, OwnedNestedHash,
 };
 use cidr::IpInet;
 use macaddr::MacAddr6;

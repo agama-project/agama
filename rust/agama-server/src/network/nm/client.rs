@@ -34,9 +34,9 @@ use super::proxies::{
 use crate::network::model::{
     AccessPoint, Connection, ConnectionConfig, Device, GeneralState, SecurityProtocol,
 };
-use agama_lib::dbus::get_optional_property;
 use agama_lib::error::ServiceError;
 use agama_lib::network::types::{DeviceType, SSID};
+use agama_utils::dbus::get_optional_property;
 use uuid::Uuid;
 use zbus;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};

@@ -22,3 +22,4 @@
 //! other Agama's crates.
 
 pub mod dbus;
+pub mod openapi;

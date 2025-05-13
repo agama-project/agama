@@ -32,7 +32,7 @@
 //! …consequently `zbus-xmlgen` did not generate code for the above interfaces.
 //! Also some proxies can be used against multiple services when they share interface.
 
-use agama_lib::dbus::OwnedNestedHash;
+use agama_utils::dbus::OwnedNestedHash;
 use zbus::proxy;
 
 #[proxy(

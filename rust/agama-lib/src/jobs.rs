@@ -27,7 +27,8 @@ use std::collections::HashMap;
 use serde::Serialize;
 use zbus::zvariant::OwnedValue;
 
-use crate::{dbus::get_property, error::ServiceError};
+use crate::error::ServiceError;
+use agama_utils::dbus::get_property;
 
 pub mod client;
 

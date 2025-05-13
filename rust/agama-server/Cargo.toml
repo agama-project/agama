@@ -10,6 +10,7 @@ rust-version.workspace = true
 anyhow = "1.0"
 agama-locale-data = { path = "../agama-locale-data" }
 agama-lib = { path = "../agama-lib" }
+agama-utils = { path = "../agama-utils" }
 zbus = { version = "5", default-features = false, features = ["tokio"] }
 uuid = { version = "1.10.0", features = ["v4"] }
 thiserror = "2.0.12"

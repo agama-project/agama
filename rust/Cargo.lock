@@ -44,6 +44,7 @@ dependencies = [
 name = "agama-lib"
 version = "1.0.0"
 dependencies = [
+ "agama-utils",
  "anyhow",
  "async-trait",
  "chrono",
@@ -94,6 +95,7 @@ version = "0.1.0"
 dependencies = [
  "agama-lib",
  "agama-locale-data",
+ "agama-utils",
  "anyhow",
  "async-trait",
  "axum",
@@ -140,6 +142,11 @@ dependencies = [
 [[package]]
 name = "agama-utils"
 version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "utoipa",
+ "zvariant",
+]
 
 [[package]]
 name = "ahash"
@@ -5314,14 +5321,13 @@ dependencies = [
 
 [[package]]
 name = "zvariant"
-version = "5.4.0"
+version = "5.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b2df9ee044893fcffbdc25de30546edef3e32341466811ca18421e3cd6c5a3ac"
+checksum = "e34d60a2cff1bfddd0d4a73791fd0a4255a59e349aa0cec437cb0df7776f2450"
 dependencies = [
  "endi",
  "enumflags2",
  "serde",
- "static_assertions",
  "winnow",
  "zvariant_derive",
  "zvariant_utils",
@@ -5329,9 +5335,9 @@ dependencies = [
 
 [[package]]
 name = "zvariant_derive"
-version = "5.4.0"
+version = "5.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "74170caa85b8b84cc4935f2d56a57c7a15ea6185ccdd7eadb57e6edd90f94b2f"
+checksum = "0604376d86f838e0c3f4fe6d6ee1f861a04dac9015cbbb25c25d336996c91423"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",

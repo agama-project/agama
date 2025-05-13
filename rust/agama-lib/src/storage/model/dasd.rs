@@ -24,7 +24,8 @@ use std::collections::HashMap;
 use serde::Serialize;
 use zbus::zvariant::OwnedValue;
 
-use crate::{dbus::get_property, error::ServiceError};
+use crate::error::ServiceError;
+use agama_utils::dbus::get_property;
 
 /// Represents a DASD device (specific to s390x systems).
 #[derive(Clone, Debug, Serialize, Default, utoipa::ToSchema)]
