@@ -68,76 +68,230 @@ describe("InstallerOptions", () => {
     jest.spyOn(utils, "localConnection").mockReturnValue(true);
   });
 
-  it("renders a dialog for settings display language and keyboard layout", async () => {
-    installerRender(<InstallerOptions isOpen />, { withL10n: true });
-    const dialog = screen.getByRole("dialog", { name: "Language & Keyboard" });
-    within(dialog).getByRole("combobox", { name: "Language" });
-    await within(dialog).findByRole("combobox", { name: "Keyboard layout" });
-  });
+  describe("when using variant=all", () => {
+    it("allows setting display language and keyboard layout", async () => {
+      const { user } = installerRender(<InstallerOptions isOpen />, { withL10n: true });
+      const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
+      const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
+      const keymapSelector = await within(dialog).findByRole("combobox", {
+        name: "Keyboard layout",
+      });
+      const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
 
-  it("allows setting display language and keyboard layout", async () => {
-    const { user } = installerRender(<InstallerOptions isOpen />, { withL10n: true });
-    const dialog = screen.getByRole("dialog", { name: "Language & Keyboard" });
-    const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
-    const keymapSelector = await within(dialog).findByRole("combobox", { name: "Keyboard layout" });
-    const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
+      await user.selectOptions(languageSelector, "Español");
+      await user.selectOptions(keymapSelector, "English (UK)");
 
-    await user.selectOptions(languageSelector, "Español");
-    await user.selectOptions(keymapSelector, "English (UK)");
+      await user.click(acceptButton);
+      expect(mockChangeUIKeymap).toHaveBeenCalledWith("gb");
+      expect(mockChangeUILanguage).toHaveBeenCalledWith("es-ES");
+    });
 
-    await user.click(acceptButton);
-    expect(mockChangeUIKeymap).toHaveBeenCalledWith("gb");
-    expect(mockChangeUILanguage).toHaveBeenCalledWith("es-ES");
-  });
+    it("allows copying settings to selected product", async () => {
+      const { user } = installerRender(<InstallerOptions isOpen />, { withL10n: true });
+      const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
+      const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
+      const keymapSelector = await within(dialog).findByRole("combobox", {
+        name: "Keyboard layout",
+      });
+      const copySettings = within(dialog).getByRole("checkbox", {
+        name: /Use these same settings/,
+      });
+      const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
 
-  it("does not allow setting the keyboard layout", async () => {
-    jest.spyOn(utils, "localConnection").mockReturnValue(false);
-    const { user } = installerRender(<InstallerOptions isOpen />, { withL10n: true });
-    const dialog = screen.getByRole("dialog", { name: "Language & Keyboard" });
-    const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
-    const keymapSelector = within(dialog).queryByRole("combobox", { name: "Keyboard layout" });
-    expect(keymapSelector).toBeNull();
-    await within(dialog).findByText("Cannot be changed in remote installation");
-    await user.selectOptions(languageSelector, "Español");
-    const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
-    await user.click(acceptButton);
-    expect(mockChangeUIKeymap).not.toHaveBeenCalled();
-  });
+      expect(copySettings).toBeChecked();
 
-  it("allows copying settings to selected product", async () => {
-    const { user } = installerRender(<InstallerOptions isOpen />, { withL10n: true });
-    const dialog = screen.getByRole("dialog", { name: "Language & Keyboard" });
-    const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
-    const keymapSelector = await within(dialog).findByRole("combobox", { name: "Keyboard layout" });
-    const copySettings = within(dialog).getByRole("checkbox", { name: /Use these same settings/ });
-    const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
+      await user.selectOptions(languageSelector, "Español");
+      await user.selectOptions(keymapSelector, "English (UK)");
 
-    expect(copySettings).toBeChecked();
+      await user.click(acceptButton);
+      expect(mockL10nConfigMutation.mutate).toHaveBeenCalledWith({
+        locales: ["es_ES.UTF-8"],
+        keymap: "gb",
+      });
+    });
 
-    await user.selectOptions(languageSelector, "Español");
-    await user.selectOptions(keymapSelector, "English (UK)");
+    it("allows not copying settings to selected product", async () => {
+      const { user } = installerRender(<InstallerOptions isOpen />, { withL10n: true });
+      const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
+      const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
+      const keymapSelector = await within(dialog).findByRole("combobox", {
+        name: "Keyboard layout",
+      });
+      const copySettings = within(dialog).getByRole("checkbox", {
+        name: /Use these same settings/,
+      });
+      const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
 
-    await user.click(acceptButton);
-    expect(mockL10nConfigMutation.mutate).toHaveBeenCalledWith({
-      locales: ["es_ES.UTF-8"],
-      keymap: "gb",
+      expect(copySettings).toBeChecked();
+      await user.click(copySettings);
+      expect(copySettings).not.toBeChecked();
+      await user.selectOptions(languageSelector, "Español");
+      await user.selectOptions(keymapSelector, "English (UK)");
+      await user.click(acceptButton);
+      expect(mockL10nConfigMutation.mutate).not.toHaveBeenCalled();
+    });
+
+    describe("but in a remote connection", () => {
+      beforeEach(() => {
+        jest.spyOn(utils, "localConnection").mockReturnValue(false);
+      });
+
+      it("does not allow setting the keyboard layout", async () => {
+        const { user } = installerRender(<InstallerOptions isOpen />, { withL10n: true });
+        const dialog = screen.getByRole("dialog");
+        const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
+        const keymapSelector = within(dialog).queryByRole("combobox", { name: "Keyboard layout" });
+        expect(keymapSelector).toBeNull();
+        await within(dialog).findByText("Cannot be changed in remote installation");
+        await user.selectOptions(languageSelector, "Español");
+        const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
+        await user.click(acceptButton);
+        expect(mockChangeUIKeymap).not.toHaveBeenCalled();
+      });
     });
   });
 
-  it("allows not copying settings to selected product", async () => {
-    const { user } = installerRender(<InstallerOptions isOpen />, { withL10n: true });
-    const dialog = screen.getByRole("dialog", { name: "Language & Keyboard" });
-    const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
-    const keymapSelector = await within(dialog).findByRole("combobox", { name: "Keyboard layout" });
-    const copySettings = within(dialog).getByRole("checkbox", { name: /Use these same settings/ });
-    const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
+  describe("when using variant=language", () => {
+    it("allows setting only language", async () => {
+      const { user } = installerRender(<InstallerOptions isOpen variant="language" />, {
+        withL10n: true,
+      });
+      const dialog = screen.getByRole("dialog", { name: "Change Language" });
+      const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
+      const keymapSelector = within(dialog).queryByRole("combobox", {
+        name: "Keyboard layout",
+      });
+      expect(keymapSelector).toBeNull();
+      const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
 
-    expect(copySettings).toBeChecked();
-    await user.click(copySettings);
-    expect(copySettings).not.toBeChecked();
-    await user.selectOptions(languageSelector, "Español");
-    await user.selectOptions(keymapSelector, "English (UK)");
-    await user.click(acceptButton);
-    expect(mockL10nConfigMutation.mutate).not.toHaveBeenCalled();
+      await user.selectOptions(languageSelector, "Español");
+
+      await user.click(acceptButton);
+      expect(mockChangeUILanguage).toHaveBeenCalledWith("es-ES");
+    });
+
+    it("allows copying settings to selected product", async () => {
+      const { user } = installerRender(<InstallerOptions isOpen variant="language" />, {
+        withL10n: true,
+      });
+      const dialog = screen.getByRole("dialog", { name: "Change Language" });
+      const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
+      const copySettings = within(dialog).getByRole("checkbox", {
+        name: /Use for the selected product too/,
+      });
+      const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
+
+      expect(copySettings).toBeChecked();
+
+      await user.selectOptions(languageSelector, "Español");
+
+      await user.click(acceptButton);
+      expect(mockL10nConfigMutation.mutate).toHaveBeenCalledWith({
+        locales: ["es_ES.UTF-8"],
+      });
+    });
+
+    it("allows not copying settings to selected product", async () => {
+      const { user } = installerRender(<InstallerOptions isOpen variant="language" />, {
+        withL10n: true,
+      });
+      const dialog = screen.getByRole("dialog", { name: "Change Language" });
+      const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
+      const copySettings = within(dialog).getByRole("checkbox", {
+        name: /Use for the selected product too/,
+      });
+      const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
+
+      expect(copySettings).toBeChecked();
+      await user.click(copySettings);
+      expect(copySettings).not.toBeChecked();
+      await user.selectOptions(languageSelector, "Español");
+      await user.click(acceptButton);
+      expect(mockL10nConfigMutation.mutate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("when using variant=keyboard", () => {
+    it("allows setting only keyboard layout", async () => {
+      const { user } = installerRender(<InstallerOptions isOpen variant="keyboard" />, {
+        withL10n: true,
+      });
+      const dialog = screen.getByRole("dialog", { name: "Change keyboard" });
+      const languageSelector = within(dialog).queryByRole("combobox", { name: "Language" });
+      const keymapSelector = await within(dialog).findByRole("combobox", {
+        name: "Keyboard layout",
+      });
+      expect(languageSelector).toBeNull();
+      const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
+
+      await user.selectOptions(keymapSelector, "English (UK)");
+
+      await user.click(acceptButton);
+      expect(mockChangeUIKeymap).toHaveBeenCalledWith("gb");
+      expect(mockChangeUILanguage).not.toHaveBeenCalled();
+    });
+
+    it("allows copying settings to selected product", async () => {
+      const { user } = installerRender(<InstallerOptions isOpen variant="keyboard" />, {
+        withL10n: true,
+      });
+      const dialog = screen.getByRole("dialog", { name: "Change keyboard" });
+      const keymapSelector = await within(dialog).findByRole("combobox", {
+        name: "Keyboard layout",
+      });
+      const copySettings = within(dialog).getByRole("checkbox", {
+        name: /Use for the selected product too/,
+      });
+      const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
+
+      expect(copySettings).toBeChecked();
+
+      await user.selectOptions(keymapSelector, "English (UK)");
+
+      await user.click(acceptButton);
+      expect(mockL10nConfigMutation.mutate).toHaveBeenCalledWith({
+        keymap: "gb",
+      });
+    });
+
+    it("allows not copying settings to selected product", async () => {
+      const { user } = installerRender(<InstallerOptions isOpen variant="keyboard" />, {
+        withL10n: true,
+      });
+      const dialog = screen.getByRole("dialog", { name: "Change keyboard" });
+      const keymapSelector = await within(dialog).findByRole("combobox", {
+        name: "Keyboard layout",
+      });
+      const copySettings = within(dialog).getByRole("checkbox", {
+        name: /Use for the selected product too/,
+      });
+      const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
+
+      expect(copySettings).toBeChecked();
+      await user.click(copySettings);
+      expect(copySettings).not.toBeChecked();
+      await user.selectOptions(keymapSelector, "English (UK)");
+      await user.click(acceptButton);
+      expect(mockL10nConfigMutation.mutate).not.toHaveBeenCalled();
+    });
+
+    describe("but in a remote connection", () => {
+      beforeEach(() => {
+        jest.spyOn(utils, "localConnection").mockReturnValue(false);
+      });
+
+      it("does not allow setting the keyboard layout", async () => {
+        const { user } = installerRender(<InstallerOptions isOpen variant="keyboard" />, {
+          withL10n: true,
+        });
+        const dialog = screen.getByRole("dialog");
+        const keymapSelector = within(dialog).queryByRole("combobox", { name: "Keyboard layout" });
+        expect(keymapSelector).toBeNull();
+        await within(dialog).findByText("Cannot be changed in remote installation");
+        const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
+        await user.click(acceptButton);
+        expect(mockChangeUIKeymap).not.toHaveBeenCalled();
+      });
+    });
   });
 });
