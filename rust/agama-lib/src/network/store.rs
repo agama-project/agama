@@ -176,6 +176,18 @@ mod tests {
                 "bond0".to_string(),
                 "eth2".to_string()
             ]
+        );
+
+        let conns = vec![bridge];
+        let ordered = ordered_connections(&conns);
+        assert_eq!(
+            ordered,
+            vec![
+                "eth0".to_string(),
+                "eth1".to_string(),
+                "eth3".to_string(),
+                "br0".to_string()
+            ]
         )
     }
 }

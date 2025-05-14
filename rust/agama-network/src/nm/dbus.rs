@@ -80,6 +80,8 @@ pub fn connection_to_dbus<'a>(
             .as_deref()
             .unwrap_or(controller.id.as_str());
         connection_dbus.insert("master", master.into());
+        connection_dbus.remove("autoconnect");
+        connection_dbus.insert("autoconnect", false.into());
     } else {
         connection_dbus.insert("port-type", "".into());
         connection_dbus.insert("master", "".into());
@@ -122,6 +124,7 @@ pub fn connection_to_dbus<'a>(
         }
         ConnectionConfig::Bond(bond) => {
             connection_dbus.insert("type", BOND_KEY.into());
+            connection_dbus.insert("autoconnect-slaves", 1.into());
             if !connection_dbus.contains_key("interface-name") {
                 connection_dbus.insert("interface-name", conn.id.as_str().into());
             }
@@ -136,6 +139,7 @@ pub fn connection_to_dbus<'a>(
         }
         ConnectionConfig::Bridge(bridge) => {
             connection_dbus.insert("type", BRIDGE_KEY.into());
+            connection_dbus.insert("autoconnect-slaves", 1.into());
             result.insert(BRIDGE_KEY, bridge_config_to_dbus(bridge));
         }
         ConnectionConfig::Infiniband(infiniband) => {
@@ -265,7 +269,7 @@ fn is_bridge(conn: NestedHash) -> bool {
         }
     }
 
-    return false;
+    false
 }
 
 /// Cleans up the NestedHash that represents a connection.
