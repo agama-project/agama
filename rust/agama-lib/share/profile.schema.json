@@ -446,22 +446,22 @@
                   "forwardDelay": {
                     "title": "Spanning Tree Protocol forward delay, in seconds",
                     "type": "integer",
-                    "minimum": "0"
+                    "minimum": 0
                   },
                   "priority": {
                     "title": "Spanning Tree Protocol priority. Lower values are 'better'",
                     "type": "integer",
-                    "minimum": "0"
+                    "minimum": 0
                   },
                   "maxAge": {
                     "title": "Spanning Tree Protocol maximum message age, in seconds",
                     "type": "integer",
-                    "minimum": "0"
+                    "minimum": 0
                   },
                   "helloTime": {
                     "title": "Spanning Tree Protocol hello time, in seconds",
                     "type": "integer",
-                    "minimum": "0"
+                    "minimum": 0
                   },
                   "ports": {
                     "type": "array",
@@ -472,7 +472,6 @@
                   }
                 }
               },
-
               "match": {
                 "type": "object",
                 "title": "Match settings",
