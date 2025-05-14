@@ -80,9 +80,10 @@ impl WSClient {
     }
 
     /// Receive a message from the websocket.
-    pub fn receive(&mut self) -> Result<String, WSClientError> {
+    pub fn receive(&mut self) -> Result<Event, WSClientError> {
         let msg = self.socket.read()?;
-        Ok(msg.to_string())
+        let event: Event = serde_json::from_str(&msg.to_string())?;
+        Ok(event)
     }
 
     fn find_port(uri: &Uri) -> u16 {

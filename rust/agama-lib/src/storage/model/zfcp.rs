@@ -21,14 +21,14 @@
 //! Implements a data model for zFCP devices management.
 use std::collections::HashMap;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use zbus::zvariant::OwnedValue;
 
 use crate::error::ServiceError;
 use agama_utils::dbus::get_property;
 
 /// Represents a zFCP disk (specific to s390x systems).
-#[derive(Clone, Debug, Serialize, Default, utoipa::ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ZFCPDisk {
     /// Name of the zFCP device (e.g., /dev/sda)
@@ -55,7 +55,7 @@ impl TryFrom<&HashMap<String, OwnedValue>> for ZFCPDisk {
 }
 
 /// Represents a zFCP controller (specific to s390x systems).
-#[derive(Clone, Debug, Serialize, Default, utoipa::ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ZFCPController {
     /// unique internal ID for given controller

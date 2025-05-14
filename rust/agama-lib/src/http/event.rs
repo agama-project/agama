@@ -34,12 +34,12 @@ use crate::{
     },
     users::{FirstUser, RootUser},
 };
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use crate::issue::Issue;
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "type")]
 pub enum Event {
     L10nConfigChanged(LocaleConfig),
