@@ -39,6 +39,7 @@ import {
   ButtonProps,
   Checkbox,
   Flex,
+  FlexProps,
   Form,
   FormGroup,
   FormSelect,
@@ -368,12 +369,11 @@ const LanguageIcon = () => <Icon name="translate" />;
 const KeyboardIcon = () => <Icon name="keyboard" />;
 
 /** A layout helper that centers its children with spacing. Used in toggle buttons. */
-const CenteredContent = ({ children }: React.PropsWithChildren) => (
-  <Flex
-    gap={{ default: "gapXs" }}
-    alignContent={{ default: "alignContentCenter" }}
-    alignItems={{ default: "alignItemsCenter" }}
-  >
+const CenteredContent = ({
+  children,
+  alignItems = "alignItemsCenter",
+}: React.PropsWithChildren<{ alignItems?: FlexProps["alignItems"]["default"] }>) => (
+  <Flex gap={{ default: "gapXs" }} component="span" alignItems={{ default: alignItems }}>
     {children}
   </Flex>
 );
@@ -387,7 +387,7 @@ const AllSettingsToggle = ({ size, onClick, language, keymap }) => (
     variant="plain"
   >
     <CenteredContent>
-      <LanguageIcon /> {language} <KeyboardIcon /> {keymap}
+      <LanguageIcon /> {language} <KeyboardIcon /> <code>{keymap}</code>
     </CenteredContent>
   </Button>
 );
@@ -404,8 +404,8 @@ const LanguageOnlyToggle = ({ size, onClick, language }) => (
 /** Toggle button for accessing only keymap settings. */
 const KeyboardOnlyToggle = ({ size, onClick, keymap }) => (
   <Button size={size} onClick={onClick} aria-label={_("Change keyboard layout")} variant="plain">
-    <CenteredContent>
-      <KeyboardIcon /> {keymap}
+    <CenteredContent alignItems="alignItemsFlexEnd">
+      <KeyboardIcon /> <code>{keymap}</code>
     </CenteredContent>
   </Button>
 );
