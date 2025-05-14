@@ -26,11 +26,11 @@
 ///
 /// Using the newtype pattern around an String is enough. For proper support, we might replace this
 /// struct with an enum.
-use crate::network::{
+use crate::{
     model::{Ipv4Method, Ipv6Method, SecurityProtocol, WirelessMode},
     nm::error::NmError,
+    types::{ConnectionState, DeviceType},
 };
-use agama_lib::network::types::{ConnectionState, DeviceType};
 use std::fmt;
 use std::str::FromStr;
 

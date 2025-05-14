@@ -25,10 +25,10 @@
 
 use std::collections::{hash_map::Entry, HashMap};
 
-use crate::network::{
+use crate::{
     adapter::Watcher, model::Device, nm::proxies::DeviceProxy, Action, NetworkAdapterError,
 };
-use agama_lib::error::ServiceError;
+use anyhow::anyhow;
 use async_trait::async_trait;
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
 use tokio_stream::StreamExt;
@@ -36,6 +36,7 @@ use zbus::zvariant::OwnedObjectPath;
 
 use super::{
     builder::DeviceFromProxyBuilder,
+    error::NmError,
     model::NmConnectionState,
     proxies::{ActiveConnectionProxy, NetworkManagerProxy},
     streams::{ActiveConnectionChangedStream, DeviceChangedStream, NmChange},
@@ -108,7 +109,10 @@ impl Watcher for NetworkManagerWatcher {
         // Turn the changes into actions in a separate task.
         let connection = self.connection.clone();
         let mut dispatcher = ActionDispatcher::new(connection, rx, actions);
-        dispatcher.run().await.map_err(NetworkAdapterError::Watcher)
+        dispatcher
+            .run()
+            .await
+            .map_err(|e| NetworkAdapterError::Watcher(anyhow!(e)))
     }
 }
 
@@ -144,7 +148,7 @@ impl ActionDispatcher<'_> {
     /// Processes the updates.
     ///
     /// It runs until the updates channel is closed.
-    pub async fn run(&mut self) -> Result<(), ServiceError> {
+    pub async fn run(&mut self) -> Result<(), NmError> {
         self.read_devices().await?;
         while let Some(update) = self.updates_rx.recv().await {
             let result = match update {
@@ -169,7 +173,7 @@ impl ActionDispatcher<'_> {
     }
 
     /// Reads the devices.
-    async fn read_devices(&mut self) -> Result<(), ServiceError> {
+    async fn read_devices(&mut self) -> Result<(), NmError> {
         let nm_proxy = NetworkManagerProxy::new(&self.connection).await?;
         for path in nm_proxy.get_devices().await? {
             self.proxies.find_or_add_device(&path).await?;
@@ -180,7 +184,7 @@ impl ActionDispatcher<'_> {
     /// Handles the case where a new device appears.
     ///
     /// * `path`: D-Bus object path of the new device.
-    async fn handle_device_added(&mut self, path: OwnedObjectPath) -> Result<(), ServiceError> {
+    async fn handle_device_added(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         let (_, proxy) = self.proxies.find_or_add_device(&path).await?;
         if let Ok(device) = Self::device_from_proxy(&self.connection, proxy.clone()).await {
             _ = self.actions_tx.send(Action::AddDevice(Box::new(device)));
@@ -193,7 +197,7 @@ impl ActionDispatcher<'_> {
     /// Handles the case where a device is updated.
     ///
     /// * `path`: D-Bus object path of the updated device.
-    async fn handle_device_updated(&mut self, path: OwnedObjectPath) -> Result<(), ServiceError> {
+    async fn handle_device_updated(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         let (old_name, proxy) = self.proxies.find_or_add_device(&path).await?;
         let device = Self::device_from_proxy(&self.connection, proxy.clone()).await?;
         let new_name = device.name.clone();
@@ -207,7 +211,7 @@ impl ActionDispatcher<'_> {
     /// Handles the case where a device is removed.
     ///
     /// * `path`: D-Bus object path of the removed device.
-    async fn handle_device_removed(&mut self, path: OwnedObjectPath) -> Result<(), ServiceError> {
+    async fn handle_device_removed(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         if let Some((name, _)) = self.proxies.remove_device(&path) {
             _ = self.actions_tx.send(Action::RemoveDevice(name));
         }
@@ -217,10 +221,7 @@ impl ActionDispatcher<'_> {
     /// Handles the case where the IPv4 configuration changes.
     ///
     /// * `path`: D-Bus object path of the changed IP configuration.
-    async fn handle_ip4_config_changed(
-        &mut self,
-        path: OwnedObjectPath,
-    ) -> Result<(), ServiceError> {
+    async fn handle_ip4_config_changed(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         if let Some((name, proxy)) = self.proxies.find_device_for_ip4(&path).await {
             let device = Self::device_from_proxy(&self.connection, proxy.clone()).await?;
             _ = self
@@ -233,10 +234,7 @@ impl ActionDispatcher<'_> {
     /// Handles the case where the IPv6 configuration changes.
     ///
     /// * `path`: D-Bus object path of the changed IP configuration.
-    async fn handle_ip6_config_changed(
-        &mut self,
-        path: OwnedObjectPath,
-    ) -> Result<(), ServiceError> {
+    async fn handle_ip6_config_changed(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         if let Some((name, proxy)) = self.proxies.find_device_for_ip6(&path).await {
             let device = Self::device_from_proxy(&self.connection, proxy.clone()).await?;
             _ = self
@@ -252,7 +250,7 @@ impl ActionDispatcher<'_> {
     async fn handle_active_connection_updated(
         &mut self,
         path: OwnedObjectPath,
-    ) -> Result<(), ServiceError> {
+    ) -> Result<(), NmError> {
         let proxy = self.proxies.find_or_add_active_connection(&path).await?;
         let id = proxy.id().await?;
         let state = proxy.state().await.map(|s| NmConnectionState(s.clone()))?;
@@ -272,7 +270,7 @@ impl ActionDispatcher<'_> {
     async fn handle_active_connection_removed(
         &mut self,
         path: OwnedObjectPath,
-    ) -> Result<(), ServiceError> {
+    ) -> Result<(), NmError> {
         if let Some(proxy) = self.proxies.remove_active_connection(&path) {
             let id = proxy.id().await?;
             let state = proxy.state().await.map(|s| NmConnectionState(s.clone()))?;
@@ -289,7 +287,7 @@ impl ActionDispatcher<'_> {
     async fn device_from_proxy(
         connection: &zbus::Connection,
         proxy: DeviceProxy<'_>,
-    ) -> Result<Device, ServiceError> {
+    ) -> Result<Device, NmError> {
         let builder = DeviceFromProxyBuilder::new(connection, &proxy);
         builder.build().await
     }
@@ -318,7 +316,7 @@ impl<'a> ProxiesRegistry<'a> {
     pub async fn find_or_add_device(
         &mut self,
         path: &OwnedObjectPath,
-    ) -> Result<&(String, DeviceProxy<'a>), ServiceError> {
+    ) -> Result<&(String, DeviceProxy<'a>), NmError> {
         // Cannot use entry(...).or_insert_with(...) because of the async call.
         match self.devices.entry(path.clone()) {
             Entry::Vacant(entry) => {
@@ -340,7 +338,7 @@ impl<'a> ProxiesRegistry<'a> {
     pub async fn find_or_add_active_connection(
         &mut self,
         path: &OwnedObjectPath,
-    ) -> Result<&ActiveConnectionProxy<'a>, ServiceError> {
+    ) -> Result<&ActiveConnectionProxy<'a>, NmError> {
         // Cannot use entry(...).or_insert_with(...) because of the async call.
         match self.active_connections.entry(path.clone()) {
             Entry::Vacant(entry) => {

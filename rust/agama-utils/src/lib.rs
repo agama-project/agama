@@ -1,4 +1,4 @@
-// Copyright (c) [2024-2025] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,15 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements support for handling the network settings
+//! This crate offers a set of utility struct and functions to be used accross
+//! other Agama's crates.
 
-mod client;
-mod store;
-
-pub use agama_network::{
-    error, model, settings, types, Action, Adapter, NetworkAdapterError, NetworkManagerAdapter,
-    NetworkSystem, NetworkSystemClient, NetworkSystemError,
-};
-pub use client::{NetworkClient, NetworkClientError};
-pub use settings::NetworkSettings;
-pub use store::{NetworkStore, NetworkStoreError};
+pub mod dbus;
+pub mod openapi;

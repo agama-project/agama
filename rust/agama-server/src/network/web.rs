@@ -33,17 +33,15 @@ use axum::{
     Json, Router,
 };
 
-use super::{
-    error::NetworkStateError,
-    model::{AccessPoint, GeneralState},
-    system::{NetworkSystemClient, NetworkSystemError},
-    Adapter,
-};
-
-use crate::network::{model::Connection, model::Device, NetworkSystem};
 use agama_lib::{
     error::ServiceError,
-    network::{settings::NetworkConnection, types::NetworkConnectionWithState},
+    network::{
+        error::NetworkStateError,
+        model::{AccessPoint, Connection, Device, GeneralState},
+        settings::NetworkConnection,
+        types::NetworkConnectionWithState,
+        Adapter, NetworkSystem, NetworkSystemClient, NetworkSystemError,
+    },
 };
 
 use serde_json::json;

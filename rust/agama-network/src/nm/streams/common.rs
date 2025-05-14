@@ -18,8 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::error::ServiceError;
 use zbus::{message::Type as MessageType, zvariant::OwnedObjectPath, MatchRule, MessageStream};
+
+use crate::nm::error::NmError;
 
 #[derive(Debug, Clone)]
 pub enum NmChange {
@@ -35,7 +36,7 @@ pub enum NmChange {
 
 pub async fn build_added_and_removed_stream(
     connection: &zbus::Connection,
-) -> Result<MessageStream, ServiceError> {
+) -> Result<MessageStream, NmError> {
     let rule = MatchRule::builder()
         .msg_type(MessageType::Signal)
         .path("/org/freedesktop")?
@@ -50,7 +51,7 @@ pub async fn build_added_and_removed_stream(
 /// It listens for changes in several objects that are related to a network device.
 pub async fn build_properties_changed_stream(
     connection: &zbus::Connection,
-) -> Result<MessageStream, ServiceError> {
+) -> Result<MessageStream, NmError> {
     let rule = MatchRule::builder()
         .msg_type(MessageType::Signal)
         .interface("org.freedesktop.DBus.Properties")?

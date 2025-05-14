@@ -1,4 +1,4 @@
-// Copyright (c) [2024-2025] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,15 +18,21 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements support for handling the network settings
+//! Network configuration service for Agama
+//!
+//! This library implements the network configuration service for Agama.
 
-mod client;
-mod store;
+pub mod action;
+pub mod adapter;
+pub mod error;
+pub mod model;
+mod nm;
+pub mod settings;
+mod system;
+pub mod types;
 
-pub use agama_network::{
-    error, model, settings, types, Action, Adapter, NetworkAdapterError, NetworkManagerAdapter,
-    NetworkSystem, NetworkSystemClient, NetworkSystemError,
-};
-pub use client::{NetworkClient, NetworkClientError};
-pub use settings::NetworkSettings;
-pub use store::{NetworkStore, NetworkStoreError};
+pub use action::Action;
+pub use adapter::{Adapter, NetworkAdapterError};
+pub use model::NetworkState;
+pub use nm::NetworkManagerAdapter;
+pub use system::{NetworkSystem, NetworkSystemClient, NetworkSystemError};

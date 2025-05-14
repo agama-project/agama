@@ -20,22 +20,18 @@
 
 //! Conversion mechanism between proxies and model structs.
 
-use crate::network::{
+use crate::types::{DeviceState, DeviceType};
+use crate::{
     model::{Device, IpConfig, IpRoute, MacAddress},
     nm::{
         model::NmDeviceType,
         proxies::{DeviceProxy, IP4ConfigProxy, IP6ConfigProxy},
     },
 };
-use agama_lib::{
-    error::ServiceError,
-    network::types::{DeviceState, DeviceType},
-};
-use anyhow::Context;
 use cidr::IpInet;
 use std::{collections::HashMap, net::IpAddr, str::FromStr};
 
-use super::model::NmDeviceState;
+use super::{error::NmError, model::NmDeviceState};
 
 /// Builder to create a [Device] from its corresponding NetworkManager D-Bus representation.
 pub struct DeviceFromProxyBuilder<'a> {
@@ -52,12 +48,9 @@ impl<'a> DeviceFromProxyBuilder<'a> {
     }
 
     /// Creates a [Device] starting on the [DeviceProxy].
-    pub async fn build(&self) -> Result<Device, ServiceError> {
+    pub async fn build(&self) -> Result<Device, NmError> {
         let device_type = NmDeviceType(self.proxy.device_type().await?);
-        // TODO: we need to check the errors hierarchy to not abuse ServiceError.
-        let type_: DeviceType = device_type
-            .try_into()
-            .context("Unsupported device type: {device_type}")?;
+        let type_: DeviceType = device_type.try_into()?;
 
         let mut device = Device {
             name: self.proxy.interface().await?,
@@ -78,7 +71,7 @@ impl<'a> DeviceFromProxyBuilder<'a> {
         Ok(device)
     }
 
-    async fn build_ip_config(&self) -> Result<Option<IpConfig>, ServiceError> {
+    async fn build_ip_config(&self) -> Result<Option<IpConfig>, NmError> {
         let ip4_path = self.proxy.ip4_config().await?;
         let ip6_path = self.proxy.ip6_config().await?;
 
@@ -111,7 +104,7 @@ impl<'a> DeviceFromProxyBuilder<'a> {
         &self,
         ip4_proxy: IP4ConfigProxy<'_>,
         ip6_proxy: IP6ConfigProxy<'_>,
-    ) -> Result<IpConfig, ServiceError> {
+    ) -> Result<IpConfig, NmError> {
         let address_data = ip4_proxy.address_data().await?;
         let nameserver_data = ip4_proxy.nameserver_data().await?;
         let mut addresses: Vec<IpInet> = vec![];
@@ -250,13 +243,11 @@ impl<'a> DeviceFromProxyBuilder<'a> {
     /// See https://www.networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMDeviceState
     /// and https://www.networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMDeviceStateReason
     /// for further information.
-    async fn device_state_from_proxy(&self) -> Result<DeviceState, ServiceError> {
+    async fn device_state_from_proxy(&self) -> Result<DeviceState, NmError> {
         const USER_REQUESTED: u32 = 39;
 
         let (state, reason) = self.proxy.state_reason().await?;
-        let state: NmDeviceState = (state as u8)
-            .try_into()
-            .context("Unsupported device state: {state}")?;
+        let state: NmDeviceState = (state as u8).try_into()?;
 
         let device_state = match state {
             NmDeviceState::Unknown => DeviceState::Unknown,

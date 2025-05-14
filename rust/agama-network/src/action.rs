@@ -18,8 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::network::model::{AccessPoint, Connection, Device};
-use agama_lib::network::types::{ConnectionState, DeviceType};
+use crate::model::{AccessPoint, Connection, Device};
+use crate::types::{ConnectionState, DeviceType};
 use tokio::sync::oneshot;
 use uuid::Uuid;
 

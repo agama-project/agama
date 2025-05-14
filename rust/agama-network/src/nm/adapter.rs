@@ -18,16 +18,18 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::network::{
+use crate::{
     adapter::Watcher,
     model::{Connection, NetworkState, StateConfig},
     nm::{NetworkManagerClient, NetworkManagerWatcher},
     Adapter, NetworkAdapterError,
 };
-use agama_lib::error::ServiceError;
+use anyhow::anyhow;
 use async_trait::async_trait;
 use core::time;
 use std::thread;
+
+use super::error::NmError;
 
 /// An adapter for NetworkManager
 pub struct NetworkManagerAdapter<'a> {
@@ -37,7 +39,7 @@ pub struct NetworkManagerAdapter<'a> {
 
 impl<'a> NetworkManagerAdapter<'a> {
     /// Returns the adapter for system's NetworkManager.
-    pub async fn from_system() -> Result<NetworkManagerAdapter<'a>, ServiceError> {
+    pub async fn from_system() -> Result<NetworkManagerAdapter<'a>, NmError> {
         let connection = zbus::Connection::system().await?;
         let client = NetworkManagerClient::new(connection.clone()).await?;
         Ok(Self { client, connection })
@@ -51,7 +53,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
             .client
             .general_state()
             .await
-            .map_err(NetworkAdapterError::Read)?;
+            .map_err(|e| NetworkAdapterError::Read(anyhow!(e)))?;
 
         let mut state = NetworkState::default();
 
@@ -64,7 +66,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
                 .client
                 .devices()
                 .await
-                .map_err(NetworkAdapterError::Read)?;
+                .map_err(|e| NetworkAdapterError::Read(anyhow!(e)))?;
         }
 
         if config.connections {
@@ -72,7 +74,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
                 .client
                 .connections()
                 .await
-                .map_err(NetworkAdapterError::Read)?;
+                .map_err(|e| NetworkAdapterError::Read(anyhow!(e)))?;
         }
 
         if config.access_points && general_state.wireless_enabled {
@@ -80,14 +82,14 @@ impl Adapter for NetworkManagerAdapter<'_> {
                 self.client
                     .request_scan()
                     .await
-                    .map_err(NetworkAdapterError::Read)?;
+                    .map_err(|e| NetworkAdapterError::Read(anyhow!(e)))?;
                 thread::sleep(time::Duration::from_secs(1));
             };
             state.access_points = self
                 .client
                 .access_points()
                 .await
-                .map_err(NetworkAdapterError::Read)?;
+                .map_err(|e| NetworkAdapterError::Read(anyhow!(e)))?;
         }
 
         Ok(state)
@@ -106,7 +108,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
             .client
             .create_checkpoint()
             .await
-            .map_err(NetworkAdapterError::Checkpoint)?;
+            .map_err(|e| NetworkAdapterError::Checkpoint(anyhow!(e)))?;
 
         tracing::info!("Updating the general state {:?}", &network.general_state);
 
@@ -119,14 +121,14 @@ impl Adapter for NetworkManagerAdapter<'_> {
             self.client
                 .rollback_checkpoint(&checkpoint.as_ref())
                 .await
-                .map_err(NetworkAdapterError::Checkpoint)?;
+                .map_err(|e| NetworkAdapterError::Checkpoint(anyhow!(e)))?;
 
             tracing::error!(
                 "Could not update the general state {:?}: {}",
                 &network.general_state,
                 &e
             );
-            return Err(NetworkAdapterError::Write(e));
+            return Err(NetworkAdapterError::Write(anyhow!(e)));
         }
 
         for conn in ordered_connections(network) {
@@ -157,16 +159,16 @@ impl Adapter for NetworkManagerAdapter<'_> {
                 self.client
                     .rollback_checkpoint(&checkpoint.as_ref())
                     .await
-                    .map_err(NetworkAdapterError::Checkpoint)?;
+                    .map_err(|e| NetworkAdapterError::Checkpoint(anyhow!(e)))?;
                 tracing::error!("Could not process the connection {}: {}", conn.id, &e);
-                return Err(NetworkAdapterError::Write(e));
+                return Err(NetworkAdapterError::Write(anyhow!(e)));
             }
         }
 
         self.client
             .destroy_checkpoint(&checkpoint.as_ref())
             .await
-            .map_err(NetworkAdapterError::Checkpoint)?;
+            .map_err(|e| NetworkAdapterError::Checkpoint(anyhow!(e)))?;
         Ok(())
     }
 
