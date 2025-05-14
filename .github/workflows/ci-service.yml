@@ -1,5 +1,6 @@
 name: CI - Service
-
+permissions:
+  contents: read
 on:
   push:
     paths:
