@@ -117,7 +117,7 @@ module Agama
           .convert
 
         ConfigSolver
-          .new(product_config, storage_manager.probed)
+          .new(product_config, storage_manager.probed, disk_analyzer: disk_analyzer)
           .solve(config)
 
         ConfigConversions::ToModel.new(config).convert

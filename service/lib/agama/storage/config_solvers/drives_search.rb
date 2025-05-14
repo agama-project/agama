@@ -22,7 +22,6 @@
 require "agama/storage/config_solvers/devices_search"
 require "agama/storage/config_solvers/search_matchers"
 require "agama/storage/config_solvers/with_partitions_search"
-require "y2storage/disk_analyzer"
 
 module Agama
   module Storage
@@ -33,9 +32,11 @@ module Agama
         include WithPartitionsSearch
 
         # @param devicegraph [Y2Storage::Devicegraph]
-        def initialize(devicegraph)
+        # @param disk_analyzer [Y2Storage::DiskAnalyzer]
+        def initialize(devicegraph, disk_analyzer)
           super()
           @devicegraph = devicegraph
+          @disk_analyzer = disk_analyzer
         end
 
         # Solves the search of the drive configs and solves the searches of their partitions.
@@ -55,6 +56,9 @@ module Agama
         # @return [Y2Storage::Devicegraph]
         attr_reader :devicegraph
 
+        # @return [Y2Storage::DiskAnalyzer]
+        attr_reader :disk_analyzer
+
         # @see DevicesSearch#match_condition?
         # @param drive_config [Configs::Drive]
         # @param drive [Y2Storage::Disk, Y2Storage::StrayBlkDevice]
@@ -68,7 +72,6 @@ module Agama
         #
         # @return [Array<Y2Storage::Drive, Y2Storage::StrayBlkDevice>]
         def candidate_drives
-          disk_analyzer = Y2Storage::DiskAnalyzer.new(devicegraph)
           drives = devicegraph.disk_devices + devicegraph.stray_blk_devices
           drives.select { |d| disk_analyzer.candidate_device?(d) }
         end

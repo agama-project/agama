@@ -32,9 +32,11 @@ module Agama
         include WithPartitionsSearch
 
         # @param devicegraph [Y2Storage::Devicegraph]
-        def initialize(devicegraph)
+        # @param disk_analyzer [Y2Storage::DiskAnalyzer]
+        def initialize(devicegraph, disk_analyzer)
           super()
           @devicegraph = devicegraph
+          @disk_analyzer = disk_analyzer
         end
 
         # Solves the search of the MD RAID configs and solves the searches of their partitions.
@@ -54,6 +56,9 @@ module Agama
         # @return [Y2Storage::Devicegraph]
         attr_reader :devicegraph
 
+        # @return [Y2Storage::DiskAnalyzer]
+        attr_reader :disk_analyzer
+
         # @see DevicesSearch#match_condition?
         # @param md_raid_config [Configs::MdRaid]
         # @param md_raid [Y2Storage::Md]
@@ -67,7 +72,6 @@ module Agama
         #
         # @return [Array<Y2Storage::Md]
         def candidate_md_raids
-          disk_analyzer = Y2Storage::DiskAnalyzer.new(devicegraph)
           devicegraph.md_raids.select { |d| disk_analyzer.candidate_device?(d) }
         end
       end

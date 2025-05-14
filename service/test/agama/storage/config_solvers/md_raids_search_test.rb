@@ -27,9 +27,10 @@ require "y2storage"
 describe Agama::Storage::ConfigSolvers::MdRaidsSearch do
   include Agama::RSpec::StorageHelpers
 
-  subject { described_class.new(devicegraph) }
+  subject { described_class.new(devicegraph, disk_analyzer) }
 
   let(:devicegraph) { Y2Storage::StorageManager.instance.probed }
+  let(:disk_analyzer) { Y2Storage::StorageManager.instance.probed_disk_analyzer }
 
   before do
     mock_storage(devicegraph: scenario)
@@ -66,10 +67,7 @@ describe Agama::Storage::ConfigSolvers::MdRaidsSearch do
       end
 
       context "and any of the devices is not a candidate device" do
-        let(:disk_analyzer) { instance_double(Y2Storage::DiskAnalyzer) }
-
         before do
-          allow(Y2Storage::DiskAnalyzer).to receive(:new).and_return(disk_analyzer)
           allow(disk_analyzer).to receive(:candidate_device?) { |d| d.name != "/dev/md0" }
         end
 
