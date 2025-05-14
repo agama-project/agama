@@ -23,5 +23,5 @@ tokio-stream = "0.1.17"
 tokio-test = "0.4.4"
 tracing = "0.1.41"
 utoipa = { version = "5.3.1", features = ["uuid"] }
-uuid = { version = "1.16.0", features = ["v4"] }
+uuid = { version = "1.16.0", features = ["v4", "serde"] }
 zbus = { version = "5", default-features = false, features = ["tokio"] }
