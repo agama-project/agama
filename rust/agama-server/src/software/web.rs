@@ -35,6 +35,7 @@ use crate::{
 
 use agama_lib::{
     error::ServiceError,
+    manager::{InstallationPhase, ManagerClient},
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
         model::{
@@ -61,6 +62,10 @@ struct SoftwareState<'a> {
     product: ProductClient<'a>,
     software: SoftwareClient<'a>,
     licenses: LicensesRepo,
+    manager: ManagerClient<'a>,
+    // cached values returned during installation when the software service is not responsive
+    cached_products: Vec<Product>,
+    cached_config: SoftwareConfig,
 }
 
 /// Returns an stream that emits software related events coming from D-Bus.
@@ -197,11 +202,19 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
     }
 
     let product = ProductClient::new(dbus.clone()).await?;
+    let manager = ManagerClient::new(dbus.clone()).await?;
     let software = SoftwareClient::new(dbus).await?;
     let state = SoftwareState {
         product,
         software,
         licenses: licenses_repo,
+        manager,
+        cached_products: vec![],
+        cached_config: SoftwareConfig {
+            patterns: None,
+            packages: None,
+            product: None,
+        },
     };
     let router = Router::new()
         .route("/patterns", get(patterns))
@@ -245,6 +258,13 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
     )
 )]
 async fn products(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<Product>>, Error> {
+    let phase = state.manager.current_installation_phase().await?;
+
+    if phase == InstallationPhase::Install {
+        tracing::info!("Install phase active, returning cached products");
+        return Ok(Json(state.cached_products));
+    }
+
     let products = state.product.products().await?;
     Ok(Json(products))
 }
@@ -499,6 +519,13 @@ async fn set_config(
     )
 )]
 async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<SoftwareConfig>, Error> {
+    let phase = state.manager.current_installation_phase().await?;
+
+    if phase == InstallationPhase::Install {
+        tracing::info!("Install phase active, returning cached config");
+        return Ok(Json(state.cached_config));
+    }
+
     let product = state.product.product().await?;
     let product = if product.is_empty() {
         None
