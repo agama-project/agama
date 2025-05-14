@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 14 12:28:57 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Extract network and utilities to the new agama-network and agama-utils
+  packages (gh#agama-project/agama#2357).
+
+-------------------------------------------------------------------
 Tue May 13 09:28:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix setting the mode for questions (bsc#1242441).
