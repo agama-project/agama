@@ -26,8 +26,7 @@ import { installerRender, mockRoutes } from "~/test-utils";
 import { InstallationPhase } from "~/types/status";
 import * as utils from "~/utils";
 import { PRODUCT, ROOT } from "~/routes/paths";
-import InstallerOptions from "./InstallerOptions";
-import { InstallerOptionsProps } from "./InstallerOptions";
+import InstallerOptions, { InstallerOptionsProps } from "./InstallerOptions";
 
 let phase: InstallationPhase;
 let isBusy: boolean;
