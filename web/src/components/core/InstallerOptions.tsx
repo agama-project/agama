@@ -56,6 +56,7 @@ import { localConnection } from "~/utils";
 import { _ } from "~/i18n";
 import supportedLanguages from "~/languages.json";
 import { PRODUCT, ROOT } from "~/routes/paths";
+import { useProduct } from "~/queries/software";
 
 /**
  * Props for select inputs
@@ -122,8 +123,10 @@ type FormState = {
   language: string;
   /** The keymap code */
   keymap: string;
+  /** Whether reusing settings for the product feature is availabler or not */
+  allowReusingSettings: boolean;
   /** Whether reuse these settings for the product localization settings too */
-  copyToSystem: boolean;
+  reuseSettings: boolean;
 };
 
 /**
@@ -132,7 +135,7 @@ type FormState = {
 type FormAction =
   | { type: "SET_SELECTED_LANGUAGE"; language: string }
   | { type: "SET_SELECTED_KEYMAP"; keymap: string }
-  | { type: "TOGGLE_COPY_TO_SYSTEM" }
+  | { type: "TOGGLE_REUSE_SETTINGS" }
   | { type: "RESET"; state: FormState };
 
 /**
@@ -148,8 +151,8 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
       return { ...state, keymap: action.keymap };
     }
 
-    case "TOGGLE_COPY_TO_SYSTEM": {
-      return { ...state, copyToSystem: !state.copyToSystem };
+    case "TOGGLE_REUSE_SETTINGS": {
+      return { ...state, reuseSettings: !state.reuseSettings };
     }
 
     case "RESET": {
@@ -218,26 +221,46 @@ type DialogProps = {
   actions: Actions;
 };
 
+/**
+ * A component that conditionally displays content based on whether settings can
+ * be reused.
+ *
+ * If reuse is allowed, the content (children) is rendered.
+ * If reuse is not allowed, a fallback message is displayed instead.
+ *
+ * This component helps avoid repeating the same condition in each form variant,
+ * as the fallbcak message should remain the same for all of them.
+ */
+const ReusableSettings = ({ isReuseAllowed, children }) => {
+  if (isReuseAllowed) {
+    return children;
+  } else {
+    return _(
+      "This will affect only the interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.",
+    );
+  }
+};
+
 const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
   return (
     <Popup isOpen={state.isOpen} variant="small" title={_("Language and keyboard")}>
-      <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
-        <Form id="installer-l10n" onSubmit={actions.handleSubmitForm}>
-          <LangaugeFormInput value={formState.language} onChange={actions.handleLanguageChange} />
-          <KeyboardFormInput value={formState.keymap} onChange={actions.handleKeymapChange} />
-          <FormGroup fieldId="copy-to-system">
+      <Form id="installer-l10n" onSubmit={actions.handleSubmitForm}>
+        <LangaugeFormInput value={formState.language} onChange={actions.handleLanguageChange} />
+        <KeyboardFormInput value={formState.keymap} onChange={actions.handleKeymapChange} />
+        <ReusableSettings isReuseAllowed={formState.allowReusingSettings}>
+          <FormGroup fieldId="reuse-settings">
             <Checkbox
-              id="copy-to-system"
+              id="reuse-settings"
               label={_("Use these same settings for the selected product")}
               description={_(
                 "More language and keyboard layout options for the selected product may be available in Localization page.",
               )}
-              isChecked={formState.copyToSystem}
+              isChecked={formState.reuseSettings}
               onChange={actions.handleCopyToSystemToggle}
             />
           </FormGroup>
-        </Form>
-      </Flex>
+        </ReusableSettings>
+      </Form>
 
       <Popup.Actions>
         <Popup.Confirm
@@ -258,22 +281,22 @@ const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
 const LanguageOnlyDialog = ({ state, formState, actions }: DialogProps) => {
   return (
     <Popup isOpen={state.isOpen} variant="small" title={_("Change Language")}>
-      <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
-        <Form id="installer-l10n" onSubmit={actions.handleSubmitForm}>
-          <LangaugeFormInput value={formState.language} onChange={actions.handleLanguageChange} />
-          <FormGroup fieldId="copy-to-system">
+      <Form id="installer-l10n" onSubmit={actions.handleSubmitForm}>
+        <LangaugeFormInput value={formState.language} onChange={actions.handleLanguageChange} />
+        <ReusableSettings isReuseAllowed={formState.allowReusingSettings}>
+          <FormGroup fieldId="reuse-settings">
             <Checkbox
-              id="copy-to-system"
+              id="reuse-settings"
               label={_("Use for the selected product too")}
               description={
                 "More languages might be available for the selected product at localization page"
               }
-              isChecked={formState.copyToSystem}
+              isChecked={formState.reuseSettings}
               onChange={actions.handleCopyToSystemToggle}
             />
           </FormGroup>
-        </Form>
-      </Flex>
+        </ReusableSettings>
+      </Form>
 
       <Popup.Actions>
         <Popup.Confirm
@@ -305,22 +328,22 @@ const KeyboardOnlyDialog = ({ state, formState, actions }: DialogProps) => {
 
   return (
     <Popup isOpen={state.isOpen} variant="small" title={_("Change keyboard")}>
-      <Flex direction={{ default: "column" }} gap={{ default: "gapLg" }}>
-        <Form id="installer-l10n" onSubmit={actions.handleSubmitForm}>
-          <KeyboardFormInput value={formState.keymap} onChange={actions.handleKeymapChange} />
-          <FormGroup fieldId="copy-to-system">
+      <Form id="installer-l10n" onSubmit={actions.handleSubmitForm}>
+        <KeyboardFormInput value={formState.keymap} onChange={actions.handleKeymapChange} />
+        <ReusableSettings isReuseAllowed={formState.allowReusingSettings}>
+          <FormGroup fieldId="reuse-settings">
             <Checkbox
-              id="copy-to-system"
+              id="reuse-settings"
               label={_("Use for the selected product too")}
               description={
                 "More keymap layout might be available for the selected product at localization page"
               }
-              isChecked={formState.copyToSystem}
+              isChecked={formState.reuseSettings}
               onChange={actions.handleCopyToSystemToggle}
             />
           </FormGroup>
-        </Form>
-      </Flex>
+        </ReusableSettings>
+      </Form>
 
       <Popup.Actions>
         <Popup.Confirm
@@ -450,7 +473,13 @@ export default function InstallerOptions({
   const { mutate: updateSystemL10n } = useConfigMutation();
   const { language, keymap, changeLanguage, changeKeymap } = useInstallerL10n();
   const { phase } = useInstallerStatus({ suspense: true });
-  const initialFormState = { language, keymap, copyToSystem: true };
+  const { selectedProduct } = useProduct({ suspense: true });
+  const initialFormState = {
+    language,
+    keymap,
+    allowReusingSettings: !!selectedProduct,
+    reuseSettings: true,
+  };
   const [formState, dispatch] = useReducer(formReducer, initialFormState);
   const [dialogState, dispatchDialogAction] = useReducer(dialogReducer, {
     isOpen: false,
@@ -471,9 +500,8 @@ export default function InstallerOptions({
 
   /**
    * Copies selected localization settings to the product to install settings,
-   * if applicable.
    **/
-  const copyToSystem = () => {
+  const reuseSettings = () => {
     // FIXME: export and use languageToLocale from context/installerL10n
     const systemLocale = locales.find((l) => l.id.startsWith(formState.language.replace("-", "_")));
     const systeml10n: Partial<LocaleConfig> = {};
@@ -503,7 +531,7 @@ export default function InstallerOptions({
         await changeLanguage(formState.language);
       }
 
-      formState.copyToSystem && copyToSystem();
+      formState.allowReusingSettings && formState.reuseSettings && reuseSettings();
     } catch (e) {
       console.error(e);
       dispatchDialogAction({ type: "SET_IDDLE" });
@@ -515,7 +543,7 @@ export default function InstallerOptions({
   const actions: Actions = {
     handleLanguageChange: (_, v) => dispatch({ type: "SET_SELECTED_LANGUAGE", language: v }),
     handleKeymapChange: (_, v) => dispatch({ type: "SET_SELECTED_KEYMAP", keymap: v }),
-    handleCopyToSystemToggle: () => dispatch({ type: "TOGGLE_COPY_TO_SYSTEM" }),
+    handleCopyToSystemToggle: () => dispatch({ type: "TOGGLE_REUSE_SETTINGS" }),
     handleSubmitForm: onSubmit,
     handleCloseDialog: close,
   };

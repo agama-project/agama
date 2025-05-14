@@ -27,6 +27,7 @@ import { InstallationPhase } from "~/types/status";
 import * as utils from "~/utils";
 import { PRODUCT, ROOT } from "~/routes/paths";
 import InstallerOptions, { InstallerOptionsProps } from "./InstallerOptions";
+import { Product } from "~/types/software";
 
 let phase: InstallationPhase;
 let isBusy: boolean;
@@ -40,6 +41,16 @@ const keymaps = [
   { id: "us", name: "English (US)" },
   { id: "gb", name: "English (UK)" },
 ];
+
+const tumbleweed: Product = {
+  id: "Tumbleweed",
+  name: "openSUSE Tumbleweed",
+  icon: "tumbleweed.svg",
+  description: "Tumbleweed description...",
+  registration: false,
+};
+
+let mockSelectedProduct: Product;
 
 const mockL10nConfigMutation = {
   mutate: jest.fn(),
@@ -75,6 +86,16 @@ jest.mock("~/context/installerL10n", () => ({
   }),
 }));
 
+jest.mock("~/queries/software", () => ({
+  ...jest.requireActual("~/queries/software"),
+  useProduct: () => {
+    return {
+      products: [tumbleweed],
+      selectedProduct: mockSelectedProduct,
+    };
+  },
+}));
+
 const renderAndOpen = async (props: InstallerOptionsProps = {}) => {
   const { user } = installerRender(<InstallerOptions {...props} />, { withL10n: true });
   const toggle = screen.getByRole("button");
@@ -85,6 +106,7 @@ const renderAndOpen = async (props: InstallerOptionsProps = {}) => {
 describe("InstallerOptions", () => {
   beforeEach(() => {
     jest.spyOn(utils, "localConnection").mockReturnValue(true);
+    mockSelectedProduct = tumbleweed;
     phase = InstallationPhase.Config;
     isBusy = false;
   });
@@ -132,19 +154,19 @@ describe("InstallerOptions", () => {
       expect(mockChangeUILanguage).toHaveBeenCalledWith("es-ES");
     });
 
-    it("allows copying settings to selected product", async () => {
+    it("allows reusing settings for the selected product", async () => {
       const { user } = await renderAndOpen();
       const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
       const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
       const keymapSelector = await within(dialog).findByRole("combobox", {
         name: "Keyboard layout",
       });
-      const copySettings = within(dialog).getByRole("checkbox", {
+      const reuseSettings = within(dialog).getByRole("checkbox", {
         name: /Use these same settings/,
       });
       const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
 
-      expect(copySettings).toBeChecked();
+      expect(reuseSettings).toBeChecked();
 
       await user.selectOptions(languageSelector, "Español");
       await user.selectOptions(keymapSelector, "English (UK)");
@@ -156,25 +178,38 @@ describe("InstallerOptions", () => {
       });
     });
 
-    it("allows not copying settings to selected product", async () => {
+    it("allows not reuisng settings for the selected product", async () => {
       const { user } = await renderAndOpen();
       const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
       const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
       const keymapSelector = await within(dialog).findByRole("combobox", {
         name: "Keyboard layout",
       });
-      const copySettings = within(dialog).getByRole("checkbox", {
+      const reuseSettings = within(dialog).getByRole("checkbox", {
         name: /Use these same settings/,
       });
       const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
 
-      expect(copySettings).toBeChecked();
-      await user.click(copySettings);
-      expect(copySettings).not.toBeChecked();
+      expect(reuseSettings).toBeChecked();
+      await user.click(reuseSettings);
+      expect(reuseSettings).not.toBeChecked();
       await user.selectOptions(languageSelector, "Español");
       await user.selectOptions(keymapSelector, "English (UK)");
       await user.click(acceptButton);
       expect(mockL10nConfigMutation.mutate).not.toHaveBeenCalled();
+    });
+
+    describe("but a product is not selected yet", () => {
+      beforeEach(() => {
+        mockSelectedProduct = undefined;
+      });
+
+      it("does not allow reusing setting", async () => {
+        await renderAndOpen();
+        const dialog = screen.getByRole("dialog");
+        expect(within(dialog).queryByRole("checkbox")).toBeNull();
+        screen.getByText(/This will affect only the interface/);
+      });
     });
 
     describe("but in a remote connection", () => {
@@ -223,16 +258,16 @@ describe("InstallerOptions", () => {
       expect(mockChangeUILanguage).toHaveBeenCalledWith("es-ES");
     });
 
-    it("allows copying settings to selected product", async () => {
+    it("allows reusing settings for the selected product", async () => {
       const { user } = await renderAndOpen({ variant: "language" });
       const dialog = screen.getByRole("dialog", { name: "Change Language" });
       const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
-      const copySettings = within(dialog).getByRole("checkbox", {
+      const reuseSettings = within(dialog).getByRole("checkbox", {
         name: /Use for the selected product too/,
       });
       const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
 
-      expect(copySettings).toBeChecked();
+      expect(reuseSettings).toBeChecked();
 
       await user.selectOptions(languageSelector, "Español");
 
@@ -242,21 +277,34 @@ describe("InstallerOptions", () => {
       });
     });
 
-    it("allows not copying settings to selected product", async () => {
+    it("allows not reusing settings for the selected product", async () => {
       const { user } = await renderAndOpen({ variant: "language" });
       const dialog = screen.getByRole("dialog", { name: "Change Language" });
       const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });
-      const copySettings = within(dialog).getByRole("checkbox", {
+      const reuseSettings = within(dialog).getByRole("checkbox", {
         name: /Use for the selected product too/,
       });
       const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
 
-      expect(copySettings).toBeChecked();
-      await user.click(copySettings);
-      expect(copySettings).not.toBeChecked();
+      expect(reuseSettings).toBeChecked();
+      await user.click(reuseSettings);
+      expect(reuseSettings).not.toBeChecked();
       await user.selectOptions(languageSelector, "Español");
       await user.click(acceptButton);
       expect(mockL10nConfigMutation.mutate).not.toHaveBeenCalled();
+    });
+
+    describe("but a product is not selected yet", () => {
+      beforeEach(() => {
+        mockSelectedProduct = undefined;
+      });
+
+      it("does not allow reusing setting", async () => {
+        await renderAndOpen();
+        const dialog = screen.getByRole("dialog");
+        expect(within(dialog).queryByRole("checkbox")).toBeNull();
+        screen.getByText(/This will affect only the interface/);
+      });
     });
   });
 
@@ -287,18 +335,18 @@ describe("InstallerOptions", () => {
       expect(mockChangeUILanguage).not.toHaveBeenCalled();
     });
 
-    it("allows copying settings to selected product", async () => {
+    it("allows reusing settings for the selected product", async () => {
       const { user } = await renderAndOpen({ variant: "keyboard" });
       const dialog = screen.getByRole("dialog", { name: "Change keyboard" });
       const keymapSelector = await within(dialog).findByRole("combobox", {
         name: "Keyboard layout",
       });
-      const copySettings = within(dialog).getByRole("checkbox", {
+      const reuseSettings = within(dialog).getByRole("checkbox", {
         name: /Use for the selected product too/,
       });
       const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
 
-      expect(copySettings).toBeChecked();
+      expect(reuseSettings).toBeChecked();
 
       await user.selectOptions(keymapSelector, "English (UK)");
 
@@ -308,20 +356,20 @@ describe("InstallerOptions", () => {
       });
     });
 
-    it("allows not copying settings to selected product", async () => {
+    it("allows not reusing settings for the selected product", async () => {
       const { user } = await renderAndOpen({ variant: "keyboard" });
       const dialog = screen.getByRole("dialog", { name: "Change keyboard" });
       const keymapSelector = await within(dialog).findByRole("combobox", {
         name: "Keyboard layout",
       });
-      const copySettings = within(dialog).getByRole("checkbox", {
+      const reuseSettings = within(dialog).getByRole("checkbox", {
         name: /Use for the selected product too/,
       });
       const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
 
-      expect(copySettings).toBeChecked();
-      await user.click(copySettings);
-      expect(copySettings).not.toBeChecked();
+      expect(reuseSettings).toBeChecked();
+      await user.click(reuseSettings);
+      expect(reuseSettings).not.toBeChecked();
       await user.selectOptions(keymapSelector, "English (UK)");
       await user.click(acceptButton);
       expect(mockL10nConfigMutation.mutate).not.toHaveBeenCalled();
@@ -337,6 +385,19 @@ describe("InstallerOptions", () => {
           withL10n: true,
         });
         expect(container).toBeEmptyDOMElement();
+      });
+    });
+
+    describe("but a product is not selected yet", () => {
+      beforeEach(() => {
+        mockSelectedProduct = undefined;
+      });
+
+      it("does not allow reusing setting", async () => {
+        await renderAndOpen();
+        const dialog = screen.getByRole("dialog");
+        expect(within(dialog).queryByRole("checkbox")).toBeNull();
+        screen.getByText(/This will affect only the interface/);
       });
     });
   });
