@@ -236,6 +236,9 @@ impl NetworkState {
                 for conn in self.connections.iter_mut() {
                     if controlled.contains(&conn.uuid) {
                         conn.controller = Some(controller.uuid);
+                        if conn.interface.is_none() {
+                            conn.interface = Some(conn.clone().id);
+                        }
                     } else if conn.controller == Some(controller.uuid) {
                         conn.controller = None;
                     }

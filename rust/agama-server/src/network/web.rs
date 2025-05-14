@@ -214,9 +214,8 @@ async fn connections(
 
     let network_connections = connections
         .iter()
-        .filter(|c| c.controller.is_none())
         .map(|c| {
-            let state = c.state.clone();
+            let state = c.state;
             let mut conn = NetworkConnection::try_from(c.clone()).unwrap();
             if let Some(ref mut bond) = conn.bond {
                 bond.ports = ports_for(connections.to_owned(), c.uuid);
@@ -224,12 +223,10 @@ async fn connections(
             if let Some(ref mut bridge) = conn.bridge {
                 bridge.ports = ports_for(connections.to_owned(), c.uuid);
             };
-            let connection_with_state = NetworkConnectionWithState {
+            NetworkConnectionWithState {
                 connection: conn,
                 state,
-            };
-
-            return connection_with_state;
+            }
         })
         .collect();
 
@@ -239,8 +236,14 @@ async fn connections(
 fn ports_for(connections: Vec<Connection>, uuid: Uuid) -> Vec<String> {
     return connections
         .iter()
-        .filter(|c| c.controller == Some(uuid) && c.interface.is_some())
-        .map(|c| c.interface.to_owned().unwrap_or_default())
+        .filter(|c| c.controller == Some(uuid))
+        .map(|c| {
+            if let Some(interface) = c.interface.to_owned() {
+                interface
+            } else {
+                c.clone().id
+            }
+        })
         .collect();
 }
 

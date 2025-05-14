@@ -231,19 +231,9 @@ impl<'a> NetworkManagerClient<'a> {
         }
 
         for conn in connections.iter_mut() {
-            let Some(id) = controlled_by.get(&conn.uuid) else {
-                continue;
+            if controlled_by.contains_key(&conn.uuid) {
+                conn.controller = Some(conn.uuid);
             };
-
-            if let controller = conn.uuid {
-                conn.controller = Some(controller);
-            } else {
-                tracing::warn!(
-                    "Could not found a connection for the interface '{}' (required by connection '{}')",
-                    conn.uuid,
-                    conn.id
-                );
-            }
         }
 
         Ok(connections)
