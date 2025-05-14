@@ -29,6 +29,7 @@ use tungstenite::{
 };
 use url::Url;
 
+use super::Event;
 use crate::auth::AuthToken;
 
 #[derive(Debug, thiserror::Error)]
@@ -43,6 +44,8 @@ pub enum WSClientError {
     Handshake(String),
     #[error(transparent)]
     InvalidUri(#[from] http::uri::InvalidUri),
+    #[error(transparent)]
+    EventDeserialize(#[from] serde_json::Error),
 }
 
 pub struct WSClient {

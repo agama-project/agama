@@ -23,3 +23,6 @@ pub use base_http_client::{BaseHTTPClient, BaseHTTPClientError};
 
 mod event;
 pub use event::Event;
+
+mod ws_client;
+pub use ws_client::{WSClient, WSClientError};
