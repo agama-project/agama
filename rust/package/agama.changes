@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed May 14 15:20:42 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Add support for bridge connections (gh#openSUSE/agama#2258).
+
+-------------------------------------------------------------------
 Mon May 19 14:02:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not crash when network events do not contain "addresses",
