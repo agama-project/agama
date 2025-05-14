@@ -26,13 +26,13 @@ use tokio::sync::mpsc::UnboundedSender;
 #[derive(Error, Debug)]
 pub enum NetworkAdapterError {
     #[error("Could not read the network configuration: {0}")]
-    Read(String),
+    Read(anyhow::Error),
     #[error("Could not update the network configuration: {0}")]
-    Write(String),
+    Write(anyhow::Error),
     #[error("Checkpoint handling error: {0}")]
-    Checkpoint(String), // only relevant for adapters that implement a checkpoint mechanism
+    Checkpoint(anyhow::Error), // only relevant for adapters that implement a checkpoint mechanism
     #[error("The network watcher cannot run: {0}")]
-    Watcher(String),
+    Watcher(anyhow::Error),
 }
 
 /// A trait for the ability to read/write from/to a network service.

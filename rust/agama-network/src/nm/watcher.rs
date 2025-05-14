@@ -28,6 +28,7 @@ use std::collections::{hash_map::Entry, HashMap};
 use crate::{
     adapter::Watcher, model::Device, nm::proxies::DeviceProxy, Action, NetworkAdapterError,
 };
+use anyhow::anyhow;
 use async_trait::async_trait;
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
 use tokio_stream::StreamExt;
@@ -111,7 +112,7 @@ impl Watcher for NetworkManagerWatcher {
         dispatcher
             .run()
             .await
-            .map_err(|e| NetworkAdapterError::Watcher(e.to_string()))
+            .map_err(|e| NetworkAdapterError::Watcher(anyhow!(e)))
     }
 }
 
