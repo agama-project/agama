@@ -178,7 +178,7 @@ describe("InstallerOptions", () => {
       });
     });
 
-    it("allows not reuisng settings for the selected product", async () => {
+    it("allows not reusing settings for the selected product", async () => {
       const { user } = await renderAndOpen();
       const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
       const languageSelector = within(dialog).getByRole("combobox", { name: "Language" });

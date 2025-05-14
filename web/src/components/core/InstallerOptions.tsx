@@ -168,7 +168,7 @@ type DialogAction =
   | { type: "OPEN" }
   | { type: "CLOSE" }
   | { type: "SET_BUSY" }
-  | { type: "SET_IDDLE" };
+  | { type: "SET_IDLE" };
 
 /**
  * Represents the dialog state
@@ -195,7 +195,7 @@ const dialogReducer = (state: DialogState, action: DialogAction): DialogState =>
       return { ...state, isBusy: true };
     }
 
-    case "SET_IDDLE": {
+    case "SET_IDLE": {
       return { ...state, isBusy: false };
     }
   }
@@ -229,7 +229,7 @@ type DialogProps = {
  * If reuse is not allowed, a fallback message is displayed instead.
  *
  * This component helps avoid repeating the same condition in each form variant,
- * as the fallbcak message should remain the same for all of them.
+ * as the fallback message should remain the same for all of them.
  */
 const ReusableSettings = ({ isReuseAllowed, children }) => {
   if (isReuseAllowed) {
@@ -504,12 +504,12 @@ export default function InstallerOptions({
   const reuseSettings = () => {
     // FIXME: export and use languageToLocale from context/installerL10n
     const systemLocale = locales.find((l) => l.id.startsWith(formState.language.replace("-", "_")));
-    const systeml10n: Partial<LocaleConfig> = {};
+    const systemL10n: Partial<LocaleConfig> = {};
     // FIXME: use a fallback if no system locale was found ?
-    if (variant !== "keyboard") systeml10n.locales = [systemLocale?.id];
-    if (variant !== "language" && localConnection()) systeml10n.keymap = formState.keymap;
+    if (variant !== "keyboard") systemL10n.locales = [systemLocale?.id];
+    if (variant !== "language" && localConnection()) systemL10n.keymap = formState.keymap;
 
-    updateSystemL10n(systeml10n);
+    updateSystemL10n(systemL10n);
   };
 
   const close = () => {
@@ -534,7 +534,7 @@ export default function InstallerOptions({
       formState.allowReusingSettings && formState.reuseSettings && reuseSettings();
     } catch (e) {
       console.error(e);
-      dispatchDialogAction({ type: "SET_IDDLE" });
+      dispatchDialogAction({ type: "SET_IDLE" });
     } finally {
       close();
     }
