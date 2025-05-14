@@ -175,7 +175,7 @@ function SoftwareConflicts(): React.ReactNode {
         <Content component="h2">{_("Conflict resolution")}</Content>
         <SubtleContent>
           {_(
-            "A concise yet thorough explanation of conflict resolution, highlighting that conflicts can be addressed in any order and that resolving one may inadvertently help resolve others as well.",
+            "Selected software contain conflicts. The conflicts can potentially depends on each other and order of solution is not important.",
           )}
         </SubtleContent>
       </Page.Header>
