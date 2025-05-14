@@ -56,7 +56,7 @@ module Agama
         #
         # @return [Boolean]
         def match_condition?(_device_config, _device)
-          raise "#match_condition? is not defined"
+          raise NotImplementedError
         end
 
         # Solves the search of given device config.
