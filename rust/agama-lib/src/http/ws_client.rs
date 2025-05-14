@@ -22,9 +22,8 @@ use native_tls::{TlsConnector, TlsStream};
 /// Should we use Tokio?
 use std::net::TcpStream;
 use tungstenite::{
-    client_tls,
+    client,
     http::{self, Uri},
-    stream::MaybeTlsStream,
     ClientRequestBuilder, WebSocket,
 };
 use url::Url;
@@ -46,10 +45,12 @@ pub enum WSClientError {
     InvalidUri(#[from] http::uri::InvalidUri),
     #[error(transparent)]
     EventDeserialize(#[from] serde_json::Error),
+    #[error("Missing hostname in {0}")]
+    MissingHostname(String),
 }
 
 pub struct WSClient {
-    socket: WebSocket<MaybeTlsStream<TlsStream<TcpStream>>>,
+    socket: WebSocket<TlsStream<TcpStream>>,
 }
 
 impl WSClient {
@@ -57,14 +58,20 @@ impl WSClient {
     ///
     /// * `url`: URL of the websocket to connect.
     /// * `auth_token`: Agama authentication token.
-    pub fn connect(url: &Url, auth_token: AuthToken) -> Result<Self, WSClientError> {
-        let uri: Uri = url.as_str().parse()?;
-        let host = uri.host().unwrap_or("localhost"); // FIXME: return an error.
-        let port = Self::find_port(&uri);
+    /// * `insecure`: whether invalid certs and hostnames are allowed.
+    pub fn connect(
+        url: &Url,
+        auth_token: AuthToken,
+        insecure: bool,
+    ) -> Result<Self, WSClientError> {
+        let host = url
+            .host_str()
+            .ok_or_else(|| WSClientError::MissingHostname(url.to_string()))?;
+        let port = Self::find_port(&url);
 
         let tls_connector = TlsConnector::builder()
-            .danger_accept_invalid_certs(true)
-            .danger_accept_invalid_certs(true)
+            .danger_accept_invalid_certs(insecure)
+            .danger_accept_invalid_hostnames(insecure)
             .build()?;
 
         let socket_addr = format!("{}:{}", host, port);
@@ -73,25 +80,36 @@ impl WSClient {
             .connect(host, stream)
             .map_err(|e| WSClientError::Handshake(e.to_string()))?;
 
+        let uri: Uri = url.as_str().parse()?;
         let token = auth_token.as_str();
-        let request = ClientRequestBuilder::new(uri.clone())
-            .with_header("Authorization", format!("Bearer {token}"));
+        let request =
+            ClientRequestBuilder::new(uri).with_header("Authorization", format!("Bearer {token}"));
 
         let (socket, _response) =
-            client_tls(request, stream).map_err(|e| WSClientError::Handshake(e.to_string()))?;
+            client(request, stream).map_err(|e| WSClientError::Handshake(e.to_string()))?;
         Ok(Self { socket })
     }
 
     /// Receive a message from the websocket.
-    pub fn receive(&mut self) -> Result<Event, WSClientError> {
+    ///
+    /// It returns the message as a string.
+    pub fn receive_raw(&mut self) -> Result<String, WSClientError> {
         let msg = self.socket.read()?;
-        let event: Event = serde_json::from_str(&msg.to_string())?;
+        Ok(msg.to_string())
+    }
+
+    /// Receive an event from the websocket.
+    ///
+    /// It returns the message as an event.
+    pub fn receive(&mut self) -> Result<Event, WSClientError> {
+        let msg = self.receive_raw()?;
+        let event: Event = serde_json::from_str(&msg)?;
         Ok(event)
     }
 
-    fn find_port(uri: &Uri) -> u16 {
-        uri.port_u16().unwrap_or_else(|| match uri.scheme_str() {
-            Some("https") => 443,
+    fn find_port(url: &Url) -> u16 {
+        url.port().unwrap_or_else(|| match url.scheme() {
+            "wss" => 443,
             _ => 80,
         })
     }
