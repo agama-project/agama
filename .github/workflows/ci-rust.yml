@@ -38,6 +38,8 @@ on:
 
 jobs:
   rust_ci:
+    # the default timeout is 6 hours, that's too much if the job gets stuck
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
       COVERAGE: 1
@@ -59,6 +61,9 @@ jobs:
 
     - name: Git Checkout
       uses: actions/checkout@v4
+
+    - name: Configure git
+      run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
     - name: Configure and refresh repositories
       # disable unused repositories to have faster refresh
@@ -108,12 +113,38 @@ jobs:
         cargo xtask openapi
         openapi-spec-validator out/openapi/*
 
+    - name: Upload coverage result
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage_rust
+        if-no-files-found: error
+        path: rust/cobertura.xml
+
+  # The coveralls action for some unknown reason gets stuck when running inside
+  # a container. As a workaround save the coverage data and send it in a
+  # separate job running directly in the Ubuntu host, that works fine.
+  # See https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/storing-and-sharing-data-from-a-workflow#passing-data-between-jobs-in-a-workflow
+  coveralls:
+    # the default timeout is 6 hours, this should take just few seconds
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    needs: rust_ci
+    defaults:
+      run:
+        working-directory: ./rust
+
+    steps:
+    - name: Git Checkout
+      uses: actions/checkout@v4
+
+    - name: Download coverage result
+      uses: actions/download-artifact@v4
+      with:
+        name: coverage_rust
+
     # send the code coverage for the Rust part to the coveralls.io
     - name: Coveralls GitHub Action
-      # ignore errors in this step
-      continue-on-error: true
       uses: coverallsapp/github-action@v2
-      # ignore errors in this step
       with:
         base-path: ./rust
         format: cobertura
@@ -124,10 +155,7 @@ jobs:
     # Web parts (it needs a separate step, the "carryforward" flag can be used
     # only with the "parallel-finished: true" option)
     - name: Coveralls Finished
-      # ignore errors in this step
-      continue-on-error: true
       uses: coverallsapp/github-action@v2
-      # ignore errors in this step
       with:
         parallel-finished: true
-        carryforward: "service,web"
+        carryforward: "rust,service,web"
