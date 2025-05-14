@@ -58,11 +58,8 @@
 //!   when a device is connected to the system.
 //! * Many configuration types are still missing (bridges, bonding, etc.).
 
-pub mod system;
 pub mod web;
 
-pub use agama_lib::network::action::Action;
-pub use agama_lib::network::adapter::{Adapter, NetworkAdapterError};
-pub use agama_lib::network::model::NetworkState;
-pub use agama_lib::network::nm::NetworkManagerAdapter;
-pub use system::NetworkSystem;
+pub use agama_lib::network::{
+    model::NetworkState, Action, Adapter, NetworkAdapterError, NetworkManagerAdapter, NetworkSystem,
+};

@@ -20,6 +20,7 @@ strum = { version = "0.27.1", features = ["derive"] }
 thiserror = "2.0.12"
 tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread"] }
 tokio-stream = "0.1.17"
+tokio-test = "0.4.4"
 tracing = "0.1.41"
 utoipa = { version = "5.3.1", features = ["uuid"] }
 uuid = { version = "1.16.0", features = ["v4"] }

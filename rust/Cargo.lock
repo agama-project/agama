@@ -106,6 +106,7 @@ dependencies = [
  "thiserror 2.0.12",
  "tokio",
  "tokio-stream",
+ "tokio-test",
  "tracing",
  "utoipa",
  "uuid",

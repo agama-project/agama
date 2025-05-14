@@ -33,15 +33,14 @@ use axum::{
     Json, Router,
 };
 
-use super::system::{NetworkSystem, NetworkSystemClient, NetworkSystemError};
 use agama_lib::{
     error::ServiceError,
     network::{
-        adapter::Adapter,
         error::NetworkStateError,
         model::{AccessPoint, Connection, Device, GeneralState},
         settings::NetworkConnection,
         types::NetworkConnectionWithState,
+        Adapter, NetworkSystem, NetworkSystemClient, NetworkSystemError,
     },
 };
 

@@ -22,10 +22,13 @@ pub mod action;
 pub mod adapter;
 pub mod error;
 pub mod model;
-pub mod nm;
+mod nm;
 pub mod settings;
+mod system;
 pub mod types;
 
 pub use action::Action;
 pub use adapter::{Adapter, NetworkAdapterError};
 pub use model::NetworkState;
+pub use nm::NetworkManagerAdapter;
+pub use system::{NetworkSystem, NetworkSystemClient, NetworkSystemError};

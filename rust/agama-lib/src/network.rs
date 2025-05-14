@@ -23,9 +23,10 @@
 mod client;
 mod store;
 
-pub use action::Action;
-pub use adapter::{Adapter, NetworkAdapterError};
-pub use agama_network::{action, adapter, error, model, nm, settings, types};
+pub use agama_network::{
+    error, model, settings, types, Action, Adapter, NetworkAdapterError, NetworkManagerAdapter,
+    NetworkSystem, NetworkSystemClient, NetworkSystemError,
+};
 pub use client::{NetworkClient, NetworkClientError};
 pub use settings::NetworkSettings;
 pub use store::{NetworkStore, NetworkStoreError};

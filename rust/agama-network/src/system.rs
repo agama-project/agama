@@ -18,15 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::network::{
+use crate::{
     action::Action,
     error::NetworkStateError,
     model::{
         AccessPoint, Connection, Device, GeneralState, NetworkChange, NetworkState, StateConfig,
     },
+    types::DeviceType,
     Adapter, NetworkAdapterError,
 };
-use agama_lib::{error::ServiceError, network::types::DeviceType};
 use std::error::Error;
 use tokio::sync::{
     broadcast::{self, Receiver},
@@ -43,8 +43,6 @@ pub enum NetworkSystemError {
     InputError(#[from] SendError<Action>),
     #[error("Could not read an answer from the network system: {0}")]
     OutputError(#[from] RecvError),
-    #[error("D-Bus service error: {0}")]
-    ServiceError(#[from] ServiceError),
     #[error("Network backend error: {0}")]
     AdapterError(#[from] NetworkAdapterError),
 }
@@ -55,8 +53,7 @@ pub enum NetworkSystemError {
 /// passing like the example below.
 ///
 /// ```no_run
-/// # use agama_server::network::{Action, NetworkManagerAdapter, NetworkSystem};
-/// # use agama_lib::connection;
+/// # use agama_network::{Action, NetworkManagerAdapter, NetworkSystem};
 /// # use tokio::sync::oneshot;
 ///
 /// # tokio_test::block_on(async {
