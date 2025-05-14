@@ -50,6 +50,7 @@ impl ApiDocBuilder for NetworkApiDocBuilder {
     fn components(&self) -> Components {
         ComponentsBuilder::new()
             .schema_from::<agama_lib::network::settings::BondSettings>()
+            .schema_from::<agama_lib::network::settings::BridgeSettings>()
             .schema_from::<agama_lib::network::settings::IEEE8021XSettings>()
             .schema_from::<agama_lib::network::settings::MatchSettings>()
             .schema_from::<agama_lib::network::settings::NetworkConnection>()
