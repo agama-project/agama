@@ -468,6 +468,53 @@ describe Agama::Storage::Config do
     end
   end
 
+  describe "#supporting_search" do
+    let(:config_json) do
+      {
+        drives:       [
+          {},
+          {
+            partitions: [
+              {}
+            ]
+          }
+        ],
+        volumeGroups: [
+          {
+            logicalVolumes: [
+              {}
+            ]
+          }
+        ],
+        mdRaids:      [
+          {},
+          {
+            partitions: [
+              {}
+            ]
+          }
+        ]
+      }
+    end
+
+    it "returns all configs with configurable search" do
+      configs = subject.supporting_search
+      expect(configs.size).to eq(6)
+    end
+
+    it "includes all drives" do
+      expect(subject.supporting_search).to include(*subject.drives)
+    end
+
+    it "includes all MD RAIDs" do
+      expect(subject.supporting_search).to include(*subject.md_raids)
+    end
+
+    it "includes all partitions" do
+      expect(subject.supporting_search).to include(*subject.partitions)
+    end
+  end
+
   describe "#supporting_encryption" do
     let(:config_json) do
       {

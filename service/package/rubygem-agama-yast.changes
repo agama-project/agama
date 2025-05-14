@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed May 14 15:15:47 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add search conditions to storage (gh#agama-project/agama#2338).
+
+-------------------------------------------------------------------
 Wed May 14 10:22:24 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix the target path for copying the udev rules and nvme files
