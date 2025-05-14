@@ -19,22 +19,61 @@
 // find current contact information at www.suse.com.
 
 use std::{
-    io::{self, Read},
+    io::{self, Write},
     path::PathBuf,
     process::Command,
 };
 
-use crate::show_progress;
+use crate::{profile::CliInput, show_progress};
 use agama_lib::{
     base_http_client::BaseHTTPClient, context::InstallationContext,
-    install_settings::InstallSettings, Store as SettingsStore,
+    install_settings::InstallSettings, profile::ValidationOutcome, Store as SettingsStore,
 };
-use anyhow::anyhow;
+use anyhow::{anyhow, Context};
 use clap::Subcommand;
-use std::io::Write;
+use console::style;
 use tempfile::Builder;
 
 const DEFAULT_EDITOR: &str = "/usr/bin/vi";
+
+/// Represents the ways user can specify the output for the command line.
+#[derive(Clone, Debug)]
+pub enum CliOutput {
+    Path(PathBuf),
+    /// Specified as `-` by the user
+    Stdout,
+}
+
+impl From<String> for CliOutput {
+    fn from(path: String) -> Self {
+        if path == "-" {
+            Self::Stdout
+        } else {
+            Self::Path(path.into())
+        }
+    }
+}
+
+impl CliOutput {
+    pub fn write(&self, contents: &str) -> anyhow::Result<()> {
+        match self {
+            Self::Stdout => {
+                let mut stdout = io::stdout().lock();
+                stdout.write_all(contents.as_bytes())?
+            }
+            Self::Path(path) => {
+                let mut file = std::fs::OpenOptions::new()
+                    .create(true)
+                    .truncate(true)
+                    .write(true)
+                    .open(path)
+                    .context(format!("Writing to {:?}", path))?;
+                file.write_all(contents.as_bytes())?
+            }
+        }
+        Ok(())
+    }
+}
 
 #[derive(Subcommand, Debug)]
 pub enum ConfigCommands {
@@ -44,10 +83,26 @@ pub enum ConfigCommands {
     /// are not included in the output.
     ///
     /// The output of command can be used as input for the "agama config load".
-    Show,
+    Show {
+        /// Save the output here (goes to stdout if not given)
+        #[arg(short, long)]
+        output: Option<CliOutput>,
+    },
 
-    /// Read and load a profile from the standard input.
-    Load,
+    /// Read and load a profile
+    Load {
+        /// JSON file: URL or path or `-` for standard input
+        url_or_path: Option<CliInput>,
+    },
+
+    /// Validate a profile using JSON Schema
+    ///
+    /// Schema is available at /usr/share/agama-cli/profile.schema.json
+    /// TODO: Validation is automatic
+    Validate {
+        /// JSON file, URL or path or `-` for standard input
+        url_or_path: CliInput,
+    },
 
     /// Edit and update installation option using an external editor.
     ///
@@ -63,19 +118,20 @@ pub enum ConfigCommands {
 }
 
 pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> anyhow::Result<()> {
-    let store = SettingsStore::new(http_client).await?;
+    let store = SettingsStore::new(http_client.clone()).await?;
 
     match subcommand {
-        ConfigCommands::Show => {
+        ConfigCommands::Show { output } => {
             let model = store.load().await?;
             let json = serde_json::to_string_pretty(&model)?;
-            println!("{}", json);
+
+            let destination = output.unwrap_or(CliOutput::Stdout);
+            destination.write(&json)?;
             Ok(())
         }
-        ConfigCommands::Load => {
-            let mut stdin = io::stdin();
-            let mut contents = String::new();
-            stdin.read_to_string(&mut contents)?;
+        ConfigCommands::Load { url_or_path } => {
+            let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
+            let contents = url_or_path.read_to_string()?;
             let result = InstallSettings::from_json(&contents, &InstallationContext::from_env()?)?;
             tokio::spawn(async move {
                 show_progress().await.unwrap();
@@ -83,6 +139,7 @@ pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> any
             store.store(&result).await?;
             Ok(())
         }
+        ConfigCommands::Validate { url_or_path } => validate(&http_client, url_or_path).await,
         ConfigCommands::Edit { editor } => {
             let model = store.load().await?;
             let editor = editor
@@ -96,6 +153,41 @@ pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> any
             Ok(())
         }
     }
+}
+
+/// Validate a JSON profile, by doing a HTTP client request.
+async fn validate_client(
+    client: &BaseHTTPClient,
+    url_or_path: CliInput,
+) -> anyhow::Result<ValidationOutcome> {
+    let mut url = client.base_url.join("profile/validate").unwrap();
+    url_or_path.add_query(&mut url)?;
+
+    let body = url_or_path.body_for_web()?;
+    // we use plain text .body instead of .json
+    let response: Result<reqwest::Response, agama_lib::error::ServiceError> = client
+        .client
+        .request(reqwest::Method::POST, url)
+        .body(body)
+        .send()
+        .await
+        .map_err(|e| e.into());
+
+    let result = client.deserialize_or_error(response?).await;
+    result.map_err(|e| e.into())
+}
+
+async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<()> {
+    let validity = validate_client(client, url_or_path).await?;
+    match validity {
+        ValidationOutcome::Valid => {
+            println!("{} {}", style("\u{2713}").bold().green(), validity);
+        }
+        ValidationOutcome::NotValid(_) => {
+            println!("{} {}", style("\u{2717}").bold().red(), validity);
+        }
+    }
+    Ok(())
 }
 
 /// Edit the installation settings using an external editor.

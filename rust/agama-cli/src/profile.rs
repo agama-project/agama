@@ -23,13 +23,11 @@ use agama_lib::{
     base_http_client::BaseHTTPClient,
     context::InstallationContext,
     install_settings::InstallSettings,
-    profile::ValidationOutcome,
     utils::{FileFormat, Transfer},
     Store as SettingsStore,
 };
 use anyhow::Context;
 use clap::Subcommand;
-use console::style;
 use fluent_uri::Uri;
 use std::{
     io,
@@ -45,14 +43,6 @@ pub enum ProfileCommands {
         /// AutoYaST profile's URL. Any AutoYaST scheme, ERB and rules/classes are supported.
         /// all schemas that autoyast supports.
         url: String,
-    },
-
-    /// Validate a profile using JSON Schema
-    ///
-    /// Schema is available at /usr/share/agama-cli/profile.schema.json
-    Validate {
-        /// JSON file, URL or path or `-` for standard input
-        url_or_path: CliInput,
     },
 
     /// Evaluate a profile, injecting the hardware information from D-Bus
@@ -77,8 +67,8 @@ pub enum ProfileCommands {
     },
 }
 
-// Represents the ways user can specify the input on the command line
-// and passes appropriate representations to the web API
+/// Represents the ways user can specify the input on the command line
+/// and passes appropriate representations to the web API
 #[derive(Clone, Debug)]
 pub enum CliInput {
     // TODO: Url(Url) would be nice here
@@ -112,7 +102,7 @@ impl CliInput {
     /// query parameter to *url*, properly escaped. The path is made absolute
     /// so that it works (on localhost) even if server's working directory is different.
     /// See also: `body_for_web`
-    fn add_query(&self, base_url: &mut Url) -> io::Result<()> {
+    pub fn add_query(&self, base_url: &mut Url) -> io::Result<()> {
         match self {
             Self::Url(url) => {
                 base_url.query_pairs_mut().append_pair("url", url);
@@ -147,56 +137,48 @@ impl CliInput {
     ///
     /// NOTE that this will consume the standard input
     /// if self is `Stdin`
-    fn body_for_web(self) -> std::io::Result<String> {
+    pub fn body_for_web(self) -> std::io::Result<String> {
         match self {
-            Self::Stdin => {
-                let mut slurp = String::new();
-                let stdin = std::io::stdin();
-                {
-                    let mut handle = stdin.lock();
-                    handle.read_to_string(&mut slurp)?;
-                }
-                Ok(slurp)
-            }
+            Self::Stdin => Self::stdin_to_string(),
             Self::Full(s) => Ok(s),
             _ => Ok("".to_owned()),
         }
     }
-}
 
-/// Validate a JSON profile, by doing a HTTP client request.
-async fn validate_client(
-    client: &BaseHTTPClient,
-    url_or_path: CliInput,
-) -> anyhow::Result<ValidationOutcome> {
-    let mut url = client.base_url.join("profile/validate").unwrap();
-    url_or_path.add_query(&mut url)?;
-
-    let body = url_or_path.body_for_web()?;
-    // we use plain text .body instead of .json
-    let response: Result<reqwest::Response, agama_lib::error::ServiceError> = client
-        .client
-        .request(reqwest::Method::POST, url)
-        .body(body)
-        .send()
-        .await
-        .map_err(|e| e.into());
-
-    let result = client.deserialize_or_error(response?).await;
-    result.map_err(|e| e.into())
-}
-
-async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<()> {
-    let validity = validate_client(client, url_or_path).await?;
-    match validity {
-        ValidationOutcome::Valid => {
-            println!("{} {}", style("\u{2713}").bold().green(), validity);
+    /// Consume standard input and return it as String.
+    fn stdin_to_string() -> std::io::Result<String> {
+        let mut slurp = String::new();
+        let stdin = std::io::stdin();
+        {
+            let mut handle = stdin.lock();
+            handle.read_to_string(&mut slurp)?;
         }
-        ValidationOutcome::NotValid(_) => {
-            println!("{} {}", style("\u{2717}").bold().red(), validity);
+        Ok(slurp)
+    }
+
+    /// Read the specified input (stdin, path, or URL) and return a String
+    // Does it belong here?
+    // vs the downloading code in web ProfileQuery::retrieve_profile
+    // put it in agama-lib?
+    pub fn read_to_string(self) -> anyhow::Result<String> {
+        match self {
+            Self::Full(s) => Ok(s),
+            Self::Stdin => Self::stdin_to_string().map_err(|e| e.into()),
+            Self::Path(pathbuf) => {
+                let s = std::fs::read_to_string(&pathbuf)
+                    .context(format!("Reading from file {:?}", pathbuf))?;
+                Ok(s)
+            }
+            Self::Url(url_string) => {
+                let mut bytebuf = Vec::new();
+                Transfer::get(&url_string, &mut bytebuf)
+                    .context(format!("Retrieving data from URL {}", url_string))?;
+                let s = String::from_utf8(bytebuf)
+                    .context(format!("Invalid UTF-8 data at URL {}", url_string))?;
+                Ok(s)
+            }
         }
     }
-    Ok(())
 }
 
 /// Evaluate a Jsonnet profile, by doing a HTTP client request.
@@ -245,7 +227,9 @@ async fn import(client: BaseHTTPClient, url_string: String) -> anyhow::Result<()
 
     // None means the profile is a script and it has been executed
     if let Some(profile_json) = profile_json {
+        /*
         validate(&client, CliInput::Full(profile_json.clone())).await?;
+        */
         let context = InstallationContext {
             source: url.to_owned(),
         };
@@ -321,7 +305,6 @@ async fn autoyast(client: BaseHTTPClient, url_string: String) -> anyhow::Result<
 pub async fn run(client: BaseHTTPClient, subcommand: ProfileCommands) -> anyhow::Result<()> {
     match subcommand {
         ProfileCommands::Autoyast { url } => autoyast(client, url).await,
-        ProfileCommands::Validate { url_or_path } => validate(&client, url_or_path).await,
         ProfileCommands::Evaluate { url_or_path } => evaluate(&client, url_or_path).await,
         ProfileCommands::Import { url } => import(client, url).await,
     }
