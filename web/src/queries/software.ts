@@ -385,6 +385,25 @@ const useProposalChanges = () => {
   }, [client, queryClient]);
 };
 
+/**
+ * Hook that registers a useEffect to listen for conflicts changes
+ *
+ */
+const useConflictsChanges = () => {
+  const client = useInstallerClient();
+  const queryClient = useQueryClient();
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.onEvent((event) => {
+      if (event.type === "ConflictsChanged") {
+        const { conflicts } = event;
+        queryClient.setQueryData(["software/conflicts"], conflicts);
+      }
+    });
+  });
+};
+
 export {
   configQuery,
   productsQuery,
@@ -392,6 +411,7 @@ export {
   useAddons,
   useConfigMutation,
   useConflicts,
+  useConflictsChanges,
   useLicenses,
   usePatterns,
   useProduct,

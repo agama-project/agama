@@ -39,6 +39,7 @@ import UsedSize from "./UsedSize";
 import { useIssues } from "~/queries/issues";
 import {
   useConflicts,
+  useConflictsChanges,
   usePatterns,
   useProposal,
   useProposalChanges,
@@ -172,6 +173,7 @@ function SoftwarePage(): React.ReactNode {
   const { mutate: probe } = useRepositoryMutation(() => setLoading(false));
 
   useProposalChanges();
+  useConflictsChanges();
 
   // Selected patterns section should fill the full width in big screen too when
   // there is no information for rendering the Proposal Size section.
