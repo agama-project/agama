@@ -32,6 +32,7 @@ import {
 import { useInstallerClient } from "~/context/installer";
 import {
   AddonInfo,
+  Conflict,
   License,
   Pattern,
   PatternsSelection,
@@ -46,6 +47,7 @@ import {
 import {
   fetchAddons,
   fetchConfig,
+  fetchConflicts,
   fetchLicenses,
   fetchPatterns,
   fetchProducts,
@@ -141,6 +143,14 @@ const patternsQuery = () => ({
 const repositoriesQuery = () => ({
   queryKey: ["software/repositories"],
   queryFn: fetchRepositories,
+});
+
+/**
+ * Query to retrieve conflicts
+ */
+const conflictsQuery = () => ({
+  queryKey: ["software/conflicts"],
+  queryFn: fetchConflicts,
 });
 
 /**
@@ -324,6 +334,14 @@ const useRepositories = (): Repository[] => {
 };
 
 /**
+ * Returns conclifts info
+ */
+const useConflicts = (): Conflict[] => {
+  const { data: conflicts } = useSuspenseQuery(conflictsQuery());
+  return conflicts;
+};
+
+/**
  * Hook that returns a useEffect to listen for  software proposal events
  *
  * When the configuration changes, it invalidates the config query.
@@ -373,6 +391,7 @@ export {
   selectedProductQuery,
   useAddons,
   useConfigMutation,
+  useConflicts,
   useLicenses,
   usePatterns,
   useProduct,

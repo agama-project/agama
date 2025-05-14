@@ -22,6 +22,7 @@
 
 import {
   AddonInfo,
+  Conflict,
   License,
   LicenseContent,
   Pattern,
@@ -87,6 +88,11 @@ const fetchPatterns = (): Promise<Pattern[]> => get("/api/software/patterns");
 const fetchRepositories = (): Promise<Repository[]> => get("/api/software/repositories");
 
 /**
+ * Returns the list of conflicts
+ */
+const fetchConflicts = (): Promise<Conflict[]> => get("/api/software/conflicts");
+
+/**
  * Updates the software configuration
  *
  * @param config - New software configuration
@@ -113,6 +119,7 @@ const registerAddon = (addon: RegisteredAddonInfo) =>
 export {
   fetchAddons,
   fetchConfig,
+  fetchConflicts,
   fetchLicense,
   fetchLicenses,
   fetchPatterns,

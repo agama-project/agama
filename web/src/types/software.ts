@@ -129,9 +129,24 @@ type RegisteredAddonInfo = {
   registrationCode: string;
 };
 
+type Conflict = {
+  id: number;
+  description: string;
+  details: string | null;
+  solutions: Solution[];
+};
+
+type Solution = {
+  id: number;
+  description: string;
+  details: string | null;
+};
+
 export { SelectedBy };
 export type {
   AddonInfo,
+  Conflict,
+  Solution,
   License,
   LicenseContent,
   Pattern,
