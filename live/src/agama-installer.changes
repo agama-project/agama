@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue May 13 16:56:56 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not set the root in /boot/grub2/grub.cfg file, it was wrong
+  and the root is already set in the /boot/grub2/earlyboot.cfg
+  file (bsc#1236873)
+- Replace underscores in the boot menu label by spaces
+
+-------------------------------------------------------------------
 Wed May  7 07:07:33 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed locale cleanup to not delete all locales
