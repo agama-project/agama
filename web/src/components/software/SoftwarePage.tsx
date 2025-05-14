@@ -38,7 +38,6 @@ import { Link, Page, IssuesAlert } from "~/components/core";
 import UsedSize from "./UsedSize";
 import { useIssues } from "~/queries/issues";
 import {
-  useConflicts,
   useConflictsChanges,
   usePatterns,
   useProposal,
@@ -47,9 +46,8 @@ import {
   useRepositoryMutation,
 } from "~/queries/software";
 import { Pattern, SelectedBy } from "~/types/software";
-import { _, n_ } from "~/i18n";
+import { _ } from "~/i18n";
 import { SOFTWARE as PATHS } from "~/routes/paths";
-import { sprintf } from "sprintf-js";
 
 /**
  * List of selected patterns.
@@ -88,33 +86,6 @@ const SelectedPatterns = ({ patterns }): React.ReactNode => (
     <SelectedPatternsList patterns={patterns} />
   </Page.Section>
 );
-
-const SolveConflicts = ({ conflicts }): React.ReactNode => {
-  if (conflicts.length === 0) {
-    return <br />;
-  }
-  const text: string = sprintf(
-    n_(
-      "There is %d conflict in software selection.",
-      "There are %d conflicts in software selection.",
-      conflicts.length,
-    ),
-    conflicts.length,
-  );
-
-  return (
-    <Page.Section
-      title={_("Conflicts")}
-      actions={
-        <Link to={PATHS.conflicts} isPrimary>
-          {_("Solve conflicts")}
-        </Link>
-      }
-    >
-      <p>{text}</p>
-    </Page.Section>
-  );
-};
 
 const NoPatterns = (): React.ReactNode => (
   <Page.Section title={_("Selected patterns")}>
@@ -167,7 +138,6 @@ function SoftwarePage(): React.ReactNode {
   const proposal = useProposal();
   const patterns = usePatterns();
   const repos = useRepositories();
-  const conflicts = useConflicts();
 
   const [loading, setLoading] = useState(false);
   const { mutate: probe } = useRepositoryMutation(() => setLoading(false));
@@ -194,7 +164,6 @@ function SoftwarePage(): React.ReactNode {
 
       <Page.Content>
         <IssuesAlert issues={issues} />
-        <SolveConflicts conflicts={conflicts} />
         <Grid hasGutter>
           {showReposAlert && (
             <GridItem sm={12}>
