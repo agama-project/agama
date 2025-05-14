@@ -24,6 +24,7 @@ use std::{collections::HashMap, task::Poll};
 
 use agama_lib::{
     error::ServiceError,
+    http::Event,
     storage::{
         client::dasd::DASDClient,
         model::dasd::{DASDDevice, DASDFormatSummary},
@@ -42,10 +43,7 @@ use zbus::{
     MatchRule, Message, MessageStream,
 };
 
-use crate::{
-    dbus::{DBusObjectChange, DBusObjectChangesStream, ObjectsCache},
-    web::Event,
-};
+use crate::dbus::{DBusObjectChange, DBusObjectChangesStream, ObjectsCache};
 
 #[derive(Debug, Error)]
 enum DASDDeviceStreamError {

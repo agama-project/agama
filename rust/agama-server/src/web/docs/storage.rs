@@ -78,6 +78,7 @@ impl ApiDocBuilder for StorageApiDocBuilder {
 
     fn components(&self) -> Components {
         ComponentsBuilder::new()
+            .schema_from::<agama_lib::issue::Issue>()
             .schema_from::<agama_lib::storage::client::iscsi::ISCSIAuth>()
             .schema_from::<agama_lib::storage::client::iscsi::ISCSIInitiator>()
             .schema_from::<agama_lib::storage::client::iscsi::ISCSINode>()
@@ -121,7 +122,6 @@ impl ApiDocBuilder for StorageApiDocBuilder {
             .schema_from::<crate::storage::web::iscsi::LoginParams>()
             .schema_from::<crate::storage::web::iscsi::NodeParams>()
             .schema_from::<crate::storage::web::zfcp::ZFCPConfig>()
-            .schema_from::<crate::web::common::Issue>()
             .build()
     }
 

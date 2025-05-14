@@ -26,13 +26,11 @@
 
 use crate::{
     error::Error,
-    web::{
-        common::{issues_router, service_status_router, EventStreams},
-        Event,
-    },
+    web::common::{issues_router, service_status_router, EventStreams},
 };
 use agama_lib::{
     error::ServiceError,
+    http::Event,
     users::{model::RootPatchSettings, proxies::Users1Proxy, FirstUser, RootUser, UsersClient},
 };
 use axum::{extract::State, http::StatusCode, response::IntoResponse, routing::get, Json, Router};

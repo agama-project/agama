@@ -24,6 +24,7 @@ use std::{pin::Pin, task::Poll};
 
 use agama_lib::{
     error::ServiceError,
+    issue::Issue,
     progress::Progress,
     proxies::{IssuesProxy, ProgressProxy, ServiceStatusProxy},
 };
@@ -317,35 +318,6 @@ async fn issues(State(state): State<IssuesState<'_>>) -> Result<Json<Vec<Issue>>
 #[derive(Clone)]
 struct IssuesState<'a> {
     proxy: IssuesProxy<'a>,
-}
-
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
-pub struct Issue {
-    description: String,
-    details: Option<String>,
-    source: u32,
-    severity: u32,
-    kind: String,
-}
-
-impl Issue {
-    pub fn from_tuple(
-        (description, kind, details, source, severity): (String, String, String, u32, u32),
-    ) -> Self {
-        let details = if details.is_empty() {
-            None
-        } else {
-            Some(details)
-        };
-
-        Self {
-            description,
-            kind,
-            details,
-            source,
-            severity,
-        }
-    }
 }
 
 /// Builds a stream of the changes in the the `org.opensuse.Agama1.Issues`

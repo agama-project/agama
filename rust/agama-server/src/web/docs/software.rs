@@ -52,6 +52,7 @@ impl ApiDocBuilder for SoftwareApiDocBuilder {
 
     fn components(&self) -> Components {
         ComponentsBuilder::new()
+            .schema_from::<agama_lib::issue::Issue>()
             .schema_from::<agama_lib::product::Product>()
             .schema_from::<agama_lib::software::Pattern>()
             .schema_from::<agama_lib::software::SelectedBy>()
@@ -66,7 +67,6 @@ impl ApiDocBuilder for SoftwareApiDocBuilder {
             .schema_from::<agama_lib::software::model::ResolvableType>()
             .schema_from::<agama_lib::software::model::SoftwareConfig>()
             .schema_from::<crate::software::web::SoftwareProposal>()
-            .schema_from::<crate::web::common::Issue>()
             .build()
     }
 

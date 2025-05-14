@@ -53,9 +53,9 @@ mod service;
 mod state;
 mod ws;
 
-use agama_lib::{connection, error::ServiceError};
+use agama_lib::{connection, error::ServiceError, http::Event};
 pub use config::ServiceConfig;
-pub use event::{Event, EventsReceiver, EventsSender};
+pub use event::{EventsReceiver, EventsSender};
 pub use service::MainServiceBuilder;
 use std::path::Path;
 use tokio_stream::{StreamExt, StreamMap};

@@ -24,12 +24,9 @@ use super::{
     error::LocaleError,
     model::{keyboard::Keymap, locale::LocaleEntry, timezone::TimezoneEntry, L10n},
 };
-use crate::{
-    error::Error,
-    web::{Event, EventsSender},
-};
+use crate::{error::Error, web::EventsSender};
 use agama_lib::{
-    error::ServiceError, localization::model::LocaleConfig, localization::LocaleProxy,
+    error::ServiceError, http::Event, localization::model::LocaleConfig, localization::LocaleProxy,
     proxies::LocaleMixinProxy as ManagerLocaleProxy,
 };
 use agama_locale_data::LocaleId;

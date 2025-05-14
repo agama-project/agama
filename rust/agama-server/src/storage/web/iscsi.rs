@@ -27,13 +27,11 @@
 
 use crate::{
     error::Error,
-    web::{
-        common::{issues_router, EventStreams},
-        Event,
-    },
+    web::common::{issues_router, EventStreams},
 };
 use agama_lib::{
     error::ServiceError,
+    http::Event,
     storage::{
         client::iscsi::{ISCSIAuth, ISCSIInitiator, ISCSINode, LoginResult},
         ISCSIClient,

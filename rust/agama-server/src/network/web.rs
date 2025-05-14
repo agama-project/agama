@@ -20,10 +20,8 @@
 
 //! This module implements the web API for the network module.
 
-use crate::{
-    error::Error,
-    web::{Event, EventsSender},
-};
+use crate::{error::Error, web::EventsSender};
+use agama_lib::http::Event;
 use anyhow::Context;
 use axum::{
     extract::{Path, State},
