@@ -245,9 +245,7 @@ module Agama
         solve_errors = Yast::Pkg.PkgSolveErrors
         return [] if solve_errors.zero?
 
-        last_error = Yast::Pkg.LastError
         res = []
-        res << last_error unless last_error.empty?
         res << (_("Found %s dependency issues.") % solve_errors) if solve_errors > 0
         res
       end
