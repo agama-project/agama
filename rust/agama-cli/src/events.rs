@@ -23,7 +23,7 @@ use agama_lib::http::WSClient;
 /// Main entry point called from Agama CLI main loop
 pub async fn run(mut ws_client: WSClient) -> anyhow::Result<()> {
     loop {
-        let event = ws_client.receive_raw()?;
+        let event = ws_client.receive_raw().await?;
         println!("{}", event);
     }
 }

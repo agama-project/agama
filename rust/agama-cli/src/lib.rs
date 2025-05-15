@@ -247,7 +247,7 @@ async fn build_ws_client(api_url: Url, insecure: bool) -> anyhow::Result<WSClien
 
     let token = find_client_token(&api_url).unwrap(); //.map_err(|| ServiceError::NotAuthenticated.into())?;
     url.set_scheme(scheme).unwrap();
-    Ok(WSClient::connect(&url, token, insecure)?)
+    Ok(WSClient::connect(&url, token, insecure).await?)
 }
 
 /// Build the API url from the host.
