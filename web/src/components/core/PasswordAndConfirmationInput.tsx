@@ -106,7 +106,6 @@ const PasswordAndConfirmationInput = ({
       </FormGroup>
       <FormGroup fieldId="passwordConfirmation" label={_("Password confirmation")}>
         <PasswordInput
-          showKeyboardHint={false}
           id="passwordConfirmation"
           name="passwordConfirmation"
           value={confirmation}
@@ -114,6 +113,7 @@ const PasswordAndConfirmationInput = ({
           onChange={onConfirmationChange}
           onBlur={() => validate(password, confirmation)}
           validated={error === "" ? "default" : "error"}
+          reminders={[]}
         />
         <FormValidationError message={error} />
       </FormGroup>

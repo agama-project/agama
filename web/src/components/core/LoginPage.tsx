@@ -109,12 +109,12 @@ user privileges.",
 
             <FormGroup fieldId="password" label={_("Password")}>
               <PasswordInput
-                showKeyboardHint={false}
                 id="password"
                 name="password"
                 value={password}
                 aria-label={_("Password input")}
                 onChange={(_, v) => setPassword(v)}
+                reminders={["capslock"]}
               />
               <FormHelperText>
                 <HelperText>
