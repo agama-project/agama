@@ -26,6 +26,7 @@ import { useDevices, useResetConfigMutation } from "~/queries/storage";
 import { useModel } from "~/hooks/storage/model";
 import DriveEditor from "~/components/storage/DriveEditor";
 import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
+import MdRaidEditor from "~/components/storage/MdRaidEditor";
 import { Alert, Button, List, ListItem } from "@patternfly/react-core";
 
 const NoDevicesConfiguredAlert = () => {
@@ -57,9 +58,10 @@ export default function ConfigEditor() {
   const model = useModel();
   const devices = useDevices("system", { suspense: true });
   const drives = model.drives;
+  const mdRaids = model.mdRaids;
   const volumeGroups = model.volumeGroups;
 
-  if (!drives.length && !volumeGroups.length) {
+  if (!drives.length && !mdRaids.length && !volumeGroups.length) {
     return <NoDevicesConfiguredAlert />;
   }
 
@@ -69,6 +71,15 @@ export default function ConfigEditor() {
         return (
           <ListItem key={`vg-${i}`}>
             <VolumeGroupEditor vg={vg} />
+          </ListItem>
+        );
+      })}
+      {mdRaids.map((raid, i) => {
+        const device = devices.find((d) => d.name === raid.name);
+
+        return (
+          <ListItem key={`md-${i}`}>
+            <MdRaidEditor raid={raid} raidDevice={device} />
           </ListItem>
         );
       })}

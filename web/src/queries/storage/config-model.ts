@@ -36,10 +36,6 @@ function isNewPartition(partition: apiModel.Partition): boolean {
   return partition.name === undefined;
 }
 
-function isSpacePartition(partition: apiModel.Partition): boolean {
-  return partition.resizeIfNeeded || partition.delete || partition.deleteIfNeeded;
-}
-
 function isUsedPartition(partition: apiModel.Partition): boolean {
   return partition.filesystem !== undefined;
 }
@@ -95,17 +91,6 @@ function allMountPaths(drive: apiModel.Drive): string[] {
   if (drive.mountPath) return [drive.mountPath];
 
   return drive.partitions.map((p) => p.mountPath).filter((m) => m);
-}
-
-function configuredExistingPartitions(drive: apiModel.Drive): apiModel.Partition[] {
-  const allPartitions = drive.partitions || [];
-
-  if (drive.spacePolicy === "custom")
-    return allPartitions.filter(
-      (p) => !isNewPartition(p) && (isUsedPartition(p) || isSpacePartition(p)),
-    );
-
-  return allPartitions.filter((p) => isReusedPartition(p));
 }
 
 function setBoot(originalModel: apiModel.Config, boot: apiModel.Boot) {
@@ -322,7 +307,6 @@ export type DriveHook = {
   isExplicitBoot: boolean;
   hasPv: boolean;
   allMountPaths: string[];
-  configuredExistingPartitions: apiModel.Partition[];
   switch: (newName: string) => void;
   getPartition: (mountPath: string) => apiModel.Partition | undefined;
   delete: () => void;
@@ -340,7 +324,6 @@ export function useDrive(name: string): DriveHook | null {
     isExplicitBoot: isExplicitBoot(model, name),
     hasPv: driveHasPv(model, drive.name),
     allMountPaths: allMountPaths(drive),
-    configuredExistingPartitions: configuredExistingPartitions(drive),
     switch: (newName) => mutate(switchDrive(model, name, newName)),
     delete: () => mutate(removeDrive(model, name)),
     getPartition: (mountPath: string) => findPartition(model, name, mountPath),

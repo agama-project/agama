@@ -55,7 +55,8 @@ import {
   editPartition as editPartitionHelper,
 } from "~/helpers/storage/partition";
 import { useDevices, useVolume } from "~/queries/storage";
-import { useDrive, useConfigModel, useSolvedConfigModel } from "~/queries/storage/config-model";
+import { useConfigModel, useSolvedConfigModel } from "~/queries/storage/config-model";
+import { findDevice } from "~/helpers/storage/api-model";
 import { StorageDevice } from "~/types/storage";
 import {
   baseName,
@@ -256,8 +257,9 @@ function useUnusedPartitions(): StorageDevice[] {
   const device = useDevice();
   const allPartitions = device.partitionTable?.partitions || [];
   const initialPartitionConfig = useInitialPartitionConfig();
-  const configuredPartitionConfigs = useDrive(device?.name)
-    .configuredExistingPartitions.filter((p) => p.name !== initialPartitionConfig?.name)
+  const configuredPartitionConfigs = useModelDevice()
+    .getConfiguredExistingPartitions()
+    .filter((p) => p.name !== initialPartitionConfig?.name)
     .map((p) => p.name);
 
   return allPartitions.filter((p) => !configuredPartitionConfigs.includes(p.name));
@@ -421,9 +423,11 @@ function useSolvedModel(value: FormValue): apiModel.Config | null {
 
 function useSolvedPartitionConfig(value: FormValue): apiModel.Partition | undefined {
   const model = useSolvedModel(value);
-  const device = useDevice();
-  const drive = model?.drives?.find((d) => d.name === device.name);
-  return drive?.partitions?.find((p) => p.mountPath === value.mountPoint);
+  const { list, listIndex } = useModelDevice();
+  if (!model) return;
+
+  const container = findDevice(model, list, listIndex);
+  return container?.partitions?.find((p) => p.mountPath === value.mountPoint);
 }
 
 function useSolvedSizes(value: FormValue): SizeRange {

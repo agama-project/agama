@@ -24,11 +24,33 @@ import { apiModel } from "~/api/storage/types";
 import { model } from "~/types/storage";
 
 function buildPartition(partitionData: apiModel.Partition): model.Partition {
-  return { ...partitionData };
+  const isNew = (): boolean => {
+    return !partitionData.name;
+  };
+
+  const isUsed = (): boolean => {
+    return partitionData.filesystem !== undefined;
+  };
+
+  const isReused = (): boolean => {
+    return !isNew() && isUsed();
+  };
+
+  const isUsedBySpacePolicy = (): boolean => {
+    return partitionData.resizeIfNeeded || partitionData.delete || partitionData.deleteIfNeeded;
+  };
+
+  return {
+    ...partitionData,
+    isNew: isNew(),
+    isUsed: isUsed(),
+    isReused: isReused(),
+    isUsedBySpacePolicy: isUsedBySpacePolicy(),
+  };
 }
 
-const findDrive = (model: model.Model, name: string): model.Drive | undefined => {
-  return model.drives.find((d) => d.name === name);
+const findTarget = (model: model.Model, name: string): model.Drive | model.MdRaid | undefined => {
+  return model.drives.concat(model.mdRaids).find((d) => d.name === name);
 };
 
 function partitionableProperties(
@@ -80,7 +102,14 @@ function partitionableProperties(
   };
 
   const isAddingPartitions = (): boolean => {
-    return (apiDevice.partitions || []).some((p) => p.mountPath && !p.name);
+    return partitions.some((p) => p.mountPath && p.isNew);
+  };
+
+  const getConfiguredExistingPartitions = (): model.Partition[] => {
+    if (apiDevice.spacePolicy === "custom")
+      return partitions.filter((p) => !p.isNew && (p.isUsed || p.isUsedBySpacePolicy));
+
+    return partitions.filter((p) => p.isReused);
   };
 
   return {
@@ -90,6 +119,7 @@ function partitionableProperties(
     getMountPaths,
     getVolumeGroups,
     getPartition,
+    getConfiguredExistingPartitions,
   };
 }
 
@@ -106,6 +136,22 @@ function buildDrive(
     list,
     listIndex,
     ...partitionableProperties(apiDrive, listIndex, apiModel, model),
+  };
+}
+
+function buildMdRaid(
+  apiMdRaid: apiModel.MdRaid,
+  listIndex: number,
+  apiModel: apiModel.Config,
+  model: model.Model,
+): model.MdRaid {
+  const list = "mdRaids";
+
+  return {
+    ...apiMdRaid,
+    list,
+    listIndex,
+    ...partitionableProperties(apiMdRaid, listIndex, apiModel, model),
   };
 }
 
@@ -128,8 +174,8 @@ function buildVolumeGroup(
     return (apiVolumeGroup.logicalVolumes || []).map(buildLogicalVolume);
   };
 
-  const getTargetDevices = (): model.Drive[] => {
-    return (apiVolumeGroup.targetDevices || []).map((d) => findDrive(model, d)).filter((d) => d);
+  const getTargetDevices = (): (model.Drive | model.MdRaid)[] => {
+    return (apiVolumeGroup.targetDevices || []).map((d) => findTarget(model, d)).filter((d) => d);
   };
 
   return {
@@ -145,6 +191,7 @@ function buildVolumeGroup(
 function buildModel(apiModel: apiModel.Config): model.Model {
   const model: model.Model = {
     drives: [],
+    mdRaids: [],
     volumeGroups: [],
     getMountPaths: () => [],
   };
@@ -153,16 +200,25 @@ function buildModel(apiModel: apiModel.Config): model.Model {
     return (apiModel.drives || []).map((d, i) => buildDrive(d, i, apiModel, model));
   };
 
+  const buildMdRaids = (): model.MdRaid[] => {
+    return (apiModel.mdRaids || []).map((r, i) => buildMdRaid(r, i, apiModel, model));
+  };
+
   const buildVolumeGroups = (): model.VolumeGroup[] => {
     return (apiModel.volumeGroups || []).map((v, i) => buildVolumeGroup(v, i, model));
   };
 
+  const withMountPaths = (): (model.Drive | model.MdRaid | model.VolumeGroup)[] => {
+    return [...model.drives, ...model.mdRaids, ...model.volumeGroups];
+  };
+
   const getMountPaths = (): string[] => {
-    return [...model.drives, ...model.volumeGroups].flatMap((d) => d.getMountPaths());
+    return withMountPaths().flatMap((d) => d.getMountPaths());
   };
 
   // Important! Modify the model object instead of assigning a new one.
   model.drives = buildDrives();
+  model.mdRaids = buildMdRaids();
   model.volumeGroups = buildVolumeGroups();
   model.getMountPaths = getMountPaths;
   return model;
