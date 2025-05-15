@@ -24,6 +24,8 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { AnswerCallback, Question } from "~/types/questions";
+import { InstallationPhase } from "~/types/status";
+import { Product } from "~/types/software";
 import LuksActivationQuestion from "~/components/questions/LuksActivationQuestion";
 
 let question: Question;
@@ -35,7 +37,49 @@ const questionMock: Question = {
   defaultOption: "decrypt",
   data: { attempt: "1" },
 };
+const tumbleweed: Product = {
+  id: "Tumbleweed",
+  name: "openSUSE Tumbleweed",
+  icon: "tumbleweed.svg",
+  description: "Tumbleweed description...",
+  registration: false,
+};
+
 const answerFn: AnswerCallback = jest.fn();
+const locales = [
+  { id: "en_US.UTF-8", name: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+];
+
+jest.mock("~/queries/status", () => ({
+  useInstallerStatus: () => ({
+    phase: InstallationPhase.Config,
+    isBusy: false,
+  }),
+}));
+
+jest.mock("~/queries/l10n", () => ({
+  ...jest.requireActual("~/queries/l10n"),
+  useL10n: () => ({ locales, selectedLocale: locales[0] }),
+}));
+
+jest.mock("~/queries/software", () => ({
+  ...jest.requireActual("~/queries/software"),
+  useProduct: () => {
+    return {
+      products: [tumbleweed],
+      selectedProduct: tumbleweed,
+    };
+  },
+}));
+
+jest.mock("~/context/installerL10n", () => ({
+  ...jest.requireActual("~/context/installerL10n"),
+  useInstallerL10n: () => ({
+    keymap: "us",
+    language: "de-DE",
+  }),
+}));
 
 const renderQuestion = () =>
   installerRender(<LuksActivationQuestion question={question} answerCallback={answerFn} />, {
@@ -45,6 +89,13 @@ const renderQuestion = () =>
 describe("LuksActivationQuestion", () => {
   beforeEach(() => {
     question = { ...questionMock };
+  });
+
+  it("allows opening the installer keymap settings", async () => {
+    const { user } = renderQuestion();
+    const changeKeymapButton = screen.getByRole("button", { name: "Change keyboard layout" });
+    await user.click(changeKeymapButton);
+    screen.getByRole("dialog", { name: "Change keyboard" });
   });
 
   it("renders the question text", async () => {

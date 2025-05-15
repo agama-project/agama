@@ -24,6 +24,8 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { Question } from "~/types/questions";
+import { Product } from "~/types/software";
+import { InstallationPhase } from "~/types/status";
 import QuestionWithPassword from "~/components/questions/QuestionWithPassword";
 
 const answerFn = jest.fn();
@@ -35,12 +37,63 @@ const question: Question = {
   defaultOption: "cancel",
 };
 
+const tumbleweed: Product = {
+  id: "Tumbleweed",
+  name: "openSUSE Tumbleweed",
+  icon: "tumbleweed.svg",
+  description: "Tumbleweed description...",
+  registration: false,
+};
+
+const locales = [
+  { id: "en_US.UTF-8", name: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+];
+
+jest.mock("~/queries/status", () => ({
+  useInstallerStatus: () => ({
+    phase: InstallationPhase.Config,
+    isBusy: false,
+  }),
+}));
+
+jest.mock("~/queries/l10n", () => ({
+  ...jest.requireActual("~/queries/l10n"),
+  useL10n: () => ({ locales, selectedLocale: locales[0] }),
+}));
+
+jest.mock("~/queries/software", () => ({
+  ...jest.requireActual("~/queries/software"),
+  useProduct: () => {
+    return {
+      products: [tumbleweed],
+      selectedProduct: tumbleweed,
+    };
+  },
+}));
+
+jest.mock("~/context/installerL10n", () => ({
+  ...jest.requireActual("~/context/installerL10n"),
+  useInstallerL10n: () => ({
+    keymap: "us",
+    language: "de-DE",
+  }),
+  useL10n: jest.fn(),
+}));
+
 const renderQuestion = () =>
   installerRender(<QuestionWithPassword question={question} answerCallback={answerFn} />, {
     withL10n: true,
   });
 
 describe("QuestionWithPassword", () => {
+  it("allows opening the installer keymap settings", async () => {
+    const { user } = renderQuestion();
+    const changeKeymapButton = screen.getByRole("button", { name: "Change keyboard layout" });
+    await user.click(changeKeymapButton);
+    screen.getByRole("dialog", { name: "Change keyboard" });
+  });
+
   it("renders the question text", () => {
     renderQuestion();
 
