@@ -1,5 +1,8 @@
 name: CI - ISO definition
 
+permissions:
+  contents: read
+
 on:
   push:
     paths:

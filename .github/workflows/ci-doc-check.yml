@@ -1,5 +1,8 @@
 name: "CI - Documentation Check"
 
+permissions:
+  contents: read
+
 on:
   push:
     paths:

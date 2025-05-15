@@ -1,5 +1,8 @@
 name: Submit rubygem-agama-yast
 
+permissions:
+  contents: read
+
 on:
   push:
     paths:

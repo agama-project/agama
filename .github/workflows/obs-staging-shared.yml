@@ -2,6 +2,9 @@
 
 name: Update OBS Packages
 
+permissions:
+  contents: read
+
 on:
   workflow_call:
     secrets:

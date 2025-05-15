@@ -1,5 +1,8 @@
 name: Submit agama-products
 
+permissions:
+  contents: read
+
 on:
   push:
     paths:
