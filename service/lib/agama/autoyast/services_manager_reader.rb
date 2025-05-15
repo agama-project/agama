@@ -26,9 +26,9 @@ Yast.import "URL"
 module Agama
   module AutoYaST
     # Converts AutoYaST's <services-manager> section into post-install script(s). See the
-    # ScriptsReader for a details.
+    # ScriptsReader for further details.
     #
-    # Conversion is not done in one-to-one manner. Several services can be joined into one
+    # Conversion is not done in one-to-one manner. Several services are currently joined into one
     # post script.
     class ServicesManagerReader
       # @param profile [ProfileHash] AutoYaST profile
@@ -81,7 +81,7 @@ module Agama
         return nil if body.nil? || body.empty?
 
         {
-          "name"    => "agama-services-manager-scripts",
+          "name"    => "agama-services-manager",
           "chroot"  => true,
           "content" => "#!/bin/bash\n#{body}"
         }
