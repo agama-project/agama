@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -71,6 +71,8 @@ module Agama
         end
 
         # Available devices for installation.
+        #
+        # @deprecated Only used by Guided strategy.
         #
         # @return [Array<Y2Storage::Device>]
         def available_devices

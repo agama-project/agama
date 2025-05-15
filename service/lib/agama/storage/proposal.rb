@@ -27,6 +27,7 @@ require "agama/storage/config_solver"
 require "agama/storage/model_support_checker"
 require "agama/storage/proposal_settings"
 require "agama/storage/proposal_strategies"
+require "agama/storage/system"
 require "json"
 require "yast"
 require "y2storage"
@@ -70,7 +71,7 @@ module Agama
       #
       # @return [Array<Y2Storage::Device>]
       def available_devices
-        disk_analyzer&.candidate_disks || []
+        storage_system.candidate_drives
       end
 
       # Storage config according to the JSON schema from the current proposal.
@@ -116,10 +117,7 @@ module Agama
           .new(model_json, product_config: product_config)
           .convert
 
-        ConfigSolver
-          .new(product_config, storage_manager.probed, disk_analyzer: disk_analyzer)
-          .solve(config)
-
+        ConfigSolver.new(product_config, storage_system).solve(config)
         ConfigConversions::ToModel.new(config).convert
       end
 
@@ -181,7 +179,7 @@ module Agama
         logger.info("Calculating proposal with agama strategy: #{config.inspect}")
         reset
         @source_config = config.copy
-        @strategy = ProposalStrategies::Agama.new(product_config, logger, config)
+        @strategy = ProposalStrategies::Agama.new(product_config, storage_system, logger, config)
         calculate
       end
 
@@ -336,16 +334,14 @@ module Agama
         success?
       end
 
+      # @return [Storage::System]
+      def storage_system
+        @storage_system ||= Storage::System.new
+      end
+
       # @return [Y2Storage::Proposal::Base, nil]
       def proposal
         storage_manager.proposal
-      end
-
-      # @return [Y2Storage::DiskAnalyzer, nil] nil if the system is not probed yet.
-      def disk_analyzer
-        return unless storage_manager.probed?
-
-        storage_manager.probed_disk_analyzer
       end
 
       # @return [Y2Storage::StorageManager]
