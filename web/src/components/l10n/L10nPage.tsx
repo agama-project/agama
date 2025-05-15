@@ -30,13 +30,13 @@ import { localConnection } from "~/utils";
 
 const InstallerL10nSettingsInfo = () => {
   const info = localConnection()
-    ? // TRANSLATORS: Text used for the helping user to set the interface language
+    ? // TRANSLATORS: Text used for helping user to set the interface language
       // and keymap from product localization options. Text in the square brackets [] is
       // used for the link to open the settings panel, please keep the brackets.
       _(
         "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.",
       )
-    : // TRANSLATORS: Text used for the helping user to set the interface language
+    : // TRANSLATORS: Text used for helping user to set the interface language
       // from product localization options. Text in the square brackets [] is used
       // for the link to open the settings panel, please keep the brackets.
       _(
