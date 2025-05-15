@@ -32,7 +32,7 @@
  */
 
 import React, { useReducer } from "react";
-import { useLocation } from "react-router-dom";
+import { useHref, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   Button,
@@ -56,7 +56,7 @@ import { useInstallerStatus } from "~/queries/status";
 import { localConnection } from "~/utils";
 import { _ } from "~/i18n";
 import supportedLanguages from "~/languages.json";
-import { PRODUCT, ROOT } from "~/routes/paths";
+import { PRODUCT, ROOT, L10N } from "~/routes/paths";
 import { useProduct } from "~/queries/software";
 
 /**
@@ -258,7 +258,55 @@ const ReusableSettings = ({ isReuseAllowed, children }) => {
   }
 };
 
+type TextWithLinkToL10nProps = {
+  /** The text containing a bracketed substring for the link. */
+  text: string;
+  /**
+   * Optional handler triggered when the user activates the link. Useful for
+   * performing side effects, such as closing the dialog. Navigation may not occur
+   * if the user is already on the L10n page. This callback runs regardless of
+   * whether navigation happens.
+   */
+  onClick?: ButtonProps["onClick"];
+};
+
+/**
+ * Renders a string with an inline link that navigates to the Localization page.
+ *
+ * The input `text` must include a substring wrapped in square brackets `[ ]`, which will be replaced
+ * by a clickable link. The component splits the text into three parts:
+ * - The content before `[link text]`
+ * - The content inside the brackets (used as the link text)
+ * - The content after the brackets
+ *
+ * Example input:
+ *   "You can configure the langauge for the product to install at [Localization page]."
+ *
+ * @param {text} props - The text containing a bracketed substring for the link.
+ */
+const TextWithLinkToL10n = ({ text, onClick }: TextWithLinkToL10nProps) => {
+  const href = useHref(L10N.root);
+  const [textStart, l10nPageLink, textEnd] = text.split(/[[\]]/);
+
+  return (
+    <>
+      {textStart}{" "}
+      <Button component="a" variant="link" href={href} isInline onClick={onClick}>
+        {l10nPageLink}
+      </Button>{" "}
+      {textEnd}
+    </>
+  );
+};
+
 const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
+  const checkboxDescription = _(
+    // TRANSLATORS: Explains where users can find more language and keymap
+    // options for the product to install. Keep the text in square brackets []
+    // as it will be replaced with a clickable link.
+    "More language and keyboard layout options for the selected product may be available in [Localization] page.",
+  );
+
   return (
     <Popup isOpen={state.isOpen} variant="small" title={_("Language and keyboard")}>
       <Form id="installer-l10n" onSubmit={actions.handleSubmitForm}>
@@ -269,9 +317,12 @@ const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
             <Checkbox
               id="reuse-settings"
               label={_("Use these same settings for the selected product")}
-              description={_(
-                "More language and keyboard layout options for the selected product may be available in Localization page.",
-              )}
+              description={
+                <TextWithLinkToL10n
+                  text={checkboxDescription}
+                  onClick={actions.handleCloseDialog}
+                />
+              }
               isChecked={formState.reuseSettings}
               onChange={actions.handleCopyToSystemToggle}
             />
@@ -296,6 +347,13 @@ const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
 };
 
 const LanguageOnlyDialog = ({ state, formState, actions }: DialogProps) => {
+  const checkboxDescription = _(
+    // TRANSLATORS: Explains where users can find more languages options for the
+    // product to install. Keep the text in square brackets [] as it will be
+    // replaced with a clickable link.
+    "More languages might be available for the selected product at [Localization] page",
+  );
+
   return (
     <Popup isOpen={state.isOpen} variant="small" title={_("Change Language")}>
       <Form id="installer-l10n" onSubmit={actions.handleSubmitForm}>
@@ -306,7 +364,10 @@ const LanguageOnlyDialog = ({ state, formState, actions }: DialogProps) => {
               id="reuse-settings"
               label={_("Use for the selected product too")}
               description={
-                "More languages might be available for the selected product at localization page"
+                <TextWithLinkToL10n
+                  text={checkboxDescription}
+                  onClick={actions.handleCloseDialog}
+                />
               }
               isChecked={formState.reuseSettings}
               onChange={actions.handleCopyToSystemToggle}
@@ -343,6 +404,13 @@ const KeyboardOnlyDialog = ({ state, formState, actions }: DialogProps) => {
     );
   }
 
+  const checkboxDescription = _(
+    // TRANSLATORS: Explains where users can find more keymap options for the
+    // product to install. Keep the text in square brackets [] as it will be
+    // replaced with a clickable link.
+    "More keymap layout might be available for the selected product at [Localization] page",
+  );
+
   return (
     <Popup isOpen={state.isOpen} variant="small" title={_("Change keyboard")}>
       <Form id="installer-l10n" onSubmit={actions.handleSubmitForm}>
@@ -353,7 +421,10 @@ const KeyboardOnlyDialog = ({ state, formState, actions }: DialogProps) => {
               id="reuse-settings"
               label={_("Use for the selected product too")}
               description={
-                "More keymap layout might be available for the selected product at localization page"
+                <TextWithLinkToL10n
+                  text={checkboxDescription}
+                  onClick={actions.handleCloseDialog}
+                />
               }
               isChecked={formState.reuseSettings}
               onChange={actions.handleCopyToSystemToggle}

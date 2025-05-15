@@ -215,6 +215,11 @@ describe("InstallerOptions", () => {
       expect(mockL10nConfigMutation.mutate).not.toHaveBeenCalled();
     });
 
+    it("includes a link to localization page", async () => {
+      await renderAndOpen();
+      screen.getByRole("link", { name: "Localization" });
+    });
+
     describe("but a product is not selected yet", () => {
       beforeEach(() => {
         mockSelectedProduct = undefined;
@@ -225,6 +230,11 @@ describe("InstallerOptions", () => {
         const dialog = screen.getByRole("dialog");
         expect(within(dialog).queryByRole("checkbox")).toBeNull();
         screen.getByText(/This will affect only the interface/);
+      });
+
+      it("does not include a link to localization page", async () => {
+        await renderAndOpen();
+        expect(screen.queryByRole("link", { name: "Localization" })).toBeNull();
       });
     });
 
@@ -310,6 +320,11 @@ describe("InstallerOptions", () => {
       expect(mockL10nConfigMutation.mutate).not.toHaveBeenCalled();
     });
 
+    it("includes a link to localization page", async () => {
+      await renderAndOpen({ variant: "language" });
+      screen.getByRole("link", { name: "Localization" });
+    });
+
     describe("but a product is not selected yet", () => {
       beforeEach(() => {
         mockSelectedProduct = undefined;
@@ -320,6 +335,11 @@ describe("InstallerOptions", () => {
         const dialog = screen.getByRole("dialog");
         expect(within(dialog).queryByRole("checkbox")).toBeNull();
         screen.getByText(/This will affect only the interface/);
+      });
+
+      it("does not include a link to localization page", async () => {
+        await renderAndOpen({ variant: "language" });
+        expect(screen.queryByRole("link", { name: "Localization" })).toBeNull();
       });
     });
   });
@@ -391,6 +411,11 @@ describe("InstallerOptions", () => {
       expect(mockL10nConfigMutation.mutate).not.toHaveBeenCalled();
     });
 
+    it("includes a link to localization page", async () => {
+      await renderAndOpen({ variant: "keyboard" });
+      screen.getByRole("link", { name: "Localization" });
+    });
+
     describe("but in a remote connection", () => {
       beforeEach(() => {
         jest.spyOn(utils, "localConnection").mockReturnValue(false);
@@ -414,6 +439,11 @@ describe("InstallerOptions", () => {
         const dialog = screen.getByRole("dialog");
         expect(within(dialog).queryByRole("checkbox")).toBeNull();
         screen.getByText(/This will affect only the interface/);
+      });
+
+      it("does not include a link to localization page", async () => {
+        await renderAndOpen({ variant: "keyboard" });
+        expect(screen.queryByRole("link", { name: "Localization" })).toBeNull();
       });
     });
   });
