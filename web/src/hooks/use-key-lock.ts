@@ -13,9 +13,9 @@ export const useKeyLock = (targetKey: KeyLock) => {
         return;
       }
 
-      setIsKeyLocked(!event.getModifierState(targetKey));
+      setIsKeyLocked(!isKeyLocked);
     },
-    [targetKey],
+    [targetKey, isKeyLocked],
   );
 
   useEffect(() => {
