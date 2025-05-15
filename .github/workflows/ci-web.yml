@@ -1,6 +1,8 @@
 name: CI - Web
+
 permissions:
   contents: read
+
 on:
   push:
     paths:
