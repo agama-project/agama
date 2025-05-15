@@ -21,11 +21,44 @@
  */
 
 import React from "react";
-import { Content, Grid, GridItem } from "@patternfly/react-core";
-import { Link, Page } from "~/components/core";
+import { Button, Content, Grid, GridItem } from "@patternfly/react-core";
+import { InstallerOptions, Link, Page } from "~/components/core";
 import { L10N as PATHS } from "~/routes/paths";
 import { useL10n } from "~/queries/l10n";
 import { _ } from "~/i18n";
+import { localConnection } from "~/utils";
+
+const InstallerL10nSettingsInfo = () => {
+  const info = localConnection()
+    ? // TRANSLATORS: Text used for the helping user to set the interface language
+      // and keymap from product localization options. Text in the square brackets [] is
+      // used for the link to open the settings panel, please keep the brackets.
+      _(
+        "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.",
+      )
+    : // TRANSLATORS: Text used for the helping user to set the interface language
+      // from product localization options. Text in the square brackets [] is used
+      // for the link to open the settings panel, please keep the brackets.
+      _(
+        "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.",
+      );
+
+  const [infoStart, infoLink, infoEnd] = info.split(/[[\]]/);
+
+  return (
+    <small>
+      {infoStart}{" "}
+      <InstallerOptions
+        toggle={({ onClick }) => (
+          <Button variant="link" isInline onClick={onClick}>
+            {infoLink}
+          </Button>
+        )}
+      />
+      {infoEnd}
+    </small>
+  );
+};
 
 // FIXME: re-evaluate the need of "Thing not selected yet"
 
@@ -82,6 +115,11 @@ export default function L10nPage() {
                 {timezone ? (timezone.parts || []).join(" - ") : _("Not selected yet")}
               </Content>
             </Page.Section>
+          </GridItem>
+          <GridItem>
+            <Content>
+              <InstallerL10nSettingsInfo />
+            </Content>
           </GridItem>
         </Grid>
       </Page.Content>
