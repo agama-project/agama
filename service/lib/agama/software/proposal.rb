@@ -133,10 +133,11 @@ module Agama
           {
             "description"          => conflict["description"],
             "details"              => conflict["details"],
-            "solution_description" => conflict["description"],
-            "solution_details"     => conflict["details"]
+            "solution_description" => solution["description"],
+            "solution_details"     => solution["details"]
           }
         end
+        logger.info "Sending solver solutions #{pkg_solutions.inspect}"
 
         Yast::Pkg.PkgSetSolveSolutions(pkg_solutions)
 
