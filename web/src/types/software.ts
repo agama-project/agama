@@ -142,11 +142,15 @@ type Solution = {
   details: string | null;
 };
 
+type SolutionPatch = {
+  conflictId: number;
+  solutionId: number;
+};
+
 export { SelectedBy };
 export type {
   AddonInfo,
   Conflict,
-  Solution,
   License,
   LicenseContent,
   Pattern,
@@ -157,4 +161,6 @@ export type {
   Repository,
   SoftwareConfig,
   SoftwareProposal,
+  Solution,
+  SolutionPatch,
 };

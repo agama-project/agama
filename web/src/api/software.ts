@@ -32,8 +32,9 @@ import {
   Repository,
   SoftwareConfig,
   SoftwareProposal,
+  SolutionPatch,
 } from "~/types/software";
-import { get, post, put } from "~/api/http";
+import { get, patch, post, put } from "~/api/http";
 
 /**
  * Returns the software configuration
@@ -116,6 +117,11 @@ const register = ({ key, email }: { key: string; email?: string }) =>
 const registerAddon = (addon: RegisteredAddonInfo) =>
   post("/api/software/registration/addons/register", addon);
 
+/**
+ * Solve conflict
+ */
+const solveConflict = (solution: SolutionPatch) => patch("/api/software/conflicts", [solution]);
+
 export {
   fetchAddons,
   fetchConfig,
@@ -131,5 +137,6 @@ export {
   probe,
   register,
   registerAddon,
+  solveConflict,
   updateConfig,
 };

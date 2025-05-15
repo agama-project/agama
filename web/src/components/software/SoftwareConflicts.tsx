@@ -41,6 +41,7 @@ import { Page, SubtleContent } from "~/components/core";
 import { useConflicts } from "~/queries/software";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
+import { solveConflict } from "~/api/software";
 
 /**
  * Conflicts component
@@ -50,7 +51,7 @@ function SoftwareConflicts(): React.ReactNode {
   const [conflictId, setConflictId] = useState(0);
   const onSubmit = async (e) => {
     e.preventDefault();
-    console.log("Sending chosen solution", solution);
+    solveConflict({ solutionId: solution, conflictId });
   };
   const onNext = async () => {
     setConflictId(conflictId + 1);
@@ -73,16 +74,20 @@ function SoftwareConflicts(): React.ReactNode {
           {sprintf(_("Conflict %d of %d"), conflictId + 1, conflicts.length)}
         </ToolbarItem>
         <ToolbarItem>
-          <Button variant="plain" isDisabled={conflictId === 0} onClick={onBack}>
+          <Button variant="secondary" isDisabled={conflictId === 0} onClick={onBack}>
             <Flex component="span" alignItems={{ default: "alignItemsCenter" }}>
-              <Icon name="chevron_left" /> {_("See Previous")}
+              <Icon name="chevron_left" /> {_("Skip to Previous")}
             </Flex>
           </Button>
         </ToolbarItem>
         <ToolbarItem>
-          <Button variant="plain" isDisabled={conflictId === conflicts.length - 1} onClick={onNext}>
+          <Button
+            variant="secondary"
+            isDisabled={conflictId === conflicts.length - 1}
+            onClick={onNext}
+          >
             <Flex component="span" alignItems={{ default: "alignItemsCenter" }}>
-              {_("See Next")} <Icon name="chevron_right" />
+              {_("Skip to Next")} <Icon name="chevron_right" />
             </Flex>
           </Button>
         </ToolbarItem>
@@ -150,7 +155,7 @@ function SoftwareConflicts(): React.ReactNode {
       <Form id="conflict-resolution" onSubmit={onSubmit}>
         <FormGroup isStack>{solutions}</FormGroup>
         <ActionGroup>
-          <Page.Submit form="conflict-resolution">{_("Apply choosen solution")}</Page.Submit>
+          <Page.Submit form="conflict-resolution">{_("Apply solution")}</Page.Submit>
         </ActionGroup>
       </Form>
     );
@@ -161,10 +166,10 @@ function SoftwareConflicts(): React.ReactNode {
 
     return (
       <Page.Content>
-        <ConflictsToolbar />
         <Divider />
         <Title headingLevel="h3">{conflict.description}</Title>
         <ConflictsForm />
+        {conflicts.length > 1 ? <ConflictsToolbar /> : ""}
       </Page.Content>
     );
   };
