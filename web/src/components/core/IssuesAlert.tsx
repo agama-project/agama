@@ -41,7 +41,11 @@ export default function IssuesAlert({ issues }) {
           <ListItem key={idx}>
             {i.description}{" "}
             {i.kind === "solver" ? (
-              <Link to={PATHS.conflicts} variant="link" icon={<Icon type="edit_square" name={"edit_square"} />}>
+              <Link
+                to={PATHS.conflicts}
+                variant="link"
+                icon={<Icon  name="build_circle" />}
+              >
                 {_("Solve it")}
               </Link>
             ) : (
