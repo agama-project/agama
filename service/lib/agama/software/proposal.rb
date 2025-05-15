@@ -124,6 +124,26 @@ module Agama
         false
       end
 
+      # @param [Array<(Integer, Integer)>] list of conflict id and solution id
+      def solve_conflicts(solutions)
+        pkg_solutions = solutions.map do |sol|
+          con_id, sol_id = sol
+          conflict = @conflicts[con_id] or raise "Unknown conflict id #{con_id.inspect}"
+          solution = conflict["solutions"][sol_id] or raise "unknown solution id #{sol_id.inspect}"
+          {
+            "description"          => conflict["description"],
+            "details"              => conflict["details"],
+            "solution_description" => conflict["description"],
+            "solution_details"     => conflict["details"]
+          }
+        end
+
+        Yast::Pkg.PkgSetSolveSolutions(pkg_solutions)
+
+        # and rerun solver to also update conflicts
+        solve_dependencies
+      end
+
       def on_conflicts_change(&block)
         @conflicts_change_callbacks << block
       end
@@ -265,26 +285,6 @@ module Agama
         @conflicts_change_callbacks.each { |c| c.call(@conflicts) }
 
         @conflicts
-      end
-
-      # @param [Array<(Integer, Integer)>] list of conflict id and solution id
-      def solve_conflicts(solutions)
-        pkg_solutions = solutions.map do |sol|
-          con_id, sol_id = sol
-          conflict = @conflicts[con_id] or raise "Unknown conflict id #{con_id.inspect}"
-          solution = conflict["solutions"][sol_id] or raise "unknown solution id #{sol_id.inspect}"
-          {
-            "description"          => conflict["description"],
-            "details"              => conflict["details"],
-            "solution_description" => conflict["description"],
-            "solution_details"     => conflict["details"]
-          }
-        end
-
-        Yast::Pkg.PkgSetSolveSolutions(pkg_solutions)
-
-        # and rerun solver to also update conflicts
-        solve_dependencies
       end
     end
   end
