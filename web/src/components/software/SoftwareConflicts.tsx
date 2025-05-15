@@ -38,7 +38,7 @@ import {
   ActionGroup,
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
-import { useConflicts } from "~/queries/software";
+import { useConflicts, useConflictsChanges } from "~/queries/software";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { solveConflict } from "~/api/software";
@@ -47,6 +47,7 @@ import { solveConflict } from "~/api/software";
  * Conflicts component
  */
 function SoftwareConflicts(): React.ReactNode {
+  useConflictsChanges();
   const [solution, setSolution] = useState(-1);
   const [conflictId, setConflictId] = useState(0);
   const onSubmit = async (e) => {
