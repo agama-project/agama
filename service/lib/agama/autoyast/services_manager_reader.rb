@@ -34,7 +34,6 @@ module Agama
       # @param profile [ProfileHash] AutoYaST profile
       def initialize(profile)
         @profile = profile
-        @index = 0
       end
 
       # Returns a hash with list of post-install script(s).
@@ -43,17 +42,12 @@ module Agama
       def read
         return [] if services_section.empty?
 
-        # 1) create "post" => [... list of hashes defining a scipt ...]"
-        # 2) each script has to contain name ("randomized/indexed" one or e.g. based on service
-        #    name) and chroot option
-        # 3) script body is one or two lines per service, particular command depends on AY's service
-        #    type
-        [
-          script(target_to_cmd),
-          script(disabled_to_cmd),
-          script(enabled_to_cmd),
-          script(ondemand_to_cmd)
-        ].compact
+        [script([
+          target_to_cmd,
+          disabled_to_cmd,
+          enabled_to_cmd,
+          ondemand_to_cmd
+        ].compact.join("\n"))]
       end
 
     private
@@ -86,10 +80,8 @@ module Agama
       def script(body)
         return nil if body.nil? || body.empty?
 
-        @index += 1
-
         {
-          "name"    => "agama-services-manager-#{@index}",
+          "name"    => "agama-services-manager-scripts",
           "chroot"  => true,
           "content" => "#!/bin/bash\n#{body}"
         }
