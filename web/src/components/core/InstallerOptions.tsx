@@ -223,6 +223,22 @@ type DialogProps = {
 };
 
 /**
+ * Defines the available installer options modes:
+ *   "all": Allow settings both language and keyboard layout.
+ *   "language": Allow setting only language.
+ *   "keyboard": Allow settings only keyboard layout.
+ */
+type InstallerOptionsVariant = "all" | "language" | "keyboard";
+
+/**
+ * Props passed to each toggle variant.
+ */
+type ToggleProps = Pick<ButtonProps, "onClick"> & {
+  language?: string;
+  keymap?: string;
+};
+
+/**
  * A component that conditionally displays content based on whether settings can
  * be reused.
  *
@@ -379,9 +395,8 @@ const CenteredContent = ({
 );
 
 /** Toggle button for accessing both language and keyboard layout settings. */
-const AllSettingsToggle = ({ size, onClick, language, keymap }) => (
+const AllSettingsToggle = ({ onClick, language, keymap }: ToggleProps) => (
   <Button
-    size={size}
     onClick={onClick}
     aria-label={_("Change display language and keyboard layout")}
     variant="plain"
@@ -393,8 +408,8 @@ const AllSettingsToggle = ({ size, onClick, language, keymap }) => (
 );
 
 /** Toggle button for accessing only language settings. */
-const LanguageOnlyToggle = ({ size, onClick, language }) => (
-  <Button size={size} onClick={onClick} aria-label={_("Change display language")} variant="plain">
+const LanguageOnlyToggle = ({ onClick, language }: ToggleProps) => (
+  <Button onClick={onClick} aria-label={_("Change display language")} variant="plain">
     <CenteredContent>
       <LanguageIcon /> {language}
     </CenteredContent>
@@ -402,21 +417,13 @@ const LanguageOnlyToggle = ({ size, onClick, language }) => (
 );
 
 /** Toggle button for accessing only keymap settings. */
-const KeyboardOnlyToggle = ({ size, onClick, keymap }) => (
-  <Button size={size} onClick={onClick} aria-label={_("Change keyboard layout")} variant="plain">
+const KeyboardOnlyToggle = ({ onClick, keymap }: ToggleProps) => (
+  <Button onClick={onClick} aria-label={_("Change keyboard layout")} variant="plain">
     <CenteredContent alignItems="alignItemsFlexEnd">
       <KeyboardIcon /> <code>{keymap}</code>
     </CenteredContent>
   </Button>
 );
-
-/**
- * Defines the available installer options modes:
- *   "all": Allow settings both language and keyboard layout.
- *   "language": Allow setting only language.
- *   "keyboard": Allow settings only keyboard layout.
- */
-type InstallerOptionsVariant = "all" | "language" | "keyboard";
 
 /**
  * Maps each dialog variant to its corresponding React component.
@@ -425,14 +432,6 @@ const dialogs: { [key in InstallerOptionsVariant]: React.FC<DialogProps> } = {
   all: AllSettingsDialog,
   language: LanguageOnlyDialog,
   keyboard: KeyboardOnlyDialog,
-};
-
-/**
- * Props passed to each toggle variant.
- */
-type ToggleProps = Pick<ButtonProps, "size" | "onClick"> & {
-  language?: string;
-  keymap?: string;
 };
 
 /**
@@ -450,10 +449,14 @@ const toggles: { [key in InstallerOptionsVariant]: React.FC<ToggleProps> } = {
 export type InstallerOptionsProps = {
   /** Determines which dialog variant to render. */
   variant?: InstallerOptionsVariant;
+  /**
+   * Optional render function for a custom button or UI element that opens the
+   * dialog. If not provided, a default toggle button will be rendered based on
+   * the selected variant.
+   */
+  toggle?: (props: ToggleProps) => JSX.Element;
   /** Optional callback when the dialog is closed. */
   onClose?: () => void;
-  /** The button toggle size. See PF/Button documentation. */
-  toggleSize?: ButtonProps["size"];
 };
 
 /**
@@ -465,7 +468,7 @@ export type InstallerOptionsProps = {
  */
 export default function InstallerOptions({
   variant = "all",
-  toggleSize = "default",
+  toggle,
   onClose,
 }: InstallerOptionsProps) {
   const location = useLocation();
@@ -548,13 +551,12 @@ export default function InstallerOptions({
     handleCloseDialog: close,
   };
 
-  const Toggle = toggles[variant];
+  const Toggle = toggle ?? toggles[variant];
   const Dialog = dialogs[variant];
 
   return (
     <>
       <Toggle
-        size={toggleSize}
         language={supportedLanguages[language]}
         keymap={keymap}
         onClick={() => dispatchDialogAction({ type: "OPEN" })}

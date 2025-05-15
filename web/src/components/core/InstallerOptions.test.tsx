@@ -111,6 +111,22 @@ describe("InstallerOptions", () => {
     isBusy = false;
   });
 
+  it("allows custom toggle", async () => {
+    const { user } = installerRender(
+      <InstallerOptions
+        toggle={({ onClick, language, keymap }) => (
+          <button onClick={onClick}>{`Change installer settings (${language}-${keymap})`}</button>
+        )}
+      />,
+      { withL10n: true },
+    );
+    const toggle = screen.getByRole("button", {
+      name: "Change installer settings (Deutsch-us)",
+    });
+    await user.click(toggle);
+    screen.getByRole("dialog", { name: "Language and keyboard" });
+  });
+
   describe.each([
     ["login", ROOT.login],
     ["product selection progress", PRODUCT.progress],
