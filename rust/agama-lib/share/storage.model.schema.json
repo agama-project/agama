@@ -10,6 +10,11 @@
       "type": "array",
       "items": { "$ref": "#/$defs/drive" }
     },
+    "mdRaids": {
+      "$comment": "So far, drives and RAIDs are still identical. Let's reuse the definition.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/drive" }
+    },
     "volumeGroups": {
       "type": "array",
       "items": { "$ref": "#/$defs/volumeGroup" }

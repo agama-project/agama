@@ -22,6 +22,7 @@
 require "agama/storage/config_conversions/from_model_conversions/base"
 require "agama/storage/config_conversions/from_model_conversions/boot"
 require "agama/storage/config_conversions/from_model_conversions/drive"
+require "agama/storage/config_conversions/from_model_conversions/md_raid"
 require "agama/storage/config_conversions/from_model_conversions/volume_group"
 require "agama/storage/config"
 
@@ -53,21 +54,24 @@ module Agama
           # @return [Hash]
           def conversions
             drives = convert_drives
+            raids = convert_raids
+            partitionables = Array(drives) + Array(raids)
 
             {
-              boot:          convert_boot(drives || []),
+              boot:          convert_boot(partitionables),
               drives:        drives,
-              volume_groups: convert_volume_groups(drives || [])
+              md_raids:      raids,
+              volume_groups: convert_volume_groups(partitionables)
             }
           end
 
-          # @param drives [Array<Configs::Drive>]
+          # @param targets [Array<Configs::Drive, Configs::MdRaid>]
           # @return [Configs::Boot, nil]
-          def convert_boot(drives)
+          def convert_boot(targets)
             boot_model = model_json[:boot]
             return unless boot_model
 
-            FromModelConversions::Boot.new(boot_model, drives).convert
+            FromModelConversions::Boot.new(boot_model, targets).convert
           end
 
           # @return [Array<Configs::Drive>, nil]
@@ -88,28 +92,47 @@ module Agama
               .convert
           end
 
-          # @param drives [Array<Configs::Drive>]
+          # @return [Array<Configs::MdRaid>, nil]
+          def convert_raids
+            raid_models = model_json[:mdRaids]
+            return unless raid_models
+
+            raid_models.map { |d| convert_raid(d) }
+          end
+
+          # @param raid_model [Hash]
+          # @return [Configs::raid]
+          def convert_raid(raid_model)
+            FromModelConversions::MdRaid
+              .new(raid_model, product_config, model_json[:encryption])
+              .convert
+          end
+
+          # @param targets [Array<Configs::Drive, Configs::MdRaid>]
           # @return [Hash<Configs::VolumeGroup>]
-          def convert_volume_groups(drives)
+          def convert_volume_groups(targets)
             volume_group_models = model_json[:volumeGroups]
             return unless volume_group_models
 
-            volume_group_models.map { |v| convert_volume_group(v, drives) }
+            volume_group_models.map { |v| convert_volume_group(v, targets) }
           end
 
           # @param volume_group_model [Hash]
-          # @param drives [Array<Configs::Drive>]
+          # @param targets [Array<Configs::Drive, Configs::MdRaid>]
           #
           # @return [Configs::VolumeGroup]
-          def convert_volume_group(volume_group_model, drives)
+          def convert_volume_group(volume_group_model, targets)
             FromModelConversions::VolumeGroup
-              .new(volume_group_model, drives, model_json[:encryption])
+              .new(volume_group_model, targets, model_json[:encryption])
               .convert
           end
 
           # Add missing drives to the model.
           #
           # Adds a drive for the selected boot device and for the LVM target devices if needed.
+          #
+          # TODO: This considers the missing device is always a drive (never a reused MD RAID).
+          # That's enough for now, but we may need to be revisit it.
           #
           # @return [Array<Hash>, nil]
           def add_missing_drives
@@ -121,7 +144,7 @@ module Agama
 
             # Add target devices, if needed.
             lvm_target_names.each do |name|
-              drives << lvm_target_device(name) if missing_drive?(name)
+              drives << lvm_target_device(name) if missing_partitionable?(name)
             end
           end
 
@@ -135,7 +158,7 @@ module Agama
 
             return false unless configure_boot && !default_boot && !boot_device_name.nil?
 
-            missing_drive?(boot_device_name)
+            missing_partitionable?(boot_device_name)
           end
 
           # Whether a drive with the given name is missing in the model.
@@ -145,6 +168,23 @@ module Agama
           def missing_drive?(name)
             drives = model_json[:drives] || []
             drives.none? { |d| d[:name] == name }
+          end
+
+          # Whether a RAID with the given name is missing in the model.
+          #
+          # @param name [String]
+          # @return [Boolean]
+          def missing_raid?(name)
+            raids = model_json[:mdRaids] || []
+            raids.none? { |d| d[:name] == name }
+          end
+
+          # Whether a partitionable device with the given name is missing in the model.
+          #
+          # @param name [String]
+          # @return [Boolean]
+          def missing_partitionable?(name)
+            missing_drive?(name) && missing_raid?(name)
           end
 
           # All the target devices for creating LVM physical volumes.
