@@ -21,13 +21,10 @@
  */
 
 import React from "react";
-import { _ } from "~/i18n";
 import { apiModel } from "~/api/storage/types";
 import { StorageDevice } from "~/types/storage";
-import { useDrive as legacyUseDrive } from "~/queries/storage/config-model";
-import * as driveUtils from "~/components/storage/utils/drive";
 import DriveDeviceMenu from "~/components/storage/DriveDeviceMenu";
-import DeviceHeader from "~/components/storage/DeviceHeader";
+import PartitionableHeader from "~/components/storage/PartitionableHeader";
 import PartitionsMenu from "~/components/storage/PartitionsMenu";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
 import { Card, CardBody, CardHeader, CardTitle, Flex } from "@patternfly/react-core";
@@ -37,66 +34,10 @@ import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacin
 export type DriveEditorProps = { drive: apiModel.Drive; driveDevice: StorageDevice };
 
 const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
-  const { isBoot, hasPv } = legacyUseDrive(drive.name);
-
-  const text = (drive: apiModel.Drive): string => {
-    if (driveUtils.hasRoot(drive)) {
-      if (hasPv) {
-        if (isBoot) {
-          // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-          return _("Use %s to install, host LVM and boot");
-        }
-        // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-        return _("Use %s to install and host LVM");
-      }
-
-      if (isBoot) {
-        // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-        return _("Use %s to install and boot");
-      }
-      // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-      return _("Use %s to install");
-    }
-
-    if (driveUtils.hasFilesystem(drive)) {
-      if (hasPv) {
-        if (isBoot) {
-          // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-          return _("Use %s for LVM, additional partitions and booting");
-        }
-        // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-        return _("Use %s for LVM and additional partitions");
-      }
-
-      if (isBoot) {
-        // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-        return _("Use %s for additional partitions and booting");
-      }
-      // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-      return _("Use %s for additional partitions");
-    }
-
-    if (hasPv) {
-      if (isBoot) {
-        // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-        return _("Use %s to host LVM and boot");
-      }
-      // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-      return _("Use %s to host LVM");
-    }
-
-    if (isBoot) {
-      // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-      return _("Use %s to configure boot partitions");
-    }
-    // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-    return _("Use %s");
-  };
-
   return (
-    <DeviceHeader title={text(drive)}>
+    <PartitionableHeader device={drive}>
       <DriveDeviceMenu drive={drive} selected={driveDevice} />
-    </DeviceHeader>
+    </PartitionableHeader>
   );
 };
 

@@ -79,12 +79,12 @@ function partitionableProperties(
     return partitions.find((p) => p.mountPath === path);
   };
 
+  const isBoot = (): boolean => {
+    return apiModel.boot?.configure && apiModel.boot.device?.name === apiDevice.name;
+  };
+
   const isExplicitBoot = (): boolean => {
-    return (
-      apiModel.boot?.configure &&
-      !apiModel.boot.device?.default &&
-      apiModel.boot.device?.name === apiDevice.name
-    );
+    return isBoot() && !apiModel.boot.device?.default;
   };
 
   const isTargetDevice = (): boolean => {
@@ -115,6 +115,8 @@ function partitionableProperties(
   return {
     isUsed: isUsed(),
     isAddingPartitions: isAddingPartitions(),
+    isTargetDevice: isTargetDevice(),
+    isBoot: isBoot(),
     partitions,
     getMountPaths,
     getVolumeGroups,
@@ -135,7 +137,7 @@ function buildDrive(
     ...apiDrive,
     list,
     listIndex,
-    ...partitionableProperties(apiDrive, listIndex, apiModel, model),
+    ...partitionableProperties(apiDrive, apiModel, model),
   };
 }
 
@@ -151,7 +153,7 @@ function buildMdRaid(
     ...apiMdRaid,
     list,
     listIndex,
-    ...partitionableProperties(apiMdRaid, listIndex, apiModel, model),
+    ...partitionableProperties(apiMdRaid, apiModel, model),
   };
 }
 

@@ -21,10 +21,9 @@
  */
 
 import React from "react";
-import { _ } from "~/i18n";
 import { MdRaid } from "~/types/storage/model";
 import { StorageDevice } from "~/types/storage";
-import DeviceHeader from "~/components/storage/DeviceHeader";
+import PartitionableHeader from "~/components/storage/PartitionableHeader";
 import PartitionsMenu from "~/components/storage/PartitionsMenu";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
 import { Card, CardBody, CardHeader, CardTitle, Flex } from "@patternfly/react-core";
@@ -34,11 +33,7 @@ import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacin
 export type MdRaidEditorProps = { raid: MdRaid; raidDevice: StorageDevice };
 
 const MdRaidHeader = ({ raid }: MdRaidEditorProps) => {
-  const text = (): string => {
-    return _("Use %s");
-  };
-
-  return <DeviceHeader title={text()}>{raid.name}</DeviceHeader>;
+  return <PartitionableHeader device={raid}>{raid.name}</PartitionableHeader>;
 };
 
 export default function MdRaidEditor({ raid, raidDevice }: MdRaidEditorProps) {
