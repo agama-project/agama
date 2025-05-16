@@ -56,15 +56,15 @@ const routes = (): Route => ({
       element: <EncryptionSettingsPage />,
     },
     {
-      path: PATHS.drive.editSpacePolicy,
+      path: PATHS.editSpacePolicy,
       element: <SpacePolicySelection />,
     },
     {
-      path: PATHS.drive.partition.add,
+      path: PATHS.addPartition,
       element: <PartitionPage />,
     },
     {
-      path: PATHS.drive.partition.edit,
+      path: PATHS.editPartition,
       element: <PartitionPage />,
     },
     {

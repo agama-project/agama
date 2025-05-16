@@ -25,11 +25,10 @@ import { useNavigate, generatePath } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { apiModel } from "~/api/storage/types";
 import { model } from "~/types/storage";
 import { baseName, formattedPath } from "~/components/storage/utils";
 import { contentDescription } from "~/components/storage/utils/volume-group";
-import { useVolumeGroup, useDeleteVolumeGroup } from "~/hooks/storage/volume-group";
+import { useDeleteVolumeGroup } from "~/hooks/storage/volume-group";
 import { useDeleteLogicalVolume } from "~/hooks/storage/logical-volume";
 import DeviceMenu from "~/components/storage/DeviceMenu";
 import DeviceHeader from "~/components/storage/DeviceHeader";
@@ -173,21 +172,19 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
   );
 };
 
-export type VolumeGroupEditorProps = { vg: apiModel.VolumeGroup };
+export type VolumeGroupEditorProps = { vg: model.VolumeGroup };
 
 export default function VolumeGroupEditor({ vg }: VolumeGroupEditorProps) {
-  const volumeGroup = useVolumeGroup(vg.vgName);
-
   return (
     <Card isCompact>
       <CardHeader>
         <CardTitle>
-          <VgHeader vg={volumeGroup} />
+          <VgHeader vg={vg} />
         </CardTitle>
       </CardHeader>
       <CardBody className={spacingStyles.plLg}>
         <Flex direction={{ default: "column" }}>
-          <LogicalVolumes vg={volumeGroup} />
+          <LogicalVolumes vg={vg} />
         </Flex>
       </CardBody>
     </Card>

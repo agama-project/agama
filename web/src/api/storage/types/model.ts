@@ -33,6 +33,7 @@ export interface Config {
   boot?: Boot;
   encryption?: Encryption;
   drives?: Drive[];
+  mdRaids?: Drive[];
   volumeGroups?: VolumeGroup[];
 }
 export interface Boot {

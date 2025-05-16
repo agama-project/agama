@@ -25,12 +25,13 @@ import { ActionGroup, Content, Form } from "@patternfly/react-core";
 import { useNavigate, useParams } from "react-router-dom";
 import { Page } from "~/components/core";
 import { SpaceActionsTable } from "~/components/storage";
-import { baseName, deviceChildren } from "~/components/storage/utils";
+import { deviceChildren } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { PartitionSlot, SpacePolicyAction, StorageDevice } from "~/types/storage";
 import { apiModel } from "~/api/storage/types";
 import { useDevices } from "~/queries/storage";
-import { useConfigModel, useDrive } from "~/queries/storage/config-model";
+import { useModel } from "~/hooks/storage/model";
+import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { toStorageDevice } from "./device-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
@@ -46,16 +47,16 @@ const partitionAction = (partition: apiModel.Partition) => {
  * Renders a page that allows the user to select the space policy and actions.
  */
 export default function SpacePolicySelection() {
-  const { id } = useParams();
-  const model = useConfigModel({ suspense: true });
+  const { list, listIndex } = useParams();
+  const model = useModel({ suspense: true });
+  const deviceModel = model[list][listIndex];
   const devices = useDevices("system", { suspense: true });
-  const device = devices.find((d) => baseName(d.name) === id);
+  const device = devices.find((d) => d.name === deviceModel.name);
   const children = deviceChildren(device);
-  const drive = model.drives.find((d) => baseName(d.name) === id);
-  const { setSpacePolicy } = useDrive(drive.name);
+  const setSpacePolicy = useSetSpacePolicy();
 
   const partitionDeviceAction = (device: StorageDevice) => {
-    const partition = drive.partitions?.find((p) => p.name === device.name);
+    const partition = deviceModel.partitions?.find((p) => p.name === device.name);
 
     return partition ? partitionAction(partition) : undefined;
   };
@@ -88,7 +89,7 @@ export default function SpacePolicySelection() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    setSpacePolicy("custom", actions);
+    setSpacePolicy(list, listIndex, { type: "custom", actions });
     navigate("..");
   };
 

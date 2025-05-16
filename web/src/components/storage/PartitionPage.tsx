@@ -47,15 +47,16 @@ import { NestedContent, Page, SelectWrapper as Select, SubtleContent } from "~/c
 import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import AutoSizeText from "~/components/storage/AutoSizeText";
-import { useDevices, useVolume } from "~/queries/storage";
+import { useAddPartition, useEditPartition } from "~/hooks/storage/partition";
+import { useMissingMountPaths } from "~/hooks/storage/product";
+import { useModel } from "~/hooks/storage/model";
 import {
-  useModel,
-  useDrive,
-  useConfigModel,
-  useSolvedConfigModel,
-  addPartition,
-  editPartition,
-} from "~/queries/storage/config-model";
+  addPartition as addPartitionHelper,
+  editPartition as editPartitionHelper,
+} from "~/helpers/storage/partition";
+import { useDevices, useVolume } from "~/queries/storage";
+import { useConfigModel, useSolvedConfigModel } from "~/queries/storage/config-model";
+import { findDevice } from "~/helpers/storage/api-model";
 import { StorageDevice } from "~/types/storage";
 import {
   baseName,
@@ -194,10 +195,16 @@ function toFormValue(partitionConfig: apiModel.Partition): FormValue {
   };
 }
 
+function useModelDevice() {
+  const { list, listIndex } = useParams();
+  const model = useModel({ suspense: true });
+  return model[list].at(listIndex);
+}
+
 function useDevice(): StorageDevice {
-  const { id } = useParams();
+  const modelDevice = useModelDevice();
   const devices = useDevices("system", { suspense: true });
-  return devices.find((d) => baseName(d.name) === id);
+  return devices.find((d) => d.name === modelDevice.name);
 }
 
 function usePartition(target: string): StorageDevice | null {
@@ -222,10 +229,9 @@ function useDefaultFilesystem(mountPoint: string): string {
 
 function useInitialPartitionConfig(): apiModel.Partition | null {
   const { partitionId: mountPath } = useParams();
-  const device = useDevice();
-  const drive = useDrive(device?.name);
+  const device = useModelDevice();
 
-  return mountPath && drive ? drive.getPartition(mountPath) : null;
+  return mountPath && device ? device.getPartition(mountPath) : null;
 }
 
 function useInitialFormValue(): FormValue | null {
@@ -241,7 +247,7 @@ function useInitialFormValue(): FormValue | null {
 
 /** Unused predefined mount points. Includes the currently used mount point when editing. */
 function useUnusedMountPoints(): string[] {
-  const { unusedMountPaths } = useModel();
+  const unusedMountPaths = useMissingMountPaths();
   const initialPartitionConfig = useInitialPartitionConfig();
   return compact([initialPartitionConfig?.mountPath, ...unusedMountPaths]);
 }
@@ -251,8 +257,9 @@ function useUnusedPartitions(): StorageDevice[] {
   const device = useDevice();
   const allPartitions = device.partitionTable?.partitions || [];
   const initialPartitionConfig = useInitialPartitionConfig();
-  const configuredPartitionConfigs = useDrive(device?.name)
-    .configuredExistingPartitions.filter((p) => p.name !== initialPartitionConfig?.name)
+  const configuredPartitionConfigs = useModelDevice()
+    .getConfiguredExistingPartitions()
+    .filter((p) => p.name !== initialPartitionConfig?.name)
     .map((p) => p.name);
 
   return allPartitions.filter((p) => !configuredPartitionConfigs.includes(p.name));
@@ -288,7 +295,8 @@ function useUsableFilesystems(mountPoint: string): string[] {
 }
 
 function useMountPointError(value: FormValue): Error | undefined {
-  const { usedMountPaths: mountPoints } = useModel();
+  const model = useModel({ suspense: true });
+  const mountPoints = model?.getMountPaths() || [];
   const initialPartitionConfig = useInitialPartitionConfig();
   const mountPoint = value.mountPoint;
 
@@ -385,7 +393,7 @@ function useErrors(value: FormValue): ErrorsHandler {
 }
 
 function useSolvedModel(value: FormValue): apiModel.Config | null {
-  const device = useDevice();
+  const device = useModelDevice();
   const model = useConfigModel();
   const { errors } = useErrors(value);
   const initialPartitionConfig = useInitialPartitionConfig();
@@ -396,21 +404,16 @@ function useSolvedModel(value: FormValue): apiModel.Config | null {
   let sparseModel: apiModel.Config | undefined;
 
   if (device && !errors.length && value.target === NEW_PARTITION && value.filesystem !== NO_VALUE) {
-    /**
-     * @todo Use a specific hook which returns functions like addPartition instead of directly
-     * exporting the function. For example:
-     *
-     * const { model, addPartition } = useEditableModel();
-     */
     if (initialPartitionConfig) {
-      sparseModel = editPartition(
+      sparseModel = editPartitionHelper(
         model,
-        device.name,
+        device.list,
+        device.listIndex,
         initialPartitionConfig.mountPath,
         partitionConfig,
       );
     } else {
-      sparseModel = addPartition(model, device.name, partitionConfig);
+      sparseModel = addPartitionHelper(model, device.list, device.listIndex, partitionConfig);
     }
   }
 
@@ -420,9 +423,11 @@ function useSolvedModel(value: FormValue): apiModel.Config | null {
 
 function useSolvedPartitionConfig(value: FormValue): apiModel.Partition | undefined {
   const model = useSolvedModel(value);
-  const device = useDevice();
-  const drive = model?.drives?.find((d) => d.name === device.name);
-  return drive?.partitions?.find((p) => p.mountPath === value.mountPoint);
+  const { list, listIndex } = useModelDevice();
+  if (!model) return;
+
+  const container = findDevice(model, list, listIndex);
+  return container?.partitions?.find((p) => p.mountPath === value.mountPoint);
 }
 
 function useSolvedSizes(value: FormValue): SizeRange {
@@ -901,9 +906,11 @@ export default function PartitionPage() {
   const value = { mountPoint, target, filesystem, filesystemLabel, sizeOption, minSize, maxSize };
   const { errors, getVisibleError } = useErrors(value);
 
-  const device = useDevice();
-  const drive = useDrive(device?.name);
+  const device = useModelDevice();
   const unusedMountPoints = useUnusedMountPoints();
+
+  const addPartition = useAddPartition();
+  const editPartition = useEditPartition();
 
   // Initializes the form values if there is an initial value (i.e., when editing a partition).
   React.useEffect(() => {
@@ -974,9 +981,10 @@ export default function PartitionPage() {
 
   const onSubmit = () => {
     const partitionConfig = toPartitionConfig(value);
+    const { list, listIndex } = device;
 
-    if (initialValue) drive.editPartition(initialValue.mountPoint, partitionConfig);
-    else drive.addPartition(partitionConfig);
+    if (initialValue) editPartition(list, listIndex, initialValue.mountPoint, partitionConfig);
+    else addPartition(list, listIndex, partitionConfig);
 
     navigate(PATHS.root);
   };

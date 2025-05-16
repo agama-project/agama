@@ -74,13 +74,9 @@ const STORAGE = {
   root: "/storage",
   editBootDevice: "/storage/boot-device/edit",
   editEncryption: "/storage/encryption/edit",
-  drive: {
-    editSpacePolicy: "/storage/drives/:id/space-policy/edit",
-    partition: {
-      add: "/storage/drives/:id/partitions/add",
-      edit: "/storage/drives/:id/partitions/:partitionId/edit",
-    },
-  },
+  editSpacePolicy: "/storage/:list/:listIndex/space-policy/edit",
+  addPartition: "/storage/:list/:listIndex/partitions/add",
+  editPartition: "/storage/:list/:listIndex/partitions/:partitionId/edit",
   volumeGroup: {
     add: "/storage/volume-groups/add",
     edit: "/storage/volume-groups/:id/edit",

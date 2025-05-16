@@ -24,18 +24,22 @@ import { apiModel } from "~/api/storage/types";
 import { deleteIfUnused } from "~/helpers/storage/drive";
 import {
   copyApiModel,
+  partitionables,
   buildVolumeGroup,
   buildLogicalVolumeFromPartition,
   buildPartitionFromLogicalVolume,
 } from "~/helpers/storage/api-model";
 import { data } from "~/types/storage";
 
-function movePartitions(drive: apiModel.Drive, volumeGroup: apiModel.VolumeGroup) {
-  if (!drive.partitions) return;
+function movePartitions(
+  device: apiModel.Drive | apiModel.MdRaid,
+  volumeGroup: apiModel.VolumeGroup,
+) {
+  if (!device.partitions) return;
 
-  const newPartitions = drive.partitions.filter((p) => !p.name);
-  const reusedPartitions = drive.partitions.filter((p) => p.name);
-  drive.partitions = [...reusedPartitions];
+  const newPartitions = device.partitions.filter((p) => !p.name);
+  const reusedPartitions = device.partitions.filter((p) => p.name);
+  device.partitions = [...reusedPartitions];
   const logicalVolumes = volumeGroup.logicalVolumes || [];
   volumeGroup.logicalVolumes = [
     ...logicalVolumes,
@@ -53,7 +57,7 @@ function addVolumeGroup(
   const volumeGroup = buildVolumeGroup(data);
 
   if (moveContent) {
-    (apiModel.drives || [])
+    partitionables(apiModel)
       .filter((d) => data.targetDevices.includes(d.name))
       .forEach((d) => movePartitions(d, volumeGroup));
   }
@@ -73,14 +77,14 @@ function newVgName(apiModel: apiModel.Config): string {
   return `system${Math.max(...numbers) + 1}`;
 }
 
-function driveToVolumeGroup(apiModel: apiModel.Config, driveName: string): apiModel.Config {
+function deviceToVolumeGroup(apiModel: apiModel.Config, devName: string): apiModel.Config {
   apiModel = copyApiModel(apiModel);
 
-  const drive = (apiModel.drives || []).find((d) => d.name === driveName);
-  if (!drive) return apiModel;
+  const device = partitionables(apiModel).find((d) => d.name === devName);
+  if (!device) return apiModel;
 
-  const volumeGroup = buildVolumeGroup({ vgName: newVgName(apiModel), targetDevices: [driveName] });
-  movePartitions(drive, volumeGroup);
+  const volumeGroup = buildVolumeGroup({ vgName: newVgName(apiModel), targetDevices: [devName] });
+  movePartitions(device, volumeGroup);
   apiModel.volumeGroups ||= [];
   apiModel.volumeGroups.push(volumeGroup);
 
@@ -102,13 +106,14 @@ function editVolumeGroup(
 
   apiModel.volumeGroups.splice(index, 1, newVolumeGroup);
   (oldVolumeGroup.targetDevices || []).forEach((d) => {
+    // deleteIfUnused only affects drives, which is good at this moment
     apiModel = deleteIfUnused(apiModel, d);
   });
 
   return apiModel;
 }
 
-function volumeGroupToDrive(apiModel: apiModel.Config, vgName: string): apiModel.Config {
+function volumeGroupToPartitions(apiModel: apiModel.Config, vgName: string): apiModel.Config {
   apiModel = copyApiModel(apiModel);
 
   const index = (apiModel.volumeGroups || []).findIndex((v) => v.vgName === vgName);
@@ -117,13 +122,13 @@ function volumeGroupToDrive(apiModel: apiModel.Config, vgName: string): apiModel
   const targetDevice = apiModel.volumeGroups[index].targetDevices[0];
   if (!targetDevice) return apiModel;
 
-  const drive = (apiModel.drives || []).find((d) => d.name === targetDevice);
-  if (!drive) return apiModel;
+  const device = partitionables(apiModel).find((d) => d.name === targetDevice);
+  if (!device) return apiModel;
 
   const logicalVolumes = apiModel.volumeGroups[index].logicalVolumes || [];
   apiModel.volumeGroups.splice(index, 1);
-  const partitions = drive.partitions || [];
-  drive.partitions = [...partitions, ...logicalVolumes.map(buildPartitionFromLogicalVolume)];
+  const partitions = device.partitions || [];
+  device.partitions = [...partitions, ...logicalVolumes.map(buildPartitionFromLogicalVolume)];
 
   return apiModel;
 }
@@ -141,6 +146,7 @@ function deleteVolumeGroup(apiModel: apiModel.Config, vgName: string): apiModel.
 
   let deletedApiModel = copyApiModel(apiModel);
   targetDevices.forEach((d) => {
+    // deleteIfUnused only affects drives, which is good at this moment
     deletedApiModel = deleteIfUnused(deletedApiModel, d);
   });
 
@@ -152,6 +158,6 @@ export {
   addVolumeGroup,
   editVolumeGroup,
   deleteVolumeGroup,
-  volumeGroupToDrive,
-  driveToVolumeGroup,
+  volumeGroupToPartitions,
+  deviceToVolumeGroup,
 };

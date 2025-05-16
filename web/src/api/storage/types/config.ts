@@ -4,7 +4,11 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type DriveElement = FormattedDrive | PartitionedDrive;
+/**
+ * Alias used to reference a device.
+ */
+export type Alias = string;
+export type DriveElement = NonPartitionedDrive | PartitionedDrive;
 export type SearchElement = SimpleSearchAll | SimpleSearchByName | AdvancedSearch;
 /**
  * Shortcut to match all devices if there is any (equivalent to specify no conditions and to skip the entry if no device is found).
@@ -15,16 +19,7 @@ export type SimpleSearchByName = string;
  * How to handle the section if the device is not found.
  */
 export type SearchAction = "skip" | "error";
-/**
- * Alias used to reference a device.
- */
-export type Alias = string;
-export type Encryption =
-  | EncryptionLuks1
-  | EncryptionLuks2
-  | EncryptionPervasiveLuks2
-  | EncryptionTPM
-  | EncryptionSwap;
+export type Encryption = EncryptionLuks1 | EncryptionLuks2 | EncryptionPervasiveLuks2 | EncryptionTPM | EncryptionSwap;
 /**
  * Password to use when creating a new encryption device.
  */
@@ -97,10 +92,7 @@ export type SizeValueWithCurrent = SizeValue | SizeCurrent;
  * The current size of the device.
  */
 export type SizeCurrent = "current";
-export type PhysicalVolumeElement =
-  | Alias
-  | SimplePhysicalVolumesGenerator
-  | AdvancedPhysicalVolumesGenerator;
+export type PhysicalVolumeElement = Alias | SimplePhysicalVolumesGenerator | AdvancedPhysicalVolumesGenerator;
 export type LogicalVolumeElement =
   | SimpleVolumesGenerator
   | AdvancedLogicalVolumesGenerator
@@ -111,6 +103,32 @@ export type LogicalVolumeElement =
  * Number of stripes.
  */
 export type LogicalVolumeStripes = number;
+export type MdRaidElement = NonPartitionedMdRaid | PartitionedMdRaid;
+/**
+ * MD base name.
+ */
+export type MdRaidName = string;
+export type MDLevel = "raid0" | "raid1" | "raid5" | "raid6" | "raid10";
+/**
+ * Only applies to raid5, raid6 and raid10
+ */
+export type MDParity =
+  | "left_asymmetric"
+  | "left_symmetric"
+  | "right_asymmetric"
+  | "right_symmetric"
+  | "first"
+  | "last"
+  | "near_2"
+  | "offset_2"
+  | "far_2"
+  | "near_3"
+  | "offset_3"
+  | "far_3";
+/**
+ * Devices used by the MD RAID.
+ */
+export type MdRaidDevices = Alias[];
 
 /**
  * Storage config.
@@ -125,6 +143,10 @@ export interface Config {
    * LVM volume groups.
    */
   volumeGroups?: VolumeGroup[];
+  /**
+   * MD RAIDs.
+   */
+  mdRaids?: MdRaidElement[];
 }
 /**
  * Allows configuring boot partitions automatically.
@@ -134,19 +156,16 @@ export interface Boot {
    * Whether to configure partitions for booting.
    */
   configure: boolean;
-  /**
-   * The target installation device is used by default.
-   */
-  device?: string;
+  device?: Alias;
 }
 /**
  * Drive without a partition table (e.g., directly formatted).
  */
-export interface FormattedDrive {
+export interface NonPartitionedDrive {
   search?: SearchElement;
   alias?: Alias;
   encryption?: Encryption;
-  filesystem: Filesystem;
+  filesystem?: Filesystem;
 }
 /**
  * Advanced options for searching devices.
@@ -242,7 +261,7 @@ export interface PartitionedDrive {
   search?: SearchElement;
   alias?: Alias;
   ptableType?: PtableType;
-  partitions?: PartitionElement[];
+  partitions: PartitionElement[];
 }
 /**
  * Automatically creates the default or mandatory volumes configured by the selected product.
@@ -296,7 +315,7 @@ export interface VolumeGroup {
   /**
    * Volume group name.
    */
-  name?: string;
+  name: string;
   extentSize?: SizeValue;
   /**
    * Devices to use as physical volumes.
@@ -365,4 +384,29 @@ export interface ThinLogicalVolume {
   usedPool: Alias;
   encryption?: Encryption;
   filesystem?: Filesystem;
+}
+/**
+ * MD RAID without a partition table (e.g., directly formatted).
+ */
+export interface NonPartitionedMdRaid {
+  search?: SearchElement;
+  alias?: Alias;
+  name?: MdRaidName;
+  level?: MDLevel;
+  parity?: MDParity;
+  chunkSize?: SizeValue;
+  devices?: MdRaidDevices;
+  encryption?: Encryption;
+  filesystem?: Filesystem;
+}
+export interface PartitionedMdRaid {
+  search?: SearchElement;
+  alias?: Alias;
+  name?: MdRaidName;
+  level?: MDLevel;
+  parity?: MDParity;
+  chunkSize?: SizeValue;
+  devices?: MdRaidDevices;
+  ptableType?: PtableType;
+  partitions: PartitionElement[];
 }

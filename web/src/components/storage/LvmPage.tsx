@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ActionGroup,
@@ -35,7 +35,7 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
-import { useAvailableDevices } from "~/queries/storage";
+import { useDevices, useAvailableDevices } from "~/queries/storage";
 import { StorageDevice, model, data } from "~/types/storage";
 import { useModel } from "~/hooks/storage/model";
 import {
@@ -48,6 +48,25 @@ import { contentDescription, filesystemLabels, typeDescription } from "./utils/d
 import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+
+/**
+ * Hook that returns the devices that can be selected as target to automatically create LVM PVs.
+ *
+ * FIXME: temporary and weak implementation that relies on the current model to offer only those RAIDs
+ * that are already there.
+ */
+function useLvmTargetDevices(): StorageDevice[] {
+  const availableDevices = useAvailableDevices();
+  const systemDevices = useDevices("system", { suspense: true });
+  const model = useModel({ suspense: true });
+
+  const targetDevices = useMemo(() => {
+    const raids = (model.mdRaids || []).map((r) => systemDevices.find((d) => d.name === r.name));
+    return [...availableDevices, ...raids];
+  }, [availableDevices, systemDevices, model]);
+
+  return targetDevices;
+}
 
 function vgNameError(
   vgName: string,
@@ -78,7 +97,7 @@ export default function LvmPage() {
   const volumeGroup = useVolumeGroup(id);
   const addVolumeGroup = useAddVolumeGroup();
   const editVolumeGroup = useEditVolumeGroup();
-  const allDevices = useAvailableDevices();
+  const allDevices = useLvmTargetDevices();
   const [name, setName] = useState("");
   const [selectedDevices, setSelectedDevices] = useState<StorageDevice[]>([]);
   const [moveMountPoints, setMoveMountPoints] = useState(true);
@@ -92,7 +111,8 @@ export default function LvmPage() {
       setSelectedDevices(targetDevices);
     } else if (model && !model.volumeGroups.length) {
       setName("system");
-      const targetNames = model.drives.filter((d) => d.isAddingPartitions).map((d) => d.name);
+      const potentialTargets = model.drives.concat(model.mdRaids);
+      const targetNames = potentialTargets.filter((d) => d.isAddingPartitions).map((d) => d.name);
       const targetDevices = allDevices.filter((d) => targetNames.includes(d.name));
       setSelectedDevices(targetDevices);
     }

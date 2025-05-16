@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,9 +21,8 @@
  */
 
 import React from "react";
-import { apiModel } from "~/api/storage/types";
+import { MdRaid } from "~/types/storage/model";
 import { StorageDevice } from "~/types/storage";
-import DriveDeviceMenu from "~/components/storage/DriveDeviceMenu";
 import PartitionableHeader from "~/components/storage/PartitionableHeader";
 import PartitionsMenu from "~/components/storage/PartitionsMenu";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
@@ -31,28 +30,24 @@ import { Card, CardBody, CardHeader, CardTitle, Flex } from "@patternfly/react-c
 
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
-export type DriveEditorProps = { drive: apiModel.Drive; driveDevice: StorageDevice };
+export type MdRaidEditorProps = { raid: MdRaid; raidDevice: StorageDevice };
 
-const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
-  return (
-    <PartitionableHeader device={drive}>
-      <DriveDeviceMenu drive={drive} selected={driveDevice} />
-    </PartitionableHeader>
-  );
+const MdRaidHeader = ({ raid }: MdRaidEditorProps) => {
+  return <PartitionableHeader device={raid}>{raid.name}</PartitionableHeader>;
 };
 
-export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
+export default function MdRaidEditor({ raid, raidDevice }: MdRaidEditorProps) {
   return (
     <Card isCompact>
       <CardHeader>
         <CardTitle>
-          <DriveHeader drive={drive} driveDevice={driveDevice} />
+          <MdRaidHeader raid={raid} />
         </CardTitle>
       </CardHeader>
       <CardBody className={spacingStyles.plLg}>
         <Flex direction={{ default: "column" }}>
-          <SpacePolicyMenu modelDevice={drive} device={driveDevice} />
-          <PartitionsMenu device={drive} />
+          <SpacePolicyMenu modelDevice={raid} device={raidDevice} />
+          <PartitionsMenu device={raid} />
         </Flex>
       </CardBody>
     </Card>

@@ -80,6 +80,37 @@
       "spacePolicy": "delete"
     }
   ],
+  "mdRaids": [
+    {
+      "name": "/dev/md0",
+      "spacePolicy": "custom",
+      "ptableType": "gpt",
+      "partitions": [
+        {
+          "name": "/dev/md0part1",
+          "size": {
+            "default": false,
+            "min": 0,
+            "max": 1234567
+          },
+          "deleteIfNeeded": true,
+          "resizeIfNeeded": true
+        },
+        {
+          "size": {
+            "default": true,
+            "min": 4444,
+            "max": 8888
+          },
+          "mountPath": "/logs",
+          "filesystem": {
+            "default": false,
+            "type": "xfs"
+          }
+        }
+      ]
+    }
+  ],
   "volumeGroups": [
     {
       "vgName": "vg0",

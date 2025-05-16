@@ -104,6 +104,14 @@ module Agama
         md_raids.find { |d| d.alias?(device_alias) }
       end
 
+      # Device supporting partitions and with the given alias
+      #
+      # @param device_alias [String]
+      # @return [Configs::MdRaid, nil]
+      def partitionable(device_alias)
+        supporting_partitions.find { |d| d.alias?(device_alias) }
+      end
+
       # @return [Array<Configs::Partition>]
       def partitions
         supporting_partitions.flat_map(&:partitions)

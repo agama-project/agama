@@ -23,9 +23,10 @@
 import React from "react";
 import { _ } from "~/i18n";
 import { useDevices, useResetConfigMutation } from "~/queries/storage";
-import { useConfigModel } from "~/queries/storage/config-model";
+import { useModel } from "~/hooks/storage/model";
 import DriveEditor from "~/components/storage/DriveEditor";
 import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
+import MdRaidEditor from "~/components/storage/MdRaidEditor";
 import { Alert, Button, List, ListItem } from "@patternfly/react-core";
 
 const NoDevicesConfiguredAlert = () => {
@@ -54,25 +55,35 @@ const NoDevicesConfiguredAlert = () => {
 };
 
 export default function ConfigEditor() {
-  const model = useConfigModel({ suspense: true });
+  const model = useModel();
   const devices = useDevices("system", { suspense: true });
-  const drives = model.drives || [];
-  const volumeGroups = model.volumeGroups || [];
+  const drives = model.drives;
+  const mdRaids = model.mdRaids;
+  const volumeGroups = model.volumeGroups;
 
-  if (!drives.length && !volumeGroups.length) {
+  if (!drives.length && !mdRaids.length && !volumeGroups.length) {
     return <NoDevicesConfiguredAlert />;
   }
 
   return (
     <List isPlain>
-      {model.volumeGroups?.map((vg, i) => {
+      {volumeGroups.map((vg, i) => {
         return (
           <ListItem key={`vg-${i}`}>
             <VolumeGroupEditor vg={vg} />
           </ListItem>
         );
       })}
-      {model.drives?.map((drive, i) => {
+      {mdRaids.map((raid, i) => {
+        const device = devices.find((d) => d.name === raid.name);
+
+        return (
+          <ListItem key={`md-${i}`}>
+            <MdRaidEditor raid={raid} raidDevice={device} />
+          </ListItem>
+        );
+      })}
+      {drives.map((drive, i) => {
         const device = devices.find((d) => d.name === drive.name);
 
         /**

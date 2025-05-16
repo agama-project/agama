@@ -29,16 +29,16 @@ module Agama
         # Boot device conversion from model according to the JSON schema.
         class BootDevice < Base
           # @param model_json [Hash] Boot device model.
-          # @param drives [Array<Configs::Drive>]
-          def initialize(model_json, drives)
+          # @param targets [Array<Configs::Drive, Configs::MdRaid>]
+          def initialize(model_json, targets)
             super(model_json)
-            @drives = drives
+            @targets = targets
           end
 
         private
 
-          # @return [Array<Configs::Drive>]
-          attr_reader :drives
+          # @return [Array<Configs::Drive, Configs::MdRaid>]
+          attr_reader :targets
 
           # @see Base
           # @return [Configs::Boot]
@@ -63,10 +63,10 @@ module Agama
             name = model_json[:name]
             return unless name
 
-            drive = drives.find { |d| d.device_name == name }
-            return unless drive
+            target = targets.find { |d| d.device_name == name }
+            return unless target
 
-            drive.ensure_alias
+            target.ensure_alias
           end
         end
       end
