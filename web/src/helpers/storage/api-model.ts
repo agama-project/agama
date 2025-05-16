@@ -36,6 +36,10 @@ function findDevice(
   return collection.at(index);
 }
 
+function partitionables(apiModel: apiModel.Config): (apiModel.Drive | apiModel.MdRaid)[] {
+  return (apiModel.drives || []).concat(apiModel.mdRaids || []);
+}
+
 function buildFilesystem(data?: data.Filesystem): apiModel.Filesystem | undefined {
   if (!data) return;
 
@@ -100,6 +104,7 @@ function buildPartitionFromLogicalVolume(lv: apiModel.LogicalVolume): apiModel.P
 export {
   copyApiModel,
   findDevice,
+  partitionables,
   buildPartition,
   buildVolumeGroup,
   buildLogicalVolume,
