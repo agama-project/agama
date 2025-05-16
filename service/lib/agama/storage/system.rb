@@ -26,7 +26,7 @@ module Agama
   module Storage
     # Helper class for asking about the system devices.
     class System
-      # @param devicegraph [Y2Storage::Divecegraph, nil] Devicegraph representing the system. Probed
+      # @param devicegraph [Y2Storage::Devicegraph, nil] Devicegraph representing the system. Probed
       #   is used by default.
       def initialize(devicegraph = nil)
         return unless devicegraph
