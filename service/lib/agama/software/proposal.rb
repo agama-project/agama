@@ -62,6 +62,9 @@ module Agama
       # @return [Array<String>] List of languages to install
       attr_reader :languages
 
+      # @return [Array<Hash<string, Object>>>] List of conflicts from the last solver run
+      attr_reader :conflicts
+
       # Constructor
       #
       # @param logger [Logger]
@@ -71,6 +74,8 @@ module Agama
         @logger = logger || Logger.new($stdout)
         @base_product = nil
         @addon_products = []
+        @conflicts = []
+        @conflicts_change_callbacks = []
       end
 
       # Adds the given list of resolvables to the proposal
@@ -109,6 +114,7 @@ module Agama
         res = Yast::Pkg.PkgSolve(unused = true)
         logger.info "Solver run #{res.inspect}"
         update_issues
+        update_conflicts
 
         return true if res
 
@@ -116,6 +122,31 @@ module Agama
         logger.error "Details: #{Yast::Pkg.LastErrorDetails}"
         logger.error "Solver errors: #{Yast::Pkg.PkgSolveErrors}"
         false
+      end
+
+      # @param [Array<(Integer, Integer)>] solutions is array of conflict id and solution id
+      def solve_conflicts(solutions)
+        pkg_solutions = solutions.map do |sol|
+          con_id, sol_id = sol
+          conflict = @conflicts[con_id] or raise "Unknown conflict id #{con_id.inspect}"
+          solution = conflict["solutions"][sol_id] or raise "unknown solution id #{sol_id.inspect}"
+          {
+            "description"          => conflict["description"],
+            "details"              => conflict["details"],
+            "solution_description" => solution["description"],
+            "solution_details"     => solution["details"]
+          }
+        end
+        logger.info "Sending solver solutions #{pkg_solutions.inspect}"
+
+        Yast::Pkg.PkgSetSolveSolutions(pkg_solutions)
+
+        # and rerun solver to also update conflicts
+        solve_dependencies
+      end
+
+      def on_conflicts_change(&block)
+        @conflicts_change_callbacks << block
       end
 
       # Returns the count of packages to install
@@ -199,7 +230,6 @@ module Agama
       def update_issues
         msgs = []
         msgs.concat(warning_messages(proposal)) if proposal
-        msgs.concat(solver_messages)
 
         issues = msgs.map do |msg|
           Issue.new(msg,
@@ -207,7 +237,14 @@ module Agama
             severity: Issue::Severity::ERROR)
         end
 
-        self.issues = issues
+        solver_issues = solver_messages.map do |msg|
+          Issue.new(msg,
+            source:   Issue::Source::CONFIG,
+            severity: Issue::Severity::ERROR,
+            kind:     :solver)
+        end
+
+        self.issues = issues + solver_issues
       end
 
       # Extracts the warning messages from the proposal result
@@ -229,11 +266,26 @@ module Agama
         solve_errors = Yast::Pkg.PkgSolveErrors
         return [] if solve_errors.zero?
 
-        last_error = Yast::Pkg.LastError
         res = []
-        res << last_error unless last_error.empty?
         res << (_("Found %s dependency issues.") % solve_errors) if solve_errors > 0
         res
+      end
+
+      def update_conflicts
+        pkg_conflicts = Yast::Pkg.PkgSolveProblems
+        @conflicts = []
+        pkg_conflicts.each_with_index do |pkg_conflict, index|
+          conflict = pkg_conflict
+          conflict["id"] = index
+          conflict["solutions"].each_with_index do |solution, index2|
+            solution["id"] = index2
+          end
+          @conflicts << conflict
+        end
+
+        @conflicts_change_callbacks.each { |c| c.call(@conflicts) }
+
+        @conflicts
       end
     end
   end

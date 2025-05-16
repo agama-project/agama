@@ -68,6 +68,7 @@ const USER = {
 const SOFTWARE = {
   root: "/software",
   patternsSelection: "/software/patterns/select",
+  conflicts: "/software/conflicts",
 };
 
 const STORAGE = {

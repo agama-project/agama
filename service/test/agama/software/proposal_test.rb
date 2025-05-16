@@ -91,13 +91,11 @@ describe Agama::Software::Proposal do
     end
 
     context "when solver errors are reported" do
-      let(:last_error) { "Solving errors..." }
       let(:solve_errors) { 5 }
 
       it "registers them as issues" do
         subject.calculate
         expect(subject.issues).to contain_exactly(
-          an_object_having_attributes(description: "Solving errors..."),
           an_object_having_attributes(description: "Found 5 dependency issues.")
         )
       end

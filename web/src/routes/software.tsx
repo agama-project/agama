@@ -26,6 +26,7 @@ import SoftwarePatternsSelection from "~/components/software/SoftwarePatternsSel
 import { Route } from "~/types/routes";
 import { SOFTWARE as PATHS } from "~/routes/paths";
 import { N_ } from "~/i18n";
+import SoftwareConflicts from "~/components/software/SoftwareConflicts";
 
 const routes = (): Route => ({
   path: PATHS.root,
@@ -41,6 +42,10 @@ const routes = (): Route => ({
     {
       path: PATHS.patternsSelection,
       element: <SoftwarePatternsSelection />,
+    },
+    {
+      path: PATHS.conflicts,
+      element: <SoftwareConflicts />,
     },
   ],
 });

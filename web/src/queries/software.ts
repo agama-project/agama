@@ -32,6 +32,7 @@ import {
 import { useInstallerClient } from "~/context/installer";
 import {
   AddonInfo,
+  Conflict,
   License,
   Pattern,
   PatternsSelection,
@@ -46,6 +47,7 @@ import {
 import {
   fetchAddons,
   fetchConfig,
+  fetchConflicts,
   fetchLicenses,
   fetchPatterns,
   fetchProducts,
@@ -141,6 +143,14 @@ const patternsQuery = () => ({
 const repositoriesQuery = () => ({
   queryKey: ["software/repositories"],
   queryFn: fetchRepositories,
+});
+
+/**
+ * Query to retrieve conflicts
+ */
+const conflictsQuery = () => ({
+  queryKey: ["software/conflicts"],
+  queryFn: fetchConflicts,
 });
 
 /**
@@ -324,6 +334,14 @@ const useRepositories = (): Repository[] => {
 };
 
 /**
+ * Returns conclifts info
+ */
+const useConflicts = (): Conflict[] => {
+  const { data: conflicts } = useSuspenseQuery(conflictsQuery());
+  return conflicts;
+};
+
+/**
  * Hook that returns a useEffect to listen for  software proposal events
  *
  * When the configuration changes, it invalidates the config query.
@@ -367,12 +385,33 @@ const useProposalChanges = () => {
   }, [client, queryClient]);
 };
 
+/**
+ * Hook that registers a useEffect to listen for conflicts changes
+ *
+ */
+const useConflictsChanges = () => {
+  const client = useInstallerClient();
+  const queryClient = useQueryClient();
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.onEvent((event) => {
+      if (event.type === "ConflictsChanged") {
+        const { conflicts } = event;
+        queryClient.setQueryData(["software/conflicts"], conflicts);
+      }
+    });
+  });
+};
+
 export {
   configQuery,
   productsQuery,
   selectedProductQuery,
   useAddons,
   useConfigMutation,
+  useConflicts,
+  useConflictsChanges,
   useLicenses,
   usePatterns,
   useProduct,
