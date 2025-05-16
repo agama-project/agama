@@ -77,7 +77,7 @@ describe("ProductRegistrationPage", () => {
     });
 
     it("renders nothing", () => {
-      const { container } = installerRender(<ProductRegistrationPage />);
+      const { container } = installerRender(<ProductRegistrationPage />, { withL10n: true });
       expect(container).toBeEmptyDOMElement();
     });
   });
@@ -90,7 +90,7 @@ describe("ProductRegistrationPage", () => {
 
     describe("and the static hostname is not set", () => {
       it("renders a custom alert using the transient hostname", () => {
-        installerRender(<ProductRegistrationPage />);
+        installerRender(<ProductRegistrationPage />, { withL10n: true });
 
         screen.getByText("Custom alert:");
         screen.getByText('The product will be registered with "testing-node" hostname');
@@ -104,7 +104,7 @@ describe("ProductRegistrationPage", () => {
       });
 
       it("renders a custom alert using the static hostname", () => {
-        installerRender(<ProductRegistrationPage />);
+        installerRender(<ProductRegistrationPage />, { withL10n: true });
 
         screen.getByText("Custom alert:");
         screen.getByText('The product will be registered with "testing-server" hostname');
@@ -113,7 +113,7 @@ describe("ProductRegistrationPage", () => {
     });
 
     it("allows registering the product with email address", async () => {
-      const { user } = installerRender(<ProductRegistrationPage />);
+      const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
       const registrationCodeInput = screen.getByLabelText("Registration code");
       const submitButton = screen.getByRole("button", { name: "Register" });
 
@@ -139,7 +139,7 @@ describe("ProductRegistrationPage", () => {
     });
 
     it("allows registering the product without email address", async () => {
-      const { user } = installerRender(<ProductRegistrationPage />);
+      const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
       const registrationCodeInput = screen.getByLabelText("Registration code");
       const submitButton = screen.getByRole("button", { name: "Register" });
 
@@ -157,7 +157,7 @@ describe("ProductRegistrationPage", () => {
     });
 
     it("renders error when a field is missing", async () => {
-      const { user } = installerRender(<ProductRegistrationPage />);
+      const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
       const registrationCodeInput = screen.getByLabelText("Registration code");
       const submitButton = screen.getByRole("button", { name: "Register" });
       await user.click(submitButton);
@@ -218,7 +218,7 @@ describe("ProductRegistrationPage", () => {
     });
 
     it("does not render a custom alert about hostname", () => {
-      installerRender(<ProductRegistrationPage />);
+      installerRender(<ProductRegistrationPage />, { withL10n: true });
 
       expect(screen.queryByText("Custom alert:")).toBeNull();
       expect(screen.queryByText(/hostname/)).toBeNull();
@@ -226,7 +226,7 @@ describe("ProductRegistrationPage", () => {
     });
 
     it("renders registration information with code partially hidden", async () => {
-      const { user } = installerRender(<ProductRegistrationPage />);
+      const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
       const visibilityCodeToggler = screen.getByRole("button", { name: "Show" });
       screen.getByText(/\*?5678/);
       expect(screen.queryByText("INTERNAL-USE-ONLY-1234-5678")).toBeNull();
@@ -240,7 +240,7 @@ describe("ProductRegistrationPage", () => {
     });
 
     it("renders available extensions", async () => {
-      const { container } = installerRender(<ProductRegistrationPage />);
+      const { container } = installerRender(<ProductRegistrationPage />, { withL10n: true });
 
       // description is displayed
       screen.getByText(addonInfoMock[0].description);
@@ -268,7 +268,7 @@ describe("ProductRegistrationPage", () => {
       });
 
       it("renders registration information with code partially hidden", async () => {
-        const { user } = installerRender(<ProductRegistrationPage />);
+        const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
 
         // the second "Show" button, the first one belongs to the base product registration code
         const visibilityCodeToggler = screen.getAllByRole("button", { name: "Show" })[1];

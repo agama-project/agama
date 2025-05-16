@@ -23,7 +23,6 @@
 import React, { useState } from "react";
 import {
   Content,
-  Divider,
   Dropdown,
   DropdownItem,
   DropdownList,
@@ -40,13 +39,11 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
+import { useMatches } from "react-router-dom";
 import { Icon } from "~/components/layout";
 import { useProduct } from "~/queries/software";
-import { InstallationPhase } from "~/types/status";
-import { useInstallerStatus } from "~/queries/status";
 import { Route } from "~/types/routes";
 import { ChangeProductOption, InstallButton, InstallerOptions, SkipTo } from "~/components/core";
-import { useLocation, useMatches } from "react-router-dom";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
 
@@ -65,56 +62,37 @@ export type HeaderProps = {
   toggleSidebar?: () => void;
 };
 
-const OptionsDropdown = ({ showInstallerOptions }) => {
+const OptionsDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isInstallerOptionsOpen, setIsInstallerOptionsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
-  const toggleInstallerOptions = () => setIsInstallerOptionsOpen(!isInstallerOptionsOpen);
 
   return (
-    <>
-      <Dropdown
-        popperProps={{ position: "right", appendTo: () => document.body }}
-        isOpen={isOpen}
-        onOpenChange={toggle}
-        onSelect={toggle}
-        onActionClick={toggle}
-        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-          <MenuToggle
-            ref={toggleRef}
-            onClick={toggle}
-            aria-label={_("Options toggle")}
-            isExpanded={isOpen}
-            isFullHeight
-            variant="plain"
-          >
-            <Icon name="expand_circle_down" />
-          </MenuToggle>
-        )}
-      >
-        <DropdownList>
-          <ChangeProductOption />
-          <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
-            {_("Download logs")}
-          </DropdownItem>
-          {showInstallerOptions && (
-            <>
-              <Divider />
-              <DropdownItem key="installer-l10n" onClick={toggleInstallerOptions}>
-                {_("Installer Options")}
-              </DropdownItem>
-            </>
-          )}
-        </DropdownList>
-      </Dropdown>
-
-      {showInstallerOptions && (
-        <InstallerOptions
-          isOpen={isInstallerOptionsOpen}
-          onClose={() => setIsInstallerOptionsOpen(false)}
-        />
+    <Dropdown
+      popperProps={{ position: "right", appendTo: () => document.body }}
+      isOpen={isOpen}
+      onOpenChange={toggle}
+      onSelect={toggle}
+      onActionClick={toggle}
+      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+        <MenuToggle
+          ref={toggleRef}
+          onClick={toggle}
+          aria-label={_("Options toggle")}
+          isExpanded={isOpen}
+          isFullHeight
+          variant="plain"
+        >
+          <Icon name="expand_circle_down" />
+        </MenuToggle>
       )}
-    </>
+    >
+      <DropdownList>
+        <ChangeProductOption />
+        <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
+          {_("Download logs")}
+        </DropdownItem>
+      </DropdownList>
+    </Dropdown>
   );
 };
 
@@ -132,18 +110,11 @@ export default function Header({
   isSidebarOpen,
   toggleSidebar,
 }: HeaderProps): React.ReactNode {
-  const location = useLocation();
   const { selectedProduct } = useProduct();
-  const { phase } = useInstallerStatus({ suspense: true });
   const routeMatches = useMatches() as Route[];
   const currentRoute = routeMatches.at(-1);
   // TODO: translate title
   const title = (showProductName && selectedProduct?.name) || currentRoute?.handle?.title;
-
-  const showInstallerOptions =
-    phase !== InstallationPhase.Install &&
-    // FIXME: Installer options should be available in the login too.
-    !["/login", "/products/progress"].includes(location.pathname);
 
   return (
     <Masthead>
@@ -173,10 +144,13 @@ export default function Header({
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
               <ToolbarItem>
+                <InstallerOptions />
+              </ToolbarItem>
+              <ToolbarItem>
                 <InstallButton onClickWithIssues={toggleIssuesDrawer} />
               </ToolbarItem>
               <ToolbarItem>
-                <OptionsDropdown showInstallerOptions={showInstallerOptions} />
+                <OptionsDropdown />
               </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>

@@ -25,10 +25,6 @@ import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import L10nPage from "~/components/l10n/L10nPage";
 
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
-));
-
 let mockLoadedData;
 
 const locales = [
@@ -46,7 +42,14 @@ const timezones = [
   { id: "Europe/Madrid", parts: ["Europe", "Madrid"] },
 ];
 
+jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
+  <div>ProductRegistrationAlert Mock</div>
+));
+
+jest.mock("~/components/core/InstallerOptions", () => () => <div>InstallerOptions Mock</div>);
+
 jest.mock("~/queries/l10n", () => ({
+  ...jest.requireActual("~/queries/l10n"),
   useL10n: () => mockLoadedData,
 }));
 
@@ -59,6 +62,13 @@ beforeEach(() => {
     selectedKeymap: keymaps[0],
     selectedTimezone: timezones[0],
   };
+});
+
+it("renders an clarification about settings", () => {
+  installerRender(<L10nPage />);
+  screen.getByText(/These are the settings for the product to install/);
+  screen.getByText(/The installer language and keyboard layout can be adjusted via/);
+  screen.getByText("InstallerOptions Mock");
 });
 
 it("renders a section for configuring the language", () => {
