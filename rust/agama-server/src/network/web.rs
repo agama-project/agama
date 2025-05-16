@@ -259,8 +259,8 @@ async fn add_connection(
     State(state): State<NetworkServiceState>,
     Json(net_conn): Json<NetworkConnection>,
 ) -> Result<Json<Connection>, NetworkError> {
-    let bond = net_conn.clone().bond;
-    let bridge = net_conn.clone().bridge;
+    let bond = net_conn.bond.clone();
+    let bridge = net_conn.bridge.clone();
     let conn = Connection::try_from(net_conn)?;
     let id = conn.id.clone();
 
@@ -340,8 +340,8 @@ async fn update_connection(
         .get_connection(&id)
         .await?
         .ok_or_else(|| NetworkError::UnknownConnection(id.clone()))?;
-    let bond = conn.clone().bond;
-    let bridge = conn.clone().bridge;
+    let bond = conn.bond.clone();
+    let bridge = conn.bridge.clone();
 
     let mut conn = Connection::try_from(conn)?;
     if orig_conn.id != id {

@@ -449,7 +449,7 @@
                     "minimum": 0
                   },
                   "priority": {
-                    "title": "Spanning Tree Protocol priority. Lower values are 'better'",
+                    "title": "Spanning Tree Protocol priority (lower values are 'better')",
                     "type": "integer",
                     "minimum": 0
                   },

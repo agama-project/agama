@@ -237,7 +237,7 @@ impl NetworkState {
                     if controlled.contains(&conn.uuid) {
                         conn.controller = Some(controller.uuid);
                         if conn.interface.is_none() {
-                            conn.interface = Some(conn.clone().id);
+                            conn.interface = Some(conn.id.clone());
                         }
                     } else if conn.controller == Some(controller.uuid) {
                         conn.controller = None;
