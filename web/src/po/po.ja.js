@@ -78,9 +78,6 @@ export default {
   "Actions": [
     "処理"
   ],
-  "Actions for connection %s": [
-    "接続 %s に対する処理"
-  ],
   "Activate": [
     "有効化"
   ],
@@ -350,9 +347,6 @@ export default {
   ],
   "Connecting to %s": [
     "%s に接続しています"
-  ],
-  "Connection actions": [
-    "接続処理"
   ],
   "Connection details": [
     "接続の詳細"
@@ -636,12 +630,6 @@ export default {
   "First user": [
     "最初のユーザ"
   ],
-  "Forget": [
-    "削除"
-  ],
-  "Forget connection %s": [
-    "接続 %s の削除"
-  ],
   "Format": [
     "フォーマット"
   ],
@@ -824,6 +812,12 @@ export default {
   ],
   "Issuer": [
     "発行者"
+  ],
+  "It is not possible to allocate space for %s.": [
+    "%s に対して領域を割り当てることができません。"
+  ],
+  "It is not possible to allocate space for the boot partition and for %s.": [
+    "起動パーティションと %s に対して領域を割り当てることができません。"
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "現在の設定ではシステムをインストールすることができません。下記の設定を調整してください。"
@@ -1403,6 +1397,9 @@ export default {
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     "サイズには単位付きもしくは単位無しの数値を入力しなければなりません。"
+  ],
+  "Skip to content": [
+    "コンテンツに移動"
   ],
   "Software": [
     "ソフトウエア"

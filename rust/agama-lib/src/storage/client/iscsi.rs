@@ -22,10 +22,10 @@ use core::fmt;
 use std::collections::HashMap;
 
 use crate::{
-    dbus::{extract_id_from_path, get_property},
     error::ServiceError,
     storage::proxies::iscsi::{ISCSIProxy, InitiatorProxy, NodeProxy},
 };
+use agama_utils::dbus::{extract_id_from_path, get_property};
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
 use thiserror::Error;

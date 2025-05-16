@@ -30,13 +30,14 @@ describe Agama::AutoYaST::ConnectionsReader do
     { "bootproto" => eth0_bootproto, "name" => "eth0" }
   end
   let(:ipv6?) { true }
+  let(:dns) { { "nameservers" => ["1.1.1.1"], "dns_searchlist" => ["example.lan"] } }
   let(:eth0_bootproto) { "dhcp" }
 
   subject do
     section = Y2Network::AutoinstProfile::InterfacesSection.new_from_hashes(
       interfaces
     )
-    described_class.new(section, ipv6: ipv6?)
+    described_class.new(section, ipv6: ipv6?, dns: dns)
   end
 
   describe "#read" do
@@ -175,7 +176,7 @@ describe Agama::AutoYaST::ConnectionsReader do
 
     context "when there are wireless settings" do
       let(:eth0) do
-        { "name" => "eth0", "wireless_mode" => "wpa-psk" }
+        { "name" => "eth0", "wireless_essid" => "mywifi" }
       end
 
       it "includes a 'wireless' key containing those settings" do
@@ -194,6 +195,13 @@ describe Agama::AutoYaST::ConnectionsReader do
         connections = subject.read["connections"]
         conn = connections.find { |c| c["id"] == "eth0" }
         expect(conn["bond"]).to be_a(Hash)
+      end
+    end
+
+    it "adds DNS settings to the connection" do
+      connections = subject.read["connections"]
+      connections.each do |conn|
+        expect(conn).to include(dns)
       end
     end
   end

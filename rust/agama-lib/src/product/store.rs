@@ -24,7 +24,6 @@ use crate::{
     base_http_client::BaseHTTPClient,
     manager::http_client::{ManagerHTTPClient, ManagerHTTPClientError},
 };
-use std::{thread, time};
 
 #[derive(Debug, thiserror::Error)]
 pub enum ProductStoreError {
@@ -92,16 +91,6 @@ impl ProductStore {
         }
         if let Some(reg_code) = &settings.registration_code {
             let email = settings.registration_email.as_deref().unwrap_or("");
-
-            if probe {
-                // give the UI a short time for processing the events related to changing the
-                // product before starting registration because it triggers another pile of events
-                // in the Web UI as well (workaround for gh#agama-project#2274)
-                // even 1 second should be enough, but rather be safe and use 5s for slow networks,
-                // in autoinstallation it does not hurt
-                let delay = time::Duration::from_secs(5);
-                thread::sleep(delay);
-            }
 
             self.product_client.register(reg_code, email).await?;
             // TODO: avoid reprobing if the system has been already registered with the same code?

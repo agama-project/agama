@@ -42,19 +42,21 @@ import {
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { useProduct } from "~/queries/software";
-import { _ } from "~/i18n";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerStatus } from "~/queries/status";
 import { Route } from "~/types/routes";
-import { ChangeProductOption, InstallButton, InstallerOptions } from "~/components/core";
+import { ChangeProductOption, InstallButton, InstallerOptions, SkipTo } from "~/components/core";
 import { useLocation, useMatches } from "react-router-dom";
 import { ROOT } from "~/routes/paths";
+import { _ } from "~/i18n";
 
 export type HeaderProps = {
   /** Whether the application sidebar should be mounted or not */
   showSidebarToggle?: boolean;
   /** Whether the selected product name should be shown */
   showProductName?: boolean;
+  /** Whether the "Skip to content" link should be mounted */
+  showSkipToContent?: boolean;
   /** Whether the installer options link should be mounted */
   showInstallerOptions?: boolean;
   /** Callback to be triggered for toggling the IssuesDrawer visibility */
@@ -125,6 +127,7 @@ const OptionsDropdown = ({ showInstallerOptions }) => {
 export default function Header({
   showSidebarToggle = true,
   showProductName = true,
+  showSkipToContent = true,
   toggleIssuesDrawer,
   isSidebarOpen,
   toggleSidebar,
@@ -145,6 +148,7 @@ export default function Header({
   return (
     <Masthead>
       <MastheadMain>
+        {showSkipToContent && <SkipTo />}
         {showSidebarToggle && (
           <MastheadToggle>
             <PageToggleButton

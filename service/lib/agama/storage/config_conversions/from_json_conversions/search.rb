@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/from_json_conversions/base"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions"
 require "agama/storage/configs/search"
 
 module Agama
@@ -50,9 +51,11 @@ module Agama
             return convert_string if search_json.is_a?(String)
 
             {
-              name:         search_json.dig(:condition, :name),
-              max:          search_json[:max],
-              if_not_found: search_json[:ifNotFound]&.to_sym
+              name:             search_json.dig(:condition, :name),
+              size:             convert_size,
+              partition_number: search_json.dig(:condition, :number),
+              max:              search_json[:max],
+              if_not_found:     search_json[:ifNotFound]&.to_sym
             }
           end
 
@@ -61,6 +64,14 @@ module Agama
             return { if_not_found: :skip } if search_json == SEARCH_ANYTHING_STRING
 
             { name: search_json }
+          end
+
+          # @return [Configs::SearchConditions::Size, nil]
+          def convert_size
+            size_json = search_json.dig(:condition, :size)
+            return unless size_json
+
+            FromJSONConversions::SearchConditions::Size.new(size_json).convert
           end
         end
       end

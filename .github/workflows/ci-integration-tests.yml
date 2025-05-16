@@ -1,5 +1,8 @@
 name: "CI - Integration Tests"
 
+permissions:
+  contents: read
+
 on:
   schedule:
     # at 9:45 UTC every day from Monday to Friday

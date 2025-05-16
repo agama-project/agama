@@ -42,6 +42,21 @@ describe("Layout", () => {
     expect(screen.queryByText("Header Mock")).toBeNull();
   });
 
+  it("renders the skip to content when mountHeader=false and mountSkipToContent is not given", () => {
+    installerRender(<Layout mountHeader={false} />);
+    screen.getByRole("link", { name: "Skip to content" });
+  });
+
+  it("renders the skip to content when mountHeader=false and mountSkipToContent is true", () => {
+    installerRender(<Layout mountHeader={false} mountSkipToContent />);
+    screen.getByRole("link", { name: "Skip to content" });
+  });
+
+  it("does not render the skip to content when mountHeader=false and mountSkipToContent=false", () => {
+    installerRender(<Layout mountHeader={false} mountSkipToContent={false} />);
+    expect(screen.queryByRole("link", { name: "Skip to content" })).toBeNull();
+  });
+
   it("does not render the sidebar when mountSidebar=false", () => {
     installerRender(<Layout mountSidebar={false} />);
     expect(screen.queryByText("Sidebar Mock")).toBeNull();

@@ -1,0 +1,15 @@
+---
+- disk:
+    name: /dev/vda
+    size: 500 GiB
+- disk:
+    name: /dev/vdb
+    size: 500 GiB
+- md:
+    name: "/dev/md0"
+    chunk_size: 16 KiB
+    md_devices:
+    - md_device:
+        blk_device: /dev/vda
+    - md_device:
+        blk_device: /dev/vdb

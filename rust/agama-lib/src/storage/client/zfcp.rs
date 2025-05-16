@@ -30,13 +30,13 @@ use zbus::{
 };
 
 use crate::{
-    dbus::{extract_id_from_path, get_property},
     error::ServiceError,
     storage::{
         model::zfcp::{ZFCPController, ZFCPDisk},
         proxies::zfcp::{ControllerProxy, ManagerProxy},
     },
 };
+use agama_utils::dbus::{extract_id_from_path, get_property};
 
 const ZFCP_CONTROLLER_PREFIX: &str = "/org/opensuse/Agama/Storage1/zfcp_controllers";
 

@@ -1,5 +1,8 @@
 name: Submit agama
 
+permissions:
+  contents: read
+
 on:
   push:
     paths:

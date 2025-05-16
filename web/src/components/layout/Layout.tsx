@@ -26,7 +26,7 @@ import { Masthead, Page, PageProps } from "@patternfly/react-core";
 import { Questions } from "~/components/questions";
 import Header, { HeaderProps } from "~/components/layout/Header";
 import { Loading, Sidebar } from "~/components/layout";
-import { IssuesDrawer } from "~/components/core";
+import { IssuesDrawer, SkipTo } from "~/components/core";
 import { ROOT } from "~/routes/paths";
 import { agamaWidthBreakpoints, getBreakpoint } from "~/utils";
 
@@ -34,6 +34,7 @@ export type LayoutProps = React.PropsWithChildren<{
   className?: string;
   mountHeader?: boolean;
   mountSidebar?: boolean;
+  mountSkipToContent?: boolean;
   headerOptions?: HeaderProps;
 }>;
 
@@ -56,6 +57,7 @@ const focusDrawer = (drawer: HTMLElement | null) => {
 const Layout = ({
   mountHeader = true,
   mountSidebar = true,
+  mountSkipToContent = true,
   headerOptions = {},
   children,
   ...props
@@ -86,6 +88,7 @@ const Layout = ({
         toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         showSidebarToggle={mountSidebar}
         toggleIssuesDrawer={toggleIssuesDrawer}
+        showSkipToContent={mountSkipToContent}
         {...headerOptions}
       />
     );
@@ -95,9 +98,9 @@ const Layout = ({
     pageProps.isNotificationDrawerExpanded = issuesDrawerVisible;
   } else {
     // FIXME: render an empty Masthead instead of nothing, in order to have
-    // everything working as designed by PatternfFly (there are some CSS rules
+    // everything working as designed by PatternFly (there are some CSS rules
     // that expect the masthead to be there :shrug:)
-    pageProps.masthead = <Masthead />;
+    pageProps.masthead = <Masthead>{mountSkipToContent && <SkipTo />}</Masthead>;
   }
 
   return (

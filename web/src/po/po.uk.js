@@ -60,9 +60,6 @@ export default {
   "Actions": [
     "Дії"
   ],
-  "Actions for connection %s": [
-    "Дії для з'єднання %s"
-  ],
   "Activate": [
     "Активувати"
   ],
@@ -299,9 +296,6 @@ export default {
   ],
   "Connected (%s)": [
     "З'єднано (%s)"
-  ],
-  "Connection actions": [
-    "Дії при підключенні"
   ],
   "Content will be kept": [
     "Вміст буде збережено"
@@ -540,12 +534,6 @@ export default {
   "First user": [
     "Перший користувач"
   ],
-  "Forget": [
-    "Забути"
-  ],
-  "Forget connection %s": [
-    "Забути з'єднання %s"
-  ],
   "Format": [
     "Формат"
   ],
@@ -717,6 +705,12 @@ export default {
     ""
   ],
   "Issuer": [
+    ""
+  ],
+  "It is not possible to allocate space for %s.": [
+    ""
+  ],
+  "It is not possible to allocate space for the boot partition and for %s.": [
     ""
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
@@ -1227,6 +1221,9 @@ export default {
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     "Розміри повинні бути введені у вигляді чисел, після чого можна вказати одиницю виміру."
+  ],
+  "Skip to content": [
+    ""
   ],
   "Software": [
     "Програми"

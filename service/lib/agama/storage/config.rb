@@ -119,6 +119,13 @@ module Agama
         supporting_filesystem.map(&:filesystem).compact
       end
 
+      # Configs with configurable search.
+      #
+      # @return [Array<#search>]
+      def supporting_search
+        drives + md_raids + partitions
+      end
+
       # Configs with configurable encryption.
       #
       # @return [Array<#encryption>]

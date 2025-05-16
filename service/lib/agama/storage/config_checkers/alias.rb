@@ -103,7 +103,7 @@ module Agama
         def partitioned_issue
           return unless config.alias && storage_config.supporting_partitions.include?(config)
 
-          return unless config.partitions.any?
+          return unless config.partitions?
 
           users = storage_config.users(config.alias)
           return unless users.any?

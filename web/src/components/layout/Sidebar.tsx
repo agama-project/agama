@@ -75,7 +75,7 @@ const MainNavigation = (): React.ReactNode => {
 
 export default function Sidebar(props: PageSidebarProps): React.ReactNode {
   return (
-    <PageSidebar id="agama-sidebar" {...props}>
+    <PageSidebar id="main-navigation" tabIndex={-1} {...props}>
       <PageSidebarBody isFilled>
         <MainNavigation />
       </PageSidebarBody>

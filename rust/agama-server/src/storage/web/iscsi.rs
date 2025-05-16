@@ -33,13 +33,13 @@ use crate::{
     },
 };
 use agama_lib::{
-    dbus::{get_optional_property, to_owned_hash},
     error::ServiceError,
     storage::{
         client::iscsi::{ISCSIAuth, ISCSIInitiator, ISCSINode, LoginResult},
         ISCSIClient,
     },
 };
+use agama_utils::dbus::{get_optional_property, to_owned_hash};
 use axum::{
     extract::{Path, State},
     http::StatusCode,
@@ -88,7 +88,7 @@ async fn initiator_stream(
         .filter_map(|change| match handle_initiator_change(change) {
             Ok(event) => event,
             Err(error) => {
-                log::warn!("Could not read the initiator change: {}", error);
+                tracing::warn!("Could not read the initiator change: {}", error);
                 None
             }
         });

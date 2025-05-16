@@ -25,7 +25,7 @@
 import { _, n_, N_, Nn_ } from "~/i18n";
 import agama from "~/agama";
 
-// mock the cockpit gettext functions
+// mock the gettext functions
 jest.mock("~/agama", () => ({
   ...jest.requireActual("~/agama"),
   gettext: jest.fn(),

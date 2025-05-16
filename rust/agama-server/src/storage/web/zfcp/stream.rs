@@ -23,14 +23,13 @@
 use std::{collections::HashMap, task::Poll};
 
 use agama_lib::{
-    dbus::get_optional_property,
     error::ServiceError,
-    property_from_dbus,
     storage::{
         client::zfcp::ZFCPClient,
         model::zfcp::{ZFCPController, ZFCPDisk},
     },
 };
+use agama_utils::{dbus::get_optional_property, property_from_dbus};
 use futures_util::{ready, Stream};
 use pin_project::pin_project;
 use thiserror::Error;
@@ -164,7 +163,7 @@ impl Stream for ZFCPDiskStream {
                     if let Ok(event) = Self::handle_change(pinned.cache, &change) {
                         Some(event)
                     } else {
-                        log::warn!("Could not process change {:?}", &change);
+                        tracing::warn!("Could not process change {:?}", &change);
                         None
                     }
                 }
@@ -297,7 +296,7 @@ impl Stream for ZFCPControllerStream {
                     if let Ok(event) = Self::handle_change(pinned.cache, &change) {
                         Some(event)
                     } else {
-                        log::warn!("Could not process change {:?}", &change);
+                        tracing::warn!("Could not process change {:?}", &change);
                         None
                     }
                 }

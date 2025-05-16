@@ -23,12 +23,11 @@ pub mod common;
 use agama_lib::error::ServiceError;
 use agama_lib::network::settings::{BondSettings, NetworkConnection};
 use agama_lib::network::types::{DeviceType, SSID};
-use agama_server::network::web::network_service;
-use agama_server::network::{
-    self,
-    model::{self, AccessPoint, GeneralState, StateConfig},
-    Adapter, NetworkAdapterError, NetworkState,
+use agama_lib::network::{
+    model::{self, AccessPoint, GeneralState, NetworkState, StateConfig},
+    Adapter, NetworkAdapterError,
 };
+use agama_server::network::web::network_service;
 
 use async_trait::async_trait;
 use axum::http::header;
@@ -62,15 +61,15 @@ async fn build_service(state: NetworkState) -> Result<Router, ServiceError> {
 }
 
 #[derive(Default)]
-pub struct NetworkTestAdapter(network::NetworkState);
+pub struct NetworkTestAdapter(NetworkState);
 
 #[async_trait]
 impl Adapter for NetworkTestAdapter {
-    async fn read(&self, _: StateConfig) -> Result<network::NetworkState, NetworkAdapterError> {
+    async fn read(&self, _: StateConfig) -> Result<NetworkState, NetworkAdapterError> {
         Ok(self.0.clone())
     }
 
-    async fn write(&self, _network: &network::NetworkState) -> Result<(), NetworkAdapterError> {
+    async fn write(&self, _network: &NetworkState) -> Result<(), NetworkAdapterError> {
         unimplemented!("Not used in tests");
     }
 }

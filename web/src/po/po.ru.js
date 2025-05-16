@@ -55,7 +55,7 @@ export default {
     "Для нового раздела %2$s будет использоваться минимум %1$s"
   ],
   "A generic size of %s will be used for the new %2$s": [
-    "Для нового раздела %2$s будет использовано %s."
+    "Для нового раздела %2$s будет использовано %s"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Для нового раздела %3$s будет использовано пространство в диапазоне между %1$s и %2$s"
@@ -77,9 +77,6 @@ export default {
   ],
   "Actions": [
     "Действия"
-  ],
-  "Actions for connection %s": [
-    "Действия для подключения %s"
   ],
   "Activate": [
     "Активировать"
@@ -145,7 +142,7 @@ export default {
     "Все содержимое будет удалено"
   ],
   "All fields are required": [
-    "Все поля обязательны"
+    "Все поля обязательны для заполнения"
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Наряду с определением первого пользователя можно настроить методы аутентификации для root-пользователя."
@@ -350,9 +347,6 @@ export default {
   ],
   "Connecting to %s": [
     "Подключение к сети %s"
-  ],
-  "Connection actions": [
-    "Действия подключения"
   ],
   "Connection details": [
     "Сведения о подключении"
@@ -625,7 +619,7 @@ export default {
     "Фильтр по территории, коду часового пояса или смещению UTC"
   ],
   "Find space in %s": [
-    "Найти место в %s"
+    "Найти пространство в %s"
   ],
   "Finish": [
     "Завершить"
@@ -635,12 +629,6 @@ export default {
   ],
   "First user": [
     "Первый пользователь"
-  ],
-  "Forget": [
-    "Забыть"
-  ],
-  "Forget connection %s": [
-    "Забыть подключение %s"
   ],
   "Format": [
     "Формат"
@@ -826,6 +814,12 @@ export default {
   ],
   "Issuer": [
     "Сертификационный центр"
+  ],
+  "It is not possible to allocate space for %s.": [
+    "Невозможно выделить пространство для %s."
+  ],
+  "It is not possible to allocate space for the boot partition and for %s.": [
+    "Невозможно выделить пространство для загрузочного раздела и для %s."
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Невозможно установить систему с текущей конфигурацией. Измените приведенные ниже настройки."
@@ -1407,6 +1401,9 @@ export default {
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     "Размеры должны быть введены в виде чисел, за которыми по желанию может следовать единица измерения."
+  ],
+  "Skip to content": [
+    "Перейти к содержимому"
   ],
   "Software": [
     "Программы"

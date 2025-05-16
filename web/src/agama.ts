@@ -104,8 +104,17 @@ const agama = {
    * @param options passed to the Intl.ListFormat constructor
    */
   formatList: (list: string[], options: object): string => {
-    const formatter = new Intl.ListFormat(agama.language, options);
-    return formatter.format(list);
+    try {
+      const formatter = new Intl.ListFormat(agama.language, options);
+      return formatter.format(list);
+    } catch (e) {
+      // use a trivial formatting with commas when the locale formatting fails for whatever reason
+      console.warn(
+        `Using fallback list formatting function for language "${agama.language}", details:`,
+        e,
+      );
+      return list.join(", ");
+    }
   },
 };
 

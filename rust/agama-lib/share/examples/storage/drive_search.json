@@ -1,0 +1,42 @@
+{
+  "storage": {
+    "drives": [
+      { "search": "*" },
+      { "search": "/dev/vda" },
+      {
+        "search": {
+          "condition": { "name": "/dev/vdb" },
+          "ifNotFound": "skip"
+        }
+      },
+      {
+        "search": {
+          "condition": { "size": "10 GiB" },
+          "ifNotFound": "error",
+          "max": 2
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "size": { "equal": "10 GiB" }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "size": { "greater": "10 GiB" }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "size": { "less": "10 GiB" }
+          }
+        }
+      }
+    ]
+  }
+}

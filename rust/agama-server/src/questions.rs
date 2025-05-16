@@ -21,7 +21,6 @@
 use std::collections::HashMap;
 
 use agama_lib::questions::{self, GenericQuestion, WithPassword};
-use log;
 use zbus::{fdo::ObjectManager, interface, zvariant::ObjectPath, Connection};
 
 mod answers;
@@ -172,7 +171,7 @@ impl Questions {
         default_option: &str,
         data: HashMap<String, String>,
     ) -> zbus::fdo::Result<ObjectPath> {
-        log::info!("Creating new question with text: {}.", text);
+        tracing::info!("Creating new question with text: {}.", text);
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
         let options = options.iter().map(|o| o.to_string()).collect();
@@ -205,7 +204,7 @@ impl Questions {
         default_option: &str,
         data: HashMap<String, String>,
     ) -> zbus::fdo::Result<ObjectPath> {
-        log::info!("Creating new question with password with text: {}.", text);
+        tracing::info!("Creating new question with password with text: {}.", text);
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
                            // TODO: share code better
@@ -221,8 +220,8 @@ impl Questions {
         let mut question = questions::WithPassword::new(base);
         let object_path = ObjectPath::try_from(question.base.object_path()).unwrap();
 
-        let base_question = question.base.clone();
         self.fill_answer_with_password(&mut question);
+        let base_question = question.base.clone();
         let base_object = GenericQuestionObject(base_question);
 
         self.connection
@@ -282,12 +281,12 @@ impl Questions {
 
     #[zbus(property)]
     fn set_interactive(&mut self, value: bool) {
-        if value != self.interactive() {
-            log::info!("interactive value unchanged - {}", value);
+        if value == self.interactive() {
+            tracing::info!("interactive value unchanged - {}", value);
             return;
         }
 
-        log::info!("set interactive to {}", value);
+        tracing::info!("set interactive to {}", value);
         if value {
             self.answer_strategies.pop();
         } else {
@@ -296,7 +295,7 @@ impl Questions {
     }
 
     fn add_answer_file(&mut self, path: String) -> zbus::fdo::Result<()> {
-        log::info!("Adding answer file {}", path);
+        tracing::info!("Adding answer file {}", path);
         let answers = answers::Answers::new_from_file(path.as_str())
             .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
         self.answer_strategies.push(Box::new(answers));

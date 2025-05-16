@@ -1,5 +1,9 @@
 name: Weblate Update POT
 
+permissions:
+  # this action uploads the updated POT files to the agama-weblate repository
+  contents: write
+
 on:
   schedule:
     # run every working day (Monday-Friday) at 1:42AM UTC

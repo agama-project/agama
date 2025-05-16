@@ -1,4 +1,31 @@
 -------------------------------------------------------------------
+Mon May 12 12:47:46 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed navigation to avoid quickly switching between two paths
+  in a loop causing "Too many calls to Location or  History APIs
+  within a short timeframe" error in Firefox and crashing the UI
+  (the proper fix for gh#agama-project/agama#2274)
+
+-------------------------------------------------------------------
+Thu May  8 13:43:53 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- MenuButton no longer opens unexpectedly when navigating
+  with the keyboard (gh#agama-project/agama#2345).
+
+-------------------------------------------------------------------
+Wed May  7 13:46:05 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Add "Skip to content" link for easing navigation for keyboard-only
+  users (gh#agama-project/agama#1521, gh#agama-project/agama#2337).
+
+-------------------------------------------------------------------
+Wed May  7 07:07:10 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Use the correct locale format in the Intl.ListFormat.format call,
+  if it fails use a fallback formatting function to avoid a crash
+  (bsc#1238584)
+
+-------------------------------------------------------------------
 Mon May  5 14:50:48 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Improve storage proposal warning to mention mount paths when

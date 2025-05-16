@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::network::model::NetworkChange;
+use agama_lib::network::model::NetworkChange;
 use agama_lib::{
     jobs::Job,
     localization::model::LocaleConfig,

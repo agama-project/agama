@@ -78,9 +78,6 @@ export default {
   "Actions": [
     "Aktionen"
   ],
-  "Actions for connection %s": [
-    "Aktionen für Verbindung %s"
-  ],
   "Activate": [
     "Aktivieren"
   ],
@@ -350,9 +347,6 @@ export default {
   ],
   "Connecting to %s": [
     "Verbindung zu %s wird hergestellt"
-  ],
-  "Connection actions": [
-    "Verbindungsaktionen"
   ],
   "Connection details": [
     "Verbindungsdetails"
@@ -630,12 +624,6 @@ export default {
   "First user": [
     "Erster Benutzer"
   ],
-  "Forget": [
-    "Vergessen"
-  ],
-  "Forget connection %s": [
-    "Verbindung %s vergessen"
-  ],
   "Format": [
     "Formatieren"
   ],
@@ -819,6 +807,12 @@ export default {
   ],
   "Issuer": [
     "Aussteller"
+  ],
+  "It is not possible to allocate space for %s.": [
+    ""
+  ],
+  "It is not possible to allocate space for the boot partition and for %s.": [
+    ""
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Es ist nicht möglich, das System mit der aktuellen Konfiguration zu installieren. Passen Sie die Einstellungen unten an."
@@ -1390,6 +1384,9 @@ export default {
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     "Größen müssen als Zahlen eingegeben werden, optional gefolgt von einer Einheit."
+  ],
+  "Skip to content": [
+    ""
   ],
   "Software": [
     "Software"
