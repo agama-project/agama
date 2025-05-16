@@ -478,7 +478,7 @@ pub struct AccessPoint {
 /// Network device
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Default, Debug, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Device {
     pub name: String,
@@ -798,7 +798,7 @@ impl From<InvalidMacAddress> for zbus::fdo::Error {
 }
 
 #[skip_serializing_none]
-#[derive(Default, Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct IpConfig {
     pub method4: Ipv4Method,
@@ -826,7 +826,7 @@ pub struct IpConfig {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
 pub struct Dhcp4Settings {
     pub send_hostname: bool,
     pub hostname: Option<String>,
@@ -847,7 +847,7 @@ impl Default for Dhcp4Settings {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 pub enum DhcpClientId {
     Id(String),
     Mac,
@@ -900,7 +900,7 @@ impl fmt::Display for DhcpClientId {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 pub enum DhcpIaid {
     Id(String),
     Mac,
@@ -948,7 +948,7 @@ impl fmt::Display for DhcpIaid {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
 pub struct Dhcp6Settings {
     pub send_hostname: bool,
     pub hostname: Option<String>,
@@ -969,7 +969,7 @@ impl Default for Dhcp6Settings {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 pub enum DhcpDuid {
     Id(String),
     Lease,
@@ -1039,7 +1039,7 @@ pub struct MatchConfig {
 #[error("Unknown IP configuration method name: {0}")]
 pub struct UnknownIpMethod(String);
 
-#[derive(Debug, Default, Copy, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Ipv4Method {
     #[default]
@@ -1075,7 +1075,7 @@ impl FromStr for Ipv4Method {
     }
 }
 
-#[derive(Debug, Default, Copy, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Ipv6Method {
     #[default]
@@ -1123,7 +1123,7 @@ impl From<UnknownIpMethod> for zbus::fdo::Error {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct IpRoute {
     #[schema(schema_with = schemas::ip_inet_ref)]
@@ -1772,7 +1772,7 @@ pub struct TunConfig {
 }
 
 /// Represents a network change.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub enum NetworkChange {
     /// A new device has been added.

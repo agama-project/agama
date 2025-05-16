@@ -22,8 +22,8 @@
 //! (e.g., issues, service status or progress).
 
 use super::ApiDocBuilder;
-use crate::web::common::{Issue, ServiceStatus};
-use agama_lib::progress::Progress;
+use crate::web::common::ServiceStatus;
+use agama_lib::{issue::Issue, progress::Progress};
 use utoipa::openapi::{
     path::OperationBuilder, schema::RefBuilder, ArrayBuilder, Components, ComponentsBuilder,
     ContentBuilder, HttpMethod, PathItem, Paths, PathsBuilder, ResponseBuilder, ResponsesBuilder,

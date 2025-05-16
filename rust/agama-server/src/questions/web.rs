@@ -25,9 +25,10 @@
 //! * `questions_service` which returns the Axum service.
 //! * `questions_stream` which offers an stream that emits questions related signals.
 
-use crate::{error::Error, web::Event};
+use crate::error::Error;
 use agama_lib::{
     error::ServiceError,
+    http::Event,
     proxies::questions::{GenericQuestionProxy, QuestionWithPasswordProxy, QuestionsProxy},
     questions::model::{Answer, GenericQuestion, PasswordAnswer, Question, QuestionWithPassword},
 };

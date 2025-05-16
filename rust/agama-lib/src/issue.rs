@@ -18,11 +18,33 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod base_http_client;
-pub use base_http_client::{BaseHTTPClient, BaseHTTPClientError};
+use serde::{Deserialize, Serialize};
 
-mod event;
-pub use event::Event;
+#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
+pub struct Issue {
+    description: String,
+    details: Option<String>,
+    source: u32,
+    severity: u32,
+    kind: String,
+}
 
-mod websocket;
-pub use websocket::{WebSocketClient, WebSocketError};
+impl Issue {
+    pub fn from_tuple(
+        (description, kind, details, source, severity): (String, String, String, u32, u32),
+    ) -> Self {
+        let details = if details.is_empty() {
+            None
+        } else {
+            Some(details)
+        };
+
+        Self {
+            description,
+            kind,
+            details,
+            source,
+            severity,
+        }
+    }
+}

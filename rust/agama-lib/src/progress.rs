@@ -68,12 +68,12 @@
 
 use crate::{error::ServiceError, proxies::ProgressProxy};
 use async_trait::async_trait;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use tokio_stream::{StreamExt, StreamMap};
 use zbus::{proxy::PropertyStream, Connection};
 
 /// Represents the progress for an Agama service.
-#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Default, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Progress {
     /// Current step

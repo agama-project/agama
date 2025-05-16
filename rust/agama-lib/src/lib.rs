@@ -52,6 +52,7 @@ pub mod files;
 pub mod hostname;
 pub mod http;
 pub mod install_settings;
+pub mod issue;
 pub mod jobs;
 pub mod localization;
 pub mod logs;
