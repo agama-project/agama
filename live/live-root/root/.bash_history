@@ -1,3 +1,4 @@
+mount | cut -f3 -d" " | grep /mnt | sort -r | xargs -r umount; swapon --show=NAME --noheadings | grep -v zram | xargs -r swapoff
 systemctl restart agama.service agama-web-server.service && sleep 2 && systemctl restart x11-autologin.service
 less /var/log/YaST2/y2log
 journalctl -u agama-web-server.service
