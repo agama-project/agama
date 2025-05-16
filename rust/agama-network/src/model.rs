@@ -826,25 +826,13 @@ pub struct IpConfig {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 pub struct Dhcp4Settings {
-    pub send_hostname: bool,
+    pub send_hostname: Option<bool>,
     pub hostname: Option<String>,
     pub send_release: Option<bool>,
     pub client_id: DhcpClientId,
     pub iaid: DhcpIaid,
-}
-
-impl Default for Dhcp4Settings {
-    fn default() -> Self {
-        Self {
-            send_hostname: true,
-            hostname: None,
-            send_release: None,
-            client_id: DhcpClientId::default(),
-            iaid: DhcpIaid::default(),
-        }
-    }
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, utoipa::ToSchema)]
@@ -948,25 +936,13 @@ impl fmt::Display for DhcpIaid {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 pub struct Dhcp6Settings {
-    pub send_hostname: bool,
+    pub send_hostname: Option<bool>,
     pub hostname: Option<String>,
     pub send_release: Option<bool>,
     pub duid: DhcpDuid,
     pub iaid: DhcpIaid,
-}
-
-impl Default for Dhcp6Settings {
-    fn default() -> Self {
-        Self {
-            send_hostname: true,
-            hostname: None,
-            send_release: None,
-            duid: DhcpDuid::default(),
-            iaid: DhcpIaid::default(),
-        }
-    }
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, utoipa::ToSchema)]

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed May 15 08:42:44 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Send different NM dbus values depending on version (gh#agama-project/agama#2356).
+
+-------------------------------------------------------------------
 Wed May 14 15:17:25 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Add search conditions to storage schema
