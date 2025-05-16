@@ -229,7 +229,7 @@ describe("InstallerOptions", () => {
         await renderAndOpen();
         const dialog = screen.getByRole("dialog");
         expect(within(dialog).queryByRole("checkbox")).toBeNull();
-        screen.getByText(/This will affect only the interface/);
+        screen.getByText(/This will affect only the installer interface/);
       });
 
       it("does not include a link to localization page", async () => {
@@ -334,7 +334,7 @@ describe("InstallerOptions", () => {
         await renderAndOpen();
         const dialog = screen.getByRole("dialog");
         expect(within(dialog).queryByRole("checkbox")).toBeNull();
-        screen.getByText(/This will affect only the interface/);
+        screen.getByText(/This will affect only the installer interface/);
       });
 
       it("does not include a link to localization page", async () => {
@@ -438,7 +438,7 @@ describe("InstallerOptions", () => {
         await renderAndOpen();
         const dialog = screen.getByRole("dialog");
         expect(within(dialog).queryByRole("checkbox")).toBeNull();
-        screen.getByText(/This will affect only the interface/);
+        screen.getByText(/This will affect only the installer interface/);
       });
 
       it("does not include a link to localization page", async () => {

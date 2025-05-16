@@ -252,8 +252,12 @@ const ReusableSettings = ({ isReuseAllowed, children }) => {
   if (isReuseAllowed) {
     return children;
   } else {
+    // TRANSLATORS: This message informs users that they are only changing the
+    // interface language and/or keyboard settings here. The term "localization"
+    // is the name of a separate page where they can configure the localization
+    // settings for the product to install.
     return _(
-      "This will affect only the interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.",
+      "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.",
     );
   }
 };

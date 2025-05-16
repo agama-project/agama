@@ -128,7 +128,7 @@ describe("PasswordInput", () => {
     expect(screen.queryByText(/^CAPS LOCK/)).toBeNull();
   });
 
-  it("allows pikcing only the keymap reminder", async () => {
+  it("allows picking only the keymap reminder", async () => {
     const { user } = installerRender(
       <PasswordInput
         id="password"
@@ -147,7 +147,7 @@ describe("PasswordInput", () => {
     expect(screen.queryByText(/is on$/)).toBeNull();
   });
 
-  it("allows pikcing only the caps locsk reminder", async () => {
+  it("allows picking only the caps locsk reminder", async () => {
     const { user } = installerRender(
       <PasswordInput
         id="password"
