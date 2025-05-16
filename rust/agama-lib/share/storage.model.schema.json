@@ -11,9 +11,8 @@
       "items": { "$ref": "#/$defs/drive" }
     },
     "mdRaids": {
-      "$comment": "So far, drives and RAIDs are still identical. Let's reuse the definition.",
       "type": "array",
-      "items": { "$ref": "#/$defs/drive" }
+      "items": { "$ref": "#/$defs/mdRaid" }
     },
     "volumeGroups": {
       "type": "array",
@@ -70,6 +69,10 @@
           "items": { "$ref": "#/$defs/partition" }
         }
       }
+    },
+    "mdRaid": {
+      "$comment": "So far, drive and RAID are still identical. Let's reuse the definition.",
+      "$ref": "#/$defs/drive"
     },
     "partition": {
       "type": "object",
