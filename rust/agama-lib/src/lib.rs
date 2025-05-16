@@ -57,6 +57,7 @@ pub mod jobs;
 pub mod localization;
 pub mod logs;
 pub mod manager;
+pub mod monitor;
 pub mod network;
 pub mod product;
 pub mod profile;
