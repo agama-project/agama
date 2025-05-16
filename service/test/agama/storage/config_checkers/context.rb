@@ -23,16 +23,17 @@ require_relative "../storage_helpers"
 require "agama/config"
 require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_solver"
+require "agama/storage/system"
 require "y2storage"
 require "y2storage/encryption_method/tpm_fde"
 
 shared_context "checker" do
   # Solves the config.
   def solve_config
-    devicegraph = Y2Storage::StorageManager.instance.probed
+    storage_system = Agama::Storage::System.new
 
     Agama::Storage::ConfigSolver
-      .new(product_config, devicegraph)
+      .new(product_config, storage_system)
       .solve(config)
   end
 

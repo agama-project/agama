@@ -29,13 +29,6 @@ module Agama
       #
       # It assigns proper size values according to the product and the system.
       class Size < Base
-        # @param product_config [Agama::Config]
-        # @param devicegraph [Y2Storage::Devicegraph]
-        def initialize(product_config, devicegraph)
-          super(product_config)
-          @devicegraph = devicegraph
-        end
-
         # Solves all the size configs within a given config.
         #
         # @note The config object is modified.
@@ -49,9 +42,6 @@ module Agama
         end
 
       private
-
-        # @return [Y2Storage::Devicegraph]
-        attr_reader :devicegraph
 
         def solve_default_sizes
           configs_with_default_product_size.each { |c| solve_default_product_size(c) }
