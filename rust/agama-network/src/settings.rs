@@ -21,7 +21,7 @@
 //! Representation of the network settings
 
 use super::types::{DeviceState, DeviceType, Status};
-use crate::openapi::schemas;
+use agama_utils::openapi::schemas;
 use cidr::IpInet;
 use serde::{Deserialize, Serialize};
 use std::default::Default;

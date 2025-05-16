@@ -135,61 +135,13 @@ end
 
 shared_examples "with search" do
   context "if 'search' is specified" do
-    context "with a device name" do
-      let(:search) { "/dev/vda1" }
+    let(:search) { "/dev/vda1" }
 
-      it "sets #search to the expected value" do
-        config = subject.convert
-        expect(config.search).to be_a(Agama::Storage::Configs::Search)
-        expect(config.search.name).to eq("/dev/vda1")
-        expect(config.search.if_not_found).to eq(:error)
-      end
-    end
-
-    context "with an asterisk" do
-      let(:search) { "*" }
-
-      it "sets #search to the expected value" do
-        config = subject.convert
-        expect(config.search).to be_a(Agama::Storage::Configs::Search)
-        expect(config.search.name).to be_nil
-        expect(config.search.if_not_found).to eq(:skip)
-        expect(config.search.max).to be_nil
-      end
-    end
-
-    context "with a search section" do
-      let(:search) do
-        {
-          condition:  { name: "/dev/vda1" },
-          ifNotFound: "skip"
-        }
-      end
-
-      it "sets #search to the expected value" do
-        config = subject.convert
-        expect(config.search).to be_a(Agama::Storage::Configs::Search)
-        expect(config.search.name).to eq("/dev/vda1")
-        expect(config.search.if_not_found).to eq(:skip)
-        expect(config.search.max).to be_nil
-      end
-    end
-
-    context "with a search section including a max" do
-      let(:search) do
-        {
-          ifNotFound: "error",
-          max:        3
-        }
-      end
-
-      it "sets #search to the expected value" do
-        config = subject.convert
-        expect(config.search).to be_a(Agama::Storage::Configs::Search)
-        expect(config.search.name).to be_nil
-        expect(config.search.if_not_found).to eq(:error)
-        expect(config.search.max).to eq 3
-      end
+    it "sets #search to the expected value" do
+      config = subject.convert
+      expect(config.search).to be_a(Agama::Storage::Configs::Search)
+      expect(config.search.name).to eq("/dev/vda1")
+      expect(config.search.if_not_found).to eq(:error)
     end
   end
 end

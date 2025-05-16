@@ -46,10 +46,35 @@ module Agama
 
           # @return [Hash, nil]
           def convert_condition
+            convert_condition_name ||
+              convert_condition_number ||
+              convert_condition_size
+          end
+
+          # @return [Hash, nil]
+          def convert_condition_name
             name = config.name || config.device&.name
             return unless name
 
             { name: name }
+          end
+
+          # @return [Hash, nil]
+          def convert_condition_number
+            number = config.partition_number
+            return unless number
+
+            { number: number }
+          end
+
+          # @return [Hash, nil]
+          def convert_condition_size
+            size = config.size
+            return unless size&.value
+
+            {
+              size: { size.operator => size.value.to_i }
+            }
           end
         end
       end

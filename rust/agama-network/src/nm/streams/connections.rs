@@ -1,4 +1,4 @@
-// Copyright (c) [2024-2025] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,11 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::error::ServiceError;
 use futures_util::ready;
 use pin_project::pin_project;
 use std::{
-    collections::HashMap,
     pin::Pin,
     task::{Context, Poll},
 };
@@ -34,26 +32,31 @@ use zbus::{
     Message, MessageStream,
 };
 
-use super::common::{build_added_and_removed_stream, build_properties_changed_stream, NmChange};
+use crate::nm::error::NmError;
 
-/// Stream of device-related events.
+use super::{
+    common::{build_added_and_removed_stream, build_properties_changed_stream},
+    NmChange,
+};
+
+/// Stream of active connections state changes.
 ///
-/// This stream listens for many NetworkManager events that are related to network devices (state,
-/// IP configuration, etc.) and converts them into variants of the [DeviceChange] enum.
+/// This stream listens for active connection state changes and converts
+/// them into [ConnectionStateChange] events.
 ///
-/// It is implemented as a struct because it needs to keep the ObjectManagerProxy alive.
+/// It is implemented as a struct because it needs to keep the ProxiesRegistry alive.
 #[pin_project]
-pub struct DeviceChangedStream {
+pub struct ActiveConnectionChangedStream {
     connection: zbus::Connection,
     #[pin]
     inner: StreamMap<&'static str, MessageStream>,
 }
 
-impl DeviceChangedStream {
+impl ActiveConnectionChangedStream {
     /// Builds a new stream using the given D-Bus connection.
     ///
     /// * `connection`: D-Bus connection.
-    pub async fn new(connection: &zbus::Connection) -> Result<Self, ServiceError> {
+    pub async fn new(connection: &zbus::Connection) -> Result<Self, NmError> {
         let connection = connection.clone();
         let mut inner = StreamMap::new();
         inner.insert(
@@ -75,9 +78,9 @@ impl DeviceChangedStream {
             .map(|i| i.to_string())
             .collect();
 
-        if interfaces.contains(&"org.freedesktop.NetworkManager.Device".to_string()) {
+        if interfaces.contains(&"org.freedesktop.NetworkManager.Connection.Active".to_string()) {
             let path = OwnedObjectPath::from(args.object_path().clone());
-            return Some(NmChange::DeviceAdded(path));
+            return Some(NmChange::ActiveConnectionAdded(path));
         }
 
         None
@@ -86,56 +89,26 @@ impl DeviceChangedStream {
     fn handle_removed(message: InterfacesRemoved) -> Option<NmChange> {
         let args = message.args().ok()?;
 
-        let interface = InterfaceName::from_str_unchecked("org.freedesktop.NetworkManager.Device");
+        let interface =
+            InterfaceName::from_str_unchecked("org.freedesktop.NetworkManager.Connection.Active");
         if args.interfaces.contains(&interface) {
             let path = OwnedObjectPath::from(args.object_path().clone());
-            return Some(NmChange::DeviceRemoved(path));
+            return Some(NmChange::ActiveConnectionRemoved(path));
         }
 
         None
     }
 
     fn handle_changed(message: PropertiesChanged) -> Option<NmChange> {
-        const IP_CONFIG_PROPS: &[&str] = &["AddressData", "Gateway", "NameserverData", "RouteData"];
-        const DEVICE_PROPS: &[&str] = &[
-            "DeviceType",
-            "HwAddress",
-            "Interface",
-            "State",
-            "StateReason",
-        ];
-
         let args = message.args().ok()?;
         let inner = message.message();
         let path = OwnedObjectPath::from(inner.header().path()?.to_owned());
 
-        match args.interface_name.as_str() {
-            "org.freedesktop.NetworkManager.IP4Config" => {
-                if Self::include_properties(IP_CONFIG_PROPS, &args.changed_properties) {
-                    return Some(NmChange::IP4ConfigChanged(path));
-                }
-            }
-            "org.freedesktop.NetworkManager.IP6Config" => {
-                if Self::include_properties(IP_CONFIG_PROPS, &args.changed_properties) {
-                    return Some(NmChange::IP6ConfigChanged(path));
-                }
-            }
-            "org.freedesktop.NetworkManager.Device" => {
-                if Self::include_properties(DEVICE_PROPS, &args.changed_properties) {
-                    return Some(NmChange::DeviceUpdated(path));
-                }
-            }
-            _ => {}
-        };
-        None
-    }
+        if args.interface_name.as_str() == "org.freedesktop.NetworkManager.Connection.Active" {
+            return Some(NmChange::ActiveConnectionUpdated(path));
+        }
 
-    fn include_properties(
-        wanted: &[&str],
-        changed: &HashMap<&'_ str, zbus::zvariant::Value<'_>>,
-    ) -> bool {
-        let properties: Vec<_> = changed.keys().collect();
-        wanted.iter().any(|i| properties.contains(&i))
+        None
     }
 
     fn handle_message(message: Result<Message, zbus::Error>) -> Option<NmChange> {
@@ -159,7 +132,7 @@ impl DeviceChangedStream {
     }
 }
 
-impl Stream for DeviceChangedStream {
+impl Stream for ActiveConnectionChangedStream {
     type Item = NmChange;
 
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {

@@ -48,7 +48,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "search": { "$ref": "#/$defs/searchElement" },
+        "search": { "$ref": "#/$defs/driveSearch" },
         "alias": { "$ref": "#/$defs/alias" },
         "encryption": { "$ref": "#/$defs/encryption" },
         "filesystem": { "$ref": "#/$defs/filesystem" }
@@ -59,7 +59,7 @@
       "additionalProperties": false,
       "required": ["partitions"],
       "properties": {
-        "search": { "$ref": "#/$defs/searchElement" },
+        "search": { "$ref": "#/$defs/driveSearch" },
         "alias": { "$ref": "#/$defs/alias" },
         "ptableType": { "$ref": "#/$defs/ptableType" },
         "partitions": {
@@ -79,7 +79,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "search": { "$ref": "#/$defs/searchElement" },
+        "search": { "$ref": "#/$defs/mdRaidSearch" },
         "alias": { "$ref": "#/$defs/alias" },
         "name": { "$ref": "#/$defs/mdRaidName" },
         "level": { "$ref": "#/$defs/mdRaidLevel" },
@@ -95,7 +95,7 @@
       "additionalProperties": false,
       "required": ["partitions"],
       "properties": {
-        "search": { "$ref": "#/$defs/searchElement" },
+        "search": { "$ref": "#/$defs/mdRaidSearch" },
         "alias": { "$ref": "#/$defs/alias" },
         "name": { "$ref": "#/$defs/mdRaidName" },
         "level": { "$ref": "#/$defs/mdRaidLevel" },
@@ -158,7 +158,7 @@
         { "$ref": "#/$defs/advancedPartitionsGenerator" },
         { "$ref": "#/$defs/regularPartition" },
         { "$ref": "#/$defs/partitionToDelete" },
-        { "$ref": "#/$defs/PartitionToDeleteIfNeeded" }
+        { "$ref": "#/$defs/partitionToDeleteIfNeeded" }
       ]
     },
     "simpleVolumesGenerator": {
@@ -195,7 +195,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "search": { "$ref": "#/$defs/searchElement" },
+        "search": { "$ref": "#/$defs/partitionSearch" },
         "alias": { "$ref": "#/$defs/alias" },
         "id": {
           "title": "Partition id",
@@ -219,19 +219,19 @@
       "additionalProperties": false,
       "required": ["delete", "search"],
       "properties": {
-        "search": { "$ref": "#/$defs/searchElement" },
+        "search": { "$ref": "#/$defs/deletePartitionSearch" },
         "delete": {
           "description": "Delete the partition.",
           "const": true
         }
       }
     },
-    "PartitionToDeleteIfNeeded": {
+    "partitionToDeleteIfNeeded": {
       "type": "object",
       "additionalProperties": false,
       "required": ["deleteIfNeeded", "search"],
       "properties": {
-        "search": { "$ref": "#/$defs/searchElement" },
+        "search": { "$ref": "#/$defs/deletePartitionSearch" },
         "deleteIfNeeded": {
           "description": "Delete the partition if needed to make space.",
           "const": true
@@ -390,48 +390,171 @@
       "minimum": 1,
       "maximum": 128
     },
-    "searchElement": {
+    "driveSearch": {
       "anyOf": [
-        { "$ref": "#/$defs/simpleSearchAll" },
-        { "$ref": "#/$defs/simpleSearchByName" },
-        { "$ref": "#/$defs/advancedSearch" }
+        { "$ref": "#/$defs/searchAll" },
+        { "$ref": "#/$defs/searchName" },
+        { "$ref": "#/$defs/driveAdvancedSearch" }
       ]
     },
-    "simpleSearchAll": {
-      "description": "Shortcut to match all devices if there is any (equivalent to specify no conditions and to skip the entry if no device is found).",
-      "const": "*"
-    },
-    "simpleSearchByName": {
-      "descrition": "Search by device name",
-      "type": "string",
-      "examples": ["/dev/vda", "/dev/disk/by-id/ata-WDC_WD3200AAKS-75L9"]
-    },
-    "advancedSearch": {
-      "description": "Advanced options for searching devices.",
+    "driveAdvancedSearch": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "condition": {
-          "title": "Search condition",
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["name"],
-          "properties": {
-            "name": { "$ref": "#/$defs/simpleSearchByName" }
-          }
-        },
-        "max": {
-          "description": "Maximum devices to match.",
-          "type": "integer",
-          "minimum": 1
-        },
-        "ifNotFound": {
-          "title": "Search action",
-          "description": "How to handle the section if the device is not found.",
-          "enum": ["skip", "error"],
-          "default": "error"
+        "condition": { "$ref": "#/$defs/driveSearchCondition" },
+        "max": { "$ref": "#/$defs/searchMax" },
+        "ifNotFound": { "$ref": "#/$defs/searchActions" }
+      }
+    },
+    "driveSearchCondition": {
+      "anyOf": [
+        { "$ref": "#/$defs/searchConditionName" },
+        { "$ref": "#/$defs/searchConditionSize" }
+      ]
+    },
+    "mdRaidSearch": {
+      "anyOf": [
+        { "$ref": "#/$defs/searchAll" },
+        { "$ref": "#/$defs/searchName" },
+        { "$ref": "#/$defs/mdRaidAdvancedSearch" }
+      ]
+    },
+    "mdRaidAdvancedSearch": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "condition": { "$ref": "#/$defs/mdRaidSearchCondition" },
+        "max": { "$ref": "#/$defs/searchMax" },
+        "ifNotFound": { "$ref": "#/$defs/searchCreatableActions" }
+      }
+    },
+    "mdRaidSearchCondition": {
+      "anyOf": [
+        { "$ref": "#/$defs/searchConditionName" },
+        { "$ref": "#/$defs/searchConditionSize" }
+      ]
+    },
+    "partitionSearch": {
+      "anyOf": [
+        { "$ref": "#/$defs/searchAll" },
+        { "$ref": "#/$defs/searchName" },
+        { "$ref": "#/$defs/partitionAdvancedSearch" }
+      ]
+    },
+    "partitionAdvancedSearch": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "condition": { "$ref": "#/$defs/partitionSearchCondition" },
+        "max": { "$ref": "#/$defs/searchMax" },
+        "ifNotFound": { "$ref": "#/$defs/searchCreatableActions" }
+      }
+    },
+    "deletePartitionSearch": {
+      "anyOf": [
+        { "$ref": "#/$defs/searchAll" },
+        { "$ref": "#/$defs/searchName" },
+        { "$ref": "#/$defs/deletePartitionAdvancedSearch" }
+      ]
+    },
+    "deletePartitionAdvancedSearch": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "condition": { "$ref": "#/$defs/partitionSearchCondition" },
+        "max": { "$ref": "#/$defs/searchMax" },
+        "ifNotFound": { "$ref": "#/$defs/searchActions" }
+      }
+    },
+    "partitionSearchCondition": {
+      "anyOf": [
+        { "$ref": "#/$defs/searchConditionName" },
+        { "$ref": "#/$defs/searchConditionSize" },
+        { "$ref": "#/$defs/searchConditionPartitionNumber" }
+      ]
+    },
+    "searchConditionName": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "$ref": "#/$defs/searchName" }
+      }
+    },
+    "searchConditionSize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["size"],
+      "properties": {
+        "size": {
+          "anyOf": [
+            { "$ref": "#/$defs/sizeValue" },
+            { "$ref": "#/$defs/searchConditionSizeEqual" },
+            { "$ref": "#/$defs/searchConditionSizeGreater" },
+            { "$ref": "#/$defs/searchConditionSizeLess" }
+          ]
         }
       }
+    },
+    "searchConditionSizeEqual": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["equal"],
+      "properties": {
+        "equal": { "$ref": "#/$defs/sizeValue" }
+      }
+    },
+    "searchConditionSizeGreater": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["greater"],
+      "properties": {
+        "greater": { "$ref": "#/$defs/sizeValue" }
+      }
+    },
+    "searchConditionSizeLess": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["less"],
+      "properties": {
+        "less": { "$ref": "#/$defs/sizeValue" }
+      }
+    },
+    "searchConditionPartitionNumber": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["number"],
+      "properties": {
+        "number": {
+          "description": "Partition number (e.g., 1 for vda1).",
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "searchMax": {
+      "description": "Maximum devices to match.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "searchActions": {
+      "description": "How to handle the section if the device is not found.",
+      "enum": ["skip", "error"],
+      "default": "error"
+    },
+    "searchCreatableActions": {
+      "description": "How to handle the section if the device is not found.",
+      "enum": ["skip", "error", "create"],
+      "default": "error"
+    },
+    "searchAll": {
+      "description": "Shortcut to match all devices if there is any (equivalent to specify no conditions and to skip the entry if no device is found).",
+      "const": "*"
+    },
+    "searchName": {
+      "descrition": "Search by device name",
+      "type": "string",
+      "examples": ["/dev/vda", "/dev/disk/by-id/ata-WDC_WD3200AAKS-75L9"]
     },
     "alias": {
       "description": "Alias used to reference a device.",

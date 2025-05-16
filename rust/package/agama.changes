@@ -1,4 +1,28 @@
 -------------------------------------------------------------------
+Wed May 14 15:17:25 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add search conditions to storage schema
+  (gh#agama-project/agama#2338).
+
+-------------------------------------------------------------------
+Wed May 14 12:28:57 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Extract network and utilities to the new agama-network and agama-utils
+  packages (gh#agama-project/agama#2357).
+
+-------------------------------------------------------------------
+Tue May 13 09:28:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix setting the mode for questions (bsc#1242441).
+
+-------------------------------------------------------------------
+Mon May 12 12:55:40 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Remove the delay between selecting the product and registering it,
+  the problem has been fixed in the web UI
+  (removed workaround for gh#agama-project/agama#2274)
+
+-------------------------------------------------------------------
 Wed May  7 21:04:24 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix automatic answer of questions with password (gh#agama-project/agama#2332).

@@ -18,8 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::network::{model::StateConfig, Action, NetworkState};
-use agama_lib::error::ServiceError;
+use crate::{model::StateConfig, Action, NetworkState};
 use async_trait::async_trait;
 use thiserror::Error;
 use tokio::sync::mpsc::UnboundedSender;
@@ -27,13 +26,13 @@ use tokio::sync::mpsc::UnboundedSender;
 #[derive(Error, Debug)]
 pub enum NetworkAdapterError {
     #[error("Could not read the network configuration: {0}")]
-    Read(ServiceError),
+    Read(anyhow::Error),
     #[error("Could not update the network configuration: {0}")]
-    Write(ServiceError),
+    Write(anyhow::Error),
     #[error("Checkpoint handling error: {0}")]
-    Checkpoint(ServiceError), // only relevant for adapters that implement a checkpoint mechanism
+    Checkpoint(anyhow::Error), // only relevant for adapters that implement a checkpoint mechanism
     #[error("The network watcher cannot run: {0}")]
-    Watcher(ServiceError),
+    Watcher(anyhow::Error),
 }
 
 /// A trait for the ability to read/write from/to a network service.

@@ -20,7 +20,7 @@ fi
 test -f $dst/.profile && . $dst/.profile
 
 arch=`uname -m`
-profile=$(echo "$kiwi_profiles" | tr "-" " ")
+profile=$(echo "$kiwi_profiles" | tr "_" " ")
 label="$profile ($arch)"
 
 if [ -d "$dst/boot/grub2/themes/SLE" ]; then
@@ -36,7 +36,6 @@ cat >$dst/boot/grub2/grub.cfg <<XXX
 # Agama generated grub2 config file
 set btrfs_relative_path="y"
 export btrfs_relative_path
-search --file --set=root /boot/0xebe87947
 set default=0
 if [ -n "\$extra_cmdline" ]; then
   submenu "Bootable snapshot \$snapshot_num" {

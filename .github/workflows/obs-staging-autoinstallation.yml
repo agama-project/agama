@@ -1,5 +1,8 @@
 name: Submit agama-auto
 
+permissions:
+  contents: read
+
 on:
   # runs on pushes targeting the default branch
   push:

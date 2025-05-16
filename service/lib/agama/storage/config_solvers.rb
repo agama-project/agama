@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,9 +20,11 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_solvers/boot"
+require "agama/storage/config_solvers/drives_search"
 require "agama/storage/config_solvers/encryption"
 require "agama/storage/config_solvers/filesystem"
-require "agama/storage/config_solvers/search"
+require "agama/storage/config_solvers/md_raids_search"
+require "agama/storage/config_solvers/partitions_search"
 require "agama/storage/config_solvers/size"
 
 module Agama
