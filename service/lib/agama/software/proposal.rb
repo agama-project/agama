@@ -124,7 +124,7 @@ module Agama
         false
       end
 
-      # @param [Array<(Integer, Integer)>] list of conflict id and solution id
+      # @param [Array<(Integer, Integer)>] solutions is array of conflict id and solution id
       def solve_conflicts(solutions)
         pkg_solutions = solutions.map do |sol|
           con_id, sol_id = sol
