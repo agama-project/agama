@@ -31,19 +31,21 @@ mod auth_tokens_file;
 mod commands;
 mod config;
 mod error;
+mod events;
 mod logs;
 mod profile;
 mod progress;
 mod questions;
 
 use crate::error::CliError;
-use agama_lib::http::BaseHTTPClient;
+use agama_lib::http::{BaseHTTPClient, WebSocketClient};
 use agama_lib::{
     error::ServiceError, manager::ManagerClient, progress::ProgressMonitor, utils::Transfer,
 };
 use auth::run as run_auth_cmd;
 use commands::Commands;
 use config::run as run_config_cmd;
+use events::run as run_events_cmd;
 use logs::run as run_logs_cmd;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
@@ -235,6 +237,19 @@ async fn build_http_client(
     }
 }
 
+async fn build_ws_client(api_url: Url, insecure: bool) -> anyhow::Result<WebSocketClient> {
+    let mut url = api_url.join("ws")?;
+    let scheme = if api_url.scheme() == "http" {
+        "ws"
+    } else {
+        "wss"
+    };
+
+    let token = find_client_token(&api_url).unwrap(); //.map_err(|| ServiceError::NotAuthenticated.into())?;
+    url.set_scheme(scheme).unwrap();
+    Ok(WebSocketClient::connect(&url, token, insecure).await?)
+}
+
 /// Build the API url from the host.
 ///
 /// * `host`: ip or host name. The protocol is optional, using https if omitted (e.g, "myserver",
@@ -303,6 +318,10 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         Commands::Auth(subcommand) => {
             let client = build_http_client(api_url, cli.opts.insecure, false).await?;
             run_auth_cmd(client, subcommand).await?;
+        }
+        Commands::Events => {
+            let ws_client = build_ws_client(api_url, cli.opts.insecure).await?;
+            run_events_cmd(ws_client).await?;
         }
     };
 

@@ -125,4 +125,7 @@ pub enum Commands {
         #[clap(default_value = "reboot")]
         method: Option<FinishMethod>,
     },
+
+    /// Display Agama events.
+    Events,
 }
