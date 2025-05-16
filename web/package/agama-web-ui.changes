@@ -1,4 +1,18 @@
 -------------------------------------------------------------------
+Fri May 16 07:46:22 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Rework the installer l10n settings (gh#agama-project/agama#2359):
+  - Improve discoverability of language and keyboard layout settings.
+  - Add contextual messages to help users differentiate between
+    installer and product localization settings.
+  - Add the ability to reuse installer settings for the product
+    to install.
+  - In local connections, keyboard layout change is now available
+    directly from modal dialogs holding password inputs.
+  - Password inputs now include a reminder of the active layout
+    (only in local connections) and a CAPS LOCK warning when active.
+
+-------------------------------------------------------------------
 Thu May  8 13:43:53 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - MenuButton no longer opens unexpectedly when navigating
