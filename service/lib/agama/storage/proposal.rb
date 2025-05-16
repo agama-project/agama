@@ -167,7 +167,7 @@ module Agama
       def calculate_guided(settings)
         logger.info("Calculating proposal with guided strategy: #{settings.inspect}")
         reset
-        @strategy = ProposalStrategies::Guided.new(product_config, logger, settings)
+        @strategy = ProposalStrategies::Guided.new(product_config, storage_system, settings, logger)
         calculate
       end
 
@@ -179,7 +179,7 @@ module Agama
         logger.info("Calculating proposal with agama strategy: #{config.inspect}")
         reset
         @source_config = config.copy
-        @strategy = ProposalStrategies::Agama.new(product_config, storage_system, logger, config)
+        @strategy = ProposalStrategies::Agama.new(product_config, storage_system, config, logger)
         calculate
       end
 
@@ -193,7 +193,8 @@ module Agama
         reset
         # Ensures keys are strings.
         partitioning = JSON.parse(partitioning.to_json)
-        @strategy = ProposalStrategies::Autoyast.new(product_config, logger, partitioning)
+        @strategy = ProposalStrategies::Autoyast
+          .new(product_config, storage_system, partitioning, logger)
         calculate
       end
 

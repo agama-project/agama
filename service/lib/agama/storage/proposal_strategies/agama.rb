@@ -35,13 +35,12 @@ module Agama
 
         # @param product_config [Agama::Config]
         # @param storage_system [Storage::System]
-        # @param logger [Logger]
         # @param config [Agama::Storage::Config]
-        def initialize(product_config, storage_system, logger, config)
+        # @param logger [Logger]
+        def initialize(product_config, storage_system, config, logger)
           textdomain "agama"
 
-          super(product_config, logger)
-          @storage_system = storage_system
+          super(product_config, storage_system, logger)
           @config = config
         end
 
@@ -61,9 +60,6 @@ module Agama
         end
 
       private
-
-        # @return [Storage::System]
-        attr_reader :storage_system
 
         # @return [Y2Storage::AgamaProposal, nil] Proposal used.
         attr_reader :proposal
