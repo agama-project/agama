@@ -43,7 +43,6 @@ impl<'a> HostnameClient<'a> {
         let settings = HostnameSettings {
             hostname: Some(hostname),
             static_hostname: Some(static_hostname),
-            ..Default::default()
         };
 
         Ok(settings)

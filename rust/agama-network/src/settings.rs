@@ -114,6 +114,35 @@ impl Default for BondSettings {
     }
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct BridgeSettings {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stp: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub priority: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub forward_delay: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hello_time: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max_age: Option<u32>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub ports: Vec<String>,
+}
+
+impl Default for BridgeSettings {
+    fn default() -> Self {
+        Self {
+            stp: None,
+            priority: None,
+            forward_delay: None,
+            hello_time: None,
+            max_age: None,
+            ports: vec![],
+        }
+    }
+}
+
 /// IEEE 802.1x (EAP) settings
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
@@ -215,6 +244,9 @@ pub struct NetworkConnection {
     /// Bonding settings if part of a bond
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bond: Option<BondSettings>,
+    /// Bridge settings if part of a bridge
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub bridge: Option<BridgeSettings>,
     /// MAC address of the connection's interface
     #[serde(rename = "mac-address", skip_serializing_if = "Option::is_none")]
     pub mac_address: Option<String>,
@@ -250,6 +282,8 @@ impl NetworkConnection {
             DeviceType::Wireless
         } else if self.bond.is_some() {
             DeviceType::Bond
+        } else if self.bridge.is_some() {
+            DeviceType::Bridge
         } else {
             DeviceType::Ethernet
         }

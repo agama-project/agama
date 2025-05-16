@@ -66,7 +66,7 @@ pub fn connection_to_dbus<'a>(
     }
 
     if let Some(controller) = controller {
-        let slave_type = match controller.config {
+        let port_type = match controller.config {
             ConnectionConfig::Bond(_) => BOND_KEY,
             ConnectionConfig::Bridge(_) => BRIDGE_KEY,
             _ => {
@@ -74,14 +74,16 @@ pub fn connection_to_dbus<'a>(
                 ""
             }
         };
-        connection_dbus.insert("slave-type", slave_type.into());
+        connection_dbus.insert("port-type", port_type.into());
         let master = controller
             .interface
             .as_deref()
             .unwrap_or(controller.id.as_str());
         connection_dbus.insert("master", master.into());
+        connection_dbus.remove("autoconnect");
+        connection_dbus.insert("autoconnect", false.into());
     } else {
-        connection_dbus.insert("slave-type", "".into());
+        connection_dbus.insert("port-type", "".into());
         connection_dbus.insert("master", "".into());
     }
 
@@ -122,6 +124,7 @@ pub fn connection_to_dbus<'a>(
         }
         ConnectionConfig::Bond(bond) => {
             connection_dbus.insert("type", BOND_KEY.into());
+            connection_dbus.insert("autoconnect-slaves", 1.into());
             if !connection_dbus.contains_key("interface-name") {
                 connection_dbus.insert("interface-name", conn.id.as_str().into());
             }
@@ -136,6 +139,7 @@ pub fn connection_to_dbus<'a>(
         }
         ConnectionConfig::Bridge(bridge) => {
             connection_dbus.insert("type", BRIDGE_KEY.into());
+            connection_dbus.insert("autoconnect-slaves", 1.into());
             result.insert(BRIDGE_KEY, bridge_config_to_dbus(bridge));
         }
         ConnectionConfig::Infiniband(infiniband) => {
@@ -256,6 +260,18 @@ pub fn merge_dbus_connections<'a>(
     Ok(merged)
 }
 
+fn is_bridge(conn: NestedHash) -> bool {
+    if let Some(connection) = conn.get("connection") {
+        if let Some(port_type) = connection.get("port-type") {
+            if port_type.to_string().as_str() == "bridge" {
+                return true;
+            }
+        }
+    }
+
+    false
+}
+
 /// Cleans up the NestedHash that represents a connection.
 ///
 /// By now it just removes the "addresses" key from the "ipv4" and "ipv6" objects, which is
@@ -263,6 +279,10 @@ pub fn merge_dbus_connections<'a>(
 ///
 /// * `conn`: connection represented as a NestedHash.
 pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
+    if !is_bridge(conn.to_owned()) {
+        conn.remove("bridge-port");
+    }
+
     if let Some(connection) = conn.get_mut("connection") {
         if connection.get("interface-name").is_some_and(is_empty_value) {
             connection.remove("interface-name");
@@ -272,8 +292,12 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
             connection.remove("master");
         }
 
-        if connection.get("slave-type").is_some_and(is_empty_value) {
+        if connection.get("slave-type").is_some() {
             connection.remove("slave-type");
+        }
+
+        if connection.get("port-type").is_some_and(is_empty_value) {
+            connection.remove("port-type");
         }
     }
 
@@ -547,7 +571,9 @@ fn bond_config_to_dbus(config: &BondConfig) -> HashMap<&str, zvariant::Value> {
 fn bridge_config_to_dbus(bridge: &BridgeConfig) -> HashMap<&str, zvariant::Value> {
     let mut hash = HashMap::new();
 
-    hash.insert("stp", bridge.stp.into());
+    if let Some(stp) = bridge.stp {
+        hash.insert("stp", stp.into());
+    }
     if let Some(prio) = bridge.priority {
         hash.insert("priority", prio.into());
     }
@@ -573,7 +599,7 @@ fn bridge_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<BridgeConfig
     };
 
     Ok(Some(BridgeConfig {
-        stp: get_property(bridge, "stp")?,
+        stp: get_optional_property(bridge, "stp")?,
         priority: get_optional_property(bridge, "priority")?,
         forward_delay: get_optional_property(bridge, "forward-delay")?,
         hello_time: get_optional_property(bridge, "hello-time")?,
@@ -1302,7 +1328,10 @@ mod test {
     use crate::{
         model::*,
         nm::{
-            dbus::{BOND_KEY, ETHERNET_KEY, INFINIBAND_KEY, WIRELESS_KEY, WIRELESS_SECURITY_KEY},
+            dbus::{
+                BOND_KEY, BRIDGE_KEY, ETHERNET_KEY, INFINIBAND_KEY, WIRELESS_KEY,
+                WIRELESS_SECURITY_KEY,
+            },
             error::NmError,
         },
     };
