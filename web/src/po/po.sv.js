@@ -258,6 +258,12 @@ export default {
   "Change device menu": [
     "Ändra enhetsmeny"
   ],
+  "Change display language and keyboard layout": [
+    ""
+  ],
+  "Change keyboard": [
+    "Ändra tangentbordslayout"
+  ],
   "Change product": [
     "Ändra produkt"
   ],
@@ -787,12 +793,6 @@ export default {
   "Installation will take %s.": [
     "Installationen kommer att ta %s."
   ],
-  "Installer Options": [
-    "Installationsalternativ"
-  ],
-  "Installer options": [
-    "Installationsalternativ"
-  ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "Att installera ett trasigt paket påverkar systemets stabilitet och är en stor säkerhetsrisk!"
   ],
@@ -948,6 +948,15 @@ export default {
   ],
   "More devices": [
     "Mer enheter"
+  ],
+  "More keymap layout might be available for the selected product at [Localization] page": [
+    ""
+  ],
+  "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
+    ""
+  ],
+  "More languages might be available for the selected product at [Localization] page": [
+    ""
   ],
   "Mount Point": [
     "Monteringspunkt"
@@ -1625,6 +1634,12 @@ export default {
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Dessa är de mest relevanta installationsinställningarna. Bläddra gärna igenom avsnitten i menyn för ytterligare detaljer."
   ],
+  "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
+    ""
+  ],
+  "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
+    ""
+  ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Denna åtgärd kan förstöra all data som lagras på enheterna som anges nedan. Vänligen bekräfta att du verkligen vill fortsätta."
   ],
@@ -1657,6 +1672,9 @@ export default {
   ],
   "This uses existing partitions at the disk": [
     "Detta använder befintliga partitioner på disken"
+  ],
+  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
+    ""
   ],
   "TiB": [
     "TiB"
@@ -1754,6 +1772,9 @@ export default {
   "Use available space": [
     "Använd tillgängligt utrymme"
   ],
+  "Use for the selected product too": [
+    ""
+  ],
   "Use password": [
     "Använd lösenord"
   ],
@@ -1768,6 +1789,9 @@ export default {
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     "Använd Trusted Platform Module (TPM) för att dekryptera automatiskt vid varje uppstart"
+  ],
+  "Use these same settings for the selected product": [
+    ""
   ],
   "Used space": [
     "Använt utrymme"
@@ -1852,6 +1876,9 @@ export default {
   ],
   "ZFCP": [
     "ZFCP"
+  ],
+  "[CAPS LOCK] is on": [
+    ""
   ],
   "at least %s": [
     "åtminstone %s"
