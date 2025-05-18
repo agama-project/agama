@@ -258,6 +258,12 @@ export default {
   "Change device menu": [
     "Gerätemenü ändern"
   ],
+  "Change display language and keyboard layout": [
+    ""
+  ],
+  "Change keyboard": [
+    "Tastatur ändern"
+  ],
   "Change product": [
     "Produkt ändern"
   ],
@@ -781,12 +787,6 @@ export default {
   "Installation will take %s.": [
     "Installation wird %s in Anspruch nehmen."
   ],
-  "Installer Options": [
-    "Installationsprogrammoptionen"
-  ],
-  "Installer options": [
-    "Installationsprogrammoptionen"
-  ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "Die Installation eines defekten Pakets beeinträchtigt die Systemstabilität und stellt ein großes Sicherheitsrisiko dar!"
   ],
@@ -942,6 +942,15 @@ export default {
   ],
   "More devices": [
     "Weitere Geräte"
+  ],
+  "More keymap layout might be available for the selected product at [Localization] page": [
+    ""
+  ],
+  "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
+    ""
+  ],
+  "More languages might be available for the selected product at [Localization] page": [
+    ""
   ],
   "Mount Point": [
     "Einhängepunkt"
@@ -1604,6 +1613,12 @@ export default {
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Dies sind die wichtigsten Installationseinstellungen. Weitere Einzelheiten finden Sie in den Abschnitten des Menüs."
   ],
+  "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
+    ""
+  ],
+  "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
+    ""
+  ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Diese Aktion könnte alle Daten zerstören, die auf den unten aufgeführten Geräten gespeichert sind. Bitte bestätigen Sie, dass Sie wirklich fortfahren möchten."
   ],
@@ -1636,6 +1651,9 @@ export default {
   ],
   "This uses existing partitions at the disk": [
     "Dies verwendet vorhandene Partitionen auf der Festplatte"
+  ],
+  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
+    ""
   ],
   "TiB": [
     "TiB"
@@ -1733,6 +1751,9 @@ export default {
   "Use available space": [
     "Verfügbaren Speicherplatz verwenden"
   ],
+  "Use for the selected product too": [
+    ""
+  ],
   "Use password": [
     "Passwort verwenden"
   ],
@@ -1747,6 +1768,9 @@ export default {
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     "Das Trusted Platform Module (TPM) zur automatischen Entschlüsselung bei jedem Bootvorgang verwenden"
+  ],
+  "Use these same settings for the selected product": [
+    ""
   ],
   "Used space": [
     "Belegter Speicherplatz"
@@ -1822,6 +1846,9 @@ export default {
   ],
   "ZFCP": [
     "ZFCP"
+  ],
+  "[CAPS LOCK] is on": [
+    ""
   ],
   "at least %s": [
     "mindestens %s"
