@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May 19 13:38:16 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Keep margin between sidebar and main content in all breakpoints
+  (gh/agama-project/agama#2370).
+
+-------------------------------------------------------------------
 Fri May 16 07:46:22 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Rework the installer l10n settings (gh#agama-project/agama#2359):

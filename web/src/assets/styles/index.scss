@@ -136,6 +136,10 @@
 
 // Reserve the sidebar space also for "lg" breakpoint
 @media (width >= 64rem) {
+  .pf-v6-c-page__main-container {
+    --pf-v6-c-page__main-container--MarginInlineStart: var(--pf-v6-c-page--inset);
+  }
+
   .pf-v6-c-page.agm-full-layout {
     --pf-v6-c-page__sidebar--Width: 12rem; // var(--pf-v6-c-page__sidebar--xl--Width);
     grid-template-areas:
