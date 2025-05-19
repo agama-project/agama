@@ -270,10 +270,10 @@ async fn add_connection(
         None => Err(NetworkError::CannotAddConnection(id.clone())),
         Some(conn) => {
             if let Some(bond) = bond {
-                state.network.set_ports(conn.clone(), bond.ports).await?;
+                state.network.set_ports(conn.uuid, bond.ports).await?;
             }
             if let Some(bridge) = bridge {
-                state.network.set_ports(conn.clone(), bridge.ports).await?;
+                state.network.set_ports(conn.uuid, bridge.ports).await?;
             }
             Ok(Json(conn))
         }
@@ -354,10 +354,10 @@ async fn update_connection(
     state.network.update_connection(conn.clone()).await?;
 
     if let Some(bond) = bond {
-        state.network.set_ports(conn.clone(), bond.ports).await?;
+        state.network.set_ports(conn.uuid, bond.ports).await?;
     }
     if let Some(bridge) = bridge {
-        state.network.set_ports(conn.clone(), bridge.ports).await?;
+        state.network.set_ports(conn.uuid, bridge.ports).await?;
     }
 
     Ok(StatusCode::NO_CONTENT)

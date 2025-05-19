@@ -274,8 +274,13 @@ fn is_bridge(conn: NestedHash) -> bool {
 
 /// Cleans up the NestedHash that represents a connection.
 ///
-/// By now it just removes the "addresses" key from the "ipv4" and "ipv6" objects, which is
-/// replaced with "address-data". However, if "addresses" is present, it takes precedence.
+/// If the connections is not a "bridge-port" anymore  it removes the "bridge-port" key.
+///
+/// It also removes empty files from the "connection" object like the "interface-name", "master",
+/// "slave-type", "port-type" keys.
+///
+/// Finally, it removes removes the "addresses" and "dns" keys from the "ipv4" and "ipv6" objects,
+/// which are replaced with "address-data".
 ///
 /// * `conn`: connection represented as a NestedHash.
 pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
@@ -1583,6 +1588,32 @@ mod test {
         let connection = connection_from_dbus(dbus_conn).unwrap();
         if let ConnectionConfig::Bond(config) = connection.config {
             assert_eq!(config.mode, BondMode::ActiveBackup);
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_connection_from_dbus_bridge() -> anyhow::Result<()> {
+        dbg!("TESTING BRIDGE");
+        let uuid = Uuid::new_v4().to_string();
+        let connection_section = HashMap::from([hi("id", "br0")?, hi("uuid", uuid)?]);
+
+        let bridge_config = Value::new(HashMap::from([
+            ("stp".to_string(), Value::from(true)),
+            ("priority".to_string(), Value::from(10_u32)),
+            ("forward-delay".to_string(), Value::from(5_u32)),
+        ]));
+
+        let dbus_conn = HashMap::from([
+            ("connection".to_string(), connection_section),
+            (BRIDGE_KEY.to_string(), bridge_config.try_into().unwrap()),
+        ]);
+
+        let connection = connection_from_dbus(dbus_conn);
+        if let ConnectionConfig::Bridge(config) = connection.unwrap().config {
+            assert_eq!(config.stp, Some(true));
+            assert_eq!(config.forward_delay, Some(5_u32));
         }
 
         Ok(())
