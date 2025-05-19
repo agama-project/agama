@@ -28,11 +28,11 @@ use fluent_uri::UriRef;
 
 mod auth;
 mod auth_tokens_file;
+mod cli_input;
 mod commands;
 mod config;
 mod error;
 mod logs;
-mod profile;
 mod progress;
 mod questions;
 

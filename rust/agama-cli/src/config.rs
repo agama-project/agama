@@ -24,7 +24,7 @@ use std::{
     process::Command,
 };
 
-use crate::{profile::CliInput, show_progress};
+use crate::{cli_input::CliInput, show_progress};
 use agama_lib::{
     base_http_client::BaseHTTPClient, context::InstallationContext,
     install_settings::InstallSettings, profile::ValidationOutcome, utils::FileFormat,
