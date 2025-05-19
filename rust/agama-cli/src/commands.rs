@@ -129,5 +129,9 @@ pub enum Commands {
     Monitor,
 
     /// Display Agama events.
-    Events,
+    Events {
+        /// Display the events in a more human-readable way.
+        #[arg(short, long)]
+        pretty: bool,
+    },
 }

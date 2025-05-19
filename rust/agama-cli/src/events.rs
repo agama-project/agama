@@ -21,10 +21,16 @@
 use agama_lib::http::WebSocketClient;
 
 /// Main entry point called from Agama CLI main loop
-pub async fn run(mut ws_client: WebSocketClient) -> anyhow::Result<()> {
+pub async fn run(mut ws_client: WebSocketClient, pretty: bool) -> anyhow::Result<()> {
     loop {
         let event = ws_client.receive().await?;
-        match serde_json::to_string(&event) {
+        let conversion = if pretty {
+            serde_json::to_string_pretty(&event)
+        } else {
+            serde_json::to_string(&event)
+        };
+
+        match conversion {
             Ok(event_json) => println!("{}", event_json),
             Err(_) => eprintln!("Could not serialize {:?}", &event),
         }

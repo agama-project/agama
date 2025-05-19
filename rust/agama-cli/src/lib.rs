@@ -321,9 +321,9 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
             let mut progress = MonitorProgress::new(monitor).stop_on_idle(false);
             progress.run().await;
         }
-        Commands::Events => {
+        Commands::Events { pretty } => {
             let ws_client = build_ws_client(api_url, cli.opts.insecure).await?;
-            run_events_cmd(ws_client).await?;
+            run_events_cmd(ws_client, pretty).await?;
         }
     };
 
