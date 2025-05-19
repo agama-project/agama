@@ -803,22 +803,22 @@ impl From<InvalidMacAddress> for zbus::fdo::Error {
 pub struct IpConfig {
     pub method4: Ipv4Method,
     pub method6: Ipv6Method,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     #[schema(schema_with = schemas::ip_inet_array)]
     pub addresses: Vec<IpInet>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     #[schema(schema_with = schemas::ip_addr_array)]
     pub nameservers: Vec<IpAddr>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub dns_searchlist: Vec<String>,
     pub ignore_auto_dns: bool,
     #[schema(schema_with = schemas::ip_addr)]
     pub gateway4: Option<IpAddr>,
     #[schema(schema_with = schemas::ip_addr)]
     pub gateway6: Option<IpAddr>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub routes4: Vec<IpRoute>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub routes6: Vec<IpRoute>,
     pub dhcp4_settings: Option<Dhcp4Settings>,
     pub dhcp6_settings: Option<Dhcp6Settings>,
