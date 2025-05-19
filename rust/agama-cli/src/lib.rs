@@ -40,16 +40,14 @@ mod questions;
 
 use crate::error::CliError;
 use agama_lib::http::{BaseHTTPClient, WebSocketClient};
-use agama_lib::{
-    error::ServiceError, manager::ManagerClient, progress::ProgressMonitor, utils::Transfer,
-};
+use agama_lib::{error::ServiceError, utils::Transfer};
 use auth::run as run_auth_cmd;
 use commands::Commands;
 use config::run as run_config_cmd;
 use events::run as run_events_cmd;
 use logs::run as run_logs_cmd;
 use profile::run as run_profile_cmd;
-use progress::{InstallerProgress, MonitorProgress};
+use progress::MonitorProgress;
 use questions::run as run_questions_cmd;
 use std::fs;
 use std::os::unix::fs::OpenOptionsExt;
