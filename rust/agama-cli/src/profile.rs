@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::progress::MonitorProgress;
+use crate::progress::ProgressMonitor;
 use agama_lib::{
     context::InstallationContext,
     http::BaseHTTPClient,
@@ -233,7 +233,7 @@ async fn import(
 ) -> anyhow::Result<()> {
     // useful for store_settings
     tokio::spawn(async move {
-        let mut progress = MonitorProgress::new(monitor);
+        let mut progress = ProgressMonitor::new(monitor);
         progress.run().await;
     });
 

@@ -88,8 +88,8 @@ impl ProgressPresenter for InstallerProgress {
     }
 }
 
-/// Represents the progress of the Agama service.
-pub struct MonitorProgress {
+/// Displays the progress on the terminal.
+pub struct ProgressMonitor {
     monitor: MonitorClient,
     bar: Option<ProgressBar>,
     current_step: u32,
@@ -97,7 +97,7 @@ pub struct MonitorProgress {
     stop_on_idle: bool,
 }
 
-impl MonitorProgress {
+impl ProgressMonitor {
     /// Builds a new instance.
     ///
     /// * `MonitorClient`: client to access the Agama monitor.

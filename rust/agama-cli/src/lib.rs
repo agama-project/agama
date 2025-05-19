@@ -47,7 +47,7 @@ use config::run as run_config_cmd;
 use events::run as run_events_cmd;
 use logs::run as run_logs_cmd;
 use profile::run as run_profile_cmd;
-use progress::MonitorProgress;
+use progress::ProgressMonitor;
 use questions::run as run_questions_cmd;
 use std::fs;
 use std::os::unix::fs::OpenOptionsExt;
@@ -93,7 +93,7 @@ async fn probe(manager: ManagerHTTPClient, monitor: MonitorClient) -> anyhow::Re
     let probe = tokio::spawn(async move {
         let _ = manager.probe().await;
     });
-    let mut progress = MonitorProgress::new(monitor);
+    let mut progress = ProgressMonitor::new(monitor);
     progress.run().await;
 
     Ok(probe.await?)
@@ -117,7 +117,7 @@ async fn install(
     }
 
     let progress = tokio::spawn(async {
-        let mut progress = MonitorProgress::new(monitor);
+        let mut progress = ProgressMonitor::new(monitor);
         progress.run().await;
     });
     // Try to start the installation up to max_attempts times.
@@ -164,7 +164,7 @@ async fn finish(
 
 async fn wait_until_idle(monitor: MonitorClient) -> anyhow::Result<()> {
     // FIXME: implement something like "wait_until_idle" in the monitor?
-    let mut progress = MonitorProgress::new(monitor.clone());
+    let mut progress = ProgressMonitor::new(monitor.clone());
     let status = monitor.get_status().await?;
     if status.installer_status.is_busy {
         eprintln!("The Agama service is busy. Waiting for it to be available...");
@@ -328,7 +328,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         }
         Commands::Monitor => {
             let (_client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
-            let mut progress = MonitorProgress::new(monitor).stop_on_idle(false);
+            let mut progress = ProgressMonitor::new(monitor).stop_on_idle(false);
             progress.run().await;
         }
         Commands::Events { pretty } => {
