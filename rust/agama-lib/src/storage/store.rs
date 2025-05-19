@@ -23,7 +23,7 @@
 pub mod dasd;
 
 use super::{http_client::StorageHTTPClientError, StorageSettings};
-use crate::{base_http_client::BaseHTTPClient, storage::http_client::StorageHTTPClient};
+use crate::{http::BaseHTTPClient, storage::http_client::StorageHTTPClient};
 
 #[derive(Debug, thiserror::Error)]
 #[error("Error processing storage settings: {0}")]
@@ -56,7 +56,7 @@ impl StorageStore {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::base_http_client::BaseHTTPClient;
+    use crate::http::BaseHTTPClient;
     use httpmock::prelude::*;
     use std::error::Error;
     use tokio::test; // without this, "error: async functions cannot be used for tests"

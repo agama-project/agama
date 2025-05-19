@@ -22,7 +22,7 @@ use super::{
     http_client::UsersHTTPClientError, FirstUser, FirstUserSettings, RootUserSettings,
     UserSettings, UsersHTTPClient,
 };
-use crate::base_http_client::BaseHTTPClient;
+use crate::http::BaseHTTPClient;
 
 #[derive(Debug, thiserror::Error)]
 #[error("Error processing users options: {0}")]
@@ -111,7 +111,7 @@ impl UsersStore {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::base_http_client::BaseHTTPClient;
+    use crate::http::BaseHTTPClient;
     use httpmock::prelude::*;
     use httpmock::Method::PATCH;
     use std::error::Error;

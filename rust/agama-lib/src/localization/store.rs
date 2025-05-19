@@ -24,7 +24,7 @@
 use super::{
     http_client::LocalizationHTTPClientError, LocalizationHTTPClient, LocalizationSettings,
 };
-use crate::{base_http_client::BaseHTTPClient, localization::model::LocaleConfig};
+use crate::{http::BaseHTTPClient, localization::model::LocaleConfig};
 
 #[derive(Debug, thiserror::Error)]
 #[error("Error processing localization settings: {0}")]
@@ -94,7 +94,7 @@ impl LocalizationStore {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::base_http_client::BaseHTTPClient;
+    use crate::http::BaseHTTPClient;
     use httpmock::prelude::*;
     use httpmock::Method::PATCH;
     use std::error::Error;

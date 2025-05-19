@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,32 +18,33 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::model::LocaleConfig;
-use crate::http::{BaseHTTPClient, BaseHTTPClientError};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, thiserror::Error)]
-pub enum LocalizationHTTPClientError {
-    #[error(transparent)]
-    HTTP(#[from] BaseHTTPClientError),
+#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
+pub struct Issue {
+    description: String,
+    details: Option<String>,
+    source: u32,
+    severity: u32,
+    kind: String,
 }
 
-pub struct LocalizationHTTPClient {
-    client: BaseHTTPClient,
-}
+impl Issue {
+    pub fn from_tuple(
+        (description, kind, details, source, severity): (String, String, String, u32, u32),
+    ) -> Self {
+        let details = if details.is_empty() {
+            None
+        } else {
+            Some(details)
+        };
 
-impl LocalizationHTTPClient {
-    pub fn new(base: BaseHTTPClient) -> Self {
-        Self { client: base }
-    }
-
-    pub async fn get_config(&self) -> Result<LocaleConfig, LocalizationHTTPClientError> {
-        Ok(self.client.get("/l10n/config").await?)
-    }
-
-    pub async fn set_config(
-        &self,
-        config: &LocaleConfig,
-    ) -> Result<(), LocalizationHTTPClientError> {
-        Ok(self.client.patch_void("/l10n/config", config).await?)
+        Self {
+            description,
+            kind,
+            details,
+            source,
+            severity,
+        }
     }
 }

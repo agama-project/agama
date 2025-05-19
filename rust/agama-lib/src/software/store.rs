@@ -26,7 +26,7 @@ use super::{
     http_client::SoftwareHTTPClientError, model::SoftwareConfig, SoftwareHTTPClient,
     SoftwareSettings,
 };
-use crate::base_http_client::BaseHTTPClient;
+use crate::http::BaseHTTPClient;
 
 #[derive(Debug, thiserror::Error)]
 #[error("Error processing software settings: {0}")]
@@ -81,7 +81,7 @@ impl SoftwareStore {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::base_http_client::BaseHTTPClient;
+    use crate::http::BaseHTTPClient;
     use httpmock::prelude::*;
     use std::error::Error;
     use tokio::test; // without this, "error: async functions cannot be used for tests"

@@ -41,7 +41,7 @@ pub struct ISCSIInitiator {
     ibft: bool,
 }
 
-#[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, utoipa::ToSchema)]
 /// ISCSI node
 pub struct ISCSINode {
     /// Artificial ID to match it against the D-Bus backend.

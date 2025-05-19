@@ -125,4 +125,14 @@ pub enum Commands {
         #[clap(default_value = "reboot")]
         method: Option<FinishMethod>,
     },
+
+    /// Monitors the Agama service.
+    Monitor,
+
+    /// Display Agama events.
+    Events {
+        /// Display the events in a more human-readable way.
+        #[arg(short, long)]
+        pretty: bool,
+    },
 }

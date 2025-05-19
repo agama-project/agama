@@ -24,7 +24,7 @@
 
 use std::collections::HashMap;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use zbus::zvariant::OwnedValue;
 
 use crate::error::ServiceError;
@@ -33,7 +33,7 @@ use agama_utils::dbus::get_property;
 pub mod client;
 
 /// Represents a job.
-#[derive(Clone, Debug, Default, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Job {
     /// Artificial job identifier.

@@ -21,7 +21,7 @@
 //! Implements the store for the storage settings.
 
 use crate::{
-    base_http_client::BaseHTTPClient,
+    http::BaseHTTPClient,
     storage::{
         http_client::dasd::{DASDHTTPClient, DASDHTTPClientError},
         settings::dasd::DASDConfig,

@@ -21,7 +21,7 @@
 //! Implements a client to access Agama's HTTP API related to Bootloader management.
 
 use super::model::UserFile;
-use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
+use crate::http::{BaseHTTPClient, BaseHTTPClientError};
 
 #[derive(Debug, thiserror::Error)]
 pub enum FilesHTTPClientError {

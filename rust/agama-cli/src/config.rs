@@ -24,15 +24,16 @@ use std::{
     process::Command,
 };
 
-use crate::show_progress;
 use agama_lib::{
-    base_http_client::BaseHTTPClient, context::InstallationContext,
-    install_settings::InstallSettings, Store as SettingsStore,
+    context::InstallationContext, http::BaseHTTPClient, install_settings::InstallSettings,
+    monitor::MonitorClient, Store as SettingsStore,
 };
 use anyhow::anyhow;
 use clap::Subcommand;
 use std::io::Write;
 use tempfile::Builder;
+
+use crate::show_progress;
 
 const DEFAULT_EDITOR: &str = "/usr/bin/vi";
 
@@ -62,7 +63,11 @@ pub enum ConfigCommands {
     },
 }
 
-pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> anyhow::Result<()> {
+pub async fn run(
+    http_client: BaseHTTPClient,
+    monitor: MonitorClient,
+    subcommand: ConfigCommands,
+) -> anyhow::Result<()> {
     let store = SettingsStore::new(http_client).await?;
 
     match subcommand {
@@ -78,7 +83,7 @@ pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> any
             stdin.read_to_string(&mut contents)?;
             let result = InstallSettings::from_json(&contents, &InstallationContext::from_env()?)?;
             tokio::spawn(async move {
-                show_progress().await.unwrap();
+                show_progress(monitor, true).await;
             });
             store.store(&result).await?;
             Ok(())
@@ -90,7 +95,7 @@ pub async fn run(http_client: BaseHTTPClient, subcommand: ConfigCommands) -> any
                 .unwrap_or(DEFAULT_EDITOR.to_string());
             let result = edit(&model, &editor)?;
             tokio::spawn(async move {
-                show_progress().await.unwrap();
+                show_progress(monitor, true).await;
             });
             store.store(&result).await?;
             Ok(())

@@ -44,18 +44,20 @@
 //! As said, those modules might implement additional stuff, like specific types, clients, etc.
 
 pub mod auth;
-pub mod base_http_client;
 pub mod bootloader;
 pub mod context;
 pub mod error;
 pub mod file_source;
 pub mod files;
 pub mod hostname;
+pub mod http;
 pub mod install_settings;
+pub mod issue;
 pub mod jobs;
 pub mod localization;
 pub mod logs;
 pub mod manager;
+pub mod monitor;
 pub mod network;
 pub mod product;
 pub mod profile;

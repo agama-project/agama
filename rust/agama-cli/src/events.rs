@@ -18,36 +18,21 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements a client to access Agama's storage service.
+use agama_lib::http::WebSocketClient;
 
-pub mod dasd;
-pub mod iscsi;
+/// Main entry point called from Agama CLI main loop
+pub async fn run(mut ws_client: WebSocketClient, pretty: bool) -> anyhow::Result<()> {
+    loop {
+        let event = ws_client.receive().await?;
+        let conversion = if pretty {
+            serde_json::to_string_pretty(&event)
+        } else {
+            serde_json::to_string(&event)
+        };
 
-use crate::{
-    http::{BaseHTTPClient, BaseHTTPClientError},
-    storage::StorageSettings,
-};
-
-#[derive(Debug, thiserror::Error)]
-pub enum StorageHTTPClientError {
-    #[error(transparent)]
-    Storage(#[from] BaseHTTPClientError),
-}
-
-pub struct StorageHTTPClient {
-    client: BaseHTTPClient,
-}
-
-impl StorageHTTPClient {
-    pub fn new(client: BaseHTTPClient) -> Self {
-        Self { client }
-    }
-
-    pub async fn get_config(&self) -> Result<Option<StorageSettings>, StorageHTTPClientError> {
-        Ok(self.client.get("/storage/config").await?)
-    }
-
-    pub async fn set_config(&self, config: &StorageSettings) -> Result<(), StorageHTTPClientError> {
-        Ok(self.client.put_void("/storage/config", config).await?)
+        match conversion {
+            Ok(event_json) => println!("{}", event_json),
+            Err(_) => eprintln!("Could not serialize {:?}", &event),
+        }
     }
 }

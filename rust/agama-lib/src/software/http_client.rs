@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
+use crate::http::{BaseHTTPClient, BaseHTTPClientError};
 use crate::software::model::SoftwareConfig;
 use std::collections::HashMap;
 

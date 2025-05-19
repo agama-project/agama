@@ -22,10 +22,10 @@
 // TODO: quickly explain difference between FooSettings and FooStore, with an example
 
 use crate::{
-    base_http_client::BaseHTTPClient,
     bootloader::store::{BootloaderStore, BootloaderStoreError},
     files::store::{FilesStore, FilesStoreError},
     hostname::store::{HostnameStore, HostnameStoreError},
+    http::BaseHTTPClient,
     install_settings::InstallSettings,
     localization::{LocalizationStore, LocalizationStoreError},
     manager::{http_client::ManagerHTTPClientError, InstallationPhase, ManagerHTTPClient},

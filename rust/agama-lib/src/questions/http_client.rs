@@ -23,7 +23,7 @@ use std::time::Duration;
 use reqwest::StatusCode;
 use tokio::time::sleep;
 
-use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
+use crate::http::{BaseHTTPClient, BaseHTTPClientError};
 
 use super::model::{self, Answer, Question};
 
@@ -96,7 +96,7 @@ impl HTTPClient {
 mod test {
     use super::model::{GenericAnswer, GenericQuestion};
     use super::*;
-    use crate::base_http_client::BaseHTTPClient;
+    use crate::http::BaseHTTPClient;
     use httpmock::prelude::*;
     use std::collections::HashMap;
     use std::error::Error;

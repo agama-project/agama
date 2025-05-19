@@ -44,10 +44,10 @@ impl ApiDocBuilder for UsersApiDocBuilder {
 
     fn components(&self) -> utoipa::openapi::Components {
         ComponentsBuilder::new()
+            .schema_from::<agama_lib::issue::Issue>()
             .schema_from::<agama_lib::users::FirstUser>()
             .schema_from::<agama_lib::users::RootUser>()
             .schema_from::<agama_lib::users::model::RootPatchSettings>()
-            .schema_from::<crate::web::common::Issue>()
             .schema(
                 "zbus.zvariant.OwnedValue",
                 utoipa::openapi::ObjectBuilder::new()
