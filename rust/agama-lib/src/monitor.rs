@@ -61,7 +61,7 @@ use crate::{
 };
 
 const MANAGER_SERVICE: &str = "org.opensuse.Agama.Manager1";
-const SOFTWARE_SERVICE: &str = "org.opensuse.Agama.Software1";
+// const SOFTWARE_SERVICE: &str = "org.opensuse.Agama.Software1";
 
 #[derive(thiserror::Error, Debug)]
 pub enum MonitorError {
@@ -260,8 +260,10 @@ impl MonitorStatusReader {
 
         self.add_service_progress(&mut status, MANAGER_SERVICE, "/manager/progress")
             .await?;
-        self.add_service_progress(&mut status, SOFTWARE_SERVICE, "/software/progress")
-            .await?;
+        // FIXME: do not read the software status yet because it might block
+        // the progress. Enable this line when the software service does not block
+        // self.add_service_progress(&mut status, SOFTWARE_SERVICE, "/software/progress")
+        //     .await?;
         Ok(status)
     }
 
