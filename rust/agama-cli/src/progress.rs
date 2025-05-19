@@ -151,8 +151,9 @@ impl MonitorProgress {
             }
         }
 
-        if let Some(progress) = status.progress.get(SOFTWARE_SERVICE) {
-            self.update_bar(&progress);
+        match status.progress.get(SOFTWARE_SERVICE) {
+            Some(progress) => self.update_bar(progress),
+            None => self.remove_bar(),
         }
 
         true
@@ -176,9 +177,14 @@ impl MonitorProgress {
             bar.enable_steady_tick(Duration::from_millis(120));
             bar
         });
+
         bar.set_length(progress.max_steps.into());
         bar.set_position(progress.current_step.into());
         bar.set_message(progress.current_title.to_owned());
+    }
+
+    fn remove_bar(&mut self) {
+        _ = self.bar.take()
     }
 
     /// Stops the representation.

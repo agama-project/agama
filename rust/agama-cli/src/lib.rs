@@ -318,6 +318,13 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
             let client = build_http_client(api_url, cli.opts.insecure, false).await?;
             run_auth_cmd(client, subcommand).await?;
         }
+        Commands::Monitor => {
+            let client = build_http_client(api_url.clone(), cli.opts.insecure, true).await?;
+            let ws_client = build_ws_client(api_url, cli.opts.insecure).await?;
+            let monitor = Monitor::connect(client, ws_client).await.unwrap();
+            let mut progress = MonitorProgress::new(monitor).stop_on_idle(false);
+            progress.run().await;
+        }
         Commands::Events => {
             let ws_client = build_ws_client(api_url, cli.opts.insecure).await?;
             run_events_cmd(ws_client).await?;

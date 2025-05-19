@@ -126,6 +126,8 @@ pub enum Commands {
         method: Option<FinishMethod>,
     },
 
+    Monitor,
+
     /// Display Agama events.
     Events,
 }
