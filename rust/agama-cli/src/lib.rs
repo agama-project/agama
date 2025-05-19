@@ -45,7 +45,6 @@ use auth::run as run_auth_cmd;
 use commands::Commands;
 use config::run as run_config_cmd;
 use logs::run as run_logs_cmd;
-use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
 use questions::run as run_questions_cmd;
 use std::fs;
@@ -277,10 +276,6 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
             let manager = build_manager().await?;
             wait_for_services(&manager).await?;
             probe().await?
-        }
-        Commands::Profile(subcommand) => {
-            let client = build_http_client(api_url, cli.opts.insecure, true).await?;
-            run_profile_cmd(client, subcommand).await?;
         }
         Commands::Install => {
             let manager = build_manager().await?;

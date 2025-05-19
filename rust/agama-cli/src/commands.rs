@@ -23,7 +23,6 @@ use std::path::PathBuf;
 use crate::auth::AuthCommands;
 use crate::config::ConfigCommands;
 use crate::logs::LogsCommands;
-use crate::profile::ProfileCommands;
 use crate::questions::QuestionsCommands;
 use crate::FinishMethod;
 use clap::Subcommand;
@@ -58,10 +57,6 @@ pub enum Commands {
     /// When the preconditions for the installation are not met, it informs the user and returns,
     /// making no changes to the system.
     Install,
-
-    /// Manage auto-installation profiles (retrieving, applying, etc.).
-    #[command(subcommand)]
-    Profile(ProfileCommands),
 
     /// Handle installer questions.
     ///

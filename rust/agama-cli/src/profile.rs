@@ -18,54 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::show_progress;
-use agama_lib::{
-    base_http_client::BaseHTTPClient,
-    context::InstallationContext,
-    install_settings::InstallSettings,
-    utils::{FileFormat, Transfer},
-    Store as SettingsStore,
-};
+use agama_lib::utils::Transfer;
 use anyhow::Context;
-use clap::Subcommand;
-use fluent_uri::Uri;
 use std::{
     io,
     io::Read,
     path::{Path, PathBuf},
 };
 use url::Url;
-
-#[derive(Subcommand, Debug)]
-pub enum ProfileCommands {
-    /// Download the autoyast profile and print resulting json
-    Autoyast {
-        /// AutoYaST profile's URL. Any AutoYaST scheme, ERB and rules/classes are supported.
-        /// all schemas that autoyast supports.
-        url: String,
-    },
-
-    /// Evaluate a profile, injecting the hardware information from D-Bus
-    ///
-    /// For an example of Jsonnet-based profile, see
-    /// https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/profile.jsonnet
-    Evaluate {
-        /// Jsonnet file, URL or path or `-` for standard input
-        url_or_path: CliInput,
-    },
-
-    /// Process autoinstallation profile and loads it into agama
-    ///
-    /// This is top level command that do all autoinstallation processing beside starting
-    /// installation. Unless there is a need to inject additional commands between processing
-    /// use this command instead of set of underlying commands.
-    Import {
-        /// Profile's URL. Supports the same schemas as the "download" command plus
-        /// AutoYaST specific ones. Supported files are json, jsonnet, sh for Agama profiles and ERB, XML, and rules/classes directories
-        /// for AutoYaST support.
-        url: String,
-    },
-}
 
 /// Represents the ways user can specify the input on the command line
 /// and passes appropriate representations to the web API
@@ -178,134 +138,5 @@ impl CliInput {
                 Ok(s)
             }
         }
-    }
-}
-
-/// Evaluate a Jsonnet profile, by doing a HTTP client request.
-/// Return well-formed Agama JSON on success.
-async fn evaluate_client(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<String> {
-    let mut url = client.base_url.join("profile/evaluate").unwrap();
-    url_or_path.add_query(&mut url)?;
-
-    let body = url_or_path.body_for_web()?;
-    // we use plain text .body instead of .json
-    let response: Result<reqwest::Response, agama_lib::error::ServiceError> = client
-        .client
-        .request(reqwest::Method::POST, url)
-        .body(body)
-        .send()
-        .await
-        .map_err(|e| e.into());
-
-    let output: Box<serde_json::value::RawValue> = client.deserialize_or_error(response?).await?;
-    Ok(output.to_string())
-}
-
-async fn evaluate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<()> {
-    let output = evaluate_client(client, url_or_path).await?;
-    println!("{}", output);
-    Ok(())
-}
-
-async fn import(client: BaseHTTPClient, url_string: String) -> anyhow::Result<()> {
-    // useful for store_settings
-    tokio::spawn(async move {
-        if let Err(error) = show_progress().await {
-            eprintln!("Cannot monitor progress: {}", error);
-        }
-    });
-
-    let url = Uri::parse(url_string.as_str())?;
-    let path = url.path().to_string();
-    let profile_json = if path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/') {
-        // AutoYaST specific download and convert to JSON
-        let config_string = autoyast_client(&client, &url.to_owned()).await?;
-        Some(config_string)
-    } else {
-        pre_process_profile(&client, &url_string).await?
-    };
-
-    // None means the profile is a script and it has been executed
-    if let Some(profile_json) = profile_json {
-        /*
-        validate(&client, CliInput::Full(profile_json.clone())).await?;
-        */
-        let context = InstallationContext {
-            source: url.to_owned(),
-        };
-        store_settings(client, &profile_json, &context).await?;
-    }
-    Ok(())
-}
-
-// Retrieve and preprocess the profile.
-//
-// The profile can be a JSON or a Jsonnet file or a script.
-//
-// * If it is a JSON file, no preprocessing is needed.
-// * If it is a Jsonnet file, it is converted to JSON.
-// * If it is a script, it is executed, None is returned
-async fn pre_process_profile(
-    client: &BaseHTTPClient,
-    url_string: &str,
-) -> anyhow::Result<Option<String>> {
-    let mut bytebuf = Vec::new();
-    Transfer::get(&url_string, &mut bytebuf)
-        .context(format!("Retrieving data from URL {}", &url_string))?;
-    let any_profile =
-        String::from_utf8(bytebuf).context(format!("Invalid UTF-8 data at URL {}", &url_string))?;
-
-    match FileFormat::from_string(&any_profile) {
-        FileFormat::Script => {
-            let api_url = format!("/profile/execute_script?url={}", url_string);
-            let _output: Box<serde_json::value::RawValue> = client.post(&api_url, &()).await?;
-            Ok(None)
-        }
-        FileFormat::Jsonnet => {
-            let json_string = evaluate_client(client, CliInput::Full(any_profile)).await?;
-            Ok(Some(json_string))
-        }
-        FileFormat::Json => Ok(Some(any_profile)),
-        _ => Err(anyhow::Error::msg(
-            "Unsupported file format. Expected JSON, Jsonnet, or a script",
-        )),
-    }
-}
-
-async fn store_settings(
-    client: BaseHTTPClient,
-    profile_json: &str,
-    context: &InstallationContext,
-) -> anyhow::Result<()> {
-    let store = SettingsStore::new(client).await?;
-    let settings = InstallSettings::from_json(profile_json, context)?;
-    store.store(&settings).await?;
-    Ok(())
-}
-
-/// Process AutoYaST profile (*url* ending with .xml, .erb, or dir/) by doing a HTTP client request.
-/// Note that this client does not act on this *url*, it passes it as a parameter
-/// to our web backend.
-/// Return well-formed Agama JSON on success.
-async fn autoyast_client(client: &BaseHTTPClient, url: &Uri<String>) -> anyhow::Result<String> {
-    // FIXME: how to escape it?
-    let api_url = format!("/profile/autoyast?url={}", url);
-    let output: Box<serde_json::value::RawValue> = client.post(&api_url, &()).await?;
-    let config_string = format!("{}", output);
-    Ok(config_string)
-}
-
-async fn autoyast(client: BaseHTTPClient, url_string: String) -> anyhow::Result<()> {
-    let url = Uri::parse(url_string.as_str())?;
-    let output = autoyast_client(&client, &url.to_owned()).await?;
-    println!("{}", output);
-    Ok(())
-}
-
-pub async fn run(client: BaseHTTPClient, subcommand: ProfileCommands) -> anyhow::Result<()> {
-    match subcommand {
-        ProfileCommands::Autoyast { url } => autoyast(client, url).await,
-        ProfileCommands::Evaluate { url_or_path } => evaluate(&client, url_or_path).await,
-        ProfileCommands::Import { url } => import(client, url).await,
     }
 }
