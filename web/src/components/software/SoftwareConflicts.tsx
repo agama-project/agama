@@ -127,8 +127,7 @@ function SoftwareConflicts(): React.ReactNode {
     );
   };
 
-  const ConflictsForm = (): React.ReactNode => {
-    const conflict = conflicts[conflictId];
+  const ConflictsForm = ({ conflict }): React.ReactNode => {
     const solutions = conflict.solutions.map((solutionE) => {
       const details = solutionE.details ? solutionE.details.split("\n") : [];
       const detailsNode =
@@ -163,13 +162,14 @@ function SoftwareConflicts(): React.ReactNode {
   };
 
   const ConflictsUI = (): React.ReactNode => {
-    const conflict = conflicts[conflictId];
+    // if the latest conflict is solved, then show the last one
+    const conflict = conflictId < conflicts.length ? conflicts[conflictId] : conflicts.at(-1);
 
     return (
       <Page.Content>
         <Divider />
         <Title headingLevel="h3">{conflict.description}</Title>
-        <ConflictsForm />
+        <ConflictsForm conflict={conflict} />
         {conflicts.length > 1 ? <ConflictsToolbar /> : ""}
       </Page.Content>
     );
