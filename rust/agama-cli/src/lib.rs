@@ -197,6 +197,10 @@ pub fn download_file(url: &str, path: &PathBuf) -> anyhow::Result<()> {
     Ok(())
 }
 
+/// * `api_url`: API URL.
+/// * `insecure`: whether an insecure connnection (e.g., using a self-signed certificate)
+///   is allowed.
+/// * `authenticated`: build an authenticated client (if possible).
 async fn build_http_client(
     api_url: Url,
     insecure: bool,
@@ -221,6 +225,11 @@ async fn build_http_client(
     }
 }
 
+/// Build a WebSocket client.
+///
+/// * `api_url`: API URL.
+/// * `insecure`: whether an insecure connnection (e.g., using a self-signed certificate)
+///   is allowed.
 async fn build_ws_client(api_url: Url, insecure: bool) -> anyhow::Result<WebSocketClient> {
     let mut url = api_url.join("ws")?;
     let scheme = if api_url.scheme() == "http" {
@@ -229,9 +238,10 @@ async fn build_ws_client(api_url: Url, insecure: bool) -> anyhow::Result<WebSock
         "wss"
     };
 
-    let token = find_client_token(&api_url).unwrap(); //.map_err(|| ServiceError::NotAuthenticated.into())?;
+    let token = find_client_token(&api_url).ok_or(ServiceError::NotAuthenticated)?;
+    // Setting the scheme to a known value ("ws" or "wss" should not fail).
     url.set_scheme(scheme).unwrap();
-    Ok(WebSocketClient::connect(&url, token, insecure).await?)
+    Ok(WebSocketClient::connect(&url, &token, insecure).await?)
 }
 
 /// Build the API url from the host.

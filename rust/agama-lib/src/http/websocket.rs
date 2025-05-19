@@ -74,7 +74,7 @@ impl WebSocketClient {
     /// * `insecure`: whether invalid certs and hostnames are allowed.
     pub async fn connect(
         url: &Url,
-        auth_token: AuthToken,
+        auth_token: &AuthToken,
         insecure: bool,
     ) -> Result<Self, WebSocketError> {
         let host = url
