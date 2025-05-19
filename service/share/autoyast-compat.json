@@ -248,6 +248,7 @@
   {
     "key": "services-manager",
     "support": "yes",
+    "notes": "Automatically converted into post-installation script",
     "children": [
       {
         "key": "default_target",
