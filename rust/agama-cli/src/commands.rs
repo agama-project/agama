@@ -126,6 +126,7 @@ pub enum Commands {
         method: Option<FinishMethod>,
     },
 
+    /// Monitors the Agama service.
     Monitor,
 
     /// Display Agama events.
