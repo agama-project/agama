@@ -18,11 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::show_progress;
+use crate::progress::MonitorProgress;
 use agama_lib::{
     context::InstallationContext,
     http::BaseHTTPClient,
     install_settings::InstallSettings,
+    monitor::MonitorClient,
     profile::ValidationOutcome,
     utils::{FileFormat, Transfer},
     Store as SettingsStore,
@@ -225,12 +226,15 @@ async fn evaluate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
     Ok(())
 }
 
-async fn import(client: BaseHTTPClient, url_string: String) -> anyhow::Result<()> {
+async fn import(
+    client: BaseHTTPClient,
+    monitor: MonitorClient,
+    url_string: String,
+) -> anyhow::Result<()> {
     // useful for store_settings
     tokio::spawn(async move {
-        if let Err(error) = show_progress().await {
-            eprintln!("Cannot monitor progress: {}", error);
-        }
+        let mut progress = MonitorProgress::new(monitor);
+        progress.run().await;
     });
 
     let url = Uri::parse(url_string.as_str())?;
@@ -318,11 +322,15 @@ async fn autoyast(client: BaseHTTPClient, url_string: String) -> anyhow::Result<
     Ok(())
 }
 
-pub async fn run(client: BaseHTTPClient, subcommand: ProfileCommands) -> anyhow::Result<()> {
+pub async fn run(
+    client: BaseHTTPClient,
+    monitor: MonitorClient,
+    subcommand: ProfileCommands,
+) -> anyhow::Result<()> {
     match subcommand {
         ProfileCommands::Autoyast { url } => autoyast(client, url).await,
         ProfileCommands::Validate { url_or_path } => validate(&client, url_or_path).await,
         ProfileCommands::Evaluate { url_or_path } => evaluate(&client, url_or_path).await,
-        ProfileCommands::Import { url } => import(client, url).await,
+        ProfileCommands::Import { url } => import(client, monitor, url).await,
     }
 }
