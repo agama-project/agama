@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May 19 14:02:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not crash when network events do not contain "addresses",
+  "nameservers", "dnsSearchlist", "routes4" or "routes6"
+  (gh#agama-project/agama#2371).
+
+-------------------------------------------------------------------
 Mon May 19 12:02:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Adapt "install", "probe" and "finish" to use the HTTP API
