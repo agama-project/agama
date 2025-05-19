@@ -33,7 +33,7 @@ use clap::Subcommand;
 use std::io::Write;
 use tempfile::Builder;
 
-use crate::progress::ProgressMonitor;
+use crate::show_progress;
 
 const DEFAULT_EDITOR: &str = "/usr/bin/vi";
 
@@ -83,8 +83,7 @@ pub async fn run(
             stdin.read_to_string(&mut contents)?;
             let result = InstallSettings::from_json(&contents, &InstallationContext::from_env()?)?;
             tokio::spawn(async move {
-                let mut progress = ProgressMonitor::new(monitor);
-                progress.run().await;
+                show_progress(monitor, true).await;
             });
             store.store(&result).await?;
             Ok(())
@@ -96,8 +95,7 @@ pub async fn run(
                 .unwrap_or(DEFAULT_EDITOR.to_string());
             let result = edit(&model, &editor)?;
             tokio::spawn(async move {
-                let mut progress = ProgressMonitor::new(monitor);
-                progress.run().await;
+                show_progress(monitor, true).await;
             });
             store.store(&result).await?;
             Ok(())

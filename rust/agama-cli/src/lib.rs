@@ -93,9 +93,7 @@ async fn probe(manager: ManagerHTTPClient, monitor: MonitorClient) -> anyhow::Re
     let probe = tokio::spawn(async move {
         let _ = manager.probe().await;
     });
-    let mut progress = ProgressMonitor::new(monitor);
-    progress.run().await;
-
+    show_progress(monitor, true).await;
     Ok(probe.await?)
 }
 
@@ -117,8 +115,7 @@ async fn install(
     }
 
     let progress = tokio::spawn(async {
-        let mut progress = ProgressMonitor::new(monitor);
-        progress.run().await;
+        show_progress(monitor, true).await;
     });
     // Try to start the installation up to max_attempts times.
     let mut attempts = 1;
@@ -164,11 +161,10 @@ async fn finish(
 
 async fn wait_until_idle(monitor: MonitorClient) -> anyhow::Result<()> {
     // FIXME: implement something like "wait_until_idle" in the monitor?
-    let mut progress = ProgressMonitor::new(monitor.clone());
     let status = monitor.get_status().await?;
     if status.installer_status.is_busy {
         eprintln!("The Agama service is busy. Waiting for it to be available...");
-        progress.run().await;
+        show_progress(monitor.clone(), true).await;
     }
     Ok(())
 }
@@ -278,8 +274,19 @@ async fn build_clients(
 ) -> anyhow::Result<(BaseHTTPClient, MonitorClient)> {
     let client = build_http_client(api_url.clone(), insecure, true).await?;
     let ws_client = build_ws_client(api_url, true).await?;
-    let monitor = Monitor::connect(client.clone(), ws_client).await.unwrap();
+    let monitor = Monitor::connect(client.clone(), ws_client).await?;
     Ok((client, monitor))
+}
+
+/// Helper function to display the progress in the terminal.
+///
+/// * `monitor`: monitor client.
+/// * `stop_on_idle`: stop displaying the progress when Agama becomes idle.
+pub async fn show_progress(monitor: MonitorClient, stop_on_idle: bool) {
+    let mut progress = ProgressMonitor::new(monitor).stop_on_idle(stop_on_idle);
+    if let Err(e) = progress.run().await {
+        eprintln!("Could not display the progress: {e:?}");
+    }
 }
 
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
@@ -328,8 +335,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         }
         Commands::Monitor => {
             let (_client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
-            let mut progress = ProgressMonitor::new(monitor).stop_on_idle(false);
-            progress.run().await;
+            show_progress(monitor, false).await;
         }
         Commands::Events { pretty } => {
             let ws_client = build_ws_client(api_url, cli.opts.insecure).await?;

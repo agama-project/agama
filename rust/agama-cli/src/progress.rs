@@ -59,15 +59,15 @@ impl ProgressMonitor {
     }
 
     /// Starts the UI representing the progress.
-    pub async fn run(&mut self) {
+    pub async fn run(&mut self) -> anyhow::Result<()> {
         let mut updates = self.monitor.subscribe();
-        let status = self.monitor.get_status().await.unwrap();
+        let status = self.monitor.get_status().await?;
         self.update(status).await;
 
         loop {
             if let Ok(status) = updates.recv().await {
                 if !self.update(status).await {
-                    return;
+                    return Ok(());
                 }
             }
         }
