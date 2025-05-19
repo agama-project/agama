@@ -243,6 +243,15 @@ describe("InstallerOptions", () => {
         jest.spyOn(utils, "localConnection").mockReturnValue(false);
       });
 
+      it("does not render keymap value in the toggle button", () => {
+        installerRender(<InstallerOptions />, { withL10n: true });
+        const toggle = screen.getByRole("button", {
+          name: "Change display language",
+        });
+        expect(toggle).toHaveTextContent("Deutsch");
+        expect(toggle).not.toHaveTextContent("us");
+      });
+
       it("does not allow setting the keyboard layout", async () => {
         const { user } = await renderAndOpen();
         const dialog = screen.getByRole("dialog");

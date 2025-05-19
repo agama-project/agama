@@ -469,19 +469,6 @@ const CenteredContent = ({
   </Flex>
 );
 
-/** Toggle button for accessing both language and keyboard layout settings. */
-const AllSettingsToggle = ({ onClick, language, keymap }: ToggleProps) => (
-  <Button
-    onClick={onClick}
-    aria-label={_("Change display language and keyboard layout")}
-    variant="plain"
-  >
-    <CenteredContent>
-      <LanguageIcon /> {language} <KeyboardIcon /> <code>{keymap}</code>
-    </CenteredContent>
-  </Button>
-);
-
 /** Toggle button for accessing only language settings. */
 const LanguageOnlyToggle = ({ onClick, language }: ToggleProps) => (
   <Button onClick={onClick} aria-label={_("Change display language")} variant="plain">
@@ -499,6 +486,23 @@ const KeyboardOnlyToggle = ({ onClick, keymap }: ToggleProps) => (
     </CenteredContent>
   </Button>
 );
+
+/** Toggle button for accessing both language and keyboard layout settings. */
+const AllSettingsToggle = ({ onClick, language, keymap }: ToggleProps) => {
+  if (!localConnection()) return <LanguageOnlyToggle onClick={onClick} language={language} />;
+
+  return (
+    <Button
+      onClick={onClick}
+      aria-label={_("Change display language and keyboard layout")}
+      variant="plain"
+    >
+      <CenteredContent>
+        <LanguageIcon /> {language} <KeyboardIcon /> <code>{keymap}</code>
+      </CenteredContent>
+    </Button>
+  );
+};
 
 /**
  * Maps each dialog variant to its corresponding React component.
