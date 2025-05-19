@@ -264,43 +264,43 @@ fn find_client_token(api_url: &Url) -> Option<AuthToken> {
     AuthToken::master()
 }
 
+async fn build_clients(
+    api_url: Url,
+    insecure: bool,
+) -> anyhow::Result<(BaseHTTPClient, MonitorClient)> {
+    let client = build_http_client(api_url.clone(), insecure, true).await?;
+    let ws_client = build_ws_client(api_url, true).await?;
+    let monitor = Monitor::connect(client.clone(), ws_client).await.unwrap();
+    Ok((client, monitor))
+}
+
 pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
     let api_url = api_url(cli.opts.host)?;
 
     match cli.command {
         Commands::Config(subcommand) => {
-            let client = build_http_client(api_url.clone(), cli.opts.insecure, true).await?;
-            let ws_client = build_ws_client(api_url, cli.opts.insecure).await?;
-            let monitor = Monitor::connect(client.clone(), ws_client).await.unwrap();
+            let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
             run_config_cmd(client, monitor, subcommand).await?
         }
         Commands::Probe => {
-            let client = build_http_client(api_url.clone(), cli.opts.insecure, true).await?;
+            let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
             let manager = ManagerHTTPClient::new(client.clone());
-            let ws_client = build_ws_client(api_url, cli.opts.insecure).await?;
-            let monitor = Monitor::connect(client, ws_client).await.unwrap();
             let _ = wait_until_idle(monitor.clone()).await;
             probe(manager, monitor).await?
         }
         Commands::Profile(subcommand) => {
-            let client = build_http_client(api_url.clone(), cli.opts.insecure, true).await?;
-            let ws_client = build_ws_client(api_url, cli.opts.insecure).await?;
-            let monitor = Monitor::connect(client.clone(), ws_client).await.unwrap();
+            let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
             run_profile_cmd(client, monitor, subcommand).await?;
         }
         Commands::Install => {
-            let client = build_http_client(api_url.clone(), cli.opts.insecure, true).await?;
+            let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
             let manager = ManagerHTTPClient::new(client.clone());
-            let ws_client = build_ws_client(api_url, cli.opts.insecure).await?;
-            let monitor = Monitor::connect(client, ws_client).await.unwrap();
             let _ = wait_until_idle(monitor.clone()).await;
             install(manager, monitor, 3).await?
         }
         Commands::Finish { method } => {
-            let client = build_http_client(api_url.clone(), cli.opts.insecure, true).await?;
+            let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
             let manager = ManagerHTTPClient::new(client.clone());
-            let ws_client = build_ws_client(api_url, cli.opts.insecure).await?;
-            let monitor = Monitor::connect(client, ws_client).await.unwrap();
             let _ = wait_until_idle(monitor.clone()).await;
             let method = method.unwrap_or_default();
             finish(manager, monitor, method).await?;
@@ -319,9 +319,7 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
             run_auth_cmd(client, subcommand).await?;
         }
         Commands::Monitor => {
-            let client = build_http_client(api_url.clone(), cli.opts.insecure, true).await?;
-            let ws_client = build_ws_client(api_url, cli.opts.insecure).await?;
-            let monitor = Monitor::connect(client, ws_client).await.unwrap();
+            let (_client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
             let mut progress = MonitorProgress::new(monitor).stop_on_idle(false);
             progress.run().await;
         }
