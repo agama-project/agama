@@ -161,7 +161,6 @@ async fn set_config(
         state.manager_proxy.set_locale(&locale_string).await?;
         changes.ui_locale = Some(locale_string);
 
-        // TODO: reset/reread the software product cache, it contains translations
         _ = state.events.send(Event::LocaleChanged {
             locale: locale.to_string(),
         });
