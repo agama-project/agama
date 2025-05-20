@@ -105,7 +105,9 @@ impl std::fmt::Display for ValidationOutcome {
 /// assert!(matches!(result, ValidationOutcome::NotValid(_)));
 ///
 /// // or a file
-/// validator.validate_file(Path::new("share/examples/profile.json"));
+/// let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+///   .join("share/examples/profile_tw.json");
+/// let result = validator.validate_file(&path).unwrap();
 /// assert!(matches!(result, ValidationOutcome::Valid));
 /// ```
 pub struct ProfileValidator {
