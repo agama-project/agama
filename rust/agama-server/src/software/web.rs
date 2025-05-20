@@ -525,27 +525,8 @@ async fn set_config(
         state.software.select_packages(packages).await?;
     }
 
-    // set the cache
-    // TODO: share the code with get_config()
-    let product = state.product.product().await?;
-    let product = if product.is_empty() {
-        None
-    } else {
-        Some(product)
-    };
-    let patterns = state
-        .software
-        .user_selected_patterns()
-        .await?
-        .into_iter()
-        .map(|p| (p, true))
-        .collect();
-    let packages = state.software.user_selected_packages().await?;
-    let config = SoftwareConfig {
-        patterns: Some(patterns),
-        packages: Some(packages),
-        product,
-    };
+    // load the config cache
+    let config = read_config(&state).await?;
 
     let mut cached_config_write = state.config.write().await;
     *cached_config_write = Some(config);
@@ -575,6 +556,17 @@ async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<Softw
         return Ok(Json(config));
     }
 
+    let config = read_config(&state).await?;
+
+    let mut cached_config_write = state.config.write().await;
+    *cached_config_write = Some(config.clone());
+
+    Ok(Json(config))
+}
+
+/// Helper function
+/// * `state` : software service state
+async fn read_config(state: &SoftwareState<'_>) -> Result<SoftwareConfig, Error> {
     let product = state.product.product().await?;
     let product = if product.is_empty() {
         None
@@ -589,16 +581,12 @@ async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<Softw
         .map(|p| (p, true))
         .collect();
     let packages = state.software.user_selected_packages().await?;
-    let config = SoftwareConfig {
+
+    Ok(SoftwareConfig {
         patterns: Some(patterns),
         packages: Some(packages),
         product,
-    };
-
-    let mut cached_config_write = state.config.write().await;
-    *cached_config_write = Some(config.clone());
-
-    Ok(Json(config))
+    })
 }
 
 #[derive(Serialize, utoipa::ToSchema)]
