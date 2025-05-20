@@ -27,7 +27,10 @@
 
 use crate::{
     error::Error,
-    web::common::{issues_router, progress_router, service_status_router, EventStreams},
+    web::{
+        common::{issues_router, progress_router, service_status_router, EventStreams},
+        EventsReceiver,
+    },
 };
 
 use agama_lib::{
@@ -52,6 +55,8 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 use tokio_stream::{Stream, StreamExt};
 
 #[derive(Clone)]
@@ -59,6 +64,10 @@ struct SoftwareState<'a> {
     product: ProductClient<'a>,
     software: SoftwareClient<'a>,
     licenses: LicensesRepo,
+    // cache the software values, during installation the software service is
+    // not responsive (blocked in a libzypp call)
+    products: Arc<RwLock<Option<Vec<Product>>>>,
+    config: Arc<RwLock<Option<SoftwareConfig>>>,
 }
 
 /// Returns an stream that emits software related events coming from D-Bus.
@@ -178,8 +187,27 @@ fn reason_to_selected_by(
     Ok(selected)
 }
 
+/// Process incoming events.
+///
+/// * `events`: channel to listen for events.
+/// * `products`: list of products (shared behind a mutex).
+pub async fn receive_events(
+    mut events: EventsReceiver,
+    products: Arc<RwLock<Option<Vec<Product>>>>,
+) {
+    while let Ok(event) = events.recv().await {
+        if let Event::LocaleChanged { locale: _ } = event {
+            let mut cached_products = products.write().await;
+            *cached_products = None;
+        }
+    }
+}
+
 /// Sets up and returns the axum service for the software module.
-pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
+pub async fn software_service(
+    dbus: zbus::Connection,
+    events: EventsReceiver,
+) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &str = "org.opensuse.Agama.Software1";
     const DBUS_PATH: &str = "/org/opensuse/Agama/Software1";
     const DBUS_PRODUCT_PATH: &str = "/org/opensuse/Agama/Software1/Product";
@@ -200,7 +228,13 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
         product,
         software,
         licenses: licenses_repo,
+        products: Arc::new(RwLock::new(None)),
+        config: Arc::new(RwLock::new(None)),
     };
+
+    let cached_products = Arc::clone(&state.products);
+    tokio::spawn(async move { receive_events(events, cached_products).await });
+
     let router = Router::new()
         .route("/patterns", get(patterns))
         .route("/repositories", get(repositories))
@@ -243,7 +277,18 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
     )
 )]
 async fn products(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<Product>>, Error> {
+    let cached_products = state.products.read().await.clone();
+
+    if let Some(products) = cached_products {
+        tracing::info!("Returning cached products");
+        return Ok(Json(products));
+    }
+
     let products = state.product.products().await?;
+
+    let mut cached_products_write = state.products.write().await;
+    *cached_products_write = Some(products.clone());
+
     Ok(Json(products))
 }
 
@@ -480,6 +525,12 @@ async fn set_config(
         state.software.select_packages(packages).await?;
     }
 
+    // load the config cache
+    let config = read_config(&state).await?;
+
+    let mut cached_config_write = state.config.write().await;
+    *cached_config_write = Some(config);
+
     Ok(())
 }
 
@@ -496,7 +547,26 @@ async fn set_config(
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
+
 async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<SoftwareConfig>, Error> {
+    let cached_config = state.config.read().await.clone();
+
+    if let Some(config) = cached_config {
+        tracing::info!("Returning cached software config");
+        return Ok(Json(config));
+    }
+
+    let config = read_config(&state).await?;
+
+    let mut cached_config_write = state.config.write().await;
+    *cached_config_write = Some(config.clone());
+
+    Ok(Json(config))
+}
+
+/// Helper function
+/// * `state` : software service state
+async fn read_config(state: &SoftwareState<'_>) -> Result<SoftwareConfig, Error> {
     let product = state.product.product().await?;
     let product = if product.is_empty() {
         None
@@ -511,12 +581,12 @@ async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<Softw
         .map(|p| (p, true))
         .collect();
     let packages = state.software.user_selected_packages().await?;
-    let config = SoftwareConfig {
+
+    Ok(SoftwareConfig {
         patterns: Some(patterns),
         packages: Some(packages),
         product,
-    };
-    Ok(Json(config))
+    })
 }
 
 #[derive(Serialize, utoipa::ToSchema)]
