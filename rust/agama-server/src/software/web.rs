@@ -35,7 +35,6 @@ use crate::{
 
 use agama_lib::{
     error::ServiceError,
-    manager::{InstallationPhase, ManagerClient},
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
         model::{
@@ -55,17 +54,18 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::sync::Arc;
 use tokio_stream::{Stream, StreamExt};
+use tokio::sync::RwLock;
 
 #[derive(Clone)]
 struct SoftwareState<'a> {
     product: ProductClient<'a>,
     software: SoftwareClient<'a>,
     licenses: LicensesRepo,
-    manager: ManagerClient<'a>,
     // cached values returned during installation when the software service is not responsive
-    cached_products: Vec<Product>,
-    cached_config: SoftwareConfig,
+    products: Arc<RwLock<Option<Vec<Product>>>>,
+    config: Arc<RwLock<Option<SoftwareConfig>>>,
 }
 
 /// Returns an stream that emits software related events coming from D-Bus.
@@ -202,19 +202,13 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
     }
 
     let product = ProductClient::new(dbus.clone()).await?;
-    let manager = ManagerClient::new(dbus.clone()).await?;
     let software = SoftwareClient::new(dbus).await?;
     let state = SoftwareState {
         product,
         software,
         licenses: licenses_repo,
-        manager,
-        cached_products: vec![],
-        cached_config: SoftwareConfig {
-            patterns: None,
-            packages: None,
-            product: None,
-        },
+        products: Arc::new(RwLock::new(None)),
+        config: Arc::new(RwLock::new(None)),
     };
     let router = Router::new()
         .route("/patterns", get(patterns))
@@ -258,14 +252,18 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
     )
 )]
 async fn products(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<Product>>, Error> {
-    let phase = state.manager.current_installation_phase().await?;
+    let cached_products = state.products.read().await.clone();
 
-    if phase == InstallationPhase::Install {
-        tracing::info!("Install phase active, returning cached products");
-        return Ok(Json(state.cached_products));
+    if let Some(products) = cached_products {
+        tracing::info!("Returning cached products");
+        return Ok(Json(products));
     }
 
     let products = state.product.products().await?;
+
+    let mut cached_products_write = state.products.write().await;
+    *cached_products_write = Some(products.clone());
+
     Ok(Json(products))
 }
 
@@ -502,6 +500,31 @@ async fn set_config(
         state.software.select_packages(packages).await?;
     }
 
+    // set the cache
+    // TODO: share the code with get_config()
+    let product = state.product.product().await?;
+    let product = if product.is_empty() {
+        None
+    } else {
+        Some(product)
+    };
+    let patterns = state
+        .software
+        .user_selected_patterns()
+        .await?
+        .into_iter()
+        .map(|p| (p, true))
+        .collect();
+    let packages = state.software.user_selected_packages().await?;
+    let config = SoftwareConfig {
+        patterns: Some(patterns),
+        packages: Some(packages),
+        product,
+    };
+
+    let mut cached_config_write = state.config.write().await;
+    *cached_config_write = Some(config);
+
     Ok(())
 }
 
@@ -518,12 +541,13 @@ async fn set_config(
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
-async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<SoftwareConfig>, Error> {
-    let phase = state.manager.current_installation_phase().await?;
 
-    if phase == InstallationPhase::Install {
-        tracing::info!("Install phase active, returning cached config");
-        return Ok(Json(state.cached_config));
+async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<SoftwareConfig>, Error> {
+    let cached_config = state.config.read().await.clone();
+
+    if let Some(config) = cached_config {
+        tracing::info!("Returning cached software config");
+        return Ok(Json(config));
     }
 
     let product = state.product.product().await?;
@@ -545,6 +569,10 @@ async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<Softw
         packages: Some(packages),
         product,
     };
+
+    let mut cached_config_write = state.config.write().await;
+    *cached_config_write = Some(config.clone());
+
     Ok(Json(config))
 }
 
