@@ -24,19 +24,20 @@ import React, { useState } from "react";
 import {
   Content,
   Radio,
-  Toolbar,
-  ToolbarContent,
-  ToolbarItem,
   Button,
   Flex,
-  Icon,
-  Divider,
   Title,
   Form,
   FormGroup,
   ExpandableSection,
   ActionGroup,
+  Toolbar,
+  ToolbarItem,
+  ToolbarContent,
+  Divider,
+  ToolbarGroup,
 } from "@patternfly/react-core";
+import { Icon } from "~/components/layout";
 import { Page, SubtleContent } from "~/components/core";
 import { useConflicts, useConflictsChanges } from "~/queries/software";
 import { _ } from "~/i18n";
@@ -48,6 +49,7 @@ import { solveConflict } from "~/api/software";
  */
 function SoftwareConflicts(): React.ReactNode {
   useConflictsChanges();
+  const conflicts = useConflicts();
   const [solution, setSolution] = useState(-1);
   const [conflictId, setConflictId] = useState(0);
   const onSubmit = async (e) => {
@@ -60,7 +62,6 @@ function SoftwareConflicts(): React.ReactNode {
   const onBack = async () => {
     setConflictId(conflictId - 1);
   };
-  const conflicts = useConflicts();
 
   const NoConflicts = (): React.ReactNode => (
     <Page.Content>
@@ -72,26 +73,27 @@ function SoftwareConflicts(): React.ReactNode {
     <Toolbar hasNoPadding>
       <ToolbarContent>
         <ToolbarItem alignSelf="center">
-          {sprintf(_("Conflict %d of %d"), conflictId + 1, conflicts.length)}
+          <Title headingLevel="h3">
+            {sprintf(_("Conflict %d of %d"), conflictId + 1, conflicts.length)}
+          </Title>
         </ToolbarItem>
-        <ToolbarItem>
-          <Button variant="secondary" isDisabled={conflictId === 0} onClick={onBack}>
-            <Flex component="span" alignItems={{ default: "alignItemsCenter" }}>
-              <Icon name="chevron_left" /> {_("Skip to Previous")}
-            </Flex>
-          </Button>
-        </ToolbarItem>
-        <ToolbarItem>
-          <Button
-            variant="secondary"
-            isDisabled={conflictId === conflicts.length - 1}
-            onClick={onNext}
-          >
-            <Flex component="span" alignItems={{ default: "alignItemsCenter" }}>
-              {_("Skip to Next")} <Icon name="chevron_right" />
-            </Flex>
-          </Button>
-        </ToolbarItem>
+        <ToolbarGroup align={{ default: "alignEnd" }} alignItems="center">
+          <ToolbarItem>
+            <Button variant="plain" size="sm" onClick={onBack}>
+              <Flex component="span" alignItems={{ default: "alignItemsCenter" }}>
+                <Icon name="chevron_left" /> {_("Skip to Previous")}
+              </Flex>
+            </Button>
+          </ToolbarItem>
+          <ToolbarItem variant="separator" />
+          <ToolbarItem>
+            <Button variant="plain" size="sm" onClick={onNext}>
+              <Flex component="span" alignItems={{ default: "alignItemsCenter" }}>
+                {_("Skip to Next")} <Icon name="chevron_right" />
+              </Flex>
+            </Button>
+          </ToolbarItem>
+        </ToolbarGroup>
       </ToolbarContent>
     </Toolbar>
   );
@@ -167,10 +169,10 @@ function SoftwareConflicts(): React.ReactNode {
 
     return (
       <Page.Content>
+        <ConflictsToolbar />
         <Divider />
-        <Title headingLevel="h3">{conflict.description}</Title>
+        <Title headingLevel="h4">{conflict.description}</Title>
         <ConflictsForm conflict={conflict} />
-        {conflicts.length > 1 ? <ConflictsToolbar /> : ""}
       </Page.Content>
     );
   };
