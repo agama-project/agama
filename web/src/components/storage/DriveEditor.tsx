@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { apiModel } from "~/api/storage/types";
+import { Drive } from "~/types/storage/model";
 import { StorageDevice } from "~/types/storage";
 import DriveDeviceMenu from "~/components/storage/DriveDeviceMenu";
 import PartitionableHeader from "~/components/storage/PartitionableHeader";
@@ -31,7 +31,7 @@ import { Card, CardBody, CardHeader, CardTitle, Flex } from "@patternfly/react-c
 
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
-export type DriveEditorProps = { drive: apiModel.Drive; driveDevice: StorageDevice };
+export type DriveEditorProps = { drive: Drive; driveDevice: StorageDevice };
 
 const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
   return (
