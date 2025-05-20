@@ -16,6 +16,11 @@ user_pref("browser.startup.couldRestoreSession.count", 0);
 // disable homepage override on updates
 user_pref("browser.startup.homepage_override.mstone", "ignore");
 
+// disable sending Firefox usage and telemetry data for increased privacy
+user_pref("datareporting.healthreport.uploadEnabled", false);
+user_pref("datareporting.usage.uploadEnabled", false);
+user_pref("toolkit.telemetry.reportingpolicy.firstRun", false);
+
 // workaround for non working file picker, disable XDG portal, use the FF native popup
 // TODO: make the XDG portal working again, it has more features (mounting USB flash)
 user_pref("widget.use-xdg-desktop-portal.file-picker", 0);
