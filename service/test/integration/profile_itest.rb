@@ -3,6 +3,7 @@
 # TODO: remember to set up and test the --api option after all
 
 require "cheetah"
+require "webrick"
 
 # @param filename relative to git repo root
 # @return usable for this suite
@@ -26,6 +27,20 @@ def cheetah_kwargs
   }
 end
 
+WEB_SERVER_PORT = 8000
+
+# @return [HTTPServer]
+def web_server_start
+  root = abs_fixture(".")
+  server = WEBrick::HTTPServer.new(Port: WEB_SERVER_PORT, DocumentRoot: root)
+  Thread.new { server.start }
+  server
+end
+
+def web_server_shutdown(server)
+  server.shutdown
+end
+
 # needs declarations:
 # command [Array<String>] like ["agama", "profile", "validate"]
 shared_examples "accepts input in 3 ways" do |filename, stdout_match, stderr_match|
@@ -38,9 +53,9 @@ shared_examples "accepts input in 3 ways" do |filename, stdout_match, stderr_mat
     end
   end
 
-  context "with #{filename} as URL" do
+  context "with #{filename} as http URL" do
     it "output matches" do
-      url = "file://" + abs_fixture(filename)
+      url = "http://localhost:#{WEB_SERVER_PORT}/#{filename}"
       cmd = [*command, url]
       stdout, stderr = Cheetah.run(*cmd, **cheetah_kwargs)
       expect(stdout).to include(stdout_match)
@@ -59,9 +74,15 @@ shared_examples "accepts input in 3 ways" do |filename, stdout_match, stderr_mat
   end
 end
 
-
-
 describe "agama config" do
+  before(:all) do
+    @web_server = web_server_start
+  end
+
+  after(:all) do
+    web_server_shutdown(@web_server)
+  end
+
   describe "validate:" do
     let(:command) { ["agama", "config", "validate"] }
     context "valid profile" do
