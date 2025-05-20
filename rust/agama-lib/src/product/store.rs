@@ -21,7 +21,7 @@
 //! Implements the store for the product settings.
 use super::{http_client::ProductHTTPClientError, ProductHTTPClient, ProductSettings};
 use crate::{
-    base_http_client::BaseHTTPClient,
+    http::BaseHTTPClient,
     manager::http_client::{ManagerHTTPClient, ManagerHTTPClientError},
 };
 
@@ -114,7 +114,7 @@ impl ProductStore {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::base_http_client::BaseHTTPClient;
+    use crate::http::BaseHTTPClient;
     use httpmock::prelude::*;
     use std::error::Error;
     use tokio::test; // without this, "error: async functions cannot be used for tests"

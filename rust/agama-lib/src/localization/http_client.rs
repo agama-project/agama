@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use super::model::LocaleConfig;
-use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
+use crate::http::{BaseHTTPClient, BaseHTTPClientError};
 
 #[derive(Debug, thiserror::Error)]
 pub enum LocalizationHTTPClientError {

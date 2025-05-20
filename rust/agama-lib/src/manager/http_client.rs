@@ -19,13 +19,15 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    base_http_client::{BaseHTTPClient, BaseHTTPClientError},
+    http::{BaseHTTPClient, BaseHTTPClientError},
     logs::LogsLists,
     manager::InstallerStatus,
 };
 use reqwest::header::CONTENT_ENCODING;
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
+
+use super::FinishMethod;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ManagerHTTPClientError {
@@ -48,6 +50,19 @@ impl ManagerHTTPClient {
         // BaseHTTPClient did not anticipate POST without request body
         // so we pass () which is rendered as `null`
         Ok(self.client.post_void("/manager/probe_sync", &()).await?)
+    }
+
+    /// Starts the installation.
+    pub async fn install(&self) -> Result<(), ManagerHTTPClientError> {
+        Ok(self.client.post_void("/manager/install", &()).await?)
+    }
+
+    /// Finishes the installation.
+    ///
+    /// * `method`: halt, reboot, stop or poweroff the system.
+    pub async fn finish(&self, method: FinishMethod) -> Result<bool, ManagerHTTPClientError> {
+        let method = Some(method);
+        Ok(self.client.post("/manager/finish", &method).await?)
     }
 
     /// Downloads package of logs from the backend

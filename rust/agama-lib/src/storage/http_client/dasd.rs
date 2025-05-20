@@ -21,7 +21,7 @@
 //! Implements a client to access Agama's iscsi service.
 
 use crate::{
-    base_http_client::{BaseHTTPClient, BaseHTTPClientError},
+    http::{BaseHTTPClient, BaseHTTPClientError},
     storage::settings::dasd::DASDConfig,
 };
 

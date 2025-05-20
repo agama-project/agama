@@ -24,7 +24,7 @@ use super::{
     client::{FilesClient, FilesHTTPClientError},
     model::UserFile,
 };
-use crate::base_http_client::BaseHTTPClient;
+use crate::http::BaseHTTPClient;
 
 #[derive(Debug, thiserror::Error)]
 pub enum FilesStoreError {

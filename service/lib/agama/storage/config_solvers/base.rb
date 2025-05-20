@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -33,9 +33,11 @@ module Agama
 
         # Solves a given config.
         #
+        # @note Derived classes must implement this method.
+        #
         # @param _config [Config]
         def solve(_config)
-          raise "#solve is not defined"
+          raise NotImplementedError
         end
 
       private

@@ -23,6 +23,7 @@ require_relative "./storage_helpers"
 require "agama/config"
 require "agama/storage/config_conversions"
 require "agama/storage/config_solver"
+require "agama/storage/system"
 require "y2storage"
 require "y2storage/refinements"
 
@@ -99,7 +100,7 @@ describe Agama::Storage::ConfigSolver do
       .convert
   end
 
-  let(:devicegraph) { Y2Storage::StorageManager.instance.probed }
+  let(:storage_system) { Agama::Storage::System.new }
 
   before do
     mock_storage(devicegraph: scenario)
@@ -109,7 +110,7 @@ describe Agama::Storage::ConfigSolver do
       .and_return(true)
   end
 
-  subject { described_class.new(product_config, devicegraph) }
+  subject { described_class.new(product_config, storage_system) }
 
   describe "#solve" do
     let(:scenario) { "empty-hd-50GiB.yaml" }

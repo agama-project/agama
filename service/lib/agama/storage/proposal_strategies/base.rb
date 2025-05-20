@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -29,9 +29,11 @@ module Agama
       # Base class for the strategies used by the Agama proposal.
       class Base
         # @param product_config [Config] Product config
+        # @param storage_system [Storage::System]
         # @param logger [Logger]
-        def initialize(product_config, logger)
+        def initialize(product_config, storage_system, logger)
           @product_config = product_config
+          @storage_system = storage_system
           @logger = logger
         end
 
@@ -60,31 +62,11 @@ module Agama
         # @return [Config]
         attr_reader :product_config
 
+        # @return [Storage::System]
+        attr_reader :storage_system
+
         # @return [Logger]
         attr_reader :logger
-
-        # @return [Y2Storage::DiskAnalyzer, nil] nil if the system is not probed yet.
-        def disk_analyzer
-          return nil unless storage_manager.probed?
-
-          storage_manager.probed_disk_analyzer
-        end
-
-        # Available devices for installation.
-        #
-        # @return [Array<Y2Storage::Device>]
-        def available_devices
-          disk_analyzer&.candidate_disks || []
-        end
-
-        # Devicegraph representing the system
-        #
-        # @return [Y2Storage::Devicegraph, nil] nil if the system is not probed yet.
-        def probed_devicegraph
-          return nil unless storage_manager.probed?
-
-          storage_manager.probed
-        end
 
         # @return [Y2Storage::StorageManager]
         def storage_manager

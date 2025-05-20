@@ -20,7 +20,7 @@
 
 use super::{settings::NetworkConnection, NetworkClientError};
 use crate::{
-    base_http_client::BaseHTTPClient,
+    http::BaseHTTPClient,
     network::{NetworkClient, NetworkSettings},
 };
 
@@ -94,6 +94,16 @@ fn add_ordered_connection(
         }
     }
 
+    if let Some(bridge) = &conn.bridge {
+        for port in &bridge.ports {
+            if let Some(conn) = find_connection(port, conns) {
+                add_ordered_connection(conn, conns, ordered);
+            } else if !ordered.contains(&conn.id) {
+                ordered.push(port.clone());
+            }
+        }
+    }
+
     if !ordered.contains(&conn.id) {
         ordered.push(conn.id.to_owned())
     }
@@ -119,13 +129,22 @@ fn default_connection(id: &str) -> NetworkConnection {
 #[cfg(test)]
 mod tests {
     use super::ordered_connections;
-    use crate::network::settings::{BondSettings, NetworkConnection};
+    use crate::network::settings::{BondSettings, BridgeSettings, NetworkConnection};
 
     #[test]
     fn test_ordered_connections() {
         let bond = NetworkConnection {
             id: "bond0".to_string(),
             bond: Some(BondSettings {
+                ports: vec!["eth0".to_string(), "eth1".to_string(), "eth3".to_string()],
+                ..Default::default()
+            }),
+            ..Default::default()
+        };
+
+        let bridge = NetworkConnection {
+            id: "br0".to_string(),
+            bridge: Some(BridgeSettings {
                 ports: vec!["eth0".to_string(), "eth1".to_string(), "eth3".to_string()],
                 ..Default::default()
             }),
@@ -156,6 +175,18 @@ mod tests {
                 "eth3".to_string(),
                 "bond0".to_string(),
                 "eth2".to_string()
+            ]
+        );
+
+        let conns = vec![bridge];
+        let ordered = ordered_connections(&conns);
+        assert_eq!(
+            ordered,
+            vec![
+                "eth0".to_string(),
+                "eth1".to_string(),
+                "eth3".to_string(),
+                "br0".to_string()
             ]
         )
     }

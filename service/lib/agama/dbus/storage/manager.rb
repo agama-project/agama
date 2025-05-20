@@ -303,9 +303,6 @@ module Agama
 
         # List of disks available for installation
         #
-        # Each device is represented by an array containing the name of the device and the label to
-        # represent that device in the UI when further information is needed.
-        #
         # @return [Array<::DBus::ObjectPath>]
         def available_devices
           proposal.available_devices.map { |d| system_devices_tree.path_for(d) }

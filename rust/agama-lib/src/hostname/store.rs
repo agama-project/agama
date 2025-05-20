@@ -24,7 +24,7 @@ use super::{
     http_client::{HostnameHTTPClient, HostnameHTTPClientError},
     model::HostnameSettings,
 };
-use crate::base_http_client::BaseHTTPClient;
+use crate::http::BaseHTTPClient;
 
 #[derive(Debug, thiserror::Error)]
 #[error("Error processing hostname settings: {0}")]

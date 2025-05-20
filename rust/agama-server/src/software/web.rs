@@ -27,14 +27,12 @@
 
 use crate::{
     error::Error,
-    web::{
-        common::{issues_router, progress_router, service_status_router, EventStreams},
-        Event,
-    },
+    web::common::{issues_router, progress_router, service_status_router, EventStreams},
 };
 
 use agama_lib::{
     error::ServiceError,
+    http::Event,
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
         model::{

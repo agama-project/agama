@@ -23,6 +23,7 @@ require_relative "../agama/storage/storage_helpers"
 require "agama/config"
 require "agama/storage/config"
 require "agama/storage/config_conversions/from_json"
+require "agama/storage/system"
 require "y2storage"
 require "y2storage/agama_proposal"
 
@@ -31,8 +32,10 @@ describe Y2Storage::AgamaProposal do
   include Agama::RSpec::StorageHelpers
 
   subject(:proposal) do
-    described_class.new(config, issues_list: issues_list)
+    described_class.new(config, storage_system, issues_list: issues_list)
   end
+
+  let(:storage_system) { Agama::Storage::System.new }
 
   let(:config) { config_from_json }
 
