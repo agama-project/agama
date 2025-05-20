@@ -61,7 +61,8 @@ struct SoftwareState<'a> {
     product: ProductClient<'a>,
     software: SoftwareClient<'a>,
     licenses: LicensesRepo,
-    // cached values returned during installation when the software service is not responsive
+    // cache the software values, during installation the software service is
+    // not responsive (blocked in a libzypp call)
     products: Arc<RwLock<Option<Vec<Product>>>>,
     config: Arc<RwLock<Option<SoftwareConfig>>>,
 }
