@@ -1,0 +1,13 @@
+{
+  "network": {
+    "connections": [
+      {
+        "id": "br0",
+        "bridge": {
+          "ports": ["eth0", "eth1"],
+          "stp": false
+        }
+      }
+    ]
+  }
+}

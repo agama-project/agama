@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_solvers"
-require "y2storage/disk_analyzer"
 
 module Agama
   module Storage
@@ -34,13 +33,10 @@ module Agama
     # generated from a profile.
     class ConfigSolver
       # @param product_config [Agama::Config] configuration of the product to install
-      # @param devicegraph [Y2Storage::Devicegraph] initial layout of the system
-      # @param disk_analyzer [Y2Storage::DiskAnalyzer, nil] extra information about the initial
-      #   layout of the system
-      def initialize(product_config, devicegraph, disk_analyzer: nil)
+      # @param storage_system [Storage::System]
+      def initialize(product_config, storage_system)
         @product_config = product_config
-        @devicegraph = devicegraph
-        @disk_analyzer = disk_analyzer || Y2Storage::DiskAnalyzer.new(devicegraph)
+        @storage_system = storage_system
       end
 
       # Solves the config according to the product and the system.
@@ -52,10 +48,10 @@ module Agama
         ConfigSolvers::Boot.new(product_config).solve(config)
         ConfigSolvers::Encryption.new(product_config).solve(config)
         ConfigSolvers::Filesystem.new(product_config).solve(config)
-        ConfigSolvers::DrivesSearch.new(devicegraph, disk_analyzer).solve(config)
-        ConfigSolvers::MdRaidsSearch.new(devicegraph, disk_analyzer).solve(config)
+        ConfigSolvers::DrivesSearch.new(storage_system).solve(config)
+        ConfigSolvers::MdRaidsSearch.new(storage_system).solve(config)
         # Sizes must be solved once the searches are solved.
-        ConfigSolvers::Size.new(product_config, devicegraph).solve(config)
+        ConfigSolvers::Size.new(product_config).solve(config)
       end
 
     private
@@ -63,11 +59,8 @@ module Agama
       # @return [Agama::Config]
       attr_reader :product_config
 
-      # @return [Y2Storage::Devicegraph]
-      attr_reader :devicegraph
-
-      # @return [Y2Storage::DiskAnalyzer]
-      attr_reader :disk_analyzer
+      # @return [Storage::System]
+      attr_reader :storage_system
     end
   end
 end

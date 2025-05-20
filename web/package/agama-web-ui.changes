@@ -1,4 +1,24 @@
 -------------------------------------------------------------------
+Mon May 19 13:38:16 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Keep margin between sidebar and main content in all breakpoints
+  (gh/agama-project/agama#2370).
+
+-------------------------------------------------------------------
+Fri May 16 07:46:22 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Rework the installer l10n settings (gh#agama-project/agama#2359):
+  - Improve discoverability of language and keyboard layout settings.
+  - Add contextual messages to help users differentiate between
+    installer and product localization settings.
+  - Add the ability to reuse installer settings for the product
+    to install.
+  - In local connections, keyboard layout change is now available
+    directly from modal dialogs holding password inputs.
+  - Password inputs now include a reminder of the active layout
+    (only in local connections) and a CAPS LOCK warning when active.
+
+-------------------------------------------------------------------
 Mon May 12 12:47:46 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed navigation to avoid quickly switching between two paths

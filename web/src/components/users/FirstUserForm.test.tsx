@@ -50,7 +50,7 @@ jest.mock("~/queries/users", () => ({
 
 describe("FirstUserForm", () => {
   it("allows using suggested username", async () => {
-    const { user } = installerRender(<FirstUserForm />);
+    const { user } = installerRender(<FirstUserForm />, { withL10n: true });
     const fullNameInput = screen.getByRole("textbox", { name: "Full name" });
     const userNameInput = screen.getByRole("textbox", { name: "Username" });
     await user.type(fullNameInput, "Gecko Giggles");
@@ -77,7 +77,7 @@ describe("FirstUserForm", () => {
     });
 
     it("renders the form in 'create' mode", () => {
-      installerRender(<FirstUserForm />);
+      installerRender(<FirstUserForm />, { withL10n: true });
 
       screen.getByRole("heading", { name: "Create user" });
       screen.getByRole("textbox", { name: "Full name" });
@@ -92,7 +92,7 @@ describe("FirstUserForm", () => {
     });
 
     it("allows defining the user when all data is provided", async () => {
-      const { user } = installerRender(<FirstUserForm />);
+      const { user } = installerRender(<FirstUserForm />, { withL10n: true });
 
       const fullname = screen.getByRole("textbox", { name: "Full name" });
       const username = screen.getByRole("textbox", { name: "Username" });
@@ -116,7 +116,7 @@ describe("FirstUserForm", () => {
     });
 
     it("warning about missing data", async () => {
-      const { user } = installerRender(<FirstUserForm />);
+      const { user } = installerRender(<FirstUserForm />, { withL10n: true });
 
       const fullname = screen.getByRole("textbox", { name: "Full name" });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
@@ -130,7 +130,7 @@ describe("FirstUserForm", () => {
 
     it("renders errors from the server, if any", async () => {
       mockFirstUserMutation.mockRejectedValue({ response: { data: "Username not valid" } });
-      const { user } = installerRender(<FirstUserForm />);
+      const { user } = installerRender(<FirstUserForm />, { withL10n: true });
 
       const fullname = screen.getByRole("textbox", { name: "Full name" });
       const username = screen.getByRole("textbox", { name: "Username" });
@@ -158,7 +158,7 @@ describe("FirstUserForm", () => {
     });
 
     it("renders the form in 'edit' mode", () => {
-      installerRender(<FirstUserForm />);
+      installerRender(<FirstUserForm />, { withL10n: true });
 
       screen.getByRole("heading", { name: "Edit user" });
       const fullNameInput = screen.getByRole("textbox", { name: "Full name" });
@@ -174,7 +174,7 @@ describe("FirstUserForm", () => {
     });
 
     it("allows editing user definition without changing the password", async () => {
-      const { user } = installerRender(<FirstUserForm />);
+      const { user } = installerRender(<FirstUserForm />, { withL10n: true });
 
       const fullname = screen.getByRole("textbox", { name: "Full name" });
       const username = screen.getByRole("textbox", { name: "Username" });
@@ -194,7 +194,7 @@ describe("FirstUserForm", () => {
     });
 
     it("allows editing full user definition", async () => {
-      const { user } = installerRender(<FirstUserForm />);
+      const { user } = installerRender(<FirstUserForm />, { withL10n: true });
 
       const fullname = screen.getByRole("textbox", { name: "Full name" });
       const username = screen.getByRole("textbox", { name: "Username" });
@@ -228,7 +228,7 @@ describe("FirstUserForm", () => {
       });
 
       it("allows preserving it", async () => {
-        const { user } = installerRender(<FirstUserForm />);
+        const { user } = installerRender(<FirstUserForm />, { withL10n: true });
         const acceptButton = screen.getByRole("button", { name: "Accept" });
         screen.getByText("Using a hashed password.");
         await user.click(acceptButton);
@@ -238,7 +238,7 @@ describe("FirstUserForm", () => {
       });
 
       it("allows using a plain password instead", async () => {
-        const { user } = installerRender(<FirstUserForm />);
+        const { user } = installerRender(<FirstUserForm />, { withL10n: true });
         const acceptButton = screen.getByRole("button", { name: "Accept" });
         screen.getByText("Using a hashed password.");
         expect(screen.queryByText(mockPassword)).not.toBeInTheDocument();

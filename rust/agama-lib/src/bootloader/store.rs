@@ -24,7 +24,7 @@ use super::{
     http_client::{BootloaderHTTPClient, BootloaderHTTPClientError},
     model::BootloaderSettings,
 };
-use crate::base_http_client::BaseHTTPClient;
+use crate::http::BaseHTTPClient;
 
 // FIXME: should we follow this approach more often?
 type BootloaderStoreResult<T> = Result<T, BootloaderStoreError>;

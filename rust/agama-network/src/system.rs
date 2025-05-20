@@ -209,6 +209,18 @@ impl NetworkSystemClient {
         Ok(result?)
     }
 
+    pub async fn set_ports(
+        &self,
+        uuid: Uuid,
+        ports: Vec<String>,
+    ) -> Result<(), NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions
+            .send(Action::SetPorts(uuid, Box::new(ports.clone()), tx))?;
+        let result = rx.await?;
+        Ok(result?)
+    }
+
     /// Applies the network configuration.
     pub async fn apply(&self) -> Result<(), NetworkSystemError> {
         let (tx, rx) = oneshot::channel();

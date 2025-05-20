@@ -24,6 +24,7 @@ use std::{collections::HashMap, task::Poll};
 
 use agama_lib::{
     error::ServiceError,
+    http::Event,
     storage::{
         client::zfcp::ZFCPClient,
         model::zfcp::{ZFCPController, ZFCPDisk},
@@ -37,10 +38,7 @@ use tokio::sync::mpsc::unbounded_channel;
 use tokio_stream::{wrappers::UnboundedReceiverStream, StreamExt};
 use zbus::zvariant::{ObjectPath, OwnedObjectPath, OwnedValue};
 
-use crate::{
-    dbus::{DBusObjectChange, DBusObjectChangesStream, ObjectsCache},
-    web::Event,
-};
+use crate::dbus::{DBusObjectChange, DBusObjectChangesStream, ObjectsCache};
 
 #[derive(Debug, Error)]
 enum ZFCPDiskStreamError {

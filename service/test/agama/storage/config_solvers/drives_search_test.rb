@@ -22,15 +22,15 @@
 require_relative "../storage_helpers"
 require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_solvers/drives_search"
+require "agama/storage/system"
 require "y2storage"
 
 describe Agama::Storage::ConfigSolvers::DrivesSearch do
   include Agama::RSpec::StorageHelpers
 
-  subject { described_class.new(devicegraph, disk_analyzer) }
+  subject { described_class.new(storage_system) }
 
-  let(:devicegraph) { Y2Storage::StorageManager.instance.probed }
-  let(:disk_analyzer) { Y2Storage::StorageManager.instance.probed_disk_analyzer }
+  let(:storage_system) { Agama::Storage::System.new }
 
   before do
     mock_storage(devicegraph: scenario)
@@ -71,7 +71,7 @@ describe Agama::Storage::ConfigSolvers::DrivesSearch do
 
       context "and any of the devices is not a candidate device" do
         before do
-          allow(disk_analyzer).to receive(:candidate_device?) { |d| d.name != "/dev/vda" }
+          allow(storage_system.analyzer).to receive(:candidate_device?) { |d| d.name != "/dev/vda" }
         end
 
         it "sets the first unassigned candidate device to the drive config" do

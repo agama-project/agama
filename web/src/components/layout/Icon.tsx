@@ -38,6 +38,8 @@ import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Globe from "@icons/globe.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
 import Info from "@icons/info.svg?component";
+import Keyboard from "@icons/keyboard.svg?component";
+import Language from "@icons/language.svg?component";
 import ListAlt from "@icons/list_alt.svg?component";
 import Lock from "@icons/lock.svg?component";
 import ManageAccounts from "@icons/manage_accounts.svg?component";
@@ -46,6 +48,7 @@ import MoreVert from "@icons/more_vert.svg?component";
 import NetworkWifi from "@icons/network_wifi.svg?component";
 import NetworkWifi1Bar from "@icons/network_wifi_1_bar.svg?component";
 import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
+import Translate from "@icons/translate.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
 import Warning from "@icons/warning.svg?component";
 import Visibility from "@icons/visibility.svg?component";
@@ -67,7 +70,9 @@ const icons = {
   globe: Globe,
   hard_drive: HardDrive,
   info: Info,
+  keyboard: Keyboard,
   keyboard_arrow_down: KeyboardArrowDown,
+  language: Language,
   list_alt: ListAlt,
   lock: Lock,
   manage_accounts: ManageAccounts,
@@ -76,9 +81,10 @@ const icons = {
   network_wifi: NetworkWifi,
   network_wifi_1_bar: NetworkWifi1Bar,
   network_wifi_3_bar: NetworkWifi3Bar,
-  settings_ethernet: SettingsEthernet,
+  translate: Translate,
   visibility: Visibility,
   visibility_off: VisibilityOff,
+  settings_ethernet: SettingsEthernet,
   warning: Warning,
   wifi: Wifi,
   wifi_off: WifiOff,

@@ -43,7 +43,7 @@ pub struct ManagerClient<'a> {
 }
 
 /// Holds information about the manager's status.
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct InstallerStatus {
     /// Current installation phase.
@@ -58,10 +58,13 @@ pub struct InstallerStatus {
 
 /// Represents the installation phase.
 /// NOTE: does this conversion have any value?
-#[derive(Clone, Copy, Debug, PartialEq, Serialize_repr, Deserialize_repr, utoipa::ToSchema)]
+#[derive(
+    Clone, Copy, Default, Debug, PartialEq, Serialize_repr, Deserialize_repr, utoipa::ToSchema,
+)]
 #[repr(u32)]
 pub enum InstallationPhase {
     /// Start up phase.
+    #[default]
     Startup,
     /// Configuration phase.
     Config,

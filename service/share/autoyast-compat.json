@@ -323,8 +323,44 @@
   },
   {
     "key": "services-manager",
-    "support": "planned",
-    "notes": "Meanwhile you can use post-installation scripts to handle these cases."
+    "support": "yes",
+    "notes": "Automatically converted into post-installation script",
+    "children": [
+      {
+        "key": "default_target",
+        "support": "yes"
+      },
+      {
+        "key": "enable",
+        "support": "yes",
+        "children": [
+          {
+            "key": "service",
+	    "support": "yes"
+          }
+        ]
+      },
+      {
+        "key": "disable",
+        "support": "yes",
+        "children": [
+          {
+            "key": "service",
+	    "support": "yes"
+          }
+        ]
+      },
+      {
+        "key": "on_demand",
+        "support": "yes",
+        "children": [
+          {
+            "key": "service",
+	    "support": "yes"
+          }
+        ]
+      }
+    ]
   },
   {
     "key": "scripts",

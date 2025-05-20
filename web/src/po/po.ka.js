@@ -258,6 +258,12 @@ export default {
   "Change device menu": [
     "მოწყობილობის მენიუს შეცვლა"
   ],
+  "Change display language and keyboard layout": [
+    ""
+  ],
+  "Change keyboard": [
+    "კლავიატურის შეცვლა"
+  ],
   "Change product": [
     "პროდუქტის შეცვლა"
   ],
@@ -787,12 +793,6 @@ export default {
   "Installation will take %s.": [
     "დაყენებას დასჭირდება %s."
   ],
-  "Installer Options": [
-    "დაყენების პროგრამის მორგება"
-  ],
-  "Installer options": [
-    "დაყენების პროგრამის მორგება"
-  ],
   "Installing a broken package affects system stability and is a big security risk!": [
     ""
   ],
@@ -948,6 +948,15 @@ export default {
   ],
   "More devices": [
     "მეტი მოწყობილობა"
+  ],
+  "More keymap layout might be available for the selected product at [Localization] page": [
+    ""
+  ],
+  "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
+    ""
+  ],
+  "More languages might be available for the selected product at [Localization] page": [
+    ""
   ],
   "Mount Point": [
     "მიმაგრების წერტილი"
@@ -1625,6 +1634,12 @@ export default {
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     ""
   ],
+  "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
+    ""
+  ],
+  "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
+    ""
+  ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     ""
   ],
@@ -1657,6 +1672,9 @@ export default {
   ],
   "This uses existing partitions at the disk": [
     "ეს იყენებს დისკზე არსებულ დანაყოფებს"
+  ],
+  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
+    ""
   ],
   "TiB": [
     "ტიბ"
@@ -1754,6 +1772,9 @@ export default {
   "Use available space": [
     "ხელმისაწვდომი ადგილის გამოყენება"
   ],
+  "Use for the selected product too": [
+    ""
+  ],
   "Use password": [
     "პაროლის გამოყენება"
   ],
@@ -1767,6 +1788,9 @@ export default {
     "მინიშნებული მომხმარებლის სახელის გამოყენება"
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
+    ""
+  ],
+  "Use these same settings for the selected product": [
     ""
   ],
   "Used space": [
@@ -1852,6 +1876,9 @@ export default {
   ],
   "ZFCP": [
     "ZFCP"
+  ],
+  "[CAPS LOCK] is on": [
+    ""
   ],
   "at least %s": [
     "%s მაინც"

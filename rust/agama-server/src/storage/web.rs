@@ -54,13 +54,11 @@ use crate::{
         dasd::{dasd_service, dasd_stream},
         iscsi::iscsi_stream,
     },
-    web::{
-        common::{
-            issues_router, jobs_service, progress_router, service_status_router, EventStreams,
-        },
-        Event,
+    web::common::{
+        issues_router, jobs_service, progress_router, service_status_router, EventStreams,
     },
 };
+use agama_lib::http::Event;
 
 pub async fn storage_streams(dbus: zbus::Connection) -> Result<EventStreams, Error> {
     let mut result: EventStreams = vec![(

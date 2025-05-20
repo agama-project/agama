@@ -83,11 +83,12 @@ module Agama
           @solved = true
         end
 
-        # Whether the search does not define any specific condition.
+        # Whether the search defines any condition.
         #
         # @return [Boolean]
-        def always_match?
-          name.nil?
+        def condition?
+          condition = name || size || partition_number
+          !condition.nil?
         end
 
         # Whether the section containing the search should be skipped

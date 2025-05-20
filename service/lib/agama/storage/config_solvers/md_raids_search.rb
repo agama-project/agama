@@ -31,12 +31,10 @@ module Agama
         include SearchMatchers
         include WithPartitionsSearch
 
-        # @param devicegraph [Y2Storage::Devicegraph]
-        # @param disk_analyzer [Y2Storage::DiskAnalyzer]
-        def initialize(devicegraph, disk_analyzer)
+        # @param storage_system [Storage::System]
+        def initialize(storage_system)
           super()
-          @devicegraph = devicegraph
-          @disk_analyzer = disk_analyzer
+          @storage_system = storage_system
         end
 
         # Solves the search of the MD RAID configs and solves the searches of their partitions.
@@ -46,18 +44,15 @@ module Agama
         # @param config [Storage::Config]
         # @return [Storage::Config]
         def solve(config)
-          config.md_raids = super(config.md_raids, candidate_md_raids)
+          config.md_raids = super(config.md_raids, storage_system.candidate_md_raids)
           solve_partitions_search(config.md_raids)
           config
         end
 
       private
 
-        # @return [Y2Storage::Devicegraph]
-        attr_reader :devicegraph
-
-        # @return [Y2Storage::DiskAnalyzer]
-        attr_reader :disk_analyzer
+        # @return [Storage::System]
+        attr_reader :storage_system
 
         # @see DevicesSearch#match_condition?
         # @param md_raid_config [Configs::MdRaid]
@@ -66,13 +61,6 @@ module Agama
         # @return [Boolean]
         def match_condition?(md_raid_config, md_raid)
           match_name?(md_raid_config, md_raid) && match_size?(md_raid_config, md_raid)
-        end
-
-        # Candidate MD RAIDs for solving the search of the configs.
-        #
-        # @return [Array<Y2Storage::Md]
-        def candidate_md_raids
-          devicegraph.md_raids.select { |d| disk_analyzer.candidate_device?(d) }
         end
       end
     end

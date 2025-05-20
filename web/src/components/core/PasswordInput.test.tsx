@@ -22,20 +22,33 @@
 
 import React, { useState } from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import userEvent from "@testing-library/user-event";
 import PasswordInput, { PasswordInputProps } from "./PasswordInput";
+import * as utils from "~/utils";
 
-describe("PasswordInput Component", () => {
+jest.mock("~/context/installerL10n", () => ({
+  ...jest.requireActual("~/context/installerL10n"),
+  useInstallerL10n: () => ({
+    keymap: "us",
+    language: "de-DE",
+  }),
+}));
+
+describe("PasswordInput", () => {
   it("renders a password input", () => {
-    plainRender(<PasswordInput id="password" name="password" aria-label="User password" />);
+    installerRender(<PasswordInput id="password" name="password" aria-label="User password" />, {
+      withL10n: true,
+    });
 
     const inputField = screen.getByLabelText("User password");
     expect(inputField).toHaveAttribute("type", "password");
   });
 
   it("allows revealing the password", async () => {
-    plainRender(<PasswordInput id="password" name="password" aria-label="User password" />);
+    installerRender(<PasswordInput id="password" name="password" aria-label="User password" />, {
+      withL10n: true,
+    });
 
     const passwordInput = screen.getByLabelText("User password");
     const button = screen.getByRole("button");
@@ -46,8 +59,9 @@ describe("PasswordInput Component", () => {
   });
 
   it("applies autoFocus behavior correctly", () => {
-    plainRender(
+    installerRender(
       <PasswordInput autoFocus id="password" name="password" aria-label="User password" />,
+      { withL10n: true },
     );
 
     const inputField = screen.getByLabelText("User password");
@@ -69,8 +83,9 @@ describe("PasswordInput Component", () => {
   };
 
   it("triggers onChange callback", async () => {
-    const { user } = plainRender(
+    const { user } = installerRender(
       <PasswordInputTest id="test-password" aria-label="Test password" />,
+      { withL10n: true },
     );
     const passwordInput = screen.getByLabelText("Test password");
 
@@ -78,5 +93,88 @@ describe("PasswordInput Component", () => {
     await user.type(passwordInput, "secret");
 
     screen.getByText("Password value updated!");
+  });
+
+  it("renders keyboard reminders by default", async () => {
+    const { user } = installerRender(
+      <PasswordInput id="password" name="password" aria-label="User password" />,
+      {
+        withL10n: true,
+      },
+    );
+
+    screen.getByLabelText("User password");
+    screen.getByText(/^Using/);
+    screen.getByText("us");
+    screen.getByText(/keyboard$/);
+    await user.keyboard("{CapsLock}");
+    screen.getByText(/^CAPS LOCK/);
+    screen.getByText(/is on$/);
+    await user.keyboard("{CapsLock}");
+    expect(screen.queryByText(/^CAPS LOCK/)).toBeNull();
+  });
+
+  it("allow disabling reminders via reminders prop", async () => {
+    const { user } = installerRender(
+      <PasswordInput id="password" name="password" aria-label="User password" reminders={[]} />,
+      {
+        withL10n: true,
+      },
+    );
+
+    expect(screen.queryByText(/^Using/)).toBeNull();
+    expect(screen.queryByText(/^CAPS LOCK/)).toBeNull();
+    await user.keyboard("{CapsLock}");
+    expect(screen.queryByText(/^CAPS LOCK/)).toBeNull();
+  });
+
+  it("allows picking only the keymap reminder", async () => {
+    const { user } = installerRender(
+      <PasswordInput
+        id="password"
+        name="password"
+        aria-label="User password"
+        reminders={["keymap"]}
+      />,
+      {
+        withL10n: true,
+      },
+    );
+
+    screen.getByText(/^Using/);
+    await user.keyboard("{CapsLock}");
+    expect(screen.queryByText(/^CAPS LOCK/)).toBeNull();
+    expect(screen.queryByText(/is on$/)).toBeNull();
+  });
+
+  it("allows picking only the caps locsk reminder", async () => {
+    const { user } = installerRender(
+      <PasswordInput
+        id="password"
+        name="password"
+        aria-label="User password"
+        reminders={["capslock"]}
+      />,
+      {
+        withL10n: true,
+      },
+    );
+
+    expect(screen.queryByText(/^Using/)).toBeNull();
+    await user.keyboard("{CapsLock}");
+    screen.getByText(/^CAPS LOCK/);
+    screen.getByText(/is on$/);
+    await user.keyboard("{CapsLock}");
+    expect(screen.queryByText(/^CAPS LOCK/)).toBeNull();
+  });
+
+  it("does not render the keymap reminder in remote connections", () => {
+    jest.spyOn(utils, "localConnection").mockReturnValue(false);
+
+    installerRender(<PasswordInput id="password" name="password" aria-label="User password" />, {
+      withL10n: true,
+    });
+
+    expect(screen.queryByText(/^Using/)).toBeNull();
   });
 });

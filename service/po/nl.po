@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-20 02:39+0000\n"
-"PO-Revision-Date: 2025-01-02 16:50+0000\n"
-"Last-Translator: Natasha Ament <stacheldrahtje@ament-teusink.eu>\n"
-"Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-service-"
-"master/nl/>\n"
+"PO-Revision-Date: 2025-05-17 22:59+0000\n"
+"Last-Translator: Feike Donia <feikedonia@proton.me>\n"
+"Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/"
+"agama-service-master/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9.2\n"
+"X-Generator: Weblate 5.11.4\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -25,7 +25,7 @@ msgstr ""
 #: service/lib/agama/autoyast/profile_reporter.rb:51
 #, perl-brace-format
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
-msgstr ""
+msgstr "Niet-ondersteunde elementen in het AutoYaST-profiel gevonden: %{keys}."
 
 #. Runs the config phase
 #: service/lib/agama/manager.rb:94
@@ -62,7 +62,7 @@ msgstr "Laad opslag vertalingen"
 #. TRANSLATORS: button label, try downloading the failed package again
 #: service/lib/agama/software/callbacks/base.rb:39
 msgid "Try again"
-msgstr ""
+msgstr "Opnieuw proberen"
 
 #. TRANSLATORS: button label, ignore the failed download, skip package installation
 #: service/lib/agama/software/callbacks/base.rb:45

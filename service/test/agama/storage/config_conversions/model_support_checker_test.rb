@@ -24,7 +24,9 @@ require_relative "../../../test_helper"
 require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_solver"
 require "agama/storage/model_support_checker"
+require "agama/storage/system"
 require "y2storage/blk_device"
+require "y2storage/encryption_method"
 require "y2storage/refinements"
 
 using Y2Storage::Refinements::SizeCasts
@@ -95,13 +97,13 @@ describe Agama::Storage::ModelSupportChecker do
 
   let(:product_config) { Agama::Config.new(product_data) }
 
-  let(:devicegraph) { Y2Storage::StorageManager.instance.probed }
+  let(:storage_system) { Agama::Storage::System.new }
 
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSON
       .new(config_json)
       .convert
-      .tap { |c| Agama::Storage::ConfigSolver.new(product_config, devicegraph).solve(c) }
+      .tap { |c| Agama::Storage::ConfigSolver.new(product_config, storage_system).solve(c) }
   end
 
   before do
