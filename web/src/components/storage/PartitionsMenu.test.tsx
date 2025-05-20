@@ -54,26 +54,6 @@ const drive1: Drive = {
   getPartition: (path) => drive1Partitions.find((p) => p.mountPath === path),
 };
 
-const drive2Partitions = [
-  {
-    mountPath: "/home",
-    size: {
-      min: 1_000_000_000,
-      default: true,
-    },
-    filesystem: { default: true, type: "xfs" },
-  },
-];
-
-const drive2: Drive = {
-  name: "/dev/sdb",
-  list: "drives",
-  listIndex: 1,
-  spacePolicy: "delete",
-  partitions: drive2Partitions,
-  getPartition: (path) => drive2Partitions.find((p) => p.mountPath === path),
-};
-
 const mockDeletePartition = jest.fn();
 
 jest.mock("~/hooks/storage/partition", () => ({

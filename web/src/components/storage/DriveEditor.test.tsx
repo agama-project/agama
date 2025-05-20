@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender, mockNavigateFn } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 import DriveEditor from "~/components/storage/DriveEditor";
 import { StorageDevice } from "~/types/storage";
 import { Drive } from "~/types/storage/model";

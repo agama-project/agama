@@ -19,7 +19,12 @@ export type SimpleSearchByName = string;
  * How to handle the section if the device is not found.
  */
 export type SearchAction = "skip" | "error";
-export type Encryption = EncryptionLuks1 | EncryptionLuks2 | EncryptionPervasiveLuks2 | EncryptionTPM | EncryptionSwap;
+export type Encryption =
+  | EncryptionLuks1
+  | EncryptionLuks2
+  | EncryptionPervasiveLuks2
+  | EncryptionTPM
+  | EncryptionSwap;
 /**
  * Password to use when creating a new encryption device.
  */
@@ -92,7 +97,10 @@ export type SizeValueWithCurrent = SizeValue | SizeCurrent;
  * The current size of the device.
  */
 export type SizeCurrent = "current";
-export type PhysicalVolumeElement = Alias | SimplePhysicalVolumesGenerator | AdvancedPhysicalVolumesGenerator;
+export type PhysicalVolumeElement =
+  | Alias
+  | SimplePhysicalVolumesGenerator
+  | AdvancedPhysicalVolumesGenerator;
 export type LogicalVolumeElement =
   | SimpleVolumesGenerator
   | AdvancedLogicalVolumesGenerator
