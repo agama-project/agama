@@ -92,20 +92,21 @@ impl std::fmt::Display for ValidationOutcome {
 /// ```
 /// # use agama_lib::profile::{ProfileValidator, ValidationOutcome};
 /// # use std::path::Path;
-/// let validator = ProfileValidator::new(
-///   Path::new("share/profile.schema.json")
-/// ).expect("the default validator");
+/// let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+///   .join("share/profile.schema.json");
+/// let validator = ProfileValidator::new(&path)
+///   .expect("the default validator");
 ///
 /// // you can validate a &str
 /// let wrong_profile = r#"
 ///   { "product": { "name": "Tumbleweed" } }
 /// "#;
 /// let result = validator.validate_str(&wrong_profile).unwrap();
-/// assert!(matches!(ValidationOutcome::NotValid, result));
+/// assert!(matches!(result, ValidationOutcome::NotValid(_)));
 ///
 /// // or a file
 /// validator.validate_file(Path::new("share/examples/profile.json"));
-/// assert!(matches!(ValidationOutcome::Valid, result));
+/// assert!(matches!(result, ValidationOutcome::Valid));
 /// ```
 pub struct ProfileValidator {
     validator: jsonschema::Validator,
