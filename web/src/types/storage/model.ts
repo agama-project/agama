@@ -39,12 +39,33 @@ interface Drive extends apiModel.Drive {
   listIndex: number;
   isUsed: boolean;
   isAddingPartitions: boolean;
+  isTargetDevice: boolean;
+  isBoot: boolean;
   getMountPaths: () => string[];
   getVolumeGroups: () => VolumeGroup[];
   getPartition: (path: string) => Partition | undefined;
+  getConfiguredExistingPartitions: () => Partition[];
 }
 
-type Partition = apiModel.Partition;
+interface MdRaid extends apiModel.MdRaid {
+  list: string;
+  listIndex: number;
+  isUsed: boolean;
+  isAddingPartitions: boolean;
+  isTargetDevice: boolean;
+  isBoot: boolean;
+  getMountPaths: () => string[];
+  getVolumeGroups: () => VolumeGroup[];
+  getPartition: (path: string) => Partition | undefined;
+  getConfiguredExistingPartitions: () => Partition[];
+}
+
+interface Partition extends apiModel.Partition {
+  isNew: boolean;
+  isUsed: boolean;
+  isReused: boolean;
+  isUsedBySpacePolicy: boolean;
+}
 
 interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logicalVolumes"> {
   list: string;
@@ -56,4 +77,4 @@ interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logi
 
 type LogicalVolume = apiModel.LogicalVolume;
 
-export type { Model, Drive, Partition, VolumeGroup, LogicalVolume };
+export type { Model, Drive, MdRaid, Partition, VolumeGroup, LogicalVolume };
