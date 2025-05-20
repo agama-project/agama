@@ -24,6 +24,7 @@ require_relative "../../../test_helper"
 require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_solver"
 require "agama/storage/model_support_checker"
+require "y2storage/blk_device"
 require "y2storage/refinements"
 
 using Y2Storage::Refinements::SizeCasts
@@ -109,11 +110,30 @@ describe Agama::Storage::ModelSupportChecker do
     allow(Y2Storage::EncryptionMethod::TPM_FDE)
       .to(receive(:possible?))
       .and_return(true)
+    allow(Y2Storage::BlkDevice).to receive(:find_by_any_name)
   end
 
   subject { described_class.new(config) }
 
   describe "#supported?" do
+    shared_examples "partitionable without name" do
+      context "and the device is going to be skipped" do
+        let(:if_not_found) { "skip" }
+
+        it "returns true" do
+          expect(subject.supported?).to eq(true)
+        end
+      end
+
+      context "and the device is not going to be skipped" do
+        let(:if_not_found) { "error" }
+
+        it "returns false" do
+          expect(subject.supported?).to eq(false)
+        end
+      end
+    end
+
     let(:scenario) { "disks.yaml" }
 
     # The drive is not found and it is not searched by name.
@@ -129,16 +149,33 @@ describe Agama::Storage::ModelSupportChecker do
         }
       end
 
-      context "and the drive is going to be skipped" do
-        let(:if_not_found) { "skip" }
+      include_examples "partitionable without name"
+    end
+
+    # The MD RAID is not found and it is not searched by name.
+    context "if there is a MD RAID with unknown name" do
+      let(:config_json) do
+        {
+          mdRaids: [
+            { search: { ifNotFound: if_not_found } }
+          ]
+        }
+      end
+
+      include_examples "partitionable without name"
+    end
+
+    shared_examples "partitionable with encryption" do
+      context "and the device is going to be skipped" do
+        let(:condition) { { name: "/not/found" } }
 
         it "returns true" do
           expect(subject.supported?).to eq(true)
         end
       end
 
-      context "and the drive is not going to be skipped" do
-        let(:if_not_found) { "error" }
+      context "and the device is not going to be skipped" do
+        let(:condition) { nil }
 
         it "returns false" do
           expect(subject.supported?).to eq(false)
@@ -163,21 +200,29 @@ describe Agama::Storage::ModelSupportChecker do
         }
       end
 
-      context "and the drive is going to be skipped" do
-        let(:condition) { { name: "/not/found" } }
+      include_examples "partitionable with encryption"
+    end
 
-        it "returns true" do
-          expect(subject.supported?).to eq(true)
-        end
+    context "if there is a MD RAID with encryption" do
+      let(:scenario) { "md_raids.yaml" }
+
+      let(:config_json) do
+        {
+          mdRaids: [
+            {
+              search:     {
+                condition:  condition,
+                ifNotFound: "skip"
+              },
+              encryption: {
+                luks1: { password: "12345" }
+              }
+            }
+          ]
+        }
       end
 
-      context "and the drive is not going to be skipped" do
-        let(:condition) { nil }
-
-        it "returns false" do
-          expect(subject.supported?).to eq(false)
-        end
-      end
+      include_examples "partitionable with encryption"
     end
 
     context "if there is a LVM thin pool" do
@@ -440,7 +485,7 @@ describe Agama::Storage::ModelSupportChecker do
     end
 
     context "if the config is totally supported" do
-      let(:scenario) { "disks.yaml" }
+      let(:scenario) { "md_raids.yaml" }
 
       let(:config_json) do
         {
@@ -461,13 +506,11 @@ describe Agama::Storage::ModelSupportChecker do
                 }
               ]
             },
+            { alias: "pv" }
+          ],
+          mdRaids:      [
             {
-              alias:      "pv",
-              partitions: [
-                { search: "*", delete: true }
-              ]
-            },
-            {
+              search:     "/dev/md1",
               partitions: [
                 { search: "*", delete: true },
                 {
