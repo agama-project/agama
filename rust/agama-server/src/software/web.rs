@@ -27,7 +27,10 @@
 
 use crate::{
     error::Error,
-    web::common::{issues_router, progress_router, service_status_router, EventStreams},
+    web::{
+        common::{issues_router, progress_router, service_status_router, EventStreams},
+        EventsReceiver,
+    },
 };
 
 use agama_lib::{
@@ -184,8 +187,27 @@ fn reason_to_selected_by(
     Ok(selected)
 }
 
+/// Process incoming events.
+///
+/// * `events`: channel to listen for events.
+/// * `products`: list of products (shared behind a mutex).
+pub async fn receive_events(
+    mut events: EventsReceiver,
+    products: Arc<RwLock<Option<Vec<Product>>>>,
+) {
+    while let Ok(event) = events.recv().await {
+        if let Event::LocaleChanged { locale: _ } = event {
+            let mut cached_products = products.write().await;
+            *cached_products = None;
+        }
+    }
+}
+
 /// Sets up and returns the axum service for the software module.
-pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
+pub async fn software_service(
+    dbus: zbus::Connection,
+    events: EventsReceiver,
+) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &str = "org.opensuse.Agama.Software1";
     const DBUS_PATH: &str = "/org/opensuse/Agama/Software1";
     const DBUS_PRODUCT_PATH: &str = "/org/opensuse/Agama/Software1/Product";
@@ -209,6 +231,10 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
         products: Arc::new(RwLock::new(None)),
         config: Arc::new(RwLock::new(None)),
     };
+
+    let cached_products = Arc::clone(&state.products);
+    tokio::spawn(async move { receive_events(events, cached_products).await });
+
     let router = Router::new()
         .route("/patterns", get(patterns))
         .route("/repositories", get(repositories))

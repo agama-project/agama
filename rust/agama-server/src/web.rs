@@ -83,7 +83,10 @@ where
         .add_service("/l10n", l10n_service(dbus.clone(), events.clone()).await?)
         .add_service("/manager", manager_service(dbus.clone()).await?)
         .add_service("/security", security_service(dbus.clone()).await?)
-        .add_service("/software", software_service(dbus.clone()).await?)
+        .add_service(
+            "/software",
+            software_service(dbus.clone(), events.subscribe()).await?,
+        )
         .add_service("/storage", storage_service(dbus.clone()).await?)
         .add_service("/iscsi", iscsi_service(dbus.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
