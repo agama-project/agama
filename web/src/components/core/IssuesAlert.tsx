@@ -26,7 +26,6 @@ import { _ } from "~/i18n";
 import { Issue } from "~/types/issues";
 import Link from "./Link";
 import { PATHS } from "~/routes/software";
-import { Icon } from "../layout";
 
 export default function IssuesAlert({ issues }) {
   if (issues === undefined || issues.length === 0) return;
@@ -40,12 +39,10 @@ export default function IssuesAlert({ issues }) {
         {issues.map((i: Issue, idx: number) => (
           <ListItem key={idx}>
             {i.description}{" "}
-            {i.kind === "solver" ? (
-              <Link to={PATHS.conflicts} variant="link" icon={<Icon name="build_circle" />}>
-                {_("Solve it")}
+            {i.kind === "solver" && (
+              <Link to={PATHS.conflicts} variant="link" isInline>
+                {_("Review and fix")}
               </Link>
-            ) : (
-              ""
             )}
           </ListItem>
         ))}

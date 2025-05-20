@@ -27,7 +27,6 @@ import React from "react";
 import Apps from "@icons/apps.svg?component";
 import AppRegistration from "@icons/app_registration.svg?component";
 import Backspace from "@icons/backspace.svg?component";
-import BuildCircle from "@icons/build_circle.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
 import ChevronLeft from "@icons/chevron_left.svg?component";
 import ChevronRight from "@icons/chevron_right.svg?component";
@@ -60,7 +59,6 @@ const icons = {
   apps: Apps,
   app_registration: AppRegistration,
   backspace: Backspace,
-  build_circle: BuildCircle,
   check_circle: CheckCircle,
   chevron_left: ChevronLeft,
   chevron_right: ChevronRight,
