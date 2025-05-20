@@ -25,6 +25,7 @@ import { MdRaid } from "~/types/storage/model";
 import { StorageDevice } from "~/types/storage";
 import PartitionableHeader from "~/components/storage/PartitionableHeader";
 import PartitionsMenu from "~/components/storage/PartitionsMenu";
+import MdRaidDeviceMenu from "~/components/storage/MdRaidDeviceMenu";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
 import { Card, CardBody, CardHeader, CardTitle, Flex } from "@patternfly/react-core";
 
@@ -32,8 +33,12 @@ import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacin
 
 export type MdRaidEditorProps = { raid: MdRaid; raidDevice: StorageDevice };
 
-const MdRaidHeader = ({ raid }: MdRaidEditorProps) => {
-  return <PartitionableHeader device={raid}>{raid.name}</PartitionableHeader>;
+const MdRaidHeader = ({ raid, raidDevice }: MdRaidEditorProps) => {
+  return (
+    <PartitionableHeader device={raid}>
+      <MdRaidDeviceMenu raid={raid} selected={raidDevice} />
+    </PartitionableHeader>
+  );
 };
 
 export default function MdRaidEditor({ raid, raidDevice }: MdRaidEditorProps) {
@@ -41,7 +46,7 @@ export default function MdRaidEditor({ raid, raidDevice }: MdRaidEditorProps) {
     <Card isCompact>
       <CardHeader>
         <CardTitle>
-          <MdRaidHeader raid={raid} />
+          <MdRaidHeader raid={raid} raidDevice={raidDevice} />
         </CardTitle>
       </CardHeader>
       <CardBody className={spacingStyles.plLg}>
