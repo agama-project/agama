@@ -19,14 +19,14 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../storage_helpers"
+require_relative "./storage_helpers"
 require "agama/config"
 require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_solver"
 require "y2storage"
 require "y2storage/encryption_method/tpm_fde"
 
-shared_context "checker" do
+shared_context "config solver" do
   # Solves the config.
   def solve_config
     devicegraph = Y2Storage::StorageManager.instance.probed

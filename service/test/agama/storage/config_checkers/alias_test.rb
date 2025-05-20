@@ -19,8 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require_relative "../config_solver_context"
 require_relative "../storage_helpers"
-require_relative "./context"
 require "agama/storage/config_checkers/alias"
 
 shared_examples "overused alias issue" do
@@ -189,7 +189,7 @@ shared_examples "partitioned and volume group user" do
 end
 
 describe Agama::Storage::ConfigCheckers::Alias do
-  include_context "checker"
+  include_context "config solver"
 
   subject { described_class.new(device_config, config) }
 
