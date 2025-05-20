@@ -37,7 +37,7 @@
 //!   async fn print_status(http_url: url::Url, ws_url: url::Url, token: AuthToken) -> anyhow::Result<()> {
 //!     let http_client = BaseHTTPClient::new(http_url)?
 //!       .authenticated(&token)?;
-//!     let ws_client = WebSocketClient::connect(&ws_url, token.clone(), false)
+//!     let ws_client = WebSocketClient::connect(&ws_url, &token, false)
 //!       .await?;
 //!     let monitor = Monitor::connect(http_client, ws_client).await.unwrap();
 //!     let mut updates = monitor.subscribe();
