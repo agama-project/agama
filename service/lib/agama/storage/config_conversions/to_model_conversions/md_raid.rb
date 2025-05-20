@@ -29,9 +29,6 @@ module Agama
     module ConfigConversions
       module ToModelConversions
         # MD RAID conversion to model according to the JSON schema.
-        #
-        # So far, only reused RAIDs are supported (ie. those that previously exist in the
-        # system and are succesfully searched at the config).
         class MdRaid < Base
           include WithFilesystem
           include WithPartitions

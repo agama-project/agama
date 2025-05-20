@@ -76,14 +76,16 @@ module Agama
         ].flatten.any?
       end
 
-      # Whether there is any mandatory drive or reused RAID without a name.
+      # Whether there is any mandatory drive or reused MD RAID without a name.
+      #
+      # So far, only existing MD RAIDs are supported.
       #
       # @return [Boolean]
       def any_partitionable_without_name?
-        config.supporting_partitions.any? do |entry|
-          !entry.found_device &&
-            !entry.search&.skip_device? &&
-            !entry.search&.name
+        config.supporting_partitions.any? do |device_config|
+          !device_config.found_device &&
+            !device_config.search&.skip_device? &&
+            !device_config.search&.name
         end
       end
 
