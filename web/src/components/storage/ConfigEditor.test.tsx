@@ -25,7 +25,7 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import ConfigEditor from "~/components/storage/ConfigEditor";
 import { StorageDevice } from "~/types/storage";
-import { apiModel } from "~/api/storage/types";
+import * as model from "~/types/storage/model";
 
 const disk: StorageDevice = {
   sid: 60,
@@ -46,29 +46,39 @@ jest.mock("~/queries/storage", () => ({
   useDevices: () => mockUseDevices(),
 }));
 
-const mockUseConfigModel = jest.fn();
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useConfigModel: () => mockUseConfigModel(),
+const mockUseModel = jest.fn();
+jest.mock("~/hooks/storage/model", () => ({
+  ...jest.requireActual("~/hooks/storage/model"),
+  useModel: () => mockUseModel(),
 }));
 
 jest.mock("./DriveEditor", () => () => <div>drive editor</div>);
+jest.mock("./MdRaidEditor", () => () => <div>raid editor</div>);
 jest.mock("./VolumeGroupEditor", () => () => <div>volume group editor</div>);
 
-const hasDrives: apiModel.Config = {
+const hasDrives: model.Config = {
   drives: [{ name: "/dev/vda" }],
+  mdRaids: [],
+  volumeGroups: [],
 };
 
-const hasVolumeGroups: apiModel.Config = {
+const hasVolumeGroups: model.Config = {
+  drives: [],
+  mdRaids: [],
   volumeGroups: [{ vgName: "/dev/system" }],
 };
 
-const hasBoth: apiModel.Config = {
+const hasBoth: model.Config = {
   drives: [{ name: "/dev/vda" }],
+  mdRaids: [],
   volumeGroups: [{ vgName: "/dev/system" }],
 };
 
-const hasNothing: apiModel.Config = {};
+const hasNothing: model.Config = {
+  drives: [],
+  mdRaids: [],
+  volumeGroups: [],
+};
 
 beforeEach(() => {
   mockUseDevices.mockReturnValue([disk]);
@@ -76,7 +86,7 @@ beforeEach(() => {
 
 describe("when no drive is used for installation", () => {
   beforeEach(() => {
-    mockUseConfigModel.mockReturnValue(hasVolumeGroups);
+    mockUseModel.mockReturnValue(hasVolumeGroups);
   });
 
   it("does not render the drive editor", () => {
@@ -87,7 +97,7 @@ describe("when no drive is used for installation", () => {
 
 describe("when a drive is used for installation", () => {
   beforeEach(() => {
-    mockUseConfigModel.mockReturnValue(hasDrives);
+    mockUseModel.mockReturnValue(hasDrives);
   });
 
   it("renders the drive editor", () => {
@@ -98,7 +108,7 @@ describe("when a drive is used for installation", () => {
 
 describe("when no volume group is used for installation", () => {
   beforeEach(() => {
-    mockUseConfigModel.mockReturnValue(hasDrives);
+    mockUseModel.mockReturnValue(hasDrives);
   });
 
   it("does not render the volume group editor", () => {
@@ -109,7 +119,7 @@ describe("when no volume group is used for installation", () => {
 
 describe("when a volume group is used for installation", () => {
   beforeEach(() => {
-    mockUseConfigModel.mockReturnValue(hasVolumeGroups);
+    mockUseModel.mockReturnValue(hasVolumeGroups);
   });
 
   it("renders the volume group editor", () => {
@@ -120,7 +130,7 @@ describe("when a volume group is used for installation", () => {
 
 describe("when both a drive and volume group are used for installation", () => {
   beforeEach(() => {
-    mockUseConfigModel.mockReturnValue(hasBoth);
+    mockUseModel.mockReturnValue(hasBoth);
   });
 
   it("renders a volume group editor followed by drive editor", () => {
@@ -136,7 +146,7 @@ describe("when both a drive and volume group are used for installation", () => {
 
 describe("when neither a drive nor volume group are used for installation", () => {
   beforeEach(() => {
-    mockUseConfigModel.mockReturnValue(hasNothing);
+    mockUseModel.mockReturnValue(hasNothing);
   });
 
   it("renders a no configuration alert with a button for resetting to default", () => {

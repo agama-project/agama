@@ -122,6 +122,7 @@ const mockEditVolumeGroup = jest.fn();
 
 let mockUseModel = {
   drives: [mockSdaDrive],
+  mdRaids: [],
   volumeGroups: [],
 };
 
@@ -136,7 +137,7 @@ jest.mock("~/queries/issues", () => ({
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useAvailableDevices: () => mockUseAllDevices,
-  useDevices: () => [sda, sdb],
+  useDevices: () => mockUseAllDevices,
 }));
 
 jest.mock("~/hooks/storage/model", () => ({
@@ -239,6 +240,7 @@ describe("LvmPage", () => {
       beforeEach(() => {
         mockUseModel = {
           drives: [mockSdaDrive],
+          mdRaids: [],
           volumeGroups: [mockRootVolumeGroup],
         };
       });
@@ -254,6 +256,7 @@ describe("LvmPage", () => {
       beforeEach(() => {
         mockUseModel = {
           drives: [mockSdaDrive],
+          mdRaids: [],
           volumeGroups: [],
         };
       });
@@ -271,6 +274,7 @@ describe("LvmPage", () => {
       mockParams({ id: "fakeRootVg" });
       mockUseModel = {
         drives: [mockSdaDrive],
+        mdRaids: [],
         volumeGroups: [mockRootVolumeGroup, mockHomeVolumeGroup],
       };
     });
