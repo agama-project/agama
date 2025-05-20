@@ -164,7 +164,6 @@ async fn probe_sync_action(State(state): State<ManagerState<'_>>) -> Result<(), 
     )
 )]
 async fn install_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
-    // TODO: fill the software caches here
     state.manager.install().await?;
     Ok(())
 }
