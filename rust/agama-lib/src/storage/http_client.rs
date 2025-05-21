@@ -24,7 +24,7 @@ pub mod dasd;
 pub mod iscsi;
 
 use crate::{
-    base_http_client::{BaseHTTPClient, BaseHTTPClientError},
+    http::{BaseHTTPClient, BaseHTTPClientError},
     storage::StorageSettings,
 };
 

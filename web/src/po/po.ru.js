@@ -258,6 +258,12 @@ export default {
   "Change device menu": [
     "Меню изменения устройства"
   ],
+  "Change display language and keyboard layout": [
+    ""
+  ],
+  "Change keyboard": [
+    "Изменить клавиатуру"
+  ],
   "Change product": [
     "Изменить продукт"
   ],
@@ -788,12 +794,6 @@ export default {
   "Installation will take %s.": [
     "Установка займёт %s."
   ],
-  "Installer Options": [
-    "Параметры установщика"
-  ],
-  "Installer options": [
-    "Параметры установщика"
-  ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "Установка повреждённого пакета влияет на стабильность системы и представляет собой большой риск для безопасности!"
   ],
@@ -949,6 +949,15 @@ export default {
   ],
   "More devices": [
     "Другие устройства"
+  ],
+  "More keymap layout might be available for the selected product at [Localization] page": [
+    ""
+  ],
+  "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
+    ""
+  ],
+  "More languages might be available for the selected product at [Localization] page": [
+    ""
   ],
   "Mount Point": [
     "Точка монтирования"
@@ -1627,6 +1636,12 @@ export default {
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Это наиболее актуальные настройки установки. Более подробные сведения приведены в разделах меню."
   ],
+  "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
+    ""
+  ],
+  "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
+    ""
+  ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Это действие может уничтожить все данные, хранящиеся на перечисленных ниже устройствах. Пожалуйста, подтвердите, что Вы действительно хотите продолжить."
   ],
@@ -1659,6 +1674,9 @@ export default {
   ],
   "This uses existing partitions at the disk": [
     "При этом используются существующие разделы на диске"
+  ],
+  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
+    ""
   ],
   "TiB": [
     "ТиБ"
@@ -1756,6 +1774,9 @@ export default {
   "Use available space": [
     "Использовать свободное пространство"
   ],
+  "Use for the selected product too": [
+    ""
+  ],
   "Use password": [
     "Использовать пароль"
   ],
@@ -1770,6 +1791,9 @@ export default {
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     "Используйте Доверенный платформенный модуль (TPM) для автоматического дешифрования при каждой загрузке"
+  ],
+  "Use these same settings for the selected product": [
+    ""
   ],
   "Used space": [
     "Используемое"
@@ -1854,6 +1878,9 @@ export default {
   ],
   "ZFCP": [
     "ZFCP"
+  ],
+  "[CAPS LOCK] is on": [
+    ""
   ],
   "at least %s": [
     "не менее %s"

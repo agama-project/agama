@@ -258,6 +258,9 @@ export default {
   "Change device menu": [
     "Cihaz menüsünü değiştir"
   ],
+  "Change display language and keyboard layout": [
+    ""
+  ],
   "Change product": [
     "Ürünü değiştir"
   ],
@@ -787,12 +790,6 @@ export default {
   "Installation will take %s.": [
     "Kurulum %s kadar olacak."
   ],
-  "Installer Options": [
-    "Yükleyici Seçenekleri"
-  ],
-  "Installer options": [
-    "Kurulum seçenekleri"
-  ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "Bozuk bir paketin kurulumu sistem kararlılığını etkiler ve büyük bir güvenlik riski oluşturur!"
   ],
@@ -948,6 +945,15 @@ export default {
   ],
   "More devices": [
     "Daha fazla cihaz"
+  ],
+  "More keymap layout might be available for the selected product at [Localization] page": [
+    ""
+  ],
+  "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
+    ""
+  ],
+  "More languages might be available for the selected product at [Localization] page": [
+    ""
   ],
   "Mount Point": [
     "Bağlantı Noktası"
@@ -1625,6 +1631,12 @@ export default {
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Bunlar en alakalı kurulum ayarlarıdır. Daha fazla ayrıntı için menüdeki bölümlere göz atmaktan çekinmeyin."
   ],
+  "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
+    ""
+  ],
+  "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
+    ""
+  ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Bu eylem aşağıda listelenen cihazlarda depolanan tüm verileri yok edebilir. Lütfen devam etmek istediğinizi onaylayın."
   ],
@@ -1657,6 +1669,9 @@ export default {
   ],
   "This uses existing partitions at the disk": [
     "Bu, diskteki mevcut bölümleri kullanır"
+  ],
+  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
+    ""
   ],
   "TiB": [
     "TB"
@@ -1754,6 +1769,9 @@ export default {
   "Use available space": [
     "Mevcut alanı kullan"
   ],
+  "Use for the selected product too": [
+    ""
+  ],
   "Use password": [
     "Şifre kullan"
   ],
@@ -1769,6 +1787,9 @@ export default {
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     "Her önyüklemede otomatik olarak şifre çözmek için Güvenilir Platform Modülünü (TPM) kullanın"
   ],
+  "Use these same settings for the selected product": [
+    ""
+  ],
   "Used space": [
     "Kullanılan alan"
   ],
@@ -1780,6 +1801,9 @@ export default {
   ],
   "Username suggestion dropdown": [
     "Kullanıcı adı önerisi açılır listesi"
+  ],
+  "Using [%s] keyboard": [
+    ""
   ],
   "Using a hashed password.": [
     "Karma şifre kullanımı."
@@ -1852,6 +1876,9 @@ export default {
   ],
   "ZFCP": [
     "ZFCP"
+  ],
+  "[CAPS LOCK] is on": [
+    ""
   ],
   "at least %s": [
     "en az %s"

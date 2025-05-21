@@ -22,15 +22,15 @@
 require_relative "../storage_helpers"
 require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_solvers/md_raids_search"
+require "agama/storage/system"
 require "y2storage"
 
 describe Agama::Storage::ConfigSolvers::MdRaidsSearch do
   include Agama::RSpec::StorageHelpers
 
-  subject { described_class.new(devicegraph, disk_analyzer) }
+  subject { described_class.new(storage_system) }
 
-  let(:devicegraph) { Y2Storage::StorageManager.instance.probed }
-  let(:disk_analyzer) { Y2Storage::StorageManager.instance.probed_disk_analyzer }
+  let(:storage_system) { Agama::Storage::System.new }
 
   before do
     mock_storage(devicegraph: scenario)
@@ -68,7 +68,7 @@ describe Agama::Storage::ConfigSolvers::MdRaidsSearch do
 
       context "and any of the devices is not a candidate device" do
         before do
-          allow(disk_analyzer).to receive(:candidate_device?) { |d| d.name != "/dev/md0" }
+          allow(storage_system.analyzer).to receive(:candidate_device?) { |d| d.name != "/dev/md0" }
         end
 
         it "sets the first unassigned candidate device to the MD RAID config" do
@@ -287,7 +287,7 @@ describe Agama::Storage::ConfigSolvers::MdRaidsSearch do
         let(:size) { { equal: value } }
 
         context "and there is a MD RAID with equal size" do
-          let(:value) { devicegraph.find_by_name("/dev/md2").size }
+          let(:value) { storage_system.devicegraph.find_by_name("/dev/md2").size }
           include_examples "find device", "/dev/md2"
         end
 

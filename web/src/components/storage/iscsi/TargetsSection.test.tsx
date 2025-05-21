@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import TargetsSection from "./TargetsSection";
 import { deleteNode, discover, login, logout } from "~/api/storage/iscsi";
 
@@ -71,7 +71,7 @@ describe("TargetsSection", () => {
 
   describe("allows discovering the node", () => {
     it("asks for discover info and closes the dialog on success", async () => {
-      const { user } = plainRender(<TargetsSection />);
+      const { user } = installerRender(<TargetsSection />, { withL10n: true });
       const button = await screen.findByRole("button", { name: "Discover iSCSI targets" });
       await user.click(button);
 
@@ -112,7 +112,7 @@ describe("TargetsSection", () => {
     });
 
     it("allows logging into disconnected targets", async () => {
-      const { user } = plainRender(<TargetsSection />);
+      const { user } = installerRender(<TargetsSection />, { withL10n: true });
 
       const row = await screen.findByRole("row", { name: /Disconnected/ });
       const actionsButton = await within(row).findByRole("button", { name: "Actions" });
@@ -147,7 +147,7 @@ describe("TargetsSection", () => {
     });
 
     it("allows logging out connected targets", async () => {
-      const { user } = plainRender(<TargetsSection />);
+      const { user } = installerRender(<TargetsSection />, { withL10n: true });
 
       const row = await screen.findByRole("row", { name: /Connected/ });
       const actionsButton = await within(row).findByRole("button", { name: "Actions" });
@@ -161,7 +161,7 @@ describe("TargetsSection", () => {
     });
 
     it("allows deleting a disconnected target", async () => {
-      const { user } = plainRender(<TargetsSection />);
+      const { user } = installerRender(<TargetsSection />, { withL10n: true });
 
       const row = await screen.findByRole("row", { name: /Disconnected/ });
       const actionsButton = await within(row).findByRole("button", { name: "Actions" });

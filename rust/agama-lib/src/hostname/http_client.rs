@@ -21,8 +21,8 @@
 //! Implements a client to access Agama's HTTP API related to Hostname management.
 
 use crate::{
-    base_http_client::{BaseHTTPClient, BaseHTTPClientError},
     hostname::model::HostnameSettings,
+    http::{BaseHTTPClient, BaseHTTPClientError},
 };
 
 #[derive(Debug, thiserror::Error)]

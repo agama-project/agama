@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May 16 08:45:58 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Fix list of candidate drives and candidate MD RAIDs for
+  installation (gh#agama-project/agama#2362).
+
+-------------------------------------------------------------------
 Wed May 14 15:15:47 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Add search conditions to storage (gh#agama-project/agama#2338).
@@ -26,7 +32,7 @@ Wed May  7 10:24:14 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 Wed May  7 06:33:28 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Add support for creating and reusing MD RAID devices
-  (gh#agama-project/agama#2286).
+  (gh#agama-project/agama#2286, bsc#1241958).
 
 -------------------------------------------------------------------
 Tue May  6 11:33:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

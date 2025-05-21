@@ -21,8 +21,8 @@
 //! Implements a client to access Agama's HTTP API related to Bootloader management.
 
 use crate::{
-    base_http_client::{BaseHTTPClient, BaseHTTPClientError},
     bootloader::model::BootloaderSettings,
+    http::{BaseHTTPClient, BaseHTTPClientError},
 };
 
 #[derive(Debug, thiserror::Error)]

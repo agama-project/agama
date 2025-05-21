@@ -54,26 +54,25 @@ module Y2Storage
     # @return [Array<Agama::Issue>] List of found issues
     attr_reader :issues_list
 
-    # @note The storage config (first param) is modified in several ways:
-    #   * The search configs are solved.
-    #   * The sizes are solved (setting the size of the selected device, assigning fallbacks, etc).
+    # @note The storage config (first param) is modified while solving it, see
+    #   {#calculate_proposal}.
     #
     # @param config [Agama::Storage::Config]
-    # @param product_config [Agama::Config]
-    # @param devicegraph [Devicegraph] Starting point. If nil, then probed devicegraph will be used.
-    # @param disk_analyzer [DiskAnalyzer] By default, the method will create a new one based on the
-    #   initial devicegraph or will use the one from the StorageManager if starting from probed
-    #   (i.e. 'devicegraph' argument is also missing).
-    # @param issues_list [Array<Agama::Issue] Array to register issues found during the process.
-    def initialize(config,
-      product_config: nil, devicegraph: nil, disk_analyzer: nil, issues_list: nil)
-      super(devicegraph: devicegraph, disk_analyzer: disk_analyzer)
+    # @param storage_system [Agama::Storage::System]
+    # @param product_config [Agama::Config, nil]
+    # @param issues_list [Array<Agama::Issue>, nil] Stores issues found during the process.
+    def initialize(config, storage_system, product_config: nil, issues_list: nil)
+      super(devicegraph: storage_system.devicegraph, disk_analyzer: storage_system.analyzer)
       @config = config
+      @storage_system = storage_system
       @product_config = product_config || Agama::Config.new
       @issues_list = issues_list || []
     end
 
   private
+
+    # @return [Agama::Storage::System]
+    attr_reader :storage_system
 
     # @return [Agama::Config]
     attr_reader :product_config
@@ -93,7 +92,7 @@ module Y2Storage
     # @raise [NoDiskSpaceError] if there is no enough space to perform the installation
     def calculate_proposal
       Agama::Storage::ConfigSolver
-        .new(product_config, initial_devicegraph, disk_analyzer: disk_analyzer)
+        .new(product_config, storage_system)
         .solve(config)
 
       issues = Agama::Storage::ConfigChecker

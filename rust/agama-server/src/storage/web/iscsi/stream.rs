@@ -22,6 +22,7 @@ use std::{collections::HashMap, task::Poll};
 
 use agama_lib::{
     error::ServiceError,
+    http::Event,
     storage::{ISCSIClient, ISCSINode},
 };
 use agama_utils::{
@@ -35,10 +36,7 @@ use tokio::sync::mpsc::unbounded_channel;
 use tokio_stream::{wrappers::UnboundedReceiverStream, StreamExt};
 use zbus::zvariant::{ObjectPath, OwnedObjectPath, OwnedValue};
 
-use crate::{
-    dbus::{DBusObjectChange, DBusObjectChangesStream, ObjectsCache},
-    web::Event,
-};
+use crate::dbus::{DBusObjectChange, DBusObjectChangesStream, ObjectsCache};
 
 /// This stream listens for changes in the collection ISCSI nodes and emits
 /// the updated objects.

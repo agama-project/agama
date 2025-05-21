@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -23,6 +23,7 @@ require_relative "../agama/storage/storage_helpers"
 require "agama/config"
 require "agama/storage/config"
 require "agama/storage/config_conversions"
+require "agama/storage/system"
 require "y2storage"
 require "y2storage/agama_proposal"
 
@@ -75,8 +76,15 @@ describe Y2Storage::AgamaProposal do
   include Agama::RSpec::StorageHelpers
 
   subject(:proposal) do
-    described_class.new(config, product_config: product_config, issues_list: issues_list)
+    described_class.new(
+      config,
+      storage_system,
+      product_config: product_config,
+      issues_list:    issues_list
+    )
   end
+
+  let(:storage_system) { Agama::Storage::System.new }
 
   let(:config) { config_json ? config_from_json : default_config }
 

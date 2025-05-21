@@ -22,8 +22,7 @@
 
 import React, { useState } from "react";
 import { Alert as PFAlert, Content, Form, FormGroup, Stack } from "@patternfly/react-core";
-import { Icon } from "~/components/layout";
-import { PasswordInput, Popup } from "~/components/core";
+import { InstallerOptions, PasswordInput, Popup } from "~/components/core";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
 
@@ -68,7 +67,8 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
       isOpen
       title={_("Encrypted Device")}
       aria-label={_("Question")}
-      titleIconVariant={() => <Icon name="lock" />}
+      elementToFocus="#luks-password"
+      titleAddon={<InstallerOptions variant="keyboard" />}
     >
       <Stack hasGutter>
         <Alert attempt={question.data.attempt} />
@@ -77,7 +77,6 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
           {/* TRANSLATORS: field label */}
           <FormGroup label={_("Encryption Password")} fieldId="luks-password">
             <PasswordInput
-              autoFocus
               id="luks-password"
               value={password}
               onChange={(_, value) => setPassword(value)}

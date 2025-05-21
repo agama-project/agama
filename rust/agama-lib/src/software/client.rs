@@ -24,7 +24,7 @@ use super::{
 };
 use crate::error::ServiceError;
 use serde::Serialize;
-use serde_repr::Serialize_repr;
+use serde_repr::{Deserialize_repr, Serialize_repr};
 use std::collections::HashMap;
 use zbus::Connection;
 
@@ -49,7 +49,7 @@ pub struct Pattern {
 }
 
 /// Represents the reason why a pattern is selected.
-#[derive(Clone, Copy, Debug, PartialEq, Serialize_repr, utoipa::ToSchema)]
+#[derive(Clone, Copy, Debug, PartialEq, Deserialize_repr, Serialize_repr, utoipa::ToSchema)]
 #[repr(u8)]
 pub enum SelectedBy {
     /// The pattern was selected by the user.

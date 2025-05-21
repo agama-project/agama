@@ -182,7 +182,7 @@ impl<'a> NetworkManagerClient<'a> {
     /// Returns the list of network connections.
     pub async fn connections(&self) -> Result<Vec<Connection>, NmError> {
         let mut controlled_by: HashMap<Uuid, String> = HashMap::new();
-        let mut uuids_map: HashMap<String, Uuid> = HashMap::new();
+        let mut uuids_map: HashMap<Uuid, String> = HashMap::new();
 
         let proxy = SettingsProxy::new(&self.connection).await?;
         let paths = proxy.list_connections().await?;
@@ -214,10 +214,10 @@ impl<'a> NetworkManagerClient<'a> {
 
                     Self::add_secrets(&mut connection.config, &proxy).await?;
                     if let Some(controller) = controller {
-                        controlled_by.insert(connection.uuid, controller.to_string());
+                        controlled_by.insert(connection.uuid, controller);
                     }
                     if let Some(iname) = &connection.interface {
-                        uuids_map.insert(iname.to_string(), connection.uuid);
+                        uuids_map.insert(connection.uuid, iname.to_string());
                     }
                     if self.settings_active_connection(path).await?.is_none() {
                         connection.set_down()
@@ -231,19 +231,9 @@ impl<'a> NetworkManagerClient<'a> {
         }
 
         for conn in connections.iter_mut() {
-            let Some(interface_name) = controlled_by.get(&conn.uuid) else {
-                continue;
+            if controlled_by.contains_key(&conn.uuid) {
+                conn.controller = Some(conn.uuid);
             };
-
-            if let Some(uuid) = uuids_map.get(interface_name) {
-                conn.controller = Some(*uuid);
-            } else {
-                tracing::warn!(
-                    "Could not found a connection for the interface '{}' (required by connection '{}')",
-                    interface_name,
-                    conn.id
-                );
-            }
         }
 
         Ok(connections)

@@ -23,7 +23,9 @@
 //! * This module contains the types that represent the network concepts. They are supposed to be
 //!   agnostic from the real network service (e.g., NetworkManager).
 use crate::error::NetworkStateError;
-use crate::settings::{BondSettings, IEEE8021XSettings, NetworkConnection, WirelessSettings};
+use crate::settings::{
+    BondSettings, BridgeSettings, IEEE8021XSettings, NetworkConnection, WirelessSettings,
+};
 use crate::types::{BondMode, ConnectionState, DeviceState, DeviceType, Status, SSID};
 use agama_utils::openapi::schemas;
 use cidr::IpInet;
@@ -220,28 +222,32 @@ impl NetworkState {
         controller: &Connection,
         ports: Vec<String>,
     ) -> Result<(), NetworkStateError> {
-        if let ConnectionConfig::Bond(_) = &controller.config {
-            let mut controlled = vec![];
-            for port in ports {
-                let connection = self
-                    .get_connection_by_interface(&port)
-                    .or_else(|| self.get_connection(&port))
-                    .ok_or(NetworkStateError::UnknownConnection(port))?;
-                controlled.push(connection.uuid);
-            }
-
-            for conn in self.connections.iter_mut() {
-                if controlled.contains(&conn.uuid) {
-                    conn.controller = Some(controller.uuid);
-                } else if conn.controller == Some(controller.uuid) {
-                    conn.controller = None;
+        match &controller.config {
+            ConnectionConfig::Bond(_) | ConnectionConfig::Bridge(_) => {
+                let mut controlled = vec![];
+                for port in ports {
+                    let connection = self
+                        .get_connection_by_interface(&port)
+                        .or_else(|| self.get_connection(&port))
+                        .ok_or(NetworkStateError::UnknownConnection(port))?;
+                    controlled.push(connection.uuid);
                 }
+
+                for conn in self.connections.iter_mut() {
+                    if controlled.contains(&conn.uuid) {
+                        conn.controller = Some(controller.uuid);
+                        if conn.interface.is_none() {
+                            conn.interface = Some(conn.id.clone());
+                        }
+                    } else if conn.controller == Some(controller.uuid) {
+                        conn.controller = None;
+                    }
+                }
+                Ok(())
             }
-            Ok(())
-        } else {
-            Err(NetworkStateError::NotControllerConnection(
+            _ => Err(NetworkStateError::NotControllerConnection(
                 controller.id.to_owned(),
-            ))
+            )),
         }
     }
 }
@@ -478,7 +484,7 @@ pub struct AccessPoint {
 /// Network device
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Default, Debug, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Device {
     pub name: String,
@@ -625,6 +631,10 @@ impl TryFrom<NetworkConnection> for Connection {
             let config = BondConfig::try_from(bond_config)?;
             connection.config = config.into();
         }
+        if let Some(bridge_config) = conn.bridge {
+            let config = BridgeConfig::try_from(bridge_config)?;
+            connection.config = config.into();
+        }
 
         if let Some(ieee_8021x_config) = conn.ieee_8021x {
             connection.ieee_8021x_config = Some(IEEE8021XConfig::try_from(ieee_8021x_config)?);
@@ -692,6 +702,9 @@ impl TryFrom<Connection> for NetworkConnection {
             ConnectionConfig::Bond(config) => {
                 connection.bond = Some(BondSettings::try_from(config)?);
             }
+            ConnectionConfig::Bridge(config) => {
+                connection.bridge = Some(BridgeSettings::try_from(config)?);
+            }
             _ => {}
         }
 
@@ -718,6 +731,12 @@ pub enum PortConfig {
     #[default]
     None,
     Bridge(BridgePortConfig),
+}
+
+impl From<BridgeConfig> for ConnectionConfig {
+    fn from(value: BridgeConfig) -> Self {
+        Self::Bridge(value)
+    }
 }
 
 impl From<BondConfig> for ConnectionConfig {
@@ -798,27 +817,27 @@ impl From<InvalidMacAddress> for zbus::fdo::Error {
 }
 
 #[skip_serializing_none]
-#[derive(Default, Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct IpConfig {
     pub method4: Ipv4Method,
     pub method6: Ipv6Method,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     #[schema(schema_with = schemas::ip_inet_array)]
     pub addresses: Vec<IpInet>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     #[schema(schema_with = schemas::ip_addr_array)]
     pub nameservers: Vec<IpAddr>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub dns_searchlist: Vec<String>,
     pub ignore_auto_dns: bool,
     #[schema(schema_with = schemas::ip_addr)]
     pub gateway4: Option<IpAddr>,
     #[schema(schema_with = schemas::ip_addr)]
     pub gateway6: Option<IpAddr>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub routes4: Vec<IpRoute>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub routes6: Vec<IpRoute>,
     pub dhcp4_settings: Option<Dhcp4Settings>,
     pub dhcp6_settings: Option<Dhcp6Settings>,
@@ -826,7 +845,7 @@ pub struct IpConfig {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
 pub struct Dhcp4Settings {
     pub send_hostname: bool,
     pub hostname: Option<String>,
@@ -847,7 +866,7 @@ impl Default for Dhcp4Settings {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 pub enum DhcpClientId {
     Id(String),
     Mac,
@@ -900,7 +919,7 @@ impl fmt::Display for DhcpClientId {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 pub enum DhcpIaid {
     Id(String),
     Mac,
@@ -948,7 +967,7 @@ impl fmt::Display for DhcpIaid {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
 pub struct Dhcp6Settings {
     pub send_hostname: bool,
     pub hostname: Option<String>,
@@ -969,7 +988,7 @@ impl Default for Dhcp6Settings {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 pub enum DhcpDuid {
     Id(String),
     Lease,
@@ -1039,7 +1058,7 @@ pub struct MatchConfig {
 #[error("Unknown IP configuration method name: {0}")]
 pub struct UnknownIpMethod(String);
 
-#[derive(Debug, Default, Copy, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Ipv4Method {
     #[default]
@@ -1075,7 +1094,7 @@ impl FromStr for Ipv4Method {
     }
 }
 
-#[derive(Debug, Default, Copy, Clone, PartialEq, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Ipv6Method {
     #[default]
@@ -1123,7 +1142,7 @@ impl From<UnknownIpMethod> for zbus::fdo::Error {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct IpRoute {
     #[schema(schema_with = schemas::ip_inet_ref)]
@@ -1696,7 +1715,8 @@ impl TryFrom<BondConfig> for BondSettings {
 
 #[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 pub struct BridgeConfig {
-    pub stp: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stp: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub priority: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1709,6 +1729,49 @@ pub struct BridgeConfig {
     pub ageing_time: Option<u32>,
 }
 
+impl TryFrom<ConnectionConfig> for BridgeConfig {
+    type Error = NetworkStateError;
+
+    fn try_from(value: ConnectionConfig) -> Result<Self, Self::Error> {
+        match value {
+            ConnectionConfig::Bridge(config) => Ok(config),
+            _ => Err(NetworkStateError::UnexpectedConfiguration),
+        }
+    }
+}
+
+impl TryFrom<BridgeSettings> for BridgeConfig {
+    type Error = NetworkStateError;
+
+    fn try_from(settings: BridgeSettings) -> Result<Self, Self::Error> {
+        let stp = settings.stp;
+        let priority = settings.priority;
+        let forward_delay = settings.forward_delay;
+        let hello_time = settings.forward_delay;
+
+        Ok(BridgeConfig {
+            stp,
+            priority,
+            forward_delay,
+            hello_time,
+            ..Default::default()
+        })
+    }
+}
+
+impl TryFrom<BridgeConfig> for BridgeSettings {
+    type Error = NetworkStateError;
+
+    fn try_from(bridge: BridgeConfig) -> Result<Self, Self::Error> {
+        Ok(BridgeSettings {
+            stp: bridge.stp,
+            priority: bridge.priority,
+            forward_delay: bridge.forward_delay,
+            hello_time: bridge.hello_time,
+            ..Default::default()
+        })
+    }
+}
 #[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 pub struct BridgePortConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1772,7 +1835,7 @@ pub struct TunConfig {
 }
 
 /// Represents a network change.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub enum NetworkChange {
     /// A new device has been added.

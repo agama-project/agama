@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import WifiConnectionForm from "./WifiConnectionForm";
 import { Connection, SecurityProtocols, WifiNetworkStatus, Wireless } from "~/types/network";
 
@@ -63,13 +63,13 @@ describe("WifiConnectionForm", () => {
 
   describe("when rendered for a public network", () => {
     it("warns the user about connecting to an unprotected network", () => {
-      plainRender(<WifiConnectionForm network={publicNetworkMock} />);
+      installerRender(<WifiConnectionForm network={publicNetworkMock} />, { withL10n: true });
       screen.getByText("Warning alert:");
       screen.getByText("Not protected network");
     });
 
     it("renders only the Connect and Cancel actions", () => {
-      plainRender(<WifiConnectionForm network={publicNetworkMock} />);
+      installerRender(<WifiConnectionForm network={publicNetworkMock} />, { withL10n: true });
       expect(screen.queryByRole("combobox", { name: "Security" })).toBeNull();
       screen.getByRole("button", { name: "Connect" });
       screen.getByRole("button", { name: "Cancel" });
@@ -78,7 +78,9 @@ describe("WifiConnectionForm", () => {
 
   describe("when form is submitted", () => {
     it("replaces form by an informative alert ", async () => {
-      const { user } = plainRender(<WifiConnectionForm network={networkMock} />);
+      const { user } = installerRender(<WifiConnectionForm network={networkMock} />, {
+        withL10n: true,
+      });
       screen.getByRole("form", { name: "Wi-Fi connection form" });
       const connectButton = screen.getByRole("button", { name: "Connect" });
       await user.click(connectButton);
@@ -91,7 +93,9 @@ describe("WifiConnectionForm", () => {
     describe("for a not configured network", () => {
       it("triggers a mutation for adding and connecting to the network", async () => {
         const { settings: _, ...notConfiguredNetwork } = networkMock;
-        const { user } = plainRender(<WifiConnectionForm network={notConfiguredNetwork} />);
+        const { user } = installerRender(<WifiConnectionForm network={notConfiguredNetwork} />, {
+          withL10n: true,
+        });
         const securitySelector = screen.getByRole("combobox", { name: "Security" });
         const connectButton = screen.getByText("Connect");
         await user.selectOptions(securitySelector, "wpa-psk");
@@ -110,7 +114,7 @@ describe("WifiConnectionForm", () => {
 
     describe("for an already configured network", () => {
       it("triggers a mutation for updating and connecting to the network", async () => {
-        const { user } = plainRender(
+        const { user } = installerRender(
           <WifiConnectionForm
             network={{
               ...networkMock,
@@ -122,6 +126,7 @@ describe("WifiConnectionForm", () => {
               }),
             }}
           />,
+          { withL10n: true },
         );
         const connectButton = screen.getByText("Connect");
         const passwordInput = screen.getByLabelText("WPA Password");
