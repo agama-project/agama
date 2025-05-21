@@ -19,12 +19,11 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../config_solver_context"
-require_relative "../storage_helpers"
+require_relative "../config_context"
 require "agama/storage/config_checkers/boot"
 
 describe Agama::Storage::ConfigCheckers::Boot do
-  include_context "config solver"
+  include_context "config"
 
   subject { described_class.new(config) }
 

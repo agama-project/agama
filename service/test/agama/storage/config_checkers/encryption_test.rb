@@ -19,15 +19,14 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../config_solver_context"
-require_relative "../storage_helpers"
+require_relative "../config_context"
 require "agama/storage/config_checkers/encryption"
 require "y2storage/encryption_method/pervasive_luks2"
 require "y2storage/encryption_method/protected_swap"
 require "y2storage/encryption_method/tpm_fde"
 
 describe Agama::Storage::ConfigCheckers::Encryption do
-  include_context "config solver"
+  include_context "config"
 
   subject { described_class.new(drive_config) }
 

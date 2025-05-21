@@ -27,7 +27,7 @@ require "agama/storage/system"
 require "y2storage"
 require "y2storage/encryption_method/tpm_fde"
 
-shared_context "config solver" do
+shared_context "config" do
   # Solves the config.
   def solve_config
     storage_system = Agama::Storage::System.new
