@@ -24,7 +24,7 @@ use crate::{
     manager::InstallationPhase,
     network::model::NetworkChange,
     progress::Progress,
-    software::SelectedBy,
+    software::{model::Conflict, SelectedBy},
     storage::{
         model::{
             dasd::{DASDDevice, DASDFormatSummary},
