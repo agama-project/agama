@@ -98,8 +98,8 @@ arch=$(uname -m)
 profile=$(echo "$kiwi_profiles" | tr "_" "-")
 label="Install-$profile-$arch"
 
-# Extra cleanup for the PXE images
-if [[ "$kiwi_profiles" == *PXE* ]]; then
+# Set the default live root except for PXE images
+if [[ "$kiwi_profiles" != *PXE* ]]; then
   echo "Setting default live root: live:LABEL=$label"
   mkdir /etc/cmdline.d
   echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
