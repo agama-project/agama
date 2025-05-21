@@ -43,7 +43,7 @@ import {
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { Page, SubtleContent } from "~/components/core";
-import { Solution } from "~/types/software";
+import { ConflictSolutionOption } from "~/types/software";
 import { useConflicts, useConflictsChanges, useConflictsMutation } from "~/queries/software";
 import { isEmpty } from "~/utils";
 import { sprintf } from "sprintf-js";
@@ -68,7 +68,7 @@ const DetailsList = ({ items }: { items: string[] }) => (
 
 type ConflictSolutionRadioProps = {
   /** Newline-separated string of solution actions */
-  details?: Solution["details"];
+  details?: ConflictSolutionOption["details"];
   /** Max number of visible detail lines before enabling toggle behavior */
   maxVisibleDetails?: number;
 } & Omit<RadioProps, "ref">;
@@ -126,7 +126,7 @@ const ConflictSolutionRadio = ({
 const ConflictsForm = ({ conflict }): React.ReactNode => {
   const { mutate: solve } = useConflictsMutation();
   const [error, setError] = useState<string | null>(null);
-  const [chosenSolution, setChosenSolution] = useState<Solution["id"] | undefined>();
+  const [chosenSolution, setChosenSolution] = useState<ConflictSolutionOption["id"] | undefined>();
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -144,7 +144,7 @@ const ConflictsForm = ({ conflict }): React.ReactNode => {
       {error && <Alert variant="warning" isInline title={error} />}
       <Title headingLevel="h3">{conflict.description}</Title>
       <FormGroup isStack>
-        {conflict.solutions.map((solution: Solution) => (
+        {conflict.solutions.map((solution: ConflictSolutionOption) => (
           <ConflictSolutionRadio
             key={solution.id}
             id={`conflict-${conflict.id}-solution-${solution.id}`}

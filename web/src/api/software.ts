@@ -23,6 +23,7 @@
 import {
   AddonInfo,
   Conflict,
+  ConflictSolution,
   License,
   LicenseContent,
   Pattern,
@@ -32,7 +33,6 @@ import {
   Repository,
   SoftwareConfig,
   SoftwareProposal,
-  SolutionPatch,
 } from "~/types/software";
 import { get, patch, post, put } from "~/api/http";
 
@@ -118,9 +118,9 @@ const registerAddon = (addon: RegisteredAddonInfo) =>
   post("/api/software/registration/addons/register", addon);
 
 /**
- * Solve conflict
+ * Request for solving a conflict by applying given solution
  */
-const solveConflict = (solution: SolutionPatch) => patch("/api/software/conflicts", [solution]);
+const solveConflict = (solution: ConflictSolution) => patch("/api/software/conflicts", [solution]);
 
 export {
   fetchAddons,
