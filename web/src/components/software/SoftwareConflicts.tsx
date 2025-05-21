@@ -207,7 +207,16 @@ const ConflictsToolbar = ({
   </Toolbar>
 );
 
-const NoConflictsContent = () => <b>{_("All conflicts solved.")}</b>;
+const NoConflictsContent = () => (
+  <>
+    <Title headingLevel="h3">{_("No conflicts to address")}</Title>
+    <Content isEditorial>
+      {_(
+        "All conflicts have been resolved, or none were detected. You can safely continue with your setup",
+      )}
+    </Content>
+  </>
+);
 const ConflictsContent = ({ conflicts }) => {
   const [currentConflictIndex, setCurrentConflictIndex] = useState(0);
   const totalConflicts = conflicts.length;

@@ -108,6 +108,7 @@ describe("SofwareConflicts", () => {
   beforeEach(() => {
     mockConflicts = [{ ...conflicts[0] }];
   });
+
   it("does not render the conflicts toolbar", () => {
     installerRender(<SoftwareConflicts />);
     expect(screen.queryByText(/Multiple conflicts found/)).toBeNull();
@@ -294,6 +295,24 @@ describe("SofwareConflicts", () => {
       await user.click(secondOption);
       await user.click(applyButton);
       expect(mockSolveConflict).toHaveBeenCalledWith({ conflictId: 1, solutionId: 1 });
+    });
+  });
+
+  describe("when there are no conflicts", () => {
+    beforeEach(() => {
+      mockConflicts = [];
+    });
+
+    it("does not render the solution selection form", () => {
+      installerRender(<SoftwareConflicts />);
+      expect(screen.queryAllByRole("radio").length).toBe(0);
+      expect(screen.queryByRole("button", { name: "Apply selected solution" })).toBeNull();
+    });
+
+    it("renders a message indicating there are no conflicts to address", () => {
+      installerRender(<SoftwareConflicts />);
+      screen.queryByRole("heading", { name: "No conflicts to address" });
+      screen.getByText(/All conflicts have been resolved, or none were detected/);
     });
   });
 });
