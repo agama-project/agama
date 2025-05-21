@@ -110,7 +110,10 @@ describe("SofwareConflicts", () => {
   });
   it("does not render the conflicts toolbar", () => {
     installerRender(<SoftwareConflicts />);
-    expect(screen.queryByRole("heading", { name: "Conflict 1 of 3" })).toBeNull();
+    expect(screen.queryByText(/Multiple conflicts found/)).toBeNull();
+    expect(screen.queryByText(/any order/)).toBeNull();
+    expect(screen.queryByText(/resolve others/)).toBeNull();
+    expect(screen.queryByText("1 of 3")).toBeNull();
     expect(screen.queryByRole("button", { name: "Skip to Previous" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Skip to Next" })).toBeNull();
   });
@@ -213,14 +216,17 @@ describe("SofwareConflicts", () => {
 
     it("renders the conflicts toolbar with information and links", () => {
       installerRender(<SoftwareConflicts />);
-      screen.getByRole("heading", { name: "Conflict 1 of 3" });
+      screen.getByText(/Multiple conflicts found/);
+      screen.getByText(/any order/);
+      screen.getByText(/resolve others/);
+      screen.getByText("1 of 3");
       screen.getByRole("button", { name: "Skip to Previous" });
       screen.getByRole("button", { name: "Skip to Next" });
     });
 
     it("allows navigating between conflicts without exceeding bounds", async () => {
       const { user } = installerRender(<SoftwareConflicts />);
-      screen.getByRole("heading", { name: "Conflict 1 of 3" });
+      screen.getByText("1 of 3");
       const skipToPrevious = screen.getByRole("button", { name: "Skip to Previous" });
       const skipToNext = screen.getByRole("button", { name: "Skip to Next" });
 
@@ -228,31 +234,31 @@ describe("SofwareConflicts", () => {
       expect(skipToNext).not.toBeDisabled();
 
       await user.click(skipToPrevious);
-      screen.getByRole("heading", { name: "Conflict 1 of 3" });
+      screen.getByText("1 of 3");
       screen.getByText(conflicts[0].description);
       await user.click(skipToNext);
       expect(skipToPrevious).not.toBeDisabled();
       expect(skipToNext).not.toBeDisabled();
-      screen.getByRole("heading", { name: "Conflict 2 of 3" });
+      screen.getByText("2 of 3");
       expect(screen.queryByText(conflicts[0].description)).toBeNull();
       screen.getByText(conflicts[1].description);
       await user.click(skipToNext);
-      screen.getByRole("heading", { name: "Conflict 3 of 3" });
+      screen.getByText("3 of 3");
       expect(screen.queryByText(conflicts[1].description)).toBeNull();
       screen.getByText(conflicts[2].description);
       expect(skipToPrevious).not.toBeDisabled();
       expect(skipToNext).toBeDisabled();
       await user.click(skipToNext);
-      screen.getByRole("heading", { name: "Conflict 3 of 3" });
+      screen.getByText("3 of 3");
     });
 
     it("does not preserve the selected option after navigating", async () => {
       const { user } = installerRender(<SoftwareConflicts />);
-      screen.getByRole("heading", { name: "Conflict 1 of 3" });
+      screen.getByText("1 of 3");
       const skipToPrevious = screen.getByRole("button", { name: "Skip to Previous" });
       const skipToNext = screen.getByRole("button", { name: "Skip to Next" });
 
-      screen.getByRole("heading", { name: "Conflict 1 of 3" });
+      screen.getByText("1 of 3");
       screen.getByText(conflicts[0].description);
       let options = screen.getAllByRole("radio", { checked: false });
       expect(options.length).toBe(conflicts[0].solutions.length);
@@ -261,7 +267,7 @@ describe("SofwareConflicts", () => {
       expect(options[0]).toBeChecked();
 
       await user.click(skipToNext);
-      screen.getByRole("heading", { name: "Conflict 2 of 3" });
+      screen.getByText("2 of 3");
       screen.getByText(conflicts[1].description);
       options = screen.getAllByRole("radio", { checked: false });
       expect(options.length).toBe(conflicts[1].solutions.length);

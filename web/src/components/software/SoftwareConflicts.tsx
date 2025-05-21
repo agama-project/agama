@@ -142,7 +142,7 @@ const ConflictsForm = ({ conflict }): React.ReactNode => {
   return (
     <Form id="conflict-resolution" onSubmit={onSubmit}>
       {error && <Alert variant="warning" isInline title={error} />}
-      <Title headingLevel="h4">{conflict.description}</Title>
+      <Title headingLevel="h3">{conflict.description}</Title>
       <FormGroup isStack>
         {conflict.solutions.map((solution: Solution) => (
           <ConflictSolutionRadio
@@ -175,33 +175,36 @@ const ConflictsToolbar = ({
   onNext,
   onBack,
 }: ConflictsToolbarProps): React.ReactNode => (
-  <>
-    <Toolbar hasNoPadding>
-      <ToolbarContent>
-        <ToolbarItem alignSelf="center">
-          <Title headingLevel="h3">{sprintf(_("Conflict %d of %d"), current, total)}</Title>
+  <Toolbar hasNoPadding>
+    <ToolbarContent>
+      <ToolbarItem alignSelf="center">
+        <SubtleContent>
+          {_(
+            "Multiple conflicts found. You can address conflicts in any order; some may resolve others.",
+          )}
+        </SubtleContent>
+      </ToolbarItem>
+      <ToolbarGroup align={{ default: "alignEnd" }} alignItems="center">
+        <ToolbarItem>
+          <Button variant="plain" size="sm" onClick={onBack} isDisabled={current === 1}>
+            <Flex component="span" alignItems={{ default: "alignItemsCenter" }}>
+              <Icon name="chevron_left" /> {_("Skip to Previous")}
+            </Flex>
+          </Button>
         </ToolbarItem>
-        <ToolbarGroup align={{ default: "alignEnd" }} alignItems="center">
-          <ToolbarItem>
-            <Button variant="plain" size="sm" onClick={onBack} isDisabled={current === 1}>
-              <Flex component="span" alignItems={{ default: "alignItemsCenter" }}>
-                <Icon name="chevron_left" /> {_("Skip to Previous")}
-              </Flex>
-            </Button>
-          </ToolbarItem>
-          <ToolbarItem variant="separator" />
-          <ToolbarItem>
-            <Button variant="plain" size="sm" onClick={onNext} isDisabled={current === total}>
-              <Flex component="span" alignItems={{ default: "alignItemsCenter" }}>
-                {_("Skip to Next")} <Icon name="chevron_right" />
-              </Flex>
-            </Button>
-          </ToolbarItem>
-        </ToolbarGroup>
-      </ToolbarContent>
-    </Toolbar>
-    <Divider />
-  </>
+        <ToolbarItem variant="separator" />
+        {sprintf(_("%d of %d"), current, total)}
+        <ToolbarItem variant="separator" />
+        <ToolbarItem>
+          <Button variant="plain" size="sm" onClick={onNext} isDisabled={current === total}>
+            <Flex component="span" alignItems={{ default: "alignItemsCenter" }}>
+              {_("Skip to Next")} <Icon name="chevron_right" />
+            </Flex>
+          </Button>
+        </ToolbarItem>
+      </ToolbarGroup>
+    </ToolbarContent>
+  </Toolbar>
 );
 
 const NoConflictsContent = () => <b>{_("All conflicts solved.")}</b>;
@@ -222,12 +225,15 @@ const ConflictsContent = ({ conflicts }) => {
   return (
     <>
       {conflicts.length > 1 && (
-        <ConflictsToolbar
-          current={currentConflictIndex + 1}
-          total={totalConflicts}
-          onNext={onNext}
-          onBack={onBack}
-        />
+        <>
+          <ConflictsToolbar
+            current={currentConflictIndex + 1}
+            total={totalConflicts}
+            onNext={onNext}
+            onBack={onBack}
+          />
+          <Divider />
+        </>
       )}
       <ConflictsForm conflict={currentConflict} key={currentConflict.id} />
     </>
@@ -244,12 +250,7 @@ function SoftwareConflicts(): React.ReactNode {
   return (
     <Page>
       <Page.Header>
-        <Content component="h2">{_("Conflict resolution")}</Content>
-        <SubtleContent>
-          {_(
-            "Selected software contain conflicts. The conflicts can potentially depends on each other and order of solution is not important.",
-          )}
-        </SubtleContent>
+        <Content component="h2">{_("Software conflicts resolution")}</Content>
       </Page.Header>
 
       <Page.Content>
