@@ -105,28 +105,38 @@ jest.mock("~/queries/software", () => ({
 }));
 
 describe("SofwareConflicts", () => {
-  describe("when there is only  one conflict", () => {
-    beforeEach(() => {
-      mockConflicts = [{ ...conflicts[0] }];
-    });
+  beforeEach(() => {
+    mockConflicts = [{ ...conflicts[0] }];
+  });
+  it("does not render the conflicts toolbar", () => {
+    installerRender(<SoftwareConflicts />);
+    expect(screen.queryByRole("heading", { name: "Conflict 1 of 3" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Skip to Previous" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Skip to Next" })).toBeNull();
+  });
 
-    it("does not render the conflicts toolbar", () => {
-      installerRender(<SoftwareConflicts />);
-      expect(screen.queryByRole("heading", { name: "Conflict 1 of 3" })).toBeNull();
-      expect(screen.queryByRole("button", { name: "Skip to Previous" })).toBeNull();
-      expect(screen.queryByRole("button", { name: "Skip to Next" })).toBeNull();
+  it("allows applying the selected solution", async () => {
+    const { user } = installerRender(<SoftwareConflicts />);
+    const applyButton = screen.getByRole("button", { name: "Apply selected solution" });
+    const secondOption = screen.getByRole("radio", {
+      name: conflicts[0].solutions[1].description,
     });
+    await user.click(secondOption);
+    await user.click(applyButton);
+    expect(mockSolveConflict).toHaveBeenCalledWith({ conflictId: 0, solutionId: 1 });
+  });
 
-    it("allows applying the selected solution", async () => {
-      const { user } = installerRender(<SoftwareConflicts />);
-      const applyButton = screen.getByRole("button", { name: "Apply solution" });
-      const secondOption = screen.getByRole("radio", {
-        name: conflicts[0].solutions[1].description,
-      });
-      await user.click(secondOption);
-      await user.click(applyButton);
-      expect(mockSolveConflict).toHaveBeenCalledWith({ conflictId: 0, solutionId: 1 });
-    });
+  it("displays an error if no solution is selected before submission", async () => {
+    const { user } = installerRender(<SoftwareConflicts />);
+    const applyButton = screen.getByRole("button", { name: "Apply selected solution" });
+    const firstSolution = screen.getAllByRole("radio")[0];
+    await user.click(applyButton);
+    screen.getByText("Warning alert:");
+    screen.getByText("Select a solution to continue");
+    await user.click(firstSolution);
+    await user.click(applyButton);
+    expect(screen.queryByText("Warning alert:")).toBeNull();
+    expect(screen.queryByText("Select a solution to continue")).toBeNull();
   });
 
   describe("when a conflict solution has details", () => {
@@ -271,7 +281,7 @@ describe("SofwareConflicts", () => {
       const skipToNext = screen.getByRole("button", { name: "Skip to Next" });
 
       await user.click(skipToNext);
-      const applyButton = screen.getByRole("button", { name: "Apply solution" });
+      const applyButton = screen.getByRole("button", { name: "Apply selected solution" });
       const secondOption = screen.getByRole("radio", {
         name: conflicts[1].solutions[1].description,
       });

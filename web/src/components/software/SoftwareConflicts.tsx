@@ -23,6 +23,7 @@
 import React, { useState } from "react";
 import {
   ActionGroup,
+  Alert,
   Button,
   ButtonProps,
   Content,
@@ -44,6 +45,7 @@ import { Icon } from "~/components/layout";
 import { Page, SubtleContent } from "~/components/core";
 import { Solution } from "~/types/software";
 import { useConflicts, useConflictsChanges, useConflictsMutation } from "~/queries/software";
+import { isEmpty } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
@@ -123,15 +125,23 @@ const ConflictSolutionRadio = ({
  */
 const ConflictsForm = ({ conflict }): React.ReactNode => {
   const { mutate: solve } = useConflictsMutation();
+  const [error, setError] = useState<string | null>(null);
   const [chosenSolution, setChosenSolution] = useState<Solution["id"] | undefined>();
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    solve({ conflictId: conflict.id, solutionId: chosenSolution });
+
+    if (!isEmpty(chosenSolution)) {
+      setError(null);
+      solve({ conflictId: conflict.id, solutionId: chosenSolution });
+    } else {
+      setError(_("Select a solution to continue"));
+    }
   };
 
   return (
     <Form id="conflict-resolution" onSubmit={onSubmit}>
+      {error && <Alert variant="warning" isInline title={error} />}
       <Title headingLevel="h4">{conflict.description}</Title>
       <FormGroup isStack>
         {conflict.solutions.map((solution: Solution) => (
@@ -147,7 +157,7 @@ const ConflictsForm = ({ conflict }): React.ReactNode => {
         ))}
       </FormGroup>
       <ActionGroup>
-        <Page.Submit form="conflict-resolution">{_("Apply solution")}</Page.Submit>
+        <Page.Submit form="conflict-resolution">{_("Apply selected solution")}</Page.Submit>
       </ActionGroup>
     </Form>
   );
