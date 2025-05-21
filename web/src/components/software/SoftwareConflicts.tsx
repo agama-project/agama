@@ -193,7 +193,14 @@ const ConflictsToolbar = ({
           </Button>
         </ToolbarItem>
         <ToolbarItem variant="separator" />
-        {sprintf(_("%d of %d"), current, total)}
+
+        {
+          // TRANSLATORS: This is a short status message like "1 of 3". It
+          // indicates the position of the current item out of a total. The
+          // first %d will be replaced with the current item number, the
+          // second %d with the total number of items.
+          sprintf(_("%d of %d"), current, total)
+        }
         <ToolbarItem variant="separator" />
         <ToolbarItem>
           <Button variant="plain" size="sm" onClick={onNext} isDisabled={current === total}>
@@ -207,6 +214,10 @@ const ConflictsToolbar = ({
   </Toolbar>
 );
 
+/**
+ * Displays content when there are no conflicts to resolve.
+ * Typically shown when user lands on this page with no actionable items.
+ */
 const NoConflictsContent = () => (
   <>
     <Title headingLevel="h3">{_("No conflicts to address")}</Title>
@@ -217,6 +228,17 @@ const NoConflictsContent = () => (
     </Content>
   </>
 );
+
+/**
+ * Main content component to display and navigate between multiple conflicts.
+ *
+ * Renders a toolbar (if more than one conflict), and the conflict resolution form.
+ *
+ * It uses a `key` prop for forcing an state reset when navigating back and
+ * forward.
+ *
+ * See https://react.dev/learn/preserving-and-resetting-state#option-2-resetting-state-with-a-key
+ */
 const ConflictsContent = ({ conflicts }) => {
   const [currentConflictIndex, setCurrentConflictIndex] = useState(0);
   const totalConflicts = conflicts.length;
@@ -250,7 +272,9 @@ const ConflictsContent = ({ conflicts }) => {
 };
 
 /**
- * Conflicts component
+ * Top-level page for handling software conflicts resolution.
+ *
+ * Displays either a resolution form or a message when no conflicts are present.
  */
 function SoftwareConflicts(): React.ReactNode {
   useConflictsChanges();
