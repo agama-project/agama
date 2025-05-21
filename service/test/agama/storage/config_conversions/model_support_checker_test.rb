@@ -19,20 +19,14 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../storage_helpers"
-require_relative "../../../test_helper"
-require "agama/storage/config_conversions/from_json"
-require "agama/storage/config_solver"
+require_relative "../config_context"
 require "agama/storage/model_support_checker"
-require "agama/storage/system"
-require "y2storage/blk_device"
-require "y2storage/encryption_method"
 require "y2storage/refinements"
 
 using Y2Storage::Refinements::SizeCasts
 
 describe Agama::Storage::ModelSupportChecker do
-  include Agama::RSpec::StorageHelpers
+  include_context "config"
 
   let(:product_data) do
     {
@@ -95,27 +89,9 @@ describe Agama::Storage::ModelSupportChecker do
     }
   end
 
-  let(:product_config) { Agama::Config.new(product_data) }
-
-  let(:storage_system) { Agama::Storage::System.new }
-
-  let(:config) do
-    Agama::Storage::ConfigConversions::FromJSON
-      .new(config_json)
-      .convert
-      .tap { |c| Agama::Storage::ConfigSolver.new(product_config, storage_system).solve(c) }
-  end
-
-  before do
-    mock_storage(devicegraph: scenario)
-    # To speed-up the tests
-    allow(Y2Storage::EncryptionMethod::TPM_FDE)
-      .to(receive(:possible?))
-      .and_return(true)
-    allow(Y2Storage::BlkDevice).to receive(:find_by_any_name)
-  end
-
   subject { described_class.new(config) }
+
+  before { solve_config }
 
   describe "#supported?" do
     shared_examples "partitionable without name" do

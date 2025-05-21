@@ -30,14 +30,14 @@ require "y2storage/encryption_method/tpm_fde"
 shared_context "config" do
   # Solves the config.
   def solve_config
-    storage_system = Agama::Storage::System.new
-
     Agama::Storage::ConfigSolver
       .new(product_config, storage_system)
       .solve(config)
   end
 
   include Agama::RSpec::StorageHelpers
+
+  let(:storage_system) { Agama::Storage::System.new }
 
   let(:product_config) { Agama::Config.new(product_data) }
 
@@ -64,11 +64,15 @@ shared_context "config" do
 
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSON
-      .new(config_json)
+      .new(config_json, default_paths: default_paths, mandatory_paths: mandatory_paths)
       .convert
   end
 
   let(:config_json) { nil }
+
+  let(:default_paths) { product_config.default_paths }
+
+  let(:mandatory_paths) { product_config.mandatory_paths }
 
   before do
     mock_storage(devicegraph: scenario)
