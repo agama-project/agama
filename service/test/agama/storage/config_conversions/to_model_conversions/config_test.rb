@@ -19,18 +19,13 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../storage_helpers"
-require "agama/storage/config_conversions/from_json"
+require_relative "../../config_context"
 require "agama/storage/config_conversions/to_model_conversions/config"
 
 describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
-  subject { described_class.new(config) }
+  include_context "config"
 
-  let(:config) do
-    Agama::Storage::ConfigConversions::FromJSON
-      .new(config_json)
-      .convert
-  end
+  subject { described_class.new(config) }
 
   let(:config_json) do
     {
@@ -73,9 +68,18 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
                 filesystem: { path: "/" }
               }
             ]
+          },
+          {
+            search:     {
+              condition:  { name: "/dev/vdz" },
+              ifNotFound: "skip"
+            },
+            partitions: []
           }
         ]
       end
+
+      before { solve_config }
 
       it "generates the expected JSON" do
         config_model = subject.convert
@@ -90,7 +94,12 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
                   deleteIfNeeded: false,
                   resize:         false,
                   resizeIfNeeded: false,
-                  filesystem:     { reuse: false },
+                  filesystem:     {
+                    reuse:     false,
+                    default:   true,
+                    type:      "btrfs",
+                    snapshots: false
+                  },
                   mountPath:      "/",
                   size:           {
                     default: true,
