@@ -203,6 +203,7 @@ module Agama
         #   8: incorrect credentials
         #   9: invalid certificate
         #   10: internal error (e.g., parsing json data)
+        #   13: Failed to add service from registration
         def register(reg_code, email: nil)
           if !backend.product
             [1, "Product not selected yet"]
@@ -378,6 +379,8 @@ module Agama
           connect_result_from_error(e, first_error_code + 7)
         rescue Errors::Registration::MultipleExtensionsFound => e
           connect_result_from_error(e, first_error_code + 8)
+        rescue Agama::Software::AddServiceError => e
+          connect_result_from_error(e, first_error_code + 9)
         end
 
         # Generates a result from a given error.
