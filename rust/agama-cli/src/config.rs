@@ -87,7 +87,7 @@ pub enum ConfigCommands {
     /// The output of command can be used as input for the "agama config load".
     Show {
         /// Save the output here (goes to stdout if not given)
-        #[arg(short, long)]
+        #[arg(short, long, value_name = "FILE_PATH")]
         output: Option<CliOutput>,
     },
 
@@ -119,6 +119,7 @@ pub enum ConfigCommands {
     ///
     /// For an example of Jsonnet-based profile, see
     /// https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/profile.jsonnet
+    #[command(verbatim_doc_comment)]
     Generate {
         /// JSON file: URL or path or `-` for standard input
         url_or_path: Option<CliInput>,
