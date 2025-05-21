@@ -150,7 +150,7 @@ const repositoriesQuery = () => ({
  * Query to retrieve conflicts
  */
 const conflictsQuery = () => ({
-  queryKey: ["software/conflicts"],
+  queryKey: ["software", "conflicts"],
   queryFn: fetchConflicts,
 });
 
