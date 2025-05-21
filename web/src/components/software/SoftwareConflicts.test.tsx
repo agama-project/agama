@@ -21,14 +21,12 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { Conflict } from "~/types/software";
 import SoftwareConflicts from "./SoftwareConflicts";
 
-let mockConflicts: Conflict[];
-
-const multipleConflicts = [
+const conflicts = [
   {
     id: 0,
     description:
@@ -93,6 +91,9 @@ const multipleConflicts = [
   },
 ];
 
+let mockConflicts: Conflict[];
+const mockSolveConflict = jest.fn();
+
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
@@ -100,19 +101,183 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
   useConflicts: () => mockConflicts,
+  useConflictsMutation: () => ({ mutate: mockSolveConflict }),
 }));
 
 describe("SofwareConflicts", () => {
-  describe("when there is more than one conflict", () => {
+  describe("when there is only  one conflict", () => {
     beforeEach(() => {
-      mockConflicts = multipleConflicts;
+      mockConflicts = [{ ...conflicts[0] }];
     });
 
-    it("renders a toolbar with conflicts info and links", () => {
+    it("does not render the conflicts toolbar", () => {
+      installerRender(<SoftwareConflicts />);
+      expect(screen.queryByRole("heading", { name: "Conflict 1 of 3" })).toBeNull();
+      expect(screen.queryByRole("button", { name: "Skip to Previous" })).toBeNull();
+      expect(screen.queryByRole("button", { name: "Skip to Next" })).toBeNull();
+    });
+
+    it("allows applying the selected solution", async () => {
+      const { user } = installerRender(<SoftwareConflicts />);
+      const applyButton = screen.getByRole("button", { name: "Apply solution" });
+      const secondOption = screen.getByRole("radio", {
+        name: conflicts[0].solutions[1].description,
+      });
+      await user.click(secondOption);
+      await user.click(applyButton);
+      expect(mockSolveConflict).toHaveBeenCalledWith({ conflictId: 0, solutionId: 1 });
+    });
+  });
+
+  describe("when a conflict solution has details", () => {
+    beforeEach(() => {
+      mockConflicts = [
+        {
+          id: 0,
+          description: "Fake conflict",
+          details: null,
+          solutions: [
+            {
+              id: 0,
+              description: `Fake solution with details`,
+              details: "Action 1\nAction 2",
+            },
+          ],
+        },
+      ];
+    });
+
+    it("renders details in a list, splitting by newline", () => {
+      installerRender(<SoftwareConflicts />);
+      const details = screen.getByRole("list");
+      within(details).getByText("Action 1");
+      within(details).getByText("Action 2");
+    });
+
+    describe("and the number of details is within the visible limit", () => {
+      it("does not render a toggle to show/hide more", () => {
+        installerRender(<SoftwareConflicts />);
+        expect(screen.queryByRole("button", { name: /^Show.*actions$"/ })).toBeNull();
+      });
+    });
+
+    describe("but the number of details exceeds the visible limit", () => {
+      beforeEach(() => {
+        mockConflicts = [
+          {
+            id: 0,
+            description: "Fake conflict",
+            details: null,
+            solutions: [
+              {
+                id: 0,
+                description: `Fake solution with details`,
+                details: "Action 1\nAction 2\nAction 3\nAction 4",
+              },
+            ],
+          },
+        ];
+      });
+
+      it("renders a toggle to show/hide all actions", async () => {
+        const { user } = installerRender(<SoftwareConflicts />);
+        const actionsToggle = screen.getByRole("button", { name: /^Show.*actions$/ });
+        const details = screen.getByRole("list");
+        within(details).getByText("Action 1");
+        within(details).getByText("Action 2");
+        within(details).getByText("Action 3");
+        expect(within(details).queryByText("Action 4")).toBeNull();
+        await user.click(actionsToggle);
+        within(details).getByText("Action 4");
+        expect(actionsToggle).toHaveTextContent("Show less actions");
+        await user.click(actionsToggle);
+        expect(within(details).queryByText("Action 4")).toBeNull();
+      });
+    });
+  });
+
+  describe("when there is more than one conflict", () => {
+    beforeEach(() => {
+      mockConflicts = conflicts;
+    });
+
+    it("renders the conflicts toolbar with information and links", () => {
       installerRender(<SoftwareConflicts />);
       screen.getByRole("heading", { name: "Conflict 1 of 3" });
       screen.getByRole("button", { name: "Skip to Previous" });
       screen.getByRole("button", { name: "Skip to Next" });
+    });
+
+    it("allows navigating between conflicts without exceeding bounds", async () => {
+      const { user } = installerRender(<SoftwareConflicts />);
+      screen.getByRole("heading", { name: "Conflict 1 of 3" });
+      const skipToPrevious = screen.getByRole("button", { name: "Skip to Previous" });
+      const skipToNext = screen.getByRole("button", { name: "Skip to Next" });
+
+      expect(skipToPrevious).toBeDisabled();
+      expect(skipToNext).not.toBeDisabled();
+
+      await user.click(skipToPrevious);
+      screen.getByRole("heading", { name: "Conflict 1 of 3" });
+      screen.getByText(conflicts[0].description);
+      await user.click(skipToNext);
+      expect(skipToPrevious).not.toBeDisabled();
+      expect(skipToNext).not.toBeDisabled();
+      screen.getByRole("heading", { name: "Conflict 2 of 3" });
+      expect(screen.queryByText(conflicts[0].description)).toBeNull();
+      screen.getByText(conflicts[1].description);
+      await user.click(skipToNext);
+      screen.getByRole("heading", { name: "Conflict 3 of 3" });
+      expect(screen.queryByText(conflicts[1].description)).toBeNull();
+      screen.getByText(conflicts[2].description);
+      expect(skipToPrevious).not.toBeDisabled();
+      expect(skipToNext).toBeDisabled();
+      await user.click(skipToNext);
+      screen.getByRole("heading", { name: "Conflict 3 of 3" });
+    });
+
+    it("does not preserve the selected option after navigating", async () => {
+      const { user } = installerRender(<SoftwareConflicts />);
+      screen.getByRole("heading", { name: "Conflict 1 of 3" });
+      const skipToPrevious = screen.getByRole("button", { name: "Skip to Previous" });
+      const skipToNext = screen.getByRole("button", { name: "Skip to Next" });
+
+      screen.getByRole("heading", { name: "Conflict 1 of 3" });
+      screen.getByText(conflicts[0].description);
+      let options = screen.getAllByRole("radio", { checked: false });
+      expect(options.length).toBe(conflicts[0].solutions.length);
+
+      await user.click(options[0]);
+      expect(options[0]).toBeChecked();
+
+      await user.click(skipToNext);
+      screen.getByRole("heading", { name: "Conflict 2 of 3" });
+      screen.getByText(conflicts[1].description);
+      options = screen.getAllByRole("radio", { checked: false });
+      expect(options.length).toBe(conflicts[1].solutions.length);
+      expect(options[0]).not.toBeChecked();
+
+      await user.click(options[0]);
+      expect(options[0]).toBeChecked();
+
+      await user.click(skipToPrevious);
+      options = screen.getAllByRole("radio", { checked: false });
+      expect(options.length).toBe(conflicts[0].solutions.length);
+      expect(options[0]).not.toBeChecked();
+    });
+
+    it("allows applying the selected solution for the current conflict", async () => {
+      const { user } = installerRender(<SoftwareConflicts />);
+      const skipToNext = screen.getByRole("button", { name: "Skip to Next" });
+
+      await user.click(skipToNext);
+      const applyButton = screen.getByRole("button", { name: "Apply solution" });
+      const secondOption = screen.getByRole("radio", {
+        name: conflicts[1].solutions[1].description,
+      });
+      await user.click(secondOption);
+      await user.click(applyButton);
+      expect(mockSolveConflict).toHaveBeenCalledWith({ conflictId: 1, solutionId: 1 });
     });
   });
 });

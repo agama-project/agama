@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,6 +24,7 @@ import React, { useState } from "react";
 import {
   ActionGroup,
   Button,
+  ButtonProps,
   Content,
   Divider,
   Flex,
@@ -42,8 +43,7 @@ import {
 import { Icon } from "~/components/layout";
 import { Page, SubtleContent } from "~/components/core";
 import { Solution } from "~/types/software";
-import { useConflicts, useConflictsChanges } from "~/queries/software";
-import { solveConflict } from "~/api/software";
+import { useConflicts, useConflictsChanges, useConflictsMutation } from "~/queries/software";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
@@ -122,15 +122,17 @@ const ConflictSolutionRadio = ({
  * and eventually apply a solution for given conflict
  */
 const ConflictsForm = ({ conflict }): React.ReactNode => {
+  const { mutate: solve } = useConflictsMutation();
   const [chosenSolution, setChosenSolution] = useState<Solution["id"] | undefined>();
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    solveConflict({ solutionId: chosenSolution, conflictId: conflict.id });
+    solve({ conflictId: conflict.id, solutionId: chosenSolution });
   };
 
   return (
     <Form id="conflict-resolution" onSubmit={onSubmit}>
+      <Title headingLevel="h4">{conflict.description}</Title>
       <FormGroup isStack>
         {conflict.solutions.map((solution: Solution) => (
           <ConflictSolutionRadio
@@ -151,37 +153,27 @@ const ConflictsForm = ({ conflict }): React.ReactNode => {
   );
 };
 
-/**
- * Conflicts component
- */
-function SoftwareConflicts(): React.ReactNode {
-  useConflictsChanges();
-  const conflicts = useConflicts();
-  const [conflictId, setConflictId] = useState(0);
-  const onNext = async () => {
-    setConflictId(conflictId + 1);
-  };
-  const onBack = async () => {
-    setConflictId(conflictId - 1);
-  };
-
-  const NoConflicts = (): React.ReactNode => (
-    <Page.Content>
-      <b>{_("All conflicts solved.")}</b>
-    </Page.Content>
-  );
-
-  const ConflictsToolbar = (): React.ReactNode => (
+type ConflictsToolbarProps = {
+  current: number;
+  total: number;
+  onNext: ButtonProps["onClick"];
+  onBack: ButtonProps["onClick"];
+};
+const ConflictsToolbar = ({
+  current,
+  total,
+  onNext,
+  onBack,
+}: ConflictsToolbarProps): React.ReactNode => (
+  <>
     <Toolbar hasNoPadding>
       <ToolbarContent>
         <ToolbarItem alignSelf="center">
-          <Title headingLevel="h3">
-            {sprintf(_("Conflict %d of %d"), conflictId + 1, conflicts.length)}
-          </Title>
+          <Title headingLevel="h3">{sprintf(_("Conflict %d of %d"), current, total)}</Title>
         </ToolbarItem>
         <ToolbarGroup align={{ default: "alignEnd" }} alignItems="center">
           <ToolbarItem>
-            <Button variant="plain" size="sm" onClick={onBack}>
+            <Button variant="plain" size="sm" onClick={onBack} isDisabled={current === 1}>
               <Flex component="span" alignItems={{ default: "alignItemsCenter" }}>
                 <Icon name="chevron_left" /> {_("Skip to Previous")}
               </Flex>
@@ -189,7 +181,7 @@ function SoftwareConflicts(): React.ReactNode {
           </ToolbarItem>
           <ToolbarItem variant="separator" />
           <ToolbarItem>
-            <Button variant="plain" size="sm" onClick={onNext}>
+            <Button variant="plain" size="sm" onClick={onNext} isDisabled={current === total}>
               <Flex component="span" alignItems={{ default: "alignItemsCenter" }}>
                 {_("Skip to Next")} <Icon name="chevron_right" />
               </Flex>
@@ -198,21 +190,46 @@ function SoftwareConflicts(): React.ReactNode {
         </ToolbarGroup>
       </ToolbarContent>
     </Toolbar>
-  );
+    <Divider />
+  </>
+);
 
-  const ConflictsUI = (): React.ReactNode => {
-    // if the latest conflict is solved, then show the last one
-    const conflict = conflictId < conflicts.length ? conflicts[conflictId] : conflicts.at(-1);
+const NoConflictsContent = () => <b>{_("All conflicts solved.")}</b>;
+const ConflictsContent = ({ conflicts }) => {
+  const [currentConflictIndex, setCurrentConflictIndex] = useState(0);
+  const totalConflicts = conflicts.length;
+  const lastConflictIndex = totalConflicts - 1;
 
-    return (
-      <Page.Content>
-        <ConflictsToolbar />
-        <Divider />
-        <Title headingLevel="h4">{conflict.description}</Title>
-        <ConflictsForm conflict={conflict} />
-      </Page.Content>
-    );
+  const onNext = async () => {
+    currentConflictIndex < lastConflictIndex && setCurrentConflictIndex(currentConflictIndex + 1);
   };
+  const onBack = async () => {
+    currentConflictIndex > 0 && setCurrentConflictIndex(currentConflictIndex - 1);
+  };
+
+  const currentConflict = conflicts[currentConflictIndex];
+
+  return (
+    <>
+      {conflicts.length > 1 && (
+        <ConflictsToolbar
+          current={currentConflictIndex + 1}
+          total={totalConflicts}
+          onNext={onNext}
+          onBack={onBack}
+        />
+      )}
+      <ConflictsForm conflict={currentConflict} key={currentConflict.id} />
+    </>
+  );
+};
+
+/**
+ * Conflicts component
+ */
+function SoftwareConflicts(): React.ReactNode {
+  useConflictsChanges();
+  const conflicts = useConflicts();
 
   return (
     <Page>
@@ -225,7 +242,9 @@ function SoftwareConflicts(): React.ReactNode {
         </SubtleContent>
       </Page.Header>
 
-      {conflicts.length > 0 ? <ConflictsUI /> : <NoConflicts />}
+      <Page.Content>
+        {conflicts.length > 0 ? <ConflictsContent conflicts={conflicts} /> : <NoConflictsContent />}
+      </Page.Content>
 
       <Page.Actions>
         <Page.Cancel variant="secondary">{_("Close")}</Page.Cancel>

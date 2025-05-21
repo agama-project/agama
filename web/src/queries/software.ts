@@ -58,6 +58,7 @@ import {
   probe,
   register,
   registerAddon,
+  solveConflict,
   updateConfig,
 } from "~/api/software";
 import { QueryHookOptions } from "~/types/queries";
@@ -342,6 +343,22 @@ const useConflicts = (): Conflict[] => {
 };
 
 /**
+ * Hook that builds a mutation for solving a conflict
+ */
+const useConflictsMutation = () => {
+  const queryClient = useQueryClient();
+
+  const query = {
+    mutationFn: solveConflict,
+    onSuccess: async () => {
+      await systemProbe();
+      queryClient.invalidateQueries({ queryKey: conflictsQuery().queryKey });
+    },
+  };
+  return useMutation(query);
+};
+
+/**
  * Hook that returns a useEffect to listen for  software proposal events
  *
  * When the configuration changes, it invalidates the config query.
@@ -411,6 +428,7 @@ export {
   useAddons,
   useConfigMutation,
   useConflicts,
+  useConflictsMutation,
   useConflictsChanges,
   useLicenses,
   usePatterns,
