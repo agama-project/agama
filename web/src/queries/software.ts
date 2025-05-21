@@ -414,7 +414,7 @@ const useConflictsChanges = () => {
     return client.onEvent((event) => {
       if (event.type === "ConflictsChanged") {
         const { conflicts } = event;
-        queryClient.setQueryData(["software/conflicts"], conflicts);
+        queryClient.setQueryData([conflictsQuery().queryKey], conflicts);
       }
     });
   });
