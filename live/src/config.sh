@@ -104,8 +104,6 @@ if [[ "$kiwi_profiles" != *PXE* ]]; then
   mkdir /etc/cmdline.d
   echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
   echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
-  # if there's a default network location, add it here
-  # echo "root_net=" >> /etc/cmdline.d/10-liveroot.conf
   echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
 fi
 echo 'add_dracutmodules+=" dracut-menu agama-cmdline "' >>/etc/dracut.conf.d/10-liveroot-file.conf
