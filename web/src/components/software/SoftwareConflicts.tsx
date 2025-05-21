@@ -177,14 +177,14 @@ const ConflictsToolbar = ({
 }: ConflictsToolbarProps): React.ReactNode => (
   <Toolbar hasNoPadding>
     <ToolbarContent>
-      <ToolbarItem alignSelf="center">
+      <ToolbarItem isOverflowContainer alignSelf="center">
         <SubtleContent>
           {_(
-            "Multiple conflicts found. You can address conflicts in any order; some may resolve others.",
+            "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.",
           )}
         </SubtleContent>
       </ToolbarItem>
-      <ToolbarGroup align={{ default: "alignEnd" }} alignItems="center">
+      <ToolbarGroup align={{ default: "alignEnd" }} alignSelf="center" alignItems="center">
         <ToolbarItem>
           <Button variant="plain" size="sm" onClick={onBack} isDisabled={current === 1}>
             <Flex component="span" alignItems={{ default: "alignItemsCenter" }}>
@@ -223,7 +223,7 @@ const NoConflictsContent = () => (
     <Title headingLevel="h3">{_("No conflicts to address")}</Title>
     <Content isEditorial>
       {_(
-        "All conflicts have been resolved, or none were detected. You can safely continue with your setup",
+        "All conflicts have been resolved, or none were detected. You can safely continue with your setup.",
       )}
     </Content>
   </>
