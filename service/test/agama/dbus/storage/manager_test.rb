@@ -758,6 +758,7 @@ describe Agama::DBus::Storage::Manager do
                 ]
               }
             ],
+            mdRaids:      [],
             volumeGroups: []
           })
         )
@@ -833,6 +834,7 @@ describe Agama::DBus::Storage::Manager do
               ]
             }
           ],
+          mdRaids:      [],
           volumeGroups: []
         })
       )

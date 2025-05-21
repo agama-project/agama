@@ -31,12 +31,14 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
     {
       boot:         boot,
       drives:       drives,
+      mdRaids:      md_raids,
       volumeGroups: volume_groups
     }
   end
 
   let(:boot) { nil }
   let(:drives) { nil }
+  let(:md_raids) { nil }
   let(:volume_groups) { nil }
 
   describe "#convert" do
@@ -87,6 +89,63 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
           [
             {
               name:        "/dev/vda",
+              spacePolicy: "keep",
+              partitions:  [
+                {
+                  delete:         false,
+                  deleteIfNeeded: false,
+                  resize:         false,
+                  resizeIfNeeded: false,
+                  filesystem:     {
+                    reuse:     false,
+                    default:   true,
+                    type:      "btrfs",
+                    snapshots: false
+                  },
+                  mountPath:      "/",
+                  size:           {
+                    default: true,
+                    min:     0
+                  }
+                }
+              ]
+            }
+          ]
+        )
+      end
+    end
+
+    context "if #md_raids is configured" do
+      let(:scenario) { "md_raids.yaml" }
+
+      let(:md_raids) do
+        [
+          {
+            search:     "/dev/md0",
+            partitions: [
+              {
+                filesystem: { path: "/" }
+              }
+            ]
+          },
+          {
+            search:     {
+              condition:  { name: "/dev/md10" },
+              ifNotFound: "skip"
+            },
+            partitions: []
+          }
+        ]
+      end
+
+      before { solve_config }
+
+      it "generates the expected JSON" do
+        config_model = subject.convert
+        expect(config_model[:mdRaids]).to eq(
+          [
+            {
+              name:        "/dev/md0",
               spacePolicy: "keep",
               partitions:  [
                 {

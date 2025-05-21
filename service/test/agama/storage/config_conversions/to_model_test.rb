@@ -19,21 +19,16 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../../test_helper"
-require "agama/storage/config_conversions/from_json"
+require_relative "../config_context"
 require "agama/storage/config_conversions/to_model"
 require "y2storage/refinements"
 
 using Y2Storage::Refinements::SizeCasts
 
 describe Agama::Storage::ConfigConversions::ToModel do
-  subject { described_class.new(config) }
+  include_context "config"
 
-  let(:config) do
-    Agama::Storage::ConfigConversions::FromJSON
-      .new(config_json)
-      .convert
-  end
+  subject { described_class.new(config) }
 
   describe "#convert" do
     let(:config_json) do
@@ -47,10 +42,14 @@ describe Agama::Storage::ConfigConversions::ToModel do
             alias:      "disk1",
             search:     "/dev/vda",
             partitions: [
-              {
-                size: "5 GiB"
-              }
+              { size: "5 GiB" }
             ]
+          }
+        ],
+        mdRaids:      [
+          {
+            search:     "/dev/md0",
+            filesystem: { path: "/data" }
           }
         ],
         volumeGroups: [
@@ -66,6 +65,8 @@ describe Agama::Storage::ConfigConversions::ToModel do
         ]
       }
     end
+
+    before { solve_config }
 
     it "generates the expected JSON" do
       expect(subject.convert).to eq(
@@ -96,14 +97,31 @@ describe Agama::Storage::ConfigConversions::ToModel do
               ]
             }
           ],
-          mdRaids:      [],
+          mdRaids:      [
+            {
+              name:        "/dev/md0",
+              filesystem:  {
+                reuse:   false,
+                default: true,
+                type:    "ext4"
+              },
+              mountPath:   "/data",
+              spacePolicy: "delete",
+              partitions:  []
+            }
+          ],
           volumeGroups: [
             {
               vgName:         "test",
               targetDevices:  ["/dev/vda"],
               logicalVolumes: [
                 {
-                  filesystem: { reuse: false },
+                  filesystem: {
+                    reuse:     false,
+                    default:   true,
+                    type:      "btrfs",
+                    snapshots: false
+                  },
                   mountPath:  "/",
                   size:       {
                     default: true,
