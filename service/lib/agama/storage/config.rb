@@ -64,7 +64,7 @@ module Agama
       def boot_device
         return unless boot.configure? && boot.device.device_alias
 
-        drives.find { |d| d.alias?(boot.device.device_alias) }
+        supporting_partitions.find { |d| d.alias?(boot.device.device_alias) }
       end
 
       # Drive config containing root.

@@ -54,17 +54,20 @@ describe Agama::Storage::Config do
     context "if boot config is set to be configured" do
       let(:config_json) do
         {
-          boot:   {
+          boot:    {
             configure: true,
             device:    device_alias
           },
-          drives: [
+          drives:  [
             {
               alias:      "disk1",
               partitions: [
                 { alias: "part1" }
               ]
             }
+          ],
+          mdRaids: [
+            { alias: "raid1" }
           ]
         }
       end
@@ -78,20 +81,29 @@ describe Agama::Storage::Config do
       end
 
       context "and boot config has a device alias" do
-        context "and there is not a drive config with the boot device alias" do
-          let(:device_alias) { "part1" }
-
-          it "returns nil" do
-            expect(subject.boot_device).to be_nil
-          end
-        end
-
         context "and there is a drive config with the boot device alias" do
           let(:device_alias) { "disk1" }
 
           it "returns the drive config" do
             expect(subject.boot_device).to be_a(Agama::Storage::Configs::Drive)
             expect(subject.boot_device.alias).to eq("disk1")
+          end
+        end
+
+        context "and there is an mdRaid config with the boot device alias" do
+          let(:device_alias) { "raid1" }
+
+          it "returns the mdRaid config" do
+            expect(subject.boot_device).to be_a(Agama::Storage::Configs::MdRaid)
+            expect(subject.boot_device.alias).to eq("raid1")
+          end
+        end
+
+        context "and there is not a drive or mdRaid config with the boot device alias" do
+          let(:device_alias) { "part1" }
+
+          it "returns nil" do
+            expect(subject.boot_device).to be_nil
           end
         end
       end
