@@ -132,7 +132,9 @@ module Agama
           # Adds a drive for the selected boot device and for the LVM target devices if needed.
           #
           # TODO: This considers the missing device is always a drive (never a reused MD RAID).
-          # That's enough for now, but we may need to be revisit it.
+          # That's enough for now because the reused MD RAIDs are always included in the model. This
+          # must be revisited when more features will be supported (e.g., selecting a MD RAID as
+          # boot device or as target for physical volumes).
           #
           # @return [Array<Hash>, nil]
           def add_missing_drives
