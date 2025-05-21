@@ -49,6 +49,8 @@ import NetworkWifi from "@icons/network_wifi.svg?component";
 import NetworkWifi1Bar from "@icons/network_wifi_1_bar.svg?component";
 import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
+import UnfoldLess from "@icons/unfold_less.svg?component";
+import UnfoldMore from "@icons/unfold_more.svg?component";
 import Warning from "@icons/warning.svg?component";
 import Visibility from "@icons/visibility.svg?component";
 import VisibilityOff from "@icons/visibility_off.svg?component";
@@ -81,6 +83,8 @@ const icons = {
   network_wifi_1_bar: NetworkWifi1Bar,
   network_wifi_3_bar: NetworkWifi3Bar,
   settings_ethernet: SettingsEthernet,
+  unfold_less: UnfoldLess,
+  unfold_more: UnfoldMore,
   visibility: Visibility,
   visibility_off: VisibilityOff,
   warning: Warning,
