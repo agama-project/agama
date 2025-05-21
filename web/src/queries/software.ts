@@ -351,7 +351,6 @@ const useConflictsMutation = () => {
   const query = {
     mutationFn: solveConflict,
     onSuccess: async () => {
-      await systemProbe();
       queryClient.invalidateQueries({ queryKey: conflictsQuery().queryKey });
     },
   };
