@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 use std::collections::HashMap;
+use zbus::{message::Type as MessageType, MatchRule, MessageStream};
 use zvariant::{self, OwnedObjectPath, OwnedValue, Value};
 
 /// Nested hash to send to D-Bus.
@@ -99,6 +100,21 @@ pub fn extract_id_from_path(path: &OwnedObjectPath) -> Result<u32, zvariant::Err
         .ok_or_else(|| {
             zvariant::Error::Message(format!("Could not extract the ID from {}", path.as_str()))
         })
+}
+
+/// Returns a stream of properties changes.
+///
+/// It listens for changes in several objects that are related to a network device.
+pub async fn build_properties_changed_stream(
+    connection: &zbus::Connection,
+) -> Result<MessageStream, zbus::Error> {
+    let rule = MatchRule::builder()
+        .msg_type(MessageType::Signal)
+        .interface("org.freedesktop.DBus.Properties")?
+        .member("PropertiesChanged")?
+        .build();
+    let stream = MessageStream::for_match_rule(rule, connection, Some(1)).await?;
+    Ok(stream)
 }
 
 #[cfg(test)]
