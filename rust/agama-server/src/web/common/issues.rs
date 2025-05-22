@@ -200,7 +200,7 @@ impl IssuesService {
     }
 }
 
-/// It allows querying the [IssuesService].o
+/// It allows querying the [IssuesService].
 ///
 /// It is cheap to clone the client and use it from several
 /// places.
