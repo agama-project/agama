@@ -90,7 +90,10 @@ where
             "/software",
             software_service(dbus.clone(), events.subscribe(), issues.clone()).await?,
         )
-        .add_service("/storage", storage_service(dbus.clone()).await?)
+        .add_service(
+            "/storage",
+            storage_service(dbus.clone(), issues.clone()).await?,
+        )
         .add_service("/iscsi", iscsi_service(dbus.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
         .add_service("/network", network_service(network_adapter, events).await?)
@@ -164,15 +167,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
     stream.insert(
         "storage-progress",
         progress_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Storage1",
-            "/org/opensuse/Agama/Storage1",
-        )
-        .await?,
-    );
-    stream.insert(
-        "storage-issues",
-        issues_stream(
             dbus.clone(),
             "org.opensuse.Agama.Storage1",
             "/org/opensuse/Agama/Storage1",
