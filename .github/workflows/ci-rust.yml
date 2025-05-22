@@ -46,6 +46,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       COVERAGE: 1
+      # disable support for incremental builds, we always build from scratch anyway
+      # this makes the build slightly faster
+      CARGO_INCREMENTAL: 0
 
     defaults:
       run:

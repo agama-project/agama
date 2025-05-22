@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 21 12:42:34 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Do not set root= dracut configuration in PXE images
+  (gh#agama-project/agama2377).
+
+-------------------------------------------------------------------
 Tue May 20 08:42:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Disable sending Firefox usage data to Mozilla for increased
