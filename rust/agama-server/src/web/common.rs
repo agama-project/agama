@@ -38,6 +38,8 @@ use crate::error::Error;
 
 mod jobs;
 pub use jobs::{jobs_service, jobs_stream};
+mod issues;
+pub use issues::{IssuesClient, IssuesRouterBuilder, IssuesService};
 
 use super::Event;
 
