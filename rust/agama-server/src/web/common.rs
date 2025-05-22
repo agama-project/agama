@@ -24,9 +24,8 @@ use std::{pin::Pin, task::Poll};
 
 use agama_lib::{
     error::ServiceError,
-    issue::Issue,
     progress::Progress,
-    proxies::{IssuesProxy, ProgressProxy, ServiceStatusProxy},
+    proxies::{ProgressProxy, ServiceStatusProxy},
 };
 use axum::{extract::State, routing::get, Json, Router};
 use pin_project::pin_project;
