@@ -37,7 +37,8 @@
 //!
 //! At this point, it only handles the issues that are exposed through D-Bus.
 
-use agama_lib::issue::Issue;
+use crate::web::EventsSender;
+use agama_lib::{http::Event, issue::Issue};
 use agama_utils::dbus::build_properties_changed_stream;
 use axum::{extract::State, routing::get, Json, Router};
 use std::collections::HashMap;
@@ -49,6 +50,20 @@ use zbus::{
     zvariant::{Array, OwnedObjectPath},
 };
 
+type IssuesServiceResult<T> = Result<T, IssuesServiceError>;
+
+#[derive(Debug, thiserror::Error)]
+pub enum IssuesServiceError {
+    #[error("Could not return the issues")]
+    SendIssues,
+    #[error("Error parsing issues from D-Bus: {0}")]
+    InvalidIssue(#[from] zbus::zvariant::Error),
+    #[error("Error reading the issues: {0}")]
+    DBus(#[from] zbus::Error),
+    #[error("Invalid D-Bus name: {0}")]
+    DBusName(#[from] zbus::names::Error),
+}
+
 #[derive(Debug)]
 enum IssuesCommand {
     Get(String, String, oneshot::Sender<Vec<Issue>>),
@@ -58,6 +73,7 @@ enum IssuesCommand {
 pub struct IssuesService {
     issues: HashMap<String, Vec<Issue>>,
     commands: mpsc::Receiver<IssuesCommand>,
+    events: EventsSender,
     dbus: zbus::Connection,
 }
 
@@ -68,11 +84,12 @@ impl IssuesService {
     ///
     /// * Commands from a client ([IssuesClient]).
     /// * Relevant events from D-Bus.
-    pub async fn start(dbus: zbus::Connection) -> IssuesClient {
+    pub async fn start(dbus: zbus::Connection, events: EventsSender) -> IssuesClient {
         let (tx, rx) = mpsc::channel(16);
         let mut service = IssuesService {
             issues: HashMap::new(),
             dbus,
+            events,
             commands: rx,
         };
 
@@ -86,7 +103,9 @@ impl IssuesService {
         loop {
             tokio::select! {
                 Some(cmd) = self.commands.recv() => {
-                    self.handle_command(cmd).await;
+                    if let Err(e) = self.handle_command(cmd).await {
+                        tracing::error!("{e}");
+                    }
                 }
 
                 Some(Ok(message)) = messages.next() => {
@@ -101,17 +120,20 @@ impl IssuesService {
     }
 
     /// Handles commands from the client.
-    async fn handle_command(&mut self, command: IssuesCommand) {
+    async fn handle_command(&mut self, command: IssuesCommand) -> IssuesServiceResult<()> {
         match command {
             IssuesCommand::Get(service, path, tx) => {
-                let issues = self.get(&service, &path).await.unwrap();
-                tx.send(issues).unwrap();
+                let issues = self.get(&service, &path).await?;
+                tx.send(issues)
+                    .map_err(|_| IssuesServiceError::SendIssues)?;
             }
         }
+
+        Ok(())
     }
 
     /// Handles PropertiesChanged events.
-    fn handle_property_changed(&mut self, message: PropertiesChanged) -> zbus::Result<()> {
+    fn handle_property_changed(&mut self, message: PropertiesChanged) -> IssuesServiceResult<()> {
         let args = message.args()?;
         let inner = message.message();
         let header = inner.header();
@@ -134,15 +156,18 @@ impl IssuesService {
             .map(Issue::try_from)
             .collect::<Result<Vec<_>, _>>()?;
 
-        self.issues.insert(path.to_string(), issues);
+        self.issues.insert(path.to_string(), issues.clone());
 
-        // TODO: ideally we should emit the issues changes from here.
-        // self.events_tx.send...
+        let event = Event::IssuesChanged {
+            path: path.to_string(),
+            issues,
+        };
+        self.events.send(event).unwrap();
         Ok(())
     }
 
     /// Gets the issues for a given D-Bus service and path.
-    async fn get(&mut self, service: &str, path: &str) -> zbus::Result<Vec<Issue>> {
+    async fn get(&mut self, service: &str, path: &str) -> IssuesServiceResult<Vec<Issue>> {
         if let Some(issues) = self.issues.get(path) {
             return Ok(issues.clone());
         }

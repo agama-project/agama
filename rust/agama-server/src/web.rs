@@ -80,7 +80,7 @@ where
         .await
         .expect("Could not connect to NetworkManager to read the configuration");
 
-    let issues = IssuesService::start(dbus.clone()).await;
+    let issues = IssuesService::start(dbus.clone(), events.clone()).await;
 
     let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
         .add_service("/l10n", l10n_service(dbus.clone(), events.clone()).await?)
@@ -208,24 +208,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
         .await?,
     );
     stream.insert("questions", questions_stream(dbus.clone()).await?);
-    stream.insert(
-        "software-issues",
-        issues_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Software1",
-            "/org/opensuse/Agama/Software1",
-        )
-        .await?,
-    );
-    stream.insert(
-        "software-product-issues",
-        issues_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Software1",
-            "/org/opensuse/Agama/Software1/Product",
-        )
-        .await?,
-    );
     stream.insert(
         "users-issues",
         issues_stream(
