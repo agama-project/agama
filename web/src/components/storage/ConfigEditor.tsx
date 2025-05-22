@@ -65,6 +65,11 @@ export default function ConfigEditor() {
     return <NoDevicesConfiguredAlert />;
   }
 
+  /**
+   * @fixme Adapt components (DriveEditor, MdRaidEditor, etc) to receive a list name and an index
+   * instead of a device object. Each component will retrieve the device from the model if needed.
+   */
+
   return (
     <List isPlain>
       {volumeGroups.map((vg, i) => {

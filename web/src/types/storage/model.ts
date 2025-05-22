@@ -35,6 +35,11 @@ type Model = {
   getMountPaths: () => string[];
 };
 
+/**
+ * @fixme Remove list and listIndex from types once the components are adapted to receive a list
+ * and an index instead of a device object.
+ */
+
 interface Drive extends apiModel.Drive {
   list: string;
   listIndex: number;
