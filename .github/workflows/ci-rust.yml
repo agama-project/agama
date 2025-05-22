@@ -39,6 +39,9 @@ on:
   # allow running manually
   workflow_dispatch:
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   rust_ci:
     # the default timeout is 6 hours, that's too much if the job gets stuck
@@ -113,6 +116,10 @@ jobs:
 
     - name: Run the tests
       run: cargo tarpaulin --all --doc --out xml -- --nocapture
+      env:
+        # use the "stable" tool chain (installed above) instead of the "nightly" default in tarpaulin
+        RUSTC_BOOTSTRAP: 1
+        RUSTUP_TOOLCHAIN: stable
 
     - name: Generate and validate the OpenAPI specification
       run: |
