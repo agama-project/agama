@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import NetworkPage from "~/components/network/NetworkPage";
 
@@ -46,6 +46,16 @@ jest.mock("~/queries/network", () => ({
 }));
 
 describe("NetworkPage", () => {
+  // TODO: below example should happen only when there are no connections for
+  // copying to the product to install
+  it("renders a warning about no connection for installed system", () => {
+    installerRender(<NetworkPage />);
+    const warningNode = screen.getByText("Warning alert:").parentElement.parentElement;
+    within(warningNode).getByText("No connections will be saved");
+    within(warningNode).getByText(/for installation only/);
+    within(warningNode).getByText(/will not be kept in the installed system/);
+  });
+
   it("renders a section for wired connections", () => {
     installerRender(<NetworkPage />);
     expect(screen.queryByText("WiredConnectionsList Mock")).toBeInTheDocument();
