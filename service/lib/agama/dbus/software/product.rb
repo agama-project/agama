@@ -252,6 +252,7 @@ module Agama
         #   10: internal error (e.g., parsing json data)
         #   11: addon not found
         #   12: addon found in multiple versions
+        #   13: Failed to add service from registration
         def register_addon(name, version, reg_code)
           if !backend.product
             [1, "Product not selected yet"]
@@ -284,6 +285,7 @@ module Agama
         #   7: incorrect credentials
         #   8: invalid certificate
         #   9: internal error (e.g., parsing json data)
+        #   13: Failed to remove service from registration
         def deregister
           if !backend.product
             [1, "Product not selected yet"]
@@ -379,7 +381,7 @@ module Agama
           connect_result_from_error(e, first_error_code + 7)
         rescue Errors::Registration::MultipleExtensionsFound => e
           connect_result_from_error(e, first_error_code + 8)
-        rescue Agama::Software::AddServiceError => e
+        rescue Agama::Software::ServiceError => e
           connect_result_from_error(e, first_error_code + 9)
         end
 

@@ -45,7 +45,7 @@ Yast.import "Pkg"
 
 module Agama
   module Software
-    class AddServiceError < StandardError; end
+    class ServiceError < StandardError; end
 
     # This class is responsible for software handling.
     #
@@ -369,24 +369,24 @@ module Agama
 
         @logger.info "Adding service #{service.name.inspect} (#{service.url})"
         if !Yast::Pkg.ServiceAdd(service.name, service.url.to_s)
-          raise AddServiceError.new(format("Adding service '%s' failed.", service.name))
+          raise ServiceError.new(format(_("Adding service '%s' failed."), service.name))
         end
 
         if !Yast::Pkg.ServiceSet(service.name, "autorefresh" => true)
           # error message
-          raise AddServiceError.new(format("Updating service '%s' failed.", service.name))
+          raise ServiceError.new(format(_("Updating service '%s' failed."), service.name))
         end
 
         # refresh works only for saved services
         if !Yast::Pkg.ServiceSave(service.name)
           # error message
-          raise AddServiceError.new(format("Saving service '%s' failed.", service.name))
+          raise ServiceError.new(format(_("Saving service '%s' failed."), service.name))
         end
 
         # Force refreshing due timing issues (bnc#967828)
         if !Yast::Pkg.ServiceForceRefresh(service.name)
           # error message
-          raise AddServiceError.new(format("Refreshing service '%s' failed.", service.name))
+          raise ServiceError.new(format(_("Refreshing service '%s' failed."), service.name))
         end
       ensure
         Yast::Pkg.SourceSaveAll
@@ -395,7 +395,7 @@ module Agama
 
       def remove_service(service)
         if Yast::Pkg.ServiceDelete(service.name) && !Yast::Pkg.SourceSaveAll
-          raise format("Removing service '%s' failed.", service_name)
+          raise ServiceError.new(format(_("Removing service '%s' failed."), service_name))
         end
 
         true
