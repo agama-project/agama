@@ -42,7 +42,7 @@ use agama_lib::{http::Event, issue::Issue};
 use agama_utils::dbus::build_properties_changed_stream;
 use axum::{extract::State, routing::get, Json, Router};
 use std::collections::HashMap;
-use tokio::sync::{mpsc, oneshot};
+use tokio::sync::{broadcast, mpsc, oneshot};
 use tokio_stream::StreamExt;
 use zbus::{
     fdo::PropertiesChanged,
@@ -56,6 +56,10 @@ type IssuesServiceResult<T> = Result<T, IssuesServiceError>;
 pub enum IssuesServiceError {
     #[error("Could not return the issues")]
     SendIssues,
+    #[error("Could not get an answer from the service: {0}")]
+    RecvIssues(#[from] oneshot::error::RecvError),
+    #[error("Could not set the command")]
+    SendCommand,
     #[error("Error parsing issues from D-Bus: {0}")]
     InvalidIssue(#[from] zbus::zvariant::Error),
     #[error("Error reading the issues: {0}")]
@@ -63,7 +67,7 @@ pub enum IssuesServiceError {
     #[error("Invalid D-Bus name: {0}")]
     DBusName(#[from] zbus::names::Error),
     #[error("Could not send the event: {0}")]
-    SendEvent(#[from] tokio::sync::broadcast::error::SendError<Event>),
+    SendEvent(#[from] broadcast::error::SendError<Event>),
 }
 
 #[derive(Debug)]
@@ -209,7 +213,7 @@ pub struct IssuesClient(mpsc::Sender<IssuesCommand>);
 
 impl IssuesClient {
     /// Get the issues for the given D-Bus service and path.
-    pub async fn get(&self, service: &str, path: &str) -> Option<Vec<Issue>> {
+    pub async fn get(&self, service: &str, path: &str) -> IssuesServiceResult<Vec<Issue>> {
         let (tx, rx) = oneshot::channel();
         self.0
             .send(IssuesCommand::Get(
@@ -218,8 +222,8 @@ impl IssuesClient {
                 tx,
             ))
             .await
-            .unwrap();
-        Some(rx.await.unwrap())
+            .map_err(|_| IssuesServiceError::SendCommand)?;
+        Ok(rx.await?)
     }
 }
 
