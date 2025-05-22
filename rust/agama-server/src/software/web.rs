@@ -347,7 +347,7 @@ async fn repositories(
     path = "/conflicts",
     context_path = "/api/software",
     responses(
-        (status = 200, description = "List of known repositories", body = Vec<Conflict>),
+        (status = 200, description = "List of software conflicts", body = Vec<Conflict>),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
