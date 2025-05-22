@@ -40,7 +40,8 @@ use agama_lib::{
     software::{
         model::{
             AddonParams, AddonProperties, License, LicenseContent, LicensesRepo, RegistrationError,
-            RegistrationInfo, RegistrationParams, Repository, ResolvableParams, SoftwareConfig,
+            RegistrationInfo, RegistrationParams, Repository, RepositoryParams, ResolvableParams,
+            SoftwareConfig,
         },
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
@@ -237,7 +238,10 @@ pub async fn software_service(
 
     let router = Router::new()
         .route("/patterns", get(patterns))
-        .route("/repositories", get(repositories))
+        .route(
+            "/repositories",
+            put(set_custom_repositories).get(repositories),
+        )
         .route("/products", get(products))
         .route("/licenses", get(licenses))
         .route("/licenses/:id", get(license))
@@ -309,6 +313,25 @@ async fn repositories(
 ) -> Result<Json<Vec<Repository>>, Error> {
     let repositories = state.software.repositories().await?;
     Ok(Json(repositories))
+}
+
+async fn set_custom_repositories(
+    State(state): State<SoftwareState<'_>>,
+    Json(repos): Json<Vec<RepositoryParams>>,
+) -> Result<impl IntoResponse, Error> {
+    Ok((StatusCode::NO_CONTENT, ().into_response()))
+
+    // let (id, message) = state.product.register_addon(&addon).await?;
+
+    // if id == 0 {
+    //     Ok((StatusCode::NO_CONTENT, ().into_response()))
+    // } else {
+    //     let details = RegistrationError { id, message };
+    //     Ok((
+    //         StatusCode::UNPROCESSABLE_ENTITY,
+    //         Json(details).into_response(),
+    //     ))
+    // }
 }
 
 /// returns registration info
