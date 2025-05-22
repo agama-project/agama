@@ -139,19 +139,25 @@ impl IssuesService {
     }
 
     /// Handles PropertiesChanged events.
+    ///
+    /// It reports an error if something went work. If the message was processed or skipped
+    /// it returns Ok(()).
     fn handle_property_changed(&mut self, message: PropertiesChanged) -> IssuesServiceResult<()> {
         let args = message.args()?;
         let inner = message.message();
         let header = inner.header();
+
+        // We are neither interested on this message...
         let Some(path) = header.path() else {
             return Ok(());
         };
 
-        // Only process Agama issues signals.
+        // nor on this...
         if args.interface_name.as_str() != "org.opensuse.Agama1.Issues" {
             return Ok(());
         }
 
+        // nor on this one.
         let Some(all) = args.changed_properties().get("All") else {
             return Ok(());
         };
@@ -173,6 +179,13 @@ impl IssuesService {
     }
 
     /// Gets the issues for a given D-Bus service and path.
+    ///
+    /// This method uses a cache to store the values. If the value is not in the cache,
+    /// it asks the D-Bus service about the issues (and cache them).
+    ///
+    /// * `service`: D-Bus service to connect to.
+    /// * `path`: path of the D-Bus object implementing the
+    ///   "org.opensuse.Agama1.Issues" interface.
     async fn get(&mut self, service: &str, path: &str) -> IssuesServiceResult<Vec<Issue>> {
         if let Some(issues) = self.issues.get(path) {
             return Ok(issues.clone());
