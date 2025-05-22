@@ -54,6 +54,7 @@ mod state;
 mod ws;
 
 use agama_lib::{connection, error::ServiceError, http::Event};
+use common::IssuesService;
 pub use config::ServiceConfig;
 pub use event::{EventsReceiver, EventsSender};
 pub use service::MainServiceBuilder;
@@ -79,13 +80,15 @@ where
         .await
         .expect("Could not connect to NetworkManager to read the configuration");
 
+    let issues = IssuesService::start(dbus.clone()).await;
+
     let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
         .add_service("/l10n", l10n_service(dbus.clone(), events.clone()).await?)
         .add_service("/manager", manager_service(dbus.clone()).await?)
         .add_service("/security", security_service(dbus.clone()).await?)
         .add_service(
             "/software",
-            software_service(dbus.clone(), events.subscribe()).await?,
+            software_service(dbus.clone(), events.subscribe(), issues).await?,
         )
         .add_service("/storage", storage_service(dbus.clone()).await?)
         .add_service("/iscsi", iscsi_service(dbus.clone()).await?)
