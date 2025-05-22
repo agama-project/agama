@@ -30,6 +30,7 @@ import Backspace from "@icons/backspace.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
 import Delete from "@icons/delete.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
+import Emergency from "@icons/emergency.svg?component";
 import Error from "@icons/error.svg?component";
 import ErrorFill from "@icons/error-fill.svg?component";
 import ExpandCircleDown from "@icons/expand_circle_down.svg?component";
@@ -63,6 +64,7 @@ const icons = {
   check_circle: CheckCircle,
   delete: Delete,
   edit_square: EditSquare,
+  emergency: Emergency,
   error: Error,
   error_fill: ErrorFill,
   expand_circle_down: ExpandCircleDown,
