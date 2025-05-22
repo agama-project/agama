@@ -33,6 +33,7 @@ use agama_lib::{
         StorageClient, StorageSettings,
     },
 };
+use anyhow::Context;
 use axum::{
     extract::{Query, State},
     routing::{get, post, put},
@@ -55,7 +56,8 @@ use crate::{
         iscsi::iscsi_stream,
     },
     web::common::{
-        issues_router, jobs_service, progress_router, service_status_router, EventStreams,
+        jobs_service, progress_router, service_status_router, EventStreams, IssuesClient,
+        IssuesRouterBuilder,
     },
 };
 use agama_lib::http::Event;
@@ -96,14 +98,19 @@ struct StorageState<'a> {
 }
 
 /// Sets up and returns the axum service for the storage module.
-pub async fn storage_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
+pub async fn storage_service(
+    dbus: zbus::Connection,
+    issues: IssuesClient,
+) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &str = "org.opensuse.Agama.Storage1";
     const DBUS_PATH: &str = "/org/opensuse/Agama/Storage1";
     const DBUS_DESTINATION: &str = "org.opensuse.Agama.Storage1";
 
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let progress_router = progress_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
-    let issues_router = issues_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
+    let issues_router = IssuesRouterBuilder::new(DBUS_SERVICE, DBUS_PATH, issues.clone())
+        .build()
+        .context("Could not build an issues router")?;
     let iscsi_router = storage_iscsi_service(&dbus).await?;
     let dasd_router = dasd_service(&dbus).await?;
     let zfcp_router = zfcp_service(&dbus).await?;

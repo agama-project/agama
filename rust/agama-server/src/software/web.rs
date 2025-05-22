@@ -28,7 +28,9 @@
 use crate::{
     error::Error,
     web::{
-        common::{issues_router, progress_router, service_status_router, EventStreams},
+        common::{
+            progress_router, service_status_router, EventStreams, IssuesClient, IssuesRouterBuilder,
+        },
         EventsReceiver,
     },
 };
@@ -47,6 +49,7 @@ use agama_lib::{
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
     },
 };
+use anyhow::Context;
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
@@ -234,6 +237,7 @@ pub async fn receive_events(
 pub async fn software_service(
     dbus: zbus::Connection,
     events: EventsReceiver,
+    issues: IssuesClient,
 ) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &str = "org.opensuse.Agama.Software1";
     const DBUS_PATH: &str = "/org/opensuse/Agama/Software1";
@@ -241,8 +245,15 @@ pub async fn software_service(
 
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let progress_router = progress_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
-    let software_issues = issues_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
-    let product_issues = issues_router(&dbus, DBUS_SERVICE, DBUS_PRODUCT_PATH).await?;
+
+    // FIXME: use anyhow temporarily until we adapt all these methods to return
+    // the crate::error::Error instead of ServiceError.
+    let software_issues = IssuesRouterBuilder::new(DBUS_SERVICE, DBUS_PATH, issues.clone())
+        .build()
+        .context("Could not build an issues router")?;
+    let product_issues = IssuesRouterBuilder::new(DBUS_SERVICE, DBUS_PRODUCT_PATH, issues)
+        .build()
+        .context("Could not build an issues router")?;
 
     let mut licenses_repo = LicensesRepo::default();
     if let Err(error) = licenses_repo.read() {

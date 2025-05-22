@@ -81,7 +81,6 @@ pub enum Event {
         status: u32,
     },
     IssuesChanged {
-        service: String,
         path: String,
         issues: Vec<Issue>,
     },
