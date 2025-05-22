@@ -91,7 +91,7 @@ impl IssuesService {
     /// * Commands from a client ([IssuesClient]).
     /// * Relevant events from D-Bus.
     pub async fn start(dbus: zbus::Connection, events: EventsSender) -> IssuesClient {
-        let (tx, rx) = mpsc::channel(16);
+        let (tx, rx) = mpsc::channel(4);
         let mut service = IssuesService {
             issues: HashMap::new(),
             dbus,
