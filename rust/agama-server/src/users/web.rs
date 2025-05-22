@@ -26,13 +26,14 @@
 
 use crate::{
     error::Error,
-    web::common::{issues_router, service_status_router, EventStreams},
+    web::common::{service_status_router, EventStreams, IssuesClient, IssuesRouterBuilder},
 };
 use agama_lib::{
     error::ServiceError,
     http::Event,
     users::{model::RootPatchSettings, proxies::Users1Proxy, FirstUser, RootUser, UsersClient},
 };
+use anyhow::Context;
 use axum::{extract::State, http::StatusCode, response::IntoResponse, routing::get, Json, Router};
 use tokio_stream::{Stream, StreamExt};
 
@@ -106,13 +107,20 @@ async fn root_user_changed_stream(
 }
 
 /// Sets up and returns the axum service for the users module.
-pub async fn users_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
+pub async fn users_service(
+    dbus: zbus::Connection,
+    issues: IssuesClient,
+) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &str = "org.opensuse.Agama.Manager1";
     const DBUS_PATH: &str = "/org/opensuse/Agama/Users1";
 
     let users = UsersClient::new(dbus.clone()).await?;
     let state = UsersState { users };
-    let issues_router = issues_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
+    // FIXME: use anyhow temporarily until we adapt all these methods to return
+    // the crate::error::Error instead of ServiceError.
+    let issues_router = IssuesRouterBuilder::new(DBUS_SERVICE, DBUS_PATH, issues.clone())
+        .build()
+        .context("Could not build an issues router")?;
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
     let router = Router::new()
         .route(

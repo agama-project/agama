@@ -88,14 +88,14 @@ where
         .add_service("/security", security_service(dbus.clone()).await?)
         .add_service(
             "/software",
-            software_service(dbus.clone(), events.subscribe(), issues).await?,
+            software_service(dbus.clone(), events.subscribe(), issues.clone()).await?,
         )
         .add_service("/storage", storage_service(dbus.clone()).await?)
         .add_service("/iscsi", iscsi_service(dbus.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
         .add_service("/network", network_service(network_adapter, events).await?)
         .add_service("/questions", questions_service(dbus.clone()).await?)
-        .add_service("/users", users_service(dbus.clone()).await?)
+        .add_service("/users", users_service(dbus.clone(), issues).await?)
         .add_service("/scripts", scripts_service().await?)
         .add_service("/files", files_service().await?)
         .add_service("/hostname", hostname_service().await?)
@@ -208,15 +208,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
         .await?,
     );
     stream.insert("questions", questions_stream(dbus.clone()).await?);
-    stream.insert(
-        "users-issues",
-        issues_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Manager1",
-            "/org/opensuse/Agama/Users1",
-        )
-        .await?,
-    );
 
     tokio::pin!(stream);
     let e = events.clone();
