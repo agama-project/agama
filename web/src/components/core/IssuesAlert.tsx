@@ -41,8 +41,10 @@ export default function IssuesAlert({ issues }) {
             {i.description}{" "}
             {i.kind === "solver" && (
               <Link to={PATHS.conflicts} variant="link" isInline>
-                // TRANSLATORS: Clickable link to show and resolve package dependency conflicts
-                {_("Review and fix")}
+                {
+                  // TRANSLATORS: Clickable link to show and resolve package dependency conflicts
+                  _("Review and fix")
+                }
               </Link>
             )}
           </ListItem>
