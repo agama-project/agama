@@ -22,11 +22,11 @@
 
 import React from "react";
 import { _ } from "~/i18n";
-import { apiModel } from "~/api/storage/types";
+import { model } from "~/types/storage";
 import DeviceHeader from "~/components/storage/DeviceHeader";
 
 export type PartitionableHeaderProps = {
-  device: apiModel.Drive | apiModel.MdRaid;
+  device: model.Drive | model.MdRaid;
   children: React.ReactNode;
 };
 
@@ -89,5 +89,5 @@ export default function PartitionableHeader({ device, children }: PartitionableH
     return _("Use %s");
   };
 
-  return <DeviceHeader title={text(device)}>{children}</DeviceHeader>;
+  return <DeviceHeader title={text()}>{children}</DeviceHeader>;
 }

@@ -97,14 +97,22 @@ const mockSdaDrive: model.Drive = {
       filesystem: { default: false, type: "xfs" },
     },
   ],
+  list: "drives",
+  listIndex: 1,
   isUsed: true,
   isAddingPartitions: true,
-  getVolumeGroups: () => [],
+  isTargetDevice: true,
+  isBoot: false,
   getMountPaths: () => ["/home", "swap"],
+  getVolumeGroups: () => [],
+  getPartition: jest.fn(),
+  getConfiguredExistingPartitions: jest.fn(),
 };
 
 const mockRootVolumeGroup: model.VolumeGroup = {
   vgName: "fakeRootVg",
+  list: "volumeGroups",
+  listIndex: 1,
   logicalVolumes: [],
   getTargetDevices: () => [mockSdaDrive],
   getMountPaths: () => [],
@@ -112,6 +120,8 @@ const mockRootVolumeGroup: model.VolumeGroup = {
 
 const mockHomeVolumeGroup: model.VolumeGroup = {
   vgName: "fakeHomeVg",
+  list: "volumeGroups",
+  listIndex: 2,
   logicalVolumes: [],
   getTargetDevices: () => [mockSdaDrive],
   getMountPaths: () => [],

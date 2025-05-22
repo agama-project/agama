@@ -24,9 +24,8 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import PartitionPage from "./PartitionPage";
-import { StorageDevice } from "~/types/storage";
+import { StorageDevice, model } from "~/types/storage";
 import { apiModel, Volume } from "~/api/storage/types";
-import { Drive } from "~/types/storage/model";
 import { gib } from "./utils";
 
 jest.mock("~/queries/issues", () => ({
@@ -79,7 +78,14 @@ const sda: StorageDevice = {
   description: "",
 };
 
-const mockDrive: Drive = {
+const mockPartition: model.Partition = {
+  isNew: false,
+  isUsed: true,
+  isReused: false,
+  isUsedBySpacePolicy: false,
+};
+
+const mockDrive: model.Drive = {
   name: "/dev/sda",
   spacePolicy: "delete",
   partitions: [
@@ -100,8 +106,16 @@ const mockDrive: Drive = {
       filesystem: { default: false, type: "xfs" },
     },
   ],
+  list: "drives",
+  listIndex: 1,
+  isUsed: true,
+  isAddingPartitions: true,
+  isTargetDevice: false,
+  isBoot: true,
+  getMountPaths: jest.fn(),
+  getVolumeGroups: jest.fn(),
   getPartition: mockGetPartition,
-  getConfiguredExistingPartitions: () => [sda1],
+  getConfiguredExistingPartitions: () => [mockPartition],
 };
 
 const mockSolvedConfigModel: apiModel.Config = {
@@ -156,7 +170,7 @@ jest.mock("~/queries/storage/config-model", () => ({
 }));
 
 beforeEach(() => {
-  mockParams({ list: "drives", listIndex: 0 });
+  mockParams({ list: "drives", listIndex: "0" });
 });
 
 describe("PartitionPage", () => {
@@ -235,7 +249,7 @@ describe("PartitionPage", () => {
 
   describe("if editing a partition", () => {
     beforeEach(() => {
-      mockParams({ list: "drives", listIndex: 0, partitionId: "/home" });
+      mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
       mockGetPartition.mockReturnValue({
         mountPath: "/home",
         size: {

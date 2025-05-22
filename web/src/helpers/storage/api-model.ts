@@ -27,11 +27,7 @@ function copyApiModel(apiModel: apiModel.Config): apiModel.Config {
   return JSON.parse(JSON.stringify(apiModel));
 }
 
-function findDevice(
-  apiModel: apiModel.Config,
-  list: string,
-  index: number | string,
-): apiModel.Drive | apiModel.VolumeGroup | undefined {
+function findDevice(apiModel: apiModel.Config, list: string, index: number | string) {
   const collection = apiModel[list] || [];
   return collection.at(index);
 }

@@ -24,9 +24,9 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import DriveEditor from "~/components/storage/DriveEditor";
-import { StorageDevice } from "~/types/storage";
-import { Drive } from "~/types/storage/model";
-import { Volume } from "~/api/storage/types";
+import { StorageDevice, model } from "~/types/storage";
+import { Volume, apiModel } from "~/api/storage/types";
+import { DriveHook } from "~/queries/storage/config-model";
 
 const mockDeleteDrive = jest.fn();
 
@@ -124,7 +124,7 @@ const sdb: StorageDevice = {
   description: "",
 };
 
-const drive1Partitions = [
+const drive1Partitions: apiModel.Partition[] = [
   {
     mountPath: "/",
     size: {
@@ -143,17 +143,33 @@ const drive1Partitions = [
   },
 ];
 
-const drive1: Drive = {
+const drive1: model.Drive = {
   name: "/dev/sda",
   spacePolicy: "delete",
   partitions: drive1Partitions,
-  delete: mockDeleteDrive,
+  list: "drives",
+  listIndex: 1,
+  isUsed: true,
+  isAddingPartitions: true,
+  isTargetDevice: false,
+  isBoot: true,
   getVolumeGroups: () => [],
-  getPartition: (path) => drive1Partitions.find((p) => p.mountPath === path),
+  getPartition: jest.fn(),
   getMountPaths: () => drive1Partitions.map((p) => p.mountPath),
+  getConfiguredExistingPartitions: jest.fn(),
 };
 
-const drive2Partitions = [
+const drive1Hook: DriveHook = {
+  isBoot: true,
+  isExplicitBoot: true,
+  hasPv: false,
+  allMountPaths: [],
+  switch: jest.fn(),
+  delete: mockDeleteDrive,
+  getPartition: (path) => drive1Partitions.find((p) => p.mountPath === path),
+};
+
+const drive2Partitions: apiModel.Partition[] = [
   {
     mountPath: "/home",
     size: {
@@ -164,14 +180,20 @@ const drive2Partitions = [
   },
 ];
 
-const drive2: Drive = {
+const drive2: model.Drive = {
   name: "/dev/sdb",
   spacePolicy: "delete",
   partitions: drive2Partitions,
-  delete: mockDeleteDrive,
+  list: "drives",
+  listIndex: 2,
+  isUsed: true,
+  isAddingPartitions: true,
+  isTargetDevice: false,
+  isBoot: true,
   getVolumeGroups: () => [],
-  getPartition: (path) => drive2Partitions.find((p) => p.mountPath === path),
-  getMountPaths: () => drive2Partitions.map((p) => p.mountPath),
+  getPartition: jest.fn(),
+  getMountPaths: () => drive1Partitions.map((p) => p.mountPath),
+  getConfiguredExistingPartitions: jest.fn(),
 };
 
 let additionalDrives = true;
@@ -187,7 +209,7 @@ jest.mock("~/queries/storage", () => ({
 jest.mock("~/queries/storage/config-model", () => ({
   ...jest.requireActual("~/queries/storage/config-model"),
   useDrive: (name) => ({
-    ...drive1,
+    ...drive1Hook,
     isExplicitBoot: name === "/dev/sda",
   }),
   useModel: () => ({

@@ -33,7 +33,7 @@ export interface Config {
   boot?: Boot;
   encryption?: Encryption;
   drives?: Drive[];
-  mdRaids?: Drive[];
+  mdRaids?: MdRaid[];
   volumeGroups?: VolumeGroup[];
 }
 export interface Boot {
@@ -78,6 +78,14 @@ export interface Size {
   default: boolean;
   min: number;
   max?: number;
+}
+export interface MdRaid {
+  name: string;
+  mountPath?: string;
+  filesystem?: Filesystem;
+  spacePolicy?: SpacePolicy;
+  ptableType?: PtableType;
+  partitions?: Partition[];
 }
 export interface VolumeGroup {
   vgName: string;

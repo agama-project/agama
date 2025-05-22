@@ -30,6 +30,7 @@ import { apiModel } from "~/api/storage/types";
 
 type Model = {
   drives: Drive[];
+  mdRaids: MdRaid[];
   volumeGroups: VolumeGroup[];
   getMountPaths: () => string[];
 };

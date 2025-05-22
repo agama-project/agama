@@ -24,11 +24,13 @@ import { apiModel } from "~/api/storage/types";
 import { copyApiModel, findDevice, buildPartition } from "~/helpers/storage/api-model";
 import { data } from "~/types/storage";
 
-function indexByName(device: apiModel.Drive, name): number {
+type Partitionable = apiModel.Drive | apiModel.MdRaid;
+
+function indexByName(device: Partitionable, name: string): number {
   return (device.partitions || []).findIndex((p) => p.name && p.name === name);
 }
 
-function indexByPath(device: apiModel.Drive, path): number {
+function indexByPath(device: Partitionable, path: string): number {
   return (device.partitions || []).findIndex((p) => p.mountPath === path);
 }
 
@@ -40,7 +42,7 @@ function indexByPath(device: apiModel.Drive, path): number {
  * */
 function addPartition(
   apiModel: apiModel.Config,
-  list: string,
+  list: "drives" | "mdRaids",
   listIndex: number | string,
   data: data.Partition,
 ): apiModel.Config {
@@ -60,7 +62,7 @@ function addPartition(
 
 function editPartition(
   apiModel: apiModel.Config,
-  list: string,
+  list: "drives" | "mdRaids",
   listIndex: number | string,
   mountPath: string,
   data: data.Partition,
@@ -82,7 +84,7 @@ function editPartition(
 
 function deletePartition(
   apiModel: apiModel.Config,
-  list: string,
+  list: "drives" | "mdRaids",
   listIndex: number | string,
   mountPath: string,
 ): apiModel.Config {

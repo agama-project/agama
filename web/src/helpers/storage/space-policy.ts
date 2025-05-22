@@ -24,7 +24,7 @@ import { apiModel } from "~/api/storage/types";
 import { copyApiModel, findDevice } from "~/helpers/storage/api-model";
 import { data } from "~/types/storage";
 
-function setActions(device: apiModel.Drive, actions: SpacePolicyAction[]) {
+function setActions(device: apiModel.Drive, actions: data.SpacePolicyAction[]) {
   device.partitions ||= [];
 
   // Reset resize/delete actions of all current partition configs.

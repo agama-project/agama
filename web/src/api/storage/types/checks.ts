@@ -24,7 +24,7 @@ import * as config from "./config";
 
 // Type guards.
 
-export function isFormattedDrive(drive: config.DriveElement): drive is config.FormattedDrive {
+export function isFormattedDrive(drive: config.DriveElement): drive is config.NonPartitionedDrive {
   return "filesystem" in drive;
 }
 

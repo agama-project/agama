@@ -25,18 +25,22 @@ import { QueryHookOptions } from "~/types/queries";
 import { data } from "~/types/storage";
 import { addPartition, editPartition, deletePartition } from "~/helpers/storage/partition";
 
-type AddPartitionFn = (list: string, listIndex: number | string, data: data.Partition) => void;
+type AddPartitionFn = (
+  list: "drives" | "mdRaids",
+  listIndex: number | string,
+  data: data.Partition,
+) => void;
 
 function useAddPartition(options?: QueryHookOptions): AddPartitionFn {
   const apiModel = useApiModel(options);
   const updateApiModel = useUpdateApiModel();
-  return (list: string, listIndex: number | string, data: data.Partition) => {
+  return (list: "drives" | "mdRaids", listIndex: number | string, data: data.Partition) => {
     updateApiModel(addPartition(apiModel, list, listIndex, data));
   };
 }
 
 type EditPartitionFn = (
-  list: string,
+  list: "drives" | "mdRaids",
   listIndex: number | string,
   mountPath: string,
   data: data.Partition,
@@ -45,17 +49,26 @@ type EditPartitionFn = (
 function useEditPartition(options?: QueryHookOptions): EditPartitionFn {
   const apiModel = useApiModel(options);
   const updateApiModel = useUpdateApiModel();
-  return (list: string, listIndex: number | string, mountPath: string, data: data.Partition) => {
+  return (
+    list: "drives" | "mdRaids",
+    listIndex: number | string,
+    mountPath: string,
+    data: data.Partition,
+  ) => {
     updateApiModel(editPartition(apiModel, list, listIndex, mountPath, data));
   };
 }
 
-type DeletePartitionFn = (list: string, listIndex: number | string, mountPath: string) => void;
+type DeletePartitionFn = (
+  list: "drives" | "mdRaids",
+  listIndex: number | string,
+  mountPath: string,
+) => void;
 
 function useDeletePartition(options?: QueryHookOptions): DeletePartitionFn {
   const apiModel = useApiModel(options);
   const updateApiModel = useUpdateApiModel();
-  return (list: string, listIndex: number | string, mountPath: string) =>
+  return (list: "drives" | "mdRaids", listIndex: number | string, mountPath: string) =>
     updateApiModel(deletePartition(apiModel, list, listIndex, mountPath));
 }
 

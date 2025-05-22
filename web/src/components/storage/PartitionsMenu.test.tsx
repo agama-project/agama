@@ -24,34 +24,60 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender, mockNavigateFn } from "~/test-utils";
 import PartitionsMenu from "~/components/storage/PartitionsMenu";
-import { Drive } from "~/types/storage/model";
+import { apiModel } from "~/api/storage/types";
+import { model } from "~/types/storage";
 
-const drive1Partitions = [
+const partition1: apiModel.Partition = {
+  mountPath: "/",
+  size: {
+    min: 1_000_000_000,
+    default: true,
+  },
+  filesystem: { default: true, type: "btrfs" },
+};
+
+const partition2: apiModel.Partition = {
+  mountPath: "swap",
+  size: {
+    min: 2_000_000_000,
+    default: false, // false: user provided, true: calculated
+  },
+  filesystem: { default: false, type: "swap" },
+};
+
+const drive1Partitions: apiModel.Partition[] = [partition1, partition2];
+
+const drive1PartitionsModel: model.Partition[] = [
   {
-    mountPath: "/",
-    size: {
-      min: 1_000_000_000,
-      default: true,
-    },
-    filesystem: { default: true, type: "btrfs" },
+    ...partition1,
+    isNew: true,
+    isUsed: false,
+    isReused: false,
+    isUsedBySpacePolicy: false,
   },
   {
-    mountPath: "swap",
-    size: {
-      min: 2_000_000_000,
-      default: false, // false: user provided, true: calculated
-    },
-    filesystem: { default: false, type: "swap" },
+    ...partition2,
+    isNew: true,
+    isUsed: false,
+    isReused: false,
+    isUsedBySpacePolicy: false,
   },
 ];
 
-const drive1: Drive = {
+const drive1: model.Drive = {
   name: "/dev/sda",
-  list: "drives",
-  listIndex: 0,
   spacePolicy: "delete",
   partitions: drive1Partitions,
-  getPartition: (path) => drive1Partitions.find((p) => p.mountPath === path),
+  list: "drives",
+  listIndex: 0,
+  isUsed: true,
+  isAddingPartitions: true,
+  isTargetDevice: false,
+  isBoot: true,
+  getVolumeGroups: () => [],
+  getPartition: (path) => drive1PartitionsModel.find((p) => p.mountPath === path),
+  getMountPaths: () => drive1Partitions.map((p) => p.mountPath),
+  getConfiguredExistingPartitions: jest.fn(),
 };
 
 const mockDeletePartition = jest.fn();
