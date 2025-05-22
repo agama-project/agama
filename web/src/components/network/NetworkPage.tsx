@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Content, Grid, GridItem } from "@patternfly/react-core";
+import { Alert, Content, Grid, GridItem } from "@patternfly/react-core";
 import { EmptyState, Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { useNetworkChanges, useNetworkState } from "~/queries/network";
@@ -52,6 +52,25 @@ export default function NetworkPage() {
       </Page.Header>
 
       <Page.Content>
+        {
+          // TODO: The Alert below should only be rendered when there are no
+          // connections to copy to the product to install.
+        }
+        {/**
+         * Another option could be
+         *
+         * <Alert variant="warning" title={_("Network settings will not be saved")}>
+         *   {_(
+         *      "The current network settings are only used during installation and will not be available in the installed system.",
+         *   )}
+         * </Alert>
+         */}
+        <Alert variant="warning" title={_("No connections will be saved")}>
+          {_(
+            "All defined connections are for installation only and will not be kept in the installed system.",
+          )}
+        </Alert>
+
         <Grid hasGutter>
           <GridItem sm={12} xl={6}>
             <Page.Section title={_("Wired connections")}>
