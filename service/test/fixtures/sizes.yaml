@@ -1,0 +1,61 @@
+---
+- disk:
+    name: /dev/vda
+    size: 100 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 10 GiB
+        name: /dev/vda1
+    - partition:
+        size: 20 GiB
+        name: /dev/vda2
+    - partition:
+        size: 30 GiB
+        name: /dev/vda3
+- disk:
+    name: /dev/vdb
+    size: 200 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 10 GiB
+        name: /dev/vdb1
+    - partition:
+        size: 30 GiB
+        name: /dev/vdb2
+    - partition:
+        size: 30 GiB
+        name: /dev/vdb3
+- md:
+    name: "/dev/md0"
+    chunk_size: 16 KiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 1 GiB
+        name: /dev/md0p1
+    - partition:
+        size: 2 GiB
+        name: /dev/md0p2
+    md_devices:
+    - md_device:
+        blk_device: /dev/vda1
+    - md_device:
+        blk_device: /dev/vdb1
+- md:
+    name: "/dev/md1"
+    chunk_size: 16 KiB
+    md_devices:
+    - md_device:
+        blk_device: /dev/vda2
+    - md_device:
+        blk_device: /dev/vdb2
+- md:
+    name: "/dev/md2"
+    chunk_size: 16 KiB
+    md_devices:
+    - md_device:
+        blk_device: /dev/vda3
+    - md_device:
+        blk_device: /dev/vdb3

@@ -20,10 +20,8 @@
 
 //! This module implements the web API for the network module.
 
-use crate::{
-    error::Error,
-    web::{Event, EventsSender},
-};
+use crate::{error::Error, web::EventsSender};
+use agama_lib::http::Event;
 use anyhow::Context;
 use axum::{
     extract::{Path, State},
@@ -32,18 +30,17 @@ use axum::{
     routing::{delete, get, patch, post},
     Json, Router,
 };
+use uuid::Uuid;
 
-use super::{
-    error::NetworkStateError,
-    model::{AccessPoint, GeneralState},
-    system::{NetworkSystemClient, NetworkSystemError},
-    Adapter,
-};
-
-use crate::network::{model::Connection, model::Device, NetworkSystem};
 use agama_lib::{
     error::ServiceError,
-    network::{settings::NetworkConnection, types::NetworkConnectionWithState},
+    network::{
+        error::NetworkStateError,
+        model::{AccessPoint, Connection, Device, GeneralState},
+        settings::NetworkConnection,
+        types::NetworkConnectionWithState,
+        Adapter, NetworkSystem, NetworkSystemClient, NetworkSystemError,
+    },
 };
 
 use serde_json::json;
@@ -214,19 +211,40 @@ async fn connections(
     State(state): State<NetworkServiceState>,
 ) -> Result<Json<Vec<NetworkConnectionWithState>>, NetworkError> {
     let connections = state.network.get_connections().await?;
-    let mut result = vec![];
 
-    for conn in connections {
-        let state = conn.state.clone();
-        let network_connection = NetworkConnection::try_from(conn)?;
-        let connection_with_state = NetworkConnectionWithState {
-            connection: network_connection,
-            state,
-        };
-        result.push(connection_with_state);
-    }
+    let network_connections = connections
+        .iter()
+        .map(|c| {
+            let state = c.state;
+            let mut conn = NetworkConnection::try_from(c.clone()).unwrap();
+            if let Some(ref mut bond) = conn.bond {
+                bond.ports = ports_for(connections.to_owned(), c.uuid);
+            }
+            if let Some(ref mut bridge) = conn.bridge {
+                bridge.ports = ports_for(connections.to_owned(), c.uuid);
+            };
+            NetworkConnectionWithState {
+                connection: conn,
+                state,
+            }
+        })
+        .collect();
 
-    Ok(Json(result))
+    Ok(Json(network_connections))
+}
+
+fn ports_for(connections: Vec<Connection>, uuid: Uuid) -> Vec<String> {
+    return connections
+        .iter()
+        .filter(|c| c.controller == Some(uuid))
+        .map(|c| {
+            if let Some(interface) = c.interface.to_owned() {
+                interface
+            } else {
+                c.clone().id
+            }
+        })
+        .collect();
 }
 
 #[utoipa::path(
@@ -239,15 +257,26 @@ async fn connections(
 )]
 async fn add_connection(
     State(state): State<NetworkServiceState>,
-    Json(conn): Json<NetworkConnection>,
+    Json(net_conn): Json<NetworkConnection>,
 ) -> Result<Json<Connection>, NetworkError> {
-    let conn = Connection::try_from(conn)?;
+    let bond = net_conn.bond.clone();
+    let bridge = net_conn.bridge.clone();
+    let conn = Connection::try_from(net_conn)?;
     let id = conn.id.clone();
 
-    state.network.add_connection(conn).await?;
+    state.network.add_connection(conn.clone()).await?;
+
     match state.network.get_connection(&id).await? {
         None => Err(NetworkError::CannotAddConnection(id.clone())),
-        Some(conn) => Ok(Json(conn)),
+        Some(conn) => {
+            if let Some(bond) = bond {
+                state.network.set_ports(conn.uuid, bond.ports).await?;
+            }
+            if let Some(bridge) = bridge {
+                state.network.set_ports(conn.uuid, bridge.ports).await?;
+            }
+            Ok(Json(conn))
+        }
     }
 }
 
@@ -311,6 +340,9 @@ async fn update_connection(
         .get_connection(&id)
         .await?
         .ok_or_else(|| NetworkError::UnknownConnection(id.clone()))?;
+    let bond = conn.bond.clone();
+    let bridge = conn.bridge.clone();
+
     let mut conn = Connection::try_from(conn)?;
     if orig_conn.id != id {
         // FIXME: why?
@@ -319,7 +351,15 @@ async fn update_connection(
         conn.uuid = orig_conn.uuid;
     }
 
-    state.network.update_connection(conn).await?;
+    state.network.update_connection(conn.clone()).await?;
+
+    if let Some(bond) = bond {
+        state.network.set_ports(conn.uuid, bond.ports).await?;
+    }
+    if let Some(bridge) = bridge {
+        state.network.set_ports(conn.uuid, bridge.ports).await?;
+    }
+
     Ok(StatusCode::NO_CONTENT)
 }
 

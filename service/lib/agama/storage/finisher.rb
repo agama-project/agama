@@ -146,7 +146,8 @@ module Agama
 
         def run
           glob_files.each do |file|
-            target = File.dirname(file).sub(root_dir, dest_dir)
+            relative_path = File.dirname(file).delete_prefix(root_dir)
+            target = File.join(dest_dir, relative_path)
 
             FileUtils.mkdir_p(target)
             FileUtils.cp(file, target)

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -34,12 +34,13 @@ module Agama
         alias_method :settings, :config
 
         # @param product_config [Agama::Config]
-        # @param logger [Logger]
+        # @param storage_system [Storage::System]
         # @param config [Agama::Storage::Config]
-        def initialize(product_config, logger, config)
+        # @param logger [Logger]
+        def initialize(product_config, storage_system, config, logger)
           textdomain "agama"
 
-          super(product_config, logger)
+          super(product_config, storage_system, logger)
           @config = config
         end
 
@@ -67,11 +68,12 @@ module Agama
         #
         # @return [Y2Storage::AgamaProposal]
         def agama_proposal
-          Y2Storage::AgamaProposal.new(config,
+          Y2Storage::AgamaProposal.new(
+            config,
+            storage_system,
             product_config: product_config,
-            devicegraph:    probed_devicegraph,
-            disk_analyzer:  disk_analyzer,
-            issues_list:    [])
+            issues_list:    []
+          )
         end
       end
     end

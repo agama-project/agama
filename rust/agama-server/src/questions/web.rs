@@ -25,13 +25,14 @@
 //! * `questions_service` which returns the Axum service.
 //! * `questions_stream` which offers an stream that emits questions related signals.
 
-use crate::{error::Error, web::Event};
+use crate::error::Error;
 use agama_lib::{
-    dbus::{extract_id_from_path, get_property},
     error::ServiceError,
+    http::Event,
     proxies::questions::{GenericQuestionProxy, QuestionWithPasswordProxy, QuestionsProxy},
     questions::model::{Answer, GenericQuestion, PasswordAnswer, Question, QuestionWithPassword},
 };
+use agama_utils::dbus::{extract_id_from_path, get_property};
 use anyhow::Context;
 use axum::{
     extract::{Path, State},

@@ -1,0 +1,14 @@
+{
+  "network": {
+    "connections": [
+      {
+        "id": "bond0",
+        "bond": {
+          "ports": ["eth0", "eth1"],
+          "mode": "active-backup",
+          "options": "primary=eth1"
+        }
+      }
+    ]
+  }
+}

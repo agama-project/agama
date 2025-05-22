@@ -45,11 +45,9 @@ use tokio_util::io::ReaderStream;
 
 use crate::{
     error::Error,
-    web::{
-        common::{progress_router, service_status_router},
-        Event,
-    },
+    web::common::{progress_router, service_status_router},
 };
+use agama_lib::http::Event;
 
 #[derive(Clone)]
 pub struct ManagerState<'a> {

@@ -27,8 +27,8 @@ use super::model::{
 };
 use super::proxies::{DevicesProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
 use super::StorageSettings;
-use crate::dbus::get_property;
 use crate::error::ServiceError;
+use agama_utils::dbus::get_property;
 use serde_json::value::RawValue;
 use std::collections::HashMap;
 use zbus::fdo::ObjectManagerProxy;

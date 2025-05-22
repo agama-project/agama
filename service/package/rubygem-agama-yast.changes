@@ -1,4 +1,29 @@
 -------------------------------------------------------------------
+Fri May 16 08:45:58 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Fix list of candidate drives and candidate MD RAIDs for
+  installation (gh#agama-project/agama#2362).
+
+-------------------------------------------------------------------
+Wed May 14 15:15:47 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add search conditions to storage (gh#agama-project/agama#2338).
+
+-------------------------------------------------------------------
+Wed May 14 10:22:24 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix the target path for copying the udev rules and nvme files
+  introduced by (bsc#123808, gh#agama-project/agama#2257).
+  (bsc#1241868, gh#agama-project/agama#2328).
+
+-------------------------------------------------------------------
+Fri May  9 15:37:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Convert the bootloader section to JSON (gh#agama-project/agama#2349).
+- Fix the conversion of the hostname and the networking sections to JSON
+  (gh#agama-project/agama#2349).
+
+-------------------------------------------------------------------
 Wed May  7 10:24:14 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Convert AutoYaST DNS section to JSON (gh#agama-project/agama#2335).
@@ -7,7 +32,7 @@ Wed May  7 10:24:14 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 Wed May  7 06:33:28 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Add support for creating and reusing MD RAID devices
-  (gh#agama-project/agama#2286).
+  (gh#agama-project/agama#2286, bsc#1241958).
 
 -------------------------------------------------------------------
 Tue May  6 11:33:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

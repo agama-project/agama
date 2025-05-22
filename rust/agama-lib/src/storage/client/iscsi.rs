@@ -22,10 +22,10 @@ use core::fmt;
 use std::collections::HashMap;
 
 use crate::{
-    dbus::{extract_id_from_path, get_property},
     error::ServiceError,
     storage::proxies::iscsi::{ISCSIProxy, InitiatorProxy, NodeProxy},
 };
+use agama_utils::dbus::{extract_id_from_path, get_property};
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
 use thiserror::Error;
@@ -41,7 +41,7 @@ pub struct ISCSIInitiator {
     ibft: bool,
 }
 
-#[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, utoipa::ToSchema)]
 /// ISCSI node
 pub struct ISCSINode {
     /// Artificial ID to match it against the D-Bus backend.

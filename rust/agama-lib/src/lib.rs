@@ -44,35 +44,35 @@
 //! As said, those modules might implement additional stuff, like specific types, clients, etc.
 
 pub mod auth;
-pub mod base_http_client;
 pub mod bootloader;
 pub mod context;
 pub mod error;
 pub mod file_source;
 pub mod files;
 pub mod hostname;
+pub mod http;
 pub mod install_settings;
+pub mod issue;
 pub mod jobs;
 pub mod localization;
 pub mod logs;
 pub mod manager;
+pub mod monitor;
 pub mod network;
 pub mod product;
 pub mod profile;
-pub mod software;
-pub mod storage;
-pub mod users;
-// TODO: maybe expose only clients when we have it?
-pub mod dbus;
-pub mod openapi;
 pub mod progress;
 pub mod proxies;
 pub mod questions;
 pub mod scripts;
 pub mod security;
+pub mod software;
+pub mod storage;
 mod store;
+pub mod users;
 pub use store::Store;
 pub mod utils;
+pub use agama_utils::{dbus, openapi};
 
 use crate::error::ServiceError;
 use zbus::conn::Builder;

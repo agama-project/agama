@@ -23,7 +23,7 @@
 use serde_json::value::RawValue;
 
 use crate::{
-    base_http_client::{BaseHTTPClient, BaseHTTPClientError},
+    http::{BaseHTTPClient, BaseHTTPClientError},
     storage::StorageSettings,
 };
 

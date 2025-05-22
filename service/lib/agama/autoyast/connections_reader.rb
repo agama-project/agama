@@ -65,7 +65,7 @@ module Agama
       # @return [Hash]
       def read_connection(interface)
         conn = {}
-        conn["device"] = interface.device if interface.device
+        conn["interface"] = interface.device unless interface.device.to_s.empty?
         conn["id"] = interface.name if interface.name
 
         addresses = read_addresses(interface)
@@ -74,7 +74,7 @@ module Agama
         conn["method6"] = method6
         conn["addresses"] = addresses
         wireless = Agama::AutoYaST::WirelessReader.new(interface).read
-        conn["wireless"] = wireless unless wireless.empty?
+        conn.merge!(wireless) unless wireless.empty?
         bond = Agama::AutoYaST::BondReader.new(interface).read
         conn["bond"] = bond unless bond.empty?
         conn.merge!(dns)

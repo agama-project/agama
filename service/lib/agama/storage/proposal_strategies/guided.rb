@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -31,12 +31,13 @@ module Agama
         include Yast::I18n
 
         # @param product_config [Config] Product config
-        # @param logger [Logger]
+        # @param storage_system [Storage::System]
         # @param input_settings [ProposalSettings]
-        def initialize(product_config, logger, input_settings)
+        # @param logger [Logger]
+        def initialize(product_config, storage_system, input_settings, logger)
           textdomain "agama"
 
-          super(product_config, logger)
+          super(product_config, storage_system, logger)
           @input_settings = input_settings
         end
 
@@ -76,6 +77,13 @@ module Agama
         # @return [ProposalSettings]
         attr_reader :input_settings
 
+        # Available devices for installation.
+        #
+        # @return [Array<Y2Storage::Device>]
+        def available_devices
+          storage_system.analyzer&.candidate_disks || []
+        end
+
         # Selects the first available device as target device for installation.
         #
         # @param settings [ProposalSettings]
@@ -113,8 +121,8 @@ module Agama
         def guided_proposal(settings)
           Y2Storage::MinGuidedProposal.new(
             settings:      settings.to_y2storage(config: product_config),
-            devicegraph:   probed_devicegraph,
-            disk_analyzer: disk_analyzer
+            devicegraph:   storage_system.devicegraph,
+            disk_analyzer: storage_system.analyzer
           )
         end
 

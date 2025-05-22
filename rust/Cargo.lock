@@ -44,10 +44,11 @@ dependencies = [
 name = "agama-lib"
 version = "1.0.0"
 dependencies = [
+ "agama-network",
+ "agama-utils",
  "anyhow",
  "async-trait",
  "chrono",
- "cidr",
  "curl",
  "env_logger",
  "fluent-uri",
@@ -68,7 +69,9 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.12",
  "tokio",
+ "tokio-native-tls",
  "tokio-stream",
+ "tokio-tungstenite 0.26.2",
  "url",
  "utoipa",
  "zbus",
@@ -89,16 +92,40 @@ dependencies = [
 ]
 
 [[package]]
+name = "agama-network"
+version = "0.1.0"
+dependencies = [
+ "agama-utils",
+ "anyhow",
+ "async-trait",
+ "cidr",
+ "futures-util",
+ "macaddr",
+ "pin-project",
+ "serde",
+ "serde_with",
+ "strum",
+ "thiserror 2.0.12",
+ "tokio",
+ "tokio-stream",
+ "tokio-test",
+ "tracing",
+ "utoipa",
+ "uuid",
+ "zbus",
+]
+
+[[package]]
 name = "agama-server"
 version = "0.1.0"
 dependencies = [
  "agama-lib",
  "agama-locale-data",
+ "agama-utils",
  "anyhow",
  "async-trait",
  "axum",
  "axum-extra",
- "cidr",
  "clap",
  "config",
  "futures-util",
@@ -108,7 +135,6 @@ dependencies = [
  "hyper 1.6.0",
  "hyper-util",
  "libsystemd",
- "macaddr",
  "openssl",
  "pam",
  "pin-project",
@@ -135,6 +161,15 @@ dependencies = [
  "utoipa",
  "uuid",
  "zbus",
+]
+
+[[package]]
+name = "agama-utils"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "utoipa",
+ "zvariant",
 ]
 
 [[package]]
@@ -554,7 +589,7 @@ dependencies = [
  "sha1",
  "sync_wrapper",
  "tokio",
- "tokio-tungstenite",
+ "tokio-tungstenite 0.24.0",
  "tower",
  "tower-layer",
  "tower-service",
@@ -4232,7 +4267,21 @@ dependencies = [
  "futures-util",
  "log",
  "tokio",
- "tungstenite",
+ "tungstenite 0.24.0",
+]
+
+[[package]]
+name = "tokio-tungstenite"
+version = "0.26.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7a9daff607c6d2bf6c16fd681ccb7eecc83e4e2cdc1ca067ffaadfca5de7f084"
+dependencies = [
+ "futures-util",
+ "log",
+ "native-tls",
+ "tokio",
+ "tokio-native-tls",
+ "tungstenite 0.26.2",
 ]
 
 [[package]]
@@ -4437,6 +4486,24 @@ dependencies = [
  "rand 0.8.5",
  "sha1",
  "thiserror 1.0.69",
+ "utf-8",
+]
+
+[[package]]
+name = "tungstenite"
+version = "0.26.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4793cb5e56680ecbb1d843515b23b6de9a75eb04b66643e256a396d43be33c13"
+dependencies = [
+ "bytes",
+ "data-encoding",
+ "http 1.3.1",
+ "httparse",
+ "log",
+ "native-tls",
+ "rand 0.9.1",
+ "sha1",
+ "thiserror 2.0.12",
  "utf-8",
 ]
 
@@ -5310,14 +5377,13 @@ dependencies = [
 
 [[package]]
 name = "zvariant"
-version = "5.4.0"
+version = "5.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b2df9ee044893fcffbdc25de30546edef3e32341466811ca18421e3cd6c5a3ac"
+checksum = "e34d60a2cff1bfddd0d4a73791fd0a4255a59e349aa0cec437cb0df7776f2450"
 dependencies = [
  "endi",
  "enumflags2",
  "serde",
- "static_assertions",
  "winnow",
  "zvariant_derive",
  "zvariant_utils",
@@ -5325,9 +5391,9 @@ dependencies = [
 
 [[package]]
 name = "zvariant_derive"
-version = "5.4.0"
+version = "5.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "74170caa85b8b84cc4935f2d56a57c7a15ea6185ccdd7eadb57e6edd90f94b2f"
+checksum = "0604376d86f838e0c3f4fe6d6ee1f861a04dac9015cbbb25c25d336996c91423"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",

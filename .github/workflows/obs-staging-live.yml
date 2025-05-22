@@ -1,5 +1,8 @@
 name: Submit agama-installer
 
+permissions:
+  contents: read
+
 on:
   push:
     paths:

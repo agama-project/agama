@@ -114,6 +114,7 @@ user privileges.",
                 value={password}
                 aria-label={_("Password input")}
                 onChange={(_, v) => setPassword(v)}
+                reminders={["capslock"]}
               />
               <FormHelperText>
                 <HelperText>

@@ -45,6 +45,18 @@ describe Agama::AutoYaST::Converter do
   end
 
   describe "#to_agama" do
+    context "when profile contains both scripts and services-manager sections" do
+      let(:profile_name) { "services-manager.xml" }
+
+      it "merges post scripts together" do
+        result = subject.to_agama(profile)
+
+        expect(result).to have_key("scripts")
+        expect(result["scripts"]).to have_key("post")
+        expect(result["scripts"]["post"].length).to eq 2
+      end
+    end
+
     context "when a product is selected" do
       it "exports the selected product" do
         result = subject.to_agama(profile)

@@ -21,13 +21,14 @@
 //! Implements a data model for DASD devices management.
 use std::collections::HashMap;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use zbus::zvariant::OwnedValue;
 
-use crate::{dbus::get_property, error::ServiceError};
+use crate::error::ServiceError;
+use agama_utils::dbus::get_property;
 
 /// Represents a DASD device (specific to s390x systems).
-#[derive(Clone, Debug, Serialize, Default, utoipa::ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct DASDDevice {
     pub id: String,
@@ -40,7 +41,7 @@ pub struct DASDDevice {
     pub access_type: String,
     pub partition_info: String,
 }
-#[derive(Clone, Debug, Serialize, Default, utoipa::ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, Default, utoipa::ToSchema)]
 pub struct DASDFormatSummary {
     pub total: u32,
     pub step: u32,

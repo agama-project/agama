@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::{
-    base_http_client::BaseHTTPClient, connection, proxies::questions::QuestionsProxy,
+    connection, http::BaseHTTPClient, proxies::questions::QuestionsProxy,
     questions::http_client::HTTPClient,
 };
 use anyhow::anyhow;

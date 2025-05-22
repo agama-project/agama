@@ -78,9 +78,6 @@ export default {
   "Actions": [
     "Accions"
   ],
-  "Actions for connection %s": [
-    "Accions per a la connexió %s"
-  ],
   "Activate": [
     "Activa"
   ],
@@ -261,6 +258,12 @@ export default {
   "Change device menu": [
     "Canvia el menú del dispositiu"
   ],
+  "Change display language and keyboard layout": [
+    ""
+  ],
+  "Change keyboard": [
+    "Canvia el teclat"
+  ],
   "Change product": [
     "Canvia el producte"
   ],
@@ -350,9 +353,6 @@ export default {
   ],
   "Connecting to %s": [
     "Es connecta amb %s"
-  ],
-  "Connection actions": [
-    "Accions de connexió"
   ],
   "Connection details": [
     "Detalls de la connexió"
@@ -535,7 +535,7 @@ export default {
     "Edita el grup de volums"
   ],
   "Empty LVM volume group %s": [
-    "Grup de volums d'LVM %s buit"
+    "Buida el grup de volums d'LVM %s"
   ],
   "Encrypt the system": [
     "Encripta el sistema"
@@ -635,12 +635,6 @@ export default {
   ],
   "First user": [
     "Usuari primer"
-  ],
-  "Forget": [
-    "Oblida-la"
-  ],
-  "Forget connection %s": [
-    "Oblida la connexió %s"
   ],
   "Format": [
     "Formata"
@@ -799,12 +793,6 @@ export default {
   "Installation will take %s.": [
     "La instal·lació necessitarà %s."
   ],
-  "Installer Options": [
-    "Opcions de l'instal·lador"
-  ],
-  "Installer options": [
-    "Opcions de l'instal·lador"
-  ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "Instal·lar un paquet trencat afecta l'estabilitat del sistema i és un risc important de seguretat!"
   ],
@@ -825,6 +813,12 @@ export default {
   ],
   "Issuer": [
     "Emissor"
+  ],
+  "It is not possible to allocate space for %s.": [
+    "No és possible assignar espai per a %s."
+  ],
+  "It is not possible to allocate space for the boot partition and for %s.": [
+    "No és possible assignar espai per a la partició d'arrencada i per a %s."
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "No és possible instal·lar el sistema amb la configuració actual. Ajusteu els paràmetres que hi ha a continuació."
@@ -954,6 +948,15 @@ export default {
   ],
   "More devices": [
     "Més dispositius"
+  ],
+  "More keymap layout might be available for the selected product at [Localization] page": [
+    ""
+  ],
+  "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
+    ""
+  ],
+  "More languages might be available for the selected product at [Localization] page": [
+    ""
   ],
   "Mount Point": [
     "Punt de muntatge"
@@ -1406,6 +1409,9 @@ export default {
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     "Les mides s'han d'introduir com a números opcionalment seguits d'una unitat."
   ],
+  "Skip to content": [
+    "Omet i ves al contingut"
+  ],
   "Software": [
     "Programari"
   ],
@@ -1628,6 +1634,12 @@ export default {
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Aquests són els paràmetres d'instal·lació més rellevants. No dubteu a navegar per les seccions del menú per a més detalls."
   ],
+  "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
+    ""
+  ],
+  "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
+    ""
+  ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Aquesta acció podria destruir qualsevol dada emmagatzemada als dispositius que s'indiquen a continuació. Si us plau, confirmeu que realment voleu continuar."
   ],
@@ -1660,6 +1672,9 @@ export default {
   ],
   "This uses existing partitions at the disk": [
     "Això usa les particions existents al dispositiu"
+  ],
+  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
+    ""
   ],
   "TiB": [
     "TiB"
@@ -1757,6 +1772,9 @@ export default {
   "Use available space": [
     "Usa l'espai disponible"
   ],
+  "Use for the selected product too": [
+    ""
+  ],
   "Use password": [
     "Usa contrasenya"
   ],
@@ -1771,6 +1789,9 @@ export default {
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     "Useu el mòdul de plataforma de confiança (TPM) per fer-ne la desencriptació automàticament a cada arrencada."
+  ],
+  "Use these same settings for the selected product": [
+    ""
   ],
   "Used space": [
     "Espai usat"
@@ -1855,6 +1876,9 @@ export default {
   ],
   "ZFCP": [
     "ZFCP"
+  ],
+  "[CAPS LOCK] is on": [
+    ""
   ],
   "at least %s": [
     "almenys %s"

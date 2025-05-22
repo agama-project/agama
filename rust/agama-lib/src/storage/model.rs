@@ -23,7 +23,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use zbus::zvariant::{OwnedValue, Value};
 
-use crate::dbus::{get_optional_property, get_property};
+use agama_utils::dbus::{get_optional_property, get_property};
 
 pub mod dasd;
 pub mod zfcp;

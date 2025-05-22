@@ -78,9 +78,6 @@ export default {
   "Actions": [
     "処理"
   ],
-  "Actions for connection %s": [
-    "接続 %s に対する処理"
-  ],
   "Activate": [
     "有効化"
   ],
@@ -261,6 +258,12 @@ export default {
   "Change device menu": [
     "デバイスメニューの変更"
   ],
+  "Change display language and keyboard layout": [
+    ""
+  ],
+  "Change keyboard": [
+    "キーボードの変更"
+  ],
   "Change product": [
     "製品の変更"
   ],
@@ -350,9 +353,6 @@ export default {
   ],
   "Connecting to %s": [
     "%s に接続しています"
-  ],
-  "Connection actions": [
-    "接続処理"
   ],
   "Connection details": [
     "接続の詳細"
@@ -636,12 +636,6 @@ export default {
   "First user": [
     "最初のユーザ"
   ],
-  "Forget": [
-    "削除"
-  ],
-  "Forget connection %s": [
-    "接続 %s の削除"
-  ],
   "Format": [
     "フォーマット"
   ],
@@ -798,12 +792,6 @@ export default {
   "Installation will take %s.": [
     "インストールするには %s が必要です。"
   ],
-  "Installer Options": [
-    "インストーラのオプション"
-  ],
-  "Installer options": [
-    "インストーラのオプション"
-  ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "壊れたパッケージをインストールしてしまうと、システムの安定性が損なわれるほか、セキュリティ上のリスクにもなります！"
   ],
@@ -824,6 +812,12 @@ export default {
   ],
   "Issuer": [
     "発行者"
+  ],
+  "It is not possible to allocate space for %s.": [
+    "%s に対して領域を割り当てることができません。"
+  ],
+  "It is not possible to allocate space for the boot partition and for %s.": [
+    "起動パーティションと %s に対して領域を割り当てることができません。"
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "現在の設定ではシステムをインストールすることができません。下記の設定を調整してください。"
@@ -953,6 +947,15 @@ export default {
   ],
   "More devices": [
     "さらなるデバイス"
+  ],
+  "More keymap layout might be available for the selected product at [Localization] page": [
+    ""
+  ],
+  "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
+    ""
+  ],
+  "More languages might be available for the selected product at [Localization] page": [
+    ""
   ],
   "Mount Point": [
     "マウントポイント"
@@ -1404,6 +1407,9 @@ export default {
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     "サイズには単位付きもしくは単位無しの数値を入力しなければなりません。"
   ],
+  "Skip to content": [
+    "コンテンツに移動"
+  ],
   "Software": [
     "ソフトウエア"
   ],
@@ -1626,6 +1632,12 @@ export default {
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "インストールにあたっての主要な項目のみを表示しています。さらに詳しい設定を確認したい場合は、それぞれのセクションを開いてください。"
   ],
+  "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
+    ""
+  ],
+  "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
+    ""
+  ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "この処理により、下記に示したデバイス内のデータが全て消去されます。続行して問題ないかどうか、ご確認ください。"
   ],
@@ -1658,6 +1670,9 @@ export default {
   ],
   "This uses existing partitions at the disk": [
     "これはディスク内の既存パーティションを使用します"
+  ],
+  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
+    ""
   ],
   "TiB": [
     "TiB"
@@ -1755,6 +1770,9 @@ export default {
   "Use available space": [
     "利用可能な領域を使用する"
   ],
+  "Use for the selected product too": [
+    ""
+  ],
   "Use password": [
     "パスワードの使用"
   ],
@@ -1769,6 +1787,9 @@ export default {
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     "毎回の起動時に Trusted Platform Module (TPM) を利用して自動的に暗号化解除します"
+  ],
+  "Use these same settings for the selected product": [
+    ""
   ],
   "Used space": [
     "使用済み領域"
@@ -1853,6 +1874,9 @@ export default {
   ],
   "ZFCP": [
     "ZFCP"
+  ],
+  "[CAPS LOCK] is on": [
+    ""
   ],
   "at least %s": [
     "少なくとも %s"

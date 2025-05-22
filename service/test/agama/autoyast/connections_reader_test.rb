@@ -176,7 +176,7 @@ describe Agama::AutoYaST::ConnectionsReader do
 
     context "when there are wireless settings" do
       let(:eth0) do
-        { "name" => "eth0", "wireless_mode" => "wpa-psk" }
+        { "name" => "eth0", "wireless_essid" => "mywifi" }
       end
 
       it "includes a 'wireless' key containing those settings" do

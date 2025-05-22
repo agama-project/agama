@@ -31,9 +31,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
 
   let(:config_json) do
     {
-      drives:       [
-        { alias: "disk1" }
-      ],
+      drives:       drives,
       mdRaids:      [
         {
           alias:      device_alias,
@@ -49,6 +47,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
     }
   end
 
+  let(:drives) { [{ alias: "disk1" }] }
   let(:device_alias) { nil }
   let(:search) { nil }
   let(:level) { nil }
@@ -126,6 +125,80 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
           kind:        :no_such_alias,
           description: /no MD RAID member device with alias 'disk2'/
         )
+      end
+    end
+
+    context "if the MD RAID is reused" do
+      let(:scenario) { "md_disks.yaml" }
+      let(:search) { "/dev/md0" }
+
+      before { solve_config }
+
+      context "and there is a config reusing a device member" do
+        let(:drives) do
+          [
+            {
+              alias:      "vda",
+              search:     "/dev/vda",
+              filesystem: member_filesystem,
+              partitions: member_partitions
+            }
+          ]
+        end
+
+        let(:member_filesystem) { nil }
+        let(:member_partitions) { nil }
+
+        context "and the member config has filesystem" do
+          let(:member_filesystem) { { path: "/" } }
+
+          it "includes the expected issue" do
+            issues = subject.issues
+            expect(issues).to include an_object_having_attributes(
+              error?:      true,
+              kind:        :reused_md_member,
+              description: /cannot be formatted.*member of.*md0/
+            )
+          end
+        end
+
+        context "and the member config has partitions" do
+          let(:member_partitions) do
+            [
+              {
+                filesystem: { path: "/" }
+              }
+            ]
+          end
+
+          it "includes the expected issue" do
+            issues = subject.issues
+            expect(issues).to include an_object_having_attributes(
+              error?:      true,
+              kind:        :reused_md_member,
+              description: /cannot be partitioned.*member of.*md0/
+            )
+          end
+        end
+
+        context "and the member config is used by other device" do
+          let(:volume_groups) do
+            [
+              {
+                physicalVolumes: ["vda"]
+              }
+            ]
+          end
+
+          it "includes the expected issue" do
+            issues = subject.issues
+            expect(issues).to include an_object_having_attributes(
+              error?:      true,
+              kind:        :reused_md_member,
+              description: /cannot be used.*member of.*md0/
+            )
+          end
+        end
       end
     end
 

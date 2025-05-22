@@ -23,6 +23,7 @@
 import React, { useState } from "react";
 import {
   Button,
+  FormHelperText,
   InputGroup,
   InputGroupItem,
   TextInput,
@@ -30,6 +31,18 @@ import {
 } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { Icon } from "~/components/layout";
+import { useInstallerL10n } from "~/context/installerL10n";
+import { sprintf } from "sprintf-js";
+import { useKeyLock } from "~/hooks/use-key-lock";
+import { localConnection } from "~/utils";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+
+/**
+ * Types of keyboard-related reminders to the user.
+ *   "keymap": Reminder about the current keyboard layout in use.
+ *   "capslock": Warning that Caps Lock is enabled.
+ */
+type KeyboardReminders = "keymap" | "capslock";
 
 /**
  * Props matching the {@link https://www.patternfly.org/components/forms/text-input PF/TextInput},
@@ -37,15 +50,77 @@ import { Icon } from "~/components/layout";
  */
 export type PasswordInputProps = Omit<TextInputProps, "type"> & {
   inputRef?: React.Ref<HTMLInputElement>;
+  reminders?: KeyboardReminders[];
 };
 
 /**
- * Renders a password input field and a toggle button that can be used to reveal
- * and hide the password
- * @component
- *
+ * Displays a text about keyboard layout is use, unless in remote connection
  */
-export default function PasswordInput({ id, inputRef, ...props }: PasswordInputProps) {
+const KeymapReminder = () => {
+  const { keymap } = useInstallerL10n();
+
+  if (!localConnection()) return;
+
+  const [textStart, layout, textEnd] = sprintf(
+    // TRANSLATORS: Message to inform users which keyboard layout is active. %s
+    // will be replaced with the layout name (e.g., "de", "cn", "cz"). Keep
+    // square brackets around %s to apply special formatting in
+    // the UI.
+    _("Using [%s] keyboard"),
+    keymap,
+  ).split(/[[\]]/);
+
+  return (
+    <span>
+      {textStart} <code className={textStyles.fontWeightBold}>{layout}</code> {textEnd}
+    </span>
+  );
+};
+
+/**
+ * Displays a message when Caps Lock is active.
+ */
+const CapsLockReminder = () => {
+  const isCapsLockOn = useKeyLock("CapsLock");
+
+  if (!isCapsLockOn) return;
+
+  // TRANSLATORS: Warns users that CAPS LOCK is on.
+  // Keep square brackets to apply special formatting in the UI.
+  const [textStart, capsLock, textEnd] = _("[CAPS LOCK] is on").split(/[[\]]/);
+
+  return (
+    <span className={textStyles.textColorStatusDanger}>
+      {textStart} <b className={textStyles.fontWeightBold}>{capsLock}</b> {textEnd}
+    </span>
+  );
+};
+
+/**
+ * Shows one or more keyboard-related reminders based on the provided list.
+ * Used below the password input to help prevent typing issues.
+ */
+const Reminders = ({ display = [] }: { display: KeyboardReminders[] }) => {
+  if (display.length === 0) return;
+
+  return (
+    <FormHelperText>
+      {display.includes("keymap") && <KeymapReminder />}
+      {display.includes("capslock") && <CapsLockReminder />}
+    </FormHelperText>
+  );
+};
+
+/**
+ * A password input field with a toggle button to show or hide the password, and
+ * optional keyboard-related reminders.
+ */
+export default function PasswordInput({
+  id,
+  inputRef,
+  reminders = ["keymap", "capslock"],
+  ...props
+}: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const visibilityIconName = showPassword ? "visibility_off" : "visibility";
 
@@ -57,23 +132,26 @@ export default function PasswordInput({ id, inputRef, ...props }: PasswordInputP
   }
 
   return (
-    <InputGroup>
-      <InputGroupItem isFill>
-        <TextInput {...props} ref={inputRef} id={id} type={showPassword ? "text" : "password"} />
-      </InputGroupItem>
-      <InputGroupItem>
-        <Button
-          id={`toggle-${id}-visibility`}
-          className="password-toggler"
-          aria-label={_("Password visibility button")}
-          variant="control"
-          onClick={() => setShowPassword((prev) => !prev)}
-          isDisabled={props.isDisabled}
-          isInline
-        >
-          <Icon name={visibilityIconName} style={{ width: "1em", height: "1em" }} />
-        </Button>
-      </InputGroupItem>
-    </InputGroup>
+    <>
+      <InputGroup>
+        <InputGroupItem isFill>
+          <TextInput {...props} ref={inputRef} id={id} type={showPassword ? "text" : "password"} />
+        </InputGroupItem>
+        <InputGroupItem>
+          <Button
+            id={`toggle-${id}-visibility`}
+            className="password-toggler"
+            aria-label={_("Password visibility button")}
+            variant="control"
+            onClick={() => setShowPassword((prev) => !prev)}
+            isDisabled={props.isDisabled}
+            isInline
+          >
+            <Icon name={visibilityIconName} style={{ width: "1em", height: "1em" }} />
+          </Button>
+        </InputGroupItem>
+      </InputGroup>
+      <Reminders display={reminders} />
+    </>
   );
 }

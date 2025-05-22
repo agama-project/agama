@@ -55,7 +55,7 @@ export default {
     "Для нового раздела %2$s будет использоваться минимум %1$s"
   ],
   "A generic size of %s will be used for the new %2$s": [
-    "Для нового раздела %2$s будет использовано %s."
+    "Для нового раздела %2$s будет использовано %s"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Для нового раздела %3$s будет использовано пространство в диапазоне между %1$s и %2$s"
@@ -77,9 +77,6 @@ export default {
   ],
   "Actions": [
     "Действия"
-  ],
-  "Actions for connection %s": [
-    "Действия для подключения %s"
   ],
   "Activate": [
     "Активировать"
@@ -145,7 +142,7 @@ export default {
     "Все содержимое будет удалено"
   ],
   "All fields are required": [
-    "Все поля обязательны"
+    "Все поля обязательны для заполнения"
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Наряду с определением первого пользователя можно настроить методы аутентификации для root-пользователя."
@@ -261,6 +258,12 @@ export default {
   "Change device menu": [
     "Меню изменения устройства"
   ],
+  "Change display language and keyboard layout": [
+    ""
+  ],
+  "Change keyboard": [
+    "Изменить клавиатуру"
+  ],
   "Change product": [
     "Изменить продукт"
   ],
@@ -350,9 +353,6 @@ export default {
   ],
   "Connecting to %s": [
     "Подключение к сети %s"
-  ],
-  "Connection actions": [
-    "Действия подключения"
   ],
   "Connection details": [
     "Сведения о подключении"
@@ -625,7 +625,7 @@ export default {
     "Фильтр по территории, коду часового пояса или смещению UTC"
   ],
   "Find space in %s": [
-    "Найти место в %s"
+    "Найти пространство в %s"
   ],
   "Finish": [
     "Завершить"
@@ -635,12 +635,6 @@ export default {
   ],
   "First user": [
     "Первый пользователь"
-  ],
-  "Forget": [
-    "Забыть"
-  ],
-  "Forget connection %s": [
-    "Забыть подключение %s"
   ],
   "Format": [
     "Формат"
@@ -800,12 +794,6 @@ export default {
   "Installation will take %s.": [
     "Установка займёт %s."
   ],
-  "Installer Options": [
-    "Параметры установщика"
-  ],
-  "Installer options": [
-    "Параметры установщика"
-  ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "Установка повреждённого пакета влияет на стабильность системы и представляет собой большой риск для безопасности!"
   ],
@@ -826,6 +814,12 @@ export default {
   ],
   "Issuer": [
     "Сертификационный центр"
+  ],
+  "It is not possible to allocate space for %s.": [
+    "Невозможно выделить пространство для %s."
+  ],
+  "It is not possible to allocate space for the boot partition and for %s.": [
+    "Невозможно выделить пространство для загрузочного раздела и для %s."
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Невозможно установить систему с текущей конфигурацией. Измените приведенные ниже настройки."
@@ -955,6 +949,15 @@ export default {
   ],
   "More devices": [
     "Другие устройства"
+  ],
+  "More keymap layout might be available for the selected product at [Localization] page": [
+    ""
+  ],
+  "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
+    ""
+  ],
+  "More languages might be available for the selected product at [Localization] page": [
+    ""
   ],
   "Mount Point": [
     "Точка монтирования"
@@ -1408,6 +1411,9 @@ export default {
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     "Размеры должны быть введены в виде чисел, за которыми по желанию может следовать единица измерения."
   ],
+  "Skip to content": [
+    "Перейти к содержимому"
+  ],
   "Software": [
     "Программы"
   ],
@@ -1630,6 +1636,12 @@ export default {
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Это наиболее актуальные настройки установки. Более подробные сведения приведены в разделах меню."
   ],
+  "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
+    ""
+  ],
+  "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
+    ""
+  ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Это действие может уничтожить все данные, хранящиеся на перечисленных ниже устройствах. Пожалуйста, подтвердите, что Вы действительно хотите продолжить."
   ],
@@ -1662,6 +1674,9 @@ export default {
   ],
   "This uses existing partitions at the disk": [
     "При этом используются существующие разделы на диске"
+  ],
+  "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
+    ""
   ],
   "TiB": [
     "ТиБ"
@@ -1759,6 +1774,9 @@ export default {
   "Use available space": [
     "Использовать свободное пространство"
   ],
+  "Use for the selected product too": [
+    ""
+  ],
   "Use password": [
     "Использовать пароль"
   ],
@@ -1773,6 +1791,9 @@ export default {
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     "Используйте Доверенный платформенный модуль (TPM) для автоматического дешифрования при каждой загрузке"
+  ],
+  "Use these same settings for the selected product": [
+    ""
   ],
   "Used space": [
     "Используемое"
@@ -1857,6 +1878,9 @@ export default {
   ],
   "ZFCP": [
     "ZFCP"
+  ],
+  "[CAPS LOCK] is on": [
+    ""
   ],
   "at least %s": [
     "не менее %s"

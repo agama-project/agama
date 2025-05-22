@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -31,12 +31,13 @@ module Agama
         include Yast::I18n
 
         # @param product_config [Config] Product config
-        # @param logger [Logger]
+        # @param storage_system [Storage::System]
         # @param partitioning [Array<Hash>]
-        def initialize(product_config, logger, partitioning)
+        # @param logger [Logger]
+        def initialize(product_config, storage_system, partitioning, logger)
           textdomain "agama"
 
-          super(product_config, logger)
+          super(product_config, storage_system, logger)
           @partitioning = partitioning
         end
 
@@ -52,8 +53,8 @@ module Agama
           proposal = Y2Storage::AutoinstProposal.new(
             partitioning:      partitioning,
             proposal_settings: proposal_settings,
-            devicegraph:       probed_devicegraph,
-            disk_analyzer:     disk_analyzer,
+            devicegraph:       storage_system.devicegraph,
+            disk_analyzer:     storage_system.analyzer,
             issues_list:       ay_issues
           )
           proposal.propose

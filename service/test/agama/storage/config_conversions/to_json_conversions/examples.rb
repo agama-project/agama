@@ -124,58 +124,6 @@ shared_examples "with search" do
         }
       )
     end
-
-    context "if the device name is not provided" do
-      let(:search) { {} }
-
-      it "generates the expected JSON" do
-        config_json = subject.convert
-        search_json = config_json[:search]
-
-        expect(search_json).to eq(
-          {
-            ifNotFound: "error"
-          }
-        )
-      end
-
-      context "and a device was assigned" do
-        before do
-          allow_any_instance_of(Agama::Storage::Configs::Search)
-            .to(receive(:device))
-            .and_return(device)
-        end
-
-        let(:device) { instance_double(Y2Storage::BlkDevice, name: "/dev/vda") }
-
-        it "generates the expected JSON" do
-          config_json = subject.convert
-          search_json = config_json[:search]
-
-          expect(search_json).to eq(
-            {
-              condition:  { name: "/dev/vda" },
-              ifNotFound: "error"
-            }
-          )
-        end
-      end
-    end
-
-    context "if there are no conditions or limits and errors should be skipped" do
-      let(:search) { { ifNotFound: "skip" } }
-
-      it "generates the expected JSON" do
-        config_json = subject.convert
-        search_json = config_json[:search]
-
-        expect(search_json).to eq(
-          {
-            ifNotFound: "skip"
-          }
-        )
-      end
-    end
   end
 end
 

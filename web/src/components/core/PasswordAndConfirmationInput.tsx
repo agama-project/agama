@@ -113,6 +113,7 @@ const PasswordAndConfirmationInput = ({
           onChange={onConfirmationChange}
           onBlur={() => validate(password, confirmation)}
           validated={error === "" ? "default" : "error"}
+          reminders={[]}
         />
         <FormValidationError message={error} />
       </FormGroup>

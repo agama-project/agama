@@ -24,7 +24,7 @@ use url::Url;
 
 use crate::auth_tokens_file::AuthTokensFile;
 use crate::error::CliError;
-use agama_lib::base_http_client::BaseHTTPClient;
+use agama_lib::http::BaseHTTPClient;
 use inquire::Password;
 use std::collections::HashMap;
 use std::io::{self, IsTerminal};

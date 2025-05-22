@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -32,13 +32,25 @@ module Agama
           new.tap { |c| c.if_not_found = :skip }
         end
 
-        # Found device, if any
-        # @return [Y2Storage::Device, nil]
-        attr_reader :device
-
-        # Name of the device to find.
+        # Search by name.
+        #
         # @return [String, nil]
         attr_accessor :name
+
+        # Search by size.
+        #
+        # @return [SearchConditions::Size, nil]
+        attr_accessor :size
+
+        # Search by partition number (only applies if searching partitions).
+        #
+        # @return [Integer, nil] e.g., 2 for "/dev/vda2".
+        attr_accessor :partition_number
+
+        # Found device, if any
+        #
+        # @return [Y2Storage::Device, nil]
+        attr_reader :device
 
         # What to do if the search does not match with the expected number of devices
         # @return [:create, :skip, :error]
@@ -71,11 +83,12 @@ module Agama
           @solved = true
         end
 
-        # Whether the search does not define any specific condition.
+        # Whether the search defines any condition.
         #
         # @return [Boolean]
-        def always_match?
-          name.nil?
+        def condition?
+          condition = name || size || partition_number
+          !condition.nil?
         end
 
         # Whether the section containing the search should be skipped

@@ -27,19 +27,17 @@
 
 use crate::{
     error::Error,
-    web::{
-        common::{issues_router, EventStreams},
-        Event,
-    },
+    web::common::{issues_router, EventStreams},
 };
 use agama_lib::{
-    dbus::{get_optional_property, to_owned_hash},
     error::ServiceError,
+    http::Event,
     storage::{
         client::iscsi::{ISCSIAuth, ISCSIInitiator, ISCSINode, LoginResult},
         ISCSIClient,
     },
 };
+use agama_utils::dbus::{get_optional_property, to_owned_hash};
 use axum::{
     extract::{Path, State},
     http::StatusCode,

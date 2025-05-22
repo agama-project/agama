@@ -89,7 +89,7 @@ module Agama
           # @return [Boolean]
           def search_all?(partition_config)
             !partition_config.search.nil? &&
-              partition_config.search.always_match? &&
+              !partition_config.search.condition? &&
               partition_config.search.max.nil?
           end
         end

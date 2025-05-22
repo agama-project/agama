@@ -39,12 +39,15 @@ module Agama
       #
       # @return [Hash]
       def read
-        wireless = {}
+        wireless = {
+          "ssid" => section.wireless_essid.to_s
+        }
+        return {} if wireless["ssid"].empty?
+
         security = security_from(section.wireless_auth_mode)
         wireless["security"] = security if security
         mode = mode_from(section.wireless_mode)
         wireless["mode"] = mode if mode
-        wireless["ssid"] = section.wireless_essid.to_s
 
         case security
         when "wpa-psk"

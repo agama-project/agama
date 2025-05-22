@@ -22,10 +22,9 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender, mockRoutes } from "~/test-utils";
-import Header from "./Header";
-import { InstallationPhase } from "~/types/status";
+import { plainRender, installerRender } from "~/test-utils";
 import { Product } from "~/types/software";
+import Header from "./Header";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -41,9 +40,6 @@ const microos: Product = {
   registration: false,
 };
 
-let phase: InstallationPhase;
-let isBusy: boolean;
-
 jest.mock("~/components/core/InstallerOptions", () => () => <div>Installer Options Mock</div>);
 jest.mock("~/components/core/InstallButton", () => () => <div>Install Button Mock</div>);
 
@@ -55,30 +51,9 @@ jest.mock("~/queries/software", () => ({
   useRegistration: () => undefined,
 }));
 
-jest.mock("~/queries/status", () => ({
-  useInstallerStatus: () => ({
-    phase,
-    isBusy,
-  }),
-}));
-
-const doesNotRenderInstallerL10nOptions = () =>
-  it("does not render the installer localization options", async () => {
-    const { user } = installerRender(<Header />);
-    const toggler = screen.getByRole("button", { name: "Options toggle" });
-    await user.click(toggler);
-    const menu = screen.getByRole("menu");
-    expect(within(menu).queryByRole("menuitem", { name: "Installer Options" })).toBeNull();
-  });
-
 describe("Header", () => {
-  beforeEach(() => {
-    phase = InstallationPhase.Config;
-    isBusy = false;
-  });
-
   it("renders the product name unless showProductName is set to false", () => {
-    const { rerender } = installerRender(<Header />);
+    const { rerender } = plainRender(<Header />);
     screen.getByRole("heading", { name: tumbleweed.name, level: 1 });
     rerender(<Header />);
     screen.getByRole("heading", { name: tumbleweed.name, level: 1 });
@@ -87,17 +62,22 @@ describe("Header", () => {
   });
 
   it("mounts the Install button", () => {
-    installerRender(<Header />);
+    plainRender(<Header />);
     screen.getByText("Install Button Mock");
   });
 
+  it("mounts InstallerOptions", () => {
+    plainRender(<Header />);
+    screen.getByText("Installer Options Mock");
+  });
+
   it("renders skip to content link", async () => {
-    installerRender(<Header />);
+    plainRender(<Header />);
     screen.getByRole("link", { name: "Skip to content" });
   });
 
   it("does not render skip to content link when showSkipToContent is false", async () => {
-    installerRender(<Header showSkipToContent={false} />);
+    plainRender(<Header showSkipToContent={false} />);
     expect(screen.queryByRole("link", { name: "Skip to content" })).toBeNull();
   });
 
@@ -109,32 +89,7 @@ describe("Header", () => {
     const menu = screen.getByRole("menu");
     within(menu).getByRole("menuitem", { name: "Change product" });
     within(menu).getByRole("menuitem", { name: "Download logs" });
-    within(menu).getByRole("menuitem", { name: "Installer Options" });
   });
 
   it.todo("allows downloading the logs");
-
-  describe("at install phase", () => {
-    beforeEach(() => {
-      phase = InstallationPhase.Install;
-    });
-
-    doesNotRenderInstallerL10nOptions();
-  });
-
-  describe("at /products/progress path", () => {
-    beforeEach(() => {
-      mockRoutes("/products/progress");
-    });
-
-    doesNotRenderInstallerL10nOptions();
-  });
-
-  describe("at /login path", () => {
-    beforeEach(() => {
-      mockRoutes("/login");
-    });
-
-    doesNotRenderInstallerL10nOptions();
-  });
 });
