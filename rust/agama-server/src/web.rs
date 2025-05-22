@@ -39,7 +39,7 @@ use crate::{
     software::web::{software_service, software_streams},
     storage::web::{iscsi::iscsi_service, storage_service, storage_streams},
     users::web::{users_service, users_streams},
-    web::common::{issues_stream, jobs_stream, progress_stream, service_status_stream},
+    web::common::{jobs_stream, progress_stream, service_status_stream},
 };
 use axum::Router;
 
