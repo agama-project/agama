@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu May 22 16:18:06 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Provide software conflicts DBuS API (gh#agama-project/agama#2348) 
+
+-------------------------------------------------------------------
 Fri May 16 08:45:58 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Fix list of candidate drives and candidate MD RAIDs for

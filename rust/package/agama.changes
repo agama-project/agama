@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu May 22 16:16:54 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Provide software conflicts http API (gh#agama-project/agama#2348) 
+
+-------------------------------------------------------------------
 Thu May 22 13:16:49 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Cache issues to avoid blocking the clients
