@@ -62,6 +62,8 @@ pub enum IssuesServiceError {
     DBus(#[from] zbus::Error),
     #[error("Invalid D-Bus name: {0}")]
     DBusName(#[from] zbus::names::Error),
+    #[error("Could not send the event: {0}")]
+    SendEvent(#[from] tokio::sync::broadcast::error::SendError<Event>),
 }
 
 #[derive(Debug)]
@@ -162,7 +164,7 @@ impl IssuesService {
             path: path.to_string(),
             issues,
         };
-        self.events.send(event).unwrap();
+        self.events.send(event)?;
         Ok(())
     }
 
