@@ -39,9 +39,7 @@ use agama_lib::{
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
         model::{
-            AddonParams, AddonProperties, License, LicenseContent, LicensesRepo, RegistrationError,
-            RegistrationInfo, RegistrationParams, Repository, RepositoryParams, ResolvableParams,
-            SoftwareConfig,
+            AddonParams, AddonProperties, Conflict, ConflictSolve, License, LicenseContent, LicensesRepo, RegistrationError, RegistrationInfo, RegistrationParams, Repository, RepositoryParams, ResolvableParams, SoftwareConfig
         },
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
@@ -81,6 +79,10 @@ pub async fn software_streams(dbus: zbus::Connection) -> Result<EventStreams, Er
         (
             "patterns_changed",
             Box::pin(patterns_changed_stream(dbus.clone()).await?),
+        ),
+        (
+            "conflicts_changed",
+            Box::pin(conflicts_changed_stream(dbus.clone()).await?),
         ),
         (
             "product_changed",
@@ -136,6 +138,28 @@ async fn patterns_changed_stream(
             None
         })
         .filter_map(|e| e.map(|patterns| Event::SoftwareProposalChanged { patterns }));
+    Ok(stream)
+}
+
+async fn conflicts_changed_stream(
+    dbus: zbus::Connection,
+) -> Result<impl Stream<Item = Event>, Error> {
+    let proxy = Software1Proxy::new(&dbus).await?;
+    let stream = proxy
+        .receive_conflicts_changed()
+        .await
+        .then(|change| async move {
+            if let Ok(conflicts) = change.get().await {
+                return Some(
+                    conflicts
+                        .into_iter()
+                        .map(|c| Conflict::from_dbus(c))
+                        .collect(),
+                );
+            }
+            None
+        })
+        .filter_map(|e| e.map(|conflicts| Event::ConflictsChanged { conflicts }));
     Ok(stream)
 }
 
@@ -238,6 +262,7 @@ pub async fn software_service(
 
     let router = Router::new()
         .route("/patterns", get(patterns))
+        .route("/conflicts", get(get_conflicts).patch(solve_conflicts))
         .route(
             "/repositories",
             put(set_custom_repositories).get(repositories),
@@ -332,6 +357,46 @@ async fn set_custom_repositories(
     //         Json(details).into_response(),
     //     ))
     // }
+}
+
+/// Returns the list of conflicts that proposal found.
+///
+/// * `state`: service state.
+#[utoipa::path(
+    get,
+    path = "/conflicts",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "List of software conflicts", body = Vec<Conflict>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn get_conflicts(
+    State(state): State<SoftwareState<'_>>,
+) -> Result<Json<Vec<Conflict>>, Error> {
+    let conflicts = state.software.get_conflicts().await?;
+    Ok(Json(conflicts))
+}
+
+/// Solve conflicts. Not all conflicts needs to be solved at once.
+///
+/// * `state`: service state.
+#[utoipa::path(
+    patch,
+    path = "/conflicts",
+    context_path = "/api/software",
+    request_body = Vec<ConflictSolve>,
+    responses(
+        (status = 200, description = "Operation success"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn solve_conflicts(
+    State(state): State<SoftwareState<'_>>,
+    Json(solutions): Json<Vec<ConflictSolve>>,
+) -> Result<(), Error> {
+    Ok(state.software.solve_conflicts(solutions).await?)
+
 }
 
 /// returns registration info

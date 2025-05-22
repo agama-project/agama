@@ -22,6 +22,8 @@
 
 import {
   AddonInfo,
+  Conflict,
+  ConflictSolution,
   License,
   LicenseContent,
   Pattern,
@@ -32,7 +34,7 @@ import {
   SoftwareConfig,
   SoftwareProposal,
 } from "~/types/software";
-import { get, post, put } from "~/api/http";
+import { get, patch, post, put } from "~/api/http";
 
 /**
  * Returns the software configuration
@@ -87,6 +89,11 @@ const fetchPatterns = (): Promise<Pattern[]> => get("/api/software/patterns");
 const fetchRepositories = (): Promise<Repository[]> => get("/api/software/repositories");
 
 /**
+ * Returns the list of conflicts
+ */
+const fetchConflicts = (): Promise<Conflict[]> => get("/api/software/conflicts");
+
+/**
  * Updates the software configuration
  *
  * @param config - New software configuration
@@ -110,9 +117,15 @@ const register = ({ key, email }: { key: string; email?: string }) =>
 const registerAddon = (addon: RegisteredAddonInfo) =>
   post("/api/software/registration/addons/register", addon);
 
+/**
+ * Request for solving a conflict by applying given solution
+ */
+const solveConflict = (solution: ConflictSolution) => patch("/api/software/conflicts", [solution]);
+
 export {
   fetchAddons,
   fetchConfig,
+  fetchConflicts,
   fetchLicense,
   fetchLicenses,
   fetchPatterns,
@@ -124,5 +137,6 @@ export {
   probe,
   register,
   registerAddon,
+  solveConflict,
   updateConfig,
 };
