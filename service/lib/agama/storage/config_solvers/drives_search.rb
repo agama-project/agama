@@ -44,7 +44,7 @@ module Agama
         # @param config [Storage::Config]
         # @return [Storage::Config]
         def solve(config)
-          config.drives = super(config.drives, storage_system.candidate_drives)
+          config.drives = super(config.drives, storage_system.available_drives)
           solve_partitions_search(config.drives)
           config
         end

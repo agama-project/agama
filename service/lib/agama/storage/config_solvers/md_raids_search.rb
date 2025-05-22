@@ -44,7 +44,7 @@ module Agama
         # @param config [Storage::Config]
         # @return [Storage::Config]
         def solve(config)
-          config.md_raids = super(config.md_raids, storage_system.candidate_md_raids)
+          config.md_raids = super(config.md_raids, storage_system.available_md_raids)
           solve_partitions_search(config.md_raids)
           config
         end
