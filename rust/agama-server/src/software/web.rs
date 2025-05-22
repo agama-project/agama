@@ -375,11 +375,7 @@ async fn solve_conflicts(
     State(state): State<SoftwareState<'_>>,
     Json(solutions): Json<Vec<ConflictSolve>>,
 ) -> Result<(), Error> {
-    state
-        .software
-        .solve_conflicts(solutions)
-        .await
-        .map_err(|e| e.into())
+    Ok(state.software.solve_conflicts(solutions).await?)
 }
 
 /// returns registration info

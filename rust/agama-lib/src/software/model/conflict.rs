@@ -30,9 +30,9 @@ pub struct ConflictSolve {
     pub solution_id: u32,
 }
 
-impl Into<(u32, u32)> for ConflictSolve {
-    fn into(self) -> (u32, u32) {
-        (self.conflict_id, self.solution_id)
+impl From<ConflictSolve> for (u32, u32) {
+    fn from(solve: ConflictSolve) -> Self {
+        (solve.conflict_id, solve.solution_id)
     }
 }
 

@@ -180,14 +180,11 @@ impl<'a> SoftwareClient<'a> {
         Ok(conflicts)
     }
 
-    /// returns current list of conflicts
+    /// Sets solutions ( not necessary for all conflicts ) and recompute conflicts
     pub async fn solve_conflicts(&self, solutions: Vec<ConflictSolve>) -> Result<(), ServiceError> {
         let solutions: Vec<(u32, u32)> = solutions.into_iter().map(|s| s.into()).collect();
 
-        self.software_proxy
-            .solve_conflicts(&solutions)
-            .await
-            .map_err(|e| e.into())
+        Ok(self.software_proxy.solve_conflicts(&solutions).await?)
     }
 
     /// Selects patterns by user
