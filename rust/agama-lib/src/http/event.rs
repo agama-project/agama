@@ -24,7 +24,7 @@ use crate::{
     manager::InstallationPhase,
     network::model::NetworkChange,
     progress::Progress,
-    software::SelectedBy,
+    software::{model::Conflict, SelectedBy},
     storage::{
         model::{
             dasd::{DASDDevice, DASDFormatSummary},
@@ -68,6 +68,9 @@ pub enum Event {
     // all the relevant changes.
     SoftwareProposalChanged {
         patterns: HashMap<String, SelectedBy>,
+    },
+    ConflictsChanged {
+        conflicts: Vec<Conflict>,
     },
     QuestionsChanged,
     InstallationPhaseChanged {

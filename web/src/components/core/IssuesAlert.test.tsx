@@ -24,13 +24,30 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { IssuesAlert } from "~/components/core";
+import { Issue, IssueSeverity, IssueSource } from "~/types/issues";
+import { SOFTWARE } from "~/routes/paths";
 
-it("renders a list of issues", () => {
-  const issue = {
-    description: "You need to create a user",
-    source: "config",
-    severity: "error",
-  };
-  plainRender(<IssuesAlert issues={[issue]} />);
-  expect(screen.getByText(issue.description)).toBeInTheDocument();
+describe("IssueAlert", () => {
+  it("renders a list of issues", () => {
+    const issue: Issue = {
+      description: "A generic issue",
+      source: IssueSource.Config,
+      severity: IssueSeverity.Error,
+      kind: "generic",
+    };
+    plainRender(<IssuesAlert issues={[issue]} />);
+    expect(screen.getByText(issue.description)).toBeInTheDocument();
+  });
+
+  it("renders a link to conflict resolution when there is a 'solver' issue", () => {
+    const issue: Issue = {
+      description: "Conflicts found",
+      source: IssueSource.Config,
+      severity: IssueSeverity.Error,
+      kind: "solver",
+    };
+    plainRender(<IssuesAlert issues={[issue]} />);
+    const link = screen.getByRole("link", { name: "Review and fix" });
+    expect(link).toHaveAttribute("href", SOFTWARE.conflicts);
+  });
 });
