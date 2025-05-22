@@ -73,7 +73,7 @@
     </method>
     <method name="SolveConflicts">
       <!--
-        List of solutions in format of id of conflict and if of solution.
+        List of solutions in format of id of conflict and id of solution.
       -->
       <arg name="solutions" direction="in" type="a(uu)"/>
     </method>
