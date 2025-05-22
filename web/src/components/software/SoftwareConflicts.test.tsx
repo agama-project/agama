@@ -115,8 +115,8 @@ describe("SofwareConflicts", () => {
     expect(screen.queryByText(/any order/)).toBeNull();
     expect(screen.queryByText(/resolve others/)).toBeNull();
     expect(screen.queryByText("1 of 3")).toBeNull();
-    expect(screen.queryByRole("button", { name: "Skip to Previous" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "Skip to Next" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Skip to previous" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Skip to next" })).toBeNull();
   });
 
   it("allows applying the selected solution", async () => {
@@ -221,15 +221,15 @@ describe("SofwareConflicts", () => {
       screen.getByText(/any order/);
       screen.getByText(/resolve others/);
       screen.getByText("1 of 3");
-      screen.getByRole("button", { name: "Skip to Previous" });
-      screen.getByRole("button", { name: "Skip to Next" });
+      screen.getByRole("button", { name: "Skip to previous" });
+      screen.getByRole("button", { name: "Skip to next" });
     });
 
     it("allows navigating between conflicts without exceeding bounds", async () => {
       const { user } = installerRender(<SoftwareConflicts />);
       screen.getByText("1 of 3");
-      const skipToPrevious = screen.getByRole("button", { name: "Skip to Previous" });
-      const skipToNext = screen.getByRole("button", { name: "Skip to Next" });
+      const skipToPrevious = screen.getByRole("button", { name: "Skip to previous" });
+      const skipToNext = screen.getByRole("button", { name: "Skip to next" });
 
       expect(skipToPrevious).toBeDisabled();
       expect(skipToNext).not.toBeDisabled();
@@ -256,8 +256,8 @@ describe("SofwareConflicts", () => {
     it("does not preserve the selected option after navigating", async () => {
       const { user } = installerRender(<SoftwareConflicts />);
       screen.getByText("1 of 3");
-      const skipToPrevious = screen.getByRole("button", { name: "Skip to Previous" });
-      const skipToNext = screen.getByRole("button", { name: "Skip to Next" });
+      const skipToPrevious = screen.getByRole("button", { name: "Skip to previous" });
+      const skipToNext = screen.getByRole("button", { name: "Skip to next" });
 
       screen.getByText("1 of 3");
       screen.getByText(conflicts[0].description);
@@ -285,7 +285,7 @@ describe("SofwareConflicts", () => {
 
     it("allows applying the selected solution for the current conflict", async () => {
       const { user } = installerRender(<SoftwareConflicts />);
-      const skipToNext = screen.getByRole("button", { name: "Skip to Next" });
+      const skipToNext = screen.getByRole("button", { name: "Skip to next" });
 
       await user.click(skipToNext);
       const applyButton = screen.getByRole("button", { name: "Apply selected solution" });

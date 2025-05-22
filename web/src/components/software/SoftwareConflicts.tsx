@@ -188,7 +188,7 @@ const ConflictsToolbar = ({
         <ToolbarItem>
           <Button variant="plain" size="sm" onClick={onBack} isDisabled={current === 1}>
             <Flex component="span" alignItems={{ default: "alignItemsCenter" }}>
-              <Icon name="chevron_left" /> {_("Skip to Previous")}
+              <Icon name="chevron_left" /> {_("Skip to previous")}
             </Flex>
           </Button>
         </ToolbarItem>
@@ -205,7 +205,7 @@ const ConflictsToolbar = ({
         <ToolbarItem>
           <Button variant="plain" size="sm" onClick={onNext} isDisabled={current === total}>
             <Flex component="span" alignItems={{ default: "alignItemsCenter" }}>
-              {_("Skip to Next")} <Icon name="chevron_right" />
+              {_("Skip to next")} <Icon name="chevron_right" />
             </Flex>
           </Button>
         </ToolbarItem>
