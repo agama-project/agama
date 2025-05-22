@@ -113,7 +113,8 @@ pub async fn build_properties_changed_stream(
         .interface("org.freedesktop.DBus.Properties")?
         .member("PropertiesChanged")?
         .build();
-    let stream = MessageStream::for_match_rule(rule, connection, Some(1)).await?;
+    // The third parameter corresponds to the max_queue. We rely on the default (64).
+    let stream = MessageStream::for_match_rule(rule, connection, None).await?;
     Ok(stream)
 }
 
