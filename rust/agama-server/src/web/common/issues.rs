@@ -24,7 +24,7 @@
 //!
 //! * Querying the issues via D-Bus and keeping them in a cache.
 //! * Listening to D-Bus signals to keep the cache up-to-date.
-//! * (Not implemented yet) Emitting `IssuesChanged` events, replacing
+//! * Emitting `IssuesChanged` events, replacing
 //!   [issues_stream](crate::web::common::issues_stream).
 //!
 //! The following components are included:
