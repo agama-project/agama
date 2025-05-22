@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, mockNavigateFn } from "~/test-utils";
 import WifiNetworksList from "~/components/network/WifiNetworksList";
 import {
   Connection,
@@ -130,6 +130,16 @@ describe("WifiNetworksList", () => {
       installerRender(<WifiNetworksList />);
       screen.getByLabelText("Secured network Network 2 Excellent signal");
       screen.getByRole("progressbar", { name: "Connecting to Network 2" });
+    });
+
+    describe("and user selects a network", () => {
+      it("navigates to the Wi-Fi network path including the expected SSID", async () => {
+        // @ts-expect-error: you need to specify the aria-label
+        const { user } = installerRender(<WifiNetworksList />);
+        const network1 = screen.getByLabelText("Secured network Network 1 Weak signal");
+        await user.click(network1);
+        expect(mockNavigateFn).toHaveBeenCalledWith(expect.stringContaining("Network 1"));
+      });
     });
 
     describe.skip("and user selects a connected network", () => {
