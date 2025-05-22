@@ -59,8 +59,8 @@ type Issue = {
   description: string;
   /** Issue kind **/
   kind: string;
-  /** Issue details. It is not mandatory. */
-  details: string | undefined;
+  /** Issue details */
+  details?: string;
   /** Where the issue comes from */
   source: IssueSource;
   /** How severe is the issue */

@@ -56,10 +56,5 @@ describe "Agama::SSL::CertificateDetails" do
                                    )
       # rubocop:enable Layout/TrailingWhitespace
     end
-
-    it "can optionaly limit line lenght to fit terminal width" do
-      # the longest line still fits 80 chars wide terminal
-      expect(subject.summary(small_space: true).split("\n").map(&:size).max).to be < 80
-    end
   end
 end

@@ -28,6 +28,8 @@ import Apps from "@icons/apps.svg?component";
 import AppRegistration from "@icons/app_registration.svg?component";
 import Backspace from "@icons/backspace.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
+import ChevronLeft from "@icons/chevron_left.svg?component";
+import ChevronRight from "@icons/chevron_right.svg?component";
 import Delete from "@icons/delete.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Error from "@icons/error.svg?component";
@@ -50,6 +52,8 @@ import NetworkWifi1Bar from "@icons/network_wifi_1_bar.svg?component";
 import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
 import Translate from "@icons/translate.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
+import UnfoldLess from "@icons/unfold_less.svg?component";
+import UnfoldMore from "@icons/unfold_more.svg?component";
 import Warning from "@icons/warning.svg?component";
 import Visibility from "@icons/visibility.svg?component";
 import VisibilityOff from "@icons/visibility_off.svg?component";
@@ -61,6 +65,8 @@ const icons = {
   app_registration: AppRegistration,
   backspace: Backspace,
   check_circle: CheckCircle,
+  chevron_left: ChevronLeft,
+  chevron_right: ChevronRight,
   delete: Delete,
   edit_square: EditSquare,
   error: Error,
@@ -81,10 +87,12 @@ const icons = {
   network_wifi: NetworkWifi,
   network_wifi_1_bar: NetworkWifi1Bar,
   network_wifi_3_bar: NetworkWifi3Bar,
+  settings_ethernet: SettingsEthernet,
   translate: Translate,
+  unfold_less: UnfoldLess,
+  unfold_more: UnfoldMore,
   visibility: Visibility,
   visibility_off: VisibilityOff,
-  settings_ethernet: SettingsEthernet,
   warning: Warning,
   wifi: Wifi,
   wifi_off: WifiOff,

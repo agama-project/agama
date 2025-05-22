@@ -113,7 +113,7 @@ const NetworkListItem = ({ network, connection, showIp }: NetworkListItemProps) 
   const ipId = useId();
 
   return (
-    <DataListItem>
+    <DataListItem id={network.ssid}>
       <DataListItemRow>
         <DataListItemCells
           dataListCells={[
