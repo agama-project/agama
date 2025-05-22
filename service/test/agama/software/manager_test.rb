@@ -546,10 +546,10 @@ describe Agama::Software::Manager do
       expect { subject.add_service(service) }.to_not raise_error
     end
 
-    it "raises AddServiceError when failed to add service" do
+    it "raises ServiceError when failed to add service" do
       expect(Yast::Pkg).to receive(:ServiceForceRefresh).and_return(false)
       service = double(name: "test", url: "http://test.com")
-      expect { subject.add_service(service) }.to raise_error(Agama::Software::AddServiceError)
+      expect { subject.add_service(service) }.to raise_error(Agama::Software::ServiceError)
     end
   end
 
