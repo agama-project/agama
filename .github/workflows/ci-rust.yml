@@ -71,6 +71,8 @@ jobs:
     - name: Configure git
       run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
+    - run: df -h
+
     - name: Configure and refresh repositories
       # disable unused repositories to have faster refresh
       run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
@@ -101,6 +103,8 @@ jobs:
     - name: Run rustfmt
       run: cargo fmt --all -- --check
 
+    - run: df -h
+
     - name: Install cargo-binstall
       uses: taiki-e/install-action@v2
       with:
@@ -111,8 +115,12 @@ jobs:
         echo "$PWD/share/bin" >> $GITHUB_PATH
         cargo-binstall --no-confirm cargo-tarpaulin
 
+    - run: df -h
+
     - name: Run the tests
-      run: cargo tarpaulin --all --doc --out xml -- --nocapture
+      run: cargo +stable --verbose tarpaulin --debug --all --out xml -- --nocapture
+
+    - run: df -h
 
     - name: Generate and validate the OpenAPI specification
       run: |
