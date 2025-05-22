@@ -341,7 +341,6 @@ pub async fn issues_stream(
             if let Ok(issues) = change.get().await {
                 let issues = issues.into_iter().map(Issue::from_tuple).collect();
                 Some(Event::IssuesChanged {
-                    service: destination.to_string(),
                     path: path.to_string(),
                     issues,
                 })
