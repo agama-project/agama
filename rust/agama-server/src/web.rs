@@ -94,7 +94,7 @@ where
             "/storage",
             storage_service(dbus.clone(), issues.clone()).await?,
         )
-        .add_service("/iscsi", iscsi_service(dbus.clone()).await?)
+        .add_service("/iscsi", iscsi_service(dbus.clone(), issues.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
         .add_service("/network", network_service(network_adapter, events).await?)
         .add_service("/questions", questions_service(dbus.clone()).await?)
