@@ -88,7 +88,6 @@ const IpDetails = ({ connection, device }: { connection: Connection; device: Dev
               <FlexItem>
                 {_("IPv6")} {connection.method6}
               </FlexItem>
-              <FlexItem>{device.gateway6}</FlexItem>
             </Flex>
           </DescriptionListDescription>
         </DescriptionListGroup>
