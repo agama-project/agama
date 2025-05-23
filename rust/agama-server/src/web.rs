@@ -39,7 +39,7 @@ use crate::{
     software::web::{software_service, software_streams},
     storage::web::{iscsi::iscsi_service, storage_service, storage_streams},
     users::web::{users_service, users_streams},
-    web::common::{issues_stream, jobs_stream, progress_stream, service_status_stream},
+    web::common::{jobs_stream, progress_stream, service_status_stream},
 };
 use axum::Router;
 
@@ -54,6 +54,7 @@ mod state;
 mod ws;
 
 use agama_lib::{connection, error::ServiceError, http::Event};
+use common::IssuesService;
 pub use config::ServiceConfig;
 pub use event::{EventsReceiver, EventsSender};
 pub use service::MainServiceBuilder;
@@ -79,20 +80,25 @@ where
         .await
         .expect("Could not connect to NetworkManager to read the configuration");
 
+    let issues = IssuesService::start(dbus.clone(), events.clone()).await;
+
     let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
         .add_service("/l10n", l10n_service(dbus.clone(), events.clone()).await?)
         .add_service("/manager", manager_service(dbus.clone()).await?)
         .add_service("/security", security_service(dbus.clone()).await?)
         .add_service(
             "/software",
-            software_service(dbus.clone(), events.subscribe()).await?,
+            software_service(dbus.clone(), events.subscribe(), issues.clone()).await?,
         )
-        .add_service("/storage", storage_service(dbus.clone()).await?)
-        .add_service("/iscsi", iscsi_service(dbus.clone()).await?)
+        .add_service(
+            "/storage",
+            storage_service(dbus.clone(), issues.clone()).await?,
+        )
+        .add_service("/iscsi", iscsi_service(dbus.clone(), issues.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
         .add_service("/network", network_service(network_adapter, events).await?)
         .add_service("/questions", questions_service(dbus.clone()).await?)
-        .add_service("/users", users_service(dbus.clone()).await?)
+        .add_service("/users", users_service(dbus.clone(), issues).await?)
         .add_service("/scripts", scripts_service().await?)
         .add_service("/files", files_service().await?)
         .add_service("/hostname", hostname_service().await?)
@@ -168,15 +174,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
         .await?,
     );
     stream.insert(
-        "storage-issues",
-        issues_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Storage1",
-            "/org/opensuse/Agama/Storage1",
-        )
-        .await?,
-    );
-    stream.insert(
         "storage-jobs",
         jobs_stream(
             dbus.clone(),
@@ -205,33 +202,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
         .await?,
     );
     stream.insert("questions", questions_stream(dbus.clone()).await?);
-    stream.insert(
-        "software-issues",
-        issues_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Software1",
-            "/org/opensuse/Agama/Software1",
-        )
-        .await?,
-    );
-    stream.insert(
-        "software-product-issues",
-        issues_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Software1",
-            "/org/opensuse/Agama/Software1/Product",
-        )
-        .await?,
-    );
-    stream.insert(
-        "users-issues",
-        issues_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Manager1",
-            "/org/opensuse/Agama/Users1",
-        )
-        .await?,
-    );
 
     tokio::pin!(stream);
     let e = events.clone();

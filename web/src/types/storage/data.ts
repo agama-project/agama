@@ -29,6 +29,11 @@
 
 import { apiModel } from "~/api/storage/types";
 
+interface Partition extends Partial<Omit<apiModel.Partition, "filesystem" | "size">> {
+  filesystem?: Filesystem;
+  size?: Size;
+}
+
 type VolumeGroup = Partial<Omit<apiModel.VolumeGroup, "logicalVolumes">>;
 
 interface LogicalVolume extends Partial<Omit<apiModel.LogicalVolume, "filesystem" | "size">> {
@@ -40,4 +45,22 @@ type Filesystem = Partial<Omit<apiModel.Filesystem, "default">>;
 
 type Size = Partial<Omit<apiModel.Size, "default">>;
 
-export type { VolumeGroup, LogicalVolume, Filesystem, Size };
+type SpacePolicyAction = {
+  deviceName: string;
+  value: "delete" | "resizeIfNeeded";
+};
+
+type SpacePolicy = {
+  type: apiModel.SpacePolicy;
+  actions?: SpacePolicyAction[];
+};
+
+export type {
+  Partition,
+  VolumeGroup,
+  LogicalVolume,
+  Filesystem,
+  Size,
+  SpacePolicy,
+  SpacePolicyAction,
+};

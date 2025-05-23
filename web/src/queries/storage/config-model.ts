@@ -26,7 +26,6 @@ import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tansta
 import { setConfigModel, solveConfigModel } from "~/api/storage";
 import { apiModel, Volume } from "~/api/storage/types";
 import { QueryHookOptions } from "~/types/queries";
-import { SpacePolicyAction } from "~/types/storage";
 import { apiModelQuery, useVolumes } from "~/queries/storage";
 
 function copyModel(model: apiModel.Config): apiModel.Config {
@@ -35,10 +34,6 @@ function copyModel(model: apiModel.Config): apiModel.Config {
 
 function isNewPartition(partition: apiModel.Partition): boolean {
   return partition.name === undefined;
-}
-
-function isSpacePartition(partition: apiModel.Partition): boolean {
-  return partition.resizeIfNeeded || partition.delete || partition.deleteIfNeeded;
 }
 
 function isUsedPartition(partition: apiModel.Partition): boolean {
@@ -98,17 +93,6 @@ function allMountPaths(drive: apiModel.Drive): string[] {
   return drive.partitions.map((p) => p.mountPath).filter((m) => m);
 }
 
-function configuredExistingPartitions(drive: apiModel.Drive): apiModel.Partition[] {
-  const allPartitions = drive.partitions || [];
-
-  if (drive.spacePolicy === "custom")
-    return allPartitions.filter(
-      (p) => !isNewPartition(p) && (isUsedPartition(p) || isSpacePartition(p)),
-    );
-
-  return allPartitions.filter((p) => isReusedPartition(p));
-}
-
 function setBoot(originalModel: apiModel.Config, boot: apiModel.Boot) {
   const model = copyModel(originalModel);
   const name = model.boot?.device?.name;
@@ -163,61 +147,6 @@ function disableEncryption(originalModel: apiModel.Config): apiModel.Config {
   return model;
 }
 
-function deletePartition(
-  originalModel: apiModel.Config,
-  driveName: string,
-  mountPath: string,
-): apiModel.Config {
-  const model = copyModel(originalModel);
-  const drive = findDrive(model, driveName);
-  if (drive === undefined) return;
-
-  const partitions = (drive.partitions || []).filter((p) => p.mountPath !== mountPath);
-  drive.partitions = partitions;
-  return model;
-}
-
-/**
- * Adds a new partition.
- *
- * If a partition already exists in the model (e.g., as effect of using the custom policy), then
- * the partition is replaced.
- * */
-export function addPartition(
-  originalModel: apiModel.Config,
-  driveName: string,
-  partition: apiModel.Partition,
-): apiModel.Config {
-  const model = copyModel(originalModel);
-  const drive = findDrive(model, driveName);
-  if (drive === undefined) return;
-
-  drive.partitions ||= [];
-  const index = drive.partitions.findIndex((p) => p.name && p.name === partition.name);
-
-  if (index === -1) drive.partitions.push(partition);
-  else drive.partitions[index] = partition;
-
-  return model;
-}
-
-export function editPartition(
-  originalModel: apiModel.Config,
-  driveName: string,
-  mountPath: string,
-  partition: apiModel.Partition,
-): apiModel.Config {
-  const model = copyModel(originalModel);
-  const drive = findDrive(model, driveName);
-  const partitions = drive?.partitions || [];
-  const index = partitions.findIndex((p) => p.mountPath === mountPath);
-
-  if (index === -1) return;
-  else drive.partitions[index] = partition;
-
-  return model;
-}
-
 function switchDrive(
   originalModel: apiModel.Config,
   driveName: string,
@@ -260,65 +189,6 @@ function addDrive(originalModel: apiModel.Config, driveName: string): apiModel.C
 
   const model = copyModel(originalModel);
   model.drives.push({ name: driveName });
-
-  return model;
-}
-
-function setCustomSpacePolicy(
-  originalModel: apiModel.Config,
-  driveName: string,
-  actions: SpacePolicyAction[],
-): apiModel.Config {
-  const model = copyModel(originalModel);
-  const drive = findDrive(model, driveName);
-  if (drive === undefined) return model;
-
-  drive.spacePolicy = "custom";
-  drive.partitions ||= [];
-
-  // Reset resize/delete actions of all current partition configs.
-  drive.partitions
-    .filter((p) => p.name !== undefined)
-    .forEach((partition) => {
-      partition.delete = false;
-      partition.deleteIfNeeded = false;
-      partition.resizeIfNeeded = false;
-      partition.size = undefined;
-    });
-
-  // Apply the given actions.
-  actions.forEach(({ deviceName, value }) => {
-    const isDelete = value === "delete";
-    const isResizeIfNeeded = value === "resizeIfNeeded";
-    const partition = drive.partitions.find((p) => p.name === deviceName);
-
-    if (partition) {
-      partition.delete = isDelete;
-      partition.resizeIfNeeded = isResizeIfNeeded;
-    } else {
-      drive.partitions.push({
-        name: deviceName,
-        delete: isDelete,
-        resizeIfNeeded: isResizeIfNeeded,
-      });
-    }
-  });
-
-  return model;
-}
-
-function setSpacePolicy(
-  originalModel: apiModel.Config,
-  driveName: string,
-  spacePolicy: apiModel.SpacePolicy,
-  actions?: SpacePolicyAction[],
-): apiModel.Config {
-  if (spacePolicy === "custom")
-    return setCustomSpacePolicy(originalModel, driveName, actions || []);
-
-  const model = copyModel(originalModel);
-  const drive = findDrive(model, driveName);
-  if (drive !== undefined) drive.spacePolicy = spacePolicy;
 
   return model;
 }
@@ -437,13 +307,8 @@ export type DriveHook = {
   isExplicitBoot: boolean;
   hasPv: boolean;
   allMountPaths: string[];
-  configuredExistingPartitions: apiModel.Partition[];
   switch: (newName: string) => void;
   getPartition: (mountPath: string) => apiModel.Partition | undefined;
-  addPartition: (partition: apiModel.Partition) => void;
-  editPartition: (mountPath: string, partition: apiModel.Partition) => void;
-  deletePartition: (mountPath: string) => void;
-  setSpacePolicy: (policy: apiModel.SpacePolicy, actions?: SpacePolicyAction[]) => void;
   delete: () => void;
 };
 
@@ -459,16 +324,9 @@ export function useDrive(name: string): DriveHook | null {
     isExplicitBoot: isExplicitBoot(model, name),
     hasPv: driveHasPv(model, drive.name),
     allMountPaths: allMountPaths(drive),
-    configuredExistingPartitions: configuredExistingPartitions(drive),
     switch: (newName) => mutate(switchDrive(model, name, newName)),
     delete: () => mutate(removeDrive(model, name)),
     getPartition: (mountPath: string) => findPartition(model, name, mountPath),
-    addPartition: (partition: apiModel.Partition) => mutate(addPartition(model, name, partition)),
-    editPartition: (mountPath: string, partition: apiModel.Partition) =>
-      mutate(editPartition(model, name, mountPath, partition)),
-    deletePartition: (mountPath: string) => mutate(deletePartition(model, name, mountPath)),
-    setSpacePolicy: (policy: apiModel.SpacePolicy, actions?: SpacePolicyAction[]) =>
-      mutate(setSpacePolicy(model, name, policy, actions)),
   };
 }
 

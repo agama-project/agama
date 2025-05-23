@@ -42,8 +42,12 @@
       <arg name="result" direction="out" type="b"/>
     </method>
     <method name="SetUserPatterns">
-      <arg name="ids" direction="in" type="as"/>
+      <arg name="add" direction="in" type="as"/>
+      <arg name="remove" direction="in" type="as"/>
       <arg name="wrong" direction="out" type="as"/>
+    </method>
+    <method name="SolveConflicts">
+      <arg name="solutions" direction="in" type="a(uu)"/>
     </method>
     <method name="ProvisionsSelected">
       <arg name="Provisions" direction="in" type="as"/>
@@ -69,6 +73,7 @@
     <method name="Finish">
     </method>
     <property type="a{sy}" name="SelectedPatterns" access="read"/>
+    <property type="a(ussa(uss))" name="Conflicts" access="read"/>
   </interface>
   <interface name="org.opensuse.Agama1.Issues">
     <property type="a(ssuu)" name="All" access="read"/>

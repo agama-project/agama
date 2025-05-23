@@ -358,6 +358,53 @@ describe Agama::Storage::Config do
     end
   end
 
+  describe "#partitionable" do
+    let(:config_json) do
+      {
+        drives:  [
+          { alias: "disk1" },
+          { alias: "disk2" }
+        ],
+        mdRaids: [
+          { alias: "md1" },
+          { alias: "md2" }
+        ]
+      }
+    end
+
+    context "if there is a drive with the given alias" do
+      let(:device_alias) { "disk2" }
+
+      it "returns the drive" do
+        device = subject.partitionable(device_alias)
+
+        expect(device).to be_a(Agama::Storage::Configs::Drive)
+        expect(device.alias).to eq(device_alias)
+      end
+    end
+
+    context "if there is a MD RAID with the given alias" do
+      let(:device_alias) { "md1" }
+
+      it "returns the MD RAID" do
+        device = subject.partitionable(device_alias)
+
+        expect(device).to be_a(Agama::Storage::Configs::MdRaid)
+        expect(device.alias).to eq(device_alias)
+      end
+    end
+
+    context "if there is neither a drive nor a MD RAID with the given alias" do
+      let(:device_alias) { "part1" }
+
+      it "returns nil" do
+        device = subject.partitionable(device_alias)
+
+        expect(device).to be_nil
+      end
+    end
+  end
+
   describe "#partitions" do
     let(:config_json) do
       {

@@ -22,10 +22,13 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender, mockNavigateFn } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 import DriveEditor from "~/components/storage/DriveEditor";
-import { StorageDevice } from "~/types/storage";
-import { apiModel, Volume } from "~/api/storage/types";
+import { StorageDevice, model } from "~/types/storage";
+import { Volume, apiModel } from "~/api/storage/types";
+import { DriveHook } from "~/queries/storage/config-model";
+
+const mockDeleteDrive = jest.fn();
 
 const volume1: Volume = {
   mountPath: "/",
@@ -121,46 +124,77 @@ const sdb: StorageDevice = {
   description: "",
 };
 
-const drive1: apiModel.Drive = {
+const drive1Partitions: apiModel.Partition[] = [
+  {
+    mountPath: "/",
+    size: {
+      min: 1_000_000_000,
+      default: true,
+    },
+    filesystem: { default: true, type: "btrfs" },
+  },
+  {
+    mountPath: "swap",
+    size: {
+      min: 2_000_000_000,
+      default: false, // false: user provided, true: calculated
+    },
+    filesystem: { default: false, type: "swap" },
+  },
+];
+
+const drive1: model.Drive = {
   name: "/dev/sda",
   spacePolicy: "delete",
-  partitions: [
-    {
-      mountPath: "/",
-      size: {
-        min: 1_000_000_000,
-        default: true,
-      },
-      filesystem: { default: true, type: "btrfs" },
-    },
-    {
-      mountPath: "swap",
-      size: {
-        min: 2_000_000_000,
-        default: false, // false: user provided, true: calculated
-      },
-      filesystem: { default: false, type: "swap" },
-    },
-  ],
+  partitions: drive1Partitions,
+  list: "drives",
+  listIndex: 1,
+  isUsed: true,
+  isAddingPartitions: true,
+  isTargetDevice: false,
+  isBoot: true,
+  getVolumeGroups: () => [],
+  getPartition: jest.fn(),
+  getMountPaths: () => drive1Partitions.map((p) => p.mountPath),
+  getConfiguredExistingPartitions: jest.fn(),
 };
 
-const drive2: apiModel.Drive = {
+const drive1Hook: DriveHook = {
+  isBoot: true,
+  isExplicitBoot: true,
+  hasPv: false,
+  allMountPaths: [],
+  switch: jest.fn(),
+  delete: mockDeleteDrive,
+  getPartition: (path) => drive1Partitions.find((p) => p.mountPath === path),
+};
+
+const drive2Partitions: apiModel.Partition[] = [
+  {
+    mountPath: "/home",
+    size: {
+      min: 1_000_000_000,
+      default: true,
+    },
+    filesystem: { default: true, type: "xfs" },
+  },
+];
+
+const drive2: model.Drive = {
   name: "/dev/sdb",
   spacePolicy: "delete",
-  partitions: [
-    {
-      mountPath: "/home",
-      size: {
-        min: 1_000_000_000,
-        default: true,
-      },
-      filesystem: { default: true, type: "xfs" },
-    },
-  ],
+  partitions: drive2Partitions,
+  list: "drives",
+  listIndex: 2,
+  isUsed: true,
+  isAddingPartitions: true,
+  isTargetDevice: false,
+  isBoot: true,
+  getVolumeGroups: () => [],
+  getPartition: jest.fn(),
+  getMountPaths: () => drive1Partitions.map((p) => p.mountPath),
+  getConfiguredExistingPartitions: jest.fn(),
 };
-
-const mockDeleteDrive = jest.fn();
-const mockDeletePartition = jest.fn();
 
 let additionalDrives = true;
 
@@ -174,58 +208,14 @@ jest.mock("~/queries/storage", () => ({
 
 jest.mock("~/queries/storage/config-model", () => ({
   ...jest.requireActual("~/queries/storage/config-model"),
-  useConfigModel: () => ({ drives: [drive1, drive2] }),
   useDrive: (name) => ({
+    ...drive1Hook,
     isExplicitBoot: name === "/dev/sda",
-    delete: mockDeleteDrive,
-    getPartition: (path) => drive1.partitions.find((p) => p.mountPath === path),
-    deletePartition: mockDeletePartition,
   }),
   useModel: () => ({
     hasAdditionalDrives: additionalDrives,
   }),
 }));
-
-describe("PartitionMenuItem", () => {
-  it("allows users to delete a not required partition", async () => {
-    const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
-
-    const partitionsButton = screen.getByRole("button", { name: "Partitions" });
-    await user.click(partitionsButton);
-    const partitionsMenu = screen.getByRole("menu");
-    const deleteSwapButton = within(partitionsMenu).getByRole("menuitem", {
-      name: "Delete swap",
-    });
-    await user.click(deleteSwapButton);
-    expect(mockDeletePartition).toHaveBeenCalled();
-  });
-
-  it("allows users to delete a required partition", async () => {
-    const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
-
-    const partitionsButton = screen.getByRole("button", { name: "Partitions" });
-    await user.click(partitionsButton);
-    const partitionsMenu = screen.getByRole("menu");
-    const deleteRootButton = within(partitionsMenu).getByRole("menuitem", {
-      name: "Delete /",
-    });
-    await user.click(deleteRootButton);
-    expect(mockDeletePartition).toHaveBeenCalled();
-  });
-
-  it("allows users to edit a partition", async () => {
-    const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
-
-    const partitionsButton = screen.getByRole("button", { name: "Partitions" });
-    await user.click(partitionsButton);
-    const partitionsMenu = screen.getByRole("menu");
-    const editSwapButton = within(partitionsMenu).getByRole("menuitem", {
-      name: "Edit swap",
-    });
-    await user.click(editSwapButton);
-    expect(mockNavigateFn).toHaveBeenCalledWith("/storage/drives/sda/partitions/swap/edit");
-  });
-});
 
 describe("RemoveDriveOption", () => {
   describe("if there are additional drives", () => {

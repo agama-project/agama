@@ -450,6 +450,12 @@ module Agama
         selected.each { |s| Yast::Pkg.ResolvableInstall(s.name, s.kind) }
       end
 
+      def proposal
+        @proposal ||= Proposal.new.tap do |proposal|
+          proposal.on_issues_change { update_issues }
+        end
+      end
+
     private
 
       # @return [Agama::Config]
@@ -474,12 +480,6 @@ module Agama
         return product if @products.size == 1 && product.license.to_s.empty?
 
         nil
-      end
-
-      def proposal
-        @proposal ||= Proposal.new.tap do |proposal|
-          proposal.on_issues_change { update_issues }
-        end
       end
 
       def import_gpg_keys

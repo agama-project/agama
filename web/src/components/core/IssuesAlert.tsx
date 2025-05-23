@@ -24,6 +24,8 @@ import React from "react";
 import { Alert, List, ListItem } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { Issue } from "~/types/issues";
+import Link from "./Link";
+import { PATHS } from "~/routes/software";
 
 export default function IssuesAlert({ issues }) {
   if (issues === undefined || issues.length === 0) return;
@@ -35,7 +37,17 @@ export default function IssuesAlert({ issues }) {
     >
       <List>
         {issues.map((i: Issue, idx: number) => (
-          <ListItem key={idx}>{i.description}</ListItem>
+          <ListItem key={idx}>
+            {i.description}{" "}
+            {i.kind === "solver" && (
+              <Link to={PATHS.conflicts} variant="link" isInline>
+                {
+                  // TRANSLATORS: Clickable link to show and resolve package dependency conflicts
+                  _("Review and fix")
+                }
+              </Link>
+            )}
+          </ListItem>
         ))}
       </List>
     </Alert>

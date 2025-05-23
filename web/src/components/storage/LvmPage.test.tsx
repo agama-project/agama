@@ -97,14 +97,22 @@ const mockSdaDrive: model.Drive = {
       filesystem: { default: false, type: "xfs" },
     },
   ],
+  list: "drives",
+  listIndex: 1,
   isUsed: true,
   isAddingPartitions: true,
-  getVolumeGroups: () => [],
+  isTargetDevice: true,
+  isBoot: false,
   getMountPaths: () => ["/home", "swap"],
+  getVolumeGroups: () => [],
+  getPartition: jest.fn(),
+  getConfiguredExistingPartitions: jest.fn(),
 };
 
 const mockRootVolumeGroup: model.VolumeGroup = {
   vgName: "fakeRootVg",
+  list: "volumeGroups",
+  listIndex: 1,
   logicalVolumes: [],
   getTargetDevices: () => [mockSdaDrive],
   getMountPaths: () => [],
@@ -112,6 +120,8 @@ const mockRootVolumeGroup: model.VolumeGroup = {
 
 const mockHomeVolumeGroup: model.VolumeGroup = {
   vgName: "fakeHomeVg",
+  list: "volumeGroups",
+  listIndex: 2,
   logicalVolumes: [],
   getTargetDevices: () => [mockSdaDrive],
   getMountPaths: () => [],
@@ -122,6 +132,7 @@ const mockEditVolumeGroup = jest.fn();
 
 let mockUseModel = {
   drives: [mockSdaDrive],
+  mdRaids: [],
   volumeGroups: [],
 };
 
@@ -136,7 +147,7 @@ jest.mock("~/queries/issues", () => ({
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useAvailableDevices: () => mockUseAllDevices,
-  useDevices: () => [sda, sdb],
+  useDevices: () => mockUseAllDevices,
 }));
 
 jest.mock("~/hooks/storage/model", () => ({
@@ -239,6 +250,7 @@ describe("LvmPage", () => {
       beforeEach(() => {
         mockUseModel = {
           drives: [mockSdaDrive],
+          mdRaids: [],
           volumeGroups: [mockRootVolumeGroup],
         };
       });
@@ -254,6 +266,7 @@ describe("LvmPage", () => {
       beforeEach(() => {
         mockUseModel = {
           drives: [mockSdaDrive],
+          mdRaids: [],
           volumeGroups: [],
         };
       });
@@ -271,6 +284,7 @@ describe("LvmPage", () => {
       mockParams({ id: "fakeRootVg" });
       mockUseModel = {
         drives: [mockSdaDrive],
+        mdRaids: [],
         volumeGroups: [mockRootVolumeGroup, mockHomeVolumeGroup],
       };
     });
