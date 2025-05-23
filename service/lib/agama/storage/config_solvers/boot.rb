@@ -26,6 +26,13 @@ module Agama
     module ConfigSolvers
       # Solver for the boot config.
       class Boot < Base
+        # @param product_config [Agama::Config]
+        # @param storage_system [Storage::System]
+        def initialize(product_config, storage_system)
+          super(product_config)
+          @storage_system = storage_system
+        end
+
         # Solves the boot config within a given config.
         #
         # @note The config object is modified.
@@ -38,6 +45,9 @@ module Agama
 
       private
 
+        # @return [Storage::System]
+        attr_reader :storage_system
+
         # Finds a device for booting and sets its alias, if needed.
         #
         # A boot device cannot be automatically inferred in the following scenarios:
@@ -45,7 +55,8 @@ module Agama
         #   * A disk is directly formated and mounted as root.
         #   * The volume group allocating the root logical volume uses whole drives as physical
         #     volumes.
-        #   * The MD RAID allocating root uses whole drives as member devices.
+        #   * The MD RAID allocating root uses whole drives as member devices and is not directly
+        #     bootable (see System#candidate_md_raids).
         def solve_device_alias
           return unless config.boot.configure? && config.boot.device.default?
 
@@ -65,72 +76,94 @@ module Agama
         #
         # The boot device is recursively searched until reaching a drive.
         #
-        # @return [Configs::Drive, nil] nil if the boot device cannot be inferred from the config.
+        # @return [Configs::Drive, Configs::MdDrive, nil] nil if the boot device cannot be inferred
+        #   from the config.
         def boot_device
           root_device = config.root_drive || config.root_md_raid || config.root_volume_group
           return unless root_device
 
-          partitioned_drive_from_device(root_device)
+          partitionable_from_device(root_device)
         end
 
-        # Recursively looks for the first partitioned drive from the given list of devices.
+        # Recursively looks for the first partitioned config from the given list of devices.
         #
         # @param devices [Array<Configs::Drive, Configs::MdRaid, Configs::VolumeGroup>]
         # @param is_target [Boolean] Whether the devices are target for automatically creating
         #   partitions (e.g., for creating physical volumes).
         #
-        # @return [Configs::Drive, nil]
-        def partitioned_drive_from_devices(devices, is_target: false)
+        # @return [Configs::Drive, Configs::MdDrive, nil]
+        def partitionable_from_devices(devices, is_target: false)
           devices.each do |device|
-            drive = partitioned_drive_from_device(device, is_target: is_target)
+            drive = partitionable_from_device(device, is_target: is_target)
             return drive if drive
           end
 
           nil
         end
 
-        # Recursively looks for the first partitioned drive from the given device.
+        # Recursively looks for the first partitioned config from the given device.
         #
         # @param device [Configs::Drive, Configs::MdRaid, Configs::VolumeGroup]
         # @param is_target [Boolean] See {#partitioned_drive_from_devices}
         #
-        # @return [Configs::Drive, nil]
-        def partitioned_drive_from_device(device, is_target: false)
+        # @return [Configs::Drive, Configs::MdDrive, nil]
+        def partitionable_from_device(device, is_target: false)
           case device
           when Configs::Drive
             (device.partitions? || is_target) ? device : nil
           when Configs::MdRaid
-            partitioned_drive_from_md_raid(device)
+            partitionable_from_md_raid(device)
           when Configs::VolumeGroup
-            partitioned_drive_from_volume_group(device)
+            partitionable_from_volume_group(device)
           end
+        end
+
+        # Recursively looks for the first partitioned config from the given MD RAID.
+        #
+        # @param md_raid [Configs::MdRaid]
+        # @return [Configs::Drive, Configs::MdDrive, nil]
+        def partitionable_from_md_raid(md_raid)
+          return partitionable_from_found_md_raid(md_raid) if md_raid.found_device
+
+          partitioned_drive_from_new_md_raid(md_raid)
+        end
+
+        # Recursively looks for the first partitioned config from the given MD RAID.
+        #
+        # @param md_raid [Configs::MdRaid]
+        # @return [Configs::Drive, Configs::MdDrive, nil]
+        def partitionable_from_found_md_raid(md_raid)
+          return md_raid if storage_system.candidate?(md_raid.found_device)
+
+          # TODO: find the correct underlying disk devices for the MD RAID (note they may lack
+          # a corresponding drive entry at the configuration)
+          nil
         end
 
         # Recursively looks for the first partitioned drive from the given MD RAID.
         #
         # @param md_raid [Configs::MdRaid]
         # @return [Configs::Drive, nil]
-        def partitioned_drive_from_md_raid(md_raid)
+        def partitioned_drive_from_new_md_raid(md_raid)
           devices = find_devices(md_raid.devices)
-          partitioned_drive_from_devices(devices)
+          partitionable_from_devices(devices)
         end
 
-        # Recursively looks for the first partitioned drive from the given volume group.
+        # Recursively looks for the first partitioned config from the given volume group.
         #
         # @param volume_group [Configs::VolumeGroup]
-        # @return [Configs::Drive, nil]
-        def partitioned_drive_from_volume_group(volume_group)
+        # @return [Configs::Drive, Configs::MdDrive, nil]
+        def partitionable_from_volume_group(volume_group)
           pv_devices = find_devices(volume_group.physical_volumes_devices, is_target: true)
           pvs = find_devices(volume_group.physical_volumes)
 
-          partitioned_drive_from_devices(pv_devices, is_target: true) ||
-            partitioned_drive_from_devices(pvs)
+          partitionable_from_devices(pv_devices, is_target: true) || partitionable_from_devices(pvs)
         end
 
         # Finds the devices with the given aliases or containing the given aliases.
         #
         # @param aliases [Array<String>]
-        # @param is_target [Boolean] See {#partitioned_drive_from_devices}
+        # @param is_target [Boolean] See {#partitionable_from_devices}
         #
         # @return [Array<Configs::Drive, Configs::MdRaid, Configs::VolumeGroup>]
         def find_devices(aliases, is_target: false)
