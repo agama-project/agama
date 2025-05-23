@@ -59,7 +59,7 @@ export default function SwitchEnhanced({ description, label, ...props }: SwitchE
   const descriptionId = useId();
 
   return (
-    <Flex direction={{ default: "column" }} flexWrap={{ default: "nowrap" }}>
+    <Flex flexWrap={{ default: "nowrap" }}>
       <FlexItem>
         <Switch {...props} aria-labelledby={labelId} aria-describedby={descriptionId} />
       </FlexItem>

@@ -35,15 +35,15 @@ import {
   Spinner,
 } from "@patternfly/react-core";
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
-import { EmptyState } from "~/components/core";
+import { Annotation, EmptyState } from "~/components/core";
 import Icon, { IconProps } from "~/components/layout/Icon";
 import { Connection, ConnectionState, WifiNetwork, WifiNetworkStatus } from "~/types/network";
 import { useConnections, useNetworkChanges, useWifiNetworks } from "~/queries/network";
 import { NETWORK as PATHS } from "~/routes/paths";
 import { isEmpty } from "~/utils";
 import { formatIp } from "~/utils/network";
-import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
 const NetworkSignal = ({ id, signal }) => {
   let label: string;
@@ -141,6 +141,11 @@ const NetworkListItem = ({ network, connection, showIp }: NetworkListItemProps) 
                     {network.device?.addresses.map(formatIp).join(", ")}
                   </Content>
                 )}
+
+                {
+                  // FIXME: make below annotation appear only when needed
+                }
+                <Annotation>{_("Configured for installation only")}</Annotation>
               </Flex>
             </DataListCell>,
             <DataListCell key="badges" isFilled={false} alignRight>

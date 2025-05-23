@@ -34,6 +34,7 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
+import InstallationOnlySwitch from "./InstallationOnlySwitch";
 import { Connection, Device } from "~/types/network";
 import { formatIp } from "~/utils/network";
 import { NETWORK } from "~/routes/paths";
@@ -144,13 +145,16 @@ export default function WiredConnectionDetails({ connection }: { connection: Con
 
   return (
     <Grid hasGutter>
-      <GridItem md={6} order={{ default: "2", md: "1" }}>
+      <GridItem md={6} order={{ default: "2", md: "1" }} rowSpan={3}>
         <IpDetails device={device} connection={connection} />
       </GridItem>
       <GridItem md={6} order={{ default: "1", md: "2" }}>
         <Stack hasGutter>
           <DeviceDetails device={device} />
         </Stack>
+      </GridItem>
+      <GridItem md={6} order={{ default: "3" }}>
+        <InstallationOnlySwitch connection={connection} />
       </GridItem>
     </Grid>
   );
