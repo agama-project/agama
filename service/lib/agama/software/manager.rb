@@ -143,16 +143,22 @@ module Agama
 
         logger.info "Probing software"
 
+        common_steps = [
+          _("Refreshing repositories metadata"),
+          _("Calculating the software proposal")
+        ]
         if repositories.empty?
-          start_progress_with_size(3)
+          start_progress_with_descriptions(
+            _("Initializing sources"), *common_steps
+          )
           Yast::PackageCallbacks.InitPackageCallbacks(logger)
-          progress.step(_("Initializing sources")) { add_base_repos }
+          progress.step { add_base_repos }
         else
-          start_progress_with_size(2)
+          start_progress_with_size(*common_steps)
         end
 
-        progress.step(_("Refreshing repositories metadata")) { repositories.load }
-        progress.step(_("Calculating the software proposal")) { propose }
+        progress.step { repositories.load }
+        progress.step { propose }
 
         update_issues
       end
