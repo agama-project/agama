@@ -23,11 +23,13 @@ require_relative "../storage_helpers"
 require "agama/config"
 require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_solvers/boot"
+require "agama/storage/system"
 
 describe Agama::Storage::ConfigSolvers::Boot do
-  subject { described_class.new(product_config) }
+  subject { described_class.new(product_config, storage_system) }
 
   let(:product_config) { Agama::Config.new({}) }
+  let(:storage_system) { Agama::Storage::System.new }
 
   describe "#solve" do
     let(:config_json) { nil }
@@ -122,7 +124,7 @@ describe Agama::Storage::ConfigSolvers::Boot do
             let(:md_raids) do
               [
                 {
-                  alias:      "root",
+                  alias:      raid_alias,
                   partitions: [
                     {
                       filesystem: { path: "/" }
@@ -133,6 +135,7 @@ describe Agama::Storage::ConfigSolvers::Boot do
               ]
             end
 
+            let(:raid_alias) { "raid" }
             let(:device_alias) { "root" }
             let(:md_devices) { [] }
 
@@ -188,6 +191,49 @@ describe Agama::Storage::ConfigSolvers::Boot do
               it "does not set a boot device alias" do
                 subject.solve(config)
                 expect(config.boot.device.device_alias).to be_nil
+              end
+            end
+
+            context "and it corresponds to an existing (reused) RAID" do
+              let(:md_device) { instance_double(Y2Storage::Md) }
+
+              before do
+                allow(config.md_raids.first).to receive(:found_device).and_return md_device
+                allow(storage_system).to receive(:candidate?).with(md_device).and_return candidate
+              end
+
+              context "if the RAID is considered bootable (candidate)" do
+                let(:candidate) { true }
+
+                it "sets the alias of the mdRaid as boot device alias" do
+                  subject.solve(config)
+                  expect(config.boot.device.device_alias).to eq("raid")
+                end
+
+                context "and the mdRaid configuration has no alias" do
+                  let(:raid_alias) { nil }
+
+                  it "sets an alias to the mdRaid" do
+                    subject.solve(config)
+                    raid = config.md_raids.first
+                    expect(raid.alias).to_not be_nil
+                  end
+
+                  it "sets the alias of the mdRaid as boot device alias" do
+                    subject.solve(config)
+                    raid = config.md_raids.first
+                    expect(config.boot.device.device_alias).to eq(raid.alias)
+                  end
+                end
+              end
+
+              context "if the RAID is a regular one (not candidate)" do
+                let(:candidate) { false }
+
+                it "does not set a boot device alias" do
+                  subject.solve(config)
+                  expect(config.boot.device.device_alias).to be_nil
+                end
               end
             end
           end

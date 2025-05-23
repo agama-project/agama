@@ -69,9 +69,11 @@ describe Agama::Storage::ConfigSolvers::DrivesSearch do
         expect(drive3.search.device.name).to eq("/dev/vdc")
       end
 
-      context "and any of the devices is not a candidate device" do
+      context "and any of the devices is not available" do
         before do
-          allow(storage_system.analyzer).to receive(:candidate_device?) { |d| d.name != "/dev/vda" }
+          allow(storage_system.analyzer).to receive(:available_device?) do |dev|
+            dev.name != "/dev/vda"
+          end
         end
 
         it "sets the first unassigned candidate device to the drive config" do
