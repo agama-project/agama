@@ -61,7 +61,7 @@ use crate::{
 };
 
 const MANAGER_SERVICE: &str = "org.opensuse.Agama.Manager1";
-// const SOFTWARE_SERVICE: &str = "org.opensuse.Agama.Software1";
+const SOFTWARE_SERVICE: &str = "org.opensuse.Agama.Software1";
 
 #[derive(thiserror::Error, Debug)]
 pub enum MonitorError {
@@ -82,7 +82,7 @@ pub struct MonitorStatus {
     ///
     /// FIXME: do not hold the full status (some elements are not updated)
     pub installer_status: InstallerStatus,
-    /// Progress for each service using the name as the key. If the progress is
+    /// Progress for each service using the D-Bus object path as the key. If the progress is
     /// finished, the entry is removed from the map.
     pub progress: HashMap<String, Progress>,
 }
@@ -92,13 +92,13 @@ impl MonitorStatus {
     ///
     /// The entry is removed if the progress is finished.
     ///
-    /// * `service`: service name.
+    /// * `service`: D-Bus object path.
     /// * `progress`: updated progress.
-    fn update_progress(&mut self, service: String, progress: Progress) {
+    fn update_progress(&mut self, path: String, progress: Progress) {
         if progress.finished {
-            _ = self.progress.remove_entry(&service);
+            _ = self.progress.remove_entry(&path);
         } else {
-            _ = self.progress.insert(service, progress);
+            _ = self.progress.insert(path, progress);
         }
     }
 
@@ -224,8 +224,8 @@ impl Monitor {
     /// * `event`: Agama event.
     fn handle_event(&mut self, event: Event) {
         match event {
-            Event::Progress { service, progress } => {
-                self.status.update_progress(service, progress);
+            Event::ProgressChanged { path, progress } => {
+                self.status.update_progress(path, progress);
             }
             Event::ServiceStatusChanged { service, status } => {
                 if service.as_str() == MANAGER_SERVICE {
@@ -262,8 +262,8 @@ impl MonitorStatusReader {
             .await?;
         // FIXME: do not read the software status yet because it might block
         // the progress. Enable this line when the software service does not block
-        // self.add_service_progress(&mut status, SOFTWARE_SERVICE, "/software/progress")
-        //     .await?;
+        self.add_service_progress(&mut status, SOFTWARE_SERVICE, "/software/progress")
+            .await?;
         Ok(status)
     }
 
