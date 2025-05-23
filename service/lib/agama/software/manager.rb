@@ -156,7 +156,7 @@ module Agama
           Yast::PackageCallbacks.InitPackageCallbacks(logger)
           progress.step { add_base_repos }
         else
-          start_progress_with_size(*common_steps)
+          start_progress_with_descriptions(*common_steps)
         end
 
         progress.step { repositories.load }
