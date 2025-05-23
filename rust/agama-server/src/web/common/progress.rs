@@ -55,8 +55,8 @@ pub enum ProgressServiceError {
     SendProgress,
     #[error("Could not get an answer from the service: {0}")]
     RecvProgress(#[from] oneshot::error::RecvError),
-    #[error("Could not set the command")]
-    SendCommand,
+    #[error("Could not set the command: {0}")]
+    SendCommand(#[from] mpsc::error::SendError<ProgressCommand>),
     #[error("Error parsing progress from D-Bus: {0}")]
     InvalidProgress(#[from] zbus::zvariant::Error),
     #[error("Error reading the progress: {0}")]
@@ -68,7 +68,7 @@ pub enum ProgressServiceError {
 }
 
 #[derive(Debug)]
-enum ProgressCommand {
+pub enum ProgressCommand {
     Get(String, String, oneshot::Sender<ProgressSequence>),
 }
 
@@ -223,8 +223,7 @@ impl ProgressClient {
                 path.to_string(),
                 tx,
             ))
-            .await
-            .map_err(|_| ProgressServiceError::SendCommand)?;
+            .await?;
         Ok(rx.await?)
     }
 }

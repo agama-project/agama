@@ -46,7 +46,7 @@ pub enum Error {
     Locale(#[from] LocaleError),
     #[error("Issues service error: {0}")]
     Issues(#[from] IssuesServiceError),
-    #[error("Issues service error: {0}")]
+    #[error("Progress service error: {0}")]
     Progress(#[from] ProgressServiceError),
 }
 

@@ -56,8 +56,8 @@ pub enum IssuesServiceError {
     SendIssues,
     #[error("Could not get an answer from the service: {0}")]
     RecvIssues(#[from] oneshot::error::RecvError),
-    #[error("Could not set the command")]
-    SendCommand,
+    #[error("Could not set the command: {0}")]
+    SendCommand(#[from] mpsc::error::SendError<IssuesCommand>),
     #[error("Error parsing issues from D-Bus: {0}")]
     InvalidIssue(#[from] zbus::zvariant::Error),
     #[error("Error reading the issues: {0}")]
@@ -69,7 +69,7 @@ pub enum IssuesServiceError {
 }
 
 #[derive(Debug)]
-enum IssuesCommand {
+pub enum IssuesCommand {
     Get(String, String, oneshot::Sender<Vec<Issue>>),
 }
 
@@ -236,8 +236,7 @@ impl IssuesClient {
                 path.to_string(),
                 tx,
             ))
-            .await
-            .map_err(|_| IssuesServiceError::SendCommand)?;
+            .await?;
         Ok(rx.await?)
     }
 }
