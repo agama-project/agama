@@ -136,6 +136,23 @@ shared_examples "formatted and volume group target user" do
   end
 end
 
+shared_examples "formatted and boot target user" do
+  context "if it is formatted" do
+    let(:filesystem) { { path: "/" } }
+
+    context "and it is used as target for boot partitions" do
+      let(:boot) do
+        {
+          configure: true,
+          device:    device_alias
+        }
+      end
+
+      include_examples "formatted and used issue"
+    end
+  end
+end
+
 shared_examples "partitioned and used issue" do
   it "includes the expected issue" do
     issues = subject.issues
@@ -196,6 +213,7 @@ describe Agama::Storage::ConfigCheckers::Alias do
     context "for a drive" do
       let(:config_json) do
         {
+          boot:         boot,
           drives:       [
             {
               alias:      device_alias,
@@ -208,6 +226,7 @@ describe Agama::Storage::ConfigCheckers::Alias do
         }
       end
 
+      let(:boot) { nil }
       let(:device_alias) { "disk1" }
       let(:filesystem) { nil }
       let(:partitions) { nil }
@@ -222,6 +241,7 @@ describe Agama::Storage::ConfigCheckers::Alias do
       include_examples "formatted and MD RAID user"
       include_examples "formatted and volume group user"
       include_examples "formatted and volume group target user"
+      include_examples "formatted and boot target user"
       include_examples "partitioned and MD RAID user"
       include_examples "partitioned and volume group user"
     end
@@ -261,6 +281,7 @@ describe Agama::Storage::ConfigCheckers::Alias do
     context "for a MD RAID" do
       let(:config_json) do
         {
+          boot:         boot,
           mdRaids:      [
             {
               alias:      device_alias,
@@ -272,6 +293,7 @@ describe Agama::Storage::ConfigCheckers::Alias do
         }
       end
 
+      let(:boot) { nil }
       let(:device_alias) { "md1" }
       let(:filesystem) { nil }
       let(:partitions) { nil }
@@ -282,6 +304,7 @@ describe Agama::Storage::ConfigCheckers::Alias do
       include_examples "several volume group users"
       include_examples "formatted and volume group user"
       include_examples "formatted and volume group target user"
+      include_examples "formatted and boot target user"
       include_examples "partitioned and volume group user"
     end
 
