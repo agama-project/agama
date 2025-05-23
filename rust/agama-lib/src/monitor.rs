@@ -60,8 +60,8 @@ use crate::{
     progress::Progress,
 };
 
-const MANAGER_SERVICE: &str = "org.opensuse.Agama.Manager1";
-const SOFTWARE_SERVICE: &str = "org.opensuse.Agama.Software1";
+const MANAGER_PROGRESS_OBJECT_PATH: &str = "/org/opensuse/Agama/Manager1";
+const SOFTWARE_PROGRESS_OBJECT_PATH: &str = "/org/opensuse/Agama/Software1";
 
 #[derive(thiserror::Error, Debug)]
 pub enum MonitorError {
@@ -228,7 +228,7 @@ impl Monitor {
                 self.status.update_progress(path, progress);
             }
             Event::ServiceStatusChanged { service, status } => {
-                if service.as_str() == MANAGER_SERVICE {
+                if service.as_str() == MANAGER_PROGRESS_OBJECT_PATH {
                     self.status.set_is_busy(status == 1);
                 }
             }
@@ -258,26 +258,34 @@ impl MonitorStatusReader {
             ..Default::default()
         };
 
-        self.add_service_progress(&mut status, MANAGER_SERVICE, "/manager/progress")
-            .await?;
+        self.add_service_progress(
+            &mut status,
+            MANAGER_PROGRESS_OBJECT_PATH,
+            "/manager/progress",
+        )
+        .await?;
         // FIXME: do not read the software status yet because it might block
         // the progress. Enable this line when the software service does not block
-        self.add_service_progress(&mut status, SOFTWARE_SERVICE, "/software/progress")
-            .await?;
+        self.add_service_progress(
+            &mut status,
+            SOFTWARE_PROGRESS_OBJECT_PATH,
+            "/software/progress",
+        )
+        .await?;
         Ok(status)
     }
 
     async fn add_service_progress(
         &self,
         status: &mut MonitorStatus,
-        service: &str,
+        dbus_path: &str,
         path: &str,
     ) -> Result<(), MonitorError> {
         let progress: Progress = self.http.get(path).await?;
         if progress.finished {
             return Ok(());
         }
-        status.progress.insert(service.to_string(), progress);
+        status.progress.insert(dbus_path.to_string(), progress);
         Ok(())
     }
 }
