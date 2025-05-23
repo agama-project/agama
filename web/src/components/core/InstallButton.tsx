@@ -36,7 +36,7 @@ import { Icon } from "../layout";
  *
  * Apart from obvious login and installation paths, it does not make sense to
  * show the button neither, when the user is about to change the product,
- * defining the root authentication for the fisrt time, nor when the installer
+ * defining the root authentication for the first time, nor when the installer
  * is setting the chosen product.
  * */
 
@@ -102,7 +102,7 @@ const InstallButton = (
   const tooltipProps: TooltipProps = {
     id: tooltipId,
     content: withIssuesText,
-    position: "left-start",
+    position: "bottom-start",
     flipBehavior: ["bottom-end"],
   };
 
