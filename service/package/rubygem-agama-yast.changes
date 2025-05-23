@@ -5,6 +5,12 @@ Fri May 23 10:17:28 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   instead of PropertiesChanged (gh#agama-project/agama#2389).
 
 -------------------------------------------------------------------
+Fri May 23 09:27:04 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Allow to specify a software RAID (mdRaids) as explicit boot
+  device (gh#agama-project/agama#2386).
+
+-------------------------------------------------------------------
 Thu May 22 17:21:24 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Include RAIDs at the model for the storage UI

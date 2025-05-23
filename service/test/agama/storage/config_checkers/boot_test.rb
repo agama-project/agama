@@ -29,17 +29,20 @@ describe Agama::Storage::ConfigCheckers::Boot do
 
   let(:config_json) do
     {
-      boot:   {
+      boot:    {
         configure: configure,
         device:    device_alias
       },
-      drives: [
+      drives:  [
         {
           alias:      "disk",
           partitions: [
             { alias: "p1" }
           ]
         }
+      ],
+      mdRaids: [
+        { alias: "raid" }
       ]
     }
   end
@@ -77,9 +80,12 @@ describe Agama::Storage::ConfigCheckers::Boot do
         include_examples "alias issue"
       end
 
-      context "and the device with the given alias is not a drive" do
-        let(:device_alias) { "p1" }
-        include_examples "alias issue"
+      context "and the device with the given alias is an mdRaid" do
+        let(:device_alias) { "raid" }
+
+        it "does not include any issue" do
+          expect(subject.issues).to be_empty
+        end
       end
 
       context "and the device with the given alias is a drive" do
@@ -88,6 +94,11 @@ describe Agama::Storage::ConfigCheckers::Boot do
         it "does not include any issue" do
           expect(subject.issues).to be_empty
         end
+      end
+
+      context "and the device with the given alias is neither a drive or an mdRaid" do
+        let(:device_alias) { "p1" }
+        include_examples "alias issue"
       end
     end
 
