@@ -77,6 +77,71 @@ shared_examples "several users" do
   end
 end
 
+shared_examples "MD RAID user and target user" do
+  context "if it is used by a MD RAID and it is target for boot partitions" do
+    let(:boot) do
+      {
+        configure: true,
+        device:    device_alias
+      }
+    end
+
+    let(:md_raids) do
+      [
+        { devices: [device_alias] }
+      ]
+    end
+
+    include_examples "overused alias issue"
+  end
+
+  context "if it is used by a MD RAID and it is target for physical volumes" do
+    let(:md_raids) do
+      [
+        { devices: [device_alias] }
+      ]
+    end
+
+    let(:volume_groups) do
+      [
+        { physicalVolumes: [{ generate: [device_alias] }] }
+      ]
+    end
+
+    include_examples "overused alias issue"
+  end
+end
+
+shared_examples "Volume group user and target user" do
+  context "if it is used by a volume group and it is target for boot partitions" do
+    let(:boot) do
+      {
+        configure: true,
+        device:    device_alias
+      }
+    end
+
+    let(:volume_groups) do
+      [
+        { physicalVolumes: [device_alias] }
+      ]
+    end
+
+    include_examples "overused alias issue"
+  end
+
+  context "if it is used by a volume group and it is target for physical volumes" do
+    let(:volume_groups) do
+      [
+        { physicalVolumes: [device_alias] },
+        { physicalVolumes: [{ generate: [device_alias] }] }
+      ]
+    end
+
+    include_examples "overused alias issue"
+  end
+end
+
 shared_examples "formatted and used issue" do
   it "includes the expected issue" do
     issues = subject.issues
@@ -238,6 +303,8 @@ describe Agama::Storage::ConfigCheckers::Alias do
       include_examples "several MD RAID users"
       include_examples "several volume group users"
       include_examples "several users"
+      include_examples "MD RAID user and target user"
+      include_examples "Volume group user and target user"
       include_examples "formatted and MD RAID user"
       include_examples "formatted and volume group user"
       include_examples "formatted and volume group target user"
@@ -302,6 +369,7 @@ describe Agama::Storage::ConfigCheckers::Alias do
       let(:device_config) { config.md_raids.first }
 
       include_examples "several volume group users"
+      include_examples "Volume group user and target user"
       include_examples "formatted and volume group user"
       include_examples "formatted and volume group target user"
       include_examples "formatted and boot target user"
