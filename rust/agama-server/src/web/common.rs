@@ -20,18 +20,12 @@
 
 //! This module defines functions to be used accross all services.
 
-use std::{pin::Pin, task::Poll};
+use std::pin::Pin;
 
-use agama_lib::{
-    error::ServiceError,
-    progress::Progress,
-    proxies::{ProgressProxy, ServiceStatusProxy},
-};
+use agama_lib::{error::ServiceError, proxies::ServiceStatusProxy};
 use axum::{extract::State, routing::get, Json, Router};
-use pin_project::pin_project;
 use serde::Serialize;
 use tokio_stream::{Stream, StreamExt};
-use zbus::proxy::PropertyStream;
 
 use crate::error::Error;
 
@@ -39,6 +33,8 @@ mod jobs;
 pub use jobs::{jobs_service, jobs_stream};
 mod issues;
 pub use issues::{IssuesClient, IssuesRouterBuilder, IssuesService, IssuesServiceError};
+mod progress;
+pub use progress::{ProgressClient, ProgressRouterBuilder, ProgressService, ProgressServiceError};
 
 use super::Event;
 
@@ -137,133 +133,6 @@ async fn build_service_status_proxy<'a>(
     path: &str,
 ) -> Result<ServiceStatusProxy<'a>, zbus::Error> {
     let proxy = ServiceStatusProxy::builder(dbus)
-        .destination(destination.to_string())?
-        .path(path.to_string())?
-        .build()
-        .await?;
-    Ok(proxy)
-}
-
-/// Builds a router to the `org.opensuse.Agama1.Progress`
-/// interface of the given D-Bus object.
-///
-/// ```no_run
-/// # use axum::{extract::State, routing::get, Json, Router};
-/// # use agama_lib::connection;
-/// # use agama_server::web::common::progress_router;
-/// # use tokio_test;
-///
-/// # tokio_test::block_on(async {
-/// async fn hello(state: State<HelloWorldState>) {};
-///
-/// #[derive(Clone)]
-/// struct HelloWorldState {};
-///
-/// let dbus = connection().await.unwrap();
-/// let progress_router = progress_router(
-///   &dbus, "org.opensuse.HelloWorld", "/org/opensuse/hello"
-/// ).await.unwrap();
-/// let router: Router<HelloWorldState> = Router::new()
-///   .route("/hello", get(hello))
-///   .merge(progress_router)
-///   .with_state(HelloWorldState {});
-/// });
-/// ```
-///
-/// * `dbus`: D-Bus connection.
-/// * `destination`: D-Bus service name.
-/// * `path`: D-Bus object path.
-pub async fn progress_router<T>(
-    dbus: &zbus::Connection,
-    destination: &str,
-    path: &str,
-) -> Result<Router<T>, ServiceError> {
-    let proxy = build_progress_proxy(dbus, destination, path).await?;
-    let state = ProgressState { proxy };
-    Ok(Router::new()
-        .route("/progress", get(progress))
-        .with_state(state))
-}
-
-#[derive(Clone)]
-struct ProgressState<'a> {
-    proxy: ProgressProxy<'a>,
-}
-
-/// Information about the current progress sequence.
-#[derive(Clone, Default, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct ProgressSequence {
-    /// Sequence steps if known in advance
-    steps: Vec<String>,
-    #[serde(flatten)]
-    progress: Progress,
-}
-
-async fn progress(State(state): State<ProgressState<'_>>) -> Result<Json<ProgressSequence>, Error> {
-    let proxy = state.proxy;
-    let progress = Progress::from_proxy(&proxy).await?;
-    let steps = proxy.steps().await?;
-    let sequence = ProgressSequence { steps, progress };
-    Ok(Json(sequence))
-}
-
-#[pin_project]
-pub struct ProgressStream<'a> {
-    #[pin]
-    inner: PropertyStream<'a, (u32, String)>,
-    proxy: ProgressProxy<'a>,
-}
-
-pub async fn progress_stream<'a>(
-    dbus: zbus::Connection,
-    destination: &'static str,
-    path: &'static str,
-) -> Result<Pin<Box<impl Stream<Item = Event> + Send>>, zbus::Error> {
-    let proxy = build_progress_proxy(&dbus, destination, path).await?;
-    Ok(Box::pin(ProgressStream::new(proxy).await))
-}
-
-impl<'a> ProgressStream<'a> {
-    pub async fn new(proxy: ProgressProxy<'a>) -> Self {
-        let stream = proxy.receive_current_step_changed().await;
-        ProgressStream {
-            inner: stream,
-            proxy,
-        }
-    }
-}
-
-impl Stream for ProgressStream<'_> {
-    type Item = Event;
-
-    fn poll_next(
-        self: std::pin::Pin<&mut Self>,
-        cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Option<Self::Item>> {
-        let pinned = self.project();
-        match pinned.inner.poll_next(cx) {
-            Poll::Pending => Poll::Pending,
-            Poll::Ready(_change) => match Progress::from_cached_proxy(pinned.proxy) {
-                Some(progress) => {
-                    let event = Event::Progress {
-                        progress,
-                        service: pinned.proxy.inner().destination().to_string(),
-                    };
-                    Poll::Ready(Some(event))
-                }
-                _ => Poll::Pending,
-            },
-        }
-    }
-}
-
-async fn build_progress_proxy<'a>(
-    dbus: &zbus::Connection,
-    destination: &str,
-    path: &str,
-) -> Result<ProgressProxy<'a>, zbus::Error> {
-    let proxy = ProgressProxy::builder(dbus)
         .destination(destination.to_string())?
         .path(path.to_string())?
         .build()

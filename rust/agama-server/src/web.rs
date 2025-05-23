@@ -39,7 +39,7 @@ use crate::{
     software::web::{software_service, software_streams},
     storage::web::{iscsi::iscsi_service, storage_service, storage_streams},
     users::web::{users_service, users_streams},
-    web::common::{jobs_stream, progress_stream, service_status_stream},
+    web::common::{jobs_stream, service_status_stream},
 };
 use axum::Router;
 
@@ -54,7 +54,7 @@ mod state;
 mod ws;
 
 use agama_lib::{connection, error::ServiceError, http::Event};
-use common::IssuesService;
+use common::{IssuesService, ProgressService};
 pub use config::ServiceConfig;
 pub use event::{EventsReceiver, EventsSender};
 pub use service::MainServiceBuilder;
@@ -81,18 +81,28 @@ where
         .expect("Could not connect to NetworkManager to read the configuration");
 
     let issues = IssuesService::start(dbus.clone(), events.clone()).await;
+    let progress = ProgressService::start(dbus.clone(), events.clone()).await;
 
     let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
         .add_service("/l10n", l10n_service(dbus.clone(), events.clone()).await?)
-        .add_service("/manager", manager_service(dbus.clone()).await?)
+        .add_service(
+            "/manager",
+            manager_service(dbus.clone(), progress.clone()).await?,
+        )
         .add_service("/security", security_service(dbus.clone()).await?)
         .add_service(
             "/software",
-            software_service(dbus.clone(), events.subscribe(), issues.clone()).await?,
+            software_service(
+                dbus.clone(),
+                events.subscribe(),
+                issues.clone(),
+                progress.clone(),
+            )
+            .await?,
         )
         .add_service(
             "/storage",
-            storage_service(dbus.clone(), issues.clone()).await?,
+            storage_service(dbus.clone(), issues.clone(), progress).await?,
         )
         .add_service("/iscsi", iscsi_service(dbus.clone(), issues.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
@@ -137,15 +147,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
         )
         .await?,
     );
-    stream.insert(
-        "manager-progress",
-        progress_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Manager1",
-            "/org/opensuse/Agama/Manager1",
-        )
-        .await?,
-    );
     for (id, user_stream) in users_streams(dbus.clone()).await? {
         stream.insert(id, user_stream);
     }
@@ -165,15 +166,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
         .await?,
     );
     stream.insert(
-        "storage-progress",
-        progress_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Storage1",
-            "/org/opensuse/Agama/Storage1",
-        )
-        .await?,
-    );
-    stream.insert(
         "storage-jobs",
         jobs_stream(
             dbus.clone(),
@@ -186,15 +178,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
     stream.insert(
         "software-status",
         service_status_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Software1",
-            "/org/opensuse/Agama/Software1",
-        )
-        .await?,
-    );
-    stream.insert(
-        "software-progress",
-        progress_stream(
             dbus.clone(),
             "org.opensuse.Agama.Software1",
             "/org/opensuse/Agama/Software1",

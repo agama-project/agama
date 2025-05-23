@@ -176,6 +176,8 @@ describe DBusObjectWithProgressInterface do
 
       expect(subject).to receive(:dbus_properties_changed)
         .with(progress_interface, anything, anything)
+      expect(subject).to receive(:ProgressChanged)
+        .with(2, [1, "step 1"], false, [])
 
       progress.step("step 1")
     end
@@ -186,6 +188,8 @@ describe DBusObjectWithProgressInterface do
 
       expect(subject).to receive(:dbus_properties_changed)
         .with(progress_interface, anything, anything)
+      expect(subject).to receive(:ProgressChanged)
+        .with(2, [0, ""], true, [])
 
       progress.finish
     end

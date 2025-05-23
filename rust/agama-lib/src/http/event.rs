@@ -49,8 +49,8 @@ pub enum Event {
     DevicesDirty {
         dirty: bool,
     },
-    Progress {
-        service: String,
+    ProgressChanged {
+        path: String,
         #[serde(flatten)]
         progress: Progress,
     },

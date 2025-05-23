@@ -24,16 +24,14 @@
 //!
 //! * Querying the issues via D-Bus and keeping them in a cache.
 //! * Listening to D-Bus signals to keep the cache up-to-date.
-//! * Emitting `IssuesChanged` events, replacing
-//!   [issues_stream](crate::web::common::issues_stream).
+//! * Emitting `IssuesChanged` events.
 //!
 //! The following components are included:
 //!
 //! * [IssuesService] that runs on a separate task to hold the status.
 //! * [IssuesClient] that allows querying the [IssuesService] server about the
 //!   issues.
-//! * [IssuesRouter] which allows building a router, replacing
-//!   [issues_router](crate::web::common::issues_router).
+//! * [IssuesRouterBuilder] which allows building a router.
 //!
 //! At this point, it only handles the issues that are exposed through D-Bus.
 
@@ -58,8 +56,8 @@ pub enum IssuesServiceError {
     SendIssues,
     #[error("Could not get an answer from the service: {0}")]
     RecvIssues(#[from] oneshot::error::RecvError),
-    #[error("Could not set the command")]
-    SendCommand,
+    #[error("Could not set the command: {0}")]
+    SendCommand(#[from] mpsc::error::SendError<IssuesCommand>),
     #[error("Error parsing issues from D-Bus: {0}")]
     InvalidIssue(#[from] zbus::zvariant::Error),
     #[error("Error reading the issues: {0}")]
@@ -71,13 +69,13 @@ pub enum IssuesServiceError {
 }
 
 #[derive(Debug)]
-enum IssuesCommand {
+pub enum IssuesCommand {
     Get(String, String, oneshot::Sender<Vec<Issue>>),
 }
 
 /// Implements a Tokio task that holds the issues for each service.
 pub struct IssuesService {
-    issues: HashMap<String, Vec<Issue>>,
+    cache: HashMap<String, Vec<Issue>>,
     commands: mpsc::Receiver<IssuesCommand>,
     events: EventsSender,
     dbus: zbus::Connection,
@@ -93,19 +91,23 @@ impl IssuesService {
     pub async fn start(dbus: zbus::Connection, events: EventsSender) -> IssuesClient {
         let (tx, rx) = mpsc::channel(4);
         let mut service = IssuesService {
-            issues: HashMap::new(),
+            cache: HashMap::new(),
             dbus,
             events,
             commands: rx,
         };
 
-        tokio::spawn(async move { service.run().await });
+        tokio::spawn(async move {
+            if let Err(e) = service.run().await {
+                tracing::error!("Could not start the issues service: {e:?}")
+            }
+        });
         IssuesClient(tx)
     }
 
     /// Main loop of the service.
-    async fn run(&mut self) {
-        let mut messages = build_properties_changed_stream(&self.dbus).await.unwrap();
+    async fn run(&mut self) -> IssuesServiceResult<()> {
+        let mut messages = build_properties_changed_stream(&self.dbus).await?;
         loop {
             tokio::select! {
                 Some(cmd) = self.commands.recv() => {
@@ -168,7 +170,7 @@ impl IssuesService {
             .map(Issue::try_from)
             .collect::<Result<Vec<_>, _>>()?;
 
-        self.issues.insert(path.to_string(), issues.clone());
+        self.cache.insert(path.to_string(), issues.clone());
 
         let event = Event::IssuesChanged {
             path: path.to_string(),
@@ -187,7 +189,7 @@ impl IssuesService {
     /// * `path`: path of the D-Bus object implementing the
     ///   "org.opensuse.Agama1.Issues" interface.
     async fn get(&mut self, service: &str, path: &str) -> IssuesServiceResult<Vec<Issue>> {
-        if let Some(issues) = self.issues.get(path) {
+        if let Some(issues) = self.cache.get(path) {
             return Ok(issues.clone());
         }
 
@@ -212,7 +214,7 @@ impl IssuesService {
             .map(Issue::try_from)
             .collect::<Result<Vec<_>, _>>()?;
 
-        self.issues.insert(path.to_string(), issues.clone());
+        self.cache.insert(path.to_string(), issues.clone());
         Ok(issues)
     }
 }
@@ -234,8 +236,7 @@ impl IssuesClient {
                 path.to_string(),
                 tx,
             ))
-            .await
-            .map_err(|_| IssuesServiceError::SendCommand)?;
+            .await?;
         Ok(rx.await?)
     }
 }
@@ -279,7 +280,7 @@ impl IssuesRouterBuilder {
     async fn issues(
         State(state): State<IssuesState>,
     ) -> Result<Json<Vec<Issue>>, crate::error::Error> {
-        let issues = state.client.get(&state.service, &state.path).await.unwrap();
+        let issues = state.client.get(&state.service, &state.path).await?;
         Ok(Json(issues))
     }
 }
