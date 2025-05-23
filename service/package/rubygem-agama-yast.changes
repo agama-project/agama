@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May 23 10:17:28 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Introduce a new ProgressChanged signal which should be used
+  instead of PropertiesChanged (gh#agama-project/agama#2389).
+
+-------------------------------------------------------------------
 Thu May 22 17:21:24 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Include RAIDs at the model for the storage UI
