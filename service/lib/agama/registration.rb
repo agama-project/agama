@@ -88,7 +88,7 @@ module Agama
     # @raise [
     #   SocketError|Timeout::Error|SUSE::Connect::ApiError|
     #   SUSE::Connect::MissingSccCredentialsFile|SUSE::Connect::MissingSccCredentialsFile|
-    #   OpenSSL::SSL::SSLError|JSON::ParserError
+    #   OpenSSL::SSL::SSLError|JSON::ParserError|Agama::Software::AddServiceError
     # ]
     #
     # @param code [String] Registration code.
