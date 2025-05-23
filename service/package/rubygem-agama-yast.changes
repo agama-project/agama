@@ -1,8 +1,14 @@
 -------------------------------------------------------------------
-Thu May 22 19:39:21 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+Fri May 23 10:39:21 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Properly report if registration failed when adding new libzypp
   service obtained from registration server (bsc#1238851)
+
+-------------------------------------------------------------------
+Fri May 23 09:27:04 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Allow to specify a software RAID (mdRaids) as explicit boot
+  device (gh#agama-project/agama#2386).
 
 -------------------------------------------------------------------
 Thu May 22 17:21:24 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>

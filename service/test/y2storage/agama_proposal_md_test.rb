@@ -342,5 +342,35 @@ describe Y2Storage::AgamaProposal do
         expect(partition.sid).to eq part_sid
       end
     end
+
+    context "when configuring explicit boot from an existing RAID" do
+      let(:scenario) { "partitioned_md.yml" }
+
+      let(:config_json) do
+        {
+          mdRaids: [
+            {
+              search:     { max: 1 },
+              alias:      "raid",
+              partitions: [
+                { search: "*", delete: true },
+                { filesystem: { path: "/" } }
+              ]
+            }
+          ],
+          boot:    { configure: true, device: "raid" }
+        }
+      end
+
+      it "allocates the boot partition in the RAID" do
+        md_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/md0").sid
+        proposal.propose
+
+        md = proposal.devices.find_by_name("/dev/md0")
+        expect(md.sid).to eq md_sid
+        expect(md.partitions.size).to eq 2
+        expect(md.partitions.first.id).to eq Y2Storage::PartitionId::BIOS_BOOT
+      end
+    end
   end
 end
