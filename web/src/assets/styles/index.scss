@@ -355,6 +355,10 @@
 
 .pf-v6-c-button {
   --pf-v6-c-button--BorderRadius: var(--pf-t--global--border--radius--small);
+
+  &:disabled {
+    fill: currentcolor;
+  }
 }
 
 .pf-v6-c-menu-toggle.pf-m-split-button > :first-child {

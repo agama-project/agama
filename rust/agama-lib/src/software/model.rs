@@ -18,10 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+mod conflict;
 mod license;
 mod packages;
 mod registration;
 
+pub use conflict::*;
 pub use license::*;
 pub use packages::*;
 pub use registration::*;
