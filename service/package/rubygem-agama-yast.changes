@@ -1,9 +1,15 @@
 -------------------------------------------------------------------
+Fri May 23 12:37:31 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add checks to the storage config to avoid using wrong devices as
+  target for boot partitions (gh#agama-project/agama#2390).
+
+-------------------------------------------------------------------
 Fri May 23 11:59:20 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Introduce a new ProgressChanged signal which should be used
   instead of PropertiesChanged (gh#agama-project/agama#2389).
-  
+
 -------------------------------------------------------------------
 Fri May 23 10:39:21 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 

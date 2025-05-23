@@ -1007,13 +1007,34 @@ describe Agama::Storage::Config do
           ]
         end
 
-        it "returns the volume groups" do
+        it "includes the volume groups" do
           users = subject.target_users(device_alias)
           expect(users).to contain_exactly(subject.volume_groups[0], subject.volume_groups[2])
         end
       end
 
-      context "and it is not used as target for physical volumes" do
+      context "and it is used as target for boot partitions" do
+        let(:boot) do
+          {
+            configure: true,
+            device:    device_alias
+          }
+        end
+
+        it "includes the boot config" do
+          users = subject.target_users(device_alias)
+          expect(users).to contain_exactly(subject.boot)
+        end
+      end
+
+      context "and it is not used as target for physical volumes or boot" do
+        let(:boot) do
+          {
+            configure: false,
+            device:    device_alias
+          }
+        end
+
         let(:volume_groups) do
           [
             { name: "vg1" }
@@ -1029,12 +1050,14 @@ describe Agama::Storage::Config do
 
     let(:config_json) do
       {
+        boot:         boot,
         drives:       drives,
         mdRaids:      md_raids,
         volumeGroups: volume_groups
       }
     end
 
+    let(:boot) { nil }
     let(:drives) { nil }
     let(:md_raids) { nil }
     let(:volume_groups) { nil }
