@@ -54,6 +54,11 @@ pub enum Event {
         #[serde(flatten)]
         progress: Progress,
     },
+    ProgressChanged {
+        path: String,
+        #[serde(flatten)]
+        progress: Progress,
+    },
     ProductChanged {
         id: String,
     },

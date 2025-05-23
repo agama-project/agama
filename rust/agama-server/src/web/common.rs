@@ -39,6 +39,8 @@ mod jobs;
 pub use jobs::{jobs_service, jobs_stream};
 mod issues;
 pub use issues::{IssuesClient, IssuesRouterBuilder, IssuesService, IssuesServiceError};
+mod progress;
+pub use progress::{ProgressClient, ProgressRouterBuilder, ProgressService, ProgressServiceError};
 
 use super::Event;
 
@@ -191,7 +193,7 @@ struct ProgressState<'a> {
 }
 
 /// Information about the current progress sequence.
-#[derive(Clone, Default, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ProgressSequence {
     /// Sequence steps if known in advance
