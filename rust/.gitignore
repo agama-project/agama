@@ -10,3 +10,8 @@
 
 # Generated OpenAPI data
 /out/
+
+# Code coverage related files
+/target-coverage/
+cobertura.xml
+tarpaulin_*.json

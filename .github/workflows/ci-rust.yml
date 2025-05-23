@@ -41,134 +41,198 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  # this makes the build slightly faster and the saved cache smaller
+  CARGO_INCREMENTAL: 0
 
 jobs:
-  rust_ci:
+  fmt:
     # the default timeout is 6 hours, that's too much if the job gets stuck
-    timeout-minutes: 60
+    timeout-minutes: 10
     runs-on: ubuntu-latest
-    env:
-      COVERAGE: 1
-      # disable support for incremental builds, we always build from scratch anyway
-      # this makes the build slightly faster
-      CARGO_INCREMENTAL: 0
 
     defaults:
       run:
         working-directory: ./rust
-
-    strategy:
-      fail-fast: false
-      matrix:
-        distro: [ "tumbleweed" ]
-
-    container:
-      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
-      options: --security-opt seccomp=unconfined
 
     steps:
 
     - name: Git Checkout
       uses: actions/checkout@v4
 
-    - name: Configure git
-      run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
-
-    - name: Configure and refresh repositories
-      # disable unused repositories to have faster refresh
-      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
-
-    - name: Install Rust development files
-      run: zypper --non-interactive install rustup
-
-    - name: Install required packages
-      run: zypper --non-interactive install
-        clang-devel
-        dbus-1-daemon
-        golang-github-google-jsonnet
-        jq
-        libopenssl-3-devel
-        openssl-3
-        pam-devel
-        python-langtable-data
-        python3-openapi_spec_validator
-        timezone
-        xkeyboard-config
-
-    - name: Install Rust toolchains
-      run: rustup toolchain install stable
-
-    - name: Run clippy linter
-      run: cargo clippy
+    - name: Rust toolchain
+      run: |
+        rustup show
+        cargo --version
 
     - name: Run rustfmt
       run: cargo fmt --all -- --check
 
-    - name: Install cargo-binstall
-      uses: taiki-e/install-action@v2
-      with:
-        tool: cargo-binstall
-
-    - name: Install Tarpaulin (for code coverage)
-      run: |
-        echo "$PWD/share/bin" >> $GITHUB_PATH
-        cargo-binstall --no-confirm cargo-tarpaulin
-
-    - name: Run the tests
-      run: cargo tarpaulin --all --doc --out xml -- --nocapture
-      env:
-        # use the "stable" tool chain (installed above) instead of the "nightly" default in tarpaulin
-        RUSTC_BOOTSTRAP: 1
-        RUSTUP_TOOLCHAIN: stable
-
-    - name: Generate and validate the OpenAPI specification
-      run: |
-        cargo xtask openapi
-        openapi-spec-validator out/openapi/*
-
-    - name: Upload coverage result
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage_rust
-        if-no-files-found: error
-        path: rust/cobertura.xml
-
-  # The coveralls action for some unknown reason gets stuck when running inside
-  # a container. As a workaround save the coverage data and send it in a
-  # separate job running directly in the Ubuntu host, that works fine.
-  # See https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/storing-and-sharing-data-from-a-workflow#passing-data-between-jobs-in-a-workflow
-  coveralls:
-    # the default timeout is 6 hours, this should take just few seconds
+  clippy:
+    # the default timeout is 6 hours, that's too much if the job gets stuck
     timeout-minutes: 20
     runs-on: ubuntu-latest
-    needs: rust_ci
+
     defaults:
       run:
         working-directory: ./rust
 
     steps:
+
     - name: Git Checkout
       uses: actions/checkout@v4
 
-    - name: Download coverage result
-      uses: actions/download-artifact@v4
+    - name: Rust toolchain
+      run: |
+        rustup show
+        cargo --version
+
+    - name: Install packages
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install libclang-18-dev libpam0g-dev
+
+    - name: Installed packages
+      run: apt list --installed
+
+    - name: Rust cache
+      uses: actions/cache@v4
       with:
-        name: coverage_rust
+        path: |
+          ~/.cargo
+          rust/target
+        key: ${{ runner.os }}-cargo-clippy-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Run clippy linter
+      run: cargo clippy
+
+  tests:
+    # the default timeout is 6 hours, that's too much if the job gets stuck
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    env:
+      COVERAGE: 1
+
+    defaults:
+      run:
+        working-directory: ./rust
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v4
+
+    - name: Rust toolchain
+      run: |
+        rustup show
+        cargo --version
+
+    - name: Install packages
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install libclang-18-dev libpam0g-dev python3-langtable
+        # the langtable data location is different in SUSE/openSUSE, create a symlink
+        sudo mkdir -p /usr/share/langtable/data
+        sudo ln -s /usr/lib/python3/dist-packages/langtable/data/timezoneidparts.xml.gz /usr/share/langtable/data/timezoneidparts.xml.gz
+
+    - name: Installed packages
+      run: apt list --installed
+
+    - name: Rust cache
+      id: cache-tests
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo
+          rust/target-coverage
+        key: ${{ runner.os }}-cargo-tests-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Install Tarpaulin (for code coverage)
+      # skip the step completely if the cache has been restored
+      # this avoids refreshing the crates index and saves few seconds
+      if: steps.cache-tests.outputs.cache-hit != 'true'
+      run: cargo install cargo-tarpaulin
+
+    - name: Run the tests
+      # Compile into the ./target-coverage directory because tarpaulin uses special compilation
+      # flags, to avoid reusing the previous builds it always starts from scratch.
+      # The --skip-clean skips the cleanup and allows using the cached results.
+      # See https://github.com/xd009642/tarpaulin/discussions/772
+      run: cargo tarpaulin --all --doc --out xml --target-dir target-coverage --skip-clean -- --nocapture
+      env:
+        # use the "stable" tool chain (installed by default) instead of the "nightly" default in tarpaulin
+        RUSTC_BOOTSTRAP: 1
+        RUSTUP_TOOLCHAIN: stable
 
     # send the code coverage for the Rust part to the coveralls.io
-    - name: Coveralls GitHub Action
+    - name: Send coverage data to Coveralls
+      timeout-minutes: 10
+      # ignore errors in this step
+      continue-on-error: true
       uses: coverallsapp/github-action@v2
       with:
+        flag-name: rust
         base-path: ./rust
         format: cobertura
-        flag-name: rust
-        parallel: true
 
-    # close the code coverage and inherit the previous coverage for the Ruby and
-    # Web parts (it needs a separate step, the "carryforward" flag can be used
+    # Close the parallel build and inherit the Web parts (it needs a separate step, the "carryforward" flag can be used
     # only with the "parallel-finished: true" option)
-    - name: Coveralls Finished
+    - name: Close the Coveralls build
+      timeout-minutes: 10
+      # ignore errors in this step
+      continue-on-error: true
       uses: coverallsapp/github-action@v2
       with:
         parallel-finished: true
         carryforward: "rust,service,web"
+
+  openapi:
+    # the default timeout is 6 hours, that's too much if the job gets stuck
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./rust
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v4
+
+    - name: Rust toolchain
+      run: |
+        rustup show
+        cargo --version
+
+    - name: Configure system
+      # disable updating initramfs (the system is not booted again)
+      # disable updating man db (to save some time)
+      run: |
+        sudo sed -i "s/yes/no/g" /etc/initramfs-tools/update-initramfs.conf
+        sudo rm -f /var/lib/man-db/auto-update
+
+    - name: Install packages
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install libclang-18-dev libpam0g-dev
+        # uninstall the python3-jsonschema package, openapi-spec-validator wants
+        # to install a newer version which would conflict with that
+        sudo apt-get purge python3-jsonschema
+        sudo pip install openapi-spec-validator
+
+    - name: Installed packages
+      run: apt list --installed
+
+    - name: Rust cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo
+          rust/target
+        key: ${{ runner.os }}-cargo-openapi-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Generate the OpenAPI specification
+      run: cargo xtask openapi
+
+    - name: Validate the OpenAPI specification
+      run: openapi-spec-validator out/openapi/*
