@@ -54,6 +54,21 @@ const NoDevicesConfiguredAlert = () => {
   );
 };
 
+/**
+ * @fixme Adapt components (DriveEditor, MdRaidEditor, etc) to receive a list name and an index
+ * instead of a device object. Each component will retrieve the device from the model if needed.
+ *
+ * That will allow to:
+ * * Simplify the model types (list and listIndex properties are not needed).
+ * * All the components (DriveEditor, PartitionPage, etc) work in a similar way. They receive a
+ *   list and an index and each component retrieves the device from the model if needed.
+ * * The components always have all the needed info for generating an url.
+ * * The partitions and logical volumes can also be referenced by an index, so it opens the door
+ *   to have partitions and lvs without a mount path.
+ *
+ * These changes will be done once creating partitions without a mount path is needed (e.g., for
+ * manually creating physical volumes).
+ */
 export default function ConfigEditor() {
   const model = useModel();
   const devices = useDevices("system", { suspense: true });
@@ -64,11 +79,6 @@ export default function ConfigEditor() {
   if (!drives.length && !mdRaids.length && !volumeGroups.length) {
     return <NoDevicesConfiguredAlert />;
   }
-
-  /**
-   * @fixme Adapt components (DriveEditor, MdRaidEditor, etc) to receive a list name and an index
-   * instead of a device object. Each component will retrieve the device from the model if needed.
-   */
 
   return (
     <List isPlain>

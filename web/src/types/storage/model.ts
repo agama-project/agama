@@ -37,7 +37,7 @@ type Model = {
 
 /**
  * @fixme Remove list and listIndex from types once the components are adapted to receive a list
- * and an index instead of a device object.
+ * and an index instead of a device object. See ConfigEditor component.
  */
 
 interface Drive extends apiModel.Drive {
