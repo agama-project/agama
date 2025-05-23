@@ -33,7 +33,7 @@ import {
   Flex,
 } from "@patternfly/react-core";
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
-import { EmptyState } from "~/components/core";
+import { Annotation, EmptyState } from "~/components/core";
 import { Connection } from "~/types/network";
 import { useConnections, useNetworkDevices } from "~/queries/network";
 import { NETWORK as PATHS } from "~/routes/paths";
@@ -66,6 +66,10 @@ const ConnectionListItem = ({ connection }: ConnectionListItemProps) => {
                   <Content className={a11yStyles.screenReader}>{_("IP addresses")}</Content>
                   {addresses.map(formatIp).join(", ")}
                 </Content>
+                {
+                  // FIXME: make below annotation appear only when needed
+                }
+                <Annotation>{_("Configured for installation only")}</Annotation>
               </Flex>
             </DataListCell>,
           ]}
