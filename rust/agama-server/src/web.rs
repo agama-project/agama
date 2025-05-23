@@ -39,7 +39,7 @@ use crate::{
     software::web::{software_service, software_streams},
     storage::web::{iscsi::iscsi_service, storage_service, storage_streams},
     users::web::{users_service, users_streams},
-    web::common::{jobs_stream, progress_stream, service_status_stream},
+    web::common::{jobs_stream, service_status_stream},
 };
 use axum::Router;
 
@@ -147,15 +147,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
         )
         .await?,
     );
-    stream.insert(
-        "manager-progress",
-        progress_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Manager1",
-            "/org/opensuse/Agama/Manager1",
-        )
-        .await?,
-    );
     for (id, user_stream) in users_streams(dbus.clone()).await? {
         stream.insert(id, user_stream);
     }
@@ -175,15 +166,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
         .await?,
     );
     stream.insert(
-        "storage-progress",
-        progress_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Storage1",
-            "/org/opensuse/Agama/Storage1",
-        )
-        .await?,
-    );
-    stream.insert(
         "storage-jobs",
         jobs_stream(
             dbus.clone(),
@@ -196,15 +178,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
     stream.insert(
         "software-status",
         service_status_stream(
-            dbus.clone(),
-            "org.opensuse.Agama.Software1",
-            "/org/opensuse/Agama/Software1",
-        )
-        .await?,
-    );
-    stream.insert(
-        "software-progress",
-        progress_stream(
             dbus.clone(),
             "org.opensuse.Agama.Software1",
             "/org/opensuse/Agama/Software1",

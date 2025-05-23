@@ -38,7 +38,7 @@
 use crate::web::EventsSender;
 use agama_lib::{
     http::Event,
-    progress::Progress,
+    progress::{Progress, ProgressSequence},
     proxies::{ProgressChanged, ProgressProxy},
 };
 use axum::{extract::State, routing::get, Json, Router};
@@ -46,8 +46,6 @@ use std::collections::HashMap;
 use tokio::sync::{broadcast, mpsc, oneshot};
 use tokio_stream::StreamExt;
 use zbus::{message::Type as MessageType, MatchRule, MessageStream};
-
-use super::ProgressSequence;
 
 type ProgressServiceResult<T> = Result<T, ProgressServiceError>;
 
