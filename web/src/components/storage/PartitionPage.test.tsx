@@ -24,7 +24,7 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import PartitionPage from "./PartitionPage";
-import { StorageDevice } from "~/types/storage";
+import { StorageDevice, model } from "~/types/storage";
 import { apiModel, Volume } from "~/api/storage/types";
 import { gib } from "./utils";
 
@@ -36,6 +36,8 @@ jest.mock("~/queries/issues", () => ({
 
 jest.mock("./ProposalResultSection", () => () => <div>result section</div>);
 jest.mock("./ProposalTransactionalInfo", () => () => <div>trasactional info</div>);
+
+const mockGetPartition = jest.fn();
 
 const sda1: StorageDevice = {
   sid: 69,
@@ -76,7 +78,14 @@ const sda: StorageDevice = {
   description: "",
 };
 
-const mockDrive: apiModel.Drive = {
+const mockPartition: model.Partition = {
+  isNew: false,
+  isUsed: true,
+  isReused: false,
+  isUsedBySpacePolicy: false,
+};
+
+const mockDrive: model.Drive = {
   name: "/dev/sda",
   spacePolicy: "delete",
   partitions: [
@@ -97,6 +106,16 @@ const mockDrive: apiModel.Drive = {
       filesystem: { default: false, type: "xfs" },
     },
   ],
+  list: "drives",
+  listIndex: 1,
+  isUsed: true,
+  isAddingPartitions: true,
+  isTargetDevice: false,
+  isBoot: true,
+  getMountPaths: jest.fn(),
+  getVolumeGroups: jest.fn(),
+  getPartition: mockGetPartition,
+  getConfiguredExistingPartitions: () => [mockPartition],
 };
 
 const mockSolvedConfigModel: apiModel.Config = {
@@ -124,8 +143,6 @@ const mockHomeVolume: Volume = {
   },
 };
 
-const mockGetPartition = jest.fn();
-
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useAvailableDevices: () => [sda],
@@ -133,19 +150,27 @@ jest.mock("~/queries/storage", () => ({
   useVolume: () => mockHomeVolume,
 }));
 
+jest.mock("~/hooks/storage/model", () => ({
+  ...jest.requireActual("~/hooks/storage/model"),
+  useModel: () => ({
+    drives: [mockDrive],
+    getMountPaths: () => [],
+  }),
+}));
+
+jest.mock("~/hooks/storage/product", () => ({
+  ...jest.requireActual("~/hooks/storage/product"),
+  useMissingMountPaths: () => ["/home", "swap"],
+}));
+
 jest.mock("~/queries/storage/config-model", () => ({
   ...jest.requireActual("~/queries/storage/config-model"),
   useConfigModel: () => ({ drives: [mockDrive] }),
-  useDrive: () => ({
-    getPartition: mockGetPartition,
-    configuredExistingPartitions: [sda1],
-  }),
-  useModel: () => ({ unusedMountPaths: ["/home", "swap"], usedMountPaths: [] }),
   useSolvedConfigModel: () => mockSolvedConfigModel,
 }));
 
 beforeEach(() => {
-  mockParams({ id: "sda" });
+  mockParams({ list: "drives", listIndex: "0" });
 });
 
 describe("PartitionPage", () => {
@@ -224,7 +249,7 @@ describe("PartitionPage", () => {
 
   describe("if editing a partition", () => {
     beforeEach(() => {
-      mockParams({ id: "sda", partitionId: "/home" });
+      mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
       mockGetPartition.mockReturnValue({
         mountPath: "/home",
         size: {

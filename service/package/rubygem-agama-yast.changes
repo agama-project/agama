@@ -1,7 +1,13 @@
 -------------------------------------------------------------------
+Thu May 22 17:21:24 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Include RAIDs at the model for the storage UI
+  (gh#agama-project/agama#2346).
+
+-------------------------------------------------------------------
 Thu May 22 16:18:06 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
-- Provide software conflicts D-Bus API (gh#agama-project/agama#2348) 
+- Provide software conflicts D-Bus API (gh#agama-project/agama#2348)
 
 -------------------------------------------------------------------
 Fri May 16 08:45:58 UTC 2025 - José Iván López González <jlopez@suse.com>

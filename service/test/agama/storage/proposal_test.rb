@@ -406,6 +406,7 @@ describe Agama::Storage::Proposal do
                   partitions:  []
                 }
               ],
+              mdRaids:      [],
               volumeGroups: []
             }
           )
@@ -471,6 +472,7 @@ describe Agama::Storage::Proposal do
                   ]
                 }
               ],
+              mdRaids:      [],
               volumeGroups: []
             }
           )
@@ -529,6 +531,7 @@ describe Agama::Storage::Proposal do
             ]
           }
         ],
+        mdRaids:      [],
         volumeGroups: []
       })
     end
