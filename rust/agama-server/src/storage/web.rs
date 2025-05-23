@@ -56,8 +56,8 @@ use crate::{
         iscsi::iscsi_stream,
     },
     web::common::{
-        jobs_service, progress_router, service_status_router, EventStreams, IssuesClient,
-        IssuesRouterBuilder,
+        jobs_service, service_status_router, EventStreams, IssuesClient, IssuesRouterBuilder,
+        ProgressClient, ProgressRouterBuilder,
     },
 };
 use agama_lib::http::Event;
@@ -101,16 +101,21 @@ struct StorageState<'a> {
 pub async fn storage_service(
     dbus: zbus::Connection,
     issues: IssuesClient,
+    progress: ProgressClient,
 ) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &str = "org.opensuse.Agama.Storage1";
     const DBUS_PATH: &str = "/org/opensuse/Agama/Storage1";
     const DBUS_DESTINATION: &str = "org.opensuse.Agama.Storage1";
 
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
-    let progress_router = progress_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
+    // FIXME: use anyhow temporarily until we adapt all these methods to return
+    // the crate::error::Error instead of ServiceError.
     let issues_router = IssuesRouterBuilder::new(DBUS_SERVICE, DBUS_PATH, issues.clone())
         .build()
         .context("Could not build an issues router")?;
+    let progress_router = ProgressRouterBuilder::new(DBUS_SERVICE, DBUS_PATH, progress)
+        .build()
+        .context("Could not build the progress router")?;
     let iscsi_router = storage_iscsi_service(&dbus).await?;
     let dasd_router = dasd_service(&dbus).await?;
     let zfcp_router = zfcp_service(&dbus).await?;

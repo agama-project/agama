@@ -54,7 +54,7 @@ mod state;
 mod ws;
 
 use agama_lib::{connection, error::ServiceError, http::Event};
-use common::IssuesService;
+use common::{IssuesService, ProgressService};
 pub use config::ServiceConfig;
 pub use event::{EventsReceiver, EventsSender};
 pub use service::MainServiceBuilder;
@@ -81,18 +81,28 @@ where
         .expect("Could not connect to NetworkManager to read the configuration");
 
     let issues = IssuesService::start(dbus.clone(), events.clone()).await;
+    let progress = ProgressService::start(dbus.clone(), events.clone()).await;
 
     let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
         .add_service("/l10n", l10n_service(dbus.clone(), events.clone()).await?)
-        .add_service("/manager", manager_service(dbus.clone()).await?)
+        .add_service(
+            "/manager",
+            manager_service(dbus.clone(), progress.clone()).await?,
+        )
         .add_service("/security", security_service(dbus.clone()).await?)
         .add_service(
             "/software",
-            software_service(dbus.clone(), events.subscribe(), issues.clone()).await?,
+            software_service(
+                dbus.clone(),
+                events.subscribe(),
+                issues.clone(),
+                progress.clone(),
+            )
+            .await?,
         )
         .add_service(
             "/storage",
-            storage_service(dbus.clone(), issues.clone()).await?,
+            storage_service(dbus.clone(), issues.clone(), progress).await?,
         )
         .add_service("/iscsi", iscsi_service(dbus.clone(), issues.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)

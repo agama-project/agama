@@ -31,6 +31,7 @@ use agama_lib::{
     manager::{FinishMethod, InstallationPhase, InstallerStatus, ManagerClient},
     proxies::Manager1Proxy,
 };
+use anyhow::Context;
 use axum::{
     body::Body,
     extract::State,
@@ -45,7 +46,7 @@ use tokio_util::io::ReaderStream;
 
 use crate::{
     error::Error,
-    web::common::{progress_router, service_status_router},
+    web::common::{service_status_router, ProgressClient, ProgressRouterBuilder},
 };
 use agama_lib::http::Event;
 
@@ -85,12 +86,19 @@ pub async fn manager_stream(
 }
 
 /// Sets up and returns the axum service for the manager module
-pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
+pub async fn manager_service(
+    dbus: zbus::Connection,
+    progress: ProgressClient,
+) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &str = "org.opensuse.Agama.Manager1";
     const DBUS_PATH: &str = "/org/opensuse/Agama/Manager1";
 
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
-    let progress_router = progress_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
+    // FIXME: use anyhow temporarily until we adapt all these methods to return
+    // the crate::error::Error instead of ServiceError.
+    let progress_router = ProgressRouterBuilder::new(DBUS_SERVICE, DBUS_PATH, progress)
+        .build()
+        .context("Could not build the progress router")?;
     let manager = ManagerClient::new(dbus.clone()).await?;
     let state = ManagerState { manager, dbus };
     Ok(Router::new()
