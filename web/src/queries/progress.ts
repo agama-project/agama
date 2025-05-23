@@ -28,9 +28,9 @@ import { QueryHookOptions } from "~/types/queries";
 import { fetchProgress } from "~/api/progress";
 
 const servicesMap = {
-  "org.opensuse.Agama.Manager1": "manager",
-  "org.opensuse.Agama.Software1": "software",
-  "org.opensuse.Agama.Storage1": "storage",
+  "/org/opensuse/Agama/Manager1": "manager",
+  "/org/opensuse/Agama/Software1": "software",
+  "/org/opensuse/Agama/Storage1": "storage",
 };
 
 /**
@@ -76,10 +76,10 @@ const useProgressChanges = () => {
     if (!client) return;
 
     return client.onEvent((event) => {
-      if (event.type === "Progress") {
-        const service = servicesMap[event.service];
+      if (event.type === "ProgressChanged") {
+        const service = servicesMap[event.path];
         if (!service) {
-          console.warn("Unknown service", event.service);
+          console.warn("Unknown progress path", event.path);
           return;
         }
 
