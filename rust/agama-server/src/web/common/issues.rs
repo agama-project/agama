@@ -24,16 +24,14 @@
 //!
 //! * Querying the issues via D-Bus and keeping them in a cache.
 //! * Listening to D-Bus signals to keep the cache up-to-date.
-//! * Emitting `IssuesChanged` events, replacing
-//!   [issues_stream](crate::web::common::issues_stream).
+//! * Emitting `IssuesChanged` events.
 //!
 //! The following components are included:
 //!
 //! * [IssuesService] that runs on a separate task to hold the status.
 //! * [IssuesClient] that allows querying the [IssuesService] server about the
 //!   issues.
-//! * [IssuesRouter] which allows building a router, replacing
-//!   [issues_router](crate::web::common::issues_router).
+//! * [IssuesRouterBuilder] which allows building a router.
 //!
 //! At this point, it only handles the issues that are exposed through D-Bus.
 
