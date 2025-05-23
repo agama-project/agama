@@ -264,8 +264,6 @@ impl MonitorStatusReader {
             "/manager/progress",
         )
         .await?;
-        // FIXME: do not read the software status yet because it might block
-        // the progress. Enable this line when the software service does not block
         self.add_service_progress(
             &mut status,
             SOFTWARE_PROGRESS_OBJECT_PATH,
