@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed May 23 09:02:05 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Send different NM dbus values depending on version (gh#agama-project/agama#2356).
+
+-------------------------------------------------------------------
 Thu May 22 17:19:10 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Update schema of the storage model (gh#agama-project/agama#2346).
