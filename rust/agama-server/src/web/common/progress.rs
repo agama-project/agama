@@ -151,7 +151,7 @@ impl ProgressService {
         let inner = message.message();
         let header = inner.header();
 
-        // We are not interested on this message
+        // Given that it is a ProcessChanged, it should not happen.
         let Some(path) = header.path() else {
             tracing::warn!("Found a ProgressChanged signal without a path");
             return Ok(());
