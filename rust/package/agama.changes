@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri May 23 13:22:15 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Proper handling of WebSocket secure connections (gh#agama-project/agama#2391):
+  - "agama monitor" does not use "insecure" by default.
+  - Do not encrypt the connection when using ws: URLs.
+
+-------------------------------------------------------------------
 Fri May 23 10:17:32 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Cache progress reporting to avoid blocking the clients
