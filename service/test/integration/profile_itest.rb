@@ -3,6 +3,7 @@
 # TODO: remember to set up and test the --api option after all
 
 require "cheetah"
+require "webrick"
 
 # @param filename relative to git repo root
 # @return usable for this suite
@@ -26,47 +27,69 @@ def cheetah_kwargs
   }
 end
 
+WEB_SERVER_PORT = 8000
+
+# @return [HTTPServer]
+def web_server_start
+  root = abs_fixture(".")
+  server = WEBrick::HTTPServer.new(Port: WEB_SERVER_PORT, DocumentRoot: root)
+  Thread.new { server.start }
+  server
+end
+
+def web_server_shutdown(server)
+  server.shutdown
+end
+
 # needs declarations:
 # command [Array<String>] like ["agama", "profile", "validate"]
-shared_examples "accepts input in 3 ways" do |filename, output_match|
+shared_examples "accepts input in 3 ways" do |filename, stdout_match, stderr_match|
   context "with #{filename} as path" do
     it "output matches" do
-      output = Cheetah.run(*command, fixture(filename), stdout: :capture)
-      expect(output).to include(output_match)
+      cmd = [*command, fixture(filename)]
+      stdout, stderr = Cheetah.run(*cmd, **cheetah_kwargs)
+      expect(stdout).to include(stdout_match)
+      expect(stderr).to include(stderr_match)
     end
   end
 
-  context "with #{filename} as URL" do
+  context "with #{filename} as http URL" do
     it "output matches" do
-      url = "file://" + abs_fixture(filename)
-      output = Cheetah.run(*command, url, stdout: :capture)
-      expect(output).to include(output_match)
+      url = "http://localhost:#{WEB_SERVER_PORT}/#{filename}"
+      cmd = [*command, url]
+      stdout, stderr = Cheetah.run(*cmd, **cheetah_kwargs)
+      expect(stdout).to include(stdout_match)
+      expect(stderr).to include(stderr_match)
     end
   end
 
   context "with #{filename} as stdin" do
     it "output matches" do
       input = File.read(fixture(filename))
-      output = Cheetah.run(*command, "-", stdout: :capture, stdin: input)
-      expect(output).to include(output_match)
+      cmd = [*command, "-"]
+      stdout, stderr = Cheetah.run(*cmd, stdin: input, **cheetah_kwargs)
+      expect(stdout).to include(stdout_match)
+      expect(stderr).to include(stderr_match)
     end
   end
 end
 
-describe "agama profile" do
-  before do
-    # Maybe run agama auth login, or read the auth token...
-    # But that is not needed if
-    # 1. the client can read the server token
-    # 2. and the server token has not expired (1 day) yet
+describe "agama config" do
+  before(:all) do
+    @web_server = web_server_start
+  end
+
+  after(:all) do
+    web_server_shutdown(@web_server)
   end
 
   describe "validate:" do
-    let(:command) { ["agama", "profile", "validate"] }
+    let(:command) { ["agama", "config", "validate"] }
     context "valid profile" do
       include_examples \
         "accepts input in 3 ways", \
         "rust/agama-lib/share/examples/profile_tw_minimal.json", \
+        "", \
         "is valid"
     end
 
@@ -74,6 +97,7 @@ describe "agama profile" do
       include_examples \
         "accepts input in 3 ways", \
         "rust/agama-lib/share/examples space/profile_tw_minimal.json", \
+        "", \
         "is valid"
     end
 
@@ -84,6 +108,7 @@ describe "agama profile" do
       include_examples \
         "accepts input in 3 ways", \
         "rust/agama-lib/share/examples%20percent/profile_tw_minimal.json", \
+        "", \
         "is valid"
     end
 
@@ -91,16 +116,17 @@ describe "agama profile" do
       include_examples \
         "accepts input in 3 ways", \
         "rust/agama-lib/share/examples/profile_tw_invalid.json", \
+        "", \
         "* Additional properties are not allowed ('ID' was unexpected). /product"
     end
   end
 
-  describe "evaluate:" do
+  describe "generate:" do
     context "jsonnet, by stdin" do
       let(:profile_body) { '{product: {uh: "oh"}}' }
 
       it "is evaluated" do
-        output = Cheetah.run("agama", "profile", "evaluate", "-",
+        output = Cheetah.run("agama", "config", "generate", "-",
           stdout: :capture, stdin: profile_body)
         expected = <<~JSON
           {
@@ -114,8 +140,8 @@ describe "agama profile" do
     end
   end
 
-  describe "autoyast:" do
-    let(:command) { ["agama", "profile", "autoyast"] }
+  describe "generate (autoyast):" do
+    let(:command) { ["agama", "config", "generate"] }
 
     let(:output_match) do
       json = <<~JSON
@@ -170,32 +196,6 @@ describe "agama profile" do
         output = Cheetah.run(*command, url, stdout: :capture)
         # this claim is too weak but the test needs to be fixed first
         expect(output).to include("Tumbleweed")
-      end
-    end
-  end
-
-  describe "import:" do
-    let(:command) { ["agama", "profile", "import"] }
-
-    context "script, with file:/// URL" do
-      let(:filename) { "service/test/fixtures/profiles/smoke-test.sh" }
-
-      it "is executed without error" do
-        url = "file://" + abs_fixture(filename)
-        start_time = Time.now
-        _output, err_output, _status = Cheetah.run(*command, url, **cheetah_kwargs)
-        end_time = Time.now
-        expect(err_output).to be_empty
-      end
-    end
-
-    context "failing script, with file:/// URL" do
-      let(:filename) { "service/test/fixtures/profiles/smoke-test-fail.sh" }
-
-      it "reports a failure" do
-        url = "file://" + abs_fixture(filename)
-        _output, err_output, _status = Cheetah.run(*command, url, **cheetah_kwargs)
-        expect(err_output).to include("failed with exit status")
       end
     end
   end
