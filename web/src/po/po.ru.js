@@ -18,6 +18,9 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "Диск %1$s по-прежнему будет содержать группу LVM „%2$s“ и все разделы, необходимые для загрузки"
   ],
+  "%d of %d": [
+    ""
+  ],
   "%s - %s": [
     "%s - %s"
   ],
@@ -138,6 +141,9 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     "Измените приведенные ниже параметры, чтобы новая система вписалась в свободное пространство."
   ],
+  "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
+    ""
+  ],
   "All content will be deleted": [
     "Все содержимое будет удалено"
   ],
@@ -252,17 +258,26 @@ export default {
   "Change": [
     "Изменить"
   ],
+  "Change Language": [
+    "Изменить язык"
+  ],
   "Change boot options": [
     "Изменение параметров загрузки"
   ],
   "Change device menu": [
     "Меню изменения устройства"
   ],
+  "Change display language": [
+    "Изменить язык"
+  ],
   "Change display language and keyboard layout": [
-    ""
+    "Изменить язык и раскладку клавиатуры"
   ],
   "Change keyboard": [
     "Изменить клавиатуру"
+  ],
+  "Change keyboard layout": [
+    "Изменить раскладку клавиатуры"
   ],
   "Change product": [
     "Изменить продукт"
@@ -854,6 +869,9 @@ export default {
   "Language": [
     "Язык"
   ],
+  "Language and keyboard": [
+    "Язык и клавиатура"
+  ],
   "Let the installer propose a sensible range of sizes": [
     "Программа установки предложит разумный диапазон размеров"
   ],
@@ -951,13 +969,13 @@ export default {
     "Другие устройства"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    ""
+    "Больше раскладок клавиатуры может быть доступно на странице [Локализации]"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    ""
+    "Больше вариантов языков и раскладок клавиатуры может быть доступно на странице [Локализации]."
   ],
   "More languages might be available for the selected product at [Localization] page": [
-    ""
+    "Больше языков может быть доступно на странице [Локализации]"
   ],
   "Mount Point": [
     "Точка монтирования"
@@ -982,6 +1000,9 @@ export default {
   ],
   "Multipath": [
     "Многопутевое"
+  ],
+  "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
+    ""
   ],
   "NFS": [
     "NFS"
@@ -1277,6 +1298,9 @@ export default {
   "Result": [
     "Результат"
   ],
+  "Review and fix": [
+    ""
+  ],
   "Root authentication methods": [
     "Методы root-аутентификации"
   ],
@@ -1314,7 +1338,7 @@ export default {
     "См. подробнее"
   ],
   "Select": [
-    "Выбор"
+    "Выбрать"
   ],
   "Select a disk": [
     "Выберите диск"
@@ -1413,6 +1437,9 @@ export default {
   ],
   "Skip to content": [
     "Перейти к содержимому"
+  ],
+  "Skip to previous": [
+    ""
   ],
   "Software": [
     "Программы"
@@ -1637,10 +1664,10 @@ export default {
     "Это наиболее актуальные настройки установки. Более подробные сведения приведены в разделах меню."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "Это настройки для устанавливаемого продукта. Язык программы установки и раскладку клавиатуры можно изменить через [панель настроек], доступную на верхней панели."
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "Это настройки для устанавливаемого продукта. Язык программы установки можно изменить через [панель настроек], доступную на верхней панели."
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Это действие может уничтожить все данные, хранящиеся на перечисленных ниже устройствах. Пожалуйста, подтвердите, что Вы действительно хотите продолжить."
@@ -1676,7 +1703,7 @@ export default {
     "При этом используются существующие разделы на диске"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    ""
+    "Это повлияет только на интерфейс установщика, не на устанавливаемый продукт. Изменить параметры локализации продукта вы сможете позже на странице настроек локализации."
   ],
   "TiB": [
     "ТиБ"
@@ -1775,7 +1802,7 @@ export default {
     "Использовать свободное пространство"
   ],
   "Use for the selected product too": [
-    ""
+    "Использовать также для выбранного продукта"
   ],
   "Use password": [
     "Использовать пароль"
@@ -1793,7 +1820,7 @@ export default {
     "Используйте Доверенный платформенный модуль (TPM) для автоматического дешифрования при каждой загрузке"
   ],
   "Use these same settings for the selected product": [
-    ""
+    "Использовать эти же настройки для выбранного продукта"
   ],
   "Used space": [
     "Используемое"
@@ -1806,6 +1833,9 @@ export default {
   ],
   "Username suggestion dropdown": [
     "Выпадающий список с предложением имени пользователя"
+  ],
+  "Using [%s] keyboard": [
+    "Раскладка клавиатуры [%s]"
   ],
   "Using a hashed password.": [
     "Используя хэшированный пароль."
@@ -1880,7 +1910,7 @@ export default {
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
-    ""
+    "[CAPS LOCK] включён"
   ],
   "at least %s": [
     "не менее %s"

@@ -18,6 +18,9 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s には起動に必要な設定済み LVM グループ '%2$s' とパーティションが含まれています"
   ],
+  "%d of %d": [
+    ""
+  ],
   "%s - %s": [
     "%s - %s"
   ],
@@ -138,6 +141,9 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     "新しいシステムが利用可能な領域内に収まるように設定を調整してください。"
   ],
+  "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
+    ""
+  ],
   "All content will be deleted": [
     "全ての内容を削除する"
   ],
@@ -252,17 +258,26 @@ export default {
   "Change": [
     "変更"
   ],
+  "Change Language": [
+    "言語の変更"
+  ],
   "Change boot options": [
     "起動オプションの変更"
   ],
   "Change device menu": [
     "デバイスメニューの変更"
   ],
+  "Change display language": [
+    "表示言語の変更"
+  ],
   "Change display language and keyboard layout": [
-    ""
+    "表示言語とキーボードレイアウトの変更"
   ],
   "Change keyboard": [
     "キーボードの変更"
+  ],
+  "Change keyboard layout": [
+    "キーボードレイアウトの変更"
   ],
   "Change product": [
     "製品の変更"
@@ -852,6 +867,9 @@ export default {
   "Language": [
     "言語"
   ],
+  "Language and keyboard": [
+    "言語とキーボード"
+  ],
   "Let the installer propose a sensible range of sizes": [
     "インストーラでのサイズ範囲の提案"
   ],
@@ -949,13 +967,13 @@ export default {
     "さらなるデバイス"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    ""
+    "選択した製品に対するキーボードレイアウトの詳細な設定は、 [ローカライゼーション] のページにあります"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    ""
+    "選択した製品に対する言語やキーボードレイアウトの詳細な設定は、 [ローカライゼーション] のページにあります。"
   ],
   "More languages might be available for the selected product at [Localization] page": [
-    ""
+    "選択した製品に対する言語の詳細な設定は、 [ローカライゼーション] のページにあります"
   ],
   "Mount Point": [
     "マウントポイント"
@@ -980,6 +998,9 @@ export default {
   ],
   "Multipath": [
     "マルチパス"
+  ],
+  "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
+    ""
   ],
   "NFS": [
     "NFS"
@@ -1275,6 +1296,9 @@ export default {
   "Result": [
     "結果"
   ],
+  "Review and fix": [
+    ""
+  ],
   "Root authentication methods": [
     "root の認証方式"
   ],
@@ -1409,6 +1433,9 @@ export default {
   ],
   "Skip to content": [
     "コンテンツに移動"
+  ],
+  "Skip to previous": [
+    ""
   ],
   "Software": [
     "ソフトウエア"
@@ -1633,10 +1660,10 @@ export default {
     "インストールにあたっての主要な項目のみを表示しています。さらに詳しい設定を確認したい場合は、それぞれのセクションを開いてください。"
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "インストールする製品に対する設定があります。インストーラの言語やキーボードレイアウトの設定は、上部バーの [設定パネル] から変更できます。"
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "インストールする製品に対する設定があります。インストーラの言語の設定は、上部バーの [設定パネル] から変更できます。"
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "この処理により、下記に示したデバイス内のデータが全て消去されます。続行して問題ないかどうか、ご確認ください。"
@@ -1672,7 +1699,7 @@ export default {
     "これはディスク内の既存パーティションを使用します"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    ""
+    "ここでの設定はインストーラ自身にのみ適用され、インストールする製品には適用されません。製品に対する設定を行いたい場合は、ローカライゼーション設定のページで行ってください。"
   ],
   "TiB": [
     "TiB"
@@ -1771,7 +1798,7 @@ export default {
     "利用可能な領域を使用する"
   ],
   "Use for the selected product too": [
-    ""
+    "選択した製品に対しても使用する"
   ],
   "Use password": [
     "パスワードの使用"
@@ -1789,7 +1816,7 @@ export default {
     "毎回の起動時に Trusted Platform Module (TPM) を利用して自動的に暗号化解除します"
   ],
   "Use these same settings for the selected product": [
-    ""
+    "選択した製品に対しても同じ設定を使用する"
   ],
   "Used space": [
     "使用済み領域"
@@ -1802,6 +1829,9 @@ export default {
   ],
   "Username suggestion dropdown": [
     "ユーザ名の提案ドロップダウン"
+  ],
+  "Using [%s] keyboard": [
+    "[%s] キーボードを使用しています"
   ],
   "Using a hashed password.": [
     "ハッシュ化されたパスワードを使用します。"
@@ -1876,7 +1906,7 @@ export default {
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
-    ""
+    "[CAPS LOCK] が有効化されています"
   ],
   "at least %s": [
     "少なくとも %s"
