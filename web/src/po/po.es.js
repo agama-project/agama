@@ -18,6 +18,9 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s aún contendrán el grupo LVM '%2$s' y cualquier partición necesaria para arrancar"
   ],
+  "%d of %d": [
+    ""
+  ],
   "%s - %s": [
     "%s - %s"
   ],
@@ -138,6 +141,9 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     "Ajuste las opciones debajo para hacer el sistema nuevo quepa dentro del espacio disponible."
   ],
+  "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
+    ""
+  ],
   "All content will be deleted": [
     "Todo el contenido será borrado"
   ],
@@ -252,17 +258,26 @@ export default {
   "Change": [
     "Cambiar"
   ],
+  "Change Language": [
+    "Cambiar idioma"
+  ],
   "Change boot options": [
     "Cambiar opciones de arranque"
   ],
   "Change device menu": [
     "Cambiar el menú del dispositivos"
   ],
+  "Change display language": [
+    "Cambiar el idioma de visualización"
+  ],
   "Change display language and keyboard layout": [
-    ""
+    "Cambiar idioma de visualización y distribución del teclado"
   ],
   "Change keyboard": [
     "Cambiar teclado"
+  ],
+  "Change keyboard layout": [
+    "Cambiar distribución del teclado"
   ],
   "Change product": [
     "Cambiar de producto"
@@ -815,10 +830,10 @@ export default {
     "Emisor"
   ],
   "It is not possible to allocate space for %s.": [
-    ""
+    "No es posible asignar espacio para %s."
   ],
   "It is not possible to allocate space for the boot partition and for %s.": [
-    ""
+    "No es posible asignar espacio para la partición de arranque y para %s."
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "No es posible instalar el sistema con la configuración actual. Ajuste las opciones a continuación."
@@ -852,6 +867,9 @@ export default {
   ],
   "Language": [
     "Idioma"
+  ],
+  "Language and keyboard": [
+    "Idioma y teclado"
   ],
   "Let the installer propose a sensible range of sizes": [
     "Deje al instalador proponer un intervalo de tamaño sensible"
@@ -950,13 +968,13 @@ export default {
     "Más dispositivos"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    ""
+    "Puede haber más distribuciones de teclado disponibles para el producto seleccionado en la página de [Localización]"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    ""
+    "Es posible que haya más idiomas y opciones de distribución de teclado para el producto seleccionado en la página de [Localización]."
   ],
   "More languages might be available for the selected product at [Localization] page": [
-    ""
+    "Puede haber más idiomas disponibles para el producto seleccionado en la página de [Localización]"
   ],
   "Mount Point": [
     "Punto de montaje"
@@ -981,6 +999,9 @@ export default {
   ],
   "Multipath": [
     "Ruta múltiple"
+  ],
+  "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
+    ""
   ],
   "NFS": [
     "NFS"
@@ -1276,6 +1297,9 @@ export default {
   "Result": [
     "Resultado"
   ],
+  "Review and fix": [
+    ""
+  ],
   "Root authentication methods": [
     "Métodos de autenticación de root"
   ],
@@ -1410,6 +1434,9 @@ export default {
     "Los tamaños deben ser introducidos como un número seguido opcionalmente por una unidad."
   ],
   "Skip to content": [
+    "Saltar a contenido"
+  ],
+  "Skip to previous": [
     ""
   ],
   "Software": [
@@ -1635,10 +1662,10 @@ export default {
     "Estas son las configuraciones de instalación más relevantes. No dude en explorar las secciones del menú para obtener más detalles."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "Estas son las configuraciones del producto a instalar. El idioma del instalador y la ditribución del teclado pueden ser ajustados mediante el [panel de configuraciones] accesible desde la barra superior."
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "Estas son las configuraciones del producto a instalar. El idioma del instalador puede ser ajustado mediante el [panel de configuraciones] accesible desde la barra superior."
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Esta acción podría destruir cualquier dato almacenado en los dispositivos listados debajo. Confirme que realmente desea continuar."
@@ -1674,7 +1701,7 @@ export default {
     "Esto utiliza particiones existentes en el disco"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    ""
+    "Esto afectará sólo a la interfaz del instalador, no el producto a instalar. Puede ajustar la localización del producto más adelante en la página de configuración de Localización."
   ],
   "TiB": [
     "TiB"
@@ -1773,7 +1800,7 @@ export default {
     "Utilice el espacio disponible"
   ],
   "Use for the selected product too": [
-    ""
+    "Usar también para el producto seleccionado"
   ],
   "Use password": [
     "Utilice contraseña"
@@ -1791,7 +1818,7 @@ export default {
     "Utilizar Trusted Platform Module(TPM) para descifrar automáticamente en cada arranque"
   ],
   "Use these same settings for the selected product": [
-    ""
+    "Usar estas mismas configuraciones para el producto seleccionado"
   ],
   "Used space": [
     "Espacio utilizado"
@@ -1804,6 +1831,9 @@ export default {
   ],
   "Username suggestion dropdown": [
     "Menú desplegable de sugerencias de nombre de usuario"
+  ],
+  "Using [%s] keyboard": [
+    "Utilizando teclado [%s]"
   ],
   "Using a hashed password.": [
     "Utilizando una contraseña con hash."
@@ -1878,7 +1908,7 @@ export default {
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
-    ""
+    "[BLOQ MAYÚS] está activado"
   ],
   "at least %s": [
     "al menos %s"

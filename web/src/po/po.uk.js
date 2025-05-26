@@ -18,6 +18,9 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s, як і раніше, міститиме групу LVM '%2$s' і будь-який розділ, необхідний для завантаження"
   ],
+  "%d of %d": [
+    ""
+  ],
   "%s - %s": [
     "%s - %s"
   ],
@@ -137,6 +140,9 @@ export default {
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
     "Відрегулюйте наведені нижче налаштування, щоб нова система вписувалася в наявний простір."
+  ],
+  "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
+    ""
   ],
   "All content will be deleted": [
     "Весь вміст буде видалений"
@@ -983,6 +989,9 @@ export default {
   "Multipath": [
     "Багатошляхове"
   ],
+  "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
+    ""
+  ],
   "NFS": [
     "NFS"
   ],
@@ -1277,6 +1286,9 @@ export default {
   "Result": [
     "Результат"
   ],
+  "Review and fix": [
+    ""
+  ],
   "Root authentication methods": [
     "Методи автентифікації користувача root"
   ],
@@ -1413,6 +1425,9 @@ export default {
   ],
   "Skip to content": [
     "Перейти до вмісту"
+  ],
+  "Skip to previous": [
+    ""
   ],
   "Software": [
     "Програми"

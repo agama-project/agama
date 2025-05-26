@@ -18,6 +18,9 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s kommer fortfarande att innehålla LVM-gruppen '%2$s' och eventuell partition som behövs för att starta systemet"
   ],
+  "%d of %d": [
+    ""
+  ],
   "%s - %s": [
     "%s - %s"
   ],
@@ -138,6 +141,9 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     "Justera inställningarna nedan för att få det nya systemet att passa in i det tillgängliga utrymmet."
   ],
+  "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
+    ""
+  ],
   "All content will be deleted": [
     "Allt innehåll kommer att raderas"
   ],
@@ -252,16 +258,25 @@ export default {
   "Change": [
     "Ändra"
   ],
+  "Change Language": [
+    "Ändra språk"
+  ],
   "Change boot options": [
     "Ändra uppstartsalternativ"
   ],
   "Change device menu": [
     "Ändra enhetsmeny"
   ],
+  "Change display language": [
+    "Ändra visningsspråk"
+  ],
   "Change display language and keyboard layout": [
-    ""
+    "Ändra visningsspråk och tangentbordslayout"
   ],
   "Change keyboard": [
+    "Ändra tangentbordslayout"
+  ],
+  "Change keyboard layout": [
     "Ändra tangentbordslayout"
   ],
   "Change product": [
@@ -853,6 +868,9 @@ export default {
   "Language": [
     "Språk"
   ],
+  "Language and keyboard": [
+    "Språk och tangentbordslayout"
+  ],
   "Let the installer propose a sensible range of sizes": [
     "Låt installationsprogrammet föreslå ett vettigt utbud av storlekar"
   ],
@@ -950,13 +968,13 @@ export default {
     "Mer enheter"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    ""
+    "Fler tangentbordslayouter kan vara tillgängliga för den valda produkten på [Lokalisering] sidan"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    ""
+    "Fler språk och tangentbordslayoutalternativ för den valda produkten kan finnas tillgängliga på sidan [Lokalisering]."
   ],
   "More languages might be available for the selected product at [Localization] page": [
-    ""
+    "Fler språk kan vara tillgängliga för den valda produkten på [Lokalisering] sidan"
   ],
   "Mount Point": [
     "Monteringspunkt"
@@ -981,6 +999,9 @@ export default {
   ],
   "Multipath": [
     "Flervägs"
+  ],
+  "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
+    ""
   ],
   "NFS": [
     "NFS"
@@ -1276,6 +1297,9 @@ export default {
   "Result": [
     "Resultat"
   ],
+  "Review and fix": [
+    ""
+  ],
   "Root authentication methods": [
     "Rotautentiseringsmetoder"
   ],
@@ -1411,6 +1435,9 @@ export default {
   ],
   "Skip to content": [
     "Hoppa till innehåll"
+  ],
+  "Skip to previous": [
+    ""
   ],
   "Software": [
     "Programvara"
@@ -1635,10 +1662,10 @@ export default {
     "Dessa är de mest relevanta installationsinställningarna. Bläddra gärna igenom avsnitten i menyn för ytterligare detaljer."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "Det här är inställningarna för produkten som ska installeras. Installationsprogrammets språk och tangentbordslayout kan justeras via [inställningspanelen] som är tillgänglig från det övre fältet."
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "Det här är inställningarna för produkten som ska installeras. Installationsspråket kan justeras via [inställningspanelen] som är tillgänglig från det övre fältet."
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Denna åtgärd kan förstöra all data som lagras på enheterna som anges nedan. Vänligen bekräfta att du verkligen vill fortsätta."
@@ -1674,7 +1701,7 @@ export default {
     "Detta använder befintliga partitioner på disken"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    ""
+    "Detta påverkar endast installationsgränssnittet, inte produkten som ska installeras. Du kan justera produktens lokalisering senare på sidan Lokaliseringsinställningar."
   ],
   "TiB": [
     "TiB"
@@ -1773,7 +1800,7 @@ export default {
     "Använd tillgängligt utrymme"
   ],
   "Use for the selected product too": [
-    ""
+    "Använd även för den valda produkten"
   ],
   "Use password": [
     "Använd lösenord"
@@ -1791,7 +1818,7 @@ export default {
     "Använd Trusted Platform Module (TPM) för att dekryptera automatiskt vid varje uppstart"
   ],
   "Use these same settings for the selected product": [
-    ""
+    "Använd samma inställningar för den valda produkten"
   ],
   "Used space": [
     "Använt utrymme"
@@ -1804,6 +1831,9 @@ export default {
   ],
   "Username suggestion dropdown": [
     "Rullgardinsmeny för användarnamnsförslag"
+  ],
+  "Using [%s] keyboard": [
+    "Använder [%s] tangentbordslayout"
   ],
   "Using a hashed password.": [
     "Använder ett hashat lösenord."
@@ -1878,7 +1908,7 @@ export default {
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
-    ""
+    "[CAPS LOCK] är på"
   ],
   "at least %s": [
     "åtminstone %s"

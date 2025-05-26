@@ -18,6 +18,9 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s encara contindrà el grup d'LVM %2$s i qualsevol partició necessària per a arrencar"
   ],
+  "%d of %d": [
+    ""
+  ],
   "%s - %s": [
     "%s - %s"
   ],
@@ -138,6 +141,9 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     "Ajusteu la configuració següent perquè el sistema nou s'adapti a l'espai disponible."
   ],
+  "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
+    ""
+  ],
   "All content will be deleted": [
     "Se'n suprimirà tot el contingut"
   ],
@@ -252,17 +258,26 @@ export default {
   "Change": [
     "Canvia"
   ],
+  "Change Language": [
+    "Canvia'n la llengua"
+  ],
   "Change boot options": [
     "Canvia les opcions d'arrencada"
   ],
   "Change device menu": [
     "Canvia el menú del dispositiu"
   ],
+  "Change display language": [
+    "Canvia la llengua de visualització"
+  ],
   "Change display language and keyboard layout": [
-    ""
+    "Canvia la llengua de visualització i la disposició del teclat"
   ],
   "Change keyboard": [
     "Canvia el teclat"
+  ],
+  "Change keyboard layout": [
+    "Canvia la disposició del teclat"
   ],
   "Change product": [
     "Canvia el producte"
@@ -853,6 +868,9 @@ export default {
   "Language": [
     "Llengua"
   ],
+  "Language and keyboard": [
+    "Llengua i teclat"
+  ],
   "Let the installer propose a sensible range of sizes": [
     "Permeteu que l'instal·lador proposi una gamma raonable de mides"
   ],
@@ -950,13 +968,13 @@ export default {
     "Més dispositius"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    ""
+    "Pot ser que hi hagi més disposicions de teclat disponibles per al producte seleccionat a la pàgina [Localitzation]"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    ""
+    "És possible que hi hagi més opcions de llengua i disposicions de teclat per al producte seleccionat a la pàgina [Localization]."
   ],
   "More languages might be available for the selected product at [Localization] page": [
-    ""
+    "És possible que hi hagi més llengües disponibles per al producte seleccionat a la pàgina [Localitzation]"
   ],
   "Mount Point": [
     "Punt de muntatge"
@@ -981,6 +999,9 @@ export default {
   ],
   "Multipath": [
     "Multicamí"
+  ],
+  "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
+    ""
   ],
   "NFS": [
     "NFS"
@@ -1276,6 +1297,9 @@ export default {
   "Result": [
     "Resultat"
   ],
+  "Review and fix": [
+    ""
+  ],
   "Root authentication methods": [
     "Mètodes d'autenticació d'arrel"
   ],
@@ -1411,6 +1435,9 @@ export default {
   ],
   "Skip to content": [
     "Omet i ves al contingut"
+  ],
+  "Skip to previous": [
+    ""
   ],
   "Software": [
     "Programari"
@@ -1635,10 +1662,10 @@ export default {
     "Aquests són els paràmetres d'instal·lació més rellevants. No dubteu a navegar per les seccions del menú per a més detalls."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "Aquests són els paràmetres per instal·lar el producte. La llengua de l'instal·lador i la disposició del teclat es poden ajustar a [settings panel] accessible des de la barra superior."
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "Aquests són els paràmetres per instal·lar el producte. La llengua de l'instal·lador es pot ajustar a [settings panel] accessible des de la barra superior."
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Aquesta acció podria destruir qualsevol dada emmagatzemada als dispositius que s'indiquen a continuació. Si us plau, confirmeu que realment voleu continuar."
@@ -1674,7 +1701,7 @@ export default {
     "Això usa les particions existents al dispositiu"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    ""
+    "Això afectarà només la interfície de l'instal·lador, no el producte que s'ha d'instal·lar. Podeu ajustar la localització del producte més endavant a la pàgina de configuració de la localització."
   ],
   "TiB": [
     "TiB"
@@ -1773,7 +1800,7 @@ export default {
     "Usa l'espai disponible"
   ],
   "Use for the selected product too": [
-    ""
+    "Usa-la també per al producte seleccionat"
   ],
   "Use password": [
     "Usa contrasenya"
@@ -1791,7 +1818,7 @@ export default {
     "Useu el mòdul de plataforma de confiança (TPM) per fer-ne la desencriptació automàticament a cada arrencada."
   ],
   "Use these same settings for the selected product": [
-    ""
+    "Usa aquests mateixos paràmetres per al producte seleccionat"
   ],
   "Used space": [
     "Espai usat"
@@ -1804,6 +1831,9 @@ export default {
   ],
   "Username suggestion dropdown": [
     "Menú desplegable de suggeriments de nom d'usuari"
+  ],
+  "Using [%s] keyboard": [
+    "S'usa el teclat per a [%s]"
   ],
   "Using a hashed password.": [
     "S'usa una contrasenya amb funció resum."
@@ -1878,7 +1908,7 @@ export default {
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
-    ""
+    "[CAPS LOCK] activat"
   ],
   "at least %s": [
     "almenys %s"
