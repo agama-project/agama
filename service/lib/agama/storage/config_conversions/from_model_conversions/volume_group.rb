@@ -32,11 +32,11 @@ module Agama
         # Volume group conversion from model according to the JSON schema.
         class VolumeGroup < Base
           # @param model_json [Hash]
-          # @param drives [Array<Configs::Drive>]
+          # @param targets [Array<Configs::Drive, Configs::MdRaid>]
           # @param encryption_model [Hash, nil]
-          def initialize(model_json, drives, encryption_model = nil)
+          def initialize(model_json, targets, encryption_model = nil)
             super(model_json)
-            @drives = drives
+            @targets = targets
             @encryption_model = encryption_model
           end
 
@@ -44,8 +44,8 @@ module Agama
 
           alias_method :volume_group_model, :model_json
 
-          # @return [Array<Configs::Drive>]
-          attr_reader :drives
+          # @return [Array<Configs::Drive, Configs::MdRaid>]
+          attr_reader :targets
 
           # @return [Hash, nil]
           attr_reader :encryption_model
@@ -82,7 +82,7 @@ module Agama
             return unless target_names
 
             target_names
-              .map { |n| drive(n)&.ensure_alias }
+              .map { |n| target(n)&.ensure_alias }
               .compact
           end
 
@@ -102,9 +102,9 @@ module Agama
           end
 
           # @param name [String]
-          # @return [Configs::Drive, nil]
-          def drive(name)
-            drives.find { |d| d.device_name == name }
+          # @return [Configs::Drive, Configs::MdRaid, nil]
+          def target(name)
+            targets.find { |d| d.device_name == name }
           end
         end
       end

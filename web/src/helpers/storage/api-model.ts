@@ -27,6 +27,15 @@ function copyApiModel(apiModel: apiModel.Config): apiModel.Config {
   return JSON.parse(JSON.stringify(apiModel));
 }
 
+function findDevice(apiModel: apiModel.Config, list: string, index: number | string) {
+  const collection = apiModel[list] || [];
+  return collection.at(index);
+}
+
+function partitionables(apiModel: apiModel.Config): (apiModel.Drive | apiModel.MdRaid)[] {
+  return (apiModel.drives || []).concat(apiModel.mdRaids || []);
+}
+
 function buildFilesystem(data?: data.Filesystem): apiModel.Filesystem | undefined {
   if (!data) return;
 
@@ -59,6 +68,14 @@ function buildLogicalVolume(data: data.LogicalVolume): apiModel.LogicalVolume {
   };
 }
 
+function buildPartition(data: data.Partition): apiModel.Partition {
+  return {
+    ...data,
+    filesystem: buildFilesystem(data.filesystem),
+    size: buildSize(data.size),
+  };
+}
+
 function buildLogicalVolumeName(mountPath?: string): string | undefined {
   if (!mountPath) return;
 
@@ -82,6 +99,9 @@ function buildPartitionFromLogicalVolume(lv: apiModel.LogicalVolume): apiModel.P
 
 export {
   copyApiModel,
+  findDevice,
+  partitionables,
+  buildPartition,
   buildVolumeGroup,
   buildLogicalVolume,
   buildLogicalVolumeName,

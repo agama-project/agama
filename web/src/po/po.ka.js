@@ -18,6 +18,9 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     ""
   ],
+  "%d of %d": [
+    ""
+  ],
   "%s - %s": [
     "%s - %s"
   ],
@@ -136,6 +139,9 @@ export default {
     "მისამართის მონაცემების სია"
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
+    ""
+  ],
+  "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     ""
   ],
   "All content will be deleted": [
@@ -982,6 +988,9 @@ export default {
   "Multipath": [
     "მრავალბილიკიანი"
   ],
+  "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
+    ""
+  ],
   "NFS": [
     "NFS"
   ],
@@ -1276,6 +1285,9 @@ export default {
   "Result": [
     "შედეგი"
   ],
+  "Review and fix": [
+    ""
+  ],
   "Root authentication methods": [
     "Root-ით ავთენტიკაციის მეთოდები"
   ],
@@ -1410,6 +1422,12 @@ export default {
     ""
   ],
   "Skip to content": [
+    ""
+  ],
+  "Skip to next": [
+    ""
+  ],
+  "Skip to previous": [
     ""
   ],
   "Software": [

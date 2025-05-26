@@ -24,7 +24,7 @@ use crate::{
     manager::InstallationPhase,
     network::model::NetworkChange,
     progress::Progress,
-    software::SelectedBy,
+    software::{model::Conflict, SelectedBy},
     storage::{
         model::{
             dasd::{DASDDevice, DASDFormatSummary},
@@ -49,8 +49,8 @@ pub enum Event {
     DevicesDirty {
         dirty: bool,
     },
-    Progress {
-        service: String,
+    ProgressChanged {
+        path: String,
         #[serde(flatten)]
         progress: Progress,
     },
@@ -69,6 +69,9 @@ pub enum Event {
     SoftwareProposalChanged {
         patterns: HashMap<String, SelectedBy>,
     },
+    ConflictsChanged {
+        conflicts: Vec<Conflict>,
+    },
     QuestionsChanged,
     InstallationPhaseChanged {
         phase: InstallationPhase,
@@ -78,7 +81,6 @@ pub enum Event {
         status: u32,
     },
     IssuesChanged {
-        service: String,
         path: String,
         issues: Vec<Issue>,
     },

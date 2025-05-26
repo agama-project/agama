@@ -88,9 +88,13 @@ describe Agama::Software::Manager do
     allow(Yast::Pkg).to receive(:TargetInitialize)
     allow(Yast::Pkg).to receive(:TargetFinish)
     allow(Yast::Pkg).to receive(:TargetLoad)
-    allow(Yast::Pkg).to receive(:SourceSaveAll)
+    allow(Yast::Pkg).to receive(:SourceSaveAll).and_return(true)
     allow(Yast::Pkg).to receive(:SourceDelete)
     allow(Yast::Pkg).to receive(:ImportGPGKey)
+    allow(Yast::Pkg).to receive(:ServiceAdd).and_return(true)
+    allow(Yast::Pkg).to receive(:ServiceSet).and_return(true)
+    allow(Yast::Pkg).to receive(:ServiceSave).and_return(true)
+    allow(Yast::Pkg).to receive(:ServiceForceRefresh).and_return(true)
     # allow glob to work for other calls
     allow(Dir).to receive(:glob).and_call_original
     allow(Dir).to receive(:glob).with(/keys/).and_return(gpg_keys)
@@ -533,6 +537,19 @@ describe Agama::Software::Manager do
       it "returns false" do
         expect(subject.package_available?(package)).to eq(false)
       end
+    end
+  end
+
+  describe "#add_service" do
+    it "does not raise exception if everything goes well" do
+      service = double(name: "test", url: "http://test.com")
+      expect { subject.add_service(service) }.to_not raise_error
+    end
+
+    it "raises ServiceError when failed to add service" do
+      expect(Yast::Pkg).to receive(:ServiceForceRefresh).and_return(false)
+      service = double(name: "test", url: "http://test.com")
+      expect { subject.add_service(service) }.to raise_error(Agama::Software::ServiceError)
     end
   end
 

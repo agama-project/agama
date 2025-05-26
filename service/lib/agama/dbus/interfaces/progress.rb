@@ -92,10 +92,16 @@ module Agama
         def register_progress_callbacks
           progress_manager.on_change do
             dbus_properties_changed(PROGRESS_INTERFACE, progress_properties, [])
+            ProgressChanged(
+              progress_total_steps, progress_current_step, progress_finished, progress_steps
+            )
           end
 
           progress_manager.on_finish do
             dbus_properties_changed(PROGRESS_INTERFACE, progress_properties, [])
+            ProgressChanged(
+              progress_total_steps, progress_current_step, progress_finished, progress_steps
+            )
           end
         end
 
@@ -106,6 +112,8 @@ module Agama
               dbus_reader :progress_current_step, "(us)", dbus_name: "CurrentStep"
               dbus_reader :progress_finished, "b", dbus_name: "Finished"
               dbus_reader :progress_steps, "as", dbus_name: "Steps"
+              dbus_signal :ProgressChanged,
+                "total_steps:u, current_step:(us), finished:b, steps:as"
             end
           end
         end

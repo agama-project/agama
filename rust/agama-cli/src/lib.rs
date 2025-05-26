@@ -272,7 +272,7 @@ async fn build_clients(
     insecure: bool,
 ) -> anyhow::Result<(BaseHTTPClient, MonitorClient)> {
     let client = build_http_client(api_url.clone(), insecure, true).await?;
-    let ws_client = build_ws_client(api_url, true).await?;
+    let ws_client = build_ws_client(api_url, insecure).await?;
     let monitor = Monitor::connect(client.clone(), ws_client).await?;
     Ok((client, monitor))
 }

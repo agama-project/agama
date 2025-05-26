@@ -26,7 +26,7 @@ type APIProgress = {
   currentTitle: string;
   finished: boolean;
   steps?: string[];
-  service: string;
+  path: string;
 };
 
 class Progress {

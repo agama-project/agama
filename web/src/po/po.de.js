@@ -18,6 +18,9 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s wird weiterhin die LVM-Gruppe ‚%2$s‘ und alle zum Booten benötigten Partitionen enthalten"
   ],
+  "%d of %d": [
+    ""
+  ],
   "%s - %s": [
     "%s - %s"
   ],
@@ -138,6 +141,9 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     "Passen Sie die Einstellungen unten an, damit das neue System in den verfügbaren Speicherplatz passt."
   ],
+  "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
+    ""
+  ],
   "All content will be deleted": [
     "Der gesamte Inhalt wird gelöscht"
   ],
@@ -252,17 +258,26 @@ export default {
   "Change": [
     "Ändern"
   ],
+  "Change Language": [
+    "Sprache ändern"
+  ],
   "Change boot options": [
     "Boot-Optionen ändern"
   ],
   "Change device menu": [
     "Gerätemenü ändern"
   ],
+  "Change display language": [
+    "Anzeigesprache ändern"
+  ],
   "Change display language and keyboard layout": [
-    ""
+    "Anzeigesprache und Tastaturbelegung ändern"
   ],
   "Change keyboard": [
     "Tastatur ändern"
+  ],
+  "Change keyboard layout": [
+    "Tastaturbelegung ändern"
   ],
   "Change product": [
     "Produkt ändern"
@@ -531,6 +546,9 @@ export default {
   "Edit volume group": [
     "Volume-Gruppe bearbeiten"
   ],
+  "Empty LVM volume group %s": [
+    "LVM-Volume-Gruppe %s löschen"
+  ],
   "Encrypt the system": [
     "System verschlüsseln"
   ],
@@ -716,7 +734,7 @@ export default {
     "Wenn ein lokales Medium zur Ausführung dieses Installationsprogramms verwendet wurde, entfernen Sie es vor dem nächsten Start."
   ],
   "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    ""
+    "Wenn die Einheit weggelassen wird, werden Bytes (B) verwendet. Größere Einheiten können in der Form GiB (Potenz von 2) oder GB (Potenz von 10) angegeben werden."
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Wenn Sie fortfahren, werden die Partitionen auf Ihrer Festplatte entsprechend den vorgegebenen Installationseinstellungen geändert."
@@ -809,10 +827,10 @@ export default {
     "Aussteller"
   ],
   "It is not possible to allocate space for %s.": [
-    ""
+    "Es ist nicht möglich, Platz für %s zuzuweisen."
   ],
   "It is not possible to allocate space for the boot partition and for %s.": [
-    ""
+    "Es ist nicht möglich, Platz für die Bootpartition und für %s zuzuweisen."
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Es ist nicht möglich, das System mit der aktuellen Konfiguration zu installieren. Passen Sie die Einstellungen unten an."
@@ -846,6 +864,9 @@ export default {
   ],
   "Language": [
     "Sprache"
+  ],
+  "Language and keyboard": [
+    "Sprache und Tastatur"
   ],
   "Let the installer propose a sensible range of sizes": [
     "Eine vernünftige Auswahl an Größen durch das Installationsprogramm vorschlagen lassen"
@@ -944,13 +965,13 @@ export default {
     "Weitere Geräte"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    ""
+    "Weitere Tastaturbelegungen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar."
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    ""
+    "Weitere Sprach- und Tastaturbelegungsoptionen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar."
   ],
   "More languages might be available for the selected product at [Localization] page": [
-    ""
+    "Weitere Sprachen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar"
   ],
   "Mount Point": [
     "Einhängepunkt"
@@ -971,10 +992,13 @@ export default {
     "Einhängepunkte verschieben"
   ],
   "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    ""
+    "Verschieben Sie die derzeit auf den ausgewählten Festplatten konfigurierten Einhängepunkte auf logische Volumes dieser Volume-Gruppe."
   ],
   "Multipath": [
     "Multipfad"
+  ],
+  "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
+    ""
   ],
   "NFS": [
     "NFS"
@@ -1261,6 +1285,9 @@ export default {
   "Result": [
     "Ergebnis"
   ],
+  "Review and fix": [
+    ""
+  ],
   "Root authentication methods": [
     "Methoden der Root-Authentifizierung"
   ],
@@ -1395,6 +1422,9 @@ export default {
     "Größen müssen als Zahlen eingegeben werden, optional gefolgt von einer Einheit."
   ],
   "Skip to content": [
+    "Zum Inhalt springen"
+  ],
+  "Skip to previous": [
     ""
   ],
   "Software": [
@@ -1545,7 +1575,7 @@ export default {
     "Das Minimum muss eine Zahl sein, optional gefolgt von einer Einheit wie GiB oder GB"
   ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    ""
+    "Die benötigten physikalischen LVM-Volumes werden als Partitionen auf den ausgewählten Festplatten hinzugefügt, basierend auf den Größen der logischen Volumes. Wenn Sie mehr als eine Festplatte auswählen, können die physikalischen Volumes auf mehrere Festplatten verteilt werden."
   ],
   "The partition can grow to use all the contiguous free space": [
     "Die Partition kann so lange wachsen, bis sie den gesamten zusammenhängenden freien Speicherplatz belegt"
@@ -1614,10 +1644,10 @@ export default {
     "Dies sind die wichtigsten Installationseinstellungen. Weitere Einzelheiten finden Sie in den Abschnitten des Menüs."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "Dies sind die Einstellungen für das zu installierende Produkt. Die Sprache des Installationsprogramms und die Tastaturbelegung können über das [settings panel] in der oberen Leiste angepasst werden."
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "Dies sind die Einstellungen für das zu installierende Produkt. Die Sprache des Installationsprogramms kann über das [settings panel] in der oberen Leiste angepasst werden."
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Diese Aktion könnte alle Daten zerstören, die auf den unten aufgeführten Geräten gespeichert sind. Bitte bestätigen Sie, dass Sie wirklich fortfahren möchten."
@@ -1653,7 +1683,7 @@ export default {
     "Dies verwendet vorhandene Partitionen auf der Festplatte"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    ""
+    "Dies betrifft nur die Oberfläche des Installationsprogramms, nicht das zu installierende Produkt. Sie können die Lokalisierung des Produkts später auf der Seite mit den Lokalisierungseinstellungen anpassen."
   ],
   "TiB": [
     "TiB"
@@ -1752,7 +1782,7 @@ export default {
     "Verfügbaren Speicherplatz verwenden"
   ],
   "Use for the selected product too": [
-    ""
+    "Auch für das ausgewählte Produkt verwenden"
   ],
   "Use password": [
     "Passwort verwenden"
@@ -1770,7 +1800,7 @@ export default {
     "Das Trusted Platform Module (TPM) zur automatischen Entschlüsselung bei jedem Bootvorgang verwenden"
   ],
   "Use these same settings for the selected product": [
-    ""
+    "Dieselben Einstellungen für das ausgewählte Produkt verwenden"
   ],
   "Used space": [
     "Belegter Speicherplatz"
@@ -1783,6 +1813,9 @@ export default {
   ],
   "Username suggestion dropdown": [
     "Dropdown-Liste mit Vorschlägen für Benutzernamen"
+  ],
+  "Using [%s] keyboard": [
+    "Tastatur [%s] wird verwendet"
   ],
   "Using a hashed password.": [
     "Verwendung eines gehashten Passworts."
@@ -1848,7 +1881,7 @@ export default {
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
-    ""
+    "[CAPS LOCK] ist eingeschaltet"
   ],
   "at least %s": [
     "mindestens %s"

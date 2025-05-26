@@ -19,8 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../storage_helpers"
-require_relative "./context"
+require_relative "../config_context"
 require "agama/storage/config_checkers/alias"
 
 shared_examples "overused alias issue" do
@@ -71,6 +70,71 @@ shared_examples "several users" do
     let(:volume_groups) do
       [
         { physicalVolumes: [device_alias] }
+      ]
+    end
+
+    include_examples "overused alias issue"
+  end
+end
+
+shared_examples "MD RAID user and target user" do
+  context "if it is used by a MD RAID and it is target for boot partitions" do
+    let(:boot) do
+      {
+        configure: true,
+        device:    device_alias
+      }
+    end
+
+    let(:md_raids) do
+      [
+        { devices: [device_alias] }
+      ]
+    end
+
+    include_examples "overused alias issue"
+  end
+
+  context "if it is used by a MD RAID and it is target for physical volumes" do
+    let(:md_raids) do
+      [
+        { devices: [device_alias] }
+      ]
+    end
+
+    let(:volume_groups) do
+      [
+        { physicalVolumes: [{ generate: [device_alias] }] }
+      ]
+    end
+
+    include_examples "overused alias issue"
+  end
+end
+
+shared_examples "Volume group user and target user" do
+  context "if it is used by a volume group and it is target for boot partitions" do
+    let(:boot) do
+      {
+        configure: true,
+        device:    device_alias
+      }
+    end
+
+    let(:volume_groups) do
+      [
+        { physicalVolumes: [device_alias] }
+      ]
+    end
+
+    include_examples "overused alias issue"
+  end
+
+  context "if it is used by a volume group and it is target for physical volumes" do
+    let(:volume_groups) do
+      [
+        { physicalVolumes: [device_alias] },
+        { physicalVolumes: [{ generate: [device_alias] }] }
       ]
     end
 
@@ -137,6 +201,23 @@ shared_examples "formatted and volume group target user" do
   end
 end
 
+shared_examples "formatted and boot target user" do
+  context "if it is formatted" do
+    let(:filesystem) { { path: "/" } }
+
+    context "and it is used as target for boot partitions" do
+      let(:boot) do
+        {
+          configure: true,
+          device:    device_alias
+        }
+      end
+
+      include_examples "formatted and used issue"
+    end
+  end
+end
+
 shared_examples "partitioned and used issue" do
   it "includes the expected issue" do
     issues = subject.issues
@@ -189,7 +270,7 @@ shared_examples "partitioned and volume group user" do
 end
 
 describe Agama::Storage::ConfigCheckers::Alias do
-  include_context "checker"
+  include_context "config"
 
   subject { described_class.new(device_config, config) }
 
@@ -197,6 +278,7 @@ describe Agama::Storage::ConfigCheckers::Alias do
     context "for a drive" do
       let(:config_json) do
         {
+          boot:         boot,
           drives:       [
             {
               alias:      device_alias,
@@ -209,6 +291,7 @@ describe Agama::Storage::ConfigCheckers::Alias do
         }
       end
 
+      let(:boot) { nil }
       let(:device_alias) { "disk1" }
       let(:filesystem) { nil }
       let(:partitions) { nil }
@@ -220,9 +303,12 @@ describe Agama::Storage::ConfigCheckers::Alias do
       include_examples "several MD RAID users"
       include_examples "several volume group users"
       include_examples "several users"
+      include_examples "MD RAID user and target user"
+      include_examples "Volume group user and target user"
       include_examples "formatted and MD RAID user"
       include_examples "formatted and volume group user"
       include_examples "formatted and volume group target user"
+      include_examples "formatted and boot target user"
       include_examples "partitioned and MD RAID user"
       include_examples "partitioned and volume group user"
     end
@@ -262,6 +348,7 @@ describe Agama::Storage::ConfigCheckers::Alias do
     context "for a MD RAID" do
       let(:config_json) do
         {
+          boot:         boot,
           mdRaids:      [
             {
               alias:      device_alias,
@@ -273,6 +360,7 @@ describe Agama::Storage::ConfigCheckers::Alias do
         }
       end
 
+      let(:boot) { nil }
       let(:device_alias) { "md1" }
       let(:filesystem) { nil }
       let(:partitions) { nil }
@@ -281,8 +369,10 @@ describe Agama::Storage::ConfigCheckers::Alias do
       let(:device_config) { config.md_raids.first }
 
       include_examples "several volume group users"
+      include_examples "Volume group user and target user"
       include_examples "formatted and volume group user"
       include_examples "formatted and volume group target user"
+      include_examples "formatted and boot target user"
       include_examples "partitioned and volume group user"
     end
 

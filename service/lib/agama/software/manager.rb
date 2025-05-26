@@ -45,6 +45,8 @@ Yast.import "Pkg"
 
 module Agama
   module Software
+    class ServiceError < StandardError; end
+
     # This class is responsible for software handling.
     #
     # FIXME: This class has too many responsibilities:
@@ -143,16 +145,22 @@ module Agama
 
         logger.info "Probing software"
 
+        common_steps = [
+          _("Refreshing repositories metadata"),
+          _("Calculating the software proposal")
+        ]
         if repositories.empty?
-          start_progress_with_size(3)
+          start_progress_with_descriptions(
+            _("Initializing sources"), *common_steps
+          )
           Yast::PackageCallbacks.InitPackageCallbacks(logger)
-          progress.step(_("Initializing sources")) { add_base_repos }
+          progress.step { add_base_repos }
         else
-          start_progress_with_size(2)
+          start_progress_with_descriptions(*common_steps)
         end
 
-        progress.step(_("Refreshing repositories metadata")) { repositories.load }
-        progress.step(_("Calculating the software proposal")) { propose }
+        progress.step { repositories.load }
+        progress.step { propose }
 
         update_issues
       end
@@ -367,24 +375,24 @@ module Agama
 
         @logger.info "Adding service #{service.name.inspect} (#{service.url})"
         if !Yast::Pkg.ServiceAdd(service.name, service.url.to_s)
-          raise format("Adding service '%s' failed.", service.name)
+          raise ServiceError, format(_("Adding service '%s' failed."), service.name)
         end
 
         if !Yast::Pkg.ServiceSet(service.name, "autorefresh" => true)
           # error message
-          raise format("Updating service '%s' failed.", service.name)
+          raise ServiceError, format(_("Updating service '%s' failed."), service.name)
         end
 
         # refresh works only for saved services
         if !Yast::Pkg.ServiceSave(service.name)
           # error message
-          raise format("Saving service '%s' failed.", service.name)
+          raise ServiceError, format(_("Saving service '%s' failed."), service.name)
         end
 
         # Force refreshing due timing issues (bnc#967828)
         if !Yast::Pkg.ServiceForceRefresh(service.name)
           # error message
-          raise format("Refreshing service '%s' failed.", service.name)
+          raise ServiceError, format(_("Refreshing service '%s' failed."), service.name)
         end
       ensure
         Yast::Pkg.SourceSaveAll
@@ -393,7 +401,7 @@ module Agama
 
       def remove_service(service)
         if Yast::Pkg.ServiceDelete(service.name) && !Yast::Pkg.SourceSaveAll
-          raise format("Removing service '%s' failed.", service_name)
+          raise ServiceError, format(_("Removing service '%s' failed."), service_name)
         end
 
         true
@@ -448,6 +456,12 @@ module Agama
         selected.each { |s| Yast::Pkg.ResolvableInstall(s.name, s.kind) }
       end
 
+      def proposal
+        @proposal ||= Proposal.new.tap do |proposal|
+          proposal.on_issues_change { update_issues }
+        end
+      end
+
     private
 
       # @return [Agama::Config]
@@ -472,12 +486,6 @@ module Agama
         return product if @products.size == 1 && product.license.to_s.empty?
 
         nil
-      end
-
-      def proposal
-        @proposal ||= Proposal.new.tap do |proposal|
-          proposal.on_issues_change { update_issues }
-        end
       end
 
       def import_gpg_keys

@@ -19,11 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../agama/storage/storage_helpers"
-require "agama/config"
-require "agama/storage/config"
-require "agama/storage/config_conversions"
-require "agama/storage/system"
+require_relative "../agama/storage/config_context"
 require "y2storage"
 require "y2storage/agama_proposal"
 
@@ -73,7 +69,7 @@ def partition_config(name: nil, filesystem: nil, size: nil)
 end
 
 describe Y2Storage::AgamaProposal do
-  include Agama::RSpec::StorageHelpers
+  include_context "config"
 
   subject(:proposal) do
     described_class.new(
@@ -84,25 +80,11 @@ describe Y2Storage::AgamaProposal do
     )
   end
 
-  let(:storage_system) { Agama::Storage::System.new }
-
-  let(:config) { config_json ? config_from_json : default_config }
-
-  let(:config_from_json) do
-    Agama::Storage::ConfigConversions::FromJSON
-      .new(config_json, default_paths: default_paths, mandatory_paths: mandatory_paths)
-      .convert
-  end
-
   let(:default_config) do
     Agama::Storage::Config.new.tap do |settings|
       settings.drives = drives
     end
   end
-
-  let(:config_json) { nil }
-
-  let(:product_config) { Agama::Config.new(product_data) }
 
   let(:product_data) do
     {
@@ -166,10 +148,6 @@ describe Y2Storage::AgamaProposal do
     }
   end
 
-  let(:default_paths) { product_config.default_paths }
-
-  let(:mandatory_paths) { product_config.mandatory_paths }
-
   let(:issues_list) { [] }
 
   let(:drives) { [drive0] }
@@ -209,16 +187,12 @@ describe Y2Storage::AgamaProposal do
     end
   end
 
-  before do
-    mock_storage(devicegraph: scenario)
-    # To speed-up the tests
-    allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
-  end
-
   let(:scenario) { "empty-hd-50GiB.yaml" }
 
   describe "#propose" do
     context "when only the root partition is specified" do
+      let(:config) { default_config }
+
       context "if no configuration about boot devices is specified" do
         it "proposes to create the root device and the boot-related partition" do
           proposal.propose
@@ -292,6 +266,7 @@ describe Y2Storage::AgamaProposal do
     context "when the config has 2 drives" do
       let(:scenario) { "disks.yaml" }
 
+      let(:config) { default_config }
       let(:drives) { [drive0, drive1] }
 
       let(:drive1) do
@@ -312,6 +287,7 @@ describe Y2Storage::AgamaProposal do
     context "when trying to reuse a file system from a drive" do
       let(:scenario) { "disks.yaml" }
 
+      let(:config) { default_config }
       let(:drives) { [drive] }
 
       let(:drive) do
@@ -350,6 +326,8 @@ describe Y2Storage::AgamaProposal do
     end
 
     context "when a partition table type is specified for a drive" do
+      let(:config) { default_config }
+
       let(:drive0) do
         Agama::Storage::Configs::Drive.new.tap do |drive|
           drive.partitions = partitions0
@@ -371,6 +349,7 @@ describe Y2Storage::AgamaProposal do
     end
 
     context "when encrypting some devices" do
+      let(:config) { default_config }
       let(:partitions0) { [root_partition, home_partition] }
 
       let(:home_encryption) do
@@ -479,7 +458,9 @@ describe Y2Storage::AgamaProposal do
     end
 
     context "when there are more drives than disks in the system" do
+      let(:config) { default_config }
       let(:drives) { [drive0, drive1] }
+
       let(:drive1) do
         Agama::Storage::Configs::Drive.new.tap do |drive|
           drive.search = Agama::Storage::Configs::Search.new.tap do |search|
@@ -523,6 +504,8 @@ describe Y2Storage::AgamaProposal do
     context "when searching for an existent drive" do
       let(:scenario) { "disks.yaml" }
 
+      let(:config) { default_config }
+
       before do
         drive0.search.name = "/dev/vdb"
       end
@@ -541,6 +524,7 @@ describe Y2Storage::AgamaProposal do
     context "when searching for any drive" do
       let(:scenario) { "disks.yaml" }
 
+      let(:config) { default_config }
       let(:drives) { [drive0, drive1] }
 
       let(:drive0) do
@@ -568,7 +552,9 @@ describe Y2Storage::AgamaProposal do
     end
 
     context "when searching for a missing partition" do
+      let(:config) { default_config }
       let(:partitions0) { [root_partition, missing_partition] }
+
       let(:missing_partition) do
         Agama::Storage::Configs::Partition.new.tap do |part|
           part.search = Agama::Storage::Configs::Search.new.tap do |search|
@@ -612,6 +598,7 @@ describe Y2Storage::AgamaProposal do
     context "when searching for an existent partition" do
       let(:scenario) { "disks.yaml" }
 
+      let(:config) { default_config }
       let(:partitions0) { [root_partition, home_partition] }
 
       before do
@@ -633,6 +620,7 @@ describe Y2Storage::AgamaProposal do
     context "when searching for any partition" do
       let(:scenario) { "disks.yaml" }
 
+      let(:config) { default_config }
       let(:partitions0) { [root_partition, home_partition] }
 
       before do
@@ -668,6 +656,7 @@ describe Y2Storage::AgamaProposal do
     context "forcing to delete some partitions" do
       let(:scenario) { "disks.yaml" }
 
+      let(:config) { default_config }
       let(:partitions0) { [root_partition, vda2, vda3] }
 
       let(:vda2) do
@@ -701,6 +690,7 @@ describe Y2Storage::AgamaProposal do
     context "allowing to delete some partition" do
       let(:scenario) { "disks.yaml" }
 
+      let(:config) { default_config }
       let(:partitions0) { [root_partition, vda3] }
 
       let(:vda3) do
@@ -749,6 +739,7 @@ describe Y2Storage::AgamaProposal do
     context "if the partition config indicates both force to delete and allow to delete" do
       let(:scenario) { "disks.yaml" }
 
+      let(:config) { default_config }
       let(:partitions0) { [root_partition, vda3] }
 
       let(:vda3) do

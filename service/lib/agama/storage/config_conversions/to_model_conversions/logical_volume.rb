@@ -44,7 +44,6 @@ module Agama
           def conversions
             {
               lvName:     config.name,
-              alias:      config.alias,
               mountPath:  config.filesystem&.path,
               filesystem: convert_filesystem,
               size:       convert_size,

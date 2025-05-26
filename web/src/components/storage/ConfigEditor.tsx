@@ -23,9 +23,10 @@
 import React from "react";
 import { _ } from "~/i18n";
 import { useDevices, useResetConfigMutation } from "~/queries/storage";
-import { useConfigModel } from "~/queries/storage/config-model";
+import { useModel } from "~/hooks/storage/model";
 import DriveEditor from "~/components/storage/DriveEditor";
 import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
+import MdRaidEditor from "~/components/storage/MdRaidEditor";
 import { Alert, Button, List, ListItem } from "@patternfly/react-core";
 
 const NoDevicesConfiguredAlert = () => {
@@ -53,26 +54,51 @@ const NoDevicesConfiguredAlert = () => {
   );
 };
 
+/**
+ * @fixme Adapt components (DriveEditor, MdRaidEditor, etc) to receive a list name and an index
+ * instead of a device object. Each component will retrieve the device from the model if needed.
+ *
+ * That will allow to:
+ * * Simplify the model types (list and listIndex properties are not needed).
+ * * All the components (DriveEditor, PartitionPage, etc) work in a similar way. They receive a
+ *   list and an index and each component retrieves the device from the model if needed.
+ * * The components always have all the needed info for generating an url.
+ * * The partitions and logical volumes can also be referenced by an index, so it opens the door
+ *   to have partitions and lvs without a mount path.
+ *
+ * These changes will be done once creating partitions without a mount path is needed (e.g., for
+ * manually creating physical volumes).
+ */
 export default function ConfigEditor() {
-  const model = useConfigModel({ suspense: true });
+  const model = useModel();
   const devices = useDevices("system", { suspense: true });
-  const drives = model.drives || [];
-  const volumeGroups = model.volumeGroups || [];
+  const drives = model.drives;
+  const mdRaids = model.mdRaids;
+  const volumeGroups = model.volumeGroups;
 
-  if (!drives.length && !volumeGroups.length) {
+  if (!drives.length && !mdRaids.length && !volumeGroups.length) {
     return <NoDevicesConfiguredAlert />;
   }
 
   return (
     <List isPlain>
-      {model.volumeGroups?.map((vg, i) => {
+      {volumeGroups.map((vg, i) => {
         return (
           <ListItem key={`vg-${i}`}>
             <VolumeGroupEditor vg={vg} />
           </ListItem>
         );
       })}
-      {model.drives?.map((drive, i) => {
+      {mdRaids.map((raid, i) => {
+        const device = devices.find((d) => d.name === raid.name);
+
+        return (
+          <ListItem key={`md-${i}`}>
+            <MdRaidEditor raid={raid} raidDevice={device} />
+          </ListItem>
+        );
+      })}
+      {drives.map((drive, i) => {
         const device = devices.find((d) => d.name === drive.name);
 
         /**

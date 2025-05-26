@@ -58,7 +58,7 @@ module Agama
           # @return [Array<String>]
           def convert_target_devices
             config.physical_volumes_devices
-              .map { |a| storage_config.drive(a)&.device_name }
+              .map { |a| storage_config.partitionable(a)&.device_name }
               .compact
           end
 

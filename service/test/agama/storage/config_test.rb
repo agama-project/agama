@@ -54,17 +54,20 @@ describe Agama::Storage::Config do
     context "if boot config is set to be configured" do
       let(:config_json) do
         {
-          boot:   {
+          boot:    {
             configure: true,
             device:    device_alias
           },
-          drives: [
+          drives:  [
             {
               alias:      "disk1",
               partitions: [
                 { alias: "part1" }
               ]
             }
+          ],
+          mdRaids: [
+            { alias: "raid1" }
           ]
         }
       end
@@ -78,20 +81,29 @@ describe Agama::Storage::Config do
       end
 
       context "and boot config has a device alias" do
-        context "and there is not a drive config with the boot device alias" do
-          let(:device_alias) { "part1" }
-
-          it "returns nil" do
-            expect(subject.boot_device).to be_nil
-          end
-        end
-
         context "and there is a drive config with the boot device alias" do
           let(:device_alias) { "disk1" }
 
           it "returns the drive config" do
             expect(subject.boot_device).to be_a(Agama::Storage::Configs::Drive)
             expect(subject.boot_device.alias).to eq("disk1")
+          end
+        end
+
+        context "and there is an mdRaid config with the boot device alias" do
+          let(:device_alias) { "raid1" }
+
+          it "returns the mdRaid config" do
+            expect(subject.boot_device).to be_a(Agama::Storage::Configs::MdRaid)
+            expect(subject.boot_device.alias).to eq("raid1")
+          end
+        end
+
+        context "and there is not a drive or mdRaid config with the boot device alias" do
+          let(:device_alias) { "part1" }
+
+          it "returns nil" do
+            expect(subject.boot_device).to be_nil
           end
         end
       end
@@ -354,6 +366,53 @@ describe Agama::Storage::Config do
         md_raid = subject.md_raid(device_alias)
 
         expect(md_raid).to be_nil
+      end
+    end
+  end
+
+  describe "#partitionable" do
+    let(:config_json) do
+      {
+        drives:  [
+          { alias: "disk1" },
+          { alias: "disk2" }
+        ],
+        mdRaids: [
+          { alias: "md1" },
+          { alias: "md2" }
+        ]
+      }
+    end
+
+    context "if there is a drive with the given alias" do
+      let(:device_alias) { "disk2" }
+
+      it "returns the drive" do
+        device = subject.partitionable(device_alias)
+
+        expect(device).to be_a(Agama::Storage::Configs::Drive)
+        expect(device.alias).to eq(device_alias)
+      end
+    end
+
+    context "if there is a MD RAID with the given alias" do
+      let(:device_alias) { "md1" }
+
+      it "returns the MD RAID" do
+        device = subject.partitionable(device_alias)
+
+        expect(device).to be_a(Agama::Storage::Configs::MdRaid)
+        expect(device.alias).to eq(device_alias)
+      end
+    end
+
+    context "if there is neither a drive nor a MD RAID with the given alias" do
+      let(:device_alias) { "part1" }
+
+      it "returns nil" do
+        device = subject.partitionable(device_alias)
+
+        expect(device).to be_nil
       end
     end
   end
@@ -948,13 +1007,34 @@ describe Agama::Storage::Config do
           ]
         end
 
-        it "returns the volume groups" do
+        it "includes the volume groups" do
           users = subject.target_users(device_alias)
           expect(users).to contain_exactly(subject.volume_groups[0], subject.volume_groups[2])
         end
       end
 
-      context "and it is not used as target for physical volumes" do
+      context "and it is used as target for boot partitions" do
+        let(:boot) do
+          {
+            configure: true,
+            device:    device_alias
+          }
+        end
+
+        it "includes the boot config" do
+          users = subject.target_users(device_alias)
+          expect(users).to contain_exactly(subject.boot)
+        end
+      end
+
+      context "and it is not used as target for physical volumes or boot" do
+        let(:boot) do
+          {
+            configure: false,
+            device:    device_alias
+          }
+        end
+
         let(:volume_groups) do
           [
             { name: "vg1" }
@@ -970,12 +1050,14 @@ describe Agama::Storage::Config do
 
     let(:config_json) do
       {
+        boot:         boot,
         drives:       drives,
         mdRaids:      md_raids,
         volumeGroups: volume_groups
       }
     end
 
+    let(:boot) { nil }
     let(:drives) { nil }
     let(:md_raids) { nil }
     let(:volume_groups) { nil }

@@ -29,7 +29,7 @@
 
 import xbytes from "xbytes";
 import { _, N_ } from "~/i18n";
-import { PartitionSlot, StorageDevice } from "~/types/storage";
+import { PartitionSlot, StorageDevice, model } from "~/types/storage";
 import { apiModel, Volume } from "~/api/storage/types";
 import { sprintf } from "sprintf-js";
 
@@ -198,12 +198,14 @@ const baseName = (name: string, truncate?: boolean): string => {
   return base.slice(0, limit1) + "…" + base.slice(limit2);
 };
 
+type DeviceWithName = StorageDevice | model.Drive | model.MdRaid;
+
 /**
  * Base name of a device.
  *
  * FIXME: See note at baseName about the usage of truncate.
  */
-const deviceBaseName = (device: StorageDevice, truncate?: boolean): string => {
+const deviceBaseName = (device: DeviceWithName, truncate?: boolean): string => {
   return baseName(device.name, truncate);
 };
 

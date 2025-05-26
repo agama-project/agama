@@ -26,8 +26,8 @@ use console::style;
 use indicatif::{ProgressBar, ProgressStyle};
 use std::time::Duration;
 
-const MANAGER_SERVICE: &str = "org.opensuse.Agama.Manager1";
-const SOFTWARE_SERVICE: &str = "org.opensuse.Agama.Software1";
+const MANAGER_PROGRESS_OBJECT_PATH: &str = "/org/opensuse/Agama/Manager1";
+const SOFTWARE_PROGRESS_OBJECT_PATH: &str = "/org/opensuse/Agama/Software1";
 
 /// Displays the progress on the terminal.
 pub struct ProgressMonitor {
@@ -77,14 +77,14 @@ impl ProgressMonitor {
     ///
     /// It returns true if the monitor should continue.
     async fn update(&mut self, status: MonitorStatus) -> bool {
-        if status.progress.get(MANAGER_SERVICE).is_none() && self.running {
+        if status.progress.get(MANAGER_PROGRESS_OBJECT_PATH).is_none() && self.running {
             self.finish();
             if self.stop_on_idle {
                 return false;
             }
         }
 
-        if let Some(progress) = status.progress.get(MANAGER_SERVICE) {
+        if let Some(progress) = status.progress.get(MANAGER_PROGRESS_OBJECT_PATH) {
             self.running = true;
             if self.current_step != progress.current_step {
                 self.update_main(&progress).await;
@@ -92,7 +92,7 @@ impl ProgressMonitor {
             }
         }
 
-        match status.progress.get(SOFTWARE_SERVICE) {
+        match status.progress.get(SOFTWARE_PROGRESS_OBJECT_PATH) {
             Some(progress) => self.update_bar(progress),
             None => self.remove_bar(),
         }

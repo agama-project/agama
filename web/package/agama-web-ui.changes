@@ -1,4 +1,21 @@
 -------------------------------------------------------------------
+Thu May 22 17:16:40 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Handle reused MD RAIDs that are already included at the storage
+  configuration (gh/agama-project/agama#2346).
+
+-------------------------------------------------------------------
+Thu May 22 16:20:38 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to resolve in web UI software conflicts
+  (gh#agama-project/agama#2348)
+
+-------------------------------------------------------------------
+Thu May 22 09:07:28 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Do not crash when navigating to a Wi-Fi network (bsc#1243415)
+
+-------------------------------------------------------------------
 Mon May 19 13:38:16 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Keep margin between sidebar and main content in all breakpoints

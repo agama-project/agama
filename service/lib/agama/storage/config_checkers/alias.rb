@@ -63,7 +63,12 @@ module Agama
         # @return [Issue, nil]
         def overused_alias_issue
           return unless config.alias
-          return unless storage_config.users(config.alias).size > 1
+
+          users = storage_config.users(config.alias)
+          target_users = storage_config.target_users(config.alias)
+
+          overused = users.size > 1 || (users.any? && target_users.any?)
+          return unless overused
 
           error(
             format(_("The device with alias '%s' is used by more than one device"), config.alias),

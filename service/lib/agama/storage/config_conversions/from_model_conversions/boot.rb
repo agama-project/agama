@@ -30,16 +30,16 @@ module Agama
         # Boot conversion from model according to the JSON schema.
         class Boot < Base
           # @param model_json [Hash] Boot model.
-          # @param drives [Array<Configs::Drive>]
-          def initialize(model_json, drives)
+          # @param targets [Array<Configs::Drive, Configs::MdRaid>]
+          def initialize(model_json, targets)
             super(model_json)
-            @drives = drives
+            @targets = targets
           end
 
         private
 
-          # @return [Array<Configs::Drive>]
-          attr_reader :drives
+          # @return [Array<Configs::Drive, Configs::MdRaid>]
+          attr_reader :targets
 
           # @see Base
           # @return [Configs::Boot]
@@ -61,7 +61,7 @@ module Agama
             boot_device_model = model_json[:device]
             return if boot_device_model.nil?
 
-            FromModelConversions::BootDevice.new(boot_device_model, drives).convert
+            FromModelConversions::BootDevice.new(boot_device_model, targets).convert
           end
         end
       end

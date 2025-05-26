@@ -63,3 +63,13 @@ impl Progress {
         })
     }
 }
+
+/// Information about the current progress sequence.
+#[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct ProgressSequence {
+    /// Sequence steps if known in advance
+    pub steps: Vec<String>,
+    #[serde(flatten)]
+    pub progress: Progress,
+}
