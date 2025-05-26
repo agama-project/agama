@@ -27,7 +27,7 @@ use crate::{
 use anyhow::anyhow;
 use async_trait::async_trait;
 use core::time;
-use std::thread;
+use std::{collections::HashMap, thread};
 
 use super::error::NmError;
 
@@ -70,6 +70,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
         }
 
         if config.connections {
+            let copy = state.general_state.copy_network;
             state.connections = self
                 .client
                 .connections()
@@ -111,7 +112,6 @@ impl Adapter for NetworkManagerAdapter<'_> {
             .map_err(|e| NetworkAdapterError::Checkpoint(anyhow!(e)))?;
 
         tracing::info!("Updating the general state {:?}", &network.general_state);
-
         let result = self
             .client
             .update_general_state(&network.general_state)
@@ -194,8 +194,11 @@ fn add_ordered_connections<'b>(
     conns: &mut Vec<&'b Connection>,
 ) {
     if let Some(uuid) = conn.controller {
-        let controller = network.get_connection_by_uuid(uuid).unwrap();
-        add_ordered_connections(controller, network, conns);
+        if let Some(controller) = network.get_connection_by_uuid(uuid) {
+            add_ordered_connections(controller, network, conns);
+        } else {
+            tracing::error!("Could not found the controller {}", &uuid);
+        }
     }
 
     if !conns.contains(&conn) {

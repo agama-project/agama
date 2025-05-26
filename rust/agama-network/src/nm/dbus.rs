@@ -1595,7 +1595,6 @@ mod test {
 
     #[test]
     fn test_connection_from_dbus_bridge() -> anyhow::Result<()> {
-        dbg!("TESTING BRIDGE");
         let uuid = Uuid::new_v4().to_string();
         let connection_section = HashMap::from([hi("id", "br0")?, hi("uuid", uuid)?]);
 
