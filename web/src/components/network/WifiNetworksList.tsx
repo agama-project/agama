@@ -142,10 +142,9 @@ const NetworkListItem = ({ network, connection, showIp }: NetworkListItemProps) 
                   </Content>
                 )}
 
-                {
-                  // FIXME: make below annotation appear only when needed
-                }
-                <Annotation>{_("Configured for installation only")}</Annotation>
+                {connection && !connection.keep && (
+                  <Annotation>{_("Configured for installation only")}</Annotation>
+                )}
               </Flex>
             </DataListCell>,
             <DataListCell key="badges" isFilled={false} alignRight>
