@@ -232,6 +232,7 @@ type APIConnection = {
   wireless?: Wireless;
   status: ConnectionStatus;
   state: ConnectionState;
+  keep: boolean;
 };
 
 type WirelessOptions = {
@@ -268,6 +269,7 @@ type ConnectionOptions = {
   method6?: ConnectionMethod;
   wireless?: Wireless;
   state?: ConnectionState;
+  keep?: boolean;
 };
 
 class Connection {
@@ -282,6 +284,7 @@ class Connection {
   method4: ConnectionMethod = ConnectionMethod.AUTO;
   method6: ConnectionMethod = ConnectionMethod.AUTO;
   wireless?: Wireless;
+  keep: boolean;
 
   constructor(id: string, options?: ConnectionOptions) {
     this.id = id;

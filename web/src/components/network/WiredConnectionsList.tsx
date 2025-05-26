@@ -66,10 +66,9 @@ const ConnectionListItem = ({ connection }: ConnectionListItemProps) => {
                   <Content className={a11yStyles.screenReader}>{_("IP addresses")}</Content>
                   {addresses.map(formatIp).join(", ")}
                 </Content>
-                {
-                  // FIXME: make below annotation appear only when needed
-                }
-                <Annotation>{_("Configured for installation only")}</Annotation>
+                {!connection.keep && (
+                  <Annotation>{_("Configured for installation only")}</Annotation>
+                )}
               </Flex>
             </DataListCell>,
           ]}
