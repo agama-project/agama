@@ -22,13 +22,15 @@
 require_relative "../../../test_helper"
 require "agama/config"
 require "agama/storage/config"
-require "agama/storage/config_conversions"
+require "agama/storage/config_conversions/from_model"
 require "agama/storage/configs"
 require "y2storage/encryption_method"
 require "y2storage/filesystems/mount_by_type"
 require "y2storage/filesystems/type"
 require "y2storage/pbkd_function"
 require "y2storage/refinements"
+
+# TODO: this test suite requires a better organization, similar to ToJSON tests.
 
 using Y2Storage::Refinements::SizeCasts
 
@@ -913,20 +915,22 @@ describe Agama::Storage::ConfigConversions::FromModel do
     context "with a JSON specifying 'boot'" do
       let(:model_json) do
         {
-          boot:   {
+          boot:    {
             configure: configure,
             device:    {
               default: default,
               name:    name
             }
           },
-          drives: drives
+          drives:  drives,
+          mdRaids: md_raids
         }
       end
 
       let(:default) { false }
       let(:name) { nil }
       let(:drives) { [] }
+      let(:md_raids) { [] }
 
       context "if boot is set to be configured" do
         let(:configure) { true }
@@ -960,9 +964,9 @@ describe Agama::Storage::ConfigConversions::FromModel do
           end
 
           context "and the boot device specifies a 'name'" do
-            let(:name) { "/dev/vda" }
-
             context "and there is a drive config for the given boot device name" do
+              let(:name) { "/dev/vda" }
+
               let(:drives) do
                 [
                   { name: "/dev/vda" }
@@ -992,6 +996,8 @@ describe Agama::Storage::ConfigConversions::FromModel do
             end
 
             context "and there is not a drive config for the given boot device name" do
+              let(:name) { "/dev/vda" }
+
               let(:drives) do
                 [
                   { name: "/dev/vdb" }
@@ -1014,6 +1020,65 @@ describe Agama::Storage::ConfigConversions::FromModel do
                 expect(boot.configure?).to eq(true)
                 expect(boot.device.default?).to eq(false)
                 expect(boot.device.device_alias).to eq(drive.alias)
+              end
+            end
+
+            context "and there is a MD RAID config for the given boot device name" do
+              let(:name) { "/dev/md0" }
+
+              let(:md_raids) do
+                [
+                  { name: "/dev/md0" }
+                ]
+              end
+
+              it "does not add more MD RAIDs" do
+                config = subject.convert
+                expect(config.md_raids.size).to eq(1)
+                expect(config.md_raids.first.search.name).to eq("/dev/md0")
+              end
+
+              it "sets an alias to the MD RAID config" do
+                config = subject.convert
+                md = config.md_raids.first
+                expect(md.alias).to_not be_nil
+              end
+
+              it "sets #boot to the expected value" do
+                config = subject.convert
+                boot = config.boot
+                md = config.md_raids.first
+                expect(boot.configure?).to eq(true)
+                expect(boot.device.default?).to eq(false)
+                expect(boot.device.device_alias).to eq(md.alias)
+              end
+            end
+
+            xcontext "and there is not a MD RAID config for the given boot device name" do
+              let(:name) { "/dev/md0" }
+
+              let(:md_raids) do
+                [
+                  { name: "/dev/md1" }
+                ]
+              end
+
+              it "adds a MD RAID for the boot device" do
+                config = subject.convert
+                expect(config.md_raids.size).to eq(2)
+
+                md = config.md_raids.find { |d| d.search.name == name }
+                expect(md.alias).to_not be_nil
+                expect(md.partitions).to be_empty
+              end
+
+              it "sets #boot to the expected value" do
+                config = subject.convert
+                boot = config.boot
+                md = config.md_raids.find { |d| d.search.name == name }
+                expect(boot.configure?).to eq(true)
+                expect(boot.device.default?).to eq(false)
+                expect(boot.device.device_alias).to eq(md.alias)
               end
             end
           end
@@ -1054,6 +1119,15 @@ describe Agama::Storage::ConfigConversions::FromModel do
               ]
             }
           ],
+          mdRaids:      [
+            {
+              name:       "/dev/md0",
+              partitions: [
+                { name: "/dev/md0-p1" },
+                {}
+              ]
+            }
+          ],
           volumeGroups: [
             {
               vgName:        "system",
@@ -1065,13 +1139,13 @@ describe Agama::Storage::ConfigConversions::FromModel do
 
       it "sets #encryption to the new partitions" do
         config = subject.convert
-        partitions = config.drives.first.partitions
-        new_partition = partitions.find { |p| p.search.nil? }
-        reused_partition = partitions.find { |p| p.search&.name == "/dev/vda1" }
+        partitions = config.partitions
+        new_partitions = partitions.reject(&:search)
+        reused_partitions = partitions.select(&:search)
 
-        expect(new_partition.encryption.method.id).to eq(:luks1)
-        expect(new_partition.encryption.password).to eq("12345")
-        expect(reused_partition.encryption).to be_nil
+        expect(new_partitions.map { |p| p.encryption.method.id }).to all(eq(:luks1))
+        expect(new_partitions.map { |p| p.encryption.password }).to all(eq("12345"))
+        expect(reused_partitions.map(&:encryption)).to all(be_nil)
       end
 
       it "sets #encryption for the automatically created physical volumes" do
@@ -1192,15 +1266,123 @@ describe Agama::Storage::ConfigConversions::FromModel do
       end
     end
 
+    context "with a JSON specifying 'mdRaids'" do
+      let(:model_json) do
+        { mdRaids: md_raids }
+      end
+
+      let(:md_raids) do
+        [
+          md_raid,
+          { name: "/dev/md1" }
+        ]
+      end
+
+      let(:md_raid) do
+        { name: "/dev/md0" }
+      end
+
+      context "with an empty list" do
+        let(:md_raids) { [] }
+
+        it "sets #md_raids to the expected value" do
+          config = subject.convert
+          expect(config.md_raids).to eq([])
+        end
+      end
+
+      context "with a list of MD RAIDs" do
+        it "sets #md_raids to the expected value" do
+          config = subject.convert
+          expect(config.md_raids.size).to eq(2)
+          expect(config.md_raids).to all(be_a(Agama::Storage::Configs::MdRaid))
+
+          md1, md2 = config.md_raids
+          expect(md1.search.name).to eq("/dev/md0")
+          expect(md1.partitions).to eq([])
+          expect(md2.search.name).to eq("/dev/md1")
+          expect(md2.partitions).to eq([])
+        end
+      end
+
+      md_raid_proc = proc { |c| c.md_raids.first }
+
+      context "if a MD RAID does not specify 'name'" do
+        let(:md_raid) { {} }
+
+        it "sets #search to the expected value" do
+          md = md_raid_proc.call(subject.convert)
+          expect(md.search).to be_nil
+        end
+      end
+
+      context "if a MD RAID does not spicify neither 'mountPath' nor 'filesystem'" do
+        let(:md_raid) { {} }
+        include_examples "without filesystem", md_raid_proc
+      end
+
+      context "if a MD RAID does not spicify 'ptableType'" do
+        let(:md_raid) { {} }
+        include_examples "without ptableType", md_raid_proc
+      end
+
+      context "if a MD RAID does not specifies 'spacePolicy'" do
+        let(:md_raid) { {} }
+        include_examples "without spacePolicy", md_raid_proc
+      end
+
+      context "if a MD RAID specifies 'name'" do
+        let(:md_raid) { { name: name } }
+        include_examples "with name", md_raid_proc
+      end
+
+      context "if a MD RAID specifies 'mountPath'" do
+        let(:md_raid) { { mountPath: mountPath } }
+        include_examples "with mountPath", md_raid_proc
+      end
+
+      context "if a MD RAID specifies 'filesystem'" do
+        let(:md_raid) { { filesystem: filesystem } }
+        include_examples "with filesystem", md_raid_proc
+      end
+
+      context "if a MD RAID specifies both 'mountPath' and 'filesystem'" do
+        let(:md_raid) { { mountPath: mountPath, filesystem: filesystem } }
+        include_examples "with mountPath and filesystem", md_raid_proc
+      end
+
+      context "if a MD RAID specifies 'ptableType'" do
+        let(:md_raid) { { ptableType: ptableType } }
+        include_examples "with ptableType", md_raid_proc
+      end
+
+      context "if a MD RAID specifies 'partitions'" do
+        let(:md_raid) { { partitions: partitions } }
+        include_examples "with partitions", md_raid_proc
+      end
+
+      context "if a MD RAID specifies 'spacePolicy'" do
+        let(:md_raid) { { spacePolicy: spacePolicy } }
+        include_examples "with spacePolicy", md_raid_proc
+      end
+
+      context "if a MD RAID specifies both 'spacePolicy' and 'partitions'" do
+        let(:md_raid) { { spacePolicy: spacePolicy, partitions: partitions } }
+        include_examples "with spacePolicy and partitions", md_raid_proc
+      end
+    end
+
     context "with a JSON specifying 'volumeGroups'" do
       let(:model_json) do
         {
           drives:       drives,
+          mdRaids:      md_raids,
           volumeGroups: volume_groups
         }
       end
 
       let(:drives) { [] }
+      let(:md_raids) { [] }
 
       let(:volume_groups) do
         [
@@ -1293,12 +1475,19 @@ describe Agama::Storage::ConfigConversions::FromModel do
       end
 
       context "if a volume group specifies 'targetDevices'" do
-        let(:volume_group) { { targetDevices: ["/dev/vda", "/dev/vdc"] } }
+        let(:volume_group) { { targetDevices: ["/dev/vda", "/dev/vdc", "/dev/md0"] } }
 
         let(:drives) do
           [
             { name: "/dev/vda" },
             { name: "/dev/vdb" }
+          ]
+        end
+
+        let(:md_raids) do
+          [
+            { name: "/dev/md0" },
+            { name: "/dev/md1" }
           ]
         end
 
@@ -1309,14 +1498,18 @@ describe Agama::Storage::ConfigConversions::FromModel do
           expect(config.drives).to include(an_object_having_attributes({ device_name: "/dev/vdc" }))
         end
 
-        it "sets an alias to the target drives" do
+        it "sets an alias to the target devices" do
           config = subject.convert
           vda = config.drives.find { |d| d.device_name == "/dev/vda" }
           vdb = config.drives.find { |d| d.device_name == "/dev/vdb" }
           vdc = config.drives.find { |d| d.device_name == "/dev/vdc" }
+          md0 = config.md_raids.find { |d| d.device_name == "/dev/md0" }
+          md1 = config.md_raids.find { |d| d.device_name == "/dev/md1" }
           expect(vda.alias).to_not be_nil
           expect(vdb.alias).to be_nil
           expect(vda.alias).to_not be_nil
+          expect(md0.alias).to_not be_nil
+          expect(md1.alias).to be_nil
         end
 
         it "sets #physical_volumes_devices to the expected value" do
@@ -1324,7 +1517,8 @@ describe Agama::Storage::ConfigConversions::FromModel do
           volume_group = volume_group_proc.call(config)
           vda = config.drives.find { |d| d.device_name == "/dev/vda" }
           vdc = config.drives.find { |d| d.device_name == "/dev/vdc" }
-          expect(volume_group.physical_volumes_devices).to eq([vda.alias, vdc.alias])
+          md0 = config.md_raids.find { |d| d.device_name == "/dev/md0" }
+          expect(volume_group.physical_volumes_devices).to eq([vda.alias, vdc.alias, md0.alias])
         end
       end
 

@@ -48,3 +48,36 @@ impl Issue {
         }
     }
 }
+
+impl TryFrom<&zbus::zvariant::Value<'_>> for Issue {
+    type Error = zbus::zvariant::Error;
+
+    fn try_from(value: &zbus::zvariant::Value<'_>) -> Result<Self, Self::Error> {
+        let value = value.downcast_ref::<zbus::zvariant::Structure>()?;
+        let fields = value.fields();
+
+        let Some([description, kind, details, source, severity]) = fields.get(0..5) else {
+            return Err(zbus::zvariant::Error::Message(
+                "Not enough elements for building an Issue.".to_string(),
+            ));
+        };
+
+        let description: String = description.try_into()?;
+        let kind: String = kind.try_into()?;
+        let details: String = details.try_into()?;
+        let source: u32 = source.try_into()?;
+        let severity: u32 = severity.try_into()?;
+
+        Ok(Issue {
+            description,
+            kind,
+            details: if details.is_empty() {
+                None
+            } else {
+                Some(details.to_string())
+            },
+            severity,
+            source,
+        })
+    }
+}

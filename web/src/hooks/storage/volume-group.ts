@@ -25,8 +25,8 @@ import {
   addVolumeGroup,
   editVolumeGroup,
   deleteVolumeGroup,
-  volumeGroupToDrive,
-  driveToVolumeGroup,
+  volumeGroupToPartitions,
+  deviceToVolumeGroup,
 } from "~/helpers/storage/volume-group";
 import { QueryHookOptions } from "~/types/queries";
 import { model, data } from "~/types/storage";
@@ -65,7 +65,7 @@ function useDeleteVolumeGroup(options?: QueryHookOptions): DeleteVolumeGroupFn {
   const updateApiModel = useUpdateApiModel();
   return (vgName: string, moveToDrive: boolean) => {
     updateApiModel(
-      moveToDrive ? volumeGroupToDrive(apiModel, vgName) : deleteVolumeGroup(apiModel, vgName),
+      moveToDrive ? volumeGroupToPartitions(apiModel, vgName) : deleteVolumeGroup(apiModel, vgName),
     );
   };
 }
@@ -76,7 +76,7 @@ function useConvertToVolumeGroup(options?: QueryHookOptions): ConvertToVolumeGro
   const apiModel = useApiModel(options);
   const updateApiModel = useUpdateApiModel();
   return (driveName: string) => {
-    updateApiModel(driveToVolumeGroup(apiModel, driveName));
+    updateApiModel(deviceToVolumeGroup(apiModel, driveName));
   };
 }
 

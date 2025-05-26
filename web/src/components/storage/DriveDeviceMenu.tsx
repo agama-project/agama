@@ -24,21 +24,21 @@ import React from "react";
 import { Split, Flex, Label } from "@patternfly/react-core";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import MenuDeviceDescription from "./MenuDeviceDescription";
+import NewVgMenuOption from "./NewVgMenuOption";
 import { useAvailableDevices, useLongestDiskTitle } from "~/queries/storage";
 import { useDrive, useModel } from "~/queries/storage/config-model";
 import { useDrive as useDriveModel } from "~/hooks/storage/drive";
-import { useConvertToVolumeGroup } from "~/hooks/storage/volume-group";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { deviceBaseName, deviceLabel, formattedPath } from "~/components/storage/utils";
-import { apiModel } from "~/api/storage/types";
+import * as model from "~/types/storage/model";
 import { StorageDevice } from "~/types/storage";
 import { sprintf } from "sprintf-js";
-import { _, n_, formatList } from "~/i18n";
+import { _, formatList } from "~/i18n";
 
 const driveBaseName = (device: StorageDevice): string => deviceBaseName(device, true);
 const driveLabel = (device: StorageDevice): string => deviceLabel(device, true);
 
-const UseOnlyOneOption = (drive: apiModel.Drive): boolean => {
+const UseOnlyOneOption = (drive: model.Drive): boolean => {
   const driveModel = useDrive(drive.name);
   if (!driveModel) return false;
 
@@ -109,7 +109,7 @@ const SearchSelectorSingleOption = ({ selected }: { selected: StorageDevice }): 
 };
 
 const searchSelectorOptions = (
-  drive: apiModel.Drive,
+  drive: model.Drive,
   devices: StorageDevice[],
   selected: StorageDevice,
   onChange: (name: StorageDevice["name"]) => void,
@@ -122,7 +122,7 @@ const searchSelectorOptions = (
 };
 
 type DisksDrillDownMenuItemProps = {
-  drive: apiModel.Drive;
+  drive: model.Drive;
   selected: StorageDevice;
   onDeviceClick: (name: StorageDevice["name"]) => void;
 };
@@ -261,7 +261,7 @@ const DisksDrillDownMenuItem = ({
   );
 };
 
-type RemoveDriveOptionProps = { drive: apiModel.Drive };
+type RemoveDriveOptionProps = { drive: model.Drive };
 
 const RemoveDriveOption = ({ drive }: RemoveDriveOptionProps): React.ReactNode => {
   const driveModel = useDrive(drive.name);
@@ -305,54 +305,7 @@ const RemoveDriveOption = ({ drive }: RemoveDriveOptionProps): React.ReactNode =
   );
 };
 
-type NewVgOptionProps = DriveDeviceMenuProps;
-
-const NewVgOption = ({ drive, selected }: NewVgOptionProps): React.ReactNode => {
-  const convertToVg = useConvertToVolumeGroup();
-  /** @todo Replace the useDrive hook from /queries by the hook from /hooks. */
-  const vgs = useDriveModel(drive.name)?.getVolumeGroups() || [];
-  const mountPaths = drive.partitions.filter((p) => !p.name).map((p) => formattedPath(p.mountPath));
-
-  const titleText = () => {
-    if (vgs.length) {
-      // TRANSLATORS: %s is the short name of a disk, like 'sda'
-      return sprintf(_("Create another LVM volume group on %s"), driveBaseName(selected));
-    }
-
-    // TRANSLATORS: %s is the short name of a disk, like 'sda'
-    return sprintf(_("Create LVM volume group on %s"), driveBaseName(selected));
-  };
-
-  const descriptionText = () => {
-    if (mountPaths.length) {
-      return sprintf(
-        n_(
-          // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
-          // single mount point in the singular case).
-          "%s will be created as a logical volume",
-          "%s will be created as logical volumes",
-          mountPaths.length,
-        ),
-        formatList(mountPaths),
-      );
-    }
-  };
-
-  return (
-    <MenuButtonItem
-      component="a"
-      onClick={() => convertToVg(drive.name)}
-      itemId="lvm"
-      description={descriptionText()}
-    >
-      <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
-        <span>{titleText()}</span>
-      </Flex>
-    </MenuButtonItem>
-  );
-};
-
-export type DriveDeviceMenuProps = { drive: apiModel.Drive; selected: StorageDevice };
+export type DriveDeviceMenuProps = { drive: model.Drive; selected: StorageDevice };
 
 /**
  * Menu that provides options for users to configure the device used by a given drive.
@@ -386,7 +339,7 @@ export default function DriveDeviceMenu({
           selected={selected}
           onDeviceClick={changeDriveTarget}
         />,
-        <NewVgOption key="add-vg-option" drive={drive} selected={selected} />,
+        <NewVgMenuOption key="add-vg-option" device={drive} />,
         <RemoveDriveOption key="delete-disk-option" drive={drive} />,
       ]}
     >

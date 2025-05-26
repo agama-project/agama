@@ -22,15 +22,15 @@
 //! listen for events.
 
 use tokio::{net::TcpStream, sync::broadcast};
-use tokio_native_tls::{native_tls, TlsConnector};
+use tokio_native_tls::native_tls;
 use tokio_stream::StreamExt;
 use tokio_tungstenite::{
-    client_async,
+    connect_async_tls_with_config,
     tungstenite::{
         http::{self, Uri},
         ClientRequestBuilder,
     },
-    WebSocketStream,
+    Connector, WebSocketStream,
 };
 use url::Url;
 
@@ -60,10 +60,8 @@ pub enum WebSocketError {
 }
 
 /// WebSocket client for the Agama service.
-///
-/// TODO: implement Stream.
 pub struct WebSocketClient {
-    socket: WebSocketStream<tokio_native_tls::TlsStream<tokio::net::TcpStream>>,
+    socket: WebSocketStream<tokio_tungstenite::MaybeTlsStream<TcpStream>>,
 }
 
 impl WebSocketClient {
@@ -77,32 +75,27 @@ impl WebSocketClient {
         auth_token: &AuthToken,
         insecure: bool,
     ) -> Result<Self, WebSocketError> {
-        let host = url
-            .host_str()
-            .ok_or_else(|| WebSocketError::MissingHostname(url.to_string()))?;
-        let port = Self::find_port(&url);
-
         let tls_connector = native_tls::TlsConnector::builder()
             .danger_accept_invalid_certs(insecure)
             .danger_accept_invalid_hostnames(insecure)
             .build()?;
-        let tls_connector: TlsConnector = tls_connector.into();
+        let tls_connector: native_tls::TlsConnector = tls_connector.into();
 
-        let socket_addr = format!("{}:{}", host, port);
-        let stream = TcpStream::connect(socket_addr).await?;
-        let stream = tls_connector
-            .connect(host, stream)
-            .await
-            .map_err(|e| WebSocketError::Handshake(e.to_string()))?;
-
+        let connector = Connector::NativeTls(tls_connector);
         let uri: Uri = url.as_str().parse()?;
         let token = auth_token.as_str();
+
         let request =
             ClientRequestBuilder::new(uri).with_header("Authorization", format!("Bearer {token}"));
 
-        let (socket, _response) = client_async(request, stream)
-            .await
-            .map_err(|e| WebSocketError::Handshake(e.to_string()))?;
+        // The connect_async_tls_config receives a request, the WebSocket
+        // configuration, whether to disable the "Nagle's algorithm"
+        // (recommended to false) and the connector.
+        //
+        // See https://docs.rs/tokio-tungstenite/latest/tokio_tungstenite/fn.connect_async_tls_with_config.html.
+        let (socket, _response) =
+            connect_async_tls_with_config(request, None, false, Some(connector)).await?;
+
         Ok(Self { socket })
     }
 
@@ -114,12 +107,5 @@ impl WebSocketClient {
         let content = msg?.to_string();
         let event: Event = serde_json::from_str(&content)?;
         Ok(event)
-    }
-
-    fn find_port(url: &Url) -> u16 {
-        url.port().unwrap_or_else(|| match url.scheme() {
-            "wss" => 443,
-            _ => 80,
-        })
     }
 }

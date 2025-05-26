@@ -64,7 +64,7 @@ module Agama
       def boot_device
         return unless boot.configure? && boot.device.device_alias
 
-        drives.find { |d| d.alias?(boot.device.device_alias) }
+        supporting_partitions.find { |d| d.alias?(boot.device.device_alias) }
       end
 
       # Drive config containing root.
@@ -102,6 +102,14 @@ module Agama
       # @return [Configs::MdRaid, nil]
       def md_raid(device_alias)
         md_raids.find { |d| d.alias?(device_alias) }
+      end
+
+      # Device supporting partitions and with the given alias
+      #
+      # @param device_alias [String]
+      # @return [Configs::MdRaid, nil]
+      def partitionable(device_alias)
+        supporting_partitions.find { |d| d.alias?(device_alias) }
       end
 
       # @return [Array<Configs::Partition>]
@@ -189,9 +197,9 @@ module Agama
       # Configs directly using the given alias as target device.
       #
       # @param device_alias [String]
-      # @return [Array<Configs::VolumeGroup>]
+      # @return [Array<Configs::Boot, Configs::VolumeGroup>]
       def target_users(device_alias)
-        vg_target_users(device_alias)
+        [boot_target_user(device_alias), vg_target_users(device_alias)].flatten.compact
       end
 
     private
@@ -216,6 +224,16 @@ module Agama
         return [] unless device
 
         volume_groups.select { |v| v.physical_volumes.include?(device_alias) }
+      end
+
+      # Boot config if it uses the given alias as target for creating the boot partition.
+      #
+      # @param device_alias [String]
+      # @return [Configs::Boot, nil]
+      def boot_target_user(device_alias)
+        return unless boot_device&.alias?(device_alias)
+
+        boot
       end
 
       # Volume groups using the given alias as target for physical volumes.

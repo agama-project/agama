@@ -19,7 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../storage_helpers"
+require_relative "./storage_helpers"
 require "agama/config"
 require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_solver"
@@ -27,17 +27,17 @@ require "agama/storage/system"
 require "y2storage"
 require "y2storage/encryption_method/tpm_fde"
 
-shared_context "checker" do
+shared_context "config" do
   # Solves the config.
   def solve_config
-    storage_system = Agama::Storage::System.new
-
     Agama::Storage::ConfigSolver
       .new(product_config, storage_system)
       .solve(config)
   end
 
   include Agama::RSpec::StorageHelpers
+
+  let(:storage_system) { Agama::Storage::System.new }
 
   let(:product_config) { Agama::Config.new(product_data) }
 
@@ -64,11 +64,15 @@ shared_context "checker" do
 
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSON
-      .new(config_json)
+      .new(config_json, default_paths: default_paths, mandatory_paths: mandatory_paths)
       .convert
   end
 
   let(:config_json) { nil }
+
+  let(:default_paths) { product_config.default_paths }
+
+  let(:mandatory_paths) { product_config.mandatory_paths }
 
   before do
     mock_storage(devicegraph: scenario)

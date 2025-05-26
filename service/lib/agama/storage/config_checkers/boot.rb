@@ -92,7 +92,7 @@ module Agama
         def valid_alias?
           return false unless device_alias
 
-          storage_config.drives.any? { |d| d.alias?(device_alias) }
+          storage_config.supporting_partitions.any? { |d| d.alias?(device_alias) }
         end
       end
     end
