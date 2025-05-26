@@ -76,7 +76,7 @@ module Agama
         #
         # The boot device is recursively searched until reaching a drive.
         #
-        # @return [Configs::Drive, Configs::MdDrive, nil] nil if the boot device cannot be inferred
+        # @return [Configs::Drive, Configs::MdRaid, nil] nil if the boot device cannot be inferred
         #   from the config.
         def boot_device
           root_device = config.root_drive || config.root_md_raid || config.root_volume_group
@@ -91,7 +91,7 @@ module Agama
         # @param is_target [Boolean] Whether the devices are target for automatically creating
         #   partitions (e.g., for creating physical volumes).
         #
-        # @return [Configs::Drive, Configs::MdDrive, nil]
+        # @return [Configs::Drive, Configs::MdRaid, nil]
         def partitionable_from_devices(devices, is_target: false)
           devices.each do |device|
             drive = partitionable_from_device(device, is_target: is_target)
@@ -106,7 +106,7 @@ module Agama
         # @param device [Configs::Drive, Configs::MdRaid, Configs::VolumeGroup]
         # @param is_target [Boolean] See {#partitioned_drive_from_devices}
         #
-        # @return [Configs::Drive, Configs::MdDrive, nil]
+        # @return [Configs::Drive, Configs::MdRaid, nil]
         def partitionable_from_device(device, is_target: false)
           case device
           when Configs::Drive
@@ -121,7 +121,7 @@ module Agama
         # Recursively looks for the first partitioned config from the given MD RAID.
         #
         # @param md_raid [Configs::MdRaid]
-        # @return [Configs::Drive, Configs::MdDrive, nil]
+        # @return [Configs::Drive, Configs::MdRaid, nil]
         def partitionable_from_md_raid(md_raid)
           return partitionable_from_found_md_raid(md_raid) if md_raid.found_device
 
@@ -131,7 +131,7 @@ module Agama
         # Recursively looks for the first partitioned config from the given MD RAID.
         #
         # @param md_raid [Configs::MdRaid]
-        # @return [Configs::Drive, Configs::MdDrive, nil]
+        # @return [Configs::Drive, Configs::MdRaid, nil]
         def partitionable_from_found_md_raid(md_raid)
           return md_raid if storage_system.candidate?(md_raid.found_device)
 
@@ -152,7 +152,7 @@ module Agama
         # Recursively looks for the first partitioned config from the given volume group.
         #
         # @param volume_group [Configs::VolumeGroup]
-        # @return [Configs::Drive, Configs::MdDrive, nil]
+        # @return [Configs::Drive, Configs::MdRaid, nil]
         def partitionable_from_volume_group(volume_group)
           pv_devices = find_devices(volume_group.physical_volumes_devices, is_target: true)
           pvs = find_devices(volume_group.physical_volumes)
