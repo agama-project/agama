@@ -24,41 +24,148 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import AllConnectionsStatusAlert from "./AllConnectionsStatusAlert";
+import { Connection } from "~/types/network";
+
+let mockConnections: Connection[];
+
+jest.mock("~/queries/network", () => ({
+  ...jest.requireActual("~/queries/network"),
+  useConnections: () => mockConnections,
+}));
 
 describe("AllConnectionsStatusAlert", () => {
-  it("renders an alert with 'full-transient' mode correctly", () => {
-    plainRender(<AllConnectionsStatusAlert mode="full-transient" connections={3} />);
+  describe("when there is only one connection", () => {
+    describe("and it is set to persistent (`keep` is true)", () => {
+      beforeEach(() => {
+        mockConnections = [
+          new Connection("Newtwork 2", {
+            wireless: {
+              security: "none",
+              ssid: "Network 2",
+              mode: "infrastructure",
+            },
+            keep: true,
+          }),
+        ];
+      });
 
-    screen.getByText("No connections will be available in the installed system");
-    screen.getByRole("button", { name: "Set all to be available in the installed system" });
+      it("renders nothing", () => {
+        const { container } = plainRender(<AllConnectionsStatusAlert />);
+        expect(container).toBeEmptyDOMElement();
+      });
+    });
+
+    describe("and it is set to transient (`keep` is false)", () => {
+      beforeEach(() => {
+        mockConnections = [
+          new Connection("Newtwork 2", {
+            wireless: {
+              security: "none",
+              ssid: "Network 2",
+              mode: "infrastructure",
+            },
+            keep: false,
+          }),
+        ];
+      });
+
+      it("renders the 'full-transient' alert", () => {
+        plainRender(<AllConnectionsStatusAlert />);
+
+        screen.getByText("No connections will be available in the installed system");
+      });
+    });
   });
 
-  it("renders an alert with 'full-persistent' mode correctly", () => {
-    plainRender(<AllConnectionsStatusAlert mode="full-persistent" connections={3} />);
+  describe("when there is more than one connection", () => {
+    describe("and all are transient (`keep` is false)", () => {
+      beforeEach(() => {
+        mockConnections = [
+          new Connection("Newtwork 2", {
+            wireless: {
+              security: "none",
+              ssid: "Network 2",
+              mode: "infrastructure",
+            },
+            keep: false,
+          }),
+          new Connection("Newtwork 3", {
+            wireless: {
+              security: "none",
+              ssid: "Network 2",
+              mode: "infrastructure",
+            },
+            keep: false,
+          }),
+        ];
+      });
 
-    screen.getByText("All connections will be available in the installed system");
-    screen.getByRole("button", { name: "Set all for installation only" });
-  });
+      it("renders a 'full-transient' alert", () => {
+        plainRender(<AllConnectionsStatusAlert />);
 
-  it("renders an alert with 'mixed' mode correctly", () => {
-    plainRender(<AllConnectionsStatusAlert mode="mixed" connections={3} />);
+        screen.getByText("No connections will be available in the installed system");
+        screen.getByRole("button", { name: "Set all to be available in the installed system" });
+      });
+    });
+    describe("and all are persistent (`keep` is true)", () => {
+      beforeEach(() => {
+        mockConnections = [
+          new Connection("Newtwork 2", {
+            wireless: {
+              security: "none",
+              ssid: "Network 2",
+              mode: "infrastructure",
+            },
+            keep: true,
+          }),
+          new Connection("Newtwork 3", {
+            wireless: {
+              security: "none",
+              ssid: "Network 2",
+              mode: "infrastructure",
+            },
+            keep: true,
+          }),
+        ];
+      });
 
-    screen.getByText("Some connections will be available in the installed system.");
-    screen.getByRole("button", { name: "Set all to be available in the installed system" });
-    screen.getByRole("button", { name: "Set all for installation only" });
-  });
+      it("renders a 'full-persistent' alert", () => {
+        plainRender(<AllConnectionsStatusAlert />);
 
-  it("renders nothing the alert if there is only one connection and mode is not 'full-transient'", () => {
-    const { container } = plainRender(
-      <AllConnectionsStatusAlert mode="full-persistent" connections={1} />,
-    );
-    expect(container).toBeEmptyDOMElement();
-  });
+        screen.getByText("All connections will be available in the installed system");
+        screen.getByRole("button", { name: "Set all for installation only" });
+      });
+    });
+    describe("and there are both, persistent and transient connections", () => {
+      beforeEach(() => {
+        mockConnections = [
+          new Connection("Newtwork 2", {
+            wireless: {
+              security: "none",
+              ssid: "Network 2",
+              mode: "infrastructure",
+            },
+            keep: true,
+          }),
+          new Connection("Newtwork 3", {
+            wireless: {
+              security: "none",
+              ssid: "Network 2",
+              mode: "infrastructure",
+            },
+            keep: false,
+          }),
+        ];
+      });
 
-  it("renders alert when there is only one connection and mode is 'full-transient'", () => {
-    plainRender(<AllConnectionsStatusAlert mode="full-transient" connections={1} />);
+      it("renders a 'mixed' alert", () => {
+        plainRender(<AllConnectionsStatusAlert />);
 
-    screen.getByText("No connections will be available in the installed system");
+        screen.getByText("Some connections will be available in the installed system.");
+        screen.getByRole("button", { name: "Set all to be available in the installed system" });
+        screen.getByRole("button", { name: "Set all for installation only" });
+      });
+    });
   });
 
   // TODO: update below test when actions are implemented

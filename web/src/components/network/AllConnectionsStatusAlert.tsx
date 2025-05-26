@@ -22,6 +22,8 @@
 
 import React from "react";
 import { Alert, Button, Content } from "@patternfly/react-core";
+import { useConnections } from "~/queries/network";
+import { Connection } from "~/types/network";
 import { _ } from "~/i18n";
 
 // TODO: find a better name and add the onClick action
@@ -42,24 +44,11 @@ const MakePermament = () => {
   );
 };
 
-type AllConnectionsStatusAlertProp = {
-  /**
-   * Indicates the overall state of the connections' persistence configuration:
-   *   - "full-transient": All connections are set for temporary use during installation only.
-   *   - "full-persistent": All connections are configured to be available in the installed system too.
-   *   - "mixed": A mix of persistent and transient connections is present.
-   */
-  mode: "full-transient" | "full-persistent" | "mixed";
-
-  /** The total number of defined network connections. */
-  connections: number;
-};
-
 /**
  * Displays a contextual alert to inform users about the full transient, full
  * persistence or mixed status of defined network connections.
  *
- * Depending on the provided mode, the alert will:
+ * Depending on the `keep` flag of connections, the alert will:
  * - Show a warning if no connections will be available in the installed system ("full-transient" mode).
  * - Show a custom alert if all connections will be available ("full-persistent" mode).
  * - Show a custom alert if the connections are mixed between the two ("mixed" mode).
@@ -72,14 +61,30 @@ type AllConnectionsStatusAlertProp = {
  * "full-transient", to avoid showing an unnecessary bulk action prompt.
  *
  */
-export default function AllConnectionsStatusAlert({
-  mode,
-  connections,
-}: AllConnectionsStatusAlertProp) {
+export default function AllConnectionsStatusAlert() {
+  const connections: Connection[] = useConnections();
+  const persistentConnections: number = connections.filter((c) => c.keep).length;
+
+  /**
+   * Indicates the overall state of the connections' persistence configuration:
+   *   - "full-transient": All connections are set for temporary use during installation only.
+   *   - "full-persistent": All connections are configured to be available in the installed system too.
+   *   - "mixed": A mix of persistent and transient connections is present.
+   */
+  let mode: "full-transient" | "full-persistent" | "mixed";
+
+  if (persistentConnections === 0) {
+    mode = "full-transient";
+  } else if (persistentConnections === connections.length) {
+    mode = "full-persistent";
+  } else {
+    mode = "mixed";
+  }
+
   // If there is only one connection and not in mode "all transient" let's not
   // bother users with the warning with a kind of useless "bulk" action in such
   // a context.
-  if (mode !== "full-transient" && connections === 1) return;
+  if (mode !== "full-transient" && connections.length === 1) return;
 
   const titles = {
     "full-transient": _("No connections will be available in the installed system"),
