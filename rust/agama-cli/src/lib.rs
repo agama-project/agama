@@ -26,6 +26,7 @@ use anyhow::Context;
 use auth_tokens_file::AuthTokensFile;
 use clap::{Args, Parser};
 use fluent_uri::UriRef;
+use monitor::start_monitor;
 
 mod auth;
 mod auth_tokens_file;
@@ -34,6 +35,7 @@ mod config;
 mod error;
 mod events;
 mod logs;
+mod monitor;
 mod profile;
 mod progress;
 mod questions;
@@ -335,7 +337,8 @@ pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
         }
         Commands::Monitor => {
             let (_client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
-            show_progress(monitor, false).await;
+            // show_progress(monitor, false).await;
+            start_monitor(monitor).await?;
         }
         Commands::Events { pretty } => {
             let ws_client = build_ws_client(api_url, cli.opts.insecure).await?;

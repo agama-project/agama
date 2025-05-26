@@ -22,11 +22,11 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 pub struct Issue {
-    description: String,
-    details: Option<String>,
-    source: u32,
-    severity: u32,
-    kind: String,
+    pub description: String,
+    pub details: Option<String>,
+    pub source: u32,
+    pub severity: u32,
+    pub kind: String,
 }
 
 impl Issue {
