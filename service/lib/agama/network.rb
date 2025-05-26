@@ -95,17 +95,17 @@ module Agama
     def copy_files
       copy(HOSTNAME)
 
+      copy_directory(
+        AGAMA_SYSTEMD_LINK,
+        File.join(Yast::Installation.destdir, SYSTEMD_LINK)
+      )
+
       return unless Dir.exist?(ETC_NM_DIR)
       return if File.exist?(NOT_COPY_NETWORK)
 
       copy_directory(
         File.join(ETC_NM_DIR, "system-connections"),
         File.join(Yast::Installation.destdir, ETC_NM_DIR, "system-connections")
-      )
-
-      copy_directory(
-        AGAMA_SYSTEMD_LINK,
-        File.join(Yast::Installation.destdir, SYSTEMD_LINK)
       )
     end
 

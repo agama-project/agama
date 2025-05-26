@@ -38,6 +38,8 @@ describe Agama::Network do
     allow(Yast::Installation).to receive(:destdir).and_return(targetdir)
     stub_const("Agama::Network::HOSTNAME", hostname_path)
     stub_const("Agama::Network::RUN_NM_DIR", File.join(rootdir, "run", "NetworkManager"))
+    stub_const("Agama::Network::AGAMA_SYSTEMD_LINK",
+      File.join(rootdir, Agama::Network::AGAMA_SYSTEMD_LINK))
     stub_const("Agama::Network::NOT_COPY_NETWORK", not_copy_network)
     FileUtils.mkdir_p(agama_dir)
   end
@@ -58,6 +60,19 @@ describe Agama::Network do
     before do
       allow(Yast2::Systemd::Service).to receive(:find).with("NetworkManager").and_return(service)
       stub_const("Agama::Network::ETC_NM_DIR", etcdir)
+    end
+
+    context "when there is some agama systemd network link file" do
+      before do
+        FileUtils.cp_r(Dir["#{fixtures}/*"], rootdir)
+      end
+
+      it "copies the files to /etc/systemd/network" do
+        network.install
+        expect(File).to exist(
+          File.join(targetdir, "etc", "systemd", "network", "10-agama-ifname-bootdev.link")
+        )
+      end
     end
 
     context "when NetworkManager configuration files are present" do
@@ -109,6 +124,7 @@ describe Agama::Network do
         )
       end
     end
+
     context "when an static hostname is present" do
       let(:test_path) { File.join(fixtures, "etc", "hostname.test") }
 
