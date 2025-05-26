@@ -42,6 +42,8 @@ import {
   fetchConnections,
   fetchDevices,
   fetchState,
+  keep,
+  unkeep,
   updateConnection,
 } from "~/api/network";
 
@@ -123,6 +125,7 @@ const useAddConnectionMutation = () => {
   };
   return useMutation(query);
 };
+
 /**
  * Hook that builds a mutation to update a network connection
  *
@@ -131,9 +134,10 @@ const useAddConnectionMutation = () => {
 const useConnectionMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: (newConnection: Connection) =>
-      updateConnection(newConnection.toApi()).then(() => applyChanges()),
-    onSuccess: () => {
+    mutationFn: (newConnection: Connection, forceApply: boolean = true) =>
+      updateConnection(newConnection.toApi()).then(() => forceApply && applyChanges()),
+    onSuccess: (data) => {
+      console.log(data);
       queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
       queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
     },
@@ -141,6 +145,48 @@ const useConnectionMutation = () => {
   return useMutation(query);
 };
 
+/**
+ * Hook that builds a mutation to keep or unkeep a network connection
+ *
+ * It does not require to call `useMutation`.
+ */
+const useConnectionKeepMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: (connection: Connection) => {
+      const method = connection.keep ? unkeep : keep;
+      return method(connection.id);
+    },
+    onMutate: async (connection) => {
+      console.log("called on Mutate");
+      const previousConnections: Connection[] = queryClient.getQueryData([
+        "network",
+        "connections",
+      ]);
+
+      // Optimistically update to the new value
+      const updatedConnections = previousConnections.map((conn) => {
+        if (conn.id === connection.id) {
+          const { id, ...nextConnection } = connection;
+          return new Connection(id, { ...nextConnection, keep: !connection.keep });
+        }
+        return connection;
+      });
+      console.log("go for ", updatedConnections);
+      queryClient.setQueryData(["network", "connections"], updatedConnections);
+
+      // Return a context object with the snapshotted value
+      return { previousConnections };
+    },
+    // If the mutation fails,
+    // use the context returned from onMutate to roll back
+    onError: (_err, connection, context) => {
+      queryClient.setQueryData(["network", "connections"], context.previousConnections);
+    },
+  };
+
+  return useMutation(query);
+};
 /**
  * Hook that builds a mutation to remove a network connection
  *
@@ -316,6 +362,7 @@ export {
   useAddConnectionMutation,
   useConnections,
   useConnectionMutation,
+  useConnectionKeepMutation,
   useRemoveConnectionMutation,
   useConnection,
   useNetworkDevices,

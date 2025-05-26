@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { isObject } from "~/utils";
+import { isEmpty, isObject } from "~/utils";
 import {
   buildAddress,
   buildAddresses,
@@ -292,7 +292,7 @@ class Connection {
     if (!isObject(options)) return;
 
     for (const [key, value] of Object.entries(options)) {
-      if (value) this[key] = value;
+      if (typeof value === "boolean" || !isEmpty(value)) this[key] = value;
     }
   }
 
