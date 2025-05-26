@@ -48,6 +48,7 @@ pub struct StateConfig {
     pub devices: bool,
     pub connections: bool,
     pub general_state: bool,
+    pub keep_connections: bool,
 }
 
 impl Default for StateConfig {
@@ -57,6 +58,7 @@ impl Default for StateConfig {
             devices: true,
             connections: true,
             general_state: true,
+            keep_connections: true,
         }
     }
 }
@@ -67,6 +69,7 @@ pub struct NetworkState {
     pub access_points: Vec<AccessPoint>,
     pub devices: Vec<Device>,
     pub connections: Vec<Connection>,
+    pub keep_connections: HashMap<String, bool>,
 }
 
 impl NetworkState {
@@ -81,12 +84,14 @@ impl NetworkState {
         access_points: Vec<AccessPoint>,
         devices: Vec<Device>,
         connections: Vec<Connection>,
+        keep_connections: HashMap<String, bool>,
     ) -> Self {
         Self {
             general_state,
             access_points,
             devices,
             connections,
+            keep_connections,
         }
     }
 
@@ -154,6 +159,8 @@ impl NetworkState {
     ///
     /// It uses the `id` to decide whether the connection already exists.
     pub fn add_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
+        self.keep_connections
+            .insert((&conn.id).to_string(), (&conn.keep).to_owned());
         if self.get_connection(&conn.id).is_some() {
             return Err(NetworkStateError::ConnectionExists(conn.id));
         }
@@ -168,6 +175,8 @@ impl NetworkState {
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
     pub fn update_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
+        self.keep_connections
+            .insert((&conn.id).to_string(), (&conn.keep).to_owned());
         let Some(old_conn) = self.get_connection_mut(&conn.id) else {
             return Err(NetworkStateError::UnknownConnection(conn.id.clone()));
         };
@@ -180,6 +189,7 @@ impl NetworkState {
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
     pub fn remove_connection(&mut self, id: &str) -> Result<(), NetworkStateError> {
+        self.keep_connections.remove(id);
         let Some(conn) = self.get_connection_mut(id) else {
             return Err(NetworkStateError::UnknownConnection(id.to_string()));
         };
@@ -463,6 +473,7 @@ mod tests {
 pub struct GeneralState {
     pub hostname: String,
     pub connectivity: bool,
+    pub copy_network: bool,
     pub wireless_enabled: bool,
     pub networking_enabled: bool, // pub network_state: NMSTATE
 }
@@ -520,6 +531,8 @@ pub struct Connection {
     pub ieee_8021x_config: Option<IEEE8021XConfig>,
     pub autoconnect: bool,
     pub state: ConnectionState,
+    pub keep: bool,
+    pub filename: String,
 }
 
 impl Connection {
@@ -593,6 +606,8 @@ impl Default for Connection {
             ieee_8021x_config: Default::default(),
             autoconnect: true,
             state: Default::default(),
+            keep: true,
+            filename: Default::default(),
         }
     }
 }
@@ -648,6 +663,7 @@ impl TryFrom<NetworkConnection> for Connection {
         connection.interface = conn.interface;
         connection.mtu = conn.mtu;
         connection.autoconnect = conn.autoconnect;
+        connection.keep = conn.keep;
 
         Ok(connection)
     }
@@ -675,6 +691,8 @@ impl TryFrom<Connection> for NetworkConnection {
             .ieee_8021x_config
             .and_then(|x| IEEE8021XSettings::try_from(x).ok());
         let autoconnect = conn.autoconnect;
+        let keep = conn.keep;
+        let filename = conn.filename;
 
         let mut connection = NetworkConnection {
             id,
@@ -692,6 +710,8 @@ impl TryFrom<Connection> for NetworkConnection {
             mtu,
             ieee_8021x,
             autoconnect,
+            keep,
+            filename,
             ..Default::default()
         };
 

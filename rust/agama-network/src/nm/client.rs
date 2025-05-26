@@ -20,6 +20,8 @@
 
 //! NetworkManager client.
 use std::collections::HashMap;
+use std::fs::{self, OpenOptions};
+use std::path::Path;
 
 use super::builder::DeviceFromProxyBuilder;
 use super::dbus::{
@@ -70,23 +72,35 @@ impl<'a> NetworkManagerClient<'a> {
         // let global_dns_configuration = self.nm_proxy.global_dns_configuration().await?;
         // Fixme: save as NMConnectivityState enum
         let connectivity = self.nm_proxy.connectivity().await? == 4;
+        let copy_network = !Path::new("/run/agama/not_copy_network").exists();
 
         Ok(GeneralState {
             hostname,
             wireless_enabled,
             networking_enabled,
             connectivity,
+            copy_network,
         })
     }
 
     /// Updates the general state
     pub async fn update_general_state(&self, state: &GeneralState) -> Result<(), NmError> {
         let wireless_enabled = self.nm_proxy.wireless_enabled().await?;
+        let copy_network = !Path::new("/run/agama/not_copy_network").exists();
 
         if wireless_enabled != state.wireless_enabled {
             self.nm_proxy
                 .set_wireless_enabled(state.wireless_enabled)
                 .await?;
+        };
+
+        if copy_network != state.copy_network {
+            let path = Path::new("/run/agama/not_copy_network");
+            if state.copy_network {
+                fs::remove_file(path);
+            } else {
+                OpenOptions::new().create(true).write(true).open(path);
+            }
         };
 
         Ok(())
@@ -213,6 +227,7 @@ impl<'a> NetworkManagerClient<'a> {
                     }
 
                     Self::add_secrets(&mut connection.config, &proxy).await?;
+                    connection.filename = proxy.filename().await?;
                     if let Some(controller) = controller {
                         controlled_by.insert(connection.uuid, controller);
                     }
