@@ -21,8 +21,9 @@
  */
 
 import React from "react";
-import { Connection, ConnectionStatus } from "~/types/network";
+import { Connection } from "~/types/network";
 import { SwitchEnhanced } from "~/components/core";
+import { useConnectionKeepMutation } from "~/queries/network";
 import { _ } from "~/i18n";
 
 type InstallationOnlySwitchProps = {
@@ -36,24 +37,11 @@ type InstallationOnlySwitchProps = {
  * Intended to mark connections as transient (used only during
  * OS installation) or persistent (persisted to the installed system)
  *
- * @remarks
- * - The current `onChange` handler is a placeholder that logs a warning.
- * - The `isChecked` state is temporarily based on the connection's status,
- *   which actually does not represent the actual "installation only" state.
- *
- * @todo
- * - Implement the logic for toggling the connection's persistence.
- * - Update the `isChecked` condition to reflect the real "installation only" state.
  */
 export default function InstallationOnlySwitch({ connection }: InstallationOnlySwitchProps) {
-  const onChange = () =>
-    console.warn(
-      "FIXME: update InstallationOnlySwitch for making connection",
-      connection.id,
-      "either, transient or persistent depending on the previous state",
-    );
+  const { mutateAsync: toggleKeep } = useConnectionKeepMutation();
+  const onChange = () => toggleKeep(connection);
 
-  // FIXME: use the right condition for isChecked when implemented
   return (
     <SwitchEnhanced
       label={_("Use for installation only")}
@@ -61,7 +49,7 @@ export default function InstallationOnlySwitch({ connection }: InstallationOnlyS
         "The connection will be used only during installation and not available in the installed system.",
       )}
       onChange={onChange}
-      isChecked={connection.status === ConnectionStatus.UP}
+      isChecked={!connection.keep}
     />
   );
 }

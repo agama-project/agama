@@ -62,6 +62,10 @@ const isEmpty = (value) => {
     return true;
   }
 
+  if (typeof value === "boolean") {
+    return value;
+  }
+
   if (typeof value === "function") {
     return false;
   }

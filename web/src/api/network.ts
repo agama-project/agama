@@ -84,6 +84,16 @@ const connect = (name: string) => patch(`/api/network/connections/${name}/connec
  */
 const disconnect = (name: string) => patch(`/api/network/connections/${name}/disconnect`);
 
+/**
+ * Make the connection persistent after the installation
+ */
+const keep = (name: string) => patch(`/api/network/connections/${name}/keep`);
+
+/**
+ * Make the connection to be used only for the installation
+ */
+const unkeep = (name: string) => patch(`/api/network/connections/${name}/unkeep`);
+
 export {
   fetchState,
   fetchDevices,
@@ -96,4 +106,6 @@ export {
   deleteConnection,
   connect,
   disconnect,
+  keep,
+  unkeep,
 };
