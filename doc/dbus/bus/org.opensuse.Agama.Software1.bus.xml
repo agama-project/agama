@@ -29,6 +29,12 @@
     </signal>
   </interface>
   <interface name="org.opensuse.Agama.Software1">
+    <method name="ListRepositories">
+      <arg name="Result" direction="out" type="a(issssbb)"/>
+    </method>
+    <method name="SetUserRepositories">
+      <arg name="repos" direction="in" type="a{sv}"/>
+    </method>
     <method name="ListPatterns">
       <arg name="Filtered" direction="in" type="b"/>
       <arg name="Result" direction="out" type="a{s(sssss)}"/>
