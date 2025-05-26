@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May 26 19:51:50 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 15
+
+-------------------------------------------------------------------
 Mon May 26 09:44:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Set stopOnBootMenu to "true" when a negative timeout is
