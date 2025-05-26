@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May 26 09:44:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Set stopOnBootMenu to "true" when a negative timeout is
+  set in the bootloader section of an AutoYaST profile
+  (bsc#1243623).
+
+-------------------------------------------------------------------
 Fri May 23 12:37:31 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Add checks to the storage config to avoid using wrong devices as
