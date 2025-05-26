@@ -74,6 +74,8 @@ module Agama
     HOSTNAME = "/etc/hostname"
     RESOLV = "/etc/resolv.conf"
     NOT_COPY_NETWORK = "/run/agama/not_copy_network"
+    AGAMA_SYSTEMD_LINK = "/run/agama/systemd/network"
+    SYSTEMD_LINK = "/etc/systemd/network"
     RESOLV_FLAG = "/run/agama/manage_resolv"
     ETC_NM_DIR = "/etc/NetworkManager"
     RUN_NM_DIR = "/run/NetworkManager"
@@ -99,6 +101,11 @@ module Agama
       copy_directory(
         File.join(ETC_NM_DIR, "system-connections"),
         File.join(Yast::Installation.destdir, ETC_NM_DIR, "system-connections")
+      )
+
+      copy_directory(
+        AGAMA_SYSTEMD_LINK,
+        File.join(Yast::Installation.destdir, SYSTEMD_LINK)
       )
     end
 
