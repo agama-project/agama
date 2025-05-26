@@ -97,17 +97,6 @@ arch=$(uname -m)
 # keep in sync with ISO Volume ID set in the fix_bootconfig script
 profile=$(echo "$kiwi_profiles" | tr "_" "-")
 label="Install-$profile-$arch"
-# the simple rescue system reuses the installation live media
-# but boots to the text-mode only and disables the Agama server
-rescue_system_boot_settings="systemd.unit=multi-user.target
-systemd.mask=agama.service
-systemd.mask=agama-dbus-monitor.service
-systemd.mask=agama-ssh-issue.service
-systemd.mask=agama-avahi-issue.service
-systemd.mask=agama-welcome-issue.service
-systemd.mask=agama-url-issue.service
-systemd.mask=agama-certificate-issue.service
-systemd.mask=agama-certificate-wait.service"
 
 # Set the default live root except for PXE images
 if [[ "$kiwi_profiles" != *PXE* ]]; then

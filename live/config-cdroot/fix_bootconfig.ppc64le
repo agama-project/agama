@@ -111,7 +111,7 @@ menuentry "Check Installation Medium" --class os --unrestricted {
 
 menuentry "Rescue System" --class os --unrestricted {
   echo 'Loading kernel...'
-  linux /boot/ppc64le/linux $rescue_system_boot_settings
+  linux /boot/ppc64le/linux $RESCUE_SYSTEM_BOOT_SETTINGS
   echo 'Loading initrd...'
   initrd /boot/ppc64le/initrd
 }
