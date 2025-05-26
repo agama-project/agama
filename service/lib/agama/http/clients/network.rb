@@ -19,15 +19,25 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/http/clients/base"
+
 module Agama
   module HTTP
-    # Namespace for HTTP clients
     module Clients
+      # HTTP client to interact with the network API.
+      class Network < Base
+        def connections
+          JSON.parse(get("network/connections"))
+        end
+
+        def to_persist
+          connections.select {|c| c["keep"] }
+        end
+
+        def devices
+          get("network/devices")
+        end
+      end
     end
   end
 end
-
-require "agama/http/clients/base"
-require "agama/http/clients/files"
-require "agama/http/clients/scripts"
-require "agama/http/clients/network"
