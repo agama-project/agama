@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May 26 19:51:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 15
+
+-------------------------------------------------------------------
 Thu May 22 17:16:40 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Handle reused MD RAIDs that are already included at the storage
