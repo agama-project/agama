@@ -53,11 +53,7 @@ export default function NetworkPage() {
       </Page.Header>
 
       <Page.Content>
-        {
-          // TODO: The Alert below should only be rendered when there are no
-          // connections to copy to the product to install.
-        }
-        <AllConnectionsStatusAlert mode="full-persistent" connections={3} />
+        <AllConnectionsStatusAlert />
 
         <Grid hasGutter>
           <GridItem sm={12} xl={6}>
