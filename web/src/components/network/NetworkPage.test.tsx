@@ -36,6 +36,10 @@ jest.mock("~/components/network/WiredConnectionsList", () => () => (
   <div>WiredConnectionsList Mock</div>
 ));
 
+jest.mock("~/components/network/AllConnectionsStatusAlert", () => () => (
+  <div>AllConnectionsStatusAlert Mock</div>
+));
+
 const mockNetworkState = {
   wirelessEnabled: true,
 };
@@ -46,6 +50,11 @@ jest.mock("~/queries/network", () => ({
 }));
 
 describe("NetworkPage", () => {
+  it("mounts alert for all connections status", () => {
+    installerRender(<NetworkPage />);
+    expect(screen.queryByText("AllConnectionsStatusAlert Mock")).toBeInTheDocument();
+  });
+
   it("renders a section for wired connections", () => {
     installerRender(<NetworkPage />);
     expect(screen.queryByText("WiredConnectionsList Mock")).toBeInTheDocument();
