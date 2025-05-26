@@ -66,9 +66,11 @@ describe Agama::Storage::ConfigSolvers::MdRaidsSearch do
         expect(md2.search.device.name).to eq("/dev/md1")
       end
 
-      context "and any of the devices is not a candidate device" do
+      context "and any of the devices is not available" do
         before do
-          allow(storage_system.analyzer).to receive(:candidate_device?) { |d| d.name != "/dev/md0" }
+          allow(storage_system.analyzer).to receive(:available_device?) do |dev|
+            dev.name != "/dev/md0"
+          end
         end
 
         it "sets the first unassigned candidate device to the MD RAID config" do

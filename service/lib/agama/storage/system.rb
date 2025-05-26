@@ -35,23 +35,71 @@ module Agama
         @disk_analizer = Y2Storage::DiskAnalyzer.new(devicegraph)
       end
 
-      # Candidate drives for installation.
+      # All devices that can be referenced by a drive entry at the Agama config
       #
-      # @return [Array<Y2Storage::Drive, Y2Storage::StrayBlkDevice>]
-      def candidate_drives
+      # This excludes devices with any mounted filesystem and devices that contain a repository
+      # for installation.
+      #
+      # @return [Array<Y2Storage::Partitionable>]
+      def available_drives
         return [] unless devicegraph
 
         drives = devicegraph.disk_devices + devicegraph.stray_blk_devices
-        drives.select { |d| analyzer.candidate_device?(d) }
+        drives.select { |d| available?(d) }
       end
 
-      # Candidate MD RAIDs for installation.
+      # All drive devices that are considered as a valid target for the boot partitions and,
+      # as such, as candidates for a typical installation.
       #
-      # @return [Array<Y2Storage::Md]
-      def candidate_md_raids
+      # @return [Array<Y2Storage::Partitionable>]
+      def candidate_drives
+        available_drives.select { |d| analyzer.supports_boot_partitions?(d) }
+      end
+
+      # All devices that can be referenced by an mdRaid entry at the Agama config
+      #
+      # This excludes devices with any mounted filesystem and devices that contain a repository
+      # for installation.
+      #
+      # @return [Array<Y2Storage::Md>]
+      def available_md_raids
         return [] unless devicegraph
 
-        devicegraph.md_raids.select { |d| analyzer.candidate_device?(d) }
+        devicegraph.software_raids.select { |r| available?(r) }
+      end
+
+      # All mdRaid devices that are considered as a valid target for the boot partitions and,
+      # as such, as candidates for a typical installation.
+      #
+      # Although it could diverge in the future, this relies in the historical YaST heuristics
+      # that considers software RAIDs with partition table or without children as candidates for
+      # installation, but only when booting in EFI mode.
+      #
+      # Check Y2Storage::DiskAnalyzer for some historical background.
+      #
+      # @return [Array<Y2Storage::Md>]
+      def candidate_md_raids
+        available_md_raids.select { |r| analyzer.supports_boot_partitions?(r) }
+      end
+
+      # Whether the device is usable as drive or mdRaid
+      #
+      # See {#available_drives} and {#available_md_raids}
+      #
+      # @param device [Y2Storage::Partitionable, Y2Storage::Md]
+      # @return [Boolean]
+      def available?(device)
+        analyzer.available_device?(device)
+      end
+
+      # Whether the device can be used for installation, including the boot partitions
+      #
+      # See {#candidate_drives} and {#candidate_md_raids}
+      #
+      # @param device [Y2Storage::Partitionable, Y2Storage::Md]
+      # @return [Boolean]
+      def candidate?(device)
+        analyzer.supports_boot_partitions?(device) && available?(device)
       end
 
       # Devicegraph representing the system.
