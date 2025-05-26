@@ -95,6 +95,11 @@ pub struct MonitorStatus {
 }
 
 impl MonitorStatus {
+    /// Determines whether the system is idle.
+    pub fn is_idle(&self) -> bool {
+        self.progress.is_empty()
+    }
+
     /// Updates the progress for the given service.
     ///
     /// The entry is removed if the progress is finished.
