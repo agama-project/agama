@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May 26 14:22:03 UTC 2025 - Lukas Ocilka <locilka@suse.com>
+
+- Added a simple Rescue System by reusing the Installation Live
+  Image and disabling the Agama services
+
+-------------------------------------------------------------------
 Wed May 21 12:42:34 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Do not set root= dracut configuration in PXE images
