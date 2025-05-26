@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockNavigateFn } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import WiredConnectionsList from "~/components/network/WiredConnectionsList";
 import {
   Connection,
@@ -30,7 +30,6 @@ import {
   ConnectionType,
   Device,
   DeviceState,
-  SecurityProtocols,
 } from "~/types/network";
 
 const mockDevice: Device = {
