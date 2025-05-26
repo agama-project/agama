@@ -145,9 +145,12 @@ const useConnectionMutation = () => {
 };
 
 /**
- * Hook that builds a mutation to keep or unkeep a network connection
+ * Hook that provides a mutation for toggling the "keep" state of a network
+ * connection.
  *
- * It does not require to call `useMutation`.
+ * This hook uses optimistic updates to immediately reflect the change in the UI
+ * before the mutation completes. If the mutation fails, it will rollback to the
+ * previous state.
  */
 const useConnectionKeepMutation = () => {
   const queryClient = useQueryClient();
@@ -156,30 +159,33 @@ const useConnectionKeepMutation = () => {
       const method = connection.keep ? unkeep : keep;
       return method(connection.id);
     },
-    onMutate: async (connection) => {
-      console.log("called on Mutate");
+    onMutate: async (connection: Connection) => {
+      // Get the current list of cached connections
       const previousConnections: Connection[] = queryClient.getQueryData([
         "network",
         "connections",
       ]);
 
-      // Optimistically update to the new value
-      const updatedConnections = previousConnections.map((conn) => {
-        if (conn.id === connection.id) {
-          const { id, ...nextConnection } = connection;
-          return new Connection(id, { ...nextConnection, keep: !connection.keep });
-        }
-        return connection;
+      // Optimistically toggle the 'keep' status of the matching connection
+      const updatedConnections = previousConnections.map((cachedConnection) => {
+        if (connection.id !== cachedConnection.id) return cachedConnection;
+
+        const { id, ...nextConnection } = cachedConnection;
+        return new Connection(id, { ...nextConnection, keep: !cachedConnection.keep });
       });
-      console.log("go for ", updatedConnections);
+
+      // Update the cached data with the optimistically updated connections
       queryClient.setQueryData(["network", "connections"], updatedConnections);
 
-      // Return a context object with the snapshotted value
+      // Return the previous state for potential rollback
       return { previousConnections };
     },
-    // If the mutation fails,
-    // use the context returned from onMutate to roll back
-    onError: (_err, connection, context) => {
+
+    /**
+     * Called if the mutation fails for whatever reason. Rolls back the cache to
+     * the previous state.
+     */
+    onError: (_, connection: Connection, context: { previousConnections: Connection[] }) => {
       queryClient.setQueryData(["network", "connections"], context.previousConnections);
     },
   };

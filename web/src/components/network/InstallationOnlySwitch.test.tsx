@@ -24,27 +24,56 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import InstallationOnlySwitch from "./InstallationOnlySwitch";
-import { Connection, ConnectionMethod, ConnectionState } from "~/types/network";
+import { Connection, ConnectionMethod, ConnectionOptions, ConnectionState } from "~/types/network";
 
-const mockConnection = new Connection("Newtwork 2", {
-  method4: ConnectionMethod.AUTO,
-  method6: ConnectionMethod.AUTO,
-  wireless: {
-    security: "none",
-    ssid: "Network 2",
-    mode: "infrastructure",
-  },
-  state: ConnectionState.activating,
-});
+const mockKeepMutation = jest.fn();
+const mockConnection = (options: Partial<ConnectionOptions> = {}) =>
+  new Connection("Newtwork 2", {
+    method4: ConnectionMethod.AUTO,
+    method6: ConnectionMethod.AUTO,
+    wireless: {
+      security: "none",
+      ssid: "Network 2",
+      mode: "infrastructure",
+    },
+    state: ConnectionState.activating,
+    ...options,
+  });
+
+jest.mock("~/queries/network", () => ({
+  ...jest.requireActual("~/queries/network"),
+  useConnectionKeepMutation: () => ({
+    mutateAsync: mockKeepMutation,
+  }),
+}));
 
 describe("InstallationOnlySwitch", () => {
   it("renders the switch with the correct label and description", () => {
-    plainRender(<InstallationOnlySwitch connection={mockConnection} />);
-    screen.getByLabelText("Use for installation only");
-    screen.getByText(/The connection will be used only during installation/);
+    plainRender(<InstallationOnlySwitch connection={mockConnection()} />);
+    const switchInput = screen.getByRole("switch", { name: "Use for installation only" });
+    const switchDescription = screen.getByText(
+      /The connection will be used only during installation/,
+    );
+    expect(switchInput).toHaveAttribute("aria-describedby", switchDescription.id);
   });
 
-  it.todo("renders as checked when connection is transient");
-  it.todo("renders as not checked when connection is permanent");
-  it.todo("allows switching between transient and permanent");
+  it("renders as checked when connection is transient (`keep` is false)", () => {
+    plainRender(<InstallationOnlySwitch connection={mockConnection({ keep: false })} />);
+    const switchInput = screen.getByRole("switch", { name: "Use for installation only" });
+    expect(switchInput).toBeChecked();
+  });
+
+  it("renders as not checked when connection is permanent (`keep` is true)", () => {
+    plainRender(<InstallationOnlySwitch connection={mockConnection({ keep: true })} />);
+    const switchInput = screen.getByRole("switch", { name: "Use for installation only" });
+    expect(switchInput).not.toBeChecked();
+  });
+
+  it("triggers mutation for switching between transient and permanent", async () => {
+    const connection = mockConnection({ keep: true });
+    const { user } = plainRender(<InstallationOnlySwitch connection={connection} />);
+    const switchInput = screen.getByRole("switch", { name: "Use for installation only" });
+    await user.click(switchInput);
+    expect(mockKeepMutation).toHaveBeenCalledWith(connection);
+  });
 });
