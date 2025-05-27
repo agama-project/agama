@@ -42,7 +42,7 @@ use agama_lib::{
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
         model::{
-            AddonParams, AddonProperties, Conflict, ConflictSolve, License, LicenseContent, LicensesRepo, RegistrationError, RegistrationInfo, RegistrationParams, Repository, RepositoryParams, ResolvableParams, SoftwareConfig
+            AddonParams, AddonProperties, Conflict, ConflictSolve, License, LicenseContent, LicensesRepo, RegistrationError, RegistrationInfo, RegistrationParams, Repository, ResolvableParams, SoftwareConfig
         },
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
@@ -280,7 +280,7 @@ pub async fn software_service(
         .route("/conflicts", get(get_conflicts).patch(solve_conflicts))
         .route(
             "/repositories",
-            put(set_custom_repositories).get(repositories),
+            get(repositories),
         )
         .route("/products", get(products))
         .route("/licenses", get(licenses))
@@ -353,25 +353,6 @@ async fn repositories(
 ) -> Result<Json<Vec<Repository>>, Error> {
     let repositories = state.software.repositories().await?;
     Ok(Json(repositories))
-}
-
-async fn set_custom_repositories(
-    State(state): State<SoftwareState<'_>>,
-    Json(repos): Json<Vec<RepositoryParams>>,
-) -> Result<impl IntoResponse, Error> {
-    Ok((StatusCode::NO_CONTENT, ().into_response()))
-
-    // let (id, message) = state.product.register_addon(&addon).await?;
-
-    // if id == 0 {
-    //     Ok((StatusCode::NO_CONTENT, ().into_response()))
-    // } else {
-    //     let details = RegistrationError { id, message };
-    //     Ok((
-    //         StatusCode::UNPROCESSABLE_ENTITY,
-    //         Json(details).into_response(),
-    //     ))
-    // }
 }
 
 /// Returns the list of conflicts that proposal found.
@@ -628,6 +609,10 @@ async fn set_config(
         state.software.select_packages(packages).await?;
     }
 
+    if let Some(repositories) = config.extra_repositories {
+        state.software.set_user_repositories(repositories).await?;
+    }
+
     // load the config cache
     let config = read_config(&state).await?;
 
@@ -684,11 +669,17 @@ async fn read_config(state: &SoftwareState<'_>) -> Result<SoftwareConfig, Error>
         .map(|p| (p, true))
         .collect();
     let packages = state.software.user_selected_packages().await?;
+    let repos = state.software.user_repositories().await?;
 
     Ok(SoftwareConfig {
         patterns: Some(patterns),
         packages: Some(packages),
         product,
+        extra_repositories: if repos.is_empty() {
+            None
+        } else {
+            Some(repos)
+        }
     })
 }
 

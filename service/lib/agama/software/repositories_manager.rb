@@ -33,6 +33,8 @@ module Agama
       def initialize
         @repositories = []
         @user_repositories = []
+        # remember how exactly user specify repos and return it identical
+        @plain_user_repositories = {}
       end
 
       # Adds a new repository
@@ -42,8 +44,14 @@ module Agama
         repositories << Repository.create(name: url, url: url)
       end
 
+      # returns user repositories as it was previously specified
+      def get_user_repositories
+        @plain_user_repositories
+      end
+
       # sets and loads user repositories
       def set_user_repositories(repos)
+        @plain_user_repositories = repos
         clear_user_repositories
         repos.each do |repo|
           id = Yast::Pkg.RepositoryAdd(

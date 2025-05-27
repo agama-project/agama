@@ -11,10 +11,16 @@
       <arg name="Result" direction="out" type="a(issssbb)"/>
     </method>
     <!--
+      List of user specified extra repositories.
+    -->
+    <method name="ListUserRepositories">
+      <arg name="Result" direction="out" type="aa{sv}"/>
+    </method>
+    <!--
       Sets list of user specified repositories.
     -->
     <method name="SetUserRepositories">
-      <arg name="repos" direction="in" type="a{sv}"/>
+      <arg name="repos" direction="in" type="aa{sv}"/>
     </method>
     <!--
       List available patterns.

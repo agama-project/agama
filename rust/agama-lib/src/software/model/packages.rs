@@ -30,6 +30,8 @@ pub struct SoftwareConfig {
     pub packages: Option<Vec<String>>,
     /// Name of the product to install.
     pub product: Option<String>,
+    /// Extra repositories defined by user.
+    pub extra_repositories: Option<Vec<RepositoryParams>>,
 }
 
 /// Software resolvable type (package or pattern).
@@ -73,7 +75,7 @@ pub struct Repository {
 }
 
 /// Parameters for creating new a repository
-#[derive(Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct RepositoryParams {
     /// repository alias. Has to be unique
