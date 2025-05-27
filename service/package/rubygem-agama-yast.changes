@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Mon May 26 21:33:40 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
-- Copy agama generated systemd network link files to the target
+- Copy Agama generated systemd network link files to the target
   system (bsc#1237327, bsc#1241969).
 
 -------------------------------------------------------------------
