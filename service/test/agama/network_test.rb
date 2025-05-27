@@ -62,7 +62,7 @@ describe Agama::Network do
       stub_const("Agama::Network::ETC_NM_DIR", etcdir)
     end
 
-    context "when there is some agama systemd network link file" do
+    context "when there is some Agama systemd network link file" do
       before do
         FileUtils.cp_r(Dir["#{fixtures}/*"], rootdir)
       end

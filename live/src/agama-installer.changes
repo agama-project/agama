@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Mon May 26 21:35:04 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
-- Generate systemd network link files below agama run folder to 
+- Generate systemd network link files below Agama run folder to 
   be copied at the end of the installation (bsc#1237327, 
   bsc#1241969, gh#agama-project/agama#2404).
 
