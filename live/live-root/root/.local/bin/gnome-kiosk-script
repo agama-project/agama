@@ -7,7 +7,22 @@ TOKEN_FILE=/run/agama/token
 TOKEN=$(cat $TOKEN_FILE)
 PREFS=$HOME/.mozilla/firefox/profile/user.js
 
-sed -e "s/__HOMEPAGE__/http:\/\/localhost\/login?token=$TOKEN/" $PREFS.template > $PREFS
+# read the system locale from EFI if present
+LANG_FILE=/sys/firmware/efi/efivars/PlatformLang-8be4df61-93ca-11d2-aa0d-00e098032b8c
+
+# file exists and is not empty
+if [ -s  "$LANG_FILE" ]; then
+  # skip the first 4 bytes (the EFI attributes), keep only the characters allowed in a language code,
+  # especially remove the trailing null byte
+  EFI_LANG=$(cat "$LANG_FILE" | tail -c +5 | tr -cd "[_a-zA-Z-]")
+
+  if [ -n "$EFI_LANG" ]; then
+    # escape & because it has a special meaning in sed replacement
+    LANG_QUERY="\\&lang=$EFI_LANG"
+  fi
+fi
+
+sed -e "s/__HOMEPAGE__/http:\/\/localhost\/login?token=$TOKEN$LANG_QUERY/" $PREFS.template > $PREFS
 
 # Do not use --kiosk mode (see bsc#1236073) until SLE16 is updated to next ESR. For Firefox
 # 128.9 which is currently used the bug is valid, for >= 138 should be fixed.

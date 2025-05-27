@@ -146,7 +146,7 @@
         <package name="agama-auto"/>
         <package name="rubygem(agama-yast)"/>
         <package name="rubygem(byebug)"/>
-        <package name="microos-tools"/>
+        <!-- package name="microos-tools"/ -->
         <package name="psmisc"/>
         <package name="joe"/>
         <package name="checkmedia"/>
