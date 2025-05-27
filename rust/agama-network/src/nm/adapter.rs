@@ -70,12 +70,22 @@ impl Adapter for NetworkManagerAdapter<'_> {
         }
 
         if config.connections {
-            let copy = state.general_state.copy_network;
             state.connections = self
                 .client
                 .connections()
                 .await
                 .map_err(|e| NetworkAdapterError::Read(anyhow!(e)))?;
+
+            if config.keep_connections {
+                let copy = state.general_state.copy_network;
+                let mut keep_connections: HashMap<String, bool> = HashMap::new();
+
+                for conn in state.connections.iter_mut() {
+                    keep_connections.insert((&conn.id).to_string(), copy);
+                    conn.keep = copy;
+                }
+                state.keep_connections = keep_connections;
+            }
         }
 
         if config.access_points && general_state.wireless_enabled {
