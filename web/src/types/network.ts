@@ -292,7 +292,7 @@ class Connection {
     if (!isObject(options)) return;
 
     for (const [key, value] of Object.entries(options)) {
-      if (typeof value === "boolean" || !isEmpty(value)) this[key] = value;
+      if (!isEmpty(value)) this[key] = value;
     }
   }
 
