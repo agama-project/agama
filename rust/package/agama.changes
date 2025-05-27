@@ -40,7 +40,7 @@ Tue May 20 14:54:17 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
   (bsc#1241208)
 
 -------------------------------------------------------------------
-Wed May 14 15:20:42 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+Wed May 19 15:20:42 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Add support for bridge connections (gh#openSUSE/agama#2258).
 
