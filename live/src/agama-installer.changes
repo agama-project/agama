@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue May 27 12:54:02 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- Switched live ISO to use Wayland (gh#agama-project/agama#1781)
+
+-------------------------------------------------------------------
 Mon May 26 21:35:04 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Generate systemd network link files below Agama run folder to 
