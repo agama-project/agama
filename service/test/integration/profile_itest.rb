@@ -147,12 +147,48 @@ describe "agama config" do
         expect(output).to include("/my-script.sh")
       end
     end
-    context "jsonnet, by stdin" do
+
+    context "jsonnet valid (by stdin)" do
+      let(:profile_body) { '{product: {id: "Tumbleweed"}}' }
+
+      it "is evaluated and validity reported" do
+        stdout, stderr = Cheetah.run("agama", "config", "generate", "-",
+          stdout: :capture, stderr: :capture, stdin: profile_body)
+        expected = <<~JSON
+          {
+            "product": {
+              "id": "Tumbleweed"
+            }
+          }
+        JSON
+        expect(stdout).to eq(expected)
+        expect(stderr).to include("profile is valid")
+      end
+    end
+
+    context "jsonnet invalid (by stdin)" do
       let(:profile_body) { '{product: {uh: "oh"}}' }
 
-      it "is evaluated" do
-        output = Cheetah.run("agama", "config", "generate", "-",
-          stdout: :capture, stdin: profile_body)
+      it "is evaluated and invalidity reported" do
+        stdout, stderr = Cheetah.run("agama", "config", "generate", "-",
+        stdout: :capture, stderr: :capture, stdin: profile_body)
+         # NOTE: 2 space indent here
+         expected = <<~JSON
+          {
+            "product": {
+              "id": null
+            }
+          }
+        JSON
+        expect(stdout).to eq(expected)
+        expect(stderr).to include("profile is not valid")
+        expect(stderr).to include("null is not")
+      end
+
+      it "is evaluated and invalidity reported, without deserialization" do
+        stdout, stderr = Cheetah.run("agama", "config", "generate", "--fixme-skip-deserialization", "-",
+        stdout: :capture, stderr: :capture, stdin: profile_body)
+        # NOTE: 3 space indent here
         expected = <<~JSON
           {
              "product": {
@@ -160,7 +196,9 @@ describe "agama config" do
              }
           }
         JSON
-        expect(output).to eq(expected)
+        expect(stdout).to eq(expected)
+        expect(stderr).to include("profile is not valid")
+        expect(stderr).to include("'uh' was unexpected")
       end
     end
   end
@@ -171,14 +209,14 @@ describe "agama config" do
     let(:output_match) do
       json = <<~JSON
         {
-          "product": {
-            "id": "Tumbleweed"
-          },
           "software": {
             "patterns": [
               "base"
             ],
             "packages": []
+          },
+          "product": {
+            "id": "Tumbleweed"
           }
         }
       JSON

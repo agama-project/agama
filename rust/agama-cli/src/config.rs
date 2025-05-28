@@ -123,6 +123,9 @@ pub enum ConfigCommands {
     Generate {
         /// JSON file: URL or path or `-` for standard input
         url_or_path: Option<CliInput>,
+        /// Skip deserialization into InstallSettings (different from config load, which is InstallStore)
+        #[arg(long)]
+        fixme_skip_deserialization: bool,
     },
 
     /// Edit and update installation option using an external editor.
@@ -196,10 +199,10 @@ pub async fn run(
             Ok(())
         }
         ConfigCommands::Validate { url_or_path } => validate(&http_client, url_or_path).await,
-        ConfigCommands::Generate { url_or_path } => {
+        ConfigCommands::Generate { url_or_path, fixme_skip_deserialization } => {
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
 
-            generate(&http_client, url_or_path).await
+            generate(&http_client, url_or_path, fixme_skip_deserialization).await
         }
         ConfigCommands::Edit { editor } => {
             let model = store.load().await?;
@@ -267,7 +270,7 @@ fn is_autoyast(url_or_path: &CliInput) -> bool {
     path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/')
 }
 
-async fn generate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<()> {
+async fn generate(client: &BaseHTTPClient, url_or_path: CliInput, skip_deserialization: bool) -> anyhow::Result<()> {
     let profile_json = if is_autoyast(&url_or_path) {
         // AutoYaST specific download and convert to JSON
         let config_string =
@@ -285,8 +288,19 @@ async fn generate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
         from_json_or_jsonnet(&client, url_or_path).await?
     };
 
-    println!("{}", &profile_json);
-    validate(client, CliInput::Full(profile_json.clone())).await?;
+    let config_json = if skip_deserialization {
+        profile_json
+    }
+    else {
+        // validate before or after?
+        let context = InstallationContext::from_env()?;
+        // resolves relative URL references
+        let model = InstallSettings::from_json(&profile_json, &context)?;
+        serde_json::to_string_pretty(&model)?
+    };
+
+    println!("{}", &config_json);
+    validate(client, CliInput::Full(config_json.clone())).await?;
     Ok(())
 }
 
