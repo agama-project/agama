@@ -120,6 +120,8 @@ module Agama
 
           dbus_method :SolveConflicts, "in solutions:a(uu)" do |solutions|
             ret = backend.proposal.solve_conflicts(solutions)
+            # update the user selected patterns, patterns might be unselected as
+            # part of the conflict resolution
             backend.update_selected_patterns
             ret
           end
