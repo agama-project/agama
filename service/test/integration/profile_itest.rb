@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-# TODO: remember to set up and test the --api option after all
+# See ./README.md for standalone usage
+# TODO: remember to set up and test the --host option after all
 
 require "cheetah"
 require "webrick"
@@ -122,6 +123,30 @@ describe "agama config" do
   end
 
   describe "generate:" do
+    context "config contains relative URL references:" do
+      let(:profile_body) do
+        json = <<~JSON
+          {
+            "scripts": {
+              "postPartitioning": [
+                {
+                  "name": "foo",
+                  "url": "my-script.sh"
+                }
+              ]
+            }
+          }
+        JSON
+        json
+      end
+
+      it "they are resolved" do
+        output = Cheetah.run("agama", "config", "generate", "-",
+          stdout: :capture, stdin: profile_body)
+        # FIXME: better match. for now we assume that a "/" is a correct resolution
+        expect(output).to include("/my-script.sh")
+      end
+    end
     context "jsonnet, by stdin" do
       let(:profile_body) { '{product: {uh: "oh"}}' }
 
