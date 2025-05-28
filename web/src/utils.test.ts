@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { compact, toValidationError, localConnection, slugify } from "./utils";
+import { compact, toValidationError, localConnection } from "./utils";
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -69,11 +69,5 @@ describe("localConnection", () => {
     it("returns false", () => {
       expect(localConnection(remoteURL)).toEqual(false);
     });
-  });
-});
-
-describe("slugify", () => {
-  it("converts given input into a slug", () => {
-    expect(slugify("Agama! / Network 1")).toEqual("agama-network-1");
   });
 });
