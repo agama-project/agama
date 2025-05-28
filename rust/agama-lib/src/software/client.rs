@@ -116,13 +116,11 @@ impl<'a> SoftwareClient<'a> {
 
     /// Returns list of user defined repositories
     pub async fn user_repositories(&self) -> Result<Vec<RepositoryParams>, ServiceError> {
-        self
-            .software_proxy
+        self.software_proxy
             .list_user_repositories()
             .await?
             .into_iter()
-            .map(
-                |params|
+            .map(|params|
                 // unwrapping below is OK as it is our own dbus API, so we know what is in variants
                 Ok(RepositoryParams {
                     priority: get_optional_property(&params, "priority")?,
@@ -131,14 +129,17 @@ impl<'a> SoftwareClient<'a> {
                     url: get_property(&params, "url")?,
                     product_dir: get_optional_property(&params, "product_dir")?,
                     enabled: get_optional_property(&params, "enabled")?,
-                }),
-            )
+                }))
             .collect()
     }
 
-    pub async fn set_user_repositories(&self, repos: Vec<RepositoryParams>) -> Result<(), ServiceError> {
-        let dbus_repos: Vec<HashMap<&str, zbus::zvariant::Value<'_>>> = repos.into_iter()
-            .map( |params| {
+    pub async fn set_user_repositories(
+        &self,
+        repos: Vec<RepositoryParams>,
+    ) -> Result<(), ServiceError> {
+        let dbus_repos: Vec<HashMap<&str, zbus::zvariant::Value<'_>>> = repos
+            .into_iter()
+            .map(|params| {
                 let mut result: HashMap<&str, zbus::zvariant::Value<'_>> = HashMap::new();
                 result.insert("alias", params.alias.into());
                 result.insert("url", params.url.into());
@@ -155,8 +156,11 @@ impl<'a> SoftwareClient<'a> {
                     result.insert("enabled", enabled.into());
                 }
                 result
-        }).collect();
-        self.software_proxy.set_user_repositories(&dbus_repos).await?;
+            })
+            .collect();
+        self.software_proxy
+            .set_user_repositories(&dbus_repos)
+            .await?;
         Ok(())
     }
 

@@ -102,7 +102,7 @@ pub trait Software1 {
     /// SetUserPatterns method
     fn set_user_patterns(&self, add: &[&str], remove: &[&str]) -> zbus::Result<Vec<String>>;
 
-        /// SetUserRepositories method
+    /// SetUserRepositories method
     fn set_user_repositories(
         &self,
         repos: &[std::collections::HashMap<&str, zbus::zvariant::Value<'_>>],

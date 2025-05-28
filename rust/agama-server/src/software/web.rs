@@ -42,7 +42,9 @@ use agama_lib::{
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
         model::{
-            AddonParams, AddonProperties, Conflict, ConflictSolve, License, LicenseContent, LicensesRepo, RegistrationError, RegistrationInfo, RegistrationParams, Repository, ResolvableParams, SoftwareConfig
+            AddonParams, AddonProperties, Conflict, ConflictSolve, License, LicenseContent,
+            LicensesRepo, RegistrationError, RegistrationInfo, RegistrationParams, Repository,
+            ResolvableParams, SoftwareConfig,
         },
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
@@ -278,10 +280,7 @@ pub async fn software_service(
     let router = Router::new()
         .route("/patterns", get(patterns))
         .route("/conflicts", get(get_conflicts).patch(solve_conflicts))
-        .route(
-            "/repositories",
-            get(repositories),
-        )
+        .route("/repositories", get(repositories))
         .route("/products", get(products))
         .route("/licenses", get(licenses))
         .route("/licenses/:id", get(license))
@@ -392,7 +391,6 @@ async fn solve_conflicts(
     Json(solutions): Json<Vec<ConflictSolve>>,
 ) -> Result<(), Error> {
     Ok(state.software.solve_conflicts(solutions).await?)
-
 }
 
 /// returns registration info
@@ -675,11 +673,7 @@ async fn read_config(state: &SoftwareState<'_>) -> Result<SoftwareConfig, Error>
         patterns: Some(patterns),
         packages: Some(packages),
         product,
-        extra_repositories: if repos.is_empty() {
-            None
-        } else {
-            Some(repos)
-        }
+        extra_repositories: if repos.is_empty() { None } else { Some(repos) },
     })
 }
 
