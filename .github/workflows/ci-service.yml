@@ -109,7 +109,7 @@ jobs:
     - name: Check collecting translatable strings
       run: |
         rake pot
-        msgfmt --statistics agama.pot
+        msgfmt --statistics ../agama.pot
 
     - name: Run the tests and generate coverage report
       run: bundle exec rspec
