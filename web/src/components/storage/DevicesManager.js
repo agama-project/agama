@@ -22,7 +22,8 @@
 
 // @ts-check
 
-import { compact, uniq } from "~/utils";
+import { unique } from "radashi";
+import { compact } from "~/utils";
 
 /**
  * @typedef {import ("~/types/storage").Action} Action
@@ -158,7 +159,7 @@ export default class DevicesManager {
       .filter((d) => this.#isUsed(d) || knownNames.includes(d.name))
       .map((d) => d.sid);
 
-    return compact(uniq(sids).map((sid) => this.stagingDevice(sid)));
+    return compact(unique(sids).map((sid) => this.stagingDevice(sid)));
   }
 
   /**
@@ -236,7 +237,7 @@ export default class DevicesManager {
    * @returns {boolean}
    */
   #isUsed(device) {
-    const sids = uniq(compact(this.actions.map((a) => a.device)));
+    const sids = unique(compact(this.actions.map((a) => a.device)));
 
     const partitions = device.partitionTable?.partitions || [];
     const lvmLvs = device.logicalVolumes || [];

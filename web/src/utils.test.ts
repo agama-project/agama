@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { classNames, compact, uniq, toValidationError, localConnection, slugify } from "./utils";
+import { classNames, compact, toValidationError, localConnection, slugify } from "./utils";
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -32,22 +32,6 @@ describe("compact", () => {
       NaN,
       false,
       true,
-    ]);
-  });
-});
-
-describe("uniq", () => {
-  it("removes duplicated values", () => {
-    expect(uniq([])).toEqual([]);
-    expect(uniq([undefined, null, null, 0, 1, NaN, false, true, false, "test"])).toEqual([
-      undefined,
-      null,
-      0,
-      1,
-      NaN,
-      false,
-      true,
-      "test",
     ]);
   });
 });

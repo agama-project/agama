@@ -69,7 +69,8 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { apiModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { compact, uniq } from "~/utils";
+import { unique } from "radashi";
+import { compact } from "~/utils";
 
 const NO_VALUE = "";
 const NEW_PARTITION = "new";
@@ -288,7 +289,7 @@ function useUsableFilesystems(mountPoint: string): string[] {
       return [BTRFS_SNAPSHOTS, ...allValues];
     };
 
-    return uniq([defaultFilesystem, ...volumeFilesystems()]);
+    return unique([defaultFilesystem, ...volumeFilesystems()]);
   }, [volume, defaultFilesystem]);
 
   return usableFilesystems;
@@ -468,7 +469,7 @@ function useAutoRefreshFilesystem(handler, value: FormValue) {
     // Select default filesystem for the mount point if the partition has no filesystem.
     if (mountPoint !== NO_VALUE && target !== NEW_PARTITION && !partitionFilesystem)
       handler(defaultFilesystem);
-    // Reuse the filesystem from the partition if possble.
+    // Reuse the filesystem from the partition if possible.
     if (mountPoint !== NO_VALUE && target !== NEW_PARTITION && partitionFilesystem) {
       // const reuse = usableFilesystems.includes(partitionFilesystem);
       const reuse = usableFilesystems.includes(partitionFilesystem);

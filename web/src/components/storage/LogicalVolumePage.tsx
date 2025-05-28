@@ -52,9 +52,6 @@ import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapp
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import AutoSizeText from "~/components/storage/AutoSizeText";
 import { deviceSize, filesystemLabel, parseToBytes } from "~/components/storage/utils";
-import { compact, uniq } from "~/utils";
-import { _ } from "~/i18n";
-import { sprintf } from "sprintf-js";
 import { useApiModel, useSolvedApiModel } from "~/hooks/storage/api-model";
 import { useModel } from "~/hooks/storage/model";
 import { useMissingMountPaths, useVolume } from "~/hooks/storage/product";
@@ -65,6 +62,10 @@ import { buildLogicalVolumeName } from "~/helpers/storage/api-model";
 import { apiModel } from "~/api/storage/types";
 import { data } from "~/types/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
+import { unique } from "radashi";
+import { compact } from "~/utils";
+import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
 const NO_VALUE = "";
 const BTRFS_SNAPSHOTS = "btrfsSnapshots";
@@ -225,7 +226,7 @@ function useUsableFilesystems(mountPoint: string): string[] {
       return [BTRFS_SNAPSHOTS, ...allValues];
     };
 
-    return uniq([defaultFilesystem, ...volumeFilesystems()]);
+    return unique([defaultFilesystem, ...volumeFilesystems()]);
   }, [volume, defaultFilesystem]);
 
   return usableFilesystems;

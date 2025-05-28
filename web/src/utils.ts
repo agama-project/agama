@@ -30,13 +30,6 @@ const compact = <T>(collection: Array<T>) => {
 };
 
 /**
- * Generates a new array without duplicates.
- */
-const uniq = <T>(collection: Array<T>) => {
-  return [...new Set(collection)];
-};
-
-/**
  * Simple utility function to help building className conditionally
  *
  * @example
@@ -346,7 +339,6 @@ const getBreakpoint = (width: number): "default" | "sm" | "md" | "lg" | "xl" | "
 
 export {
   compact,
-  uniq,
   classNames,
   useCancellablePromise,
   useLocalStorage,
