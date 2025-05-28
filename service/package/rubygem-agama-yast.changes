@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 28 07:51:36 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Unselect user patterns which are unselected by a conflict
+  resolution (followup for gh#agama-project/agama#2348)
+
+-------------------------------------------------------------------
 Mon May 26 21:33:40 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Copy Agama generated systemd network link files to the target
