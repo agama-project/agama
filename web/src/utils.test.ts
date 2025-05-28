@@ -27,7 +27,6 @@ import {
   noop,
   toValidationError,
   localConnection,
-  isObject,
   slugify,
 } from "./utils";
 
@@ -111,45 +110,6 @@ describe("localConnection", () => {
     it("returns false", () => {
       expect(localConnection(remoteURL)).toEqual(false);
     });
-  });
-});
-
-describe("isObject", () => {
-  it("returns true when called with an object", () => {
-    expect(isObject({ dummy: "object" })).toBe(true);
-  });
-
-  it("returns false when called with null", () => {
-    expect(isObject(null)).toBe(false);
-  });
-
-  it("returns false when called with undefined", () => {
-    expect(isObject(undefined)).toBe(false);
-  });
-
-  it("returns false when called with a string", () => {
-    expect(isObject("dummy string")).toBe(false);
-  });
-
-  it("returns false when called with an array", () => {
-    expect(isObject(["dummy", "array"])).toBe(false);
-  });
-
-  it("returns false when called with a date", () => {
-    expect(isObject(new Date())).toBe(false);
-  });
-
-  it("returns false when called with regexp", () => {
-    expect(isObject(/aRegExp/i)).toBe(false);
-  });
-
-  it("returns false when called with a set", () => {
-    expect(isObject(new Set(["dummy", "set"]))).toBe(false);
-  });
-
-  it("returns false when called with a map", () => {
-    const map = new Map([["dummy", "map"]]);
-    expect(isObject(map)).toBe(false);
   });
 });
 

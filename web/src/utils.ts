@@ -23,24 +23,6 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 
 /**
- * Returns true when given value is an
- * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object Object}
- *
- * Borrowed from https://dev.to/alesm0101/how-to-check-if-a-value-is-an-object-in-javascript-3pin
- *
- * @param value - the value to be checked
- * @return true when given value is an object; false otherwise
- */
-const isObject = (value) =>
-  typeof value === "object" &&
-  value !== null &&
-  !Array.isArray(value) &&
-  !(value instanceof RegExp) &&
-  !(value instanceof Date) &&
-  !(value instanceof Set) &&
-  !(value instanceof Map);
-
-/**
  * Whether given object is empty or not
  *
  * @param value - the value to be checked
@@ -387,7 +369,6 @@ const getBreakpoint = (width: number): "default" | "sm" | "md" | "lg" | "xl" | "
 export {
   noop,
   identity,
-  isObject,
   isObjectEmpty,
   compact,
   uniq,

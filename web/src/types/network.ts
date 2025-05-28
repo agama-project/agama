@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { isObject } from "~/utils";
+import { isObject } from "radashi";
 import {
   buildAddress,
   buildAddresses,
