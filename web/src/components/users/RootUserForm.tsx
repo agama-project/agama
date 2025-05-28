@@ -35,7 +35,7 @@ import { useNavigate } from "react-router-dom";
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
 import { useRootUser, useRootUserMutation } from "~/queries/users";
 import { RootUser } from "~/types/users";
-import { isEmpty } from "~/utils";
+import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 
 const AVAILABLE_METHODS = ["password", "sshPublicKey"] as const;

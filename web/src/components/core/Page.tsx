@@ -45,7 +45,8 @@ import Link, { LinkProps } from "~/components/core/Link";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
 import { useLocation, useNavigate } from "react-router-dom";
-import { isEmpty, isObject } from "~/utils";
+import { isObject } from "~/utils";
+import { isEmpty } from "radashi";
 import { SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 

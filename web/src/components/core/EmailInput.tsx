@@ -22,7 +22,8 @@
 
 import React, { useEffect, useState } from "react";
 import { InputGroup, TextInput, TextInputProps } from "@patternfly/react-core";
-import { isEmpty, noop } from "~/utils";
+import { isEmpty } from "radashi";
+import { noop } from "~/utils";
 
 /**
  * Email validation.

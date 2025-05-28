@@ -51,41 +51,6 @@ const isObjectEmpty = (value: object) => {
 };
 
 /**
- * Whether given value is empty or not
- *
- * @param value - the value to be checked
- * @return false if value is a function, a not empty object, or a not
- *                   empty string; true otherwise
- */
-const isEmpty = (value) => {
-  if (value === null || value === undefined) {
-    return true;
-  }
-
-  if (typeof value === "function") {
-    return false;
-  }
-
-  if (typeof value === "number" && !Number.isNaN(value)) {
-    return false;
-  }
-
-  if (typeof value === "string") {
-    return value.trim() === "";
-  }
-
-  if (Array.isArray(value)) {
-    return value.length === 0;
-  }
-
-  if (isObject(value)) {
-    return isObjectEmpty(value);
-  }
-
-  return true;
-};
-
-/**
  * Returns an empty function useful to be used as a default callback.
  *
  * @return empty function
@@ -444,7 +409,6 @@ const getBreakpoint = (width: number): "default" | "sm" | "md" | "lg" | "xl" | "
 export {
   noop,
   identity,
-  isEmpty,
   isObject,
   isObjectEmpty,
   partition,
