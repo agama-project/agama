@@ -37,7 +37,7 @@ pub enum CliInput {
     Path(PathBuf),
     Stdin,
     /// The full text as String.
-    // Not parsed from CLI but used when implementing import.
+    // Not parsed from CLI but used when validating as part of `config generate`.
     Full(String),
 }
 
@@ -58,7 +58,7 @@ impl From<String> for CliInput {
 }
 
 impl CliInput {
-    /// If *self* has a path or url value, append a `path=...` or `url=...`
+    /// If *self* has a path or URL value, append a `path=...` or `url=...`
     /// query parameter to *url*, properly escaped. The path is made absolute
     /// so that it works (on localhost) even if server's working directory is different.
     /// See also: `body_for_web`
@@ -81,6 +81,7 @@ impl CliInput {
         Ok(())
     }
 
+    /// Make *path* absolute by prepending the current directory
     fn absolute(path: &Path) -> std::io::Result<PathBuf> {
         // we avoid Path.canonicalize because it would resolve away symlinks
         // that we need for testing
