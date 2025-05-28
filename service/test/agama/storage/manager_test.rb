@@ -27,7 +27,7 @@ require "agama/dbus/clients/questions"
 require "agama/config"
 require "agama/http"
 require "agama/issue"
-require "agama/storage/config_json_reader"
+require "agama/storage/configurator"
 require "agama/storage/iscsi/manager"
 require "agama/storage/manager"
 require "agama/storage/proposal"
@@ -170,11 +170,12 @@ describe Agama::Storage::Manager do
 
       allow(proposal).to receive(:issues).and_return(proposal_issues)
       allow(proposal).to receive(:available_devices).and_return(devices)
-      allow(proposal).to receive(:calculate_from_json)
+      allow(proposal).to receive(:calculate_from_json).and_return(true)
+      allow(proposal).to receive(:success?).and_return(true)
       allow(proposal).to receive(:storage_json).and_return(current_config)
 
-      allow_any_instance_of(Agama::Storage::ConfigJSONReader)
-        .to receive(:read).and_return(default_config)
+      allow_any_instance_of(Agama::Storage::Configurator)
+        .to receive(:generate_configs).and_return([default_config])
 
       allow(config).to receive(:pick_product)
       allow(iscsi).to receive(:activate)
