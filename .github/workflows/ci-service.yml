@@ -81,23 +81,35 @@ jobs:
         augeas-devel
 
     - name: Install required packages
-      run: zypper --non-interactive install
-        suseconnect-ruby-bindings
-        autoyast2-installation
-        yast2
-        yast2-bootloader
-        yast2-country
-        yast2-hardware-detection
-        yast2-installation
-        yast2-iscsi-client
-        yast2-network
-        yast2-proxy
-        yast2-storage-ng
-        yast2-users
-        python3-jsonschema
+      run: |
+        RUBY_VERSION=$(ruby -e "puts RbConfig::CONFIG['ruby_version']")
+        zypper --non-interactive install \
+        suseconnect-ruby-bindings \
+        autoyast2-installation \
+        yast2 \
+        yast2-bootloader \
+        yast2-country \
+        yast2-devtools \
+        yast2-hardware-detection \
+        yast2-installation \
+        yast2-iscsi-client \
+        yast2-network \
+        yast2-proxy \
+        yast2-storage-ng \
+        yast2-users \
+        python3-jsonschema \
+        gettext-tools \
+        "rubygem(ruby:$RUBY_VERSION:yast-rake)" \
+        "rubygem(ruby:$RUBY_VERSION:gettext)" \
+        which
 
     - name: Install RubyGems dependencies
       run: bundle config set --local with 'development' && bundle install
+
+    - name: Check collecting translatable strings
+      run: |
+        rake pot
+        msgfmt --statistics agama.pot
 
     - name: Run the tests and generate coverage report
       run: bundle exec rspec
