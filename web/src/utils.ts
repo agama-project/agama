@@ -23,11 +23,6 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 
 /**
- * @return identity function
- */
-const identity = (i) => i;
-
-/**
  * Generates a new array without null and undefined values.
  */
 const compact = <T>(collection: Array<T>) => {
@@ -350,7 +345,6 @@ const getBreakpoint = (width: number): "default" | "sm" | "md" | "lg" | "xl" | "
 };
 
 export {
-  identity,
   compact,
   uniq,
   classNames,
