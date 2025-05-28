@@ -22,7 +22,6 @@
 
 import {
   classNames,
-  partition,
   compact,
   uniq,
   noop,
@@ -36,16 +35,6 @@ describe("noop", () => {
   it("returns undefined", () => {
     const result = noop();
     expect(result).toBeUndefined();
-  });
-});
-
-describe("partition", () => {
-  it("returns two groups of elements that do and do not satisfy provided filter", () => {
-    const numbers = [1, 2, 3, 4, 5, 6];
-    const [odd, even] = partition(numbers, (number) => number % 2 !== 0);
-
-    expect(odd).toEqual([1, 3, 5]);
-    expect(even).toEqual([2, 4, 6]);
   });
 });
 

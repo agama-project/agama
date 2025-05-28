@@ -63,28 +63,6 @@ const noop = () => undefined;
 const identity = (i) => i;
 
 /**
- * Returns a new array with a given collection split into two groups, the first holding elements
- * satisfying the filter and the second with those which do not.
- *
- * @param collection - the collection to be filtered
- * @param filter - the function to be used as filter
- * @return a pair of arrays, [passing, failing]
- */
-const partition = <T>(
-  collection: Array<T>,
-  filter: (element: T) => boolean,
-): [Array<T>, Array<T>] => {
-  const pass = [];
-  const fail = [];
-
-  collection.forEach((element) => {
-    filter(element) ? pass.push(element) : fail.push(element);
-  });
-
-  return [pass, fail];
-};
-
-/**
  * Generates a new array without null and undefined values.
  */
 const compact = <T>(collection: Array<T>) => {
@@ -411,7 +389,6 @@ export {
   identity,
   isObject,
   isObjectEmpty,
-  partition,
   compact,
   uniq,
   classNames,

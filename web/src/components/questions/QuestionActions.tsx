@@ -21,8 +21,8 @@
  */
 
 import React from "react";
-import { partition } from "~/utils";
 import { Popup } from "~/components/core";
+import { fork } from "radashi";
 
 /**
  * Returns given text capitalized
@@ -56,7 +56,7 @@ export default function QuestionActions({
   actionCallback: (action: string) => void;
   conditions?: { disable?: { [key: string]: boolean } };
 }): React.ReactNode {
-  let [[primaryAction], secondaryActions] = partition(actions, (a: string) => a === defaultAction);
+  let [[primaryAction], secondaryActions] = fork(actions, (a: string) => a === defaultAction);
 
   // Ensure there is always a primary action
   if (!primaryAction) [primaryAction, ...secondaryActions] = secondaryActions;
