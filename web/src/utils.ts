@@ -23,16 +23,6 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 
 /**
- * Whether given object is empty or not
- *
- * @param value - the value to be checked
- * @return true when given value is an empty object; false otherwise
- */
-const isObjectEmpty = (value: object) => {
-  return Object.keys(value).length === 0;
-};
-
-/**
  * Returns an empty function useful to be used as a default callback.
  *
  * @return empty function
@@ -369,7 +359,6 @@ const getBreakpoint = (width: number): "default" | "sm" | "md" | "lg" | "xl" | "
 export {
   noop,
   identity,
-  isObjectEmpty,
   compact,
   uniq,
   classNames,
