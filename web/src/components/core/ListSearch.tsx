@@ -22,8 +22,9 @@
 
 import React, { useState } from "react";
 import { SearchInput } from "@patternfly/react-core";
+import { noop } from "radashi";
+import { useDebounce } from "~/utils";
 import { _ } from "~/i18n";
-import { noop, useDebounce } from "~/utils";
 
 type ListSearchProps<T> = {
   /** Text to display as placeholder for the search input. */

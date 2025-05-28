@@ -36,8 +36,7 @@ import { render } from "@testing-library/react";
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 import { InstallerL10nProvider } from "~/context/installerL10n";
-import { isObject } from "radashi";
-import { noop } from "./utils";
+import { isObject, noop } from "radashi";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default

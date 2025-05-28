@@ -23,13 +23,6 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 
 /**
- * Returns an empty function useful to be used as a default callback.
- *
- * @return empty function
- */
-const noop = () => undefined;
-
-/**
  * @return identity function
  */
 const identity = (i) => i;
@@ -357,7 +350,6 @@ const getBreakpoint = (width: number): "default" | "sm" | "md" | "lg" | "xl" | "
 };
 
 export {
-  noop,
   identity,
   compact,
   uniq,

@@ -1,4 +1,4 @@
-import { noop } from "~/utils";
+import { noop } from "radashi";
 
 type AddAttributeFn = HTMLElement["setAttribute"];
 type RemoveAttributeFn = HTMLElement["removeAttribute"];

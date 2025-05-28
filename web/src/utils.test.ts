@@ -20,22 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import {
-  classNames,
-  compact,
-  uniq,
-  noop,
-  toValidationError,
-  localConnection,
-  slugify,
-} from "./utils";
-
-describe("noop", () => {
-  it("returns undefined", () => {
-    const result = noop();
-    expect(result).toBeUndefined();
-  });
-});
+import { classNames, compact, uniq, toValidationError, localConnection, slugify } from "./utils";
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
