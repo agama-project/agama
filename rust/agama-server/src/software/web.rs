@@ -393,8 +393,8 @@ async fn solve_conflicts(
     let ret = state.software.solve_conflicts(solutions).await?;
 
     // refresh the config cache
-    let mut cached_config_write = state.config.write().await;
     let config = read_config(&state).await?;
+    let mut cached_config_write = state.config.write().await;
     *cached_config_write = Some(config);
 
     Ok(ret)
