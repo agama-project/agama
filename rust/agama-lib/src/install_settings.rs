@@ -65,6 +65,7 @@ pub struct InstallSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub files: Option<Vec<UserFile>>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub hostname: Option<HostnameSettings>,
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -78,6 +79,7 @@ pub struct InstallSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub software: Option<SoftwareSettings>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub product: Option<ProductSettings>,
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -86,8 +88,10 @@ pub struct InstallSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub storage_autoyast: Option<Box<RawValue>>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub network: Option<NetworkSettings>,
     #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub localization: Option<LocalizationSettings>,
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
