@@ -30,22 +30,6 @@ const compact = <T>(collection: Array<T>) => {
 };
 
 /**
- * Simple utility function to help building className conditionally
- *
- * @example
- * // returns "bg-yellow w-24"
- * classNames("bg-yellow", true && "w-24", false && "h-24");
- *
- * @todo Use https://github.com/JedWatson/classnames instead?
- *
- * @param classes - CSS classes to join
- * @returns CSS classes joined together after ignoring falsy values
- */
-const classNames = (...classes) => {
-  return classes.filter((item) => !!item).join(" ");
-};
-
-/**
  * Convert any string into a slug
  *
  * Borrowed from https://jasonwatmore.com/vanilla-js-slugify-a-string-in-javascript
@@ -339,7 +323,6 @@ const getBreakpoint = (width: number): "default" | "sm" | "md" | "lg" | "xl" | "
 
 export {
   compact,
-  classNames,
   useCancellablePromise,
   useLocalStorage,
   useDebounce,

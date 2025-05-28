@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { classNames, compact, toValidationError, localConnection, slugify } from "./utils";
+import { compact, toValidationError, localConnection, slugify } from "./utils";
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -33,16 +33,6 @@ describe("compact", () => {
       false,
       true,
     ]);
-  });
-});
-
-describe("classNames", () => {
-  it("join given arguments, ignoring falsy values", () => {
-    const includeClass = true;
-
-    expect(
-      classNames("bg-yellow", !includeClass && "h-24", undefined, null, includeClass && "w-24"),
-    ).toEqual("bg-yellow w-24");
   });
 });
 
