@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 28 09:00:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Fix bridge port config (bridge-port.priority and 
+  brdige-port.path_cost)
+
+-------------------------------------------------------------------
 Mon May 26 19:51:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 15
