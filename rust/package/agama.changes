@@ -1,4 +1,22 @@
 -------------------------------------------------------------------
+Wed May 28 14:53:51 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Refresh the software cache after resolving conflicts to
+  show the correct current status
+  (followup for gh#agama-project/agama#2348)
+
+-------------------------------------------------------------------
+Wed May 28 13:29:51 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Stop serving the web UI from $HOME/.local/share/agama
+  (gh#agama-project/agama#2414).
+
+-------------------------------------------------------------------
+Mon May 26 19:51:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 15
+
+-------------------------------------------------------------------
 Fri May 23 13:22:15 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Proper handling of WebSocket secure connections (gh#agama-project/agama#2391):

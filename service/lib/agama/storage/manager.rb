@@ -19,26 +19,26 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
-require "bootloader/proposal_client"
-require "y2storage/storage_manager"
-require "y2storage/storage_env"
-require "y2storage/clients/inst_prepdisk"
-require "agama/storage/actions_generator"
-require "agama/storage/bootloader"
-require "agama/storage/proposal"
-require "agama/storage/proposal_settings"
-require "agama/storage/callbacks"
-require "agama/storage/iscsi/manager"
-require "agama/storage/finisher"
-require "agama/storage/config_json_reader"
-require "agama/issue"
-require "agama/with_locale"
-require "agama/with_issues"
-require "agama/with_progress"
-require "agama/security"
 require "agama/dbus/clients/questions"
 require "agama/dbus/clients/software"
+require "agama/issue"
+require "agama/security"
+require "agama/storage/actions_generator"
+require "agama/storage/bootloader"
+require "agama/storage/callbacks"
+require "agama/storage/configurator"
+require "agama/storage/finisher"
+require "agama/storage/iscsi/manager"
+require "agama/storage/proposal"
+require "agama/storage/proposal_settings"
+require "agama/with_issues"
+require "agama/with_locale"
+require "agama/with_progress"
+require "yast"
+require "bootloader/proposal_client"
+require "y2storage/clients/inst_prepdisk"
+require "y2storage/storage_env"
+require "y2storage/storage_manager"
 
 Yast.import "PackagesProposal"
 
@@ -170,8 +170,7 @@ module Agama
       #   proposal. If false, then the default config from the product is used.
       def calculate_proposal(keep_config: false)
         config_json = proposal.storage_json if keep_config
-        config_json ||= ConfigJSONReader.new(product_config).read
-        proposal.calculate_from_json(config_json)
+        Configurator.new(proposal).configure(config_json)
       end
 
       # Storage proposal manager

@@ -42,8 +42,17 @@ module Agama
         return {} if global.empty?
 
         bootloader = {}
-        bootloader["timeout"] = global["timeout"] if global["timeout"].is_a?(Integer)
+
+        if global["timeout"].is_a?(Integer)
+          if global["timeout"] >= 0
+            bootloader["timeout"] = global["timeout"]
+          else
+            bootloader["stopOnBootMenu"] = true
+          end
+        end
+
         bootloader["extraKernelParams"] = global["append"] unless global["append"].to_s.empty?
+
         { "bootloader" => bootloader }
       end
 
