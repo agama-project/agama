@@ -75,18 +75,6 @@ impl Adapter for NetworkManagerAdapter<'_> {
                 .connections()
                 .await
                 .map_err(|e| NetworkAdapterError::Read(anyhow!(e)))?;
-
-            if config.keep_connections {
-                let copy = state.general_state.copy_network;
-                let mut keep_connections: HashMap<String, bool> = HashMap::new();
-
-                for conn in state.connections.iter_mut() {
-                    keep_connections.insert((&conn.id).to_string(), copy);
-                    // 0 is NONE, the rest are mainly unsaved
-                    conn.keep = if conn.flags != 0 { false } else { true };
-                }
-                state.keep_connections = keep_connections;
-            }
         }
 
         if config.access_points && general_state.wireless_enabled {

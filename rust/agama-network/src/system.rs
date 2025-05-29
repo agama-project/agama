@@ -427,21 +427,12 @@ impl<T: Adapter> NetworkSystemServer<T> {
     /// Writes the network configuration.
     pub async fn write(&mut self) -> Result<(), NetworkAdapterError> {
         self.adapter.write(&self.state).await?;
-        let keep_connections = self.state.keep_connections.clone();
         self.state = self
             .adapter
             .read(StateConfig {
-                keep_connections: false,
                 ..Default::default()
             })
             .await?;
-
-        let copy = self.state.general_state.copy_network;
-        for conn in self.state.connections.iter_mut() {
-            conn.keep = keep_connections.get(&conn.id).unwrap_or(&copy).to_owned();
-        }
-
-        self.state.keep_connections = keep_connections;
         Ok(())
     }
 }
