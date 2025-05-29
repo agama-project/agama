@@ -27,7 +27,7 @@ use crate::{
 use anyhow::anyhow;
 use async_trait::async_trait;
 use core::time;
-use std::{collections::HashMap, thread};
+use std::thread;
 
 use super::error::NmError;
 

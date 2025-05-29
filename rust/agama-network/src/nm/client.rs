@@ -97,10 +97,14 @@ impl<'a> NetworkManagerClient<'a> {
         if copy_network != state.copy_network {
             let path = Path::new("/run/agama/not_copy_network");
             if state.copy_network {
-                fs::remove_file(path);
+                if let Err(error) = fs::remove_file(path) {
+                    tracing::error!("Cannot remove /run/agama/not_copy_network file {:?}", error);
+                }
             } else {
-                OpenOptions::new().create(true).write(true).open(path);
-            }
+                if let Err(error) = OpenOptions::new().create(true).write(true).open(path) {
+                    tracing::error!("Cannot write /run/agama/not_copy_network file {:?}", error);
+                }
+            };
         };
 
         Ok(())
