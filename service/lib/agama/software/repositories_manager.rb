@@ -45,25 +45,26 @@ module Agama
       end
 
       # returns user repositories as it was previously specified
-      def get_user_repositories
+      def user_repositories
         @plain_user_repositories
       end
 
       # sets and loads user repositories
-      def set_user_repositories(repos)
+      def user_repositories=(repos)
         @plain_user_repositories = repos
         clear_user_repositories
         repos.each do |repo|
           id = Yast::Pkg.RepositoryAdd(
-            "name" => repo["name"],
+            "name"      => repo["name"],
             "base_urls" => [repo["url"].to_s],
-            "alias" => repo["alias"],
-            "prod_dir" => repo["product_dir"],
-            "enabled" => repo["enabled"],
-            "priority" => repo["priority"],
+            "alias"     => repo["alias"],
+            "prod_dir"  => repo["product_dir"],
+            "enabled"   => repo["enabled"],
+            "priority"  => repo["priority"]
           )
           # TODO: better error reporting
           raise "failed to add repo" unless id
+
           zypp_repo = Repository.find(id)
 
           @user_repositories << zypp_repo
