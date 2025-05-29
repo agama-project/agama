@@ -468,7 +468,7 @@ function useAutoRefreshFilesystem(handler, value: FormValue) {
     // Select default filesystem for the mount point if the partition has no filesystem.
     if (mountPoint !== NO_VALUE && target !== NEW_PARTITION && !partitionFilesystem)
       handler(defaultFilesystem);
-    // Reuse the filesystem from the partition if possble.
+    // Reuse the filesystem from the partition if possible.
     if (mountPoint !== NO_VALUE && target !== NEW_PARTITION && partitionFilesystem) {
       // const reuse = usableFilesystems.includes(partitionFilesystem);
       const reuse = usableFilesystems.includes(partitionFilesystem);

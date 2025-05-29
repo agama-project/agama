@@ -35,7 +35,7 @@ jest.mock("~/queries/issues", () => ({
 }));
 
 jest.mock("./ProposalResultSection", () => () => <div>result section</div>);
-jest.mock("./ProposalTransactionalInfo", () => () => <div>trasactional info</div>);
+jest.mock("./ProposalTransactionalInfo", () => () => <div>transactional info</div>);
 
 const mockGetPartition = jest.fn();
 
