@@ -533,6 +533,7 @@ pub struct Connection {
     pub state: ConnectionState,
     pub keep: bool,
     pub filename: String,
+    pub flags: u32,
 }
 
 impl Connection {
@@ -608,6 +609,7 @@ impl Default for Connection {
             state: Default::default(),
             keep: true,
             filename: Default::default(),
+            flags: Default::default(),
         }
     }
 }
@@ -692,7 +694,7 @@ impl TryFrom<Connection> for NetworkConnection {
             .and_then(|x| IEEE8021XSettings::try_from(x).ok());
         let autoconnect = conn.autoconnect;
         let keep = conn.keep;
-        let filename = conn.filename;
+        let filename = Some(conn.filename);
 
         let mut connection = NetworkConnection {
             id,
