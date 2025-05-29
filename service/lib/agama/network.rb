@@ -24,7 +24,6 @@ require "yast"
 require "yast2/systemd/service"
 require "y2network/proposal_settings"
 require "agama/proxy_setup"
-require "agama/http"
 
 Yast.import "Installation"
 
@@ -97,15 +96,10 @@ module Agama
       return unless Dir.exist?(ETC_NM_DIR)
       return if File.exist?(NOT_COPY_NETWORK)
 
-      persist_connections
-    end
-
-    def persist_connections
-      client = Agama::HTTP::Clients::Network.new(logger)
-      client.to_persist.each {|c|
-        next if c["filename"].to_s.empty?
-        copy(c["filename"])
-      }
+      copy_directory(
+        File.join(ETC_NM_DIR, "system-connections"),
+        File.join(Yast::Installation.destdir, ETC_NM_DIR, "system-connections")
+      )
     end
 
     # Copies a directory
@@ -135,7 +129,6 @@ module Agama
 
       path = target || File.join(Yast::Installation.destdir, source)
       FileUtils.mkdir_p(File.dirname(path))
-      logger.info "Copying #{source} to #{path}"
       FileUtils.copy_entry(source, path)
     end
   end
