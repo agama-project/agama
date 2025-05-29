@@ -19,8 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require_relative "./product_config_context"
 require_relative "./storage_helpers"
-require "agama/config"
 require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_solver"
 require "agama/storage/system"
@@ -28,6 +28,8 @@ require "y2storage"
 require "y2storage/encryption_method/tpm_fde"
 
 shared_context "config" do
+  include_context "product config"
+
   # Solves the config.
   def solve_config
     Agama::Storage::ConfigSolver
@@ -39,29 +41,6 @@ shared_context "config" do
 
   let(:storage_system) { Agama::Storage::System.new }
 
-  let(:product_config) { Agama::Config.new(product_data) }
-
-  let(:product_data) do
-    {
-      "storage" => {
-        "volumes"          => volumes,
-        "volume_templates" => volume_templates
-      }
-    }
-  end
-
-  let(:volumes) { ["/"] }
-
-  let(:volume_templates) do
-    [
-      {
-        "mount_path" => "/",
-        "filesystem" => "btrfs",
-        "outline"    => { "filesystems" => ["btrfs", "xfs"] }
-      }
-    ]
-  end
-
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSON
       .new(config_json, default_paths: default_paths, mandatory_paths: mandatory_paths)
@@ -69,10 +48,6 @@ shared_context "config" do
   end
 
   let(:config_json) { nil }
-
-  let(:default_paths) { product_config.default_paths }
-
-  let(:mandatory_paths) { product_config.mandatory_paths }
 
   before do
     mock_storage(devicegraph: scenario)
