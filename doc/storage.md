@@ -11,7 +11,7 @@ documentation. This document is maintained here for the following purposes.
     documents.
   - Record aspects that are still under discussion.
 
-## Agama and YaST 
+## Agama and YaST
 
 This section describes some of the main differences between the Agama and YaST approaches.
 
@@ -22,7 +22,7 @@ different for every product or system role, describe the partitions or LVM logic
 created during the process.
 
 In YaST, every volume specifies two different kinds of lower size limits. The so-called "desired
-size" that is the smallest size that is recommeded for a normal usage of that volume and the "min
+size" that is the smallest size that is recommended for a normal usage of that volume and the "min
 size" that is the lower threshold for the volume to be minimally useful. On top of that, every
 volume has a "weight", used to adjust how the available space is distributed among the volumes.
 
@@ -49,7 +49,7 @@ configuration. For that it relies on two features of the so-called volumes.
 
 YaST performs an initial execution of the `GuidedProposal` using the desired sizes as starting point
 and with all the optional features set at their recommended values. If that fails, it runs
-subsequent attempts until a proposal is possible. For that it fallbacks to the min sizes and
+subsequent attempts until a proposal is possible. For that it fall-backs to the min sizes and
 disables volumes (or volume features) in the order specified in the control file. It also explores
 the possibility of using the different disks found on the system.
 
@@ -65,14 +65,18 @@ sentence like these next to the result of the current proposal:
 
 As mentioned before, Agama doesn't need to replicate all YaST behaviors or to inherit its
 requirements and expectations. It's possible to adopt the same approach or to go all the way in the
-other direction and try by default to execute the storage proposal only once, with:
+other direction. At this moment, Agama tries to execute the storage proposal with:
 
-  - A single disk as target (chosen by any criteria)
-  - The default product strategy for making space (eg. wiping the content of the disk)
-  - Using the default settings for all volumes
+  - A single device as target.
+  - The default product strategy for making space (eg. wiping the content of the disk).
+  - Using the default settings for all volumes.
 
-If that execution of the proposal fails, then Agama could simply show a message like:
-"it was not possible to calculate an initial storage layout".
+Agama performs until 5 attempts by using different target devices. If the system contains any BOSS
+device, then the installation is tried only over such kind of devices. Otherwise, the proposal
+attempts are performed over software RAIDs first and drives later. Some devices (both, software
+RAIDs and drives) are not used if they are not considered as bootable device. In the case of
+software RAIDs,  Agama relies on some historical YaST heuristics to consider the device as bootable.
+Finally, the removable devices (e.g., USB devices) are used as last resort.
 
 ### Reusing LVM Setups
 

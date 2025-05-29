@@ -23,6 +23,7 @@ require "agama/issue"
 require "agama/storage/actions_generator"
 require "agama/storage/config_checker"
 require "agama/storage/config_conversions"
+require "agama/storage/config_json_generator"
 require "agama/storage/config_solver"
 require "agama/storage/model_support_checker"
 require "agama/storage/proposal_settings"
@@ -72,6 +73,18 @@ module Agama
       # @return [Array<Y2Storage::Device>]
       def available_devices
         storage_system.candidate_drives
+      end
+
+      # Default storage config according to the JSON schema.
+      #
+      # The default config depends on the target device.
+      #
+      # @param device [Y2Storage::Device, nil] Target device.
+      # @return [Hash]
+      def default_storage_json(device = nil)
+        config_json = ConfigJSONGenerator.new(product_config, device: device).generate
+
+        { storage: config_json }
       end
 
       # Storage config according to the JSON schema from the current proposal.
