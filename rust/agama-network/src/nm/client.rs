@@ -37,6 +37,7 @@ use crate::model::{
 };
 use crate::types::{DeviceType, SSID};
 use agama_utils::dbus::get_optional_property;
+use semver::Version;
 use uuid::Uuid;
 use zbus;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
@@ -261,7 +262,12 @@ impl<'a> NetworkManagerClient<'a> {
         conn: &Connection,
         controller: Option<&Connection>,
     ) -> Result<(), NmError> {
-        let mut new_conn = connection_to_dbus(conn, controller);
+        let mut new_conn = connection_to_dbus(
+            conn,
+            controller,
+            Version::parse(&self.nm_proxy.version().await?)
+                .map_err(NmError::FailedNmVersionParse)?,
+        );
 
         let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid).await {
             let original = proxy.get_settings().await?;
