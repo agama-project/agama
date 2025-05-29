@@ -346,12 +346,8 @@ async fn update_connection(
     let bridge = conn.bridge.clone();
 
     let mut conn = Connection::try_from(conn)?;
-    if orig_conn.id != id {
-        // FIXME: why?
-        return Err(NetworkError::UnknownConnection(id));
-    } else {
-        conn.uuid = orig_conn.uuid;
-    }
+    conn.uuid = orig_conn.uuid;
+    conn.filename = orig_conn.filename;
 
     state.network.update_connection(conn.clone()).await?;
 

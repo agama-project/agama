@@ -82,7 +82,8 @@ impl Adapter for NetworkManagerAdapter<'_> {
 
                 for conn in state.connections.iter_mut() {
                     keep_connections.insert((&conn.id).to_string(), copy);
-                    conn.keep = copy;
+                    // 0 is NONE, the rest are mainly unsaved
+                    conn.keep = if conn.flags != 0 { false } else { true };
                 }
                 state.keep_connections = keep_connections;
             }
@@ -144,6 +145,11 @@ impl Adapter for NetworkManagerAdapter<'_> {
         for conn in ordered_connections(network) {
             if let Some(old_conn) = old_state.get_connection_by_uuid(conn.uuid) {
                 if old_conn == conn {
+                    tracing::info!(
+                        "No change detected for connection {} ({})",
+                        conn.id,
+                        conn.uuid
+                    );
                     continue;
                 }
             } else if conn.is_removed() {
