@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 29 09:31:28 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Requires a unit when entering sizes to avoid confusion and
+  accidental sizes in bytes (gh#agama-project/agama#2421).
+
+-------------------------------------------------------------------
 Mon May 26 19:51:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 15
@@ -7,7 +13,7 @@ Mon May 26 19:51:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 Thu May 22 17:16:40 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Handle reused MD RAIDs that are already included at the storage
-  configuration (gh/agama-project/agama#2346).
+  configuration (gh#agama-project/agama#2346).
 
 -------------------------------------------------------------------
 Thu May 22 16:20:38 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
@@ -24,7 +30,7 @@ Thu May 22 09:07:28 UTC 2025 - David Diaz <dgonzalez@suse.com>
 Mon May 19 13:38:16 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Keep margin between sidebar and main content in all breakpoints
-  (gh/agama-project/agama#2370).
+  (gh#agama-project/agama#2370).
 
 -------------------------------------------------------------------
 Fri May 16 07:46:22 UTC 2025 - David Diaz <dgonzalez@suse.com>
