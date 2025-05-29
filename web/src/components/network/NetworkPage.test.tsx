@@ -36,8 +36,8 @@ jest.mock("~/components/network/WiredConnectionsList", () => () => (
   <div>WiredConnectionsList Mock</div>
 ));
 
-jest.mock("~/components/network/AllConnectionsStatusAlert", () => () => (
-  <div>AllConnectionsStatusAlert Mock</div>
+jest.mock("~/components/network/NoPersistentConnectionsAlert", () => () => (
+  <div>NoPersistentConnectionsAlert Mock</div>
 ));
 
 const mockNetworkState = {
@@ -52,7 +52,7 @@ jest.mock("~/queries/network", () => ({
 describe("NetworkPage", () => {
   it("mounts alert for all connections status", () => {
     installerRender(<NetworkPage />);
-    expect(screen.queryByText("AllConnectionsStatusAlert Mock")).toBeInTheDocument();
+    expect(screen.queryByText("NoPersistentConnectionsAlert Mock")).toBeInTheDocument();
   });
 
   it("renders a section for wired connections", () => {
