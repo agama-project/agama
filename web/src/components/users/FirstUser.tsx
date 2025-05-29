@@ -33,7 +33,7 @@ import {
 import { Link, Page, SplitButton } from "~/components/core";
 import { useFirstUser, useFirstUserChanges, useRemoveFirstUserMutation } from "~/queries/users";
 import { PATHS } from "~/routes/users";
-import { isEmpty } from "~/utils";
+import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 
 const UserActions = () => {

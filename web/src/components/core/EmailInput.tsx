@@ -22,7 +22,7 @@
 
 import React, { useEffect, useState } from "react";
 import { InputGroup, TextInput, TextInputProps } from "@patternfly/react-core";
-import { isEmpty, noop } from "~/utils";
+import { isEmpty, noop } from "radashi";
 
 /**
  * Email validation.

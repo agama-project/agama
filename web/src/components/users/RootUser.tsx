@@ -33,7 +33,7 @@ import {
 import { Link, Page } from "~/components/core";
 import { useRootUser, useRootUserChanges } from "~/queries/users";
 import { USER } from "~/routes/paths";
-import { isEmpty } from "~/utils";
+import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 
 const SSHKeyLabel = ({ sshKey }) => {

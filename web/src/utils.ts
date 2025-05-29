@@ -23,161 +23,10 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 
 /**
- * Returns true when given value is an
- * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object Object}
- *
- * Borrowed from https://dev.to/alesm0101/how-to-check-if-a-value-is-an-object-in-javascript-3pin
- *
- * @param value - the value to be checked
- * @return true when given value is an object; false otherwise
- */
-const isObject = (value) =>
-  typeof value === "object" &&
-  value !== null &&
-  !Array.isArray(value) &&
-  !(value instanceof RegExp) &&
-  !(value instanceof Date) &&
-  !(value instanceof Set) &&
-  !(value instanceof Map);
-
-/**
- * Whether given object is empty or not
- *
- * @param value - the value to be checked
- * @return true when given value is an empty object; false otherwise
- */
-const isObjectEmpty = (value: object) => {
-  return Object.keys(value).length === 0;
-};
-
-/**
- * Whether given value is empty or not
- *
- * @param value - the value to be checked
- * @return false if value is a function, a not empty object, or a not
- *                   empty string; true otherwise
- */
-const isEmpty = (value) => {
-  if (value === null || value === undefined) {
-    return true;
-  }
-
-  if (typeof value === "function") {
-    return false;
-  }
-
-  if (typeof value === "number" && !Number.isNaN(value)) {
-    return false;
-  }
-
-  if (typeof value === "string") {
-    return value.trim() === "";
-  }
-
-  if (Array.isArray(value)) {
-    return value.length === 0;
-  }
-
-  if (isObject(value)) {
-    return isObjectEmpty(value);
-  }
-
-  return true;
-};
-
-/**
- * Returns an empty function useful to be used as a default callback.
- *
- * @return empty function
- */
-const noop = () => undefined;
-
-/**
- * @return identity function
- */
-const identity = (i) => i;
-
-/**
- * Returns a new array with a given collection split into two groups, the first holding elements
- * satisfying the filter and the second with those which do not.
- *
- * @param collection - the collection to be filtered
- * @param filter - the function to be used as filter
- * @return a pair of arrays, [passing, failing]
- */
-const partition = <T>(
-  collection: Array<T>,
-  filter: (element: T) => boolean,
-): [Array<T>, Array<T>] => {
-  const pass = [];
-  const fail = [];
-
-  collection.forEach((element) => {
-    filter(element) ? pass.push(element) : fail.push(element);
-  });
-
-  return [pass, fail];
-};
-
-/**
  * Generates a new array without null and undefined values.
  */
 const compact = <T>(collection: Array<T>) => {
   return collection.filter((e) => e !== null && e !== undefined);
-};
-
-/**
- * Generates a new array without duplicates.
- */
-const uniq = <T>(collection: Array<T>) => {
-  return [...new Set(collection)];
-};
-
-/**
- * Simple utility function to help building className conditionally
- *
- * @example
- * // returns "bg-yellow w-24"
- * classNames("bg-yellow", true && "w-24", false && "h-24");
- *
- * @todo Use https://github.com/JedWatson/classnames instead?
- *
- * @param classes - CSS classes to join
- * @returns CSS classes joined together after ignoring falsy values
- */
-const classNames = (...classes) => {
-  return classes.filter((item) => !!item).join(" ");
-};
-
-/**
- * Convert any string into a slug
- *
- * Borrowed from https://jasonwatmore.com/vanilla-js-slugify-a-string-in-javascript
- *
- * @example
- * slugify("Agama! / Network 1");
- * // returns "agama-network-1"
- *
- * @param input - the string to slugify
- * @returns the slug
- */
-const slugify = (input: string) => {
-  if (!input) return "";
-
-  return (
-    input
-      // make lower case and trim
-      .toLowerCase()
-      .trim()
-      // remove accents from charaters
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      // replace invalid chars with spaces
-      .replace(/[^a-z0-9\s-]/g, " ")
-      .trim()
-      // replace multiple spaces or hyphens with a single hyphen
-      .replace(/[\s-]+/g, "-")
-  );
 };
 
 type CancellableWrapper<T> = {
@@ -442,15 +291,7 @@ const getBreakpoint = (width: number): "default" | "sm" | "md" | "lg" | "xl" | "
 };
 
 export {
-  noop,
-  identity,
-  isEmpty,
-  isObject,
-  isObjectEmpty,
-  partition,
   compact,
-  uniq,
-  classNames,
   useCancellablePromise,
   useLocalStorage,
   useDebounce,
@@ -459,7 +300,6 @@ export {
   locationReload,
   setLocationSearch,
   localConnection,
-  slugify,
   timezoneTime,
   mask,
   getBreakpoint,

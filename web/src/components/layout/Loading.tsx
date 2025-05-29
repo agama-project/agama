@@ -26,7 +26,7 @@ import { PlainLayout } from "~/components/layout";
 import { LayoutProps } from "~/components/layout/Layout";
 import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
-import { isEmpty } from "~/utils";
+import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 
 /**

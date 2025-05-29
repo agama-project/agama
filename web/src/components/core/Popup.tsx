@@ -32,8 +32,8 @@ import {
   ModalProps,
 } from "@patternfly/react-core";
 import { Loading } from "~/components/layout";
+import { fork } from "radashi";
 import { _ } from "~/i18n";
-import { partition } from "~/utils";
 
 type ButtonWithoutVariantProps = Omit<ButtonProps, "variant">;
 type PredefinedAction = React.PropsWithChildren<ButtonWithoutVariantProps>;
@@ -212,7 +212,7 @@ const Popup = ({
   children,
   ...props
 }: PopupProps) => {
-  const [actions, content] = partition(React.Children.toArray(children), (child) =>
+  const [actions, content] = fork(React.Children.toArray(children), (child) =>
     isValidElement(child) ? child.type === Actions : false,
   );
 

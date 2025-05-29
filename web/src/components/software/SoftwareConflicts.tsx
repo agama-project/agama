@@ -45,7 +45,7 @@ import { Icon } from "~/components/layout";
 import { Page, SubtleContent } from "~/components/core";
 import { ConflictSolutionOption } from "~/types/software";
 import { useConflicts, useConflictsChanges, useConflictsMutation } from "~/queries/software";
-import { isEmpty } from "~/utils";
+import { isNullish } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
@@ -131,7 +131,7 @@ const ConflictsForm = ({ conflict }): React.ReactNode => {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isEmpty(chosenSolution)) {
+    if (!isNullish(chosenSolution)) {
       setError(null);
       solve({ conflictId: conflict.id, solutionId: chosenSolution });
     } else {

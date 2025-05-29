@@ -42,11 +42,11 @@ import { Page } from "~/components/core";
 import { useConfigMutation, useProduct, useRegistration } from "~/queries/software";
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import pfRadioStyles from "@patternfly/react-styles/css/components/Radio/radio";
+import { PATHS } from "~/router";
+import { Product } from "~/types/software";
+import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { PATHS } from "~/router";
-import { isEmpty } from "~/utils";
-import { Product } from "~/types/software";
 import LicenseDialog from "./LicenseDialog";
 
 const ResponsiveGridItem = ({ children }) => (

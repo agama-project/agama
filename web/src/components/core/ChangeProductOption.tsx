@@ -25,8 +25,8 @@ import { DropdownItem, DropdownItemProps } from "@patternfly/react-core";
 import { useHref, useLocation } from "react-router-dom";
 import { useProduct, useRegistration } from "~/queries/software";
 import { PRODUCT as PATHS, SIDE_PATHS } from "~/routes/paths";
+import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
-import { isEmpty } from "~/utils";
 
 /**
  * DropdownItem Option for navigating to the selection product.

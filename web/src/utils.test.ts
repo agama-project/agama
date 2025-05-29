@@ -20,35 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import {
-  classNames,
-  partition,
-  compact,
-  uniq,
-  noop,
-  toValidationError,
-  localConnection,
-  isObject,
-  slugify,
-  isEmpty,
-} from "./utils";
-
-describe("noop", () => {
-  it("returns undefined", () => {
-    const result = noop();
-    expect(result).toBeUndefined();
-  });
-});
-
-describe("partition", () => {
-  it("returns two groups of elements that do and do not satisfy provided filter", () => {
-    const numbers = [1, 2, 3, 4, 5, 6];
-    const [odd, even] = partition(numbers, (number) => number % 2 !== 0);
-
-    expect(odd).toEqual([1, 3, 5]);
-    expect(even).toEqual([2, 4, 6]);
-  });
-});
+import { compact, toValidationError, localConnection } from "./utils";
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -61,32 +33,6 @@ describe("compact", () => {
       false,
       true,
     ]);
-  });
-});
-
-describe("uniq", () => {
-  it("removes duplicated values", () => {
-    expect(uniq([])).toEqual([]);
-    expect(uniq([undefined, null, null, 0, 1, NaN, false, true, false, "test"])).toEqual([
-      undefined,
-      null,
-      0,
-      1,
-      NaN,
-      false,
-      true,
-      "test",
-    ]);
-  });
-});
-
-describe("classNames", () => {
-  it("join given arguments, ignoring falsy values", () => {
-    const includeClass = true;
-
-    expect(
-      classNames("bg-yellow", !includeClass && "h-24", undefined, null, includeClass && "w-24"),
-    ).toEqual("bg-yellow w-24");
   });
 });
 
@@ -123,92 +69,5 @@ describe("localConnection", () => {
     it("returns false", () => {
       expect(localConnection(remoteURL)).toEqual(false);
     });
-  });
-});
-
-describe("isObject", () => {
-  it("returns true when called with an object", () => {
-    expect(isObject({ dummy: "object" })).toBe(true);
-  });
-
-  it("returns false when called with null", () => {
-    expect(isObject(null)).toBe(false);
-  });
-
-  it("returns false when called with undefined", () => {
-    expect(isObject(undefined)).toBe(false);
-  });
-
-  it("returns false when called with a string", () => {
-    expect(isObject("dummy string")).toBe(false);
-  });
-
-  it("returns false when called with an array", () => {
-    expect(isObject(["dummy", "array"])).toBe(false);
-  });
-
-  it("returns false when called with a date", () => {
-    expect(isObject(new Date())).toBe(false);
-  });
-
-  it("returns false when called with regexp", () => {
-    expect(isObject(/aRegExp/i)).toBe(false);
-  });
-
-  it("returns false when called with a set", () => {
-    expect(isObject(new Set(["dummy", "set"]))).toBe(false);
-  });
-
-  it("returns false when called with a map", () => {
-    const map = new Map([["dummy", "map"]]);
-    expect(isObject(map)).toBe(false);
-  });
-});
-
-describe("isEmpty", () => {
-  it("returns true when called with null", () => {
-    expect(isEmpty(null)).toBe(true);
-  });
-
-  it("returns true when called with undefined", () => {
-    expect(isEmpty(undefined)).toBe(true);
-  });
-
-  it("returns false when called with a function", () => {
-    expect(isEmpty(() => {})).toBe(false);
-  });
-
-  it("returns false when called with a number", () => {
-    expect(isEmpty(1)).toBe(false);
-  });
-
-  it("returns true when called with an empty string", () => {
-    expect(isEmpty("")).toBe(true);
-  });
-
-  it("returns false when called with a not empty string", () => {
-    expect(isEmpty("not empty")).toBe(false);
-  });
-
-  it("returns true when called with an empty array", () => {
-    expect(isEmpty([])).toBe(true);
-  });
-
-  it("returns false when called with a not empty array", () => {
-    expect(isEmpty([""])).toBe(false);
-  });
-
-  it("returns true when called with an empty object", () => {
-    expect(isEmpty({})).toBe(true);
-  });
-
-  it("returns false when called with a not empty object", () => {
-    expect(isEmpty({ not: "empty" })).toBe(false);
-  });
-});
-
-describe("slugify", () => {
-  it("converts given input into a slug", () => {
-    expect(slugify("Agama! / Network 1")).toEqual("agama-network-1");
   });
 });
