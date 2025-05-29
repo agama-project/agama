@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed May 28 14:53:51 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Refresh the software cache after resolving conflicts to
+  show the correct current status
+  (followup for gh#agama-project/agama#2348)
+
+-------------------------------------------------------------------
 Wed May 28 13:29:51 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Stop serving the web UI from $HOME/.local/share/agama
