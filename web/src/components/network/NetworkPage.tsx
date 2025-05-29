@@ -26,7 +26,7 @@ import { EmptyState, Page } from "~/components/core";
 import { useNetworkChanges, useNetworkState } from "~/queries/network";
 import WifiNetworksList from "./WifiNetworksList";
 import WiredConnectionsList from "./WiredConnectionsList";
-import AllConnectionsStatusAlert from "./AllConnectionsStatusAlert";
+import NoPersistentConnectionsAlert from "./NoPersistentConnectionsAlert";
 import { _ } from "~/i18n";
 
 const NoWifiAvailable = () => (
@@ -53,7 +53,7 @@ export default function NetworkPage() {
       </Page.Header>
 
       <Page.Content>
-        <AllConnectionsStatusAlert />
+        <NoPersistentConnectionsAlert />
 
         <Grid hasGutter>
           <GridItem sm={12} xl={6}>
