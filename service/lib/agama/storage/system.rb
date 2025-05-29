@@ -35,6 +35,14 @@ module Agama
         @disk_analizer = Y2Storage::DiskAnalyzer.new(devicegraph)
       end
 
+      # All devices that are considered as a valid target for the boot partitions and, as such, as
+      # candidates for a typical installation.
+      #
+      # @return [Array<Y2Storage::Partitionable>]
+      def candidate_devices
+        candidate_drives + candidate_md_raids
+      end
+
       # All devices that can be referenced by a drive entry at the Agama config
       #
       # This excludes devices with any mounted filesystem and devices that contain a repository
