@@ -150,6 +150,8 @@ pub enum Status {
     Up,
     Down,
     Removed,
+    // Workaound for not modify the connection status
+    Keep,
 }
 
 impl fmt::Display for Status {
@@ -157,6 +159,7 @@ impl fmt::Display for Status {
         let name = match &self {
             Status::Up => "up",
             Status::Down => "down",
+            Status::Keep => "keep",
             Status::Removed => "removed",
         };
         write!(f, "{}", name)
@@ -174,6 +177,7 @@ impl TryFrom<&str> for Status {
         match value {
             "up" => Ok(Status::Up),
             "down" => Ok(Status::Down),
+            "keep" => Ok(Status::Keep),
             "removed" => Ok(Status::Removed),
             _ => Err(InvalidStatus(value.to_string())),
         }

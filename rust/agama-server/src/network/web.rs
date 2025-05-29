@@ -440,11 +440,17 @@ async fn keep(
     let Some(mut conn) = state.network.get_connection(&id).await? else {
         return Err(NetworkError::UnknownConnection(id));
     };
-    conn.keep = true;
+    conn.set_keep(true);
 
     state
         .network
         .update_connection(conn)
+        .await
+        .map_err(|_| NetworkError::CannotApplyConfig)?;
+
+    state
+        .network
+        .apply()
         .await
         .map_err(|_| NetworkError::CannotApplyConfig)?;
 
@@ -466,11 +472,17 @@ async fn unkeep(
     let Some(mut conn) = state.network.get_connection(&id).await? else {
         return Err(NetworkError::UnknownConnection(id));
     };
-    conn.keep = false;
+    conn.set_keep(false);
 
     state
         .network
         .update_connection(conn)
+        .await
+        .map_err(|_| NetworkError::CannotApplyConfig)?;
+
+    state
+        .network
+        .apply()
         .await
         .map_err(|_| NetworkError::CannotApplyConfig)?;
 

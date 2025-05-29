@@ -556,8 +556,17 @@ impl Connection {
         self.status == Status::Up
     }
 
+    pub fn is_down(&self) -> bool {
+        self.status == Status::Down
+    }
+
     pub fn set_up(&mut self) {
         self.status = Status::Up
+    }
+
+    pub fn set_keep(&mut self, keep: bool) {
+        self.keep = keep;
+        self.status = Status::Keep
     }
 
     pub fn set_down(&mut self) {
