@@ -67,7 +67,7 @@ module Agama
     # @return [Array<RegisteredAddon>]
     attr_reader :registered_addons
 
-    # Overwriten default registration URL
+    # Overwritten default registration URL
     #
     # @return [String, nil]
     attr_accessor :registration_url
@@ -99,12 +99,18 @@ module Agama
       catch_registration_errors do
         reg_params = connect_params(token: code, email: email)
 
+        # hide the registration code in the logs
+        log_params = reg_params.dup
+        log_params[:token] = "<REG_CODE>" if log_params[:token] != ""
+        @logger.info "Registering system #{target_distro}: #{log_params.inspect}"
+
         @login, @password = SUSE::Connect::YaST.announce_system(reg_params, target_distro)
         # write the global credentials
         # TODO: check if we can do it in memory for libzypp
         SUSE::Connect::YaST.create_credentials_file(@login, @password, GLOBAL_CREDENTIALS_PATH)
 
         activate_params = {}
+        @logger.info "Activating product #{base_target_product.inspect}"
         service = SUSE::Connect::YaST.activate_product(base_target_product, activate_params, email)
         process_service(service)
 
