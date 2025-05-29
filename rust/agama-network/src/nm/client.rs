@@ -313,7 +313,9 @@ impl<'a> NetworkManagerClient<'a> {
             // device which is not available it will also fail.
             self.activate_connection(path).await?;
         } else {
-            self.deactivate_connection(path).await?;
+            if conn.is_down() || conn.is_removed() {
+                self.deactivate_connection(path).await?;
+            }
         }
         Ok(())
     }
