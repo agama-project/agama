@@ -34,7 +34,7 @@ module Agama
         @repositories = []
         @user_repositories = []
         # remember how exactly user specify repos and return it identical
-        @plain_user_repositories = {}
+        @plain_user_repositories = []
       end
 
       # Adds a new repository
@@ -64,7 +64,7 @@ module Agama
           )
           # TODO: better error reporting
           raise "failed to add repo" unless id
-          zypp_repo = find(id)
+          zypp_repo = Repository.find(id)
 
           @user_repositories << zypp_repo
           repositories << zypp_repo
