@@ -129,7 +129,11 @@ module Agama
           dbus_reader_attr_accessor :conflicts, "a(ussa(uss))"
 
           dbus_method :SolveConflicts, "in solutions:a(uu)" do |solutions|
-            backend.proposal.solve_conflicts(solutions)
+            ret = backend.proposal.solve_conflicts(solutions)
+            # update the user selected patterns, patterns might be unselected as
+            # part of the conflict resolution
+            backend.update_selected_patterns
+            ret
           end
 
           dbus_method :ProvisionsSelected, "in Provisions:as, out Result:ab" do |provisions|

@@ -12,7 +12,7 @@ module Agama
       INDENT = " " * 3
 
       def initialize(certificate)
-        textdomain "registration"
+        textdomain "agama"
         @certificate = certificate
       end
 
@@ -27,6 +27,7 @@ module Agama
       end
 
       def summary
+        # TRANSLATORS: SSL certificate details
         summary = _("Certificate:") + "\n" + _("Issued To") + "\n" + subject +
           "\n" + _("Issued By") + "\n" + issuer + "\n" + _("SHA1 Fingerprint: ") +
           "\n" + INDENT + certificate.fingerprint(Fingerprint::SHA1).value + "\n" +

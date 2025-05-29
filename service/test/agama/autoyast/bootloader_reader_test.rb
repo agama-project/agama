@@ -64,6 +64,18 @@ describe Agama::AutoYaST::BootloaderReader do
           "timeout" => 5
         )
       end
+
+      context "and it is a negative number" do
+        let(:global) do
+          { "timeout" => -1 }
+        end
+
+        it "sets the 'stopOnBootMenu' to 'true'" do
+          expect(subject.read["bootloader"]).to include(
+            "stopOnBootMenu" => true
+          )
+        end
+      end
     end
   end
 end

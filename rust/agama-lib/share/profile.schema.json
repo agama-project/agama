@@ -500,7 +500,7 @@
                   "ports": {
                     "type": "array",
                     "items": {
-                      "title": "A list of the interfaces or connections to be part of the bridge",
+                      "title": "A list of the interface(s) or connection(s) to be part of the bridge",
                       "type": "string"
                     }
                   }

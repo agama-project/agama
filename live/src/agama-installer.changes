@@ -1,8 +1,31 @@
 -------------------------------------------------------------------
+Thu May 29 07:16:11 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Keep the nvmem kernel drivers (bsc#1243350)
+
+-------------------------------------------------------------------
+Mon May 26 21:35:04 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Generate systemd network link files below Agama run folder to 
+  be copied at the end of the installation (bsc#1237327, 
+  bsc#1241969, gh#agama-project/agama#2404).
+
+-------------------------------------------------------------------
+Mon May 26 19:51:55 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 15
+
+-------------------------------------------------------------------
+Mon May 26 14:22:03 UTC 2025 - Lukas Ocilka <locilka@suse.com>
+
+- Added a simple Rescue System by reusing the Installation Live
+  Image and disabling the Agama services
+
+-------------------------------------------------------------------
 Wed May 21 12:42:34 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Do not set root= dracut configuration in PXE images
-  (gh#agama-project/agama2377).
+  (gh#agama-project/agama#2377).
 
 -------------------------------------------------------------------
 Tue May 20 08:42:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>

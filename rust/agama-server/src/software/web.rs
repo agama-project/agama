@@ -390,7 +390,14 @@ async fn solve_conflicts(
     State(state): State<SoftwareState<'_>>,
     Json(solutions): Json<Vec<ConflictSolve>>,
 ) -> Result<(), Error> {
-    Ok(state.software.solve_conflicts(solutions).await?)
+    let ret = state.software.solve_conflicts(solutions).await?;
+
+    // refresh the config cache
+    let config = read_config(&state).await?;
+    let mut cached_config_write = state.config.write().await;
+    *cached_config_write = Some(config);
+
+    Ok(ret)
 }
 
 /// returns registration info

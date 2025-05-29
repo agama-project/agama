@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,20 +21,20 @@
 
 module Agama
   module Storage
-    # Reader for the initial JSON config.
-    class ConfigJSONReader
+    # Config JSON generator.
+    class ConfigJSONGenerator
       # @param product_config [Agama::Config]
-      def initialize(product_config)
+      # @param device [Y2Storage::BlkDevice, nil] Target device for the installation.
+      def initialize(product_config, device: nil)
         @product_config = product_config
+        @device = device
       end
 
-      # Generates a JSON config from the product config.
+      # Generates a JSON config according to the product and the target device.
       #
       # @return [Hash]
-      def read
-        json = product_config.lvm? ? json_for_lvm : json_for_disk
-
-        { storage: json }
+      def generate
+        product_config.lvm? ? lvm_config : partitionable_config
       end
 
     private
@@ -42,34 +42,63 @@ module Agama
       # @return [Agama::Config]
       attr_reader :product_config
 
-      # @see #read
+      # @return [Y2Storage::BlkDevice, nil]
+      attr_reader :device
+
+      # Default config when the target is a partitionable device.
+      #
       # @return [Hash]
-      def json_for_disk
+      def partitionable_config
         {
-          drives: [
-            { partitions: [partition_for_existing, volumes_generator].compact }
+          target_section => [
+            {
+              search:     device&.name,
+              partitions: [partition_for_existing, volumes_generator].compact
+            }
           ]
         }
       end
 
-      # @see #read
+      # Default config when the target is a volume group.
+      #
       # @return [Hash]
-      def json_for_lvm
-        partition = partition_for_existing
+      def lvm_config
+        target_config("system-target").merge(
+          {
+            volumeGroups: [
+              {
+                name:            "system",
+                physicalVolumes: [{ generate: ["system-target"] }],
+                logicalVolumes:  [volumes_generator]
+              }
+            ]
+          }
+        )
+      end
 
-        drive = { alias: "target" }
-        drive[:partitions] = [partition] if partition
-
+      # Config for a device used as target by other device (e.g., for creating physical volumes).
+      #
+      # @param device_alias [String] Alias to use for referring to this target config.
+      # @return [Hash]
+      def target_config(device_alias)
         {
-          drives:       [drive],
-          volumeGroups: [
+          target_section => [
             {
-              name:            "system",
-              physicalVolumes: [{ generate: ["target"] }],
-              logicalVolumes:  [volumes_generator]
+              alias:      device_alias,
+              search:     device&.name,
+              partitions: [partition_for_existing].compact
             }
           ]
         }
+      end
+
+      # Section name depending on the target device for installation.
+      #
+      # @return [String]
+      def target_section
+        return :mdRaids if device&.is?(:software_raid)
+
+        :drives
       end
 
       # JSON piece to generate default filesystems as partitions or logical volumes.
