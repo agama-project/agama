@@ -739,7 +739,6 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Result<Connection, NmErr
         uuid,
         interface: get_optional_property(connection, "interface-name")?,
         firewall_zone: get_optional_property(connection, "firewall-zone")?,
-        flags: get_property(connection, "flags")?,
         ..Default::default()
     };
 
@@ -760,11 +759,6 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Result<Connection, NmErr
     }
 
     base_connection.ip_config = ip_config_from_dbus(conn)?;
-    base_connection.keep = if base_connection.flags != 0 {
-        false
-    } else {
-        true
-    };
 
     Ok(base_connection)
 }
