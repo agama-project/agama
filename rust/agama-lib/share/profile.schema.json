@@ -183,6 +183,40 @@
             "type": "string",
             "examples": ["vim"]
           }
+        },
+        "extraRepositories": {
+          "title": "List of user specified repositories that will be used on top of default ones",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["alias", "url"],
+            "properties": {
+              "alias": {
+                "title": "alias used for repository. Acting as identifier",
+                "type": "string"
+              },
+              "url": {
+                "title": "URL pointing to repository",
+                "type": "string"
+              },
+              "priority": {
+                "title": "Repository priority",
+                "type": "integer"
+              },
+              "name": {
+                "title": "User visible name. Defaults to alias",
+                "type": "string"
+              },
+              "productDir": {
+                "title": "product directory on multi repo DVD. Usually not needed",
+                "type": "string"
+              },
+              "enabled": {
+                "title": "If repository should be enabled. Defaults to true. Useful when adding additional repo that should not be immediatelly use.",
+                "type": "boolean"
+              }
+            }
+          }
         }
       }
     },

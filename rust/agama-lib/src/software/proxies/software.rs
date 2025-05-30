@@ -82,6 +82,11 @@ pub trait Software1 {
     /// ListRepositories method
     fn list_repositories(&self) -> zbus::Result<Vec<Repository>>;
 
+    /// ListUserRepositories method
+    fn list_user_repositories(
+        &self,
+    ) -> zbus::Result<Vec<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>>;
+
     /// Probe method
     fn probe(&self) -> zbus::Result<()>;
 
@@ -96,6 +101,12 @@ pub trait Software1 {
 
     /// SetUserPatterns method
     fn set_user_patterns(&self, add: &[&str], remove: &[&str]) -> zbus::Result<Vec<String>>;
+
+    /// SetUserRepositories method
+    fn set_user_repositories(
+        &self,
+        repos: &[std::collections::HashMap<&str, zbus::zvariant::Value<'_>>],
+    ) -> zbus::Result<()>;
 
     /// SolveConflicts method
     fn solve_conflicts(&self, solutions: &[(u32, u32)]) -> zbus::Result<()>;

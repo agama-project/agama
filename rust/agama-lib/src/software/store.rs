@@ -57,6 +57,7 @@ impl SoftwareStore {
                 Some(patterns)
             },
             packages: config.packages,
+            extra_repositories: config.extra_repositories,
         })
     }
 
@@ -71,6 +72,7 @@ impl SoftwareStore {
             product: None,
             patterns,
             packages: settings.packages.clone(),
+            extra_repositories: settings.extra_repositories.clone(),
         };
         self.software_client.set_config(&config).await?;
 
@@ -117,6 +119,7 @@ mod test {
         let expected = SoftwareSettings {
             patterns: Some(vec!["xfce".to_owned()]),
             packages: Some(vec!["vim".to_owned()]),
+            extra_repositories: None,
         };
         // main assertion
         assert_eq!(settings, expected);
@@ -143,6 +146,7 @@ mod test {
         let settings = SoftwareSettings {
             patterns: Some(vec!["xfce".to_owned()]),
             packages: Some(vec!["vim".to_owned()]),
+            extra_repositories: None,
         };
 
         let result = store.store(&settings).await;
@@ -172,6 +176,7 @@ mod test {
         let settings = SoftwareSettings {
             patterns: Some(vec!["no_such_pattern".to_owned()]),
             packages: Some(vec!["vim".to_owned()]),
+            extra_repositories: None,
         };
 
         let result = store.store(&settings).await;

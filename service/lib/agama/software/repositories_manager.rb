@@ -32,6 +32,9 @@ module Agama
 
       def initialize
         @repositories = []
+        @user_repositories = []
+        # remember how exactly user specify repos and return it identical
+        @plain_user_repositories = []
       end
 
       # Adds a new repository
@@ -39,6 +42,37 @@ module Agama
       # @param url [String] Repository URL
       def add(url)
         repositories << Repository.create(name: url, url: url)
+      end
+
+      # returns user repositories as it was previously specified
+      def user_repositories
+        @plain_user_repositories
+      end
+
+      # sets and loads user repositories
+      def user_repositories=(repos)
+        @plain_user_repositories = repos
+        clear_user_repositories
+        repos.each do |repo|
+          id = Yast::Pkg.RepositoryAdd(
+            "name"      => repo["name"],
+            "base_urls" => [repo["url"].to_s],
+            "alias"     => repo["alias"],
+            "prod_dir"  => repo["product_dir"],
+            "enabled"   => repo["enabled"],
+            "priority"  => repo["priority"]
+          )
+          # TODO: better error reporting
+          raise "failed to add repo" unless id
+
+          zypp_repo = Repository.find(id)
+
+          @user_repositories << zypp_repo
+          repositories << zypp_repo
+        end
+
+        # load new repos
+        self.load
       end
 
       # Determines if there are registered repositories
@@ -87,6 +121,14 @@ module Agama
       def delete_all
         repositories.each(&:delete!)
         repositories.clear
+      end
+
+    private
+
+      def clear_user_repositories
+        @repositories -= @user_repositories
+        @user_repositories.each(&:delete!)
+        @user_repositories.clear
       end
     end
   end

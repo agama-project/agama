@@ -88,6 +88,16 @@ module Agama
             ]
           end
 
+          # set user specified repositories properties
+          dbus_method :SetUserRepositories, "in repos:aa{sv}" do |repos|
+            backend.repositories.user_repositories = repos
+          end
+
+          # set user specified repositories properties
+          dbus_method :ListUserRepositories, "out repos:aa{sv}" do
+            [backend.repositories.user_repositories]
+          end
+
           # value of result hash is category, description, icon, summary and order
           dbus_method :ListPatterns, "in Filtered:b, out Result:a{s(sssss)}" do |filtered|
             [
