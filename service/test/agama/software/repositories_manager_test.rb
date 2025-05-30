@@ -34,6 +34,15 @@ describe Agama::Software::RepositoriesManager do
     instance_double(Agama::Software::Repository, enable!: nil, enabled?: false)
   end
 
+  let(:user_repositories) do
+    [{
+      "url" => "http://testing.com",
+      "alias" => "test",
+      "enabled" => true,
+      "priority" => 50
+    }]
+  end
+
   describe "#add" do
     it "registers the repository in the packaging system" do
       url = "https://example.net"
@@ -121,6 +130,61 @@ describe Agama::Software::RepositoriesManager do
 
     it "returns the enabled repositories" do
       expect(subject.disabled).to eq([disabled_repo])
+    end
+  end
+
+  describe "#user_repositories" do
+    before do
+      allow(Yast::Pkg).to receive(:RepositoryAdd).and_return(1)
+      allow(Agama::Software::Repository).to receive(:find).and_return(double())
+      allow(subject).to receive(:load)
+    end
+
+    it "returns list of repositories as defined by user" do
+      subject.user_repositories = user_repositories
+      expect(subject.user_repositories).to eq user_repositories
+    end
+  end
+
+  describe "#user_repositories=" do
+    before do
+      allow(Yast::Pkg).to receive(:RepositoryAdd).and_return(1)
+      allow(Agama::Software::Repository).to receive(:find).and_return(double())
+      allow(subject).to receive(:load)
+    end
+
+    it "sets list of user repositories" do
+      subject.user_repositories = user_repositories
+      expect(subject.user_repositories).to eq user_repositories
+    end
+
+    it "add repositories to repository pool" do
+      expect(Yast::Pkg).to receive(:RepositoryAdd).and_return(1)
+      repo = double()
+      allow(Agama::Software::Repository).to receive(:find).with(1).and_return(repo)
+
+      subject.user_repositories = user_repositories
+      expect(subject.repositories).to include repo
+    end
+
+    it "loads repositories" do
+      expect(subject).to receive(:load)
+
+      subject.user_repositories = user_repositories
+    end
+
+    it "removes previous user repositories" do
+      old_repo = double()
+      allow(Agama::Software::Repository).to receive(:find).and_return(old_repo)
+      subject.user_repositories = user_repositories
+
+      expect(old_repo).to receive(:delete!)
+      new_repo = double()
+      allow(Agama::Software::Repository).to receive(:find).and_return(new_repo)
+
+      subject.user_repositories = user_repositories
+      expect(subject.repositories).to_not include old_repo
+      expect(subject.repositories).to include new_repo
     end
   end
 end
