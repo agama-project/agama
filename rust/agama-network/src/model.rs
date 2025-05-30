@@ -463,6 +463,7 @@ mod tests {
 pub struct GeneralState {
     pub hostname: String,
     pub connectivity: bool,
+    pub copy_network: bool,
     pub wireless_enabled: bool,
     pub networking_enabled: bool, // pub network_state: NMSTATE
 }
@@ -520,6 +521,9 @@ pub struct Connection {
     pub ieee_8021x_config: Option<IEEE8021XConfig>,
     pub autoconnect: bool,
     pub state: ConnectionState,
+    pub keep: bool,
+    pub filename: String,
+    pub flags: u32,
 }
 
 impl Connection {
@@ -552,8 +556,17 @@ impl Connection {
         self.status == Status::Up
     }
 
+    pub fn is_down(&self) -> bool {
+        self.status == Status::Down
+    }
+
     pub fn set_up(&mut self) {
         self.status = Status::Up
+    }
+
+    pub fn set_keep(&mut self, keep: bool) {
+        self.keep = keep;
+        self.status = Status::Keep
     }
 
     pub fn set_down(&mut self) {
@@ -593,6 +606,9 @@ impl Default for Connection {
             ieee_8021x_config: Default::default(),
             autoconnect: true,
             state: Default::default(),
+            keep: true,
+            filename: Default::default(),
+            flags: Default::default(),
         }
     }
 }
@@ -648,6 +664,7 @@ impl TryFrom<NetworkConnection> for Connection {
         connection.interface = conn.interface;
         connection.mtu = conn.mtu;
         connection.autoconnect = conn.autoconnect;
+        connection.keep = conn.keep;
 
         Ok(connection)
     }
@@ -675,6 +692,8 @@ impl TryFrom<Connection> for NetworkConnection {
             .ieee_8021x_config
             .and_then(|x| IEEE8021XSettings::try_from(x).ok());
         let autoconnect = conn.autoconnect;
+        let keep = conn.keep;
+        let filename = Some(conn.filename);
 
         let mut connection = NetworkConnection {
             id,
@@ -692,6 +711,8 @@ impl TryFrom<Connection> for NetworkConnection {
             mtu,
             ieee_8021x,
             autoconnect,
+            keep,
+            filename,
             ..Default::default()
         };
 

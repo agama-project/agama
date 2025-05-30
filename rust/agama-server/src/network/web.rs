@@ -123,6 +123,8 @@ pub async fn network_service<T: Adapter + Send + Sync + 'static>(
         )
         .route("/connections/:id/connect", patch(connect))
         .route("/connections/:id/disconnect", patch(disconnect))
+        .route("/connections/:id/keep", patch(keep))
+        .route("/connections/:id/unkeep", patch(unkeep))
         .route("/devices", get(devices))
         .route("/system/apply", post(apply))
         .route("/wifi", get(wifi_networks))
@@ -344,12 +346,8 @@ async fn update_connection(
     let bridge = conn.bridge.clone();
 
     let mut conn = Connection::try_from(conn)?;
-    if orig_conn.id != id {
-        // FIXME: why?
-        return Err(NetworkError::UnknownConnection(id));
-    } else {
-        conn.uuid = orig_conn.uuid;
-    }
+    conn.uuid = orig_conn.uuid;
+    conn.filename = orig_conn.filename;
 
     state.network.update_connection(conn.clone()).await?;
 
@@ -411,6 +409,70 @@ async fn disconnect(
         return Err(NetworkError::UnknownConnection(id));
     };
     conn.set_down();
+
+    state
+        .network
+        .update_connection(conn)
+        .await
+        .map_err(|_| NetworkError::CannotApplyConfig)?;
+
+    state
+        .network
+        .apply()
+        .await
+        .map_err(|_| NetworkError::CannotApplyConfig)?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
+#[utoipa::path(
+    patch,
+    path = "/connections/:id/keep",
+    context_path = "/api/network",
+    responses(
+      (status = 204, description = "Keep the given connection after the installation", body = String)
+    )
+)]
+async fn keep(
+    State(state): State<NetworkServiceState>,
+    Path(id): Path<String>,
+) -> Result<impl IntoResponse, NetworkError> {
+    let Some(mut conn) = state.network.get_connection(&id).await? else {
+        return Err(NetworkError::UnknownConnection(id));
+    };
+    conn.set_keep(true);
+
+    state
+        .network
+        .update_connection(conn)
+        .await
+        .map_err(|_| NetworkError::CannotApplyConfig)?;
+
+    state
+        .network
+        .apply()
+        .await
+        .map_err(|_| NetworkError::CannotApplyConfig)?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
+#[utoipa::path(
+    patch,
+    path = "/connections/:id/unkeep",
+    context_path = "/api/network",
+    responses(
+      (status = 204, description = "Do not keep the given connection after the installation", body = String)
+    )
+)]
+async fn unkeep(
+    State(state): State<NetworkServiceState>,
+    Path(id): Path<String>,
+) -> Result<impl IntoResponse, NetworkError> {
+    let Some(mut conn) = state.network.get_connection(&id).await? else {
+        return Err(NetworkError::UnknownConnection(id));
+    };
+    conn.set_keep(false);
 
     state
         .network

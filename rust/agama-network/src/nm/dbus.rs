@@ -264,7 +264,7 @@ fn is_bridge_port(conn: &NestedHash) -> bool {
     if let Some(connection) = conn.get("connection") {
         if let Some(port_type) = connection.get("port-type") {
             if let Ok(s) = TryInto::<&str>::try_into(port_type) {
-                return s == "bridge"
+                return s == "bridge";
             }
         }
     }
@@ -1595,7 +1595,6 @@ mod test {
 
     #[test]
     fn test_connection_from_dbus_bridge() -> anyhow::Result<()> {
-        dbg!("TESTING BRIDGE");
         let uuid = Uuid::new_v4().to_string();
         let connection_section = HashMap::from([hi("id", "br0")?, hi("uuid", uuid)?]);
 
