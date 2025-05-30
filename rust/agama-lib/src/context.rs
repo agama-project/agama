@@ -37,7 +37,7 @@ impl InstallationContext {
     pub fn from_env() -> Result<Self, InstallationContextError> {
         let current_path =
             std::env::current_dir().map_err(|e| InstallationContextError(e.to_string()))?;
-        let url = format!("file://{}", current_path.as_path().display());
+        let url = format!("file://{}/", current_path.as_path().display());
         let url = Uri::parse(url.as_str()).map_err(|e| InstallationContextError(e.to_string()))?;
         Ok(Self {
             source: url.to_owned(),

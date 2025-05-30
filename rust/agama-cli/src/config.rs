@@ -19,23 +19,63 @@
 // find current contact information at www.suse.com.
 
 use std::{
-    io::{self, Read},
+    io::{self, Write},
     path::PathBuf,
     process::Command,
 };
 
 use agama_lib::{
     context::InstallationContext, http::BaseHTTPClient, install_settings::InstallSettings,
-    monitor::MonitorClient, Store as SettingsStore,
+    monitor::MonitorClient, profile::ValidationOutcome, utils::FileFormat, Store as SettingsStore,
 };
-use anyhow::anyhow;
+use anyhow::{anyhow, Context};
 use clap::Subcommand;
-use std::io::Write;
+use console::style;
+use fluent_uri::Uri;
 use tempfile::Builder;
 
-use crate::show_progress;
+use crate::{cli_input::CliInput, show_progress};
 
 const DEFAULT_EDITOR: &str = "/usr/bin/vi";
+
+/// Represents the ways user can specify the output for the command line.
+#[derive(Clone, Debug)]
+pub enum CliOutput {
+    Path(PathBuf),
+    /// Specified as `-` by the user
+    Stdout,
+}
+
+impl From<String> for CliOutput {
+    fn from(path: String) -> Self {
+        if path == "-" {
+            Self::Stdout
+        } else {
+            Self::Path(path.into())
+        }
+    }
+}
+
+impl CliOutput {
+    pub fn write(&self, contents: &str) -> anyhow::Result<()> {
+        match self {
+            Self::Stdout => {
+                let mut stdout = io::stdout().lock();
+                stdout.write_all(contents.as_bytes())?
+            }
+            Self::Path(path) => {
+                let mut file = std::fs::OpenOptions::new()
+                    .create(true)
+                    .truncate(true)
+                    .write(true)
+                    .open(path)
+                    .context(format!("Writing to {:?}", path))?;
+                file.write_all(contents.as_bytes())?
+            }
+        }
+        Ok(())
+    }
+}
 
 #[derive(Subcommand, Debug)]
 pub enum ConfigCommands {
@@ -45,10 +85,48 @@ pub enum ConfigCommands {
     /// are not included in the output.
     ///
     /// The output of command can be used as input for the "agama config load".
-    Show,
+    Show {
+        /// Save the output here (goes to stdout if not given)
+        #[arg(short, long, value_name = "FILE_PATH")]
+        output: Option<CliOutput>,
+    },
 
-    /// Read and load a profile from the standard input.
-    Load,
+    /// Read and load a profile
+    Load {
+        /// JSON file: URL or path or `-` for standard input
+        url_or_path: Option<CliInput>,
+    },
+
+    /// Validate a profile using JSON Schema
+    ///
+    /// Schema is available at /usr/share/agama-cli/profile.schema.json
+    /// TODO: Validation is automatic
+    Validate {
+        /// JSON file, URL or path or `-` for standard input
+        url_or_path: CliInput,
+    },
+
+    /// Generate and print a native Agama JSON configuration from any kind and location.
+    ///
+    /// Kinds:
+    /// - JSON
+    /// - Jsonnet, injecting the hardware information
+    /// - AutoYaST profile, including ERB and rules/classes
+    ///
+    /// Locations:
+    /// - path
+    /// - URL (including AutoYaST specific schemes)
+    ///
+    /// For an example of Jsonnet-based profile, see
+    /// https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/profile.jsonnet
+    #[command(verbatim_doc_comment)]
+    Generate {
+        /// JSON file: URL or path or `-` for standard input
+        url_or_path: Option<CliInput>,
+        /// Skip deserialization into InstallSettings (different from config load, which is InstallStore)
+        #[arg(long)]
+        fixme_skip_deserialization: bool,
+    },
 
     /// Edit and update installation option using an external editor.
     ///
@@ -63,30 +141,68 @@ pub enum ConfigCommands {
     },
 }
 
+// FIXME: `agama profile` no longer exists as a command, but merge its descriptions into `agama config`
+pub enum ProfileCommands {
+    /// Download the autoyast profile and print resulting json
+    Autoyast {
+        /// AutoYaST profile's URL. Any AutoYaST scheme, ERB and rules/classes are supported.
+        /// all schemas that autoyast supports.
+        url: String,
+    },
+
+    /// Evaluate a profile, injecting the hardware information from D-Bus
+    ///
+    /// For an example of Jsonnet-based profile, see
+    /// https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/profile.jsonnet
+    Evaluate {
+        /// Jsonnet file, URL or path or `-` for standard input
+        url_or_path: CliInput,
+    },
+
+    /// Process autoinstallation profile and loads it into agama
+    ///
+    /// This is top level command that do all autoinstallation processing beside starting
+    /// installation. Unless there is a need to inject additional commands between processing
+    /// use this command instead of set of underlying commands.
+    Import {
+        /// Profile's URL. Supports the same schemas as the "download" command plus
+        /// AutoYaST specific ones. Supported files are json, jsonnet, sh for Agama profiles and ERB, XML, and rules/classes directories
+        /// for AutoYaST support.
+        url: String,
+    },
+}
+
 pub async fn run(
     http_client: BaseHTTPClient,
     monitor: MonitorClient,
     subcommand: ConfigCommands,
 ) -> anyhow::Result<()> {
-    let store = SettingsStore::new(http_client).await?;
+    let store = SettingsStore::new(http_client.clone()).await?;
 
     match subcommand {
-        ConfigCommands::Show => {
+        ConfigCommands::Show { output } => {
             let model = store.load().await?;
             let json = serde_json::to_string_pretty(&model)?;
-            println!("{}", json);
+
+            let destination = output.unwrap_or(CliOutput::Stdout);
+            destination.write(&json)?;
             Ok(())
         }
-        ConfigCommands::Load => {
-            let mut stdin = io::stdin();
-            let mut contents = String::new();
-            stdin.read_to_string(&mut contents)?;
+        ConfigCommands::Load { url_or_path } => {
+            let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
+            let contents = url_or_path.read_to_string()?;
             let result = InstallSettings::from_json(&contents, &InstallationContext::from_env()?)?;
             tokio::spawn(async move {
                 show_progress(monitor, true).await;
             });
             store.store(&result).await?;
             Ok(())
+        }
+        ConfigCommands::Validate { url_or_path } => validate(&http_client, url_or_path).await,
+        ConfigCommands::Generate { url_or_path, fixme_skip_deserialization } => {
+            let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
+
+            generate(&http_client, url_or_path, fixme_skip_deserialization).await
         }
         ConfigCommands::Edit { editor } => {
             let model = store.load().await?;
@@ -101,6 +217,152 @@ pub async fn run(
             Ok(())
         }
     }
+}
+
+/// Validate a JSON profile, by doing a HTTP client request.
+async fn validate_client(
+    client: &BaseHTTPClient,
+    url_or_path: CliInput,
+) -> anyhow::Result<ValidationOutcome> {
+    let mut url = client.base_url.join("profile/validate").unwrap();
+    url_or_path.add_query(&mut url)?;
+
+    let body = url_or_path.body_for_web()?;
+    // we use plain text .body instead of .json
+    let response: Result<reqwest::Response, agama_lib::error::ServiceError> = client
+        .client
+        .request(reqwest::Method::POST, url)
+        .body(body)
+        .send()
+        .await
+        .map_err(|e| e.into());
+
+    let result = client.deserialize_or_error(response?).await;
+    result.map_err(|e| e.into())
+}
+
+async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<()> {
+    let validity = validate_client(client, url_or_path).await?;
+    match validity {
+        ValidationOutcome::Valid => {
+            eprintln!("{} {}", style("\u{2713}").bold().green(), validity);
+        }
+        ValidationOutcome::NotValid(_) => {
+            eprintln!("{} {}", style("\u{2717}").bold().red(), validity);
+        }
+    }
+    Ok(())
+}
+
+fn is_autoyast(url_or_path: &CliInput) -> bool {
+    let path = match url_or_path {
+        CliInput::Path(pathbuf) => pathbuf.as_os_str().to_str().unwrap_or_default().to_string(),
+        CliInput::Url(url_string) => {
+            let url = Uri::parse(url_string.as_str()).unwrap_or_default();
+            let path = url.path().to_string();
+            path
+        }
+        _ => {
+            return false;
+        }
+    };
+
+    path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/')
+}
+
+async fn generate(client: &BaseHTTPClient, url_or_path: CliInput, skip_deserialization: bool) -> anyhow::Result<()> {
+    let profile_json = if is_autoyast(&url_or_path) {
+        // AutoYaST specific download and convert to JSON
+        let config_string =
+            match url_or_path {
+                CliInput::Url(url_string) => {
+                    let url = Uri::parse(url_string)?;
+                    autoyast_client(client, &url).await?
+                }
+                _ => return Err(anyhow::Error::msg(
+                    "FIXME: Path input not implemented yet for this command, use file://ABS_PATH",
+                )),
+            };
+        config_string
+    } else {
+        from_json_or_jsonnet(&client, url_or_path).await?
+    };
+
+    let config_json = if skip_deserialization {
+        profile_json
+    }
+    else {
+        // validate before or after?
+        let context = InstallationContext::from_env()?;
+        // resolves relative URL references
+        let model = InstallSettings::from_json(&profile_json, &context)?;
+        serde_json::to_string_pretty(&model)?
+    };
+
+    println!("{}", &config_json);
+    validate(client, CliInput::Full(config_json.clone())).await?;
+    Ok(())
+}
+
+/// Process AutoYaST profile (*url* ending with .xml, .erb, or dir/) by doing a HTTP client request.
+/// Note that this client does not act on this *url*, it passes it as a parameter
+/// to our web backend.
+/// Return well-formed Agama JSON on success.
+async fn autoyast_client(client: &BaseHTTPClient, url: &Uri<String>) -> anyhow::Result<String> {
+    // FIXME: how to escape it?
+    let api_url = format!("/profile/autoyast?url={}", url);
+    let output: Box<serde_json::value::RawValue> = client.post(&api_url, &()).await?;
+    let config_string = format!("{}", output);
+    Ok(config_string)
+}
+
+// Retrieve and preprocess the profile.
+//
+// The profile can be a JSON or a Jsonnet file.
+//
+// * If it is a JSON file, no preprocessing is needed.
+// * If it is a Jsonnet file, it is converted to JSON.
+// * If it is a script, it is an error (formerly a feature, deprecated in favor of in-profile scripts)
+async fn from_json_or_jsonnet(
+    client: &BaseHTTPClient,
+    url_or_path: CliInput,
+) -> anyhow::Result<String> {
+    let any_profile = url_or_path.read_to_string()?;
+
+    match FileFormat::from_string(&any_profile) {
+        FileFormat::Jsonnet => {
+            let json_string = evaluate_client(client, CliInput::Full(any_profile)).await?;
+            Ok(json_string)
+        }
+        FileFormat::Json => Ok(any_profile),
+        FileFormat::Script => Err(anyhow::Error::msg(
+            // TODO: remove execute_script on backend
+            "Scripts are no longer supported as full profiles. Use /TODO/.../script",
+        )),
+        _ => Err(anyhow::Error::msg(
+            "Unsupported file format. Expected JSON, or Jsonnet",
+        )),
+    }
+}
+
+/// Evaluate a Jsonnet profile, by doing a HTTP client request.
+/// Return well-formed Agama JSON on success.
+async fn evaluate_client(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<String> {
+    let mut url = client.base_url.join("profile/evaluate").unwrap();
+    url_or_path.add_query(&mut url)?;
+
+    let body = url_or_path.body_for_web()?;
+    // we use plain text .body instead of .json
+    let response: Result<reqwest::Response, agama_lib::error::ServiceError> = client
+        .client
+        .request(reqwest::Method::POST, url)
+        .body(body)
+        .send()
+        .await
+        .map_err(|e| e.into());
+
+    let output: Box<serde_json::value::RawValue> = client.deserialize_or_error(response?).await?;
+    Ok(output.to_string())
 }
 
 /// Edit the installation settings using an external editor.

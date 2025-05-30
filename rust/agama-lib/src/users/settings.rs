@@ -27,7 +27,9 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct UserSettings {
     #[serde(rename = "user")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub first_user: Option<FirstUserSettings>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub root: Option<RootUserSettings>,
 }
 
