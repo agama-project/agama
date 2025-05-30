@@ -56,12 +56,17 @@ use tokio::sync::{broadcast, mpsc, oneshot};
 
 use crate::{
     http::{BaseHTTPClient, BaseHTTPClientError, Event, WebSocketClient, WebSocketError},
+    issue::Issue,
     manager::{InstallationPhase, InstallerStatus},
     progress::Progress,
 };
 
 const MANAGER_PROGRESS_OBJECT_PATH: &str = "/org/opensuse/Agama/Manager1";
 const SOFTWARE_PROGRESS_OBJECT_PATH: &str = "/org/opensuse/Agama/Software1";
+const SOFTWARE_ISSUES_OBJECT_PATH: &str = "/org/opensuse/Agama/Software1";
+const PRODUCT_ISSUES_OBJECT_PATH: &str = "/org/opensuse/Agama/Software1/Product";
+const STORAGE_ISSUES_OBJECT_PATH: &str = "/org/opensuse/Agama/Storage1";
+const USERS_ISSUES_OBJECT_PATH: &str = "/org/opensuse/Agama/Users1";
 
 #[derive(thiserror::Error, Debug)]
 pub enum MonitorError {
@@ -85,6 +90,8 @@ pub struct MonitorStatus {
     /// Progress for each service using the D-Bus object path as the key. If the progress is
     /// finished, the entry is removed from the map.
     pub progress: HashMap<String, Progress>,
+    /// Issues.
+    pub issues: HashMap<String, Vec<Issue>>,
 }
 
 impl MonitorStatus {
@@ -92,13 +99,27 @@ impl MonitorStatus {
     ///
     /// The entry is removed if the progress is finished.
     ///
-    /// * `service`: D-Bus object path.
+    /// * `path`: D-Bus object path.
     /// * `progress`: updated progress.
     fn update_progress(&mut self, path: String, progress: Progress) {
         if progress.finished {
             _ = self.progress.remove_entry(&path);
         } else {
             _ = self.progress.insert(path, progress);
+        }
+    }
+
+    /// Updates the issues for the given service.
+    ///
+    /// The entry is removed if there are no issues.
+    ///
+    /// * `path`: D-Bus object path.
+    /// * `progress`: updated progress.
+    fn update_issues(&mut self, path: String, issues: Vec<Issue>) {
+        if issues.is_empty() {
+            _ = self.issues.remove(&path);
+        } else {
+            _ = self.issues.insert(path, issues);
         }
     }
 
@@ -235,6 +256,9 @@ impl Monitor {
             Event::InstallationPhaseChanged { phase } => {
                 self.status.set_phase(phase);
             }
+            Event::IssuesChanged { path, issues } => {
+                self.status.update_issues(path, issues);
+            }
             _ => {}
         }
         let _ = self.updates.send(self.status.clone());
@@ -270,6 +294,26 @@ impl MonitorStatusReader {
             "/software/progress",
         )
         .await?;
+
+        self.add_issues(
+            &mut status,
+            SOFTWARE_ISSUES_OBJECT_PATH,
+            "/software/issues/software",
+        )
+        .await?;
+
+        self.add_issues(
+            &mut status,
+            PRODUCT_ISSUES_OBJECT_PATH,
+            "/software/issues/product",
+        )
+        .await?;
+
+        self.add_issues(&mut status, STORAGE_ISSUES_OBJECT_PATH, "/storage/issues")
+            .await?;
+
+        self.add_issues(&mut status, USERS_ISSUES_OBJECT_PATH, "/users/issues")
+            .await?;
         Ok(status)
     }
 
@@ -284,6 +328,17 @@ impl MonitorStatusReader {
             return Ok(());
         }
         status.progress.insert(dbus_path.to_string(), progress);
+        Ok(())
+    }
+
+    async fn add_issues(
+        &self,
+        status: &mut MonitorStatus,
+        dbus_path: &str,
+        path: &str,
+    ) -> Result<(), MonitorError> {
+        let issues: Vec<Issue> = self.http.get(path).await?;
+        status.update_issues(dbus_path.to_string(), issues);
         Ok(())
     }
 }
