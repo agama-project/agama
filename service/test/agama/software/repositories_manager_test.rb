@@ -36,9 +36,9 @@ describe Agama::Software::RepositoriesManager do
 
   let(:user_repositories) do
     [{
-      "url" => "http://testing.com",
-      "alias" => "test",
-      "enabled" => true,
+      "url"      => "http://testing.com",
+      "alias"    => "test",
+      "enabled"  => true,
       "priority" => 50
     }]
   end
@@ -136,7 +136,7 @@ describe Agama::Software::RepositoriesManager do
   describe "#user_repositories" do
     before do
       allow(Yast::Pkg).to receive(:RepositoryAdd).and_return(1)
-      allow(Agama::Software::Repository).to receive(:find).and_return(double())
+      allow(Agama::Software::Repository).to receive(:find).and_return(double)
       allow(subject).to receive(:load)
     end
 
@@ -149,7 +149,7 @@ describe Agama::Software::RepositoriesManager do
   describe "#user_repositories=" do
     before do
       allow(Yast::Pkg).to receive(:RepositoryAdd).and_return(1)
-      allow(Agama::Software::Repository).to receive(:find).and_return(double())
+      allow(Agama::Software::Repository).to receive(:find).and_return(double)
       allow(subject).to receive(:load)
     end
 
@@ -160,7 +160,7 @@ describe Agama::Software::RepositoriesManager do
 
     it "add repositories to repository pool" do
       expect(Yast::Pkg).to receive(:RepositoryAdd).and_return(1)
-      repo = double()
+      repo = double
       allow(Agama::Software::Repository).to receive(:find).with(1).and_return(repo)
 
       subject.user_repositories = user_repositories
@@ -174,12 +174,12 @@ describe Agama::Software::RepositoriesManager do
     end
 
     it "removes previous user repositories" do
-      old_repo = double()
+      old_repo = double
       allow(Agama::Software::Repository).to receive(:find).and_return(old_repo)
       subject.user_repositories = user_repositories
 
       expect(old_repo).to receive(:delete!)
-      new_repo = double()
+      new_repo = double
       allow(Agama::Software::Repository).to receive(:find).and_return(new_repo)
 
       subject.user_repositories = user_repositories
