@@ -193,31 +193,125 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#available_devices" do
+  describe "#available_drives" do
     before do
-      allow(proposal).to receive(:available_devices).and_return(devices)
+      allow(proposal.storage_system).to receive(:available_drives).and_return(drives)
     end
 
-    context "if there is no available devices" do
-      let(:devices) { [] }
+    context "if there is no available drives" do
+      let(:drives) { [] }
 
       it "returns an empty list" do
-        expect(subject.available_devices).to eq([])
+        expect(subject.available_drives).to eq([])
       end
     end
 
-    context "if there are available devices" do
-      let(:devices) { [device1, device2] }
+    context "if there are available drives" do
+      let(:drives) { [drive1, drive2, drive3] }
 
-      let(:device1) { instance_double(Y2Storage::Disk, name: "/dev/vda", sid: 95) }
-      let(:device2) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 96) }
+      let(:drive1) { instance_double(Y2Storage::Disk, name: "/dev/vda", sid: 95) }
+      let(:drive2) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 96) }
+      let(:drive3) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 97) }
 
-      it "retuns the path of each device" do
-        result = subject.available_devices
+      it "retuns the path of each drive" do
+        result = subject.available_drives
+
+        expect(result).to contain_exactly(
+          /system\/95/,
+          /system\/96/,
+          /system\/97/
+        )
+      end
+    end
+  end
+
+  describe "#candidate_drives" do
+    before do
+      allow(proposal.storage_system).to receive(:candidate_drives).and_return(drives)
+    end
+
+    context "if there is no candidate drives" do
+      let(:drives) { [] }
+
+      it "returns an empty list" do
+        expect(subject.candidate_drives).to eq([])
+      end
+    end
+
+    context "if there are candidate drives" do
+      let(:drives) { [drive1, drive2] }
+
+      let(:drive1) { instance_double(Y2Storage::Disk, name: "/dev/vda", sid: 95) }
+      let(:drive2) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 96) }
+
+      it "retuns the path of each drive" do
+        result = subject.candidate_drives
 
         expect(result).to contain_exactly(
           /system\/95/,
           /system\/96/
+        )
+      end
+    end
+  end
+
+  describe "#available_md_raids" do
+    before do
+      allow(proposal.storage_system).to receive(:available_md_raids).and_return(md_raids)
+    end
+
+    context "if there is no available MD RAIDs" do
+      let(:md_raids) { [] }
+
+      it "returns an empty list" do
+        expect(subject.available_md_raids).to eq([])
+      end
+    end
+
+    context "if there are available MD RAIDs" do
+      let(:md_raids) { [md_raid1, md_raid2, md_raid3] }
+
+      let(:md_raid1) { instance_double(Y2Storage::Md, name: "/dev/md0", sid: 100) }
+      let(:md_raid2) { instance_double(Y2Storage::Md, name: "/dev/md1", sid: 101) }
+      let(:md_raid3) { instance_double(Y2Storage::Md, name: "/dev/md2", sid: 102) }
+
+      it "retuns the path of each MD RAID" do
+        result = subject.available_md_raids
+
+        expect(result).to contain_exactly(
+          /system\/100/,
+          /system\/101/,
+          /system\/102/
+        )
+      end
+    end
+  end
+
+  describe "#candidate_md_raids" do
+    before do
+      allow(proposal.storage_system).to receive(:candidate_md_raids).and_return(md_raids)
+    end
+
+    context "if there is no candidate MD RAIDs" do
+      let(:md_raids) { [] }
+
+      it "returns an empty list" do
+        expect(subject.candidate_md_raids).to eq([])
+      end
+    end
+
+    context "if there are candidate MD RAIDs" do
+      let(:md_raids) { [md_raid1, md_raid2] }
+
+      let(:md_raid1) { instance_double(Y2Storage::Md, name: "/dev/md0", sid: 100) }
+      let(:md_raid2) { instance_double(Y2Storage::Md, name: "/dev/md1", sid: 101) }
+
+      it "retuns the path of each MD RAID" do
+        result = subject.candidate_md_raids
+
+        expect(result).to contain_exactly(
+          /system\/100/,
+          /system\/101/
         )
       end
     end

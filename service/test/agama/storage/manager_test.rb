@@ -53,6 +53,7 @@ describe Agama::Storage::Manager do
   let(:tmp_dir) { Dir.mktmpdir }
 
   before do
+    mock_storage(devicegraph: "empty-hd-50GiB.yaml")
     allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
     allow(Agama::DBus::Clients::Software).to receive(:instance).and_return(software)
     allow(Bootloader::FinishClient).to receive(:new).and_return(bootloader_finish)
@@ -71,7 +72,7 @@ describe Agama::Storage::Manager do
     FileUtils.remove_entry(tmp_dir)
   end
 
-  let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
+  let(:y2storage_manager) { Y2Storage::StorageManager.instance }
   let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
   let(:software) do
     instance_double(Agama::DBus::Clients::Software, selected_product: "ALP")
