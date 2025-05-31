@@ -273,9 +273,33 @@ const timezoneTime = (timezone: string, date: Date = new Date()): string | undef
   }
 };
 
-const mask = (value, visible = 4, character = "*") => {
-  const regex = new RegExp(`.(?=(.{${visible}}))`, "g");
-  return value.replace(regex, character);
+/**
+ * Masks all but the last `visible` characters of a string.
+ *
+ * Replaces each character in the input string with `maskChar` ("*" by default),
+ * except for the last `visible` (4 by default) characters, which are left
+ * unchanged. If `visible` is greater than or equal to the string length, the
+ * input is returned as-is.
+ *
+ * @example
+ * ```ts
+ * mask("123456789");          // "*****6789"
+ * mask("secret", 2);          // "****et"
+ * mask("secret", 6);          // "secret"
+ * mask("secret", 3, "#");     // "###ret"
+ * ```
+ *
+ * @param value - The input string to mask
+ * @param visible - Number of trailing characters to leave unmasked (default: 4)
+ * @param maskChar - The character to use for masking (default: "*")
+ * @returns The masked string with only the last `visible` characters shown
+ */
+const mask = (value: string, visible: number = 4, maskChar: string = "*"): string => {
+  const length = value.length;
+  const safeVisible = Number.isFinite(visible) && visible > 0 ? visible : 0;
+  const maskedLength = Math.max(0, length - safeVisible);
+  const visiblePart = safeVisible === 0 ? "" : value.slice(-safeVisible);
+  return maskChar.repeat(maskedLength) + visiblePart;
 };
 
 const agamaWidthBreakpoints = {

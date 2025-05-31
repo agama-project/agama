@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { compact, toValidationError, localConnection, hex } from "./utils";
+import { compact, toValidationError, localConnection, hex, mask } from "./utils";
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -59,6 +59,42 @@ describe("hex", () => {
     expect(hex(".123")).toBe(291);
     expect(hex("123.")).toBe(291);
     expect(hex(".1.2.3.")).toBe(291);
+  });
+});
+
+describe("mask", () => {
+  it("masks all but the last 4 characters by default", () => {
+    expect(mask("123456789")).toBe("*****6789");
+    expect(mask("abcd")).toBe("abcd");
+    expect(mask("abcde")).toBe("*bcde");
+  });
+
+  it("respects custom visible count", () => {
+    expect(mask("secret", 2)).toBe("****et");
+    expect(mask("secret", 0)).toBe("******");
+    expect(mask("secret", 6)).toBe("secret");
+    expect(mask("secret", 10)).toBe("secret");
+  });
+
+  it("uses custom mask character", () => {
+    expect(mask("secret", 3, "#")).toBe("###ret");
+    expect(mask("secret", 1, "X")).toBe("XXXXXt");
+    expect(mask("secret", 2, "!")).toBe("!!!!et");
+  });
+
+  it("handles empty and short input values", () => {
+    expect(mask("")).toBe("");
+    expect(mask("a")).toBe("a");
+    expect(mask("ab", 5)).toBe("ab");
+  });
+
+  it("handles negative or NaN visible values safely", () => {
+    expect(mask("secret", -2)).toBe("******");
+    expect(mask("secret", NaN)).toBe("******");
+  });
+
+  it("masks with empty character (no masking)", () => {
+    expect(mask("secret", 2, "")).toBe("et");
   });
 });
 
