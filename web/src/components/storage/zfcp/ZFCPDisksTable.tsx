@@ -24,7 +24,7 @@ import React, { useState } from "react";
 import { deactivateZFCPDisk } from "~/api/storage/zfcp";
 import { useZFCPControllers, useZFCPDisks } from "~/queries/storage/zfcp";
 import { ZFCPDisk } from "~/types/zfcp";
-import { useCancellablePromise } from "~/utils";
+import { useCancellablePromise } from "~/hooks/use-cancellable-promise";
 import RowActions from "../../core/RowActions";
 import { Table, Tbody, Td, Th, Thead, Tr } from "@patternfly/react-table";
 import { Skeleton } from "@patternfly/react-core";
