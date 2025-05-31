@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { compact, toValidationError, localConnection } from "./utils";
+import { compact, toValidationError, localConnection, hex } from "./utils";
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -33,6 +33,32 @@ describe("compact", () => {
       false,
       true,
     ]);
+  });
+});
+
+describe("hex", () => {
+  it("parses numeric dot strings as hex", () => {
+    expect(hex("0.0.0160")).toBe(352); // "000160"
+    expect(hex("1.2.3")).toBe(291); // "123"
+    expect(hex("123")).toBe(291); // "123"
+  });
+
+  it("returns 0 for strings with letters or invalid characters", () => {
+    expect(hex("1A")).toBe(0);
+    expect(hex("1A.3F")).toBe(0);
+    expect(hex("xyz")).toBe(0);
+    expect(hex("123Z")).toBe(0);
+  });
+
+  it("returns 0 for values resulting in empty string", () => {
+    expect(hex("..")).toBe(0);
+    expect(hex("")).toBe(0);
+  });
+
+  it("allows leading or trailing dots", () => {
+    expect(hex(".123")).toBe(291);
+    expect(hex("123.")).toBe(291);
+    expect(hex(".1.2.3.")).toBe(291);
   });
 });
 

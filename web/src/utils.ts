@@ -164,11 +164,29 @@ const useDebounce = (callback: Function, delay: number) => {
 };
 
 /**
- * Convert given string to a hexadecimal number
+ * Parses a "numeric dot string" as a hexadecimal number.
+ *
+ * Accepts only strings containing digits (`0–9`) and dots (`.`),
+ * for example: `"0.0.0160"` or `"123"`. Dots are removed before parsing.
+ *
+ * If the cleaned string contains any non-digit characters (such as letters),
+ * or is not a valid integer string, the function returns `0`.
+ *
+ * @example
+ *
+ * ```ts
+ * hex("0.0.0.160"); // Returns 352
+ * hex("1.2.3");     // Returns 291
+ * hex("1.A.3");     // Returns 0 (letters are not allowed)
+ * hex("..");        // Returns 0 (empty string before removing dots)
+ * ```
+ *
+ * @param value - A string representing a dot-separated numeric value
+ * @returns The number parsed as hexadecimal (base-16) integer, or `0` if invalid
  */
-const hex = (value: string) => {
-  const sanitizedValue = value.replaceAll(".", "");
-  return parseInt(sanitizedValue, 16);
+const hex = (value: string): number => {
+  const sanitizedValued = value.replaceAll(".", "");
+  return /^[0-9]+$/.test(sanitizedValued) ? parseInt(sanitizedValued, 16) : 0;
 };
 
 /**
