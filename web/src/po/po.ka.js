@@ -1412,11 +1412,17 @@ export default {
   "Size": [
     "ზომა"
   ],
+  "Size limits must be numbers followed by a unit like GiB or GB": [
+    ""
+  ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     ""
   ],
   "Size options": [
     "ზომის მორგება"
+  ],
+  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
+    ""
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     ""
@@ -1571,10 +1577,16 @@ export default {
   "The logical volume is created exactly with the given size": [
     ""
   ],
+  "The maximum must be a number followed by a unit like GiB or GB": [
+    ""
+  ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
     ""
   ],
   "The minimum cannot be greater than the maximum": [
+    ""
+  ],
+  "The minimum must be a number followed by a unit like GiB or GB": [
     ""
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
