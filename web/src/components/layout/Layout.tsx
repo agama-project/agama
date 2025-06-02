@@ -48,19 +48,18 @@ const focusDrawer = (drawer: HTMLElement | null) => {
 };
 
 /**
- * Custom width breakpoints for the Agama application layout.
+ * Custom width breakpoints for the Agama layout.
  *
- * These values override PatternFly's default breakpoints to better fit
- * Agama's responsive design needs. Each value is specified in pixels
- * and is derived from rem-based measurements, multiplied by the standard
- * root font size (16px).
+ * These values override PatternFly's default breakpoints to better fit Agama's
+ * needs. Each value is specified in pixels and is derived from rem-based
+ * measurements, multiplied by the standard root font size (16px).
  *
  * Breakpoints:
- * - sm: 36rem  → 576px
- * - md: 48rem  → 768px
- * - lg: 64rem  → 1024px
- * - xl: 75rem  → 1200px
- * - 2xl: 90rem → 1440px
+ * - sm:  36rem  / 576px
+ * - md:  48rem  / 768px
+ * - lg:  64rem  / 1024px
+ * - xl:  75rem  / 1200px
+ * - 2xl: 90rem  / 1440px
  */
 const agamaWidthBreakpoints = {
   sm: parseInt("36rem") * 16,
