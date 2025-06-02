@@ -57,19 +57,22 @@ impl From<String> for CliOutput {
 }
 
 impl CliOutput {
-    pub fn write(&self, contents: &str) -> anyhow::Result<()> {
+    // consumes self, otherwise
+    // foo.write(&data); foo.write("\n"); would leave just \n
+    pub fn write(self, contents: &str) -> anyhow::Result<()> {
         match self {
             Self::Stdout => {
                 let mut stdout = io::stdout().lock();
-                stdout.write_all(contents.as_bytes())?
+                stdout.write_all(contents.as_bytes())?;
+                stdout.flush()?
             }
             Self::Path(path) => {
                 let mut file = std::fs::OpenOptions::new()
                     .create(true)
                     .truncate(true)
                     .write(true)
-                    .open(path)
-                    .context(format!("Writing to {:?}", path))?;
+                    .open(&path)
+                    .context(format!("Writing to {:?}", &path))?;
                 file.write_all(contents.as_bytes())?
             }
         }
@@ -183,11 +186,15 @@ pub async fn run(
 
             let destination = output.unwrap_or(CliOutput::Stdout);
             destination.write(&json)?;
+
+            eprintln!("");
+            validate(&http_client, CliInput::Full(json.clone())).await?;
             Ok(())
         }
         ConfigCommands::Load { url_or_path } => {
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
             let contents = url_or_path.read_to_string()?;
+            validate(&http_client, CliInput::Full(contents.clone())).await?;
             let result = InstallSettings::from_json(&contents, &InstallationContext::from_env()?)?;
             tokio::spawn(async move {
                 show_progress(monitor, true).await;
