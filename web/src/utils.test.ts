@@ -98,26 +98,56 @@ describe("mask", () => {
   });
 });
 
-const localURL = new URL("http://127.0.0.90/");
-const localURL2 = new URL("http://localhost:9090/");
-const remoteURL = new URL("http://example.com");
-
 describe("localConnection", () => {
-  describe("when the page URL is " + localURL, () => {
-    it("returns true", () => {
-      expect(localConnection(localURL)).toEqual(true);
-    });
+  const originalEnv = process.env;
+  const localhostURL = new URL("http://localhost");
+  const localIpURL = new URL("http://127.0.0.90");
+  const remoteURL = new URL("http://example.com");
+
+  beforeEach(() => {
+    process.env = { ...originalEnv };
   });
 
-  describe("when the page URL is " + localURL2, () => {
-    it("returns true", () => {
-      expect(localConnection(localURL2)).toEqual(true);
-    });
+  it("uses window.location when no argument is provided", () => {
+    const originalLocation = window.location;
+    delete window.location;
+    // @ts-expect-error: https://github.com/microsoft/TypeScript/issues/48949
+    window.location = localhostURL;
+
+    expect(localConnection()).toBe(true);
+
+    // Restore
+    // @ts-expect-error: https://github.com/microsoft/TypeScript/issues/48949
+    window.location = originalLocation;
   });
 
-  describe("when the page URL is " + remoteURL, () => {
-    it("returns false", () => {
-      expect(localConnection(remoteURL)).toEqual(false);
+  it("returns true for 'localhost' hostname", () => {
+    expect(localConnection(localhostURL)).toBe(true);
+  });
+
+  it("returns true for 127.x.x.x IPs", () => {
+    expect(localConnection(new URL(localIpURL))).toBe(true);
+  });
+
+  it("returns false for non-local hostnames", () => {
+    expect(localConnection(remoteURL)).toBe(false);
+  });
+
+  describe("but LOCAL_CONNECTION environment variable is '1'", () => {
+    beforeEach(() => {
+      process.env.LOCAL_CONNECTION = "1";
+    });
+
+    it("returns true for 'localhost' hostname", () => {
+      expect(localConnection(localhostURL)).toBe(true);
+    });
+
+    it("returns true for 127.x.x.x IPs", () => {
+      expect(localConnection(localIpURL)).toBe(true);
+    });
+
+    it("returns true for non-local hostnames", () => {
+      expect(localConnection(remoteURL)).toBe(true);
     });
   });
 });

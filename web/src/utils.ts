@@ -82,7 +82,7 @@ const setLocationSearch = (query: string) => {
 };
 
 /**
- * WetherAgama server is running locally or not.
+ * Whether Agama server is running locally or not.
  *
  * This function should be used only in special cases, the Agama behavior should
  * be the same regardless of the user connection.
