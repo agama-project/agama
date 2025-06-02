@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-20 02:39+0000\n"
-"PO-Revision-Date: 2025-04-10 18:56+0000\n"
+"POT-Creation-Date: 2025-06-01 03:23+0000\n"
+"PO-Revision-Date: 2025-05-29 17:59+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
-"Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/"
-"agama-service-master/ka/>\n"
+"Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-"
+"service-master/ka/>\n"
 "Language: ka\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.4\n"
+"X-Generator: Weblate 5.11.4\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -59,20 +59,84 @@ msgstr "პროგრამის თარგმანების ჩატ�
 msgid "Load storage translations"
 msgstr "საცავის თარგმანების ჩატვირთვა"
 
+#. @param certificate [Agama::SSL::Certificate]
+#. @return [Agama::Question]
+#: service/lib/agama/registration.rb:374
+msgid ""
+"Trying to import a self signed certificate. Do you want to trust it and "
+"register the product?"
+msgstr ""
+
 #. TRANSLATORS: button label, try downloading the failed package again
-#: service/lib/agama/software/callbacks/base.rb:39
+#: service/lib/agama/software/callbacks/base.rb:48
 msgid "Try again"
 msgstr "თავიდან სცადეთ"
 
 #. TRANSLATORS: button label, ignore the failed download, skip package installation
-#: service/lib/agama/software/callbacks/base.rb:45
+#: service/lib/agama/software/callbacks/base.rb:54
 msgid "Continue anyway"
 msgstr "მაინც გაგრძელება"
 
 #. TRANSLATORS: button label, abort the installation completely after an error
-#: service/lib/agama/software/callbacks/base.rb:51
+#: service/lib/agama/software/callbacks/base.rb:60
 msgid "Abort installation"
 msgstr "დაყენების შეწყვეტა"
+
+#. TRANSLATORS: button label, skip the error
+#: service/lib/agama/software/callbacks/base.rb:66
+msgid "Skip"
+msgstr "გამოტოვება"
+
+#. TRANSLATORS: button label
+#: service/lib/agama/software/callbacks/base.rb:72
+msgid "Yes"
+msgstr "დიახ"
+
+#. TRANSLATORS: button label
+#: service/lib/agama/software/callbacks/base.rb:78
+msgid "No"
+msgstr "არა"
+
+#. Callback to accept a file without a checksum
+#.
+#. @param filename [String] File name
+#. @return [Boolean]
+#: service/lib/agama/software/callbacks/digest.rb:58
+#, perl-brace-format
+msgid ""
+"No checksum for the file %{file} was found in the repository. This means "
+"that although the file is part of the signed repository, the list of "
+"checksums does not mention this file. Use it anyway?"
+msgstr ""
+
+#. Callback to accept an unknown digest
+#.
+#. @param filename [String] File name
+#. @param digest [String] expected checksum
+#. @return [Boolean]
+#: service/lib/agama/software/callbacks/digest.rb:84
+#, fuzzy, perl-brace-format
+msgid ""
+"The checksum of the file %{file} is \"%{digest}\" but the expected checksum "
+"is unknown. This means that the origin and integrity of the file cannot be "
+"verified. Use it anyway?"
+msgstr ""
+"{source}-ზე ციფრული ხელმოწერა არ არსებობს. ფაილის წყაროს და სიმთლიანის "
+"გადამოწმება შეუძლებელია. გამოვიყენო მაინც?"
+
+#. Callback to accept wrong digest
+#.
+#. @param filename [String] File name
+#. @param expected_digest [String] expected checksum
+#. @param found_digest [String] found checksum
+#. @return [Boolean]
+#: service/lib/agama/software/callbacks/digest.rb:111
+#, perl-brace-format
+msgid ""
+"The expected checksum of file %{file} is \"%{found}\" but it was expected to "
+"be \"%{expected}\". The file has changed by accident or by an attacker since "
+"the creater signed it. Use it anyway?"
+msgstr ""
 
 #. DoneProvide callback
 #.
@@ -87,21 +151,20 @@ msgstr "პრობლემა პაჯეტის სკრიპტის 
 #.
 #. @param filename [String] File name
 #. @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
-#: service/lib/agama/software/callbacks/signature.rb:63
-#, perl-brace-format
-msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
-msgstr "ფაილი {filename} რეპოზიტორიიდან {repo_name} ({repo_url})"
+#: service/lib/agama/software/callbacks/signature.rb:61
+#, fuzzy, perl-brace-format
+msgid ""
+"The file %{filename} from %{repo_url} is not digitally signed. The origin "
+"and integrity of the file cannot be verified. Use it anyway?"
+msgstr ""
+"{source}-ზე ციფრული ხელმოწერა არ არსებობს. ფაილის წყაროს და სიმთლიანის "
+"გადამოწმება შეუძლებელია. გამოვიყენო მაინც?"
 
 #: service/lib/agama/software/callbacks/signature.rb:67
-#, perl-brace-format
-msgid "The file %{filename}"
-msgstr "ფაილი %{filename}"
-
-#: service/lib/agama/software/callbacks/signature.rb:71
-#, perl-brace-format
+#, fuzzy, perl-brace-format
 msgid ""
-"%{source} is not digitally signed. The origin and integrity of the file "
-"cannot be verified. Use it anyway?"
+"The file %{filename} is not digitally signed. The origin and integrity of "
+"the file cannot be verified. Use it anyway?"
 msgstr ""
 "{source}-ზე ციფრული ხელმოწერა არ არსებობს. ფაილის წყაროს და სიმთლიანის "
 "გადამოწმება შეუძლებელია. გამოვიყენო მაინც?"
@@ -110,32 +173,106 @@ msgstr ""
 #.
 #. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
 #. @param _repo_id [Integer] Repository ID
-#: service/lib/agama/software/callbacks/signature.rb:94
+#: service/lib/agama/software/callbacks/signature.rb:92
 #, perl-brace-format
 msgid ""
 "The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
 "want to trust this key?"
 msgstr ""
 
-#. Should an error be raised?
-#: service/lib/agama/software/manager.rb:141
-msgid "Initializing sources"
-msgstr "წყაროების ინიციალიზაცია"
+#. Callback to handle unknown GPG keys
+#.
+#. @param filename [String] Name of the file.
+#. @param key_id [String] Key ID.
+#. @param repo_id [String] Repository ID.
+#: service/lib/agama/software/callbacks/signature.rb:123
+#, perl-brace-format
+msgid ""
+"The file %{filename} from %{repo_url} is digitally signed with the following "
+"unknown GnuPG key: %{key_id}. Use it anyway?"
+msgstr ""
 
-#: service/lib/agama/software/manager.rb:146
+#: service/lib/agama/software/callbacks/signature.rb:129
+#, perl-brace-format
+msgid ""
+"The file %{filename} is digitally signed with the following unknown GnuPG "
+"key: %{key_id}. Use it anyway?"
+msgstr ""
+
+#. Callback to handle file verification failures
+#.
+#. @param filename [String] File name
+#. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
+#. @param repo_id [Integer] Repository ID
+#: service/lib/agama/software/callbacks/signature.rb:160
+#, perl-brace-format
+msgid ""
+"The file %{filename} from %{repo_url} is digitally signed with the following "
+"GnuPG key, but the integrity check failed: %{key_id} (%{key_name}). Use it "
+"anyway?"
+msgstr ""
+
+#: service/lib/agama/software/callbacks/signature.rb:167
+#, perl-brace-format
+msgid ""
+"The file %{filename} is digitally signed with the following GnuPG key, but "
+"the integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
+msgstr ""
+
+#. TRANSLATORS: button label, trust the GPG key or the signature
+#: service/lib/agama/software/callbacks/signature.rb:191
+msgid "Trust"
+msgstr "ნდობა"
+
+#. Should an error be raised?
+#: service/lib/agama/software/manager.rb:149
 msgid "Refreshing repositories metadata"
 msgstr "რეპოზიტორიის მეტამონაცემების განახლება"
 
-#: service/lib/agama/software/manager.rb:147
+#: service/lib/agama/software/manager.rb:150
 msgid "Calculating the software proposal"
 msgstr "პროგრამების შეთავაზების მომზადება"
+
+#: service/lib/agama/software/manager.rb:154
+msgid "Initializing sources"
+msgstr "წყაროების ინიციალიზაცია"
+
+#. error message
+#: service/lib/agama/software/manager.rb:392
+#, c-format
+msgid "Adding service '%s' failed."
+msgstr "სერვისის '%s' დამატება ჩავარდა."
+
+#. error message
+#: service/lib/agama/software/manager.rb:397
+#, c-format
+msgid "Updating service '%s' failed."
+msgstr "სერვისის '%s' განახლება ჩავარდა."
+
+#. error message
+#: service/lib/agama/software/manager.rb:403
+#, c-format
+msgid "Saving service '%s' failed."
+msgstr "სერვისის '%s' შენახვა ჩავარდა."
+
+#. error message
+#: service/lib/agama/software/manager.rb:409
+#, c-format
+msgid "Refreshing service '%s' failed."
+msgstr "სერვისის '%s' თავიდან ჩატვირთვა ჩავარდა."
+
+#. rubocop:enable Metrics/AbcSize
+#: service/lib/agama/software/manager.rb:418
+#, c-format
+msgid "Removing service '%s' failed."
+msgstr "სერვისის '%s' წაშლა ჩავარდა."
 
 #. Issues related to the software proposal.
 #.
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:596
+#: service/lib/agama/software/manager.rb:631
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "რეპოზიტორიის \"%s\" წაკთხვა შეუძლებელია"
@@ -143,53 +280,108 @@ msgstr "რეპოზიტორიის \"%s\" წაკთხვა შე
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:606
+#: service/lib/agama/software/manager.rb:641
 msgid "Product not selected yet"
 msgstr "ჯერ პროდუქტი არ აგირჩევიათ"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:615
+#: service/lib/agama/software/manager.rb:650
 msgid "Product must be registered"
 msgstr "პროდუქტი დარეგისტრირებული უნდა იყოს"
 
 #. Returns solver error messages from the last attempt
 #.
 #. @return [Array<String>] Error messages
-#: service/lib/agama/software/proposal.rb:225
+#: service/lib/agama/software/proposal.rb:270
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "აღმოჩენილია %s დამოკიდებულების პრობლემა."
 
-#. Issue for not found device.
+#. TRANSLATORS: SSL certificate details
+#: service/lib/agama/ssl/certificate_details.rb:31
+msgid "Certificate:"
+msgstr "სერტიფიკატი:"
+
+#: service/lib/agama/ssl/certificate_details.rb:31
+msgid "Issued To"
+msgstr "გაცემულია ვისთვის"
+
+#: service/lib/agama/ssl/certificate_details.rb:32
+msgid "Issued By"
+msgstr "გამომცემელია"
+
+#: service/lib/agama/ssl/certificate_details.rb:32
+msgid "SHA1 Fingerprint: "
+msgstr "SHA1 ანაბეჭდი: "
+
+#: service/lib/agama/ssl/certificate_details.rb:34
+msgid "SHA256 Fingerprint: "
+msgstr "SHA256 ანაბეჭდი: "
+
+#. label followed by the SSL certificate identification
+#: service/lib/agama/ssl/certificate_details.rb:46
+msgid "Common Name (CN): "
+msgstr "ზოგადი სახელი (CN): "
+
+#. label followed by the SSL certificate identification
+#: service/lib/agama/ssl/certificate_details.rb:48
+msgid "Organization (O): "
+msgstr "ორგანიზაცია (O): "
+
+#. label followed by the SSL certificate identification
+#: service/lib/agama/ssl/certificate_details.rb:50
+msgid "Organization Unit (OU): "
+msgstr "ორგანიზაციის დეპარტამენტი (OU): "
+
+#. Issue when the device has several users.
 #.
-#. @param config [Configs::Drive, Configs::Partition]
-#. @return [Agama::Issue]
-#: service/lib/agama/storage/config_checker.rb:87
-msgid "No device found for a mandatory drive"
-msgstr ""
-
-#: service/lib/agama/storage/config_checker.rb:89
-msgid "No device found for a mandatory partition"
-msgstr ""
-
-#. TRANSLATORS: %s is the replaced by a mount path (e.g., "/home").
-#: service/lib/agama/storage/config_checker.rb:118
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/alias.rb:74
 #, c-format
-msgid "Missing file system type for '%s'"
+msgid "The device with alias '%s' is used by more than one device"
 msgstr ""
 
-#. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
-#. %{path} is replaced by a mount path (e.g., "/home").
-#: service/lib/agama/storage/config_checker.rb:145
-#, perl-brace-format
-msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
+#. Issue when the device has both filesystem and a user.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/alias.rb:95
+#, c-format
+msgid ""
+"The device with alias '%s' cannot be formatted because it is used by other "
+"device"
+msgstr ""
+
+#. Issue when the device has both partitions and a user.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/alias.rb:118
+#, c-format
+msgid ""
+"The device with alias '%s' cannot be partitioned because it is used by other "
+"device"
+msgstr ""
+
+#. Error if a boot device is required and unknown.
+#.
+#. This happens when the config solver is not able to infer a boot device, see
+#. {ConfigSolvers::Boot}.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/boot.rb:75
+msgid "The boot device cannot be automatically selected"
+msgstr "ჩამტვირთავი მოწყობილობის ავტომატური შერჩევა შეუძლებელია"
+
+#. TRANSLATORS: %s is replaced by a device alias (e.g., "boot").
+#: service/lib/agama/storage/config_checkers/boot.rb:86
+#, c-format
+msgid "There is no boot device with alias '%s'"
 msgstr ""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checker.rb:178
+#: service/lib/agama/storage/config_checkers/encryption.rb:78
 #, perl-brace-format
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
@@ -197,49 +389,163 @@ msgstr ""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checker.rb:196
+#: service/lib/agama/storage/config_checkers/encryption.rb:93
 #, perl-brace-format
 msgid "Encryption method '%{crypt_method}' is not available in this system."
 msgstr ""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checker.rb:226
+#: service/lib/agama/storage/config_checkers/encryption.rb:120
 #, perl-brace-format
 msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
 msgstr ""
 
-#. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
-#: service/lib/agama/storage/config_checker.rb:276
+#. TRANSLATORS: %s is replaced by a mount path (e.g., "/home").
+#: service/lib/agama/storage/config_checkers/filesystem.rb:79
 #, c-format
-msgid ""
-"The device '%s' is used several times as target device for physical volumes"
+msgid "Missing file system type for '%s'"
+msgstr "მიუთითებელი ფაილური სისტემის ტიპი '%s'-სთვის"
+
+#. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
+#. %{path} is replaced by a mount path (e.g., "/home").
+#: service/lib/agama/storage/config_checkers/filesystem.rb:100
+#, perl-brace-format
+msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr ""
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checker.rb:350
+#: service/lib/agama/storage/config_checkers/logical_volume.rb:82
 #, c-format
 msgid "There is no LVM thin pool volume with alias '%s'"
 msgstr ""
 
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "md1").
+#: service/lib/agama/storage/config_checkers/md_raid.rb:98
+#, c-format
+msgid "There is no MD RAID member device with alias '%s'"
+msgstr ""
+
+#. Issue if the MD RAID level is missing and the device is not reused.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/md_raid.rb:110
+msgid "There is a MD RAID without level"
+msgstr "არსებობს MD RAID დონის გარეშე"
+
+#. Issue if the MD RAID does not contain enough member devices.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/md_raid.rb:121
+#, c-format
+msgid "At least %s devices are required for %s"
+msgstr ""
+
+#. Issue if the device member is formatted.
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/md_raid.rb:174
+#, perl-brace-format
+msgid ""
+"The device '%{member}' cannot be formatted because it is a device member of "
+"the reused MD RAID %{md_raid}"
+msgstr ""
+
+#. Issue if the device member is partitioned.
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/md_raid.rb:197
+#, perl-brace-format
+msgid ""
+"The device '%{member}' cannot be partitioned because it is a device member "
+"of the reused MD RAID %{md_raid}"
+msgstr ""
+
+#. Issue if the device member is used by other device (e.g., as target for physical volumes).
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/md_raid.rb:219
+#, perl-brace-format
+msgid ""
+"The device '%{member}' cannot be used because it is a device member of the "
+"reused MD RAID %{md_raid}"
+msgstr ""
+
+#. TRANSLATORS: 'method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1').
+#: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:61
+#, perl-brace-format
+msgid "'%{method}' is not a suitable method to encrypt the physical volumes."
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
+#: service/lib/agama/storage/config_checkers/search.rb:74
+#, c-format
+msgid "Mandatory device %s not found"
+msgstr "აუცილებელი მოწყობილობა %s აღმოჩენილი არაა"
+
+#. TRANSLATORS: %s is replaced by a device type (e.g., "drive").
+#: service/lib/agama/storage/config_checkers/search.rb:77
+#, c-format
+msgid "Mandatory %s not found"
+msgstr "აუცილებელი %s აღმოჩენილი არაა"
+
+#. @return [String]
+#: service/lib/agama/storage/config_checkers/search.rb:85
+msgid "drive"
+msgstr "ამძრავი"
+
+#: service/lib/agama/storage/config_checkers/search.rb:87
+msgid "MD RAID"
+msgstr "MD RAID"
+
+#: service/lib/agama/storage/config_checkers/search.rb:89
+msgid "partition"
+msgstr "დანაყოფი"
+
+#: service/lib/agama/storage/config_checkers/search.rb:91
+msgid "LVM logical volume"
+msgstr "LVM ლოგიკური ტომი"
+
+#: service/lib/agama/storage/config_checkers/search.rb:93
+msgid "device"
+msgstr "მოწყობილობა"
+
+#. Issue if the volume group name is missing.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/volume_group.rb:76
+msgid "There is a volume group without name"
+msgstr "არსებობს ტომების ჯგუფი სახელის გარეშე"
+
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checker.rb:375
+#: service/lib/agama/storage/config_checkers/volume_group.rb:106
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
 msgstr ""
 
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checkers/volume_group.rb:133
+#, c-format
+msgid ""
+"The list of target devices for the volume group '%s' is mixing reused "
+"devices and new devices"
+msgstr ""
+
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
-#: service/lib/agama/storage/config_checker.rb:401
+#: service/lib/agama/storage/config_checkers/volume_group.rb:153
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
 msgstr ""
 
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
-#. (e.g., 'luks1').
-#: service/lib/agama/storage/config_checker.rb:434
-#, perl-brace-format
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
+#: service/lib/agama/storage/config_checkers/volume_groups.rb:66
+#, c-format
 msgid ""
-"'%{crypt_method}' is not a suitable method to encrypt the physical volumes."
+"The device '%s' is used several times as target device for physical volumes"
 msgstr ""
 
 #. Text of the reason preventing to shrink because there is no content.
@@ -257,68 +563,90 @@ msgstr ""
 #. @return [String, nil] nil if there is a minimum size or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:162
 msgid "Shrinking is not supported by this device"
-msgstr ""
+msgstr "ამ მოწყობილობაზე დაპატარავება მხარდაჭერილი არაა"
 
-#. Probes storage devices and performs an initial proposal
-#: service/lib/agama/storage/manager.rb:120
+#. Applies the target configs.
+#.
+#. @param config [ISCSI::Config]
+#: service/lib/agama/storage/iscsi/manager.rb:291
+msgid "Logout iSCSI targets"
+msgstr "გასვლა iSCSI სამიზნეებიდან"
+
+#: service/lib/agama/storage/iscsi/manager.rb:292
+msgid "Login iSCSI targets"
+msgstr "შესვლა iSCSI სამიზნეებზე"
+
+#. Login issue.
+#.
+#. @param target [ISCSI::Configs::Target]
+#. @return [Issue]
+#: service/lib/agama/storage/iscsi/manager.rb:346
+#, c-format
+msgid "Cannot login to iSCSI target %s"
+msgstr "ვერ შევედი iSCSI სამიზნეზე %s"
+
+#. Underlying yast-storage-ng has own mechanism for proposing boot strategies.
+#. However, we don't always want to use BLS when it proposes so. Currently
+#. we want to use BLS only for Tumbleweed / Slowroll
+#: service/lib/agama/storage/manager.rb:131
 msgid "Activating storage devices"
 msgstr "საცავის მოწყობილობების გააქტიურება"
 
-#: service/lib/agama/storage/manager.rb:121
+#: service/lib/agama/storage/manager.rb:132
 msgid "Probing storage devices"
 msgstr "საცავის მოწყობილობების აღმოჩენა"
 
-#: service/lib/agama/storage/manager.rb:122
+#: service/lib/agama/storage/manager.rb:133
 msgid "Calculating the storage proposal"
 msgstr "საცავის შეთავაზების მომზადება"
 
-#: service/lib/agama/storage/manager.rb:123
+#: service/lib/agama/storage/manager.rb:136
 msgid "Selecting Linux Security Modules"
 msgstr "Linux-ის უსაფრთხოების მოდულების არჩევა"
 
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:131
+#: service/lib/agama/storage/manager.rb:146
 msgid "Preparing bootloader proposal"
 msgstr "ჩამტვირთავის შეთავაზების მომზადება"
 
 #. then also apply changes to that proposal
-#: service/lib/agama/storage/manager.rb:138
+#: service/lib/agama/storage/manager.rb:153
 msgid "Adding storage-related packages"
 msgstr "საცავთან დაკავშირებული პაკეტების დამატება"
 
-#: service/lib/agama/storage/manager.rb:139
+#: service/lib/agama/storage/manager.rb:154
 msgid "Preparing the storage devices"
 msgstr "საცავის მოწყობილობების მომზადება"
 
-#: service/lib/agama/storage/manager.rb:140
+#: service/lib/agama/storage/manager.rb:155
 msgid "Writing bootloader sysconfig"
 msgstr "ჩამტვირთავის sysconfig-ის ჩაწერა"
 
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:287
-msgid "Cannot accommodate the required file systems for installation"
-msgstr "დაყენებისთვის საჭირო ფაილური სისტემების შეგროვება შეუძლებელია"
+#: service/lib/agama/storage/proposal.rb:371
+msgid "Cannot calculate a valid storage setup with the current configuration"
+msgstr ""
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:298
+#: service/lib/agama/storage/proposal.rb:382
 msgid "A problem ocurred while calculating the storage setup"
-msgstr ""
+msgstr "პრობლემა საცავის მორგების გამოთვლისას"
 
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:127
+#: service/lib/agama/storage/proposal_strategies/guided.rb:135
 msgid "No device selected for installation"
 msgstr "დაყენებისთვის მოწყობილობა არჩეული არაა"
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:143
+#: service/lib/agama/storage/proposal_strategies/guided.rb:151
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
@@ -327,7 +655,18 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. Recalculates the list of issues
-#: service/lib/agama/users.rb:165
+#: service/lib/agama/users.rb:154
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
+
+#, perl-brace-format
+#~ msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
+#~ msgstr "ფაილი {filename} რეპოზიტორიიდან {repo_name} ({repo_url})"
+
+#, perl-brace-format
+#~ msgid "The file %{filename}"
+#~ msgstr "ფაილი %{filename}"
+
+#~ msgid "Cannot accommodate the required file systems for installation"
+#~ msgstr "დაყენებისთვის საჭირო ფაილური სისტემების შეგროვება შეუძლებელია"
