@@ -172,22 +172,6 @@ describe "agama config" do
       it "is evaluated and invalidity reported" do
         stdout, stderr = Cheetah.run("agama", "config", "generate", "-",
         stdout: :capture, stderr: :capture, stdin: profile_body)
-         # NOTE: 2 space indent here
-         expected = <<~JSON
-          {
-            "product": {
-              "id": null
-            }
-          }
-        JSON
-        expect(stdout).to eq(expected)
-        expect(stderr).to include("profile is not valid")
-        expect(stderr).to include("null is not")
-      end
-
-      it "is evaluated and invalidity reported, without deserialization" do
-        stdout, stderr = Cheetah.run("agama", "config", "generate", "--fixme-skip-deserialization", "-",
-        stdout: :capture, stderr: :capture, stdin: profile_body)
         # NOTE: 3 space indent here
         expected = <<~JSON
           {
@@ -199,6 +183,7 @@ describe "agama config" do
         expect(stdout).to eq(expected)
         expect(stderr).to include("profile is not valid")
         expect(stderr).to include("'uh' was unexpected")
+        expect(stderr).to include("\"id\" is a required property")
       end
     end
   end
