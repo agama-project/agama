@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { compact, toValidationError, localConnection, hex, mask } from "./utils";
+import { compact, localConnection, hex, mask } from "./utils";
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -95,18 +95,6 @@ describe("mask", () => {
 
   it("masks with empty character (no masking)", () => {
     expect(mask("secret", 2, "")).toBe("et");
-  });
-});
-
-describe("toValidationError", () => {
-  it("converts an issue to a validation error", () => {
-    const issue = {
-      description: "Issue 1",
-      details: "Details issue 1",
-      source: "config",
-      severity: "warn",
-    };
-    expect(toValidationError(issue)).toEqual({ message: "Issue 1" });
   });
 });
 

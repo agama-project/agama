@@ -54,16 +54,6 @@ const hex = (value: string): number => {
 };
 
 /**
- * Converts an issue to a validation error
- *
- * @todo This conversion will not be needed after adapting Section to directly work with issues.
- *
- * @param {import("~/types/issues").Issue} issue
- * @returns {import("~/types/issues").ValidationError}
- */
-const toValidationError = (issue) => ({ message: issue.description });
-
-/**
  * Wrapper around window.location.reload
  *
  * It's needed mainly to ease testing because we can't override window in jest with jsdom anymore
@@ -166,13 +156,4 @@ const mask = (value: string, visible: number = 4, maskChar: string = "*"): strin
   return maskChar.repeat(maskedLength) + visiblePart;
 };
 
-export {
-  compact,
-  hex,
-  toValidationError,
-  locationReload,
-  setLocationSearch,
-  localConnection,
-  timezoneTime,
-  mask,
-};
+export { compact, hex, locationReload, setLocationSearch, localConnection, timezoneTime, mask };
