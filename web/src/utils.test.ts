@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { compact, localConnection, hex, mask } from "./utils";
+import { compact, localConnection, hex, mask, timezoneTime } from "./utils";
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -95,6 +95,44 @@ describe("mask", () => {
 
   it("masks with empty character (no masking)", () => {
     expect(mask("secret", 2, "")).toBe("et");
+  });
+});
+
+describe("timezoneTime", () => {
+  const fixedDate = new Date("2023-01-01T12:34:56Z");
+
+  it("returns time in 24h format for a valid timezone", () => {
+    const time = timezoneTime("UTC", fixedDate);
+    expect(time).toBe("12:34");
+  });
+
+  it("uses current date if no date provided", () => {
+    // Fake "now"
+    const now = new Date("2023-06-01T15:45:00Z");
+    jest.useFakeTimers();
+    jest.setSystemTime(now);
+
+    const time = timezoneTime("UTC");
+    expect(time).toBe("15:45");
+
+    jest.useRealTimers();
+  });
+
+  it("returns undefined for invalid timezone", () => {
+    expect(timezoneTime("Invalid/Timezone", fixedDate)).toBeUndefined();
+  });
+
+  it("rethrows unexpected errors", () => {
+    // To simulate unexpected error, mock Intl.DateTimeFormat to throw something else
+    const original = Intl.DateTimeFormat;
+    // @ts-expect-error because missing properties not needed for this test
+    Intl.DateTimeFormat = jest.fn(() => {
+      throw new Error("Unexpected");
+    });
+
+    expect(() => timezoneTime("UTC", fixedDate)).toThrow("Unexpected");
+
+    Intl.DateTimeFormat = original;
   });
 });
 
