@@ -20,30 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 /**
  * Generates a new array without null and undefined values.
  */
 const compact = <T>(collection: Array<T>) => {
   return collection.filter((e) => e !== null && e !== undefined);
-};
-
-/** Hook for using local storage
- *
- * @see {@link https://www.robinwieruch.de/react-uselocalstorage-hook/}
- *
- * @param storageKey
- * @param fallbackState
- */
-const useLocalStorage = (storageKey: string, fallbackState) => {
-  const [value, setValue] = useState(JSON.parse(localStorage.getItem(storageKey)) ?? fallbackState);
-
-  useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(value));
-  }, [value, storageKey]);
-
-  return [value, setValue];
 };
 
 /**
@@ -256,7 +239,6 @@ const getBreakpoint = (width: number): "default" | "sm" | "md" | "lg" | "xl" | "
 
 export {
   compact,
-  useLocalStorage,
   useDebounce,
   hex,
   toValidationError,
