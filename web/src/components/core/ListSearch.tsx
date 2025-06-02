@@ -23,7 +23,7 @@
 import React, { useState } from "react";
 import { SearchInput } from "@patternfly/react-core";
 import { noop } from "radashi";
-import { useDebounce } from "~/utils";
+import { useDebounce } from "~/hooks/use-debounce";
 import { _ } from "~/i18n";
 
 type ListSearchProps<T> = {

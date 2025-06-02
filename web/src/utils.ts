@@ -20,52 +20,11 @@
  * find current contact information at www.suse.com.
  */
 
-import { useEffect, useRef } from "react";
-
 /**
  * Generates a new array without null and undefined values.
  */
 const compact = <T>(collection: Array<T>) => {
   return collection.filter((e) => e !== null && e !== undefined);
-};
-
-/**
- * Debounce hook.
- *
- * Source {@link https://designtechworld.medium.com/create-a-custom-debounce-hook-in-react-114f3f245260}
- *
- * @param callback - Function to be called after some delay.
- * @param delay - Delay in milliseconds.
- *
- * @example
- *
- * const log = useDebounce(console.log, 1000);
- * log("test ", 1) // The message will be logged after at least 1 second.
- * log("test ", 2) // Subsequent calls cancels pending calls.
- */
-const useDebounce = (callback: Function, delay: number) => {
-  const timeoutRef = useRef(null);
-
-  useEffect(() => {
-    // Cleanup the previous timeout on re-render
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
-  const debouncedCallback = (...args) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    timeoutRef.current = setTimeout(() => {
-      callback(...args);
-    }, delay);
-  };
-
-  return debouncedCallback;
 };
 
 /**
@@ -239,7 +198,6 @@ const getBreakpoint = (width: number): "default" | "sm" | "md" | "lg" | "xl" | "
 
 export {
   compact,
-  useDebounce,
   hex,
   toValidationError,
   locationReload,
