@@ -216,6 +216,7 @@ async fn connections(
 
     let network_connections = connections
         .iter()
+        .filter(|c| c.controller.is_none())
         .map(|c| {
             let state = c.state;
             let mut conn = NetworkConnection::try_from(c.clone()).unwrap();
