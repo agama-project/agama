@@ -20,7 +20,12 @@ if getargbool 1 inst.copy_network; then
     echo 'ignore-carrier=*' >>/run/NetworkManager/conf.d/00-agama-server.conf
 
     mkdir -p "$NEWROOT/etc/NetworkManager/system-connections/"
-    cp /run/NetworkManager/system-connections/* "$NEWROOT/etc/NetworkManager/system-connections/"
+    for _i in /run/NetworkManager/system-connections/*; do
+      [ -f "$_i" ] || continue
+      grep -q 'origin=nm-initrd-generator' "$_i" 2>/dev/null || continue
+
+      mv "$_i" "$NEWROOT/etc/NetworkManager/system-connections/"
+    done
   fi
 else
   : >/run/agama/not_copy_network

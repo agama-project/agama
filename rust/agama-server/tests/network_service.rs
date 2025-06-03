@@ -232,7 +232,6 @@ async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
     let response = network_service.clone().oneshot(request).await?;
     assert_eq!(response.status(), StatusCode::OK);
     let body = body_to_string(response.into_body()).await;
-    assert!(body.contains(r#""id":"eth0""#));
     assert!(body.contains(r#""id":"bond0""#));
     assert!(body.contains(r#""mode":"active-backup""#));
     assert!(body.contains(r#""primary=eth0""#));
@@ -278,7 +277,6 @@ async fn test_add_bridge_connection() -> Result<(), Box<dyn Error>> {
     let response = network_service.clone().oneshot(request).await?;
     assert_eq!(response.status(), StatusCode::OK);
     let body = body_to_string(response.into_body()).await;
-    assert!(body.contains(r#""id":"eth0""#));
     assert!(body.contains(r#""id":"br0""#));
     assert!(body.contains(r#""ports":["eth0"]"#));
     assert!(body.contains(r#""stp":false"#));

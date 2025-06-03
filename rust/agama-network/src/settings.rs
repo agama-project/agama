@@ -262,6 +262,11 @@ pub struct NetworkConnection {
     /// Specifies if the connection should automatically connect
     #[serde(default = "default_true")]
     pub autoconnect: bool,
+    /// Specifies whether the connection should be keep after the installation
+    #[serde(default = "default_true")]
+    pub keep: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub filename: Option<String>,
 }
 
 fn is_zero<T: PartialEq + From<u16>>(u: &T) -> bool {

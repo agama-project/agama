@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Tue Jun  3 08:38:36 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Propose to move existing connections to disk if there is no one 
+  to be persisted (custom config provided)
+  (gh#agama-project/agama#2402).
+  
+-------------------------------------------------------------------
+Mon May 26 21:33:40 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Copy Agama generated systemd network link files to the target
+  system (bsc#1237327, bsc#1241969).
+
+-------------------------------------------------------------------
 Mon May 26 19:51:50 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 15

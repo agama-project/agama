@@ -78,6 +78,8 @@ module Agama
     def startup_phase
       service_status.busy
       installation_phase.startup
+      # FIXME: hot-fix for decision taken at bsc#1224868 (RC1)
+      network.startup
       config_phase if software.selected_product
 
       logger.info("Startup phase done")

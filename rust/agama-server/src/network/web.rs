@@ -27,7 +27,7 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::{IntoResponse, Response},
-    routing::{delete, get, patch, post},
+    routing::{delete, get, post},
     Json, Router,
 };
 use uuid::Uuid;
@@ -121,8 +121,10 @@ pub async fn network_service<T: Adapter + Send + Sync + 'static>(
                 .put(update_connection)
                 .get(connection),
         )
-        .route("/connections/:id/connect", patch(connect))
-        .route("/connections/:id/disconnect", patch(disconnect))
+        .route("/connections/:id/connect", post(connect))
+        .route("/connections/:id/disconnect", post(disconnect))
+        .route("/connections/:id/keep", post(keep))
+        .route("/connections/:id/unkeep", post(unkeep))
         .route("/devices", get(devices))
         .route("/system/apply", post(apply))
         .route("/wifi", get(wifi_networks))
@@ -214,6 +216,7 @@ async fn connections(
 
     let network_connections = connections
         .iter()
+        .filter(|c| c.controller.is_none())
         .map(|c| {
             let state = c.state;
             let mut conn = NetworkConnection::try_from(c.clone()).unwrap();
@@ -344,12 +347,8 @@ async fn update_connection(
     let bridge = conn.bridge.clone();
 
     let mut conn = Connection::try_from(conn)?;
-    if orig_conn.id != id {
-        // FIXME: why?
-        return Err(NetworkError::UnknownConnection(id));
-    } else {
-        conn.uuid = orig_conn.uuid;
-    }
+    conn.uuid = orig_conn.uuid;
+    conn.filename = orig_conn.filename;
 
     state.network.update_connection(conn.clone()).await?;
 
@@ -364,7 +363,7 @@ async fn update_connection(
 }
 
 #[utoipa::path(
-    patch,
+    post,
     path = "/connections/:id/connect",
     context_path = "/api/network",
     responses(
@@ -396,7 +395,7 @@ async fn connect(
 }
 
 #[utoipa::path(
-    patch,
+    post,
     path = "/connections/:id/disconnect",
     context_path = "/api/network",
     responses(
@@ -417,6 +416,100 @@ async fn disconnect(
         .update_connection(conn)
         .await
         .map_err(|_| NetworkError::CannotApplyConfig)?;
+
+    state
+        .network
+        .apply()
+        .await
+        .map_err(|_| NetworkError::CannotApplyConfig)?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
+#[utoipa::path(
+    post,
+    path = "/connections/:id/keep",
+    context_path = "/api/network",
+    responses(
+      (status = 204, description = "Keep the given connection after the installation", body = String)
+    )
+)]
+async fn keep(
+    State(state): State<NetworkServiceState>,
+    Path(id): Path<String>,
+) -> Result<impl IntoResponse, NetworkError> {
+    if id == "all" {
+        let mut connections = state.network.get_connections().await?;
+
+        for conn in connections.iter_mut() {
+            conn.set_keep(true);
+
+            state
+                .network
+                .update_connection(conn.to_owned())
+                .await
+                .map_err(|_| NetworkError::CannotApplyConfig)?;
+        }
+    } else {
+        let Some(mut conn) = state.network.get_connection(&id).await? else {
+            return Err(NetworkError::UnknownConnection(id));
+        };
+
+        conn.set_keep(true);
+
+        state
+            .network
+            .update_connection(conn)
+            .await
+            .map_err(|_| NetworkError::CannotApplyConfig)?;
+    }
+
+    state
+        .network
+        .apply()
+        .await
+        .map_err(|_| NetworkError::CannotApplyConfig)?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
+#[utoipa::path(
+    post,
+    path = "/connections/:id/unkeep",
+    context_path = "/api/network",
+    responses(
+      (status = 204, description = "Do not keep the given connection after the installation", body = String)
+    )
+)]
+async fn unkeep(
+    State(state): State<NetworkServiceState>,
+    Path(id): Path<String>,
+) -> Result<impl IntoResponse, NetworkError> {
+    if id == "all" {
+        let mut connections = state.network.get_connections().await?;
+
+        for conn in connections.iter_mut() {
+            conn.set_keep(false);
+
+            state
+                .network
+                .update_connection(conn.to_owned())
+                .await
+                .map_err(|_| NetworkError::CannotApplyConfig)?;
+        }
+    } else {
+        let Some(mut conn) = state.network.get_connection(&id).await? else {
+            return Err(NetworkError::UnknownConnection(id));
+        };
+
+        conn.set_keep(false);
+
+        state
+            .network
+            .update_connection(conn)
+            .await
+            .map_err(|_| NetworkError::CannotApplyConfig)?;
+    }
 
     state
         .network

@@ -111,7 +111,6 @@ impl Adapter for NetworkManagerAdapter<'_> {
             .map_err(|e| NetworkAdapterError::Checkpoint(anyhow!(e)))?;
 
         tracing::info!("Updating the general state {:?}", &network.general_state);
-
         let result = self
             .client
             .update_general_state(&network.general_state)
@@ -134,6 +133,11 @@ impl Adapter for NetworkManagerAdapter<'_> {
         for conn in ordered_connections(network) {
             if let Some(old_conn) = old_state.get_connection_by_uuid(conn.uuid) {
                 if old_conn == conn {
+                    tracing::info!(
+                        "No change detected for connection {} ({})",
+                        conn.id,
+                        conn.uuid
+                    );
                     continue;
                 }
             } else if conn.is_removed() {
@@ -194,8 +198,11 @@ fn add_ordered_connections<'b>(
     conns: &mut Vec<&'b Connection>,
 ) {
     if let Some(uuid) = conn.controller {
-        let controller = network.get_connection_by_uuid(uuid).unwrap();
-        add_ordered_connections(controller, network, conns);
+        if let Some(controller) = network.get_connection_by_uuid(uuid) {
+            add_ordered_connections(controller, network, conns);
+        } else {
+            tracing::error!("Could not found the controller {}", &uuid);
+        }
     }
 
     if !conns.contains(&conn) {

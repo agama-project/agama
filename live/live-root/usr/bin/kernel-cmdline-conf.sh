@@ -28,7 +28,7 @@ write_kernel_args() {
     # remove the network configuration options
     # https://man7.org/linux/man-pages/man7/dracut.cmdline.7.html
     ip=* | rd.route=* | bootdev=* | BOOTIF=* | rd.bootif=* | nameserver=* | \
-    rd.peerdns=* | rd.neednet=* | vlan=* | bond=* | team=* | bridge=*)
+    rd.peerdns=* | rd.neednet=* | vlan=* | bond=* | team=* | bridge=* | ifname=*)
       _found=1
       ;;
     esac
