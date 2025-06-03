@@ -27,7 +27,7 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::{IntoResponse, Response},
-    routing::{delete, get, patch, post},
+    routing::{delete, get, post},
     Json, Router,
 };
 use uuid::Uuid;
@@ -121,10 +121,10 @@ pub async fn network_service<T: Adapter + Send + Sync + 'static>(
                 .put(update_connection)
                 .get(connection),
         )
-        .route("/connections/:id/connect", patch(connect))
-        .route("/connections/:id/disconnect", patch(disconnect))
-        .route("/connections/:id/keep", patch(keep))
-        .route("/connections/:id/unkeep", patch(unkeep))
+        .route("/connections/:id/connect", post(connect))
+        .route("/connections/:id/disconnect", post(disconnect))
+        .route("/connections/:id/keep", post(keep))
+        .route("/connections/:id/unkeep", post(unkeep))
         .route("/devices", get(devices))
         .route("/system/apply", post(apply))
         .route("/wifi", get(wifi_networks))
@@ -363,7 +363,7 @@ async fn update_connection(
 }
 
 #[utoipa::path(
-    patch,
+    post,
     path = "/connections/:id/connect",
     context_path = "/api/network",
     responses(
@@ -395,7 +395,7 @@ async fn connect(
 }
 
 #[utoipa::path(
-    patch,
+    post,
     path = "/connections/:id/disconnect",
     context_path = "/api/network",
     responses(
@@ -427,7 +427,7 @@ async fn disconnect(
 }
 
 #[utoipa::path(
-    patch,
+    post,
     path = "/connections/:id/keep",
     context_path = "/api/network",
     responses(
@@ -459,7 +459,7 @@ async fn keep(
 }
 
 #[utoipa::path(
-    patch,
+    post,
     path = "/connections/:id/unkeep",
     context_path = "/api/network",
     responses(
