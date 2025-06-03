@@ -120,7 +120,7 @@ module Agama
         return unless storage_manager.probed?
 
         config = ConfigConversions::FromModel
-          .new(model_json, product_config: product_config)
+          .new(model_json, product_config: product_config, storage_system: storage_system)
           .convert
 
         ConfigSolver.new(product_config, storage_system).solve(config)
@@ -160,7 +160,7 @@ module Agama
       # @return [Boolean] Whether the proposal successes.
       def calculate_from_model(model_json)
         config = ConfigConversions::FromModel
-          .new(model_json, product_config: product_config)
+          .new(model_json, product_config: product_config, storage_system: storage_system)
           .convert
 
         calculate_agama(config)

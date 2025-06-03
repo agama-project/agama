@@ -34,15 +34,20 @@ module Agama
         class Config < Base
           # @param model_json [Hash]
           # @param product_config [Agama::Config]
-          def initialize(model_json, product_config)
+          # @param storage_system [Storage::System]
+          def initialize(model_json, product_config, storage_system)
             super(model_json)
             @product_config = product_config
+            @storage_system = storage_system
           end
 
         private
 
           # @return [Agama::Config]
           attr_reader :product_config
+
+          # @return [Storage::System]
+          attr_reader :storage_system
 
           # @see Base
           # @return [Storage::Config]
@@ -94,6 +99,8 @@ module Agama
 
           # @return [Array<Configs::MdRaid>, nil]
           def convert_raids
+            add_missing_md_raids
+
             raid_models = model_json[:mdRaids]
             return unless raid_models
 
@@ -128,39 +135,49 @@ module Agama
           end
 
           # Add missing drives to the model.
-          #
           # Adds a drive for the selected boot device and for the LVM target devices if needed.
-          #
-          # TODO: This considers the missing device is always a drive (never a reused MD RAID).
-          # That's enough for now because the reused MD RAIDs are always included in the model. This
-          # must be revisited when more features will be supported (e.g., selecting a MD RAID as
-          # boot device or as target for physical volumes).
           #
           # @return [Array<Hash>, nil]
           def add_missing_drives
             model_json[:drives] ||= []
             drives = model_json[:drives]
 
-            # Add boot device, if needed.
-            drives << boot_device if missing_boot_device?
+            # Add boot drive, if needed.
+            drives << boot_device if missing_boot_device? && drive?(boot_device_name)
 
-            # Add target devices, if needed.
+            # Add target drive, if needed.
             lvm_target_names.each do |name|
-              drives << lvm_target_device(name) if missing_partitionable?(name)
+              drives << lvm_target_device(name) if missing_drive?(name) && drive?(name)
             end
           end
 
-          # Whether the boot drive is missing in the model.
+          # Add missing MD RAIDs to the model.
+          # Adds a MD RAID for the selected boot device and for the LVM target devices if needed.
+          #
+          # @return [Array<Hash>, nil]
+          def add_missing_md_raids
+            model_json[:mdRaids] ||= []
+            md_raids = model_json[:mdRaids]
+
+            # Add boot drive, if needed.
+            md_raids << boot_device if missing_boot_device? && md_raid?(boot_device_name)
+
+            # Add target drive, if needed.
+            lvm_target_names.each do |name|
+              md_raids << lvm_target_device(name) if missing_md_raid?(name) && md_raid?(name)
+            end
+          end
+
+          # Whether the boot device is missing in the model.
           #
           # @return [Boolean]
           def missing_boot_device?
             configure_boot = model_json.dig(:boot, :configure)
             default_boot = model_json.dig(:boot, :device, :default)
-            boot_device_name = model_json.dig(:boot, :device, :name)
 
             return false unless configure_boot && !default_boot && !boot_device_name.nil?
 
-            missing_partitionable?(boot_device_name)
+            missing_drive?(boot_device_name) && missing_md_raid?(boot_device_name)
           end
 
           # Whether a drive with the given name is missing in the model.
@@ -172,21 +189,20 @@ module Agama
             drives.none? { |d| d[:name] == name }
           end
 
-          # Whether a RAID with the given name is missing in the model.
+          # Whether a MD RAID with the given name is missing in the model.
           #
           # @param name [String]
           # @return [Boolean]
-          def missing_raid?(name)
+          def missing_md_raid?(name)
             raids = model_json[:mdRaids] || []
             raids.none? { |d| d[:name] == name }
           end
 
-          # Whether a partitionable device with the given name is missing in the model.
+          # Name of the boot device, if any.
           #
-          # @param name [String]
-          # @return [Boolean]
-          def missing_partitionable?(name)
-            missing_drive?(name) && missing_raid?(name)
+          # @return [String, nil]
+          def boot_device_name
+            model_json.dig(:boot, :device, :name)
           end
 
           # All the target devices for creating LVM physical volumes.
@@ -201,12 +217,10 @@ module Agama
           #
           # @return [Hash]
           def boot_device
-            name = model_json.dig(:boot, :device, :name)
-
             # The main use case for using a specific device for booting is to share the boot
             # partition with other installed systems. So let's ensure the partitions are not deleted
             # by setting the "keep" space policy.
-            { name: name, spacePolicy: "keep" }
+            { name: boot_device_name, spacePolicy: "keep" }
           end
 
           # Drive model for a LVM target device.
@@ -215,6 +229,36 @@ module Agama
           # @return [Hash]
           def lvm_target_device(name)
             { name: name, spacePolicy: product_config.space_policy }
+          end
+
+          # Whether the given name is a drive.
+          #
+          # @param name [String]
+          # @return [Boolean]
+          def drive?(name)
+            device = find_device(name)
+            return false unless device
+
+            device.is?(:disk_device)
+          end
+
+          # Whether the given name is a MD RAID.
+          #
+          # @param name [String]
+          # @return [Boolean]
+          def md_raid?(name)
+            device = find_device(name)
+            return false unless device
+
+            device.is?(:software_raid)
+          end
+
+          # Finds a device with the given name in the system.
+          #
+          # @param name [String]
+          # @return [Y2Storage::Device, nil]
+          def find_device(name)
+            storage_system.devicegraph.find_by_any_name(name)
           end
         end
       end
