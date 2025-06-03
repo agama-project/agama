@@ -214,9 +214,9 @@ async fn connections(
 ) -> Result<Json<Vec<NetworkConnectionWithState>>, NetworkError> {
     let connections = state.network.get_connections().await?;
 
-    // TODO: we should filter controller connections .filter(|c| c.controller.is_none())
     let network_connections = connections
         .iter()
+        .filter(|c| c.controller.is_none())
         .map(|c| {
             let state = c.state;
             let mut conn = NetworkConnection::try_from(c.clone()).unwrap();
