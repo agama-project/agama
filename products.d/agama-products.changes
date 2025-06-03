@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 29 14:41:10 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Change the SLES and SLES_SAP version from "16-0" to "16.0",
+  that is accepted by RMT (SCC accepts that as well) (bsc#1243788)
+
+-------------------------------------------------------------------
 Wed May 28 15:04:21 UTC 2025 - Andreas Jaeger <aj@suse.com>
 
 - Add all SLES 16.0 patterns to SLES for SAP 16.0 as well (bsc#1243757).
