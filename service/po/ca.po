@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-20 02:39+0000\n"
-"PO-Revision-Date: 2025-02-20 12:50+0000\n"
+"POT-Creation-Date: 2025-06-01 03:23+0000\n"
+"PO-Revision-Date: 2025-05-29 10:59+0000\n"
 "Last-Translator: David Medina <medipas@gmail.com>\n"
-"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/"
-"agama-service-master/ca/>\n"
+"Language-Team: Catalan <https://l10n.opensuse.org/projects/agama/agama-"
+"service-master/ca/>\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10\n"
+"X-Generator: Weblate 5.11.4\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -59,20 +59,94 @@ msgstr "Carrega les traduccions del programari"
 msgid "Load storage translations"
 msgstr "Carrega les traduccions de l'emmagatzematge"
 
+#. @param certificate [Agama::SSL::Certificate]
+#. @return [Agama::Question]
+#: service/lib/agama/registration.rb:374
+msgid ""
+"Trying to import a self signed certificate. Do you want to trust it and "
+"register the product?"
+msgstr ""
+"S'intenta importar un certificat autosignat. Voleu confiar-hi i registrar el "
+"producte?"
+
 #. TRANSLATORS: button label, try downloading the failed package again
-#: service/lib/agama/software/callbacks/base.rb:39
+#: service/lib/agama/software/callbacks/base.rb:48
 msgid "Try again"
 msgstr "Torna-ho a provar"
 
 #. TRANSLATORS: button label, ignore the failed download, skip package installation
-#: service/lib/agama/software/callbacks/base.rb:45
+#: service/lib/agama/software/callbacks/base.rb:54
 msgid "Continue anyway"
 msgstr "Continua tanmateix"
 
 #. TRANSLATORS: button label, abort the installation completely after an error
-#: service/lib/agama/software/callbacks/base.rb:51
+#: service/lib/agama/software/callbacks/base.rb:60
 msgid "Abort installation"
 msgstr "Avorta la instal·lació"
+
+#. TRANSLATORS: button label, skip the error
+#: service/lib/agama/software/callbacks/base.rb:66
+msgid "Skip"
+msgstr "Omet"
+
+#. TRANSLATORS: button label
+#: service/lib/agama/software/callbacks/base.rb:72
+msgid "Yes"
+msgstr "Sí"
+
+#. TRANSLATORS: button label
+#: service/lib/agama/software/callbacks/base.rb:78
+msgid "No"
+msgstr "No"
+
+#. Callback to accept a file without a checksum
+#.
+#. @param filename [String] File name
+#. @return [Boolean]
+#: service/lib/agama/software/callbacks/digest.rb:58
+#, perl-brace-format
+msgid ""
+"No checksum for the file %{file} was found in the repository. This means "
+"that although the file is part of the signed repository, the list of "
+"checksums does not mention this file. Use it anyway?"
+msgstr ""
+"No s'ha trobat cap suma de comprovació per al fitxer %{file} al repositori. "
+"Això vol dir que tot i que el fitxer forma part del repositori signat, la "
+"llista de sumes de comprovació no esmenta aquest fitxer. Voleu usar-lo "
+"tanmateix?"
+
+#. Callback to accept an unknown digest
+#.
+#. @param filename [String] File name
+#. @param digest [String] expected checksum
+#. @return [Boolean]
+#: service/lib/agama/software/callbacks/digest.rb:84
+#, perl-brace-format
+msgid ""
+"The checksum of the file %{file} is \"%{digest}\" but the expected checksum "
+"is unknown. This means that the origin and integrity of the file cannot be "
+"verified. Use it anyway?"
+msgstr ""
+"La suma de comprovació del fitxer %{file} és %{digest}, però la suma de "
+"comprovació esperada és desconeguda. Això vol dir que l'origen i la "
+"integritat del fitxer no es poden verificar. Voleu usar-lo tanmateix?"
+
+#. Callback to accept wrong digest
+#.
+#. @param filename [String] File name
+#. @param expected_digest [String] expected checksum
+#. @param found_digest [String] found checksum
+#. @return [Boolean]
+#: service/lib/agama/software/callbacks/digest.rb:111
+#, perl-brace-format
+msgid ""
+"The expected checksum of file %{file} is \"%{found}\" but it was expected to "
+"be \"%{expected}\". The file has changed by accident or by an attacker since "
+"the creater signed it. Use it anyway?"
+msgstr ""
+"La suma de comprovació esperada del fitxer %{file} és %{found} però "
+"s'esperava que fos %{expected}. El fitxer ha canviat per accident o per un "
+"atacant des que el creador el va signar. Voleu usar-lo tanmateix?"
 
 #. DoneProvide callback
 #.
@@ -87,30 +161,29 @@ msgstr "Hi ha hagut un problema en executar un script de paquet."
 #.
 #. @param filename [String] File name
 #. @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
-#: service/lib/agama/software/callbacks/signature.rb:63
+#: service/lib/agama/software/callbacks/signature.rb:61
 #, perl-brace-format
-msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
-msgstr "El fitxer %{filename} del repositori %{repo_name} (%{repo_url})"
+msgid ""
+"The file %{filename} from %{repo_url} is not digitally signed. The origin "
+"and integrity of the file cannot be verified. Use it anyway?"
+msgstr ""
+"El fitxer %{filename} de %{repo_url} no està signat digitalment. L'origen i "
+"la integritat del fitxer no es poden verificar. Voleu usar-lo tanmateix?"
 
 #: service/lib/agama/software/callbacks/signature.rb:67
 #, perl-brace-format
-msgid "The file %{filename}"
-msgstr "El fitxer %{filename}"
-
-#: service/lib/agama/software/callbacks/signature.rb:71
-#, perl-brace-format
 msgid ""
-"%{source} is not digitally signed. The origin and integrity of the file "
-"cannot be verified. Use it anyway?"
+"The file %{filename} is not digitally signed. The origin and integrity of "
+"the file cannot be verified. Use it anyway?"
 msgstr ""
-"%{source} no està signat digitalment. L'origen i la integritat del fitxer no "
-"es poden verificar. Voleu usar-lo tanmateix?"
+"El fitxer %{filename} no està signat digitalment. L'origen i la integritat "
+"del fitxer no es poden verificar. Voleu usar-lo tanmateix?"
 
 #. Callback to handle signature verification failures
 #.
 #. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
 #. @param _repo_id [Integer] Repository ID
-#: service/lib/agama/software/callbacks/signature.rb:94
+#: service/lib/agama/software/callbacks/signature.rb:92
 #, perl-brace-format
 msgid ""
 "The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
@@ -119,25 +192,109 @@ msgstr ""
 "La clau %{id} (%{name}) amb l'empremta digital %{fingerprint} és "
 "desconeguda. Voleu confiar en aquesta clau?"
 
-#. Should an error be raised?
-#: service/lib/agama/software/manager.rb:141
-msgid "Initializing sources"
-msgstr "Iniciant les fonts"
+#. Callback to handle unknown GPG keys
+#.
+#. @param filename [String] Name of the file.
+#. @param key_id [String] Key ID.
+#. @param repo_id [String] Repository ID.
+#: service/lib/agama/software/callbacks/signature.rb:123
+#, perl-brace-format
+msgid ""
+"The file %{filename} from %{repo_url} is digitally signed with the following "
+"unknown GnuPG key: %{key_id}. Use it anyway?"
+msgstr ""
+"El fitxer %{filename} de %{repo_url} està signat digitalment amb la clau "
+"GnuPG desconeguda següent: %{key_id}. Voleu usar-lo tanmateix?"
 
-#: service/lib/agama/software/manager.rb:146
+#: service/lib/agama/software/callbacks/signature.rb:129
+#, perl-brace-format
+msgid ""
+"The file %{filename} is digitally signed with the following unknown GnuPG "
+"key: %{key_id}. Use it anyway?"
+msgstr ""
+"El fitxer %{filename} està signat digitalment amb la clau GnuPG desconeguda "
+"següent: %{key_id}. Voleu usar-lo tanmateix?"
+
+#. Callback to handle file verification failures
+#.
+#. @param filename [String] File name
+#. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
+#. @param repo_id [Integer] Repository ID
+#: service/lib/agama/software/callbacks/signature.rb:160
+#, perl-brace-format
+msgid ""
+"The file %{filename} from %{repo_url} is digitally signed with the following "
+"GnuPG key, but the integrity check failed: %{key_id} (%{key_name}). Use it "
+"anyway?"
+msgstr ""
+"El fitxer %{filename} de %{repo_url} està signat digitalment amb la clau "
+"GnuPG següent, però la comprovació d'integritat ha fallat: %{key_id} "
+"(%{key_name}). Voleu usar-lo tanmateix?"
+
+#: service/lib/agama/software/callbacks/signature.rb:167
+#, perl-brace-format
+msgid ""
+"The file %{filename} is digitally signed with the following GnuPG key, but "
+"the integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
+msgstr ""
+"El fitxer %{filename} està signat digitalment amb la clau GnuPG següent, "
+"però la comprovació d'integritat ha fallat: %{key_id} (%{key_name}). Voleu "
+"usar-lo tanmateix?"
+
+#. TRANSLATORS: button label, trust the GPG key or the signature
+#: service/lib/agama/software/callbacks/signature.rb:191
+msgid "Trust"
+msgstr "Confia-hi"
+
+#. Should an error be raised?
+#: service/lib/agama/software/manager.rb:149
 msgid "Refreshing repositories metadata"
 msgstr "Refrescant les metadades dels repositoris"
 
-#: service/lib/agama/software/manager.rb:147
+#: service/lib/agama/software/manager.rb:150
 msgid "Calculating the software proposal"
 msgstr "Calculant la proposta de programari"
+
+#: service/lib/agama/software/manager.rb:154
+msgid "Initializing sources"
+msgstr "Iniciant les fonts"
+
+#. error message
+#: service/lib/agama/software/manager.rb:392
+#, c-format
+msgid "Adding service '%s' failed."
+msgstr "Ha fallat afegir el servei %s."
+
+#. error message
+#: service/lib/agama/software/manager.rb:397
+#, c-format
+msgid "Updating service '%s' failed."
+msgstr "Ha fallat actualitzar el servei %s."
+
+#. error message
+#: service/lib/agama/software/manager.rb:403
+#, c-format
+msgid "Saving service '%s' failed."
+msgstr "Ha fallat desar el servei %s."
+
+#. error message
+#: service/lib/agama/software/manager.rb:409
+#, c-format
+msgid "Refreshing service '%s' failed."
+msgstr "Ha fallat refrescar el servei %s."
+
+#. rubocop:enable Metrics/AbcSize
+#: service/lib/agama/software/manager.rb:418
+#, c-format
+msgid "Removing service '%s' failed."
+msgstr "Ha fallat suprimir el servei %s."
 
 #. Issues related to the software proposal.
 #.
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:596
+#: service/lib/agama/software/manager.rb:631
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "No s'ha pogut llegir el repositori %s."
@@ -145,54 +302,112 @@ msgstr "No s'ha pogut llegir el repositori %s."
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:606
+#: service/lib/agama/software/manager.rb:641
 msgid "Product not selected yet"
 msgstr "Encara no s'ha seleccionat el producte."
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:615
+#: service/lib/agama/software/manager.rb:650
 msgid "Product must be registered"
 msgstr "El producte ha d'estar registrat."
 
 #. Returns solver error messages from the last attempt
 #.
 #. @return [Array<String>] Error messages
-#: service/lib/agama/software/proposal.rb:225
+#: service/lib/agama/software/proposal.rb:270
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "S'han trobat %s problemes de dependències."
 
-#. Issue for not found device.
+#. TRANSLATORS: SSL certificate details
+#: service/lib/agama/ssl/certificate_details.rb:31
+msgid "Certificate:"
+msgstr "Certificat:"
+
+#: service/lib/agama/ssl/certificate_details.rb:31
+msgid "Issued To"
+msgstr "Emès a"
+
+#: service/lib/agama/ssl/certificate_details.rb:32
+msgid "Issued By"
+msgstr "Emès per"
+
+#: service/lib/agama/ssl/certificate_details.rb:32
+msgid "SHA1 Fingerprint: "
+msgstr "Empremta digital SHA1: "
+
+#: service/lib/agama/ssl/certificate_details.rb:34
+msgid "SHA256 Fingerprint: "
+msgstr "Empremta digital SHA256: "
+
+#. label followed by the SSL certificate identification
+#: service/lib/agama/ssl/certificate_details.rb:46
+msgid "Common Name (CN): "
+msgstr "Nom comú (CN): "
+
+#. label followed by the SSL certificate identification
+#: service/lib/agama/ssl/certificate_details.rb:48
+msgid "Organization (O): "
+msgstr "Organització (O): "
+
+#. label followed by the SSL certificate identification
+#: service/lib/agama/ssl/certificate_details.rb:50
+msgid "Organization Unit (OU): "
+msgstr "Unitat organitzativa (OU): "
+
+#. Issue when the device has several users.
 #.
-#. @param config [Configs::Drive, Configs::Partition]
-#. @return [Agama::Issue]
-#: service/lib/agama/storage/config_checker.rb:87
-msgid "No device found for a mandatory drive"
-msgstr "No s'ha trobat cap dispositiu per a una unitat obligatòria."
-
-#: service/lib/agama/storage/config_checker.rb:89
-msgid "No device found for a mandatory partition"
-msgstr "No s'ha trobat cap dispositiu per a una partició obligatòria."
-
-#. TRANSLATORS: %s is the replaced by a mount path (e.g., "/home").
-#: service/lib/agama/storage/config_checker.rb:118
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/alias.rb:74
 #, c-format
-msgid "Missing file system type for '%s'"
-msgstr "Falta el tipus de sistema de fitxers per a %s"
+msgid "The device with alias '%s' is used by more than one device"
+msgstr "El dispositiu amb l'àlies %s és usat per més d'un dispositiu."
 
-#. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
-#. %{path} is replaced by a mount path (e.g., "/home").
-#: service/lib/agama/storage/config_checker.rb:145
-#, perl-brace-format
-msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
+#. Issue when the device has both filesystem and a user.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/alias.rb:95
+#, c-format
+msgid ""
+"The device with alias '%s' cannot be formatted because it is used by other "
+"device"
 msgstr ""
-"El tipus de sistema de fitxers %{filesystem} no és adequat per a %{path}"
+"El dispositiu amb l'àlies %s no es pot formatar perquè l'usa un altre "
+"dispositiu."
+
+#. Issue when the device has both partitions and a user.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/alias.rb:118
+#, c-format
+msgid ""
+"The device with alias '%s' cannot be partitioned because it is used by other "
+"device"
+msgstr ""
+"El dispositiu amb l'àlies %s no es pot partir perquè l'usa un altre "
+"dispositiu."
+
+#. Error if a boot device is required and unknown.
+#.
+#. This happens when the config solver is not able to infer a boot device, see
+#. {ConfigSolvers::Boot}.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/boot.rb:75
+msgid "The boot device cannot be automatically selected"
+msgstr "El dispositiu d'arrencada no es pot seleccionar automàticament."
+
+#. TRANSLATORS: %s is replaced by a device alias (e.g., "boot").
+#: service/lib/agama/storage/config_checkers/boot.rb:86
+#, c-format
+msgid "There is no boot device with alias '%s'"
+msgstr "No hi ha cap dispositiu d'arrencada amb l'àlies %s."
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checker.rb:178
+#: service/lib/agama/storage/config_checkers/encryption.rb:78
 #, perl-brace-format
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
@@ -202,7 +417,7 @@ msgstr ""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checker.rb:196
+#: service/lib/agama/storage/config_checkers/encryption.rb:93
 #, perl-brace-format
 msgid "Encryption method '%{crypt_method}' is not available in this system."
 msgstr ""
@@ -210,51 +425,173 @@ msgstr ""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checker.rb:226
+#: service/lib/agama/storage/config_checkers/encryption.rb:120
 #, perl-brace-format
 msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
 msgstr ""
 "El mètode %{crypt_method} no és un mètode adequat per encriptar el "
 "dispositiu."
 
-#. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
-#: service/lib/agama/storage/config_checker.rb:276
+#. TRANSLATORS: %s is replaced by a mount path (e.g., "/home").
+#: service/lib/agama/storage/config_checkers/filesystem.rb:79
 #, c-format
-msgid ""
-"The device '%s' is used several times as target device for physical volumes"
+msgid "Missing file system type for '%s'"
+msgstr "Falta el tipus de sistema de fitxers per a %s"
+
+#. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
+#. %{path} is replaced by a mount path (e.g., "/home").
+#: service/lib/agama/storage/config_checkers/filesystem.rb:100
+#, perl-brace-format
+msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr ""
-"El dispositiu %s s'usa diverses vegades com a dispositiu de destinació per a "
-"volums físics."
+"El tipus de sistema de fitxers %{filesystem} no és adequat per a %{path}"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checker.rb:350
+#: service/lib/agama/storage/config_checkers/logical_volume.rb:82
 #, c-format
 msgid "There is no LVM thin pool volume with alias '%s'"
 msgstr "No hi ha cap volum d'agrupació prim d'LVM amb l'àlies %s."
 
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "md1").
+#: service/lib/agama/storage/config_checkers/md_raid.rb:98
+#, c-format
+msgid "There is no MD RAID member device with alias '%s'"
+msgstr "No hi ha cap dispositiu membre de la RAID MD amb l'àlies %s."
+
+#. Issue if the MD RAID level is missing and the device is not reused.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/md_raid.rb:110
+msgid "There is a MD RAID without level"
+msgstr "Hi ha una RAID MD sense nivell."
+
+#. Issue if the MD RAID does not contain enough member devices.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/md_raid.rb:121
+#, c-format
+msgid "At least %s devices are required for %s"
+msgstr "Calen almenys %s dispositius per a %s."
+
+#. Issue if the device member is formatted.
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/md_raid.rb:174
+#, perl-brace-format
+msgid ""
+"The device '%{member}' cannot be formatted because it is a device member of "
+"the reused MD RAID %{md_raid}"
+msgstr ""
+"El dispositiu %{member} no es pot formatar perquè és un dispositiu membre de "
+"la RAID MD reutilitzada %{md_raid}"
+
+#. Issue if the device member is partitioned.
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/md_raid.rb:197
+#, perl-brace-format
+msgid ""
+"The device '%{member}' cannot be partitioned because it is a device member "
+"of the reused MD RAID %{md_raid}"
+msgstr ""
+"El dispositiu %{member} no es pot partir perquè és un dispositiu membre de "
+"la RAID MD reutilitzada %{md_raid}"
+
+#. Issue if the device member is used by other device (e.g., as target for physical volumes).
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/md_raid.rb:219
+#, perl-brace-format
+msgid ""
+"The device '%{member}' cannot be used because it is a device member of the "
+"reused MD RAID %{md_raid}"
+msgstr ""
+"El dispositiu %{member} no es pot usar perquè és un dispositiu membre de la "
+"RAID MD reutilitzada %{md_raid}"
+
+#. TRANSLATORS: 'method' is the identifier of the method to encrypt the device
+#. (e.g., 'luks1').
+#: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:61
+#, perl-brace-format
+msgid "'%{method}' is not a suitable method to encrypt the physical volumes."
+msgstr ""
+"El mètode %{method} no és un mètode adequat per encriptar els volums físics."
+
+#. TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
+#: service/lib/agama/storage/config_checkers/search.rb:74
+#, c-format
+msgid "Mandatory device %s not found"
+msgstr "No s'ha trobat el dispositiu obligatori %s."
+
+#. TRANSLATORS: %s is replaced by a device type (e.g., "drive").
+#: service/lib/agama/storage/config_checkers/search.rb:77
+#, c-format
+msgid "Mandatory %s not found"
+msgstr "No s'ha trobat el tipus de dispositiu obligatori %s."
+
+#. @return [String]
+#: service/lib/agama/storage/config_checkers/search.rb:85
+msgid "drive"
+msgstr "unitat"
+
+#: service/lib/agama/storage/config_checkers/search.rb:87
+msgid "MD RAID"
+msgstr "RAID MD"
+
+#: service/lib/agama/storage/config_checkers/search.rb:89
+msgid "partition"
+msgstr "partició"
+
+#: service/lib/agama/storage/config_checkers/search.rb:91
+msgid "LVM logical volume"
+msgstr "Volum lògic d'LVM"
+
+#: service/lib/agama/storage/config_checkers/search.rb:93
+msgid "device"
+msgstr "dispositiu"
+
+#. Issue if the volume group name is missing.
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/volume_group.rb:76
+msgid "There is a volume group without name"
+msgstr "Hi ha un grup de volums sense nom."
+
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checker.rb:375
+#: service/lib/agama/storage/config_checkers/volume_group.rb:106
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
 msgstr "No hi ha cap volum físic d'LVM amb l'àlies %s."
 
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
+#: service/lib/agama/storage/config_checkers/volume_group.rb:133
+#, c-format
+msgid ""
+"The list of target devices for the volume group '%s' is mixing reused "
+"devices and new devices"
+msgstr ""
+"La llista de dispositius de destinació per al grup de volums %s barreja "
+"dispositius reutilitzats i de nous."
+
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
-#: service/lib/agama/storage/config_checker.rb:401
+#: service/lib/agama/storage/config_checkers/volume_group.rb:153
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
 msgstr ""
 "No hi ha cap dispositiu de destinació per als volums físics d'LVM amb "
 "l'àlies %s."
 
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
-#. (e.g., 'luks1').
-#: service/lib/agama/storage/config_checker.rb:434
-#, perl-brace-format
+#. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
+#: service/lib/agama/storage/config_checkers/volume_groups.rb:66
+#, c-format
 msgid ""
-"'%{crypt_method}' is not a suitable method to encrypt the physical volumes."
+"The device '%s' is used several times as target device for physical volumes"
 msgstr ""
-"El mètode %{crypt_method} no és un mètode adequat per encriptar els volums "
-"físics."
+"El dispositiu %s s'usa diverses vegades com a dispositiu de destinació per a "
+"volums físics."
 
 #. Text of the reason preventing to shrink because there is no content.
 #.
@@ -277,54 +614,76 @@ msgstr ""
 msgid "Shrinking is not supported by this device"
 msgstr "Aquest dispositiu no admet l'encongiment."
 
-#. Probes storage devices and performs an initial proposal
-#: service/lib/agama/storage/manager.rb:120
+#. Applies the target configs.
+#.
+#. @param config [ISCSI::Config]
+#: service/lib/agama/storage/iscsi/manager.rb:291
+msgid "Logout iSCSI targets"
+msgstr "Surt de la sessió dels objectius iSCSI"
+
+#: service/lib/agama/storage/iscsi/manager.rb:292
+msgid "Login iSCSI targets"
+msgstr "Inicia sessió als objectius iSCSI"
+
+#. Login issue.
+#.
+#. @param target [ISCSI::Configs::Target]
+#. @return [Issue]
+#: service/lib/agama/storage/iscsi/manager.rb:346
+#, c-format
+msgid "Cannot login to iSCSI target %s"
+msgstr "No es pot iniciar sessió a l'objectiu iSCSI %s."
+
+#. Underlying yast-storage-ng has own mechanism for proposing boot strategies.
+#. However, we don't always want to use BLS when it proposes so. Currently
+#. we want to use BLS only for Tumbleweed / Slowroll
+#: service/lib/agama/storage/manager.rb:131
 msgid "Activating storage devices"
 msgstr "Activant els dispositius d'emmagatzematge"
 
-#: service/lib/agama/storage/manager.rb:121
+#: service/lib/agama/storage/manager.rb:132
 msgid "Probing storage devices"
 msgstr "Sondant els dispositius d'emmagatzematge"
 
-#: service/lib/agama/storage/manager.rb:122
+#: service/lib/agama/storage/manager.rb:133
 msgid "Calculating the storage proposal"
 msgstr "Calculant la proposta d'emmagatzematge"
 
-#: service/lib/agama/storage/manager.rb:123
+#: service/lib/agama/storage/manager.rb:136
 msgid "Selecting Linux Security Modules"
 msgstr "Seleccionant els mòduls de seguretat de Linux"
 
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:131
+#: service/lib/agama/storage/manager.rb:146
 msgid "Preparing bootloader proposal"
 msgstr "Preparant la proposta de carregador d'arrencada"
 
 #. then also apply changes to that proposal
-#: service/lib/agama/storage/manager.rb:138
+#: service/lib/agama/storage/manager.rb:153
 msgid "Adding storage-related packages"
 msgstr "Afegint paquets relacionats amb l'emmagatzematge"
 
-#: service/lib/agama/storage/manager.rb:139
+#: service/lib/agama/storage/manager.rb:154
 msgid "Preparing the storage devices"
 msgstr "Preparant els dispositius d'emmagatzematge"
 
-#: service/lib/agama/storage/manager.rb:140
+#: service/lib/agama/storage/manager.rb:155
 msgid "Writing bootloader sysconfig"
 msgstr "Escrivint la configuració de sistema del carregador d'arrencada"
 
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:287
-msgid "Cannot accommodate the required file systems for installation"
+#: service/lib/agama/storage/proposal.rb:371
+msgid "Cannot calculate a valid storage setup with the current configuration"
 msgstr ""
-"No es poden acomodar els sistemes de fitxers necessaris per a la "
-"instal·lació."
+"No es pot calcular una configuració d'emmagatzematge vàlida amb la "
+"configuració actual."
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:298
+#: service/lib/agama/storage/proposal.rb:382
 msgid "A problem ocurred while calculating the storage setup"
 msgstr ""
 "Hi ha hagut un problema en calcular la configuració de l'emmagatzematge."
@@ -332,14 +691,14 @@ msgstr ""
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:127
+#: service/lib/agama/storage/proposal_strategies/guided.rb:135
 msgid "No device selected for installation"
 msgstr "No s'ha seleccionat cap dispositiu per a la instal·lació."
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/proposal_strategies/guided.rb:143
+#: service/lib/agama/storage/proposal_strategies/guided.rb:151
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
@@ -350,12 +709,31 @@ msgstr[1] ""
 "Els dispositius seleccionats següents no es troben al sistema: %{devices}"
 
 #. Recalculates the list of issues
-#: service/lib/agama/users.rb:165
+#: service/lib/agama/users.rb:154
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Cal definir un usuari, establir la contrasenya d'arrel o una clau pública "
 "SSH."
+
+#, perl-brace-format
+#~ msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
+#~ msgstr "El fitxer %{filename} del repositori %{repo_name} (%{repo_url})"
+
+#, perl-brace-format
+#~ msgid "The file %{filename}"
+#~ msgstr "El fitxer %{filename}"
+
+#~ msgid "No device found for a mandatory drive"
+#~ msgstr "No s'ha trobat cap dispositiu per a una unitat obligatòria."
+
+#~ msgid "No device found for a mandatory partition"
+#~ msgstr "No s'ha trobat cap dispositiu per a una partició obligatòria."
+
+#~ msgid "Cannot accommodate the required file systems for installation"
+#~ msgstr ""
+#~ "No es poden acomodar els sistemes de fitxers necessaris per a la "
+#~ "instal·lació."
 
 #, c-format
 #~ msgid "Package %s could not be installed."
@@ -377,9 +755,6 @@ msgstr ""
 
 #~ msgid "Probing Storage"
 #~ msgstr "Sondant l'emmagatzematge"
-
-#~ msgid "Partitioning"
-#~ msgstr "Particions"
 
 #~ msgid "Writing Users"
 #~ msgstr "Escrivint els usuaris"

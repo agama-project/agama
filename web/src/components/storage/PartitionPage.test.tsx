@@ -35,7 +35,7 @@ jest.mock("~/queries/issues", () => ({
 }));
 
 jest.mock("./ProposalResultSection", () => () => <div>result section</div>);
-jest.mock("./ProposalTransactionalInfo", () => () => <div>trasactional info</div>);
+jest.mock("./ProposalTransactionalInfo", () => () => <div>transactional info</div>);
 
 const mockGetPartition = jest.fn();
 
@@ -245,6 +245,44 @@ describe("PartitionPage", () => {
     expect(filesystem).toBeDisabled();
     expect(screen.queryByRole("textbox", { name: "File system label" })).not.toBeInTheDocument();
     expect(size).toBeDisabled();
+  });
+
+  it("does not allow sending sizes without units", async () => {
+    const { user } = installerRender(<PartitionPage />);
+    screen.getByRole("form", { name: "Configure partition at /dev/sda" });
+    const mountPoint = screen.getByRole("button", { name: "Mount point toggle" });
+    const size = screen.getByRole("button", { name: "Size" });
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
+
+    await user.click(mountPoint);
+    const mountPointOptions = screen.getByRole("listbox", { name: "Suggested mount points" });
+    const homeMountPoint = within(mountPointOptions).getByRole("option", { name: "/home" });
+    await user.click(homeMountPoint);
+    // Display available size options
+    await user.click(size);
+    const sizeOptions = screen.getByRole("listbox", { name: "Size options" });
+    // Display custom size
+    const customSize = within(sizeOptions).getByRole("option", { name: /Custom/ });
+    await user.click(customSize);
+    const minSizeInput = screen.getByRole("textbox", { name: "Minimum size value" });
+    const maxSizeModeToggle = screen.getByRole("button", { name: "Maximum size mode" });
+    await user.click(maxSizeModeToggle);
+    const maxSizeOptions = screen.getByRole("listbox", { name: "Maximum size options" });
+    const limitedMaxSizeOption = within(maxSizeOptions).getByRole("option", { name: /Limited/ });
+    await user.click(limitedMaxSizeOption);
+    const maxSizeInput = screen.getByRole("textbox", { name: "Maximum size value" });
+
+    await user.clear(minSizeInput);
+    await user.type(minSizeInput, "1");
+    screen.getByText(/The minimum must be.*followed by a unit/);
+    await user.clear(maxSizeInput);
+    await user.type(maxSizeInput, "3");
+    screen.getByText(/Size limits must be.*followed by a unit/);
+    await user.type(minSizeInput, " GiB");
+    await user.type(maxSizeInput, " TiB");
+    expect(screen.queryByText(/The minimum must be.*followed by a unit/)).toBeNull();
+    expect(screen.queryByText(/Size limits must be.*followed by a unit/)).toBeNull();
+    expect(acceptButton).toBeEnabled();
   });
 
   describe("if editing a partition", () => {

@@ -262,11 +262,11 @@ pub fn merge_dbus_connections<'a>(
     Ok(merged)
 }
 
-fn is_bridge(conn: NestedHash) -> bool {
+fn is_bridge_port(conn: &NestedHash) -> bool {
     if let Some(connection) = conn.get("connection") {
         if let Some(port_type) = connection.get("port-type") {
-            if port_type.to_string().as_str() == "bridge" {
-                return true;
+            if let Ok(s) = TryInto::<&str>::try_into(port_type) {
+                return s == "bridge"
             }
         }
     }
@@ -286,7 +286,7 @@ fn is_bridge(conn: NestedHash) -> bool {
 ///
 /// * `conn`: connection represented as a NestedHash.
 pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
-    if !is_bridge(conn.to_owned()) {
+    if !is_bridge_port(conn) {
         conn.remove("bridge-port");
     }
 
