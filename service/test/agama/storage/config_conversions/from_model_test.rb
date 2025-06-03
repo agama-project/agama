@@ -19,7 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../../test_helper"
+require_relative "../storage_helpers"
 require "agama/config"
 require "agama/storage/config"
 require "agama/storage/config_conversions/from_model"
@@ -865,6 +865,8 @@ shared_examples "with spacePolicy and partitions" do |config_proc|
 end
 
 describe Agama::Storage::ConfigConversions::FromModel do
+  include Agama::RSpec::StorageHelpers
+
   subject do
     described_class.new(model_json, product_config: product_config)
   end
@@ -876,9 +878,13 @@ describe Agama::Storage::ConfigConversions::FromModel do
   let(:product_space_policy) { nil }
 
   before do
+    mock_storage(devicegraph: scenario)
+
     # Speed up tests by avoding real check of TPM presence.
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
   end
+
+  let(:scenario) { "disks.yaml" }
 
   describe "#convert" do
     let(:model_json) { {} }
@@ -1054,7 +1060,9 @@ describe Agama::Storage::ConfigConversions::FromModel do
               end
             end
 
-            xcontext "and there is not a MD RAID config for the given boot device name" do
+            context "and there is not a MD RAID config for the given boot device name" do
+              let(:scenario) { "md_raids.yaml" }
+
               let(:name) { "/dev/md0" }
 
               let(:md_raids) do
@@ -1475,18 +1483,19 @@ describe Agama::Storage::ConfigConversions::FromModel do
       end
 
       context "if a volume group specifies 'targetDevices'" do
-        let(:volume_group) { { targetDevices: ["/dev/vda", "/dev/vdc", "/dev/md0"] } }
+        let(:scenario) { "md_raids.yaml" }
+
+        let(:volume_group) { { targetDevices: ["/dev/vda", "/dev/vdb", "/dev/md0"] } }
 
         let(:drives) do
           [
             { name: "/dev/vda" },
-            { name: "/dev/vdb" }
+            { name: "/dev/vdc" }
           ]
         end
 
         let(:md_raids) do
           [
-            { name: "/dev/md0" },
             { name: "/dev/md1" }
           ]
         end
@@ -1495,7 +1504,15 @@ describe Agama::Storage::ConfigConversions::FromModel do
           config = subject.convert
           expect(config.drives.size).to eq(3)
           expect(config.drives).to all(be_a(Agama::Storage::Configs::Drive))
-          expect(config.drives).to include(an_object_having_attributes({ device_name: "/dev/vdc" }))
+          expect(config.drives).to include(an_object_having_attributes({ device_name: "/dev/vdb" }))
+        end
+
+        it "adds the missing MD RAIDs" do
+          config = subject.convert
+          expect(config.md_raids.size).to eq(2)
+          expect(config.md_raids).to all(be_a(Agama::Storage::Configs::MdRaid))
+          expect(config.md_raids)
+            .to include(an_object_having_attributes({ device_name: "/dev/md0" }))
         end
 
         it "sets an alias to the target devices" do
@@ -1506,8 +1523,8 @@ describe Agama::Storage::ConfigConversions::FromModel do
           md0 = config.md_raids.find { |d| d.device_name == "/dev/md0" }
           md1 = config.md_raids.find { |d| d.device_name == "/dev/md1" }
           expect(vda.alias).to_not be_nil
-          expect(vdb.alias).to be_nil
-          expect(vda.alias).to_not be_nil
+          expect(vdb.alias).to_not be_nil
+          expect(vdc.alias).to be_nil
           expect(md0.alias).to_not be_nil
           expect(md1.alias).to be_nil
         end
@@ -1516,9 +1533,9 @@ describe Agama::Storage::ConfigConversions::FromModel do
           config = subject.convert
           volume_group = volume_group_proc.call(config)
           vda = config.drives.find { |d| d.device_name == "/dev/vda" }
-          vdc = config.drives.find { |d| d.device_name == "/dev/vdc" }
+          vdb = config.drives.find { |d| d.device_name == "/dev/vdb" }
           md0 = config.md_raids.find { |d| d.device_name == "/dev/md0" }
-          expect(volume_group.physical_volumes_devices).to eq([vda.alias, vdc.alias, md0.alias])
+          expect(volume_group.physical_volumes_devices).to eq([vda.alias, vdb.alias, md0.alias])
         end
       end
 
