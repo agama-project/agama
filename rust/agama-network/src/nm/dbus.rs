@@ -2388,6 +2388,58 @@ mod test {
     }
 
     #[test]
+    fn test_dbus_from_bridge_connection() {
+        let mut master_con = build_base_connection();
+        master_con.config = ConnectionConfig::Bridge(BridgeConfig::default());
+        let bridge_con = build_base_connection();
+
+        let bridge_dbus = connection_to_dbus(
+            &bridge_con,
+            Some(&master_con),
+            semver::Version::parse("1.50.0").unwrap(),
+        );
+        let connection_dbus = bridge_dbus.get("connection").unwrap();
+        let port_type: &str = connection_dbus
+            .get("port-type")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(port_type, BRIDGE_KEY);
+        let master: &str = connection_dbus
+            .get("master")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(master, bridge_con.id);
+    }
+
+    #[test]
+    fn test_dbus_from_bond_connection() {
+        let mut master_con = build_base_connection();
+        master_con.config = ConnectionConfig::Bond(BondConfig::default());
+        let bond_con = build_base_connection();
+
+        let bond_dbus = connection_to_dbus(
+            &bond_con,
+            Some(&master_con),
+            semver::Version::parse("1.50.0").unwrap(),
+        );
+        let connection_dbus = bond_dbus.get("connection").unwrap();
+        let port_type: &str = connection_dbus
+            .get("port-type")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(port_type, BOND_KEY);
+        let master: &str = connection_dbus
+            .get("master")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(master, bond_con.id);
+    }
+
+    #[test]
     fn test_dbus_from_bridge_connection_for_different_nm_versions() {
         let mut master_con = build_base_connection();
         master_con.config = ConnectionConfig::Bridge(BridgeConfig::default());
