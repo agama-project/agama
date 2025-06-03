@@ -438,16 +438,31 @@ async fn keep(
     State(state): State<NetworkServiceState>,
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, NetworkError> {
-    let Some(mut conn) = state.network.get_connection(&id).await? else {
-        return Err(NetworkError::UnknownConnection(id));
-    };
-    conn.set_keep(true);
+    if id == "all" {
+        let mut connections = state.network.get_connections().await?;
 
-    state
-        .network
-        .update_connection(conn)
-        .await
-        .map_err(|_| NetworkError::CannotApplyConfig)?;
+        for conn in connections.iter_mut() {
+            conn.set_keep(true);
+
+            state
+                .network
+                .update_connection(conn.to_owned())
+                .await
+                .map_err(|_| NetworkError::CannotApplyConfig)?;
+        }
+    } else {
+        let Some(mut conn) = state.network.get_connection(&id).await? else {
+            return Err(NetworkError::UnknownConnection(id));
+        };
+
+        conn.set_keep(true);
+
+        state
+            .network
+            .update_connection(conn)
+            .await
+            .map_err(|_| NetworkError::CannotApplyConfig)?;
+    }
 
     state
         .network
@@ -470,16 +485,31 @@ async fn unkeep(
     State(state): State<NetworkServiceState>,
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, NetworkError> {
-    let Some(mut conn) = state.network.get_connection(&id).await? else {
-        return Err(NetworkError::UnknownConnection(id));
-    };
-    conn.set_keep(false);
+    if id == "all" {
+        let mut connections = state.network.get_connections().await?;
 
-    state
-        .network
-        .update_connection(conn)
-        .await
-        .map_err(|_| NetworkError::CannotApplyConfig)?;
+        for conn in connections.iter_mut() {
+            conn.set_keep(false);
+
+            state
+                .network
+                .update_connection(conn.to_owned())
+                .await
+                .map_err(|_| NetworkError::CannotApplyConfig)?;
+        }
+    } else {
+        let Some(mut conn) = state.network.get_connection(&id).await? else {
+            return Err(NetworkError::UnknownConnection(id));
+        };
+
+        conn.set_keep(false);
+
+        state
+            .network
+            .update_connection(conn)
+            .await
+            .map_err(|_| NetworkError::CannotApplyConfig)?;
+    }
 
     state
         .network
