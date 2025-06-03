@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jun  3 12:30:40 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add to api/software/config ability to set/get list of additional
+  installatio repositories (jsc#AGM-125)
+- Add extraRepositories key to software section in agama profile
+
+-------------------------------------------------------------------
 Thu May 29 09:00:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
 
 - Fix bridge port config (bridge-port.priority and 
