@@ -35,6 +35,10 @@ module Agama
       @logger = logger
     end
 
+    def startup
+      keep_connections if do_proposal?
+    end
+
     # Writes the network configuration to the installed system
     #
     # * Copies the connections configuration for NetworkManager, as Agama is not
@@ -79,10 +83,6 @@ module Agama
     ETC_NM_DIR = "/etc/NetworkManager"
     RUN_NM_DIR = "/run/NetworkManager"
     private_constant :ETC_NM_DIR
-
-    def startup
-      keep_connections if do_proposal?
-    end
 
     def enable_service
       service = Yast2::Systemd::Service.find("NetworkManager")
