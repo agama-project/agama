@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun  3 08:35:58 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Added support for moving the connections from memory only to disk
+  (gh#agama-project/agama#2402).
+
+-------------------------------------------------------------------
 Wed May 28 09:00:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
 
 - Fix bridge port config (bridge-port.priority and 
