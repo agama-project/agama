@@ -5,6 +5,11 @@ Tue Jun  3 08:35:58 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
   (gh#agama-project/agama#2402).
 
 -------------------------------------------------------------------
+Fri May 30 15:05:35 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Send different NM dbus values depending on version (gh#agama-project/agama#2356).
+
+-------------------------------------------------------------------
 Thu May 29 09:00:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
 
 - Fix bridge port config (bridge-port.priority and 

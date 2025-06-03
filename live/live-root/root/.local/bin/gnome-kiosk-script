@@ -1,5 +1,7 @@
-#!/usr/bin/env sh
+#!/bin/sh
 # Start a browser to connect to Agama's web user interface skipping the authentication.
+# This script is invoked as a part of gnome-kiosk startup procedure. See /usr/bin/gnome-kiosk-script
+# which is at the end of the chain and invokes this script.
 
 TOKEN_FILE=/run/agama/token
 TOKEN=$(cat $TOKEN_FILE)
@@ -22,4 +24,9 @@ fi
 
 sed -e "s/__HOMEPAGE__/http:\/\/localhost\/login?token=$TOKEN$LANG_QUERY/" $PREFS.template > $PREFS
 
-firefox --kiosk --profile $HOME/.mozilla/firefox/profile
+# Do not use --kiosk mode (see bsc#1236073) until SLE16 is updated to next ESR. For Firefox
+# 128.9 which is currently used the bug is valid, for >= 138 should be fixed.
+firefox --profile $HOME/.mozilla/firefox/profile
+
+sleep 1.0
+exec "$0" "$@"
