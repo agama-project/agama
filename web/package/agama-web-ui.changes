@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Jun  3 08:32:23 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to select which connections will be used only for 
+  installation and warn the user in case that there is no one 
+  expected to be copied to the target system (no network).
+  (gh#agama-project/agama#2402).
+
+-------------------------------------------------------------------
 Thu May 29 09:31:28 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Requires a unit when entering sizes to avoid confusion and
