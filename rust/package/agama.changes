@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jun  3 12:30:40 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add to api/software/config ability to set/get list of additional
+  installatio repositories (jsc#AGM-125)
+- Add extraRepositories key to software section in agama profile
+
+-------------------------------------------------------------------
 Fri May 30 15:05:35 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
 - Send different NM dbus values depending on version (gh#agama-project/agama#2356).

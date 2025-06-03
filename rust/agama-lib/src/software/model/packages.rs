@@ -30,6 +30,8 @@ pub struct SoftwareConfig {
     pub packages: Option<Vec<String>>,
     /// Name of the product to install.
     pub product: Option<String>,
+    /// Extra repositories defined by user.
+    pub extra_repositories: Option<Vec<RepositoryParams>>,
 }
 
 /// Software resolvable type (package or pattern).
@@ -52,7 +54,7 @@ pub struct ResolvableParams {
     pub optional: bool,
 }
 
-/// Repository list specification.
+/// Repository specification.
 #[derive(Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Repository {
@@ -70,4 +72,26 @@ pub struct Repository {
     pub enabled: bool,
     /// Whether the repository is loaded
     pub loaded: bool,
+}
+
+/// Parameters for creating new a repository
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct RepositoryParams {
+    /// repository alias. Has to be unique
+    pub alias: String,
+    /// repository name, if not specified the alias is used
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    /// Repository url (raw format without expanded variables)
+    pub url: String,
+    /// product directory (currently not used, valid only for multiproduct DVDs)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub product_dir: Option<String>,
+    /// Whether the repository is enabled, if missing the repository is enabled
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub enabled: Option<bool>,
+    /// Repository priority, lower number means higher priority, the default priority is 99
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub priority: Option<i32>,
 }

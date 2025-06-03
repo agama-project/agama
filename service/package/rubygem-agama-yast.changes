@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun  3 12:22:41 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for adding extra repositories as installation sources
+  (jsc#AGM-125)
+
+-------------------------------------------------------------------
 Wed May 28 14:19:28 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Try several attempts for the first storage proposal
