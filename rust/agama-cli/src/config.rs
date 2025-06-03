@@ -141,37 +141,6 @@ pub enum ConfigCommands {
     },
 }
 
-// FIXME: `agama profile` no longer exists as a command, but merge its descriptions into `agama config`
-pub enum ProfileCommands {
-    /// Download the autoyast profile and print resulting json
-    Autoyast {
-        /// AutoYaST profile's URL. Any AutoYaST scheme, ERB and rules/classes are supported.
-        /// all schemas that autoyast supports.
-        url: String,
-    },
-
-    /// Evaluate a profile, injecting the hardware information from D-Bus
-    ///
-    /// For an example of Jsonnet-based profile, see
-    /// https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/profile.jsonnet
-    Evaluate {
-        /// Jsonnet file, URL or path or `-` for standard input
-        url_or_path: CliInput,
-    },
-
-    /// Process autoinstallation profile and loads it into agama
-    ///
-    /// This is top level command that do all autoinstallation processing beside starting
-    /// installation. Unless there is a need to inject additional commands between processing
-    /// use this command instead of set of underlying commands.
-    Import {
-        /// Profile's URL. Supports the same schemas as the "download" command plus
-        /// AutoYaST specific ones. Supported files are json, jsonnet, sh for Agama profiles and ERB, XML, and rules/classes directories
-        /// for AutoYaST support.
-        url: String,
-    },
-}
-
 pub async fn run(
     http_client: BaseHTTPClient,
     monitor: MonitorClient,
