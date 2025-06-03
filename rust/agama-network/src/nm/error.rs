@@ -74,6 +74,8 @@ pub enum NmError {
     InvalidNetworkAddress(#[from] AddrParseError),
     #[error("Invalid device state: '{0}'")]
     InvalidDeviceState(#[from] InvalidNmDeviceState),
+    #[error("Failed to parse NetworkManager version: '{0}'")]
+    FailedNmVersionParse(#[from] semver::Error),
 }
 
 impl From<NmError> for NetworkStateError {
