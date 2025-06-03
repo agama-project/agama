@@ -24,6 +24,7 @@ require "yast"
 require "yast2/systemd/service"
 require "y2network/proposal_settings"
 require "agama/proxy_setup"
+require "agama/http"
 
 Yast.import "Installation"
 
@@ -79,6 +80,10 @@ module Agama
     RUN_NM_DIR = "/run/NetworkManager"
     private_constant :ETC_NM_DIR
 
+    def startup
+      keep_connections if do_proposal?
+    end
+
     def enable_service
       service = Yast2::Systemd::Service.find("NetworkManager")
       if service.nil?
@@ -130,6 +135,25 @@ module Agama
       path = target || File.join(Yast::Installation.destdir, source)
       FileUtils.mkdir_p(File.dirname(path))
       FileUtils.copy_entry(source, path)
+    end
+
+    def http_client
+      @http_client ||= Agama::HTTP::Clients::Network.new(logger)
+    end
+
+    def keep_connections
+      http_client.keep_connection("all")
+    end
+
+    def copy_connections?
+      http_client.state["copyNetwork"]
+    end
+
+    def do_proposal?
+      return false unless copy_connections?
+      return false if http_client.connections.any? { |c| c["keep"] }
+
+      !http_client.connections.empty?
     end
   end
 end

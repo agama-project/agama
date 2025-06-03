@@ -43,6 +43,15 @@ module Agama
           @logger.warn "server returned #{response.code} with body: #{response.body}"
         end
 
+        # send GET request with given path.
+        # @param path[String] path relatived to `api`` endpoint.
+        def get(path)
+          response = Net::HTTP.get(uri(path), headers)
+          return response unless response.is_a?(Net::HTTPClientError)
+
+          @logger.warn "server returned #{response.code} with body: #{response.body}"
+        end
+
       protected
 
         def uri(path)
