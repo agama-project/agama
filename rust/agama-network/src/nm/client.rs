@@ -232,7 +232,6 @@ impl<'a> NetworkManagerClient<'a> {
                     }
 
                     Self::add_secrets(&mut connection.config, &proxy).await?;
-                    connection.filename = proxy.filename().await?;
                     connection.flags = flags;
                     connection.keep = if flags != 0 { false } else { true };
 

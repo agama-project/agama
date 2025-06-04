@@ -348,7 +348,6 @@ async fn update_connection(
 
     let mut conn = Connection::try_from(conn)?;
     conn.uuid = orig_conn.uuid;
-    conn.filename = orig_conn.filename;
 
     state.network.update_connection(conn.clone()).await?;
 
