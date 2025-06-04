@@ -129,6 +129,8 @@ impl<'a> SoftwareClient<'a> {
                     url: get_property(&params, "url")?,
                     product_dir: get_optional_property(&params, "product_dir")?,
                     enabled: get_optional_property(&params, "enabled")?,
+                    allow_unsigned: get_optional_property(&params, "allow_unsigned")?,
+                    gpg_fingerprints: get_optional_property(&params, "gpg_fingerprints")?,
                 }))
             .collect()
     }
