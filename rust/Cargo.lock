@@ -165,6 +165,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "agama-transfer"
+version = "0.1.0"
+
+[[package]]
 name = "agama-utils"
 version = "0.1.0"
 dependencies = [
