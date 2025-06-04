@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jun  4 13:34:20 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add an agama-transfer binary.
+
+-------------------------------------------------------------------
 Tue Jun  3 12:30:40 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Add to api/software/config ability to set/get list of additional
