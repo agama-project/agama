@@ -78,7 +78,6 @@
     "react-refresh-typescript": "^2.0.9",
     "sass": "^1.69.5",
     "sass-loader": "^16.0.1",
-    "string-replace-loader": "^3.0.0",
     "stylelint": "^16.5.0",
     "stylelint-config-standard": "^38.0.0",
     "stylelint-config-standard-scss": "^14.0.0",
