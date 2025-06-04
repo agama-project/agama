@@ -37,6 +37,7 @@ install6() {
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}"/target/${RUST_TARGET}/agama
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}"/target/${RUST_TARGET}/agama-dbus-server
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}"/target/${RUST_TARGET}/agama-web-server
+install -D -t "${DESTDIR}${bindir}" "${SRCDIR}"/target/${RUST_TARGET}/agama-transfer
 
 install6 -D -p "${SRCDIR}"/share/agama.pam "${DESTDIR}${pamvendordir}"/agama
 

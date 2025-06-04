@@ -110,6 +110,17 @@ BuildArch:      noarch
 %description -n agama-cli-zsh-completion
 Zsh command-line completion support for %{name}-cli.
 
+%package -n agama-transfer
+#               This will be set by osc services, that will run after this.
+Version:        0
+Release:        0
+Summary:        Agama transfer program
+License:        GPL-2.0-only
+Url:            https://github.com/agama-project/agama
+
+%description -n agama-transfer
+Command line program to transfer files using Agama specific URLs.
+
 %package -n agama-openapi
 Summary:        Agama's OpenAPI Specification
 
