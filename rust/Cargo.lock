@@ -170,7 +170,7 @@ name = "agama-transfer"
 version = "0.1.0"
 dependencies = [
  "curl",
- "regex",
+ "regex-lite",
  "thiserror 2.0.12",
  "url",
 ]
@@ -3446,6 +3446,12 @@ dependencies = [
  "memchr",
  "regex-syntax 0.8.5",
 ]
+
+[[package]]
+name = "regex-lite"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "53a49587ad06b26609c52e423de037e7f57f20d53535d66e08c695f347df952a"
 
 [[package]]
 name = "regex-syntax"

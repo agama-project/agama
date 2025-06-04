@@ -21,7 +21,7 @@
 /// Module to search for file systems.
 use std::{path::PathBuf, process::Command};
 
-use regex::Regex;
+use regex_lite::Regex;
 
 use super::{TransferError, TransferResult};
 
