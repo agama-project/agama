@@ -37,7 +37,7 @@ use super::proxies::{
 use crate::model::{
     AccessPoint, Connection, ConnectionConfig, Device, GeneralState, SecurityProtocol,
 };
-use crate::types::{DeviceType, SSID};
+use crate::types::{AddFlags, ConnectionFlags, DeviceType, UpdateFlags, SSID};
 use agama_utils::dbus::get_optional_property;
 use semver::Version;
 use uuid::Uuid;
@@ -214,7 +214,7 @@ impl<'a> NetworkManagerClient<'a> {
                 .await?;
             let flags = proxy.flags().await?;
             // https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMSettingsConnectionFlags
-            if flags & 8 != 0 {
+            if flags & ConnectionFlags::External as u32 != 0 {
                 tracing::warn!("Skipped connection because of flags: {}", flags);
                 continue;
             }
@@ -295,19 +295,27 @@ impl<'a> NetworkManagerClient<'a> {
         let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid).await {
             let original = proxy.get_settings().await?;
             let merged = merge_dbus_connections(&original, &new_conn)?;
-            // https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMSettingsConnectionFlags
-            // 0x1 persist to disk, 0x8 memory only
-            let persist = if conn.keep { 0x1 } else { 0x8 };
-            proxy.update2(merged, persist, Default::default()).await?;
+            let persist = if conn.keep {
+                UpdateFlags::ToDisk
+            } else {
+                UpdateFlags::InMemoryOnly
+            };
+            proxy
+                .update2(merged, persist as u32, Default::default())
+                .await?;
             OwnedObjectPath::from(proxy.inner().path().to_owned())
         } else {
             let proxy = SettingsProxy::new(&self.connection).await?;
             // https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMSettingsConnectionFlags
             // 0x1 persist to disk, 0x2 memory only
-            let persist = if conn.keep { 0x1 } else { 0x2 };
+            let persist = if conn.keep {
+                AddFlags::ToDisk
+            } else {
+                AddFlags::InMemory
+            };
             cleanup_dbus_connection(&mut new_conn);
             let (path, _) = proxy
-                .add_connection2(new_conn, persist, Default::default())
+                .add_connection2(new_conn, persist as u32, Default::default())
                 .await?;
             path
         };
