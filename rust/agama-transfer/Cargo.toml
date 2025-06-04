@@ -5,3 +5,7 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
+curl = { version = "0.4.47", features = ["protocol-ftp"] }
+regex = "1.11.1"
+thiserror = "2.0.12"
+url = "2.5.4"

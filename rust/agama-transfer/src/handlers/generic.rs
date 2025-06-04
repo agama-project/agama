@@ -23,7 +23,7 @@ use std::io::Write;
 use curl::easy::Easy;
 use url::Url;
 
-use crate::utils::{TransferError, TransferResult};
+use crate::{TransferError, TransferResult};
 
 /// Generic handler to retrieve any URL.
 ///

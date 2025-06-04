@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0"
 agama-utils = { path = "../agama-utils" }
+agama-transfer = { path = "../agama-transfer" }
 agama-network = { path = "../agama-network" }
 async-trait = "0.1.83"
 futures-util = "0.3.30"

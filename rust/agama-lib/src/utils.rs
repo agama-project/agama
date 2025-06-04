@@ -21,7 +21,6 @@
 //! Utility module for Agama.
 
 mod file_format;
-mod transfer;
+pub use agama_transfer::*;
 
 pub use file_format::*;
-pub use transfer::*;

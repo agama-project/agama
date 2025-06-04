@@ -45,6 +45,7 @@ name = "agama-lib"
 version = "1.0.0"
 dependencies = [
  "agama-network",
+ "agama-transfer",
  "agama-utils",
  "anyhow",
  "async-trait",
@@ -167,6 +168,12 @@ dependencies = [
 [[package]]
 name = "agama-transfer"
 version = "0.1.0"
+dependencies = [
+ "curl",
+ "regex",
+ "thiserror 2.0.12",
+ "url",
+]
 
 [[package]]
 name = "agama-utils"
