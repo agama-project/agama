@@ -25,12 +25,14 @@ use axum::http::HeaderValue;
 use axum::{
     body::Body,
     extract::Request,
-    middleware,
+    http::Uri,
+    middleware::{self, Next},
     response::{IntoResponse, Response},
     routing::{get, post},
     Router,
 };
 use hyper::header::CACHE_CONTROL;
+use hyper::Method;
 use std::time::Duration;
 use std::{
     convert::Infallible,
@@ -56,6 +58,13 @@ pub struct MainServiceBuilder {
     api_router: Router<ServiceState>,
     public_dir: PathBuf,
 }
+
+/// Original request URI
+#[derive(Clone)]
+struct RequestUri(Uri);
+/// Original request method
+#[derive(Clone)]
+struct RequestMethod(Method);
 
 impl MainServiceBuilder {
     /// Returns a new service builder.
@@ -104,6 +113,19 @@ impl MainServiceBuilder {
             public_dir: self.public_dir.clone(),
         };
 
+        // middleware function for storing the original request URI
+        async fn uri_middleware(request: Request<axum::body::Body>, next: Next) -> Response {
+            // remember the request parameters
+            let uri = request.uri().clone();
+            let method = request.method().clone();
+
+            let mut response = next.run(request).await;
+
+            response.extensions_mut().insert(RequestUri(uri));
+            response.extensions_mut().insert(RequestMethod(method));
+            response
+        }
+
         let api_router = self
             .api_router
             .route_layer(middleware::from_extractor_with_state::<TokenClaims, _>(
@@ -119,6 +141,7 @@ impl MainServiceBuilder {
             .nest_service("/", serve)
             .route("/login", get(login_from_query))
             .nest("/api", api_router)
+            .layer(axum::middleware::from_fn(uri_middleware))
             .layer(
                 TraceLayer::new_for_http()
                     .on_request(|request: &Request<Body>, _span: &Span| {
@@ -126,7 +149,14 @@ impl MainServiceBuilder {
                     })
                     .on_response(
                         |response: &Response<Body>, latency: Duration, _span: &Span| {
-                            tracing::info!("response: {} {:?}", response.status(), latency)
+                            tracing::info!(
+                                "response for {:?} {:?}: {} {:?}",
+                                // the original request method and URI
+                                response.extensions().get::<RequestMethod>().map(|r| &r.0).unwrap(),
+                                response.extensions().get::<RequestUri>().map(|r| &r.0).unwrap(),
+                                response.status(),
+                                latency
+                            )
                         },
                     ),
             )
