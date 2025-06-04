@@ -15,3 +15,10 @@ resolver = "2"
 # required by zbus 5
 rust-version = "1.81"
 edition = "2021"
+
+[profile.release]
+lto = "thin"
+
+[profile.release.package.agama-transfer]
+opt-level = "z"
+strip = true
