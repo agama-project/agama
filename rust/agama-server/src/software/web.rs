@@ -614,6 +614,10 @@ async fn set_config(
         state.software.select_packages(packages).await?;
     }
 
+    if let Some(repositories) = config.extra_repositories {
+        state.software.set_user_repositories(repositories).await?;
+    }
+
     // load the config cache
     let config = read_config(&state).await?;
 
@@ -670,11 +674,13 @@ async fn read_config(state: &SoftwareState<'_>) -> Result<SoftwareConfig, Error>
         .map(|p| (p, true))
         .collect();
     let packages = state.software.user_selected_packages().await?;
+    let repos = state.software.user_repositories().await?;
 
     Ok(SoftwareConfig {
         patterns: Some(patterns),
         packages: Some(packages),
         product,
+        extra_repositories: if repos.is_empty() { None } else { Some(repos) },
     })
 }
 

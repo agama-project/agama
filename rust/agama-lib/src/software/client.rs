@@ -19,10 +19,11 @@
 // find current contact information at www.suse.com.
 
 use super::{
-    model::{Conflict, ConflictSolve, Repository, ResolvableType},
+    model::{Conflict, ConflictSolve, Repository, RepositoryParams, ResolvableType},
     proxies::{ProposalProxy, Software1Proxy},
 };
 use crate::error::ServiceError;
+use agama_utils::dbus::{get_optional_property, get_property};
 use serde::Serialize;
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use std::collections::HashMap;
@@ -111,6 +112,56 @@ impl<'a> SoftwareClient<'a> {
             )
             .collect();
         Ok(repositories)
+    }
+
+    /// Returns list of user defined repositories
+    pub async fn user_repositories(&self) -> Result<Vec<RepositoryParams>, ServiceError> {
+        self.software_proxy
+            .list_user_repositories()
+            .await?
+            .into_iter()
+            .map(|params|
+                // unwrapping below is OK as it is our own dbus API, so we know what is in variants
+                Ok(RepositoryParams {
+                    priority: get_optional_property(&params, "priority")?,
+                    alias: get_property(&params, "alias")?,
+                    name: get_optional_property(&params, "name")?,
+                    url: get_property(&params, "url")?,
+                    product_dir: get_optional_property(&params, "product_dir")?,
+                    enabled: get_optional_property(&params, "enabled")?,
+                }))
+            .collect()
+    }
+
+    pub async fn set_user_repositories(
+        &self,
+        repos: Vec<RepositoryParams>,
+    ) -> Result<(), ServiceError> {
+        let dbus_repos: Vec<HashMap<&str, zbus::zvariant::Value<'_>>> = repos
+            .into_iter()
+            .map(|params| {
+                let mut result: HashMap<&str, zbus::zvariant::Value<'_>> = HashMap::new();
+                result.insert("alias", params.alias.into());
+                result.insert("url", params.url.into());
+                if let Some(priority) = params.priority {
+                    result.insert("priority", priority.into());
+                }
+                if let Some(name) = params.name {
+                    result.insert("name", name.into());
+                }
+                if let Some(product_dir) = params.product_dir {
+                    result.insert("product_dir", product_dir.into());
+                }
+                if let Some(enabled) = params.enabled {
+                    result.insert("enabled", enabled.into());
+                }
+                result
+            })
+            .collect();
+        self.software_proxy
+            .set_user_repositories(&dbus_repos)
+            .await?;
+        Ok(())
     }
 
     /// Returns the available patterns

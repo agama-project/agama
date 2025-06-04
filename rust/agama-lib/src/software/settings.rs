@@ -22,6 +22,8 @@
 
 use serde::{Deserialize, Serialize};
 
+use super::model::RepositoryParams;
+
 /// Software settings for installation
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -32,11 +34,14 @@ pub struct SoftwareSettings {
     /// List of user selected packages to install.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub packages: Option<Vec<String>>,
+    /// List of user specified repositories to use on top of default ones.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extra_repositories: Option<Vec<RepositoryParams>>,
 }
 
 impl SoftwareSettings {
     pub fn to_option(self) -> Option<Self> {
-        if self.patterns.is_none() && self.packages.is_none() {
+        if self.patterns.is_none() && self.packages.is_none() && self.extra_repositories.is_none() {
             None
         } else {
             Some(self)

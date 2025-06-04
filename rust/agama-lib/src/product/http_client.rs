@@ -69,6 +69,7 @@ impl ProductHTTPClient {
             product: Some(product_id.to_owned()),
             patterns: None,
             packages: None,
+            extra_repositories: None,
         };
         self.set_software(&config).await
     }

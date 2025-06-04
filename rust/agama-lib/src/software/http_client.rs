@@ -82,6 +82,7 @@ impl SoftwareHTTPClient {
             // TODO: SoftwareStore only passes true bools, false branch is untested
             patterns: Some(patterns),
             packages: None,
+            extra_repositories: None,
         };
         self.set_config(&config).await
     }
