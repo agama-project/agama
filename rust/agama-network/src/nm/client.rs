@@ -253,7 +253,6 @@ impl<'a> NetworkManagerClient<'a> {
         }
 
         for conn in connections.iter_mut() {
-            // FIXME: Is this OK?
             if let Some(controller) = controlled_by.get(&conn.uuid) {
                 if let Some(iface) = uuids_map.get(controller) {
                     conn.controller = Some(iface.to_owned());

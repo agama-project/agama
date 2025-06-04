@@ -427,12 +427,7 @@ impl<T: Adapter> NetworkSystemServer<T> {
     /// Writes the network configuration.
     pub async fn write(&mut self) -> Result<(), NetworkAdapterError> {
         self.adapter.write(&self.state).await?;
-        self.state = self
-            .adapter
-            .read(StateConfig {
-                ..Default::default()
-            })
-            .await?;
+        self.state = self.adapter.read(StateConfig::default()).await?;
         Ok(())
     }
 }
