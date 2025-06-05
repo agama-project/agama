@@ -29,11 +29,17 @@
 import { apiModel } from "~/api/storage/types";
 
 type Model = {
+  boot: Boot;
   drives: Drive[];
   mdRaids: MdRaid[];
   volumeGroups: VolumeGroup[];
   getMountPaths: () => string[];
 };
+
+interface Boot extends Omit<apiModel.Boot, "device"> {
+  isDefault: boolean;
+  getDevice: () => Drive | MdRaid | null;
+}
 
 /**
  * @fixme Remove list and listIndex from types once the components are adapted to receive a list
@@ -83,4 +89,4 @@ interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logi
 
 type LogicalVolume = apiModel.LogicalVolume;
 
-export type { Model, Drive, MdRaid, Partition, VolumeGroup, LogicalVolume };
+export type { Model, Boot, Drive, MdRaid, Partition, VolumeGroup, LogicalVolume };
