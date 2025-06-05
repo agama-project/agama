@@ -123,7 +123,7 @@ describe "agama config" do
   end
 
   describe "generate:" do
-    context "config contains relative URL references:" do
+    context "config via stdin contains relative URL references:" do
       let(:profile_body) do
         json = <<~JSON
           {
@@ -143,8 +143,20 @@ describe "agama config" do
       it "they are resolved" do
         output = Cheetah.run("agama", "config", "generate", "-",
           stdout: :capture, stdin: profile_body)
-        # FIXME: better match. for now we assume that a "/" is a correct resolution
-        expect(output).to include("/my-script.sh")
+        expect(output).to include("file:///")
+        expect(output).to include("/service/my-script.sh")
+      end
+    end
+
+    context "config via file contains relative URL references:" do
+      let(:filename) { "rust/agama-lib/share/examples/post-script-ref.jsonnet" }
+
+      it "they are resolved" do
+        output = Cheetah.run("agama", "config", "generate", fixture(filename),
+          stdout: :capture)
+        expect(output).to include("file:///")
+        expect(output).to include("/rust/agama-lib/share/examples/enable-sshd.sh")
+        expect(output).to_not include("..")
       end
     end
 
@@ -171,7 +183,7 @@ describe "agama config" do
 
       it "is evaluated and invalidity reported" do
         stdout, stderr = Cheetah.run("agama", "config", "generate", "-",
-        stdout: :capture, stderr: :capture, stdin: profile_body)
+          stdout: :capture, stderr: :capture, stdin: profile_body)
         # NOTE: 3 space indent here
         expected = <<~JSON
           {

@@ -244,6 +244,12 @@ fn is_autoyast(url_or_path: &CliInput) -> bool {
 }
 
 async fn generate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<()> {
+    let context = match &url_or_path {
+        CliInput::Stdin | CliInput::Full(_) => InstallationContext::from_env()?,
+        CliInput::Url(url_str) => InstallationContext::from_url_str(url_str)?,
+        CliInput::Path(pathbuf) => InstallationContext::from_file(pathbuf.as_path())?,
+    };
+
     let profile_json = if is_autoyast(&url_or_path) {
         // AutoYaST specific download and convert to JSON
         let config_string =
@@ -272,7 +278,6 @@ async fn generate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
         ValidationOutcome::Valid => {}
     }
 
-    let context = InstallationContext::from_env()?;
     // resolves relative URL references
     let model = InstallSettings::from_json(&profile_json, &context)?;
     let config_json = serde_json::to_string_pretty(&model)?;

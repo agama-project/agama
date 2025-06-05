@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 use fluent_uri::Uri;
+use std::path::Path;
 
 #[derive(Debug, thiserror::Error)]
 #[error("Could not determine the installation context")]
@@ -37,10 +38,22 @@ impl InstallationContext {
     pub fn from_env() -> Result<Self, InstallationContextError> {
         let current_path =
             std::env::current_dir().map_err(|e| InstallationContextError(e.to_string()))?;
-        let url = format!("file://{}/", current_path.as_path().display());
-        let url = Uri::parse(url.as_str()).map_err(|e| InstallationContextError(e.to_string()))?;
+        let url = format!("file://{}/", current_path.display());
+        Self::from_url_str(&url)
+    }
+
+    pub fn from_url_str(url_str: &str) -> Result<Self, InstallationContextError> {
+        let url = Uri::parse(url_str).map_err(|e| InstallationContextError(e.to_string()))?;
         Ok(Self {
             source: url.to_owned(),
         })
+    }
+
+    pub fn from_file(path: &Path) -> Result<Self, InstallationContextError> {
+        let canon_path = path
+            .canonicalize()
+            .map_err(|e| InstallationContextError(e.to_string()))?;
+        let url = format!("file://{}", canon_path.display());
+        Self::from_url_str(&url)
     }
 }
