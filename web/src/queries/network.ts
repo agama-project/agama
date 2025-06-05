@@ -42,8 +42,7 @@ import {
   fetchConnections,
   fetchDevices,
   fetchState,
-  keep,
-  unkeep,
+  persist,
   updateConnection,
 } from "~/api/network";
 
@@ -145,19 +144,18 @@ const useConnectionMutation = () => {
 };
 
 /**
- * Hook that provides a mutation for toggling the "keep" state of a network
+ * Hook that provides a mutation for toggling the "persistent" state of a network
  * connection.
  *
  * This hook uses optimistic updates to immediately reflect the change in the UI
  * before the mutation completes. If the mutation fails, it will rollback to the
  * previous state.
  */
-const useConnectionKeepMutation = () => {
+const useConnectionPersistMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: (connection: Connection) => {
-      const method = connection.keep ? unkeep : keep;
-      return method(connection.id);
+      return persist(connection.id, !connection.persistent);
     },
     onMutate: async (connection: Connection) => {
       // Get the current list of cached connections
@@ -166,12 +164,12 @@ const useConnectionKeepMutation = () => {
         "connections",
       ]);
 
-      // Optimistically toggle the 'keep' status of the matching connection
+      // Optimistically toggle the 'persistent' status of the matching connection
       const updatedConnections = previousConnections.map((cachedConnection) => {
         if (connection.id !== cachedConnection.id) return cachedConnection;
 
         const { id, ...nextConnection } = cachedConnection;
-        return new Connection(id, { ...nextConnection, keep: !cachedConnection.keep });
+        return new Connection(id, { ...nextConnection, persistent: !cachedConnection.persistent });
       });
 
       // Update the cached data with the optimistically updated connections
@@ -367,7 +365,7 @@ export {
   useAddConnectionMutation,
   useConnections,
   useConnectionMutation,
-  useConnectionKeepMutation,
+  useConnectionPersistMutation,
   useRemoveConnectionMutation,
   useConnection,
   useNetworkDevices,

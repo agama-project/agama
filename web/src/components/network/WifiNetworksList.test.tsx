@@ -154,7 +154,7 @@ describe("WifiNetworksList", () => {
               mode: "infrastructure",
             },
             state: ConnectionState.activating,
-            keep: true,
+            persistent: true,
           }),
         ];
 
@@ -192,7 +192,7 @@ describe("WifiNetworksList", () => {
               mode: "infrastructure",
             },
             state: ConnectionState.activating,
-            keep: false,
+            persistent: false,
           }),
         ];
 

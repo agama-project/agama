@@ -31,7 +31,7 @@ import { _ } from "~/i18n";
  */
 export default function NoPersistentConnectionsAlert() {
   const connections: Connection[] = useConnections();
-  const persistentConnections: number = connections.filter((c) => c.keep).length;
+  const persistentConnections: number = connections.filter((c) => c.persistent).length;
 
   if (persistentConnections !== 0) return;
 

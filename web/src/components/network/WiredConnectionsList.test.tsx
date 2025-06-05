@@ -65,7 +65,7 @@ describe("WiredConnectionsList", () => {
           method4: ConnectionMethod.AUTO,
           method6: ConnectionMethod.AUTO,
           state: ConnectionState.activating,
-          keep: true,
+          persistent: true,
         }),
       ];
     });
@@ -84,7 +84,7 @@ describe("WiredConnectionsList", () => {
           method4: ConnectionMethod.AUTO,
           method6: ConnectionMethod.AUTO,
           state: ConnectionState.activating,
-          keep: false,
+          persistent: false,
         }),
       ];
     });

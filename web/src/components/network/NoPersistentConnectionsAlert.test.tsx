@@ -43,7 +43,7 @@ describe("NoPersistentConnectionsAlert", () => {
             ssid: "Network 2",
             mode: "infrastructure",
           },
-          keep: true,
+          persistent: true,
         }),
         new Connection("Newtwork 3", {
           wireless: {
@@ -51,7 +51,7 @@ describe("NoPersistentConnectionsAlert", () => {
             ssid: "Network 2",
             mode: "infrastructure",
           },
-          keep: false,
+          persistent: false,
         }),
       ];
     });
@@ -71,7 +71,7 @@ describe("NoPersistentConnectionsAlert", () => {
             ssid: "Network 2",
             mode: "infrastructure",
           },
-          keep: false,
+          persistent: false,
         }),
         new Connection("Newtwork 3", {
           wireless: {
@@ -79,7 +79,7 @@ describe("NoPersistentConnectionsAlert", () => {
             ssid: "Network 2",
             mode: "infrastructure",
           },
-          keep: false,
+          persistent: false,
         }),
       ];
     });

@@ -87,12 +87,8 @@ const disconnect = (name: string) => post(`/api/network/connections/${name}/disc
 /**
  * Make the connection persistent after the installation
  */
-const keep = (name: string) => post(`/api/network/connections/${name}/keep`);
-
-/**
- * Make the connection to be used only for the installation
- */
-const unkeep = (name: string) => post(`/api/network/connections/${name}/unkeep`);
+const persist = (name: string, value: boolean) =>
+  post(`/api/network/connections/${name}/persist`, { value });
 
 export {
   fetchState,
@@ -106,6 +102,5 @@ export {
   deleteConnection,
   connect,
   disconnect,
-  keep,
-  unkeep,
+  persist,
 };

@@ -57,20 +57,20 @@ describe("InstallationOnlySwitch", () => {
     expect(switchInput).toHaveAttribute("aria-describedby", switchDescription.id);
   });
 
-  it("renders as checked when connection is transient (`keep` is false)", () => {
-    plainRender(<InstallationOnlySwitch connection={mockConnection({ keep: false })} />);
+  it("renders as checked when connection is transient (`persistent` is false)", () => {
+    plainRender(<InstallationOnlySwitch connection={mockConnection({ persistent: false })} />);
     const switchInput = screen.getByRole("switch", { name: "Use for installation only" });
     expect(switchInput).toBeChecked();
   });
 
-  it("renders as not checked when connection is permanent (`keep` is true)", () => {
-    plainRender(<InstallationOnlySwitch connection={mockConnection({ keep: true })} />);
+  it("renders as not checked when connection is permanent (`persistent` is true)", () => {
+    plainRender(<InstallationOnlySwitch connection={mockConnection({ persistent: true })} />);
     const switchInput = screen.getByRole("switch", { name: "Use for installation only" });
     expect(switchInput).not.toBeChecked();
   });
 
   it("triggers mutation for switching between transient and permanent", async () => {
-    const connection = mockConnection({ keep: true });
+    const connection = mockConnection({ persistent: true });
     const { user } = plainRender(<InstallationOnlySwitch connection={connection} />);
     const switchInput = screen.getByRole("switch", { name: "Use for installation only" });
     await user.click(switchInput);

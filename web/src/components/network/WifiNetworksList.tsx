@@ -142,7 +142,7 @@ const NetworkListItem = ({ network, connection, showIp }: NetworkListItemProps) 
                   </Content>
                 )}
 
-                {connection && !connection.keep && (
+                {connection && !connection.persistent && (
                   <Annotation>{_("Configured for installation only")}</Annotation>
                 )}
               </Flex>

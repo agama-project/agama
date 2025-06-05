@@ -521,7 +521,7 @@ pub struct Connection {
     pub ieee_8021x_config: Option<IEEE8021XConfig>,
     pub autoconnect: bool,
     pub state: ConnectionState,
-    pub keep: bool,
+    pub persistent: bool,
     pub flags: u32,
 }
 
@@ -563,8 +563,8 @@ impl Connection {
         self.status = Status::Up
     }
 
-    pub fn set_keep(&mut self, keep: bool) {
-        self.keep = keep;
+    pub fn set_persistent(&mut self, persistent: bool) {
+        self.persistent = persistent;
         self.status = Status::Keep
     }
 
@@ -605,7 +605,7 @@ impl Default for Connection {
             ieee_8021x_config: Default::default(),
             autoconnect: true,
             state: Default::default(),
-            keep: true,
+            persistent: true,
             flags: Default::default(),
         }
     }
@@ -662,7 +662,7 @@ impl TryFrom<NetworkConnection> for Connection {
         connection.interface = conn.interface;
         connection.mtu = conn.mtu;
         connection.autoconnect = conn.autoconnect;
-        connection.keep = conn.keep;
+        connection.persistent = conn.persistent;
 
         Ok(connection)
     }
@@ -690,7 +690,7 @@ impl TryFrom<Connection> for NetworkConnection {
             .ieee_8021x_config
             .and_then(|x| IEEE8021XSettings::try_from(x).ok());
         let autoconnect = conn.autoconnect;
-        let keep = conn.keep;
+        let persistent = conn.persistent;
 
         let mut connection = NetworkConnection {
             id,
@@ -708,7 +708,7 @@ impl TryFrom<Connection> for NetworkConnection {
             mtu,
             ieee_8021x,
             autoconnect,
-            keep,
+            persistent,
             ..Default::default()
         };
 

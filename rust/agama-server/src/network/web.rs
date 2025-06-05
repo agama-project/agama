@@ -43,6 +43,7 @@ use agama_lib::{
     },
 };
 
+use serde::Deserialize;
 use serde_json::json;
 use thiserror::Error;
 
@@ -123,8 +124,7 @@ pub async fn network_service<T: Adapter + Send + Sync + 'static>(
         )
         .route("/connections/:id/connect", post(connect))
         .route("/connections/:id/disconnect", post(disconnect))
-        .route("/connections/:id/keep", post(keep))
-        .route("/connections/:id/unkeep", post(unkeep))
+        .route("/connections/:id/persist", post(persist))
         .route("/devices", get(devices))
         .route("/system/apply", post(apply))
         .route("/wifi", get(wifi_networks))
@@ -425,70 +425,29 @@ async fn disconnect(
     Ok(StatusCode::NO_CONTENT)
 }
 
-#[utoipa::path(
-    post,
-    path = "/connections/:id/keep",
-    context_path = "/api/network",
-    responses(
-      (status = 204, description = "Keep the given connection after the installation", body = String)
-    )
-)]
-async fn keep(
-    State(state): State<NetworkServiceState>,
-    Path(id): Path<String>,
-) -> Result<impl IntoResponse, NetworkError> {
-    if id == "all" {
-        let mut connections = state.network.get_connections().await?;
-
-        for conn in connections.iter_mut() {
-            conn.set_keep(true);
-
-            state
-                .network
-                .update_connection(conn.to_owned())
-                .await
-                .map_err(|_| NetworkError::CannotApplyConfig)?;
-        }
-    } else {
-        let Some(mut conn) = state.network.get_connection(&id).await? else {
-            return Err(NetworkError::UnknownConnection(id));
-        };
-
-        conn.set_keep(true);
-
-        state
-            .network
-            .update_connection(conn)
-            .await
-            .map_err(|_| NetworkError::CannotApplyConfig)?;
-    }
-
-    state
-        .network
-        .apply()
-        .await
-        .map_err(|_| NetworkError::CannotApplyConfig)?;
-
-    Ok(StatusCode::NO_CONTENT)
+#[derive(Deserialize, utoipa::ToSchema)]
+pub struct BooleanParam {
+    pub value: bool,
 }
 
 #[utoipa::path(
     post,
-    path = "/connections/:id/unkeep",
+    path = "/connections/:id/persist",
     context_path = "/api/network",
     responses(
-      (status = 204, description = "Do not keep the given connection after the installation", body = String)
+      (status = 204, description = "Persist the given connection to disk", body = BooleanParam)
     )
 )]
-async fn unkeep(
+async fn persist(
     State(state): State<NetworkServiceState>,
     Path(id): Path<String>,
+    Json(persist): Json<BooleanParam>,
 ) -> Result<impl IntoResponse, NetworkError> {
     if id == "all" {
         let mut connections = state.network.get_connections().await?;
 
         for conn in connections.iter_mut() {
-            conn.set_keep(false);
+            conn.set_persistent(persist.value);
 
             state
                 .network
@@ -501,7 +460,7 @@ async fn unkeep(
             return Err(NetworkError::UnknownConnection(id));
         };
 
-        conn.set_keep(false);
+        conn.set_persistent(persist.value);
 
         state
             .network

@@ -23,7 +23,7 @@
 import React from "react";
 import { Connection } from "~/types/network";
 import { SwitchEnhanced } from "~/components/core";
-import { useConnectionKeepMutation } from "~/queries/network";
+import { useConnectionPersistMutation } from "~/queries/network";
 import { _ } from "~/i18n";
 
 type InstallationOnlySwitchProps = {
@@ -39,8 +39,8 @@ type InstallationOnlySwitchProps = {
  *
  */
 export default function InstallationOnlySwitch({ connection }: InstallationOnlySwitchProps) {
-  const { mutateAsync: toggleKeep } = useConnectionKeepMutation();
-  const onChange = () => toggleKeep(connection);
+  const { mutateAsync: togglePersist } = useConnectionPersistMutation();
+  const onChange = () => togglePersist(connection);
 
   return (
     <SwitchEnhanced
@@ -49,7 +49,7 @@ export default function InstallationOnlySwitch({ connection }: InstallationOnlyS
         "The connection will be used only during installation and not available in the installed system.",
       )}
       onChange={onChange}
-      isChecked={!connection.keep}
+      isChecked={!connection.persistent}
     />
   );
 }

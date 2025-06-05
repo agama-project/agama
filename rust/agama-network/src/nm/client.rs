@@ -233,7 +233,7 @@ impl<'a> NetworkManagerClient<'a> {
 
                     Self::add_secrets(&mut connection.config, &proxy).await?;
                     connection.flags = flags;
-                    connection.keep = if flags != 0 { false } else { true };
+                    connection.persistent = if flags != 0 { false } else { true };
 
                     if let Some(controller) = controller {
                         controlled_by.insert(connection.uuid, controller);
@@ -295,7 +295,7 @@ impl<'a> NetworkManagerClient<'a> {
         let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid).await {
             let original = proxy.get_settings().await?;
             let merged = merge_dbus_connections(&original, &new_conn)?;
-            let persist = if conn.keep {
+            let persist = if conn.persistent {
                 UpdateFlags::ToDisk
             } else {
                 UpdateFlags::InMemoryOnly
@@ -308,7 +308,7 @@ impl<'a> NetworkManagerClient<'a> {
             let proxy = SettingsProxy::new(&self.connection).await?;
             // https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMSettingsConnectionFlags
             // 0x1 persist to disk, 0x2 memory only
-            let persist = if conn.keep {
+            let persist = if conn.persistent {
                 AddFlags::ToDisk
             } else {
                 AddFlags::InMemory

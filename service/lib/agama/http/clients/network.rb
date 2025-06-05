@@ -35,7 +35,7 @@ module Agama
         end
 
         def keep_connection(id)
-          post("network/connections/#{id}/keep", nil)
+          post("network/connections/#{id}/keep", { value: true })
         end
 
         def state
