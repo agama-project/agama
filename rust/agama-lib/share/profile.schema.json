@@ -651,11 +651,6 @@
         "hashedPassword": {
           "title": "Flag for hashed password (true) or plain text password (false or not defined)",
           "type": "boolean"
-        },
-        "autologin": {
-          "title": "Automatic user login",
-          "description": "Whether the user should be automatically logged in (only relevant in desktop systems)",
-          "type": "boolean"
         }
       },
       "required": ["fullName", "userName", "password"]

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun  5 10:35:40 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Updated Node.js dependencies to their latest available versions
+  as of 2024-06-03 (gh#agama-project/agama#2440).
+
+-------------------------------------------------------------------
 Mon Jun  2 22:29:03 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Fix out-of-sync translations by improving localization cache

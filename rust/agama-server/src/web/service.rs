@@ -39,6 +39,7 @@ use std::{
 use tower::Service;
 use tower_http::set_header::SetResponseHeaderLayer;
 use tower_http::{compression::CompressionLayer, services::ServeDir, trace::TraceLayer};
+use tracing::span::Id;
 use tracing::Span;
 
 /// Builder for Agama main service.
@@ -121,12 +122,22 @@ impl MainServiceBuilder {
             .nest("/api", api_router)
             .layer(
                 TraceLayer::new_for_http()
-                    .on_request(|request: &Request<Body>, _span: &Span| {
-                        tracing::info!("request: {} {}", request.method(), request.uri().path())
+                    .on_request(|request: &Request<Body>, span: &Span| {
+                        tracing::info!(
+                            "request {}: {} {}",
+                            span.id().unwrap_or(Id::from_u64(1)).into_u64(),
+                            request.method(),
+                            request.uri().path()
+                        )
                     })
                     .on_response(
-                        |response: &Response<Body>, latency: Duration, _span: &Span| {
-                            tracing::info!("response: {} {:?}", response.status(), latency)
+                        |response: &Response<Body>, latency: Duration, span: &Span| {
+                            tracing::info!(
+                                "response for {}: {} {:?}",
+                                span.id().unwrap_or(Id::from_u64(1)).into_u64(),
+                                response.status(),
+                                latency
+                            )
                         },
                     ),
             )

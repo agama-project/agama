@@ -27,7 +27,6 @@ import {
   Alert,
   Bullseye,
   Button,
-  Content,
   Flex,
   Form,
   FormGroup,
@@ -37,11 +36,10 @@ import {
 } from "@patternfly/react-core";
 import { Page, PasswordInput } from "~/components/core";
 import { AuthErrors, useAuth } from "~/context/auth";
-import { _ } from "~/i18n";
-import shadowUtils from "@patternfly/react-styles/css/utilities/BoxShadow/box-shadow";
-import alignmentUtils from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import { Icon } from "../layout";
+import shadowUtils from "@patternfly/react-styles/css/utilities/BoxShadow/box-shadow";
 import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
 /**
  * Renders the UI that lets the user log into the system.
@@ -86,17 +84,16 @@ user privileges.",
       <Bullseye>
         <Page.Section
           hasHeaderDivider
+          headingLevel="h1"
           title={
-            <Content component="h1" className={alignmentUtils.textAlignCenter}>
-              <Flex
-                alignItems={{ default: "alignItemsCenter" }}
-                direction={{ default: "column" }}
-                gap={{ default: "gapSm" }}
-              >
-                <Icon name="lock" width="3rem" height="3rem" />
-                {sectionTitle}
-              </Flex>
-            </Content>
+            <Flex
+              alignItems={{ default: "alignItemsCenter" }}
+              direction={{ default: "column" }}
+              gap={{ default: "gapSm" }}
+            >
+              <Icon name="lock" width="3rem" height="3rem" />
+              {sectionTitle}
+            </Flex>
           }
           pfCardProps={{
             isCompact: false,

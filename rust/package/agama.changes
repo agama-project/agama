@@ -4,6 +4,12 @@ Wed Jun  4 13:34:20 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 - Add an agama-transfer binary.
 
 -------------------------------------------------------------------
+Wed Jun  4 13:18:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the autologin property from the JSON schema
+  (gh#agama-project/agama#2438).
+
+-------------------------------------------------------------------
 Tue Jun  3 12:30:40 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Add to api/software/config ability to set/get list of additional
@@ -18,7 +24,7 @@ Fri May 30 15:05:35 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 -------------------------------------------------------------------
 Thu May 29 09:00:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
 
-- Fix bridge port config (bridge-port.priority and 
+- Fix bridge port config (bridge-port.priority and
   brdige-port.path_cost)
 
 -------------------------------------------------------------------
