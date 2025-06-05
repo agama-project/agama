@@ -159,7 +159,7 @@ describe Agama::Software::RepositoriesManager do
       allow(subject).to receive(:load)
       subject.user_repositories = user_repositories
 
-      expect(subject.trust_gpg?("0123")).to eq true
+      expect(subject.trust_gpg?("test", "0123")).to eq true
     end
 
     it "ignores any whitespaces in fingerprint" do
@@ -168,7 +168,7 @@ describe Agama::Software::RepositoriesManager do
       allow(subject).to receive(:load)
       subject.user_repositories = user_repositories
 
-      expect(subject.trust_gpg?("01 23")).to eq true
+      expect(subject.trust_gpg?("test", "01 23")).to eq true
     end
   end
 
