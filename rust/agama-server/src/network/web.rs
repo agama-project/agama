@@ -448,7 +448,8 @@ async fn persist(
 
     for conn in connections.iter_mut() {
         if ids.is_empty() || ids.contains(&conn.id) {
-            conn.set_persistent(persist.value);
+            conn.persistent = persist.value;
+            conn.keep_status();
 
             state
                 .network

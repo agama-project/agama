@@ -45,6 +45,7 @@ module Agama
 
         # send GET request with given path.
         # @param path[String] path relatived to `api`` endpoint.
+        # @return [Net::HTTPResponse, nil] the Net::HTTPResponse if it is not an Net::HTTPClientError
         def get(path)
           response = Net::HTTP.get(uri(path), headers)
           return response unless response.is_a?(Net::HTTPClientError)

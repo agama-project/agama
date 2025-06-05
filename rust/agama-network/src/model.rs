@@ -456,6 +456,8 @@ mod tests {
     }
 }
 
+pub const NOT_COPY_NETWORK_PATH: &str = "/run/agama/not_copy_network";
+
 /// Network state
 #[serde_as]
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
@@ -563,8 +565,7 @@ impl Connection {
         self.status = Status::Up
     }
 
-    pub fn set_persistent(&mut self, persistent: bool) {
-        self.persistent = persistent;
+    pub fn keep_status(&mut self) {
         self.status = Status::Keep
     }
 

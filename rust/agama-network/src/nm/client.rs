@@ -36,6 +36,7 @@ use super::proxies::{
 };
 use crate::model::{
     AccessPoint, Connection, ConnectionConfig, Device, GeneralState, SecurityProtocol,
+    NOT_COPY_NETWORK_PATH,
 };
 use crate::types::{AddFlags, ConnectionFlags, DeviceType, UpdateFlags, SSID};
 use agama_utils::dbus::get_optional_property;
@@ -73,7 +74,7 @@ impl<'a> NetworkManagerClient<'a> {
         // let global_dns_configuration = self.nm_proxy.global_dns_configuration().await?;
         // Fixme: save as NMConnectivityState enum
         let connectivity = self.nm_proxy.connectivity().await? == 4;
-        let copy_network = !Path::new("/run/agama/not_copy_network").exists();
+        let copy_network = !Path::new(NOT_COPY_NETWORK_PATH).exists();
 
         Ok(GeneralState {
             hostname,
@@ -87,7 +88,8 @@ impl<'a> NetworkManagerClient<'a> {
     /// Updates the general state
     pub async fn update_general_state(&self, state: &GeneralState) -> Result<(), NmError> {
         let wireless_enabled = self.nm_proxy.wireless_enabled().await?;
-        let copy_network = !Path::new("/run/agama/not_copy_network").exists();
+        let not_copy_path = Path::new(NOT_COPY_NETWORK_PATH);
+        let copy_network = !not_copy_path.exists();
 
         if wireless_enabled != state.wireless_enabled {
             self.nm_proxy
@@ -96,14 +98,17 @@ impl<'a> NetworkManagerClient<'a> {
         };
 
         if copy_network != state.copy_network {
-            let path = Path::new("/run/agama/not_copy_network");
             if state.copy_network {
-                if let Err(error) = fs::remove_file(path) {
-                    tracing::error!("Cannot remove /run/agama/not_copy_network file {:?}", error);
+                if let Err(error) = fs::remove_file(not_copy_path) {
+                    tracing::error!("Cannot remove {:?} file {:?}", NOT_COPY_NETWORK_PATH, error);
                 }
             } else {
-                if let Err(error) = OpenOptions::new().create(true).write(true).open(path) {
-                    tracing::error!("Cannot write /run/agama/not_copy_network file {:?}", error);
+                if let Err(error) = OpenOptions::new()
+                    .create(true)
+                    .write(true)
+                    .open(not_copy_path)
+                {
+                    tracing::error!("Cannot write {:?} file {:?}", NOT_COPY_NETWORK_PATH, error);
                 }
             };
         };
@@ -233,7 +238,7 @@ impl<'a> NetworkManagerClient<'a> {
 
                     Self::add_secrets(&mut connection.config, &proxy).await?;
                     connection.flags = flags;
-                    connection.persistent = if flags != 0 { false } else { true };
+                    connection.persistent = flags == 0;
 
                     if let Some(controller) = controller {
                         controlled_by.insert(connection.uuid, controller);
