@@ -328,8 +328,7 @@ async fn from_json_or_jsonnet(
         }
         FileFormat::Json => Ok(any_profile),
         FileFormat::Script => Err(anyhow::Error::msg(
-            // TODO: remove execute_script on backend
-            "Scripts are no longer supported as full profiles. Use /TODO/.../script",
+            "Standalone scripts are no longer supported as full profiles. Use the \"scripts\" property.",
         )),
         _ => Err(anyhow::Error::msg(
             "Unsupported file format. Expected JSON, or Jsonnet",
