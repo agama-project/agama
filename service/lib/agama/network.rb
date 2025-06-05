@@ -36,7 +36,7 @@ module Agama
     end
 
     def startup
-      keep_connections if do_proposal?
+      persist_connections if do_proposal?
     end
 
     # Writes the network configuration to the installed system
@@ -148,8 +148,8 @@ module Agama
       @http_client ||= Agama::HTTP::Clients::Network.new(logger)
     end
 
-    def keep_connections
-      http_client.keep_connection("all")
+    def persist_connections
+      http_client.persist_connections
     end
 
     def copy_connections?
@@ -158,7 +158,7 @@ module Agama
 
     def do_proposal?
       return false unless copy_connections?
-      return false if http_client.connections.any? { |c| c["keep"] }
+      return false if http_client.connections.any? { |c| c["persistent"] }
 
       !http_client.connections.empty?
     end

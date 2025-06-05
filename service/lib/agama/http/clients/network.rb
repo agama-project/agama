@@ -34,8 +34,8 @@ module Agama
           JSON.parse(get("network/devices"))
         end
 
-        def keep_connection(id)
-          post("network/connections/#{id}/keep", { value: true })
+        def persist_connections
+          post("network/connections/persist", { value: true })
         end
 
         def state

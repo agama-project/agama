@@ -124,7 +124,7 @@ pub async fn network_service<T: Adapter + Send + Sync + 'static>(
         )
         .route("/connections/:id/connect", post(connect))
         .route("/connections/:id/disconnect", post(disconnect))
-        .route("/connections/:id/persist", post(persist))
+        .route("/connections/persist", post(persist))
         .route("/devices", get(devices))
         .route("/system/apply", post(apply))
         .route("/wifi", get(wifi_networks))
@@ -426,27 +426,28 @@ async fn disconnect(
 }
 
 #[derive(Deserialize, utoipa::ToSchema)]
-pub struct BooleanParam {
+pub struct PersistParams {
+    pub only: Option<Vec<String>>,
     pub value: bool,
 }
 
 #[utoipa::path(
     post,
-    path = "/connections/:id/persist",
+    path = "/connections/persist",
     context_path = "/api/network",
     responses(
-      (status = 204, description = "Persist the given connection to disk", body = BooleanParam)
+      (status = 204, description = "Persist the given connection to disk", body = PersistParams)
     )
 )]
 async fn persist(
     State(state): State<NetworkServiceState>,
-    Path(id): Path<String>,
-    Json(persist): Json<BooleanParam>,
+    Json(persist): Json<PersistParams>,
 ) -> Result<impl IntoResponse, NetworkError> {
-    if id == "all" {
-        let mut connections = state.network.get_connections().await?;
+    let mut connections = state.network.get_connections().await?;
+    let ids = persist.only.unwrap_or(vec![]);
 
-        for conn in connections.iter_mut() {
+    for conn in connections.iter_mut() {
+        if ids.is_empty() || ids.contains(&conn.id) {
             conn.set_persistent(persist.value);
 
             state
@@ -455,18 +456,6 @@ async fn persist(
                 .await
                 .map_err(|_| NetworkError::CannotApplyConfig)?;
         }
-    } else {
-        let Some(mut conn) = state.network.get_connection(&id).await? else {
-            return Err(NetworkError::UnknownConnection(id));
-        };
-
-        conn.set_persistent(persist.value);
-
-        state
-            .network
-            .update_connection(conn)
-            .await
-            .map_err(|_| NetworkError::CannotApplyConfig)?;
     }
 
     state
