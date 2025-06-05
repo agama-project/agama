@@ -1,0 +1,355 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "Network settings",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "connections": {
+      "title": "Network connections to be defined",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "title": "Connection ID",
+            "type": "string"
+          },
+          "interface": {
+            "title": "The name of the network interface bound to this connection",
+            "type": "string"
+          },
+          "macAddress": {
+            "title": "Custom MAC address",
+            "description": "Can also be 'preserve', 'permanent', 'random' or 'stable'.",
+            "type": "string"
+          },
+          "mtu": {
+            "description": "Connection MTU",
+            "type": "integer",
+            "minimum": 0
+          },
+          "method4": {
+            "title": "IPv4 configuration method",
+            "type": "string",
+            "enum": ["auto", "manual", "link-local", "disabled"]
+          },
+          "method6": {
+            "title": "IPv6 configuration method",
+            "type": "string",
+            "enum": ["auto", "manual", "link-local", "disabled"]
+          },
+          "gateway4": {
+            "title": "Connection gateway address",
+            "type": "string",
+            "examples": ["192.168.122.1"]
+          },
+          "gateway6": {
+            "title": "Connection gateway address",
+            "type": "string",
+            "examples": ["::ffff:c0a8:7a01"]
+          },
+          "addresses": {
+            "type": "array",
+            "items": {
+              "title": "Connection addresses",
+              "type": "string"
+            }
+          },
+          "nameservers": {
+            "type": "array",
+            "items": {
+              "title": "Nameservers",
+              "description": "IPv4 and/or IPv6 are allowed.",
+              "type": "string"
+            }
+          },
+          "dns_searchlist": {
+            "type": "array",
+            "items": {
+              "description": "DNS search domains",
+              "type": "string",
+              "additionalProperties": false
+            }
+          },
+          "ignoreAutoDns": {
+            "description": "Whether DNS options provided via DHCP are used or not",
+            "type": "boolean"
+          },
+          "status": {
+            "title": "Connection status",
+            "description": "The status of the connection",
+            "type": "string",
+            "enum": ["up", "down", "removed"]
+          },
+          "autoconnect": {
+            "title": "Auto-connected",
+            "description": "Whether the connection should be automatically connected",
+            "type": "boolean"
+          },
+          "persistent": {
+            "title": "Persistent",
+            "description": "Whether the connection should be written to disk permanently",
+            "type": "boolean"
+          },
+          "wireless": {
+            "type": "object",
+            "title": "Wireless configuration",
+            "additionalProperties": false,
+            "properties": {
+              "password": {
+                "title": "Password of the wireless network",
+                "type": "string"
+              },
+              "security": {
+                "title": "Security method/key management",
+                "type": "string",
+                "enum": [
+                  "none",
+                  "owe",
+                  "ieee8021x",
+                  "wpa-psk",
+                  "sae",
+                  "wpa-eap",
+                  "wpa-eap-suite-b-192"
+                ]
+              },
+              "ssid": {
+                "title": "SSID of the wireless network",
+                "type": "string"
+              },
+              "mode": {
+                "title": "Wireless network mode",
+                "type": "string",
+                "enum": ["infrastructure", "adhoc", "mesh", "ap"]
+              },
+              "hidden": {
+                "title": "Indicates that the wireless network is not broadcasting its SSID",
+                "type": "boolean"
+              },
+              "band": {
+                "title": "Frequency band of the wireless network",
+                "type": "string",
+                "enum": ["a", "bg"]
+              },
+              "channel": {
+                "title": "Wireless channel of the wireless network",
+                "type": "integer",
+                "minimum": 0
+              },
+              "bssid": {
+                "title": "Only allow connection to this mac address",
+                "type": "string"
+              },
+              "groupAlgorithms": {
+                "type": "array",
+                "items": {
+                  "title": "A list of group/broadcast encryption algorithms",
+                  "type": "string",
+                  "enum": ["wep40", "wep104", "tkip", "ccmp"]
+                }
+              },
+              "pairwiseAlgorithms": {
+                "type": "array",
+                "items": {
+                  "title": "A list of pairwise encryption algorithms",
+                  "type": "string",
+                  "enum": ["tkip", "ccmp"]
+                }
+              },
+              "wpaProtocolVersions": {
+                "type": "array",
+                "items": {
+                  "title": "A list of allowed WPA protocol versions",
+                  "type": "string",
+                  "enum": ["wpa", "rsn"]
+                }
+              },
+              "pmf": {
+                "title": "Indicates whether Protected Management Frames must be enabled for the connection",
+                "type": "integer"
+              }
+            }
+          },
+          "bond": {
+            "type": "object",
+            "title": "Bonding configuration",
+            "additionalProperties": false,
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "balance-rr",
+                  "active-backup",
+                  "balance-xor",
+                  "broadcast",
+                  "802.3ad",
+                  "balance-tlb",
+                  "balance-alb"
+                ]
+              },
+              "options": {
+                "type": "string"
+              },
+              "ports": {
+                "type": "array",
+                "items": {
+                  "title": "A list of the interfaces or connections to be bonded",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "bridge": {
+            "type": "object",
+            "title": "Bridge configuration",
+            "additionalProperties": false,
+            "properties": {
+              "stp": {
+                "title": "whether the Spanning Tree Protocol is enabled or not",
+                "type": "boolean"
+              },
+              "forwardDelay": {
+                "title": "Spanning Tree Protocol forward delay, in seconds",
+                "type": "integer",
+                "minimum": 0
+              },
+              "priority": {
+                "title": "Spanning Tree Protocol priority (lower values are 'better')",
+                "type": "integer",
+                "minimum": 0
+              },
+              "maxAge": {
+                "title": "Spanning Tree Protocol maximum message age, in seconds",
+                "type": "integer",
+                "minimum": 0
+              },
+              "helloTime": {
+                "title": "Spanning Tree Protocol hello time, in seconds",
+                "type": "integer",
+                "minimum": 0
+              },
+              "ports": {
+                "type": "array",
+                "items": {
+                  "title": "A list of the interface(s) or connection(s) to be part of the bridge",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "match": {
+            "type": "object",
+            "title": "Match settings",
+            "description": "Identifies the network interface to apply the connection settings to",
+            "additionalProperties": false,
+            "properties": {
+              "kernel": {
+                "type": "array",
+                "items": {
+                  "title": "A list of kernel command line arguments to match",
+                  "type": "string"
+                }
+              },
+              "interface": {
+                "type": "array",
+                "items": {
+                  "title": "A list of interface names to match",
+                  "type": "string"
+                }
+              },
+              "driver": {
+                "type": "array",
+                "items": {
+                  "title": "A list of driver names to match",
+                  "type": "string"
+                }
+              },
+              "path": {
+                "type": "array",
+                "items": {
+                  "title": "A list of paths to match against the ID_PATH udev property of devices",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "ieee-8021x": {
+            "type": "object",
+            "title": "IEEE 802.1x (EAP) settings",
+            "properties": {
+              "eap": {
+                "type": "array",
+                "items": {
+                  "title": "List of EAP methods used",
+                  "type": "string",
+                  "enum": ["leap", "md5", "tls", "peap", "ttls", "pwd", "fast"]
+                }
+              },
+              "phase2Auth": {
+                "title": "Phase 2 inner auth method",
+                "type": "string",
+                "enum": [
+                  "pap",
+                  "chap",
+                  "mschap",
+                  "mschapv2",
+                  "gtc",
+                  "otp",
+                  "md5",
+                  "tls"
+                ]
+              },
+              "identity": {
+                "title": "Identity string, often for example the user's login name",
+                "type": "string"
+              },
+              "password": {
+                "title": "Password string used for EAP authentication",
+                "type": "string"
+              },
+              "caCert": {
+                "title": "Path to CA certificate",
+                "type": "string"
+              },
+              "caCertPassword": {
+                "title": "Password string for CA certificate if it is encrypted",
+                "type": "string"
+              },
+              "clientCert": {
+                "title": "Path to client certificate",
+                "type": "string"
+              },
+              "clientCertPassword": {
+                "title": "Password string for client certificate if it is encrypted",
+                "type": "string"
+              },
+              "privateKey": {
+                "title": "Path to private key",
+                "type": "string"
+              },
+              "privateKeyPassword": {
+                "title": "Password string for private key if it is encrypted",
+                "type": "string"
+              },
+              "anonymousIdentity": {
+                "title": "Anonymous identity string for EAP authentication methods",
+                "type": "string"
+              },
+              "peapVersion": {
+                "title": "Which PEAP version is used when PEAP is set as the EAP method in the 'eap' property",
+                "type": "string",
+                "enum": ["0", "1"]
+              },
+              "peapLabel": {
+                "title": "Force the use of the new PEAP label during key derivation",
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

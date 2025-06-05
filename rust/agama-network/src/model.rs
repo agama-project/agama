@@ -632,6 +632,14 @@ impl TryFrom<NetworkConnection> for Connection {
             connection.status = status;
         }
 
+        if let Some(autoconnect) = conn.autoconnect {
+            connection.autoconnect = autoconnect;
+        }
+
+        if let Some(persistent) = conn.persistent {
+            connection.persistent = persistent;
+        }
+
         if let Some(ignore_auto_dns) = conn.ignore_auto_dns {
             connection.ip_config.ignore_auto_dns = ignore_auto_dns;
         }
@@ -661,8 +669,6 @@ impl TryFrom<NetworkConnection> for Connection {
         connection.ip_config.gateway6 = conn.gateway6;
         connection.interface = conn.interface;
         connection.mtu = conn.mtu;
-        connection.autoconnect = conn.autoconnect;
-        connection.persistent = conn.persistent;
 
         Ok(connection)
     }
@@ -689,8 +695,8 @@ impl TryFrom<Connection> for NetworkConnection {
         let ieee_8021x: Option<IEEE8021XSettings> = conn
             .ieee_8021x_config
             .and_then(|x| IEEE8021XSettings::try_from(x).ok());
-        let autoconnect = conn.autoconnect;
-        let persistent = conn.persistent;
+        let autoconnect = Some(conn.autoconnect);
+        let persistent = Some(conn.persistent);
 
         let mut connection = NetworkConnection {
             id,
