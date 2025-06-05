@@ -22,6 +22,7 @@
 require "yast"
 require "agama/question"
 require "agama/software/callbacks/base"
+require "agama/software/repositories_manager"
 
 Yast.import "Pkg"
 
@@ -56,6 +57,12 @@ module Agama
         # @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
         def accept_unsigned_file(filename, repo_id)
           repo = Yast::Pkg.SourceGeneralData(repo_id)
+          if repo
+            if Agama::Software::RepositoriesManager.instance.unsigned_allowed?(repo["alias"])
+              return true
+            end
+          end
+
           message = if repo
             format(
               _("The file %{filename} from %{repo_url} is not digitally signed. The origin " \
@@ -85,9 +92,15 @@ module Agama
         # Callback to handle signature verification failures
         #
         # @param key [Hash] GPG key data (id, name, fingerprint, etc.)
-        # @param _repo_id [Integer] Repository ID
-        def import_gpg_key(key, _repo_id)
+        # @param repo_id [Integer] Repository ID
+        def import_gpg_key(key, repo_id)
           fingerprint = key["fingerprint"].scan(/.{4}/).join(" ")
+          repo = Yast::Pkg.SourceGeneralData(repo_id)
+          if repo && repo_manager.trust_gpg?(repo["alias"], fingerprint)
+            return true
+          end
+
+
           message = format(
             _("The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. " \
               "Do you want to trust this key?"),
@@ -189,6 +202,10 @@ module Agama
         def trust_label
           # TRANSLATORS: button label, trust the GPG key or the signature
           _("Trust")
+        end
+
+        def repo_manager
+          Agama::Software::RepositoriesManager.instance
         end
       end
     end

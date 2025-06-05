@@ -23,6 +23,12 @@ require_relative "../../test_helper"
 require "agama/software/repositories_manager"
 
 describe Agama::Software::RepositoriesManager do
+  subject do
+    res = described_class.instance
+    res.reset
+    res
+  end
+
   # probe and refresh succeed
   let(:repo) do
     instance_double(
