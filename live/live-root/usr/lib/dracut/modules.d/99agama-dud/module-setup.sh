@@ -19,5 +19,5 @@ install() {
   inst_multiple agama-transfer
 
   inst_hook cmdline 99 "$moddir/agama-dud-parser.sh"
-  inst_hook initqueue finish 99 "$moddir/agama-dud-apply.sh"
+  inst_hook initqueue/online 99 "$moddir/agama-dud-apply.sh"
 }
