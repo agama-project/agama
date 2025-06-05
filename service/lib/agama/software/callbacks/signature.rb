@@ -57,10 +57,8 @@ module Agama
         # @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
         def accept_unsigned_file(filename, repo_id)
           repo = Yast::Pkg.SourceGeneralData(repo_id)
-          if repo
-            if Agama::Software::RepositoriesManager.instance.unsigned_allowed?(repo["alias"])
-              return true
-            end
+          if repo && Agama::Software::RepositoriesManager.instance.unsigned_allowed?(repo["alias"])
+            return true
           end
 
           message = if repo
@@ -96,10 +94,7 @@ module Agama
         def import_gpg_key(key, repo_id)
           fingerprint = key["fingerprint"].scan(/.{4}/).join(" ")
           repo = Yast::Pkg.SourceGeneralData(repo_id)
-          if repo && repo_manager.trust_gpg?(repo["alias"], fingerprint)
-            return true
-          end
-
+          return true if repo && repo_manager.trust_gpg?(repo["alias"], fingerprint)
 
           message = format(
             _("The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. " \

@@ -76,7 +76,8 @@ module Agama
           repositories << zypp_repo
 
           @unsigned_repos << @repo["alias"] if repo["allow_unsigned"]
-          @gpg_fingerprints["alias"] = repo["gpg_fingerprints"] || []
+          @gpg_fingerprints["alias"] = repo["gpg_fingerprints"]
+            &.map { |f| f.gsub(/\s/, "") } || []
         end
 
         # load new repos
@@ -88,7 +89,7 @@ module Agama
       end
 
       def trust_gpg?(repo_alias, fingerprint)
-        @gpg_fingerprints[repo_alias]&.include?(fingerprint)
+        @gpg_fingerprints[repo_alias]&.include?(fingerprint.gsub(/\s/, ""))
       end
 
       # Determines if there are registered repositories
