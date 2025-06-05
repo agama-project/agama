@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun  5 15:51:11 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Revert eslint removal and updates it to latest version
+  (gh#agama-project/agama#2445).
+
+-------------------------------------------------------------------
 Thu Jun  5 15:35:42 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Improve caching in the software area by using array-form
