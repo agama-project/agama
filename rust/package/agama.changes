@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun  5 15:42:13 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support to specify for extra repositories if it can be
+  unsigned or list of GPG fingerprints that are trusted
+  (jsc#AGM-125)
+
+-------------------------------------------------------------------
 Thu Jun  5 12:57:11 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use camel case for the extra repositories key (gh#agama-project/agama#2442).
