@@ -58,7 +58,7 @@ jest.mock("~/queries/network", () => ({
 }));
 
 describe("WiredConnectionsList", () => {
-  describe("and the connection is selected to be kept", () => {
+  describe("and the connection is persistent", () => {
     beforeEach(() => {
       mockConnections = [
         new Connection("Newtwork 1", {
@@ -77,7 +77,7 @@ describe("WiredConnectionsList", () => {
     });
   });
 
-  describe("and the connection is not selected to be kept", () => {
+  describe("and the connection is not persistent", () => {
     beforeEach(() => {
       mockConnections = [
         new Connection("Newtwork 1", {

@@ -142,7 +142,7 @@ describe("WifiNetworksList", () => {
       });
     });
 
-    describe("and the connection is selected to be kept", () => {
+    describe("and the connection is persistent", () => {
       beforeEach(() => {
         mockWifiConnections = [
           new Connection("Newtwork 2", {
@@ -180,7 +180,7 @@ describe("WifiNetworksList", () => {
       });
     });
 
-    describe("and the connection is not selected to be kept", () => {
+    describe("and the connection is not persistent", () => {
       beforeEach(() => {
         mockWifiConnections = [
           new Connection("Newtwork 2", {

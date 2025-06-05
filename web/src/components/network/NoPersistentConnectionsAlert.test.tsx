@@ -34,7 +34,7 @@ jest.mock("~/queries/network", () => ({
 }));
 
 describe("NoPersistentConnectionsAlert", () => {
-  describe("when there are connections to be kept", () => {
+  describe("when there are persistent connections", () => {
     beforeEach(() => {
       mockConnections = [
         new Connection("Newtwork 2", {
@@ -62,7 +62,7 @@ describe("NoPersistentConnectionsAlert", () => {
     });
   });
 
-  describe("when there are no connections to be kept", () => {
+  describe("when there are no persistent connections", () => {
     beforeEach(() => {
       mockConnections = [
         new Connection("Newtwork 2", {

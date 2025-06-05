@@ -100,7 +100,7 @@ describe("WifiConnectionDetails", () => {
     within(section).getByText("192.168.69.6");
   });
 
-  it("renders link for editing connection", () => {
+  it("renders link for editing the connection", () => {
     plainRender(<WifiConnectionDetails network={mockNetwork} />);
     const section = screen.getByRole("region", { name: "IP settings" });
     const editLink = within(section).getByRole("link", { name: "Edit" });
