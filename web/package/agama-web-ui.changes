@@ -1,10 +1,16 @@
 -------------------------------------------------------------------
-Tue Jun  3 08:32:23 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+Thu Jun  5 12:32:23 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow to select which connections will be used only for
   installation and warn the user in case that there is no one
   expected to be copied to the target system (no network).
   (gh#agama-project/agama#2402).
+
+-------------------------------------------------------------------
+Thu Jun  5 10:35:40 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Updated Node.js dependencies to their latest available versions
+  as of 2024-06-03 (gh#agama-project/agama#2440).
 
 -------------------------------------------------------------------
 Mon Jun  2 22:29:03 UTC 2025 - David Diaz <dgonzalez@suse.com>
