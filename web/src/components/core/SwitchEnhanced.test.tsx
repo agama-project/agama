@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import SwitchEnhanced from "./SwitchEnhanced";
@@ -46,22 +46,24 @@ describe("SwitchEnhanced", () => {
   });
 
   it("fires onChange handler when toggled", async () => {
-    const onChangeMock = jest.fn();
+    const SwitchEnhancedTestWrapper = () => {
+      const [isChecked, setIsChecked] = useState(false);
+      return (
+        <SwitchEnhanced
+          id="installation-only-connection"
+          label="Use for installation only"
+          description="Not persisted to the installed system."
+          isChecked={isChecked}
+          onChange={() => setIsChecked(!isChecked)}
+        />
+      );
+    };
 
-    const { user } = plainRender(
-      <SwitchEnhanced
-        id="installation-only-connection"
-        label="Use for installation only"
-        description="Not persisted to the installed system."
-        isChecked={false}
-        onChange={onChangeMock}
-      />,
-    );
+    const { user } = plainRender(<SwitchEnhancedTestWrapper />);
 
     const switchElement = screen.getByRole("switch");
-
+    expect(switchElement).not.toBeChecked();
     await user.click(switchElement);
-
-    expect(onChangeMock).toHaveBeenCalledTimes(1);
+    expect(switchElement).toBeChecked();
   });
 });
