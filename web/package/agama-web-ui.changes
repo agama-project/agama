@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun  5 11:26:05 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- The "InstallationPhaseChanged", "ProductChanged" and
+  "IssuesChanged" events were ignored in some situation
+  (possibly causing bug bsc#1241208)
+
+-------------------------------------------------------------------
 Thu Jun  5 10:35:40 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Updated Node.js dependencies to their latest available versions
