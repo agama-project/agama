@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jun  5 12:57:11 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use camel case for the extra repositories key (#agama-project/agama#2442).
+
+-------------------------------------------------------------------
 Wed Jun  4 13:18:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Drop the autologin property from the JSON schema
