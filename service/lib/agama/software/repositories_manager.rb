@@ -75,7 +75,7 @@ module Agama
           @user_repositories << zypp_repo
           repositories << zypp_repo
 
-          @unsigned_repos << @repo["alias"] if repo["allow_unsigned"]
+          @unsigned_repos << repo["alias"] if repo["allow_unsigned"]
           @gpg_fingerprints["alias"] = repo["gpg_fingerprints"]
             &.map { |f| f.gsub(/\s/, "") } || []
         end

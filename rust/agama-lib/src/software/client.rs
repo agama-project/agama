@@ -161,7 +161,7 @@ impl<'a> SoftwareClient<'a> {
                     result.insert("allow_unsigned", allow_unsigned.into());
                 }
                 if let Some(gpg_fingerprints) = params.gpg_fingerprints {
-                    result.insert("gpg_fingerprints", gpg_fingerprints.into())
+                    result.insert("gpg_fingerprints", gpg_fingerprints.into());
                 }
                 result
             })
