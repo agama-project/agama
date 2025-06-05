@@ -23,58 +23,26 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
+import { mockApi, addMockApi, ApiData } from "~/mocks/api";
+import * as deviceFactory from "~/factories/storage/device";
 import { StorageSection } from "~/components/overview";
-import { apiModel } from "~/api/storage/types";
-import { Issue } from "~/types/issues";
 
-const sdaDrive: apiModel.Drive = {
-  name: "/dev/sda",
-  spacePolicy: "delete",
-  partitions: [],
+const defaultApiData: ApiData = {
+  "/api/storage/devices/available_drives": [],
+  "/api/storage/devices/available_md_raids": [],
+  "/api/storage/devices/system": [
+    deviceFactory.generate({ sid: 59, name: "/dev/sda", size: 536870912000 }),
+    deviceFactory.generate({ sid: 60, name: "/dev/sdb", size: 697932185600 }),
+  ],
 };
 
-const sdbDrive: apiModel.Drive = {
-  name: "/dev/sdb",
-  spacePolicy: "delete",
-  partitions: [],
-};
-
-const mockDevices = [
-  { name: "/dev/sda", size: 536870912000 },
-  { name: "/dev/sdb", size: 697932185600 },
-];
-
-const systemError: Issue = {
-  description: "System error",
-  kind: "storage",
-  details: "",
-  source: 1,
-  severity: 1,
-};
-
-const mockUseConfigModelFn = jest.fn();
-const mockUseAvailableDevicesFn = jest.fn();
-const mockUseSystemErrorsFn = jest.fn();
-
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useDevices: () => mockDevices,
-  useAvailableDevices: () => mockUseAvailableDevicesFn(),
-}));
-
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useConfigModel: () => mockUseConfigModelFn(),
-}));
-
-jest.mock("~/queries/issues", () => ({
-  ...jest.requireActual("~/queries/issues"),
-  useSystemErrors: () => mockUseSystemErrorsFn(),
-}));
+beforeEach(() => {
+  mockApi(defaultApiData);
+});
 
 describe("when the configuration does not include any device", () => {
   beforeEach(() => {
-    mockUseConfigModelFn.mockReturnValue({ drives: [] });
+    addMockApi({ "/api/storage/config_model": { drives: [] } });
   });
 
   it("indicates that a device is not selected", async () => {
@@ -86,7 +54,11 @@ describe("when the configuration does not include any device", () => {
 
 describe("when the configuration contains one drive", () => {
   beforeEach(() => {
-    mockUseConfigModelFn.mockReturnValue({ drives: [sdaDrive] });
+    addMockApi({
+      "/api/storage/config_model": {
+        drives: [{ name: "/dev/sda", spacePolicy: "delete" }],
+      },
+    });
   });
 
   it("renders the proposal summary", async () => {
@@ -99,7 +71,11 @@ describe("when the configuration contains one drive", () => {
 
   describe("and the space policy is set to 'resize'", () => {
     beforeEach(() => {
-      mockUseConfigModelFn.mockReturnValue({ drives: [{ ...sdaDrive, spacePolicy: "resize" }] });
+      addMockApi({
+        "/api/storage/config_model": {
+          drives: [{ name: "/dev/sda", spacePolicy: "resize" }],
+        },
+      });
     });
 
     it("indicates that partitions may be shrunk", async () => {
@@ -111,7 +87,11 @@ describe("when the configuration contains one drive", () => {
 
   describe("and the space policy is set to 'keep'", () => {
     beforeEach(() => {
-      mockUseConfigModelFn.mockReturnValue({ drives: [{ ...sdaDrive, spacePolicy: "keep" }] });
+      addMockApi({
+        "/api/storage/config_model": {
+          drives: [{ name: "/dev/sda", spacePolicy: "keep" }],
+        },
+      });
     });
 
     it("indicates that partitions will be kept", async () => {
@@ -123,7 +103,11 @@ describe("when the configuration contains one drive", () => {
 
   describe("and the space policy is set to 'custom'", () => {
     beforeEach(() => {
-      mockUseConfigModelFn.mockReturnValue({ drives: [{ ...sdaDrive, spacePolicy: "custom" }] });
+      addMockApi({
+        "/api/storage/config_model": {
+          drives: [{ name: "/dev/sda", spacePolicy: "custom" }],
+        },
+      });
     });
 
     it("indicates that custom strategy for allocating space is set", async () => {
@@ -135,7 +119,11 @@ describe("when the configuration contains one drive", () => {
 
   describe("and the drive matches no disk", () => {
     beforeEach(() => {
-      mockUseConfigModelFn.mockReturnValue({ drives: [{ ...sdaDrive, name: null }] });
+      addMockApi({
+        "/api/storage/config_model": {
+          drives: [{ name: undefined, spacePolicy: "delete" }],
+        },
+      });
     });
 
     it("indicates that a device is not selected", async () => {
@@ -148,7 +136,14 @@ describe("when the configuration contains one drive", () => {
 
 describe("when the configuration contains several drives", () => {
   beforeEach(() => {
-    mockUseConfigModelFn.mockReturnValue({ drives: [sdaDrive, sdbDrive] });
+    addMockApi({
+      "/api/storage/config_model": {
+        drives: [
+          { name: "/dev/sda", spacePolicy: "delete" },
+          { name: "/dev/sdb", spacePolicy: "delete" },
+        ],
+      },
+    });
   });
 
   it("renders the proposal summary", async () => {
@@ -160,8 +155,13 @@ describe("when the configuration contains several drives", () => {
 
   describe("but one of them has a different space policy", () => {
     beforeEach(() => {
-      mockUseConfigModelFn.mockReturnValue({
-        drives: [sdaDrive, { ...sdbDrive, spacePolicy: "resize" }],
+      addMockApi({
+        "/api/storage/config_model": {
+          drives: [
+            { name: "/dev/sda", spacePolicy: "delete" },
+            { name: "/dev/sdb", spacePolicy: "resize" },
+          ],
+        },
       });
     });
 
@@ -175,19 +175,15 @@ describe("when the configuration contains several drives", () => {
 
 describe("when there is no configuration model (unsupported features)", () => {
   beforeEach(() => {
-    mockUseConfigModelFn.mockReturnValue(undefined);
+    addMockApi({ "/api/storage/config_model": null });
   });
 
   describe("if the storage proposal succeeded", () => {
     beforeEach(() => {
-      mockUseSystemErrorsFn.mockReturnValue([]);
+      addMockApi({ "/api/storage/issues": [] });
     });
 
-    describe("and there are no available disks", () => {
-      beforeEach(() => {
-        mockUseAvailableDevicesFn.mockReturnValue([]);
-      });
-
+    describe("and there are no available devices", () => {
       it("indicates that an unhandled configuration was used", async () => {
         plainRender(<StorageSection />);
         await screen.findByText(/advanced configuration/);
@@ -196,7 +192,9 @@ describe("when there is no configuration model (unsupported features)", () => {
 
     describe("and there are available disks", () => {
       beforeEach(() => {
-        mockUseAvailableDevicesFn.mockReturnValue(mockDevices);
+        addMockApi({
+          "/api/storage/devices/available_drives": [59],
+        });
       });
 
       it("indicates that an unhandled configuration was used", async () => {
@@ -208,23 +206,29 @@ describe("when there is no configuration model (unsupported features)", () => {
 
   describe("if the storage proposal was not possible", () => {
     beforeEach(() => {
-      mockUseSystemErrorsFn.mockReturnValue([systemError]);
+      addMockApi({
+        "/api/storage/issues": [
+          {
+            description: "System error",
+            kind: "storage",
+            details: "",
+            source: 1,
+            severity: 1,
+          },
+        ],
+      });
     });
 
-    describe("and there are no available disks", () => {
-      beforeEach(() => {
-        mockUseAvailableDevicesFn.mockReturnValue([]);
-      });
-
+    describe("and there are no available devices", () => {
       it("indicates that there are no available disks", async () => {
         plainRender(<StorageSection />);
         await screen.findByText(/no disks available/);
       });
     });
 
-    describe("and there are available disks", () => {
+    describe("and there are available devices", () => {
       beforeEach(() => {
-        mockUseAvailableDevicesFn.mockReturnValue(mockDevices);
+        addMockApi({ "/api/storage/devices/available_drives": [59] });
       });
 
       it("indicates that an unhandled configuration was used", async () => {
