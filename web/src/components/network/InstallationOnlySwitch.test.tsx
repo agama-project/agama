@@ -26,7 +26,7 @@ import { plainRender } from "~/test-utils";
 import InstallationOnlySwitch from "./InstallationOnlySwitch";
 import { Connection, ConnectionMethod, ConnectionOptions, ConnectionState } from "~/types/network";
 
-const mockKeepMutation = jest.fn();
+const mockPersistMutation = jest.fn();
 const mockConnection = (options: Partial<ConnectionOptions> = {}) =>
   new Connection("Newtwork 2", {
     method4: ConnectionMethod.AUTO,
@@ -42,8 +42,8 @@ const mockConnection = (options: Partial<ConnectionOptions> = {}) =>
 
 jest.mock("~/queries/network", () => ({
   ...jest.requireActual("~/queries/network"),
-  useConnectionKeepMutation: () => ({
-    mutateAsync: mockKeepMutation,
+  useConnectionPersistMutation: () => ({
+    mutateAsync: mockPersistMutation,
   }),
 }));
 
@@ -74,6 +74,6 @@ describe("InstallationOnlySwitch", () => {
     const { user } = plainRender(<InstallationOnlySwitch connection={connection} />);
     const switchInput = screen.getByRole("switch", { name: "Use for installation only" });
     await user.click(switchInput);
-    expect(mockKeepMutation).toHaveBeenCalledWith(connection);
+    expect(mockPersistMutation).toHaveBeenCalledWith(connection);
   });
 });
