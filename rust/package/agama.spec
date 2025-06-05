@@ -229,7 +229,7 @@ echo $PATH
 %{_datadir}/zsh/*
 
 %files -n agama-transfer
-%{_bindir}/agama
+%{_bindir}/agama-transfer
 
 %files -n agama-openapi
 %dir %{_datadir}/agama
