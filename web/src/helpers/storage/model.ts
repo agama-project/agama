@@ -23,6 +23,19 @@
 import { apiModel } from "~/api/storage/types";
 import { model } from "~/types/storage";
 
+function buildBoot(apiModel: apiModel.Config, model: model.Model) {
+  const getDevice = (): model.Drive | model.MdRaid | null => {
+    const targets = [...model.drives, ...model.mdRaids];
+    return targets.find((d) => d.name && d.name === apiModel.boot?.device?.name) || null;
+  };
+
+  return {
+    configure: apiModel?.boot?.configure || false,
+    isDefault: apiModel?.boot?.device?.default || false,
+    getDevice,
+  };
+}
+
 function buildPartition(partitionData: apiModel.Partition): model.Partition {
   const isNew = (): boolean => {
     return !partitionData.name;
@@ -93,12 +106,7 @@ function partitionableProperties(
   };
 
   const isUsed = (): boolean => {
-    return (
-      isExplicitBoot() ||
-      isTargetDevice() ||
-      apiDevice.mountPath !== undefined ||
-      apiDevice.partitions?.some((p) => p.mountPath)
-    );
+    return isExplicitBoot() || isTargetDevice() || getMountPaths().length > 0;
   };
 
   const isAddingPartitions = (): boolean => {
@@ -191,7 +199,14 @@ function buildVolumeGroup(
 }
 
 function buildModel(apiModel: apiModel.Config): model.Model {
+  const defaultBoot: model.Boot = {
+    configure: false,
+    isDefault: false,
+    getDevice: () => null,
+  };
+
   const model: model.Model = {
+    boot: defaultBoot,
     drives: [],
     mdRaids: [],
     volumeGroups: [],
@@ -219,6 +234,7 @@ function buildModel(apiModel: apiModel.Config): model.Model {
   };
 
   // Important! Modify the model object instead of assigning a new one.
+  model.boot = buildBoot(apiModel, model);
   model.drives = buildDrives();
   model.mdRaids = buildMdRaids();
   model.volumeGroups = buildVolumeGroups();

@@ -31,7 +31,13 @@ import { useCandidateDevices } from "~/hooks/storage/system";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { useBoot } from "~/queries/storage/config-model";
+import { useDevices } from "~/queries/storage";
+import { useModel } from "~/hooks/storage/model";
+import {
+  useSetBootDevice,
+  useSetDefaultBootDevice,
+  useDisableBootConfig,
+} from "~/hooks/storage/boot";
 
 // FIXME: improve classNames
 // FIXME: improve and rename to BootSelectionDialog
@@ -54,35 +60,45 @@ type BootSelectionState = {
  */
 export default function BootSelectionDialog() {
   const [state, setState] = useState<BootSelectionState>({ load: false });
-  const candidateDevices = useCandidateDevices();
   const navigate = useNavigate();
-  const boot = useBoot();
+  const devices = useDevices("system");
+  const candidateDevices = useCandidateDevices();
+  const model = useModel({ suspense: true });
+  const setBootDevice = useSetBootDevice();
+  const setDefaultBootDevice = useSetDefaultBootDevice();
+  const disableBootConfig = useDisableBootConfig();
 
   useEffect(() => {
     if (state.load) return;
 
+    const boot = model?.boot;
     let selectedOption: string;
 
-    if (!boot.configure) {
+    if (!boot?.configure) {
       selectedOption = BOOT_DISABLED_ID;
-    } else if (boot.isDefault) {
+    } else if (boot?.isDefault) {
       selectedOption = BOOT_AUTO_ID;
     } else {
       selectedOption = BOOT_MANUAL_ID;
     }
 
-    const bootDevice = candidateDevices.find((d) => d.name === boot.deviceName);
+    const bootDevice = devices.find((d) => d.name === boot.getDevice()?.name);
     const defaultBootDevice = boot.isDefault ? bootDevice : undefined;
+    let candidates = [...candidateDevices];
+    // Add the current boot device if it does not belong to the candidate devices.
+    if (bootDevice && !candidates.includes(bootDevice)) {
+      candidates = [bootDevice, ...candidates];
+    }
 
     setState({
       load: true,
       bootDevice: bootDevice || candidateDevices[0],
       configureBoot: boot.configure,
       defaultBootDevice,
-      candidateDevices,
+      candidateDevices: candidates,
       selectedOption,
     });
-  }, [candidateDevices, boot, state.load]);
+  }, [devices, candidateDevices, model, state.load]);
 
   if (!state.load) return;
 
@@ -91,13 +107,13 @@ export default function BootSelectionDialog() {
 
     switch (state.selectedOption) {
       case BOOT_DISABLED_ID:
-        boot.disable();
+        disableBootConfig();
         break;
       case BOOT_AUTO_ID:
-        boot.setDefault();
+        setDefaultBootDevice();
         break;
       default:
-        boot.setDevice(state.bootDevice?.name);
+        setBootDevice(state.bootDevice?.name);
     }
 
     navigate("..");
@@ -178,7 +194,7 @@ partitions in the appropriate disk.",
               }
               body={
                 <Stack hasGutter>
-                  <div>{_("Partitions to boot will be allocated at the following device.")}</div>
+                  <p>{_("Partitions to boot will be allocated at the following device.")}</p>
                   <DevicesFormSelect
                     aria-label={_("Choose a disk for placing the boot loader")}
                     name="bootDevice"
