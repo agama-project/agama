@@ -1,8 +1,14 @@
 -------------------------------------------------------------------
-Wed Jun  4 10:22:58 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+Thu Jun  5 10:22:58 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Added support for moving the connections from memory only to disk
   (gh#agama-project/agama#2402).
+
+-------------------------------------------------------------------
+Wed Jun  4 13:18:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the autologin property from the JSON schema
+  (gh#agama-project/agama#2438).
 
 -------------------------------------------------------------------
 Tue Jun  3 12:30:40 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
