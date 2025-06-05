@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Thu Jun  5 12:57:11 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use camel case for the extra repositories key (gh#agama-project/agama#2442).
+
+-------------------------------------------------------------------
+Wed Jun  4 13:18:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the autologin property from the JSON schema
+  (gh#agama-project/agama#2438).
+
+-------------------------------------------------------------------
 Tue Jun  3 12:30:40 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Add to api/software/config ability to set/get list of additional
