@@ -23,7 +23,7 @@
 import React from "react";
 import MenuButton from "~/components/core/MenuButton";
 import NewVgMenuOption from "./NewVgMenuOption";
-import { useLongestDiskTitle } from "~/queries/storage";
+import { useLongestDiskTitle } from "~/hooks/storage/system";
 import { deviceLabel } from "~/components/storage/utils";
 import * as model from "~/types/storage/model";
 import { StorageDevice } from "~/types/storage";

@@ -27,7 +27,7 @@ import { DevicesFormSelect } from "~/components/storage";
 import { Page, SubtleContent } from "~/components/core";
 import { deviceLabel } from "~/components/storage/utils";
 import { StorageDevice } from "~/types/storage";
-import { useAvailableDevices } from "~/queries/storage";
+import { useCandidateDevices } from "~/hooks/storage/system";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
@@ -46,7 +46,7 @@ type BootSelectionState = {
   configureBoot?: boolean;
   bootDevice?: StorageDevice;
   defaultBootDevice?: StorageDevice;
-  availableDevices?: StorageDevice[];
+  candidateDevices?: StorageDevice[];
 };
 
 /**
@@ -54,7 +54,7 @@ type BootSelectionState = {
  */
 export default function BootSelectionDialog() {
   const [state, setState] = useState<BootSelectionState>({ load: false });
-  const availableDevices = useAvailableDevices();
+  const candidateDevices = useCandidateDevices();
   const navigate = useNavigate();
   const boot = useBoot();
 
@@ -71,18 +71,18 @@ export default function BootSelectionDialog() {
       selectedOption = BOOT_MANUAL_ID;
     }
 
-    const bootDevice = availableDevices.find((d) => d.name === boot.deviceName);
+    const bootDevice = candidateDevices.find((d) => d.name === boot.deviceName);
     const defaultBootDevice = boot.isDefault ? bootDevice : undefined;
 
     setState({
       load: true,
-      bootDevice: bootDevice || availableDevices[0],
+      bootDevice: bootDevice || candidateDevices[0],
       configureBoot: boot.configure,
       defaultBootDevice,
-      availableDevices,
+      candidateDevices,
       selectedOption,
     });
-  }, [availableDevices, boot, state.load]);
+  }, [candidateDevices, boot, state.load]);
 
   if (!state.load) return;
 
@@ -182,7 +182,7 @@ partitions in the appropriate disk.",
                   <DevicesFormSelect
                     aria-label={_("Choose a disk for placing the boot loader")}
                     name="bootDevice"
-                    devices={state?.availableDevices || []}
+                    devices={state?.candidateDevices || []}
                     selectedDevice={state.bootDevice}
                     onChange={changeBootDevice}
                     isDisabled={state.selectedOption !== BOOT_MANUAL_ID}
