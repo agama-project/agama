@@ -99,7 +99,7 @@ const sdc: StorageDevice = {
   udevPaths: ["pci-0000:00-19"],
 };
 
-const mockAvailableDevices = [sda, sdb, sdc];
+const mockCandidateDevices = [sda, sdb, sdc];
 
 const mockBoot: BootHook = {
   configure: false,
@@ -115,9 +115,9 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigateFn,
 }));
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useAvailableDevices: () => mockAvailableDevices,
+jest.mock("~/hooks/storage/system", () => ({
+  ...jest.requireActual("~/hooks/storage/system"),
+  useCandidateDevices: () => mockCandidateDevices,
 }));
 
 jest.mock("~/queries/storage/config-model", () => ({

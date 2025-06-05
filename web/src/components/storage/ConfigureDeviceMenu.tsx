@@ -25,7 +25,7 @@ import { useNavigate } from "react-router-dom";
 import { Split, Flex, Label, Divider } from "@patternfly/react-core";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import MenuDeviceDescription from "./MenuDeviceDescription";
-import { useAvailableDevices, useLongestDiskTitle } from "~/queries/storage";
+import { useAvailableDrives, useLongestDiskTitle } from "~/hooks/storage/system";
 import { useConfigModel, useModel } from "~/queries/storage/config-model";
 import { deviceLabel } from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -110,7 +110,7 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
   const navigate = useNavigate();
   const model = useConfigModel({ suspense: true });
   const { addDrive } = useModel();
-  const allDevices = useAvailableDevices();
+  const allDevices = useAvailableDrives();
 
   const drivesNames = model.drives.map((d) => d.name);
   const drivesCount = drivesNames.length;
