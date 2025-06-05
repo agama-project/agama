@@ -214,6 +214,7 @@
         <package name="glibc-locale"/>
         <package name="ca-certificates"/>
         <package name="ca-certificates-mozilla"/>
+        <package name="agama-transfer"/>
     </packages>
     <packages type="bootstrap" profiles="Leap_16.0,Leap_16.0_PXE">
         <package name="Leap-release"/>
