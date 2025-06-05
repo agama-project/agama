@@ -20,27 +20,12 @@
  * find current contact information at www.suse.com.
  */
 
-import { useApiModel, useUpdateApiModel } from "~/hooks/storage/api-model";
-import { addDrive } from "~/helpers/storage/drive";
-import { QueryHookOptions } from "~/types/queries";
-import { model, data } from "~/types/storage";
-import { useModel } from "~/hooks/storage/model";
+import { apiModel } from "~/api/storage/types";
+import { data } from "~/types/storage";
+import { addSearched } from "~/helpers/storage/search";
 
-function useDrive(name: string, options?: QueryHookOptions): model.Drive | null {
-  const model = useModel(options);
-  const drive = model?.drives?.find((d) => d.name === name);
-  return drive || null;
+function addReusedMdRaid(apiModel: apiModel.Config, data: data.MdRaid): apiModel.Config {
+  return addSearched(apiModel, data.name, "mdRaids");
 }
 
-type AddDriveFn = (data: data.Drive) => void;
-
-function useAddDrive(options?: QueryHookOptions): AddDriveFn {
-  const apiModel = useApiModel(options);
-  const updateApiModel = useUpdateApiModel();
-  return (data: data.Drive) => {
-    updateApiModel(addDrive(apiModel, data));
-  };
-}
-
-export { useDrive, useAddDrive };
-export type { AddDriveFn };
+export { addReusedMdRaid };

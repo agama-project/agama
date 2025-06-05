@@ -21,26 +21,11 @@
  */
 
 import { apiModel } from "~/api/storage/types";
-import { model } from "~/types/storage";
-import { copyApiModel } from "~/helpers/storage/api-model";
-import { buildModel } from "~/helpers/storage/model";
+import { data } from "~/types/storage";
+import { addSearched } from "~/helpers/storage/search";
 
-function buildDrive(apiModel: apiModel.Config, name: string): model.Drive | undefined {
-  const model = buildModel(apiModel);
-  return model.drives.find((d) => d.name === name);
+function addDrive(apiModel: apiModel.Config, data: data.Drive): apiModel.Config {
+  return addSearched(apiModel, data.name, "drives");
 }
 
-function deleteIfUnused(apiModel: apiModel.Config, name: string): apiModel.Config {
-  apiModel = copyApiModel(apiModel);
-
-  const index = (apiModel.drives || []).findIndex((d) => d.name === name);
-  if (index === -1) return apiModel;
-
-  const drive = buildDrive(apiModel, name);
-  if (!drive || drive.isUsed) return apiModel;
-
-  apiModel.drives.splice(index, 1);
-  return apiModel;
-}
-
-export { deleteIfUnused };
+export { addDrive };
