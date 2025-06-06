@@ -29,6 +29,19 @@ describe Agama::Storage::System do
 
   let(:disk_analyzer) { Y2Storage::StorageManager.instance.probed_disk_analyzer }
 
+  describe "#candidate_devices" do
+    let(:scenario) { "md_raids.yaml" }
+
+    before do
+      allow(disk_analyzer).to receive(:supports_boot_partitions?) { |d| d.name != "/dev/md2" }
+    end
+
+    it "includes all devices suitable for installation" do
+      expect(subject.candidate_devices.map(&:name))
+        .to contain_exactly("/dev/vda", "/dev/vdb", "/dev/md0", "/dev/md1")
+    end
+  end
+
   describe "#candidate_drives" do
     let(:scenario) { "disks.yaml" }
 

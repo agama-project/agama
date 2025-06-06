@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -52,4 +52,20 @@ pub trait Devices {
     fn actions(
         &self,
     ) -> zbus::Result<Vec<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>>;
+
+    /// AvailableDrives property
+    #[zbus(property)]
+    fn available_drives(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
+
+    /// CandidateDrives property
+    #[zbus(property)]
+    fn candidate_drives(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
+
+    /// AvailableMdRaids property
+    #[zbus(property)]
+    fn available_md_raids(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
+
+    /// CandidateMdRaids property
+    #[zbus(property)]
+    fn candidate_md_raids(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 }

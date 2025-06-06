@@ -68,13 +68,6 @@ module Agama
         @on_calculate_callbacks << block
       end
 
-      # Available devices for installation.
-      #
-      # @return [Array<Y2Storage::Device>]
-      def available_devices
-        storage_system.candidate_drives
-      end
-
       # Default storage config according to the JSON schema.
       #
       # The default config depends on the target device.
@@ -127,7 +120,7 @@ module Agama
         return unless storage_manager.probed?
 
         config = ConfigConversions::FromModel
-          .new(model_json, product_config: product_config)
+          .new(model_json, product_config: product_config, storage_system: storage_system)
           .convert
 
         ConfigSolver.new(product_config, storage_system).solve(config)
@@ -167,7 +160,7 @@ module Agama
       # @return [Boolean] Whether the proposal successes.
       def calculate_from_model(model_json)
         config = ConfigConversions::FromModel
-          .new(model_json, product_config: product_config)
+          .new(model_json, product_config: product_config, storage_system: storage_system)
           .convert
 
         calculate_agama(config)
@@ -260,6 +253,11 @@ module Agama
         strategy.settings
       end
 
+      # @return [Storage::System]
+      def storage_system
+        @storage_system ||= Storage::System.new
+      end
+
     private
 
       # @return [Agama::Config]
@@ -346,11 +344,6 @@ module Agama
 
         @on_calculate_callbacks.each(&:call)
         success?
-      end
-
-      # @return [Storage::System]
-      def storage_system
-        @storage_system ||= Storage::System.new
       end
 
       # @return [Y2Storage::Proposal::Base, nil]

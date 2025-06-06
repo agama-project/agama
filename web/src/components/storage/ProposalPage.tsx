@@ -45,8 +45,8 @@ import ProposalFailedInfo from "./ProposalFailedInfo";
 import ProposalResultSection from "./ProposalResultSection";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import UnsupportedModelInfo from "./UnsupportedModelInfo";
+import { useAvailableDevices } from "~/hooks/storage/system";
 import {
-  useAvailableDevices,
   useResetConfigMutation,
   useDeprecated,
   useDeprecatedChanges,

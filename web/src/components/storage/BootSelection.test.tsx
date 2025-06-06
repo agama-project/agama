@@ -25,7 +25,6 @@ import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import BootSelection from "./BootSelection";
 import { StorageDevice } from "~/types/storage";
-import { BootHook } from "~/queries/storage/config-model";
 
 // FIXME: drop this mock once a better solution for dealing with
 // ProductRegistrationAlert, which uses a query with suspense,
@@ -99,33 +98,52 @@ const sdc: StorageDevice = {
   udevPaths: ["pci-0000:00-19"],
 };
 
-const mockAvailableDevices = [sda, sdb, sdc];
-
-const mockBoot: BootHook = {
-  configure: false,
-  isDefault: false,
-  deviceName: undefined,
-  setDevice: jest.fn(),
-  setDefault: jest.fn(),
-  disable: jest.fn(),
-};
-
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockNavigateFn,
 }));
 
+const mockUseDevices = jest.fn();
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
-  useAvailableDevices: () => mockAvailableDevices,
+  useDevices: () => mockUseDevices(),
 }));
 
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useBoot: () => mockBoot,
+const mockUseCandidateDevices = jest.fn();
+jest.mock("~/hooks/storage/system", () => ({
+  ...jest.requireActual("~/hooks/storage/system"),
+  useCandidateDevices: () => mockUseCandidateDevices(),
+}));
+
+const mockUseModel = jest.fn();
+jest.mock("~/hooks/storage/model", () => ({
+  ...jest.requireActual("~/hooks/storage/model"),
+  useModel: () => mockUseModel(),
+}));
+
+const mockUseSetBootDevice = jest.fn();
+const mockUseSetDefaultBootDevice = jest.fn();
+const mockUseDisableBootConfig = jest.fn();
+jest.mock("~/hooks/storage/boot", () => ({
+  ...jest.requireActual("~/hooks/storage/boot"),
+  useSetBootDevice: () => mockUseSetBootDevice,
+  useSetDefaultBootDevice: () => mockUseSetDefaultBootDevice,
+  useDisableBootConfig: () => mockUseDisableBootConfig,
 }));
 
 describe("BootSelection", () => {
+  beforeEach(() => {
+    mockUseDevices.mockReturnValue([sda, sdb, sdc]);
+    mockUseCandidateDevices.mockReturnValue([sda, sdb, sdc]);
+    mockUseModel.mockReturnValue({
+      boot: {
+        configure: true,
+        isDefault: true,
+        getDevice: () => null,
+      },
+    });
+  });
+
   const automaticOption = () => screen.getByRole("radio", { name: "Automatic" });
   const selectDiskOption = () => screen.getByRole("radio", { name: "Select a disk" });
   const notConfigureOption = () => screen.getByRole("radio", { name: "Do not configure" });
@@ -148,11 +166,6 @@ describe("BootSelection", () => {
   });
 
   describe("if the current value is set to boot from the installation disk", () => {
-    beforeEach(() => {
-      mockBoot.configure = true;
-      mockBoot.isDefault = true;
-    });
-
     it("selects 'Automatic' option by default", () => {
       installerRender(<BootSelection />);
       expect(automaticOption()).toBeChecked();
@@ -164,9 +177,13 @@ describe("BootSelection", () => {
 
   describe("if the current value is set to boot from a selected disk", () => {
     beforeEach(() => {
-      mockBoot.configure = true;
-      mockBoot.isDefault = false;
-      mockBoot.deviceName = sda.name;
+      mockUseModel.mockReturnValue({
+        boot: {
+          configure: true,
+          isDefault: false,
+          getDevice: () => sda,
+        },
+      });
     });
 
     it("selects 'Select a disk' option by default", () => {
@@ -180,7 +197,13 @@ describe("BootSelection", () => {
 
   describe("if the current value is set to not configure boot", () => {
     beforeEach(() => {
-      mockBoot.configure = false;
+      mockUseModel.mockReturnValue({
+        boot: {
+          configure: false,
+          isDefault: false,
+          getDevice: () => null,
+        },
+      });
     });
 
     it("selects 'Do not configure' option by default", () => {
@@ -192,15 +215,35 @@ describe("BootSelection", () => {
     });
   });
 
+  describe("if the current boot device is not a candidate device", () => {
+    beforeEach(() => {
+      mockUseCandidateDevices.mockReturnValue([sdb, sdc]);
+      mockUseModel.mockReturnValue({
+        boot: {
+          configure: true,
+          isDefault: false,
+          getDevice: () => sda,
+        },
+      });
+    });
+
+    it("offers the current boot device as an option", async () => {
+      const { user } = installerRender(<BootSelection />);
+      await user.click(selectDiskOption());
+      const selector = diskSelector();
+      within(selector).getByRole("option", { name: /sda/ });
+    });
+  });
+
   it("does not change the boot options on cancel", async () => {
     const { user } = installerRender(<BootSelection />);
     const cancel = screen.getByRole("link", { name: "Cancel" });
 
     await user.click(cancel);
 
-    expect(mockBoot.setDevice).not.toHaveBeenCalled();
-    expect(mockBoot.setDefault).not.toHaveBeenCalled();
-    expect(mockBoot.disable).not.toHaveBeenCalled();
+    expect(mockUseSetBootDevice).not.toHaveBeenCalled();
+    expect(mockUseSetDefaultBootDevice).not.toHaveBeenCalled();
+    expect(mockUseDisableBootConfig).not.toHaveBeenCalled();
   });
 
   it("applies the expected boot options when 'Automatic' is selected", async () => {
@@ -210,7 +253,7 @@ describe("BootSelection", () => {
     const accept = screen.getByRole("button", { name: "Accept" });
     await user.click(accept);
 
-    expect(mockBoot.setDefault).toHaveBeenCalled();
+    expect(mockUseSetDefaultBootDevice).toHaveBeenCalled();
   });
 
   it("applies the expected boot options when a disk is selected", async () => {
@@ -224,7 +267,7 @@ describe("BootSelection", () => {
     const accept = screen.getByRole("button", { name: "Accept" });
     await user.click(accept);
 
-    expect(mockBoot.setDevice).toHaveBeenCalledWith(sdb.name);
+    expect(mockUseSetBootDevice).toHaveBeenCalledWith(sdb.name);
   });
 
   it("applies the expected boot options when 'No configure' is selected", async () => {
@@ -234,6 +277,6 @@ describe("BootSelection", () => {
     const accept = screen.getByRole("button", { name: "Accept" });
     await user.click(accept);
 
-    expect(mockBoot.disable).toHaveBeenCalled();
+    expect(mockUseDisableBootConfig).toHaveBeenCalled();
   });
 });

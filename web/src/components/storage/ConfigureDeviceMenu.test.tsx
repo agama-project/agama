@@ -70,9 +70,9 @@ const vdbDrive: apiModel.Drive = {
 const mockUseConfigModelFn = jest.fn();
 const mockAddDriveFn = jest.fn();
 
-jest.mock("~/queries/storage", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useAvailableDevices: () => [vda, vdb],
+jest.mock("~/hooks/storage/system", () => ({
+  ...jest.requireActual("~/hooks/storage/system"),
+  useAvailableDrives: () => [vda, vdb],
   useLongestDiskTitle: () => 20,
 }));
 

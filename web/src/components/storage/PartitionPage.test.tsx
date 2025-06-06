@@ -145,7 +145,6 @@ const mockHomeVolume: Volume = {
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
-  useAvailableDevices: () => [sda],
   useDevices: () => [sda],
   useVolume: () => mockHomeVolume,
 }));

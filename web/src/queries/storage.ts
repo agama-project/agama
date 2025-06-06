@@ -21,7 +21,7 @@
  */
 
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import React, { useMemo } from "react";
+import React from "react";
 import {
   fetchConfig,
   setConfig,
@@ -32,7 +32,10 @@ import {
   fetchVolume,
   fetchVolumes,
   fetchProductParams,
-  fetchUsableDevices,
+  fetchAvailableDrives,
+  fetchCandidateDrives,
+  fetchAvailableMdRaids,
+  fetchCandidateMdRaids,
   reprobe,
 } from "~/api/storage";
 import { fetchDevices, fetchDevicesDirty } from "~/api/storage/devices";
@@ -40,7 +43,6 @@ import { useInstallerClient } from "~/context/installer";
 import { config, apiModel, ProductParams, Volume } from "~/api/storage/types";
 import { Action, StorageDevice } from "~/types/storage";
 import { QueryHookOptions } from "~/types/queries";
-import { deviceLabel } from "~/components/storage/utils";
 
 const configQuery = {
   queryKey: ["storage", "config"],
@@ -66,9 +68,27 @@ const devicesQuery = (scope: "result" | "system") => ({
   staleTime: Infinity,
 });
 
-const usableDevicesQuery = () => ({
-  queryKey: ["storage", "usableDevices"],
-  queryFn: fetchUsableDevices,
+const availableDrivesQuery = () => ({
+  queryKey: ["storage", "availableDrives"],
+  queryFn: fetchAvailableDrives,
+  staleTime: Infinity,
+});
+
+const candidateDrivesQuery = () => ({
+  queryKey: ["storage", "candidateDrives"],
+  queryFn: fetchCandidateDrives,
+  staleTime: Infinity,
+});
+
+const availableMdRaidsQuery = () => ({
+  queryKey: ["storage", "availableMdRaids"],
+  queryFn: fetchAvailableMdRaids,
+  staleTime: Infinity,
+});
+
+const candidateMdRaidsQuery = () => ({
+  queryKey: ["storage", "candidateMdRaids"],
+  queryFn: fetchCandidateMdRaids,
   staleTime: Infinity,
 });
 
@@ -153,51 +173,6 @@ const useDevices = (
 };
 
 /**
- * Hook that returns the list of available devices for installation.
- */
-const useAvailableDevices = (): StorageDevice[] => {
-  const devices = useDevices("system", { suspense: true });
-  const { data: usableDevices } = useSuspenseQuery(usableDevicesQuery());
-
-  const availableDevices = useMemo(() => {
-    /** @todo Extract this function to some shared place. */
-    const findDevice = (devices: StorageDevice[], sid: number): StorageDevice | undefined => {
-      const device = devices.find((d) => d.sid === sid);
-      if (device === undefined) console.warn("Device not found:", sid);
-
-      return device;
-    };
-    return usableDevices.map((sid: number) => findDevice(devices, sid)).filter((d) => d);
-  }, [devices, usableDevices]);
-
-  return availableDevices;
-};
-
-/**
- * Temporary hook that calculates the longest string the UI could need to use to identify a disk.
- *
- * FIXME: This is part of a very hacky solution used to enforce the width of the drill-down menus.
- * That is needed because our MenuButton widget is somehow buggy and it cannot properly set the
- * width of its elements. This hook is totally coupled to the format used in those menus to
- * represent the devices (with a first line including name, size and operating systems).
- */
-const useLongestDiskTitle = (): number => {
-  const availableDevices = useAvailableDevices();
-
-  const longest = useMemo(() => {
-    const titles = availableDevices.map((dev) => {
-      const label = deviceLabel(dev, true).length;
-      const systems = dev.systems.join(" ").length;
-      return label + systems;
-    });
-
-    return Math.max(...titles);
-  }, [availableDevices]);
-
-  return longest;
-};
-
-/**
  * @deprecated Use useProductParams from ~/hooks/storage/product.
  * Hook that returns the product parameters (e.g., mount points).
  */
@@ -253,35 +228,6 @@ function useVolume(mountPoint: string): Volume {
 }
 
 /**
- * Hook that returns the devices that can be selected as target for volume.
- *
- * A device can be selected as target for a volume if either it is an available device for
- * installation or it is a device built over the available devices for installation. For example,
- * a MD RAID is a possible target only if all its members are available devices or children of the
- * available devices.
- */
-const useVolumeDevices = (): StorageDevice[] => {
-  const availableDevices = useAvailableDevices();
-
-  const isAvailable = (device: StorageDevice) => {
-    const isChildren = (device: StorageDevice, parentDevice: StorageDevice) => {
-      const partitions = parentDevice.partitionTable?.partitions || [];
-      return !!partitions.find((d) => d.name === device.name);
-    };
-
-    return !!availableDevices.find((d) => d.name === device.name || isChildren(device, d));
-  };
-
-  const allAvailable = (devices: StorageDevice[]) => devices.every(isAvailable);
-
-  const system = useDevices("system", { suspense: true });
-  const mds = system.filter((d) => d.type === "md" && allAvailable(d.devices));
-  const vgs = system.filter((d) => d.type === "lvmVg" && allAvailable(d.physicalVolumes));
-
-  return [...availableDevices, ...mds, ...vgs];
-};
-
-/**
  * Hook that returns the actions to perform in the storage devices.
  */
 const useActions = (): Action[] => {
@@ -333,20 +279,21 @@ const useReprobeMutation = () => {
 export {
   productParamsQuery,
   apiModelQuery,
+  availableDrivesQuery,
+  candidateDrivesQuery,
+  availableMdRaidsQuery,
+  candidateMdRaidsQuery,
   solveApiModelQuery,
   volumeQuery,
   useConfig,
   useConfigMutation,
   useResetConfigMutation,
   useDevices,
-  useAvailableDevices,
   useEncryptionMethods,
   useVolumes,
   useVolume,
-  useVolumeDevices,
   useActions,
   useDeprecated,
   useDeprecatedChanges,
   useReprobeMutation,
-  useLongestDiskTitle,
 };

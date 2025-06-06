@@ -68,11 +68,15 @@ const mockUseDeprecatedChanges = jest.fn();
 const mockUseReprobeMutation = jest.fn();
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
-  useAvailableDevices: () => mockUseAvailableDevices(),
   useResetConfigMutation: () => mockUseResetConfigMutation(),
   useDeprecated: () => mockUseDeprecated(),
   useDeprecatedChanges: () => mockUseDeprecatedChanges(),
   useReprobeMutation: () => mockUseReprobeMutation(),
+}));
+
+jest.mock("~/hooks/storage/system", () => ({
+  ...jest.requireActual("~/hooks/storage/system"),
+  useAvailableDevices: () => mockUseAvailableDevices(),
 }));
 
 const mockUseConfigModel = jest.fn();

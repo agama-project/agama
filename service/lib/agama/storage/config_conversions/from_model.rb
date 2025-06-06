@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,6 +21,7 @@
 
 require "agama/config"
 require "agama/storage/config_conversions/from_model_conversions/config"
+require "agama/storage/system"
 
 module Agama
   module Storage
@@ -29,9 +30,11 @@ module Agama
       class FromModel
         # @param model_json [Hash]
         # @param product_config [Agama::Config, nil]
-        def initialize(model_json, product_config: nil)
+        # @param storage_system [Storage::System, nil]
+        def initialize(model_json, product_config: nil, storage_system: nil)
           @model_json = model_json
           @product_config = product_config || Agama::Config.new
+          @storage_system = storage_system || Storage::System.new
         end
 
         # Performs the conversion from model according to the JSON schema.
@@ -39,7 +42,7 @@ module Agama
         # @return [Storage::Config]
         def convert
           # TODO: Raise error if model_json does not match the JSON schema.
-          FromModelConversions::Config.new(model_json, product_config).convert
+          FromModelConversions::Config.new(model_json, product_config, storage_system).convert
         end
 
       private
@@ -49,6 +52,9 @@ module Agama
 
         # @return [Agama::Config]
         attr_reader :product_config
+
+        # @return [Storage::System]
+        attr_reader :storage_system
       end
     end
   end

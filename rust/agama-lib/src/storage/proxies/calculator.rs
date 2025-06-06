@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -58,10 +58,6 @@ pub trait Calculator {
         &self,
         mount_path: &str,
     ) -> zbus::Result<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>;
-
-    /// AvailableDevices property
-    #[zbus(property)]
-    fn available_devices(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 
     /// EncryptionMethods property
     #[zbus(property)]
