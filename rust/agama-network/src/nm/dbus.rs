@@ -76,7 +76,11 @@ pub fn connection_to_dbus<'a>(
                 ""
             }
         };
-        connection_dbus.insert("port-type", port_type.into());
+        if VersionReq::parse(">=1.46.0").unwrap().matches(&nm_version) {
+            connection_dbus.insert("port-type", port_type.into());
+        } else {
+            connection_dbus.insert("slave-type", port_type.into());
+        }
         let master = controller
             .interface
             .as_deref()
@@ -85,7 +89,11 @@ pub fn connection_to_dbus<'a>(
         connection_dbus.remove("autoconnect");
         connection_dbus.insert("autoconnect", false.into());
     } else {
-        connection_dbus.insert("port-type", "".into());
+        if VersionReq::parse(">=1.46.0").unwrap().matches(&nm_version) {
+            connection_dbus.insert("port-type", "".into());
+        } else {
+            connection_dbus.insert("slave-type", "".into());
+        }
         connection_dbus.insert("master", "".into());
     }
 
@@ -268,6 +276,10 @@ fn is_bridge_port(conn: &NestedHash) -> bool {
             if let Ok(s) = TryInto::<&str>::try_into(port_type) {
                 return s == "bridge";
             }
+        } else if let Some(port_type) = connection.get("slave-type") {
+            if let Ok(s) = TryInto::<&str>::try_into(port_type) {
+                return s == "bridge";
+            }
         }
     }
 
@@ -299,7 +311,12 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
             connection.remove("master");
         }
 
-        if connection.get("slave-type").is_some() {
+        // prefer port-type over slave type
+        if connection.get("slave-type").is_some() && connection.get("port-type").is_some() {
+            connection.remove("slave-type");
+        }
+
+        if connection.get("slave-type").is_some_and(is_empty_value) {
             connection.remove("slave-type");
         }
 
@@ -2368,5 +2385,92 @@ mod test {
             .downcast_ref()
             .unwrap();
         assert_eq!(send_release, 0);
+    }
+
+    #[test]
+    fn test_dbus_from_bridge_connection() {
+        let mut master_con = build_base_connection();
+        master_con.config = ConnectionConfig::Bridge(BridgeConfig::default());
+        let bridge_con = build_base_connection();
+
+        let bridge_dbus = connection_to_dbus(
+            &bridge_con,
+            Some(&master_con),
+            semver::Version::parse("1.50.0").unwrap(),
+        );
+        let connection_dbus = bridge_dbus.get("connection").unwrap();
+        let port_type: &str = connection_dbus
+            .get("port-type")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(port_type, BRIDGE_KEY);
+        let master: &str = connection_dbus
+            .get("master")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(master, bridge_con.id);
+    }
+
+    #[test]
+    fn test_dbus_from_bond_connection() {
+        let mut master_con = build_base_connection();
+        master_con.config = ConnectionConfig::Bond(BondConfig::default());
+        let bond_con = build_base_connection();
+
+        let bond_dbus = connection_to_dbus(
+            &bond_con,
+            Some(&master_con),
+            semver::Version::parse("1.50.0").unwrap(),
+        );
+        let connection_dbus = bond_dbus.get("connection").unwrap();
+        let port_type: &str = connection_dbus
+            .get("port-type")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(port_type, BOND_KEY);
+        let master: &str = connection_dbus
+            .get("master")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(master, bond_con.id);
+    }
+
+    #[test]
+    fn test_dbus_from_bridge_connection_for_different_nm_versions() {
+        let mut master_con = build_base_connection();
+        master_con.config = ConnectionConfig::Bridge(BridgeConfig::default());
+        let bridge_con = build_base_connection();
+
+        let bridge_dbus = connection_to_dbus(
+            &bridge_con,
+            Some(&master_con),
+            semver::Version::parse("1.44.0").unwrap(),
+        );
+        let connection_dbus = bridge_dbus.get("connection").unwrap();
+        let slave_type: &str = connection_dbus
+            .get("slave-type")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(slave_type, BRIDGE_KEY);
+        assert_eq!(connection_dbus.get("port-type"), None);
+
+        let bridge_dbus = connection_to_dbus(
+            &bridge_con,
+            Some(&master_con),
+            semver::Version::parse("1.46.0").unwrap(),
+        );
+        let connection_dbus = bridge_dbus.get("connection").unwrap();
+        let port_type: &str = connection_dbus
+            .get("port-type")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(port_type, BRIDGE_KEY);
+        assert_eq!(connection_dbus.get("slave-type"), None);
     }
 }

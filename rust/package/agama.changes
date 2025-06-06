@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jun  5 16:03:31 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Use slave-type instead of port-type for NM<1.46.0 (gh#agama-project/agama#2433).
+
+-------------------------------------------------------------------
 Thu Jun  5 15:42:13 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Add support to specify for extra repositories if it can be
