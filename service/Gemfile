@@ -29,4 +29,5 @@ group :development do
   gem "base64"
   gem "byebug"
   gem "rubocop", "1.24.1"
+  gem "webrick"
 end

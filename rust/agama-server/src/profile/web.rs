@@ -18,9 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use anyhow::{anyhow, Context};
-use std::io::Write;
-use std::os::unix::fs::PermissionsExt;
+use anyhow::Context;
 
 use agama_lib::utils::Transfer;
 use agama_lib::{
@@ -92,8 +90,7 @@ pub async fn profile_service() -> Result<Router, ServiceError> {
     let router = Router::new()
         .route("/evaluate", post(evaluate))
         .route("/validate", post(validate))
-        .route("/autoyast", post(autoyast))
-        .route("/execute_script", post(execute_script));
+        .route("/autoyast", post(autoyast));
     Ok(router)
 }
 
@@ -235,49 +232,4 @@ async fn autoyast(
             Err(error.into())
         }
     }
-}
-
-#[utoipa::path(
-    post,
-    path = "/execute_script",
-    context_path = "/api/profile",
-    params(ProfileQuery),
-    responses(
-        (status = 200, description = "Script has started"),
-        (status = 400, description = "Some error has occurred")
-    )
-)]
-async fn execute_script(
-    query: Query<ProfileQuery>,
-    script: String, // script_or_empty
-) -> Result<Json<()>, ProfileServiceError> {
-    let request_has_body = !script.is_empty() && script != "null";
-    query.check(request_has_body)?;
-    let script_string = match query.retrieve_profile()? {
-        Some(retrieved) => retrieved,
-        None => script,
-    };
-
-    let mut named_tempfile = tempfile::Builder::new()
-        .prefix("agama-script")
-        .permissions(std::fs::Permissions::from_mode(0o700))
-        .tempfile()
-        .context("Creating temporary file for script")?;
-    named_tempfile
-        .as_file_mut()
-        .write_all(script_string.as_bytes())
-        .context("Writing script text")?;
-    // close the file otherwise exec fails with ETXTBSY
-    let path = named_tempfile.into_temp_path();
-    let path = path.keep().context("Persisting script file")?;
-
-    let mut child = tokio::process::Command::new(&path)
-        .spawn()
-        .context(format!("Spawning script {:?}", path))?;
-
-    let exit_status = child.wait().await.context("Script result")?;
-    if !exit_status.success() {
-        return Err(anyhow!("Script failed with {}", exit_status).into());
-    }
-    Ok(Json(()))
 }
