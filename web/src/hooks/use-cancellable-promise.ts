@@ -54,9 +54,9 @@ const makeCancellable = <T>(promise: Promise<T>): CancellableWrapper<T> => {
 /**
  * Allows using promises in a safer way.
  *
- * This hook is useful for safely performing actions that modify a React component after resolving
- * a promise (e.g., setting the component state once a D-Bus call is answered). Note that nothing
- * guarantees that a React component is still mounted when a promise is resolved.
+ * This hook is useful for safely performing actions that modify a React
+ * component after resolving a promise. Note that nothing guarantees that a
+ * React component is still mounted when a promise is resolved.
  *
  * @see {@link https://overreacted.io/a-complete-guide-to-useeffect/#speaking-of-race-conditions|Race conditions}
  *
