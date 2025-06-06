@@ -69,7 +69,8 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { apiModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { compact, uniq } from "~/utils";
+import { unique } from "radashi";
+import { compact } from "~/utils";
 
 const NO_VALUE = "";
 const NEW_PARTITION = "new";
@@ -288,7 +289,7 @@ function useUsableFilesystems(mountPoint: string): string[] {
       return [BTRFS_SNAPSHOTS, ...allValues];
     };
 
-    return uniq([defaultFilesystem, ...volumeFilesystems()]);
+    return unique([defaultFilesystem, ...volumeFilesystems()]);
   }, [volume, defaultFilesystem]);
 
   return usableFilesystems;

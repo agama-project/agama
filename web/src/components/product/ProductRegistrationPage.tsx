@@ -38,15 +38,16 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
+import RegistrationExtension from "./RegistrationExtension";
+import RegistrationCodeInput from "./RegistrationCodeInput";
 import { RegistrationInfo } from "~/types/software";
 import { HOSTNAME } from "~/routes/paths";
 import { useProduct, useRegistration, useRegisterMutation, useAddons } from "~/queries/software";
 import { useHostname } from "~/queries/system";
-import { isEmpty, mask } from "~/utils";
+import { isEmpty } from "radashi";
+import { mask } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import RegistrationExtension from "./RegistrationExtension";
-import RegistrationCodeInput from "./RegistrationCodeInput";
 
 const FORM_ID = "productRegistration";
 const EMAIL_LABEL = "Email";

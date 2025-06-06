@@ -30,14 +30,13 @@
 
 import React from "react";
 import { MemoryRouter, useParams } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
 import { render } from "@testing-library/react";
-
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
-import { noop, isObject } from "./utils";
-import { InstallerL10nProvider } from "./context/installerL10n";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { InstallerL10nProvider } from "~/context/installerL10n";
+import { isObject, noop } from "radashi";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default

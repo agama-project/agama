@@ -20,109 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-import { useEffect, useRef, useCallback, useState } from "react";
-
-/**
- * Returns true when given value is an
- * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object Object}
- *
- * Borrowed from https://dev.to/alesm0101/how-to-check-if-a-value-is-an-object-in-javascript-3pin
- *
- * @param value - the value to be checked
- * @return true when given value is an object; false otherwise
- */
-const isObject = (value) =>
-  typeof value === "object" &&
-  value !== null &&
-  !Array.isArray(value) &&
-  !(value instanceof RegExp) &&
-  !(value instanceof Date) &&
-  !(value instanceof Set) &&
-  !(value instanceof Map);
-
-/**
- * Whether given object is empty or not
- *
- * @param value - the value to be checked
- * @return true when given value is an empty object; false otherwise
- */
-const isObjectEmpty = (value: object) => {
-  return Object.keys(value).length === 0;
-};
-
-/**
- * Whether given value is empty or not
- *
- * @param value - the value to be checked
- * @return false if value is a function, a not empty object, or a not
- *                   empty string; true otherwise
- */
-const isEmpty = (value) => {
-  if (value === null || value === undefined) {
-    return true;
-  }
-
-  if (typeof value === "boolean") {
-    return false;
-  }
-
-  if (typeof value === "function") {
-    return false;
-  }
-
-  if (typeof value === "number" && !Number.isNaN(value)) {
-    return false;
-  }
-
-  if (typeof value === "string") {
-    return value.trim() === "";
-  }
-
-  if (Array.isArray(value)) {
-    return value.length === 0;
-  }
-
-  if (isObject(value)) {
-    return isObjectEmpty(value);
-  }
-
-  return true;
-};
-
-/**
- * Returns an empty function useful to be used as a default callback.
- *
- * @return empty function
- */
-const noop = () => undefined;
-
-/**
- * @return identity function
- */
-const identity = (i) => i;
-
-/**
- * Returns a new array with a given collection split into two groups, the first holding elements
- * satisfying the filter and the second with those which do not.
- *
- * @param collection - the collection to be filtered
- * @param filter - the function to be used as filter
- * @return a pair of arrays, [passing, failing]
- */
-const partition = <T>(
-  collection: Array<T>,
-  filter: (element: T) => boolean,
-): [Array<T>, Array<T>] => {
-  const pass = [];
-  const fail = [];
-
-  collection.forEach((element) => {
-    filter(element) ? pass.push(element) : fail.push(element);
-  });
-
-  return [pass, fail];
-};
-
 /**
  * Generates a new array without null and undefined values.
  */
@@ -131,210 +28,30 @@ const compact = <T>(collection: Array<T>) => {
 };
 
 /**
- * Generates a new array without duplicates.
- */
-const uniq = <T>(collection: Array<T>) => {
-  return [...new Set(collection)];
-};
-
-/**
- * Simple utility function to help building className conditionally
+ * Parses a "numeric dot string" as a hexadecimal number.
  *
- * @example
- * // returns "bg-yellow w-24"
- * classNames("bg-yellow", true && "w-24", false && "h-24");
+ * Accepts only strings containing digits (`0–9`) and dots (`.`),
+ * for example: `"0.0.0160"` or `"123"`. Dots are removed before parsing.
  *
- * @todo Use https://github.com/JedWatson/classnames instead?
- *
- * @param classes - CSS classes to join
- * @returns CSS classes joined together after ignoring falsy values
- */
-const classNames = (...classes) => {
-  return classes.filter((item) => !!item).join(" ");
-};
-
-/**
- * Convert any string into a slug
- *
- * Borrowed from https://jasonwatmore.com/vanilla-js-slugify-a-string-in-javascript
- *
- * @example
- * slugify("Agama! / Network 1");
- * // returns "agama-network-1"
- *
- * @param input - the string to slugify
- * @returns the slug
- */
-const slugify = (input: string) => {
-  if (!input) return "";
-
-  return (
-    input
-      // make lower case and trim
-      .toLowerCase()
-      .trim()
-      // remove accents from charaters
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      // replace invalid chars with spaces
-      .replace(/[^a-z0-9\s-]/g, " ")
-      .trim()
-      // replace multiple spaces or hyphens with a single hyphen
-      .replace(/[\s-]+/g, "-")
-  );
-};
-
-type CancellableWrapper<T> = {
-  /** Cancellable promise */
-  promise: Promise<T>;
-  /** Function for cancelling the promise */
-  cancel: Function;
-};
-
-/**
- * Creates a wrapper object with a cancellable promise and a function for canceling the promise
- *
- * @see useCancellablePromise
- */
-const makeCancellable = <T>(promise: Promise<T>): CancellableWrapper<T> => {
-  let isCanceled = false;
-
-  const cancellablePromise: Promise<T> = new Promise((resolve, reject) => {
-    promise
-      .then((value) => !isCanceled && resolve(value))
-      .catch((error) => !isCanceled && reject(error));
-  });
-
-  return {
-    promise: cancellablePromise,
-    cancel() {
-      isCanceled = true;
-    },
-  };
-};
-
-/**
- * Allows using promises in a safer way.
- *
- * This hook is useful for safely performing actions that modify a React component after resolving
- * a promise (e.g., setting the component state once a D-Bus call is answered). Note that nothing
- * guarantees that a React component is still mounted when a promise is resolved.
- *
- * @see {@link https://overreacted.io/a-complete-guide-to-useeffect/#speaking-of-race-conditions|Race conditions}
- *
- * The hook provides a function for making promises cancellable. All cancellable promises are
- * automatically canceled once the component is unmounted. Note that the promises are not really
- * canceled. In this context, a canceled promise means that the promise will be neither resolved nor
- * rejected. Canceled promises will be destroyed by the garbage collector after unmounting the
- * component.
- *
- * @see {@link https://rajeshnaroth.medium.com/writing-a-react-hook-to-cancel-promises-when-a-component-unmounts-526efabf251f|Cancel promises}
+ * If the cleaned string contains any non-digit characters (such as letters),
+ * or is not a valid integer string, the function returns `0`.
  *
  * @example
  *
- * const { cancellablePromise } = useCancellablePromise();
- * const [state, setState] = useState();
+ * ```ts
+ * hex("0.0.0.160"); // Returns 352
+ * hex("1.2.3");     // Returns 291
+ * hex("1.A.3");     // Returns 0 (letters are not allowed)
+ * hex("..");        // Returns 0 (empty string before removing dots)
+ * ```
  *
- * useEffect(() => {
- *  const promise = new Promise((resolve) => setTimeout(() => resolve("success"), 6000));
- * // The state is only set if the promise is not canceled
- *  cancellablePromise(promise).then(setState);
- * }, [setState, cancellablePromise]);
+ * @param value - A string representing a dot-separated numeric value
+ * @returns The number parsed as hexadecimal (base-16) integer, or `0` if invalid
  */
-const useCancellablePromise = <T>() => {
-  const promises = useRef<Array<CancellableWrapper<T>>>();
-
-  useEffect(() => {
-    promises.current = [];
-
-    return () => {
-      promises.current.forEach((p) => p.cancel());
-      promises.current = [];
-    };
-  }, []);
-
-  const cancellablePromise = useCallback((promise: Promise<T>): Promise<T> => {
-    const cancellableWrapper: CancellableWrapper<T> = makeCancellable(promise);
-    promises.current.push(cancellableWrapper);
-    return cancellableWrapper.promise;
-  }, []);
-
-  return { cancellablePromise };
+const hex = (value: string): number => {
+  const sanitizedValued = value.replaceAll(".", "");
+  return /^[0-9]+$/.test(sanitizedValued) ? parseInt(sanitizedValued, 16) : 0;
 };
-
-/** Hook for using local storage
- *
- * @see {@link https://www.robinwieruch.de/react-uselocalstorage-hook/}
- *
- * @param storageKey
- * @param fallbackState
- */
-const useLocalStorage = (storageKey: string, fallbackState) => {
-  const [value, setValue] = useState(JSON.parse(localStorage.getItem(storageKey)) ?? fallbackState);
-
-  useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(value));
-  }, [value, storageKey]);
-
-  return [value, setValue];
-};
-
-/**
- * Debounce hook.
- *
- * Source {@link https://designtechworld.medium.com/create-a-custom-debounce-hook-in-react-114f3f245260}
- *
- * @param callback - Function to be called after some delay.
- * @param delay - Delay in milliseconds.
- *
- * @example
- *
- * const log = useDebounce(console.log, 1000);
- * log("test ", 1) // The message will be logged after at least 1 second.
- * log("test ", 2) // Subsequent calls cancels pending calls.
- */
-const useDebounce = (callback: Function, delay: number) => {
-  const timeoutRef = useRef(null);
-
-  useEffect(() => {
-    // Cleanup the previous timeout on re-render
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
-  const debouncedCallback = (...args) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    timeoutRef.current = setTimeout(() => {
-      callback(...args);
-    }, delay);
-  };
-
-  return debouncedCallback;
-};
-
-/**
- * Convert given string to a hexadecimal number
- */
-const hex = (value: string) => {
-  const sanitizedValue = value.replaceAll(".", "");
-  return parseInt(sanitizedValue, 16);
-};
-
-/**
- * Converts an issue to a validation error
- *
- * @todo This conversion will not be needed after adapting Section to directly work with issues.
- *
- * @param {import("~/types/issues").Issue} issue
- * @returns {import("~/types/issues").ValidationError}
- */
-const toValidationError = (issue) => ({ message: issue.description });
 
 /**
  * Wrapper around window.location.reload
@@ -365,7 +82,7 @@ const setLocationSearch = (query: string) => {
 };
 
 /**
- * WetherAgama server is running locally or not.
+ * Whether Agama server is running locally or not.
  *
  * This function should be used only in special cases, the Agama behavior should
  * be the same regardless of the user connection.
@@ -410,62 +127,33 @@ const timezoneTime = (timezone: string, date: Date = new Date()): string | undef
   }
 };
 
-const mask = (value, visible = 4, character = "*") => {
-  const regex = new RegExp(`.(?=(.{${visible}}))`, "g");
-  return value.replace(regex, character);
+/**
+ * Masks all but the last `visible` characters of a string.
+ *
+ * Replaces each character in the input string with `maskChar` ("*" by default),
+ * except for the last `visible` (4 by default) characters, which are left
+ * unchanged. If `visible` is greater than or equal to the string length, the
+ * input is returned as-is.
+ *
+ * @example
+ * ```ts
+ * mask("123456789");          // "*****6789"
+ * mask("secret", 2);          // "****et"
+ * mask("secret", 6);          // "secret"
+ * mask("secret", 3, "#");     // "###ret"
+ * ```
+ *
+ * @param value - The input string to mask
+ * @param visible - Number of trailing characters to leave unmasked (default: 4)
+ * @param maskChar - The character to use for masking (default: "*")
+ * @returns The masked string with only the last `visible` characters shown
+ */
+const mask = (value: string, visible: number = 4, maskChar: string = "*"): string => {
+  const length = value.length;
+  const safeVisible = Number.isFinite(visible) && visible > 0 ? visible : 0;
+  const maskedLength = Math.max(0, length - safeVisible);
+  const visiblePart = safeVisible === 0 ? "" : value.slice(-safeVisible);
+  return maskChar.repeat(maskedLength) + visiblePart;
 };
 
-const agamaWidthBreakpoints = {
-  sm: parseInt("36rem") * 16,
-  md: parseInt("48rem") * 16,
-  lg: parseInt("64rem") * 16,
-  xl: parseInt("75rem") * 16,
-  "2xl": parseInt("90rem") * 16,
-};
-
-const getBreakpoint = (width: number): "default" | "sm" | "md" | "lg" | "xl" | "2xl" => {
-  if (width === null) {
-    return null;
-  }
-  if (width >= agamaWidthBreakpoints["2xl"]) {
-    return "2xl";
-  }
-  if (width >= agamaWidthBreakpoints.xl) {
-    return "xl";
-  }
-  if (width >= agamaWidthBreakpoints.lg) {
-    return "lg";
-  }
-  if (width >= agamaWidthBreakpoints.md) {
-    return "md";
-  }
-  if (width >= agamaWidthBreakpoints.sm) {
-    return "sm";
-  }
-  return "default";
-};
-
-export {
-  noop,
-  identity,
-  isEmpty,
-  isObject,
-  isObjectEmpty,
-  partition,
-  compact,
-  uniq,
-  classNames,
-  useCancellablePromise,
-  useLocalStorage,
-  useDebounce,
-  hex,
-  toValidationError,
-  locationReload,
-  setLocationSearch,
-  localConnection,
-  slugify,
-  timezoneTime,
-  mask,
-  getBreakpoint,
-  agamaWidthBreakpoints,
-};
+export { compact, hex, locationReload, setLocationSearch, localConnection, timezoneTime, mask };

@@ -20,35 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import {
-  classNames,
-  partition,
-  compact,
-  uniq,
-  noop,
-  toValidationError,
-  localConnection,
-  isObject,
-  slugify,
-  isEmpty,
-} from "./utils";
-
-describe("noop", () => {
-  it("returns undefined", () => {
-    const result = noop();
-    expect(result).toBeUndefined();
-  });
-});
-
-describe("partition", () => {
-  it("returns two groups of elements that do and do not satisfy provided filter", () => {
-    const numbers = [1, 2, 3, 4, 5, 6];
-    const [odd, even] = partition(numbers, (number) => number % 2 !== 0);
-
-    expect(odd).toEqual([1, 3, 5]);
-    expect(even).toEqual([2, 4, 6]);
-  });
-});
+import { compact, localConnection, hex, mask, timezoneTime } from "./utils";
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -64,159 +36,156 @@ describe("compact", () => {
   });
 });
 
-describe("uniq", () => {
-  it("removes duplicated values", () => {
-    expect(uniq([])).toEqual([]);
-    expect(uniq([undefined, null, null, 0, 1, NaN, false, true, false, "test"])).toEqual([
-      undefined,
-      null,
-      0,
-      1,
-      NaN,
-      false,
-      true,
-      "test",
-    ]);
+describe("hex", () => {
+  it("parses numeric dot strings as hex", () => {
+    expect(hex("0.0.0160")).toBe(352); // "000160"
+    expect(hex("1.2.3")).toBe(291); // "123"
+    expect(hex("123")).toBe(291); // "123"
+  });
+
+  it("returns 0 for strings with letters or invalid characters", () => {
+    expect(hex("1A")).toBe(0);
+    expect(hex("1A.3F")).toBe(0);
+    expect(hex("xyz")).toBe(0);
+    expect(hex("123Z")).toBe(0);
+  });
+
+  it("returns 0 for values resulting in empty string", () => {
+    expect(hex("..")).toBe(0);
+    expect(hex("")).toBe(0);
+  });
+
+  it("allows leading or trailing dots", () => {
+    expect(hex(".123")).toBe(291);
+    expect(hex("123.")).toBe(291);
+    expect(hex(".1.2.3.")).toBe(291);
   });
 });
 
-describe("classNames", () => {
-  it("join given arguments, ignoring falsy values", () => {
-    const includeClass = true;
+describe("mask", () => {
+  it("masks all but the last 4 characters by default", () => {
+    expect(mask("123456789")).toBe("*****6789");
+    expect(mask("abcd")).toBe("abcd");
+    expect(mask("abcde")).toBe("*bcde");
+  });
 
-    expect(
-      classNames("bg-yellow", !includeClass && "h-24", undefined, null, includeClass && "w-24"),
-    ).toEqual("bg-yellow w-24");
+  it("respects custom visible count", () => {
+    expect(mask("secret", 2)).toBe("****et");
+    expect(mask("secret", 0)).toBe("******");
+    expect(mask("secret", 6)).toBe("secret");
+    expect(mask("secret", 10)).toBe("secret");
+  });
+
+  it("uses custom mask character", () => {
+    expect(mask("secret", 3, "#")).toBe("###ret");
+    expect(mask("secret", 1, "X")).toBe("XXXXXt");
+    expect(mask("secret", 2, "!")).toBe("!!!!et");
+  });
+
+  it("handles empty and short input values", () => {
+    expect(mask("")).toBe("");
+    expect(mask("a")).toBe("a");
+    expect(mask("ab", 5)).toBe("ab");
+  });
+
+  it("handles negative or NaN visible values safely", () => {
+    expect(mask("secret", -2)).toBe("******");
+    expect(mask("secret", NaN)).toBe("******");
+  });
+
+  it("masks with empty character (no masking)", () => {
+    expect(mask("secret", 2, "")).toBe("et");
   });
 });
 
-describe("toValidationError", () => {
-  it("converts an issue to a validation error", () => {
-    const issue = {
-      description: "Issue 1",
-      details: "Details issue 1",
-      source: "config",
-      severity: "warn",
-    };
-    expect(toValidationError(issue)).toEqual({ message: "Issue 1" });
+describe("timezoneTime", () => {
+  const fixedDate = new Date("2023-01-01T12:34:56Z");
+
+  it("returns time in 24h format for a valid timezone", () => {
+    const time = timezoneTime("UTC", fixedDate);
+    expect(time).toBe("12:34");
+  });
+
+  it("uses current date if no date provided", () => {
+    // Fake "now"
+    const now = new Date("2023-06-01T15:45:00Z");
+    jest.useFakeTimers();
+    jest.setSystemTime(now);
+
+    const time = timezoneTime("UTC");
+    expect(time).toBe("15:45");
+
+    jest.useRealTimers();
+  });
+
+  it("returns undefined for invalid timezone", () => {
+    expect(timezoneTime("Invalid/Timezone", fixedDate)).toBeUndefined();
+  });
+
+  it("rethrows unexpected errors", () => {
+    // To simulate unexpected error, mock Intl.DateTimeFormat to throw something else
+    const original = Intl.DateTimeFormat;
+    // @ts-expect-error because missing properties not needed for this test
+    Intl.DateTimeFormat = jest.fn(() => {
+      throw new Error("Unexpected");
+    });
+
+    expect(() => timezoneTime("UTC", fixedDate)).toThrow("Unexpected");
+
+    Intl.DateTimeFormat = original;
   });
 });
-
-const localURL = new URL("http://127.0.0.90/");
-const localURL2 = new URL("http://localhost:9090/");
-const remoteURL = new URL("http://example.com");
 
 describe("localConnection", () => {
-  describe("when the page URL is " + localURL, () => {
-    it("returns true", () => {
-      expect(localConnection(localURL)).toEqual(true);
+  const originalEnv = process.env;
+  const localhostURL = new URL("http://localhost");
+  const localIpURL = new URL("http://127.0.0.90");
+  const remoteURL = new URL("http://example.com");
+
+  beforeEach(() => {
+    process.env = { ...originalEnv };
+  });
+
+  it("uses window.location when no argument is provided", () => {
+    const originalLocation = window.location;
+    delete window.location;
+    // @ts-expect-error: https://github.com/microsoft/TypeScript/issues/48949
+    window.location = localhostURL;
+
+    expect(localConnection()).toBe(true);
+
+    // Restore
+    // @ts-expect-error: https://github.com/microsoft/TypeScript/issues/48949
+    window.location = originalLocation;
+  });
+
+  it("returns true for 'localhost' hostname", () => {
+    expect(localConnection(localhostURL)).toBe(true);
+  });
+
+  it("returns true for 127.x.x.x IPs", () => {
+    expect(localConnection(new URL(localIpURL))).toBe(true);
+  });
+
+  it("returns false for non-local hostnames", () => {
+    expect(localConnection(remoteURL)).toBe(false);
+  });
+
+  describe("but LOCAL_CONNECTION environment variable is '1'", () => {
+    beforeEach(() => {
+      process.env.LOCAL_CONNECTION = "1";
     });
-  });
 
-  describe("when the page URL is " + localURL2, () => {
-    it("returns true", () => {
-      expect(localConnection(localURL2)).toEqual(true);
+    it("returns true for 'localhost' hostname", () => {
+      expect(localConnection(localhostURL)).toBe(true);
     });
-  });
 
-  describe("when the page URL is " + remoteURL, () => {
-    it("returns false", () => {
-      expect(localConnection(remoteURL)).toEqual(false);
+    it("returns true for 127.x.x.x IPs", () => {
+      expect(localConnection(localIpURL)).toBe(true);
     });
-  });
-});
 
-describe("isObject", () => {
-  it("returns true when called with an object", () => {
-    expect(isObject({ dummy: "object" })).toBe(true);
-  });
-
-  it("returns false when called with null", () => {
-    expect(isObject(null)).toBe(false);
-  });
-
-  it("returns false when called with undefined", () => {
-    expect(isObject(undefined)).toBe(false);
-  });
-
-  it("returns false when called with a string", () => {
-    expect(isObject("dummy string")).toBe(false);
-  });
-
-  it("returns false when called with an array", () => {
-    expect(isObject(["dummy", "array"])).toBe(false);
-  });
-
-  it("returns false when called with a date", () => {
-    expect(isObject(new Date())).toBe(false);
-  });
-
-  it("returns false when called with regexp", () => {
-    expect(isObject(/aRegExp/i)).toBe(false);
-  });
-
-  it("returns false when called with a set", () => {
-    expect(isObject(new Set(["dummy", "set"]))).toBe(false);
-  });
-
-  it("returns false when called with a map", () => {
-    const map = new Map([["dummy", "map"]]);
-    expect(isObject(map)).toBe(false);
-  });
-});
-
-describe("isEmpty", () => {
-  it("returns true when called with null", () => {
-    expect(isEmpty(null)).toBe(true);
-  });
-
-  it("returns true when called with undefined", () => {
-    expect(isEmpty(undefined)).toBe(true);
-  });
-
-  it("returns false when called with a function", () => {
-    expect(isEmpty(() => {})).toBe(false);
-  });
-
-  it("returns false when called with `true` (boolean)", () => {
-    expect(isEmpty(true)).toBe(false);
-  });
-
-  it("returns false when called with `false` (boolean)", () => {
-    expect(isEmpty(false)).toBe(false);
-  });
-
-  it("returns false when called with a number", () => {
-    expect(isEmpty(1)).toBe(false);
-  });
-
-  it("returns true when called with an empty string", () => {
-    expect(isEmpty("")).toBe(true);
-  });
-
-  it("returns false when called with a not empty string", () => {
-    expect(isEmpty("not empty")).toBe(false);
-  });
-
-  it("returns true when called with an empty array", () => {
-    expect(isEmpty([])).toBe(true);
-  });
-
-  it("returns false when called with a not empty array", () => {
-    expect(isEmpty([""])).toBe(false);
-  });
-
-  it("returns true when called with an empty object", () => {
-    expect(isEmpty({})).toBe(true);
-  });
-
-  it("returns false when called with a not empty object", () => {
-    expect(isEmpty({ not: "empty" })).toBe(false);
-  });
-});
-
-describe("slugify", () => {
-  it("converts given input into a slug", () => {
-    expect(slugify("Agama! / Network 1")).toEqual("agama-network-1");
+    it("returns true for non-local hostnames", () => {
+      expect(localConnection(remoteURL)).toBe(true);
+    });
   });
 });

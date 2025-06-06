@@ -22,8 +22,8 @@
 
 import React, { useState } from "react";
 import { SearchInput } from "@patternfly/react-core";
+import { debounce, noop } from "radashi";
 import { _ } from "~/i18n";
-import { noop, useDebounce } from "~/utils";
 
 type ListSearchProps<T> = {
   /** Text to display as placeholder for the search input. */
@@ -44,6 +44,12 @@ function search<T>(elements: T[], term: string): T[] {
   return elements.filter(match);
 }
 
+function filterList<T>(elements: ListSearchProps<T>["elements"], term: string, action: Function) {
+  action(search(elements, term));
+}
+
+const searchHandler = debounce({ delay: 500 }, filterList);
+
 /**
  * Input field for searching in a given list of elements.
  * @component
@@ -61,13 +67,9 @@ export default function ListSearch<T>({
     onChangeProp(result);
   };
 
-  const searchHandler = useDebounce((term: string) => {
-    updateResult(search(elements, term));
-  }, 500);
-
   const onChange = (value: string) => {
     setValue(value);
-    searchHandler(value);
+    searchHandler(elements, value, updateResult);
   };
 
   const onClear = () => {

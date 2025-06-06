@@ -40,7 +40,7 @@ import Icon, { IconProps } from "~/components/layout/Icon";
 import { Connection, ConnectionState, WifiNetwork, WifiNetworkStatus } from "~/types/network";
 import { useConnections, useNetworkChanges, useWifiNetworks } from "~/queries/network";
 import { NETWORK as PATHS } from "~/routes/paths";
-import { isEmpty } from "~/utils";
+import { isEmpty } from "radashi";
 import { formatIp } from "~/utils/network";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";

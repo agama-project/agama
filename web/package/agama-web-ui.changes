@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Jun  6 13:44:14 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Replaced custom utility functions with a well-tested,
+  community-driven third-party dependency, refactored remaining
+  helpers, and removed unused code to improve maintainability
+  (gh#agama-project/agama#2412).
+
+-------------------------------------------------------------------
 Fri Jun  6 12:32:23 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow to select which connections will be used only for

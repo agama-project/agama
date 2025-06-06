@@ -24,7 +24,7 @@ import React from "react";
 import { Content, List, ListItem } from "@patternfly/react-core";
 import { SelectedBy } from "~/types/software";
 import { usePatterns, useProposal, useProposalChanges } from "~/queries/software";
-import { isObjectEmpty } from "~/utils";
+import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 
 export default function SoftwareSection(): React.ReactNode {
@@ -33,7 +33,7 @@ export default function SoftwareSection(): React.ReactNode {
 
   useProposalChanges();
 
-  if (isObjectEmpty(proposal.patterns)) return;
+  if (isEmpty(proposal.patterns)) return;
 
   const TextWithoutList = () => {
     return (
