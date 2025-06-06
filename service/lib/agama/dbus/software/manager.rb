@@ -90,6 +90,7 @@ module Agama
 
           # set user specified repositories properties
           dbus_method :SetUserRepositories, "in repos:aa{sv}" do |repos|
+            @logger.info "Setting user repositories #{repos.inspect}"
             backend.repositories.user_repositories = repos
           end
 

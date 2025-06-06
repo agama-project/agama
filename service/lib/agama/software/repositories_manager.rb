@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/software/repository"
+require "singleton"
 
 module Agama
   module Software
@@ -27,14 +28,18 @@ module Agama
     #
     # @see Repository
     class RepositoriesManager
+      include Singleton
+
       # @return [Array<Repository>]
       attr_reader :repositories
 
-      def initialize
+      def reset
         @repositories = []
         @user_repositories = []
         # remember how exactly user specify repos and return it identical
         @plain_user_repositories = []
+        @unsigned_repos = []
+        @gpg_fingerprints = {}
       end
 
       # Adds a new repository
@@ -69,10 +74,22 @@ module Agama
 
           @user_repositories << zypp_repo
           repositories << zypp_repo
+
+          @unsigned_repos << repo["alias"] if repo["allow_unsigned"]
+          @gpg_fingerprints[repo["alias"]] = repo["gpg_fingerprints"]
+            &.map { |f| f.gsub(/\s/, "") } || []
         end
 
         # load new repos
         self.load
+      end
+
+      def unsigned_allowed?(repo_alias)
+        @unsigned_repos.include?(repo_alias)
+      end
+
+      def trust_gpg?(repo_alias, fingerprint)
+        @gpg_fingerprints[repo_alias]&.include?(fingerprint.gsub(/\s/, ""))
       end
 
       # Determines if there are registered repositories
@@ -129,6 +146,13 @@ module Agama
         @repositories -= @user_repositories
         @user_repositories.each(&:delete!)
         @user_repositories.clear
+
+        @unsigned_repos = []
+        @gpg_fingerprints = {}
+      end
+
+      def initialize
+        reset
       end
     end
   end

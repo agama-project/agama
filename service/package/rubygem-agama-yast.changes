@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Thu Jun  5 15:44:06 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- agama-dbus-monitor: Increase timeout when restarting to prevent
+  crash due to socket not available
+
+-------------------------------------------------------------------
+Thu Jun  5 15:41:31 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support to specify for extra repositories if it can be
+  unsigned or list of GPG fingerprints that are trusted
+  (jsc#AGM-125)
+
+-------------------------------------------------------------------
 Tue Jun  3 12:22:41 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Add support for adding extra repositories as installation sources
