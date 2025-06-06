@@ -6,12 +6,11 @@
 
 fetch_updates() {
   # Agama driver updates
-  local updates=$(getargs inst.dud=)
+  local updates
+  updates=$(getargs inst.dud=)
   if [ -n "$updates" ]; then
     echo "$updates" >/tmp/agamadud.info
   fi
-
-  exit 0
 }
 
 fetch_updates
