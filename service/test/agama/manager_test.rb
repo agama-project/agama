@@ -53,7 +53,7 @@ describe Agama::Manager do
     )
   end
   let(:locale) { instance_double(Agama::DBus::Clients::Locale, finish: nil) }
-  let(:network) { instance_double(Agama::Network, install: nil) }
+  let(:network) { instance_double(Agama::Network, install: nil, startup: nil) }
   let(:storage) do
     instance_double(
       Agama::DBus::Clients::Storage, probe: nil, install: nil, finish: nil,
@@ -87,6 +87,11 @@ describe Agama::Manager do
     it "sets the installation phase to startup" do
       subject.startup_phase
       expect(subject.installation_phase.startup?).to eq(true)
+    end
+
+    it "does the network startup configuration" do
+      expect(network).to receive(:startup)
+      subject.startup_phase
     end
 
     context "when there is no selected product" do

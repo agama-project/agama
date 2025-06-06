@@ -142,6 +142,82 @@ describe("WifiNetworksList", () => {
       });
     });
 
+    describe("and the connection is persistent", () => {
+      beforeEach(() => {
+        mockWifiConnections = [
+          new Connection("Newtwork 2", {
+            method4: ConnectionMethod.AUTO,
+            method6: ConnectionMethod.AUTO,
+            wireless: {
+              security: "none",
+              ssid: "Network 2",
+              mode: "infrastructure",
+            },
+            state: ConnectionState.activating,
+            persistent: true,
+          }),
+        ];
+
+        mockWifiNetworks = [
+          {
+            ssid: "Network 2",
+            strength: 88,
+            hwAddress: "??",
+            security: [SecurityProtocols.RSN],
+            settings: new Connection("Network 2", {
+              iface: "wlan1",
+              addresses: [{ address: "192.168.69.202", prefix: 24 }],
+            }),
+            status: WifiNetworkStatus.CONFIGURED,
+          },
+        ];
+      });
+
+      it("does not render any hint", () => {
+        // @ts-expect-error: you need to specify the aria-label
+        installerRender(<WifiNetworksList />);
+        expect(screen.queryByText("Configured for installation only")).toBeNull;
+      });
+    });
+
+    describe("and the connection is not persistent", () => {
+      beforeEach(() => {
+        mockWifiConnections = [
+          new Connection("Newtwork 2", {
+            method4: ConnectionMethod.AUTO,
+            method6: ConnectionMethod.AUTO,
+            wireless: {
+              security: "none",
+              ssid: "Network 2",
+              mode: "infrastructure",
+            },
+            state: ConnectionState.activating,
+            persistent: false,
+          }),
+        ];
+
+        mockWifiNetworks = [
+          {
+            ssid: "Network 2",
+            strength: 88,
+            hwAddress: "??",
+            security: [SecurityProtocols.RSN],
+            settings: new Connection("Network 2", {
+              iface: "wlan1",
+              addresses: [{ address: "192.168.69.202", prefix: 24 }],
+            }),
+            status: WifiNetworkStatus.CONFIGURED,
+          },
+        ];
+      });
+
+      it("renders an installation only hint", () => {
+        // @ts-expect-error: you need to specify the aria-label
+        installerRender(<WifiNetworksList />);
+        screen.getByText("Configured for installation only");
+      });
+    });
+
     describe.skip("and user selects a connected network", () => {
       it("renders basic network information and actions instead of the connection form", async () => {
         // @ts-expect-error: you need to specify the aria-label

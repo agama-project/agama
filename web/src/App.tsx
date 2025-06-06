@@ -55,25 +55,37 @@ function App() {
     if (error) return <ServerError />;
 
     if (phase === InstallationPhase.Install) {
+      console.log("Navigating to the installation progress page");
       return <Navigate to={ROOT.installationProgress} />;
     }
 
     if (phase === InstallationPhase.Finish) {
+      console.log("Navigating to the finished page");
       return <Navigate to={ROOT.installationFinished} />;
     }
 
-    if (!products || !connected || (selectedProduct === undefined && isBusy))
+    if (!products || !connected || (selectedProduct === undefined && isBusy)) {
+      console.log("Loading screen: Initialization", {
+        products,
+        connected,
+        selectedProduct,
+        isBusy,
+      });
       return <Loading listenQuestions />;
+    }
 
     if (phase === InstallationPhase.Startup && isBusy) {
+      console.log("Loading screen: Installer start phase");
       return <Loading listenQuestions />;
     }
 
     if (selectedProduct === undefined && location.pathname !== PRODUCT.root) {
+      console.log("Navigating to the product selection page");
       return <Navigate to={PRODUCT.root} />;
     }
 
     if (phase === InstallationPhase.Config && isBusy && location.pathname !== PRODUCT.progress) {
+      console.log("Navigating to the probing progress page");
       return <Navigate to={PRODUCT.progress} />;
     }
 

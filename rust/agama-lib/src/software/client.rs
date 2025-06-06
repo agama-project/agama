@@ -129,6 +129,8 @@ impl<'a> SoftwareClient<'a> {
                     url: get_property(&params, "url")?,
                     product_dir: get_optional_property(&params, "product_dir")?,
                     enabled: get_optional_property(&params, "enabled")?,
+                    allow_unsigned: get_optional_property(&params, "allow_unsigned")?,
+                    gpg_fingerprints: get_optional_property(&params, "gpg_fingerprints")?,
                 }))
             .collect()
     }
@@ -154,6 +156,12 @@ impl<'a> SoftwareClient<'a> {
                 }
                 if let Some(enabled) = params.enabled {
                     result.insert("enabled", enabled.into());
+                }
+                if let Some(allow_unsigned) = params.allow_unsigned {
+                    result.insert("allow_unsigned", allow_unsigned.into());
+                }
+                if let Some(gpg_fingerprints) = params.gpg_fingerprints {
+                    result.insert("gpg_fingerprints", gpg_fingerprints.into());
                 }
                 result
             })

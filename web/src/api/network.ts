@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { del, get, patch, post, put } from "~/api/http";
+import { del, get, post, put } from "~/api/http";
 import { APIAccessPoint, APIConnection, APIDevice, NetworkGeneralState } from "~/types/network";
 
 /**
@@ -77,12 +77,18 @@ const applyChanges = () => post("/api/network/system/apply");
 /**
  * Performs the connect action for connection matching given name
  */
-const connect = (name: string) => patch(`/api/network/connections/${name}/connect`);
+const connect = (name: string) => post(`/api/network/connections/${name}/connect`);
 
 /**
  * Performs the disconnect action for connection matching given name
  */
-const disconnect = (name: string) => patch(`/api/network/connections/${name}/disconnect`);
+const disconnect = (name: string) => post(`/api/network/connections/${name}/disconnect`);
+
+/**
+ * Make the connection persistent after the installation
+ */
+const persist = (name: string, value: boolean) =>
+  post(`/api/network/connections/persist`, { only: [name], value });
 
 export {
   fetchState,
@@ -96,4 +102,5 @@ export {
   deleteConnection,
   connect,
   disconnect,
+  persist,
 };

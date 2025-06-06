@@ -102,7 +102,7 @@ module Agama
         @languages = DEFAULT_LANGUAGES
         @products = build_products
         @product = find_initial_product
-        @repositories = RepositoriesManager.new
+        @repositories = RepositoriesManager.instance
         # patterns selected by user
         @user_patterns = []
         @selected_patterns_change_callbacks = []

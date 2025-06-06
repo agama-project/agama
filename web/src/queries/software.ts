@@ -68,7 +68,7 @@ import { probe as systemProbe } from "~/api/manager";
  * Query to retrieve software configuration
  */
 const configQuery = () => ({
-  queryKey: ["software/config"],
+  queryKey: ["software", "config"],
   queryFn: fetchConfig,
 });
 
@@ -76,7 +76,7 @@ const configQuery = () => ({
  * Query to retrieve current software proposal
  */
 const proposalQuery = () => ({
-  queryKey: ["software/proposal"],
+  queryKey: ["software", "proposal"],
   queryFn: fetchProposal,
 });
 
@@ -84,7 +84,7 @@ const proposalQuery = () => ({
  * Query to retrieve available products
  */
 const productsQuery = () => ({
-  queryKey: ["software/products"],
+  queryKey: ["software", "products"],
   queryFn: fetchProducts,
   staleTime: Infinity,
 });
@@ -93,7 +93,7 @@ const productsQuery = () => ({
  * Query to retrieve available licenses
  */
 const licensesQuery = () => ({
-  queryKey: ["software/licenses"],
+  queryKey: ["software", "licenses"],
   queryFn: fetchLicenses,
   staleTime: Infinity,
 });
@@ -102,7 +102,7 @@ const licensesQuery = () => ({
  * Query to retrieve selected product
  */
 const selectedProductQuery = () => ({
-  queryKey: ["software/product"],
+  queryKey: ["software", "product"],
   queryFn: () => fetchConfig().then(({ product }) => product),
 });
 
@@ -110,7 +110,7 @@ const selectedProductQuery = () => ({
  * Query to retrieve registration info
  */
 const registrationQuery = () => ({
-  queryKey: ["software/registration"],
+  queryKey: ["software", "registration"],
   queryFn: fetchRegistration,
 });
 
@@ -134,7 +134,7 @@ const registeredAddonsQuery = () => ({
  * Query to retrieve available patterns
  */
 const patternsQuery = () => ({
-  queryKey: ["software/patterns"],
+  queryKey: ["software", "patterns"],
   queryFn: fetchPatterns,
 });
 
@@ -142,7 +142,7 @@ const patternsQuery = () => ({
  * Query to retrieve configured repositories
  */
 const repositoriesQuery = () => ({
-  queryKey: ["software/repositories"],
+  queryKey: ["software", "repositories"],
   queryFn: fetchRepositories,
 });
 
@@ -166,9 +166,9 @@ const useConfigMutation = () => {
   const query = {
     mutationFn: updateConfig,
     onSuccess: async (_, config: SoftwareConfig) => {
-      queryClient.invalidateQueries({ queryKey: ["software/config"] });
-      queryClient.invalidateQueries({ queryKey: ["software/product"] });
-      queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
+      queryClient.invalidateQueries({ queryKey: ["software", "config"] });
+      queryClient.invalidateQueries({ queryKey: ["software", "product"] });
+      queryClient.invalidateQueries({ queryKey: ["software", "proposal"] });
       if (config.product) {
         await systemProbe();
         queryClient.invalidateQueries({ queryKey: ["storage"] });
@@ -191,7 +191,7 @@ const useRegisterMutation = () => {
     mutationFn: register,
     onSuccess: async () => {
       await systemProbe();
-      queryClient.invalidateQueries({ queryKey: ["software/registration"] });
+      queryClient.invalidateQueries({ queryKey: ["software", "registration"] });
       queryClient.invalidateQueries({ queryKey: ["storage"] });
     },
   };
@@ -223,7 +223,7 @@ const useRepositoryMutation = (callback: () => void) => {
   const query = {
     mutationFn: probe,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["software/repositories"] });
+      queryClient.invalidateQueries({ queryKey: ["software", "repositories"] });
       callback();
     },
   };
@@ -371,11 +371,11 @@ const useProductChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "ProductChanged") {
-        queryClient.invalidateQueries({ queryKey: ["software/config"] });
+        queryClient.invalidateQueries({ queryKey: ["software", "config"] });
       }
 
       if (event.type === "LocaleChanged") {
-        queryClient.invalidateQueries({ queryKey: ["software/products"] });
+        queryClient.invalidateQueries({ queryKey: ["software", "products"] });
       }
     });
   }, [client, queryClient]);
@@ -395,7 +395,7 @@ const useProposalChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "SoftwareProposalChanged") {
-        queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
+        queryClient.invalidateQueries({ queryKey: ["software", "proposal"] });
       }
     });
   }, [client, queryClient]);

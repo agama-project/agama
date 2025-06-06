@@ -132,6 +132,10 @@
   --pf-t--global--font--family--200: "Noto Sans KR Display", "Noto Sans KR", serif;
 }
 
+strong {
+  font-weight: var(--pf-t--global--font--weight--400);
+}
+
 // Temporary CSS rules written during migration to PFv6
 
 // Reserve the sidebar space also for "lg" breakpoint

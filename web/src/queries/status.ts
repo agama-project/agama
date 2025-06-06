@@ -65,26 +65,32 @@ const useInstallerStatusChanges = () => {
     return client.onEvent((event) => {
       const { type } = event;
       const data = queryClient.getQueryData(["status"]) as object;
-      if (!data) {
-        return;
-      }
 
-      if (type === "InstallationPhaseChanged") {
-        const { phase } = event;
-        queryClient.setQueryData(["status"], { ...data, phase });
-      }
-
-      if (type === "ServiceStatusChanged" && event.service === MANAGER_SERVICE) {
-        const { status } = event;
-        queryClient.setQueryData(["status"], { ...data, isBusy: status === 1 });
-      }
-
-      if (type === "IssuesChanged") {
-        queryClient.invalidateQueries({ queryKey: ["status"] });
-      }
-
-      if (event.type === "ProductChanged") {
-        queryClient.invalidateQueries({ queryKey: selectedProductQuery().queryKey });
+      switch (type) {
+        case "IssuesChanged":
+          queryClient.invalidateQueries({ queryKey: ["status"] });
+          break;
+        case "ProductChanged":
+          queryClient.invalidateQueries({ queryKey: selectedProductQuery().queryKey });
+          break;
+        case "InstallationPhaseChanged":
+          if (!data) {
+            console.warn("Ignoring InstallationPhaseChanged event", event);
+          } else {
+            const { phase } = event;
+            queryClient.setQueryData(["status"], { ...data, phase });
+          }
+          break;
+        case "ServiceStatusChanged":
+          if (event.service === MANAGER_SERVICE) {
+            if (!data) {
+              console.warn("Ignoring ServiceStatusChanged event", event);
+            } else {
+              const { status } = event;
+              queryClient.setQueryData(["status"], { ...data, isBusy: status === 1 });
+            }
+          }
+          break;
       }
     });
   });

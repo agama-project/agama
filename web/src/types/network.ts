@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { isObject } from "~/utils";
+import { isEmpty, isObject } from "~/utils";
 import {
   buildAddress,
   buildAddresses,
@@ -232,6 +232,7 @@ type APIConnection = {
   wireless?: Wireless;
   status: ConnectionStatus;
   state: ConnectionState;
+  persistent: boolean;
 };
 
 type WirelessOptions = {
@@ -268,6 +269,7 @@ type ConnectionOptions = {
   method6?: ConnectionMethod;
   wireless?: Wireless;
   state?: ConnectionState;
+  persistent?: boolean;
 };
 
 class Connection {
@@ -282,6 +284,7 @@ class Connection {
   method4: ConnectionMethod = ConnectionMethod.AUTO;
   method6: ConnectionMethod = ConnectionMethod.AUTO;
   wireless?: Wireless;
+  persistent: boolean;
 
   constructor(id: string, options?: ConnectionOptions) {
     this.id = id;
@@ -289,7 +292,7 @@ class Connection {
     if (!isObject(options)) return;
 
     for (const [key, value] of Object.entries(options)) {
-      if (value) this[key] = value;
+      if (!isEmpty(value)) this[key] = value;
     }
   }
 

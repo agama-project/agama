@@ -95,4 +95,10 @@ pub struct RepositoryParams {
     /// Repository priority, lower number means higher priority, the default priority is 99
     #[serde(skip_serializing_if = "Option::is_none")]
     pub priority: Option<i32>,
+    /// Whenever repository can be unsigned. Default is false
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_unsigned: Option<bool>,
+    /// List of fingerprints for GPG keys used for repository signing. By default empty
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub gpg_fingerprints: Option<Vec<String>>,
 }

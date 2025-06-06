@@ -104,7 +104,7 @@ describe Agama::Software::Manager do
     allow(Yast::Pkg).to receive(:SourceCreate)
     allow(Yast::Installation).to receive(:destdir).and_return(destdir)
     allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
-    allow(Agama::Software::RepositoriesManager).to receive(:new).and_return(repositories)
+    allow(Agama::Software::RepositoriesManager).to receive(:instance).and_return(repositories)
     allow(Agama::Software::Proposal).to receive(:new).and_return(proposal)
     allow(Agama::ProductReader).to receive(:new).and_call_original
     allow(FileUtils).to receive(:mkdir_p)
