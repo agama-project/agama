@@ -22,10 +22,30 @@
 
 import { apiModel } from "~/api/storage/types";
 import { data } from "~/types/storage";
-import { addSearched } from "~/helpers/storage/search";
+import { switchSearched } from "~/helpers/storage/search";
+import { copyApiModel } from "~/helpers/storage/api-model";
 
 function addReusedMdRaid(apiModel: apiModel.Config, data: data.MdRaid): apiModel.Config {
-  return addSearched(apiModel, data.name, "mdRaids");
+  apiModel = copyApiModel(apiModel);
+  apiModel.mdRaids ||= [];
+  apiModel.mdRaids.push(data);
+
+  return apiModel;
 }
 
-export { addReusedMdRaid };
+function deleteMdRaid(apiModel: apiModel.Config, name: string): apiModel.Config {
+  apiModel = copyApiModel(apiModel);
+  apiModel.mdRaids = apiModel.mdRaids.filter((d) => d.name !== name);
+
+  return apiModel;
+}
+
+function switchToMdRaid(
+  apiModel: apiModel.Config,
+  oldName: string,
+  raid: data.MdRaid,
+): apiModel.Config {
+  return switchSearched(apiModel, oldName, raid.name, "mdRaids");
+}
+
+export { addReusedMdRaid, deleteMdRaid, switchToMdRaid };

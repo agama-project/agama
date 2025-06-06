@@ -21,7 +21,7 @@
  */
 
 import { useApiModel, useUpdateApiModel } from "~/hooks/storage/api-model";
-import { addReusedMdRaid } from "~/helpers/storage/md-raid";
+import { addReusedMdRaid, deleteMdRaid, switchToMdRaid } from "~/helpers/storage/md-raid";
 import { QueryHookOptions } from "~/types/queries";
 import { data } from "~/types/storage";
 
@@ -35,5 +35,25 @@ function useAddReusedMdRaid(options?: QueryHookOptions): AddReusedMdRaidFn {
   };
 }
 
-export { useAddReusedMdRaid };
-export type { AddReusedMdRaidFn };
+type DeleteMdRaidFn = (name: string) => void;
+
+function useDeleteMdRaid(options?: QueryHookOptions): DeleteMdRaidFn {
+  const apiModel = useApiModel(options);
+  const updateApiModel = useUpdateApiModel();
+  return (name: string) => {
+    updateApiModel(deleteMdRaid(apiModel, name));
+  };
+}
+
+type SwitchToMdRaidFn = (oldName: string, raid: data.MdRaid) => void;
+
+function useSwitchToMdRaid(options?: QueryHookOptions): SwitchToMdRaidFn {
+  const apiModel = useApiModel(options);
+  const updateApiModel = useUpdateApiModel();
+  return (oldName: string, raid: data.MdRaid) => {
+    updateApiModel(switchToMdRaid(apiModel, oldName, raid));
+  };
+}
+
+export { useAddReusedMdRaid, useDeleteMdRaid, useSwitchToMdRaid };
+export type { AddReusedMdRaidFn, DeleteMdRaidFn, SwitchToMdRaidFn };

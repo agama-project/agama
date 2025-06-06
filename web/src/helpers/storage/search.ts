@@ -22,42 +22,82 @@
 
 import { apiModel } from "~/api/storage/types";
 import { model } from "~/types/storage";
-import { copyApiModel } from "~/helpers/storage/api-model";
+import { copyApiModel, findDevice, findDeviceIndex } from "~/helpers/storage/api-model";
 import { buildModel } from "~/helpers/storage/model";
+import { fork } from "radashi";
+
+function deviceLocation(apiModel: apiModel.Config, name: string) {
+  let index;
+  for (const list of ["drives", "mdRaids"]) {
+    index = findDeviceIndex(apiModel, list, name);
+    if (index !== -1) return { list, index };
+  }
+
+  return { list: undefined, index: -1 };
+}
 
 function buildModelDevice(
   apiModel: apiModel.Config,
-  name: string,
   list: string,
+  index: number,
 ): model.Drive | model.MdRaid | undefined {
   const model = buildModel(apiModel);
-  return model[list].find((d) => d.name === name);
+  return model[list].at(index);
 }
 
 function deleteIfUnused(apiModel: apiModel.Config, name: string): apiModel.Config {
   apiModel = copyApiModel(apiModel);
 
-  let list = "drives";
-  let index = (apiModel.drives || []).findIndex((d) => d.name === name);
-  if (index === -1) {
-    list = "mdRaids";
-    index = (apiModel.mdRaids || []).findIndex((d) => d.name === name);
-    if (index === -1) return apiModel;
-  }
+  const { list, index } = deviceLocation(apiModel, name);
+  if (!list) return apiModel;
 
-  const device = buildModelDevice(apiModel, name, list);
+  const device = buildModelDevice(apiModel, list, index);
   if (!device || device.isUsed) return apiModel;
 
   apiModel[list].splice(index, 1);
   return apiModel;
 }
 
-function addSearched(apiModel: apiModel.Config, name: string, list: string): apiModel.Config {
+function switchSearched(
+  apiModel: apiModel.Config,
+  oldName: string,
+  name: string,
+  list: "drives" | "mdRaids",
+): apiModel.Config {
+  if (name === oldName) return apiModel;
+
   apiModel = copyApiModel(apiModel);
-  apiModel[list] ||= [];
-  apiModel[list].push({ name });
+
+  const { list: oldList, index } = deviceLocation(apiModel, oldName);
+  if (!oldList) return apiModel;
+
+  const device = findDevice(apiModel, oldList, index);
+  const deviceModel = buildModelDevice(apiModel, oldList, index);
+
+  const [newPartitions, existingPartitions] = fork(deviceModel.partitions, (p) => p.isNew);
+  const reusedPartitions = existingPartitions.filter((p) => p.isReused);
+  const keepEntry = deviceModel.isExplicitBoot || reusedPartitions.length;
+
+  if (keepEntry) {
+    device.partitions = existingPartitions;
+  } else {
+    apiModel[oldList].splice(index, 1);
+  }
+
+  const targetIndex = findDeviceIndex(apiModel, list, name);
+  if (targetIndex !== -1) {
+    const target = findDevice(apiModel, list, targetIndex);
+    target.partitions ||= [];
+    target.partitions = [...target.partitions, ...newPartitions];
+  } else {
+    apiModel[list].push({
+      name,
+      partitions: newPartitions,
+      spacePolicy: device.spacePolicy === "custom" ? undefined : device.spacePolicy,
+    });
+  }
 
   return apiModel;
 }
 
-export { deleteIfUnused, addSearched };
+export { deleteIfUnused, switchSearched };

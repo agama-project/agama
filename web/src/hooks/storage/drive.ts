@@ -21,7 +21,7 @@
  */
 
 import { useApiModel, useUpdateApiModel } from "~/hooks/storage/api-model";
-import { addDrive } from "~/helpers/storage/drive";
+import { addDrive, deleteDrive, switchToDrive } from "~/helpers/storage/drive";
 import { QueryHookOptions } from "~/types/queries";
 import { model, data } from "~/types/storage";
 import { useModel } from "~/hooks/storage/model";
@@ -42,5 +42,25 @@ function useAddDrive(options?: QueryHookOptions): AddDriveFn {
   };
 }
 
-export { useDrive, useAddDrive };
-export type { AddDriveFn };
+type DeleteDriveFn = (name: string) => void;
+
+function useDeleteDrive(options?: QueryHookOptions): DeleteDriveFn {
+  const apiModel = useApiModel(options);
+  const updateApiModel = useUpdateApiModel();
+  return (name: string) => {
+    updateApiModel(deleteDrive(apiModel, name));
+  };
+}
+
+type SwitchToDriveFn = (oldName: string, drive: data.Drive) => void;
+
+function useSwitchToDrive(options?: QueryHookOptions): SwitchToDriveFn {
+  const apiModel = useApiModel(options);
+  const updateApiModel = useUpdateApiModel();
+  return (oldName: string, drive: data.Drive) => {
+    updateApiModel(switchToDrive(apiModel, oldName, drive));
+  };
+}
+
+export { useDrive, useAddDrive, useDeleteDrive, useSwitchToDrive };
+export type { AddDriveFn, DeleteDriveFn, SwitchToDriveFn };

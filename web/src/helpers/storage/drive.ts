@@ -22,10 +22,30 @@
 
 import { apiModel } from "~/api/storage/types";
 import { data } from "~/types/storage";
-import { addSearched } from "~/helpers/storage/search";
+import { switchSearched } from "~/helpers/storage/search";
+import { copyApiModel } from "~/helpers/storage/api-model";
 
 function addDrive(apiModel: apiModel.Config, data: data.Drive): apiModel.Config {
-  return addSearched(apiModel, data.name, "drives");
+  apiModel = copyApiModel(apiModel);
+  apiModel.drives ||= [];
+  apiModel.drives.push(data);
+
+  return apiModel;
 }
 
-export { addDrive };
+function deleteDrive(apiModel: apiModel.Config, name: string): apiModel.Config {
+  apiModel = copyApiModel(apiModel);
+  apiModel.drives = apiModel.drives.filter((d) => d.name !== name);
+
+  return apiModel;
+}
+
+function switchToDrive(
+  apiModel: apiModel.Config,
+  oldName: string,
+  drive: data.Drive,
+): apiModel.Config {
+  return switchSearched(apiModel, oldName, drive.name, "drives");
+}
+
+export { addDrive, deleteDrive, switchToDrive };
