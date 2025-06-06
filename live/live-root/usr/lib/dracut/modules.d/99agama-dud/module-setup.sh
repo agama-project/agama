@@ -8,7 +8,7 @@ check() {
 
 # called by dracut
 depends() {
-  echo network url-lib dmsquash-live img-lib bash
+  echo network url-lib img-lib bash
   return 0
 }
 
@@ -19,7 +19,5 @@ installkernel() {
 # called by dracut
 install() {
   inst_hook cmdline 99 "$moddir/agama-dud-parser.sh"
-  inst_hook initqueue/online 99 "$moddir/agama-dud-apply.sh"
-
-  dracut_need_initqueue
+  inst_hook pre-mount 99 "$moddir/agama-dud-apply.sh"
 }

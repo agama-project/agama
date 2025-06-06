@@ -3,7 +3,6 @@
 [ -e /dracut-state.sh ] && . /dracut-state.sh
 
 . /lib/dracut-lib.sh
-set -ex
 
 fetch_updates() {
   # Agama driver updates
