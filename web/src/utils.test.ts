@@ -178,6 +178,14 @@ describe("isEmpty", () => {
     expect(isEmpty(() => {})).toBe(false);
   });
 
+  it("returns false when called with `true` (boolean)", () => {
+    expect(isEmpty(true)).toBe(false);
+  });
+
+  it("returns false when called with `false` (boolean)", () => {
+    expect(isEmpty(false)).toBe(false);
+  });
+
   it("returns false when called with a number", () => {
     expect(isEmpty(1)).toBe(false);
   });

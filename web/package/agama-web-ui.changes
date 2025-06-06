@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Jun  6 12:32:23 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to select which connections will be used only for
+  installation and warn the user in case that there is no one
+  expected to be copied to the target system (no network).
+  (gh#agama-project/agama#2402).
+
+-------------------------------------------------------------------
 Thu Jun  5 15:51:11 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Revert eslint removal and updates it to latest version

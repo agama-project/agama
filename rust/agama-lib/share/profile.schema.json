@@ -73,15 +73,16 @@
         }
       },
       "oneOf": [
-        { "required": [ "stopOnBootMenu" ]},
-        { "required": [ "timeout" ]},
-        { "not": {
-          "anyOf": [
-            { "required": [ "stopOnBootMenu" ]},
-            { "required": [ "timeout" ]}
-          ]
-        }}
-
+        { "required": ["stopOnBootMenu"] },
+        { "required": ["timeout"] },
+        {
+          "not": {
+            "anyOf": [
+              { "required": ["stopOnBootMenu"] },
+              { "required": ["timeout"] }
+            ]
+          }
+        }
       ]
     },
     "dasd": {
@@ -101,10 +102,7 @@
               "state": {
                 "title": "Specify target state of device. Either activate it or deactivate it.",
                 "type": "string",
-                "enum": [
-                  "active",
-                  "offline"
-                ],
+                "enum": ["active", "offline"],
                 "default": "active"
               },
               "format": {
@@ -116,9 +114,7 @@
                 "type": "boolean"
               }
             },
-            "required": [
-              "channel"
-            ]
+            "required": ["channel"]
           }
         }
       }
@@ -150,13 +146,15 @@
               "fingerprint": {
                 "title": "fingerprint of ssl certificate",
                 "type": "string",
-                "examples": ["A8:DE:08:B1:57:52:FE:70:DF:D5:31:EA:E3:53:BB:39:EE:01:FF:B9"] 
+                "examples": [
+                  "A8:DE:08:B1:57:52:FE:70:DF:D5:31:EA:E3:53:BB:39:EE:01:FF:B9"
+                ]
               },
               "algorithm": {
                 "title": "Fingerprint algorithm used to compute it",
                 "type": "string",
                 "enum": ["SHA1", "SHA256"],
-                "examples": ["SHA1"] 
+                "examples": ["SHA1"]
               }
             },
             "required": ["fingerprint", "algorithm"]
@@ -370,6 +368,11 @@
               "autoconnect": {
                 "title": "Auto-connected",
                 "description": "Whether the connection should be automatically connected",
+                "type": "boolean"
+              },
+              "persistent": {
+                "title": "Persistent",
+                "description": "Whether the connection should be written to disk permanently",
                 "type": "boolean"
               },
               "wireless": {
