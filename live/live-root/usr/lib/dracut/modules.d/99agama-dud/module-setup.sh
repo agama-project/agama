@@ -18,6 +18,8 @@ installkernel() {
 
 # called by dracut
 install() {
+  inst_multiple agama-transfer
+
   inst_hook cmdline 99 "$moddir/agama-dud-parser.sh"
   inst_hook pre-mount 99 "$moddir/agama-dud-apply.sh"
 }
