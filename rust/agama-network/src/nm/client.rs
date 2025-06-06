@@ -100,7 +100,7 @@ impl<'a> NetworkManagerClient<'a> {
         if copy_network != state.copy_network {
             if state.copy_network {
                 if let Err(error) = fs::remove_file(not_copy_path) {
-                    tracing::error!("Cannot remove {:?} file {:?}", NOT_COPY_NETWORK_PATH, error);
+                    tracing::error!("Cannot remove {} file {:?}", NOT_COPY_NETWORK_PATH, error);
                 }
             } else {
                 if let Err(error) = OpenOptions::new()
@@ -108,7 +108,7 @@ impl<'a> NetworkManagerClient<'a> {
                     .write(true)
                     .open(not_copy_path)
                 {
-                    tracing::error!("Cannot write {:?} file {:?}", NOT_COPY_NETWORK_PATH, error);
+                    tracing::error!("Cannot write {} file {:?}", NOT_COPY_NETWORK_PATH, error);
                 }
             };
         };
