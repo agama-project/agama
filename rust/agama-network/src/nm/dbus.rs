@@ -30,6 +30,7 @@ use agama_utils::dbus::{
 };
 use cidr::IpInet;
 use macaddr::MacAddr6;
+use semver::{Version, VersionReq};
 use std::{collections::HashMap, net::IpAddr, str::FromStr};
 use uuid::Uuid;
 use zbus::zvariant::{self, OwnedValue, Value};
@@ -53,6 +54,7 @@ const IEEE_8021X_KEY: &str = "802-1x";
 pub fn connection_to_dbus<'a>(
     conn: &'a Connection,
     controller: Option<&'a Connection>,
+    nm_version: Version,
 ) -> NestedHash<'a> {
     let mut result = NestedHash::new();
     let mut connection_dbus = HashMap::from([
@@ -74,7 +76,11 @@ pub fn connection_to_dbus<'a>(
                 ""
             }
         };
-        connection_dbus.insert("port-type", port_type.into());
+        if VersionReq::parse(">=1.46.0").unwrap().matches(&nm_version) {
+            connection_dbus.insert("port-type", port_type.into());
+        } else {
+            connection_dbus.insert("slave-type", port_type.into());
+        }
         let master = controller
             .interface
             .as_deref()
@@ -83,7 +89,11 @@ pub fn connection_to_dbus<'a>(
         connection_dbus.remove("autoconnect");
         connection_dbus.insert("autoconnect", false.into());
     } else {
-        connection_dbus.insert("port-type", "".into());
+        if VersionReq::parse(">=1.46.0").unwrap().matches(&nm_version) {
+            connection_dbus.insert("port-type", "".into());
+        } else {
+            connection_dbus.insert("slave-type", "".into());
+        }
         connection_dbus.insert("master", "".into());
     }
 
@@ -91,8 +101,8 @@ pub fn connection_to_dbus<'a>(
         connection_dbus.insert("zone", zone.into());
     }
 
-    result.insert("ipv4", ip_config_to_ipv4_dbus(&conn.ip_config));
-    result.insert("ipv6", ip_config_to_ipv6_dbus(&conn.ip_config));
+    result.insert("ipv4", ip_config_to_ipv4_dbus(&conn.ip_config, &nm_version));
+    result.insert("ipv6", ip_config_to_ipv6_dbus(&conn.ip_config, &nm_version));
     result.insert("match", match_config_to_dbus(&conn.match_config));
 
     if conn.is_ethernet() {
@@ -260,11 +270,15 @@ pub fn merge_dbus_connections<'a>(
     Ok(merged)
 }
 
-fn is_bridge(conn: NestedHash) -> bool {
+fn is_bridge_port(conn: &NestedHash) -> bool {
     if let Some(connection) = conn.get("connection") {
         if let Some(port_type) = connection.get("port-type") {
-            if port_type.to_string().as_str() == "bridge" {
-                return true;
+            if let Ok(s) = TryInto::<&str>::try_into(port_type) {
+                return s == "bridge";
+            }
+        } else if let Some(port_type) = connection.get("slave-type") {
+            if let Ok(s) = TryInto::<&str>::try_into(port_type) {
+                return s == "bridge";
             }
         }
     }
@@ -284,7 +298,7 @@ fn is_bridge(conn: NestedHash) -> bool {
 ///
 /// * `conn`: connection represented as a NestedHash.
 pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
-    if !is_bridge(conn.to_owned()) {
+    if !is_bridge_port(conn) {
         conn.remove("bridge-port");
     }
 
@@ -297,7 +311,12 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
             connection.remove("master");
         }
 
-        if connection.get("slave-type").is_some() {
+        // prefer port-type over slave type
+        if connection.get("slave-type").is_some() && connection.get("port-type").is_some() {
+            connection.remove("slave-type");
+        }
+
+        if connection.get("slave-type").is_some_and(is_empty_value) {
             connection.remove("slave-type");
         }
 
@@ -331,7 +350,10 @@ pub fn controller_from_dbus(conn: &OwnedNestedHash) -> Result<Option<String>, zv
     get_optional_property(connection, "master")
 }
 
-fn ip_config_to_ipv4_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value> {
+fn ip_config_to_ipv4_dbus<'a>(
+    ip_config: &'a IpConfig,
+    nm_version: &Version,
+) -> HashMap<&'a str, zvariant::Value<'a>> {
     let addresses: Vec<HashMap<&str, Value>> = ip_config
         .addresses
         .iter()
@@ -378,7 +400,22 @@ fn ip_config_to_ipv4_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value
     }
 
     if let Some(dhcp4_settings) = &ip_config.dhcp4_settings {
-        ipv4_dbus.insert("dhcp-send-hostname", dhcp4_settings.send_hostname.into());
+        if VersionReq::parse(">=1.52.0").unwrap().matches(nm_version) {
+            let dhcp_send_hostname = match dhcp4_settings.send_hostname {
+                Some(send_hostname) => {
+                    if send_hostname {
+                        1
+                    } else {
+                        0
+                    }
+                }
+                None => -1,
+            };
+            ipv4_dbus.insert("dhcp-send-hostname-v2", dhcp_send_hostname.into());
+        } else {
+            let dhcp_send_hostname = dhcp4_settings.send_hostname.unwrap_or(true);
+            ipv4_dbus.insert("dhcp-send-hostname", dhcp_send_hostname.into());
+        }
         let dhcp_send_release = match dhcp4_settings.send_release {
             Some(send_release) => {
                 if send_release {
@@ -389,7 +426,9 @@ fn ip_config_to_ipv4_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value
             }
             None => -1,
         };
-        ipv4_dbus.insert("dhcp-send-release", dhcp_send_release.into());
+        if VersionReq::parse(">=1.48.0").unwrap().matches(nm_version) {
+            ipv4_dbus.insert("dhcp-send-release", dhcp_send_release.into());
+        }
         if let Some(hostname) = &dhcp4_settings.hostname {
             ipv4_dbus.insert("dhcp-hostname", hostname.into());
         }
@@ -407,7 +446,10 @@ fn ip_config_to_ipv4_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value
     ipv4_dbus
 }
 
-fn ip_config_to_ipv6_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value> {
+fn ip_config_to_ipv6_dbus<'a>(
+    ip_config: &'a IpConfig,
+    nm_version: &Version,
+) -> HashMap<&'a str, zvariant::Value<'a>> {
     let addresses: Vec<HashMap<&str, Value>> = ip_config
         .addresses
         .iter()
@@ -458,7 +500,22 @@ fn ip_config_to_ipv6_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value
     }
 
     if let Some(dhcp6_settings) = &ip_config.dhcp6_settings {
-        ipv6_dbus.insert("dhcp-send-hostname", dhcp6_settings.send_hostname.into());
+        if VersionReq::parse(">=1.52.0").unwrap().matches(nm_version) {
+            let dhcp_send_hostname = match dhcp6_settings.send_hostname {
+                Some(send_hostname) => {
+                    if send_hostname {
+                        1
+                    } else {
+                        0
+                    }
+                }
+                None => -1,
+            };
+            ipv6_dbus.insert("dhcp-send-hostname-v2", dhcp_send_hostname.into());
+        } else {
+            let dhcp_send_hostname = dhcp6_settings.send_hostname.unwrap_or(true);
+            ipv6_dbus.insert("dhcp-send-hostname", dhcp_send_hostname.into());
+        }
         let dhcp_send_release = match dhcp6_settings.send_release {
             Some(send_release) => {
                 if send_release {
@@ -469,7 +526,9 @@ fn ip_config_to_ipv6_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value
             }
             None => -1,
         };
-        ipv6_dbus.insert("dhcp-send-release", dhcp_send_release.into());
+        if VersionReq::parse(">=1.48.0").unwrap().matches(nm_version) {
+            ipv6_dbus.insert("dhcp-send-release", dhcp_send_release.into());
+        }
         if let Some(hostname) = &dhcp6_settings.hostname {
             ipv6_dbus.insert("dhcp-hostname", hostname.into());
         }
@@ -856,8 +915,15 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Result<IpConfig, NmError> {
         }
 
         let mut dhcp4_settings = Dhcp4Settings::default();
-        if let Some(dhcp_send_hostname) = get_optional_property(ipv4, "dhcp-send-hostname")? {
-            dhcp4_settings.send_hostname = dhcp_send_hostname;
+        if let Some(dhcp_send_hostname) = get_optional_property(ipv4, "dhcp-send-hostname-v2")? {
+            dhcp4_settings.send_hostname = match dhcp_send_hostname {
+                -1 => None,
+                0 => Some(false),
+                _ => Some(true),
+            };
+        } else if let Some(dhcp_send_hostname) = get_optional_property(ipv4, "dhcp-send-hostname")?
+        {
+            dhcp4_settings.send_hostname = Some(dhcp_send_hostname);
         }
         if let Some(dhcp_send_release) = get_optional_property::<i32>(ipv4, "dhcp-send-release")? {
             dhcp4_settings.send_release = match dhcp_send_release {
@@ -919,8 +985,15 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Result<IpConfig, NmError> {
         }
 
         let mut dhcp6_settings = Dhcp6Settings::default();
-        if let Some(dhcp_send_hostname) = get_optional_property(ipv6, "dhcp-send-hostname")? {
-            dhcp6_settings.send_hostname = dhcp_send_hostname;
+        if let Some(dhcp_send_hostname) = get_optional_property(ipv6, "dhcp-send-hostname-v2")? {
+            dhcp6_settings.send_hostname = match dhcp_send_hostname {
+                -1 => None,
+                0 => Some(false),
+                _ => Some(true),
+            };
+        } else if let Some(dhcp_send_hostname) = get_optional_property(ipv6, "dhcp-send-hostname")?
+        {
+            dhcp6_settings.send_hostname = Some(dhcp_send_hostname);
         }
         if let Some(dhcp_send_release) = get_optional_property::<i32>(ipv6, "dhcp-send-release")? {
             dhcp6_settings.send_release = match dhcp_send_release {
@@ -1382,7 +1455,7 @@ mod test {
             hi("dns-search", vec!["suse.com", "example.com"])?,
             hi("ignore-auto-dns", true)?,
             hi("route-data", route_v4_data)?,
-            hi("dhcp-send-hostname", true)?,
+            hi("dhcp-send-hostname-v2", -1)?,
             hi("dhcp-hostname", "workstation.example.com")?,
             hi("dhcp-send-release", -1)?,
             hi("dhcp-client-id", "ipv6-duid")?,
@@ -1478,7 +1551,7 @@ mod test {
 
         assert!(ip_config.dhcp4_settings.is_some());
         let dhcp4_settings = ip_config.dhcp4_settings.unwrap();
-        assert!(dhcp4_settings.send_hostname);
+        assert_eq!(dhcp4_settings.send_hostname, None);
         assert_eq!(
             dhcp4_settings.hostname,
             Some("workstation.example.com".to_string())
@@ -1489,7 +1562,7 @@ mod test {
 
         assert!(ip_config.dhcp6_settings.is_some());
         let dhcp6_settings = ip_config.dhcp6_settings.unwrap();
-        assert!(!dhcp6_settings.send_hostname);
+        assert_eq!(dhcp6_settings.send_hostname, Some(false));
         assert_eq!(dhcp6_settings.hostname, None);
         assert_eq!(dhcp6_settings.send_release, Some(true));
         assert_eq!(dhcp6_settings.duid, DhcpDuid::Llt);
@@ -1595,7 +1668,6 @@ mod test {
 
     #[test]
     fn test_connection_from_dbus_bridge() -> anyhow::Result<()> {
-        dbg!("TESTING BRIDGE");
         let uuid = Uuid::new_v4().to_string();
         let connection_section = HashMap::from([hi("id", "br0")?, hi("uuid", uuid)?]);
 
@@ -1720,7 +1792,7 @@ mod test {
         };
         let mut infiniband = build_base_connection();
         infiniband.config = ConnectionConfig::Infiniband(config);
-        let infiniband_dbus = connection_to_dbus(&infiniband, None);
+        let infiniband_dbus = connection_to_dbus(&infiniband, None, semver::Version::new(1, 50, 0));
 
         let infiniband = infiniband_dbus.get(INFINIBAND_KEY).unwrap();
         let p_key = infiniband.get("p-key").unwrap().downcast_ref::<i32>()?;
@@ -1767,7 +1839,7 @@ mod test {
         };
         let mut wireless = build_base_connection();
         wireless.config = ConnectionConfig::Wireless(config);
-        let wireless_dbus = connection_to_dbus(&wireless, None);
+        let wireless_dbus = connection_to_dbus(&wireless, None, semver::Version::new(1, 50, 0));
 
         let wireless = wireless_dbus.get(WIRELESS_KEY).unwrap();
         let mode: &str = wireless.get("mode").unwrap().downcast_ref().unwrap();
@@ -1901,7 +1973,7 @@ mod test {
         };
         let mut conn = build_base_connection();
         conn.ieee_8021x_config = Some(ieee_8021x_config);
-        let conn_dbus = connection_to_dbus(&conn, None);
+        let conn_dbus = connection_to_dbus(&conn, None, semver::Version::new(1, 50, 0));
 
         let config = conn_dbus.get(super::IEEE_8021X_KEY).unwrap();
         let eap: &Array = config.get("eap").unwrap().downcast_ref().unwrap();
@@ -1975,7 +2047,7 @@ mod test {
     #[test]
     fn test_dbus_from_ethernet_connection() {
         let ethernet = build_base_connection();
-        let ethernet_dbus = connection_to_dbus(&ethernet, None);
+        let ethernet_dbus = connection_to_dbus(&ethernet, None, semver::Version::new(1, 50, 0));
         check_dbus_base_connection(&ethernet_dbus);
     }
 
@@ -2005,7 +2077,7 @@ mod test {
             interface: Some("eth0".to_string()),
             ..Default::default()
         };
-        let updated = connection_to_dbus(&ethernet, None);
+        let updated = connection_to_dbus(&ethernet, None, semver::Version::new(1, 50, 0));
 
         let merged = merge_dbus_connections(&original, &updated)?;
         let connection = merged.get("connection").unwrap();
@@ -2059,7 +2131,7 @@ mod test {
             mac_address: MacAddress::Unset,
             ..Default::default()
         };
-        let updated = connection_to_dbus(&updated, None);
+        let updated = connection_to_dbus(&updated, None, semver::Version::new(1, 50, 0));
 
         let merged = merge_dbus_connections(&original, &updated)?;
         let connection = merged.get("connection").unwrap();
@@ -2100,7 +2172,7 @@ mod test {
             }],
             dns_searchlist: vec!["suse.com".to_string(), "suse.de".to_string()],
             dhcp4_settings: Some(Dhcp4Settings {
-                send_hostname: true,
+                send_hostname: Some(true),
                 hostname: Some("workstation.suse.com".to_string()),
                 send_release: Some(false),
                 client_id: DhcpClientId::Duid,
@@ -2278,5 +2350,126 @@ mod test {
         let client_id: String = ipv6_dbus.get("dhcp-duid").unwrap().downcast_ref().unwrap();
         assert_eq!(client_id, "stable-ll".to_string());
         assert!(ipv6_dbus.get("dhcp-iaid").is_none());
+    }
+
+    #[test]
+    fn test_dbus_from_ethernet_connection_for_different_nm_versions() {
+        let ethernet = build_base_connection();
+
+        let ethernet_dbus =
+            connection_to_dbus(&ethernet, None, semver::Version::parse("1.44.0").unwrap());
+        let ipv4_dbus = ethernet_dbus.get("ipv4").unwrap();
+        let ipv6_dbus = ethernet_dbus.get("ipv6").unwrap();
+        let send_hostname: bool = ipv6_dbus
+            .get("dhcp-send-hostname")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert!(send_hostname);
+        assert_eq!(ipv4_dbus.get("dhcp-send-release"), None);
+
+        let ethernet_dbus =
+            connection_to_dbus(&ethernet, None, semver::Version::parse("1.52.0").unwrap());
+        let ipv4_dbus = ethernet_dbus.get("ipv4").unwrap();
+        let ipv6_dbus = ethernet_dbus.get("ipv6").unwrap();
+        let send_hostname: i32 = ipv6_dbus
+            .get("dhcp-send-hostname-v2")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(send_hostname, -1);
+        let send_release: i32 = ipv4_dbus
+            .get("dhcp-send-release")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(send_release, 0);
+    }
+
+    #[test]
+    fn test_dbus_from_bridge_connection() {
+        let mut master_con = build_base_connection();
+        master_con.config = ConnectionConfig::Bridge(BridgeConfig::default());
+        let bridge_con = build_base_connection();
+
+        let bridge_dbus = connection_to_dbus(
+            &bridge_con,
+            Some(&master_con),
+            semver::Version::parse("1.50.0").unwrap(),
+        );
+        let connection_dbus = bridge_dbus.get("connection").unwrap();
+        let port_type: &str = connection_dbus
+            .get("port-type")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(port_type, BRIDGE_KEY);
+        let master: &str = connection_dbus
+            .get("master")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(master, bridge_con.id);
+    }
+
+    #[test]
+    fn test_dbus_from_bond_connection() {
+        let mut master_con = build_base_connection();
+        master_con.config = ConnectionConfig::Bond(BondConfig::default());
+        let bond_con = build_base_connection();
+
+        let bond_dbus = connection_to_dbus(
+            &bond_con,
+            Some(&master_con),
+            semver::Version::parse("1.50.0").unwrap(),
+        );
+        let connection_dbus = bond_dbus.get("connection").unwrap();
+        let port_type: &str = connection_dbus
+            .get("port-type")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(port_type, BOND_KEY);
+        let master: &str = connection_dbus
+            .get("master")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(master, bond_con.id);
+    }
+
+    #[test]
+    fn test_dbus_from_bridge_connection_for_different_nm_versions() {
+        let mut master_con = build_base_connection();
+        master_con.config = ConnectionConfig::Bridge(BridgeConfig::default());
+        let bridge_con = build_base_connection();
+
+        let bridge_dbus = connection_to_dbus(
+            &bridge_con,
+            Some(&master_con),
+            semver::Version::parse("1.44.0").unwrap(),
+        );
+        let connection_dbus = bridge_dbus.get("connection").unwrap();
+        let slave_type: &str = connection_dbus
+            .get("slave-type")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(slave_type, BRIDGE_KEY);
+        assert_eq!(connection_dbus.get("port-type"), None);
+
+        let bridge_dbus = connection_to_dbus(
+            &bridge_con,
+            Some(&master_con),
+            semver::Version::parse("1.46.0").unwrap(),
+        );
+        let connection_dbus = bridge_dbus.get("connection").unwrap();
+        let port_type: &str = connection_dbus
+            .get("port-type")
+            .unwrap()
+            .downcast_ref()
+            .unwrap();
+        assert_eq!(port_type, BRIDGE_KEY);
+        assert_eq!(connection_dbus.get("slave-type"), None);
     }
 }

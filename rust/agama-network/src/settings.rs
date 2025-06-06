@@ -260,16 +260,15 @@ pub struct NetworkConnection {
     #[serde(rename = "ieee-8021x", skip_serializing_if = "Option::is_none")]
     pub ieee_8021x: Option<IEEE8021XSettings>,
     /// Specifies if the connection should automatically connect
-    #[serde(default = "default_true")]
-    pub autoconnect: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub autoconnect: Option<bool>,
+    /// Specifies whether the connection should be persisted or not
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub persistent: Option<bool>,
 }
 
 fn is_zero<T: PartialEq + From<u16>>(u: &T) -> bool {
     *u == T::from(0)
-}
-
-fn default_true() -> bool {
-    true
 }
 
 impl NetworkConnection {

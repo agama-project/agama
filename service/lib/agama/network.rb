@@ -24,6 +24,7 @@ require "yast"
 require "yast2/systemd/service"
 require "y2network/proposal_settings"
 require "agama/proxy_setup"
+require "agama/http"
 
 Yast.import "Installation"
 
@@ -32,6 +33,10 @@ module Agama
   class Network
     def initialize(logger)
       @logger = logger
+    end
+
+    def startup
+      persist_connections if do_proposal?
     end
 
     # Writes the network configuration to the installed system
@@ -137,6 +142,25 @@ module Agama
       path = target || File.join(Yast::Installation.destdir, source)
       FileUtils.mkdir_p(File.dirname(path))
       FileUtils.copy_entry(source, path)
+    end
+
+    def http_client
+      @http_client ||= Agama::HTTP::Clients::Network.new(logger)
+    end
+
+    def persist_connections
+      http_client.persist_connections
+    end
+
+    def copy_connections?
+      http_client.state["copyNetwork"]
+    end
+
+    def do_proposal?
+      return false unless copy_connections?
+      return false if http_client.connections.any? { |c| c["persistent"] }
+
+      !http_client.connections.empty?
     end
   end
 end

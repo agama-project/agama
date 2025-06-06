@@ -102,7 +102,7 @@ module Agama
         @languages = DEFAULT_LANGUAGES
         @products = build_products
         @product = find_initial_product
-        @repositories = RepositoriesManager.new
+        @repositories = RepositoriesManager.instance
         # patterns selected by user
         @user_patterns = []
         @selected_patterns_change_callbacks = []
@@ -294,7 +294,7 @@ module Agama
 
         user_patterns = Yast::PackagesProposal.GetResolvables(PROPOSAL_ID, :pattern)
         user_patterns.each { |p| Yast::Pkg.ResolvableNeutral(p, :pattern, force = false) }
-        logger.info "Adding patterns: #{add.join(", ")}. Removing patterns: #{remove.join(",")}."
+        logger.info "Adding patterns: #{add.inspect}, removing patterns: #{remove.inspect}"
 
         Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :pattern, add)
         add.each do |id|
@@ -322,8 +322,22 @@ module Agama
 
         patterns = Y2Packager::Resolvable.find(kind: :pattern, status: :selected)
         patterns.map!(&:name)
+        logger.info "Currently selected patterns: #{patterns.inspect}"
 
         patterns.partition { |p| user_patterns.include?(p) }
+      end
+
+      def update_selected_patterns
+        user_patterns = Yast::PackagesProposal.GetResolvables(PROPOSAL_ID, :pattern)
+        patterns = Y2Packager::Resolvable.find(kind: :pattern, status: :selected).map!(&:name)
+
+        unselect_patterns = user_patterns - patterns
+        unselect_patterns.each do |id|
+          logger.info "Unselecting pattern #{id}"
+          Yast::PackagesProposal.RemoveResolvables(PROPOSAL_ID, :pattern, [id])
+        end
+
+        selected_patterns_changed if !unselect_patterns.empty?
       end
 
       def on_selected_patterns_change(&block)

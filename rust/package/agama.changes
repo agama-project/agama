@@ -1,4 +1,64 @@
 -------------------------------------------------------------------
+Fri Jun  6 13:22:58 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Added support for moving the connections from memory only to disk
+  (gh#agama-project/agama#2402).
+
+-------------------------------------------------------------------
+Tue Jun  5 16:03:31 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Use slave-type instead of port-type for NM<1.46.0 (gh#agama-project/agama#2433).
+
+-------------------------------------------------------------------
+Thu Jun  5 15:42:13 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support to specify for extra repositories if it can be
+  unsigned or list of GPG fingerprints that are trusted
+  (jsc#AGM-125)
+
+-------------------------------------------------------------------
+Thu Jun  5 12:57:11 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use camel case for the extra repositories key (gh#agama-project/agama#2442).
+
+-------------------------------------------------------------------
+Wed Jun  4 13:18:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the autologin property from the JSON schema
+  (gh#agama-project/agama#2438).
+
+-------------------------------------------------------------------
+Tue Jun  3 12:30:40 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add to api/software/config ability to set/get list of additional
+  installatio repositories (jsc#AGM-125)
+- Add extraRepositories key to software section in agama profile
+
+-------------------------------------------------------------------
+Fri May 30 15:05:35 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Send different NM dbus values depending on version (gh#agama-project/agama#2356).
+
+-------------------------------------------------------------------
+Thu May 29 09:00:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Fix bridge port config (bridge-port.priority and 
+  brdige-port.path_cost)
+
+-------------------------------------------------------------------
+Wed May 28 14:53:51 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Refresh the software cache after resolving conflicts to
+  show the correct current status
+  (followup for gh#agama-project/agama#2348)
+
+-------------------------------------------------------------------
+Wed May 28 13:29:51 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Stop serving the web UI from $HOME/.local/share/agama
+  (gh#agama-project/agama#2414).
+
+-------------------------------------------------------------------
 Mon May 26 19:51:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 15

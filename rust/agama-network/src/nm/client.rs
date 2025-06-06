@@ -20,6 +20,8 @@
 
 //! NetworkManager client.
 use std::collections::HashMap;
+use std::fs::{self, OpenOptions};
+use std::path::Path;
 
 use super::builder::DeviceFromProxyBuilder;
 use super::dbus::{
@@ -34,9 +36,11 @@ use super::proxies::{
 };
 use crate::model::{
     AccessPoint, Connection, ConnectionConfig, Device, GeneralState, SecurityProtocol,
+    NOT_COPY_NETWORK_PATH,
 };
-use crate::types::{DeviceType, SSID};
+use crate::types::{AddFlags, ConnectionFlags, DeviceType, UpdateFlags, SSID};
 use agama_utils::dbus::get_optional_property;
+use semver::Version;
 use uuid::Uuid;
 use zbus;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
@@ -70,23 +74,43 @@ impl<'a> NetworkManagerClient<'a> {
         // let global_dns_configuration = self.nm_proxy.global_dns_configuration().await?;
         // Fixme: save as NMConnectivityState enum
         let connectivity = self.nm_proxy.connectivity().await? == 4;
+        let copy_network = !Path::new(NOT_COPY_NETWORK_PATH).exists();
 
         Ok(GeneralState {
             hostname,
             wireless_enabled,
             networking_enabled,
             connectivity,
+            copy_network,
         })
     }
 
     /// Updates the general state
     pub async fn update_general_state(&self, state: &GeneralState) -> Result<(), NmError> {
         let wireless_enabled = self.nm_proxy.wireless_enabled().await?;
+        let not_copy_path = Path::new(NOT_COPY_NETWORK_PATH);
+        let copy_network = !not_copy_path.exists();
 
         if wireless_enabled != state.wireless_enabled {
             self.nm_proxy
                 .set_wireless_enabled(state.wireless_enabled)
                 .await?;
+        };
+
+        if copy_network != state.copy_network {
+            if state.copy_network {
+                if let Err(error) = fs::remove_file(not_copy_path) {
+                    tracing::error!("Cannot remove {} file {:?}", NOT_COPY_NETWORK_PATH, error);
+                }
+            } else {
+                if let Err(error) = OpenOptions::new()
+                    .create(true)
+                    .write(true)
+                    .open(not_copy_path)
+                {
+                    tracing::error!("Cannot write {} file {:?}", NOT_COPY_NETWORK_PATH, error);
+                }
+            };
         };
 
         Ok(())
@@ -182,7 +206,7 @@ impl<'a> NetworkManagerClient<'a> {
     /// Returns the list of network connections.
     pub async fn connections(&self) -> Result<Vec<Connection>, NmError> {
         let mut controlled_by: HashMap<Uuid, String> = HashMap::new();
-        let mut uuids_map: HashMap<Uuid, String> = HashMap::new();
+        let mut uuids_map: HashMap<String, Uuid> = HashMap::new();
 
         let proxy = SettingsProxy::new(&self.connection).await?;
         let paths = proxy.list_connections().await?;
@@ -195,7 +219,7 @@ impl<'a> NetworkManagerClient<'a> {
                 .await?;
             let flags = proxy.flags().await?;
             // https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMSettingsConnectionFlags
-            if flags & 8 != 0 {
+            if flags & ConnectionFlags::External as u32 != 0 {
                 tracing::warn!("Skipped connection because of flags: {}", flags);
                 continue;
             }
@@ -213,11 +237,14 @@ impl<'a> NetworkManagerClient<'a> {
                     }
 
                     Self::add_secrets(&mut connection.config, &proxy).await?;
+                    connection.flags = flags;
+                    connection.persistent = flags == 0;
+
                     if let Some(controller) = controller {
                         controlled_by.insert(connection.uuid, controller);
                     }
                     if let Some(iname) = &connection.interface {
-                        uuids_map.insert(connection.uuid, iname.to_string());
+                        uuids_map.insert(iname.to_string(), connection.uuid);
                     }
                     if self.settings_active_connection(path).await?.is_none() {
                         connection.set_down()
@@ -231,8 +258,10 @@ impl<'a> NetworkManagerClient<'a> {
         }
 
         for conn in connections.iter_mut() {
-            if controlled_by.contains_key(&conn.uuid) {
-                conn.controller = Some(conn.uuid);
+            if let Some(controller) = controlled_by.get(&conn.uuid) {
+                if let Some(iface) = uuids_map.get(controller) {
+                    conn.controller = Some(iface.to_owned());
+                }
             };
         }
 
@@ -261,23 +290,51 @@ impl<'a> NetworkManagerClient<'a> {
         conn: &Connection,
         controller: Option<&Connection>,
     ) -> Result<(), NmError> {
-        let mut new_conn = connection_to_dbus(conn, controller);
+        let mut new_conn = connection_to_dbus(
+            conn,
+            controller,
+            Version::parse(&self.nm_proxy.version().await?)
+                .map_err(NmError::FailedNmVersionParse)?,
+        );
 
         let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid).await {
             let original = proxy.get_settings().await?;
             let merged = merge_dbus_connections(&original, &new_conn)?;
-            proxy.update(merged).await?;
+            let persist = if conn.persistent {
+                UpdateFlags::ToDisk
+            } else {
+                UpdateFlags::InMemoryOnly
+            };
+            proxy
+                .update2(merged, persist as u32, Default::default())
+                .await?;
             OwnedObjectPath::from(proxy.inner().path().to_owned())
         } else {
             let proxy = SettingsProxy::new(&self.connection).await?;
+            // https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMSettingsConnectionFlags
+            // 0x1 persist to disk, 0x2 memory only
+            let persist = if conn.persistent {
+                AddFlags::ToDisk
+            } else {
+                AddFlags::InMemory
+            };
             cleanup_dbus_connection(&mut new_conn);
-            proxy.add_connection(new_conn).await?
+            let (path, _) = proxy
+                .add_connection2(new_conn, persist as u32, Default::default())
+                .await?;
+            path
         };
 
+        // FIXME: Do not like that an activation/deactivation could not apply the changes because of
+        // a roolback when calling this method with an error.
         if conn.is_up() {
+            // FIXME: If it is a wireless and wireless is disabled it will fail, and if it is a
+            // device which is not available it will also fail.
             self.activate_connection(path).await?;
         } else {
-            self.deactivate_connection(path).await?;
+            if conn.is_down() || conn.is_removed() {
+                self.deactivate_connection(path).await?;
+            }
         }
         Ok(())
     }

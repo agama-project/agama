@@ -104,7 +104,7 @@ describe Agama::Software::Manager do
     allow(Yast::Pkg).to receive(:SourceCreate)
     allow(Yast::Installation).to receive(:destdir).and_return(destdir)
     allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
-    allow(Agama::Software::RepositoriesManager).to receive(:new).and_return(repositories)
+    allow(Agama::Software::RepositoriesManager).to receive(:instance).and_return(repositories)
     allow(Agama::Software::Proposal).to receive(:new).and_return(proposal)
     allow(Agama::ProductReader).to receive(:new).and_call_original
     allow(FileUtils).to receive(:mkdir_p)
@@ -636,6 +636,24 @@ describe Agama::Software::Manager do
           end
         end
       end
+    end
+  end
+
+  describe "#update_selected_patterns" do
+    it "unselects user patterns unselected by conflict resolution" do
+      # user selected patterns
+      expect(Yast::PackagesProposal).to receive(:GetResolvables).with(anything,
+        :pattern).and_return(["pattern1", "pattern2"])
+      # patterns selected in libzypp
+      expect(Y2Packager::Resolvable).to receive(:find).with(kind: :pattern,
+        status: :selected).and_return([double(name: "pattern1")])
+      # list of patterns is changed
+      expect(subject).to receive(:selected_patterns_changed)
+      # the "pattern2" is unselected
+      expect(Yast::PackagesProposal).to receive(:RemoveResolvables).with(anything, :pattern,
+        ["pattern2"])
+
+      subject.update_selected_patterns
     end
   end
 

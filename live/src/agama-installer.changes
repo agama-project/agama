@@ -1,4 +1,21 @@
 -------------------------------------------------------------------
+Thu Jun  5 08:28:10 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Disable Firefox extensions autoupdate
+  (gh#agama-project/agama#2441)
+
+-------------------------------------------------------------------
+Tue Jun  3 07:35:56 UTC 2025 - Michal Filka <mfilka@suse.cz>
+
+- Switched live ISO to use Wayland (gh#agama-project/agama#1781)
+- Do not require microos-tools as we don't need it anymore. bsc#1237366
+
+-------------------------------------------------------------------
+Thu May 29 07:16:11 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Keep the nvmem kernel drivers (bsc#1243350)
+
+-------------------------------------------------------------------
 Mon May 26 21:35:04 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Generate systemd network link files below Agama run folder to 
