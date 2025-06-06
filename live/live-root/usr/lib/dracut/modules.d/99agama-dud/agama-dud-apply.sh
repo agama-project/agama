@@ -15,7 +15,7 @@ apply_updates() {
     mkdir -p "$DUD_DIR"
     echo "Fetching $dud_url!"
     file=${dud_url##*/}
-    if ! agama download $dud_url "$DUD_DIR/$file"; then
+    if ! agama-transfer $dud_url "$DUD_DIR/$file"; then
       warn "failed to fetch DUD!"
       exit 1
     fi
