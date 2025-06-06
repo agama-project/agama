@@ -1,10 +1,23 @@
 -------------------------------------------------------------------
-Wed Jun  4 10:22:36 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+Fri Jun  6 10:22:36 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Propose to move existing connections to disk if there is no one 
   to be persisted (custom config provided)
   (gh#agama-project/agama#2402).
   
+-------------------------------------------------------------------
+Thu Jun  5 15:44:06 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- agama-dbus-monitor: Increase timeout when restarting to prevent
+  crash due to socket not available
+
+-------------------------------------------------------------------
+Thu Jun  5 15:41:31 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support to specify for extra repositories if it can be
+  unsigned or list of GPG fingerprints that are trusted
+  (jsc#AGM-125)
+
 -------------------------------------------------------------------
 Tue Jun  3 12:22:41 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
