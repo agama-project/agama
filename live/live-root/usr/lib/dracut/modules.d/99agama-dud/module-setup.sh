@@ -21,5 +21,5 @@ install() {
   inst_multiple agama-transfer
 
   inst_hook cmdline 99 "$moddir/agama-dud-parser.sh"
-  inst_hook pre-mount 99 "$moddir/agama-dud-apply.sh"
+  inst_hook pre-pivot 99 "$moddir/agama-dud-apply.sh"
 }

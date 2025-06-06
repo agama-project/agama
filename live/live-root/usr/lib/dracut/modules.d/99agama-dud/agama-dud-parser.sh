@@ -8,13 +8,10 @@ fetch_updates() {
   # Agama driver updates
   local updates=$(getargs inst.dud=)
   if [ -n "$updates" ]; then
-    # make sure network comes up even if we're doing a local live device
-    if [ -z "$netroot" ]; then
-      echo >/tmp/net.ifaces
-    fi
     echo "$updates" >/tmp/agamadud.info
-    echo '[ -e /tmp/agama_dud.done ]' >"$hookdir"/initqueue/finished/agama-dud-apply.sh
   fi
+
+  exit 0
 }
 
 fetch_updates
