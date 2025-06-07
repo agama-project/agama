@@ -26,7 +26,7 @@ import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tansta
 import { setConfigModel, solveConfigModel } from "~/api/storage";
 import { apiModel, Volume } from "~/api/storage/types";
 import { QueryHookOptions } from "~/types/queries";
-import { apiModelQuery, useVolumes } from "~/queries/storage";
+import { apiModelQuery, storageKeys, useVolumes } from "~/queries/storage";
 
 function copyModel(model: apiModel.Config): apiModel.Config {
   return JSON.parse(JSON.stringify(model));
@@ -124,7 +124,7 @@ export function useConfigModelMutation() {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: (model: apiModel.Config) => setConfigModel(model),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: storageKeys.all() }),
   };
 
   return useMutation(query);

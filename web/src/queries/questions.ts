@@ -26,6 +26,10 @@ import { useInstallerClient } from "~/context/installer";
 import { Question } from "~/types/questions";
 import { fetchQuestions, updateAnswer } from "~/api/questions";
 
+const questionsKeys = {
+  all: () => ["questions"] as const,
+};
+
 /**
  * Query to retrieve questions
  */
@@ -60,7 +64,7 @@ const useQuestionsChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "QuestionsChanged") {
-        queryClient.invalidateQueries({ queryKey: ["questions"] });
+        queryClient.invalidateQueries({ queryKey: questionsKeys.all() });
       }
     });
   }, [client, queryClient]);
@@ -69,7 +73,7 @@ const useQuestionsChanges = () => {
     if (!client) return;
 
     return client.onConnect(() => {
-      queryClient.invalidateQueries({ queryKey: ["questions"] });
+      queryClient.invalidateQueries({ queryKey: questionsKeys.all() });
     });
   }, [client, queryClient]);
 };

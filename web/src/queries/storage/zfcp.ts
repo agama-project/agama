@@ -31,25 +31,34 @@ import { useInstallerClient } from "~/context/installer";
 import React from "react";
 import { ZFCPConfig, ZFCPController, ZFCPDisk } from "~/types/zfcp";
 
+// FIXME: move this to sotaraKeys factory?
+const storageZfcpKeys = {
+  all: () => ["storage", "zfcp"] as const,
+  config: () => [...storageZfcpKeys.all(), "config"] as const,
+  controllers: () => [...storageZfcpKeys.all(), "controllers"] as const,
+  disks: () => [...storageZfcpKeys.all(), "disks"] as const,
+  supported: () => [...storageZfcpKeys.all(), "supported"] as const,
+};
+
 const zfcpControllersQuery = {
-  queryKey: ["zfcp", "controllers"],
+  queryKey: storageZfcpKeys.controllers(),
   queryFn: fetchZFCPControllers,
   staleTime: Infinity,
 };
 
 const zfcpDisksQuery = {
-  queryKey: ["zfcp", "disks"],
+  queryKey: storageZfcpKeys.disks(),
   queryFn: fetchZFCPDisks,
   staleTime: Infinity,
 };
 
 const zfcpSupportedQuery = {
-  queryKey: ["zfcp", "supported"],
+  queryKey: storageZfcpKeys.supported(),
   queryFn: supportedZFCP,
 };
 
 const zfcpConfigQuery = {
-  queryKey: ["zfcp", "config"],
+  queryKey: storageZfcpKeys.config(),
   queryFn: fetchZFCPConfig,
 };
 
@@ -137,7 +146,7 @@ const useZFCPDisksChanges = () => {
       if (!["ZFCPDiskAdded", "ZFCPDiskChanged", "ZFCPDiskRemoved"].includes(type)) {
         return;
       }
-      queryClient.setQueryData(zfcpDisksQuery.queryKey, (prev: ZFCPDisk[] | undefined) => {
+      queryClient.setQueryData(storageZfcpKeys.disks(), (prev: ZFCPDisk[] | undefined) => {
         if (prev === undefined) return;
 
         switch (type) {
