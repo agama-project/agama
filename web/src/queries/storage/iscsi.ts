@@ -26,9 +26,17 @@ import { fetchInitiator, fetchNodes, updateInitiator } from "~/api/storage/iscsi
 import { ISCSIInitiator } from "~/types/storage";
 import { useInstallerClient } from "~/context/installer";
 import { ISCSINode } from "~/api/storage/types";
+import { storageKeys } from "../storage";
+
+// FIXME: move this to sotaraKeys factory?
+const storageIscsiKeys = {
+  all: () => ["storage", "iscsi"] as const,
+  initiator: () => [...storageKeys.all(), "initiator"] as const,
+  nodes: () => [...storageKeys.all(), "nodes"] as const,
+};
 
 const initiatorQuery = {
-  queryKey: ["storage", "iscsi", "initiator"],
+  queryKey: storageIscsiKeys.initiator(),
   queryFn: async (): Promise<ISCSIInitiator> => {
     const initiator = await fetchInitiator();
     return initiator;
@@ -52,7 +60,7 @@ const useInitiatorMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: ({ name }) => updateInitiator({ name }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: initiatorQuery.queryKey }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: storageIscsiKeys.initiator() }),
   };
   return useMutation(query);
 };
@@ -69,20 +77,23 @@ const useInitiatorChanges = () => {
     return client.onEvent(({ type, name, ibft }) => {
       if (type !== "ISCSIInitiatorChanged") return;
 
-      queryClient.setQueryData(initiatorQuery.queryKey, (oldData: ISCSIInitiator | undefined) => {
-        if (oldData === undefined) return;
+      queryClient.setQueryData(
+        storageIscsiKeys.initiator(),
+        (oldData: ISCSIInitiator | undefined) => {
+          if (oldData === undefined) return;
 
-        return {
-          name: name === null ? oldData.name : name,
-          ibft: ibft === null ? oldData.ibft : ibft,
-        };
-      });
+          return {
+            name: name === null ? oldData.name : name,
+            ibft: ibft === null ? oldData.ibft : ibft,
+          };
+        },
+      );
     });
   }, [client, queryClient]);
 };
 
 const nodesQuery = {
-  queryKey: ["storage", "iscsi", "nodes"],
+  queryKey: storageIscsiKeys.nodes(),
   queryFn: fetchNodes,
 };
 
@@ -106,7 +117,7 @@ const useNodesChanges = () => {
         return;
       }
 
-      queryClient.setQueryData(nodesQuery.queryKey, (oldData: ISCSINode[] | undefined) => {
+      queryClient.setQueryData(storageIscsiKeys.nodes(), (oldData: ISCSINode[] | undefined) => {
         if (oldData === undefined) return;
 
         switch (type) {
