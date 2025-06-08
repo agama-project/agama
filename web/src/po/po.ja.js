@@ -150,6 +150,9 @@ export default {
   "All fields are required": [
     "全ての項目に入力する必要があります"
   ],
+  "All network connections managed through this interface are currently set to be         used only during installation and will not be copied to the installed system": [
+    ""
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "最初のユーザの作成とは別に、 root ユーザに対する認証方式を設定することができます。"
   ],
@@ -806,6 +809,9 @@ export default {
   ],
   "Installation will take %s.": [
     "インストールするには %s が必要です。"
+  ],
+  "Installed system may not have network connections": [
+    ""
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "壊れたパッケージをインストールしてしまうと、システムの安定性が損なわれるほか、セキュリティ上のリスクにもなります！"
@@ -1505,6 +1511,9 @@ export default {
   ],
   "The configured LVM groups will remain at %s": [
     "設定済みの LVM グループが %s に残されます"
+  ],
+  "The connection will be used only during installation and not available in the installed system.": [
+    ""
   ],
   "The content may be deleted": [
     "内容が削除されるかもしれません"

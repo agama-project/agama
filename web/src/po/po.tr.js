@@ -150,6 +150,9 @@ export default {
   "All fields are required": [
     "Tüm alanlar zorunludur"
   ],
+  "All network connections managed through this interface are currently set to be         used only during installation and will not be copied to the installed system": [
+    ""
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "İlk kullanıcıyı tanımlamanın yanı sıra, root kullanıcı için kimlik doğrulama yöntemleri de yapılandırılabilir."
   ],
@@ -795,6 +798,9 @@ export default {
   ],
   "Installation will take %s.": [
     "Kurulum %s kadar olacak."
+  ],
+  "Installed system may not have network connections": [
+    ""
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "Bozuk bir paketin kurulumu sistem kararlılığını etkiler ve büyük bir güvenlik riski oluşturur!"
@@ -1495,6 +1501,9 @@ export default {
   ],
   "The configured LVM groups will remain at %s": [
     "Yapılandırılan LVM grupları %s konumunda kalacaktır"
+  ],
+  "The connection will be used only during installation and not available in the installed system.": [
+    ""
   ],
   "The content may be deleted": [
     "İçerik silinmiş olabilir"

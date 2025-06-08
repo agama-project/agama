@@ -150,6 +150,9 @@ export default {
   "All fields are required": [
     "Всі поля обов'язкові"
   ],
+  "All network connections managed through this interface are currently set to be         used only during installation and will not be copied to the installed system": [
+    ""
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Крім зазначення першого користувача, можна налаштувати методи автентифікації для root-користувача."
   ],
@@ -799,6 +802,9 @@ export default {
   ],
   "Installation will take %s.": [
     "Встановлення займе %s."
+  ],
+  "Installed system may not have network connections": [
+    ""
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "Встановлення пошкоджених пакунків впливає на стабільність системи і є великим ризиком для безпеки!"
@@ -1497,6 +1503,9 @@ export default {
   ],
   "The configured LVM groups will remain at %s": [
     "Налаштовані групи LVM залишаться у %s"
+  ],
+  "The connection will be used only during installation and not available in the installed system.": [
+    ""
   ],
   "The content may be deleted": [
     "Вміст може бути видалений"
