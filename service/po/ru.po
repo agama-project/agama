@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-01 03:23+0000\n"
+"POT-Creation-Date: 2025-06-08 03:14+0000\n"
 "PO-Revision-Date: 2025-05-30 09:59+0000\n"
 "Last-Translator: Aleksey Fedorov <Aleksejfedorov963@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -29,34 +29,34 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Найдены неподдерживаемые элементы в профиле AutoYaST: %{keys}."
 
 #. Runs the config phase
-#: service/lib/agama/manager.rb:94
+#: service/lib/agama/manager.rb:96
 msgid "Analyze disks"
 msgstr "Анализ дисков"
 
-#: service/lib/agama/manager.rb:94
+#: service/lib/agama/manager.rb:96
 msgid "Configure software"
 msgstr "Настройка программного обеспечения"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-#: service/lib/agama/manager.rb:117
+#: service/lib/agama/manager.rb:119
 msgid "Prepare disks"
 msgstr "Подготовка дисков"
 
-#: service/lib/agama/manager.rb:118
+#: service/lib/agama/manager.rb:120
 msgid "Install software"
 msgstr "Установка программного обеспечения"
 
-#: service/lib/agama/manager.rb:119
+#: service/lib/agama/manager.rb:121
 msgid "Configure the system"
 msgstr "Настройка системы"
 
 #. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
-#: service/lib/agama/manager.rb:159
+#: service/lib/agama/manager.rb:161
 msgid "Load software translations"
 msgstr "Загрузка переводов программ"
 
-#: service/lib/agama/manager.rb:160
+#: service/lib/agama/manager.rb:162
 msgid "Load storage translations"
 msgstr "Загрузка переводов хранения"
 
@@ -161,7 +161,7 @@ msgstr "Возникла проблема с запуском скрипта п�
 #.
 #. @param filename [String] File name
 #. @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
-#: service/lib/agama/software/callbacks/signature.rb:61
+#: service/lib/agama/software/callbacks/signature.rb:66
 #, perl-brace-format
 msgid ""
 "The file %{filename} from %{repo_url} is not digitally signed. The origin "
@@ -170,7 +170,7 @@ msgstr ""
 "Файл %{filename} из %{repo_url} не имеет цифровой подписи. Происхождение и "
 "целостность файла не могут быть проверены. Все равно использовать его?"
 
-#: service/lib/agama/software/callbacks/signature.rb:67
+#: service/lib/agama/software/callbacks/signature.rb:72
 #, perl-brace-format
 msgid ""
 "The file %{filename} is not digitally signed. The origin and integrity of "
@@ -182,8 +182,8 @@ msgstr ""
 #. Callback to handle signature verification failures
 #.
 #. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
-#. @param _repo_id [Integer] Repository ID
-#: service/lib/agama/software/callbacks/signature.rb:92
+#. @param repo_id [Integer] Repository ID
+#: service/lib/agama/software/callbacks/signature.rb:100
 #, perl-brace-format
 msgid ""
 "The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
@@ -197,7 +197,7 @@ msgstr ""
 #. @param filename [String] Name of the file.
 #. @param key_id [String] Key ID.
 #. @param repo_id [String] Repository ID.
-#: service/lib/agama/software/callbacks/signature.rb:123
+#: service/lib/agama/software/callbacks/signature.rb:131
 #, perl-brace-format
 msgid ""
 "The file %{filename} from %{repo_url} is digitally signed with the following "
@@ -206,7 +206,7 @@ msgstr ""
 "Файл %{filename} из %{repo_url} подписан цифровой подписью следующим "
 "неизвестным ключом GnuPG: %{key_id}. Использовать его в любом случае?"
 
-#: service/lib/agama/software/callbacks/signature.rb:129
+#: service/lib/agama/software/callbacks/signature.rb:137
 #, perl-brace-format
 msgid ""
 "The file %{filename} is digitally signed with the following unknown GnuPG "
@@ -220,7 +220,7 @@ msgstr ""
 #. @param filename [String] File name
 #. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
 #. @param repo_id [Integer] Repository ID
-#: service/lib/agama/software/callbacks/signature.rb:160
+#: service/lib/agama/software/callbacks/signature.rb:168
 #, perl-brace-format
 msgid ""
 "The file %{filename} from %{repo_url} is digitally signed with the following "
@@ -231,7 +231,7 @@ msgstr ""
 "целостности дала сбой: %{key_id} (%{key_name}). Использовать его в любом "
 "случае?"
 
-#: service/lib/agama/software/callbacks/signature.rb:167
+#: service/lib/agama/software/callbacks/signature.rb:175
 #, perl-brace-format
 msgid ""
 "The file %{filename} is digitally signed with the following GnuPG key, but "
@@ -241,7 +241,7 @@ msgstr ""
 "дала сбой: %{key_id} (%{key_name}). Использовать его в любом случае?"
 
 #. TRANSLATORS: button label, trust the GPG key or the signature
-#: service/lib/agama/software/callbacks/signature.rb:191
+#: service/lib/agama/software/callbacks/signature.rb:199
 msgid "Trust"
 msgstr "Доверять"
 
