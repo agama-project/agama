@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Mon Jun  9 06:12:23 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Extend the D-Bus API to get avialable/candidate drives and MD
+  RAIDs (gh#agama-project/agama#2419).
+- Improve the config conversion from model to add missing MD RAIDs
+  if needed (e.g., the MD RAID was seleted as boot device or as
+  target for LVM).
+
+-------------------------------------------------------------------
 Fri Jun  6 10:22:36 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Propose to move existing connections to disk if there is no one 
