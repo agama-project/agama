@@ -69,10 +69,9 @@ impl CliInput {
             }
             Self::Path(path) => {
                 let pathbuf = Self::absolute(Path::new(path))?;
-                let pathstr = pathbuf.to_str().ok_or(std::io::Error::new(
-                    io::ErrorKind::Other,
-                    "Stringifying current directory",
-                ))?;
+                let pathstr = pathbuf
+                    .to_str()
+                    .ok_or(std::io::Error::other("Stringifying current directory"))?;
                 base_url.query_pairs_mut().append_pair("path", pathstr);
             }
             Self::Stdin => (),

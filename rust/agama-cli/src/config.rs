@@ -110,7 +110,7 @@ pub async fn run(
             let destination = output.unwrap_or(CliOutput::Stdout);
             destination.write(&json)?;
 
-            eprintln!("");
+            eprintln!();
             validate(&http_client, CliInput::Full(json.clone())).await?;
             Ok(())
         }
@@ -220,7 +220,7 @@ async fn generate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
         };
         config_string
     } else {
-        from_json_or_jsonnet(&client, url_or_path).await?
+        from_json_or_jsonnet(client, url_or_path).await?
     };
 
     let validity = validate_client(client, CliInput::Full(profile_json.clone())).await?;
@@ -245,11 +245,11 @@ async fn generate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
             eprintln!("{} {}", style("\u{2713}").bold().green(), validity);
         }
         ValidationOutcome::NotValid(_) => {
-            eprintln!("{} {}", style("\u{2717}").bold().red(), validity);
+            let red_x = style("\u{2717}").bold().red();
+            eprintln!("{} {}", red_x, validity);
             eprintln!(
-                "{} {}",
-                style("\u{2717}").bold().red(),
-                "Internal error: the profile was made invalid by InstallSettings round trip"
+                "{} Internal error: the profile was made invalid by InstallSettings round trip",
+                red_x
             );
         }
     }
