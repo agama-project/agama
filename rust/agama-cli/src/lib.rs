@@ -30,6 +30,7 @@ use fluent_uri::UriRef;
 mod auth;
 mod auth_tokens_file;
 mod cli_input;
+mod cli_output;
 mod commands;
 mod config;
 mod error;

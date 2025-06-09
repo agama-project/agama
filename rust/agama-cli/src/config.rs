@@ -18,11 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::{
-    io::{self, Write},
-    path::PathBuf,
-    process::Command,
-};
+use std::{io::Write, path::PathBuf, process::Command};
 
 use agama_lib::{
     context::InstallationContext, http::BaseHTTPClient, install_settings::InstallSettings,
@@ -34,51 +30,9 @@ use console::style;
 use fluent_uri::Uri;
 use tempfile::Builder;
 
-use crate::{cli_input::CliInput, show_progress};
+use crate::{cli_input::CliInput, cli_output::CliOutput, show_progress};
 
 const DEFAULT_EDITOR: &str = "/usr/bin/vi";
-
-/// Represents the ways user can specify the output for the command line.
-#[derive(Clone, Debug)]
-pub enum CliOutput {
-    Path(PathBuf),
-    /// Specified as `-` by the user
-    Stdout,
-}
-
-impl From<String> for CliOutput {
-    fn from(path: String) -> Self {
-        if path == "-" {
-            Self::Stdout
-        } else {
-            Self::Path(path.into())
-        }
-    }
-}
-
-impl CliOutput {
-    // consumes self, otherwise
-    // foo.write(&data); foo.write("\n"); would leave just \n
-    pub fn write(self, contents: &str) -> anyhow::Result<()> {
-        match self {
-            Self::Stdout => {
-                let mut stdout = io::stdout().lock();
-                stdout.write_all(contents.as_bytes())?;
-                stdout.flush()?
-            }
-            Self::Path(path) => {
-                let mut file = std::fs::OpenOptions::new()
-                    .create(true)
-                    .truncate(true)
-                    .write(true)
-                    .open(&path)
-                    .context(format!("Writing to {:?}", &path))?;
-                file.write_all(contents.as_bytes())?
-            }
-        }
-        Ok(())
-    }
-}
 
 #[derive(Subcommand, Debug)]
 pub enum ConfigCommands {
