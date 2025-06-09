@@ -427,8 +427,8 @@ Fri Jan 10 13:46:42 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Drop the feature for deregistering a product
   (gh#agama-project/agama#1882).
--------------------------------------------------------------------
 
+-------------------------------------------------------------------
 Fri Jan 10 13:22:27 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not allow changing the storage setup when Agama is using the
@@ -1382,7 +1382,6 @@ Wed May 24 11:01:24 UTC 2023 - David Diaz <dgonzalez@suse.com>
   any nodes other than <body> direct children (gh#openSUSE/agama#588).
 
 -------------------------------------------------------------------
-
 Tue May 23 11:51:26 UTC 2023 - Martin Vidner <mvidner@suse.com>
 
 - Version 2.1
