@@ -253,16 +253,19 @@ async fn generate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
 
     let profile_json = if is_autoyast(&url_or_path) {
         // AutoYaST specific download and convert to JSON
-        let config_string =
-            match url_or_path {
-                CliInput::Url(url_string) => {
-                    let url = Uri::parse(url_string)?;
-                    autoyast_client(client, &url).await?
-                }
-                _ => return Err(anyhow::Error::msg(
-                    "FIXME: Path input not implemented yet for this command, use file://ABS_PATH",
-                )),
-            };
+        let config_string = match url_or_path {
+            CliInput::Url(url_string) => {
+                let url = Uri::parse(url_string)?;
+                autoyast_client(client, &url).await?
+            }
+            CliInput::Path(pathbuf) => {
+                let canon_path = pathbuf.canonicalize()?;
+                let url_string = format!("file://{}", canon_path.display());
+                let url = Uri::parse(url_string)?;
+                autoyast_client(client, &url).await?
+            }
+            _ => panic!("is_autoyast returned true on unnamed input"),
+        };
         config_string
     } else {
         from_json_or_jsonnet(&client, url_or_path).await?

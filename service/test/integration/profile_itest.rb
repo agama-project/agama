@@ -227,6 +227,16 @@ describe "agama config" do
       let(:label_url) { "label://mylabel#{abs_fixture(filename)}" }
     end
 
+    context "XML, with path" do
+      let(:filename) { "service/test/fixtures/profiles/trivial_tw.xml" }
+
+      it "output matches" do
+        path = fixture(filename)
+        output = Cheetah.run(*command, path, stdout: :capture)
+        expect(output).to include(output_match)
+      end
+    end
+
     context "XML, with file:/// URL" do
       let(:filename) { "service/test/fixtures/profiles/trivial_tw.xml" }
 
