@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -49,7 +49,7 @@ type SharedData = {
   rowIndex: number;
 };
 
-export type ExpandableSelectorColumn = {
+export type SelectableDataTableColumn = {
   /** The column header text */
   name: string;
   /** A function receiving the item to work with  and returns the column value */
@@ -58,9 +58,9 @@ export type ExpandableSelectorColumn = {
   classNames?: string;
 };
 
-export type ExpandableSelectorProps = {
+export type SelectableDataTableProps = {
   /** Collection of objects defining columns. */
-  columns?: ExpandableSelectorColumn[];
+  columns?: SelectableDataTableColumn[];
   /** Whether multiple selection is allowed. */
   isMultiple?: boolean;
   /** Collection of items to be rendered. */
@@ -84,7 +84,7 @@ export type ExpandableSelectorProps = {
 /**
  * Internal component for building the table header
  */
-const TableHeader = ({ columns }: { columns: ExpandableSelectorColumn[] }) => (
+const TableHeader = ({ columns }: { columns: SelectableDataTableColumn[] }) => (
   <Thead noWrap>
     <Tr>
       <Th />
@@ -99,7 +99,7 @@ const TableHeader = ({ columns }: { columns: ExpandableSelectorColumn[] }) => (
 );
 
 /**
- * Helper function for ensuring a good value for ExpandableSelector#itemsSelected prop
+ * Helper function for ensuring a good value for SelectableDataTable#itemsSelected prop
  *
  * It logs information to console.error if given value does not match
  * expectations.
@@ -135,9 +135,9 @@ const sanitizeSelection = (selection: any[], allowMultiple: boolean): any[] => {
  *
  * @note It only accepts one nesting level.
  *
- * @param {ExpandableSelectorProps} props
+ * @param {SelectableDataTableProps} props
  */
-export default function ExpandableSelector({
+export default function SelectableDataTable({
   columns = [],
   isMultiple = false,
   items = [],
@@ -149,7 +149,7 @@ export default function ExpandableSelector({
   initialExpandedKeys = [],
   onSelectionChange,
   ...tableProps
-}: ExpandableSelectorProps) {
+}: SelectableDataTableProps) {
   const [expandedItemsKeys, setExpandedItemsKeys] = useState(initialExpandedKeys);
   const selection = sanitizeSelection(itemsSelected, isMultiple);
   const isItemSelected = (item: object) => {

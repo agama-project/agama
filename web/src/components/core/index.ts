@@ -51,4 +51,4 @@ export { default as SplitButton } from "./SplitButton";
 export { default as SkipTo } from "./SkipTo";
 export { default as Annotation } from "./Annotation";
 export { default as SwitchEnhanced } from "./SwitchEnhanced";
-export { default as ExpandableSelector } from "./ExpandableSelector";
+export { default as SelectableDataTable } from "./SelectableDataTable";

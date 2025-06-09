@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,8 +23,8 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { ExpandableSelector } from "~/components/core";
-import { ExpandableSelectorColumn } from "./ExpandableSelector";
+import { SelectableDataTable } from "~/components/core";
+import { SelectableDataTableColumn } from "./SelectableDataTable";
 
 let consoleErrorSpy: jest.SpyInstance;
 
@@ -117,7 +117,7 @@ const vg = {
   lvs: [lv1],
 };
 
-const columns: ExpandableSelectorColumn[] = [
+const columns: SelectableDataTableColumn[] = [
   // FIXME: do not use any but the right types once storage part is rewritten.
   // Or even better, write a test not coupled to storage
   { name: "Device", value: (item: any) => item.name },
@@ -146,7 +146,7 @@ const commonProps = {
   "aria-label": "Device selector",
 };
 
-describe("ExpandableSelector", () => {
+describe("SelectableDataTable", () => {
   beforeAll(() => {
     consoleErrorSpy = jest.spyOn(console, "error");
     consoleErrorSpy.mockImplementation();
@@ -161,12 +161,12 @@ describe("ExpandableSelector", () => {
   });
 
   it("renders a table with given name", () => {
-    plainRender(<ExpandableSelector {...props} />);
+    plainRender(<SelectableDataTable {...props} />);
     screen.getByRole("grid", { name: "Device selector" });
   });
 
   it("renders the table headers", () => {
-    plainRender(<ExpandableSelector {...props} />);
+    plainRender(<SelectableDataTable {...props} />);
     const table = screen.getByRole("grid");
     within(table).getByRole("columnheader", { name: "Device" });
     within(table).getByRole("columnheader", { name: "Content" });
@@ -174,7 +174,7 @@ describe("ExpandableSelector", () => {
   });
 
   it("renders a rowgroup per parent item", () => {
-    plainRender(<ExpandableSelector {...props} />);
+    plainRender(<SelectableDataTable {...props} />);
     const groups = screen.getAllByRole("rowgroup");
     // NOTE: since <thead> has also the rowgroup role, we expect to found 4 in
     // this example: 1 thead + 3 tbody (sda, sdb, vg)
@@ -182,7 +182,7 @@ describe("ExpandableSelector", () => {
   });
 
   it("renders a row per given item and found children", () => {
-    plainRender(<ExpandableSelector {...props} />);
+    plainRender(<SelectableDataTable {...props} />);
     const table = screen.getByRole("grid");
     within(table).getByRole("row", { name: /dev\/sda 1024/ });
     within(table).getByRole("row", { name: /dev\/sdb 2048/ });
@@ -193,7 +193,7 @@ describe("ExpandableSelector", () => {
   });
 
   it("renders a expand toggler in items with children", () => {
-    plainRender(<ExpandableSelector {...props} />);
+    plainRender(<SelectableDataTable {...props} />);
     const table = screen.getByRole("grid");
     const sdaRow = within(table).getByRole("row", { name: /dev\/sda 1024/ });
     const sdbRow = within(table).getByRole("row", { name: /dev\/sdb 2048/ });
@@ -208,7 +208,7 @@ describe("ExpandableSelector", () => {
 
   it("renders as expanded items which value for `itemIdKey` is included in `initialExpandedKeys` prop", () => {
     plainRender(
-      <ExpandableSelector {...props} itemIdKey="name" initialExpandedKeys={["/dev/sda"]} />,
+      <SelectableDataTable {...props} itemIdKey="name" initialExpandedKeys={["/dev/sda"]} />,
     );
     const table = screen.getByRole("grid");
     within(table).getByRole("row", { name: /dev\/sda1 512/ });
@@ -217,7 +217,7 @@ describe("ExpandableSelector", () => {
 
   it("keeps track of expanded items", async () => {
     const { user } = plainRender(
-      <ExpandableSelector {...props} itemIdKey="name" initialExpandedKeys={["/dev/sda"]} />,
+      <SelectableDataTable {...props} itemIdKey="name" initialExpandedKeys={["/dev/sda"]} />,
     );
     const table = screen.getByRole("grid");
     const sdaRow = within(table).getByRole("row", { name: /sda 1024/ });
@@ -238,7 +238,7 @@ describe("ExpandableSelector", () => {
   });
 
   it("uses 'id' as key when `itemIdKey` prop is not given", () => {
-    plainRender(<ExpandableSelector {...props} itemIdKey={undefined} />);
+    plainRender(<SelectableDataTable {...props} itemIdKey={undefined} />);
 
     const table = screen.getByRole("grid");
     // Since itemIdKey does not match the id used for the item, they are
@@ -249,7 +249,7 @@ describe("ExpandableSelector", () => {
 
   it("uses given `itemIdKey` as key", () => {
     plainRender(
-      <ExpandableSelector {...props} itemIdKey="name" initialExpandedKeys={["/dev/sda"]} />,
+      <SelectableDataTable {...props} itemIdKey="name" initialExpandedKeys={["/dev/sda"]} />,
     );
 
     const table = screen.getByRole("grid");
@@ -261,7 +261,7 @@ describe("ExpandableSelector", () => {
 
   describe("when `itemsSelected` is given", () => {
     it("renders nothing as checked if value is an empty array", () => {
-      plainRender(<ExpandableSelector {...props} itemsSelected={[]} />);
+      plainRender(<SelectableDataTable {...props} itemsSelected={[]} />);
       const table = screen.getByRole("grid");
       const selection = within(table).queryAllByRole("radio", { checked: true });
       expect(selection.length).toEqual(0);
@@ -269,7 +269,7 @@ describe("ExpandableSelector", () => {
 
     describe("but it isn't an array", () => {
       it("outputs to console.error", () => {
-        plainRender(<ExpandableSelector {...props} itemsSelected="Whatever" />);
+        plainRender(<SelectableDataTable {...props} itemsSelected="Whatever" />);
         expect(console.error).toHaveBeenCalledWith(
           expect.stringContaining("prop must be an array"),
           "Whatever",
@@ -277,7 +277,7 @@ describe("ExpandableSelector", () => {
       });
 
       it("renders nothing as selected", () => {
-        plainRender(<ExpandableSelector {...props} itemsSelected="Whatever" />);
+        plainRender(<SelectableDataTable {...props} itemsSelected="Whatever" />);
         const table = screen.getByRole("grid");
         const selection = within(table).queryAllByRole("radio", { checked: true });
         expect(selection.length).toEqual(0);
@@ -292,7 +292,7 @@ describe("ExpandableSelector", () => {
       });
 
       it("renders a radio per item row", () => {
-        plainRender(<ExpandableSelector {...props} />);
+        plainRender(<SelectableDataTable {...props} />);
         const table = screen.getByRole("grid");
         const radios = within(table).getAllByRole("radio");
         expect(radios.length).toEqual(6);
@@ -301,7 +301,7 @@ describe("ExpandableSelector", () => {
       describe("but `itemSelectable` is given", () => {
         it("renders a radio only for items for which it returns true", () => {
           const itemSelectable = (item) => item.isDrive || item.type === "vg";
-          plainRender(<ExpandableSelector {...props} itemSelectable={itemSelectable} />);
+          plainRender(<SelectableDataTable {...props} itemSelectable={itemSelectable} />);
           const table = screen.getByRole("grid");
           const radios = within(table).getAllByRole("radio");
 
@@ -321,7 +321,7 @@ describe("ExpandableSelector", () => {
       describe("and `itemsSelected` is given", () => {
         describe("and it is an array with just one item", () => {
           it("renders it as checked", async () => {
-            plainRender(<ExpandableSelector {...props} itemsSelected={[sda1]} />);
+            plainRender(<SelectableDataTable {...props} itemsSelected={[sda1]} />);
             const table = screen.getByRole("grid");
             const sda1Row = within(table).getByRole("row", { name: /dev\/sda1/ });
             const selection = screen.getAllByRole("radio", { checked: true });
@@ -332,14 +332,14 @@ describe("ExpandableSelector", () => {
 
         describe("but it is an array with more than one item", () => {
           it("outputs to console.error", () => {
-            plainRender(<ExpandableSelector {...props} itemsSelected={[sda1, lv1]} />);
+            plainRender(<SelectableDataTable {...props} itemsSelected={[sda1, lv1]} />);
             expect(console.error).toHaveBeenCalledWith(
               expect.stringContaining("Using only the first element"),
             );
           });
 
           it("renders the first one as checked", async () => {
-            plainRender(<ExpandableSelector {...props} itemsSelected={[sda1, lv1]} />);
+            plainRender(<SelectableDataTable {...props} itemsSelected={[sda1, lv1]} />);
             const table = screen.getByRole("grid");
             const selection = screen.getAllByRole("radio", { checked: true });
             const sda1Row = within(table).getByRole("row", { name: /dev\/sda1/ });
@@ -354,7 +354,7 @@ describe("ExpandableSelector", () => {
 
       describe("and user selects an already selected item", () => {
         it("does not trigger the `onSelectionChange` callback", async () => {
-          const { user } = plainRender(<ExpandableSelector {...props} itemsSelected={[sda1]} />);
+          const { user } = plainRender(<SelectableDataTable {...props} itemsSelected={[sda1]} />);
           const sda1row = screen.getByRole("row", { name: /dev\/sda1/ });
           const sda1radio = within(sda1row).getByRole("radio");
           await user.click(sda1radio);
@@ -364,7 +364,7 @@ describe("ExpandableSelector", () => {
 
       describe("and user selects a not selected item", () => {
         it("calls the `onSelectionChange` callback with a collection holding only selected item", async () => {
-          const { user } = plainRender(<ExpandableSelector {...props} itemsSelected={[sda1]} />);
+          const { user } = plainRender(<SelectableDataTable {...props} itemsSelected={[sda1]} />);
           const sda2row = screen.getByRole("row", { name: /dev\/sda2/ });
           const sda2radio = within(sda2row).getByRole("radio");
           await user.click(sda2radio);
@@ -380,7 +380,7 @@ describe("ExpandableSelector", () => {
     });
 
     it("renders a checkbox per item row", () => {
-      plainRender(<ExpandableSelector {...props} />);
+      plainRender(<SelectableDataTable {...props} />);
       const table = screen.getByRole("grid");
       const checkboxes = within(table).getAllByRole("checkbox");
       expect(checkboxes.length).toEqual(6);
@@ -389,7 +389,7 @@ describe("ExpandableSelector", () => {
     describe("but `itemSelectable` is given", () => {
       it("renders a checkbox only for items for which it returns true", () => {
         const itemSelectable = (item) => item.isDrive || item.type === "vg";
-        plainRender(<ExpandableSelector {...props} itemSelectable={itemSelectable} />);
+        plainRender(<SelectableDataTable {...props} itemSelectable={itemSelectable} />);
         const table = screen.getByRole("grid");
         const checkboxes = within(table).getAllByRole("checkbox");
 
@@ -408,7 +408,7 @@ describe("ExpandableSelector", () => {
 
     describe("and `itemsSelected` is given", () => {
       it("renders given items as checked", async () => {
-        plainRender(<ExpandableSelector {...props} itemsSelected={[sda1, lv1]} />);
+        plainRender(<SelectableDataTable {...props} itemsSelected={[sda1, lv1]} />);
         const table = screen.getByRole("grid");
         const selection = screen.getAllByRole("checkbox", { checked: true });
         const sda1Row = within(table).getByRole("row", { name: /dev\/sda1/ });
@@ -420,7 +420,7 @@ describe("ExpandableSelector", () => {
     });
 
     it("renders initially selected items given via `itemsSelected` prop", async () => {
-      plainRender(<ExpandableSelector {...props} isMultiple itemsSelected={[sda1, lv1]} />);
+      plainRender(<SelectableDataTable {...props} isMultiple itemsSelected={[sda1, lv1]} />);
       const table = screen.getByRole("grid");
       const sda1Row = within(table).getByRole("row", { name: /dev\/sda1/ });
       const lv1Row = within(table).getByRole("row", { name: /Personal Data/ });
@@ -432,7 +432,7 @@ describe("ExpandableSelector", () => {
     describe("and user selects an already selected item", () => {
       it("triggers the `onSelectionChange` callback with a collection not including the item", async () => {
         const { user } = plainRender(
-          <ExpandableSelector {...props} itemsSelected={[sda1, sda2]} />,
+          <SelectableDataTable {...props} itemsSelected={[sda1, sda2]} />,
         );
         const sda1row = screen.getByRole("row", { name: /dev\/sda1/ });
         const sda1radio = within(sda1row).getByRole("checkbox");
@@ -443,7 +443,7 @@ describe("ExpandableSelector", () => {
 
     describe("and user selects a not selected item", () => {
       it("calls the `onSelectionChange` callback with a collection including the item", async () => {
-        const { user } = plainRender(<ExpandableSelector {...props} itemsSelected={[sda1]} />);
+        const { user } = plainRender(<SelectableDataTable {...props} itemsSelected={[sda1]} />);
         const sda2row = screen.getByRole("row", { name: /dev\/sda2/ });
         const sda2checkbox = within(sda2row).getByRole("checkbox");
         await user.click(sda2checkbox);
