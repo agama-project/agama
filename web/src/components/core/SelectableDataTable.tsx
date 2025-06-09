@@ -52,32 +52,81 @@ type SharedData = {
 export type SelectableDataTableColumn = {
   /** The column header text */
   name: string;
-  /** A function receiving the item to work with  and returns the column value */
+  /** Function that gets a data item and returns what to display in the column */
   value: (item: object) => React.ReactNode;
   /** Space-separated list of additional CSS class names */
   classNames?: string;
 };
 
+/**
+ * Props for the `SelectableDataTable` component.
+ *
+ * This component renders a data table with support for single or multiple item selection,
+ * optional row expansion, and customizable rendering behavior.
+ *
+ * The selection API (`itemsSelected` and `onSelectionChange`) always uses arrays,
+ * even in single selection mode, to maintain consistency.
+ */
 export type SelectableDataTableProps = {
-  /** Collection of objects defining columns. */
+  /**
+   * Defines the columns of the table.
+   *
+   * Each entry describes the configuration for a single column.
+   */
   columns?: SelectableDataTableColumn[];
-  /** Whether multiple selection is allowed. */
-  isMultiple?: boolean;
-  /** Collection of items to be rendered. */
+
+  /**
+   * Determines the selection behavior of the table.
+   *
+   * - `"single"`: Allows selecting only one item at a time (radio buttons).
+   * - `"multiple"`: Allows selecting multiple items (checkboxes).
+   */
+  selectionMode?: "single" | "multiple";
+
+  /**
+   * Data items to be rendered as rows in the table.
+   */
   items?: object[];
-  /** The key for retrieving the item id. */
+
+  /**
+   * Key used to extract a unique identifier from each item.
+   */
   itemIdKey?: string;
-  /** Lookup method to retrieve children from given item. */
+
+  /**
+   * A function that returns the child items of a given item (for expandable
+   * items).
+   */
   itemChildren?: (item: object) => object[];
-  /** Whether an item will be selectable or not. */
+
+  /**
+   * A function to determine if a given item is selectable.
+   *
+   * Return `false` to disable the selection.
+   */
   itemSelectable?: (item: object) => boolean;
-  /** Callback to add additional CSS class names to item row. */
+
+  /**
+   * A function to add custom CSS class names to the row corresponding to a
+   * given item.
+   */
   itemClassNames?: (item: object) => string | undefined;
-  /** Collection of selected items. */
+
+  /**
+   * Array of currently selected items.
+   */
   itemsSelected?: object[];
-  /** Ids of initially expanded items. */
+
+  /**
+   * Keys of items that should be initially expanded (for expandable rows).
+   */
   initialExpandedKeys?: any[];
-  /** Callback to be triggered when selection changes. */
+
+  /**
+   * Callback fired when the selection changes.
+   *
+   * Receives the updated array of selected items.
+   */
   onSelectionChange?: (selection: object[]) => void;
 } & TableProps;
 
@@ -99,28 +148,33 @@ const TableHeader = ({ columns }: { columns: SelectableDataTableColumn[] }) => (
 );
 
 /**
- * Helper function for ensuring a good value for SelectableDataTable#itemsSelected prop
+ * Helper function to sanitize the `itemsSelected` prop value for the
+ * `SelectableDataTable` component.
  *
- * It logs information to console.error if given value does not match
- * expectations.
+ * It logs an error to the console if the provided value does not meet
+ * expectations, and adjusts the selection accordingly.
  *
- * @param selection - The value to check.
- * @param allowMultiple - Whether the returned collection can have
- *   more than one item
- * @return Empty array if given value is not valid. The first element if
- *   it is a collection with more than one but selector does not allow multiple.
- *   The original value otherwise.
+ * @param selection - The selection value to validate.
+ * @param selectionMode - The selection mode.
+ * @returns
+ *   - An empty array if the input is not a valid array.
+ *   - An array containing only the first item if `selectionMode` is `"single"`
+ *     and multiple items are provided.
+ *   - The original selection array otherwise.
  */
-const sanitizeSelection = (selection: any[], allowMultiple: boolean): any[] => {
+const sanitizeSelection = (
+  selection: unknown,
+  selectionMode: SelectableDataTableProps["selectionMode"],
+): any[] => {
   if (!Array.isArray(selection)) {
-    console.error("`itemSelected` prop must be an array. Ignoring given value", selection);
+    console.error("`itemsSelected` prop must be an array. Ignoring given value:", selection);
     return [];
   }
 
-  if (!allowMultiple && selection.length > 1) {
+  if (selectionMode === "single" && selection.length > 1) {
     console.error(
-      "`itemsSelected` prop can only have more than one item when selector `isMultiple`. " +
-        "Using only the first element",
+      "`itemsSelected` prop cannot contain more than one item when `selectionMode` is `single`. " +
+        "Using only the first element.",
     );
 
     return [selection[0]];
@@ -130,16 +184,16 @@ const sanitizeSelection = (selection: any[], allowMultiple: boolean): any[] => {
 };
 
 /**
- * Build a expandable table with selectable items.
- * @component
+ * A data table component that supports single or multiple item selection.
+ *
+ * For consistency, the selection API (`itemsSelected` and `onSelectionChange`)
+ * always uses arrays, even when `selectionMode` is set to `"single"`.
  *
  * @note It only accepts one nesting level.
- *
- * @param {SelectableDataTableProps} props
  */
 export default function SelectableDataTable({
   columns = [],
-  isMultiple = false,
+  selectionMode = "single",
   items = [],
   itemIdKey = "id",
   itemChildren = () => [],
@@ -151,7 +205,8 @@ export default function SelectableDataTable({
   ...tableProps
 }: SelectableDataTableProps) {
   const [expandedItemsKeys, setExpandedItemsKeys] = useState(initialExpandedKeys);
-  const selection = sanitizeSelection(itemsSelected, isMultiple);
+  const selection = sanitizeSelection(itemsSelected, selectionMode);
+  const allowMultiple = selectionMode === "multiple";
   const isItemSelected = (item: object) => {
     const selected = selection.find((selectionItem) => {
       return (
@@ -171,7 +226,7 @@ export default function SelectableDataTable({
   };
 
   const updateSelection = (item: object) => {
-    if (!isMultiple) {
+    if (!allowMultiple) {
       onSelectionChange([item]);
       return;
     }
@@ -197,7 +252,7 @@ export default function SelectableDataTable({
       rowIndex,
       onSelect: () => updateSelection(item),
       isSelected: isItemSelected(item),
-      variant: isMultiple ? RowSelectVariant.checkbox : RowSelectVariant.radio,
+      variant: allowMultiple ? RowSelectVariant.checkbox : RowSelectVariant.radio,
     };
 
     return (
@@ -234,7 +289,7 @@ export default function SelectableDataTable({
       rowIndex,
       onSelect: () => updateSelection(item),
       isSelected: isItemSelected(item),
-      variant: isMultiple ? RowSelectVariant.checkbox : RowSelectVariant.radio,
+      variant: allowMultiple ? RowSelectVariant.checkbox : RowSelectVariant.radio,
     };
 
     const renderChildren = () => {

@@ -286,7 +286,7 @@ describe("SelectableDataTable", () => {
   });
 
   describe("when mounted as single selector", () => {
-    describe.each([undefined, null, false])("because isMultiple={%s}", (isMultiple) => {
+    describe.each([undefined, null, "single"])("because selectionMode={%s}", (isMultiple) => {
       beforeEach(() => {
         props = { ...props, isMultiple };
       });
@@ -376,7 +376,7 @@ describe("SelectableDataTable", () => {
 
   describe("when mounted as multiple selector", () => {
     beforeEach(() => {
-      props = { ...props, isMultiple: true };
+      props = { ...props, selectionMode: "multiple" };
     });
 
     it("renders a checkbox per item row", () => {
