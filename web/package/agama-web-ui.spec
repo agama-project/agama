@@ -1,5 +1,5 @@
 #
-# spec file for package cockpit-machines
+# spec file for package agama-web-ui
 #
 # Copyright (c) 2022-2025 SUSE LLC
 #
