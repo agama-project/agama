@@ -103,7 +103,7 @@ pub enum ConfigCommands {
     /// Validate a profile using JSON Schema
     ///
     /// Schema is available at /usr/share/agama-cli/profile.schema.json
-    /// TODO: Validation is automatic
+    /// Note: validation is always done as part of all other "agama config" commands.
     Validate {
         /// JSON file, URL or path or `-` for standard input
         url_or_path: CliInput,
@@ -163,6 +163,7 @@ pub async fn run(
         ConfigCommands::Load { url_or_path } => {
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
             let contents = url_or_path.read_to_string()?;
+            // FIXME: invalid profile still gets loaded
             validate(&http_client, CliInput::Full(contents.clone())).await?;
             let result = InstallSettings::from_json(&contents, &InstallationContext::from_env()?)?;
             tokio::spawn(async move {
@@ -182,7 +183,7 @@ pub async fn run(
             let editor = editor
                 .or_else(|| std::env::var("EDITOR").ok())
                 .unwrap_or(DEFAULT_EDITOR.to_string());
-            let result = edit(&model, &editor)?;
+            let result = edit(&http_client, &model, &editor).await?;
             tokio::spawn(async move {
                 show_progress(monitor, true).await;
             });
@@ -365,9 +366,14 @@ async fn evaluate_client(client: &BaseHTTPClient, url_or_path: CliInput) -> anyh
 ///
 /// If the editor does not return a successful error code, it returns an error.
 ///
+/// * `http_client`: for invoking validation of the edited text
 /// * `model`: current installation settings.
 /// * `editor`: editor command.
-fn edit(model: &InstallSettings, editor: &str) -> anyhow::Result<InstallSettings> {
+async fn edit(
+    http_client: &BaseHTTPClient,
+    model: &InstallSettings,
+    editor: &str,
+) -> anyhow::Result<InstallSettings> {
     let content = serde_json::to_string_pretty(model)?;
     let mut file = Builder::new().suffix(".json").tempfile()?;
     let path = PathBuf::from(file.path());
@@ -376,7 +382,10 @@ fn edit(model: &InstallSettings, editor: &str) -> anyhow::Result<InstallSettings
     let mut base_command = editor_command(editor);
     let command = base_command.arg(path.as_os_str());
     let status = command.status().context(format!("Running {:?}", command))?;
+    // TODO: do nothing if the content of the file is unchanged
     if status.success() {
+        // FIXME: invalid profile still gets loaded
+        validate(http_client, CliInput::Path(path.clone())).await?;
         return Ok(InstallSettings::from_file(
             path,
             &InstallationContext::from_env()?,
