@@ -42,7 +42,7 @@ Fri May 30 15:05:35 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 -------------------------------------------------------------------
 Thu May 29 09:00:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
 
-- Fix bridge port config (bridge-port.priority and 
+- Fix bridge port config (bridge-port.priority and
   brdige-port.path_cost)
 
 -------------------------------------------------------------------
@@ -105,7 +105,7 @@ Wed May 14 15:20:42 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 - Add support for bridge connections (gh#openSUSE/agama#2258).
 
 -------------------------------------------------------------------
-Mon May 19 14:02:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Mon May 19 14:02:50 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not crash when network events do not contain "addresses",
   "nameservers", "dnsSearchlist", "routes4" or "routes6"
@@ -1273,7 +1273,6 @@ Wed Nov 15 12:35:32 UTC 2023 - José Iván López González <jlopez@suse.com>
 - Adapt to changes in software D-Bus API (gh#openSUSE/agama#869).
 
 -------------------------------------------------------------------
-
 Wed Nov 15 11:27:10 UTC 2023 - Michal Filka <mfilka@suse.com>
 
 - Improved "agama logs store" (gh#openSUSE/agama#823)
