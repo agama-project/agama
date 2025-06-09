@@ -323,7 +323,6 @@ async fn autoyast_client(client: &BaseHTTPClient, url: &Uri<String>) -> anyhow::
 //
 // * If it is a JSON file, no preprocessing is needed.
 // * If it is a Jsonnet file, it is converted to JSON.
-// * If it is a script, it is an error (formerly a feature, deprecated in favor of in-profile scripts)
 async fn from_json_or_jsonnet(
     client: &BaseHTTPClient,
     url_or_path: CliInput,
@@ -336,10 +335,7 @@ async fn from_json_or_jsonnet(
             Ok(json_string)
         }
         FileFormat::Json => Ok(any_profile),
-        FileFormat::Script => Err(anyhow::Error::msg(
-            "Standalone scripts are no longer supported as full profiles. Use the \"scripts\" property.",
-        )),
-        _ => Err(anyhow::Error::msg(
+        FileFormat::Unknown => Err(anyhow::Error::msg(
             "Unsupported file format. Expected JSON, or Jsonnet",
         )),
     }
