@@ -203,16 +203,14 @@ async fn validate_client(
 
     let body = url_or_path.body_for_web()?;
     // we use plain text .body instead of .json
-    let response: Result<reqwest::Response, agama_lib::error::ServiceError> = client
+    let response = client
         .client
         .request(reqwest::Method::POST, url)
         .body(body)
         .send()
-        .await
-        .map_err(|e| e.into());
+        .await?;
 
-    let result = client.deserialize_or_error(response?).await;
-    result.map_err(|e| e.into())
+    Ok(client.deserialize_or_error(response).await?)
 }
 
 async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<()> {
