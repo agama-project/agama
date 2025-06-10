@@ -62,7 +62,7 @@ if (eslint) {
       configType: "flat",
       extensions: ["js", "jsx", "ts", "tsx"],
       failOnError: production,
-      failOnWarning: true,
+      failOnWarning: production,
     }),
   );
 }

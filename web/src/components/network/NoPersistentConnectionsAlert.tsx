@@ -39,7 +39,7 @@ export default function NoPersistentConnectionsAlert() {
     <Alert variant="warning" title={_("Installed system may not have network connections")}>
       {_(
         "All network connections managed through this interface are currently set to be \
-        used only during installation and will not be copied to the installed system",
+used only during installation and will not be copied to the installed system",
       )}
     </Alert>
   );
