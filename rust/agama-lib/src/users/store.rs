@@ -19,8 +19,8 @@
 // find current contact information at www.suse.com.
 
 use super::{
-    http_client::UsersHTTPClientError, settings::UserPassword, FirstUser, FirstUserSettings,
-    RootUserSettings, UserSettings, UsersHTTPClient,
+    http_client::UsersHTTPClientError, FirstUserSettings, RootUserSettings, UserSettings,
+    UsersHTTPClient,
 };
 use crate::http::BaseHTTPClient;
 
@@ -50,42 +50,16 @@ impl UsersStore {
 
     pub async fn load(&self) -> UsersStoreResult<UserSettings> {
         let first_user = self.users_client.first_user().await?;
-        let first_user = if first_user.user_name.is_empty() {
-            None
-        } else {
-            let user_password = if first_user.password.is_empty() {
-                None
-            } else {
-                Some(UserPassword {
-                    password: first_user.password,
-                    hashed_password: first_user.hashed_password,
-                })
-            };
-
-            Some(FirstUserSettings {
-                user_name: Some(first_user.user_name),
-                full_name: Some(first_user.full_name),
-                password: user_password,
-            })
-        };
-
-        let root_user = self.users_client.root_user().await?;
-        let root_password = root_user
-            .password
-            .filter(|password| !password.is_empty())
-            .map(|password| UserPassword {
-                password,
-                hashed_password: root_user.hashed_password.unwrap_or_default(),
-            });
-        let ssh_public_key = root_user.ssh_public_key.filter(|key| !key.is_empty());
-        let root = if root_password.is_some() || ssh_public_key.is_some() {
-            Some(RootUserSettings {
-                password: root_password,
-                ssh_public_key,
-            })
+        let first_user: FirstUserSettings = first_user.into();
+        let first_user = if first_user.is_valid() {
+            Some(first_user)
         } else {
             None
         };
+
+        let root = self.users_client.root_user().await?;
+        let root: RootUserSettings = root.into();
+        let root = if root.is_empty() { None } else { Some(root) };
 
         Ok(UserSettings { first_user, root })
     }
@@ -103,21 +77,7 @@ impl UsersStore {
     }
 
     async fn store_first_user(&self, settings: &FirstUserSettings) -> UsersStoreResult<()> {
-        let first_user = FirstUser {
-            user_name: settings.user_name.clone().unwrap_or_default(),
-            full_name: settings.full_name.clone().unwrap_or_default(),
-            password: settings
-                .password
-                .as_ref()
-                .map(|p| p.password.clone())
-                .unwrap_or_default(),
-            hashed_password: settings
-                .password
-                .as_ref()
-                .map(|p| p.hashed_password)
-                .unwrap_or_default(),
-        };
-        Ok(self.users_client.set_first_user(&first_user).await?)
+        Ok(self.users_client.set_first_user(&settings.into()).await?)
     }
 
     async fn store_root_user(&self, settings: &RootUserSettings) -> UsersStoreResult<()> {
@@ -139,6 +99,7 @@ impl UsersStore {
 mod test {
     use super::*;
     use crate::http::BaseHTTPClient;
+    use crate::users::settings::UserPassword;
     use httpmock::prelude::*;
     use httpmock::Method::PATCH;
     use std::error::Error;

@@ -20,6 +20,8 @@
 
 use serde::{Deserialize, Serialize};
 
+use super::{FirstUser, RootUser};
+
 /// User settings
 ///
 /// Holds the user settings for the installation.
@@ -49,6 +51,44 @@ pub struct FirstUserSettings {
     pub user_name: Option<String>,
 }
 
+impl FirstUserSettings {
+    /// Whether it is a valid user.
+    pub fn is_valid(&self) -> bool {
+        self.user_name.is_some()
+    }
+}
+
+impl From<FirstUser> for FirstUserSettings {
+    fn from(value: FirstUser) -> Self {
+        let user_name = if value.user_name.is_empty() {
+            None
+        } else {
+            Some(value.user_name.clone())
+        };
+
+        let password = if value.password.is_empty() {
+            None
+        } else {
+            Some(UserPassword {
+                password: value.password,
+                hashed_password: value.hashed_password,
+            })
+        };
+
+        let full_name = if value.full_name.is_empty() {
+            None
+        } else {
+            Some(value.full_name)
+        };
+
+        Self {
+            user_name,
+            password,
+            full_name,
+        }
+    }
+}
+
 /// Represents a user password.
 ///
 /// It holds the password and whether it is a hashed or a plain text password.
@@ -74,4 +114,91 @@ pub struct RootUserSettings {
     /// Root SSH public key
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ssh_public_key: Option<String>,
+}
+
+impl RootUserSettings {
+    pub fn is_empty(&self) -> bool {
+        self.password.is_none() && self.ssh_public_key.is_none()
+    }
+}
+
+impl From<RootUser> for RootUserSettings {
+    fn from(value: RootUser) -> Self {
+        let password = value
+            .password
+            .filter(|password| !password.is_empty())
+            .map(|password| UserPassword {
+                password,
+                hashed_password: value.hashed_password.unwrap_or_default(),
+            });
+        let ssh_public_key = value.ssh_public_key.filter(|key| !key.is_empty());
+        Self {
+            password,
+            ssh_public_key,
+        }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::users::{FirstUser, RootUser};
+
+    use super::{FirstUserSettings, RootUserSettings};
+
+    #[test]
+    fn test_user_settings_from_first_user() {
+        let empty = FirstUser {
+            full_name: "".to_string(),
+            user_name: "".to_string(),
+            password: "".to_string(),
+            hashed_password: false,
+        };
+        let settings: FirstUserSettings = empty.into();
+        assert_eq!(settings.full_name, None);
+        assert_eq!(settings.user_name, None);
+        assert_eq!(settings.password, None);
+
+        let user = FirstUser {
+            full_name: "SUSE".to_string(),
+            user_name: "suse".to_string(),
+            password: "nots3cr3t".to_string(),
+            hashed_password: false,
+        };
+        let settings: FirstUserSettings = user.into();
+        assert_eq!(settings.full_name, Some("SUSE".to_string()));
+        assert_eq!(settings.user_name, Some("suse".to_string()));
+        let password = settings.password.unwrap();
+        assert_eq!(password.password, "nots3cr3t".to_string());
+        assert_eq!(password.hashed_password, false);
+    }
+
+    #[test]
+    fn test_root_settings_from_root_user() {
+        let empty = RootUser {
+            password: None,
+            hashed_password: None,
+            ssh_public_key: None,
+        };
+
+        let settings: RootUserSettings = empty.into();
+        assert_eq!(settings.password, None);
+        assert_eq!(settings.ssh_public_key, None);
+
+        let with_password = RootUser {
+            password: Some("nots3cr3t".to_string()),
+            hashed_password: Some(false),
+            ..Default::default()
+        };
+        let settings: RootUserSettings = with_password.into();
+        let password = settings.password.unwrap();
+        assert_eq!(password.password, "nots3cr3t".to_string());
+        assert_eq!(password.hashed_password, false);
+
+        let with_ssh_public_key = RootUser {
+            ssh_public_key: Some("ssh-rsa ...".to_string()),
+            ..Default::default()
+        };
+        let settings: RootUserSettings = with_ssh_public_key.into();
+        assert_eq!(settings.ssh_public_key, Some("ssh-rsa ...".to_string()));
+    }
 }
