@@ -19,8 +19,8 @@
 // find current contact information at www.suse.com.
 
 use super::{
-    http_client::UsersHTTPClientError, FirstUser, FirstUserSettings, RootUserSettings,
-    UserSettings, UsersHTTPClient,
+    http_client::UsersHTTPClientError, settings::UserPassword, FirstUser, FirstUserSettings,
+    RootUserSettings, UserSettings, UsersHTTPClient,
 };
 use crate::http::BaseHTTPClient;
 
@@ -50,16 +50,26 @@ impl UsersStore {
 
     pub async fn load(&self) -> UsersStoreResult<UserSettings> {
         let first_user = self.users_client.first_user().await?;
+        let user_password = UserPassword {
+            password: first_user.password,
+            hashed_password: first_user.hashed_password,
+        };
         let first_user = FirstUserSettings {
             user_name: Some(first_user.user_name),
             full_name: Some(first_user.full_name),
-            password: Some(first_user.password),
-            hashed_password: Some(first_user.hashed_password),
+            password: if user_password.password.is_empty() {
+                None
+            } else {
+                Some(user_password)
+            },
         };
         let root_user = self.users_client.root_user().await?;
+        let root_password = root_user.password.map(|password| UserPassword {
+            password,
+            hashed_password: root_user.hashed_password.unwrap_or_default(),
+        });
         let root_user = RootUserSettings {
-            password: root_user.password,
-            hashed_password: root_user.hashed_password,
+            password: root_password,
             ssh_public_key: root_user.ssh_public_key,
         };
 
@@ -85,18 +95,24 @@ impl UsersStore {
         let first_user = FirstUser {
             user_name: settings.user_name.clone().unwrap_or_default(),
             full_name: settings.full_name.clone().unwrap_or_default(),
-            password: settings.password.clone().unwrap_or_default(),
-            hashed_password: settings.hashed_password.unwrap_or_default(),
+            password: settings
+                .password
+                .as_ref()
+                .map(|p| p.password.clone())
+                .unwrap_or_default(),
+            hashed_password: settings
+                .password
+                .as_ref()
+                .map(|p| p.hashed_password)
+                .unwrap_or_default(),
         };
         Ok(self.users_client.set_first_user(&first_user).await?)
     }
 
     async fn store_root_user(&self, settings: &RootUserSettings) -> UsersStoreResult<()> {
-        let hashed_password = settings.hashed_password.unwrap_or_default();
-
-        if let Some(root_password) = &settings.password {
+        if let Some(password) = &settings.password {
             self.users_client
-                .set_root_password(root_password, hashed_password)
+                .set_root_password(&password.password, password.hashed_password)
                 .await?;
         }
 
@@ -160,13 +176,17 @@ mod test {
         let first_user = FirstUserSettings {
             full_name: Some("Tux".to_owned()),
             user_name: Some("tux".to_owned()),
-            password: Some("fish".to_owned()),
-            hashed_password: Some(false),
+            password: Some(UserPassword {
+                password: "fish".to_owned(),
+                hashed_password: false,
+            }),
         };
         let root_user = RootUserSettings {
             // FIXME this is weird: no matter what HTTP reports, we end up with None
-            password: Some("nots3cr3t".to_owned()),
-            hashed_password: Some(false),
+            password: Some(UserPassword {
+                password: "nots3cr3t".to_owned(),
+                hashed_password: false,
+            }),
             ssh_public_key: Some("keykeykey".to_owned()),
         };
         let expected = UserSettings {
@@ -216,12 +236,16 @@ mod test {
         let first_user = FirstUserSettings {
             full_name: Some("Tux".to_owned()),
             user_name: Some("tux".to_owned()),
-            password: Some("fish".to_owned()),
-            hashed_password: Some(false),
+            password: Some(UserPassword {
+                password: "fish".to_owned(),
+                hashed_password: false,
+            }),
         };
         let root_user = RootUserSettings {
-            password: Some("1234".to_owned()),
-            hashed_password: Some(false),
+            password: Some(UserPassword {
+                password: "1234".to_owned(),
+                hashed_password: false,
+            }),
             ssh_public_key: Some("keykeykey".to_owned()),
         };
         let settings = UserSettings {

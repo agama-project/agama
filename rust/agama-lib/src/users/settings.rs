@@ -39,12 +39,24 @@ pub struct UserSettings {
 pub struct FirstUserSettings {
     /// First user's full name
     pub full_name: Option<String>,
+    /// First user password
+    #[serde(flatten)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub password: Option<UserPassword>,
     /// First user's username
     pub user_name: Option<String>,
-    /// First user's password (in clear text)
-    pub password: Option<String>,
+}
+
+/// Represents a user password.
+///
+/// It holds the password and whether it is a hashed or a plain text password.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct UserPassword {
+    /// User password
+    pub password: String,
     /// Whether the password is hashed or is plain text
-    pub hashed_password: Option<bool>,
+    pub hashed_password: bool,
 }
 
 /// Root user settings
@@ -53,12 +65,10 @@ pub struct FirstUserSettings {
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct RootUserSettings {
-    /// Root's password (in clear text)
-    #[serde(skip_serializing)]
-    pub password: Option<String>,
-    /// Whether the password is hashed or is plain text
-    #[serde(skip_serializing)]
-    pub hashed_password: Option<bool>,
+    /// Root user password
+    #[serde(flatten)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub password: Option<UserPassword>,
     /// Root SSH public key
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ssh_public_key: Option<String>,
