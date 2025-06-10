@@ -61,7 +61,7 @@ impl CliInput {
     /// If *self* has a path or URL value, append a `path=...` or `url=...`
     /// query parameter to *url*, properly escaped. The path is made absolute
     /// so that it works (on localhost) even if server's working directory is different.
-    /// See also: `body_for_web`
+    /// See also: [`body_for_web`](Self::body_for_web).
     pub fn add_query(&self, base_url: &mut Url) -> io::Result<()> {
         match self {
             Self::Url(url) => {
