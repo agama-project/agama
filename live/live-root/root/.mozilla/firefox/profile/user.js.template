@@ -21,6 +21,11 @@ user_pref("datareporting.healthreport.uploadEnabled", false);
 user_pref("datareporting.usage.uploadEnabled", false);
 user_pref("toolkit.telemetry.reportingpolicy.firstRun", false);
 
+// globally disable extensions autoupdate,
+// the AutoFullscreen extension does not specify the update URL
+// but rather be on the safe side
+user_pref("extensions.update.autoUpdateDefault", false);
+
 // workaround for non working file picker, disable XDG portal, use the FF native popup
 // TODO: make the XDG portal working again, it has more features (mounting USB flash)
 user_pref("widget.use-xdg-desktop-portal.file-picker", 0);

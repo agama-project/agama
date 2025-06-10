@@ -74,17 +74,6 @@ struct Cli {
     pub command: Commands,
 }
 
-fn find_web_ui_dir() -> PathBuf {
-    if let Ok(home) = std::env::var("HOME") {
-        let path = Path::new(&home).join(".local/share/agama");
-        if path.exists() {
-            return path;
-        }
-    }
-
-    Path::new(DEFAULT_WEB_UI_DIR).into()
-}
-
 #[derive(Args, Debug)]
 struct ServeArgs {
     // Address/port to listen on. ":::80" listens for both IPv6 and IPv4
@@ -338,7 +327,10 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
     write_token(TOKEN_FILE, &config.jwt_secret).context("could not create the token file")?;
 
     let dbus = connection_to(&args.dbus_address).await?;
-    let web_ui_dir = args.web_ui_dir.clone().unwrap_or(find_web_ui_dir());
+    let web_ui_dir = args
+        .web_ui_dir
+        .clone()
+        .unwrap_or_else(|| PathBuf::from(DEFAULT_WEB_UI_DIR));
     let service = web::service(config, tx, dbus, web_ui_dir).await?;
     // TODO: Move elsewhere? Use a singleton? (It would be nice to use the same
     // generated self-signed certificate on both ports.)

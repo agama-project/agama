@@ -28,7 +28,6 @@ import Header, { HeaderProps } from "~/components/layout/Header";
 import { Loading, Sidebar } from "~/components/layout";
 import { IssuesDrawer, SkipTo } from "~/components/core";
 import { ROOT } from "~/routes/paths";
-import { agamaWidthBreakpoints, getBreakpoint } from "~/utils";
 
 export type LayoutProps = React.PropsWithChildren<{
   className?: string;
@@ -46,6 +45,60 @@ const focusDrawer = (drawer: HTMLElement | null) => {
     | HTMLButtonElement
     | null;
   firstTabbableItem?.focus();
+};
+
+/**
+ * Custom width breakpoints for the Agama layout.
+ *
+ * These values override PatternFly's default breakpoints to better fit Agama's
+ * needs. Each value is specified in pixels and is derived from rem-based
+ * measurements, multiplied by the standard root font size (16px).
+ *
+ * Breakpoints:
+ * - sm:  36rem  / 576px
+ * - md:  48rem  / 768px
+ * - lg:  64rem  / 1024px
+ * - xl:  75rem  / 1200px
+ * - 2xl: 90rem  / 1440px
+ */
+const agamaWidthBreakpoints = {
+  sm: parseInt("36rem") * 16,
+  md: parseInt("48rem") * 16,
+  lg: parseInt("64rem") * 16,
+  xl: parseInt("75rem") * 16,
+  "2xl": parseInt("90rem") * 16,
+};
+
+/**
+ * Maps a viewport width (in pixels) to the appropriate Agama breakpoint.
+ *
+ * This function is used to determine the responsive breakpoint level
+ * based on the current viewport width, aligning with the custom
+ * `agamaWidthBreakpoints`.
+ *
+ * @param width - The current viewport width in pixels.
+ * @returns A breakpoint string: 'default', 'sm', 'md', 'lg', 'xl', or '2xl'.
+ */
+const getBreakpoint = (width: number): "default" | "sm" | "md" | "lg" | "xl" | "2xl" => {
+  if (width === null) {
+    return null;
+  }
+  if (width >= agamaWidthBreakpoints["2xl"]) {
+    return "2xl";
+  }
+  if (width >= agamaWidthBreakpoints.xl) {
+    return "xl";
+  }
+  if (width >= agamaWidthBreakpoints.lg) {
+    return "lg";
+  }
+  if (width >= agamaWidthBreakpoints.md) {
+    return "md";
+  }
+  if (width >= agamaWidthBreakpoints.sm) {
+    return "sm";
+  }
+  return "default";
 };
 
 /**

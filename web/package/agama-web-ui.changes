@@ -1,8 +1,66 @@
 -------------------------------------------------------------------
+Fri Jun  6 13:44:14 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Replaced custom utility functions with a well-tested,
+  community-driven third-party dependency, refactored remaining
+  helpers, and removed unused code to improve maintainability
+  (gh#agama-project/agama#2412).
+
+-------------------------------------------------------------------
+Fri Jun  6 12:32:23 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to select which connections will be used only for
+  installation and warn the user in case that there is no one
+  expected to be copied to the target system (no network).
+  (gh#agama-project/agama#2402).
+
+-------------------------------------------------------------------
+Thu Jun  5 15:51:11 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Revert eslint removal and updates it to latest version
+  (gh#agama-project/agama#2445).
+
+-------------------------------------------------------------------
+Thu Jun  5 15:35:42 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Improve caching in the software area by using array-form
+  query keys (gh#agama-project/agama#2434).
+
+-------------------------------------------------------------------
+Thu Jun  5 11:26:05 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- The "InstallationPhaseChanged", "ProductChanged" and
+  "IssuesChanged" events were ignored in some situation
+  (possibly causing bug bsc#1241208)
+
+-------------------------------------------------------------------
+Thu Jun  5 10:35:40 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Updated Node.js dependencies to their latest available versions
+  as of 2024-06-03 (gh#agama-project/agama#2440).
+
+-------------------------------------------------------------------
+Mon Jun  2 22:29:03 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Fix out-of-sync translations by improving localization cache
+  and its invalidation (gh#agama-project/agama#2428).
+
+-------------------------------------------------------------------
+Thu May 29 09:31:28 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Requires a unit when entering sizes to avoid confusion and
+  accidental sizes in bytes (gh#agama-project/agama#2421).
+
+-------------------------------------------------------------------
+Mon May 26 19:51:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 15
+
+-------------------------------------------------------------------
 Thu May 22 17:16:40 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Handle reused MD RAIDs that are already included at the storage
-  configuration (gh/agama-project/agama#2346).
+  configuration (gh#agama-project/agama#2346).
 
 -------------------------------------------------------------------
 Thu May 22 16:20:38 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
@@ -19,7 +77,7 @@ Thu May 22 09:07:28 UTC 2025 - David Diaz <dgonzalez@suse.com>
 Mon May 19 13:38:16 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Keep margin between sidebar and main content in all breakpoints
-  (gh/agama-project/agama#2370).
+  (gh#agama-project/agama#2370).
 
 -------------------------------------------------------------------
 Fri May 16 07:46:22 UTC 2025 - David Diaz <dgonzalez@suse.com>
@@ -369,8 +427,8 @@ Fri Jan 10 13:46:42 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Drop the feature for deregistering a product
   (gh#agama-project/agama#1882).
--------------------------------------------------------------------
 
+-------------------------------------------------------------------
 Fri Jan 10 13:22:27 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not allow changing the storage setup when Agama is using the
@@ -1324,7 +1382,6 @@ Wed May 24 11:01:24 UTC 2023 - David Diaz <dgonzalez@suse.com>
   any nodes other than <body> direct children (gh#openSUSE/agama#588).
 
 -------------------------------------------------------------------
-
 Tue May 23 11:51:26 UTC 2023 - Martin Vidner <mvidner@suse.com>
 
 - Version 2.1

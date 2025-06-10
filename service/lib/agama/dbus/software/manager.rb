@@ -88,6 +88,17 @@ module Agama
             ]
           end
 
+          # set user specified repositories properties
+          dbus_method :SetUserRepositories, "in repos:aa{sv}" do |repos|
+            @logger.info "Setting user repositories #{repos.inspect}"
+            backend.repositories.user_repositories = repos
+          end
+
+          # set user specified repositories properties
+          dbus_method :ListUserRepositories, "out repos:aa{sv}" do
+            [backend.repositories.user_repositories]
+          end
+
           # value of result hash is category, description, icon, summary and order
           dbus_method :ListPatterns, "in Filtered:b, out Result:a{s(sssss)}" do |filtered|
             [
@@ -119,7 +130,11 @@ module Agama
           dbus_reader_attr_accessor :conflicts, "a(ussa(uss))"
 
           dbus_method :SolveConflicts, "in solutions:a(uu)" do |solutions|
-            backend.proposal.solve_conflicts(solutions)
+            ret = backend.proposal.solve_conflicts(solutions)
+            # update the user selected patterns, patterns might be unselected as
+            # part of the conflict resolution
+            backend.update_selected_patterns
+            ret
           end
 
           dbus_method :ProvisionsSelected, "in Provisions:as, out Result:ab" do |provisions|

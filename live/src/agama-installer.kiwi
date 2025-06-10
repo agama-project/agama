@@ -21,7 +21,7 @@
         <profile name="Leap_16.0_PXE" description="openSUSE Leap OEM image for remote installation" import="true" />
     </profiles>
     <preferences>
-        <version>15.pre.0.0</version>
+        <version>16.pre.0.0</version>
         <packagemanager>zypper</packagemanager>
         <locale>en_US</locale>
         <keytable>us</keytable>
@@ -146,7 +146,6 @@
         <package name="agama-auto"/>
         <package name="rubygem(agama-yast)"/>
         <package name="rubygem(byebug)"/>
-        <package name="microos-tools"/>
         <package name="psmisc"/>
         <package name="joe"/>
         <package name="checkmedia"/>
@@ -171,12 +170,10 @@
         <package name="adobe-sourcehansans-jp-fonts"/>
         <package name="xauth"/>
         <package name="MozillaFirefox"/>
-        <package name="icewm-lite"/>
-        <package name="xinit"/>
-        <package name="xset"/>
-        <package name="xorg-x11-server"/>
-        <package name="xorg-x11-fonts-core"/>
-        <package name="xf86-input-libinput" />
+        <package name="gdm"/>
+        <package name="gnome-shell"/>
+        <package name="gnome-session-wayland"/>
+        <package name="gnome-kiosk"/>
         <package name="spice-vdagent"/>
     </packages>
 

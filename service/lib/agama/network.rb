@@ -24,6 +24,7 @@ require "yast"
 require "yast2/systemd/service"
 require "y2network/proposal_settings"
 require "agama/proxy_setup"
+require "agama/http"
 
 Yast.import "Installation"
 
@@ -32,6 +33,10 @@ module Agama
   class Network
     def initialize(logger)
       @logger = logger
+    end
+
+    def startup
+      persist_connections if do_proposal?
     end
 
     # Writes the network configuration to the installed system
@@ -74,6 +79,8 @@ module Agama
     HOSTNAME = "/etc/hostname"
     RESOLV = "/etc/resolv.conf"
     NOT_COPY_NETWORK = "/run/agama/not_copy_network"
+    AGAMA_SYSTEMD_LINK = "/run/agama/systemd/network"
+    SYSTEMD_LINK = "/etc/systemd/network"
     RESOLV_FLAG = "/run/agama/manage_resolv"
     ETC_NM_DIR = "/etc/NetworkManager"
     RUN_NM_DIR = "/run/NetworkManager"
@@ -92,6 +99,11 @@ module Agama
     # Copies NetworkManager configuration files
     def copy_files
       copy(HOSTNAME)
+
+      copy_directory(
+        AGAMA_SYSTEMD_LINK,
+        File.join(Yast::Installation.destdir, SYSTEMD_LINK)
+      )
 
       return unless Dir.exist?(ETC_NM_DIR)
       return if File.exist?(NOT_COPY_NETWORK)
@@ -130,6 +142,25 @@ module Agama
       path = target || File.join(Yast::Installation.destdir, source)
       FileUtils.mkdir_p(File.dirname(path))
       FileUtils.copy_entry(source, path)
+    end
+
+    def http_client
+      @http_client ||= Agama::HTTP::Clients::Network.new(logger)
+    end
+
+    def persist_connections
+      http_client.persist_connections
+    end
+
+    def copy_connections?
+      http_client.state["copyNetwork"]
+    end
+
+    def do_proposal?
+      return false unless copy_connections?
+      return false if http_client.connections.any? { |c| c["persistent"] }
+
+      !http_client.connections.empty?
     end
   end
 end

@@ -1,4 +1,53 @@
 -------------------------------------------------------------------
+Fri Jun  6 10:22:36 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Propose to move existing connections to disk if there is no one 
+  to be persisted (custom config provided)
+  (gh#agama-project/agama#2402).
+  
+-------------------------------------------------------------------
+Thu Jun  5 15:44:06 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- agama-dbus-monitor: Increase timeout when restarting to prevent
+  crash due to socket not available
+
+-------------------------------------------------------------------
+Thu Jun  5 15:41:31 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support to specify for extra repositories if it can be
+  unsigned or list of GPG fingerprints that are trusted
+  (jsc#AGM-125)
+
+-------------------------------------------------------------------
+Tue Jun  3 12:22:41 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for adding extra repositories as installation sources
+  (jsc#AGM-125)
+
+-------------------------------------------------------------------
+Wed May 28 14:19:28 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Try several attempts for the first storage proposal
+  (gh#agama-project/agama#2393).
+
+-------------------------------------------------------------------
+Wed May 28 07:51:36 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Unselect user patterns which are unselected by a conflict
+  resolution (followup for gh#agama-project/agama#2348)
+
+-------------------------------------------------------------------
+Mon May 26 21:33:40 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Copy Agama generated systemd network link files to the target
+  system (bsc#1237327, bsc#1241969).
+
+-------------------------------------------------------------------
+Mon May 26 19:51:50 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 15
+
+-------------------------------------------------------------------
 Mon May 26 09:44:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Set stopOnBootMenu to "true" when a negative timeout is
@@ -1416,7 +1465,7 @@ Wed Jan 18 08:03:40 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
   (gh#openSUSE/agama#379)
 
 -------------------------------------------------------------------
-Tue Jan 17 10:06:23 UT0 2023 - Josef Reidinger <jreidinger@suse.com>
+Tue Jan 17 10:06:23 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Implement validation of software proposal
   (gh#openSUSE/agama#381)

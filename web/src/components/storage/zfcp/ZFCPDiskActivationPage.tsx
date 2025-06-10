@@ -24,7 +24,7 @@ import React, { useState } from "react";
 import { Content, Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { _ } from "~/i18n";
-import { useCancellablePromise } from "~/utils";
+import { useCancellablePromise } from "~/hooks/use-cancellable-promise";
 import { LUNInfo } from "~/types/zfcp";
 import { activateZFCPDisk } from "~/api/storage/zfcp";
 import { PATHS } from "~/routes/storage";

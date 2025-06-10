@@ -456,6 +456,8 @@ mod tests {
     }
 }
 
+pub const NOT_COPY_NETWORK_PATH: &str = "/run/agama/not_copy_network";
+
 /// Network state
 #[serde_as]
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
@@ -463,6 +465,7 @@ mod tests {
 pub struct GeneralState {
     pub hostname: String,
     pub connectivity: bool,
+    pub copy_network: bool,
     pub wireless_enabled: bool,
     pub networking_enabled: bool, // pub network_state: NMSTATE
 }
@@ -520,6 +523,8 @@ pub struct Connection {
     pub ieee_8021x_config: Option<IEEE8021XConfig>,
     pub autoconnect: bool,
     pub state: ConnectionState,
+    pub persistent: bool,
+    pub flags: u32,
 }
 
 impl Connection {
@@ -552,8 +557,16 @@ impl Connection {
         self.status == Status::Up
     }
 
+    pub fn is_down(&self) -> bool {
+        self.status == Status::Down
+    }
+
     pub fn set_up(&mut self) {
         self.status = Status::Up
+    }
+
+    pub fn keep_status(&mut self) {
+        self.status = Status::Keep
     }
 
     pub fn set_down(&mut self) {
@@ -593,6 +606,8 @@ impl Default for Connection {
             ieee_8021x_config: Default::default(),
             autoconnect: true,
             state: Default::default(),
+            persistent: true,
+            flags: Default::default(),
         }
     }
 }
@@ -616,6 +631,14 @@ impl TryFrom<NetworkConnection> for Connection {
 
         if let Some(status) = conn.status {
             connection.status = status;
+        }
+
+        if let Some(autoconnect) = conn.autoconnect {
+            connection.autoconnect = autoconnect;
+        }
+
+        if let Some(persistent) = conn.persistent {
+            connection.persistent = persistent;
         }
 
         if let Some(ignore_auto_dns) = conn.ignore_auto_dns {
@@ -647,7 +670,6 @@ impl TryFrom<NetworkConnection> for Connection {
         connection.ip_config.gateway6 = conn.gateway6;
         connection.interface = conn.interface;
         connection.mtu = conn.mtu;
-        connection.autoconnect = conn.autoconnect;
 
         Ok(connection)
     }
@@ -674,7 +696,8 @@ impl TryFrom<Connection> for NetworkConnection {
         let ieee_8021x: Option<IEEE8021XSettings> = conn
             .ieee_8021x_config
             .and_then(|x| IEEE8021XSettings::try_from(x).ok());
-        let autoconnect = conn.autoconnect;
+        let autoconnect = Some(conn.autoconnect);
+        let persistent = Some(conn.persistent);
 
         let mut connection = NetworkConnection {
             id,
@@ -692,6 +715,7 @@ impl TryFrom<Connection> for NetworkConnection {
             mtu,
             ieee_8021x,
             autoconnect,
+            persistent,
             ..Default::default()
         };
 
@@ -845,25 +869,13 @@ pub struct IpConfig {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
 pub struct Dhcp4Settings {
-    pub send_hostname: bool,
+    pub send_hostname: Option<bool>,
     pub hostname: Option<String>,
     pub send_release: Option<bool>,
     pub client_id: DhcpClientId,
     pub iaid: DhcpIaid,
-}
-
-impl Default for Dhcp4Settings {
-    fn default() -> Self {
-        Self {
-            send_hostname: true,
-            hostname: None,
-            send_release: None,
-            client_id: DhcpClientId::default(),
-            iaid: DhcpIaid::default(),
-        }
-    }
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
@@ -967,25 +979,13 @@ impl fmt::Display for DhcpIaid {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
 pub struct Dhcp6Settings {
-    pub send_hostname: bool,
+    pub send_hostname: Option<bool>,
     pub hostname: Option<String>,
     pub send_release: Option<bool>,
     pub duid: DhcpDuid,
     pub iaid: DhcpIaid,
-}
-
-impl Default for Dhcp6Settings {
-    fn default() -> Self {
-        Self {
-            send_hostname: true,
-            hostname: None,
-            send_release: None,
-            duid: DhcpDuid::default(),
-            iaid: DhcpIaid::default(),
-        }
-    }
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]

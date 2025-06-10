@@ -61,7 +61,8 @@ if (eslint) {
     new ESLintPlugin({
       configType: "flat",
       extensions: ["js", "jsx", "ts", "tsx"],
-      failOnWarning: true,
+      failOnError: production,
+      failOnWarning: production,
     }),
   );
 }

@@ -69,7 +69,8 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { apiModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { compact, uniq } from "~/utils";
+import { unique } from "radashi";
+import { compact } from "~/utils";
 
 const NO_VALUE = "";
 const NEW_PARTITION = "new";
@@ -288,7 +289,7 @@ function useUsableFilesystems(mountPoint: string): string[] {
       return [BTRFS_SNAPSHOTS, ...allValues];
     };
 
-    return uniq([defaultFilesystem, ...volumeFilesystems()]);
+    return unique([defaultFilesystem, ...volumeFilesystems()]);
   }, [volume, defaultFilesystem]);
 
   return usableFilesystems;
@@ -340,7 +341,7 @@ function useSizeError(value: FormValue): Error | undefined {
     };
   }
 
-  const regexp = /^[0-9]+(\.[0-9]+)?(\s*([KkMmGgTtPpEeZzYy][iI]?)?[Bb])?$/;
+  const regexp = /^[0-9]+(\.[0-9]+)?(\s*([KkMmGgTtPpEeZzYy][iI]?)?[Bb])$/;
   const validMin = regexp.test(min);
   const validMax = max ? regexp.test(max) : true;
 
@@ -357,7 +358,7 @@ function useSizeError(value: FormValue): Error | undefined {
   if (validMin) {
     return {
       id: "customSize",
-      message: _("The maximum must be a number optionally followed by a unit like GiB or GB"),
+      message: _("The maximum must be a number followed by a unit like GiB or GB"),
       isVisible: true,
     };
   }
@@ -365,14 +366,14 @@ function useSizeError(value: FormValue): Error | undefined {
   if (validMax) {
     return {
       id: "customSize",
-      message: _("The minimum must be a number optionally followed by a unit like GiB or GB"),
+      message: _("The minimum must be a number followed by a unit like GiB or GB"),
       isVisible: true,
     };
   }
 
   return {
     id: "customSize",
-    message: _("Size limits must be numbers optionally followed by a unit like GiB or GB"),
+    message: _("Size limits must be numbers followed by a unit like GiB or GB"),
     isVisible: true,
   };
 }
@@ -468,7 +469,7 @@ function useAutoRefreshFilesystem(handler, value: FormValue) {
     // Select default filesystem for the mount point if the partition has no filesystem.
     if (mountPoint !== NO_VALUE && target !== NEW_PARTITION && !partitionFilesystem)
       handler(defaultFilesystem);
-    // Reuse the filesystem from the partition if possble.
+    // Reuse the filesystem from the partition if possible.
     if (mountPoint !== NO_VALUE && target !== NEW_PARTITION && partitionFilesystem) {
       // const reuse = usableFilesystems.includes(partitionFilesystem);
       const reuse = usableFilesystems.includes(partitionFilesystem);
@@ -826,11 +827,8 @@ function CustomSize({ value, onChange }: CustomSizeProps) {
     <Stack hasGutter>
       <Stack>
         <SubtleContent>
-          {_("Sizes must be entered as a numbers optionally followed by a unit.")}
-        </SubtleContent>
-        <SubtleContent>
           {_(
-            "If the unit is omitted, bytes (B) will be used. Greater units can be of \
+            "Sizes must be entered as a numbers followed by a unit of \
               the form GiB (power of 2) or GB (power of 10).",
           )}
         </SubtleContent>

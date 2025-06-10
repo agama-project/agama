@@ -26,6 +26,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { InstallerL10nProvider } from "~/context/installerL10n";
 import { InstallerClientProvider } from "./installer";
 import * as utils from "~/utils";
+import { noop } from "radashi";
 
 const mockFetchConfigFn = jest.fn();
 const mockUpdateConfigFn = jest.fn();
@@ -77,7 +78,7 @@ const TranslatedContent = () => {
 
 describe("InstallerL10nProvider", () => {
   beforeAll(() => {
-    jest.spyOn(utils, "locationReload").mockImplementation(utils.noop);
+    jest.spyOn(utils, "locationReload").mockImplementation(noop);
     jest.spyOn(utils, "setLocationSearch");
 
     mockUpdateConfigFn.mockResolvedValue(true);

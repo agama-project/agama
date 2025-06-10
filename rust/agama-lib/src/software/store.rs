@@ -57,6 +57,7 @@ impl SoftwareStore {
                 Some(patterns)
             },
             packages: config.packages,
+            extra_repositories: config.extra_repositories,
         })
     }
 
@@ -71,6 +72,7 @@ impl SoftwareStore {
             product: None,
             patterns,
             packages: settings.packages.clone(),
+            extra_repositories: settings.extra_repositories.clone(),
         };
         self.software_client.set_config(&config).await?;
 
@@ -117,6 +119,7 @@ mod test {
         let expected = SoftwareSettings {
             patterns: Some(vec!["xfce".to_owned()]),
             packages: Some(vec!["vim".to_owned()]),
+            extra_repositories: None,
         };
         // main assertion
         assert_eq!(settings, expected);
@@ -134,7 +137,7 @@ mod test {
             when.method(PUT)
                 .path("/api/software/config")
                 .header("content-type", "application/json")
-                .body(r#"{"patterns":{"xfce":true},"packages":["vim"],"product":null}"#);
+                .body(r#"{"patterns":{"xfce":true},"packages":["vim"],"product":null,"extraRepositories":null}"#);
             then.status(200);
         });
         let url = server.url("/api");
@@ -143,6 +146,7 @@ mod test {
         let settings = SoftwareSettings {
             patterns: Some(vec!["xfce".to_owned()]),
             packages: Some(vec!["vim".to_owned()]),
+            extra_repositories: None,
         };
 
         let result = store.store(&settings).await;
@@ -162,7 +166,7 @@ mod test {
             when.method(PUT)
                 .path("/api/software/config")
                 .header("content-type", "application/json")
-                .body(r#"{"patterns":{"no_such_pattern":true},"packages":["vim"],"product":null}"#);
+                .body(r#"{"patterns":{"no_such_pattern":true},"packages":["vim"],"product":null,"extraRepositories":null}"#);
             then.status(400)
                 .body(r#"'{"error":"Agama service error: Failed to find these patterns: [\"no_such_pattern\"]"}"#);
         });
@@ -172,6 +176,7 @@ mod test {
         let settings = SoftwareSettings {
             patterns: Some(vec!["no_such_pattern".to_owned()]),
             packages: Some(vec!["vim".to_owned()]),
+            extra_repositories: None,
         };
 
         let result = store.store(&settings).await;

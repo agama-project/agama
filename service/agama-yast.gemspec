@@ -37,7 +37,7 @@ Gem::Specification.new do |spec|
   spec.description = "D-Bus service exposing some YaST features that are useful for Agama."
   spec.author = "YaST Team"
   spec.email = "yast-devel@opensuse.org"
-  spec.homepage = "https://github.com/openSUSE/agama"
+  spec.homepage = "https://github.com/agama-project/agama"
   spec.license = "GPL-2.0-only"
   spec.files = Dir["lib/**/*.rb", "bin/*", "share/*", "conf.d/*", "install.sh"]
   spec.executables = ["agamactl", "agama-proxy-setup", "agama-autoyast"]

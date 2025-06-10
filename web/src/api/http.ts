@@ -56,7 +56,7 @@ const put = (url: string, data: object) => http.put(url, data);
  * @param url - endpoint URL
  * @param data - request payload
  */
-const post = (url: string, data?: object) => http.post(url, data);
+const post = (url: string, data?: object | boolean) => http.post(url, data);
 
 /**
  * Performs a DELETE request on the given URL

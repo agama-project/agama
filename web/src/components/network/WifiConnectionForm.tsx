@@ -34,9 +34,9 @@ import {
 import { Page, PasswordInput } from "~/components/core";
 import { useAddConnectionMutation, useConnectionMutation, useConnections } from "~/queries/network";
 import { Connection, ConnectionState, WifiNetwork, Wireless } from "~/types/network";
-import { _ } from "~/i18n";
+import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
-import { isEmpty } from "~/utils";
+import { _ } from "~/i18n";
 
 const securityOptions = [
   // TRANSLATORS: WiFi authentication mode

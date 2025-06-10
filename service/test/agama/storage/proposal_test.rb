@@ -116,6 +116,48 @@ describe Agama::Storage::Proposal do
     end
   end
 
+  describe "#default_storage_json" do
+    context "if no device is given" do
+      it "returns the default JSON config without device" do
+        expect(subject.default_storage_json).to eq(
+          {
+            storage: {
+              drives: [
+                {
+                  search:     nil,
+                  partitions: [
+                    { generate: "default" }
+                  ]
+                }
+              ]
+            }
+          }
+        )
+      end
+    end
+
+    context "if a device is given" do
+      let(:device) { Y2Storage::StorageManager.instance.probed.disks.first }
+
+      it "returns the default JSON config for the given device" do
+        expect(subject.default_storage_json(device)).to eq(
+          {
+            storage: {
+              drives: [
+                {
+                  search:     device.name,
+                  partitions: [
+                    { generate: "default" }
+                  ]
+                }
+              ]
+            }
+          }
+        )
+      end
+    end
+  end
+
   describe "#storage_json" do
     context "if no proposal has been calculated yet" do
       it "returns nil" do
