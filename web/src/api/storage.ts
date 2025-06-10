@@ -50,7 +50,15 @@ const solveConfigModel = (model: apiModel.Config): Promise<apiModel.Config> => {
   return get(`/api/storage/config_model/solve?model=${serializedModel}`);
 };
 
-const fetchUsableDevices = (): Promise<number[]> => get(`/api/storage/proposal/usable_devices`);
+const fetchAvailableDrives = (): Promise<number[]> => get(`/api/storage/devices/available_drives`);
+
+const fetchCandidateDrives = (): Promise<number[]> => get(`/api/storage/devices/candidate_drives`);
+
+const fetchAvailableMdRaids = (): Promise<number[]> =>
+  get(`/api/storage/devices/available_md_raids`);
+
+const fetchCandidateMdRaids = (): Promise<number[]> =>
+  get(`/api/storage/devices/candidate_md_raids`);
 
 const fetchProductParams = (): Promise<ProductParams> => get("/api/storage/product/params");
 
@@ -84,7 +92,10 @@ export {
   resetConfig,
   setConfigModel,
   solveConfigModel,
-  fetchUsableDevices,
+  fetchAvailableDrives,
+  fetchCandidateDrives,
+  fetchAvailableMdRaids,
+  fetchCandidateMdRaids,
   fetchProductParams,
   fetchVolume,
   fetchVolumes,

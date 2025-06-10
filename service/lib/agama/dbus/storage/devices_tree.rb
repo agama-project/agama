@@ -85,6 +85,7 @@ module Agama
         # @return [Array<Y2Storage::Device>]
         def devices(devicegraph)
           devices = devicegraph.disk_devices +
+            devicegraph.stray_blk_devices +
             devicegraph.software_raids +
             devicegraph.lvm_vgs +
             devicegraph.lvm_lvs

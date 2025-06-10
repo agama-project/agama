@@ -81,7 +81,7 @@
       "properties": {
         "search": { "$ref": "#/$defs/mdRaidSearch" },
         "alias": { "$ref": "#/$defs/alias" },
-        "name": { "$ref": "#/$defs/mdRaidName" },
+        "name": { "$ref": "#/$defs/baseName" },
         "level": { "$ref": "#/$defs/mdRaidLevel" },
         "parity": { "$ref": "#/$defs/mdRaidParity" },
         "chunkSize": { "$ref": "#/$defs/sizeValue" },
@@ -97,7 +97,7 @@
       "properties": {
         "search": { "$ref": "#/$defs/mdRaidSearch" },
         "alias": { "$ref": "#/$defs/alias" },
-        "name": { "$ref": "#/$defs/mdRaidName" },
+        "name": { "$ref": "#/$defs/baseName" },
         "level": { "$ref": "#/$defs/mdRaidLevel" },
         "parity": { "$ref": "#/$defs/mdRaidParity" },
         "chunkSize": { "$ref": "#/$defs/sizeValue" },
@@ -108,11 +108,6 @@
           "items": { "$ref": "#/$defs/partitionElement" }
         }
       }
-    },
-    "mdRaidName": {
-      "description": "MD base name.",
-      "type": "string",
-      "examples": ["system"]
     },
     "mdRaidLevel": {
       "title": "MD level",
@@ -245,11 +240,7 @@
       "additionalProperties": false,
       "required": ["name"],
       "properties": {
-        "name": {
-          "description": "Volume group name.",
-          "type": "string",
-          "examples": ["vg0"]
-        },
+        "name": { "$ref": "#/$defs/baseName" },
         "extentSize": { "$ref": "#/$defs/sizeValue" },
         "physicalVolumes": {
           "description": "Devices to use as physical volumes.",
@@ -335,11 +326,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "name": {
-          "description": "Logical volume name.",
-          "type": "string",
-          "examples": ["lv0"]
-        },
+        "name": { "$ref": "#/$defs/baseName" },
         "size": { "$ref": "#/$defs/size" },
         "stripes": { "$ref": "#/$defs/logicalVolumeStripes" },
         "stripeSize": { "$ref": "#/$defs/sizeValue" },
@@ -357,11 +344,7 @@
           "const": true
         },
         "alias": { "$ref": "#/$defs/alias" },
-        "name": {
-          "description": "Logical volume name.",
-          "type": "string",
-          "examples": ["lv0"]
-        },
+        "name": { "$ref": "#/$defs/baseName" },
         "size": { "$ref": "#/$defs/size" },
         "stripes": { "$ref": "#/$defs/logicalVolumeStripes" },
         "stripeSize": { "$ref": "#/$defs/sizeValue" },
@@ -373,11 +356,7 @@
       "additionalProperties": false,
       "required": ["usedPool"],
       "properties": {
-        "name": {
-          "description": "Thin logical volume name.",
-          "type": "string",
-          "examples": ["lv0"]
-        },
+        "name": { "$ref": "#/$defs/baseName" },
         "size": { "$ref": "#/$defs/size" },
         "usedPool": { "$ref": "#/$defs/alias" },
         "encryption": { "$ref": "#/$defs/encryption" },
@@ -559,6 +538,12 @@
     "alias": {
       "description": "Alias used to reference a device.",
       "type": "string"
+    },
+    "baseName": {
+      "description": "Device base name.",
+      "type": "string",
+      "pattern": "^[^/]+$",
+      "examples": ["system"]
     },
     "size": {
       "title": "Size",
