@@ -57,6 +57,18 @@ shared_context "config" do
       .to(receive(:possible?))
       .and_return(true)
 
+    allow_any_instance_of(Y2Storage::EncryptionMethod::SystemdFde)
+      .to(receive(:available?))
+      .and_return(true)
+
+    allow_any_instance_of(Y2Storage::EncryptionMethod::PervasiveLuks2)
+      .to(receive(:available?))
+      .and_return(true)
+
+    allow_any_instance_of(Y2Storage::EncryptionMethod::Swap)
+      .to(receive(:available?))
+      .and_return(true)
+
     allow(Y2Storage::BlkDevice).to receive(:find_by_any_name)
   end
 

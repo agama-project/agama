@@ -156,7 +156,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
             expect(issues).to include an_object_having_attributes(
               error?:      true,
               kind:        :reused_md_member,
-              description: /cannot be formatted.*member of.*md0/
+              description: /cannot be formatted because it is a device member of.*md0/
             )
           end
         end
@@ -197,6 +197,82 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
               description: /cannot be used.*member of.*md0/
             )
           end
+        end
+
+        context "and the member config is deleted" do
+          let(:scenario) { "md_raids.yaml" }
+
+          let(:drives) do
+            [
+              {
+                search:     "/dev/vda",
+                partitions: [
+                  {
+                    search: "/dev/vda1",
+                    delete: true
+                  }
+                ]
+              }
+            ]
+          end
+
+          it "includes the expected issue" do
+            issues = subject.issues
+            expect(issues).to include an_object_having_attributes(
+              error?:      true,
+              kind:        :reused_md_member,
+              description: /cannot be deleted.*member of.*md0/
+            )
+          end
+        end
+
+        context "and the member config is resized" do
+          let(:scenario) { "md_raids.yaml" }
+
+          let(:drives) do
+            [
+              {
+                search:     "/dev/vda",
+                partitions: [
+                  {
+                    search: "/dev/vda1",
+                    size:   "2 GiB"
+                  }
+                ]
+              }
+            ]
+          end
+
+          it "includes the expected issue" do
+            issues = subject.issues
+            expect(issues).to include an_object_having_attributes(
+              error?:      true,
+              kind:        :reused_md_member,
+              description: /cannot be resized.*member of.*md0/
+            )
+          end
+        end
+      end
+
+      context "and a member is indirectly deleted (i.e., the drive is formatted)" do
+        let(:scenario) { "md_raids.yaml" }
+
+        let(:drives) do
+          [
+            {
+              search:     "/dev/vda",
+              filesystem: { path: "/data" }
+            }
+          ]
+        end
+
+        it "includes the expected issue" do
+          issues = subject.issues
+          expect(issues).to include an_object_having_attributes(
+            error?:      true,
+            kind:        :reused_md_member,
+            description: /cannot be formatted because its partition.*vda1.*member of.*md0/
+          )
         end
       end
     end
