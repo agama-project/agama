@@ -237,7 +237,7 @@ export default function ProposalPage(): React.ReactNode {
     if (isDeprecated) reprobe().catch(console.log);
   }, [isDeprecated, reprobe]);
 
-  const fixable = ["no_root", "required_filesystems", "vg_target_devices"];
+  const fixable = ["no_root", "required_filesystems", "vg_target_devices", "reused_md_member"];
   const unfixableErrors = configErrors.filter((e) => !fixable.includes(e.kind));
   const isModelEditable = model && !unfixableErrors.length;
   const hasDevices = !!availableDevices.length;
