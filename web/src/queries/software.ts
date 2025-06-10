@@ -63,12 +63,28 @@ import {
 } from "~/api/software";
 import { QueryHookOptions } from "~/types/queries";
 import { probe as systemProbe } from "~/api/manager";
+import { storageKeys } from "./storage";
+
+const softwareKeys = {
+  all: () => ["software"] as const,
+  config: () => [...softwareKeys.all(), "config"] as const,
+  proposal: () => [...softwareKeys.all(), "proposal"] as const,
+  products: () => [...softwareKeys.all(), "products"] as const,
+  licenses: () => [...softwareKeys.all(), "licenses"] as const,
+  selectedProduct: () => [...softwareKeys.all(), "product"] as const,
+  registration: () => [...softwareKeys.all(), "registration"] as const,
+  addons: () => [...softwareKeys.registration(), "addons"] as const,
+  registeredAddons: () => [...softwareKeys.addons(), "registered"] as const,
+  patterns: () => [...softwareKeys.all(), "patterns"] as const,
+  repositories: () => [...softwareKeys.all(), "repositories"] as const,
+  conflicts: () => [...softwareKeys.all(), "conflicts"] as const,
+};
 
 /**
  * Query to retrieve software configuration
  */
 const configQuery = () => ({
-  queryKey: ["software", "config"],
+  queryKey: softwareKeys.config(),
   queryFn: fetchConfig,
 });
 
@@ -76,7 +92,7 @@ const configQuery = () => ({
  * Query to retrieve current software proposal
  */
 const proposalQuery = () => ({
-  queryKey: ["software", "proposal"],
+  queryKey: softwareKeys.proposal(),
   queryFn: fetchProposal,
 });
 
@@ -84,7 +100,7 @@ const proposalQuery = () => ({
  * Query to retrieve available products
  */
 const productsQuery = () => ({
-  queryKey: ["software", "products"],
+  queryKey: softwareKeys.products(),
   queryFn: fetchProducts,
   staleTime: Infinity,
 });
@@ -93,7 +109,7 @@ const productsQuery = () => ({
  * Query to retrieve available licenses
  */
 const licensesQuery = () => ({
-  queryKey: ["software", "licenses"],
+  queryKey: softwareKeys.licenses(),
   queryFn: fetchLicenses,
   staleTime: Infinity,
 });
@@ -102,7 +118,7 @@ const licensesQuery = () => ({
  * Query to retrieve selected product
  */
 const selectedProductQuery = () => ({
-  queryKey: ["software", "product"],
+  queryKey: softwareKeys.selectedProduct(),
   queryFn: () => fetchConfig().then(({ product }) => product),
 });
 
@@ -110,7 +126,7 @@ const selectedProductQuery = () => ({
  * Query to retrieve registration info
  */
 const registrationQuery = () => ({
-  queryKey: ["software", "registration"],
+  queryKey: softwareKeys.registration(),
   queryFn: fetchRegistration,
 });
 
@@ -118,7 +134,7 @@ const registrationQuery = () => ({
  * Query to retrieve available addons info
  */
 const addonsQuery = () => ({
-  queryKey: ["software", "registration", "addons"],
+  queryKey: softwareKeys.addons(),
   queryFn: fetchAddons,
 });
 
@@ -126,7 +142,7 @@ const addonsQuery = () => ({
  * Query to retrieve registered addons info
  */
 const registeredAddonsQuery = () => ({
-  queryKey: ["software", "registration", "addons", "registered"],
+  queryKey: softwareKeys.registeredAddons(),
   queryFn: fetchRegisteredAddons,
 });
 
@@ -134,7 +150,7 @@ const registeredAddonsQuery = () => ({
  * Query to retrieve available patterns
  */
 const patternsQuery = () => ({
-  queryKey: ["software", "patterns"],
+  queryKey: softwareKeys.patterns(),
   queryFn: fetchPatterns,
 });
 
@@ -142,7 +158,7 @@ const patternsQuery = () => ({
  * Query to retrieve configured repositories
  */
 const repositoriesQuery = () => ({
-  queryKey: ["software", "repositories"],
+  queryKey: softwareKeys.repositories(),
   queryFn: fetchRepositories,
 });
 
@@ -150,7 +166,7 @@ const repositoriesQuery = () => ({
  * Query to retrieve conflicts
  */
 const conflictsQuery = () => ({
-  queryKey: ["software", "conflicts"],
+  queryKey: softwareKeys.conflicts(),
   queryFn: fetchConflicts,
 });
 
@@ -166,12 +182,12 @@ const useConfigMutation = () => {
   const query = {
     mutationFn: updateConfig,
     onSuccess: async (_, config: SoftwareConfig) => {
-      queryClient.invalidateQueries({ queryKey: ["software", "config"] });
-      queryClient.invalidateQueries({ queryKey: ["software", "product"] });
-      queryClient.invalidateQueries({ queryKey: ["software", "proposal"] });
+      queryClient.invalidateQueries({ queryKey: softwareKeys.config() });
+      queryClient.invalidateQueries({ queryKey: softwareKeys.selectedProduct() });
+      queryClient.invalidateQueries({ queryKey: softwareKeys.proposal() });
       if (config.product) {
         await systemProbe();
-        queryClient.invalidateQueries({ queryKey: ["storage"] });
+        queryClient.invalidateQueries({ queryKey: storageKeys.all() });
       }
     },
   };
@@ -191,8 +207,8 @@ const useRegisterMutation = () => {
     mutationFn: register,
     onSuccess: async () => {
       await systemProbe();
-      queryClient.invalidateQueries({ queryKey: ["software", "registration"] });
-      queryClient.invalidateQueries({ queryKey: ["storage"] });
+      queryClient.invalidateQueries({ queryKey: softwareKeys.registration() });
+      queryClient.invalidateQueries({ queryKey: storageKeys.all() });
     },
   };
   return useMutation(query);
@@ -208,7 +224,7 @@ const useRegisterAddonMutation = () => {
   const query = {
     mutationFn: registerAddon,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: registeredAddonsQuery().queryKey });
+      queryClient.invalidateQueries({ queryKey: softwareKeys.registeredAddons() });
     },
   };
   return useMutation(query);
@@ -223,7 +239,7 @@ const useRepositoryMutation = (callback: () => void) => {
   const query = {
     mutationFn: probe,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["software", "repositories"] });
+      queryClient.invalidateQueries({ queryKey: softwareKeys.repositories() });
       callback();
     },
   };
@@ -351,7 +367,7 @@ const useConflictsMutation = () => {
   const query = {
     mutationFn: solveConflict,
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: conflictsQuery().queryKey });
+      queryClient.invalidateQueries({ queryKey: softwareKeys.conflicts() });
     },
   };
   return useMutation(query);
@@ -371,11 +387,11 @@ const useProductChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "ProductChanged") {
-        queryClient.invalidateQueries({ queryKey: ["software", "config"] });
+        queryClient.invalidateQueries({ queryKey: softwareKeys.config() });
       }
 
       if (event.type === "LocaleChanged") {
-        queryClient.invalidateQueries({ queryKey: ["software", "products"] });
+        queryClient.invalidateQueries({ queryKey: softwareKeys.products() });
       }
     });
   }, [client, queryClient]);
@@ -395,7 +411,7 @@ const useProposalChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "SoftwareProposalChanged") {
-        queryClient.invalidateQueries({ queryKey: ["software", "proposal"] });
+        queryClient.invalidateQueries({ queryKey: softwareKeys.proposal() });
       }
     });
   }, [client, queryClient]);
@@ -414,7 +430,7 @@ const useConflictsChanges = () => {
     return client.onEvent((event) => {
       if (event.type === "ConflictsChanged") {
         const { conflicts } = event;
-        queryClient.setQueryData([conflictsQuery().queryKey], conflicts);
+        queryClient.setQueryData(softwareKeys.conflicts(), conflicts);
       }
     });
   });
