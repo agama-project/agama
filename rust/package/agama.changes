@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Tue Jun 10 09:25:39 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- consistent CLI for unattended installation (gh#agama-project/agama#2347)
+  - `agama config generate | agama config load` replaces `agama profile import`
+  - `agama config generate` replaces `agama profile evaluate`
+    and `agama profile autoyast`
+  - `agama config validate` replaces `agama profile validate`, is also automatic
+  - More consistency in stdio handling, adding --output option
+
+-------------------------------------------------------------------
 Fri Jun  6 13:22:58 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Added support for moving the connections from memory only to disk
