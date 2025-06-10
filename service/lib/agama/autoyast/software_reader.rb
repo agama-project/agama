@@ -37,7 +37,6 @@ module Agama
       #
       # @return [Hash] Agama "software" section
       def read
-
         software = {}
 
         if profile["software"]
@@ -58,11 +57,13 @@ module Agama
       attr_reader :profile
 
       def process_repos
-        repos = profile["add-on"].fetch_as_array("add_on_products") + profile["add-on"].fetch_as_array("add_on_others")
+        repos = profile["add-on"].fetch_as_array("add_on_products") +
+          profile["add-on"].fetch_as_array("add_on_others")
         repos.each_with_index.map do |repo, index|
           res = {}
           res["url"] = repo["media_url"]
-          res["alias"] = repo["alias"] || "autoyast_#{index}" # alias is mandatory to craft one if needed
+          # alias is mandatory to craft one if needed
+          res["alias"] = repo["alias"] || "autoyast_#{index}"
           res["priority"] = repo["priority"] if repo["priority"]
           res["name"] = repo["name"] if repo["name"]
           res["productDir"] = repo["product_dir"] if repo["product_dir"]

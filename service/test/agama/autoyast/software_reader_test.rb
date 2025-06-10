@@ -33,17 +33,17 @@ describe Agama::AutoYaST::SoftwareReader do
         "patterns" => ["base", "gnome"],
         "packages" => ["vim"]
       },
-      "add-on" => {
+      "add-on"   => {
         "add_on_others" => [
           {
             "media_url" => "https://test.com"
           },
           {
-            "media_url" => "https://test2.com",
+            "media_url"   => "https://test2.com",
             "product_dir" => "/prod",
-            "alias" => "prod2",
-            "priority" => 20,
-            "name" => "prod 2"
+            "alias"       => "prod2",
+            "priority"    => 20,
+            "name"        => "prod 2"
           }
         ]
       }
