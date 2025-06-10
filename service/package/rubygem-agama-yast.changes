@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 10 12:08:44 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- AutoYaST support: add support for add-on elements
+  (gh#agama-project/agama#2458)
+
+-------------------------------------------------------------------
 Fri Jun  6 10:22:36 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Propose to move existing connections to disk if there is no one 

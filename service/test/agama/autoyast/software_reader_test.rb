@@ -78,7 +78,7 @@ describe Agama::AutoYaST::SoftwareReader do
     end
 
     context "when a list of add-ons are provided" do
-      it "includes the list of repositoriess under 'software.extraRepositories'" do
+      it "includes the list of repositories under 'software.extraRepositories'" do
         repos = subject.read.dig("software", "extraRepositories")
         expect(repos).to_not be_empty
       end
