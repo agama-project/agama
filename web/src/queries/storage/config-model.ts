@@ -93,44 +93,6 @@ function allMountPaths(drive: apiModel.Drive): string[] {
   return drive.partitions.map((p) => p.mountPath).filter((m) => m);
 }
 
-function setBoot(originalModel: apiModel.Config, boot: apiModel.Boot) {
-  const model = copyModel(originalModel);
-  const name = model.boot?.device?.name;
-  const remove =
-    name !== undefined &&
-    isExplicitBoot(model, name) &&
-    !isUsedDrive(model, name) &&
-    !driveHasPv(model, name);
-
-  if (remove) removeDrive(model, name);
-
-  model.boot = boot;
-  return model;
-}
-
-function setBootDevice(originalModel: apiModel.Config, deviceName: string): apiModel.Config {
-  return setBoot(originalModel, {
-    configure: true,
-    device: {
-      default: false,
-      name: deviceName,
-    },
-  });
-}
-
-function setDefaultBootDevice(originalModel: apiModel.Config): apiModel.Config {
-  return setBoot(originalModel, {
-    configure: true,
-    device: {
-      default: true,
-    },
-  });
-}
-
-function disableBoot(originalModel: apiModel.Config): apiModel.Config {
-  return setBoot(originalModel, { configure: false });
-}
-
 function setEncryption(
   originalModel: apiModel.Config,
   method: apiModel.EncryptionMethod,
@@ -259,29 +221,6 @@ export function useSolvedConfigModel(model?: apiModel.Config): apiModel.Config |
   });
 
   return query.data;
-}
-
-export type BootHook = {
-  configure: boolean;
-  isDefault: boolean;
-  deviceName?: string;
-  setDevice: (deviceName: string) => void;
-  setDefault: () => void;
-  disable: () => void;
-};
-
-export function useBoot(): BootHook {
-  const model = useConfigModel();
-  const { mutate } = useConfigModelMutation();
-
-  return {
-    configure: model?.boot?.configure || false,
-    isDefault: model?.boot?.device?.default || false,
-    deviceName: model?.boot?.device?.name,
-    setDevice: (deviceName: string) => mutate(setBootDevice(model, deviceName)),
-    setDefault: () => mutate(setDefaultBootDevice(model)),
-    disable: () => mutate(disableBoot(model)),
-  };
 }
 
 export type EncryptionHook = {

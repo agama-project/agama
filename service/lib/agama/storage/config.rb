@@ -162,6 +162,13 @@ module Agama
         drives + md_raids
       end
 
+      # Configs with configurable delete.
+      #
+      # @return [#delete?]
+      def supporting_delete
+        partitions
+      end
+
       # Config objects that could act as physical volume
       #
       # @return [Array<Configs::Drive, Configs::Md, Configs::Partition>]

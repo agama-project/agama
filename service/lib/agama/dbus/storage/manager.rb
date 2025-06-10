@@ -278,10 +278,45 @@ module Agama
           self.actions = read_actions
         end
 
+        # @see Storage::System#available_drives
+        # @return [Array<::DBus::ObjectPath>]
+        def available_drives
+          proposal.storage_system.available_drives.map { |d| system_device_path(d)  }
+        end
+
+        # @see Storage::System#available_drives
+        # @return [Array<::DBus::ObjectPath>]
+        def candidate_drives
+          proposal.storage_system.candidate_drives.map { |d| system_device_path(d)  }
+        end
+
+        # @see Storage::System#available_drives
+        # @return [Array<::DBus::ObjectPath>]
+        def available_md_raids
+          proposal.storage_system.available_md_raids.map { |d| system_device_path(d)  }
+        end
+
+        # @see Storage::System#available_drives
+        # @return [Array<::DBus::ObjectPath>]
+        def candidate_md_raids
+          proposal.storage_system.candidate_md_raids.map { |d| system_device_path(d)  }
+        end
+
+        # @param device [Y2Storage::Device]
+        # @return [::DBus::ObjectPath]
+        def system_device_path(device)
+          system_devices_tree.path_for(device)
+        end
+
         dbus_interface STORAGE_DEVICES_INTERFACE do
           # PropertiesChanged signal if a proposal is calculated, see
           # {#register_proposal_callbacks}.
           dbus_reader_attr_accessor :actions, "aa{sv}"
+
+          dbus_reader :available_drives, "ao"
+          dbus_reader :candidate_drives, "ao"
+          dbus_reader :available_md_raids, "ao"
+          dbus_reader :candidate_md_raids, "ao"
         end
 
         PROPOSAL_CALCULATOR_INTERFACE = "org.opensuse.Agama.Storage1.Proposal.Calculator"
@@ -299,13 +334,6 @@ module Agama
 
           proposal.calculate_guided(settings)
           proposal.success? ? 0 : 1
-        end
-
-        # List of disks available for installation
-        #
-        # @return [Array<::DBus::ObjectPath>]
-        def available_devices
-          proposal.available_devices.map { |d| system_devices_tree.path_for(d) }
         end
 
         # Meaningful mount points for the current product.
@@ -336,8 +364,6 @@ module Agama
         end
 
         dbus_interface PROPOSAL_CALCULATOR_INTERFACE do
-          dbus_reader :available_devices, "ao"
-
           dbus_reader :product_mount_points, "as"
 
           # PropertiesChanged signal if software is probed, see {#register_software_callbacks}.

@@ -782,6 +782,61 @@ describe Agama::Storage::Config do
     end
   end
 
+  describe "#supporting_delete" do
+    let(:config_json) do
+      {
+        drives:       [
+          {},
+          {
+            partitions: [
+              {}
+            ]
+          }
+        ],
+        volumeGroups: [
+          {
+            logicalVolumes: [
+              {}
+            ]
+          }
+        ],
+        mdRaids:      [
+          {},
+          {
+            partitions: [
+              {}
+            ]
+          }
+        ]
+      }
+    end
+
+    it "returns all configs with configurable delete" do
+      configs = subject.supporting_delete
+      expect(configs.size).to eq(2)
+    end
+
+    it "includes all partitions" do
+      expect(subject.supporting_delete).to include(*subject.partitions)
+    end
+
+    it "does not include drives" do
+      expect(subject.supporting_delete).to_not include(*subject.drives)
+    end
+
+    it "does not include MD RAIDs" do
+      expect(subject.supporting_delete).to_not include(*subject.md_raids)
+    end
+
+    it "does not include volume groups" do
+      expect(subject.supporting_delete).to_not include(*subject.volume_groups)
+    end
+
+    it "does not include logical volumes" do
+      expect(subject.supporting_delete).to_not include(*subject.logical_volumes)
+    end
+  end
+
   describe "#potential_for_md_device" do
     let(:config_json) do
       {

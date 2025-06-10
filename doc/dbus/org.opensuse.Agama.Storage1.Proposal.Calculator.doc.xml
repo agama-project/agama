@@ -81,7 +81,6 @@
       -->
       <arg name="result" direction="out" type="u"/>
     </method>
-    <property type="ao" name="AvailableDevices" access="read"/>
     <!--
       Relevant mount points for the selected product. Normally, the product defines some specific
       values for these mount points (e.g., min and max sizes, file system type, etc).

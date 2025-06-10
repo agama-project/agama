@@ -53,6 +53,8 @@ describe Agama::Storage::Manager do
   let(:tmp_dir) { Dir.mktmpdir }
 
   before do
+    mock_storage(devicegraph: scenario)
+    allow(Agama::Storage::Proposal).to receive(:new).and_return(proposal)
     allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
     allow(Agama::DBus::Clients::Software).to receive(:instance).and_return(software)
     allow(Bootloader::FinishClient).to receive(:new).and_return(bootloader_finish)
@@ -71,7 +73,8 @@ describe Agama::Storage::Manager do
     FileUtils.remove_entry(tmp_dir)
   end
 
-  let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
+  let(:y2storage_manager) { Y2Storage::StorageManager.instance }
+  let(:proposal) { Agama::Storage::Proposal.new(config, logger: logger) }
   let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
   let(:software) do
     instance_double(Agama::DBus::Clients::Software, selected_product: "ALP")
@@ -80,21 +83,9 @@ describe Agama::Storage::Manager do
   let(:bootloader_finish) { instance_double(Bootloader::FinishClient, write: nil) }
   let(:security) { instance_double(Agama::Security, probe: nil, write: nil) }
 
+  let(:scenario) { "empty-hd-50GiB.yaml" }
+
   describe "#deprecated_system=" do
-    before do
-      allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
-      allow(Agama::Storage::Proposal).to receive(:new).and_return(proposal)
-
-      allow(y2storage_manager).to receive(:raw_probed).and_return(raw_devicegraph)
-
-      allow(proposal).to receive(:issues).and_return([])
-      allow(proposal).to receive(:available_devices).and_return([])
-    end
-
-    let(:raw_devicegraph) { instance_double(Y2Storage::Devicegraph, probing_issues: []) }
-
-    let(:proposal) { Agama::Storage::Proposal.new(config, logger: logger) }
-
     let(:callback) { proc {} }
 
     context "if the current value is changed" do
@@ -162,21 +153,15 @@ describe Agama::Storage::Manager do
 
   describe "#probe" do
     before do
-      allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
-      allow(Agama::Storage::Proposal).to receive(:new).and_return(proposal)
       allow(Agama::Storage::ISCSI::Manager).to receive(:new).and_return(iscsi)
-
       allow(y2storage_manager).to receive(:raw_probed).and_return(raw_devicegraph)
-
       allow(proposal).to receive(:issues).and_return(proposal_issues)
-      allow(proposal).to receive(:available_devices).and_return(devices)
+      allow(proposal.storage_system).to receive(:candidate_devices).and_return(devices)
       allow(proposal).to receive(:calculate_from_json).and_return(true)
       allow(proposal).to receive(:success?).and_return(true)
       allow(proposal).to receive(:storage_json).and_return(current_config)
-
       allow_any_instance_of(Agama::Storage::Configurator)
         .to receive(:generate_configs).and_return([default_config])
-
       allow(config).to receive(:pick_product)
       allow(iscsi).to receive(:activate)
       allow(y2storage_manager).to receive(:activate)
@@ -319,7 +304,6 @@ describe Agama::Storage::Manager do
 
   describe "#install" do
     before do
-      allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
       allow(y2storage_manager).to receive(:staging).and_return(proposed_devicegraph)
 
       allow(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
@@ -369,7 +353,6 @@ describe Agama::Storage::Manager do
 
   describe "#finish" do
     before do
-      mock_storage(devicegraph: devicegraph)
       allow(File).to receive(:directory?).and_call_original
       allow(File).to receive(:directory?).with("/iguana").and_return iguana
       allow(copy_files_class).to receive(:new).and_return(copy_files)
@@ -380,7 +363,7 @@ describe Agama::Storage::Manager do
     let(:copy_files) { instance_double(copy_files_class, run?: true, run: true, label: "Copy") }
 
     let(:iguana) { false }
-    let(:devicegraph) { "staging-plain-partitions.yaml" }
+    let(:scenario) { "staging-plain-partitions.yaml" }
 
     it "copy needed files, installs the bootloader, sets up the snapshots, " \
        "copy logs, symlink resolv.conf, runs the post-installation scripts, " \
@@ -427,7 +410,7 @@ describe Agama::Storage::Manager do
       end
 
       context "on a traditional installation over plain partitions" do
-        let(:devicegraph) { "staging-plain-partitions.yaml" }
+        let(:scenario) { "staging-plain-partitions.yaml" }
 
         it "writes the /iguana/mountlist file with the expected content" do
           file = instance_double(File)
@@ -439,7 +422,7 @@ describe Agama::Storage::Manager do
       end
 
       context "on a transactional system with encrypted partitions" do
-        let(:devicegraph) { "staging-ro-luks-partitions.yaml" }
+        let(:scenario) { "staging-ro-luks-partitions.yaml" }
 
         it "writes the /iguana/mountlist file with the expected content" do
           file = instance_double(File)
