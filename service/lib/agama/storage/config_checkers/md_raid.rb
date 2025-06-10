@@ -168,8 +168,8 @@ module Agama
               _(
                 # TRANSLATORS: %{member} is replaced by a device name (e.g., "/dev/vda") and
                 #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
-                "The device '%{member}' cannot be deleted because it is a device member of the " \
-                "reused MD RAID %{md_raid}"
+                "The device '%{member}' cannot be deleted because it is part of the MD RAID " \
+                "%{md_raid}"
               ),
               member:  member_config.found_device.name,
               md_raid: config.found_device.name
@@ -191,8 +191,8 @@ module Agama
               _(
                 # TRANSLATORS: %{member} is replaced by a device name (e.g., "/dev/vda") and
                 #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
-                "The device '%{member}' cannot be resized because it is a device member of the " \
-                "reused MD RAID %{md_raid}"
+                "The device '%{member}' cannot be resized because it is part of the MD RAID " \
+                "%{md_raid}"
               ),
               member:  member_config.found_device.name,
               md_raid: config.found_device.name
@@ -214,8 +214,8 @@ module Agama
               _(
                 # TRANSLATORS: %{member} is replaced by a device name (e.g., "/dev/vda") and
                 #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
-                "The device '%{member}' cannot be formatted because it is a device member of the " \
-                "reused MD RAID %{md_raid}"
+                "The device '%{member}' cannot be formatted because it is part of the MD RAID " \
+                "%{md_raid}"
               ),
               member:  member_config.found_device.name,
               md_raid: config.found_device.name
@@ -237,8 +237,8 @@ module Agama
               _(
                 # TRANSLATORS: %{member} is replaced by a device name (e.g., "/dev/vda") and
                 #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
-                "The device '%{member}' cannot be partitioned because it is a device member of " \
-                "the reused MD RAID %{md_raid}"
+                "The device '%{member}' cannot be partitioned because it is part of the MD RAID " \
+                "%{md_raid}"
               ),
               member:  member_config.found_device.name,
               md_raid: config.found_device.name
@@ -259,8 +259,8 @@ module Agama
               _(
                 # TRANSLATORS: %{member} is replaced by a device name (e.g., "/dev/vda") and
                 #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
-                "The device '%{member}' cannot be used because it is a device member of the " \
-                "reused MD RAID %{md_raid}"
+                "The device '%{member}' cannot be used because it is part of the MD RAID " \
+                "%{md_raid}"
               ),
               member:  member_config.found_device.name,
               md_raid: config.found_device.name
@@ -282,13 +282,12 @@ module Agama
           error(
             format(
               _(
-                # TRANSLATORS: %{device} and %{member} are replaced by a device name (e.g.,
-                # "/dev/vda") and %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
-                "The device '%{device}' cannot be formatted because its partition '%{member}' is " \
-                "a device member of the reused MD RAID %{md_raid}"
+                # TRANSLATORS: %{device} is replaced by a device name (e.g., "/dev/vda") and
+                #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
+                "The device '%{device}' cannot be formatted because it is part of the MD RAID " \
+                "%{md_raid}"
               ),
               device:  parent_config.found_device.name,
-              member:  device.name,
               md_raid: config.found_device.name
             ),
             kind: :reused_md_member

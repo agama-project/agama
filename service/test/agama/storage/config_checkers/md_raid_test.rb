@@ -156,7 +156,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
             expect(issues).to include an_object_having_attributes(
               error?:      true,
               kind:        :reused_md_member,
-              description: /cannot be formatted because it is a device member of.*md0/
+              description: /.*vda.*cannot be formatted.*part of.*md0/
             )
           end
         end
@@ -175,7 +175,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
             expect(issues).to include an_object_having_attributes(
               error?:      true,
               kind:        :reused_md_member,
-              description: /cannot be partitioned.*member of.*md0/
+              description: /.*vda.*cannot be partitioned.*part of.*md0/
             )
           end
         end
@@ -194,7 +194,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
             expect(issues).to include an_object_having_attributes(
               error?:      true,
               kind:        :reused_md_member,
-              description: /cannot be used.*member of.*md0/
+              description: /.*vda.*cannot be used.*part of.*md0/
             )
           end
         end
@@ -221,7 +221,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
             expect(issues).to include an_object_having_attributes(
               error?:      true,
               kind:        :reused_md_member,
-              description: /cannot be deleted.*member of.*md0/
+              description: /.*vda1.*cannot be deleted.*part of.*md0/
             )
           end
         end
@@ -248,7 +248,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
             expect(issues).to include an_object_having_attributes(
               error?:      true,
               kind:        :reused_md_member,
-              description: /cannot be resized.*member of.*md0/
+              description: /.*vda1.*cannot be resized.*part of.*md0/
             )
           end
         end
@@ -271,7 +271,7 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
           expect(issues).to include an_object_having_attributes(
             error?:      true,
             kind:        :reused_md_member,
-            description: /cannot be formatted because its partition.*vda1.*member of.*md0/
+            description: /.*vda.*cannot be formatted.*part of.*md0/
           )
         end
       end
