@@ -69,14 +69,14 @@ export default function BootSelectionDialog() {
   const disableBootConfig = useDisableBootConfig();
 
   useEffect(() => {
-    if (state.load) return;
+    if (state.load || !model) return;
 
-    const boot = model?.boot;
+    const boot = model.boot;
     let selectedOption: string;
 
-    if (!boot?.configure) {
+    if (!boot.configure) {
       selectedOption = BOOT_DISABLED_ID;
-    } else if (boot?.isDefault) {
+    } else if (boot.isDefault) {
       selectedOption = BOOT_AUTO_ID;
     } else {
       selectedOption = BOOT_MANUAL_ID;
@@ -100,7 +100,7 @@ export default function BootSelectionDialog() {
     });
   }, [devices, candidateDevices, model, state.load]);
 
-  if (!state.load) return;
+  if (!state.load || !model) return;
 
   const onSubmit = async (e) => {
     e.preventDefault();
