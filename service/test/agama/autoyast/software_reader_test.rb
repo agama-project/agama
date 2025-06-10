@@ -32,6 +32,20 @@ describe Agama::AutoYaST::SoftwareReader do
         "products" => ["SLE"],
         "patterns" => ["base", "gnome"],
         "packages" => ["vim"]
+      },
+      "add-on" => {
+        "add_on_others" => [
+          {
+            "media_url" => "https://test.com"
+          },
+          {
+            "media_url" => "https://test2.com",
+            "product_dir" => "/prod",
+            "alias" => "prod2",
+            "priority" => 20,
+            "name" => "prod 2"
+          }
+        ]
       }
     }
   end
@@ -60,6 +74,19 @@ describe Agama::AutoYaST::SoftwareReader do
       it "includes the list of patterns under 'software.packages'" do
         patterns = subject.read.dig("software", "packages")
         expect(patterns).to eq(["vim"])
+      end
+    end
+
+    context "when a list of add-ons are provided" do
+      it "includes the list of repositoriess under 'software.extraRepositories'" do
+        repos = subject.read.dig("software", "extraRepositories")
+        expect(repos).to_not be_empty
+      end
+
+      it "generates alias if it is not provided" do
+        repos = subject.read.dig("software", "extraRepositories")
+        repo = repos.find { |r| r["url"] == "https://test.com" }
+        expect(repo["alias"]).to_not be_empty
       end
     end
   end
