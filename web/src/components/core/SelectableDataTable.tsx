@@ -31,6 +31,8 @@ import {
   Td,
   ExpandableRowContent,
   RowSelectVariant,
+  ThProps,
+  TdProps,
 } from "@patternfly/react-table";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -49,13 +51,58 @@ type SharedData = {
   rowIndex: number;
 };
 
+/**
+ * Defines a column configuration for a SelectableDataTable component.
+ *
+ * This type is used to describe how each column should be rendered, including
+ * its header, cell content, styling, and integration with its counterpart PatternFly
+ * components.
+ */
 export type SelectableDataTableColumn = {
-  /** The column header text */
+  /**
+   * The text to display in the column header.
+   *
+   * @example "Name", "Status", "Created At"
+   */
   name: string;
-  /** Function that gets a data item and returns what to display in the column */
+
+  /**
+   * A function that takes a data item and returns the content to display in the
+   * column's cell. This enables dynamic rendering based on the row data.
+   *
+   * @param item - The data object for the current row.
+   * @returns A React node representing the cell content.
+   *
+   * @example
+   * ```ts
+   * value: (item) => <strong>{item.name}</strong>
+   * ```
+   */
   value: (item: object) => React.ReactNode;
-  /** Space-separated list of additional CSS class names */
+
+  /**
+   * A space-separated string of additional CSS class names to apply to the column's cells.
+   * Useful for custom styling or conditional formatting.
+   *
+   * @example "text-right font-weight-bold"
+   */
   classNames?: string;
+
+  /**
+   * Additional props to pass to the PatternFly `<th>` element for this column.
+   *
+   * Refer to the PatternFly documentation for available properties:
+   * https://www.patternfly.org/components/table#th
+   */
+  pfThProps?: ThProps;
+
+  /**
+   * Additional props to pass to the PatternFly `<td>` element for this column's cells.
+   *
+   * Refer to the PatternFly documentation for available properties:
+   * https://www.patternfly.org/components/table#th
+   */
+  pfTdProps?: TdProps;
 };
 
 /**
