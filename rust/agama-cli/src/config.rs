@@ -152,6 +152,7 @@ async fn validate_client(
     client: &BaseHTTPClient,
     url_or_path: CliInput,
 ) -> anyhow::Result<ValidationOutcome> {
+    // unwrap OK: joining a parsable constant to a valid Url
     let mut url = client.base_url.join("profile/validate").unwrap();
     url_or_path.add_query(&mut url)?;
 
@@ -296,6 +297,7 @@ async fn from_json_or_jsonnet(
 /// Evaluate a Jsonnet profile, by doing a HTTP client request.
 /// Return well-formed Agama JSON on success.
 async fn evaluate_client(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<String> {
+    // unwrap OK: joining a parsable constant to a valid Url
     let mut url = client.base_url.join("profile/evaluate").unwrap();
     url_or_path.add_query(&mut url)?;
 
