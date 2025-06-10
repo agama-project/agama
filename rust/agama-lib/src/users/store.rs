@@ -50,33 +50,44 @@ impl UsersStore {
 
     pub async fn load(&self) -> UsersStoreResult<UserSettings> {
         let first_user = self.users_client.first_user().await?;
-        let user_password = UserPassword {
-            password: first_user.password,
-            hashed_password: first_user.hashed_password,
-        };
-        let first_user = FirstUserSettings {
-            user_name: Some(first_user.user_name),
-            full_name: Some(first_user.full_name),
-            password: if user_password.password.is_empty() {
+        let first_user = if first_user.user_name.is_empty() {
+            None
+        } else {
+            let user_password = if first_user.password.is_empty() {
                 None
             } else {
-                Some(user_password)
-            },
-        };
-        let root_user = self.users_client.root_user().await?;
-        let root_password = root_user.password.map(|password| UserPassword {
-            password,
-            hashed_password: root_user.hashed_password.unwrap_or_default(),
-        });
-        let root_user = RootUserSettings {
-            password: root_password,
-            ssh_public_key: root_user.ssh_public_key,
+                Some(UserPassword {
+                    password: first_user.password,
+                    hashed_password: first_user.hashed_password,
+                })
+            };
+
+            Some(FirstUserSettings {
+                user_name: Some(first_user.user_name),
+                full_name: Some(first_user.full_name),
+                password: user_password,
+            })
         };
 
-        Ok(UserSettings {
-            first_user: Some(first_user),
-            root: Some(root_user),
-        })
+        let root_user = self.users_client.root_user().await?;
+        let root_password = root_user
+            .password
+            .filter(|password| !password.is_empty())
+            .map(|password| UserPassword {
+                password,
+                hashed_password: root_user.hashed_password.unwrap_or_default(),
+            });
+        let ssh_public_key = root_user.ssh_public_key.filter(|key| !key.is_empty());
+        let root = if root_password.is_some() || ssh_public_key.is_some() {
+            Some(RootUserSettings {
+                password: root_password,
+                ssh_public_key,
+            })
+        } else {
+            None
+        };
+
+        Ok(UserSettings { first_user, root })
     }
 
     pub async fn store(&self, settings: &UserSettings) -> UsersStoreResult<()> {
