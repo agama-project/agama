@@ -29,9 +29,10 @@ import {
   CardBody,
   Content,
   EmptyState,
+  EmptyStateActions,
   EmptyStateBody,
+  EmptyStateFooter,
   ExpandableSection,
-  Flex,
   Grid,
   GridItem,
   Stack,
@@ -98,9 +99,54 @@ function usingTpm(config): boolean {
   return root?.encryption?.tpmFde !== undefined;
 }
 
-function InstallationFinished() {
-  const { phase, useIguana } = useInstallerStatus({ suspense: true });
+const Congratulations = ({ useIguana, onFinish }) => {
   const config = useConfig();
+
+  const finish = () => {
+    finishInstallation();
+    // TODO: Ensure WebSocket is disconnected. The system is initiating a
+    // shutdown (reboot/power-off), which will make the Agama server
+    // inaccessible.
+    onFinish();
+  };
+
+  return (
+    <EmptyState variant="xl" titleText={_("Congratulations!")} headingLevel="h1" icon={SuccessIcon}>
+      <EmptyStateBody>
+        <Content component="p">{_("The installation on your machine is complete.")}</Content>
+        <Content component="p">
+          {useIguana
+            ? _("At this point you can power off the machine.")
+            : _("At this point you can reboot the machine to log in to the new system.")}
+        </Content>
+        {usingTpm(config) && <TpmHint />}
+      </EmptyStateBody>
+      <EmptyStateFooter>
+        <EmptyStateActions>
+          <Button variant="primary" onClick={finish}>
+            {useIguana ? _("Finish") : _("Reboot")}
+          </Button>
+        </EmptyStateActions>
+      </EmptyStateFooter>
+    </EmptyState>
+  );
+};
+
+const InstallationOver = ({ useIguana }) => {
+  const title = useIguana ? _("Your system has powered off") : _("Your system has restarted");
+  return (
+    <EmptyState variant="xl" titleText={title} headingLevel="h1">
+      <EmptyStateBody>
+        <Content component="p">{_("You can close this page now.")}</Content>
+      </EmptyStateBody>
+    </EmptyState>
+  );
+};
+
+function InstallationFinished() {
+  const [systemAlive, setSystemAlive] = useState(true);
+  const { phase, useIguana } = useInstallerStatus({ suspense: true });
+  const setSystemDown = () => setSystemAlive(false);
 
   if (phase !== InstallationPhase.Finish) {
     return <Navigate to={PATHS.root} />;
@@ -112,37 +158,11 @@ function InstallationFinished() {
         <GridItem sm={8} smOffset={2}>
           <Card>
             <CardBody>
-              <Stack hasGutter>
-                <EmptyState
-                  variant="xl"
-                  titleText={_("Congratulations!")}
-                  headingLevel="h2"
-                  icon={SuccessIcon}
-                >
-                  <EmptyStateBody>
-                    <Flex
-                      direction={{ default: "column" }}
-                      rowGap={{ default: "rowGapMd" }}
-                      justifyContent={{ default: "justifyContentCenter" }}
-                    >
-                      <Content>{_("The installation on your machine is complete.")}</Content>
-                      <Content>
-                        {useIguana
-                          ? _("At this point you can power off the machine.")
-                          : _(
-                              "At this point you can reboot the machine to log in to the new system.",
-                            )}
-                      </Content>
-                      {usingTpm(config) && <TpmHint />}
-                    </Flex>
-                  </EmptyStateBody>
-                </EmptyState>
-                <Flex direction={{ default: "rowReverse" }}>
-                  <Button variant="primary" onClick={finishInstallation}>
-                    {useIguana ? _("Finish") : _("Reboot")}
-                  </Button>
-                </Flex>
-              </Stack>
+              {systemAlive ? (
+                <Congratulations useIguana={useIguana} onFinish={setSystemDown} />
+              ) : (
+                <InstallationOver useIguana={useIguana} />
+              )}
             </CardBody>
           </Card>
         </GridItem>

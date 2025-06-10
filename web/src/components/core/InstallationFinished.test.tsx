@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -119,6 +119,9 @@ describe("InstallationFinished", () => {
     const rebootButton = screen.getByRole("button", { name: "Reboot" });
     await user.click(rebootButton);
     expect(mockFinishInstallation).toHaveBeenCalled();
+    screen.getByText("Your system has restarted");
+    screen.getByText("You can close this page now.");
+    expect(screen.queryByRole("button", { name: "Reboot" })).toBeNull();
   });
 
   describe("when running storage config in raw mode", () => {
