@@ -106,6 +106,10 @@
     </method>
   </interface>
   <interface name="org.opensuse.Agama.Storage1.Devices">
+    <property type="ao" name="AvailableDrives" access="read"/>
+    <property type="ao" name="CandidateDrives" access="read"/>
+    <property type="ao" name="AvailableMdRaids" access="read"/>
+    <property type="ao" name="CandidateMdRaids" access="read"/>
     <property type="aa{sv}" name="Actions" access="read"/>
   </interface>
   <interface name="org.opensuse.Agama.Storage1.DASD.Manager">
@@ -153,7 +157,6 @@
       <arg name="settings_dbus" direction="in" type="a{sv}"/>
       <arg name="result" direction="out" type="u"/>
     </method>
-    <property type="ao" name="AvailableDevices" access="read"/>
     <property type="as" name="ProductMountPoints" access="read"/>
     <property type="as" name="EncryptionMethods" access="read"/>
   </interface>

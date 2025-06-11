@@ -146,19 +146,59 @@ module Agama
         # @return [Issue, nil]
         def reused_member_issue(device)
           member_config = find_config(device)
-          return unless member_config
+          return parent_reused_member_issue(device) unless member_config
 
-          formatted_reused_member_issue(member_config) ||
+          deleted_reused_member_issue(member_config) ||
+            resized_reused_member_issue(member_config) ||
+            formatted_reused_member_issue(member_config) ||
             partitioned_reused_member_issue(member_config) ||
             target_reused_member_issue(member_config)
         end
 
-        # Finds the config assigned to the given device.
+        # Issue if the device member is deleted.
         #
-        # @param device [Y2Storage::BlkDevice]
-        # @return [#search]
-        def find_config(device)
-          storage_config.supporting_search.find { |c| c.found_device == device }
+        # @param member_config [#search]
+        # @return [Issue, nil]
+        def deleted_reused_member_issue(member_config)
+          return unless storage_config.supporting_delete.include?(member_config)
+          return unless member_config.delete? || member_config.delete_if_needed?
+
+          error(
+            format(
+              _(
+                # TRANSLATORS: %{member} is replaced by a device name (e.g., "/dev/vda") and
+                #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
+                "The device '%{member}' cannot be deleted because it is part of the MD RAID " \
+                "%{md_raid}"
+              ),
+              member:  member_config.found_device.name,
+              md_raid: config.found_device.name
+            ),
+            kind: :reused_md_member
+          )
+        end
+
+        # Issue if the device member is resized.
+        #
+        # @param member_config [#search]
+        # @return [Issue, nil]
+        def resized_reused_member_issue(member_config)
+          return unless storage_config.supporting_size.include?(member_config)
+          return if member_config.size.default?
+
+          error(
+            format(
+              _(
+                # TRANSLATORS: %{member} is replaced by a device name (e.g., "/dev/vda") and
+                #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
+                "The device '%{member}' cannot be resized because it is part of the MD RAID " \
+                "%{md_raid}"
+              ),
+              member:  member_config.found_device.name,
+              md_raid: config.found_device.name
+            ),
+            kind: :reused_md_member
+          )
         end
 
         # Issue if the device member is formatted.
@@ -174,8 +214,8 @@ module Agama
               _(
                 # TRANSLATORS: %{member} is replaced by a device name (e.g., "/dev/vda") and
                 #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
-                "The device '%{member}' cannot be formatted because it is a device member of the " \
-                "reused MD RAID %{md_raid}"
+                "The device '%{member}' cannot be formatted because it is part of the MD RAID " \
+                "%{md_raid}"
               ),
               member:  member_config.found_device.name,
               md_raid: config.found_device.name
@@ -197,8 +237,8 @@ module Agama
               _(
                 # TRANSLATORS: %{member} is replaced by a device name (e.g., "/dev/vda") and
                 #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
-                "The device '%{member}' cannot be partitioned because it is a device member of " \
-                "the reused MD RAID %{md_raid}"
+                "The device '%{member}' cannot be partitioned because it is part of the MD RAID " \
+                "%{md_raid}"
               ),
               member:  member_config.found_device.name,
               md_raid: config.found_device.name
@@ -219,14 +259,47 @@ module Agama
               _(
                 # TRANSLATORS: %{member} is replaced by a device name (e.g., "/dev/vda") and
                 #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
-                "The device '%{member}' cannot be used because it is a device member of the " \
-                "reused MD RAID %{md_raid}"
+                "The device '%{member}' cannot be used because it is part of the MD RAID " \
+                "%{md_raid}"
               ),
               member:  member_config.found_device.name,
               md_raid: config.found_device.name
             ),
             kind: :reused_md_member
           )
+        end
+
+        # Issue if the parent of the device member is formatted.
+        #
+        # @param device [Y2Storage::BlkDevice]
+        # @return [Issue, nil]
+        def parent_reused_member_issue(device)
+          return false unless device.respond_to?(:partitionable)
+
+          parent_config = find_config(device.partitionable)
+          return unless parent_config&.filesystem
+
+          error(
+            format(
+              _(
+                # TRANSLATORS: %{device} is replaced by a device name (e.g., "/dev/vda") and
+                #   %{md_raid} is replaced by a MD RAID name (e.g., "/dev/md0").
+                "The device '%{device}' cannot be formatted because it is part of the MD RAID " \
+                "%{md_raid}"
+              ),
+              device:  parent_config.found_device.name,
+              md_raid: config.found_device.name
+            ),
+            kind: :reused_md_member
+          )
+        end
+
+        # Finds the config assigned to the given device.
+        #
+        # @param device [Y2Storage::BlkDevice]
+        # @return [#search]
+        def find_config(device)
+          storage_config.supporting_search.find { |c| c.found_device == device }
         end
 
         # Whether the given config has any user (direct user or as target).

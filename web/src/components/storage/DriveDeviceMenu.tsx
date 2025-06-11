@@ -25,7 +25,7 @@ import { Split, Flex, Label } from "@patternfly/react-core";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import MenuDeviceDescription from "./MenuDeviceDescription";
 import NewVgMenuOption from "./NewVgMenuOption";
-import { useAvailableDevices, useLongestDiskTitle } from "~/queries/storage";
+import { useAvailableDrives, useLongestDiskTitle } from "~/hooks/storage/system";
 import { useDrive, useModel } from "~/queries/storage/config-model";
 import { useDrive as useDriveModel } from "~/hooks/storage/drive";
 import * as driveUtils from "~/components/storage/utils/drive";
@@ -138,7 +138,7 @@ const DisksDrillDownMenuItem = ({
   /** @todo Replace the useDrive hook from /queries by the hook from /hooks. */
   const volumeGroups = useDriveModel(drive.name)?.getVolumeGroups() || [];
   const onlyOneOption = UseOnlyOneOption(drive);
-  const devices = useAvailableDevices();
+  const devices = useAvailableDrives();
   const driveModel = useDrive(drive.name);
   if (!driveModel) return;
 

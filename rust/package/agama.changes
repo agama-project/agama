@@ -1,4 +1,31 @@
 -------------------------------------------------------------------
+Tue Jun 10 13:33:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Expose the user and the root password when exporting the configuration
+  (bsc#1235602).
+- Do not export the "user" section unless a first user is defined.
+- Do not export the "root" section unless an authentication mechanism
+  is defined.
+
+-------------------------------------------------------------------
+Tue Jun 10 09:25:39 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- consistent CLI for unattended installation (gh#agama-project/agama#2347)
+  - `agama config generate | agama config load` replaces `agama profile import`
+  - `agama config generate` replaces `agama profile evaluate`
+    and `agama profile autoyast`
+  - `agama config validate` replaces `agama profile validate`, is also automatic
+  - More consistency in stdio handling, adding --output option
+
+-------------------------------------------------------------------
+Mon Jun  9 06:19:39 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Extend the HTTP API to get available/candidate drives and MD
+  RAIDs (gh#agama-project/agama#2419).
+- Improve storage schema to avoid wrong device base name
+  (bsc#1244049).
+
+-------------------------------------------------------------------
 Fri Jun  6 13:22:58 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Added support for moving the connections from memory only to disk

@@ -33,7 +33,6 @@ use std::{
 pub enum FileFormat {
     Json,
     Jsonnet,
-    Script,
     Unknown,
 }
 
@@ -50,8 +49,6 @@ impl FileFormat {
     pub fn from_string(content: &str) -> Self {
         if Self::is_json(content) {
             return Self::Json;
-        } else if Self::is_script(content) {
-            return Self::Script;
         } else if Self::is_jsonnet(content) {
             return Self::Jsonnet;
         }
@@ -93,18 +90,6 @@ impl FileFormat {
 
         child.wait().is_ok_and(|s| s.success())
     }
-
-    /// Whether is is a script.
-    ///
-    /// It returns `true` if the content starts with a shebang. However, it excludes the
-    /// case of a "jsonnet" script because it needs special handling: injecting the hardware
-    /// information and processing its output.
-    fn is_script(content: &str) -> bool {
-        let Some(first_line) = content.lines().next() else {
-            return false;
-        };
-        first_line.starts_with("#!") && !first_line.contains("jsonnet")
-    }
 }
 
 #[cfg(test)]
@@ -130,19 +115,6 @@ mod tests {
             print
         "#;
         assert_eq!(FileFormat::from_string(content), FileFormat::Jsonnet);
-    }
-
-    #[test]
-    fn test_script() {
-        let content = r#"#!/bin/bash
-            echo "Hello World"
-            "#;
-        assert_eq!(FileFormat::from_string(content), FileFormat::Script);
-
-        let content = r#"#!/usr/bin/python3
-            print
-            "#;
-        assert_eq!(FileFormat::from_string(content), FileFormat::Script);
     }
 
     #[test]

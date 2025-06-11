@@ -74,7 +74,7 @@ things, it allows downloading, validating and evaluating profiles. For instance,
 result of the previous profile by running the following command:
 
 ```
-$ sudo agama profile evaluate my-profile.jsonnet
+$ sudo agama config generate my-profile.jsonnet
 ```
 
 > [!WARNING]
@@ -83,14 +83,14 @@ $ sudo agama profile evaluate my-profile.jsonnet
 Do you want to check whether your profile is valid? `agama` have you covered.
 
 ```
-$ agama profile validate my-profile.json
+$ agama config validate my-profile.json
 ```
 
 Bear in mind that you
 can only validate JSON profiles (a Jsonnet profile must be evaluated first):
 
 ```
-$ sudo agama profile evaluate my-profile.jsonnet | agama profile validate -
+$ sudo agama config generate my-profile.jsonnet | agama config validate -
 ```
 
 ### Generating a configuration file
@@ -115,7 +115,7 @@ Below there is a minimal working example to install Tumbleweed:
 ```sh
 set -ex
 
-/usr/bin/agama profile import ftp://my.server/profile.json
+/usr/bin/agama config load ftp://my.server/profile.json
 /usr/bin/agama install
 ```
 
@@ -140,7 +140,7 @@ set -ex
 
 /usr/bin/agama download ftp://my.server/tricky_hardware_setup.sh > tricky_hardware_setup.sh
 sh tricky_hardware_setup.sh
-/usr/bin/agama profile import ftp://my.server/profile.json
+/usr/bin/agama config load ftp://my.server/profile.json
 /usr/bin/agama install
 ```
 
@@ -155,7 +155,7 @@ set -ex
 
 # modify profile.json here
 
-/usr/bin/agama profile import file:///root/profile.json
+/usr/bin/agama config load /root/profile.json
 /usr/bin/agama install
 ```
 
@@ -171,7 +171,7 @@ Agama and before installing RPMs, such as changing the fstab and mount an extra 
 ```sh
 set -ex
 
-/usr/bin/agama profile import http://my.server/profile.json
+/usr/bin/agama config load http://my.server/profile.json
 /usr/bin/agama install --until partitioning # install till the partitioning step
 
 # Place for specific changes to /dev
@@ -192,7 +192,7 @@ software for internal network, then it must be modified before umount.
 set -ex
 
 /usr/bin/agama download ftp://my.server/velociraptor.config
-/usr/bin/agama profile import http://my.server/profile.json
+/usr/bin/agama config load http://my.server/profile.json
 /usr/bin/agama install --until deploy # do partitioning, rpm installation and configuration step
 
 # Example of enabling velociraptor
@@ -215,7 +215,7 @@ some kernel tuning or adding some remote storage that needs to be mounted during
 ```sh
 set -ex
 
-/usr/bin/agama profile import http://my.server/profile.json
+/usr/bin/agama config load http://my.server/profile.json
 /usr/bin/agama install --until deploy # do partitioning, rpm installation and configuration step
 
 # Do custom modification of /mnt including call to dracut

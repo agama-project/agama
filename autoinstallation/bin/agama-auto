@@ -1,5 +1,6 @@
 #!/usr/bin/bash
 set -x
+set -o pipefail
 
 # Find the URL given by the user.
 find_user_url() {
@@ -18,11 +19,11 @@ import_profile() {
 
   if [ -n "$url" ]; then
     echo "Using the profile located at $url"
-    agama profile import "$url" && return 0
+    agama config generate "$url" | agama config load && return 0
   else
     urls=("label://OEMDRV/autoinst.jsonnet" "label://OEMDRV/autoinst.json" "label://OEMDRV/autoinst.xml" "file:///autoinst.jsonnet" "file:///autoinst.json" "file:///autoinst.xml")
     for url in "${urls[@]}"; do
-      YAST_SKIP_PROFILE_FETCH_ERROR=1 agama profile import "$url" && return 0
+      YAST_SKIP_PROFILE_FETCH_ERROR=1 agama config generate "$url" | agama config load && return 0
     done
   fi
 

@@ -200,9 +200,13 @@ let additionalDrives = true;
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
-  useAvailableDevices: () => [sda],
   useVolume: (mountPath: string): Volume =>
     [volume1, volume2, volume3].find((v) => v.mountPath === mountPath),
+}));
+
+jest.mock("~/hooks/storage/system", () => ({
+  ...jest.requireActual("~/hooks/storage/system"),
+  useAvailableDrives: () => [sda],
   useLongestDiskTitle: () => 20,
 }));
 
