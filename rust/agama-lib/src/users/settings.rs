@@ -142,7 +142,7 @@ impl From<RootUser> for RootUserSettings {
 
 #[cfg(test)]
 mod test {
-    use crate::users::{FirstUser, RootUser};
+    use crate::users::{settings::UserPassword, FirstUser, RootUser};
 
     use super::{FirstUserSettings, RootUserSettings};
 
@@ -201,5 +201,18 @@ mod test {
         };
         let settings: RootUserSettings = with_ssh_public_key.into();
         assert_eq!(settings.ssh_public_key, Some("ssh-rsa ...".to_string()));
+    }
+
+    #[test]
+    fn test_parse_user_password() {
+        let password_str = r#"{ "password": "$a$b123", "hashedPassword": true }"#;
+        let password: UserPassword = serde_json::from_str(&password_str).unwrap();
+        assert_eq!(&password.password, "$a$b123");
+        assert_eq!(password.hashed_password, true);
+
+        let password_str = r#"{ "password": "$a$b123" }"#;
+        let password: UserPassword = serde_json::from_str(&password_str).unwrap();
+        assert_eq!(&password.password, "$a$b123");
+        assert_eq!(password.hashed_password, false);
     }
 }
