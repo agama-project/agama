@@ -98,6 +98,7 @@ pub struct UserPassword {
     /// User password
     pub password: String,
     /// Whether the password is hashed or is plain text
+    #[serde(default)]
     pub hashed_password: bool,
 }
 
