@@ -22,28 +22,53 @@ apply_updates() {
       exit 1
     fi
     mkdir -p "$ROOT/$DUD_DIR/${file}_unpacked"
+
     echo "Unpacking ${file}"
     unpack_img "$ROOT/$DUD_DIR/$file" "$ROOT/$DUD_DIR/${file}_unpacked"
-    apply_update "$ROOT/$DUD_DIR/${file}_unpacked"
+
+    dud_root=$(echo $ROOT/$DUD_DIR/${file}_unpacked/linux/suse/$(uname -m)-*)
+    echo "Detected DUD root at ${dud_root}"
+
+    apply_update "$dud_root"
+    copy_packages "$dud_root"
   done </tmp/agamadud.info
 
-  for dud in $ROOT/$DUD_DIR/*; do
-    echo $dud
+  create_repo "$ROOT/$DUD_DIR/repo"
+}
+
+# Apply an update to the inst-sys
+apply_update() {
+  dud_dir=$1
+  echo "Apply inst-sys update from ${dud_dir}"
+
+  cp -av "${dud_dir}/inst-sys/"* $ROOT
+  # TODO: make sure it uses the links from the update.
+  $ROOT/usr/bin/chroot $ROOT update-alternatives --auto agamactl
+  $ROOT/usr/bin/chroot $ROOT update-alternatives --auto agama-autoyast
+}
+
+# Copy the packages to use during installation
+#
+# This function is mainly a PoC.
+#
+# This is a simplistic version that just copies all the RPMs to the new repository.
+# In the future, it might need to put each package under a different respository depending
+# on the distribution (e.g., "/run/agama/dud/repo/tw" for "x86_64-tw").
+copy_packages() {
+  dud_dir=$1
+  echo "Copy packages from ${dud_dir}"
+
+  for rpm in "${dud_dir}/install/*.rpm"; do
+    mkdir -p "$ROOT/$DUD_DIR/repo"
+    cp $rpm "$ROOT/$DUD_DIR/repo"
   done
 }
 
-apply_update() {
-  dud_dir=$1
-  echo "Apply update from ${dud_dir}"
+# Creates the repository metadata.
+create_repo() {
+  repo_dir=$1
 
-  dud_root=$(echo $dud_dir/linux/suse/$(uname -m)-*)
-  echo "Detected DUD root at ${dud_root}"
-
-  for rpm in "${dud_root}/install/*.rpm"; do
-    $ROOT/usr/bin/chroot $ROOT /usr/bin/rpm -Uvh --nodeps --force "${rpm#$ROOT}"
-  done
-
-  cp -av "${dud_root}/inst-sys/"* $ROOT
+  $ROOT/usr/bin/chroot $ROOT createrepo_c $repo_dir
 }
 
 apply_updates
