@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Jun 10 13:33:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Expose the user and the root password when exporting the configuration
+  (bsc#1235602).
+- Do not export the "user" section unless a first user is defined.
+- Do not export the "root" section unless an authentication mechanism
+  is defined.
+
+-------------------------------------------------------------------
 Tue Jun 10 09:25:39 UTC 2025 - Martin Vidner <mvidner@suse.com>
 
 - consistent CLI for unattended installation (gh#agama-project/agama#2347)
