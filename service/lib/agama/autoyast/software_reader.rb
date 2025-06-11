@@ -37,12 +37,16 @@ module Agama
       #
       # @return [Hash] Agama "software" section
       def read
-        return {} if profile["software"].nil?
-
         software = {}
 
-        software["patterns"] = profile["software"].fetch_as_array("patterns")
-        software["packages"] = profile["software"].fetch_as_array("packages")
+        if profile["software"]
+          software["patterns"] = profile["software"].fetch_as_array("patterns")
+          software["packages"] = profile["software"].fetch_as_array("packages")
+        end
+        if profile["add-on"]
+          repos = process_repos
+          software["extraRepositories"] = repos unless repos.empty?
+        end
         return {} if software.empty?
 
         { "software" => software }
@@ -51,6 +55,21 @@ module Agama
     private
 
       attr_reader :profile
+
+      def process_repos
+        repos = profile["add-on"].fetch_as_array("add_on_products") +
+          profile["add-on"].fetch_as_array("add_on_others")
+        repos.each_with_index.map do |repo, index|
+          res = {}
+          res["url"] = repo["media_url"]
+          # alias is mandatory to craft one if needed
+          res["alias"] = repo["alias"] || "autoyast_#{index}"
+          res["priority"] = repo["priority"] if repo["priority"]
+          res["name"] = repo["name"] if repo["name"]
+          res["productDir"] = repo["product_dir"] if repo["product_dir"]
+          res
+        end
+      end
     end
   end
 end

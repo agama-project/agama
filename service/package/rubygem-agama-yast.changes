@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 10 12:08:44 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- AutoYaST support: add support for add-on elements
+  (gh#agama-project/agama#2458)
+
+-------------------------------------------------------------------
 Mon Jun  9 06:12:23 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Extend the D-Bus API to get available/candidate drives and MD

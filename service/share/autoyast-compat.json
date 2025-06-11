@@ -1,5 +1,35 @@
 [
-  { "key": "add-on", "support": "planned" },
+  {
+    "key": "add-on",
+    "children": [
+      {
+        "key": "add_on_products",
+        "children": [
+          { "key": "media_url", "support": "yes", "agama": "url" },
+          { "key": "product_dir", "support": "yes", "agama": "productDir" },
+          { "key": "product", "support": "no" },
+          { "key": "alias", "support": "yes" },
+          { "key": "priority", "support": "yes" },
+          { "key": "ask_on_error", "support": "no" },
+          { "key": "confirm_license", "support": "no" },
+          { "key": "name", "support": "yes" }
+        ]
+      },
+      {
+        "key": "add_on_others",
+        "children": [
+          { "key": "media_url", "support": "yes", "agama": "url" },
+          { "key": "product_dir", "support": "yes", "agama": "productDir" },
+          { "key": "product", "support": "no" },
+          { "key": "alias", "support": "yes" },
+          { "key": "priority", "support": "yes" },
+          { "key": "ask_on_error", "support": "no" },
+          { "key": "confirm_license", "support": "no" },
+          { "key": "name", "support": "yes" }
+        ]
+      }
+    ]
+  },
   { "key": "audit-laf", "support": "no" },
   { "key": "auth-client", "support": "no" },
   {
