@@ -1,8 +1,8 @@
 -------------------------------------------------------------------
 Tue Jun 10 16:51:15 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
-- Improve post-installation user experience by adding a feedback
-  message that confirms system restart/power-off (bsc#1237410,
+- Improve post-installation user experience by providing feedback
+  that confirms the system restart (bsc#1237410,
   gh#agama-project/agama#2462).
 
 -------------------------------------------------------------------
