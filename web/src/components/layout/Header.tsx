@@ -106,6 +106,7 @@ export default function Header({
   showSidebarToggle = true,
   showProductName = true,
   showSkipToContent = true,
+  showInstallerOptions = true,
   toggleIssuesDrawer,
   isSidebarOpen,
   toggleSidebar,
@@ -149,9 +150,11 @@ export default function Header({
               <ToolbarItem>
                 <InstallButton onClickWithIssues={toggleIssuesDrawer} />
               </ToolbarItem>
-              <ToolbarItem>
-                <OptionsDropdown />
-              </ToolbarItem>
+              {showInstallerOptions && (
+                <ToolbarItem>
+                  <OptionsDropdown />
+                </ToolbarItem>
+              )}
             </ToolbarGroup>
           </ToolbarContent>
         </Toolbar>
