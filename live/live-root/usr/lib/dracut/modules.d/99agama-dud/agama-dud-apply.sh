@@ -30,10 +30,10 @@ apply_updates() {
     echo "Detected DUD root at ${dud_root}"
 
     apply_update "$dud_root"
-    copy_packages "$dud_root"
+    copy_packages "$dud_root" "$ROOT/var/lib/agama/repo"
   done </tmp/agamadud.info
 
-  create_repo "$ROOT/$DUD_DIR/repo"
+  create_repo "$ROOT/var/lib/agama/repo"
 }
 
 # Apply an update to the inst-sys
@@ -70,11 +70,12 @@ set_alternative() {
 # on the distribution (e.g., "/run/agama/dud/repo/tw" for "x86_64-tw").
 copy_packages() {
   dud_dir=$1
-  echo "Copy packages from ${dud_dir}"
+  repo_dir=$2
+  echo "Copy packages from ${dud_dir} to ${repo_dir}"
 
   for rpm in "${dud_dir}/install/*.rpm"; do
-    mkdir -p "$ROOT/$DUD_DIR/repo"
-    cp $rpm "$ROOT/$DUD_DIR/repo"
+    mkdir -p "${repo_dir}"
+    cp $rpm "${repo_dir}"
   done
 }
 
