@@ -68,7 +68,7 @@ copy_packages() {
 create_repo() {
   repo_dir=$1
 
-  $ROOT/usr/bin/chroot $ROOT createrepo_c $repo_dir
+  $ROOT/usr/bin/chroot $ROOT createrepo_c ${repo_dir##$ROOT}
 }
 
 apply_updates
