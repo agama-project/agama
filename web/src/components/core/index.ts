@@ -26,6 +26,7 @@ export { default as FormValidationError } from "./FormValidationError";
 export { default as EmailInput } from "./EmailInput";
 export { default as InstallationFinished } from "./InstallationFinished";
 export { default as InstallationProgress } from "./InstallationProgress";
+export { default as InstallationExit } from "./InstallationExit";
 export { default as InstallButton } from "./InstallButton";
 export { default as IssuesAlert } from "./IssuesAlert";
 export { default as ListSearch } from "./ListSearch";

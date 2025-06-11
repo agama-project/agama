@@ -25,7 +25,12 @@ import { createHashRouter, Outlet } from "react-router-dom";
 import App from "~/App";
 import Protected from "~/Protected";
 import { FullLayout, PlainLayout } from "~/components/layout";
-import { InstallationFinished, InstallationProgress, LoginPage } from "~/components/core";
+import {
+  InstallationExit,
+  InstallationFinished,
+  InstallationProgress,
+  LoginPage,
+} from "~/components/core";
 import { OverviewPage } from "~/components/overview";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/routes/network";
@@ -92,6 +97,19 @@ const protectedRoutes = () => [
       {
         path: PATHS.installationFinished,
         element: <InstallationFinished />,
+      },
+    ],
+  },
+  {
+    element: (
+      <PlainLayout mountHeader={false} mountSkipToContent={false}>
+        <Outlet />
+      </PlainLayout>
+    ),
+    children: [
+      {
+        path: PATHS.installationExit,
+        element: <InstallationExit />,
       },
     ],
   },
