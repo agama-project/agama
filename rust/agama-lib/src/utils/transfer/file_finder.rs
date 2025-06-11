@@ -63,7 +63,7 @@ impl FileFinder {
         file_name: &str,
         writer: &mut impl Write,
     ) -> TransferResult<()> {
-        println!("Searching {} in {}", &file_name, &file_system.block_device);
+        eprintln!("Searching {} in {}", &file_name, &file_system.block_device);
 
         file_system.ensure_mounted(|mount_point: &PathBuf| {
             let file_name = file_name.strip_prefix("/").unwrap_or(file_name);

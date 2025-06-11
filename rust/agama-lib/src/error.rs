@@ -73,7 +73,7 @@ pub enum ProfileError {
     EvaluationError(String),
     #[error("I/O error")]
     InputOutputError(#[from] io::Error),
-    #[error("The profile is not a valid JSON file")]
+    #[error("The profile is not a well-formed JSON file")]
     FormatError(#[from] serde_json::Error),
     // `#` is std::fmt "Alternate form", anyhow::Error interprets as "include causes"
     #[error("Error: {0:#}")]
