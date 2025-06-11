@@ -23,7 +23,6 @@ use std::path::PathBuf;
 use crate::auth::AuthCommands;
 use crate::config::ConfigCommands;
 use crate::logs::LogsCommands;
-use crate::profile::ProfileCommands;
 use crate::questions::QuestionsCommands;
 use crate::FinishMethod;
 use clap::Subcommand;
@@ -59,10 +58,6 @@ pub enum Commands {
     /// making no changes to the system.
     Install,
 
-    /// Manage auto-installation profiles (retrieving, applying, etc.).
-    #[command(subcommand)]
-    Profile(ProfileCommands),
-
     /// Handle installer questions.
     ///
     /// Agama might require user intervention at any time. The reasons include providing some
@@ -97,13 +92,12 @@ pub enum Commands {
     #[command(subcommand)]
     Auth(AuthCommands),
 
-    /// Download file from given URL
+    /// Download file from a given (AutoYaST) URL
     ///
     /// The purpose of this command is to download files using AutoYaST supported schemas (e.g. device://).
     /// It can be used to download additional scripts, configuration files and so on.
-    /// You can use it for downloading Agama autoinstallation profiles. However, unless you need additional processing,
-    /// the "agama profile import" is recommended.
-    /// If you want to convert an AutoYaST profile, use "agama profile autoyast".
+    /// You can use it for downloading Agama autoinstallation profiles.
+    /// If you want to convert an AutoYaST profile, use "agama config generate".
     Download {
         /// URL reference pointing to file for download. If a relative URL is
         /// provided, it will be resolved against the current working directory.
