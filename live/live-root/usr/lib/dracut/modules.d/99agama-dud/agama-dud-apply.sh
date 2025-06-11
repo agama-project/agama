@@ -41,10 +41,24 @@ apply_update() {
   dud_dir=$1
   echo "Apply inst-sys update from ${dud_dir}"
 
-  cp -av "${dud_dir}/inst-sys/"* $ROOT
-  # TODO: make sure it uses the links from the update.
-  $ROOT/usr/bin/chroot $ROOT update-alternatives --auto agamactl
-  $ROOT/usr/bin/chroot $ROOT update-alternatives --auto agama-autoyast
+  cp -a "${dud_dir}/inst-sys/"* $ROOT
+
+  dud_instsys="${dud_dir}/inst-sys"
+
+  set_alternative $dud_instsys "agama-autoyast"
+  set_alternative $dud_instsys "agamactl"
+  set_alternative $dud_instsys "agama-proxy-setup"
+}
+
+# Sets the alternative links.
+set_alternative() {
+  dud_instsys=$1
+  name=$2
+
+  executables=("$dud_instsys/usr/bin/${name}.ruby"*-*)
+  executable=${executables[0]}
+  $ROOT/usr/bin/chroot $ROOT /usr/sbin/update-alternatives --install /usr/bin/$name $name ${executable##$dud_instsys} 250000
+  $ROOT/usr/bin/chroot $ROOT /usr/sbin/update-alternatives --set $name ${executable##$dud_instsys}
 }
 
 # Copy the packages to use during installation
