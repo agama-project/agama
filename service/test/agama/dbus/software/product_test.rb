@@ -130,7 +130,6 @@ describe Agama::DBus::Software::Product do
     end
   end
 
-
   describe "#reg_code" do
     before do
       allow(backend.registration).to receive(:reg_code).and_return(reg_code)
