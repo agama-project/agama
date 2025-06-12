@@ -353,7 +353,6 @@
   },
   {
     "key": "services-manager",
-    "support": "yes",
     "notes": "Automatically converted into post-installation script",
     "children": [
       {
@@ -362,31 +361,28 @@
       },
       {
         "key": "enable",
-        "support": "yes",
         "children": [
           {
             "key": "service",
-	    "support": "yes"
+	          "support": "yes"
           }
         ]
       },
       {
         "key": "disable",
-        "support": "yes",
         "children": [
           {
             "key": "service",
-	    "support": "yes"
+	          "support": "yes"
           }
         ]
       },
       {
         "key": "on_demand",
-        "support": "yes",
         "children": [
           {
             "key": "service",
-	    "support": "yes"
+	          "support": "yes"
           }
         ]
       }
