@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun 12 14:59:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use "localectl" instead of "setxkbmap" to change the keymap
+  (gh#agama-project/agama#2470).
+
+-------------------------------------------------------------------
 Wed Jun 11 13:12:12 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Consider `hashedPassword` as `false` when it is not specified
