@@ -179,7 +179,7 @@ impl L10n {
             .map_err(LocaleError::Commit)?;
         let output = String::from_utf8_lossy(&output.stdout);
 
-        let keymap_regexp = Regex::new(r"(?m)VC Kayout: (.+)$").unwrap();
+        let keymap_regexp = Regex::new(r"(?m)VC Keymap: (.+)$").unwrap();
         let captures = keymap_regexp.captures(&output);
         let keymap = captures
             .and_then(|c| c.get(1).map(|e| e.as_str()))
