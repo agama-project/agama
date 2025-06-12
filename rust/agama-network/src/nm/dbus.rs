@@ -109,8 +109,9 @@ pub fn connection_to_dbus<'a>(
         let ethernet_config = HashMap::from([
             (
                 "assigned-mac-address",
-                Value::new(conn.mac_address.to_string()),
+                Value::new(conn.custom_mac_address.to_string()),
             ),
+            ("mac-address", Value::new(conn.mac_address.to_string())),
             ("mtu", Value::new(conn.mtu)),
         ]);
         result.insert(ETHERNET_KEY, ethernet_config);
@@ -125,8 +126,9 @@ pub fn connection_to_dbus<'a>(
                     ("mtu", Value::new(conn.mtu)),
                     (
                         "assigned-mac-address",
-                        Value::new(conn.mac_address.to_string()),
+                        Value::new(conn.custom_mac_address.to_string()),
                     ),
+                    ("mac-address", Value::new(conn.mac_address.to_string())),
                 ]));
             }
 
@@ -811,9 +813,11 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Result<Connection, NmErr
 
     if let Some(ethernet_config) = conn.get(ETHERNET_KEY) {
         base_connection.mac_address = mac_address_from_dbus(ethernet_config)?;
+        base_connection.custom_mac_address = custom_mac_address_from_dbus(ethernet_config)?;
         base_connection.mtu = mtu_from_dbus(ethernet_config);
     } else if let Some(wireless_config) = conn.get(WIRELESS_KEY) {
         base_connection.mac_address = mac_address_from_dbus(wireless_config)?;
+        base_connection.custom_mac_address = custom_mac_address_from_dbus(wireless_config)?;
         base_connection.mtu = mtu_from_dbus(wireless_config);
     }
 
@@ -822,8 +826,18 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Result<Connection, NmErr
     Ok(base_connection)
 }
 
-fn mac_address_from_dbus(config: &HashMap<String, OwnedValue>) -> Result<MacAddress, NmError> {
+fn custom_mac_address_from_dbus(
+    config: &HashMap<String, OwnedValue>,
+) -> Result<MacAddress, NmError> {
     let Ok(mac_address) = get_property::<String>(config, "assigned-mac-address") else {
+        return Ok(MacAddress::Unset);
+    };
+
+    Ok(MacAddress::from_str(mac_address.as_str())?)
+}
+
+fn mac_address_from_dbus(config: &HashMap<String, OwnedValue>) -> Result<MacAddress, NmError> {
+    let Ok(mac_address) = get_property::<String>(config, "mac-address") else {
         return Ok(MacAddress::Unset);
     };
 
@@ -1586,7 +1600,7 @@ mod test {
         let wireless_section = HashMap::from([
             hi("mode", "infrastructure")?,
             hi("ssid", "agama".as_bytes())?,
-            hi("assigned-mac-address", "13:45:67:89:AB:CD")?,
+            hi("mac-address", "13:45:67:89:AB:CD")?,
             hi("band", "a")?,
             hi("channel", 32_u32)?,
             hi("bssid", vec![18_u8, 52_u8, 86_u8, 120_u8, 154_u8, 188_u8])?,

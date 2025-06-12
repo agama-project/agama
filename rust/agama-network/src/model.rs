@@ -511,6 +511,8 @@ pub struct Connection {
     pub uuid: Uuid,
     #[serde_as(as = "DisplayFromStr")]
     pub mac_address: MacAddress,
+    #[serde_as(as = "DisplayFromStr")]
+    pub custom_mac_address: MacAddress,
     pub firewall_zone: Option<String>,
     pub mtu: u32,
     pub ip_config: IpConfig,
@@ -594,6 +596,7 @@ impl Default for Connection {
             id: Default::default(),
             uuid: Uuid::new_v4(),
             mac_address: Default::default(),
+            custom_mac_address: Default::default(),
             firewall_zone: Default::default(),
             mtu: Default::default(),
             ip_config: Default::default(),
@@ -681,9 +684,11 @@ impl TryFrom<Connection> for NetworkConnection {
     fn try_from(conn: Connection) -> Result<Self, Self::Error> {
         let id = conn.clone().id;
         let mac = conn.mac_address.to_string();
+        let custom_mac = conn.custom_mac_address.to_string();
         let method4 = Some(conn.ip_config.method4.to_string());
         let method6 = Some(conn.ip_config.method6.to_string());
         let mac_address = (!mac.is_empty()).then_some(mac);
+        let custom_mac_address = (!custom_mac.is_empty()).then_some(custom_mac);
         let nameservers = conn.ip_config.nameservers;
         let dns_searchlist = conn.ip_config.dns_searchlist;
         let ignore_auto_dns = Some(conn.ip_config.ignore_auto_dns);
@@ -709,6 +714,7 @@ impl TryFrom<Connection> for NetworkConnection {
             nameservers,
             dns_searchlist,
             ignore_auto_dns,
+            custom_mac_address,
             mac_address,
             interface,
             addresses,
