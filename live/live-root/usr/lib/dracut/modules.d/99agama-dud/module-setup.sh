@@ -19,5 +19,7 @@ installkernel() {
 # called by dracut
 install() {
   inst_hook cmdline 99 "$moddir/agama-dud-parser.sh"
+  # Fetch and apply the updates in the pre-pivot hook in order to use some binaries and scripts
+  # from the installer img using a chroot (also from the image itself).
   inst_hook pre-pivot 99 "$moddir/agama-dud-apply.sh"
 }
