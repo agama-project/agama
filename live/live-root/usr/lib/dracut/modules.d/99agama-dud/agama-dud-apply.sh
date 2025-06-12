@@ -29,7 +29,7 @@ apply_updates() {
     echo "Fetching a Driver Update Disk from $dud_url to ${file}"
     if ! $AGAMA_CLI download "$dud_url" "${file}"; then
       warn "Failed to fetch the Driver Update Disk"
-      exit 1
+      continue
     fi
 
     # The $dir could be a temporary one created by each function.
