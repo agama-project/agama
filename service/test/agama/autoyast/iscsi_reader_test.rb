@@ -115,5 +115,39 @@ describe Agama::AutoYaST::IscsiReader do
         })
       end
     end
+
+    context "when the portal of a target does not indicate a port" do
+      let(:profile) do
+        Yast::ProfileHash.new({
+          "iscsi-client" => {
+            "targets" => [
+              {
+                "portal"  => "192.168.100.101",
+                "target"  => "iqn.2025-06.com.test:0a5b93b9a9a79ff5db53",
+                "iface"   => "default",
+                "startup" => "onboot"
+              }
+            ]
+          }
+        })
+      end
+
+      it "generates a target config with port 0" do
+        config = subject.read
+        expect(config).to eq({
+          "iscsi" => {
+            "targets" => [
+              {
+                "address"   => "192.168.100.101",
+                "port"      => 0,
+                "name"      => "iqn.2025-06.com.test:0a5b93b9a9a79ff5db53",
+                "interface" => "default",
+                "startup"   => "onboot"
+              }
+            ]
+          }
+        })
+      end
+    end
   end
 end
