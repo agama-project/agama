@@ -22,6 +22,7 @@
 require "agama/autoyast/bootloader_reader"
 require "agama/autoyast/files_reader"
 require "agama/autoyast/hostname_reader"
+require "agama/autoyast/iscsi_reader"
 require "agama/autoyast/localization_reader"
 require "agama/autoyast/network_reader"
 require "agama/autoyast/product_reader"
@@ -50,6 +51,7 @@ module Agama
           BootloaderReader.new(profile).read,
           FilesReader.new(profile).read,
           HostnameReader.new(profile).read,
+          IscsiReader.new(profile).read,
           LocalizationReader.new(profile).read,
           NetworkReader.new(profile).read,
           ProductReader.new(profile).read,

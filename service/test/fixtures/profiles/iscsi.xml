@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE profile>
+<profile xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+  <iscsi-client>
+    <initiatorname>iqn.2013-02.de.suse:01:e229358d2dea</initiatorname>
+    <targets config:type="list">
+      <listentry>
+         <authmethod>None</authmethod>
+         <portal>192.168.1.1:3260</portal>
+         <startup>onboot</startup>
+         <target>iqn.2001-05.com.doe:test</target>
+         <iface>default</iface>
+      </listentry>
+    </targets>
+    <version>1.0</version>
+  </iscsi-client>
+</profile>
