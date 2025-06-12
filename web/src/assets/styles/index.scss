@@ -16,8 +16,15 @@
 }
 
 @font-face {
-  font-family: "Noto Sans SC";
+  font-family: "Noto Sans";
   font-weight: 400;
+  font-style: normal;
+  src: local(""), url("./fonts/NotoSans-VariableFont_wdth_wght.ttf");
+}
+
+@font-face {
+  font-family: "Noto Sans SC Display";
+  font-weight: 600;
   font-style: normal;
   src: local(""), url("./fonts/NotoSansSC-VariableFont_wght.ttf");
 }
@@ -117,17 +124,37 @@
   --pf-t--global--color--brand--clicked: var(--agm-t--color--pine);
 }
 
-:root[lang="zh"] {
+/*
+ * Use Noto font family for Cyrillic languages of countries with larger
+ * populations based on data from
+ * https://worldpopulationreview.com/country-rankings/countries-that-use-cyrillic
+ */
+:lang(ru), /* Russian */
+:lang(uk), /* Ukrainian */
+:lang(kk), /* Kazakh */
+:lang(tg), /* Tajik */
+:lang(be), /* Belarusian */
+:lang(bg), /* Bulgarian */
+:lang(sr-Cyrl) {
+  /* Serbian (Cyrillic) */
+  --pf-t--global--font--family--100: "Noto Sans", sans-serif;
+  --pf-t--global--font--family--200: "Noto Sans", sans-serif;
+}
+
+/* Chinese (Simplified) */
+:lang(zh) {
   --pf-t--global--font--family--100: "Noto Sans SC";
   --pf-t--global--font--family--200: "Noto Sans SC Display", "Noto Sans SC", serif;
 }
 
-:root[lang="ja"] {
+/* Japanese */
+:lang(ja) {
   --pf-t--global--font--family--100: "Noto Sans JP", serif;
   --pf-t--global--font--family--200: "Noto Sans JP Display", "Noto Sans JP", serif;
 }
 
-:root[lang="ko"] {
+/* Korean */
+:lang(ko) {
   --pf-t--global--font--family--100: "Noto Sans KR", serif;
   --pf-t--global--font--family--200: "Noto Sans KR Display", "Noto Sans KR", serif;
 }
