@@ -32,6 +32,6 @@ pub enum LocaleError {
     UnknownKeymap(KeymapId),
     #[error("Invalid keymap: {0}")]
     InvalidKeymap(#[from] InvalidKeymap),
-    #[error("Could not apply the changes")]
+    #[error("Could not apply the l10n settings: {0}")]
     Commit(#[from] std::io::Error),
 }
