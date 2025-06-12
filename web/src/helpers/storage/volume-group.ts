@@ -21,7 +21,7 @@
  */
 
 import { apiModel } from "~/api/storage/types";
-import { deleteIfUnused } from "~/helpers/storage/drive";
+import { deleteIfUnused } from "~/helpers/storage/search";
 import {
   copyApiModel,
   partitionables,
@@ -106,7 +106,6 @@ function editVolumeGroup(
 
   apiModel.volumeGroups.splice(index, 1, newVolumeGroup);
   (oldVolumeGroup.targetDevices || []).forEach((d) => {
-    // deleteIfUnused only affects drives, which is good at this moment
     apiModel = deleteIfUnused(apiModel, d);
   });
 
@@ -146,12 +145,11 @@ function deleteVolumeGroup(apiModel: apiModel.Config, vgName: string): apiModel.
 
   let deletedApiModel = copyApiModel(apiModel);
   targetDevices.forEach((d) => {
-    // deleteIfUnused only affects drives, which is good at this moment
     deletedApiModel = deleteIfUnused(deletedApiModel, d);
   });
 
   // Do not delete the underlying drives if that results in an empty configuration
-  return deletedApiModel.drives.length ? deletedApiModel : apiModel;
+  return partitionables(deletedApiModel).length ? deletedApiModel : apiModel;
 }
 
 export {

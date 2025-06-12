@@ -21,46 +21,39 @@
  */
 
 import { useApiModel, useUpdateApiModel } from "~/hooks/storage/api-model";
-import { addDrive, deleteDrive, switchToDrive } from "~/helpers/storage/drive";
+import { addReusedMdRaid, deleteMdRaid, switchToMdRaid } from "~/helpers/storage/md-raid";
 import { QueryHookOptions } from "~/types/queries";
-import { model, data } from "~/types/storage";
-import { useModel } from "~/hooks/storage/model";
+import { data } from "~/types/storage";
 
-function useDrive(name: string, options?: QueryHookOptions): model.Drive | null {
-  const model = useModel(options);
-  const drive = model?.drives?.find((d) => d.name === name);
-  return drive || null;
-}
+type AddReusedMdRaidFn = (data: data.MdRaid) => void;
 
-type AddDriveFn = (data: data.Drive) => void;
-
-function useAddDrive(options?: QueryHookOptions): AddDriveFn {
+function useAddReusedMdRaid(options?: QueryHookOptions): AddReusedMdRaidFn {
   const apiModel = useApiModel(options);
   const updateApiModel = useUpdateApiModel();
-  return (data: data.Drive) => {
-    updateApiModel(addDrive(apiModel, data));
+  return (data: data.MdRaid) => {
+    updateApiModel(addReusedMdRaid(apiModel, data));
   };
 }
 
-type DeleteDriveFn = (name: string) => void;
+type DeleteMdRaidFn = (name: string) => void;
 
-function useDeleteDrive(options?: QueryHookOptions): DeleteDriveFn {
+function useDeleteMdRaid(options?: QueryHookOptions): DeleteMdRaidFn {
   const apiModel = useApiModel(options);
   const updateApiModel = useUpdateApiModel();
   return (name: string) => {
-    updateApiModel(deleteDrive(apiModel, name));
+    updateApiModel(deleteMdRaid(apiModel, name));
   };
 }
 
-type SwitchToDriveFn = (oldName: string, drive: data.Drive) => void;
+type SwitchToMdRaidFn = (oldName: string, raid: data.MdRaid) => void;
 
-function useSwitchToDrive(options?: QueryHookOptions): SwitchToDriveFn {
+function useSwitchToMdRaid(options?: QueryHookOptions): SwitchToMdRaidFn {
   const apiModel = useApiModel(options);
   const updateApiModel = useUpdateApiModel();
-  return (oldName: string, drive: data.Drive) => {
-    updateApiModel(switchToDrive(apiModel, oldName, drive));
+  return (oldName: string, raid: data.MdRaid) => {
+    updateApiModel(switchToMdRaid(apiModel, oldName, raid));
   };
 }
 
-export { useDrive, useAddDrive, useDeleteDrive, useSwitchToDrive };
-export type { AddDriveFn, DeleteDriveFn, SwitchToDriveFn };
+export { useAddReusedMdRaid, useDeleteMdRaid, useSwitchToMdRaid };
+export type { AddReusedMdRaidFn, DeleteMdRaidFn, SwitchToMdRaidFn };

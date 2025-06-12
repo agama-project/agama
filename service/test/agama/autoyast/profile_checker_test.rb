@@ -36,12 +36,12 @@ describe Agama::AutoYaST::ProfileChecker do
 
     context "when an unsupported section is included" do
       let(:profile) do
-        { "iscsi-client" => {} }
+        { "auth-client" => {} }
       end
 
       it "returns an array with the unsupported element" do
         expect(subject.find_unsupported(profile)).to contain_exactly(
-          an_object_having_attributes(key: "iscsi-client")
+          an_object_having_attributes(key: "auth-client")
         )
       end
     end

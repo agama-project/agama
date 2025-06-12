@@ -67,23 +67,29 @@ const vdbDrive: apiModel.Drive = {
   partitions: [],
 };
 
-const mockUseConfigModelFn = jest.fn();
-const mockAddDriveFn = jest.fn();
+const mockAddDrive = jest.fn();
+const mockUseModel = jest.fn();
 
 jest.mock("~/hooks/storage/system", () => ({
   ...jest.requireActual("~/hooks/storage/system"),
-  useAvailableDrives: () => [vda, vdb],
+  useCandidateDevices: () => [vda, vdb],
   useLongestDiskTitle: () => 20,
 }));
 
-jest.mock("~/queries/storage/config-model", () => ({
-  useModel: () => ({ addDrive: mockAddDriveFn }),
-  useConfigModel: () => mockUseConfigModelFn(),
+jest.mock("~/hooks/storage/model", () => ({
+  ...jest.requireActual("~/hooks/storage/model"),
+  useModel: () => mockUseModel(),
+}));
+
+jest.mock("~/hooks/storage/drive", () => ({
+  ...jest.requireActual("~/hooks/storage/drive"),
+  __esModule: true,
+  useAddDrive: () => mockAddDrive,
 }));
 
 describe("ConfigureDeviceMenu", () => {
   beforeEach(() => {
-    mockUseConfigModelFn.mockReturnValue({ drives: [] });
+    mockUseModel.mockReturnValue({ drives: [], mdRaids: [] });
   });
 
   it("renders an initially closed menu ", async () => {
@@ -114,13 +120,13 @@ describe("ConfigureDeviceMenu", () => {
         await user.click(disksMenuItem);
         const vdaItem = screen.getByRole("menuitem", { name: /vda/ });
         await user.click(vdaItem);
-        expect(mockAddDriveFn).toHaveBeenCalled();
+        expect(mockAddDrive).toHaveBeenCalled();
       });
     });
 
     describe("but some disks are already configured", () => {
       beforeEach(() => {
-        mockUseConfigModelFn.mockReturnValue({ drives: [vdaDrive] });
+        mockUseModel.mockReturnValue({ drives: [vdaDrive], mdRaids: [] });
       });
 
       it("allows users to add a new drive to an unused disk", async () => {
@@ -132,14 +138,14 @@ describe("ConfigureDeviceMenu", () => {
         expect(screen.queryByRole("menuitem", { name: /vda/ })).toBeNull();
         const vdbItem = screen.getByRole("menuitem", { name: /vdb/ });
         await user.click(vdbItem);
-        expect(mockAddDriveFn).toHaveBeenCalled();
+        expect(mockAddDrive).toHaveBeenCalled();
       });
     });
   });
 
   describe("when there are no more unused disks", () => {
     beforeEach(() => {
-      mockUseConfigModelFn.mockReturnValue({ drives: [vdaDrive, vdbDrive] });
+      mockUseModel.mockReturnValue({ drives: [vdaDrive, vdbDrive], mdRaids: [] });
     });
 
     it("renders the disks menu as disabled with an informative label", async () => {
