@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jun 12 15:39:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix error messages formatting (gh#agama-project/agama#2471).
+
+-------------------------------------------------------------------
 Wed Jun 11 13:12:12 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Consider `hashedPassword` as `false` when it is not specified
