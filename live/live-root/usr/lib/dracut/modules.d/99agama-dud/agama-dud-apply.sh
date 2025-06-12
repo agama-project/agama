@@ -25,24 +25,24 @@ apply_updates() {
   index=0
 
   while read -r dud_url; do
-    mkdir -p "$ROOT/$DUD_DIR"
+    mkdir -p "$DUD_DIR"
     file=${dud_url##*/}
     # FIXME: use an index because two updates, coming from different places, can have the same name.
     echo "Fetching a Driver Update Disk from $dud_url to $file"
-    if ! $AGAMA_CLI download "$dud_url" "$ROOT/$DUD_DIR/$file"; then
+    if ! $AGAMA_CLI download "$dud_url" "$DUD_DIR/$file"; then
       warn "Failed to fetch the Driver Update Disk"
       exit 1
     fi
-    mkdir -p "$ROOT/$DUD_DIR/${file}_unpacked"
 
-    dir="$ROOT/$DUD_DIR/dud_$(printf "%02d" $index)"
+    dir="$DUD_DIR/dud_$(printf "%03d" $index)"
+    mkdir -p "$dir"
     echo "Unpacking ${file} to ${dir}"
-    unpack_img "$ROOT/$DUD_DIR/$file" "$dir"
+    unpack_img "$DUD_DIR/$file" "$dir"
     ((index++))
 
     # FIXME: do not ignore the dist (e.g., "tw" in "x86_64-tw").
     arch=$(uname -m)
-    dud_root=$(echo "$ROOT/$DUD_DIR/${file}_unpacked/linux/suse/${arch}"-*)
+    dud_root=$(echo "${dir}/linux/suse/${arch}"-*)
     echo "Detected DUD root at ${dud_root}"
 
     apply_update "$dud_root"
