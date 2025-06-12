@@ -141,24 +141,4 @@ const contentDescription = (drive: apiModel.Drive): string => {
   return sprintf(_("Partitions will be used and created for %s"), formatList(mountPaths));
 };
 
-const hasFilesystem = (drive: apiModel.Drive): boolean => {
-  return drive.partitions && drive.partitions.some((p) => p.mountPath);
-};
-
-const hasRoot = (drive: apiModel.Drive): boolean => {
-  return drive.partitions && drive.partitions.some((p) => p.mountPath && p.mountPath === "/");
-};
-
-const hasReuse = (drive: apiModel.Drive): boolean => {
-  return drive.partitions && drive.partitions.some((p) => p.mountPath && p.name);
-};
-
-export {
-  hasReuse,
-  hasFilesystem,
-  hasRoot,
-  label,
-  spacePolicyEntry,
-  contentActionsDescription,
-  contentDescription,
-};
+export { label, spacePolicyEntry, contentActionsDescription, contentDescription };

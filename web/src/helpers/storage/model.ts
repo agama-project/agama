@@ -113,6 +113,10 @@ function partitionableProperties(
     return partitions.some((p) => p.mountPath && p.isNew);
   };
 
+  const isReusingPartitions = (): boolean => {
+    return partitions.some((p) => p.isReused);
+  };
+
   const getConfiguredExistingPartitions = (): model.Partition[] => {
     if (apiDevice.spacePolicy === "custom")
       return partitions.filter((p) => !p.isNew && (p.isUsed || p.isUsedBySpacePolicy));
@@ -123,6 +127,7 @@ function partitionableProperties(
   return {
     isUsed: isUsed(),
     isAddingPartitions: isAddingPartitions(),
+    isReusingPartitions: isReusingPartitions(),
     isTargetDevice: isTargetDevice(),
     isBoot: isBoot(),
     isExplicitBoot: isExplicitBoot(),

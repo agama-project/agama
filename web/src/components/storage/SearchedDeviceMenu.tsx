@@ -29,7 +29,6 @@ import { useCandidateDevices, useLongestDiskTitle } from "~/hooks/storage/system
 import { useModel } from "~/hooks/storage/model";
 import { useSwitchToDrive } from "~/hooks/storage/drive";
 import { useSwitchToMdRaid } from "~/hooks/storage/md-raid";
-import * as driveUtils from "~/components/storage/utils/drive";
 import { deviceBaseName, deviceLabel, formattedPath } from "~/components/storage/utils";
 import * as model from "~/types/storage/model";
 import { StorageDevice } from "~/types/storage";
@@ -41,9 +40,9 @@ const label = (device: StorageDevice): string => deviceLabel(device, true);
 
 const UseOnlyOneOption = (device: model.Drive | model.MdRaid): boolean => {
   const hasPv = device.isTargetDevice;
-  if (!driveUtils.hasFilesystem(device) && (hasPv || device.isExplicitBoot)) return true;
+  if (!device.getMountPaths().length && (hasPv || device.isExplicitBoot)) return true;
 
-  return driveUtils.hasReuse(device);
+  return device.isReusingPartitions;
 };
 
 type DiskSelectorTitleProps = { device: StorageDevice; isSelected: boolean };
@@ -139,6 +138,8 @@ const DisksDrillDownMenuItem = ({
 
   const isBoot = modelDevice.isBoot;
   const isExplicitBoot = modelDevice.isExplicitBoot;
+  const mountPaths = modelDevice.getMountPaths();
+  const hasMountPaths = mountPaths.length > 0;
   const hasPv = volumeGroups.length > 0;
   const vgName = volumeGroups[0]?.vgName;
 
@@ -147,15 +148,15 @@ const DisksDrillDownMenuItem = ({
       return _("Selected disk (cannot be changed)");
     }
 
-    if (!driveUtils.hasFilesystem(modelDevice)) {
+    if (!hasMountPaths) {
       return _("Select a disk to configure");
     }
 
-    if (driveUtils.hasRoot(modelDevice)) {
+    if (mountPaths.includes("/")) {
       return _("Select a disk to install the system");
     }
 
-    const mountPaths = modelDevice.partitions
+    const newMountPaths = modelDevice.partitions
       .filter((p) => !p.name)
       .map((p) => formattedPath(p.mountPath));
 
@@ -163,19 +164,19 @@ const DisksDrillDownMenuItem = ({
       // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
       // single mount point in the singular case).
       _("Select a disk to create %s"),
-      formatList(mountPaths),
+      formatList(newMountPaths),
     );
   };
 
   const extraText = (): string => {
     const name = baseName(selected);
 
-    if (driveUtils.hasReuse(modelDevice)) {
+    if (modelDevice.isReusingPartitions) {
       // The current device will be the only option to choose from
       return _("This uses existing partitions at the disk");
     }
 
-    if (!driveUtils.hasFilesystem(modelDevice)) {
+    if (!hasMountPaths) {
       // The current device will be the only option to choose from
       if (hasPv) {
         if (volumeGroups.length > 1) {
