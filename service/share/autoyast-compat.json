@@ -353,7 +353,6 @@
   },
   {
     "key": "services-manager",
-    "support": "yes",
     "notes": "Automatically converted into post-installation script",
     "children": [
       {
@@ -362,31 +361,28 @@
       },
       {
         "key": "enable",
-        "support": "yes",
         "children": [
           {
             "key": "service",
-	    "support": "yes"
+            "support": "yes"
           }
         ]
       },
       {
         "key": "disable",
-        "support": "yes",
         "children": [
           {
             "key": "service",
-	    "support": "yes"
+            "support": "yes"
           }
         ]
       },
       {
         "key": "on_demand",
-        "support": "yes",
         "children": [
           {
             "key": "service",
-	    "support": "yes"
+            "support": "yes"
           }
         ]
       }
@@ -624,7 +620,28 @@
     ]
   },
   { "key": "upgrade", "support": "no" },
-  { "key": "iscsi-client", "support": "planned" },
+  {
+    "key": "iscsi-client",
+    "children": [
+      { "key": "initiatorname", "support": "yes", "agama": "iscsi.initiator" },
+      { "key": "version", "support": "no" },
+      {
+        "key": "targets[]",
+        "children": [
+          { "key": "authmethod", "support": "no" },
+          {
+            "key": "portal",
+            "support": "yes",
+            "agama": "iscsi.targets[].address",
+            "notes": "Splitted into two values, address and port."
+          },
+          { "key": "startup", "support": "yes" },
+          { "key": "target", "support": "yes", "agama": "iscsi.targets[].name" },
+          { "key": "iface", "support": "yes", "agama": "iscsi.targets[].interface" }
+        ]
+      }
+    ]
+  },
   {
     "key": "users[]",
     "notes": "Only the root and the first user are considered.",
