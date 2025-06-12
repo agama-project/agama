@@ -53,8 +53,10 @@ import { _ } from "~/i18n";
 /**
  * Hook that returns the devices that can be selected as target to automatically create LVM PVs.
  *
- * FIXME: temporary and weak implementation that relies on the current model to offer only those RAIDs
- * that are already there.
+ * FIXME: temporary and weak implementation that relies on the current model to offer only the
+ * candidate RAIDs and those non-candidate RAIDs that are already present at the current
+ * configuration. In the future we plan to add all available RAIDs to this form and then this whole
+ * function should disappear.
  */
 function useLvmTargetDevices(): StorageDevice[] {
   const candidateDevices = useCandidateDevices();
