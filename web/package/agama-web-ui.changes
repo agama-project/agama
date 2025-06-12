@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun 12 12:31:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Replace SUSE font with Noto Sans for Cyrillic languages and
+  update CSS to use `:lang(xx)` for improved language support
+  (gh#agama-project/agama#2467, bsc#1236261).
+
+-------------------------------------------------------------------
 Tue Jun 10 16:51:15 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Improve post-installation user experience by providing feedback
