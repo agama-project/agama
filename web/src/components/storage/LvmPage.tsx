@@ -65,7 +65,7 @@ function useLvmTargetDevices(): StorageDevice[] {
 
   const targetDevices = useMemo(() => {
     const sids = candidateDevices.map((d) => d.sid);
-    const raids = (model.mdRaids || [])
+    const raids = model.mdRaids
       .map((r) => systemDevices.find((d) => d.name === r.name))
       .filter((r) => !sids.includes(r.sid));
 
