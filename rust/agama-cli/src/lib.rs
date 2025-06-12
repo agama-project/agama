@@ -289,7 +289,7 @@ pub async fn show_progress(monitor: MonitorClient, stop_on_idle: bool) {
     }
 }
 
-pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
+pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
     let api_url = api_url(cli.opts.host)?;
 
     match cli.command {
