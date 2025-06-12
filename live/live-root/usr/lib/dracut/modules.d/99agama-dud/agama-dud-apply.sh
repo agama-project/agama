@@ -6,17 +6,16 @@
 . /lib/img-lib.sh
 
 DUD_DIR="/run/agama/dud"
-ROOT="/sysroot"
-AGAMA_CLI="$ROOT/usr/bin/agama"
+AGAMA_CLI="$NEWROOT/usr/bin/agama"
 AGAMA_DUD_INFO="/tmp/agamadud.info"
-DUD_RPM_REPOSITORY="$ROOT/var/lib/agama/dud/repo"
+DUD_RPM_REPOSITORY="$NEWROOT/var/lib/agama/dud/repo"
 
 # Apply all the updates.
 #
 # Read the URL of the updates from $AGAMA_DUD_INFO and process each one:
 #
 #   1. Download and unpack the update in $DUD_DIR.
-#   2. Copy the inst-sys updates to the $ROOT system.
+#   2. Copy the inst-sys updates to the $NEWROOT system.
 #   3. Update agamactl, agama-autoyast and agama-proxy-setup alternative links.
 #   4. Copy the packages to the $DUD_RPM_REPOSITORY.
 apply_updates() {
@@ -60,7 +59,7 @@ apply_update() {
   dud_dir=$1
   echo "Apply inst-sys update from ${dud_dir}"
 
-  cp -a "${dud_dir}/inst-sys/"* $ROOT
+  cp -a "${dud_dir}/inst-sys/"* $NEWROOT
 
   dud_instsys="${dud_dir}/inst-sys"
 
@@ -76,8 +75,8 @@ set_alternative() {
 
   executables=("$dud_instsys/usr/bin/${name}.ruby"*-*)
   executable=${executables[0]}
-  $ROOT/usr/bin/chroot $ROOT /usr/sbin/update-alternatives --install "/usr/bin/$name" "$name" "${executable##"$dud_instsys"}" 150000
-  $ROOT/usr/bin/chroot $ROOT /usr/sbin/update-alternatives --set "$name" "${executable##"$dud_instsys"}"
+  $NEWROOT/usr/bin/chroot $NEWROOT /usr/sbin/update-alternatives --install "/usr/bin/$name" "$name" "${executable##"$dud_instsys"}" 150000
+  $NEWROOT/usr/bin/chroot $NEWROOT /usr/sbin/update-alternatives --set "$name" "${executable##"$dud_instsys"}"
 }
 
 # Copy the packages to use during installation
@@ -102,7 +101,7 @@ copy_packages() {
 create_repo() {
   repo_dir=$1
 
-  $ROOT/usr/bin/chroot $ROOT createrepo_c "${repo_dir##"$ROOT"}"
+  $NEWROOT/usr/bin/chroot $NEWROOT createrepo_c "${repo_dir##"$NEWROOT"}"
 }
 
 apply_updates
