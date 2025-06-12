@@ -22,6 +22,7 @@ DUD_RPM_REPOSITORY="$ROOT/var/lib/agama/dud/repo"
 apply_updates() {
   local file
   local dud_url
+  index=0
 
   while read -r dud_url; do
     mkdir -p "$ROOT/$DUD_DIR"
@@ -34,8 +35,10 @@ apply_updates() {
     fi
     mkdir -p "$ROOT/$DUD_DIR/${file}_unpacked"
 
-    echo "Unpacking ${file}"
-    unpack_img "$ROOT/$DUD_DIR/$file" "$ROOT/$DUD_DIR/${file}_unpacked"
+    dir="$ROOT/$DUD_DIR/dud_$(printf "%02d" $index)"
+    echo "Unpacking ${file} to ${dir}"
+    unpack_img "$ROOT/$DUD_DIR/$file" "$dir"
+    ((index++))
 
     # FIXME: do not ignore the dist (e.g., "tw" in "x86_64-tw").
     arch=$(uname -m)
