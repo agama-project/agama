@@ -70,9 +70,15 @@ module Agama
           "name"    => name
         }
 
-        target["startup"] = startup if startup
+        target["startup"] = startup if valid_startup?(startup)
         target["interface"] = interface if interface
         target
+      end
+
+      # @param value [String, nil]
+      # @return [Boolean]
+      def valid_startup?(value)
+        ["onboot", "manual", "automatic"].include?(value)
       end
     end
   end

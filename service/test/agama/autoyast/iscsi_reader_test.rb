@@ -149,5 +149,38 @@ describe Agama::AutoYaST::IscsiReader do
         })
       end
     end
+
+    context "when the startup of a target is not valid" do
+      let(:profile) do
+        Yast::ProfileHash.new({
+          "iscsi-client" => {
+            "targets" => [
+              {
+                "portal"  => "192.168.100.101:3260",
+                "target"  => "iqn.2025-06.com.test:0a5b93b9a9a79ff5db53",
+                "iface"   => "default",
+                "startup" => "invalid"
+              }
+            ]
+          }
+        })
+      end
+
+      it "generates a target config without startup value" do
+        config = subject.read
+        expect(config).to eq({
+          "iscsi" => {
+            "targets" => [
+              {
+                "address"   => "192.168.100.101",
+                "port"      => 3260,
+                "name"      => "iqn.2025-06.com.test:0a5b93b9a9a79ff5db53",
+                "interface" => "default"
+              }
+            ]
+          }
+        })
+      end
+    end
   end
 end
