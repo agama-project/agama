@@ -66,9 +66,9 @@ jobs:
     - name: Build the application
       run: npm run build
 
-#    - name: Check types
-#      run: npm run check-types
-#
+    - name: Check types
+      run: npm run check-types
+
     - name: Run ESLint
       run: npm run eslint
 
