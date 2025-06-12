@@ -21,38 +21,20 @@
  */
 
 import React from "react";
-import MenuButton from "~/components/core/MenuButton";
-import NewVgMenuOption from "./NewVgMenuOption";
-import { useLongestDiskTitle } from "~/hooks/storage/system";
-import { deviceLabel } from "~/components/storage/utils";
-import * as model from "~/types/storage/model";
-import { StorageDevice } from "~/types/storage";
-import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
+import SearchedDeviceMenu from "./SearchedDeviceMenu";
+import { useDeleteMdRaid } from "~/hooks/storage/md-raid";
 
-export type MdRaidDeviceMenuProps = { raid: model.MdRaid; selected: StorageDevice };
+export type MdRaidDeviceMenuProps = {
+  raid: model.MdRaid;
+  selected: StorageDevice;
+};
 
-/**
- * Menu with options to configure an MdRaid entry for an existing RAID.
- */
 export default function MdRaidDeviceMenu({
   raid,
   selected,
 }: MdRaidDeviceMenuProps): React.ReactNode {
-  const longestTitle = useLongestDiskTitle();
+  const deleteMdRaid = useDeleteMdRaid();
+  const deleteFn = (device: model.MdRaid) => deleteMdRaid(device.name);
 
-  return (
-    <MenuButton
-      menuProps={{
-        "aria-label": sprintf(_("Device %s menu"), raid.name),
-        popperProps: { minWidth: `min(${longestTitle * 0.75}em, 75vw)`, width: "max-content" },
-      }}
-      toggleProps={{
-        className: "agm-inline-toggle",
-      }}
-      items={[<NewVgMenuOption key="add-vg-option" device={raid} />]}
-    >
-      {<b>{deviceLabel(selected)}</b>}
-    </MenuButton>
-  );
+  return <SearchedDeviceMenu modelDevice={raid} selected={selected} deleteFn={deleteFn} />;
 }

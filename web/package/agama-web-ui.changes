@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun 12 12:51:38 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Allow selecting bootable MD RAIDS to create partitions and LVM
+  volume groups on them (gh#agama-project/agama#2455).
+
+-------------------------------------------------------------------
 Tue Jun 10 16:51:15 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Improve post-installation user experience by providing feedback
