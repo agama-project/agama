@@ -25,7 +25,6 @@ import { DropdownItem, DropdownItemProps } from "@patternfly/react-core";
 import { useHref, useLocation } from "react-router-dom";
 import { useProduct, useRegistration } from "~/queries/software";
 import { PRODUCT as PATHS, SIDE_PATHS } from "~/routes/paths";
-import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 
 /**
@@ -38,7 +37,7 @@ export default function ChangeProductOption({ children, ...props }: Omit<Dropdow
   const to = useHref(PATHS.changeProduct);
 
   if (products.length <= 1) return null;
-  if (!isEmpty(registration?.key)) return null;
+  if (registration.registered) return null;
   if (SIDE_PATHS.includes(currentLocation.pathname)) return null;
 
   return (
