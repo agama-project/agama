@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun 12 12:39:03 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Configure the console font so the non-ASCII characters are
+  displayed properly (bsc#1239462)
+
+-------------------------------------------------------------------
 Wed Jun 11 13:12:12 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Consider `hashedPassword` as `false` when it is not specified
