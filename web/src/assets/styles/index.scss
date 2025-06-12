@@ -141,16 +141,19 @@
   --pf-t--global--font--family--200: "Noto Sans", sans-serif;
 }
 
+/* Chinese (Simplified) */
 :lang(zh) {
   --pf-t--global--font--family--100: "Noto Sans SC";
   --pf-t--global--font--family--200: "Noto Sans SC Display", "Noto Sans SC", serif;
 }
 
+/* Japanese */
 :lang(ja) {
   --pf-t--global--font--family--100: "Noto Sans JP", serif;
   --pf-t--global--font--family--200: "Noto Sans JP Display", "Noto Sans JP", serif;
 }
 
+/* Korean */
 :lang(ko) {
   --pf-t--global--font--family--100: "Noto Sans KR", serif;
   --pf-t--global--font--family--200: "Noto Sans KR Display", "Noto Sans KR", serif;
