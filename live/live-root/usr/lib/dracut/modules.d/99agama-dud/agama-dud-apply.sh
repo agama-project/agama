@@ -8,7 +8,17 @@
 DUD_DIR="/run/agama/dud"
 ROOT="/sysroot"
 AGAMA_CLI="$ROOT/usr/bin/agama"
+AGAMA_DUD_INFO="/tmp/agamadud.info"
+DUD_RPM_REPOSITORY="$ROOT/var/lib/agama/dud/repo"
 
+# Apply all the updates.
+#
+# Read the URL of the updates from $AGAMA_DUD_INFO and process each one:
+#
+#   1. Download and unpack the update in $DUD_DIR.
+#   2. Copy the inst-sys updates to the $ROOT system.
+#   3. Update agamactl, agama-autoyast and agama-proxy-setup alternative links.
+#   4. Copy the packages to the $DUD_RPM_REPOSITORY.
 apply_updates() {
   local file
   local dud_url
@@ -16,8 +26,9 @@ apply_updates() {
   while read -r dud_url; do
     mkdir -p "$ROOT/$DUD_DIR"
     file=${dud_url##*/}
+    # FIXME: use an index because two updates, coming from different places, can have the same name.
     echo "Fetching a Driver Update Disk from $dud_url to $file"
-    if ! $AGAMA_CLI download $dud_url "$ROOT/$DUD_DIR/$file"; then
+    if ! $AGAMA_CLI download "$dud_url" "$ROOT/$DUD_DIR/$file"; then
       warn "Failed to fetch the Driver Update Disk"
       exit 1
     fi
@@ -26,17 +37,22 @@ apply_updates() {
     echo "Unpacking ${file}"
     unpack_img "$ROOT/$DUD_DIR/$file" "$ROOT/$DUD_DIR/${file}_unpacked"
 
-    dud_root=$(echo $ROOT/$DUD_DIR/${file}_unpacked/linux/suse/$(uname -m)-*)
+    # FIXME: do not ignore the dist (e.g., "tw" in "x86_64-tw").
+    arch=$(uname -m)
+    dud_root=$(echo "$ROOT/$DUD_DIR/${file}_unpacked/linux/suse/${arch}"-*)
     echo "Detected DUD root at ${dud_root}"
 
     apply_update "$dud_root"
-    copy_packages "$dud_root" "$ROOT/var/lib/agama/repo"
-  done </tmp/agamadud.info
+    copy_packages "$dud_root" "$DUD_RPM_REPOSITORY"
+  done <$AGAMA_DUD_INFO
 
-  create_repo "$ROOT/var/lib/agama/repo"
+  create_repo "$DUD_RPM_REPOSITORY"
 }
 
-# Apply an update to the inst-sys
+# Apply an update to the installation system.
+#
+# inst-sys updates are applied by copying files instead of installing packages. For that reason,
+# it might be needed to do some adjustments "manually", like settings the alternative links.
 apply_update() {
   dud_dir=$1
   echo "Apply inst-sys update from ${dud_dir}"
@@ -45,9 +61,9 @@ apply_update() {
 
   dud_instsys="${dud_dir}/inst-sys"
 
-  set_alternative $dud_instsys "agama-autoyast"
-  set_alternative $dud_instsys "agamactl"
-  set_alternative $dud_instsys "agama-proxy-setup"
+  set_alternative "$dud_instsys" "agama-autoyast"
+  set_alternative "$dud_instsys" "agamactl"
+  set_alternative "$dud_instsys" "agama-proxy-setup"
 }
 
 # Sets the alternative links.
@@ -57,8 +73,8 @@ set_alternative() {
 
   executables=("$dud_instsys/usr/bin/${name}.ruby"*-*)
   executable=${executables[0]}
-  $ROOT/usr/bin/chroot $ROOT /usr/sbin/update-alternatives --install /usr/bin/$name $name ${executable##$dud_instsys} 250000
-  $ROOT/usr/bin/chroot $ROOT /usr/sbin/update-alternatives --set $name ${executable##$dud_instsys}
+  $ROOT/usr/bin/chroot $ROOT /usr/sbin/update-alternatives --install "/usr/bin/$name" "$name" "${executable##"$dud_instsys"}" 150000
+  $ROOT/usr/bin/chroot $ROOT /usr/sbin/update-alternatives --set "$name" "${executable##"$dud_instsys"}"
 }
 
 # Copy the packages to use during installation
@@ -73,9 +89,9 @@ copy_packages() {
   repo_dir=$2
   echo "Copy packages from ${dud_dir} to ${repo_dir}"
 
-  for rpm in "${dud_dir}/install/*.rpm"; do
-    mkdir -p "${repo_dir}"
-    cp $rpm "${repo_dir}"
+  for rpm in "$dud_dir"/install/*.rpm; do
+    mkdir -p "$repo_dir"
+    cp "$rpm" "$repo_dir"
   done
 }
 
@@ -83,7 +99,7 @@ copy_packages() {
 create_repo() {
   repo_dir=$1
 
-  $ROOT/usr/bin/chroot $ROOT createrepo_c ${repo_dir##$ROOT}
+  $ROOT/usr/bin/chroot $ROOT createrepo_c "${repo_dir##"$ROOT"}"
 }
 
 apply_updates
