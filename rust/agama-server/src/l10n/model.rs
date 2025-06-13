@@ -18,6 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use std::fs::OpenOptions;
+use std::io::Write;
 use std::process::Command;
 
 use crate::error::Error;
@@ -151,6 +153,7 @@ impl L10n {
     // TODO: what should be returned value for commit?
     pub fn commit(&self) -> Result<(), LocaleError> {
         const ROOT: &str = "/mnt";
+        const VCONSOLE_CONF: &str = "/etc/vconsole.conf";
 
         let locale = self.locales.first().cloned().unwrap_or_default();
         let mut cmd = Command::new("/usr/bin/systemd-firstboot");
@@ -169,6 +172,20 @@ impl L10n {
 
         let output = cmd.output()?;
         tracing::info!("{:?}", &output);
+
+        // unfortunately the console font cannot be set via the "systemd-firstboot" tool,
+        // we need to write it directly to the config file
+        if let Some(entry) = self.locales_db.find_locale(&locale) {
+            if let Some(font) = &entry.consolefont {
+                // the font entry is missing in a file created by "systemd-firstboot", just append it at the end
+                let mut file = OpenOptions::new()
+                    .append(true)
+                    .open(format!("{}{}", ROOT, VCONSOLE_CONF))?;
+
+                tracing::info!("Configuring console font \"{:?}\"", font);
+                writeln!(file, "\nFONT={}.psfu", font)?;
+            }
+        }
 
         Ok(())
     }

@@ -38,6 +38,8 @@ pub struct LocaleEntry {
     pub language: String,
     /// Localized territory name (e.g., "Spain", "España", etc.)
     pub territory: String,
+    /// Console font
+    pub consolefont: Option<String>,
 }
 
 /// Represents the locales database.
@@ -77,6 +79,13 @@ impl LocalesDatabase {
         &self.locales
     }
 
+    /// Find the locale in the database
+    ///
+    /// * `locale`: the language to find
+    pub fn find_locale(&self, locale: &LocaleId) -> Option<&LocaleEntry> {
+        self.locales.iter().find(|l| l.id == *locale)
+    }
+
     /// Gets the supported locales information.
     ///
     /// * `ui_language`: language to use in the translations.
@@ -106,11 +115,21 @@ impl LocalesDatabase {
                 .or_else(|| names.name_for(DEFAULT_LANG))
                 .unwrap_or(territory.id.to_string());
 
+            let consolefont = language
+                .consolefonts
+                .consolefont
+                .first()
+                .map(|f| f.id.clone());
+
             let entry = LocaleEntry {
                 id: code.clone(),
                 language: language_label,
                 territory: territory_label,
+                consolefont,
             };
+
+            tracing::info!("Using locale data {:?}", entry);
+
             result.push(entry)
         }
 

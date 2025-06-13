@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 13 12:45:49 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Configure the console font so the non-ASCII characters are
+  displayed properly (bsc#1239462)
+
+-------------------------------------------------------------------
 Fri Jun 13 10:42:48 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - The "logs store" saves all journald logs on a single file (related
