@@ -295,9 +295,25 @@ module Agama
     # @return [Hash]
     def connect_params(params = {})
       default_params = {}
+      default_params[:language] = http_language if http_language
       default_params[:url] = registration_url if registration_url
       default_params[:verify_callback] = verify_callback
       default_params.merge(params)
+    end
+
+    def http_language
+      lang = Yast::WFM.GetLanguage
+      return nil if ["POSIX", "C"].include?(lang)
+
+      # remove the encoding suffix (e.g. ".UTF-8")
+      lang = lang.sub(/\..*$/, "")
+
+      # replace Linux locale separator "_" by the HTTP separator "-", downcase the country name
+      # see https://www.rfc-editor.org/rfc/rfc9110.html#name-accept-language
+      lang.tr!("_", "-")
+      lang.downcase!
+
+      lang
     end
 
     # returns SSL verify callback

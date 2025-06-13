@@ -95,9 +95,22 @@ describe Agama::Registration do
       context "and the product is not registered yet" do
         it "announces the system" do
           expect(SUSE::Connect::YaST).to receive(:announce_system).with(
-            { token: "11112222", email: "test@test.com", verify_callback: anything },
+            { language: anything, token: "11112222", email: "test@test.com",
+              verify_callback: anything },
             "test-5-x86_64"
           )
+
+          subject.register("11112222", email: "test@test.com")
+        end
+
+        it "sets the current language in the request" do
+          expect(SUSE::Connect::YaST).to receive(:announce_system).with(
+            { language: "de-de", token: "11112222", email: "test@test.com",
+              verify_callback: anything },
+            "test-5-x86_64"
+          )
+
+          allow(Yast::WFM).to receive(:GetLanguage).and_return("de_DE")
 
           subject.register("11112222", email: "test@test.com")
         end
@@ -110,7 +123,7 @@ describe Agama::Registration do
           it "registers using the given URL" do
             expect(SUSE::Connect::YaST).to receive(:announce_system).with(
               { token: "11112222", email: "test@test.com", url: "http://scc.example.net",
-                verify_callback: anything },
+                verify_callback: anything, language: anything },
               "test-5-x86_64"
             )
 
@@ -424,7 +437,8 @@ describe Agama::Registration do
 
         it "deactivates the system" do
           expect(SUSE::Connect::YaST).to receive(:deactivate_system).with(
-            { token: "11112222", email: "test@test.com", verify_callback: anything }
+            { token: "11112222", email: "test@test.com", verify_callback: anything,
+              language: anything }
           )
 
           subject.deregister
