@@ -25,6 +25,7 @@ require "ostruct"
 require "suse/connect"
 require "y2packager/new_repository_setup"
 require "y2packager/resolvable"
+require "yast2/execute"
 
 require "agama/cmdline_args"
 require "agama/errors"
@@ -228,6 +229,8 @@ module Agama
       files.each do |src_dest|
         FileUtils.cp(*src_dest)
       end
+
+      copy_certificates_to_target
     end
 
     # Get the available addons for the specified base product.
@@ -260,6 +263,26 @@ module Agama
     # @return [Agama::Software::Product, nil]
     def product
       software.product
+    end
+
+    def copy_certificates_to_target
+      cert_file = SSL::Certificate.default_certificate_path
+      return unless File.exist?(cert_file) # no certificate imported?
+
+      # copy the imported certificate
+      @logger.info "Copying SSL certificate (#{cert_file}) to the target system..."
+      cert_target_file = File.join("/mnt",
+        SUSE::Connect::YaST::SERVER_CERT_FILE)
+      ::FileUtils.mkdir_p(File.dirname(cert_target_file))
+      ::FileUtils.cp(cert_file, cert_target_file)
+
+      # update the certificate links
+      cmd = SUSE::Connect::YaST::UPDATE_CERTIFICATES
+      @logger.info "Updating certificate links (#{cmd})..."
+      # beware that Yast::Execute.on_target! does not work here due
+      # to not changed SCR root when registration finish is executed.
+      # So do chroot explicitelly.
+      Yast::Execute.locally!(cmd, chroot: "/mnt")
     end
 
     # Product name expected by SCC.
