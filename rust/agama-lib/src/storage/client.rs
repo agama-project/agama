@@ -97,15 +97,30 @@ impl<'a> StorageClient<'a> {
         Ok(result)
     }
 
-    /// SIDs of the devices available for the installation.
-    pub async fn available_devices(&self) -> Result<Vec<DeviceSid>, ServiceError> {
-        let paths: Vec<zbus::zvariant::ObjectPath> = self
-            .calculator_proxy
-            .available_devices()
-            .await?
-            .into_iter()
-            .map(|p| p.into_inner())
-            .collect();
+    /// SIDs of the available drives for the installation.
+    pub async fn available_drives(&self) -> Result<Vec<DeviceSid>, ServiceError> {
+        self.sids(self.devices_proxy.available_drives().await?)
+    }
+
+    /// SIDs of the candidate drives for the installation.
+    pub async fn candidate_drives(&self) -> Result<Vec<DeviceSid>, ServiceError> {
+        self.sids(self.devices_proxy.candidate_drives().await?)
+    }
+
+    /// SIDs of the available MD RAIDs for the installation.
+    pub async fn available_md_raids(&self) -> Result<Vec<DeviceSid>, ServiceError> {
+        self.sids(self.devices_proxy.available_md_raids().await?)
+    }
+
+    /// SIDs of the candidate MD RAIDs for the installation.
+    pub async fn candidate_md_raids(&self) -> Result<Vec<DeviceSid>, ServiceError> {
+        self.sids(self.devices_proxy.candidate_md_raids().await?)
+    }
+
+    /// SIDs from the given list of object paths.
+    fn sids(&self, object_paths: Vec<OwnedObjectPath>) -> Result<Vec<DeviceSid>, ServiceError> {
+        let paths: Vec<zbus::zvariant::ObjectPath> =
+            object_paths.into_iter().map(|p| p.into_inner()).collect();
 
         let result: Result<Vec<DeviceSid>, _> = paths.into_iter().map(|v| v.try_into()).collect();
 

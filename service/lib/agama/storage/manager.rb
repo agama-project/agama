@@ -285,7 +285,7 @@ module Agama
       def system_issues
         issues = probing_issues + [
           deprecated_system_issue,
-          available_devices_issue
+          candidate_devices_issue
         ]
 
         issues.compact
@@ -317,11 +317,11 @@ module Agama
           severity: Issue::Severity::ERROR)
       end
 
-      # Returns an issue if there is no available device for installation
+      # Returns an issue if there is no candidate device for installation
       #
       # @return [Issue, nil]
-      def available_devices_issue
-        return if proposal.available_devices.any?
+      def candidate_devices_issue
+        return if proposal.storage_system.candidate_devices.any?
 
         Issue.new("There is no suitable device for installation",
           source:   Issue::Source::SYSTEM,

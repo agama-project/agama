@@ -1,6 +1,8 @@
 # This is a helper action for debugging the conditions used for starting the
 # automatic OBS submission.
 
+# See https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/evaluate-expressions-in-workflows-and-actions
+
 name: Debug obs2branch
 
 permissions:

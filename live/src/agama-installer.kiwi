@@ -131,6 +131,7 @@
         <package name="ipw-firmware"/>
         <package name="mpt-firmware"/>
         <package name="zd1211-firmware"/>
+        <package name="iscsiuio"/>
         <package name="systemd-zram-service"/> <!--- needed for zram -->
         <package name="shim" arch="aarch64,x86_64"/>
         <package name="timezone"/>

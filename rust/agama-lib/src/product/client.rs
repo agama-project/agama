@@ -116,6 +116,11 @@ impl<'a> ProductClient<'a> {
         }
     }
 
+    /// flag if base product is registered
+    pub async fn registered(&self) -> Result<bool, ServiceError> {
+        Ok(self.registration_proxy.registered().await?)
+    }
+
     /// registration code used to register product
     pub async fn registration_code(&self) -> Result<String, ServiceError> {
         Ok(self.registration_proxy.reg_code().await?)

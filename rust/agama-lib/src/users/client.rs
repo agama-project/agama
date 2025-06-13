@@ -20,7 +20,10 @@
 
 //! Implements a client to access Agama's users service.
 
-use super::proxies::{FirstUser as FirstUserFromDBus, RootUser as RootUserFromDBus, Users1Proxy};
+use super::{
+    proxies::{FirstUser as FirstUserFromDBus, RootUser as RootUserFromDBus, Users1Proxy},
+    FirstUserSettings,
+};
 use crate::error::ServiceError;
 use serde::{Deserialize, Serialize};
 use zbus::Connection;
@@ -48,6 +51,25 @@ impl FirstUser {
             password: data.2,
             hashed_password: data.3,
         })
+    }
+}
+
+impl From<&FirstUserSettings> for FirstUser {
+    fn from(value: &FirstUserSettings) -> Self {
+        FirstUser {
+            user_name: value.user_name.clone().unwrap_or_default(),
+            full_name: value.full_name.clone().unwrap_or_default(),
+            password: value
+                .password
+                .as_ref()
+                .map(|p| p.password.clone())
+                .unwrap_or_default(),
+            hashed_password: value
+                .password
+                .as_ref()
+                .map(|p| p.hashed_password)
+                .unwrap_or_default(),
+        }
     }
 }
 

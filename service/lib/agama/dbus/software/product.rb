@@ -88,7 +88,7 @@ module Agama
         def select_product(id)
           if backend.product&.id == id
             [1, "Product is already selected"]
-          elsif backend.registration.reg_code
+          elsif backend.registration.registered
             [2, "Current product must be deregistered first"]
           else
             backend.select_product(id)
@@ -126,6 +126,10 @@ module Agama
 
             [[code, description]]
           end
+        end
+
+        def registered
+          !!backend.registration.registered
         end
 
         def reg_code
@@ -207,13 +211,11 @@ module Agama
         def register(reg_code, email: nil)
           if !backend.product
             [1, "Product not selected yet"]
-          elsif backend.registration.reg_code
-            # report success and do nothing when already registered with the same code
-            if backend.registration.reg_code == reg_code
-              [0, ""]
-            else
-              [2, "Product already registered"]
-            end
+          # report success and do nothing when already registered with the same code
+          elsif backend.registration.reg_code == reg_code
+            [0, ""]
+          elsif backend.registration.registered
+            [2, "Product already registered"]
           elsif !backend.product.registration
             [3, "Product does not require registration"]
           else
@@ -258,7 +260,7 @@ module Agama
             [1, "Product not selected yet"]
           elsif !backend.product.registration
             [2, "Base product does not require registration"]
-          elsif !backend.registration.reg_code
+          elsif !backend.registration.registered
             [3, "Base product not registered yet"]
           else
             connect_result(first_error_code: 4) do
@@ -289,7 +291,7 @@ module Agama
         def deregister
           if !backend.product
             [1, "Product not selected yet"]
-          elsif !backend.registration.reg_code
+          elsif !backend.registration.registered
             [2, "Product not registered yet"]
           else
             connect_result(first_error_code: 3) do
@@ -302,6 +304,8 @@ module Agama
         private_constant :REGISTRATION_INTERFACE
 
         dbus_interface REGISTRATION_INTERFACE do
+          dbus_reader(:registered, "b")
+
           dbus_reader(:reg_code, "s")
 
           dbus_reader(:email, "s")

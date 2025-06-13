@@ -35,7 +35,8 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
-import { useDevices, useAvailableDevices } from "~/queries/storage";
+import { useCandidateDevices } from "~/hooks/storage/system";
+import { useDevices } from "~/queries/storage";
 import { StorageDevice, model, data } from "~/types/storage";
 import { useModel } from "~/hooks/storage/model";
 import {
@@ -52,18 +53,24 @@ import { _ } from "~/i18n";
 /**
  * Hook that returns the devices that can be selected as target to automatically create LVM PVs.
  *
- * FIXME: temporary and weak implementation that relies on the current model to offer only those RAIDs
- * that are already there.
+ * FIXME: temporary and weak implementation that relies on the current model to offer only the
+ * candidate RAIDs and those non-candidate RAIDs that are already present at the current
+ * configuration. In the future we plan to add all available RAIDs to this form and then this whole
+ * function should disappear.
  */
 function useLvmTargetDevices(): StorageDevice[] {
-  const availableDevices = useAvailableDevices();
+  const candidateDevices = useCandidateDevices();
   const systemDevices = useDevices("system", { suspense: true });
   const model = useModel({ suspense: true });
 
   const targetDevices = useMemo(() => {
-    const raids = (model.mdRaids || []).map((r) => systemDevices.find((d) => d.name === r.name));
-    return [...availableDevices, ...raids];
-  }, [availableDevices, systemDevices, model]);
+    const sids = candidateDevices.map((d) => d.sid);
+    const raids = model.mdRaids
+      .map((r) => systemDevices.find((d) => d.name === r.name))
+      .filter((r) => !sids.includes(r.sid));
+
+    return [...candidateDevices, ...raids];
+  }, [candidateDevices, systemDevices, model]);
 
   return targetDevices;
 }

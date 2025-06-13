@@ -1,5 +1,35 @@
 [
-  { "key": "add-on", "support": "planned" },
+  {
+    "key": "add-on",
+    "children": [
+      {
+        "key": "add_on_products",
+        "children": [
+          { "key": "media_url", "support": "yes", "agama": "url" },
+          { "key": "product_dir", "support": "yes", "agama": "productDir" },
+          { "key": "product", "support": "no" },
+          { "key": "alias", "support": "yes" },
+          { "key": "priority", "support": "yes" },
+          { "key": "ask_on_error", "support": "no" },
+          { "key": "confirm_license", "support": "no" },
+          { "key": "name", "support": "yes" }
+        ]
+      },
+      {
+        "key": "add_on_others",
+        "children": [
+          { "key": "media_url", "support": "yes", "agama": "url" },
+          { "key": "product_dir", "support": "yes", "agama": "productDir" },
+          { "key": "product", "support": "no" },
+          { "key": "alias", "support": "yes" },
+          { "key": "priority", "support": "yes" },
+          { "key": "ask_on_error", "support": "no" },
+          { "key": "confirm_license", "support": "no" },
+          { "key": "name", "support": "yes" }
+        ]
+      }
+    ]
+  },
   { "key": "audit-laf", "support": "no" },
   { "key": "auth-client", "support": "no" },
   {
@@ -323,7 +353,6 @@
   },
   {
     "key": "services-manager",
-    "support": "yes",
     "notes": "Automatically converted into post-installation script",
     "children": [
       {
@@ -332,31 +361,28 @@
       },
       {
         "key": "enable",
-        "support": "yes",
         "children": [
           {
             "key": "service",
-	    "support": "yes"
+            "support": "yes"
           }
         ]
       },
       {
         "key": "disable",
-        "support": "yes",
         "children": [
           {
             "key": "service",
-	    "support": "yes"
+            "support": "yes"
           }
         ]
       },
       {
         "key": "on_demand",
-        "support": "yes",
         "children": [
           {
             "key": "service",
-	    "support": "yes"
+            "support": "yes"
           }
         ]
       }
@@ -594,7 +620,28 @@
     ]
   },
   { "key": "upgrade", "support": "no" },
-  { "key": "iscsi-client", "support": "planned" },
+  {
+    "key": "iscsi-client",
+    "children": [
+      { "key": "initiatorname", "support": "yes", "agama": "iscsi.initiator" },
+      { "key": "version", "support": "no" },
+      {
+        "key": "targets[]",
+        "children": [
+          { "key": "authmethod", "support": "no" },
+          {
+            "key": "portal",
+            "support": "yes",
+            "agama": "iscsi.targets[].address",
+            "notes": "Splitted into two values, address and port."
+          },
+          { "key": "startup", "support": "yes" },
+          { "key": "target", "support": "yes", "agama": "iscsi.targets[].name" },
+          { "key": "iface", "support": "yes", "agama": "iscsi.targets[].interface" }
+        ]
+      }
+    ]
+  },
   {
     "key": "users[]",
     "notes": "Only the root and the first user are considered.",

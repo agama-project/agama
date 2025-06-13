@@ -146,8 +146,12 @@ jest.mock("~/queries/issues", () => ({
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
-  useAvailableDevices: () => mockUseAllDevices,
   useDevices: () => mockUseAllDevices,
+}));
+
+jest.mock("~/hooks/storage/system", () => ({
+  ...jest.requireActual("~/hooks/storage/system"),
+  useCandidateDevices: () => mockUseAllDevices,
 }));
 
 jest.mock("~/hooks/storage/model", () => ({

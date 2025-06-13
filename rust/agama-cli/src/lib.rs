@@ -29,12 +29,13 @@ use fluent_uri::UriRef;
 
 mod auth;
 mod auth_tokens_file;
+mod cli_input;
+mod cli_output;
 mod commands;
 mod config;
 mod error;
 mod events;
 mod logs;
-mod profile;
 mod progress;
 mod questions;
 
@@ -46,7 +47,6 @@ use commands::Commands;
 use config::run as run_config_cmd;
 use events::run as run_events_cmd;
 use logs::run as run_logs_cmd;
-use profile::run as run_profile_cmd;
 use progress::ProgressMonitor;
 use questions::run as run_questions_cmd;
 use std::fs;
@@ -300,10 +300,6 @@ pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
             let manager = ManagerHTTPClient::new(client.clone());
             let _ = wait_until_idle(monitor.clone()).await;
             probe(manager, monitor).await?
-        }
-        Commands::Profile(subcommand) => {
-            let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
-            run_profile_cmd(client, monitor, subcommand).await?;
         }
         Commands::Install => {
             let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;

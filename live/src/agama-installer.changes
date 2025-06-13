@@ -5,6 +5,11 @@ Fri Jun 13 10:41:15 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   (gh#agama-project/agama#2466).
 
 -------------------------------------------------------------------
+Tue Jun 10 14:40:21 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add iscsiuio kernel driver (gh#agama-project/agama#2460).
+
+-------------------------------------------------------------------
 Thu Jun  5 08:28:10 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Disable Firefox extensions autoupdate
