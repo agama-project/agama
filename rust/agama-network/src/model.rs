@@ -29,6 +29,7 @@ use crate::settings::{
 use crate::types::{BondMode, ConnectionState, DeviceState, DeviceType, Status, SSID};
 use agama_utils::openapi::schemas;
 use cidr::IpInet;
+use macaddr::{MacAddr, MacAddr6};
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
 use std::{
@@ -509,8 +510,8 @@ pub struct Device {
 pub struct Connection {
     pub id: String,
     pub uuid: Uuid,
-    #[serde_as(as = "DisplayFromStr")]
-    pub mac_address: MacAddress,
+    #[schema(schema_with = schemas::mac_addr6)]
+    pub mac_address: Option<MacAddr6>,
     #[serde_as(as = "DisplayFromStr")]
     pub custom_mac_address: MacAddress,
     pub firewall_zone: Option<String>,
@@ -666,6 +667,13 @@ impl TryFrom<NetworkConnection> for Connection {
             connection.ieee_8021x_config = Some(IEEE8021XConfig::try_from(ieee_8021x_config)?);
         }
 
+        if let Some(mac) = conn.mac_address {
+            connection.mac_address = match MacAddr6::from_str(mac.as_str()) {
+                Ok(mac) => Some(mac),
+                Err(_) => None,
+            }
+        }
+
         connection.ip_config.addresses = conn.addresses;
         connection.ip_config.nameservers = conn.nameservers;
         connection.ip_config.dns_searchlist = conn.dns_searchlist;
@@ -683,11 +691,10 @@ impl TryFrom<Connection> for NetworkConnection {
 
     fn try_from(conn: Connection) -> Result<Self, Self::Error> {
         let id = conn.clone().id;
-        let mac = conn.mac_address.to_string();
         let custom_mac = conn.custom_mac_address.to_string();
         let method4 = Some(conn.ip_config.method4.to_string());
         let method6 = Some(conn.ip_config.method6.to_string());
-        let mac_address = (!mac.is_empty()).then_some(mac);
+        let mac_address = conn.mac_address.and_then(|mac| Some(mac.to_string()));
         let custom_mac_address = (!custom_mac.is_empty()).then_some(custom_mac);
         let nameservers = conn.ip_config.nameservers;
         let dns_searchlist = conn.ip_config.dns_searchlist;
