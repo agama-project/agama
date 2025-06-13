@@ -69,7 +69,7 @@ jest.mock("~/queries/software", () => ({
 describe("ProductSelectionPage", () => {
   beforeEach(() => {
     mockSelectedProduct = microOs;
-    registrationInfoMock = { key: "", email: "" };
+    registrationInfoMock = { registered: false, key: "", email: "", url: "" };
   });
 
   describe("when user select a product with license", () => {
@@ -105,9 +105,14 @@ describe("ProductSelectionPage", () => {
     });
   });
 
-  describe("when there is a registration code set", () => {
+  describe("when product is registered", () => {
     beforeEach(() => {
-      registrationInfoMock = { key: "INTERNAL-USE-ONLY-1234-5678", email: "" };
+      registrationInfoMock = {
+        registered: true,
+        key: "INTERNAL-USE-ONLY-1234-5678",
+        email: "",
+        url: "",
+      };
     });
 
     it("navigates to root path", async () => {

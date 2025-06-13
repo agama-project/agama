@@ -72,6 +72,10 @@ pub trait Registration {
     #[zbus(property)]
     fn reg_code(&self) -> zbus::Result<String>;
 
+    /// Registered property
+    #[zbus(property)]
+    fn registered(&self) -> zbus::Result<bool>;
+
     /// Url property
     #[zbus(property)]
     fn url(&self) -> zbus::Result<String>;

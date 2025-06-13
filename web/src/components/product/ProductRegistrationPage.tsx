@@ -40,7 +40,7 @@ import {
 import { Link, Page } from "~/components/core";
 import RegistrationExtension from "./RegistrationExtension";
 import RegistrationCodeInput from "./RegistrationCodeInput";
-import { RegistrationInfo } from "~/types/software";
+import { RegistrationParams } from "~/types/software";
 import { HOSTNAME } from "~/routes/paths";
 import { useProduct, useRegistration, useRegisterMutation, useAddons } from "~/queries/software";
 import { useHostname } from "~/queries/system";
@@ -104,15 +104,8 @@ const RegistrationFormSection = () => {
     e.preventDefault();
     setError(null);
 
-    const data: RegistrationInfo = { key, email: provideEmail ? email : "" };
+    const data: RegistrationParams = { key, email: provideEmail ? email : "" };
 
-    // TODO: Replace with a more sophisticated mechanism to ensure all available
-    // fields are filled and validated. Ideally, this should be a reusable solution
-    // applicable to all Agama forms.
-    if (isEmpty(key) || (provideEmail && isEmpty(email))) {
-      setError("Some fields are missing. Please check and fill them.");
-      return;
-    }
     setLoading(true);
 
     // @ts-expect-error
@@ -200,9 +193,7 @@ const Extensions = () => {
 
 export default function ProductRegistrationPage() {
   const { selectedProduct: product } = useProduct();
-  const { key } = useRegistration();
-  // FIXME: this needs to be fixed for RMT which allows registering with empty key
-  const isRegistered = !isEmpty(key);
+  const { registered } = useRegistration();
 
   // TODO: render something meaningful instead? "Product not registrable"?
   if (!product.registration) return;
@@ -214,9 +205,9 @@ export default function ProductRegistrationPage() {
       </Page.Header>
 
       <Page.Content>
-        {!isRegistered && <HostnameAlert />}
-        {!isRegistered ? <RegistrationFormSection /> : <RegisteredProductSection />}
-        {isRegistered && <Extensions />}
+        {!registered && <HostnameAlert />}
+        {!registered ? <RegistrationFormSection /> : <RegisteredProductSection />}
+        {registered && <Extensions />}
       </Page.Content>
     </Page>
   );
