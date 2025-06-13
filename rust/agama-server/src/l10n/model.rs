@@ -269,9 +269,7 @@ impl L10n {
         // we need to write it directly to the config file
         let locale = self.locales_db.entries().iter().find(|l| l.id == locale);
         if let Some(entry) = locale {
-            let font = &entry.consolefont;
-
-            if !font.is_empty() {
+            if let Some(font) = &entry.consolefont {
                 // the font entry is missing in a file created by "systemd-firstboot", just append it at the end
                 let mut file = OpenOptions::new()
                     .append(true)

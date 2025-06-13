@@ -21,7 +21,7 @@
 //! This module provides support for reading the locales database.
 
 use crate::error::Error;
-use agama_locale_data::{ranked::RankedConsoleFont, LocaleId};
+use agama_locale_data::LocaleId;
 use anyhow::Context;
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
@@ -39,7 +39,7 @@ pub struct LocaleEntry {
     /// Localized territory name (e.g., "Spain", "España", etc.)
     pub territory: String,
     /// Console font
-    pub consolefont: String,
+    pub consolefont: Option<String>,
 }
 
 /// Represents the locales database.
@@ -108,20 +108,16 @@ impl LocalesDatabase {
                 .or_else(|| names.name_for(DEFAULT_LANG))
                 .unwrap_or(territory.id.to_string());
 
+            let consolefont = match language.consolefonts.consolefont.first() {
+                Some(font) => Some(font.id.clone()),
+                None => None,
+            };
+
             let entry = LocaleEntry {
                 id: code.clone(),
                 language: language_label,
                 territory: territory_label,
-                consolefont: language
-                    .consolefonts
-                    .consolefont
-                    .first()
-                    .unwrap_or(&RankedConsoleFont {
-                        id: String::new(),
-                        rank: 0,
-                    })
-                    .id
-                    .clone(),
+                consolefont,
             };
 
             tracing::info!("Using locale data {:?}", entry);
