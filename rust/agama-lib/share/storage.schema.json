@@ -369,6 +369,10 @@
       "minimum": 1,
       "maximum": 128
     },
+    "searchSortCriterionOrder": {
+      "description": "Direction of sorting at the search results",
+      "enum": ["asc", "desc"]
+    },
     "driveSearch": {
       "anyOf": [
         { "$ref": "#/$defs/searchAll" },
@@ -381,6 +385,7 @@
       "additionalProperties": false,
       "properties": {
         "condition": { "$ref": "#/$defs/driveSearchCondition" },
+        "sort": { "$ref": "#/$defs/driveSearchSort" },
         "max": { "$ref": "#/$defs/searchMax" },
         "ifNotFound": { "$ref": "#/$defs/searchActions" }
       }
@@ -390,6 +395,35 @@
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" }
       ]
+    },
+    "driveSearchSort": {
+      "anyOf": [
+        { "$ref": "#/$defs/driveSearchSortCriterion" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/driveSearchSortCriterion" }
+        }
+      ]
+    },
+    "driveSearchSortCriterion": {
+      "anyOf": [
+        { "$ref": "#/$defs/driveSearchSortCriterionShort" },
+        { "$ref": "#/$defs/driveSearchSortCriterionFull" }
+      ]
+    },
+    "driveSearchSortCriterionShort": {
+      "description": "Sort search results",
+      "enum": ["name", "size"]
+    },
+    "driveSearchSortCriterionFull": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/$defs/searchSortCriterionOrder" },
+        "size": { "$ref": "#/$defs/searchSortCriterionOrder" }
+      },
+      "minProperties": 1,
+      "maxProperties": 1
     },
     "mdRaidSearch": {
       "anyOf": [
@@ -531,7 +565,7 @@
       "const": "*"
     },
     "searchName": {
-      "descrition": "Search by device name",
+      "description": "Search by device name",
       "type": "string",
       "examples": ["/dev/vda", "/dev/disk/by-id/ata-WDC_WD3200AAKS-75L9"]
     },

@@ -39,6 +39,7 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
   let(:config_json) do
     {
       condition:  condition,
+      sort:       sort,
       ifNotFound: if_not_found,
       max:        max
     }
@@ -47,6 +48,7 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
   let(:condition) { nil }
   let(:if_not_found) { nil }
   let(:max) { nil }
+  let(:sort) { nil }
 
   shared_examples "with device" do
     context "and there is an assigned device" do
@@ -103,7 +105,6 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
         config_json = subject.convert
         expect(config_json[:condition]).to eq({ name: "/dev/vda" })
       end
-
     end
 
     context "if #condition is configured to search by size" do
@@ -139,6 +140,24 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
 
       it "generates the expected JSON" do
         expect(subject.convert[:ifNotFound]).to eq("skip")
+      end
+    end
+
+    context "if #sort is configured with a single criterion" do
+      let(:sort) { "name" }
+
+      it "generates a JSON with a fully defined list of sort criteria" do
+        config_json = subject.convert
+        expect(config_json[:sort]).to eq [{ name: "asc" }]
+      end
+    end
+
+    context "if #sort is configured with complex criteria" do
+      let(:sort) { ["size", { name: "desc" }] }
+
+      it "generates a JSON with a fully defined list of sort criteria" do
+        config_json = subject.convert
+        expect(config_json[:sort]).to eq [{ size: "asc" }, { name: "desc" }]
       end
     end
   end
