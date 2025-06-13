@@ -118,12 +118,16 @@ install_update() {
 set_alternative() {
   dud_instsys=$1
   name=$2
+  # Use the same value used during RPMs installation.
+  priority=150000
 
   executables=("$dud_instsys/usr/bin/${name}.ruby"*-*)
   executable=${executables[0]}
   if [ ! -z "$executable" ]; then
-    "$NEWROOT/usr/bin/chroot" "$NEWROOT" /usr/sbin/update-alternatives --install "/usr/bin/$name" "$name" "${executable##"$dud_instsys"}" 150000
-    "$NEWROOT/usr/bin/chroot" "$NEWROOT" /usr/sbin/update-alternatives --set "$name" "${executable##"$dud_instsys"}"
+    "$NEWROOT/usr/bin/chroot" "$NEWROOT" /usr/sbin/update-alternatives \
+      --install "/usr/bin/$name" "$name" "${executable##"$dud_instsys"}" "$priority"
+    "$NEWROOT/usr/bin/chroot" "$NEWROOT" /usr/sbin/update-alternatives \
+      --set "$name" "${executable##"$dud_instsys"}"
   fi
 }
 
