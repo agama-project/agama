@@ -32,33 +32,9 @@ function copyModel(model: apiModel.Config): apiModel.Config {
   return JSON.parse(JSON.stringify(model));
 }
 
-function isNewPartition(partition: apiModel.Partition): boolean {
-  return partition.name === undefined;
-}
-
-function isUsedPartition(partition: apiModel.Partition): boolean {
-  return partition.filesystem !== undefined;
-}
-
-function isReusedPartition(partition: apiModel.Partition): boolean {
-  return !isNewPartition(partition) && isUsedPartition(partition);
-}
-
 function findDrive(model: apiModel.Config, driveName: string): apiModel.Drive | undefined {
   const drives = model?.drives || [];
   return drives.find((d) => d.name === driveName);
-}
-
-function removeDrive(model: apiModel.Config, driveName: string): apiModel.Config {
-  model.drives = model.drives.filter((d) => d.name !== driveName);
-  return model;
-}
-
-function isUsedDrive(model: apiModel.Config, driveName: string) {
-  const drive = findDrive(model, driveName);
-  if (drive === undefined) return false;
-
-  return drive.partitions?.some((p) => isNewPartition(p) || isReusedPartition(p));
 }
 
 function findPartition(
@@ -109,43 +85,6 @@ function disableEncryption(originalModel: apiModel.Config): apiModel.Config {
   return model;
 }
 
-function switchDrive(
-  originalModel: apiModel.Config,
-  driveName: string,
-  newDriveName: string,
-): apiModel.Config {
-  if (driveName === newDriveName) return;
-
-  const model = copyModel(originalModel);
-  const drive = findDrive(model, driveName);
-  if (drive === undefined) return;
-
-  const newPartitions = (drive.partitions || []).filter(isNewPartition);
-  const existingPartitions = (drive.partitions || []).filter((p) => !isNewPartition(p));
-  const reusedPartitions = existingPartitions.filter(isReusedPartition);
-  const keepDrive = isExplicitBoot(model, driveName) || reusedPartitions.length;
-  const newDrive = findDrive(model, newDriveName);
-
-  if (keepDrive) {
-    drive.partitions = existingPartitions;
-  } else {
-    removeDrive(model, driveName);
-  }
-
-  if (newDrive) {
-    newDrive.partitions ||= [];
-    newDrive.partitions = [...newDrive.partitions, ...newPartitions];
-  } else {
-    model.drives.push({
-      name: newDriveName,
-      partitions: newPartitions,
-      spacePolicy: drive.spacePolicy === "custom" ? undefined : drive.spacePolicy,
-    });
-  }
-
-  return model;
-}
-
 function addDrive(originalModel: apiModel.Config, driveName: string): apiModel.Config {
   if (findDrive(originalModel, driveName)) return;
 
@@ -168,27 +107,6 @@ function unusedMountPaths(model: apiModel.Config, volumes: Volume[]): string[] {
   const volPaths = volumes.filter((v) => v.mountPath.length).map((v) => v.mountPath);
   const assigned = usedMountPaths(model);
   return volPaths.filter((p) => !assigned.includes(p));
-}
-
-/*
- * Pretty artificial logic used to decide whether the UI should display buttons to remove
- * some drives. The logic is tricky and misplaced, but it is the lesser evil taking into
- * account the current code organization.
- *
- * TODO: Revisit when LVM support is added to the UI.
- */
-function hasAdditionalDrives(model: apiModel.Config): boolean {
-  if (model.drives.length <= 1) return false;
-  if (model.drives.length > 2) return true;
-
-  // If there are only two drives, the following logic avoids the corner case in which first
-  // deleting one of them and then changing the boot settings can lead to zero disks. But it is far
-  // from being fully reasonable or understandable for the user.
-  const onlyToBoot = model.drives.find(
-    (d) => isExplicitBoot(model, d.name) && !isUsedDrive(model, d.name),
-  );
-
-  return !onlyToBoot;
 }
 
 /** @deprecated Use useApiModel from ~/hooks/storage/api-model. */
@@ -246,14 +164,11 @@ export type DriveHook = {
   isExplicitBoot: boolean;
   hasPv: boolean;
   allMountPaths: string[];
-  switch: (newName: string) => void;
   getPartition: (mountPath: string) => apiModel.Partition | undefined;
-  delete: () => void;
 };
 
 export function useDrive(name: string): DriveHook | null {
   const model = useConfigModel();
-  const { mutate } = useConfigModelMutation();
   const drive = findDrive(model, name);
 
   if (drive === undefined) return null;
@@ -263,8 +178,6 @@ export function useDrive(name: string): DriveHook | null {
     isExplicitBoot: isExplicitBoot(model, name),
     hasPv: driveHasPv(model, drive.name),
     allMountPaths: allMountPaths(drive),
-    switch: (newName) => mutate(switchDrive(model, name, newName)),
-    delete: () => mutate(removeDrive(model, name)),
     getPartition: (mountPath: string) => findPartition(model, name, mountPath),
   };
 }
@@ -273,8 +186,6 @@ export type ModelHook = {
   model: apiModel.Config;
   usedMountPaths: string[];
   unusedMountPaths: string[];
-  // Hacky solution used to decide whether it makes sense to allow to remove drives
-  hasAdditionalDrives: boolean;
   addDrive: (driveName: string) => void;
 };
 
@@ -291,6 +202,5 @@ export function useModel(): ModelHook {
     addDrive: (driveName) => mutate(addDrive(model, driveName)),
     usedMountPaths: model ? usedMountPaths(model) : [],
     unusedMountPaths: model ? unusedMountPaths(model, volumes) : [],
-    hasAdditionalDrives: hasAdditionalDrives(model),
   };
 }

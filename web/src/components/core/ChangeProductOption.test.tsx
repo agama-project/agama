@@ -65,7 +65,12 @@ describe("ChangeProductOption", () => {
 
     describe("but a product is registered", () => {
       beforeEach(() => {
-        registrationInfoMock = { key: "INTERNAL-USE-ONLY-1234-5678", email: "" };
+        registrationInfoMock = {
+          registered: true,
+          key: "INTERNAL-USE-ONLY-1234-5678",
+          email: "",
+          url: "",
+        };
       });
 
       it("renders nothing", () => {

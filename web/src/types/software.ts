@@ -107,8 +107,17 @@ type Repository = {
 };
 
 type RegistrationInfo = {
+  registered: boolean;
+  key: string;
+  email: string;
+  url: string;
+};
+
+type RegistrationParams = {
+  registered?: boolean;
   key: string;
   email?: string;
+  url?: string;
 };
 
 type AddonInfo = {
@@ -160,6 +169,7 @@ export type {
   Product,
   RegisteredAddonInfo,
   RegistrationInfo,
+  RegistrationParams,
   Repository,
   SoftwareConfig,
   SoftwareProposal,

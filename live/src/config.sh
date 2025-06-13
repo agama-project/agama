@@ -54,7 +54,6 @@ systemctl enable avahi-daemon.service
 systemctl enable agama.service
 systemctl enable agama-web-server.service
 systemctl enable agama-dbus-monitor.service
-systemctl enable agama-dud.service
 systemctl enable agama-auto.service
 systemctl enable agama-hostname.service
 systemctl enable agama-proxy-setup.service
@@ -108,7 +107,7 @@ if [[ "$kiwi_profiles" != *PXE* ]]; then
   echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
   echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
 fi
-echo 'add_dracutmodules+=" dracut-menu agama-cmdline "' >>/etc/dracut.conf.d/10-liveroot-file.conf
+echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 
 # decrease the kernel logging on the console, use a dracut module to do it early in the boot process
 echo 'add_dracutmodules+=" agama-logging "' > /etc/dracut.conf.d/10-agama-logging.conf

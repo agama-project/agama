@@ -19,10 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
-Yast.import "URL"
-
-# :nodoc:
 module Agama
   module AutoYaST
     # Converts AutoYaST's <services-manager> section into post-install script(s). See the

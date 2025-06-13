@@ -25,27 +25,27 @@ import { data } from "~/types/storage";
 import { switchSearched } from "~/helpers/storage/search";
 import { copyApiModel } from "~/helpers/storage/api-model";
 
-function addDrive(apiModel: apiModel.Config, data: data.Drive): apiModel.Config {
+function addReusedMdRaid(apiModel: apiModel.Config, data: data.MdRaid): apiModel.Config {
   apiModel = copyApiModel(apiModel);
-  apiModel.drives ||= [];
-  apiModel.drives.push(data);
+  apiModel.mdRaids ||= [];
+  apiModel.mdRaids.push(data);
 
   return apiModel;
 }
 
-function deleteDrive(apiModel: apiModel.Config, name: string): apiModel.Config {
+function deleteMdRaid(apiModel: apiModel.Config, name: string): apiModel.Config {
   apiModel = copyApiModel(apiModel);
-  apiModel.drives = apiModel.drives.filter((d) => d.name !== name);
+  apiModel.mdRaids = apiModel.mdRaids.filter((d) => d.name !== name);
 
   return apiModel;
 }
 
-function switchToDrive(
+function switchToMdRaid(
   apiModel: apiModel.Config,
   oldName: string,
-  drive: data.Drive,
+  raid: data.MdRaid,
 ): apiModel.Config {
-  return switchSearched(apiModel, oldName, drive.name, "drives");
+  return switchSearched(apiModel, oldName, raid.name, "mdRaids");
 }
 
-export { addDrive, deleteDrive, switchToDrive };
+export { addReusedMdRaid, deleteMdRaid, switchToMdRaid };

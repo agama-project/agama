@@ -23,7 +23,6 @@ require "yast"
 require "agama/autoyast/services_manager_reader"
 Yast.import "URL"
 
-# :nodoc:
 module Agama
   module AutoYaST
     # Builds the Agama "scripts" section from an AutoYaST profile.

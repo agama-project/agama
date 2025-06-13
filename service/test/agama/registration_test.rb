@@ -520,7 +520,7 @@ describe Agama::Registration do
   describe "#finish" do
     context "system is not registered" do
       before do
-        subject.instance_variable_set(:@reg_code, nil)
+        subject.instance_variable_set(:@registered, false)
       end
 
       it "do nothing" do
@@ -532,6 +532,7 @@ describe Agama::Registration do
 
     context "system is registered" do
       before do
+        subject.instance_variable_set(:@registered, true)
         subject.instance_variable_set(:@reg_code, "test")
         subject.instance_variable_set(:@credentials_files, ["test"])
         Yast::Installation.destdir = "/mnt"

@@ -54,6 +54,11 @@ module Agama
 
     # Code used for registering the product.
     #
+    # @return [boolean] true if base product is already registered
+    attr_reader :registered
+
+    # Code used for registering the product.
+    #
     # @return [String, nil] nil if the product is not registered yet.
     attr_reader :reg_code
 
@@ -81,6 +86,7 @@ module Agama
       @credentials_files = []
       @registered_addons = []
       @registration_url = registration_url_from_cmdline
+      @registered = false
     end
 
     # Registers the selected product.
@@ -94,7 +100,7 @@ module Agama
     # @param code [String] Registration code.
     # @param email [String] Email for registering the product.
     def register(code, email: "")
-      return if product.nil? || reg_code
+      return if product.nil? || registered
 
       catch_registration_errors do
         reg_params = connect_params(token: code, email: email)
@@ -114,6 +120,7 @@ module Agama
         service = SUSE::Connect::YaST.activate_product(base_target_product, activate_params, email)
         process_service(service)
 
+        @registered = true
         @reg_code = code
         @email = email
         run_on_change_callbacks
@@ -166,7 +173,7 @@ module Agama
     #   OpenSSL::SSL::SSLError|JSON::ParserError
     # ]
     def deregister
-      return unless reg_code
+      return unless registered
 
       @services.each do |service|
         Y2Packager::NewRepositorySetup.instance.services.delete(service.name)
@@ -186,6 +193,7 @@ module Agama
       end
       @credentials_files = []
 
+      @registered = false
       @reg_code = nil
       @email = nil
       @registered_addons = []
@@ -197,7 +205,7 @@ module Agama
     #
     # The configuration file is copied only if a registration URL was given.
     def finish
-      return unless reg_code
+      return unless registered
 
       files = [[
         GLOBAL_CREDENTIALS_PATH, File.join(Yast::Installation.destdir, GLOBAL_CREDENTIALS_PATH)
