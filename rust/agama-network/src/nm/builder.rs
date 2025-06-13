@@ -29,7 +29,6 @@ use crate::{
     },
 };
 use cidr::IpInet;
-use macaddr::MacAddr6;
 use std::{collections::HashMap, net::IpAddr, str::FromStr};
 
 use super::{error::NmError, model::NmDeviceState};
@@ -218,12 +217,7 @@ impl<'a> DeviceFromProxyBuilder<'a> {
 
         Some(new_route)
     }
-    fn mac_addr6_from_dbus(&self, mac: &str) -> Option<MacAddr6> {
-        match MacAddr6::from_str(mac) {
-            Ok(mac) => Some(mac),
-            Err(_) => None,
-        }
-    }
+
     fn mac_address_from_dbus(&self, mac: &str) -> MacAddress {
         match MacAddress::from_str(mac) {
             Ok(mac) => mac,

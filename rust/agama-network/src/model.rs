@@ -29,7 +29,7 @@ use crate::settings::{
 use crate::types::{BondMode, ConnectionState, DeviceState, DeviceType, Status, SSID};
 use agama_utils::openapi::schemas;
 use cidr::IpInet;
-use macaddr::{MacAddr, MacAddr6};
+use macaddr::MacAddr6;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
 use std::{

@@ -866,14 +866,6 @@ fn custom_mac_address_from_dbus(
     Ok(MacAddress::from_str(mac_address.as_str())?)
 }
 
-fn mac_address_from_dbus(config: &HashMap<String, OwnedValue>) -> Result<MacAddress, NmError> {
-    let Ok(mac_address) = get_property::<String>(config, "mac-address") else {
-        return Ok(MacAddress::Unset);
-    };
-
-    Ok(MacAddress::from_str(mac_address.as_str())?)
-}
-
 fn mtu_from_dbus(config: &HashMap<String, OwnedValue>) -> u32 {
     get_property(config, "mtu").unwrap_or(0)
 }
