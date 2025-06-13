@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 13 10:42:48 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- The "logs store" saves all journald logs on a single file (related
+  to gh#agama-project/agama#2466).
+
+-------------------------------------------------------------------
 Fri Jun 13 08:24:39 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Split registration key and registered status to support RMT with
