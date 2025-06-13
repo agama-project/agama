@@ -149,6 +149,7 @@ mod test {
                 .header("content-type", "application/json")
                 .body(
                     r#"{
+                    "registered": false,
                     "key": "",
                     "email": "",
                     "url": ""

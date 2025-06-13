@@ -61,3 +61,16 @@ pub struct RankedLocales {
     #[serde(default)]
     pub locale: Vec<RankedLocale>,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct RankedConsoleFont {
+    #[serde(rename(deserialize = "consolefontId"))]
+    pub id: String,
+    pub rank: u16,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct RankedConsoleFonts {
+    #[serde(default)]
+    pub consolefont: Vec<RankedConsoleFont>,
+}

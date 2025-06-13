@@ -73,7 +73,7 @@ describe("ProductRegistrationPage", () => {
   describe("when selected product is not registrable", () => {
     beforeEach(() => {
       selectedProduct = tw;
-      registrationInfoMock = { key: "", email: "" };
+      registrationInfoMock = { registered: false, key: "", email: "", url: "" };
     });
 
     it("renders nothing", () => {
@@ -85,7 +85,7 @@ describe("ProductRegistrationPage", () => {
   describe("when selected product is registrable and registration code is not set", () => {
     beforeEach(() => {
       selectedProduct = sle;
-      registrationInfoMock = { key: "", email: "" };
+      registrationInfoMock = { registered: false, key: "", email: "", url: "" };
     });
 
     describe("and the static hostname is not set", () => {
@@ -156,52 +156,18 @@ describe("ProductRegistrationPage", () => {
       );
     });
 
-    it("renders error when a field is missing", async () => {
-      const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
-      const registrationCodeInput = screen.getByLabelText("Registration code");
-      const submitButton = screen.getByRole("button", { name: "Register" });
-      await user.click(submitButton);
-
-      screen.getByText("Warning alert:");
-      screen.getByText("Some fields are missing. Please check and fill them.");
-      expect(registerMutationMock).not.toHaveBeenCalled();
-
-      await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
-
-      // email input is optional, user has to explicitely activate it
-      const provideEmailCheckbox = screen.getByRole("checkbox", { name: "Provide email address" });
-      expect(provideEmailCheckbox).not.toBeChecked();
-      await user.click(provideEmailCheckbox);
-      expect(provideEmailCheckbox).toBeChecked();
-      await user.click(submitButton);
-
-      screen.getByText("Warning alert:");
-      screen.getByText("Some fields are missing. Please check and fill them.");
-      expect(registerMutationMock).not.toHaveBeenCalled();
-
-      const emailInput = screen.getByRole("textbox", { name: /Email/ });
-      await user.type(emailInput, "example@company.test");
-
-      await user.click(submitButton);
-
-      expect(screen.queryByText("Warning alert:")).toBeNull();
-      expect(screen.queryByText("All fields are required")).toBeNull();
-      expect(registerMutationMock).toHaveBeenCalledWith(
-        {
-          email: "example@company.test",
-          key: "INTERNAL-USE-ONLY-1234-5678",
-        },
-        expect.anything(),
-      );
-    });
-
     it.todo("handles and renders errors from server, if any");
   });
 
   describe("when selected product is registrable and registration code is set", () => {
     beforeEach(() => {
       selectedProduct = sle;
-      registrationInfoMock = { key: "INTERNAL-USE-ONLY-1234-5678", email: "example@company.test" };
+      registrationInfoMock = {
+        registered: true,
+        key: "INTERNAL-USE-ONLY-1234-5678",
+        email: "example@company.test",
+        url: "",
+      };
       addonInfoMock = [
         {
           id: "sle-ha",

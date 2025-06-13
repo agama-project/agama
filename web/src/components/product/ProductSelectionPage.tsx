@@ -112,7 +112,7 @@ function ProductSelectionPage() {
   const [showLicense, setShowLicense] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  if (!isEmpty(registration?.key) && selectedProduct) return <Navigate to={PATHS.root} />;
+  if (registration?.registered && selectedProduct) return <Navigate to={PATHS.root} />;
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

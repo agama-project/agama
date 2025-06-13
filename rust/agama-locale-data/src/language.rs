@@ -20,7 +20,7 @@
 
 use serde::Deserialize;
 
-use crate::ranked::{RankedLocales, RankedTerritories};
+use crate::ranked::{RankedConsoleFonts, RankedLocales, RankedTerritories};
 
 #[derive(Debug, Deserialize)]
 pub struct Language {
@@ -29,6 +29,7 @@ pub struct Language {
     pub territories: RankedTerritories,
     pub locales: RankedLocales,
     pub names: crate::localization::Localization,
+    pub consolefonts: RankedConsoleFonts,
 }
 
 #[derive(Debug, Deserialize)]
