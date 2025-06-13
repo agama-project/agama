@@ -303,7 +303,7 @@
                 "type": "string"
               },
               "customMacAddress": {
-                "title": "Custom MAC address to be used",
+                "title": "Custom MAC address to use",
                 "description": "Can also be 'preserve', 'permanent', 'random' or 'stable'.",
                 "type": "string"
               },
