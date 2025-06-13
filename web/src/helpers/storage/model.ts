@@ -177,7 +177,7 @@ function buildLogicalVolume(logicalVolumeData: apiModel.LogicalVolume): model.Lo
 
 function buildVolumeGroup(
   apiVolumeGroup: apiModel.VolumeGroup,
-  listIndex,
+  listIndex: number,
   model: model.Model,
 ): model.VolumeGroup {
   const list = "volumeGroups";

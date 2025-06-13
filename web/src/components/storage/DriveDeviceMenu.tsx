@@ -23,6 +23,7 @@
 import React from "react";
 import SearchedDeviceMenu from "./SearchedDeviceMenu";
 import { useDeleteDrive } from "~/hooks/storage/drive";
+import { model, StorageDevice } from "~/types/storage";
 
 export type DriveDeviceMenuProps = {
   drive: model.Drive;
