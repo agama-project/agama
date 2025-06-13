@@ -141,7 +141,7 @@ impl L10n {
 
         self.ui_keymap = keymap_id;
 
-        Command::new("/usr/bin/localectl")
+        Command::new("localectl")
             .args(["set-keymap", &self.ui_keymap.dashed()])
             .output()
             .map_err(LocaleError::Commit)?;
@@ -174,7 +174,7 @@ impl L10n {
     }
 
     fn ui_keymap() -> Result<KeymapId, LocaleError> {
-        let output = Command::new("/usr/bin/localectl")
+        let output = Command::new("localectl")
             .output()
             .map_err(LocaleError::Commit)?;
         let output = String::from_utf8_lossy(&output.stdout);
