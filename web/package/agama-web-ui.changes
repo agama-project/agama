@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 13 08:24:59 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow empty registratio key to support RMT that can be configured
+  to allow empty registration key (gh#agama-project/agama#2469)
+
+-------------------------------------------------------------------
 Mon Jun  9 06:24:08 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Allow selecting bootable MD RAIDs as boot device
