@@ -81,7 +81,7 @@ describe("Header", () => {
     expect(screen.queryByRole("link", { name: "Skip to content" })).toBeNull();
   });
 
-  it("renders an options dropdown", async () => {
+  it("renders an options dropdown by default", async () => {
     const { user } = installerRender(<Header />);
     expect(screen.queryByRole("menu")).toBeNull();
     const toggler = screen.getByRole("button", { name: "Options toggle" });
@@ -89,6 +89,11 @@ describe("Header", () => {
     const menu = screen.getByRole("menu");
     within(menu).getByRole("menuitem", { name: "Change product" });
     within(menu).getByRole("menuitem", { name: "Download logs" });
+  });
+
+  it("does not render an options dropdown when showInstallerOptions is false", async () => {
+    installerRender(<Header showInstallerOptions={false} />);
+    expect(screen.queryByRole("button", { name: "Options toggle" })).toBeNull();
   });
 
   it.todo("allows downloading the logs");

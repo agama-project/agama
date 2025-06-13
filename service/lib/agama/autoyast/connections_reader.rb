@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,14 +19,12 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
 require "y2network/boot_protocol"
 require "y2network/ip_address"
 require "agama/autoyast/bond_reader"
 require "agama/autoyast/wireless_reader"
 require "ipaddr"
 
-# :nodoc:
 module Agama
   module AutoYaST
     # Builds the Agama "network.connections" section from an AutoYaST profile.

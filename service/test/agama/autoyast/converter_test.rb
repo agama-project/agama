@@ -74,6 +74,26 @@ describe Agama::AutoYaST::Converter do
       end
     end
 
+    context "when iscsi-client is defined" do
+      let(:profile_name) { "iscsi.xml" }
+
+      it "exports the iscsi information" do
+        result = subject.to_agama(profile)
+        expect(result["iscsi"]).to eq({
+          "initiator" => "iqn.2013-02.de.suse:01:e229358d2dea",
+          "targets"   => [
+            {
+              "address"   => "192.168.1.1",
+              "port"      => 3260,
+              "name"      => "iqn.2001-05.com.doe:test",
+              "interface" => "default",
+              "startup"   => "onboot"
+            }
+          ]
+        })
+      end
+    end
+
     context "when the root password and/or public SSH key are set" do
       it "exports the root password and/or public SSH key" do
         result = subject.to_agama(profile)

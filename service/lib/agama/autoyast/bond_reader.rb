@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,11 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
-require "y2network/wireless_auth_mode"
-require "y2network/wireless_mode"
-
-# :nodoc:
 module Agama
   module AutoYaST
     # Builds an Agama "bond" section from an AutoYaST InterfaceSection.

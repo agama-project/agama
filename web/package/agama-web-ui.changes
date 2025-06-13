@@ -1,8 +1,29 @@
 -------------------------------------------------------------------
+
 Fri Jun 13 08:24:59 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow empty registratio key to support RMT that can be configured
   to allow empty registration key (gh#agama-project/agama#2469)
+
+-------------------------------------------------------------------
+Thu Jun 12 16:27:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Replace SUSE font with Noto Sans for Cyrillic languages and
+  update CSS to use `:lang(xx)` for improved language support
+  (gh#agama-project/agama#2467, bsc#1236261).
+
+-------------------------------------------------------------------
+Thu Jun 12 12:51:38 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Allow selecting bootable MD RAIDS to create partitions and LVM
+  volume groups on them (gh#agama-project/agama#2455).
+
+-------------------------------------------------------------------
+Tue Jun 10 16:51:15 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Improve post-installation user experience by providing feedback
+  that confirms the system restart (bsc#1237410,
+  gh#agama-project/agama#2462).
 
 -------------------------------------------------------------------
 Mon Jun  9 06:24:08 UTC 2025 - José Iván López González <jlopez@suse.com>

@@ -123,7 +123,7 @@ else
   for pkg in "${packages[@]}"; do
     echo "Branching package $pkg"
     # branch the package
-    osc branch systemsmanagement:Agama:Devel "$pkg" "$PROJECT" > /dev/null
+    osc branch --nodevelproject systemsmanagement:Agama:Devel "$pkg" "$PROJECT" > /dev/null
     # detach branch so the package is not updated when the original package changes,
     # this also avoids possible conflicts
     osc detachbranch "$PROJECT" "$pkg"

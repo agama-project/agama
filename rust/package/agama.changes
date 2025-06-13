@@ -5,6 +5,18 @@ Fri Jun 13 08:24:39 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
   empty registration key (gh#agama-project/agama#2469)
 
 -------------------------------------------------------------------
+Thu Jun 12 14:59:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use "localectl" instead of "setxkbmap" to change the keymap
+  (gh#agama-project/agama#2470).
+
+-------------------------------------------------------------------
+Wed Jun 11 13:12:12 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Consider `hashedPassword` as `false` when it is not specified
+  (gh#agama-project/agama#2464).
+
+-------------------------------------------------------------------
 Tue Jun 10 13:33:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Expose the user and the root password when exporting the configuration

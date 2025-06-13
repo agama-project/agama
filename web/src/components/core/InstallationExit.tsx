@@ -21,20 +21,38 @@
  */
 
 import React from "react";
-import SearchedDeviceMenu from "./SearchedDeviceMenu";
-import { useDeleteDrive } from "~/hooks/storage/drive";
+import {
+  Bullseye,
+  Card,
+  CardBody,
+  Content,
+  EmptyState,
+  EmptyStateBody,
+  Grid,
+  GridItem,
+} from "@patternfly/react-core";
+import { _ } from "~/i18n";
 
-export type DriveDeviceMenuProps = {
-  drive: model.Drive;
-  selected: StorageDevice;
-};
-
-export default function DriveDeviceMenu({
-  drive,
-  selected,
-}: DriveDeviceMenuProps): React.ReactNode {
-  const deleteDrive = useDeleteDrive();
-  const deleteFn = (device: model.Drive) => deleteDrive(device.name);
-
-  return <SearchedDeviceMenu modelDevice={drive} selected={selected} deleteFn={deleteFn} />;
+export default function InstallationExit() {
+  return (
+    <Bullseye>
+      <Grid hasGutter>
+        <GridItem sm={8} smOffset={2}>
+          <Card>
+            <CardBody>
+              <EmptyState variant="xl" titleText={_("Your system is rebooting")} headingLevel="h1">
+                <EmptyStateBody>
+                  <Content component="p">
+                    {_(
+                      "The installer interface is no longer available, so you can safely close this window.",
+                    )}
+                  </Content>
+                </EmptyStateBody>
+              </EmptyState>
+            </CardBody>
+          </Card>
+        </GridItem>
+      </Grid>
+    </Bullseye>
+  );
 }

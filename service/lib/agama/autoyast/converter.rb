@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,10 +19,12 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
-require "autoinstall/script_runner"
-require "autoinstall/script"
+require "agama/autoyast/bootloader_reader"
+require "agama/autoyast/files_reader"
+require "agama/autoyast/hostname_reader"
+require "agama/autoyast/iscsi_reader"
 require "agama/autoyast/localization_reader"
+require "agama/autoyast/network_reader"
 require "agama/autoyast/product_reader"
 require "agama/autoyast/root_reader"
 require "agama/autoyast/scripts_reader"
@@ -30,13 +32,7 @@ require "agama/autoyast/security_reader"
 require "agama/autoyast/software_reader"
 require "agama/autoyast/storage_reader"
 require "agama/autoyast/user_reader"
-require "json"
-require "fileutils"
-require "pathname"
 
-require "agama/autoyast/report_patching"
-
-# :nodoc:
 module Agama
   module AutoYaST
     # Converts an AutoYaST profile into an Agama one.
@@ -44,41 +40,28 @@ module Agama
     # It is expected that many of the AutoYaST options are ignored because Agama does not have the
     # same features.
     #
-    # The output might include, apart from the JSON Agama profile, a set of scripts (not implemented
-    # yet).
-    #
     # TODO: handle invalid profiles (YAST_SKIP_XML_VALIDATION).
     # TODO: capture reported errors (e.g., via the Report.Error function).
     class Converter
-      # Sections which have a corresponding reader. The reader is expected to be
-      # named in Pascal case and adding "Reader" as suffix (e.g., "L10nReader").
-      SECTIONS = [
-        "bootloader",
-        "files",
-        "hostname",
-        "localization",
-        "network",
-        "product",
-        "root",
-        "scripts",
-        "security",
-        "software",
-        "storage",
-        "user"
-      ].freeze
-
-      # Builds the Agama profile
+      # Converts the given AutoYaST profile to an Agama profile.
       #
-      # It goes through the list of READERS and merges the results of all of them.
-      #
-      # @return [Hash] Agama profile
+      # @return [Hash]
       def to_agama(profile)
-        SECTIONS.reduce({}) do |result, section|
-          require "agama/autoyast/#{section}_reader"
-          klass = "#{section}_reader".split("_").map(&:capitalize).join
-          reader = Agama::AutoYaST.const_get(klass).new(profile)
-          result.merge(reader.read)
-        end
+        [
+          BootloaderReader.new(profile).read,
+          FilesReader.new(profile).read,
+          HostnameReader.new(profile).read,
+          IscsiReader.new(profile).read,
+          LocalizationReader.new(profile).read,
+          NetworkReader.new(profile).read,
+          ProductReader.new(profile).read,
+          RootReader.new(profile).read,
+          ScriptsReader.new(profile).read,
+          SecurityReader.new(profile).read,
+          SoftwareReader.new(profile).read,
+          StorageReader.new(profile).read,
+          UserReader.new(profile).read
+        ].inject(:merge)
       end
     end
   end

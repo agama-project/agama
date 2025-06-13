@@ -21,20 +21,23 @@
  */
 
 import React from "react";
-import SearchedDeviceMenu from "./SearchedDeviceMenu";
-import { useDeleteDrive } from "~/hooks/storage/drive";
+import { screen } from "@testing-library/react";
+import { plainRender } from "~/test-utils";
+import InstallationExit from "./InstallationExit";
 
-export type DriveDeviceMenuProps = {
-  drive: model.Drive;
-  selected: StorageDevice;
-};
+describe("InstallationExit", () => {
+  it("makes users aware system is rebooting", () => {
+    plainRender(<InstallationExit />);
+    screen.getByRole("heading", { name: "Your system is rebooting", level: 1 });
+  });
 
-export default function DriveDeviceMenu({
-  drive,
-  selected,
-}: DriveDeviceMenuProps): React.ReactNode {
-  const deleteDrive = useDeleteDrive();
-  const deleteFn = (device: model.Drive) => deleteDrive(device.name);
+  it("makes users aware installer is no longer useful", () => {
+    plainRender(<InstallationExit />);
+    screen.getByText(/The installer interface is no longer available/);
+  });
 
-  return <SearchedDeviceMenu modelDevice={drive} selected={selected} deleteFn={deleteFn} />;
-}
+  it("invites users to close the installer", () => {
+    plainRender(<InstallationExit />);
+    screen.getByText(/you can safely close this window/);
+  });
+});
