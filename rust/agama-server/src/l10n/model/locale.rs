@@ -79,6 +79,11 @@ impl LocalesDatabase {
         &self.locales
     }
 
+    /// Find the locale in the database
+    pub fn find_locale(&self, locale: &LocaleId) -> Option<&LocaleEntry> {
+        self.locales.iter().find(|l| l.id == *locale)
+    }
+
     /// Gets the supported locales information.
     ///
     /// * `ui_language`: language to use in the translations.

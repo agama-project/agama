@@ -267,8 +267,7 @@ impl L10n {
 
         // unfortunately the console font cannot be set via the "systemd-firstboot" tool,
         // we need to write it directly to the config file
-        let locale = self.locales_db.entries().iter().find(|l| l.id == locale);
-        if let Some(entry) = locale {
+        if let Some(entry) = self.locales_db.find_locale(&locale) {
             if let Some(font) = &entry.consolefont {
                 // the font entry is missing in a file created by "systemd-firstboot", just append it at the end
                 let mut file = OpenOptions::new()
