@@ -319,7 +319,11 @@ describe Agama::Storage::Manager do
     end
 
     let(:used_features) do
-      instance_double(Y2Storage::StorageFeaturesList, pkg_list: ["btrfsprogs", "snapper"])
+      instance_double(
+        Y2Storage::StorageFeaturesList,
+        pkg_list: ["btrfsprogs", "snapper"],
+        any?:     false
+      )
     end
 
     let(:bootloader_proposal) { instance_double(Bootloader::ProposalClient, make_proposal: nil) }
@@ -342,6 +346,40 @@ describe Agama::Storage::Manager do
       expect(client).to receive(:run)
 
       storage.install
+    end
+
+    context "if iSCSI was configured" do
+      before do
+        allow_any_instance_of(Agama::Storage::ISCSI::Manager)
+          .to receive(:configured?).and_return(true)
+      end
+
+      it "adds the iSCSI software to install" do
+        expect(Yast::PackagesProposal).to receive(:SetResolvables) do |_, _, packages|
+          expect(packages).to include("open-iscsi", "iscsiuio")
+        end
+
+        storage.install
+      end
+    end
+
+    context "if iSCSI was used" do
+      before do
+        allow_any_instance_of(Agama::Storage::ISCSI::Manager)
+          .to receive(:configured?).and_return(false)
+      end
+
+      let(:used_features) do
+        instance_double(Y2Storage::StorageFeaturesList, pkg_list: [], any?: true)
+      end
+
+      it "adds the iSCSI software to install" do
+        expect(Yast::PackagesProposal).to receive(:SetResolvables) do |_, _, packages|
+          expect(packages).to include("open-iscsi", "iscsiuio")
+        end
+
+        storage.install
+      end
     end
   end
 
