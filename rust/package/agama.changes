@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 13 10:42:48 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- The "logs store" saves all journald logs on a single file (related
+  to gh#agama-project/agama#2466).
+
+-------------------------------------------------------------------
 Fri Jun  6 13:22:58 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Added support for moving the connections from memory only to disk
