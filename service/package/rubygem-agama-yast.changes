@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Fri Jun 13 08:23:46 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
-- Split registration key and registered status to allow RMT with
+- Split registration key and registered status to support RMT with
   empty registration key (gh#agama-project/agama#2469)
 
 -------------------------------------------------------------------

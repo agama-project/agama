@@ -37,7 +37,7 @@ export default function ChangeProductOption({ children, ...props }: Omit<Dropdow
   const to = useHref(PATHS.changeProduct);
 
   if (products.length <= 1) return null;
-  if (registration && registration.registered) return null;
+  if (registration?.registered) return null;
   if (SIDE_PATHS.includes(currentLocation.pathname)) return null;
 
   return (
