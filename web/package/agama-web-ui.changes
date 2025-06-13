@@ -2,8 +2,8 @@
 
 Fri Jun 13 08:24:59 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
-- Allow empty registratio key to support RMT that can be configured
-  to allow empty registration key (gh#agama-project/agama#2469)
+- Allow registering against an RMT without a registration code.
+  (gh#agama-project/agama#2469)
 
 -------------------------------------------------------------------
 Thu Jun 12 16:27:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
