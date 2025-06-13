@@ -80,6 +80,8 @@ impl LocalesDatabase {
     }
 
     /// Find the locale in the database
+    ///
+    /// * `locale`: the language to find
     pub fn find_locale(&self, locale: &LocaleId) -> Option<&LocaleEntry> {
         self.locales.iter().find(|l| l.id == *locale)
     }
@@ -113,10 +115,11 @@ impl LocalesDatabase {
                 .or_else(|| names.name_for(DEFAULT_LANG))
                 .unwrap_or(territory.id.to_string());
 
-            let consolefont = match language.consolefonts.consolefont.first() {
-                Some(font) => Some(font.id.clone()),
-                None => None,
-            };
+            let consolefont = language
+                .consolefonts
+                .consolefont
+                .first()
+                .map(|f| f.id.clone());
 
             let entry = LocaleEntry {
                 id: code.clone(),
