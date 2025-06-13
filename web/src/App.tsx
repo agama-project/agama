@@ -40,7 +40,6 @@ import { InstallationPhase } from "~/types/status";
 function App() {
   const location = useLocation();
   const { isBusy, phase } = useInstallerStatus({ suspense: true });
-  const { connected, error } = useInstallerClientStatus();
   const { selectedProduct, products } = useProduct({
     suspense: phase !== InstallationPhase.Install,
   });
@@ -52,8 +51,6 @@ function App() {
   useDeprecatedChanges();
 
   const Content = () => {
-    if (error) return <ServerError />;
-
     if (phase === InstallationPhase.Install) {
       return <Navigate to={ROOT.installationProgress} />;
     }
@@ -62,8 +59,7 @@ function App() {
       return <Navigate to={ROOT.installationFinished} />;
     }
 
-    if (!products || !connected || (selectedProduct === undefined && isBusy))
-      return <Loading listenQuestions />;
+    if (!products || (selectedProduct === undefined && isBusy)) return <Loading listenQuestions />;
 
     if (phase === InstallationPhase.Startup && isBusy) {
       return <Loading listenQuestions />;
@@ -85,4 +81,15 @@ function App() {
   return <Content />;
 }
 
-export default App;
+function AppWrapper() {
+  const { connected, error } = useInstallerClientStatus();
+
+  // TODO: invalidate all queries if connected goes from false to true (reconnecting)
+
+  if (error) return <ServerError />;
+  if (!connected) return <Loading />;
+
+  return <App />;
+}
+
+export default AppWrapper;
