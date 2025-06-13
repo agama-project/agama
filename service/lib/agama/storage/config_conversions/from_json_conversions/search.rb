@@ -22,6 +22,7 @@
 require "agama/storage/config_conversions/from_json_conversions/base"
 require "agama/storage/config_conversions/from_json_conversions/search_conditions"
 require "agama/storage/configs/search"
+require "agama/storage/configs/sort_criteria"
 
 module Agama
   module Storage
@@ -54,6 +55,7 @@ module Agama
               name:             search_json.dig(:condition, :name),
               size:             convert_size,
               partition_number: search_json.dig(:condition, :number),
+              sort_criteria:    convert_sort,
               max:              search_json[:max],
               if_not_found:     search_json[:ifNotFound]&.to_sym
             }
@@ -72,6 +74,36 @@ module Agama
             return unless size_json
 
             FromJSONConversions::SearchConditions::Size.new(size_json).convert
+          end
+
+          def convert_sort
+            Array(search_json[:sort]).map do |entry|
+              case entry
+              when Array
+                sort_criterion(entry.first, entry.last)
+              when Hash
+                sort_criterion(entry.keys.first, entry.values.first)
+              else
+                sort_criterion(entry)
+              end
+            end
+          end
+
+          def sort_criterion(name, order = "asc")
+            crit = sort_criterion_class(name).new
+            crit.asc = (order.to_s != "desc")
+            crit
+          end
+
+          SORT_CRITERIA = {
+            name:   Configs::SortCriteria::Name,
+            size:   Configs::SortCriteria::Size,
+            number: Configs::SortCriteria::PartitionNumber
+          }.freeze
+          private_constant :SORT_CRITERIA
+
+          def sort_criterion_class(name)
+            SORT_CRITERIA[name.to_sym]
           end
         end
       end

@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/configs/sort_criteria"
+
 module Agama
   module Storage
     module ConfigSolvers
@@ -59,6 +61,23 @@ module Agama
           raise NotImplementedError
         end
 
+        # Compares the order of two devices, based on the configuration.
+        #
+        # @param device_config [#search]
+        # @param dev_a [Y2Storage#device]
+        # @param dev_b [Y2Storage#device]
+        #
+        # @return [Integer] less than 0 when b follows a, greater than 0 when a follows b
+        def order(device_config, dev_a, dev_b)
+          criteria = device_config.search&.sort_criteria || []
+          criteria.each do |criterion|
+            comparison = criterion.compare(dev_a, dev_b)
+            return comparison unless comparison.zero?
+          end
+
+          fallback_sort_criterion.compare(dev_a, dev_b)
+        end
+
         # Solves the search of given device config.
         #
         # As result, one or several configs can be generated. For example, if the search condition
@@ -82,7 +101,7 @@ module Agama
         def find_devices(device_config)
           devices = unassigned_candidate_devices
             .select { |d| match_condition?(device_config, d) }
-            .sort_by(&:name)
+            .sort { |a, b| order(device_config, a, b) }
 
           devices.first(device_config.search.max || devices.size)
         end
@@ -111,6 +130,17 @@ module Agama
         def solve_with_device(device_config, device)
           @assigned_sids << device.sid
           device_config.copy.tap { |d| d.search.solve(device) }
+        end
+
+        # Sorting criterion to use when none is given or to resolve ties in the criteria specified
+        # in the configuration.
+        #
+        # NOTE: To ensure consistency between different executions, comparisons by this criterion
+        # should never return zero. Bear that in mind if this method is redefined in any subclass.
+        #
+        # @return [Configs::SortCriteria]
+        def fallback_sort_criterion
+          @fallback_sort_criterion = Configs::SortCriteria::Name.new
         end
       end
     end

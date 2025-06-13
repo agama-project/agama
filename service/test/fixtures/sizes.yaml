@@ -27,6 +27,15 @@
     - partition:
         size: 30 GiB
         name: /dev/vdb3
+- disk:
+    name: /dev/vdc
+    size: 150 GiB
+- disk:
+    name: /dev/vdd
+    size: 200 GiB
+- disk:
+    name: /dev/vde
+    size: 500 GiB
 - md:
     name: "/dev/md0"
     chunk_size: 16 KiB
