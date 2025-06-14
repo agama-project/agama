@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { ServerError } from "~/components/core";
 import { Loading } from "~/components/layout";
@@ -33,6 +33,7 @@ import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status"
 import { useDeprecatedChanges } from "~/queries/storage";
 import { ROOT, PRODUCT } from "~/routes/paths";
 import { InstallationPhase } from "~/types/status";
+import { useQueryClient } from "@tanstack/react-query";
 
 /**
  * Main application component.
@@ -45,11 +46,20 @@ function App() {
     suspense: phase !== InstallationPhase.Install,
   });
   const { language } = useInstallerL10n();
+  const queryClient = useQueryClient();
+
   useL10nConfigChanges();
   useProductChanges();
   useIssuesChanges();
   useInstallerStatusChanges();
   useDeprecatedChanges();
+
+  useEffect(() => {
+    // Invalidate the queries when unmounting this component.
+    return () => {
+      queryClient.invalidateQueries();
+    };
+  }, [queryClient]);
 
   const Content = () => {
     if (error) return <ServerError />;
