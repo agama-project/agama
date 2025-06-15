@@ -150,6 +150,9 @@ export default {
   "All fields are required": [
     "ყველა ველი აუცილებელია"
   ],
+  "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
+    ""
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     ""
   ],
@@ -798,6 +801,9 @@ export default {
   ],
   "Installation will take %s.": [
     "დაყენებას დასჭირდება %s."
+  ],
+  "Installed system may not have network connections": [
+    ""
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
     ""
@@ -1505,6 +1511,9 @@ export default {
   "The configured LVM groups will remain at %s": [
     ""
   ],
+  "The connection will be used only during installation and not available in the installed system.": [
+    ""
+  ],
   "The content may be deleted": [
     "შეიძლება, შემცველობა წაიშალოს"
   ],
@@ -1564,6 +1573,9 @@ export default {
   ],
   "The installation will take %s including:": [
     "დაყენებას დასჭირდება %s ჩათვლით:"
+  ],
+  "The installer interface is no longer available, so you can safely close this window.": [
+    ""
   ],
   "The installer requires [root] user privileges.": [
     "დაყენების პროგრამას [root] მომხმარებლის პრივილეგიები სჭირდება."
@@ -1902,6 +1914,9 @@ export default {
     ""
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
+    ""
+  ],
+  "Your system is rebooting": [
     ""
   ],
   "ZFCP": [

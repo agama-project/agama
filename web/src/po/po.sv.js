@@ -19,7 +19,7 @@ export default {
     "%1$s kommer fortfarande att innehålla LVM-gruppen '%2$s' och eventuell partition som behövs för att starta systemet"
   ],
   "%d of %d": [
-    ""
+    "%d av %d"
   ],
   "%s - %s": [
     "%s - %s"
@@ -142,13 +142,16 @@ export default {
     "Justera inställningarna nedan för att få det nya systemet att passa in i det tillgängliga utrymmet."
   ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
-    ""
+    "Alla konflikter har lösts, eller så har inga upptäckts. Du kan tryggt fortsätta med din installation."
   ],
   "All content will be deleted": [
     "Allt innehåll kommer att raderas"
   ],
   "All fields are required": [
     "Alla fält krävs"
+  ],
+  "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
+    "Alla nätverksanslutningar som hanteras via det här gränssnittet är för närvarande inställda på att endast användas under installationen och kommer inte att kopieras till det installerade systemet"
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Förutom att definiera den första användaren kan autentiseringsmetoder för rootanvändaren konfigureras."
@@ -158,6 +161,9 @@ export default {
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Alla befintliga partitioner kommer att tas bort och all data på disken kommer att gå förlorad."
+  ],
+  "Apply selected solution": [
+    "Använd den valda lösningen"
   ],
   "As a new partition on %s": [
     "Som en ny partition på %s"
@@ -338,6 +344,9 @@ export default {
   ],
   "Configure zFCP": [
     "Konfigurera zFCP"
+  ],
+  "Configured for installation only": [
+    "Endast konfigurerad för installation"
   ],
   "Configuring the product, please wait ...": [
     "Konfigurerar produkten, vänta..."
@@ -808,6 +817,9 @@ export default {
   "Installation will take %s.": [
     "Installationen kommer att ta %s."
   ],
+  "Installed system may not have network connections": [
+    "Det installerade systemet kanske inte har nätverksanslutningar"
+  ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "Att installera ett trasigt paket påverkar systemets stabilitet och är en stor säkerhetsrisk!"
   ],
@@ -1001,7 +1013,7 @@ export default {
     "Flervägs"
   ],
   "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
-    ""
+    "Flera konflikter hittades. Du kan åtgärda dem i valfri ordning, och att lösa en kan lösa andra."
   ],
   "NFS": [
     "NFS"
@@ -1038,6 +1050,9 @@ export default {
   ],
   "No additional software was selected.": [
     "Ingen ytterligare programvara valdes."
+  ],
+  "No conflicts to address": [
+    "Det finns inga konflikter att ta itu med"
   ],
   "No content found": [
     "Inget innehåll hittades"
@@ -1298,7 +1313,7 @@ export default {
     "Resultat"
   ],
   "Review and fix": [
-    ""
+    "Granska och åtgärda"
   ],
   "Root authentication methods": [
     "Rotautentiseringsmetoder"
@@ -1356,6 +1371,9 @@ export default {
   ],
   "Select a product": [
     "Välj en produkt"
+  ],
+  "Select a solution to continue": [
+    "Välj en lösning för att fortsätta"
   ],
   "Select another disk to define partitions": [
     "Välj en annan disk för att definiera partitioner"
@@ -1415,6 +1433,12 @@ export default {
   "Show information about %s": [
     "Visa information om %s"
   ],
+  "Show less actions": [
+    "Visa mindre åtgärder"
+  ],
+  "Show more actions": [
+    "Visa mer åtgärder"
+  ],
   "Shrink existing partitions": [
     "Krymp existerande partitioner"
   ],
@@ -1424,11 +1448,17 @@ export default {
   "Size": [
     "Storlek"
   ],
+  "Size limits must be numbers followed by a unit like GiB or GB": [
+    "Storleksgränser måste vara siffror följt av en enhet som GiB eller GB"
+  ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Storleksgränser måste vara siffror, eventuellt följt av en enhet som GiB eller GB"
   ],
   "Size options": [
     "Storleksalternativ"
+  ],
+  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
+    "Storlekar måste anges som siffror följt av en enhet              formen GiB (potens av 2) eller GB (potens av 10)."
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     "Storlekar måste anges som siffror, eventuellt följt av en enhet."
@@ -1436,14 +1466,20 @@ export default {
   "Skip to content": [
     "Hoppa till innehåll"
   ],
+  "Skip to next": [
+    "Hoppa till nästa"
+  ],
   "Skip to previous": [
-    ""
+    "Hoppa till föregående"
   ],
   "Software": [
     "Programvara"
   ],
   "Software %s": [
     "Programvara %s"
+  ],
+  "Software conflicts resolution": [
+    "Lösning av programvarukonflikter"
   ],
   "Software selection": [
     "Val av programvara"
@@ -1508,6 +1544,9 @@ export default {
   "The configured LVM groups will remain at %s": [
     "De konfigurerade LVM-grupperna kommer att finnas kvar på %s"
   ],
+  "The connection will be used only during installation and not available in the installed system.": [
+    "Anslutningen kommer endast att användas under installationen och är inte tillgänglig i det installerade systemet."
+  ],
   "The content may be deleted": [
     "Innehållet kan komma att raderas"
   ],
@@ -1568,6 +1607,9 @@ export default {
   "The installation will take %s including:": [
     "Installationen kommer att ta upp %s inklusive:"
   ],
+  "The installer interface is no longer available, so you can safely close this window.": [
+    "Installationsgränssnittet är inte längre tillgängligt, så du kan säkert stänga det här fönstret."
+  ],
   "The installer requires [root] user privileges.": [
     "Installationsprogrammet kräver [root] användarrättigheter."
   ],
@@ -1580,11 +1622,17 @@ export default {
   "The logical volume is created exactly with the given size": [
     "Den logiska volymen skapas exakt med den givna storleken"
   ],
+  "The maximum must be a number followed by a unit like GiB or GB": [
+    "Det maximala antalet måste vara ett tal följt av en enhet som GiB eller GB"
+  ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
     "Det maximala måste vara ett tal, eventuellt följt av en enhet som GiB eller GB"
   ],
   "The minimum cannot be greater than the maximum": [
     "Minimum kan inte vara större än maximum"
+  ],
+  "The minimum must be a number followed by a unit like GiB or GB": [
+    "Det minsta måste vara ett tal följt av en enhet som GiB eller GB"
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "Det minsta måste vara ett nummer, eventuellt följt av en enhet som GiB eller GB"
@@ -1799,6 +1847,9 @@ export default {
   "Use available space": [
     "Använd tillgängligt utrymme"
   ],
+  "Use for installation only": [
+    "Använd för installation endast"
+  ],
   "Use for the selected product too": [
     "Använd även för den valda produkten"
   ],
@@ -1903,6 +1954,9 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Du kommer att ansluta till ett offentligt nätverk utan kryptering. Dina data kanske inte är säkra."
+  ],
+  "Your system is rebooting": [
+    "Ditt system startar om"
   ],
   "ZFCP": [
     "ZFCP"

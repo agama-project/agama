@@ -19,7 +19,7 @@ export default {
     "%1$s には起動に必要な設定済み LVM グループ '%2$s' とパーティションが含まれています"
   ],
   "%d of %d": [
-    ""
+    "%d ／ %d"
   ],
   "%s - %s": [
     "%s - %s"
@@ -142,13 +142,16 @@ export default {
     "新しいシステムが利用可能な領域内に収まるように設定を調整してください。"
   ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
-    ""
+    "すべての競合が解決されたか、競合が検出されませんでした。セットアップを安全に続行できます。"
   ],
   "All content will be deleted": [
     "全ての内容を削除する"
   ],
   "All fields are required": [
     "全ての項目に入力する必要があります"
+  ],
+  "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
+    "このインターフェイスを通じて管理されるすべてのネットワーク接続は現在、インストール時にのみ使用されるように設定されており、インストールされたシステムにはコピーされません"
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "最初のユーザの作成とは別に、 root ユーザに対する認証方式を設定することができます。"
@@ -158,6 +161,9 @@ export default {
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "全てのパーティションを削除し、ディスク内に存在するデータを全て消去します。"
+  ],
+  "Apply selected solution": [
+    "選択したソリューションを適用する"
   ],
   "As a new partition on %s": [
     "%s に新しいパーティションとして"
@@ -338,6 +344,9 @@ export default {
   ],
   "Configure zFCP": [
     "zFCP の設定"
+  ],
+  "Configured for installation only": [
+    "インストール専用に設定されています"
   ],
   "Configuring the product, please wait ...": [
     "製品を設定しています。しばらくお待ちください..."
@@ -807,6 +816,9 @@ export default {
   "Installation will take %s.": [
     "インストールするには %s が必要です。"
   ],
+  "Installed system may not have network connections": [
+    "インストールされたシステムにはネットワーク接続がない可能性があります"
+  ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "壊れたパッケージをインストールしてしまうと、システムの安定性が損なわれるほか、セキュリティ上のリスクにもなります！"
   ],
@@ -1000,7 +1012,7 @@ export default {
     "マルチパス"
   ],
   "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
-    ""
+    "複数の競合が検出されました。これらの競合は任意の順序で対処できます。1 つの競合を解決すると、他の競合も解決される場合があります。"
   ],
   "NFS": [
     "NFS"
@@ -1037,6 +1049,9 @@ export default {
   ],
   "No additional software was selected.": [
     "追加のソフトウエアは何も選択していません。"
+  ],
+  "No conflicts to address": [
+    "対処すべき競合はありません"
   ],
   "No content found": [
     "ストレージには何も記録されていないようです"
@@ -1297,7 +1312,7 @@ export default {
     "結果"
   ],
   "Review and fix": [
-    ""
+    "確認と修正"
   ],
   "Root authentication methods": [
     "root の認証方式"
@@ -1356,6 +1371,9 @@ export default {
   "Select a product": [
     "製品の選択"
   ],
+  "Select a solution to continue": [
+    "続行するにはソリューションを選択してください"
+  ],
   "Select another disk to define partitions": [
     "パーティションの設定作業を行う他のディスクを選択"
   ],
@@ -1413,6 +1431,12 @@ export default {
   "Show information about %s": [
     "%s に関する情報を表示"
   ],
+  "Show less actions": [
+    "表示する処理を減らす"
+  ],
+  "Show more actions": [
+    "表示する処理を増やす"
+  ],
   "Shrink existing partitions": [
     "既存のパーティションを縮小する"
   ],
@@ -1422,11 +1446,17 @@ export default {
   "Size": [
     "サイズ"
   ],
+  "Size limits must be numbers followed by a unit like GiB or GB": [
+    "サイズ制限は GiB や GB のような単位を付けた数値でなければなりません"
+  ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "サイズ制限は数値でなければいけません。なお、 GiB や GB のように単位を付けることもできます"
   ],
   "Size options": [
     "サイズのオプション"
+  ],
+  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
+    "サイズは、数値の後に GiB (2 のべき乗で指定する場合) や GB (10 のべき乗で指定する場合) の形式の単位を付けて入力する必要があります。"
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     "サイズには単位付きもしくは単位無しの数値を入力しなければなりません。"
@@ -1434,14 +1464,20 @@ export default {
   "Skip to content": [
     "コンテンツに移動"
   ],
+  "Skip to next": [
+    "次へスキップ"
+  ],
   "Skip to previous": [
-    ""
+    "前へスキップ"
   ],
   "Software": [
     "ソフトウエア"
   ],
   "Software %s": [
     "ソフトウエア %s"
+  ],
+  "Software conflicts resolution": [
+    "ソフトウエアの競合の解決"
   ],
   "Software selection": [
     "ソフトウエア選択"
@@ -1506,6 +1542,9 @@ export default {
   "The configured LVM groups will remain at %s": [
     "設定済みの LVM グループが %s に残されます"
   ],
+  "The connection will be used only during installation and not available in the installed system.": [
+    "接続はインストール時にのみ使用され、インストールされたシステムでは利用できません。"
+  ],
   "The content may be deleted": [
     "内容が削除されるかもしれません"
   ],
@@ -1566,6 +1605,9 @@ export default {
   "The installation will take %s including:": [
     "下記の構成をインストールするには %s が必要です:"
   ],
+  "The installer interface is no longer available, so you can safely close this window.": [
+    "インストーラの処理は完了しています。このウインドウは閉じてかまいません。"
+  ],
   "The installer requires [root] user privileges.": [
     "インストーラを使用するには [root] 権限が必要です。"
   ],
@@ -1578,11 +1620,17 @@ export default {
   "The logical volume is created exactly with the given size": [
     "指定したサイズで論理ボリュームを作成します"
   ],
+  "The maximum must be a number followed by a unit like GiB or GB": [
+    "最大値は GiB や GB のような単位を付けた数値でなければなりません"
+  ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
     "最大サイズは数値でなければいけません。なお、 GiB や GB のように単位を付けることもできます"
   ],
   "The minimum cannot be greater than the maximum": [
     "最小サイズは最大サイズより小さくなければいけません"
+  ],
+  "The minimum must be a number followed by a unit like GiB or GB": [
+    "最小値は GiB や GB のような単位を付けた数値でなければなりません"
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "最小サイズは数値でなければいけません。なお、 GiB や GB のように単位を付けることもできます"
@@ -1797,6 +1845,9 @@ export default {
   "Use available space": [
     "利用可能な領域を使用する"
   ],
+  "Use for installation only": [
+    "インストールのみに使用"
+  ],
   "Use for the selected product too": [
     "選択した製品に対しても使用する"
   ],
@@ -1901,6 +1952,9 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "暗号化されていない公衆ネットワークに接続しようとしています。通信の安全性が保てないかもしれません。"
+  ],
+  "Your system is rebooting": [
+    "システムを再起動しています"
   ],
   "ZFCP": [
     "ZFCP"
