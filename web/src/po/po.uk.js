@@ -19,7 +19,7 @@ export default {
     "%1$s, як і раніше, міститиме групу LVM '%2$s' і будь-який розділ, необхідний для завантаження"
   ],
   "%d of %d": [
-    ""
+    "%d з %d"
   ],
   "%s - %s": [
     "%s - %s"
@@ -142,13 +142,16 @@ export default {
     "Відрегулюйте наведені нижче налаштування, щоб нова система вписувалася в наявний простір."
   ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
-    ""
+    "Всі конфлікти вирішено, або не виявлено жодного. Ви можете безпечно продовжити встановлення."
   ],
   "All content will be deleted": [
     "Весь вміст буде видалений"
   ],
   "All fields are required": [
     "Всі поля обов'язкові"
+  ],
+  "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
+    "Усі мережеві з'єднання, керовані через цей інтерфейс, наразі налаштовані на використання лише під час інсталяції і не будуть скопійовані до інстальованої системи"
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Крім зазначення першого користувача, можна налаштувати методи автентифікації для root-користувача."
@@ -158,6 +161,9 @@ export default {
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Всі розділи буде видалено, а всі дані на диску буде втрачено."
+  ],
+  "Apply selected solution": [
+    "Застосувати обране рішення"
   ],
   "As a new partition on %s": [
     "Як новий розділ на %s"
@@ -258,6 +264,9 @@ export default {
   "Change": [
     "Змінити"
   ],
+  "Change Language": [
+    "Змінити мову"
+  ],
   "Change boot options": [
     "Змінити параметри завантаження"
   ],
@@ -265,10 +274,16 @@ export default {
     "Меню зміни пристрою"
   ],
   "Change display language": [
-    ""
+    "Змінити видиму мову"
   ],
   "Change display language and keyboard layout": [
-    ""
+    "Змінити мову та розкладку клавіатури"
+  ],
+  "Change keyboard": [
+    "Змінити клавіатуру"
+  ],
+  "Change keyboard layout": [
+    "Змінити розкладку клавіатури"
   ],
   "Change product": [
     "Змінити продукт"
@@ -329,6 +344,9 @@ export default {
   ],
   "Configure zFCP": [
     "Налаштувати zFCP"
+  ],
+  "Configured for installation only": [
+    "Налаштовано лише для встановлення"
   ],
   "Configuring the product, please wait ...": [
     "Налаштування продукту; будь ласка, зачекайте…"
@@ -800,6 +818,9 @@ export default {
   "Installation will take %s.": [
     "Встановлення займе %s."
   ],
+  "Installed system may not have network connections": [
+    "Встановлена система може не мати мережевих підключень"
+  ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "Встановлення пошкоджених пакунків впливає на стабільність системи і є великим ризиком для безпеки!"
   ],
@@ -859,6 +880,9 @@ export default {
   ],
   "Language": [
     "Мова"
+  ],
+  "Language and keyboard": [
+    "Мова і клавіатура"
   ],
   "Let the installer propose a sensible range of sizes": [
     "Дозволити інсталятору запропонувати розумний діапазон розмірів"
@@ -957,13 +981,13 @@ export default {
     "Інші пристрої"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    ""
+    "Більше розкладок клавіатури може бути доступно на сторінці [Локалізації]"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    ""
+    "Більше варіантів мов і розкладок клавіатури може бути доступно на сторінці [Локалізації]."
   ],
   "More languages might be available for the selected product at [Localization] page": [
-    ""
+    "Більше мов може бути доступно на сторінці [Локалізації]"
   ],
   "Mount Point": [
     "Точка монтування"
@@ -990,7 +1014,7 @@ export default {
     "Багатошляхове"
   ],
   "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
-    ""
+    "Виявлено кілька конфліктів. Ви можете вирішувати їх у довільному порядку, і вирішення одного з них може вирішити й інші."
   ],
   "NFS": [
     "NFS"
@@ -1027,6 +1051,9 @@ export default {
   ],
   "No additional software was selected.": [
     "Додаткове програмне забезпечення не було обрано."
+  ],
+  "No conflicts to address": [
+    "Немає конфліктів для вирішення"
   ],
   "No content found": [
     "Вміст не знайдено"
@@ -1287,7 +1314,7 @@ export default {
     "Результат"
   ],
   "Review and fix": [
-    ""
+    "Переглянути та виправити"
   ],
   "Root authentication methods": [
     "Методи автентифікації користувача root"
@@ -1345,6 +1372,9 @@ export default {
   ],
   "Select a product": [
     "Оберіть продукт"
+  ],
+  "Select a solution to continue": [
+    "Виберіть рішення для продовження"
   ],
   "Select another disk to define partitions": [
     "Виберіть інший диск для створення розділів"
@@ -1405,6 +1435,12 @@ export default {
   "Show information about %s": [
     "Показати інформацію про %s"
   ],
+  "Show less actions": [
+    "Згорнути дії"
+  ],
+  "Show more actions": [
+    "Показати більше дій"
+  ],
   "Shrink existing partitions": [
     "Зменшення наявних розділів"
   ],
@@ -1414,11 +1450,17 @@ export default {
   "Size": [
     "Розмір"
   ],
+  "Size limits must be numbers followed by a unit like GiB or GB": [
+    "Обмеження розміру повинні бути числами, до яких потрібно додати одиницю виміру, наприклад, GiB або GB"
+  ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Обмеження розміру повинні бути числами, до яких можна додати одиницю виміру, наприклад, GiB або GB"
   ],
   "Size options": [
     "Варіанти розмірів"
+  ],
+  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
+    "Розміри мають вводитися у вигляді чисел, за якими слідує одиниця виміру                 у вигляді GiB (кратно 2) або GB (кратно 10)."
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     "Розміри повинні бути введені у вигляді чисел, після чого можна вказати одиницю виміру."
@@ -1426,14 +1468,20 @@ export default {
   "Skip to content": [
     "Перейти до вмісту"
   ],
+  "Skip to next": [
+    "Перейти до наступного"
+  ],
   "Skip to previous": [
-    ""
+    "Перейти до попереднього"
   ],
   "Software": [
     "Програми"
   ],
   "Software %s": [
     "Програмне забезпечення %s"
+  ],
+  "Software conflicts resolution": [
+    "Вирішення конфліктів ПЗ"
   ],
   "Software selection": [
     "Вибір програмного забезпечення"
@@ -1498,6 +1546,9 @@ export default {
   "The configured LVM groups will remain at %s": [
     "Налаштовані групи LVM залишаться у %s"
   ],
+  "The connection will be used only during installation and not available in the installed system.": [
+    "Це з'єднання буде використовуватися тільки під час встановлення і не буде доступним у встановленій системі."
+  ],
   "The content may be deleted": [
     "Вміст може бути видалений"
   ],
@@ -1558,6 +1609,9 @@ export default {
   "The installation will take %s including:": [
     "Встановлення займе %s, включаючи:"
   ],
+  "The installer interface is no longer available, so you can safely close this window.": [
+    ""
+  ],
   "The installer requires [root] user privileges.": [
     "Програма встановлення вимагає привілеїв користувача [root]."
   ],
@@ -1570,11 +1624,17 @@ export default {
   "The logical volume is created exactly with the given size": [
     "Логічний том буде створено точно з заданим розміром"
   ],
+  "The maximum must be a number followed by a unit like GiB or GB": [
+    "Максимальне значення повинно бути числом, за яким слідує одиниця виміру, наприклад, GiB або GB"
+  ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
     "Максимальне значення повинно бути числом, за яким може слідувати одиниця виміру, наприклад, GiB або GB"
   ],
   "The minimum cannot be greater than the maximum": [
     "Мінімум не може бути більшим за максимум"
+  ],
+  "The minimum must be a number followed by a unit like GiB or GB": [
+    "Мінімальне значення повинно бути числом, за яким слідує одиниця виміру, наприклад, GiB або GB"
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "Мінімальне значення повинно бути числом, за яким може слідувати одиниця виміру, наприклад, GiB або GB"
@@ -1652,10 +1712,10 @@ export default {
     "Це найактуальніші налаштування установки. Детальніші відомості наведено в розділах меню."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "Це налаштування для встановлюваного продукту. Мову програми встановлення та розкладку клавіатури можна змінити через [панель налаштувань], доступну на верхній панелі."
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "Це налаштування для встановлюваного продукту. Мову програми встановлення можна змінити через [панель налаштувань], доступну на верхній панелі."
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Ця дія може знищити будь-які дані, що зберігаються на перелічених нижче пристроях. Будь ласка, підтвердьте, що Ви дійсно хочете продовжити."
@@ -1691,7 +1751,7 @@ export default {
     "Для цього використовуються наявні розділи на диску"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    ""
+    "Це вплине тільки на інтерфейс установника, не на продукт, що встановлюється. Змінити параметри локалізації продукту Ви зможете пізніше на сторінці налаштувань локалізації."
   ],
   "TiB": [
     "ТіБ"
@@ -1789,8 +1849,11 @@ export default {
   "Use available space": [
     "Використати вільний простір"
   ],
+  "Use for installation only": [
+    "Використовувати тільки при встановленні"
+  ],
   "Use for the selected product too": [
-    ""
+    "Використовувати також для обраного продукту"
   ],
   "Use password": [
     "Використовувати пароль"
@@ -1808,7 +1871,7 @@ export default {
     "Використовуйте довірений платформний модуль (TPM) для автоматичного розшифрування під час кожного завантаження"
   ],
   "Use these same settings for the selected product": [
-    ""
+    "Використовувати ці ж налаштування для обраного продукту"
   ],
   "Used space": [
     "Використаний простір"
@@ -1823,7 +1886,7 @@ export default {
     "Спадний список із пропозицією імені користувача"
   ],
   "Using [%s] keyboard": [
-    ""
+    "Розкладка клавіатури [%s]"
   ],
   "Using a hashed password.": [
     "Використовуючи хешований пароль."
@@ -1894,11 +1957,14 @@ export default {
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Ви підключитеся до публічної мережі без шифрування. Дані, передані через неї можуть бути незахищеними."
   ],
+  "Your system is rebooting": [
+    ""
+  ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
-    ""
+    "[CAPS LOCK] увімкнений"
   ],
   "at least %s": [
     "не менше %s"
