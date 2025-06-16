@@ -90,7 +90,7 @@ describe("App", () => {
     // setting the language through a cookie
     document.cookie = "agamaLang=en-US; path=/;";
     (createClient as jest.Mock).mockImplementation(() => {
-      return {};
+      return { isConnected: () => true };
     });
 
     mockProducts = [tumbleweed, microos];
