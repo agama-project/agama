@@ -23,14 +23,7 @@
 import React, { useState, useEffect } from "react";
 import { createDefaultClient, InstallerClient } from "~/client";
 import Loading from "~/components/layout/Loading";
-import { ServerError } from "~/components/core";
-
-type ClientStatus = {
-  /** Whether the client is connected or not. */
-  connected: boolean;
-  /** Whether the client present an error and cannot reconnect. */
-  error: boolean;
-};
+import ServerError from "~/components/core/ServerError";
 
 type InstallerClientProviderProps = React.PropsWithChildren<{
   /** Client to connect to Agama service; if it is undefined, it instantiates a
@@ -39,12 +32,6 @@ type InstallerClientProviderProps = React.PropsWithChildren<{
 }>;
 
 const InstallerClientContext = React.createContext(null);
-// TODO: we use a separate context to avoid changing all the codes to
-// `useInstallerClient`. We should merge them in the future.
-const InstallerClientStatusContext = React.createContext({
-  connected: false,
-  error: false,
-});
 
 /**
  * Returns the D-Bus installer client
@@ -53,18 +40,6 @@ function useInstallerClient(): InstallerClient {
   const context = React.useContext(InstallerClientContext);
   if (context === undefined) {
     throw new Error("useInstallerClient must be used within a InstallerClientProvider");
-  }
-
-  return context;
-}
-
-/**
- * Returns the client status.
- */
-function useInstallerClientStatus(): ClientStatus {
-  const context = React.useContext(InstallerClientStatusContext);
-  if (!context) {
-    throw new Error("useInstallerClientStatus must be used within a InstallerClientProvider");
   }
 
   return context;
@@ -119,11 +94,9 @@ function InstallerClientProvider({ children, client = null }: InstallerClientPro
 
   return (
     <InstallerClientContext.Provider value={value}>
-      <InstallerClientStatusContext.Provider value={{ connected, error }}>
-        <Content />
-      </InstallerClientStatusContext.Provider>
+      <Content />
     </InstallerClientContext.Provider>
   );
 }
 
-export { InstallerClientProvider, useInstallerClient, useInstallerClientStatus };
+export { InstallerClientProvider, useInstallerClient };
