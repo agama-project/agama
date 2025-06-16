@@ -83,6 +83,7 @@ module Agama
           SecurityStep.new(logger, security),
           CopyFilesStep.new(logger),
           StorageStep.new(logger),
+          IscsiStep.new(logger),
           BootloaderStep.new(logger),
           IguanaStep.new(logger),
           SnapshotsStep.new(logger),
@@ -236,6 +237,24 @@ module Agama
 
         def run
           wfm_write("storage_finish")
+        end
+      end
+
+      # Step to finish the iSCSI configuration
+      class IscsiStep < Step
+        include Yast::I18n
+
+        def initialize(logger)
+          super
+          textdomain "agama"
+        end
+
+        def label
+          _("Adjusting iSCSI configuration")
+        end
+
+        def run
+          wfm_write("iscsi-client_finish")
         end
       end
 

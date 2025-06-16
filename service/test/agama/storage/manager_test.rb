@@ -410,6 +410,7 @@ describe Agama::Storage::Manager do
       expect(copy_files).to receive(:run)
       expect(bootloader_finish).to receive(:write)
       expect(Yast::WFM).to receive(:CallFunction).with("storage_finish", ["Write"])
+      expect(Yast::WFM).to receive(:CallFunction).with("iscsi-client_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("snapshots_finish", ["Write"])
       expect(network).to receive(:link_resolv)
       expect(scripts_client).to receive(:run).with("post")
