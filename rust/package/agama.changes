@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 16 14:28:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Extend the storage schema to allow sorting storage devices as
+  part of the search (gh#agama-project/agama#2474).
+
+-------------------------------------------------------------------
 Fri Jun 13 12:45:49 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Configure the console font so the non-ASCII characters are
