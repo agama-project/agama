@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2021-2024] SUSE LLC
+ * Copyright (c) [2021-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -34,7 +34,7 @@ type InstallerClientProviderProps = React.PropsWithChildren<{
 const InstallerClientContext = React.createContext(null);
 
 /**
- * Returns the D-Bus installer client
+ * Returns the installer client
  */
 function useInstallerClient(): InstallerClient {
   const context = React.useContext(InstallerClientContext);

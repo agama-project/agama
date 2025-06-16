@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,40 +22,44 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { createDefaultClient } from "~/client";
+import { createClient } from "~/client";
 import { plainRender } from "~/test-utils";
-import { InstallerClientProvider, useInstallerClientStatus } from "./installer";
+import { InstallerClientProvider } from "./installer";
+import { DummyWSClient } from "~/client/ws";
 
-jest.mock("~/client");
+jest.mock("~/components/layout/Loading", () => () => <div>Loading Mock</div>);
 
 // Helper component to check the client status.
-const ClientStatus = () => {
-  const { connected } = useInstallerClientStatus();
-
-  return (
-    <ul>
-      <li>{`connected: ${connected}`}</li>
-    </ul>
-  );
+const Content = () => {
+  return <>Content</>;
 };
 
 describe("installer context", () => {
-  beforeEach(() => {
-    (createDefaultClient as jest.Mock).mockImplementation(() => {
-      return {
-        onConnect: jest.fn(),
-        onClose: jest.fn(),
-        onError: jest.fn(),
-      };
+  describe("when the WebSocket is connected", () => {
+    it("renders the children", async () => {
+      const ws = new DummyWSClient();
+      const client = createClient(new URL("https://localhost"), ws);
+
+      plainRender(
+        <InstallerClientProvider client={client}>
+          <Content />
+        </InstallerClientProvider>,
+      );
+
+      await screen.findByText("Content");
     });
   });
 
-  it("reports the status through the useInstallerClientStatus hook", async () => {
-    plainRender(
-      <InstallerClientProvider>
-        <ClientStatus />
-      </InstallerClientProvider>,
-    );
-    await screen.findByText("connected: false");
+  describe("when the WebSocket is not connected", () => {
+    it("renders the a loading indicator", async () => {
+      const client = createClient(new URL("https://localhost"));
+
+      plainRender(
+        <InstallerClientProvider client={client}>
+          <Content />
+        </InstallerClientProvider>,
+      );
+      await screen.findByText("Loading Mock");
+    });
   });
 });
