@@ -1450,6 +1450,7 @@ mod test {
         },
     };
     use cidr::IpInet;
+    use macaddr::MacAddr6;
     use std::{collections::HashMap, net::IpAddr, str::FromStr};
     use uuid::Uuid;
     use zbus::zvariant::{self, Array, Dict, OwnedValue, Value};
@@ -1540,7 +1541,10 @@ mod test {
         let match_config = connection.match_config;
         assert_eq!(match_config.kernel, vec!["pci-0000:00:19.0"]);
 
-        assert_eq!(connection.mac_address.to_string(), "12:34:56:78:9A:BC");
+        assert_eq!(
+            connection.mac_address,
+            Some(MacAddr6::from_str("12:34:56:78:9A:BC").unwrap())
+        );
 
         assert_eq!(connection.mtu, 9000_u32);
 
@@ -1618,11 +1622,15 @@ mod test {
     fn test_connection_from_dbus_wireless() -> anyhow::Result<()> {
         let uuid = Uuid::new_v4().to_string();
         let connection_section = HashMap::from([hi("id", "wlan0")?, hi("uuid", uuid)?]);
+        let mac = MacAddr6::from_str("13:45:67:89:AB:CD")?;
 
         let wireless_section = HashMap::from([
             hi("mode", "infrastructure")?,
             hi("ssid", "agama".as_bytes())?,
-            hi("mac-address", "13:45:67:89:AB:CD")?,
+            hi(
+                "mac-address",
+                vec![19_u8, 69_u8, 103_u8, 137_u8, 171_u8, 205_u8],
+            )?,
             hi("band", "a")?,
             hi("channel", 32_u32)?,
             hi("bssid", vec![18_u8, 52_u8, 86_u8, 120_u8, 154_u8, 188_u8])?,
@@ -1647,7 +1655,10 @@ mod test {
         ]);
 
         let connection = connection_from_dbus(dbus_conn).unwrap();
-        assert_eq!(connection.mac_address.to_string(), "13:45:67:89:AB:CD");
+        assert_eq!(
+            connection.mac_address,
+            Some(MacAddr6::from_str("13:45:67:89:AB:CD").unwrap())
+        );
         assert!(matches!(connection.config, ConnectionConfig::Wireless(_)));
         if let ConnectionConfig::Wireless(wireless) = &connection.config {
             assert_eq!(wireless.ssid, SSID(vec![97, 103, 97, 109, 97]));
@@ -2164,7 +2175,7 @@ mod test {
 
         let updated = Connection {
             interface: Some("".to_string()),
-            mac_address: MacAddress::Unset,
+            mac_address: None,
             ..Default::default()
         };
         let updated = connection_to_dbus(&updated, None, semver::Version::new(1, 50, 0));
@@ -2221,7 +2232,7 @@ mod test {
             }),
             ..Default::default()
         };
-        let mac_address = MacAddress::from_str("FD:CB:A9:87:65:43").unwrap();
+        let mac_address = Some(MacAddr6::from_str("FD:CB:A9:87:65:43").unwrap());
         Connection {
             id: "agama".to_string(),
             ip_config,
