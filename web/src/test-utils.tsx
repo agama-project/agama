@@ -113,9 +113,17 @@ const Providers = ({ children, withL10n }) => {
   }
 
   if (withL10n) {
+    const fetchConfig = async () => ({
+      keymap: "us",
+      timezone: "Europe/Berlin",
+      uiLocale: "en_US",
+      uiKeymap: "us",
+    });
     return (
       <InstallerClientProvider client={client}>
-        <InstallerL10nProvider initialLanguage="en-US">{children}</InstallerL10nProvider>
+        <InstallerL10nProvider initialLanguage="en-US" fetchConfigFn={fetchConfig}>
+          {children}
+        </InstallerL10nProvider>
       </InstallerClientProvider>
     );
   }

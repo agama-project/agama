@@ -22,7 +22,6 @@
 
 import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { ServerError } from "~/components/core";
 import { Loading } from "~/components/layout";
 import { useProduct, useProductChanges } from "~/queries/software";
 import { useL10nConfigChanges } from "~/queries/l10n";

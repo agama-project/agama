@@ -25,7 +25,8 @@ import { locationReload, setLocationSearch } from "~/utils";
 import { useInstallerClientStatus } from "./installer";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
-import { fetchConfig, updateConfig } from "~/api/l10n";
+import { fetchConfig as defaultFetchConfig, updateConfig } from "~/api/l10n";
+import { LocaleConfig } from "~/types/l10n";
 
 const L10nContext = React.createContext(null);
 
@@ -137,7 +138,7 @@ function languageToLocale(language: string): string {
  *
  * @return Language tag from the backend locale.
  */
-async function languageFromBackend(): Promise<string> {
+async function languageFromBackend(fetchConfig: () => Promise<LocaleConfig>): Promise<string> {
   const config = await fetchConfig();
   return languageFromLocale(config.uiLocale);
 }
@@ -228,27 +229,31 @@ async function loadTranslations(locale: string) {
  *
  * @param props
  * @param [props.children] - Content to display within the wrapper.
+ * @param [props.fetchConfigFn] - Function to retrieve l10n settings.
  *
  * @see useInstallerL10n
  */
 function InstallerL10nProvider({
   initialLanguage,
+  fetchConfigFn,
   children,
 }: {
   initialLanguage?: string;
+  fetchConfigFn?: () => Promise<LocaleConfig>;
   children?: React.ReactNode;
 }) {
+  const fetchConfig = fetchConfigFn || defaultFetchConfig;
   const { connected } = useInstallerClientStatus();
   const [language, setLanguage] = useState(initialLanguage);
   const [keymap, setKeymap] = useState(undefined);
 
   const syncBackendLanguage = useCallback(async () => {
-    const backendLanguage = await languageFromBackend();
+    const backendLanguage = await languageFromBackend(fetchConfig);
     if (backendLanguage === language) return;
 
     // FIXME: fallback to en-US if the language is not supported.
     await updateConfig({ uiLocale: languageToLocale(language) });
-  }, [language]);
+  }, [fetchConfig, language]);
 
   const changeLanguage = useCallback(
     async (lang?: string) => {
@@ -265,7 +270,7 @@ function InstallerL10nProvider({
         wanted,
         wanted?.split("-")[0], // fallback to the language (e.g., "es" for "es-AR")
         agamaLanguage(),
-        await languageFromBackend(),
+        await languageFromBackend(fetchConfig),
       ].filter((l) => l);
       const newLanguage = findSupportedLanguage(candidateLanguages) || "en-US";
       const mustReload = storeAgamaLanguage(newLanguage);
@@ -280,7 +285,7 @@ function InstallerL10nProvider({
         await loadTranslations(newLanguage);
       }
     },
-    [setLanguage],
+    [fetchConfig, setLanguage],
   );
 
   const changeKeymap = useCallback(
@@ -304,10 +309,8 @@ function InstallerL10nProvider({
   }, [connected, language, syncBackendLanguage]);
 
   useEffect(() => {
-    if (!connected) return;
-
     fetchConfig().then((c) => setKeymap(c.uiKeymap));
-  }, [setKeymap, connected]);
+  }, [setKeymap, fetchConfig]);
 
   const value = { language, changeLanguage, keymap, changeKeymap };
 
