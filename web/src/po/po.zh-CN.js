@@ -1,10 +1,10 @@
 export default {
   "": {
-    "plural-forms": (n) => n != 1,
-    "language": "ca"
+    "plural-forms": (n) => 0,
+    "language": "zh-CN"
   },
   " Timezone selection": [
-    " Selecció de la zona horària"
+    " 时区选择"
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -13,418 +13,418 @@ export default {
     "%1$s - %2$s"
   ],
   "%1$s at %2$s": [
-    "%1$s a %2$s"
+    "%1$s（%2$s 上）"
   ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
-    "%1$s encara contindrà el grup d'LVM %2$s i qualsevol partició necessària per a arrencar"
+    "%1$s 仍将包含 LVM 组 '%2$s' 和引导所需的任何分区"
   ],
   "%d of %d": [
-    "%d de %d"
+    "%d / %d"
   ],
   "%s - %s": [
     "%s - %s"
   ],
   "%s [must be registered].": [
-    "%s [ha d'estar registrat]."
+    "[必须注册] %s。"
   ],
   "%s disk": [
-    "Disc %s"
+    "%s 磁盘"
   ],
   "%s has been registered with below information.": [
-    "%s s'ha registrat amb la informació següent."
+    "%s 已注册，信息如下。"
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s és un sistema immutable amb actualitzacions atòmiques. Usa un sistema de fitxers Btrfs només de lectura actualitzat a través d'instantànies."
+    "%s 是具备原子更新特性的不可变系统。它使用只读的 Btrfs 文件系统并通过快照保持更新。"
   ],
   "%s logo": [
-    "Logotip per a %s"
+    "%s 徽标"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
-    "%s encara contindrà els grups d'LVM configurats i qualsevol partició necessària per a arrencar"
+    "%s 仍将包含配置的 LVM 组和引导所需的任何分区"
   ],
   "%s with %d partitions": [
-    "%s amb %d particions"
+    "%s （包含 %d 个分区）"
   ],
   "A %1$s of %2$s will be created for %3$s": [
-    "Es crearà una %1$s de %2$s per a %3$s"
+    "将创建一个 %1$s (%2$s)，以用于 %3$s"
   ],
   "A %1$s of at least %2$s will be created for %3$s": [
-    "Es crearà una %1$s d'almenys %2$s per a %3$s"
+    "将创建一个 %1$s（至少 %2$s），以用于 %3$s"
   ],
   "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "Es crearà una %1$s amb una mida d'entre %2$s i %3$s per a %4$s"
+    "将创建一个 %1$s（大小介于 %2$s 至 %3$s 之间），以用于 %4$s"
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
-    "S'usarà una mida mínima genèrica de %1$s per a la %2$s nova"
+    "至少 %1$s 的通用大小将用于新 %2$s"
   ],
   "A generic size of %s will be used for the new %2$s": [
-    "S'usarà una mida genèrica de %s per a la %2$s nova"
+    "新 %2$s 将使用 %s 的通用大小"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
-    "S'usarà un interval de mida genèric entre %1$s i %2$s per a la %3$s nova"
+    "介于 %1$s 至 %2$s 的通用大小将用于新 %3$s"
   ],
   "A partition may be deleted": [
-    "Es pot suprimir una partició"
+    "可能会删除某个分区"
   ],
   "A partition may be shrunk": [
-    "Una partició es pot encongir"
+    "可能会收缩某个分区"
   ],
   "A partition will be deleted": [
-    "Se suprimirà una partició"
+    "将删除某个分区"
   ],
   "Accept": [
-    "Accepta-ho"
+    "接受"
   ],
   "Action": [
-    "Acció"
+    "操作"
   ],
   "Actions": [
-    "Accions"
+    "操作"
   ],
   "Activate": [
-    "Activa"
+    "激活"
   ],
   "Activate and format DASD devices": [
-    "Activa i formata dispositius DASD"
+    "激活并格式化 DASD 设备"
   ],
   "Activate new disk": [
-    "Activa el disc nou"
+    "激活新磁盘"
   ],
   "Activate zFCP disk": [
-    "Activa el disc zFCP"
+    "激活 zFCP 磁盘"
   ],
   "Activate zFCP disks": [
-    "Activa els discs zFCP"
+    "激活 zFCP 磁盘"
   ],
   "Activated": [
-    "Activat"
+    "已激活"
   ],
   "Add": [
-    "Afegeix"
+    "添加"
   ],
   "Add DNS": [
-    "Afegeix-hi un DNS"
+    "添加 DNS"
   ],
   "Add LVM volume group": [
-    "Afegeix un grup de volums d'LVM"
+    "添加 LVM 卷组"
   ],
   "Add an address": [
-    "Afegeix-hi una adreça"
+    "添加地址"
   ],
   "Add another DNS": [
-    "Afegeix-hi un altre DNS"
+    "添加另一个 DNS"
   ],
   "Add another address": [
-    "Afegeix-hi una altra adreça"
+    "添加另一个地址"
   ],
   "Add another partition or mount an existing one": [
-    "Afegiu-hi una altra partició o munteu-ne una d'existent"
+    "添加另一个分区或挂载一个现有分区"
   ],
   "Add device menu": [
-    "Afegeix el menú del dispositiu"
+    "添加设备菜单"
   ],
   "Add logical volume": [
-    "Afegeix un volum lògic"
+    "添加逻辑卷"
   ],
   "Add or use partition": [
-    "Afegiu o useu una partició"
+    "添加或使用分区"
   ],
   "Address": [
-    "Adreça"
+    "地址"
   ],
   "Addresses": [
-    "Adreces"
+    "地址"
   ],
   "Addresses data list": [
-    "Llista de dades d'adreces"
+    "地址数据列表"
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
-    "Ajusteu la configuració següent perquè el sistema nou s'adapti a l'espai disponible."
+    "请调整下面的设置，使新系统适配可用空间。"
   ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
-    "S'han resolt tots els conflictes o no se n'ha detectat cap. Podeu continuar la configuració de manera segura."
+    "所有冲突都已解决，或者未检测到任何冲突。您可以安心继续进行设置。"
   ],
   "All content will be deleted": [
-    "Se'n suprimirà tot el contingut"
+    "所有内容都将被删除"
   ],
   "All fields are required": [
-    "Tots els camps són obligatoris."
+    "需要填写全部字段"
   ],
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
-    "Totes les connexions de xarxa gestionades a través d'aquesta interfície estan actualment configurades per usar-les només durant la instal·lació i no es copiaran al sistema instal·lat."
+    "通过此界面管理的所有网络连接当前都设置为仅在安装过程中使用，并且不会复制到安装好的系统中"
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
-    "A més de definir el primer usuari, es poden configurar mètodes d'autenticació per a l'usuari d'arrel."
+    "除了定义首个用户外，还可配置 root 用户的身份验证方法。"
   ],
   "Already using all available disks": [
-    "Ja s'usen tots els discs disponibles"
+    "已使用所有可用磁盘"
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
-    "Se suprimirà qualsevol partició existent i es perdran totes les dades del disc."
+    "所有现有分区都将被去除，磁盘上的所有数据都将丢失。"
   ],
   "Apply selected solution": [
-    "Aplica la solució seleccionada"
+    "应用所选的解决方案"
   ],
   "As a new partition on %s": [
-    "Com a partició nova a %s"
+    "作为 %s 上的新分区"
   ],
   "At least one address must be provided for selected mode": [
-    "S'ha de proporcionar almenys una adreça per al mode seleccionat."
+    "所选模式要求至少提供一个地址"
   ],
   "At least one partition will be deleted": [
-    "Se suprimirà almenys una partició"
+    "至少将删除一个分区"
   ],
   "At this point you can power off the machine.": [
-    "En aquest punt, podeu aturar la màquina."
+    "现在您可以关闭机器电源了。"
   ],
   "At this point you can reboot the machine to log in to the new system.": [
-    "En aquest punt, podeu reiniciar la màquina per iniciar sessió al sistema nou."
+    "现在您可以重启机器并登录到新系统。"
   ],
   "Authentication": [
-    "Autenticació"
+    "身份验证"
   ],
   "Authentication by initiator": [
-    "Autenticació per iniciador"
+    "发起者身份认证"
   ],
   "Authentication by target": [
-    "Autenticació per destinació"
+    "目标身份认证"
   ],
   "Auto LUNs Scan": [
-    "Escaneig automàtic de LUN"
+    "自动扫描 LUN"
   ],
   "Automatic": [
-    "Automàtica"
+    "自动"
   ],
   "Automatic (DHCP)": [
-    "Automàtic (DHCP)"
+    "自动（DHCP）"
   ],
   "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    "L'exploració automàtica de LUN està [desactivada]. Els LUN s'han de configurar       manualment després d'activar un controlador."
+    "自动扫描 LUN 功能[已停用]。激活控制器后必须手动配置 LUN。"
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    "L'exploració automàtica de LUN està [activada]. L'activació d'un controlador       que s'executa en mode NPIV configurarà automàticament tots els seus LUN."
+    "自动扫描 LUN 功能[已启用]。如果激活在 NPIV 模式下       运行的控制器，将自动配置其所有 LUN。"
   ],
   "Available products": [
-    "Productes disponibles"
+    "可用产品"
   ],
   "Back": [
-    "Enrere"
+    "返回"
   ],
   "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "Segons la quantitat de memòria RAM del sistema, es crearà una %1s$ de %2$s per a %3$s"
+    "将根据系统中的 RAM 容量创建一个 %1s$ (%2$s)，以用于 %3$s"
   ],
   "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "Segons la quantitat de memòria RAM del sistema, es crearà una %1s$ d'almenys %2$s per a %3$s"
+    "将根据系统中的 RAM 容量创建一个 %1s$（至少 %2$s），以用于 %3$s"
   ],
   "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "Segons la quantitat de memòria RAM del sistema, es crearà una %1s$ amb una mida d'entre %2$s i %3$s per a %4$s"
+    "将根据系统中的 RAM 容量创建一个 %1s$（大小介于 %2$s 至 %3$s 之间），以用于 %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"
   ],
   "Before %s": [
-    "Abans: %s"
+    "变更前为 %s"
   ],
   "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "Abans d'instal·lar, heu de prendre algunes decisions. Cliqueu a cada secció per revisar-ne la configuració."
+    "安装前，您必须做出某些决定。请单击各个部分查看设置。"
   ],
   "Before starting the installation, you need to address the following problems:": [
-    "Abans de començar la instal·lació, heu de resoldre els problemes següents:"
+    "在开始安装前，您需要解决下列问题："
   ],
   "Beta": [
-    "Beta"
+    "Beta 版"
   ],
   "BitLocker": [
     "BitLocker"
   ],
   "Boot options": [
-    "Opcions d'arrencada"
+    "引导选项"
   ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
-    "Btrfs amb instantànies"
+    "带快照的 Btrfs"
   ],
   "Calculated automatically": [
-    "Calculat automàticament"
+    "已自动计算"
   ],
   "Cancel": [
-    "Cancel·la"
+    "取消"
   ],
   "Cannot be changed in remote installation": [
-    "No es pot canviar a la instal·lació remota."
+    "无法在远程安装中更改"
   ],
   "Cannot connect to Agama server": [
-    "No es pot connectar amb el servidor d'Agama."
+    "无法连接到 Agama 服务器"
   ],
   "Cannot format all selected devices": [
-    "No es poden formatar tots els dispositius seleccionats."
+    "无法格式化全部所选设备"
   ],
   "Change": [
-    "Canvia"
+    "更改"
   ],
   "Change Language": [
-    "Canvia'n la llengua"
+    "更改语言"
   ],
   "Change boot options": [
-    "Canvia les opcions d'arrencada"
+    "更改启动选项"
   ],
   "Change device menu": [
-    "Canvia el menú del dispositiu"
+    "更改设备菜单"
   ],
   "Change display language": [
-    "Canvia la llengua de visualització"
+    "更改显示语言"
   ],
   "Change display language and keyboard layout": [
-    "Canvia la llengua de visualització i la disposició del teclat"
+    "更改显示语言和键盘布局"
   ],
   "Change keyboard": [
-    "Canvia el teclat"
+    "更改键盘"
   ],
   "Change keyboard layout": [
-    "Canvia la disposició del teclat"
+    "更改键盘布局"
   ],
   "Change product": [
-    "Canvia el producte"
+    "更改产品"
   ],
   "Change selection": [
-    "Canvia la selecció"
+    "修改选择"
   ],
   "Channel ID": [
-    "Identificador del canal"
+    "通道 ID"
   ],
   "Check the %d planned actions": [
-    "Comproveu les %d accions planificades"
+    "检查 %d 项已计划的操作"
   ],
   "Check the authentication parameters.": [
-    "Comproveu els paràmetres d'autenticació."
+    "请检查身份验证参数。"
   ],
   "Check the following before continuing": [
-    "Comproveu el següent abans de continuar:"
+    "继续操作前请检查以下内容"
   ],
   "Choose a disk for placing the boot loader": [
-    "Trieu un disc per posar-hi el carregador d'arrencada"
+    "选择一个放置引导加载器的磁盘"
   ],
   "Choose what to with current content": [
-    "Trieu què voleu fer del contingut actual"
+    "选择如何处理当前内容"
   ],
   "Clear": [
-    "Neteja"
+    "清除"
   ],
   "Clear selected mount point": [
-    "Suprimeix el punt de muntatge seleccionat"
+    "清除所选的挂载点"
   ],
   "Close": [
-    "Tanca"
+    "关闭"
   ],
   "Collapse the list of planned actions": [
-    "Replega la llista d'accions previstes"
+    "收起已计划操作列表"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "Configuració llegida a la taula del microprogramari d'arrencada iSCSI (iBFT)."
+    "已从 iSCSI 引导固件表 (iBFT) 读取配置。"
   ],
   "Configure DASD": [
-    "Configuració de DASD"
+    "配置 DASD"
   ],
   "Configure LVM Volume Group": [
-    "Configura un grup de volums d'LVM"
+    "配置 LVM 卷组"
   ],
   "Configure LVM logical volume at %s volume group": [
-    "Configura el volum lògic d'LVM al grup de volums %s"
+    "在 %s 卷组上配置 LVM 逻辑卷"
   ],
   "Configure device menu": [
-    "Configura el menú del dispositiu"
+    "配置设备菜单"
   ],
   "Configure iSCSI": [
-    "Configuració d'iSCSI"
+    "配置 iSCSI"
   ],
   "Configure partition at %s": [
-    "Configura la partició a %s"
+    "在 %s 上配置分区"
   ],
   "Configure zFCP": [
-    "Configuració de zFCP"
+    "配置 zFCP"
   ],
   "Configured for installation only": [
-    "Configuració només per a la instal·lació"
+    "仅为安装配置"
   ],
   "Configuring the product, please wait ...": [
-    "Configurant el producte. Espereu, si us plau..."
+    "正在配置产品，请稍候……"
   ],
   "Confirm": [
-    "Confirmeu-ho"
+    "确认"
   ],
   "Confirm Installation": [
-    "Confirmeu la instal·lació"
+    "确认安装"
   ],
   "Congratulations!": [
-    "Enhorabona!"
+    "恭喜！"
   ],
   "Connect": [
-    "Connecta't"
+    "连接"
   ],
   "Connect to %s": [
-    "Connecta amb %s"
+    "连接到 %s"
   ],
   "Connect to iSCSI targets": [
-    "Connecta amb objectius iSCSI"
+    "连接到 iSCSI 目标"
   ],
   "Connected": [
-    "Connectat"
+    "已连接"
   ],
   "Connected (%s)": [
-    "Connectat (%s)"
+    "已连接（%s）"
   ],
   "Connecting to %s": [
-    "Es connecta amb %s"
+    "正在连接到 %s"
   ],
   "Connection details": [
-    "Detalls de la connexió"
+    "连接详细信息"
   ],
   "Connection not found or lost": [
-    "Connexió no trobada o perduda"
+    "未找到连接，或者连接中断"
   ],
   "Content will be kept": [
-    "El contingut es mantindrà"
+    "内容将会保留"
   ],
   "Continue": [
-    "Continua"
+    "继续"
   ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
-    "Continuar sense instal·lar el paquet pot resultar en un sistema trencat. En alguns casos, és possible que el sistema ni tan sols arrenqui."
+    "如果继续但不安装该软件包，可能会使系统损坏。在某些情况下，系统甚至可能无法引导。"
   ],
   "Controllers": [
-    "Controladors"
+    "控制器"
   ],
   "Could not authenticate against the server, please check it.": [
-    "No s'ha pogut autenticar amb el servidor. Si us plau, reviseu-ho."
+    "无法对服务器进行身份验证，请检查。"
   ],
   "Could not connect to %s": [
-    "No s'ha pogut connectar amb %s"
+    "无法连接到 %s"
   ],
   "Could not log in. Please, make sure that the password is correct.": [
-    "No s'ha pogut iniciar la sessió. Si us plau, assegureu-vos que la contrasenya sigui correcta."
+    "无法登录。请确保密码输入正确。"
   ],
   "Create LVM volume group %s": [
-    "Crea el grup de volums d'LVM %s"
+    "创建 LVM 卷组 %s"
   ],
   "Create LVM volume group on %s": [
-    "Crea un grup de volums d'LVM a %s"
+    "在 %s 上创建 LVM 卷组"
   ],
   "Create another LVM volume group on %s": [
-    "Crea un altre grup de volums d'LVM a %s"
+    "在 %s 上创建另一个 LVM 卷组"
   ],
   "Create user": [
-    "Crea un usuari"
+    "创建用户"
   ],
   "Current %1$s at %2$s": [
-    "%1$s actual a %2$s"
+    "当前 %1$s（%2$s 上）"
   ],
   "Current %s": [
-    "Actual: %s"
+    "当前 %s"
   ],
   "Custom": [
-    "Personalitzat"
+    "自定义"
   ],
   "DASD": [
     "DASD"
@@ -433,10 +433,10 @@ export default {
     "DASD %s"
   ],
   "DASD devices selection table": [
-    "Taula de selecció de dispositius DASD"
+    "DASD 设备选择表"
   ],
   "DASDs table section": [
-    "Secció de taula DASD"
+    "DASD 表部分"
   ],
   "DIAG": [
     "DIAG"
@@ -445,163 +445,163 @@ export default {
     "DNS"
   ],
   "Deactivate": [
-    "Desactiva"
+    "停用"
   ],
   "Deactivated": [
-    "Desactivat"
+    "已停用"
   ],
   "Default file system for %s": [
-    "Sistema de fitxers per defecte per a %s"
+    "%s 的默认文件系统"
   ],
   "Default file system for generic logical volumes": [
-    "Sistema de fitxers per defecte per a volums lògics genèrics"
+    "通用逻辑卷的默认文件系统"
   ],
   "Default file system for generic partitions": [
-    "Sistema de fitxers per defecte per a particions genèriques"
+    "通用分区的默认文件系统"
   ],
   "Define a custom size or a range": [
-    "Definiu una mida personalitzada o un interval"
+    "指定自定义大小或范围"
   ],
   "Define a new LVM on the disk": [
-    "Definiu un LVM nou al disc"
+    "在该磁盘上定义新 LVM"
   ],
   "Define a new LVM on top of one or several disks": [
-    "Definiu un LVM nou en un o diversos discs"
+    "在一个或多个磁盘上定义新 LVM"
   ],
   "Define a user now": [
-    "Definiu un usuari ara"
+    "现在设定用户"
   ],
   "Define the first user with admin (sudo) privileges for system management.": [
-    "Definiu el primer usuari amb privilegis d'administrador (sudo) per a la gestió del sistema."
+    "定义具有管理员 (sudo) 特权的首个用户以管理系统。"
   ],
   "Defined (hidden)": [
-    "Definit (ocult)"
+    "已定义（已隐藏）"
   ],
   "Delete": [
-    "Suprimeix"
+    "删除"
   ],
   "Delete current content": [
-    "Suprimeix el contingut actual"
+    "删除当前内容"
   ],
   "Delete volume group": [
-    "Suprimeix el grup de volums"
+    "删除卷组"
   ],
   "Destroy current data and format partition as": [
-    "Destrueix les dades actuals i formata la partició com a"
+    "销毁当前数据并将分区格式化为"
   ],
   "Details": [
-    "Detalls"
+    "细节"
   ],
   "Details will appear after the connection is successfully established.": [
-    "Els detalls apareixeran quan la connexió s'hagi establert correctament."
+    "成功建立连接后将会显示详细信息。"
   ],
   "Device": [
-    "Dispositiu"
+    "设备"
   ],
   "Device %s menu": [
-    "Menú del dispositiu %s"
+    "设备 %s 菜单"
   ],
   "Device details": [
-    "Detalls del dispositiu"
+    "设备详细信息"
   ],
   "Discard": [
-    "Descarta'l"
+    "丢弃"
   ],
   "Disconnected": [
-    "Desconnectat"
+    "已断开连接"
   ],
   "Discover": [
-    "Descobreix"
+    "发现"
   ],
   "Discover and connect to iSCSI targets": [
-    "Descobriu objectius iSCSI i connecteu-vos-hi"
+    "发现并连接到 iSCSI 目标"
   ],
   "Discover iSCSI Targets": [
-    "Descobreix les destinacions iSCSI"
+    "发现 iSCSI 目标"
   ],
   "Discover iSCSI targets": [
-    "Descobreix destinacions iSCSI"
+    "发现 iSCSI 目标"
   ],
   "Disk": [
-    "Disc"
+    "磁盘"
   ],
   "Disks": [
-    "Discs"
+    "磁盘"
   ],
   "Do not configure": [
-    "No ho configuris"
+    "不要配置"
   ],
   "Do not format %s and keep the data": [
-    "No formatis %s i conserva'n les dades"
+    "不格式化 %s 并保留数据"
   ],
   "Do not use": [
-    "No l'usis"
+    "不使用"
   ],
   "Download logs": [
-    "Baixa els registres"
+    "下载日志"
   ],
   "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Durant la instal·lació, es fan diverses accions per configurar el disseny que es mostra a la taula següent."
+    "安装期间，将执行多项操作以设置布局（如下表所示）。"
   ],
   "Edit": [
-    "Edita"
+    "编辑"
   ],
   "Edit %s": [
-    "Edita %s"
+    "编辑 %s"
   ],
   "Edit connection %s": [
-    "Edita la connexió %s"
+    "编辑连接 %s"
   ],
   "Edit user": [
-    "Edita l'usuari"
+    "编辑用户"
   ],
   "Edit volume group": [
-    "Edita el grup de volums"
+    "编辑卷组"
   ],
   "Empty LVM volume group %s": [
-    "Buida el grup de volums d'LVM %s"
+    "清空 LVM 卷组 %s"
   ],
   "Encrypt the system": [
-    "Encripta el sistema"
+    "加密系统"
   ],
   "Encrypted Device": [
-    "Dispositiu encriptat"
+    "已加密设备"
   ],
   "Encryption": [
-    "Encriptació"
+    "加密"
   ],
   "Encryption Password": [
-    "Contrasenya d'encriptació"
+    "加密密码"
   ],
   "Encryption is disabled": [
-    "L'encriptació està inhabilitada"
+    "已禁用加密功能"
   ],
   "Encryption is enabled": [
-    "L'encriptació està habilitada"
+    "已启用加密功能"
   ],
   "Encryption is enabled using TPM unlocking": [
-    "L'encriptació s'habilita amb el desblocatge de TPM"
+    "已通过 TPM 解锁机制启用加密功能"
   ],
   "Encryption settings": [
-    "Configuració de l'encriptació"
+    "加密设置"
   ],
   "Enter a hostname.": [
-    "Introduïu un nom d'amfitrió."
+    "请输入主机名。"
   ],
   "Enter a name": [
-    "Introduïu un nom"
+    "输入名称"
   ],
   "Enter a name for the volume group.": [
-    "Introduïu un nom per al grup de volums."
+    "输入卷组的名称。"
   ],
   "ExFAT": [
     "ExFAT"
   ],
   "Excellent signal": [
-    "Senyal excel·lent"
+    "信号极佳"
   ],
   "Expiration date": [
-    "Data de venciment"
+    "失效日期"
   ],
   "Ext2": [
     "Ext2"
@@ -613,7 +613,7 @@ export default {
     "Ext4"
   ],
   "Extensions": [
-    "Extensions"
+    "扩展"
   ],
   "F2FS": [
     "F2FS"
@@ -622,119 +622,118 @@ export default {
     "FAT"
   ],
   "Failed to calculate a storage layout": [
-    "No s'ha pogut calcular un disseny d'emmagatzematge"
+    "无法计算存储布局"
   ],
   "File system": [
-    "Sistema de fitxers"
+    "文件系统"
   ],
   "File system label": [
-    "Etiqueta del sistema de fitxers"
+    "文件系统标签"
   ],
   "Filter by description or keymap code": [
-    "Filtra per descripció o codi de mapa de tecles"
+    "按描述或键盘映射代码过滤"
   ],
   "Filter by language, territory or locale code": [
-    "Filtra per llengua, territori o codi local"
+    "按语言、地区或区域设定代码过滤"
   ],
   "Filter by max channel": [
-    "Filtra per canal màxim"
+    "按最大通道过滤"
   ],
   "Filter by min channel": [
-    "Filtra per canal mínim"
+    "按最小通道过滤"
   ],
   "Filter by pattern title or description": [
-    "Filtra per títol o descripció del patró"
+    "按合集名称或描述筛选"
   ],
   "Filter by territory, time zone code or UTC offset": [
-    "Filtra per territori, codi de zona horària o desplaçament d'UTC"
+    "按地区、时区代码或 UTC 偏移量过滤"
   ],
   "Find space in %s": [
-    "Cerca espai a %s"
+    "在 %s 中查找可用空间"
   ],
   "Finish": [
-    "Acaba"
+    "完成"
   ],
   "Finished": [
-    "Acabada"
+    "已完成"
   ],
   "First user": [
-    "Usuari primer"
+    "首个用户"
   ],
   "Format": [
-    "Formata"
+    "格式化"
   ],
   "Format logical volume as": [
-    "Formata el volum lògic com a"
+    "将逻辑卷格式化为"
   ],
   "Format partition as": [
-    "Formata la partició com a"
+    "将分区格式化为"
   ],
   "Format selected devices?": [
-    "Voleu formatar els dispositius seleccionats?"
+    "要格式化所选设备？"
   ],
   "Formatted": [
-    "Formatat"
+    "已格式化"
   ],
   "Formatting DASD devices": [
-    "Formatatge de dispositius DASD"
+    "正在格式化 DASD 设备"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
-    "L'encriptació de disc complet (FDE) permet protegir la informació emmagatzemada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
+    "全盘加密 (FDE) 可用于保护存储在新文件系统中的信息，包括数据、程序以及系统文件。"
   ],
   "Full name": [
-    "Nom complet"
+    "全名"
   ],
   "Gateway": [
-    "Passarel·la"
+    "网关"
   ],
   "Gateway can be defined only in 'Manual' mode": [
-    "La passarel·la només es pot definir en mode manual."
+    "网关只能在“手动”模式下配置"
   ],
   "GiB": [
     "GiB"
   ],
   "Go to network page": [
-    "Ves a la pàgina de la xarxa"
+    "前往网络页面"
   ],
   "Good signal": [
-    "Senyal bo"
+    "信号良好"
   ],
   "Hide": [
-    "Amaga"
+    "隐藏"
   ],
   "Hide %d subvolume action": [
-    "Amaga %d acció de subvolum",
-    "Amaga %d accions de subvolum"
+    "隐藏 %d 个子卷操作"
   ],
   "Hide details": [
-    "Amaga els detalls"
+    "隐藏细节"
   ],
   "Hostname": [
-    "Nom d'amfitrió"
+    "主机名"
   ],
   "Hostname could not be updated": [
-    "No s'ha pogut actualitzar el nom d'amfitrió"
+    "无法更新主机名"
   ],
   "Hostname successfully updated": [
-    "El nom d'amfitrió s'ha actualitzat correctament"
+    "已成功更新主机名"
   ],
   "I have read and accept the [license] for %s": [
-    "He llegit i accepto la [llicència] de %s"
+    "我已阅读并接受 %s 的[许可]"
   ],
   "IP Address": [
-    "Adreça IP"
+    "IP 地址"
   ],
   "IP Addresses": [
-    "Adreces IP"
+    "IP 地址"
   ],
   "IP address": [
-    "Adreça IP"
+    "IP 地址"
   ],
   "IP addresses": [
-    "Adreces IP"
+    "IP 地址"
   ],
   "IP settings": [
-    "Paràmetres d'IP"
+    "IP 设置"
   ],
   "IPv4": [
     "IPv4"
@@ -743,130 +742,130 @@ export default {
     "IPv6"
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
-    "Si s'ha usat un mitjà local per executar aquest instal·lador, traieu-lo abans de la propera arrencada."
+    "如果运行此次安装时使用了本地介质，请在下次启动前移除。"
   ],
   "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "Si s'omet la unitat, s'usaran els bytes (B). Les unitats més grosses poden tenir la forma de GiB (potència de 2) o GB (potència de 10)."
+    "如果未指定单位，则使用字节 (B)。更大的单位可以采用               GiB（2 的幂次）或 GB（10 的幂次）的形式。"
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Si continueu, les particions del disc dur es modificaran segons la configuració d'instal·lació proporcionada."
+    "如果继续，硬盘上的分区将会根据已提供的安装设置进行修改。"
   ],
   "In progress": [
-    "En curs"
+    "进行中"
   ],
   "Incorrect IP address": [
-    "Adreça IP incorrecta"
+    "不正确的 IP 地址"
   ],
   "Incorrect password": [
-    "Contrasenya incorrecta"
+    "密码不正确"
   ],
   "Incorrect port": [
-    "Port incorrecte"
+    "不正确的端口"
   ],
   "Incorrect user name": [
-    "Nom d'usuari incorrecte"
+    "用户名不正确"
   ],
   "Initiator": [
-    "Iniciador"
+    "发起者"
   ],
   "Initiator details": [
-    "Detalls de l'iniciador"
+    "发起端详细信息"
   ],
   "Initiator name": [
-    "Nom de l'iniciador"
+    "发起者名称"
   ],
   "Initiator name could not be updated": [
-    "El nom de l'iniciador s'ha actualitzat correctament"
+    "无法更新发起端名称"
   ],
   "Initiator name successfully updated": [
-    "El nom de l'iniciador s'ha actualitzat correctament"
+    "已成功更新发起端名称"
   ],
   "Install": [
-    "Instal·la"
+    "安装"
   ],
   "Install using an advanced configuration.": [
-    "Instal·la mitjançant una configuració avançada."
+    "使用高级配置安装。"
   ],
   "Install using device %s and deleting all its content.": [
-    "Instal·la al dispositiu %s suprimint-ne tot el contingut."
+    "使用设备 %s 进行安装，并删除其上的所有内容。"
   ],
   "Install using device %s shrinking existing partitions as needed.": [
-    "Instal·la al dispositiu %s encongint-ne les particions existents segons calgui."
+    "使用设备 %s 进行安装，并在需要时缩小现有分区。"
   ],
   "Install using device %s with a custom strategy to find the needed space.": [
-    "Instal·la al dispositiu %s amb una estratègia personalitzada per trobar l'espai necessari."
+    "使用设备 %s 进行安装，并采用自定义策略查找所需空间。"
   ],
   "Install using device %s without modifying existing partitions.": [
-    "Instal·la al dispositiu %s sense modificar-ne les particions existents."
+    "使用设备 %s 进行安装，不修改现有分区。"
   ],
   "Install using several devices and deleting all its content.": [
-    "Instal·la a dispositius diversos suprimint-ne tot el contingut."
+    "使用多个设备进行安装，并删除其上的所有内容。"
   ],
   "Install using several devices shrinking existing partitions as needed.": [
-    "Instal·la a dispositius diversos encongint-ne les particions existents segons calgui."
+    "使用多个设备进行安装，并在需要时缩小现有分区。"
   ],
   "Install using several devices with a custom strategy to find the needed space.": [
-    "Instal·la a dispositius diversos amb una estratègia personalitzada per trobar l'espai necessari."
+    "使用多个设备进行安装，并采用自定义策略查找所需空间。"
   ],
   "Install using several devices without modifying existing partitions.": [
-    "Instal·la a dispositius diversos sense modificar-ne les particions existents."
+    "使用多个设备进行安装，不修改现有分区。"
   ],
   "Installation Devices": [
-    "Dispositius d'instal·lació"
+    "安装设备"
   ],
   "Installation will take %s.": [
-    "La instal·lació necessitarà %s."
+    "安装将会占用 %s。"
   ],
   "Installed system may not have network connections": [
-    "El sistema instal·lat pot no tenir connexions de xarxa."
+    "安装好的系统可能没有网络连接"
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
-    "Instal·lar un paquet trencat afecta l'estabilitat del sistema i és un risc important de seguretat!"
+    "安装已损坏的软件包会影响系统稳定性，并会产生严重的安全隐患！"
   ],
   "Installing the system, please wait...": [
-    "Instal·lant el sistema. Espereu, si us plau..."
+    "正在安装系统，请稍候..."
   ],
   "Interface": [
-    "Interfície"
+    "界面"
   ],
   "Invalid storage settings": [
-    "Configuració d'emmagatzematge no vàlida"
+    "存储设置无效"
   ],
   "Ip prefix or netmask": [
-    "Prefix IP o màscara de xarxa"
+    "IP 前缀或网络掩码"
   ],
   "Issue date": [
-    "Data d'emissió"
+    "颁发日期"
   ],
   "Issuer": [
-    "Emissor"
+    "颁发者"
   ],
   "It is not possible to allocate space for %s.": [
-    "No és possible assignar espai per a %s."
+    "无法为 %s 分配空间。"
   ],
   "It is not possible to allocate space for the boot partition and for %s.": [
-    "No és possible assignar espai per a la partició d'arrencada i per a %s."
+    "无法为引导分区和 %s 分配空间。"
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
-    "No és possible instal·lar el sistema amb la configuració actual. Ajusteu els paràmetres que hi ha a continuació."
+    "无法采用当前配置安装系统，请调整下面的设置。"
   ],
   "It may take some time.": [
-    "Pot trigar una mica."
+    "这可能需要一些时间。"
   ],
   "JFS": [
     "JFS"
   ],
   "Keep size of %s": [
-    "Mantén la mida de %s"
+    "保留 %s 的大小"
   ],
   "Keyboard": [
-    "Teclat"
+    "键盘"
   ],
   "Keyboard layout": [
-    "Disposició del teclat"
+    "键盘布局"
   ],
   "Keyboard selection": [
-    "Selecció del teclat"
+    "键盘选择"
   ],
   "KiB": [
     "KiB"
@@ -875,145 +874,145 @@ export default {
     "LUN"
   ],
   "Label": [
-    "Etiqueta"
+    "标签"
   ],
   "Language": [
-    "Llengua"
+    "语言"
   ],
   "Language and keyboard": [
-    "Llengua i teclat"
+    "语言和键盘"
   ],
   "Let the installer propose a sensible range of sizes": [
-    "Permeteu que l'instal·lador proposi una gamma raonable de mides"
+    "让安装程序建议适当的大小范围"
   ],
   "License language": [
-    "Llengua de la llicència"
+    "许可语言"
   ],
   "Limited": [
-    "Limitada"
+    "有限制"
   ],
   "Loading": [
-    "Carregant"
+    "正在加载"
   ],
   "Loading data...": [
-    "Carregant dades..."
+    "正在读取数据……"
   ],
   "Loading the installation repositories...": [
-    "Carregant els repositoris d'instal·lació..."
+    "正在加载安装储存库..."
   ],
   "Locale selection": [
-    "Selecció de la llengua"
+    "区域选择"
   ],
   "Localization": [
-    "Localització"
+    "本地化"
   ],
   "Log in": [
-    "Inicia la sessió"
+    "登录"
   ],
   "Log in as %s": [
-    "Inicieu sessió com a %s"
+    "登录为 %s"
   ],
   "Logical volume name": [
-    "Nom del volum lògic"
+    "逻辑卷名称"
   ],
   "Logical volumes": [
-    "Volums lògics"
+    "逻辑卷"
   ],
   "Login": [
-    "Entrada"
+    "登录"
   ],
   "Login %s": [
-    "Entrada per a %s"
+    "登录 %s"
   ],
   "Login form": [
-    "Forma d'entrada"
+    "登录表单"
   ],
   "Logout": [
-    "Sortida"
+    "登出"
   ],
   "MAC": [
     "MAC"
   ],
   "Main navigation": [
-    "Navegació principal"
+    "主导航区"
   ],
   "Make sure you provide the correct values": [
-    "Assegureu-vos que proporcioneu els valors correctes"
+    "确保提供了正确的值"
   ],
   "Manage DASD devices": [
-    "Gestioneu els dispositius DASD"
+    "管理 DASD 设备"
   ],
   "Manual": [
-    "Manual"
+    "手动"
   ],
   "Maximum": [
-    "Màxim"
+    "最大"
   ],
   "Maximum size mode": [
-    "Mode de mida màxima"
+    "大小上限模式"
   ],
   "Maximum size options": [
-    "Opcions de mida màxima"
+    "大小上限选项"
   ],
   "Maximum size value": [
-    "Valor de mida màxima"
+    "大小上限值"
   ],
   "MiB": [
     "MiB"
   ],
   "Minimum": [
-    "Mínim"
+    "最小"
   ],
   "Minimum size value": [
-    "Valor de mida mínima"
+    "大小下限值"
   ],
   "Mode": [
-    "Mode"
+    "模式"
   ],
   "Modify settings and physical volumes": [
-    "Modifica la configuració i els volums físics"
+    "修改设置和物理卷"
   ],
   "More actions": [
-    "Més accions"
+    "更多操作"
   ],
   "More devices": [
-    "Més dispositius"
+    "更多设备"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    "Pot ser que hi hagi més disposicions de teclat disponibles per al producte seleccionat a la pàgina [Localitzation]"
+    "[本地化] 页面可能会提供更多适用于所选产品的键盘布局"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    "És possible que hi hagi més opcions de llengua i disposicions de teclat per al producte seleccionat a la pàgina [Localization]."
+    "[本地化] 页面可能会提供更多适用于所选产品的语言和键盘布局选项。"
   ],
   "More languages might be available for the selected product at [Localization] page": [
-    "És possible que hi hagi més llengües disponibles per al producte seleccionat a la pàgina [Localitzation]"
+    "[本地化] 页面可能会提供更多适用于所选产品的语言"
   ],
   "Mount Point": [
-    "Punt de muntatge"
+    "挂载点"
   ],
   "Mount point": [
-    "Punt de muntatge"
+    "挂载点"
   ],
   "Mount point mode": [
-    "Mode de punt de muntatge"
+    "挂载点模式"
   ],
   "Mount point options": [
-    "Opcions de punt de muntatge"
+    "挂载点选项"
   ],
   "Mount point toggle": [
-    "Commutació de punt de muntatge"
+    "挂载点切换开关"
   ],
   "Move mount points": [
-    "Mou els punts de muntatge"
+    "移动挂载点"
   ],
   "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    "Mou els punts de muntatge configurats actualment als discs seleccionats                    als volums lògics d'aquest grup de volums."
+    "将所选磁盘上当前配置的挂载点移动到此卷组的逻辑卷。"
   ],
   "Multipath": [
-    "Multicamí"
+    "多路径"
   ],
   "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
-    "S'han trobat diversos conflictes. Podeu abordar-los en qualsevol ordre i, si se'n resol un, potser se'n resolen d'altres."
+    "发现多处冲突。您可以采用任何顺序解决这些冲突，解决某个冲突后可能会连带解决其他冲突。"
   ],
   "NFS": [
     "NFS"
@@ -1025,953 +1024,952 @@ export default {
     "NTFS"
   ],
   "Name": [
-    "Nom"
+    "名称"
   ],
   "Network": [
-    "Xarxa"
+    "网络"
   ],
   "Network details": [
-    "Detalls de la xarxa"
+    "网络详细信息"
   ],
   "Network not found or lost": [
-    "Xarxa no trobada o perduda"
+    "未找到网络，或者网络中断"
   ],
   "New": [
-    "Nova"
+    "新建"
   ],
   "No": [
-    "No"
+    "否"
   ],
   "No Wi-Fi networks were found": [
-    "No s'ha trobat cap xarxa sense fil"
+    "未找到 WiFi 网络"
   ],
   "No additional partitions will be created": [
-    "No es crearan particions addicionals"
+    "将不创建附加分区"
   ],
   "No additional software was selected.": [
-    "No s'ha seleccionat cap programari addicional."
+    "没有选择附加软件。"
   ],
   "No conflicts to address": [
-    "No hi ha conflictes per abordar"
+    "没有需要解决的冲突"
   ],
   "No content found": [
-    "No s'ha trobat contingut."
+    "未找到内容"
   ],
   "No device selected yet": [
-    "Encara no s'ha seleccionat cap dispositiu."
+    "尚未选择设备"
   ],
   "No devices configured yet": [
-    "Encara no s'ha configurat cap dispositiu"
+    "尚未配置设备"
   ],
   "No devices found": [
-    "No s'ha trobat cap dispositiu"
+    "未找到设备"
   ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "No s'ha trobat cap taula de microprogramari d'arrencada iSCSI (iBFT). L'iniciador es pot configurar manualment."
+    "未找到 iSCSI 引导固件表 (iBFT)。可以手动配置发起端。"
   ],
   "No iSCSI targets found.": [
-    "No s'ha trobat cap destinació iSCSI."
+    "未找到 iSCSI 目标。"
   ],
   "No logical volumes are defined yet": [
-    "Encara no s'ha definit cap volum lògic"
+    "尚未定义逻辑卷"
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
-    "No es configurarà automàticament cap partició per a l'arrencada. Useu-ho amb precaució."
+    "不会自动配置任何用于启动的分区。请谨慎使用。"
   ],
   "No support is planned.": [
-    "No té compatibilitat prevista."
+    "暂无支持计划。"
   ],
   "No user defined yet.": [
-    "Encara no s'ha definit cap usuari."
+    "尚未设定用户。"
   ],
   "No wired connections were found": [
-    "No s'ha trobat cap connexió amb fil"
+    "未找到有线连接"
   ],
   "No zFCP controllers found.": [
-    "No s'ha trobat cap controlador de zFCP."
+    "未找到 zFCP 控制器。"
   ],
   "No zFCP disks found.": [
-    "No s'ha trobat cap disc zFCP."
+    "未发现 zFCP 磁盘。"
   ],
   "None": [
-    "Cap"
+    "无"
   ],
   "None of the keymaps match the filter.": [
-    "Cap dels mapes de tecles coincideix amb el filtre."
+    "没有符合此过滤器的键位映射。"
   ],
   "None of the locales match the filter.": [
-    "Cap de les llengües coincideix amb el filtre."
+    "没有符合过滤器的区域设置。"
   ],
   "None of the patterns match the filter.": [
-    "Cap dels patrons coincideix amb el filtre."
+    "没有合集与筛选器匹配。"
   ],
   "None of the time zones match the filter.": [
-    "Cap de les zones horàries coincideix amb el filtre."
+    "没有符合过滤器的时区。"
   ],
   "Not available": [
-    "No disponible"
+    "不可用"
   ],
   "Not defined": [
-    "No definit"
+    "未定义"
   ],
   "Not implemented yet (%s)": [
-    "Encara no s'ha implementat (%s)"
+    "尚未实现 (%s)"
   ],
   "Not possible with the current setup. Click to know more.": [
-    "No és possible amb la configuració actual. Feu clic per saber-ne més."
+    "当前设置不支持此操作。请单击了解更多详情。"
   ],
   "Not protected network": [
-    "Xarxa no protegida"
+    "不受保护的网络"
   ],
   "Not selected yet": [
-    "Encara no s'ha seleccionat."
+    "尚未选择"
   ],
   "Not supported (%s)": [
-    "No compatible (%s)"
+    "不受支持 (%s)"
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Els dispositius fora de línia s'han d'activar abans de formatar-los. Si us plau, desmarqueu o activeu els dispositius que s'indiquen a continuació i torneu-ho a provar."
+    "格式化前必须激活脱机设备。请先取消选择或激活下列设备，然后再试"
   ],
   "On boot": [
-    "A l'arrencada"
+    "开机时"
   ],
   "Only available if authentication by target is provided": [
-    "Només està disponible si es proporciona l'autenticació per destinació."
+    "仅当目标提供身份认证时可用"
   ],
   "Options toggle": [
-    "Canvi d'opcions"
+    "选项切换开关"
   ],
   "Other options": [
-    "Altres opcions"
+    "其他选项"
   ],
   "Other options toggle": [
-    "Canvi d'altres opcions"
+    "其他选项切换开关"
   ],
   "Overview": [
-    "Resum"
+    "概览"
   ],
   "Package installation failed": [
-    "Ha fallat instal·lació del paquet."
+    "安装软件包失败"
   ],
   "Partition Info": [
-    "Informació de la partició"
+    "分区信息"
   ],
   "Partitions": [
-    "Particions"
+    "分区"
   ],
   "Partitions needed for booting will also be adapted": [
-    "També s'adaptaran les particions necessàries per a l'arrencada"
+    "引导所需的分区也会进行调整"
   ],
   "Partitions needed for booting will remain at %s": [
-    "Les particions necessàries per a arrencar es mantindran a %s"
+    "引导所需的分区将保留在 %s 中"
   ],
   "Partitions to boot will be allocated at the following device.": [
-    "Les particions per a l'arrencada s'assignaran al dispositiu següent."
+    "引导分区将在以下设备上分配。"
   ],
   "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Les particions per a l'arrencada s'assignaran al disc d'instal·lació (%s)."
+    "引导分区将在安装磁盘（%s）上进行分配。"
   ],
   "Partitions to boot will be allocated at the installation disk.": [
-    "Les particions per a l'arrencada s'assignaran al disc d'instal·lació."
+    "引导分区将会分配在安装磁盘上。"
   ],
   "Partitions will be used and created for %s": [
-    "Les particions s'usaran i es crearan per a %s"
+    "将会为 %s 使用和创建多个分区"
   ],
   "Password": [
-    "Contrasenya"
+    "密码"
   ],
   "Password Required": [
-    "Cal una contrasenya."
+    "需要口令"
   ],
   "Password confirmation": [
-    "Confirmació de la contrasenya"
+    "确认密码"
   ],
   "Password input": [
-    "Introducció de contrasenya"
+    "密码输入"
   ],
   "Password is empty.": [
-    "La contrasenya està buida."
+    "口令为空。"
   ],
   "Password visibility button": [
-    "Botó de visibilitat de la contrasenya"
+    "密码可见性按钮"
   ],
   "Passwords do not match": [
-    "Les contrasenyes no coincideixen."
+    "密码不匹配"
   ],
   "Pending": [
-    "Pendent"
+    "等待中"
   ],
   "Perform an action": [
-    "Fes una acció"
+    "执行操作"
   ],
   "PiB": [
     "PiB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
-    "Si us plau, cancel·leu i comproveu-ne la configuració si no n'esteu segur."
+    "如果不确定任何事项，请务必取消并检查已进行的设置。"
   ],
   "Please, check whether it is running.": [
-    "Si us plau, comproveu si s'executa."
+    "请检查它是否在运行。"
   ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Si us plau, executeu un descobriment d'iSCSI per trobar destinacions iSCSI disponibles."
+    "请执行 iSCSI 发现以查找可用的 iSCSI 目标。"
   ],
   "Please, provide its password to log in to the system.": [
-    "Si us plau, proporcioneu-ne la contrasenya per iniciar sessió al sistema."
+    "请提供其密码以登录系统。"
   ],
   "Please, try to activate a zFCP controller.": [
-    "Si us plau, proveu d'activar un controlador de zFCP."
+    "请尝试激活 zFCP 控制器。"
   ],
   "Please, try to activate a zFCP disk.": [
-    "Si us plau, proveu d'activar un disc zFCP."
+    "请尝试激活 zFCP 磁盘。"
   ],
   "Port": [
-    "Port"
+    "端口"
   ],
   "Portal": [
-    "Portal"
+    "门户"
   ],
   "Pre-installation checks": [
-    "Comprovacions prèvies a la instal·lació"
+    "安装前检查"
   ],
   "Prefix length or netmask": [
-    "Longitud del prefix o màscara de xarxa"
+    "前缀长度或网络掩码"
   ],
   "Product is already registered": [
-    "El producte ja està registrat."
+    "产品已注册"
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Protecció de la informació emmagatzemada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
+    "用于保护存储在新文件系统中的信息（包括数据、程序以及系统文件）的机制。"
   ],
   "Provide email address": [
-    "Proporcioneu una adreça de correu electrònic."
+    "提供电子邮件地址"
   ],
   "Public SSH Key": [
-    "Clau pública SSH"
+    "SSH 公共密钥"
   ],
   "Public SSH Key is empty.": [
-    "La clau SSH pública és buida."
+    "SSH 公共密钥为空。"
   ],
   "Public network": [
-    "Xarxa pública"
+    "公共网络"
   ],
   "Question": [
-    "Pregunta"
+    "问题"
   ],
   "Read zFCP devices": [
-    "Llegeix els dispositius zFCP"
+    "读取 zFCP 设备"
   ],
   "Reboot": [
-    "Reinicia"
+    "重启"
   ],
   "Recommended": [
-    "Recomanat"
+    "推荐"
   ],
   "Register": [
-    "Registra"
+    "注册"
   ],
   "Registration": [
-    "Registre"
+    "注册"
   ],
   "Registration certificate": [
-    "Certificat de registre"
+    "注册证书"
   ],
   "Registration code": [
-    "Codi de registre"
+    "注册码"
   ],
   "ReiserFS": [
     "ReiserFS"
   ],
   "Reload": [
-    "Torna a carregar"
+    "重载"
   ],
   "Reloading data, please wait...": [
-    "Tornant a carregar les dades; espereu, si us plau..."
+    "正在重新加载数据，请稍候..."
   ],
   "Remove": [
-    "Suprimeix"
+    "移除"
   ],
   "Remove max channel filter": [
-    "Suprimeix el filtre de canal màxim"
+    "移除最大通道过滤器"
   ],
   "Remove min channel filter": [
-    "Suprimeix el filtre del canal mínim"
+    "移除最小通道过滤器"
   ],
   "Remove the configuration for this disk": [
-    "Suprimeix la configuració d'aquest disc"
+    "去除此磁盘的配置"
   ],
   "Repository load failed": [
-    "Ha fallat carregar el repositori."
+    "加载储存库失败"
   ],
   "Reset to defaults": [
-    "Restableix els valors predeterminats"
+    "重设为默认"
   ],
   "Reset to the default configuration": [
-    "Restableix la configuració predeterminada"
+    "重置为默认配置"
   ],
   "Result": [
-    "Resultat"
+    "结果"
   ],
   "Review and fix": [
-    "Revisa i corregeix"
+    "检查并修复"
   ],
   "Root authentication methods": [
-    "Mètodes d'autenticació d'arrel"
+    "root 身份验证方法"
   ],
   "Root user": [
-    "Usuari d'arrel"
+    "root 用户"
   ],
   "Routes": [
-    "Camins"
+    "路由"
   ],
   "SD Card": [
-    "Targeta SD"
+    "SD 卡"
   ],
   "SHA1 fingerprint": [
-    "Empremta digital SHA1"
+    "SHA1 指纹"
   ],
   "SHA256 fingerprint": [
-    "Empremta digital SHA256"
+    "SHA256 指纹"
   ],
   "SSID": [
     "SSID"
   ],
   "Same as minimum": [
-    "Igual que el mínim"
+    "与下限相同"
   ],
   "Search": [
-    "Cerca"
+    "搜索"
   ],
   "Secured network": [
-    "Xarxa amb seguretat"
+    "加密网络"
   ],
   "Security": [
-    "Seguretat"
+    "安全性"
   ],
   "See more details": [
-    "Mostra'n més detalls"
+    "查看更多细节"
   ],
   "Select": [
-    "Selecciona"
+    "选择"
   ],
   "Select a disk": [
-    "Seleccioneu un disc"
+    "选择一个磁盘"
   ],
   "Select a disk to configure": [
-    "Seleccioneu un disc per configurar-lo"
+    "选择要配置的磁盘"
   ],
   "Select a disk to create %s": [
-    "Seleccioneu un disc per crear-hi el punt de muntatge %s"
+    "选择用于创建 %s 的磁盘"
   ],
   "Select a disk to define partitions": [
-    "Seleccioneu un disc per definir-ne les particions"
+    "选择一个要定义分区的磁盘"
   ],
   "Select a disk to install the system": [
-    "Seleccioneu un disc per instal·lar-hi el sistema"
+    "选择用于安装系统的磁盘"
   ],
   "Select a product": [
-    "Seleccioneu un producte"
+    "请选择产品"
   ],
   "Select a solution to continue": [
-    "Seleccioneu una solució per continuar"
+    "选择一个解决方案以继续"
   ],
   "Select another disk to define partitions": [
-    "Seleccioneu un altre disc per definir-ne les particions"
+    "选择另一个要定义分区的磁盘"
   ],
   "Select at least one disk.": [
-    "Seleccioneu almenys un disc."
+    "请至少选择一个磁盘。"
   ],
   "Select or enter a mount point": [
-    "Seleccioneu o introduïu un punt de muntatge"
+    "选择或输入挂载点"
   ],
   "Select or enter a mount point that is not already assigned to another device": [
-    "Seleccioneu o introduïu un punt de muntatge que no estigui assignat a un altre dispositiu"
+    "请选择或输入尚未分配给其他设备的挂载点"
   ],
   "Select or enter a valid mount point": [
-    "Seleccioneu o introduïu un punt de muntatge vàlid"
+    "请选择或输入有效的挂载点"
   ],
   "Select the disk to configure partitions for booting": [
-    "Seleccioneu el disc per configurar-hi les particions per a arrencar"
+    "选择要配置引导分区的磁盘"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
-    "Seleccioneu què fer de cada partició per trobar espai per assignar-hi el sistema nou."
+    "选择如何处理每个分区，以便为新系统分配空间。"
   ],
   "Select what to do with each partition.": [
-    "Seleccioneu què voleu fer amb cada partició."
+    "选择对每个分区执行的操作。"
   ],
   "Selected disk (cannot be changed)": [
-    "Disc seleccionat (no es pot canviar)"
+    "所选磁盘（无法更改）"
   ],
   "Selected patterns": [
-    "Patrons seleccionats"
+    "已选择合集"
   ],
   "Server IP": [
-    "IP del servidor"
+    "服务器 IP"
   ],
   "Set DIAG Off": [
-    "Desactiva la diagnosi"
+    "关闭 DIAG"
   ],
   "Set DIAG On": [
-    "Activa la diagnosi"
+    "开启 DIAG"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
-    "Estableix un nom d'amfitrió permanent que no canviarà amb les actualitzacions per xarxa."
+    "设置不会因网络更新而更改的永久主机名。"
   ],
   "Setting up connection": [
-    "Establiment de la connexió"
+    "正在设置连接"
   ],
   "Several partitions will be deleted": [
-    "Se suprimiran diverses particions"
+    "将删除多个分区"
   ],
   "Show": [
-    "Mostra"
+    "显示"
   ],
   "Show %d subvolume action": [
-    "Mostra %d acció de subvolum",
-    "Mostra %d accions de subvolum"
+    "显示 %d 个子卷操作"
   ],
   "Show information about %s": [
-    "Mostra informació quant a %s"
+    "显示关于 %s 的信息"
   ],
   "Show less actions": [
-    "Mostra menys accions"
+    "收起部分操作"
   ],
   "Show more actions": [
-    "Mostra més accions"
+    "显示更多操作"
   ],
   "Shrink existing partitions": [
-    "Encongeix les particions existents"
+    "缩小现有分区"
   ],
   "Signal strength": [
-    "Força del senyal"
+    "信号强度"
   ],
   "Size": [
-    "Mida"
+    "大小"
   ],
   "Size limits must be numbers followed by a unit like GiB or GB": [
-    "Els límits de mida han de ser números seguits d'una unitat com ara GiB o GB."
+    "大小限制必须为带单位（如 GiB 或 GB）的数字"
   ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
-    "Els límits de mida han de ser números seguits opcionalment d'una unitat com ara GiB o GB"
+    "大小限制必须为数字，可选择性附带 GiB 或 GB 等单位"
   ],
   "Size options": [
-    "Opcions de mida"
+    "大小选项"
   ],
   "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
-    "Les mides s'han d'introduir com a números seguits d'una unitat                del tipus GiB (potència de 2) o GB (potència de 10)."
+    "输入的大小必须为数字，可选择性附带               GiB（2 的幂次）或 GB（10 的幂次）形式的单位。"
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "Les mides s'han d'introduir com a números opcionalment seguits d'una unitat."
+    "输入的大小必须为数字，可选择性附带单位。"
   ],
   "Skip to content": [
-    "Omet i ves al contingut"
+    "跳到内容"
   ],
   "Skip to next": [
-    "Salta al següent"
+    "跳到下一个"
   ],
   "Skip to previous": [
-    "Salta a l'anterior"
+    "跳到上一个"
   ],
   "Software": [
-    "Programari"
+    "软件"
   ],
   "Software %s": [
-    "Programari %s"
+    "软件 %s"
   ],
   "Software conflicts resolution": [
-    "Resolució de conflictes de programari"
+    "软件冲突解决情况"
   ],
   "Software selection": [
-    "Selecció de programari"
+    "软件选择"
   ],
   "Some existing partitions may be shrunk": [
-    "Algunes particions existents es poden encongir"
+    "可能会收缩部分现有分区"
   ],
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "Alguns repositoris d'instal·lació no s'han pogut carregar. El sistema no es pot instal·lar sense."
+    "无法加载某些安装储存库。没有这些储存库，将无法安装系统。"
   ],
   "Some of the elements in your AutoYaST profile are not supported.": [
-    "Alguns dels elements del vostre perfil d'AutoYaST no són compatibles."
+    "AutoYaST 配置文件中的某些元素不受支持。"
   ],
   "Some partitions may be deleted": [
-    "Algunes particions es poden suprimir"
+    "可能会删除某些分区"
   ],
   "Some partitions may be shrunk": [
-    "Algunes particions es poden encongir"
+    "可能会收缩某些分区"
   ],
   "Something went wrong": [
-    "Alguna cosa ha anat malament."
+    "出了点问题"
   ],
   "Start configuring a basic installation": [
-    "Comenceu a configurar una instal·lació bàsica"
+    "开始配置基本安装"
   ],
   "Start from scratch with the default configuration": [
-    "Comença des de zero amb la configuració predeterminada"
+    "采用默认配置从头开始"
   ],
   "Startup": [
-    "Inici"
+    "启动"
   ],
   "Static hostname": [
-    "Nom d'amfitrió estàtic"
+    "静态主机名"
   ],
   "Status": [
-    "Estat"
+    "状态"
   ],
   "Storage": [
-    "Emmagatzematge"
+    "存储"
   ],
   "Structure of the new system, including disks to use and additional devices like LVM volume groups.": [
-    "Estructura del nou sistema, inclosos els discos per usar i els dispositius addicionals com ara els grups de volums d'LVM."
+    "新系统的结构，包括要使用的磁盘和 LVM 卷组等附加设备。"
   ],
   "Suggested mount points": [
-    "Punts de muntatge suggerits"
+    "建议的挂载点"
   ],
   "Swap": [
-    "Intercanvi"
+    "Swap"
   ],
   "TPM sealing requires the new system to be booted directly.": [
-    "El segellament TPM requereix que el sistema nou s'iniciï directament."
+    "TPM 密封过程要求新系统直接启动。"
   ],
   "Target Password": [
-    "Contrasenya de destinació"
+    "目标密码"
   ],
   "Targets": [
-    "Destinacions"
+    "目标"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
-    "El grup d'LVM %1$s es mantindrà a %2$s"
+    "LVM 组 '%1$s' 将保留在 %2$s 中"
   ],
   "The configured LVM groups will remain at %s": [
-    "Els grups d'LVM configurats es mantindran a %s"
+    "配置的 LVM 组将保留在 %s 中"
   ],
   "The connection will be used only during installation and not available in the installed system.": [
-    "La connexió només s'usarà durant la instal·lació i no estarà disponible al sistema instal·lat."
+    "此连接仅在安装过程中使用，安装好的系统中不可用。"
   ],
   "The content may be deleted": [
-    "El contingut pot suprimir-se"
+    "内容可能会被删除"
   ],
   "The current configuration will result in a %1$s of %2$s.": [
-    "La configuració actual tindrà com a resultat una %1$s de %2$s."
+    "当前配置将会产生一个 %1$s (%2$s)。"
   ],
   "The current configuration will result in a %1$s of at least %2$s.": [
-    "La configuració actual tindrà com a resultat una %1$s d'almenys %2$s."
+    "当前配置将会产生一个 %1$s（至少 %2$s）。"
   ],
   "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "La configuració actual tindrà com a resultat una %1$s amb una mida d'entre %2$s i %3$s."
+    "当前配置将会产生一个 %1$s（大小介于 %2$s 至 %3$s 之间）。"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
-    "Les dades es conserven, però les particions actuals es canviaran de mida segons calgui."
+    "数据将被保留，但当前分区的大小将会按需调整。"
   ],
   "The data is kept. Only the space not assigned to any partition will be used.": [
-    "Es conserven les dades. Només s'usarà l'espai no assignat a cap partició."
+    "数据将被保留。仅使用未分配给任何分区的空间。"
   ],
   "The device cannot be shrunk:": [
-    "El dispositiu no es pot encongir:"
+    "无法收缩该设备："
   ],
   "The device will be mounted at %s.": [
-    "El dispositiu es muntarà a %s."
+    "该设备将挂载到 %s 上。"
   ],
   "The device will be used by the new system.": [
-    "El sistema nou usarà el dispositiu."
+    "新系统将使用该设备。"
   ],
   "The disk is used for LVM": [
-    "El disc s'usa per a l'LVM"
+    "此磁盘用于 LVM"
   ],
   "The disk is used for LVM and boot": [
-    "El disc s'usa per a l'LVM i l'arrencada"
+    "此磁盘用于 LVM 和引导"
   ],
   "The disk is used for booting": [
-    "El disc s'usa per a l'arrencada"
+    "此磁盘用于引导"
   ],
   "The encryption password did not work": [
-    "La contrasenya d'encriptació no ha funcionat."
+    "加密口令无效"
   ],
   "The extension has been registered with key %s.": [
-    "L'extensió s'ha registrat amb la clau %s."
+    "已使用密钥 %s 注册该扩展。"
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
-    "El pas final per configurar el Mòdul de plataforma de confiança (TPM) per obrir automàticament dispositius encriptats es farà durant la primera arrencada del nou sistema. Perquè això funcioni, la màquina ha d'arrencar directament amb el carregador d'arrencada nou."
+    "配置可信平台模块 (TPM) 以自动开启加密设备的最后一步将在新系统首次启动时进行。为此，本机需要直接启动到新的引导加载程序。"
   ],
   "The following software patterns are selected for installation:": [
-    "S'han seleccionat els patrons de programari següents per a la instal·lació:"
+    "下列软件合集已被选择以进行安装："
   ],
   "The initiator name cannot be blank": [
-    "El nom de l'iniciador no pot estar en blanc"
+    "发起端名称不能为空"
   ],
   "The installation on your machine is complete.": [
-    "La instal·lació a la màquina s'ha completat."
+    "在您机器上的安装过程已完成。"
   ],
   "The installation will take": [
-    "La instal·lació necessitarà"
+    "安装将会占用"
   ],
   "The installation will take %s including:": [
-    "La instal·lació necessitarà %s, incloent-hi el següent:"
+    "安装将会占用 %s，包括："
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
-    "La interfície de l'instal·lador ja no està disponible, així que podeu tancar aquesta finestra de manera segura."
+    ""
   ],
   "The installer requires [root] user privileges.": [
-    "L'instal·lador requereix privilegis de l'usuari [root]."
+    "安装程序要求 [root] 用户权限。"
   ],
   "The logical volume can grow to use all the contiguous free space": [
-    "El volum lògic pot créixer per usar tot l'espai lliure contigu"
+    "逻辑卷可扩展，直至使用所有连续的可用空间"
   ],
   "The logical volume can grow until a given limit size": [
-    "El volum lògic pot créixer fins a una mida límit introduïda"
+    "逻辑卷可扩展至给定的限制大小"
   ],
   "The logical volume is created exactly with the given size": [
-    "El volum lògic es crea exactament amb la mida introduïda"
+    "逻辑卷将严格按给定大小创建"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
-    "El màxim ha de ser un número seguit d'una unitat com ara GiB o GB."
+    "上限必须为带单位（如 GiB 或 GB）的数字"
   ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
-    "El màxim ha de ser un número seguit opcionalment d'una unitat com ara GiB o GB"
+    "上限必须为数字，可选择性附带 GiB 或 GB 等单位"
   ],
   "The minimum cannot be greater than the maximum": [
-    "El mínim no pot ser superior al màxim"
+    "下限不能大于上限"
   ],
   "The minimum must be a number followed by a unit like GiB or GB": [
-    "El mínim ha de ser un número seguit d'una unitat com ara GiB o GB"
+    "下限必须为带单位（如 GiB 或 GB）的数字"
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
-    "El mínim ha de ser un número seguit opcionalment d'una unitat com ara GiB o GB"
+    "下限必须为数字，可选择性附带 GiB 或 GB 等单位"
   ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    "Els volums físics d'LVM necessaris s'afegiran com a particions als discs triats,                  segons les mides dels volums lògics. Si seleccioneu més d'un disc,                  els volums físics poden estar distribuïts en diversos discs."
+    "所需的 LVM 物理卷将根据逻辑卷的大小，作为分区                 添加到所选磁盘上。如果选择多个磁盘，                 物理卷可能会分布在多个磁盘上。"
   ],
   "The partition can grow to use all the contiguous free space": [
-    "La partició pot créixer per a usar tot l'espai lliure contigu"
+    "分区可扩展以使用所有连续的可用空间"
   ],
   "The partition can grow until a given limit size": [
-    "La partició pot créixer fins a una mida límit introduïda"
+    "分区可扩展至给定的限制大小"
   ],
   "The partition is created exactly with the given size": [
-    "La partició es crea exactament amb la mida introduïda"
+    "分区将严格按给定大小创建"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
-    "La contrasenya no caldrà per arrencar i accedir a les dades si el TPM pot verificar la integritat del sistema. El segellat de TPM requereix que el nou sistema s'iniciï directament a la primera execució."
+    "若 TPM 可以验证系统的完整性，启动和访问数据的时候将无需使用密码。 TPM 密封要求新系统在首次启动时直接开始引导。"
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la quantitat de memòria RAM del sistema i de la presència d'un sistema de fitxers separat per a %2$s."
+    "%1$s 的大小范围将会动态调整，考量因素包括系统中的 RAM 容量以及 %2$s 是否存在单独的文件系统。"
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la quantitat de memòria RAM del sistema i de la presència de sistemes de fitxers separats per a %2$s."
+    "%1$s 的大小范围将会动态调整，考量因素包括系统中的 RAM 容量以及 %2$s 是否存在单独的文件系统。"
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la quantitat de memòria RAM del sistema, l'ús de les instantànies de Btrfs i la presència d'un sistema de fitxers separat per a %2$s."
+    "%1$s 的大小范围将会动态调整，考量因素包括系统中的 RAM 容量、Btrfs 快照的使用情况，以及 %2$s 是否存在单独的文件系统。"
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la quantitat de memòria RAM del sistema, l'ús de les instantànies de Btrfs i la presència de sistemes de fitxers separats per a %2$s."
+    "%1$s 的大小范围将会动态调整，考量因素包括系统中的 RAM 容量、Btrfs 快照的使用情况，以及 %2$s 是否存在单独的文件系统。"
   ],
   "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la presència d'un sistema de fitxers independent per a %2$s."
+    "%1$s 的大小范围将会根据 %2$s 是否存在单独的文件系统动态调整。"
   ],
   "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la presència de sistemes de fitxers separats per a %2$s."
+    "%1$s 的大小范围将会根据 %2$s 是否存在单独的文件系统动态调整。"
   ],
   "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs i de la presència d'un sistema de fitxers separat per a %2$s."
+    "%1$s 的大小范围将会动态调整，考量因素包括 Btrfs 快照的使用情况以及 %2$s 是否存在单独的文件系统。"
   ],
   "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs i de la presència de sistemes de fitxers separats per a %2$s."
+    "%1$s 的大小范围将会动态调整，考量因素包括 Btrfs 快照的使用情况以及 %2$s 是否存在单独的文件系统。"
   ],
   "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "L'interval de mida de %s s'ajustarà dinàmicament segons a quantitat de memòria RAM del sistema i de l'ús de les instantànies de Btrfs."
+    "%s 的大小范围将会动态调整，考量因素包括系统中的 RAM 容量以及 Btrfs 快照的使用情况。"
   ],
   "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "L'interval de mida de %s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs."
+    "%s 的大小范围将会根据 Btrfs 快照的使用情况动态调整。"
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
-    "La configuració d'emmagatzematge és vàlida (vegeu-ne el resultat a continuació) però usa elements no compatibles amb aquesta interfície."
+    "该存储配置有效（请参见下面的结果），但使用了此界面不支持的元素。"
   ],
   "The storage configuration uses elements not supported by this interface.": [
-    "La configuració d'emmagatzematge usa elements no compatibles amb aquesta interfície."
+    "存储配置使用了此界面不支持的元素。"
   ],
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
-    "El sistema no admet connexions de wifi, probablement a causa de maquinari que manca o que està inhabilitat."
+    "系统不支持 WiFi 连接，可能由于硬件缺失或已被禁用。"
   ],
   "The system will use %s as its default language.": [
-    "El sistema usarà el %s com a llengua per defecte."
+    "系统会使用 %s 作为默认语言。"
   ],
   "The zFCP disk was not activated.": [
-    "El disc zFCP no s'ha activat."
+    "zFCP 磁盘未激活。"
   ],
   "There are no disks available for the installation.": [
-    "No hi ha discs disponibles per a la instal·lació."
+    "没有可用于安装的磁盘。"
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
-    "No hi ha discs disponibles per a la instal·lació. És possible que hàgiu de configurar algun dispositiu."
+    "没有可用于安装的磁盘。您可能需要配置某些设备。"
   ],
   "There are not usable partitions": [
-    "No hi ha particions usables"
+    "没有可使用的分区"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Aquests són els paràmetres d'instal·lació més rellevants. No dubteu a navegar per les seccions del menú per a més detalls."
+    "这些是最主要的安装设置。如需获取更详细的信息，请随意浏览菜单中的各节。"
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    "Aquests són els paràmetres per instal·lar el producte. La llengua de l'instal·lador i la disposició del teclat es poden ajustar a [settings panel] accessible des de la barra superior."
+    "以下是待安装产品的相关设置。安装程序语言和键盘布局可通过顶部栏的[设置面板]进行调整。"
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    "Aquests són els paràmetres per instal·lar el producte. La llengua de l'instal·lador es pot ajustar a [settings panel] accessible des de la barra superior."
+    "以下是待安装产品的相关设置。安装程序语言可通过顶部栏的[设置面板]进行调整。"
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Aquesta acció podria destruir qualsevol dada emmagatzemada als dispositius que s'indiquen a continuació. Si us plau, confirmeu que realment voleu continuar."
+    "此操作无法销毁下列设备上存储的任何数据。请确认您确实要继续。"
   ],
   "This disk will contain any partition needed for booting": [
-    "Aquest disc contindrà qualsevol partició necessària per a arrencar"
+    "此磁盘将包含引导所需的任何分区"
   ],
   "This disk will contain the LVM group '%s'": [
-    "Aquest disc contindrà el grup d'LVM %s"
+    "此磁盘将包含 LVM 组 '%s'"
   ],
   "This disk will contain the LVM group '%s' and any partition needed to boot": [
-    "Aquest disc contindrà el grup d'LVM %s i qualsevol partició necessària per a arrencar"
+    "此磁盘将包含 LVM 组 '%s' 和引导所需的任何分区"
   ],
   "This disk will contain the configured LVM groups": [
-    "Aquest disc contindrà els grups d'LVM configurats"
+    "此磁盘将包含配置的 LVM 组"
   ],
   "This disk will contain the configured LVM groups and any partition needed to boot": [
-    "Aquest disc contindrà els grups d'LVM configurats i qualsevol partició necessària per a arrencar"
+    "此磁盘将包含配置的 LVM 组和引导所需的任何分区"
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
-    "Aquesta extensió no està disponible al servidor. Demaneu a l'administrador del servidor que repliqui l'extensió."
+    "无法在该服务器上使用此扩展。您可以请求服务器管理员镜像该扩展。"
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    "Aquest nom d'amfitrió és dinàmic i pot canviar després d'un reinici o una actualització per xarxa, tal com el configura l'administrador de la xarxa local."
+    "此主机名是动态的，可能会在系统重引导或网络更新后更改，具体由本地网络管理员配置。"
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
-    "Aquest producte no permet seleccionar patrons de programari durant la instal·lació. Tanmateix, hi podeu afegir programari addicional un cop acabada la instal·lació."
+    "此产品不允许在安装期间选择软件集。不过，您可以在安装完成后添加其他软件。"
   ],
   "This space includes the base system and the selected software patterns, if any.": [
-    "Aquest espai inclou el sistema de base i els patrons de programari seleccionats, si n'hi ha."
+    "此空间包含基础系统以及所选软件集（如有）。"
   ],
   "This uses existing partitions at the disk": [
-    "Això usa les particions existents al dispositiu"
+    "此设置会使用磁盘上的现有分区"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "Això afectarà només la interfície de l'instal·lador, no el producte que s'ha d'instal·lar. Podeu ajustar la localització del producte més endavant a la pàgina de configuració de la localització."
+    "此操作只会影响安装程序界面，不会影响要安装的产品。您稍后可以在 \"本地化设置\" 页面调整产品的本地化设置。"
   ],
   "TiB": [
     "TiB"
   ],
   "Time zone": [
-    "Zona horària"
+    "时区"
   ],
   "Tmpfs": [
     "Tmpfs"
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
-    "Per garantir que el sistema nou pugui arrencar, és possible que l'instal·lador hagi de crear o configurar algunes particions al disc adequat."
+    "为确保新系统能够启动，安装程序将需要在适当的磁盘中创建或配置一些分区。"
   ],
   "Transactional root file system": [
-    "Sistema de fitxers d'arrel transaccional"
+    "事务性根文件系统"
   ],
   "Try again": [
-    "Torna-ho a provar"
+    "重试"
   ],
   "Type": [
-    "Tipus"
+    "类型"
   ],
   "URL": [
     "URL"
   ],
   "Unable to modify the settings": [
-    "No es pot modificar la configuració"
+    "无法修改设置"
   ],
   "Unselect": [
-    "Desmarca"
+    "取消选择"
   ],
   "Unsupported AutoYaST elements": [
-    "Elements d'AutoYaST no compatibles"
+    "不受支持的 AutoYaST 元素"
   ],
   "Unused space": [
-    "Espai sense ús"
+    "未使用的空间"
   ],
   "Up to %s can be recovered by shrinking the device.": [
-    "Es poden recuperar fins a %s encongint el dispositiu."
+    "通过收缩设备最多可回收 %s 的空间。"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
-    "Actualitzar el nom d'amfitrió ara o més tard no canviarà el nom d'amfitrió registrat actualment."
+    "现在或以后更新主机名不会更改当前注册的主机名。"
   ],
   "Updating the initiator name": [
-    "Actualitzant el nom de l'iniciador"
+    "正在更新发起端名称"
   ],
   "Upload": [
-    "Carrega"
+    "上传"
   ],
   "Upload, paste, or drop an SSH public key": [
-    "Carregueu, enganxeu o deixeu-hi anar una clau pública SSH"
+    "上传、粘贴或拖入 SSH 公钥"
   ],
   "Use": [
-    "Usa'l"
+    "使用"
   ],
   "Use %s": [
-    "Usa %s"
+    "使用 %s"
   ],
   "Use %s for LVM and additional partitions": [
-    "Usa %s per a l'LVM i les particions addicionals"
+    "将 %s 用于 LVM 及附加分区"
   ],
   "Use %s for LVM, additional partitions and booting": [
-    "Usa %s per a l'LVM, les particions addicionals i l'arrencada"
+    "将 %s 用于 LVM、附加分区及引导"
   ],
   "Use %s for additional partitions": [
-    "Usa %s per a les particions addicionals"
+    "将 %s 用于附加分区"
   ],
   "Use %s for additional partitions and booting": [
-    "Usa %s per a les particions addicionals i l'arrencada"
+    "将 %s 用于附加分区及引导"
   ],
   "Use %s to configure boot partitions": [
-    "Usa %s per configurar les particions d'arrencada"
+    "使用 %s 配置引导分区"
   ],
   "Use %s to host LVM": [
-    "Usa %s per allotjar-hi l'LVM"
+    "使用 %s 托管 LVM"
   ],
   "Use %s to host LVM and boot": [
-    "Usa %s per allotjar-hi l'LVM i per a l'arrencada"
+    "使用 %s 托管 LVM 及引导"
   ],
   "Use %s to install": [
-    "Usa %s per a la instal·lació"
+    "使用 %s 安装"
   ],
   "Use %s to install and boot": [
-    "Usa %s per a la instal·lació i l'arrencada"
+    "使用 %s 安装及引导"
   ],
   "Use %s to install and host LVM": [
-    "Usa %s per a la instal·lació i allotjar-hi l'LVM"
+    "使用 %s 安装及托管 LVM"
   ],
   "Use %s to install, host LVM and boot": [
-    "Usa %s per a la instal·lació, allotjar-hi l'LVM i per a l'arrencada"
+    "使用 %s 安装、托管 LVM 及引导"
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
-    "Useu les accions següents per configurar els dispositius o cliqueu a %s per començar des de zero amb la configuració predeterminada."
+    "使用下方操作设置您的设备，或单击 %s 采用默认配置从头开始。"
   ],
   "Use available space": [
-    "Usa l'espai disponible"
+    "使用可用空间"
   ],
   "Use for installation only": [
-    "Usa-la només per a la instal·lació"
+    "仅用于安装"
   ],
   "Use for the selected product too": [
-    "Usa-la també per al producte seleccionat"
+    "同时用于所选产品"
   ],
   "Use password": [
-    "Usa contrasenya"
+    "使用口令"
   ],
   "Use public SSH Key": [
-    "Usa una clau pública SSH"
+    "使用 SSH 公共密钥"
   ],
   "Use static hostname": [
-    "Usa un nom d'amfitrió estàtic"
+    "使用静态主机名"
   ],
   "Use suggested username": [
-    "Usa el nom d'usuari suggerit"
+    "使用建议的用户名"
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
-    "Useu el mòdul de plataforma de confiança (TPM) per fer-ne la desencriptació automàticament a cada arrencada."
+    "使用可信平台模块 (TPM) 在每次启动时自动解密"
   ],
   "Use these same settings for the selected product": [
-    "Usa aquests mateixos paràmetres per al producte seleccionat"
+    "对所选产品使用同样的设置"
   ],
   "Used space": [
-    "Espai usat"
+    "已用空间"
   ],
   "User name": [
-    "Nom d'usuari"
+    "用户名"
   ],
   "Username": [
-    "Nom d'usuari"
+    "用户名"
   ],
   "Username suggestion dropdown": [
-    "Menú desplegable de suggeriments de nom d'usuari"
+    "建议用户名下拉列表"
   ],
   "Using [%s] keyboard": [
-    "S'usa el teclat per a [%s]"
+    "使用 [%s] 键盘"
   ],
   "Using a hashed password.": [
-    "S'usa una contrasenya amb funció resum."
+    "正在使用经过哈希处理的口令。"
   ],
   "Using an existing partition": [
-    "S'usa una partició existent"
+    "使用现有分区"
   ],
   "Using partition %s": [
-    "S'usa la partició %s"
+    "使用分区 %s"
   ],
   "Using transient hostname: %s": [
-    "S'usa un nom d'amfitrió transitori: %s"
+    "正在使用临时主机名 %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
-    "El grup de volums %s ja existeix. Introduïu un nom diferent."
+    "卷组 '%s' 已存在。请输入其他名称。"
   ],
   "WPA & WPA2 Personal": [
-    "WPA i WPA2 personal"
+    "WPA 与 WPA2 个人版"
   ],
   "WPA Password": [
-    "Contrasenya de WPA"
+    "WPA 密码"
   ],
   "WWPN": [
     "WWPN"
   ],
   "Waiting for a mount point": [
-    "S'espera un punt de muntatge"
+    "正在等待挂载点"
   ],
   "Waiting for information about storage configuration": [
-    "Esperant informació sobre la configuració de l'emmagatzematge"
+    "正在等待存储配置信息"
   ],
   "Weak signal": [
-    "Senyal dèbil"
+    "信号微弱"
   ],
   "Wi-Fi connection form": [
-    "Formulari de connexió per WiFi"
+    "Wi-Fi 连接表单"
   ],
   "Wi-Fi networks": [
-    "Connexions sense fil"
+    "Wi-Fi 网络"
   ],
   "Wi-Fi not supported": [
-    "Wi-Fi no compatible"
+    "不支持 Wi-Fi"
   ],
   "Will be supported in a future version.": [
-    "Serà compatible en una versió futura."
+    "未来的版本中会提供支持。"
   ],
   "Wired connections": [
-    "Connexions amb fil"
+    "有线连接"
   ],
   "XFS": [
     "XFS"
   ],
   "Yes": [
-    "Sí"
+    "是"
   ],
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
-    "Podeu procedir a la instal·lació amb la configuració actual o potser voleu descartar-la i començar des de zero amb una de simple."
+    "您可以采用当前设置继续安装，也可以舍弃该配置，并采用简单的配置从头开始。"
   ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "No ho podeu canviar més tard. Aneu a la secció %s si voleu modificar-la abans de procedir al registre."
+    "以后将无法更改此信息。如果您要在继续注册前修改，请前往 %s 部分。"
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
-    "És possible que vulgueu descartar la configuració actual i començar des de zero amb una configuració simple."
+    "您可能需要舍弃当前设置，并采用简单的配置从头开始。"
   ],
   "You may want to discard those settings and start from scratch with a simple configuration.": [
-    "És possible que vulgueu descartar aquests paràmetres i començar des de zero amb una configuració simple."
+    "您可能需要舍弃这些设置，并采用简单的配置从头开始。"
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
-    "Us connectareu a una xarxa pública sense encriptació. És possible que les vostres dades no estiguin segures."
+    "您将连接到未加密的公共网络。数据可能存在安全风险。"
   ],
   "Your system is rebooting": [
-    "El sistema es reinicia"
+    ""
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
-    "[CAPS LOCK] activat"
+    "大写锁定已开启"
   ],
   "at least %s": [
-    "almenys %s"
+    "至少 %s"
   ],
   "auto selected": [
-    "seleccionat automàticament"
+    "自动选择"
   ],
   "hostname": [
-    "Nom d'amfitrió"
+    "主机名"
   ],
   "iBFT": [
     "iBFT"
@@ -1980,21 +1978,21 @@ export default {
     "iSCSI"
   ],
   "logical volume": [
-    "volum lògic"
+    "逻辑卷"
   ],
   "partition": [
-    "partició"
+    "分区"
   ],
   "reset to defaults": [
-    "restableix els valors predeterminats"
+    "重置为默认值"
   ],
   "zFCP": [
     "zFCP"
   ],
   "zFCP Disk Activation": [
-    "Activació del disc zFCP"
+    "zFCP 磁盘激活"
   ],
   "zFCP Disk activation form": [
-    "Formulari d'activació del disc zFCP"
+    "zFCP 磁盘激活表单"
   ]
 };
