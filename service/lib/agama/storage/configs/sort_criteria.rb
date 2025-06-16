@@ -41,11 +41,6 @@ module Agama
           end
           alias_method :desc?, :desc
 
-          # @see #desc
-          def desc=(value)
-            @asc = !value
-          end
-
           # Order for the two operators
           #
           # @param dev_a [Y2Storage#device]
