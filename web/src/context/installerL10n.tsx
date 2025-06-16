@@ -22,7 +22,6 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { locationReload, setLocationSearch } from "~/utils";
-import { useInstallerClientStatus } from "./installer";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
 import { fetchConfig as defaultFetchConfig, updateConfig } from "~/api/l10n";
@@ -243,7 +242,6 @@ function InstallerL10nProvider({
   children?: React.ReactNode;
 }) {
   const fetchConfig = fetchConfigFn || defaultFetchConfig;
-  const { connected } = useInstallerClientStatus();
   const [language, setLanguage] = useState(initialLanguage);
   const [keymap, setKeymap] = useState(undefined);
 
@@ -290,12 +288,10 @@ function InstallerL10nProvider({
 
   const changeKeymap = useCallback(
     async (id: string) => {
-      if (!connected) return;
-
       setKeymap(id);
       await updateConfig({ uiKeymap: id });
     },
-    [setKeymap, connected],
+    [setKeymap],
   );
 
   useEffect(() => {
@@ -303,10 +299,10 @@ function InstallerL10nProvider({
   }, [changeLanguage, language]);
 
   useEffect(() => {
-    if (!connected || !language) return;
+    if (!language) return;
 
     syncBackendLanguage();
-  }, [connected, language, syncBackendLanguage]);
+  }, [language, syncBackendLanguage]);
 
   useEffect(() => {
     fetchConfig().then((c) => setKeymap(c.uiKeymap));
