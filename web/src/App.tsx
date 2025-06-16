@@ -24,8 +24,6 @@ import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { ServerError } from "~/components/core";
 import { Loading } from "~/components/layout";
-import { useInstallerL10n } from "~/context/installerL10n";
-import { useInstallerClientStatus } from "~/context/installer";
 import { useProduct, useProductChanges } from "~/queries/software";
 import { useL10nConfigChanges } from "~/queries/l10n";
 import { useIssuesChanges } from "~/queries/issues";
@@ -41,11 +39,9 @@ import { useQueryClient } from "@tanstack/react-query";
 function App() {
   const location = useLocation();
   const { isBusy, phase } = useInstallerStatus({ suspense: true });
-  const { connected, error } = useInstallerClientStatus();
   const { selectedProduct, products } = useProduct({
     suspense: phase !== InstallationPhase.Install,
   });
-  const { language } = useInstallerL10n();
   const queryClient = useQueryClient();
 
   useL10nConfigChanges();
@@ -62,8 +58,6 @@ function App() {
   }, [queryClient]);
 
   const Content = () => {
-    if (error) return <ServerError />;
-
     if (phase === InstallationPhase.Install) {
       console.log("Navigating to the installation progress page");
       return <Navigate to={ROOT.installationProgress} />;
@@ -74,10 +68,9 @@ function App() {
       return <Navigate to={ROOT.installationFinished} />;
     }
 
-    if (!products || !connected || (selectedProduct === undefined && isBusy)) {
+    if (!products || (selectedProduct === undefined && isBusy)) {
       console.log("Loading screen: Initialization", {
         products,
-        connected,
         selectedProduct,
         isBusy,
       });
@@ -101,8 +94,6 @@ function App() {
 
     return <Outlet />;
   };
-
-  if (!language) return null;
 
   return <Content />;
 }

@@ -23,6 +23,7 @@
 import React, { useState, useEffect } from "react";
 import { createDefaultClient, InstallerClient } from "~/client";
 import Loading from "~/components/layout/Loading";
+import { ServerError } from "~/components/core";
 
 type ClientStatus = {
   /** Whether the client is connected or not. */
@@ -110,6 +111,7 @@ function InstallerClientProvider({ children, client = null }: InstallerClientPro
   }, [value]);
 
   const Content = () => {
+    if (error) return <ServerError />;
     if (!connected) return <Loading />;
 
     return children;

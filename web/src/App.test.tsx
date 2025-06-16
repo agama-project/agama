@@ -30,15 +30,6 @@ import { Product } from "./types/software";
 
 jest.mock("~/client");
 
-jest.mock("~/api/l10n", () => ({
-  ...jest.requireActual("~/api/l10n"),
-  fetchConfig: jest.fn().mockResolvedValue({
-    uiKeymap: "en",
-    uiLocale: "en_US",
-  }),
-  updateConfig: jest.fn(),
-}));
-
 const tumbleweed: Product = { id: "openSUSE", name: "openSUSE Tumbleweed", registration: false };
 const microos: Product = { id: "Leap Micro", name: "openSUSE Micro", registration: false };
 
@@ -116,7 +107,7 @@ describe("App", () => {
     });
 
     it("renders the Loading screen", async () => {
-      installerRender(<App />, { withL10n: true });
+      installerRender(<App />);
       await screen.findByText("Loading Mock");
     });
   });
@@ -128,7 +119,7 @@ describe("App", () => {
     });
 
     it("renders the Loading screen", async () => {
-      installerRender(<App />, { withL10n: true });
+      installerRender(<App />);
       await screen.findByText("Loading Mock");
     });
   });
@@ -145,7 +136,7 @@ describe("App", () => {
       });
 
       it("redirects to product selection progress", async () => {
-        installerRender(<App />, { withL10n: true });
+        installerRender(<App />);
         await screen.findByText("Navigating to /products/progress");
       });
     });
@@ -156,7 +147,7 @@ describe("App", () => {
       });
 
       it("renders the application content", async () => {
-        installerRender(<App />, { withL10n: true });
+        installerRender(<App />);
         await screen.findByText(/Outlet Content/);
       });
     });
@@ -169,7 +160,7 @@ describe("App", () => {
     });
 
     it("navigates to installation progress", async () => {
-      installerRender(<App />, { withL10n: true });
+      installerRender(<App />);
       await screen.findByText("Navigating to /installation/progress");
     });
   });
@@ -181,7 +172,7 @@ describe("App", () => {
     });
 
     it("navigates to installation finished", async () => {
-      installerRender(<App />, { withL10n: true });
+      installerRender(<App />);
       await screen.findByText("Navigating to /installation/finished");
     });
   });

@@ -311,6 +311,8 @@ function InstallerL10nProvider({
 
   const value = { language, changeLanguage, keymap, changeKeymap };
 
+  if (!language) return null;
+
   return <L10nContext.Provider value={value}>{children}</L10nContext.Provider>;
 }
 
