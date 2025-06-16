@@ -46,26 +46,32 @@ interface Boot extends Omit<apiModel.Boot, "device"> {
  * and an index instead of a device object. See ConfigEditor component.
  */
 
-interface Drive extends apiModel.Drive {
+interface Drive extends Omit<apiModel.Drive, "partitions"> {
   list: string;
   listIndex: number;
+  isExplicitBoot: boolean;
   isUsed: boolean;
   isAddingPartitions: boolean;
+  isReusingPartitions: boolean;
   isTargetDevice: boolean;
   isBoot: boolean;
+  partitions: Partition[];
   getMountPaths: () => string[];
   getVolumeGroups: () => VolumeGroup[];
   getPartition: (path: string) => Partition | undefined;
   getConfiguredExistingPartitions: () => Partition[];
 }
 
-interface MdRaid extends apiModel.MdRaid {
+interface MdRaid extends Omit<apiModel.MdRaid, "partitions"> {
   list: string;
   listIndex: number;
+  isExplicitBoot: boolean;
   isUsed: boolean;
   isAddingPartitions: boolean;
+  isReusingPartitions: boolean;
   isTargetDevice: boolean;
   isBoot: boolean;
+  partitions: Partition[];
   getMountPaths: () => string[];
   getVolumeGroups: () => VolumeGroup[];
   getPartition: (path: string) => Partition | undefined;

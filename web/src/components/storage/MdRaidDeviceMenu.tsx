@@ -23,6 +23,7 @@
 import React from "react";
 import SearchedDeviceMenu from "./SearchedDeviceMenu";
 import { useDeleteMdRaid } from "~/hooks/storage/md-raid";
+import { model, StorageDevice } from "~/types/storage";
 
 export type MdRaidDeviceMenuProps = {
   raid: model.MdRaid;

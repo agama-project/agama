@@ -25,7 +25,7 @@ import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import DriveEditor from "~/components/storage/DriveEditor";
 import { StorageDevice, model } from "~/types/storage";
-import { Volume, apiModel } from "~/api/storage/types";
+import { Volume } from "~/api/storage/types";
 
 const mockDeleteDrive = jest.fn();
 const mockSwitchToDrive = jest.fn();
@@ -125,7 +125,7 @@ const sdb: StorageDevice = {
   description: "",
 };
 
-const drive1Partitions: apiModel.Partition[] = [
+const drive1Partitions: model.Partition[] = [
   {
     mountPath: "/",
     size: {
@@ -133,6 +133,10 @@ const drive1Partitions: apiModel.Partition[] = [
       default: true,
     },
     filesystem: { default: true, type: "btrfs" },
+    isNew: true,
+    isUsed: false,
+    isReused: false,
+    isUsedBySpacePolicy: false,
   },
   {
     mountPath: "swap",
@@ -141,6 +145,10 @@ const drive1Partitions: apiModel.Partition[] = [
       default: false, // false: user provided, true: calculated
     },
     filesystem: { default: false, type: "swap" },
+    isNew: true,
+    isUsed: false,
+    isReused: false,
+    isUsedBySpacePolicy: false,
   },
 ];
 
@@ -152,6 +160,7 @@ const drive1: model.Drive = {
   listIndex: 1,
   isUsed: true,
   isAddingPartitions: true,
+  isReusingPartitions: true,
   isTargetDevice: false,
   isBoot: true,
   isExplicitBoot: true,
@@ -161,7 +170,7 @@ const drive1: model.Drive = {
   getConfiguredExistingPartitions: jest.fn(),
 };
 
-const drive2Partitions: apiModel.Partition[] = [
+const drive2Partitions: model.Partition[] = [
   {
     mountPath: "/home",
     size: {
@@ -169,6 +178,10 @@ const drive2Partitions: apiModel.Partition[] = [
       default: true,
     },
     filesystem: { default: true, type: "xfs" },
+    isNew: true,
+    isUsed: false,
+    isReused: false,
+    isUsedBySpacePolicy: false,
   },
 ];
 
@@ -178,8 +191,10 @@ const drive2: model.Drive = {
   partitions: drive2Partitions,
   list: "drives",
   listIndex: 2,
+  isExplicitBoot: false,
   isUsed: true,
   isAddingPartitions: true,
+  isReusingPartitions: true,
   isTargetDevice: false,
   isBoot: true,
   getVolumeGroups: () => [],

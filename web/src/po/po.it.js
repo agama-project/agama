@@ -1,10 +1,10 @@
 export default {
   "": {
     "plural-forms": (n) => n != 1,
-    "language": "ca"
+    "language": "it"
   },
   " Timezone selection": [
-    " Selecció de la zona horària"
+    " Selezione fuso orario"
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -13,223 +13,223 @@ export default {
     "%1$s - %2$s"
   ],
   "%1$s at %2$s": [
-    "%1$s a %2$s"
+    "%1$s su %2$s"
   ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
-    "%1$s encara contindrà el grup d'LVM %2$s i qualsevol partició necessària per a arrencar"
+    "%1$s conterrà ancora il gruppo LVM '%2$s' e qualsiasi partizione necessaria per l'avvio"
   ],
   "%d of %d": [
-    "%d de %d"
+    "%d di %d"
   ],
   "%s - %s": [
     "%s - %s"
   ],
   "%s [must be registered].": [
-    "%s [ha d'estar registrat]."
+    "%s [deve essere registrato]."
   ],
   "%s disk": [
-    "Disc %s"
+    "Disco %s"
   ],
   "%s has been registered with below information.": [
-    "%s s'ha registrat amb la informació següent."
+    "%s è stato registrato con le informazioni riportate di seguito."
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s és un sistema immutable amb actualitzacions atòmiques. Usa un sistema de fitxers Btrfs només de lectura actualitzat a través d'instantànies."
+    "%s è un sistema immutabile con aggiornamenti atomici. Utilizza un file systema Btrfs di sola lettura aggiornato tramite istantanee."
   ],
   "%s logo": [
-    "Logotip per a %s"
+    "Immagine del logo di %s"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
-    "%s encara contindrà els grups d'LVM configurats i qualsevol partició necessària per a arrencar"
+    "%s conterrà ancora i gruppi LVM configurati e qualsiasi partizione necessaria per l'avvio"
   ],
   "%s with %d partitions": [
-    "%s amb %d particions"
+    "%s con %d partizioni"
   ],
   "A %1$s of %2$s will be created for %3$s": [
-    "Es crearà una %1$s de %2$s per a %3$s"
+    "Una %1$s di %2$s verrà creata per %3$s"
   ],
   "A %1$s of at least %2$s will be created for %3$s": [
-    "Es crearà una %1$s d'almenys %2$s per a %3$s"
+    "Una %1$s di almeno %2$s verrà creata per %3$s"
   ],
   "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "Es crearà una %1$s amb una mida d'entre %2$s i %3$s per a %4$s"
+    "Una %1$s con una dimensione tra %2$s e %3$s verrà creata per %4$s"
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
-    "S'usarà una mida mínima genèrica de %1$s per a la %2$s nova"
+    "Una dimensione minima generica di %1$s sarà utilizzata per la nuova %2$s"
   ],
   "A generic size of %s will be used for the new %2$s": [
-    "S'usarà una mida genèrica de %s per a la %2$s nova"
+    "Una dimensione generica di %s sará utilizzata per la nuova %2$s"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
-    "S'usarà un interval de mida genèric entre %1$s i %2$s per a la %3$s nova"
+    "Una dimensione generica tra %1$s e %2$s sará utilizzata per la nuova %3$s"
   ],
   "A partition may be deleted": [
-    "Es pot suprimir una partició"
+    "Una partizione potrebbe essere eliminata"
   ],
   "A partition may be shrunk": [
-    "Una partició es pot encongir"
+    "Una partizione potrebbe essere ridotta"
   ],
   "A partition will be deleted": [
-    "Se suprimirà una partició"
+    "Una partizione verrà eliminata"
   ],
   "Accept": [
-    "Accepta-ho"
+    "Accetta"
   ],
   "Action": [
-    "Acció"
+    "Azione"
   ],
   "Actions": [
-    "Accions"
+    "Azioni"
   ],
   "Activate": [
-    "Activa"
+    "Attiva"
   ],
   "Activate and format DASD devices": [
-    "Activa i formata dispositius DASD"
+    "Attiva e formatta i dispositivi DASD"
   ],
   "Activate new disk": [
-    "Activa el disc nou"
+    "Attiva nuovo disco"
   ],
   "Activate zFCP disk": [
-    "Activa el disc zFCP"
+    "Attiva disco zFCP"
   ],
   "Activate zFCP disks": [
-    "Activa els discs zFCP"
+    "Attiva i dischi zFCP"
   ],
   "Activated": [
-    "Activat"
+    "Attivato"
   ],
   "Add": [
-    "Afegeix"
+    "Aggiungi"
   ],
   "Add DNS": [
-    "Afegeix-hi un DNS"
+    "Aggiungi DNS"
   ],
   "Add LVM volume group": [
-    "Afegeix un grup de volums d'LVM"
+    "Aggiungi gruppo di volumi LVM"
   ],
   "Add an address": [
-    "Afegeix-hi una adreça"
+    "Aggiungi un indirizzo"
   ],
   "Add another DNS": [
-    "Afegeix-hi un altre DNS"
+    "Aggiungi un altro DNS"
   ],
   "Add another address": [
-    "Afegeix-hi una altra adreça"
+    "Aggiungi un altro indirizzo"
   ],
   "Add another partition or mount an existing one": [
-    "Afegiu-hi una altra partició o munteu-ne una d'existent"
+    "Aggiungi un'altra partizione o montane una esistente"
   ],
   "Add device menu": [
-    "Afegeix el menú del dispositiu"
+    "Aggiungi menu del dispositivo"
   ],
   "Add logical volume": [
-    "Afegeix un volum lògic"
+    "Aggiungi volume logico"
   ],
   "Add or use partition": [
-    "Afegiu o useu una partició"
+    "Aggiungi o usa partizione"
   ],
   "Address": [
-    "Adreça"
+    "Indirizzo"
   ],
   "Addresses": [
-    "Adreces"
+    "Indirizzi"
   ],
   "Addresses data list": [
-    "Llista de dades d'adreces"
+    "Elenco indirizzi"
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
-    "Ajusteu la configuració següent perquè el sistema nou s'adapti a l'espai disponible."
+    "Regolare le impostazioni sottostanti per adattare il nuovo sistema nello spazio disponibile."
   ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
-    "S'han resolt tots els conflictes o no se n'ha detectat cap. Podeu continuar la configuració de manera segura."
+    "Tutti i conflitti sono stati risolti oppure non è stato rilevato alcuno. È possibile procedere con la configurazione in modo sicuro."
   ],
   "All content will be deleted": [
-    "Se'n suprimirà tot el contingut"
+    "Tutti i contenuti saranno eliminati"
   ],
   "All fields are required": [
-    "Tots els camps són obligatoris."
+    "Tutti i campi sono obbligatori"
   ],
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
-    "Totes les connexions de xarxa gestionades a través d'aquesta interfície estan actualment configurades per usar-les només durant la instal·lació i no es copiaran al sistema instal·lat."
+    "Tutte le connessioni di rete gestite tramite questa interfaccia sono attualmente impostate per essere utilizzate solo durante l'installazione e non saranno copiate nel sistema installato"
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
-    "A més de definir el primer usuari, es poden configurar mètodes d'autenticació per a l'usuari d'arrel."
+    "Oltre a definire il primo utente, è possibile configurare i metodi di autenticazione per l'utente root."
   ],
   "Already using all available disks": [
-    "Ja s'usen tots els discs disponibles"
+    "I dischi disponibili sono già interamente utilizzati"
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
-    "Se suprimirà qualsevol partició existent i es perdran totes les dades del disc."
+    "Tutte le partizioni esistenti saranno rimosse e tutti i dati nel disco andranno persi."
   ],
   "Apply selected solution": [
-    "Aplica la solució seleccionada"
+    "Applica la soluzione selezionata"
   ],
   "As a new partition on %s": [
-    "Com a partició nova a %s"
+    "Come una nuova partizione su %s"
   ],
   "At least one address must be provided for selected mode": [
-    "S'ha de proporcionar almenys una adreça per al mode seleccionat."
+    "Almeno un indirizzo deve essere inserito per la modalità corrente"
   ],
   "At least one partition will be deleted": [
-    "Se suprimirà almenys una partició"
+    "Almeno una partizione verrà eliminata"
   ],
   "At this point you can power off the machine.": [
-    "En aquest punt, podeu aturar la màquina."
+    "A questo punto puoi spegnere la macchina."
   ],
   "At this point you can reboot the machine to log in to the new system.": [
-    "En aquest punt, podeu reiniciar la màquina per iniciar sessió al sistema nou."
+    "A questo punto puoi riavviare la macchina e connetterti al tuo nuovo sistema."
   ],
   "Authentication": [
-    "Autenticació"
+    "Autenticazione"
   ],
   "Authentication by initiator": [
-    "Autenticació per iniciador"
+    "Autenticazione per iniziatore"
   ],
   "Authentication by target": [
-    "Autenticació per destinació"
+    "Autenticazione per destinazione"
   ],
   "Auto LUNs Scan": [
-    "Escaneig automàtic de LUN"
+    "Scansione LUN automatica"
   ],
   "Automatic": [
-    "Automàtica"
+    "Automatico"
   ],
   "Automatic (DHCP)": [
-    "Automàtic (DHCP)"
+    "Automatico (DHCP)"
   ],
   "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    "L'exploració automàtica de LUN està [desactivada]. Els LUN s'han de configurar       manualment després d'activar un controlador."
+    "La scansione LUN automatica è [disabilitata]. È necessario configurare manualmente        le LUN dopo aver attivato un controller."
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    "L'exploració automàtica de LUN està [activada]. L'activació d'un controlador       que s'executa en mode NPIV configurarà automàticament tots els seus LUN."
+    "La scansione LUN automatica è [abilitata]. L'attivazione di un controller in      esecuzione in modalità NPIV configurerà automaticamente tutte le rispettive LUN."
   ],
   "Available products": [
-    "Productes disponibles"
+    "Prodotti disponibili"
   ],
   "Back": [
-    "Enrere"
+    "Indietro"
   ],
   "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "Segons la quantitat de memòria RAM del sistema, es crearà una %1s$ de %2$s per a %3$s"
+    "In base alla RAM del sistema, una %1s$ di %2$s verrà creata per %3$s"
   ],
   "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "Segons la quantitat de memòria RAM del sistema, es crearà una %1s$ d'almenys %2$s per a %3$s"
+    "In base alla RAM del sistema, una %1s$ di almeno %2$s verrà creata per %3$s"
   ],
   "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "Segons la quantitat de memòria RAM del sistema, es crearà una %1s$ amb una mida d'entre %2$s i %3$s per a %4$s"
+    "In base alla RAM del sistema, una %1s$ di dimensione tra %2$s e %3$s verrà creata per %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"
   ],
   "Before %s": [
-    "Abans: %s"
+    "Prima %s"
   ],
   "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "Abans d'instal·lar, heu de prendre algunes decisions. Cliqueu a cada secció per revisar-ne la configuració."
+    "Per continuare con l'installazione, devi prendere alcune decisioni. Clicca su ciascuna sezione per esaminare le impostazioni."
   ],
   "Before starting the installation, you need to address the following problems:": [
-    "Abans de començar la instal·lació, heu de resoldre els problemes següents:"
+    "Prima di procedere all'installazione, è necessario risolvere i seguenti problemi:"
   ],
   "Beta": [
     "Beta"
@@ -238,193 +238,193 @@ export default {
     "BitLocker"
   ],
   "Boot options": [
-    "Opcions d'arrencada"
+    "Opzioni di avvio"
   ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
-    "Btrfs amb instantànies"
+    "Btrfs con snapshots"
   ],
   "Calculated automatically": [
-    "Calculat automàticament"
+    "Calcolato automaticamente"
   ],
   "Cancel": [
-    "Cancel·la"
+    "Annulla"
   ],
   "Cannot be changed in remote installation": [
-    "No es pot canviar a la instal·lació remota."
+    "Non può essere cambiato nell'installazione remota"
   ],
   "Cannot connect to Agama server": [
-    "No es pot connectar amb el servidor d'Agama."
+    "Impossibile connettersi al server Agama"
   ],
   "Cannot format all selected devices": [
-    "No es poden formatar tots els dispositius seleccionats."
+    "Impossibile formattare tutti i dispositivi selezionati"
   ],
   "Change": [
-    "Canvia"
+    "Cambia"
   ],
   "Change Language": [
-    "Canvia'n la llengua"
+    "Cambia lingua"
   ],
   "Change boot options": [
-    "Canvia les opcions d'arrencada"
+    "Cambia le opzioni di boot"
   ],
   "Change device menu": [
-    "Canvia el menú del dispositiu"
+    "Cambia menu del dispositivo"
   ],
   "Change display language": [
-    "Canvia la llengua de visualització"
+    "Cambia lingua visualizzata"
   ],
   "Change display language and keyboard layout": [
-    "Canvia la llengua de visualització i la disposició del teclat"
+    "Cambia lingua visualizzata e mappatura della tastiera"
   ],
   "Change keyboard": [
-    "Canvia el teclat"
+    "Cambia tastiera"
   ],
   "Change keyboard layout": [
-    "Canvia la disposició del teclat"
+    "Cambia mappagura della tastiera"
   ],
   "Change product": [
-    "Canvia el producte"
+    "Cambia prodotto"
   ],
   "Change selection": [
-    "Canvia la selecció"
+    "Modifica la selezione"
   ],
   "Channel ID": [
-    "Identificador del canal"
+    "ID canale"
   ],
   "Check the %d planned actions": [
-    "Comproveu les %d accions planificades"
+    "Verifica le azioni pianificate %d"
   ],
   "Check the authentication parameters.": [
-    "Comproveu els paràmetres d'autenticació."
+    "Verificare i parametri di autenticazione."
   ],
   "Check the following before continuing": [
-    "Comproveu el següent abans de continuar:"
+    "Verificare quanto segue prima di continuare"
   ],
   "Choose a disk for placing the boot loader": [
-    "Trieu un disc per posar-hi el carregador d'arrencada"
+    "Seleziona un disco per installare il boot loader"
   ],
   "Choose what to with current content": [
-    "Trieu què voleu fer del contingut actual"
+    "Scegli cosa fare con il contenuto attuale"
   ],
   "Clear": [
-    "Neteja"
+    "Cancella"
   ],
   "Clear selected mount point": [
-    "Suprimeix el punt de muntatge seleccionat"
+    "Cancella punto di montaggio selezionato"
   ],
   "Close": [
-    "Tanca"
+    "Esci"
   ],
   "Collapse the list of planned actions": [
-    "Replega la llista d'accions previstes"
+    "Riduci l'elenco delle azioni pianificate"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "Configuració llegida a la taula del microprogramari d'arrencada iSCSI (iBFT)."
+    "Configurazione letta da iBFT (iSCSI Boot Firmware Table)."
   ],
   "Configure DASD": [
-    "Configuració de DASD"
+    "Configura DASD"
   ],
   "Configure LVM Volume Group": [
-    "Configura un grup de volums d'LVM"
+    "Configura gruppo di volumi LVM"
   ],
   "Configure LVM logical volume at %s volume group": [
-    "Configura el volum lògic d'LVM al grup de volums %s"
+    "Configura il volume logico LVM nel gruppo di volumi %s"
   ],
   "Configure device menu": [
-    "Configura el menú del dispositiu"
+    "Configura menu del dispositivo"
   ],
   "Configure iSCSI": [
-    "Configuració d'iSCSI"
+    "Configura iSCSI"
   ],
   "Configure partition at %s": [
-    "Configura la partició a %s"
+    "Configura partizione su %s"
   ],
   "Configure zFCP": [
-    "Configuració de zFCP"
+    "Configura zFCP"
   ],
   "Configured for installation only": [
-    "Configuració només per a la instal·lació"
+    "Configurata solo per l'Installazione"
   ],
   "Configuring the product, please wait ...": [
-    "Configurant el producte. Espereu, si us plau..."
+    "Configurazione del prodotto, attendere per favore..."
   ],
   "Confirm": [
-    "Confirmeu-ho"
+    "Conferma"
   ],
   "Confirm Installation": [
-    "Confirmeu la instal·lació"
+    "Conferma Installazione"
   ],
   "Congratulations!": [
-    "Enhorabona!"
+    "Congratulazioni!"
   ],
   "Connect": [
-    "Connecta't"
+    "Connetti"
   ],
   "Connect to %s": [
-    "Connecta amb %s"
+    "Connettiti a %s"
   ],
   "Connect to iSCSI targets": [
-    "Connecta amb objectius iSCSI"
+    "Connetti a periferiche iSCSI"
   ],
   "Connected": [
-    "Connectat"
+    "Connesso"
   ],
   "Connected (%s)": [
-    "Connectat (%s)"
+    "Connesso (%s)"
   ],
   "Connecting to %s": [
-    "Es connecta amb %s"
+    "Connessione a %s"
   ],
   "Connection details": [
-    "Detalls de la connexió"
+    "Dettagli connessione"
   ],
   "Connection not found or lost": [
-    "Connexió no trobada o perduda"
+    "Connessione non trovata o persa"
   ],
   "Content will be kept": [
-    "El contingut es mantindrà"
+    "I contenuti saranno mantenuti"
   ],
   "Continue": [
     "Continua"
   ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
-    "Continuar sense instal·lar el paquet pot resultar en un sistema trencat. En alguns casos, és possible que el sistema ni tan sols arrenqui."
+    "Proseguire senza installare il pacchetto potrebbe causare malfunzionamenti nel sistema e, in alcuni casi, impedirne l'avvio."
   ],
   "Controllers": [
-    "Controladors"
+    "Controller"
   ],
   "Could not authenticate against the server, please check it.": [
-    "No s'ha pogut autenticar amb el servidor. Si us plau, reviseu-ho."
+    "Autenticazione non riuscita con il server, controlla per favore."
   ],
   "Could not connect to %s": [
-    "No s'ha pogut connectar amb %s"
+    "Impossibile connettersi a %s"
   ],
   "Could not log in. Please, make sure that the password is correct.": [
-    "No s'ha pogut iniciar la sessió. Si us plau, assegureu-vos que la contrasenya sigui correcta."
+    "Impossibile connettersi. Prego, verificare che la password sia corretta."
   ],
   "Create LVM volume group %s": [
-    "Crea el grup de volums d'LVM %s"
+    "Crea gruppo di volumi LVM %s"
   ],
   "Create LVM volume group on %s": [
-    "Crea un grup de volums d'LVM a %s"
+    "Crea gruppo di volumi LVM su %s"
   ],
   "Create another LVM volume group on %s": [
-    "Crea un altre grup de volums d'LVM a %s"
+    "Crea un altro gruppo di volumi LVM su %s"
   ],
   "Create user": [
-    "Crea un usuari"
+    "Crea utente"
   ],
   "Current %1$s at %2$s": [
-    "%1$s actual a %2$s"
+    "Attuale %1$s su %2$s"
   ],
   "Current %s": [
-    "Actual: %s"
+    "Al momento %s"
   ],
   "Custom": [
-    "Personalitzat"
+    "Personalizzato"
   ],
   "DASD": [
     "DASD"
@@ -433,10 +433,10 @@ export default {
     "DASD %s"
   ],
   "DASD devices selection table": [
-    "Taula de selecció de dispositius DASD"
+    "Tabella di selezione dei dispositivi DASD"
   ],
   "DASDs table section": [
-    "Secció de taula DASD"
+    "Tabella di selezione dei DASD"
   ],
   "DIAG": [
     "DIAG"
@@ -445,163 +445,163 @@ export default {
     "DNS"
   ],
   "Deactivate": [
-    "Desactiva"
+    "Disattiva"
   ],
   "Deactivated": [
-    "Desactivat"
+    "Disattivato"
   ],
   "Default file system for %s": [
-    "Sistema de fitxers per defecte per a %s"
+    "File system predefinito con %s"
   ],
   "Default file system for generic logical volumes": [
-    "Sistema de fitxers per defecte per a volums lògics genèrics"
+    "File system predefinito per volumi logici generici"
   ],
   "Default file system for generic partitions": [
-    "Sistema de fitxers per defecte per a particions genèriques"
+    "File system predefinito per partizioni generiche"
   ],
   "Define a custom size or a range": [
-    "Definiu una mida personalitzada o un interval"
+    "Definisci una dimensione personalizzata o un range"
   ],
   "Define a new LVM on the disk": [
-    "Definiu un LVM nou al disc"
+    "Definisci un nuovo LVM sul disco"
   ],
   "Define a new LVM on top of one or several disks": [
-    "Definiu un LVM nou en un o diversos discs"
+    "Definisci un nuovo LVM su uno o più dischi"
   ],
   "Define a user now": [
-    "Definiu un usuari ara"
+    "Definisci un utente ora"
   ],
   "Define the first user with admin (sudo) privileges for system management.": [
-    "Definiu el primer usuari amb privilegis d'administrador (sudo) per a la gestió del sistema."
+    "Definire il primo utente con privilegi di amministratore (sudo) per la gestione del sistema."
   ],
   "Defined (hidden)": [
-    "Definit (ocult)"
+    "Definito (nascosto)"
   ],
   "Delete": [
-    "Suprimeix"
+    "Elimina"
   ],
   "Delete current content": [
-    "Suprimeix el contingut actual"
+    "Elimina contenuti attuali"
   ],
   "Delete volume group": [
-    "Suprimeix el grup de volums"
+    "Elimina gruppo di volumi"
   ],
   "Destroy current data and format partition as": [
-    "Destrueix les dades actuals i formata la partició com a"
+    "Distruggi i dati e formatta la partizione come"
   ],
   "Details": [
-    "Detalls"
+    "Dettagli"
   ],
   "Details will appear after the connection is successfully established.": [
-    "Els detalls apareixeran quan la connexió s'hagi establert correctament."
+    "I dettagli saranno visualizzati una volta stabilita la connessione."
   ],
   "Device": [
-    "Dispositiu"
+    "Dispositivo"
   ],
   "Device %s menu": [
-    "Menú del dispositiu %s"
+    "Menu del dispositivo %s"
   ],
   "Device details": [
-    "Detalls del dispositiu"
+    "Dettagli dispositivo"
   ],
   "Discard": [
-    "Descarta'l"
+    "Ignora"
   ],
   "Disconnected": [
-    "Desconnectat"
+    "Disconnesso"
   ],
   "Discover": [
-    "Descobreix"
+    "Rileva"
   ],
   "Discover and connect to iSCSI targets": [
-    "Descobriu objectius iSCSI i connecteu-vos-hi"
+    "Individua e stabilisci una connessione con i target iSCSI"
   ],
   "Discover iSCSI Targets": [
-    "Descobreix les destinacions iSCSI"
+    "Rileva destinazioni iSCSI"
   ],
   "Discover iSCSI targets": [
-    "Descobreix destinacions iSCSI"
+    "Rileva destinazioni iSCSI"
   ],
   "Disk": [
-    "Disc"
+    "Disco"
   ],
   "Disks": [
-    "Discs"
+    "Dischi"
   ],
   "Do not configure": [
-    "No ho configuris"
+    "Non configurare"
   ],
   "Do not format %s and keep the data": [
-    "No formatis %s i conserva'n les dades"
+    "Non formattare %s e mantenere i dati all'interno"
   ],
   "Do not use": [
-    "No l'usis"
+    "Non usare"
   ],
   "Download logs": [
-    "Baixa els registres"
+    "Scarica i logs"
   ],
   "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Durant la instal·lació, es fan diverses accions per configurar el disseny que es mostra a la taula següent."
+    "Durante l'installazione verranno eseguite diverse azioni per configurare il layout mostrato nella tabella seguente."
   ],
   "Edit": [
-    "Edita"
+    "Modifica"
   ],
   "Edit %s": [
-    "Edita %s"
+    "Modifica %s"
   ],
   "Edit connection %s": [
-    "Edita la connexió %s"
+    "Modifica connessione %s"
   ],
   "Edit user": [
-    "Edita l'usuari"
+    "Modifica utente"
   ],
   "Edit volume group": [
-    "Edita el grup de volums"
+    "Modifica gruppo di volumi"
   ],
   "Empty LVM volume group %s": [
-    "Buida el grup de volums d'LVM %s"
+    "Gruppo di volumi LVM %s vuoto"
   ],
   "Encrypt the system": [
-    "Encripta el sistema"
+    "Cifra il sistema"
   ],
   "Encrypted Device": [
-    "Dispositiu encriptat"
+    "Dispositivo criptato"
   ],
   "Encryption": [
-    "Encriptació"
+    "Cifratura"
   ],
   "Encryption Password": [
-    "Contrasenya d'encriptació"
+    "Password di crittografia"
   ],
   "Encryption is disabled": [
-    "L'encriptació està inhabilitada"
+    "Cifratura disabilitata"
   ],
   "Encryption is enabled": [
-    "L'encriptació està habilitada"
+    "Cifratura abilitata"
   ],
   "Encryption is enabled using TPM unlocking": [
-    "L'encriptació s'habilita amb el desblocatge de TPM"
+    "La cifratura viene abilitata mediante l'uso dello sblocco TPM"
   ],
   "Encryption settings": [
-    "Configuració de l'encriptació"
+    "Impostazioni di cifratura"
   ],
   "Enter a hostname.": [
-    "Introduïu un nom d'amfitrió."
+    "Immettere un nome host."
   ],
   "Enter a name": [
-    "Introduïu un nom"
+    "Immettere un nome"
   ],
   "Enter a name for the volume group.": [
-    "Introduïu un nom per al grup de volums."
+    "Immettere un nome per il gruppo di volumi."
   ],
   "ExFAT": [
     "ExFAT"
   ],
   "Excellent signal": [
-    "Senyal excel·lent"
+    "Segnale eccellente"
   ],
   "Expiration date": [
-    "Data de venciment"
+    "Data di scadenza"
   ],
   "Ext2": [
     "Ext2"
@@ -613,7 +613,7 @@ export default {
     "Ext4"
   ],
   "Extensions": [
-    "Extensions"
+    "Estensioni"
   ],
   "F2FS": [
     "F2FS"
@@ -622,119 +622,119 @@ export default {
     "FAT"
   ],
   "Failed to calculate a storage layout": [
-    "No s'ha pogut calcular un disseny d'emmagatzematge"
+    "Calcolo di un layout di memorizzazione non riuscito"
   ],
   "File system": [
-    "Sistema de fitxers"
+    "File system"
   ],
   "File system label": [
-    "Etiqueta del sistema de fitxers"
+    "Etichetta del file system"
   ],
   "Filter by description or keymap code": [
-    "Filtra per descripció o codi de mapa de tecles"
+    "Filtro per descrizione or keymap"
   ],
   "Filter by language, territory or locale code": [
-    "Filtra per llengua, territori o codi local"
+    "Filtra per lingua, territorio o locale di zona"
   ],
   "Filter by max channel": [
-    "Filtra per canal màxim"
+    "Filtra per canale massimo"
   ],
   "Filter by min channel": [
-    "Filtra per canal mínim"
+    "Filtra per canale minimo"
   ],
   "Filter by pattern title or description": [
-    "Filtra per títol o descripció del patró"
+    "Filtra per titolo o descrizione del pattern"
   ],
   "Filter by territory, time zone code or UTC offset": [
-    "Filtra per territori, codi de zona horària o desplaçament d'UTC"
+    "Filtra per territorio, codice di fuso orario o differenza da UTC"
   ],
   "Find space in %s": [
-    "Cerca espai a %s"
+    "Trova spazio in %s"
   ],
   "Finish": [
-    "Acaba"
+    "Finito"
   ],
   "Finished": [
-    "Acabada"
+    "Terminato"
   ],
   "First user": [
-    "Usuari primer"
+    "Primo utente"
   ],
   "Format": [
-    "Formata"
+    "Formatta"
   ],
   "Format logical volume as": [
-    "Formata el volum lògic com a"
+    "Formatta il volume logico come"
   ],
   "Format partition as": [
-    "Formata la partició com a"
+    "Formatta la partizione come"
   ],
   "Format selected devices?": [
-    "Voleu formatar els dispositius seleccionats?"
+    "Formattare i dispositivi selezionati?"
   ],
   "Formatted": [
-    "Formatat"
+    "Formattato"
   ],
   "Formatting DASD devices": [
-    "Formatatge de dispositius DASD"
+    "Formattazione dei dispositivi DASD"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
-    "L'encriptació de disc complet (FDE) permet protegir la informació emmagatzemada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
+    "Full Disk Encryption (FDE) consente di proteggere le informazioni memorizzate nei nuovi file system, tra cui dati, programmi e file di sistema."
   ],
   "Full name": [
-    "Nom complet"
+    "Nome completo"
   ],
   "Gateway": [
-    "Passarel·la"
+    "Gateway"
   ],
   "Gateway can be defined only in 'Manual' mode": [
-    "La passarel·la només es pot definir en mode manual."
+    "Il gateway può essere definito solo in modalità 'Manuale'"
   ],
   "GiB": [
     "GiB"
   ],
   "Go to network page": [
-    "Ves a la pàgina de la xarxa"
+    "Vai alla pagina della rete"
   ],
   "Good signal": [
-    "Senyal bo"
+    "Segnale buono"
   ],
   "Hide": [
-    "Amaga"
+    "Nascondi"
   ],
   "Hide %d subvolume action": [
-    "Amaga %d acció de subvolum",
-    "Amaga %d accions de subvolum"
+    "Nascondi l'azione del sottovolume %d",
+    "Nascondi le azioni del sottovolume %d"
   ],
   "Hide details": [
-    "Amaga els detalls"
+    "Nascondi i dettagli"
   ],
   "Hostname": [
-    "Nom d'amfitrió"
+    "Nome host"
   ],
   "Hostname could not be updated": [
-    "No s'ha pogut actualitzar el nom d'amfitrió"
+    "Impossibile aggiornare il nome host"
   ],
   "Hostname successfully updated": [
-    "El nom d'amfitrió s'ha actualitzat correctament"
+    "Nome host aggiornato"
   ],
   "I have read and accept the [license] for %s": [
-    "He llegit i accepto la [llicència] de %s"
+    "Confermo di aver letto e accettato la [licenza] per %s"
   ],
   "IP Address": [
-    "Adreça IP"
+    "Indirizzo IP"
   ],
   "IP Addresses": [
-    "Adreces IP"
+    "Indirizzi IP"
   ],
   "IP address": [
-    "Adreça IP"
+    "Indirizzo IP"
   ],
   "IP addresses": [
-    "Adreces IP"
+    "Indirizzi IP"
   ],
   "IP settings": [
-    "Paràmetres d'IP"
+    "Impostazioni IP"
   ],
   "IPv4": [
     "IPv4"
@@ -743,130 +743,130 @@ export default {
     "IPv6"
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
-    "Si s'ha usat un mitjà local per executar aquest instal·lador, traieu-lo abans de la propera arrencada."
+    "Se è stato utilizzato un supporto locale per eseguire questo programma di installazione, rimuoverlo prima del prossimo avvio."
   ],
   "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "Si s'omet la unitat, s'usaran els bytes (B). Les unitats més grosses poden tenir la forma de GiB (potència de 2) o GB (potència de 10)."
+    "Se si omette l'unità, verranno utilizzati i byte (B). Le unità più grandi possono presentarsi               nella forma GiB (potenza di 2) o GB (potenza di 10)."
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Si continueu, les particions del disc dur es modificaran segons la configuració d'instal·lació proporcionada."
+    "Se continui, le partizioni del disco rigido saranno modificate in base alle impostazioni di installazione fornite."
   ],
   "In progress": [
-    "En curs"
+    "In corso"
   ],
   "Incorrect IP address": [
-    "Adreça IP incorrecta"
+    "Indirizzo IP errato"
   ],
   "Incorrect password": [
-    "Contrasenya incorrecta"
+    "Password errata"
   ],
   "Incorrect port": [
-    "Port incorrecte"
+    "Porta errata"
   ],
   "Incorrect user name": [
-    "Nom d'usuari incorrecte"
+    "Nome utente errato"
   ],
   "Initiator": [
-    "Iniciador"
+    "Iniziatore"
   ],
   "Initiator details": [
-    "Detalls de l'iniciador"
+    "Dettagli dell'iniziatore"
   ],
   "Initiator name": [
-    "Nom de l'iniciador"
+    "Nome iniziatore"
   ],
   "Initiator name could not be updated": [
-    "El nom de l'iniciador s'ha actualitzat correctament"
+    "Impossibile aggiornare il nome dell'iniziatore"
   ],
   "Initiator name successfully updated": [
-    "El nom de l'iniciador s'ha actualitzat correctament"
+    "Nome iniziatore aggiornato"
   ],
   "Install": [
-    "Instal·la"
+    "Installa"
   ],
   "Install using an advanced configuration.": [
-    "Instal·la mitjançant una configuració avançada."
+    "Esegui l'installazione con una configurazione avanzata."
   ],
   "Install using device %s and deleting all its content.": [
-    "Instal·la al dispositiu %s suprimint-ne tot el contingut."
+    "Installa utilizzando il dispositivo %s ed eliminando tutto il suo contenuto."
   ],
   "Install using device %s shrinking existing partitions as needed.": [
-    "Instal·la al dispositiu %s encongint-ne les particions existents segons calgui."
+    "Installa utilizzando il dispositivo %s ridimensionando le partizioni esistenti se necessario."
   ],
   "Install using device %s with a custom strategy to find the needed space.": [
-    "Instal·la al dispositiu %s amb una estratègia personalitzada per trobar l'espai necessari."
+    "Installa utilizzando il dispositivo %s con una strategia personalizzata per individuare lo spazio necessario."
   ],
   "Install using device %s without modifying existing partitions.": [
-    "Instal·la al dispositiu %s sense modificar-ne les particions existents."
+    "Installa utilizzando il dispositivo %s senza modificare le partizioni esistenti."
   ],
   "Install using several devices and deleting all its content.": [
-    "Instal·la a dispositius diversos suprimint-ne tot el contingut."
+    "Installa utilizzando diversi dispositivi ed eliminando tutto il suo contenuto."
   ],
   "Install using several devices shrinking existing partitions as needed.": [
-    "Instal·la a dispositius diversos encongint-ne les particions existents segons calgui."
+    "Installa con il dispositivo %s riducendo le partizioni esistenti, se necessario."
   ],
   "Install using several devices with a custom strategy to find the needed space.": [
-    "Instal·la a dispositius diversos amb una estratègia personalitzada per trobar l'espai necessari."
+    "Installa utilizzando il dispositivo %s con una strategia personalizzata per individuare lo spazio necessario."
   ],
   "Install using several devices without modifying existing partitions.": [
-    "Instal·la a dispositius diversos sense modificar-ne les particions existents."
+    "Installa utilizzando il dispositivo %s senza modificare le partizioni esistenti."
   ],
   "Installation Devices": [
-    "Dispositius d'instal·lació"
+    "Dispositivi di installazione"
   ],
   "Installation will take %s.": [
-    "La instal·lació necessitarà %s."
+    "L'installazione richiederà %s."
   ],
   "Installed system may not have network connections": [
-    "El sistema instal·lat pot no tenir connexions de xarxa."
+    "Il sistema installato potrebbe non avere connessioni di rete"
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
-    "Instal·lar un paquet trencat afecta l'estabilitat del sistema i és un risc important de seguretat!"
+    "L'installazione di un pacchetto danneggiato compromette la stabilità del sistema ed è un grande rischio per la sicurezza!"
   ],
   "Installing the system, please wait...": [
-    "Instal·lant el sistema. Espereu, si us plau..."
+    "Installazione del sistema in corso, attendere prego..."
   ],
   "Interface": [
-    "Interfície"
+    "Interfaccia"
   ],
   "Invalid storage settings": [
-    "Configuració d'emmagatzematge no vàlida"
+    "Impostazioni di memorizzazione non valide"
   ],
   "Ip prefix or netmask": [
-    "Prefix IP o màscara de xarxa"
+    "Prefisso IP o netmask"
   ],
   "Issue date": [
-    "Data d'emissió"
+    "Data di emissione"
   ],
   "Issuer": [
-    "Emissor"
+    "Emittente"
   ],
   "It is not possible to allocate space for %s.": [
-    "No és possible assignar espai per a %s."
+    "Impossibile allocare spazio per %s."
   ],
   "It is not possible to allocate space for the boot partition and for %s.": [
-    "No és possible assignar espai per a la partició d'arrencada i per a %s."
+    "Impossibile allocare spazioni per la partizione di avvio e %s."
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
-    "No és possible instal·lar el sistema amb la configuració actual. Ajusteu els paràmetres que hi ha a continuació."
+    "Impossibile installare il sistema con l'attuale configurazione. Regolare le impostazioni sottostanti."
   ],
   "It may take some time.": [
-    "Pot trigar una mica."
+    "Potrebbe richiedere del tempo."
   ],
   "JFS": [
     "JFS"
   ],
   "Keep size of %s": [
-    "Mantén la mida de %s"
+    "Mantieni la dimensione di %s"
   ],
   "Keyboard": [
-    "Teclat"
+    "Tastiera"
   ],
   "Keyboard layout": [
-    "Disposició del teclat"
+    "Layout di tastiera"
   ],
   "Keyboard selection": [
-    "Selecció del teclat"
+    "Selezione tastiera"
   ],
   "KiB": [
     "KiB"
@@ -875,145 +875,145 @@ export default {
     "LUN"
   ],
   "Label": [
-    "Etiqueta"
+    "Etichetta"
   ],
   "Language": [
-    "Llengua"
+    "Lingua"
   ],
   "Language and keyboard": [
-    "Llengua i teclat"
+    "Lingua e tastiera"
   ],
   "Let the installer propose a sensible range of sizes": [
-    "Permeteu que l'instal·lador proposi una gamma raonable de mides"
+    "Lascia che l'installer proponga una serie di dimensioni"
   ],
   "License language": [
-    "Llengua de la llicència"
+    "Lingua del contratto di licenza"
   ],
   "Limited": [
-    "Limitada"
+    "Limitato"
   ],
   "Loading": [
-    "Carregant"
+    "Caricamento"
   ],
   "Loading data...": [
-    "Carregant dades..."
+    "Caricamento dati..."
   ],
   "Loading the installation repositories...": [
-    "Carregant els repositoris d'instal·lació..."
+    "Caricamento in corso dei repository di installazione..."
   ],
   "Locale selection": [
-    "Selecció de la llengua"
+    "Selezione localizzazione"
   ],
   "Localization": [
-    "Localització"
+    "Localizzazione"
   ],
   "Log in": [
-    "Inicia la sessió"
+    "Accesso"
   ],
   "Log in as %s": [
-    "Inicieu sessió com a %s"
+    "Connesso come %s"
   ],
   "Logical volume name": [
-    "Nom del volum lògic"
+    "Nome volume logico"
   ],
   "Logical volumes": [
-    "Volums lògics"
+    "Volumi logici"
   ],
   "Login": [
-    "Entrada"
+    "Login"
   ],
   "Login %s": [
-    "Entrada per a %s"
+    "Login %s"
   ],
   "Login form": [
-    "Forma d'entrada"
+    "Modulo di login"
   ],
   "Logout": [
-    "Sortida"
+    "Disconnetti"
   ],
   "MAC": [
     "MAC"
   ],
   "Main navigation": [
-    "Navegació principal"
+    "Navigazione principale"
   ],
   "Make sure you provide the correct values": [
-    "Assegureu-vos que proporcioneu els valors correctes"
+    "Assicuarsi di fornire i valori corretti"
   ],
   "Manage DASD devices": [
-    "Gestioneu els dispositius DASD"
+    "Gestisci dispositivi DASD"
   ],
   "Manual": [
-    "Manual"
+    "Manuale"
   ],
   "Maximum": [
-    "Màxim"
+    "Massimo"
   ],
   "Maximum size mode": [
-    "Mode de mida màxima"
+    "Modalità dimensione massima"
   ],
   "Maximum size options": [
-    "Opcions de mida màxima"
+    "Opzioni dimensione massima"
   ],
   "Maximum size value": [
-    "Valor de mida màxima"
+    "Valore dimensione massima"
   ],
   "MiB": [
     "MiB"
   ],
   "Minimum": [
-    "Mínim"
+    "Minimo"
   ],
   "Minimum size value": [
-    "Valor de mida mínima"
+    "Valore dimensione minima"
   ],
   "Mode": [
-    "Mode"
+    "Modalità"
   ],
   "Modify settings and physical volumes": [
-    "Modifica la configuració i els volums físics"
+    "Modifica impostazioni e volumi fisici"
   ],
   "More actions": [
-    "Més accions"
+    "Azioni aggiuntive"
   ],
   "More devices": [
-    "Més dispositius"
+    "Altri dispositivi"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    "Pot ser que hi hagi més disposicions de teclat disponibles per al producte seleccionat a la pàgina [Localitzation]"
+    "Nella pagina [Localizzazione] potrebbero essere disponibili altre mappatura della tastiera per il prodotto selezionato"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    "És possible que hi hagi més opcions de llengua i disposicions de teclat per al producte seleccionat a la pàgina [Localization]."
+    "Nella pagina [Localizzazione] potrebbero essere disponibili altre opzioni di lingua e mappatura della tastiera per il prodotto selezionato."
   ],
   "More languages might be available for the selected product at [Localization] page": [
-    "És possible que hi hagi més llengües disponibles per al producte seleccionat a la pàgina [Localitzation]"
+    "Nella pagina [Localizzazione] potrebbero essere disponibili altre lingue per il prodotto selezionato"
   ],
   "Mount Point": [
-    "Punt de muntatge"
+    "Punto di montaggio"
   ],
   "Mount point": [
-    "Punt de muntatge"
+    "Punto di montaggio"
   ],
   "Mount point mode": [
-    "Mode de punt de muntatge"
+    "Modalità punto di montaggio"
   ],
   "Mount point options": [
-    "Opcions de punt de muntatge"
+    "Opzioni del punto di montaggio"
   ],
   "Mount point toggle": [
-    "Commutació de punt de muntatge"
+    "Attivazione/disattivazione del punto di montaggio"
   ],
   "Move mount points": [
-    "Mou els punts de muntatge"
+    "Sposta punti di montaggio"
   ],
   "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    "Mou els punts de muntatge configurats actualment als discs seleccionats                    als volums lògics d'aquest grup de volums."
+    "Spostare i punti di montaggio attualmente configurati nei dischi selezionati nei volumi                    logici di questo gruppo di volumi."
   ],
   "Multipath": [
-    "Multicamí"
+    "Multipath"
   ],
   "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
-    "S'han trobat diversos conflictes. Podeu abordar-los en qualsevol ordre i, si se'n resol un, potser se'n resolen d'altres."
+    "Sono stati riscontrati più conflitti. È possibile risolverli in qualsiasi ordine e la risoluzione di uno potrebbe estendersi anche agli altri."
   ],
   "NFS": [
     "NFS"
@@ -1025,953 +1025,953 @@ export default {
     "NTFS"
   ],
   "Name": [
-    "Nom"
+    "Nome"
   ],
   "Network": [
-    "Xarxa"
+    "Network"
   ],
   "Network details": [
-    "Detalls de la xarxa"
+    "Dettagli rete"
   ],
   "Network not found or lost": [
-    "Xarxa no trobada o perduda"
+    "Rete non trovata o persa"
   ],
   "New": [
-    "Nova"
+    "Nuovo"
   ],
   "No": [
     "No"
   ],
   "No Wi-Fi networks were found": [
-    "No s'ha trobat cap xarxa sense fil"
+    "Non è stata trovata nessuna rete Wi-Fi"
   ],
   "No additional partitions will be created": [
-    "No es crearan particions addicionals"
+    "Nessun software aggiuntivo è stato selezionato"
   ],
   "No additional software was selected.": [
-    "No s'ha seleccionat cap programari addicional."
+    "Nessun software aggiuntivo è stato selezionato."
   ],
   "No conflicts to address": [
-    "No hi ha conflictes per abordar"
+    "Nessun conflitto da risolvere"
   ],
   "No content found": [
-    "No s'ha trobat contingut."
+    "Nessun contenuto trovato"
   ],
   "No device selected yet": [
-    "Encara no s'ha seleccionat cap dispositiu."
+    "Non è stato selezionato alcun dispositivo al momento"
   ],
   "No devices configured yet": [
-    "Encara no s'ha configurat cap dispositiu"
+    "Non è stato ancora configurato alcun dispositivo"
   ],
   "No devices found": [
-    "No s'ha trobat cap dispositiu"
+    "Nessun dispositivo trovato"
   ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "No s'ha trobat cap taula de microprogramari d'arrencada iSCSI (iBFT). L'iniciador es pot configurar manualment."
+    "Nessuna iBFT (iSCSI Boot Firmware Table) trovata. È possibile configurare manualmente l'iniziatore."
   ],
   "No iSCSI targets found.": [
-    "No s'ha trobat cap destinació iSCSI."
+    "Nessuna destinazione iSCSI trovata."
   ],
   "No logical volumes are defined yet": [
-    "Encara no s'ha definit cap volum lògic"
+    "Non è stato ancora definito alcun volume logico"
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
-    "No es configurarà automàticament cap partició per a l'arrencada. Useu-ho amb precaució."
+    "Le partizioni per l'avvio non verranno configurate automaticamente.Usare con cautela."
   ],
   "No support is planned.": [
-    "No té compatibilitat prevista."
+    "Non è previsto alcun supporto."
   ],
   "No user defined yet.": [
-    "Encara no s'ha definit cap usuari."
+    "Non è stato ancora definito alcun utente."
   ],
   "No wired connections were found": [
-    "No s'ha trobat cap connexió amb fil"
+    "Nessuna connessione via cavo trovata"
   ],
   "No zFCP controllers found.": [
-    "No s'ha trobat cap controlador de zFCP."
+    "Nessun controller zFCP trovato."
   ],
   "No zFCP disks found.": [
-    "No s'ha trobat cap disc zFCP."
+    "Nessun disco zFCP trovato."
   ],
   "None": [
-    "Cap"
+    "Nessuno"
   ],
   "None of the keymaps match the filter.": [
-    "Cap dels mapes de tecles coincideix amb el filtre."
+    "Nessuno dei keymap corrisponde al filtro."
   ],
   "None of the locales match the filter.": [
-    "Cap de les llengües coincideix amb el filtre."
+    "Nessuna localizzazione corrisponde al filtro."
   ],
   "None of the patterns match the filter.": [
-    "Cap dels patrons coincideix amb el filtre."
+    "Nessuno dei modelli corrisponde al filtro."
   ],
   "None of the time zones match the filter.": [
-    "Cap de les zones horàries coincideix amb el filtre."
+    "Nessuno dei fusi orari corrisponde al filtro."
   ],
   "Not available": [
-    "No disponible"
+    "Non disponibile"
   ],
   "Not defined": [
-    "No definit"
+    "Non definito"
   ],
   "Not implemented yet (%s)": [
-    "Encara no s'ha implementat (%s)"
+    "Funzionalità non ancora implementata (%s)"
   ],
   "Not possible with the current setup. Click to know more.": [
-    "No és possible amb la configuració actual. Feu clic per saber-ne més."
+    "Non possibile con la configurazione attuale. Clicca per saperne di più."
   ],
   "Not protected network": [
-    "Xarxa no protegida"
+    "Rete non protetta"
   ],
   "Not selected yet": [
-    "Encara no s'ha seleccionat."
+    "Non selezionato al momento"
   ],
   "Not supported (%s)": [
-    "No compatible (%s)"
+    "Non supportato (%s)"
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Els dispositius fora de línia s'han d'activar abans de formatar-los. Si us plau, desmarqueu o activeu els dispositius que s'indiquen a continuació i torneu-ho a provar."
+    "È necessario attivare i dispositivi offline prima di formattarli. Deselezionare o attivare i dispositivi elencati sotto e riprovare"
   ],
   "On boot": [
-    "A l'arrencada"
+    "All'avvio"
   ],
   "Only available if authentication by target is provided": [
-    "Només està disponible si es proporciona l'autenticació per destinació."
+    "Disponibile solo se viene fornita l'autenticazione per destinazione"
   ],
   "Options toggle": [
-    "Canvi d'opcions"
+    "Abilita opzioni"
   ],
   "Other options": [
-    "Altres opcions"
+    "Altre opzioni"
   ],
   "Other options toggle": [
-    "Canvi d'altres opcions"
+    "Commutazione di altre opzioni"
   ],
   "Overview": [
-    "Resum"
+    "Panoramica"
   ],
   "Package installation failed": [
-    "Ha fallat instal·lació del paquet."
+    "Installazione del pacchetto non riuscita"
   ],
   "Partition Info": [
-    "Informació de la partició"
+    "Informazioni sulla partizione"
   ],
   "Partitions": [
-    "Particions"
+    "Partizioni"
   ],
   "Partitions needed for booting will also be adapted": [
-    "També s'adaptaran les particions necessàries per a l'arrencada"
+    "Le partizioni necessarie per l'avvio saranno anche adattate"
   ],
   "Partitions needed for booting will remain at %s": [
-    "Les particions necessàries per a arrencar es mantindran a %s"
+    "Le partizioni necessarie per l'avvio rimarranno su %s"
   ],
   "Partitions to boot will be allocated at the following device.": [
-    "Les particions per a l'arrencada s'assignaran al dispositiu següent."
+    "Le partizioni per l'avvio saranno allocate sul seguente dispositivo."
   ],
   "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Les particions per a l'arrencada s'assignaran al disc d'instal·lació (%s)."
+    "Le partizioni di avvio verranno allocate nel disco di installazione (%s)."
   ],
   "Partitions to boot will be allocated at the installation disk.": [
-    "Les particions per a l'arrencada s'assignaran al disc d'instal·lació."
+    "Le partizioni di avvio verranno allocate sul disco di installazione."
   ],
   "Partitions will be used and created for %s": [
-    "Les particions s'usaran i es crearan per a %s"
+    "Le partizioni verranno utilizze e create per %s"
   ],
   "Password": [
-    "Contrasenya"
+    "Password"
   ],
   "Password Required": [
-    "Cal una contrasenya."
+    "Password richiesta"
   ],
   "Password confirmation": [
-    "Confirmació de la contrasenya"
+    "Conferma password"
   ],
   "Password input": [
-    "Introducció de contrasenya"
+    "Inserimento password"
   ],
   "Password is empty.": [
-    "La contrasenya està buida."
+    "Inserimento password."
   ],
   "Password visibility button": [
-    "Botó de visibilitat de la contrasenya"
+    "bottone visibilità password"
   ],
   "Passwords do not match": [
-    "Les contrasenyes no coincideixen."
+    "Le password non corrispondono"
   ],
   "Pending": [
-    "Pendent"
+    "In attesa"
   ],
   "Perform an action": [
-    "Fes una acció"
+    "Esegui un'azione"
   ],
   "PiB": [
     "PiB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
-    "Si us plau, cancel·leu i comproveu-ne la configuració si no n'esteu segur."
+    "Per favore, annulla e controlla le impostazioni se non sei sicuro."
   ],
   "Please, check whether it is running.": [
-    "Si us plau, comproveu si s'executa."
+    "Per favore, verificare se è in esecuzione."
   ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Si us plau, executeu un descobriment d'iSCSI per trobar destinacions iSCSI disponibles."
+    "Effettuare una rilevazione iSCSI per trovare le destinazioni iSCSI disponibili."
   ],
   "Please, provide its password to log in to the system.": [
-    "Si us plau, proporcioneu-ne la contrasenya per iniciar sessió al sistema."
+    "Per favore, inserire la password per collegarsi al sistema."
   ],
   "Please, try to activate a zFCP controller.": [
-    "Si us plau, proveu d'activar un controlador de zFCP."
+    "Provare ad attivare un controller zFCP."
   ],
   "Please, try to activate a zFCP disk.": [
-    "Si us plau, proveu d'activar un disc zFCP."
+    "Provare ad attivare un disco zFCP."
   ],
   "Port": [
-    "Port"
+    "Porta"
   ],
   "Portal": [
-    "Portal"
+    "Portale"
   ],
   "Pre-installation checks": [
-    "Comprovacions prèvies a la instal·lació"
+    "Controlli pre installazione"
   ],
   "Prefix length or netmask": [
-    "Longitud del prefix o màscara de xarxa"
+    "Lunghezza prefisso o netmask"
   ],
   "Product is already registered": [
-    "El producte ja està registrat."
+    "Il prodotto è già registrato"
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Protecció de la informació emmagatzemada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
+    "Protezione per le informazoini memorizzate nei nuovi file system, tra cui dati, programmi e file di sistema."
   ],
   "Provide email address": [
-    "Proporcioneu una adreça de correu electrònic."
+    "Fornire un indirizzo e-mail"
   ],
   "Public SSH Key": [
-    "Clau pública SSH"
+    "Chiave SSH pubblica"
   ],
   "Public SSH Key is empty.": [
-    "La clau SSH pública és buida."
+    "La chiave SSH pubblica è vuota."
   ],
   "Public network": [
-    "Xarxa pública"
+    "Rete pubblica"
   ],
   "Question": [
-    "Pregunta"
+    "Domanda"
   ],
   "Read zFCP devices": [
-    "Llegeix els dispositius zFCP"
+    "Leggi i dispositivi zFCP"
   ],
   "Reboot": [
-    "Reinicia"
+    "Riavvia"
   ],
   "Recommended": [
-    "Recomanat"
+    "Consigliato"
   ],
   "Register": [
-    "Registra"
+    "Registrare"
   ],
   "Registration": [
-    "Registre"
+    "Registrazione"
   ],
   "Registration certificate": [
-    "Certificat de registre"
+    "Certificato di registrazione"
   ],
   "Registration code": [
-    "Codi de registre"
+    "Codice di registrazione"
   ],
   "ReiserFS": [
     "ReiserFS"
   ],
   "Reload": [
-    "Torna a carregar"
+    "Ricarica"
   ],
   "Reloading data, please wait...": [
-    "Tornant a carregar les dades; espereu, si us plau..."
+    "Ricaricamento dei dati in corso, attendere..."
   ],
   "Remove": [
-    "Suprimeix"
+    "Rimuovi"
   ],
   "Remove max channel filter": [
-    "Suprimeix el filtre de canal màxim"
+    "Rimuovi filtro canale massimo"
   ],
   "Remove min channel filter": [
-    "Suprimeix el filtre del canal mínim"
+    "Rimuovi filtro canale minimo"
   ],
   "Remove the configuration for this disk": [
-    "Suprimeix la configuració d'aquest disc"
+    "Rimuovi la configurazione per questo disco"
   ],
   "Repository load failed": [
-    "Ha fallat carregar el repositori."
+    "Errore nel caricamento del repository"
   ],
   "Reset to defaults": [
-    "Restableix els valors predeterminats"
+    "Ripristina le impostazioni predefinite"
   ],
   "Reset to the default configuration": [
-    "Restableix la configuració predeterminada"
+    "Ripristina la configurazione predefinita"
   ],
   "Result": [
-    "Resultat"
+    "Risultato"
   ],
   "Review and fix": [
-    "Revisa i corregeix"
+    "Rivedi e correggi"
   ],
   "Root authentication methods": [
-    "Mètodes d'autenticació d'arrel"
+    "Metodi di autenticazione root"
   ],
   "Root user": [
-    "Usuari d'arrel"
+    "Utente root"
   ],
   "Routes": [
-    "Camins"
+    "Rotte"
   ],
   "SD Card": [
-    "Targeta SD"
+    "Scheda SD"
   ],
   "SHA1 fingerprint": [
-    "Empremta digital SHA1"
+    "Impronta digitale SHA1"
   ],
   "SHA256 fingerprint": [
-    "Empremta digital SHA256"
+    "Impronta digitale SHA256"
   ],
   "SSID": [
     "SSID"
   ],
   "Same as minimum": [
-    "Igual que el mínim"
+    "Come il minimo"
   ],
   "Search": [
-    "Cerca"
+    "Ricerca"
   ],
   "Secured network": [
-    "Xarxa amb seguretat"
+    "Rete protetta"
   ],
   "Security": [
-    "Seguretat"
+    "Sicurezza"
   ],
   "See more details": [
-    "Mostra'n més detalls"
+    "Mostra più dettagli"
   ],
   "Select": [
-    "Selecciona"
+    "Selezionare"
   ],
   "Select a disk": [
-    "Seleccioneu un disc"
+    "Seleziona un disco"
   ],
   "Select a disk to configure": [
-    "Seleccioneu un disc per configurar-lo"
+    "Seleziona un disco da configurare"
   ],
   "Select a disk to create %s": [
-    "Seleccioneu un disc per crear-hi el punt de muntatge %s"
+    "Seleziona un disco per creare %s"
   ],
   "Select a disk to define partitions": [
-    "Seleccioneu un disc per definir-ne les particions"
+    "Seleziona un disco per definire le partizioni"
   ],
   "Select a disk to install the system": [
-    "Seleccioneu un disc per instal·lar-hi el sistema"
+    "Seleziona un disco su cui installare il sistema"
   ],
   "Select a product": [
-    "Seleccioneu un producte"
+    "Seleziona un prodotto"
   ],
   "Select a solution to continue": [
-    "Seleccioneu una solució per continuar"
+    "Selezionare una soluzione per continuare"
   ],
   "Select another disk to define partitions": [
-    "Seleccioneu un altre disc per definir-ne les particions"
+    "Seleziona un altro disco per definire le partizioni"
   ],
   "Select at least one disk.": [
-    "Seleccioneu almenys un disc."
+    "Selezionare almeno un disco."
   ],
   "Select or enter a mount point": [
-    "Seleccioneu o introduïu un punt de muntatge"
+    "Selezionare o immettere un punto di montaggio"
   ],
   "Select or enter a mount point that is not already assigned to another device": [
-    "Seleccioneu o introduïu un punt de muntatge que no estigui assignat a un altre dispositiu"
+    "Selezionare o immettere un punto di montaggio che non sia già assegnato a un altro dispositivo"
   ],
   "Select or enter a valid mount point": [
-    "Seleccioneu o introduïu un punt de muntatge vàlid"
+    "Seleziona o immetti un punto di montaggio valido"
   ],
   "Select the disk to configure partitions for booting": [
-    "Seleccioneu el disc per configurar-hi les particions per a arrencar"
+    "L'installazione non provvederà a configurare le partizioni per l'avvio"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
-    "Seleccioneu què fer de cada partició per trobar espai per assignar-hi el sistema nou."
+    "Selezionare le azioni da eseguire con ogni partizione per trovare lo spazio per allocare il nuovo sistema."
   ],
   "Select what to do with each partition.": [
-    "Seleccioneu què voleu fer amb cada partició."
+    "Selezionare le azioni da eseguire con ogni partizione."
   ],
   "Selected disk (cannot be changed)": [
-    "Disc seleccionat (no es pot canviar)"
+    "Disco selezionato (non modificabile)"
   ],
   "Selected patterns": [
-    "Patrons seleccionats"
+    "Pattern selezionati"
   ],
   "Server IP": [
-    "IP del servidor"
+    "IP del Server"
   ],
   "Set DIAG Off": [
-    "Desactiva la diagnosi"
+    "Disattiva DIAG"
   ],
   "Set DIAG On": [
-    "Activa la diagnosi"
+    "Attiva DIAG"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
-    "Estableix un nom d'amfitrió permanent que no canviarà amb les actualitzacions per xarxa."
+    "Imposta un nome host permanente che non cambierà con gli aggiornamenti della rete."
   ],
   "Setting up connection": [
-    "Establiment de la connexió"
+    "Configurazione della connessione"
   ],
   "Several partitions will be deleted": [
-    "Se suprimiran diverses particions"
+    "Diverse partizioni verranno eliminate"
   ],
   "Show": [
     "Mostra"
   ],
   "Show %d subvolume action": [
-    "Mostra %d acció de subvolum",
-    "Mostra %d accions de subvolum"
+    "Mostra l'azione del sottovolume %d",
+    "Mostra le azioni del sottovolume %d"
   ],
   "Show information about %s": [
-    "Mostra informació quant a %s"
+    "Mostra informazioni su %s"
   ],
   "Show less actions": [
-    "Mostra menys accions"
+    "Mostra meno azioni"
   ],
   "Show more actions": [
-    "Mostra més accions"
+    "Mostra altre azioni"
   ],
   "Shrink existing partitions": [
-    "Encongeix les particions existents"
+    "Riduci partizioni esistenti"
   ],
   "Signal strength": [
-    "Força del senyal"
+    "Potenza del segnale"
   ],
   "Size": [
-    "Mida"
+    "Dimensione"
   ],
   "Size limits must be numbers followed by a unit like GiB or GB": [
-    "Els límits de mida han de ser números seguits d'una unitat com ara GiB o GB."
+    "I limiti delle dimensioni devono essere numeri seguiti da un'unità, come GiB o GB"
   ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
-    "Els límits de mida han de ser números seguits opcionalment d'una unitat com ara GiB o GB"
+    "I limiti delle dimensioni devono essere numeri seguiti facoltativamente da un'unità come GiB o GB"
   ],
   "Size options": [
-    "Opcions de mida"
+    "Opzioni dimensione"
   ],
   "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
-    "Les mides s'han d'introduir com a números seguits d'una unitat                del tipus GiB (potència de 2) o GB (potència de 10)."
+    "Immettere le dimensioni come numeri seguiti da un'unità               nella forma GiB (potenza di 2) o GB (potenza di 10)."
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "Les mides s'han d'introduir com a números opcionalment seguits d'una unitat."
+    "Immettere le dimensioni come numeri facoltativamente seguiti da un'unità."
   ],
   "Skip to content": [
-    "Omet i ves al contingut"
+    "Salta al contenuto"
   ],
   "Skip to next": [
-    "Salta al següent"
+    "Salta al successivo"
   ],
   "Skip to previous": [
-    "Salta a l'anterior"
+    "Salta al precedente"
   ],
   "Software": [
-    "Programari"
+    "Software"
   ],
   "Software %s": [
-    "Programari %s"
+    "Software %s"
   ],
   "Software conflicts resolution": [
-    "Resolució de conflictes de programari"
+    "Risoluzioni dei conflitti del software"
   ],
   "Software selection": [
-    "Selecció de programari"
+    "Selezione Software"
   ],
   "Some existing partitions may be shrunk": [
-    "Algunes particions existents es poden encongir"
+    "Alcune partizioni esistenti potrebbero essere ridotte"
   ],
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "Alguns repositoris d'instal·lació no s'han pogut carregar. El sistema no es pot instal·lar sense."
+    "Non è stato possibile caricare alcuni repository di installazione.Il sistema non può essere installato senza di essi."
   ],
   "Some of the elements in your AutoYaST profile are not supported.": [
-    "Alguns dels elements del vostre perfil d'AutoYaST no són compatibles."
+    "Alcuni degli elementi nel tuo profilo AutoYaST non sono supportati."
   ],
   "Some partitions may be deleted": [
-    "Algunes particions es poden suprimir"
+    "Alcune partizioni potrebbero essere eliminate"
   ],
   "Some partitions may be shrunk": [
-    "Algunes particions es poden encongir"
+    "Alcune partizioni potrebbero essere ridotte"
   ],
   "Something went wrong": [
-    "Alguna cosa ha anat malament."
+    "Qualcosa è andato storto"
   ],
   "Start configuring a basic installation": [
-    "Comenceu a configurar una instal·lació bàsica"
+    "Avvia la configurazione per un'installazione di base"
   ],
   "Start from scratch with the default configuration": [
-    "Comença des de zero amb la configuració predeterminada"
+    "Inizia da zero con la configurazione predefinita"
   ],
   "Startup": [
-    "Inici"
+    "Avvio"
   ],
   "Static hostname": [
-    "Nom d'amfitrió estàtic"
+    "Nome host statico"
   ],
   "Status": [
-    "Estat"
+    "Stato"
   ],
   "Storage": [
-    "Emmagatzematge"
+    "Archiviazione"
   ],
   "Structure of the new system, including disks to use and additional devices like LVM volume groups.": [
-    "Estructura del nou sistema, inclosos els discos per usar i els dispositius addicionals com ara els grups de volums d'LVM."
+    "Struttura del nuovo sistema, compresi i dischi da utilizzare e i dispositivi aggiuntivi come i gruppi di volumi LVM."
   ],
   "Suggested mount points": [
-    "Punts de muntatge suggerits"
+    "Punti di montaggio suggeriti"
   ],
   "Swap": [
-    "Intercanvi"
+    "Swap"
   ],
   "TPM sealing requires the new system to be booted directly.": [
-    "El segellament TPM requereix que el sistema nou s'iniciï directament."
+    "Il nuovo sistema deve essere avviato direttamente per permettere la sigillatura TPM."
   ],
   "Target Password": [
-    "Contrasenya de destinació"
+    "Password di destinazione"
   ],
   "Targets": [
-    "Destinacions"
+    "Destinazioni"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
-    "El grup d'LVM %1$s es mantindrà a %2$s"
+    "Il gruppo LVM '%1$s' rimarrá su %2$s"
   ],
   "The configured LVM groups will remain at %s": [
-    "Els grups d'LVM configurats es mantindran a %s"
+    "I gruppi LVM configurati rimarranno su %s"
   ],
   "The connection will be used only during installation and not available in the installed system.": [
-    "La connexió només s'usarà durant la instal·lació i no estarà disponible al sistema instal·lat."
+    "La connessione verrà utilizzata solo durante l'installazoine e non sarà disponibile nel sistema installato."
   ],
   "The content may be deleted": [
-    "El contingut pot suprimir-se"
+    "Il contenuto potrebbe essere stato eliminato"
   ],
   "The current configuration will result in a %1$s of %2$s.": [
-    "La configuració actual tindrà com a resultat una %1$s de %2$s."
+    "La configurazione corrente darà come risultato un %1$s di %2$s."
   ],
   "The current configuration will result in a %1$s of at least %2$s.": [
-    "La configuració actual tindrà com a resultat una %1$s d'almenys %2$s."
+    "La configurazione attuale porterà a un %1$s di almeno %2$s."
   ],
   "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "La configuració actual tindrà com a resultat una %1$s amb una mida d'entre %2$s i %3$s."
+    "La configurazione attuale porterà a un %1$s con una dimensione compresa tra %2$s e %3$s."
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
-    "Les dades es conserven, però les particions actuals es canviaran de mida segons calgui."
+    "I dati vengono mantenuti, ma le partizioni attuali saranno ridimensionate secondo necessità."
   ],
   "The data is kept. Only the space not assigned to any partition will be used.": [
-    "Es conserven les dades. Només s'usarà l'espai no assignat a cap partició."
+    "I dati vengono mantenuti. Verrà utilizzato solo lo spazio non assegnato a una partizione."
   ],
   "The device cannot be shrunk:": [
-    "El dispositiu no es pot encongir:"
+    "Impossibile ridurre il dispositivo:"
   ],
   "The device will be mounted at %s.": [
-    "El dispositiu es muntarà a %s."
+    "Il dispositivo sarà montato in %s."
   ],
   "The device will be used by the new system.": [
-    "El sistema nou usarà el dispositiu."
+    "Il dispositivi verrà utilizzato dal nuovo sistema."
   ],
   "The disk is used for LVM": [
-    "El disc s'usa per a l'LVM"
+    "Il disco viene utilizzato per LVM"
   ],
   "The disk is used for LVM and boot": [
-    "El disc s'usa per a l'LVM i l'arrencada"
+    "Il disco viene utilizzato per LVM e l'avvio"
   ],
   "The disk is used for booting": [
-    "El disc s'usa per a l'arrencada"
+    "Il disco viene utilizzato per l'avvio"
   ],
   "The encryption password did not work": [
-    "La contrasenya d'encriptació no ha funcionat."
+    "La password di crittografia non ha funzionato"
   ],
   "The extension has been registered with key %s.": [
-    "L'extensió s'ha registrat amb la clau %s."
+    "L'estensione è stata registrata con la chiave %s ."
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
-    "El pas final per configurar el Mòdul de plataforma de confiança (TPM) per obrir automàticament dispositius encriptats es farà durant la primera arrencada del nou sistema. Perquè això funcioni, la màquina ha d'arrencar directament amb el carregador d'arrencada nou."
+    "Per configurare il Trusted Platform Module (TPM) in modo che apra automaticamente i dispositivi cifrati, l'ultimo passaggio avrà luogo al primo avvio del nuovo sistema. La macchina deve avviarsi direttamente nel nuovo boot loader per completare l'operazione."
   ],
   "The following software patterns are selected for installation:": [
-    "S'han seleccionat els patrons de programari següents per a la instal·lació:"
+    "I seguenti pacchetti software sono stati selezionati per l'installazione:"
   ],
   "The initiator name cannot be blank": [
-    "El nom de l'iniciador no pot estar en blanc"
+    "Il nome dell'iniziatore non può essere vuoto"
   ],
   "The installation on your machine is complete.": [
-    "La instal·lació a la màquina s'ha completat."
+    "Installazione completata."
   ],
   "The installation will take": [
-    "La instal·lació necessitarà"
+    "Il processo di installazione avrà una durata di"
   ],
   "The installation will take %s including:": [
-    "La instal·lació necessitarà %s, incloent-hi el següent:"
+    "L'installazione impiegherà %s, compreso:"
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
-    "La interfície de l'instal·lador ja no està disponible, així que podeu tancar aquesta finestra de manera segura."
+    "L'interfaccia del programma di installazione non è più disponibile, è possibile chiudere la finestra in modo sicuro."
   ],
   "The installer requires [root] user privileges.": [
-    "L'instal·lador requereix privilegis de l'usuari [root]."
+    "L'installer richiede permessi da utente privilegiato [root]."
   ],
   "The logical volume can grow to use all the contiguous free space": [
-    "El volum lògic pot créixer per usar tot l'espai lliure contigu"
+    "Il volume logico può espandersi fino a utilizzare tutto lo spazio libero contiguo"
   ],
   "The logical volume can grow until a given limit size": [
-    "El volum lògic pot créixer fins a una mida límit introduïda"
+    "Il volume logico può espandersi fino a una dimensione limite specificata"
   ],
   "The logical volume is created exactly with the given size": [
-    "El volum lògic es crea exactament amb la mida introduïda"
+    "Il volume logico è creato esattamente con la dimensione specificata"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
-    "El màxim ha de ser un número seguit d'una unitat com ara GiB o GB."
+    "Il massimo deve essere un numero seguito da un'unità, come GiB o GB"
   ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
-    "El màxim ha de ser un número seguit opcionalment d'una unitat com ara GiB o GB"
+    "Il valore massimo deve essere un numero seguito facoltativamente da un'unità come GiB o GB"
   ],
   "The minimum cannot be greater than the maximum": [
-    "El mínim no pot ser superior al màxim"
+    "Il minimo non può essere superiore al massimo"
   ],
   "The minimum must be a number followed by a unit like GiB or GB": [
-    "El mínim ha de ser un número seguit d'una unitat com ara GiB o GB"
+    "Il minimo deve essere un numero seguito da un'unità, come GiB o GB"
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
-    "El mínim ha de ser un número seguit opcionalment d'una unitat com ara GiB o GB"
+    "Il valore minimo deve essere un numero seguito facoltativamente da un'unità come GiB o GB"
   ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    "Els volums físics d'LVM necessaris s'afegiran com a particions als discs triats,                  segons les mides dels volums lògics. Si seleccioneu més d'un disc,                  els volums físics poden estar distribuïts en diversos discs."
+    "I volumi fisici LVM necessari saranno aggiunti come partizioni sui dischi selezionati,                 in base alle dimensioni dei volumi logici. Se si selezionano più dischi, i                 volumi fisici potrebbero essere distribuiti in diveresi dischi."
   ],
   "The partition can grow to use all the contiguous free space": [
-    "La partició pot créixer per a usar tot l'espai lliure contigu"
+    "La partizione può creascere fino a utilizzare tutto lo spazio libero contiguo"
   ],
   "The partition can grow until a given limit size": [
-    "La partició pot créixer fins a una mida límit introduïda"
+    "La partizione può crescere fino a una dimensione limite specificata"
   ],
   "The partition is created exactly with the given size": [
-    "La partició es crea exactament amb la mida introduïda"
+    "La partizione è creata esattamente con la dimensione specificata"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
-    "La contrasenya no caldrà per arrencar i accedir a les dades si el TPM pot verificar la integritat del sistema. El segellat de TPM requereix que el nou sistema s'iniciï directament a la primera execució."
+    "Non sarà necessaria la password per avviare e accedere ai dati se TPM è in grado di verificare l'integrità del sistema. La sigillatura del TPM richiede che il nuovo sistema venga avviato direttamente alla sua prima esecuzione."
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la quantitat de memòria RAM del sistema i de la presència d'un sistema de fitxers separat per a %2$s."
+    "L'intervallo di dimensioni per %1$s verrà regolato dinamicamente in base alla quantità di RAM nel sistema e alla presenza di un file system separato per %2$s."
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la quantitat de memòria RAM del sistema i de la presència de sistemes de fitxers separats per a %2$s."
+    "L'intervallo di dimensioni per %1$s verrà regolato dinamicamente in base alla quantità di RAM nel sistema e alla presenza di file system separati per %2$s."
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la quantitat de memòria RAM del sistema, l'ús de les instantànies de Btrfs i la presència d'un sistema de fitxers separat per a %2$s."
+    "Lo spazio variabile di %1$s verrá dinamicamente allocato in base alla dimensione della RAM del sistema, l'utilizzo degli snapshot Btrfs e la presenza di un file system separato per %2$s."
   ],
   "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la quantitat de memòria RAM del sistema, l'ús de les instantànies de Btrfs i la presència de sistemes de fitxers separats per a %2$s."
+    "Lo spazio variabile di %1$s verrá dinamicamente allocato in base alla dimensione della RAM del sistema, l'utilizzo degli snapshot Btrfs e la presenza di un file system separato per %2$s."
   ],
   "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la presència d'un sistema de fitxers independent per a %2$s."
+    "L'intervallo di dimensioni per %1$s verrà regolato dinamicamente in base alla presenza di un file system separato per %2$s."
   ],
   "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons la presència de sistemes de fitxers separats per a %2$s."
+    "L'intervallo di dimensioni per %1$s verrà regolato dinamicamente in base alla presenza di file system separati per %2$s."
   ],
   "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs i de la presència d'un sistema de fitxers separat per a %2$s."
+    "L'intervallo di dimensioni per %1$s verrà regolato dinamicamente in base all'utilizzo degli snapshot Btrfs e alla presenza di un file system separato per %2$s."
   ],
   "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "L'interval de mida de %1$s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs i de la presència de sistemes de fitxers separats per a %2$s."
+    "L'intervallo di dimensioni per %1$s verrà regolato dinamicamente in base all'utilizzo degli snapshot Btrfs e alla presenza di file system separati per %2$s."
   ],
   "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "L'interval de mida de %s s'ajustarà dinàmicament segons a quantitat de memòria RAM del sistema i de l'ús de les instantànies de Btrfs."
+    "Lo spazio variabile per %s verrá dinamicamente allocato in base alla dimensione della RAM del sistema e l'utilizzo di snapshot Btrfs."
   ],
   "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "L'interval de mida de %s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs."
+    "L'intervallo di dimensioni per %s verrà regolato dinamicamente in base all'utilizzo degli snapshot Btrfs."
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
-    "La configuració d'emmagatzematge és vàlida (vegeu-ne el resultat a continuació) però usa elements no compatibles amb aquesta interfície."
+    "La configurazione di memorizzazione è valida (vedere i risultati sotto), ma utilizza elementi non supportati da questa interfaccia."
   ],
   "The storage configuration uses elements not supported by this interface.": [
-    "La configuració d'emmagatzematge usa elements no compatibles amb aquesta interfície."
+    "La configurazione di memorizzazione usa elementi non supportati da questa interfaccia."
   ],
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
-    "El sistema no admet connexions de wifi, probablement a causa de maquinari que manca o que està inhabilitat."
+    "Il sistema non supporta connessioni WiFi, probabilmente per hardware disabilitato o mancante."
   ],
   "The system will use %s as its default language.": [
-    "El sistema usarà el %s com a llengua per defecte."
+    "Il sistema userà %s come linguaggio predefinito."
   ],
   "The zFCP disk was not activated.": [
-    "El disc zFCP no s'ha activat."
+    "Il disco zFCP non è stato attivato."
   ],
   "There are no disks available for the installation.": [
-    "No hi ha discs disponibles per a la instal·lació."
+    "Non è disponibile alcun disco per l'installazione."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
-    "No hi ha discs disponibles per a la instal·lació. És possible que hàgiu de configurar algun dispositiu."
+    "Non ci sono dischi disponibili per l'installazione. Potrebbe essere necessario configurare almeno un dispositivo."
   ],
   "There are not usable partitions": [
-    "No hi ha particions usables"
+    "Non ci sono partizioni utilizzabili"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Aquests són els paràmetres d'instal·lació més rellevants. No dubteu a navegar per les seccions del menú per a més detalls."
+    "Queste sono le impostazioni di installazione principali. Sfoglia le sezioni nel menu per maggiori informazioni."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    "Aquests són els paràmetres per instal·lar el producte. La llengua de l'instal·lador i la disposició del teclat es poden ajustar a [settings panel] accessible des de la barra superior."
+    "Queste sono le impostazioni per il prodotto da installare. È possibile modificare l lingua e la mappatura della tastiera del programma di installazione tramite il [pannello delle impostazioni], accessibile dalla barra superiore."
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    "Aquests són els paràmetres per instal·lar el producte. La llengua de l'instal·lador es pot ajustar a [settings panel] accessible des de la barra superior."
+    "Queste sono le impostazioni per il prodotto da installare. È possibile modificare l lingua del programma di installazione tramite il [pannello delle impostazioni], accessibile dalla barra superiore."
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Aquesta acció podria destruir qualsevol dada emmagatzemada als dispositius que s'indiquen a continuació. Si us plau, confirmeu que realment voleu continuar."
+    "Questa azione potrebbe distruggere i dati memorizzati nei dispositivi elencati sotto. Confermare che si desidera continuare."
   ],
   "This disk will contain any partition needed for booting": [
-    "Aquest disc contindrà qualsevol partició necessària per a arrencar"
+    "Questo disco conterrà le partizioni necessarie per l'avvio"
   ],
   "This disk will contain the LVM group '%s'": [
-    "Aquest disc contindrà el grup d'LVM %s"
+    "Questo disco conterrà il gruppo LVM '%s'"
   ],
   "This disk will contain the LVM group '%s' and any partition needed to boot": [
-    "Aquest disc contindrà el grup d'LVM %s i qualsevol partició necessària per a arrencar"
+    "Questo disco conterrà il gruppo LVM '%s' e le partizioni necessarie per l'avvio"
   ],
   "This disk will contain the configured LVM groups": [
-    "Aquest disc contindrà els grups d'LVM configurats"
+    "Questo disco conterrà i gruppi LVM configurati"
   ],
   "This disk will contain the configured LVM groups and any partition needed to boot": [
-    "Aquest disc contindrà els grups d'LVM configurats i qualsevol partició necessària per a arrencar"
+    "Questo disco conterrà i gruppi LVM configurati e le partizioni necessarie per l'avvio"
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
-    "Aquesta extensió no està disponible al servidor. Demaneu a l'administrador del servidor que repliqui l'extensió."
+    "Questa estensione non è disponibile sul server. Chiedere all'amministratore del server di eseguire il mirroring dell'estensione."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    "Aquest nom d'amfitrió és dinàmic i pot canviar després d'un reinici o una actualització per xarxa, tal com el configura l'administrador de la xarxa local."
+    "Questo nome host è dinamico e potrebbe cambiare dopo un riavvio o una aggiornamento della rete, in base alla configurazione dell'amministratore di rete locale."
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
-    "Aquest producte no permet seleccionar patrons de programari durant la instal·lació. Tanmateix, hi podeu afegir programari addicional un cop acabada la instal·lació."
+    "Questo prodotto non consente di selezionare pattern software durante l'installazione. Tuttavia, è possibile aggiungere software aggiuntivo una volta completata l'installazione."
   ],
   "This space includes the base system and the selected software patterns, if any.": [
-    "Aquest espai inclou el sistema de base i els patrons de programari seleccionats, si n'hi ha."
+    "Questo spazio include il sistema di base e i pattern software selezionati, se presenti."
   ],
   "This uses existing partitions at the disk": [
-    "Això usa les particions existents al dispositiu"
+    "Questa operazione utilizza le partizioni esistenti sul disco"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "Això afectarà només la interfície de l'instal·lador, no el producte que s'ha d'instal·lar. Podeu ajustar la localització del producte més endavant a la pàgina de configuració de la localització."
+    "Questa operazione interesserà solo l'interfaccia del programma di installazione, non il prodotto da installare. È possibile modificare la localizzazione del prodotto successivamente nella pagina Impostazioni di localizzazione."
   ],
   "TiB": [
     "TiB"
   ],
   "Time zone": [
-    "Zona horària"
+    "Fuso orario"
   ],
   "Tmpfs": [
     "Tmpfs"
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
-    "Per garantir que el sistema nou pugui arrencar, és possible que l'instal·lador hagi de crear o configurar algunes particions al disc adequat."
+    "Affinché il nuovo sistema possa avviarsi, l'installatore potrebbe dover creare o configurare delle partizioni nel disco appropriato."
   ],
   "Transactional root file system": [
-    "Sistema de fitxers d'arrel transaccional"
+    "File system root transazionale"
   ],
   "Try again": [
-    "Torna-ho a provar"
+    "Riprova"
   ],
   "Type": [
-    "Tipus"
+    "Tipo"
   ],
   "URL": [
     "URL"
   ],
   "Unable to modify the settings": [
-    "No es pot modificar la configuració"
+    "Impossibile modificare le impostazioni"
   ],
   "Unselect": [
-    "Desmarca"
+    "Deseleziona"
   ],
   "Unsupported AutoYaST elements": [
-    "Elements d'AutoYaST no compatibles"
+    "Elementi AutoYaST non supportati"
   ],
   "Unused space": [
-    "Espai sense ús"
+    "Spazio inutilizzato"
   ],
   "Up to %s can be recovered by shrinking the device.": [
-    "Es poden recuperar fins a %s encongint el dispositiu."
+    "È possibile recuparare fino a %s riducendo il dispositivo."
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
-    "Actualitzar el nom d'amfitrió ara o més tard no canviarà el nom d'amfitrió registrat actualment."
+    "L'aggiornamento immediato o successivo del nome host non modificherà il nome host attuamente registrato."
   ],
   "Updating the initiator name": [
-    "Actualitzant el nom de l'iniciador"
+    "Aggiornamento del nome dell'iniziatore"
   ],
   "Upload": [
-    "Carrega"
+    "Carica"
   ],
   "Upload, paste, or drop an SSH public key": [
-    "Carregueu, enganxeu o deixeu-hi anar una clau pública SSH"
+    "Carica, incolla o rilascia una chiave SSH pubblica"
   ],
   "Use": [
-    "Usa'l"
+    "Usa"
   ],
   "Use %s": [
     "Usa %s"
   ],
   "Use %s for LVM and additional partitions": [
-    "Usa %s per a l'LVM i les particions addicionals"
+    "Usa %s per LVM e le partizioni aggiuntive"
   ],
   "Use %s for LVM, additional partitions and booting": [
-    "Usa %s per a l'LVM, les particions addicionals i l'arrencada"
+    "Usa %s per LVM, partizioni aggiuntive e l'avvio"
   ],
   "Use %s for additional partitions": [
-    "Usa %s per a les particions addicionals"
+    "Usa %s per le partizioni aggiuntive"
   ],
   "Use %s for additional partitions and booting": [
-    "Usa %s per a les particions addicionals i l'arrencada"
+    "Usa %s per le partizioni aggiuntive e l'avvio"
   ],
   "Use %s to configure boot partitions": [
-    "Usa %s per configurar les particions d'arrencada"
+    "Usa %s per la configurazione delle partizioni di avvio"
   ],
   "Use %s to host LVM": [
-    "Usa %s per allotjar-hi l'LVM"
+    "Usa %s per l'hosting di LVM"
   ],
   "Use %s to host LVM and boot": [
-    "Usa %s per allotjar-hi l'LVM i per a l'arrencada"
+    "Usa %s per l'hosting di LVM e l'avvio"
   ],
   "Use %s to install": [
-    "Usa %s per a la instal·lació"
+    "Usa %s per l'installazione"
   ],
   "Use %s to install and boot": [
-    "Usa %s per a la instal·lació i l'arrencada"
+    "Usa %s per l'installazione e l'avvio"
   ],
   "Use %s to install and host LVM": [
-    "Usa %s per a la instal·lació i allotjar-hi l'LVM"
+    "Usa %s per l'installazione e l'hosting di LVM"
   ],
   "Use %s to install, host LVM and boot": [
-    "Usa %s per a la instal·lació, allotjar-hi l'LVM i per a l'arrencada"
+    "Usa %s per l'installazione, l'hosting di LVM e l'avvio"
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
-    "Useu les accions següents per configurar els dispositius o cliqueu a %s per començar des de zero amb la configuració predeterminada."
+    "Usare le azioni seguenti per configurare i dispositivi o fare clic su %s per iniziare da zero con la configurazione predefinita."
   ],
   "Use available space": [
-    "Usa l'espai disponible"
+    "Usa spazio disponibile"
   ],
   "Use for installation only": [
-    "Usa-la només per a la instal·lació"
+    "Usa solo per l'installazione"
   ],
   "Use for the selected product too": [
-    "Usa-la també per al producte seleccionat"
+    "Usa anche per il prodotto selezionato"
   ],
   "Use password": [
-    "Usa contrasenya"
+    "Usa password"
   ],
   "Use public SSH Key": [
-    "Usa una clau pública SSH"
+    "Usa chiave SSH pubblica"
   ],
   "Use static hostname": [
-    "Usa un nom d'amfitrió estàtic"
+    "Usa nome host statico"
   ],
   "Use suggested username": [
-    "Usa el nom d'usuari suggerit"
+    "Usa nome utente suggerito"
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
-    "Useu el mòdul de plataforma de confiança (TPM) per fer-ne la desencriptació automàticament a cada arrencada."
+    "Usa il modulo TPM (Trusted Platform Module) per decifrare automaticamente a ogni avvio"
   ],
   "Use these same settings for the selected product": [
-    "Usa aquests mateixos paràmetres per al producte seleccionat"
+    "Usa le stesse impostazioni per il prodotto selezionato"
   ],
   "Used space": [
-    "Espai usat"
+    "Spazio utilizzato"
   ],
   "User name": [
-    "Nom d'usuari"
+    "Nome utente"
   ],
   "Username": [
-    "Nom d'usuari"
+    "Nome utente"
   ],
   "Username suggestion dropdown": [
-    "Menú desplegable de suggeriments de nom d'usuari"
+    "Menu a discesa dei nomi utenti suggeriti"
   ],
   "Using [%s] keyboard": [
-    "S'usa el teclat per a [%s]"
+    "È in uso la tastiera [%s]"
   ],
   "Using a hashed password.": [
-    "S'usa una contrasenya amb funció resum."
+    "Utilizzo di una password con hash."
   ],
   "Using an existing partition": [
-    "S'usa una partició existent"
+    "Utilizza la partizione esistente"
   ],
   "Using partition %s": [
-    "S'usa la partició %s"
+    "Uso della partizione %s"
   ],
   "Using transient hostname: %s": [
-    "S'usa un nom d'amfitrió transitori: %s"
+    "Uso del nome host transitorio: %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
-    "El grup de volums %s ja existeix. Introduïu un nom diferent."
+    "Gruppo di volumi '%s' già esistente. Immettere un nome diverso."
   ],
   "WPA & WPA2 Personal": [
-    "WPA i WPA2 personal"
+    "WPA & WPA2 Personal"
   ],
   "WPA Password": [
-    "Contrasenya de WPA"
+    "Password WPA"
   ],
   "WWPN": [
     "WWPN"
   ],
   "Waiting for a mount point": [
-    "S'espera un punt de muntatge"
+    "In attesa di un punto di mount"
   ],
   "Waiting for information about storage configuration": [
-    "Esperant informació sobre la configuració de l'emmagatzematge"
+    "In attesa di informazioni sulla configurazione di memorizzazione"
   ],
   "Weak signal": [
-    "Senyal dèbil"
+    "Segnale debole"
   ],
   "Wi-Fi connection form": [
-    "Formulari de connexió per WiFi"
+    "Modulo di connessione Wi-Fi"
   ],
   "Wi-Fi networks": [
-    "Connexions sense fil"
+    "Reti Wi-Fi"
   ],
   "Wi-Fi not supported": [
-    "Wi-Fi no compatible"
+    "Wi-Fi non supportato"
   ],
   "Will be supported in a future version.": [
-    "Serà compatible en una versió futura."
+    "Sarà supportato in una versione futura."
   ],
   "Wired connections": [
-    "Connexions amb fil"
+    "Connessioni via cavo"
   ],
   "XFS": [
     "XFS"
   ],
   "Yes": [
-    "Sí"
+    "Sì"
   ],
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
-    "Podeu procedir a la instal·lació amb la configuració actual o potser voleu descartar-la i començar des de zero amb una de simple."
+    "È possibile procedere con l'installazione utilizzando le impostazioni attuali oppure, se lo si desidera, è possibile ignorare la configurazione e iniziare da zero con una semplice."
   ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "No ho podeu canviar més tard. Aneu a la secció %s si voleu modificar-la abans de procedir al registre."
+    "Non sarà possibile modificarlo in seguito. Vai alla sezione %s se desideri modificarlo prima di procedere con la registrazione."
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
-    "És possible que vulgueu descartar la configuració actual i començar des de zero amb una configuració simple."
+    "Se lo si desidera, è possibile ignorare le impostazioni attuali e iniziare da zero con una configurazione semplice."
   ],
   "You may want to discard those settings and start from scratch with a simple configuration.": [
-    "És possible que vulgueu descartar aquests paràmetres i començar des de zero amb una configuració simple."
+    "Se lo si desidera, è possibile ignorare tali impostazioni e iniziare da zero con una configurazione semplice."
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
-    "Us connectareu a una xarxa pública sense encriptació. És possible que les vostres dades no estiguin segures."
+    "L'utente si connetterà a una rete pubblica senza cifratura. I dati potrebbero non essere al sicuro."
   ],
   "Your system is rebooting": [
-    "El sistema es reinicia"
+    "Il sistema si sta riavviando"
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
-    "[CAPS LOCK] activat"
+    "[BLOC MAIUSC] attivo"
   ],
   "at least %s": [
-    "almenys %s"
+    "almeno %s"
   ],
   "auto selected": [
-    "seleccionat automàticament"
+    "selezionato automaticamente"
   ],
   "hostname": [
-    "Nom d'amfitrió"
+    "hostname"
   ],
   "iBFT": [
     "iBFT"
@@ -1980,21 +1980,21 @@ export default {
     "iSCSI"
   ],
   "logical volume": [
-    "volum lògic"
+    "Volume LVM"
   ],
   "partition": [
-    "partició"
+    "partizione"
   ],
   "reset to defaults": [
-    "restableix els valors predeterminats"
+    "ripristina le impostazioni predefinite"
   ],
   "zFCP": [
     "zFCP"
   ],
   "zFCP Disk Activation": [
-    "Activació del disc zFCP"
+    "Attivazione disco zFCP"
   ],
   "zFCP Disk activation form": [
-    "Formulari d'activació del disc zFCP"
+    "Attivazione disco zFCP da"
   ]
 };

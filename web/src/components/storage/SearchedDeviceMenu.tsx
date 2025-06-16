@@ -52,15 +52,19 @@ const DiskSelectorTitle = ({
   isSelected = false,
 }: DiskSelectorTitleProps): React.ReactNode => {
   const Name = () => (isSelected ? <b>{label(device)}</b> : label(device));
-  const Systems = () => (
-    <Flex columnGap={{ default: "columnGapXs" }}>
-      {device.systems.map((s, i) => (
-        <Label key={i} isCompact>
-          {s}
-        </Label>
-      ))}
-    </Flex>
-  );
+  const Systems = () => {
+    if (!device.systems) return null;
+
+    return (
+      <Flex columnGap={{ default: "columnGapXs" }}>
+        {device.systems.map((s, i) => (
+          <Label key={i} isCompact>
+            {s}
+          </Label>
+        ))}
+      </Flex>
+    );
+  };
 
   return (
     <Split hasGutter>
@@ -106,7 +110,7 @@ const SearchSelectorSingleOption = ({ selected }: { selected: StorageDevice }): 
 };
 
 const searchSelectorOptions = (
-  modelDevice: model.Drive | model.mdRaid,
+  modelDevice: model.Drive | model.MdRaid,
   devices: StorageDevice[],
   selected: StorageDevice,
   onChange: (device: StorageDevice) => void,
@@ -119,7 +123,7 @@ const searchSelectorOptions = (
 };
 
 type DisksDrillDownMenuItemProps = {
-  modelDevice: model.Drive | model.mdRaid;
+  modelDevice: model.Drive | model.MdRaid;
   selected: StorageDevice;
   onDeviceClick: (device: StorageDevice) => void;
 };
@@ -271,7 +275,7 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
    * Pretty artificial logic used to decide whether the UI should display buttons to remove
    * some drives.
    */
-  const hasAdditionalDrives = (model: model.Config): boolean => {
+  const hasAdditionalDrives = (model: model.Model): boolean => {
     const entries = model.drives.concat(model.mdRaids);
 
     if (entries.length <= 1) return false;
