@@ -35,6 +35,7 @@ require "agama/dbus/clients/software"
 require "agama/dbus/clients/storage"
 require "agama/helpers"
 require "agama/http"
+require "agama/ipmi"
 
 Yast.import "Stage"
 
@@ -71,7 +72,9 @@ module Agama
       @installation_phase = InstallationPhase.new
       @service_status_recorder = ServiceStatusRecorder.new
       @service_status = DBus::ServiceStatus.new.busy
+
       on_progress_change { logger.info progress.to_s }
+      Ipmi.setup(logger)
     end
 
     # Runs the startup phase
@@ -113,6 +116,8 @@ module Agama
     # Runs the install phase
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def install_phase
+      Ipmi.current.started
+
       service_status.busy
       installation_phase.install
       start_progress_with_descriptions(
@@ -143,8 +148,11 @@ module Agama
         end
       end
 
+      Ipmi.current.finished
+
       logger.info("Install phase done")
     rescue StandardError => e
+      Ipmi.current.failed
       logger.error "Installation error: #{e.inspect}. Backtrace: #{e.backtrace}"
     ensure
       service_status.idle

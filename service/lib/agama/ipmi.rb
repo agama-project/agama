@@ -38,6 +38,8 @@ module Agama
   # * FINISHED
   class Ipmi
     class << self
+      attr_reader :current
+
       def setup(logger)
         @current ||= Ipmi.new(logger)
       end
