@@ -71,7 +71,7 @@ function useInstallerClientStatus(): ClientStatus {
 
 function InstallerClientProvider({ children, client = null }: InstallerClientProviderProps) {
   const [value, setValue] = useState(client);
-  const [connected, setConnected] = useState(false);
+  const [connected, setConnected] = useState(!!client?.isConnected());
   const [error, setError] = useState(false);
 
   useEffect(() => {

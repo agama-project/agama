@@ -110,6 +110,9 @@ const Providers = ({ children, withL10n }) => {
     client.onClose = noop;
   }
 
+  // Pretend that we are always connected.
+  client.isConnected = () => true;
+
   if (withL10n) {
     return (
       <InstallerClientProvider client={client}>
