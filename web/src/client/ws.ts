@@ -122,6 +122,7 @@ class WSClient implements WSClientIface {
     };
 
     client.onmessage = (event) => {
+      console.debug("Event received", event);
       this.dispatchEvent(event);
     };
 
