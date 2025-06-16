@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "yast/i18n"
 require "yast2/execute"
 require "yast2/systemd/service"
 require "bootloader/finish_client"
@@ -125,6 +126,8 @@ module Agama
 
       # Step to copy files from the inst-sys to the target system
       class CopyFilesStep < Step
+        include Yast::I18n
+
         UDEV_RULES_DIR = "/etc/udev/rules.d"
         ROOT_PATH = "/"
         FILES = [
@@ -136,8 +139,13 @@ module Agama
           { dir: "/etc/nvme", file: "hostid" }
         ].freeze
 
+        def initialize(logger)
+          super
+          textdomain "agama"
+        end
+
         def label
-          "Copying important installation files to the target system"
+          _("Copying important installation files to the target system")
         end
 
         def run?
@@ -171,14 +179,17 @@ module Agama
 
       # Step to write the security settings
       class SecurityStep < Step
+        include Yast::I18n
+
         # Constructor
         def initialize(logger, security)
           super(logger)
+          textdomain "agama"
           @security = security
         end
 
         def label
-          "Writing Linux Security Modules configuration"
+          _("Writing Linux Security Modules configuration")
         end
 
         def run
@@ -188,8 +199,15 @@ module Agama
 
       # Step to write the bootloader configuration
       class BootloaderStep < Step
+        include Yast::I18n
+
+        def initialize(logger)
+          super
+          textdomain "agama"
+        end
+
         def label
-          "Installing bootloader"
+          _("Installing bootloader")
         end
 
         def run
@@ -205,8 +223,15 @@ module Agama
 
       # Step to finish the Y2Storage configuration
       class StorageStep < Step
+        include Yast::I18n
+
+        def initialize(logger)
+          super
+          textdomain "agama"
+        end
+
         def label
-          "Adjusting storage configuration"
+          _("Adjusting storage configuration")
         end
 
         def run
@@ -216,8 +241,15 @@ module Agama
 
       # Step to configure the file-system snapshots
       class SnapshotsStep < Step
+        include Yast::I18n
+
+        def initialize(logger)
+          super
+          textdomain "agama"
+        end
+
         def label
-          "Configuring file systems snapshots"
+          _("Configuring file systems snapshots")
         end
 
         def run
@@ -227,10 +259,17 @@ module Agama
 
       # Step to copy the installation logs
       class CopyLogsStep < Step
+        include Yast::I18n
+
         SCRIPTS_DIR = "/run/agama/scripts"
 
+        def initialize(logger)
+          super
+          textdomain "agama"
+        end
+
         def label
-          "Copying logs"
+          _("Copying logs")
         end
 
         def run
@@ -263,8 +302,15 @@ module Agama
 
       # Executes post-installation scripts
       class PostScripts < Step
+        include Yast::I18n
+
+        def initialize(logger)
+          super
+          textdomain "agama"
+        end
+
         def label
-          "Running user-defined scripts"
+          _("Running user-defined scripts")
         end
 
         def run
@@ -302,8 +348,15 @@ module Agama
 
       # Executes post-installation scripts
       class FilesStep < Step
+        include Yast::I18n
+
+        def initialize(logger)
+          super
+          textdomain "agama"
+        end
+
         def label
-          "Deploying user-defined files"
+          _("Deploying user-defined files")
         end
 
         def run
@@ -321,8 +374,15 @@ module Agama
 
       # Step to unmount the target file-systems
       class UnmountStep < Step
+        include Yast::I18n
+
+        def initialize(logger)
+          super
+          textdomain "agama"
+        end
+
         def label
-          "Unmounting storage devices"
+          _("Unmounting storage devices")
         end
 
         def run
@@ -332,13 +392,20 @@ module Agama
 
       # Step to write the mountlist file for Iguana, if needed
       class IguanaStep < Step
+        include Yast::I18n
+
         IGUANA_PATH = "/iguana"
         private_constant :IGUANA_PATH
         IGUANA_MOUNTLIST = File.join(IGUANA_PATH, "mountlist").freeze
         private_constant :IGUANA_MOUNTLIST
 
+        def initialize(logger)
+          super
+          textdomain "agama"
+        end
+
         def label
-          "Configuring Iguana"
+          _("Configuring Iguana")
         end
 
         def run?
