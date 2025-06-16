@@ -26,7 +26,7 @@ async fn main() -> CliResult {
     let cli = Cli::parse();
 
     if let Err(error) = run_command(cli).await {
-        eprintln!("{:#}", error);
+        eprintln!("{:?}", error);
         return CliResult::Error;
     }
     CliResult::Ok

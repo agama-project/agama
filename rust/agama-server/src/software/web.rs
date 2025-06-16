@@ -416,6 +416,7 @@ async fn get_registration(
     State(state): State<SoftwareState<'_>>,
 ) -> Result<Json<RegistrationInfo>, Error> {
     let result = RegistrationInfo {
+        registered: state.product.registered().await?,
         key: state.product.registration_code().await?,
         email: state.product.email().await?,
         url: state.product.registration_url().await?,

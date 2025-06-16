@@ -1,4 +1,28 @@
 -------------------------------------------------------------------
+Fri Jun 13 20:51:10 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix copy of self-signed certificates for RMT
+  (gh#agama-project/agama#2480)
+
+-------------------------------------------------------------------
+Fri Jun 13 15:11:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Send the current language to the registration server (SCC/RMT)
+  to display localized error messages (gh#agama-project/agama#2477)
+
+-------------------------------------------------------------------
+Fri Jun 13 08:23:46 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Split registration key and registered status to support RMT with
+  empty registration key (gh#agama-project/agama#2469)
+
+-------------------------------------------------------------------
+Thu Jun 12 05:20:10 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- AutoYaST support: add support for iscsi-client section
+  (gh#agama-project/agama#2463).
+
+-------------------------------------------------------------------
 Tue Jun 10 12:08:44 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - AutoYaST support: add support for add-on elements

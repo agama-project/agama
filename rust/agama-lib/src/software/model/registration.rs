@@ -69,6 +69,8 @@ pub struct AddonProperties {
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct RegistrationInfo {
+    /// Registration status. True if base system is already registered.
+    pub registered: bool,
     /// Registration key. Empty value mean key not used or not registered.
     pub key: String,
     /// Registration email. Empty value mean email not used or not registered.

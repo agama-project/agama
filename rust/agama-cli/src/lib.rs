@@ -186,10 +186,8 @@ pub fn download_file(url: &str, path: &PathBuf) -> anyhow::Result<()> {
         uri.resolve_against(&context.source)?.to_string()
     };
 
-    match Transfer::get(&absolute_url, &mut file) {
-        Ok(()) => println!("File saved to {}", path.display()),
-        Err(e) => eprintln!("Could not retrieve the file: {e}"),
-    }
+    Transfer::get(&absolute_url, &mut file)?;
+    println!("File saved to {}", path.display());
     Ok(())
 }
 
@@ -289,7 +287,7 @@ pub async fn show_progress(monitor: MonitorClient, stop_on_idle: bool) {
     }
 }
 
-pub async fn run_command(cli: Cli) -> Result<(), ServiceError> {
+pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
     let api_url = api_url(cli.opts.host)?;
 
     match cli.command {

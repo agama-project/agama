@@ -87,6 +87,10 @@ const mockSdaDrive: model.Drive = {
         default: false, // false: user provided, true: calculated
       },
       filesystem: { default: false, type: "swap" },
+      isNew: true,
+      isUsed: false,
+      isReused: false,
+      isUsedBySpacePolicy: false,
     },
     {
       mountPath: "/home",
@@ -95,12 +99,18 @@ const mockSdaDrive: model.Drive = {
         default: true,
       },
       filesystem: { default: false, type: "xfs" },
+      isNew: true,
+      isUsed: false,
+      isReused: false,
+      isUsedBySpacePolicy: false,
     },
   ],
   list: "drives",
   listIndex: 1,
+  isExplicitBoot: false,
   isUsed: true,
   isAddingPartitions: true,
+  isReusingPartitions: true,
   isTargetDevice: true,
   isBoot: false,
   getMountPaths: () => ["/home", "swap"],
@@ -151,7 +161,7 @@ jest.mock("~/queries/storage", () => ({
 
 jest.mock("~/hooks/storage/system", () => ({
   ...jest.requireActual("~/hooks/storage/system"),
-  useAvailableDevices: () => mockUseAllDevices,
+  useCandidateDevices: () => mockUseAllDevices,
 }));
 
 jest.mock("~/hooks/storage/model", () => ({
