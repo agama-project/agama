@@ -36,18 +36,18 @@ import { useQueryClient } from "@tanstack/react-query";
  * Main application component.
  */
 function App() {
+  useL10nConfigChanges();
+  useProductChanges();
+  useIssuesChanges();
+  useInstallerStatusChanges();
+  useDeprecatedChanges();
+
   const location = useLocation();
   const { isBusy, phase } = useInstallerStatus({ suspense: true });
   const { selectedProduct, products } = useProduct({
     suspense: phase !== InstallationPhase.Install,
   });
   const queryClient = useQueryClient();
-
-  useL10nConfigChanges();
-  useProductChanges();
-  useIssuesChanges();
-  useInstallerStatusChanges();
-  useDeprecatedChanges();
 
   useEffect(() => {
     // Invalidate the queries when unmounting this component.
