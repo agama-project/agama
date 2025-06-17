@@ -75,7 +75,7 @@ function App() {
       return <Navigate to={ROOT.installationFinished} />;
     }
 
-    if (!products || (selectedProduct === undefined && isBusy)) {
+    if (!products) {
       return <Loading listenQuestions />;
     }
 
@@ -84,7 +84,7 @@ function App() {
       return <Loading listenQuestions />;
     }
 
-    if (selectedProduct === undefined && location.pathname !== PRODUCT.root) {
+    if (selectedProduct === undefined && !isBusy && location.pathname !== PRODUCT.root) {
       console.log("Navigating to the product selection page");
       return <Navigate to={PRODUCT.root} />;
     }

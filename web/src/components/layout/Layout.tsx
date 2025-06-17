@@ -168,7 +168,9 @@ const Layout = ({
       >
         <Suspense fallback={<Loading />}>{children || <Outlet />}</Suspense>
       </Page>
-      {location.pathname !== ROOT.login && <Questions />}
+      {location.pathname !== ROOT.login && location.pathname !== ROOT.installationExit && (
+        <Questions />
+      )}
     </>
   );
 };
