@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-01 03:23+0000\n"
-"PO-Revision-Date: 2025-05-30 09:59+0000\n"
+"POT-Creation-Date: 2025-06-15 03:15+0000\n"
+"PO-Revision-Date: 2025-06-12 19:59+0000\n"
 "Last-Translator: Aleksey Fedorov <Aleksejfedorov963@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/ru/>\n"
@@ -29,40 +29,40 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Найдены неподдерживаемые элементы в профиле AutoYaST: %{keys}."
 
 #. Runs the config phase
-#: service/lib/agama/manager.rb:94
+#: service/lib/agama/manager.rb:96
 msgid "Analyze disks"
 msgstr "Анализ дисков"
 
-#: service/lib/agama/manager.rb:94
+#: service/lib/agama/manager.rb:96
 msgid "Configure software"
 msgstr "Настройка программного обеспечения"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-#: service/lib/agama/manager.rb:117
+#: service/lib/agama/manager.rb:119
 msgid "Prepare disks"
 msgstr "Подготовка дисков"
 
-#: service/lib/agama/manager.rb:118
+#: service/lib/agama/manager.rb:120
 msgid "Install software"
 msgstr "Установка программного обеспечения"
 
-#: service/lib/agama/manager.rb:119
+#: service/lib/agama/manager.rb:121
 msgid "Configure the system"
 msgstr "Настройка системы"
 
 #. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
-#: service/lib/agama/manager.rb:159
+#: service/lib/agama/manager.rb:161
 msgid "Load software translations"
 msgstr "Загрузка переводов программ"
 
-#: service/lib/agama/manager.rb:160
+#: service/lib/agama/manager.rb:162
 msgid "Load storage translations"
 msgstr "Загрузка переводов хранения"
 
 #. @param certificate [Agama::SSL::Certificate]
 #. @return [Agama::Question]
-#: service/lib/agama/registration.rb:374
+#: service/lib/agama/registration.rb:421
 msgid ""
 "Trying to import a self signed certificate. Do you want to trust it and "
 "register the product?"
@@ -111,8 +111,8 @@ msgid ""
 "that although the file is part of the signed repository, the list of "
 "checksums does not mention this file. Use it anyway?"
 msgstr ""
-"В хранилище не найдена контрольная сумма для файла %{file}. Это означает, "
-"что хотя файл является частью подписанного хранилища, в списке контрольных "
+"В репозитории не найдена контрольная сумма для файла %{file}. Это означает, "
+"что хотя файл является частью подписанного репозитория, в списке контрольных "
 "сумм он не упоминается. Использовать его в любом случае?"
 
 #. Callback to accept an unknown digest
@@ -161,7 +161,7 @@ msgstr "Возникла проблема с запуском скрипта п�
 #.
 #. @param filename [String] File name
 #. @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
-#: service/lib/agama/software/callbacks/signature.rb:61
+#: service/lib/agama/software/callbacks/signature.rb:66
 #, perl-brace-format
 msgid ""
 "The file %{filename} from %{repo_url} is not digitally signed. The origin "
@@ -170,7 +170,7 @@ msgstr ""
 "Файл %{filename} из %{repo_url} не имеет цифровой подписи. Происхождение и "
 "целостность файла не могут быть проверены. Все равно использовать его?"
 
-#: service/lib/agama/software/callbacks/signature.rb:67
+#: service/lib/agama/software/callbacks/signature.rb:72
 #, perl-brace-format
 msgid ""
 "The file %{filename} is not digitally signed. The origin and integrity of "
@@ -182,8 +182,8 @@ msgstr ""
 #. Callback to handle signature verification failures
 #.
 #. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
-#. @param _repo_id [Integer] Repository ID
-#: service/lib/agama/software/callbacks/signature.rb:92
+#. @param repo_id [Integer] Repository ID
+#: service/lib/agama/software/callbacks/signature.rb:100
 #, perl-brace-format
 msgid ""
 "The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
@@ -197,7 +197,7 @@ msgstr ""
 #. @param filename [String] Name of the file.
 #. @param key_id [String] Key ID.
 #. @param repo_id [String] Repository ID.
-#: service/lib/agama/software/callbacks/signature.rb:123
+#: service/lib/agama/software/callbacks/signature.rb:131
 #, perl-brace-format
 msgid ""
 "The file %{filename} from %{repo_url} is digitally signed with the following "
@@ -206,7 +206,7 @@ msgstr ""
 "Файл %{filename} из %{repo_url} подписан цифровой подписью следующим "
 "неизвестным ключом GnuPG: %{key_id}. Использовать его в любом случае?"
 
-#: service/lib/agama/software/callbacks/signature.rb:129
+#: service/lib/agama/software/callbacks/signature.rb:137
 #, perl-brace-format
 msgid ""
 "The file %{filename} is digitally signed with the following unknown GnuPG "
@@ -220,7 +220,7 @@ msgstr ""
 #. @param filename [String] File name
 #. @param key [Hash] GPG key data (id, name, fingerprint, etc.)
 #. @param repo_id [Integer] Repository ID
-#: service/lib/agama/software/callbacks/signature.rb:160
+#: service/lib/agama/software/callbacks/signature.rb:168
 #, perl-brace-format
 msgid ""
 "The file %{filename} from %{repo_url} is digitally signed with the following "
@@ -231,7 +231,7 @@ msgstr ""
 "целостности дала сбой: %{key_id} (%{key_name}). Использовать его в любом "
 "случае?"
 
-#: service/lib/agama/software/callbacks/signature.rb:167
+#: service/lib/agama/software/callbacks/signature.rb:175
 #, perl-brace-format
 msgid ""
 "The file %{filename} is digitally signed with the following GnuPG key, but "
@@ -241,7 +241,7 @@ msgstr ""
 "дала сбой: %{key_id} (%{key_name}). Использовать его в любом случае?"
 
 #. TRANSLATORS: button label, trust the GPG key or the signature
-#: service/lib/agama/software/callbacks/signature.rb:191
+#: service/lib/agama/software/callbacks/signature.rb:199
 msgid "Trust"
 msgstr "Доверять"
 
@@ -469,44 +469,83 @@ msgstr "Существует RAID-массив MD без уровня"
 msgid "At least %s devices are required for %s"
 msgstr "Требуется не менее %s устр. для %s"
 
+#. Issue if the device member is deleted.
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/md_raid.rb:168
+#, perl-brace-format
+msgid ""
+"The device '%{member}' cannot be deleted because it is part of the MD RAID "
+"%{md_raid}"
+msgstr ""
+"Устройство „%{member}“ не может быть удалено, поскольку оно является частью "
+"MD RAID %{md_raid}"
+
+#. Issue if the device member is resized.
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/md_raid.rb:191
+#, perl-brace-format
+msgid ""
+"The device '%{member}' cannot be resized because it is part of the MD RAID "
+"%{md_raid}"
+msgstr ""
+"Размер устройства „%{member}“ не может быть изменен, поскольку оно является "
+"частью MD RAID %{md_raid}"
+
 #. Issue if the device member is formatted.
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:174
+#: service/lib/agama/storage/config_checkers/md_raid.rb:214
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be formatted because it is a device member of "
-"the reused MD RAID %{md_raid}"
+"The device '%{member}' cannot be formatted because it is part of the MD RAID "
+"%{md_raid}"
 msgstr ""
 "Устройство „%{member}“ не может быть отформатировано, поскольку оно является "
-"членом повторно используемого MD RAID %{md_raid}"
+"частью MD RAID %{md_raid}"
 
 #. Issue if the device member is partitioned.
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:197
+#: service/lib/agama/storage/config_checkers/md_raid.rb:237
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be partitioned because it is a device member "
-"of the reused MD RAID %{md_raid}"
+"The device '%{member}' cannot be partitioned because it is part of the MD "
+"RAID %{md_raid}"
 msgstr ""
 "Устройство „%{member}“ не может быть разбито на разделы, поскольку оно "
-"является членом повторно используемого MD RAID %{md_raid}"
+"является частью MD RAID %{md_raid}"
 
 #. Issue if the device member is used by other device (e.g., as target for physical volumes).
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:219
+#: service/lib/agama/storage/config_checkers/md_raid.rb:259
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be used because it is a device member of the "
-"reused MD RAID %{md_raid}"
+"The device '%{member}' cannot be used because it is part of the MD RAID "
+"%{md_raid}"
 msgstr ""
 "Устройство „%{member}“ не может быть использовано, поскольку оно является "
-"членом повторно используемого MD RAID %{md_raid}"
+"частью MD RAID %{md_raid}"
+
+#. Issue if the parent of the device member is formatted.
+#.
+#. @param device [Y2Storage::BlkDevice]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/md_raid.rb:284
+#, perl-brace-format
+msgid ""
+"The device '%{device}' cannot be formatted because it is part of the MD RAID "
+"%{md_raid}"
+msgstr ""
+"Устройство „%{device}“ не может быть отформатировано, поскольку оно является "
+"частью MD RAID %{md_raid}"
 
 #. TRANSLATORS: 'method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1').
@@ -669,7 +708,7 @@ msgstr "Запись системной конфигурации загрузч�
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:371
+#: service/lib/agama/storage/proposal.rb:364
 msgid "Cannot calculate a valid storage setup with the current configuration"
 msgstr ""
 "Невозможно рассчитать правильную настройку хранения с текущей конфигурацией"
@@ -677,7 +716,7 @@ msgstr ""
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:382
+#: service/lib/agama/storage/proposal.rb:375
 msgid "A problem ocurred while calculating the storage setup"
 msgstr "Возникла проблема при расчёте конфигурации накопителей"
 

@@ -19,7 +19,7 @@ export default {
     "Диск %1$s по-прежнему будет содержать группу LVM „%2$s“ и все разделы, необходимые для загрузки"
   ],
   "%d of %d": [
-    ""
+    "%d из %d"
   ],
   "%s - %s": [
     "%s - %s"
@@ -142,13 +142,16 @@ export default {
     "Измените приведенные ниже параметры, чтобы новая система вписалась в свободное пространство."
   ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
-    ""
+    "Все конфликты были разрешены, или их не было обнаружено. Вы можете безопасно продолжать установку."
   ],
   "All content will be deleted": [
     "Все содержимое будет удалено"
   ],
   "All fields are required": [
     "Все поля обязательны для заполнения"
+  ],
+  "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
+    "Все сетевые подключения, управляемые через этот интерфейс, в настоящее время настроены на использование только во время установки и не будут скопированы в установленную систему"
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Наряду с определением первого пользователя можно настроить методы аутентификации для root-пользователя."
@@ -158,6 +161,9 @@ export default {
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Все существующие разделы будут удалены, а все данные на диске будут потеряны."
+  ],
+  "Apply selected solution": [
+    "Применить выбранное решение"
   ],
   "As a new partition on %s": [
     "Как новый раздел на %s"
@@ -338,6 +344,9 @@ export default {
   ],
   "Configure zFCP": [
     "Настроить zFCP"
+  ],
+  "Configured for installation only": [
+    "Настроено для доступа только при установке"
   ],
   "Configuring the product, please wait ...": [
     "Настройка продукта, пожалуйста, подождите..."
@@ -809,6 +818,9 @@ export default {
   "Installation will take %s.": [
     "Установка займёт %s."
   ],
+  "Installed system may not have network connections": [
+    "Установленная система может не иметь сетевых подключений"
+  ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "Установка повреждённого пакета влияет на стабильность системы и представляет собой большой риск для безопасности!"
   ],
@@ -1002,7 +1014,7 @@ export default {
     "Многопутевое"
   ],
   "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
-    ""
+    "Обнаружено несколько конфликтов. Вы можете решать их в любом порядке, и разрешение одного может разрешить другие."
   ],
   "NFS": [
     "NFS"
@@ -1039,6 +1051,9 @@ export default {
   ],
   "No additional software was selected.": [
     "Никакого дополнительного программного обеспечения выбрано не было."
+  ],
+  "No conflicts to address": [
+    "Нет конфликтов для решения"
   ],
   "No content found": [
     "Содержимое не найдено"
@@ -1299,7 +1314,7 @@ export default {
     "Результат"
   ],
   "Review and fix": [
-    ""
+    "Просмотреть и исправить"
   ],
   "Root authentication methods": [
     "Методы root-аутентификации"
@@ -1357,6 +1372,9 @@ export default {
   ],
   "Select a product": [
     "Выберите продукт"
+  ],
+  "Select a solution to continue": [
+    "Выберите решение, чтобы продолжить"
   ],
   "Select another disk to define partitions": [
     "Выберите другой диск для определения разделов"
@@ -1417,6 +1435,12 @@ export default {
   "Show information about %s": [
     "Показать сведения о %s"
   ],
+  "Show less actions": [
+    "Свернуть действия"
+  ],
+  "Show more actions": [
+    "Другие действия"
+  ],
   "Shrink existing partitions": [
     "Уменьшение существующих разделов"
   ],
@@ -1426,11 +1450,17 @@ export default {
   "Size": [
     "Размер"
   ],
+  "Size limits must be numbers followed by a unit like GiB or GB": [
+    "Ограничения на размер должны быть числами, за которыми следуют единицы измерения, например GiB или GB"
+  ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Ограничения на размер должны быть числами, за которыми могут следовать единицы измерения, например GiB или GB"
   ],
   "Size options": [
     "Опции размера"
+  ],
+  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
+    "Размеры должны вводиться в виде чисел, за которыми следует единица измерения                 в виде GiB (степень 2) или GB (степень 10)."
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     "Размеры должны быть введены в виде чисел, за которыми по желанию может следовать единица измерения."
@@ -1438,14 +1468,20 @@ export default {
   "Skip to content": [
     "Перейти к содержимому"
   ],
+  "Skip to next": [
+    "Перейти к следующему"
+  ],
   "Skip to previous": [
-    ""
+    "Перейти к предыдущему"
   ],
   "Software": [
     "Программы"
   ],
   "Software %s": [
     "Программное обеспечение %s"
+  ],
+  "Software conflicts resolution": [
+    "Разрешение конфликтов ПО"
   ],
   "Software selection": [
     "Выбор программного обеспечения"
@@ -1510,6 +1546,9 @@ export default {
   "The configured LVM groups will remain at %s": [
     "Настроенные группы LVM останутся на диске %s"
   ],
+  "The connection will be used only during installation and not available in the installed system.": [
+    "Это подключение будет использоваться только во время установки и не будет доступно в установленной системе."
+  ],
   "The content may be deleted": [
     "Содержимое может быть удалено"
   ],
@@ -1570,6 +1609,9 @@ export default {
   "The installation will take %s including:": [
     "Установка займёт %s, в том числе:"
   ],
+  "The installer interface is no longer available, so you can safely close this window.": [
+    "Интерфейс программы установки больше недоступен. Это окно можно закрыть."
+  ],
   "The installer requires [root] user privileges.": [
     "Программа установки требует привилегий пользователя [root]."
   ],
@@ -1582,11 +1624,17 @@ export default {
   "The logical volume is created exactly with the given size": [
     "Логический том создается точно с заданным размером"
   ],
+  "The maximum must be a number followed by a unit like GiB or GB": [
+    "Максимальное значение должно быть числом, за которым следует единица измерения, например GiB или GB"
+  ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
     "Максимальное значение должно быть числом, за которым может следовать единица измерения, например GiB или GB"
   ],
   "The minimum cannot be greater than the maximum": [
     "Минимальное значение не может быть больше максимального"
+  ],
+  "The minimum must be a number followed by a unit like GiB or GB": [
+    "Минимальное значение должно быть числом, за которым следует единица измерения, например GiB или GB"
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "Минимальное значение должно быть числом, за которым может следовать единица измерения, например GiB или GB"
@@ -1801,6 +1849,9 @@ export default {
   "Use available space": [
     "Использовать свободное пространство"
   ],
+  "Use for installation only": [
+    "Использовать только при установке"
+  ],
   "Use for the selected product too": [
     "Использовать также для выбранного продукта"
   ],
@@ -1905,6 +1956,9 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Вы будете подключаться к общедоступной сети без шифрования. Ваши данные могут быть не защищены."
+  ],
+  "Your system is rebooting": [
+    "Система перезапускается"
   ],
   "ZFCP": [
     "ZFCP"

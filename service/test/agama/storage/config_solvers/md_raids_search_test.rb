@@ -125,6 +125,27 @@ describe Agama::Storage::ConfigSolvers::MdRaidsSearch do
         expect(md3.search.solved?).to eq(true)
         expect(md3.search.device.name).to eq("/dev/md2")
       end
+
+      context "but ordering by descending device name" do
+        let(:md_raids) do
+          [
+            { search: { sort: { name: "desc" } } }
+          ]
+        end
+
+        it "expands the number of MD RAID configs to match all the existing RAIDs in order" do
+          subject.solve(config)
+          expect(config.md_raids.size).to eq(3)
+
+          md1, md2, md3 = config.md_raids
+          expect(md1.search.solved?).to eq(true)
+          expect(md1.search.device.name).to eq("/dev/md2")
+          expect(md2.search.solved?).to eq(true)
+          expect(md2.search.device.name).to eq("/dev/md1")
+          expect(md3.search.solved?).to eq(true)
+          expect(md3.search.device.name).to eq("/dev/md0")
+        end
+      end
     end
 
     context "if a MD RAID config contains a search without conditions but with a max" do
@@ -146,6 +167,25 @@ describe Agama::Storage::ConfigSolvers::MdRaidsSearch do
           expect(md1.search.device.name).to eq("/dev/md0")
           expect(md2.search.solved?).to eq(true)
           expect(md2.search.device.name).to eq("/dev/md1")
+        end
+
+        context "but ordering by descending device name" do
+          let(:md_raids) do
+            [
+              { search: { sort: { name: "desc" }, max: max } }
+            ]
+          end
+
+          it "expands the number of MdRaid configs to match the max considering the order" do
+            subject.solve(config)
+            expect(config.md_raids.size).to eq(2)
+
+            md1, md2 = config.md_raids
+            expect(md1.search.solved?).to eq(true)
+            expect(md1.search.device.name).to eq("/dev/md2")
+            expect(md2.search.solved?).to eq(true)
+            expect(md2.search.device.name).to eq("/dev/md1")
+          end
         end
       end
 
@@ -350,6 +390,58 @@ describe Agama::Storage::ConfigSolvers::MdRaidsSearch do
         expect(p1.search.device.name).to eq("/dev/md0p1")
         expect(p2.search.solved?).to eq(true)
         expect(p2.search.device.name).to eq("/dev/md0p2")
+      end
+    end
+
+    context "if an mdRaid config sorts the search" do
+      let(:scenario) { "sizes.yaml" }
+
+      let(:md_raids) do
+        [
+          {
+            search: {
+              condition: condition,
+              sort:      sort,
+              max:       max
+            }
+          }
+        ]
+      end
+
+      let(:max) { 3 }
+      let(:condition) { nil }
+
+      context "by size specified as a string" do
+        let(:sort) { "size" }
+
+        it "matches the RAIDs in the expected order" do
+          subject.solve(config)
+          expect(config.md_raids.map(&:search).map(&:device).map(&:name)).to eq [
+            "/dev/md0", "/dev/md1", "/dev/md2"
+          ]
+        end
+      end
+
+      context "by size specified as 'desc'" do
+        let(:sort) { { size: "desc" } }
+
+        it "matches the RAIDs in the expected order" do
+          subject.solve(config)
+          expect(config.md_raids.map(&:search).map(&:device).map(&:name)).to eq [
+            "/dev/md2", "/dev/md1", "/dev/md0"
+          ]
+        end
+
+        context "but leaving the smallest RAID out" do
+          let(:condition) { { size: { greater: "20 GiB" } } }
+
+          it "matches the RAIDs in the expected order" do
+            subject.solve(config)
+            expect(config.md_raids.map(&:search).map(&:device).map(&:name)).to eq [
+              "/dev/md2", "/dev/md1"
+            ]
+          end
+        end
       end
     end
   end

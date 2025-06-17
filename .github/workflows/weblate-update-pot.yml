@@ -131,6 +131,7 @@ jobs:
           else
             echo "POT file unchanged"
             echo "pot_updated=false" >> $GITHUB_OUTPUT
+            git -C agama-weblate reset --hard
           fi
 
       - name: Push updated products POT file

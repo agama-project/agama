@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Mon Jun 16 14:26:06 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Initial support for sorting storage devices when searching them
+  at the configuration (gh#agama-project/agama#2474).
+
+-------------------------------------------------------------------
+Fri Jun 13 20:51:10 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix copy of self-signed certificates for RMT
+  (gh#agama-project/agama#2480)
+
+-------------------------------------------------------------------
 Fri Jun 13 15:11:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Send the current language to the registration server (SCC/RMT)
