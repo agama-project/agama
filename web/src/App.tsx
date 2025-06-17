@@ -56,6 +56,14 @@ function App() {
     };
   }, [queryClient]);
 
+  console.log("App component", {
+    phase,
+    isBusy,
+    products,
+    selectedProduct,
+    location: location.pathname,
+  });
+
   const Content = () => {
     if (phase === InstallationPhase.Install) {
       console.log("Navigating to the installation progress page");
@@ -68,11 +76,6 @@ function App() {
     }
 
     if (!products || (selectedProduct === undefined && isBusy)) {
-      console.log("Loading screen: Initialization", {
-        products,
-        selectedProduct,
-        isBusy,
-      });
       return <Loading listenQuestions />;
     }
 
