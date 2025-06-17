@@ -108,6 +108,7 @@
         <package name="systemd"/>
         <package name="procps"/>
         <package name="iputils"/>
+        <package name="hyper-v"/>
         <package name="vim"/>
         <package name="vim-data"/>
         <package name="grub2"/>
@@ -214,7 +215,6 @@
         <package name="udev"/>
         <package name="filesystem"/>
         <package name="glibc-locale"/>
-        <package name="hyper-v"/>
         <package name="ca-certificates"/>
         <package name="ca-certificates-mozilla"/>
     </packages>
