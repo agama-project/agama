@@ -65,6 +65,20 @@
 }
 
 @font-face {
+  font-family: "Noto Sans Georgian";
+  font-weight: 400;
+  font-style: normal;
+  src: local(""), url("./fonts/NotoSansGeorgian-VariableFont_wdth_wght.ttf");
+}
+
+@font-face {
+  font-family: "Noto Sans Georgian Display";
+  font-weight: 600;
+  font-style: normal;
+  src: local(""), url("./fonts/NotoSansGeorgian-VariableFont_wdth_wght.ttf");
+}
+
+@font-face {
   font-family: "Roboto Mono";
   font-weight: 400;
   font-style: normal;
@@ -139,6 +153,12 @@
   /* Serbian (Cyrillic) */
   --pf-t--global--font--family--100: "Noto Sans", sans-serif;
   --pf-t--global--font--family--200: "Noto Sans", sans-serif;
+}
+
+/* Georgian */
+:lang(ka) {
+  --pf-t--global--font--family--100: "Noto Sans Georgian", sans-serif;
+  --pf-t--global--font--family--200: "Noto Sans Georgian Display", sans-serif;
 }
 
 /* Chinese (Simplified) */
