@@ -41,7 +41,7 @@ function ProductSelectionProgress() {
     <Page>
       <ProgressReport
         title={_("Configuring the product, please wait ...")}
-        firstStep={selectedProduct.name}
+        firstStep={selectedProduct?.name}
       />
     </Page>
   );

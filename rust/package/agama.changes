@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jun 17 12:21:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve logging of WebSocket events (gh#agama-project/agama#2479).
+
+-------------------------------------------------------------------
 Mon Jun 16 14:28:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Extend the storage schema to allow sorting storage devices as
