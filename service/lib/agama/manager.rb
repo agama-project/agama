@@ -116,9 +116,9 @@ module Agama
     # Runs the install phase
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def install_phase
+      service_status.busy
       Ipmi.current.started
 
-      service_status.busy
       installation_phase.install
       start_progress_with_descriptions(
         _("Prepare disks"),
