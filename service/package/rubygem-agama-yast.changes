@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 18 12:28:14 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Disable local installation repositories instead of removing them
+  (bsc#1243064)
+
+-------------------------------------------------------------------
 Wed Jun 18 07:17:23 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Preserve AutoYaST pre-scripts artifacts (bsc#1243776, gh#agama-project/agama#2344).
