@@ -70,6 +70,7 @@ impl ProductHTTPClient {
             patterns: None,
             packages: None,
             extra_repositories: None,
+            only_required: None,
         };
         self.set_software(&config).await
     }

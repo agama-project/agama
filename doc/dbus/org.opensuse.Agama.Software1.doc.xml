@@ -126,5 +126,12 @@
     </method>
     <property type="a{sy}" name="SelectedPatterns" access="read"/>
     <property type="a(ussa(uss))" name="Conflicts" access="read"/>
+    <!--
+      flag for only required packages
+      0 not set
+      1 false
+      2 true
+    -->
+    <property type="u" name="OnlyRequired" access="readwrite"/>
   </interface>
 </node>

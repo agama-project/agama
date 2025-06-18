@@ -603,6 +603,11 @@ async fn set_config(
     State(state): State<SoftwareState<'_>>,
     Json(config): Json<SoftwareConfig>,
 ) -> Result<(), Error> {
+    // first set only require flag to ensure that it is used for later computing of solver
+    if let Some(only_required) = config.only_required {
+        state.software.set_only_required(only_required).await?;
+    }
+
     if let Some(product) = config.product {
         state.product.select_product(&product).await?;
     }
@@ -682,6 +687,7 @@ async fn read_config(state: &SoftwareState<'_>) -> Result<SoftwareConfig, Error>
         packages: Some(packages),
         product,
         extra_repositories: if repos.is_empty() { None } else { Some(repos) },
+        only_required: state.software.get_only_required().await?,
     })
 }
 

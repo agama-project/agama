@@ -182,6 +182,10 @@
             "examples": ["vim"]
           }
         },
+        "onlyRequired": {
+          "title": "Flag if only minimal hard dependecies should be used in solver",
+          "type": "boolean"
+        },
         "extraRepositories": {
           "title": "List of user specified repositories that will be used on top of default ones",
           "type": "array",
