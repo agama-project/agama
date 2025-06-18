@@ -22,6 +22,8 @@
 require "yast"
 require "y2packager/repository"
 
+Yast.import "Pkg"
+
 module Agama
   module Software
     # This class represents a software repository
@@ -31,8 +33,6 @@ module Agama
     #
     # @see RepositoriesManager
     class Repository < Y2Packager::Repository
-      Yast.import "Pkg"
-
       # delay before retrying (in seconds)
       RETRY_DELAY = 5
       # number of automatic retries
