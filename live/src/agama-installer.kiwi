@@ -170,6 +170,8 @@
         <package name="fonts-config"/>
         <package name="adobe-sourcecodepro-fonts"/>
         <package name="adobe-sourcehansans-jp-fonts"/>
+        <package name="google-noto-sans-georgian-fonts"/>
+        <package name="google-noto-sans-sc-fonts"/>
         <package name="xauth"/>
         <package name="MozillaFirefox"/>
         <package name="gdm"/>
