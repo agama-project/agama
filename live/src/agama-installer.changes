@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 18 11:29:08 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Make web bundled fonts available for the system via config
+  file (gh#agama-project/agama#2488, bsc#1236261).
+
+-------------------------------------------------------------------
 Tue Jun 17 08:47:46 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Add hyper-v package (bsc#1236961).

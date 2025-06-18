@@ -169,8 +169,6 @@
         <package name="agama-integration-tests"/>
         <package name="fontconfig"/>
         <package name="fonts-config"/>
-        <package name="adobe-sourcecodepro-fonts"/>
-        <package name="adobe-sourcehansans-jp-fonts"/>
         <package name="xauth"/>
         <package name="MozillaFirefox"/>
         <package name="gdm"/>
