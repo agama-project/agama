@@ -35,6 +35,7 @@ use agama_lib::{
 };
 use anyhow::Context;
 use axum::{extract::State, http::StatusCode, response::IntoResponse, routing::get, Json, Router};
+use libpwquality::PWQuality;
 use tokio_stream::{Stream, StreamExt};
 
 #[derive(Clone)]
@@ -130,6 +131,7 @@ pub async fn users_service(
                 .delete(remove_first_user),
         )
         .route("/root", get(get_root_config).patch(patch_root))
+        .route("/password_check", post(check_password))
         .merge(status_router)
         .nest("/issues", issues_router)
         .with_state(state);
@@ -236,4 +238,21 @@ async fn patch_root(
 )]
 async fn get_root_config(State(state): State<UsersState<'_>>) -> Result<Json<RootUser>, Error> {
     Ok(Json(state.users.root_user().await?))
+}
+
+#[utoipa::path(
+    post,
+    path = "/password_check",
+    context_path = "/api/users",
+    description = "Performs a quality check on a given password",
+    responses(
+        (status = 200, description = "The password was checked", body = String),
+        (status = 400, description = "Could not check the password")
+    )
+)]
+async fn check_password(Json(password): Json<String>) -> Result<Json<i32>, Error> {
+    let pwq = PWQuality::new().unwrap();
+    pwq.read_default_config()?;
+
+    let score = pwq.check(&password, None, None)?;
 }
