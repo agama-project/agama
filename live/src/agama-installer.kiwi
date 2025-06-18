@@ -108,6 +108,7 @@
         <package name="systemd"/>
         <package name="procps"/>
         <package name="iputils"/>
+        <package name="hyper-v"/>
         <package name="vim"/>
         <package name="vim-data"/>
         <package name="grub2"/>

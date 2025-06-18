@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jun 18 07:17:30 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Preserve AutoYaST pre-scripts artifacts (bsc#1243776, gh#agama-project/agama#2344).
+
+-------------------------------------------------------------------
 Tue Jun 17 12:21:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve logging of WebSocket events (gh#agama-project/agama#2479).
