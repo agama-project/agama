@@ -21,6 +21,7 @@
 
 require "fileutils"
 require "json"
+require "shellwords"
 require "yast"
 require "y2packager/product"
 require "y2packager/resolvable"
@@ -217,8 +218,8 @@ module Agama
 
       # Writes the repositories information to the installed system
       def finish
-        # remove the dir:///run/initramfs/live/install repository and similar
-        remove_local_repos
+        # disable local repositories (DVD, USB flash...)
+        disable_local_repos
         Yast::Pkg.SourceSaveAll
         Yast::Pkg.TargetFinish
         # copy the libzypp caches to the target
@@ -519,13 +520,21 @@ module Agama
       end
 
       def add_repos_by_dir
-        # path to cdrom which can contain installation repositories
+        # path to the installation repository present on the Live medium (only on the Full medium)
         dir_path = "/run/initramfs/live/install"
-
         return false unless File.exist?(dir_path)
 
-        logger.info "/install found on source cd"
-        repositories.add("dir://" + dir_path)
+        logger.info "/install found on Live medium"
+        url = full_repo_url(dir_path, "/install")
+        return false unless url
+
+        logger.info "Using Full media installation repository #{url}"
+        # disable autorefresh, the packages on DVD cannot be updated, for USB flash disks it can be
+        # manually enabled in the installed system if needed (updating the packages need some user
+        # interaction anyway)
+        repositories.add(url, repo_alias: product.name, name: product.display_name,
+          autorefresh: false)
+
         true
       end
 
@@ -586,6 +595,30 @@ module Agama
         else
           # none or just one disk
           disks.first
+        end
+      end
+
+      # build URL for the Full installation repository
+      # @param path [String] Local path where the Full repository is mounted
+      # @param url_path [String] Path part of the resulting URL
+      # @return [String,nil] URL or `nil` if the Full repository device was not found
+      def full_repo_url(path, url_path)
+        # find the device which is mounted at the repository location
+        live_device = `findmnt -n -o SOURCE --target #{Shellwords.escape(path)}`.chomp
+        logger.info "Installation device: #{live_device}"
+        return nil unless live_device
+
+        # distinguish between DVD and hard disks/USB flash
+        if live_device.match(/\A\/dev\/sr[0-9]+\z/)
+          "dvd:#{url_path}?devices=#{live_device}"
+        else
+          # try using a more stable by-id device name, important esp. for USB flash
+          by_id_devices = `find -L /dev/disk/by-id -samefile #{Shellwords.escape(live_device)}`
+            .chomp
+          # if there are more names just use the first one
+          by_id_device = by_id_devices.split("\n").first
+          device = (by_id_device && !by_id_device.empty?) ? by_id_device : live_device
+          "hd:#{url_path}?device=#{device}"
         end
       end
 
@@ -742,9 +775,19 @@ module Agama
         end
       end
 
-      # remove all local repositories
-      def remove_local_repos
-        Agama::Software::Repository.all.select(&:local?).each(&:delete!)
+      # disable all local repositories, remove device name from the DVD Full repository
+      def disable_local_repos
+        local_repos = Agama::Software::Repository.all.select(&:local?)
+        local_repos.each(&:disable!)
+
+        # remove the installation device from the URL, libzypp will probe all present devices,
+        # this allows inserting the DVD medium into a different drive later
+        full_dvd_repo = local_repos.find { |r| r.url.to_s.start_with?("dvd:/install?devices=") }
+        return unless full_dvd_repo
+
+        new_url = "dvd:/install"
+        logger.info "Changing repository URL from #{full_dvd_repo.url} to #{new_url}"
+        full_dvd_repo.url = new_url
       end
 
       # Return all enabled repositories belonging to the base product.
