@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -85,7 +85,9 @@ module Agama
 
     # Sends an event to IPMI
     #
-    # Events are 7B long but differs only in the command code
+    # Events are 7B long but differs only in the command code.
+    #
+    # @param code [Byte] one byte in hex
     def command(code)
       return if !available?
 
