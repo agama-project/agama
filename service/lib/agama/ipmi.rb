@@ -21,7 +21,7 @@
 
 require "yast"
 require "agama/config"
-require 'tempfile'
+require "tempfile"
 
 module Agama
   # Class for very basic IPMI support
@@ -29,19 +29,19 @@ module Agama
   # Use for reporting current installer state to IPMI.
   #
   # Implemented:
-  #
-  # TBD:
   # * STARTED
-  # * WAITING (?)
-  # * ABORTED
   # * FAILED
   # * FINISHED
+  # * ABORTED
+  #
+  # TBD:
+  # * WAITING (?)
   class Ipmi
     class << self
       attr_reader :current
 
       def setup(logger)
-        @current ||= Ipmi.new(logger)
+        @current = Ipmi.new(logger)
       end
     end
 
@@ -70,7 +70,7 @@ module Agama
       command(IPMI_FAILED)
     end
 
-    private
+  private
 
     IPMI_STARTED = 0x7
     IPMI_FINISHED = 0x8
@@ -88,6 +88,7 @@ module Agama
     # Events are 7B long but differs only in the command code
     def command(code)
       return if !available?
+
       # ipmitool wants to read events from a file, not possible to
       # pass it directly as an argument
       file = Tempfile.new("agama-ipmi")
