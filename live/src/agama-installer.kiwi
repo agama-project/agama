@@ -161,6 +161,9 @@
         <!-- it can be used by users in AutoYaST pre-scripts -->
         <package name="perl-XML-Simple"/>
         <archive name="live-root.tar.xz"/>
+        <!-- IPMI support -->
+        <package name="ipmitool" />
+        <package name="OpenIPMI"/>
     </packages>
 
     <!-- packages for local installation (desktop, browser, etc.) -->

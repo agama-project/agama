@@ -51,7 +51,7 @@ module Agama
     def initialize(logger)
       @logger = logger
 
-      logger.info("IPMI is available") if available?
+      logger.info("IPMI available: #{available?}")
     end
 
     def started
@@ -70,7 +70,7 @@ module Agama
       command(IPMI_FAILED)
     end
 
-    private:
+    private
 
     IPMI_STARTED = 0x7
     IPMI_FINISHED = 0x8
