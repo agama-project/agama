@@ -21,6 +21,7 @@
 
 require "yast"
 require "autoinstall/script"
+require "fileutils"
 
 module Agama
   module AutoYaST
@@ -29,7 +30,14 @@ module Agama
     # This class wraps around an AutoYaST pre-script and redefines
     # some of its methods to adapt it to Agama.
     class PreScript < Y2Autoinstallation::PreScript
-      SCRIPTS_DIR = "/run/agama/scripts"
+      SCRIPTS_DIR = "/run/agama/scripts/autoyast"
+
+      class << self
+        # Clean the existing pre-scripts.
+        def clean_all
+          Dir[File.join(SCRIPTS_DIR, "*")]
+        end
+      end
 
       # Overrides the logs directory.
       def logs_dir

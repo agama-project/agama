@@ -75,6 +75,7 @@ module Agama
       end
 
       def run_pre_scripts
+        PreScript.clean_all
         pre_scripts = Yast::Profile.current.fetch_as_hash("scripts")
           .fetch_as_array("pre-scripts")
           .map { |h| PreScript.new(h) }
