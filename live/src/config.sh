@@ -93,6 +93,9 @@ systemctl disable YaST2-Second-Stage.service
 # the "eurlatgr" is the default font for the English locale
 echo -e "\nFONT=eurlatgr.psfu" >> /etc/vconsole.conf
 
+# use the fonts included in agama-web-ui
+ln -sf /usr/share/agama/web_ui/fonts /usr/local/share/fonts
+
 ### setup dracut for live system
 arch=$(uname -m)
 # keep in sync with ISO Volume ID set in the fix_bootconfig script
