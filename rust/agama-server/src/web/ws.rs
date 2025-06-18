@@ -39,10 +39,15 @@ pub async fn ws_handler(
 async fn handle_socket(mut socket: WebSocket, events: EventsSender) {
     let mut rx = events.subscribe();
     while let Ok(msg) = rx.recv().await {
-        if let Ok(json) = serde_json::to_string(&msg) {
-            if socket.send(Message::Text(json)).await.is_err() {
-                tracing::info!("ws: client disconnected");
-                return;
+        match serde_json::to_string(&msg) {
+            Ok(json) => {
+                if let Err(e) = socket.send(Message::Text(json)).await {
+                    tracing::info!("ws: client disconnected: {e}");
+                    return;
+                }
+            }
+            Err(e) => {
+                tracing::error!("ws: error serializing message: {e}")
             }
         }
     }

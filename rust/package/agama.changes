@@ -1,8 +1,24 @@
 -------------------------------------------------------------------
-Mon Jun 16 07:36:50 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+Wed Jun 18 14:36:50 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow to bind a connection to an specific device mac address
    (bsc#1244259).
+
+-------------------------------------------------------------------
+Wed Jun 18 07:17:30 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Preserve AutoYaST pre-scripts artifacts (bsc#1243776, gh#agama-project/agama#2344).
+
+-------------------------------------------------------------------
+Tue Jun 17 12:21:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve logging of WebSocket events (gh#agama-project/agama#2479).
+
+-------------------------------------------------------------------
+Mon Jun 16 14:28:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Extend the storage schema to allow sorting storage devices as
+  part of the search (gh#agama-project/agama#2474).
 
 -------------------------------------------------------------------
 Fri Jun 13 12:45:49 UTC 2025 - Ladislav Slezák <lslezak@suse.com>

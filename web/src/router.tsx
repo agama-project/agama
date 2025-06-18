@@ -100,19 +100,6 @@ const protectedRoutes = () => [
       },
     ],
   },
-  {
-    element: (
-      <PlainLayout mountHeader={false} mountSkipToContent={false}>
-        <Outlet />
-      </PlainLayout>
-    ),
-    children: [
-      {
-        path: PATHS.installationExit,
-        element: <InstallationExit />,
-      },
-    ],
-  },
 ];
 
 const router = () =>
@@ -124,6 +111,19 @@ const router = () =>
           <LoginPage />
         </PlainLayout>
       ),
+    },
+    {
+      element: (
+        <PlainLayout mountHeader={false} mountSkipToContent={false}>
+          <Outlet />
+        </PlainLayout>
+      ),
+      children: [
+        {
+          path: PATHS.installationExit,
+          element: <InstallationExit />,
+        },
+      ],
     },
     {
       path: PATHS.root,

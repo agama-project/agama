@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { WSClient, EventHandlerFn, ErrorHandlerFn } from "./ws";
+import { WSClient, EventHandlerFn, ErrorHandlerFn, WSClientIface } from "./ws";
 
 type VoidFn = () => void;
 type BooleanFn = () => boolean;
@@ -57,11 +57,11 @@ export type InstallerClient = {
  *
  * @param url - URL of the HTTP API.
  */
-const createClient = (url: URL): InstallerClient => {
+const createClient = (url: URL, wsClient?: WSClientIface): InstallerClient => {
   url.hash = "";
   url.pathname = url.pathname.concat("api/ws");
   url.protocol = url.protocol === "http:" ? "ws" : "wss";
-  const ws = new WSClient(url);
+  const ws = wsClient || new WSClient(url);
 
   const isConnected = () => ws.isConnected() || false;
   const isRecoverable = () => !!ws.isRecoverable();

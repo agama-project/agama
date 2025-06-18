@@ -108,6 +108,7 @@
         <package name="systemd"/>
         <package name="procps"/>
         <package name="iputils"/>
+        <package name="hyper-v"/>
         <package name="vim"/>
         <package name="vim-data"/>
         <package name="grub2"/>
@@ -168,8 +169,6 @@
         <package name="agama-integration-tests"/>
         <package name="fontconfig"/>
         <package name="fonts-config"/>
-        <package name="adobe-sourcecodepro-fonts"/>
-        <package name="adobe-sourcehansans-jp-fonts"/>
         <package name="xauth"/>
         <package name="MozillaFirefox"/>
         <package name="gdm"/>
