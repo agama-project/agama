@@ -2,9 +2,8 @@
 Wed Jun 18 08:42:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Improve multilingual font support by fixing the font-face rule for
-  Chinese, adding Noto Sans Georgian, and making bundled fonts
-  available for the system via a new config in the live ISO
-  (gh#agama-project/agama#2488, bsc#1236261).
+  Chinese, adding Noto Sans Georgian, and setting Noto Sans as the
+  primary fallback (gh#agama-project/agama#2488, bsc#1236261).
 
 -------------------------------------------------------------------
 Tue Jun 17 12:22:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

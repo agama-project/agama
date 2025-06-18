@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 18 11:29:08 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Make web bundled fonts available for the system via config
+  file (gh#agama-project/agama#2488, bsc#1236261).
+
+-------------------------------------------------------------------
 Fri Jun 13 10:41:15 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add initial support to apply updates from RPM packages and DUD archives
