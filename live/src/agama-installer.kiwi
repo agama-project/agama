@@ -94,7 +94,7 @@
     <repository type="rpm-md">
         <source path="obsrepositories:/"/>
     </repository>
-    <packages type="image" profiles="openSUSE_PXE,Leap_16.0_PXE,SUSE_SLE_16_PXE,SUSE_SLE_16_PXE_MINI">
+    <packages type="image" patternType="onlyRequired" profiles="openSUSE_PXE,Leap_16.0_PXE,SUSE_SLE_16_PXE,SUSE_SLE_16_PXE_MINI">
         <package name="NetworkManager-config-server"/>
         <package name="dracut-kiwi-oem-repart"/>
         <package name="dracut-kiwi-oem-dump"/>
@@ -102,7 +102,7 @@
     </packages>
 
     <!-- common set of packages (SSH-based and remote installation, etc.) -->
-    <packages type="image">
+    <packages type="image" patternType="onlyRequired">
         <package name="avahi"/>
         <package name="bind-utils"/>
         <package name="systemd"/>
@@ -164,13 +164,11 @@
     </packages>
 
     <!-- packages for local installation (desktop, browser, etc.) -->
-    <packages type="image" profiles="Leap_16.0,Leap_16.0_PXE,openSUSE,openSUSE_PXE,SUSE_SLE_16,SUSE_SLE_16_PXE">
+    <packages type="image" patternType="onlyRequired" profiles="Leap_16.0,Leap_16.0_PXE,openSUSE,openSUSE_PXE,SUSE_SLE_16,SUSE_SLE_16_PXE">
         <package name="bluez-firmware"/>
         <package name="agama-integration-tests"/>
         <package name="fontconfig"/>
         <package name="fonts-config"/>
-        <package name="adobe-sourcecodepro-fonts"/>
-        <package name="adobe-sourcehansans-jp-fonts"/>
         <package name="xauth"/>
         <package name="MozillaFirefox"/>
         <package name="gdm"/>
@@ -181,7 +179,7 @@
     </packages>
 
     <!-- common packages for openSUSE Tumbleweed and Leap distributions -->
-    <packages type="image" profiles="Leap_16.0,Leap_16.0_PXE,openSUSE,openSUSE_PXE">
+    <packages type="image" patternType="onlyRequired" profiles="Leap_16.0,Leap_16.0_PXE,openSUSE,openSUSE_PXE">
         <package name="agama-products-opensuse"/>
         <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
         <package name="MozillaFirefox-branding-openSUSE"/>
