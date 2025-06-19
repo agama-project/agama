@@ -81,7 +81,7 @@
       "properties": {
         "search": { "$ref": "#/$defs/mdRaidSearch" },
         "alias": { "$ref": "#/$defs/alias" },
-        "name": { "$ref": "#/$defs/mdRaidName" },
+        "name": { "$ref": "#/$defs/baseName" },
         "level": { "$ref": "#/$defs/mdRaidLevel" },
         "parity": { "$ref": "#/$defs/mdRaidParity" },
         "chunkSize": { "$ref": "#/$defs/sizeValue" },
@@ -97,7 +97,7 @@
       "properties": {
         "search": { "$ref": "#/$defs/mdRaidSearch" },
         "alias": { "$ref": "#/$defs/alias" },
-        "name": { "$ref": "#/$defs/mdRaidName" },
+        "name": { "$ref": "#/$defs/baseName" },
         "level": { "$ref": "#/$defs/mdRaidLevel" },
         "parity": { "$ref": "#/$defs/mdRaidParity" },
         "chunkSize": { "$ref": "#/$defs/sizeValue" },
@@ -108,11 +108,6 @@
           "items": { "$ref": "#/$defs/partitionElement" }
         }
       }
-    },
-    "mdRaidName": {
-      "description": "MD base name.",
-      "type": "string",
-      "examples": ["system"]
     },
     "mdRaidLevel": {
       "title": "MD level",
@@ -245,11 +240,7 @@
       "additionalProperties": false,
       "required": ["name"],
       "properties": {
-        "name": {
-          "description": "Volume group name.",
-          "type": "string",
-          "examples": ["vg0"]
-        },
+        "name": { "$ref": "#/$defs/baseName" },
         "extentSize": { "$ref": "#/$defs/sizeValue" },
         "physicalVolumes": {
           "description": "Devices to use as physical volumes.",
@@ -335,11 +326,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "name": {
-          "description": "Logical volume name.",
-          "type": "string",
-          "examples": ["lv0"]
-        },
+        "name": { "$ref": "#/$defs/baseName" },
         "size": { "$ref": "#/$defs/size" },
         "stripes": { "$ref": "#/$defs/logicalVolumeStripes" },
         "stripeSize": { "$ref": "#/$defs/sizeValue" },
@@ -357,11 +344,7 @@
           "const": true
         },
         "alias": { "$ref": "#/$defs/alias" },
-        "name": {
-          "description": "Logical volume name.",
-          "type": "string",
-          "examples": ["lv0"]
-        },
+        "name": { "$ref": "#/$defs/baseName" },
         "size": { "$ref": "#/$defs/size" },
         "stripes": { "$ref": "#/$defs/logicalVolumeStripes" },
         "stripeSize": { "$ref": "#/$defs/sizeValue" },
@@ -373,11 +356,7 @@
       "additionalProperties": false,
       "required": ["usedPool"],
       "properties": {
-        "name": {
-          "description": "Thin logical volume name.",
-          "type": "string",
-          "examples": ["lv0"]
-        },
+        "name": { "$ref": "#/$defs/baseName" },
         "size": { "$ref": "#/$defs/size" },
         "usedPool": { "$ref": "#/$defs/alias" },
         "encryption": { "$ref": "#/$defs/encryption" },
@@ -389,6 +368,10 @@
       "type": "integer",
       "minimum": 1,
       "maximum": 128
+    },
+    "searchSortCriterionOrder": {
+      "description": "Direction of sorting at the search results",
+      "enum": ["asc", "desc"]
     },
     "driveSearch": {
       "anyOf": [
@@ -402,6 +385,7 @@
       "additionalProperties": false,
       "properties": {
         "condition": { "$ref": "#/$defs/driveSearchCondition" },
+        "sort": { "$ref": "#/$defs/driveSearchSort" },
         "max": { "$ref": "#/$defs/searchMax" },
         "ifNotFound": { "$ref": "#/$defs/searchActions" }
       }
@@ -411,6 +395,34 @@
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" }
       ]
+    },
+    "driveSearchSort": {
+      "anyOf": [
+        { "$ref": "#/$defs/driveSearchSortCriterion" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/driveSearchSortCriterion" }
+        }
+      ]
+    },
+    "driveSearchSortCriterion": {
+      "anyOf": [
+        { "$ref": "#/$defs/driveSearchSortCriterionShort" },
+        { "$ref": "#/$defs/driveSearchSortCriterionFull" }
+      ]
+    },
+    "driveSearchSortCriterionShort": {
+      "enum": ["name", "size"]
+    },
+    "driveSearchSortCriterionFull": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/$defs/searchSortCriterionOrder" },
+        "size": { "$ref": "#/$defs/searchSortCriterionOrder" }
+      },
+      "minProperties": 1,
+      "maxProperties": 1
     },
     "mdRaidSearch": {
       "anyOf": [
@@ -424,6 +436,7 @@
       "additionalProperties": false,
       "properties": {
         "condition": { "$ref": "#/$defs/mdRaidSearchCondition" },
+        "sort": { "$ref": "#/$defs/mdRaidSearchSort" },
         "max": { "$ref": "#/$defs/searchMax" },
         "ifNotFound": { "$ref": "#/$defs/searchCreatableActions" }
       }
@@ -433,6 +446,34 @@
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" }
       ]
+    },
+    "mdRaidSearchSort": {
+      "anyOf": [
+        { "$ref": "#/$defs/mdRaidSearchSortCriterion" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/mdRaidSearchSortCriterion" }
+        }
+      ]
+    },
+    "mdRaidSearchSortCriterion": {
+      "anyOf": [
+        { "$ref": "#/$defs/mdRaidSearchSortCriterionShort" },
+        { "$ref": "#/$defs/mdRaidSearchSortCriterionFull" }
+      ]
+    },
+    "mdRaidSearchSortCriterionShort": {
+      "enum": ["name", "size"]
+    },
+    "mdRaidSearchSortCriterionFull": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/$defs/searchSortCriterionOrder" },
+        "size": { "$ref": "#/$defs/searchSortCriterionOrder" }
+      },
+      "minProperties": 1,
+      "maxProperties": 1
     },
     "partitionSearch": {
       "anyOf": [
@@ -446,6 +487,7 @@
       "additionalProperties": false,
       "properties": {
         "condition": { "$ref": "#/$defs/partitionSearchCondition" },
+        "sort": { "$ref": "#/$defs/partitionSearchSort" },
         "max": { "$ref": "#/$defs/searchMax" },
         "ifNotFound": { "$ref": "#/$defs/searchCreatableActions" }
       }
@@ -462,6 +504,7 @@
       "additionalProperties": false,
       "properties": {
         "condition": { "$ref": "#/$defs/partitionSearchCondition" },
+        "sort": { "$ref": "#/$defs/partitionSearchSort" },
         "max": { "$ref": "#/$defs/searchMax" },
         "ifNotFound": { "$ref": "#/$defs/searchActions" }
       }
@@ -532,6 +575,35 @@
         }
       }
     },
+    "partitionSearchSort": {
+      "anyOf": [
+        { "$ref": "#/$defs/partitionSearchSortCriterion" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/partitionSearchSortCriterion" }
+        }
+      ]
+    },
+    "partitionSearchSortCriterion": {
+      "anyOf": [
+        { "$ref": "#/$defs/partitionSearchSortCriterionShort" },
+        { "$ref": "#/$defs/partitionSearchSortCriterionFull" }
+      ]
+    },
+    "partitionSearchSortCriterionShort": {
+      "enum": ["name", "size", "number"]
+    },
+    "partitionSearchSortCriterionFull": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/$defs/searchSortCriterionOrder" },
+        "size": { "$ref": "#/$defs/searchSortCriterionOrder" },
+        "number": { "$ref": "#/$defs/searchSortCriterionOrder" }
+      },
+      "minProperties": 1,
+      "maxProperties": 1
+    },
     "searchMax": {
       "description": "Maximum devices to match.",
       "type": "integer",
@@ -552,13 +624,19 @@
       "const": "*"
     },
     "searchName": {
-      "descrition": "Search by device name",
+      "description": "Search by device name",
       "type": "string",
       "examples": ["/dev/vda", "/dev/disk/by-id/ata-WDC_WD3200AAKS-75L9"]
     },
     "alias": {
       "description": "Alias used to reference a device.",
       "type": "string"
+    },
+    "baseName": {
+      "description": "Device base name.",
+      "type": "string",
+      "pattern": "^[^/]+$",
+      "examples": ["system"]
     },
     "size": {
       "title": "Size",

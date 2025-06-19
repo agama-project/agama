@@ -1,10 +1,66 @@
 -------------------------------------------------------------------
+Wed Jun 18 12:28:14 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Disable local installation repositories instead of removing them
+  (bsc#1243064)
+
+-------------------------------------------------------------------
+Wed Jun 18 07:17:23 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Preserve AutoYaST pre-scripts artifacts (bsc#1243776, gh#agama-project/agama#2344).
+
+-------------------------------------------------------------------
+Mon Jun 16 14:26:06 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Initial support for sorting storage devices when searching them
+  at the configuration (gh#agama-project/agama#2474).
+
+-------------------------------------------------------------------
+Fri Jun 13 20:51:10 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix copy of self-signed certificates for RMT
+  (gh#agama-project/agama#2480)
+
+-------------------------------------------------------------------
+Fri Jun 13 15:11:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Send the current language to the registration server (SCC/RMT)
+  to display localized error messages (gh#agama-project/agama#2477)
+
+-------------------------------------------------------------------
+Fri Jun 13 08:23:46 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Split registration key and registered status to support RMT with
+  empty registration key (gh#agama-project/agama#2469)
+
+-------------------------------------------------------------------
+Thu Jun 12 05:20:10 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- AutoYaST support: add support for iscsi-client section
+  (gh#agama-project/agama#2463).
+
+-------------------------------------------------------------------
+Tue Jun 10 12:08:44 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- AutoYaST support: add support for add-on elements
+  (gh#agama-project/agama#2458)
+
+-------------------------------------------------------------------
+Mon Jun  9 06:12:23 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Extend the D-Bus API to get available/candidate drives and MD
+  RAIDs (gh#agama-project/agama#2419).
+- Improve the config conversion from model to add missing MD RAIDs
+  if needed (e.g., the MD RAID was selected as boot device or as
+  target for LVM).
+
+-------------------------------------------------------------------
 Fri Jun  6 10:22:36 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
-- Propose to move existing connections to disk if there is no one 
+- Propose to move existing connections to disk if there is no one
   to be persisted (custom config provided)
   (gh#agama-project/agama#2402).
-  
+
 -------------------------------------------------------------------
 Thu Jun  5 15:44:06 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 

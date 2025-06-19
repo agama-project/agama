@@ -29,37 +29,49 @@
 import { apiModel } from "~/api/storage/types";
 
 type Model = {
+  boot: Boot;
   drives: Drive[];
   mdRaids: MdRaid[];
   volumeGroups: VolumeGroup[];
   getMountPaths: () => string[];
 };
 
+interface Boot extends Omit<apiModel.Boot, "device"> {
+  isDefault: boolean;
+  getDevice: () => Drive | MdRaid | null;
+}
+
 /**
  * @fixme Remove list and listIndex from types once the components are adapted to receive a list
  * and an index instead of a device object. See ConfigEditor component.
  */
 
-interface Drive extends apiModel.Drive {
+interface Drive extends Omit<apiModel.Drive, "partitions"> {
   list: string;
   listIndex: number;
+  isExplicitBoot: boolean;
   isUsed: boolean;
   isAddingPartitions: boolean;
+  isReusingPartitions: boolean;
   isTargetDevice: boolean;
   isBoot: boolean;
+  partitions: Partition[];
   getMountPaths: () => string[];
   getVolumeGroups: () => VolumeGroup[];
   getPartition: (path: string) => Partition | undefined;
   getConfiguredExistingPartitions: () => Partition[];
 }
 
-interface MdRaid extends apiModel.MdRaid {
+interface MdRaid extends Omit<apiModel.MdRaid, "partitions"> {
   list: string;
   listIndex: number;
+  isExplicitBoot: boolean;
   isUsed: boolean;
   isAddingPartitions: boolean;
+  isReusingPartitions: boolean;
   isTargetDevice: boolean;
   isBoot: boolean;
+  partitions: Partition[];
   getMountPaths: () => string[];
   getVolumeGroups: () => VolumeGroup[];
   getPartition: (path: string) => Partition | undefined;
@@ -83,4 +95,4 @@ interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logi
 
 type LogicalVolume = apiModel.LogicalVolume;
 
-export type { Model, Drive, MdRaid, Partition, VolumeGroup, LogicalVolume };
+export type { Model, Boot, Drive, MdRaid, Partition, VolumeGroup, LogicalVolume };

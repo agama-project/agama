@@ -178,7 +178,7 @@ describe("HostnamePage", () => {
   describe("when the selected product is registrable and registration code is not set", () => {
     beforeEach(() => {
       selectedProduct = sle;
-      registrationInfoMock = { key: "", email: "" };
+      registrationInfoMock = { registered: false, key: "", email: "", url: "" };
     });
 
     it("does not render an alert about registration", () => {
@@ -191,7 +191,12 @@ describe("HostnamePage", () => {
   describe("when the selected product is registrable and registration code is set", () => {
     beforeEach(() => {
       selectedProduct = sle;
-      registrationInfoMock = { key: "INTERNAL-USE-ONLY-1234-5678", email: "example@company.test" };
+      registrationInfoMock = {
+        registered: true,
+        key: "INTERNAL-USE-ONLY-1234-5678",
+        email: "example@company.test",
+        url: "",
+      };
     });
 
     it("renders an alert to let user know that changes will not have effect in the registration", () => {

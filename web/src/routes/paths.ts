@@ -51,6 +51,7 @@ const ROOT = {
   installation: "/installation",
   installationProgress: "/installation/progress",
   installationFinished: "/installation/finished",
+  installationExit: "/installation/exit",
   logs: "/api/manager/logs/store",
 };
 
@@ -115,6 +116,7 @@ const SIDE_PATHS = [
   PRODUCT.progress,
   ROOT.installationProgress,
   ROOT.installationFinished,
+  ROOT.installationExit,
 ];
 
 export {

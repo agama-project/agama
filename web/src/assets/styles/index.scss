@@ -16,6 +16,13 @@
 }
 
 @font-face {
+  font-family: "Noto Sans";
+  font-weight: 400;
+  font-style: normal;
+  src: local(""), url("./fonts/NotoSans-VariableFont_wdth_wght.ttf");
+}
+
+@font-face {
   font-family: "Noto Sans SC";
   font-weight: 400;
   font-style: normal;
@@ -58,6 +65,20 @@
 }
 
 @font-face {
+  font-family: "Noto Sans Georgian";
+  font-weight: 400;
+  font-style: normal;
+  src: local(""), url("./fonts/NotoSansGeorgian-VariableFont_wdth_wght.ttf");
+}
+
+@font-face {
+  font-family: "Noto Sans Georgian Display";
+  font-weight: 600;
+  font-style: normal;
+  src: local(""), url("./fonts/NotoSansGeorgian-VariableFont_wdth_wght.ttf");
+}
+
+@font-face {
   font-family: "Roboto Mono";
   font-weight: 400;
   font-style: normal;
@@ -90,8 +111,8 @@
 
   --pf-t--global--color--brand--default: var(--agm-t--color--pine);
   --pf-t--global--color--brand--hover: var(--agm-t--color--pine--shade--100);
-  --pf-t--global--font--family--100: "SUSE Text", verdana;
-  --pf-t--global--font--family--200: "SUSE Display", verdana;
+  --pf-t--global--font--family--100: "SUSE Text", "Noto Sans", verdana;
+  --pf-t--global--font--family--200: "SUSE Display", "Noto Sans", verdana;
   --pf-t--global--font--family--300: "Roboto Mono", monospace;
   --pf-t--global--font--line-height--100: 1.3;
   --pf-t--global--font--line-height--200: 1.5;
@@ -117,17 +138,43 @@
   --pf-t--global--color--brand--clicked: var(--agm-t--color--pine);
 }
 
-:root[lang="zh"] {
+/*
+ * Use Noto font family for Cyrillic languages of countries with larger
+ * populations based on data from
+ * https://worldpopulationreview.com/country-rankings/countries-that-use-cyrillic
+ */
+:lang(ru), /* Russian */
+:lang(uk), /* Ukrainian */
+:lang(kk), /* Kazakh */
+:lang(tg), /* Tajik */
+:lang(be), /* Belarusian */
+:lang(bg), /* Bulgarian */
+:lang(sr-Cyrl) {
+  /* Serbian (Cyrillic) */
+  --pf-t--global--font--family--100: "Noto Sans", sans-serif;
+  --pf-t--global--font--family--200: "Noto Sans", sans-serif;
+}
+
+/* Georgian */
+:lang(ka) {
+  --pf-t--global--font--family--100: "Noto Sans Georgian", sans-serif;
+  --pf-t--global--font--family--200: "Noto Sans Georgian Display", sans-serif;
+}
+
+/* Chinese (Simplified) */
+:lang(zh) {
   --pf-t--global--font--family--100: "Noto Sans SC";
   --pf-t--global--font--family--200: "Noto Sans SC Display", "Noto Sans SC", serif;
 }
 
-:root[lang="ja"] {
+/* Japanese */
+:lang(ja) {
   --pf-t--global--font--family--100: "Noto Sans JP", serif;
   --pf-t--global--font--family--200: "Noto Sans JP Display", "Noto Sans JP", serif;
 }
 
-:root[lang="ko"] {
+/* Korean */
+:lang(ko) {
   --pf-t--global--font--family--100: "Noto Sans KR", serif;
   --pf-t--global--font--family--200: "Noto Sans KR Display", "Noto Sans KR", serif;
 }

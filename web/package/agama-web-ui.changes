@@ -1,4 +1,52 @@
 -------------------------------------------------------------------
+Wed Jun 18 08:42:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Improve multilingual font support by fixing the font-face rule for
+  Chinese, adding Noto Sans Georgian, and setting Noto Sans as the
+  primary fallback (gh#agama-project/agama#2488, bsc#1236261).
+
+-------------------------------------------------------------------
+Tue Jun 17 12:22:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Make sure queries data is in sync with the WebSocket messages
+  (bsc#1243276, gh#agama-project/agama#2479).
+- Properly jump to the progress page when the product is selected
+  by a third party (e.g., "agama config load").
+- Log WebSocket messages in the console with "debug" log level.
+
+-------------------------------------------------------------------
+Fri Jun 13 08:24:59 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow registering against an RMT without a registration code.
+  (gh#agama-project/agama#2469)
+
+-------------------------------------------------------------------
+Thu Jun 12 16:27:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Replace SUSE font with Noto Sans for Cyrillic languages and
+  update CSS to use `:lang(xx)` for improved language support
+  (gh#agama-project/agama#2467, bsc#1236261).
+
+-------------------------------------------------------------------
+Thu Jun 12 12:51:38 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Allow selecting bootable MD RAIDS to create partitions and LVM
+  volume groups on them (gh#agama-project/agama#2455).
+
+-------------------------------------------------------------------
+Tue Jun 10 16:51:15 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Improve post-installation user experience by providing feedback
+  that confirms the system restart (bsc#1237410,
+  gh#agama-project/agama#2462).
+
+-------------------------------------------------------------------
+Mon Jun  9 06:24:08 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Allow selecting bootable MD RAIDs as boot device
+  (gh#agama-project/agama#2419).
+
+-------------------------------------------------------------------
 Fri Jun  6 13:44:14 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Replaced custom utility functions with a well-tested,
@@ -427,8 +475,8 @@ Fri Jan 10 13:46:42 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Drop the feature for deregistering a product
   (gh#agama-project/agama#1882).
--------------------------------------------------------------------
 
+-------------------------------------------------------------------
 Fri Jan 10 13:22:27 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not allow changing the storage setup when Agama is using the
@@ -1382,7 +1430,6 @@ Wed May 24 11:01:24 UTC 2023 - David Diaz <dgonzalez@suse.com>
   any nodes other than <body> direct children (gh#openSUSE/agama#588).
 
 -------------------------------------------------------------------
-
 Tue May 23 11:51:26 UTC 2023 - Martin Vidner <mvidner@suse.com>
 
 - Version 2.1

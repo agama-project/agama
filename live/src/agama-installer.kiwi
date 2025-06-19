@@ -108,6 +108,7 @@
         <package name="systemd"/>
         <package name="procps"/>
         <package name="iputils"/>
+        <package name="hyper-v"/>
         <package name="vim"/>
         <package name="vim-data"/>
         <package name="grub2"/>
@@ -131,6 +132,7 @@
         <package name="ipw-firmware"/>
         <package name="mpt-firmware"/>
         <package name="zd1211-firmware"/>
+        <package name="iscsiuio"/>
         <package name="systemd-zram-service"/> <!--- needed for zram -->
         <package name="shim" arch="aarch64,x86_64"/>
         <package name="timezone"/>
@@ -155,6 +157,7 @@
         <package name="qrencode"/>
         <package name="qemu-guest-agent" />
         <package name="aaa_base-extras"/>
+        <package name="createrepo_c" />
         <!-- it can be used by users in AutoYaST pre-scripts -->
         <package name="perl-XML-Simple"/>
         <archive name="live-root.tar.xz"/>
@@ -166,8 +169,6 @@
         <package name="agama-integration-tests"/>
         <package name="fontconfig"/>
         <package name="fonts-config"/>
-        <package name="adobe-sourcecodepro-fonts"/>
-        <package name="adobe-sourcehansans-jp-fonts"/>
         <package name="xauth"/>
         <package name="MozillaFirefox"/>
         <package name="gdm"/>

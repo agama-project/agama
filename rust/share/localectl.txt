@@ -1,0 +1,5 @@
+System Locale: LANG=en_US.UTF-8
+    VC Keymap: us
+   X11 Layout: us
+    X11 Model: pc105
+  X11 Options: terminate:ctrl_alt_bksp

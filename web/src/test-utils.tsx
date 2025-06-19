@@ -37,6 +37,7 @@ import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 import { InstallerL10nProvider } from "~/context/installerL10n";
 import { isObject, noop } from "radashi";
+import { DummyWSClient } from "./client/ws";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default
@@ -98,7 +99,8 @@ jest.mock("react-router-dom", () => ({
 }));
 
 const Providers = ({ children, withL10n }) => {
-  const client = createClient(new URL("https://localhost"));
+  const ws = new DummyWSClient();
+  const client = createClient(new URL("https://localhost"), ws);
 
   if (!client.onConnect) {
     client.onConnect = noop;
@@ -111,9 +113,17 @@ const Providers = ({ children, withL10n }) => {
   }
 
   if (withL10n) {
+    const fetchConfig = async () => ({
+      keymap: "us",
+      timezone: "Europe/Berlin",
+      uiLocale: "en_US",
+      uiKeymap: "us",
+    });
     return (
       <InstallerClientProvider client={client}>
-        <InstallerL10nProvider initialLanguage="en-US">{children}</InstallerL10nProvider>
+        <InstallerL10nProvider initialLanguage="en-US" fetchConfigFn={fetchConfig}>
+          {children}
+        </InstallerL10nProvider>
       </InstallerClientProvider>
     );
   }

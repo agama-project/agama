@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/to_json_conversions/base"
+require "agama/storage/configs/sort_criteria"
 
 module Agama
   module Storage
@@ -39,6 +40,7 @@ module Agama
           def conversions
             {
               condition:  convert_condition,
+              sort:       convert_sort,
               ifNotFound: config.if_not_found.to_s,
               max:        config.max
             }
@@ -75,6 +77,33 @@ module Agama
             {
               size: { size.operator => size.value.to_i }
             }
+          end
+
+          # @return [Hash, nil]
+          def convert_sort
+            criteria = config.sort_criteria
+            return if criteria.nil? || criteria.empty?
+
+            criteria.map do |criterion|
+              { criterion_name(criterion) => criterion_order(criterion) }
+            end
+          end
+
+          SORT_CRITERIA = {
+            Configs::SortCriteria::Name            => :name,
+            Configs::SortCriteria::Size            => :size,
+            Configs::SortCriteria::PartitionNumber => :number
+          }.freeze
+          private_constant :SORT_CRITERIA
+
+          # @see #convert_sort
+          def criterion_name(criterion)
+            SORT_CRITERIA[criterion.class]
+          end
+
+          # @see #convert_sort
+          def criterion_order(criterion)
+            criterion.asc? ? "asc" : "desc"
           end
         end
       end

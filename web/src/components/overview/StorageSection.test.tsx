@@ -24,57 +24,78 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { StorageSection } from "~/components/overview";
-import { apiModel } from "~/api/storage/types";
-import { Issue } from "~/types/issues";
 
-const sdaDrive: apiModel.Drive = {
+let mockModel = {
+  drives: [],
+};
+
+const sda = {
+  sid: 59,
   name: "/dev/sda",
-  spacePolicy: "delete",
-  partitions: [],
+  description: "",
+  isDrive: false,
+  type: "drive",
+  active: true,
+  encrypted: false,
+  shrinking: { unsuppored: [] },
+  size: 536870912000,
+  start: 0,
+  systems: [],
+  udevIds: [],
+  udevPaths: [],
 };
 
-const sdbDrive: apiModel.Drive = {
+const sdb = {
+  sid: 60,
   name: "/dev/sdb",
-  spacePolicy: "delete",
-  partitions: [],
+  description: "",
+  isDrive: false,
+  type: "drive",
+  active: true,
+  encrypted: false,
+  shrinking: { unsuppored: [] },
+  size: 697932185600,
+  start: 0,
+  systems: [],
+  udevIds: [],
+  udevPaths: [],
 };
 
-const mockDevices = [
-  { name: "/dev/sda", size: 536870912000 },
-  { name: "/dev/sdb", size: 697932185600 },
-];
+jest.mock("~/queries/storage/config-model", () => ({
+  ...jest.requireActual("~/queries/storage/config-model"),
+  useConfigModel: () => mockModel,
+}));
 
-const systemError: Issue = {
-  description: "System error",
-  kind: "storage",
-  details: "",
-  source: 1,
-  severity: 1,
-};
-
-const mockUseConfigModelFn = jest.fn();
-const mockUseAvailableDevicesFn = jest.fn();
-const mockUseSystemErrorsFn = jest.fn();
+const mockDevices = [sda, sdb];
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useDevices: () => mockDevices,
-  useAvailableDevices: () => mockUseAvailableDevicesFn(),
 }));
 
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useConfigModel: () => mockUseConfigModelFn(),
+let mockAvailableDevices = [sda, sdb];
+
+jest.mock("~/hooks/storage/system", () => ({
+  ...jest.requireActual("~/hooks/storage/system"),
+  useAvailableDevices: () => mockAvailableDevices,
 }));
+
+let mockSystemErrors = [];
 
 jest.mock("~/queries/issues", () => ({
   ...jest.requireActual("~/queries/issues"),
-  useSystemErrors: () => mockUseSystemErrorsFn(),
+  useSystemErrors: () => mockSystemErrors,
 }));
+
+beforeEach(() => {
+  mockSystemErrors = [];
+});
 
 describe("when the configuration does not include any device", () => {
   beforeEach(() => {
-    mockUseConfigModelFn.mockReturnValue({ drives: [] });
+    mockModel = {
+      drives: [],
+    };
   });
 
   it("indicates that a device is not selected", async () => {
@@ -86,7 +107,9 @@ describe("when the configuration does not include any device", () => {
 
 describe("when the configuration contains one drive", () => {
   beforeEach(() => {
-    mockUseConfigModelFn.mockReturnValue({ drives: [sdaDrive] });
+    mockModel = {
+      drives: [{ name: "/dev/sda", spacePolicy: "delete" }],
+    };
   });
 
   it("renders the proposal summary", async () => {
@@ -99,7 +122,9 @@ describe("when the configuration contains one drive", () => {
 
   describe("and the space policy is set to 'resize'", () => {
     beforeEach(() => {
-      mockUseConfigModelFn.mockReturnValue({ drives: [{ ...sdaDrive, spacePolicy: "resize" }] });
+      mockModel = {
+        drives: [{ name: "/dev/sda", spacePolicy: "resize" }],
+      };
     });
 
     it("indicates that partitions may be shrunk", async () => {
@@ -111,7 +136,9 @@ describe("when the configuration contains one drive", () => {
 
   describe("and the space policy is set to 'keep'", () => {
     beforeEach(() => {
-      mockUseConfigModelFn.mockReturnValue({ drives: [{ ...sdaDrive, spacePolicy: "keep" }] });
+      mockModel = {
+        drives: [{ name: "/dev/sda", spacePolicy: "keep" }],
+      };
     });
 
     it("indicates that partitions will be kept", async () => {
@@ -123,7 +150,9 @@ describe("when the configuration contains one drive", () => {
 
   describe("and the space policy is set to 'custom'", () => {
     beforeEach(() => {
-      mockUseConfigModelFn.mockReturnValue({ drives: [{ ...sdaDrive, spacePolicy: "custom" }] });
+      mockModel = {
+        drives: [{ name: "/dev/sda", spacePolicy: "custom" }],
+      };
     });
 
     it("indicates that custom strategy for allocating space is set", async () => {
@@ -135,7 +164,9 @@ describe("when the configuration contains one drive", () => {
 
   describe("and the drive matches no disk", () => {
     beforeEach(() => {
-      mockUseConfigModelFn.mockReturnValue({ drives: [{ ...sdaDrive, name: null }] });
+      mockModel = {
+        drives: [{ name: undefined, spacePolicy: "delete" }],
+      };
     });
 
     it("indicates that a device is not selected", async () => {
@@ -148,7 +179,12 @@ describe("when the configuration contains one drive", () => {
 
 describe("when the configuration contains several drives", () => {
   beforeEach(() => {
-    mockUseConfigModelFn.mockReturnValue({ drives: [sdaDrive, sdbDrive] });
+    mockModel = {
+      drives: [
+        { name: "/dev/sda", spacePolicy: "delete" },
+        { name: "/dev/sdb", spacePolicy: "delete" },
+      ],
+    };
   });
 
   it("renders the proposal summary", async () => {
@@ -160,9 +196,12 @@ describe("when the configuration contains several drives", () => {
 
   describe("but one of them has a different space policy", () => {
     beforeEach(() => {
-      mockUseConfigModelFn.mockReturnValue({
-        drives: [sdaDrive, { ...sdbDrive, spacePolicy: "resize" }],
-      });
+      mockModel = {
+        drives: [
+          { name: "/dev/sda", spacePolicy: "delete" },
+          { name: "/dev/sdb", spacePolicy: "resize" },
+        ],
+      };
     });
 
     it("indicates that custom strategy for allocating space is set", async () => {
@@ -175,17 +214,13 @@ describe("when the configuration contains several drives", () => {
 
 describe("when there is no configuration model (unsupported features)", () => {
   beforeEach(() => {
-    mockUseConfigModelFn.mockReturnValue(undefined);
+    mockModel = null;
   });
 
   describe("if the storage proposal succeeded", () => {
-    beforeEach(() => {
-      mockUseSystemErrorsFn.mockReturnValue([]);
-    });
-
-    describe("and there are no available disks", () => {
+    describe("and there are no available devices", () => {
       beforeEach(() => {
-        mockUseAvailableDevicesFn.mockReturnValue([]);
+        mockAvailableDevices = [];
       });
 
       it("indicates that an unhandled configuration was used", async () => {
@@ -196,7 +231,7 @@ describe("when there is no configuration model (unsupported features)", () => {
 
     describe("and there are available disks", () => {
       beforeEach(() => {
-        mockUseAvailableDevicesFn.mockReturnValue(mockDevices);
+        mockAvailableDevices = [sda];
       });
 
       it("indicates that an unhandled configuration was used", async () => {
@@ -208,12 +243,20 @@ describe("when there is no configuration model (unsupported features)", () => {
 
   describe("if the storage proposal was not possible", () => {
     beforeEach(() => {
-      mockUseSystemErrorsFn.mockReturnValue([systemError]);
+      mockSystemErrors = [
+        {
+          description: "System error",
+          kind: "storage",
+          details: "",
+          source: 1,
+          severity: 1,
+        },
+      ];
     });
 
-    describe("and there are no available disks", () => {
+    describe("and there are no available devices", () => {
       beforeEach(() => {
-        mockUseAvailableDevicesFn.mockReturnValue([]);
+        mockAvailableDevices = [];
       });
 
       it("indicates that there are no available disks", async () => {
@@ -222,9 +265,9 @@ describe("when there is no configuration model (unsupported features)", () => {
       });
     });
 
-    describe("and there are available disks", () => {
+    describe("and there are available devices", () => {
       beforeEach(() => {
-        mockUseAvailableDevicesFn.mockReturnValue(mockDevices);
+        mockAvailableDevices = [sda];
       });
 
       it("indicates that an unhandled configuration was used", async () => {

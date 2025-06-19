@@ -133,10 +133,13 @@ pub async fn storage_service(
         .route("/devices/dirty", get(devices_dirty))
         .route("/devices/system", get(system_devices))
         .route("/devices/result", get(staging_devices))
+        .route("/devices/actions", get(actions))
+        .route("/devices/available_drives", get(available_drives))
+        .route("/devices/candidate_drives", get(candidate_drives))
+        .route("/devices/available_md_raids", get(available_md_raids))
+        .route("/devices/candidate_md_raids", get(candidate_md_raids))
         .route("/product/volume_for", get(volume_for))
         .route("/product/params", get(product_params))
-        .route("/devices/actions", get(actions))
-        .route("/proposal/usable_devices", get(usable_devices))
         .route(
             "/proposal/settings",
             get(get_proposal_settings).put(set_proposal_settings),
@@ -448,22 +451,71 @@ async fn actions(State(state): State<StorageState<'_>>) -> Result<Json<Vec<Actio
     Ok(Json(state.client.actions().await?))
 }
 
-/// Gets the SID (Storage ID) of the devices usable for the installation.
-///
-/// Note that not all the existing devices can be selected as target device for the installation.
+/// Gets the SID (Storage ID) of the available drives for the installation.
 #[utoipa::path(
     get,
-    path = "/proposal/usable_devices",
+    path = "/devices/available_drives",
     context_path = "/api/storage",
     responses(
         (status = 200, description = "Lis of SIDs", body = Vec<DeviceSid>),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
-async fn usable_devices(
+async fn available_drives(
     State(state): State<StorageState<'_>>,
 ) -> Result<Json<Vec<DeviceSid>>, Error> {
-    let sids = state.client.available_devices().await?;
+    let sids = state.client.available_drives().await?;
+    Ok(Json(sids))
+}
+
+/// Gets the SID (Storage ID) of the candidate drives for the installation.
+#[utoipa::path(
+    get,
+    path = "/devices/candidate_drives",
+    context_path = "/api/storage",
+    responses(
+        (status = 200, description = "Lis of SIDs", body = Vec<DeviceSid>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn candidate_drives(
+    State(state): State<StorageState<'_>>,
+) -> Result<Json<Vec<DeviceSid>>, Error> {
+    let sids = state.client.candidate_drives().await?;
+    Ok(Json(sids))
+}
+
+/// Gets the SID (Storage ID) of the available MD RAIDs for the installation.
+#[utoipa::path(
+    get,
+    path = "/devices/available_md_raids",
+    context_path = "/api/storage",
+    responses(
+        (status = 200, description = "Lis of SIDs", body = Vec<DeviceSid>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn available_md_raids(
+    State(state): State<StorageState<'_>>,
+) -> Result<Json<Vec<DeviceSid>>, Error> {
+    let sids = state.client.available_md_raids().await?;
+    Ok(Json(sids))
+}
+
+/// Gets the SID (Storage ID) of the candidate MD RAIDs for the installation.
+#[utoipa::path(
+    get,
+    path = "/devices/candidate_md_raids",
+    context_path = "/api/storage",
+    responses(
+        (status = 200, description = "Lis of SIDs", body = Vec<DeviceSid>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn candidate_md_raids(
+    State(state): State<StorageState<'_>>,
+) -> Result<Json<Vec<DeviceSid>>, Error> {
+    let sids = state.client.candidate_md_raids().await?;
     Ok(Json(sids))
 }
 

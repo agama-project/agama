@@ -25,10 +25,11 @@ import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import DriveEditor from "~/components/storage/DriveEditor";
 import { StorageDevice, model } from "~/types/storage";
-import { Volume, apiModel } from "~/api/storage/types";
-import { DriveHook } from "~/queries/storage/config-model";
+import { Volume } from "~/api/storage/types";
 
 const mockDeleteDrive = jest.fn();
+const mockSwitchToDrive = jest.fn();
+const mockUseModel = jest.fn();
 
 const volume1: Volume = {
   mountPath: "/",
@@ -124,7 +125,7 @@ const sdb: StorageDevice = {
   description: "",
 };
 
-const drive1Partitions: apiModel.Partition[] = [
+const drive1Partitions: model.Partition[] = [
   {
     mountPath: "/",
     size: {
@@ -132,6 +133,10 @@ const drive1Partitions: apiModel.Partition[] = [
       default: true,
     },
     filesystem: { default: true, type: "btrfs" },
+    isNew: true,
+    isUsed: false,
+    isReused: false,
+    isUsedBySpacePolicy: false,
   },
   {
     mountPath: "swap",
@@ -140,6 +145,10 @@ const drive1Partitions: apiModel.Partition[] = [
       default: false, // false: user provided, true: calculated
     },
     filesystem: { default: false, type: "swap" },
+    isNew: true,
+    isUsed: false,
+    isReused: false,
+    isUsedBySpacePolicy: false,
   },
 ];
 
@@ -151,25 +160,17 @@ const drive1: model.Drive = {
   listIndex: 1,
   isUsed: true,
   isAddingPartitions: true,
+  isReusingPartitions: true,
   isTargetDevice: false,
   isBoot: true,
+  isExplicitBoot: true,
   getVolumeGroups: () => [],
   getPartition: jest.fn(),
   getMountPaths: () => drive1Partitions.map((p) => p.mountPath),
   getConfiguredExistingPartitions: jest.fn(),
 };
 
-const drive1Hook: DriveHook = {
-  isBoot: true,
-  isExplicitBoot: true,
-  hasPv: false,
-  allMountPaths: [],
-  switch: jest.fn(),
-  delete: mockDeleteDrive,
-  getPartition: (path) => drive1Partitions.find((p) => p.mountPath === path),
-};
-
-const drive2Partitions: apiModel.Partition[] = [
+const drive2Partitions: model.Partition[] = [
   {
     mountPath: "/home",
     size: {
@@ -177,6 +178,10 @@ const drive2Partitions: apiModel.Partition[] = [
       default: true,
     },
     filesystem: { default: true, type: "xfs" },
+    isNew: true,
+    isUsed: false,
+    isReused: false,
+    isUsedBySpacePolicy: false,
   },
 ];
 
@@ -186,41 +191,46 @@ const drive2: model.Drive = {
   partitions: drive2Partitions,
   list: "drives",
   listIndex: 2,
+  isExplicitBoot: false,
   isUsed: true,
   isAddingPartitions: true,
+  isReusingPartitions: true,
   isTargetDevice: false,
   isBoot: true,
   getVolumeGroups: () => [],
   getPartition: jest.fn(),
-  getMountPaths: () => drive1Partitions.map((p) => p.mountPath),
+  getMountPaths: () => drive2Partitions.map((p) => p.mountPath),
   getConfiguredExistingPartitions: jest.fn(),
 };
 
-let additionalDrives = true;
-
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
-  useAvailableDevices: () => [sda],
   useVolume: (mountPath: string): Volume =>
     [volume1, volume2, volume3].find((v) => v.mountPath === mountPath),
+}));
+
+jest.mock("~/hooks/storage/system", () => ({
+  ...jest.requireActual("~/hooks/storage/system"),
+  useCandidateDevices: () => [sda],
   useLongestDiskTitle: () => 20,
 }));
 
-jest.mock("~/queries/storage/config-model", () => ({
-  ...jest.requireActual("~/queries/storage/config-model"),
-  useDrive: (name) => ({
-    ...drive1Hook,
-    isExplicitBoot: name === "/dev/sda",
-  }),
-  useModel: () => ({
-    hasAdditionalDrives: additionalDrives,
-  }),
+jest.mock("~/hooks/storage/drive", () => ({
+  ...jest.requireActual("~/hooks/storage/drive"),
+  __esModule: true,
+  useDeleteDrive: () => mockDeleteDrive,
+  useSwitchToDrive: () => mockSwitchToDrive,
+}));
+
+jest.mock("~/hooks/storage/model", () => ({
+  ...jest.requireActual("~/hooks/storage/model"),
+  useModel: () => mockUseModel(),
 }));
 
 describe("RemoveDriveOption", () => {
   describe("if there are additional drives", () => {
     beforeEach(() => {
-      additionalDrives = true;
+      mockUseModel.mockReturnValue({ drives: [drive1, drive2], mdRaids: [] });
     });
 
     it("allows users to delete regular drives", async () => {
@@ -250,11 +260,8 @@ describe("RemoveDriveOption", () => {
   });
 
   describe("if there are no additional drives", () => {
-    beforeEach(() => {
-      additionalDrives = false;
-    });
-
     it("does not allow users to delete regular drives", async () => {
+      mockUseModel.mockReturnValue({ drives: [drive2], mdRaids: [] });
       const { user } = plainRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
 
       const driveButton = screen.getByRole("button", { name: "sdb, 1 KiB" });
@@ -267,6 +274,7 @@ describe("RemoveDriveOption", () => {
     });
 
     it("does not allow users to delete drives explicitly used to boot", async () => {
+      mockUseModel.mockReturnValue({ drives: [drive1], mdRaids: [] });
       const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
 
       const driveButton = screen.getByRole("button", { name: "sda, 1 KiB" });

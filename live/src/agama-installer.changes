@@ -1,4 +1,26 @@
 -------------------------------------------------------------------
+Wed Jun 18 11:29:08 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Make web bundled fonts available for the system via config
+  file (gh#agama-project/agama#2488, bsc#1236261).
+
+-------------------------------------------------------------------
+Tue Jun 17 08:47:46 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Add hyper-v package (bsc#1236961).
+
+-------------------------------------------------------------------
+Fri Jun 13 10:41:15 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add initial support to apply updates from RPM packages and DUD archives
+  (gh#agama-project/agama#2466).
+
+-------------------------------------------------------------------
+Tue Jun 10 14:40:21 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add iscsiuio kernel driver (gh#agama-project/agama#2460).
+
+-------------------------------------------------------------------
 Thu Jun  5 08:28:10 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Disable Firefox extensions autoupdate
@@ -18,8 +40,8 @@ Thu May 29 07:16:11 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 -------------------------------------------------------------------
 Mon May 26 21:35:04 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
-- Generate systemd network link files below Agama run folder to 
-  be copied at the end of the installation (bsc#1237327, 
+- Generate systemd network link files below Agama run folder to
+  be copied at the end of the installation (bsc#1237327,
   bsc#1241969, gh#agama-project/agama#2404).
 
 -------------------------------------------------------------------
@@ -75,7 +97,7 @@ Tue Apr 29 11:30:59 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 -------------------------------------------------------------------
 Thu Apr 28 16:40:41 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
-- Ensure the persistent NetworkManager connections are copied if 
+- Ensure the persistent NetworkManager connections are copied if
   not explicitlly disabled (related to gh#agama-project/agama#2291)
 
 -------------------------------------------------------------------
@@ -97,12 +119,12 @@ Fri Apr 25 14:10:04 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 Thu Apr 24 16:40:41 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - bsc#1239777, bsc#1236885 gh#agama-project/agama#2291.
-  - Persist the NetworkManager runtime config created by 
-    nm-initrd-generator when given explicitlly with the 'ip=' 
+  - Persist the NetworkManager runtime config created by
+    nm-initrd-generator when given explicitlly with the 'ip='
     kernel cmdline argument.
   - Allow to disable the copy of the persistent configuration with
     the inst.copy_network kernel cmdline argument.
-  - Do not copy the NetworkManager runtime configuration to the 
+  - Do not copy the NetworkManager runtime configuration to the
     target system anymore.
 
 -------------------------------------------------------------------
@@ -213,9 +235,9 @@ Mon Mar 17 12:12:02 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 Wed Mar 12 17:17:08 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - (gh#agama-project/agama#2142)
-  - Allow to set the static hostname using the hostname kernel 
+  - Allow to set the static hostname using the hostname kernel
     cmdline argument.
-  - Allow to disable the set of the hostname via DHCP using the 
+  - Allow to disable the set of the hostname via DHCP using the
     SetHostname kernel cmdline argument.
 
 -------------------------------------------------------------------
@@ -289,7 +311,7 @@ Wed Feb 19 10:38:45 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 Wed Feb 19 08:49:24 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Added support for giving a file URL with extra kernel cmdline
-  arguments (agama.info) which was known as the info file in 
+  arguments (agama.info) which was known as the info file in
   linuxrc.
 - Added basic support for translating the ifcfg kernel cmdline arg
   to its ip equivalent (gh#agama-project/agama#1896).

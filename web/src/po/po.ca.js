@@ -19,7 +19,7 @@ export default {
     "%1$s encara contindrà el grup d'LVM %2$s i qualsevol partició necessària per a arrencar"
   ],
   "%d of %d": [
-    ""
+    "%d de %d"
   ],
   "%s - %s": [
     "%s - %s"
@@ -142,13 +142,16 @@ export default {
     "Ajusteu la configuració següent perquè el sistema nou s'adapti a l'espai disponible."
   ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
-    ""
+    "S'han resolt tots els conflictes o no se n'ha detectat cap. Podeu continuar la configuració de manera segura."
   ],
   "All content will be deleted": [
     "Se'n suprimirà tot el contingut"
   ],
   "All fields are required": [
     "Tots els camps són obligatoris."
+  ],
+  "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
+    "Totes les connexions de xarxa gestionades a través d'aquesta interfície estan actualment configurades per usar-les només durant la instal·lació i no es copiaran al sistema instal·lat."
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "A més de definir el primer usuari, es poden configurar mètodes d'autenticació per a l'usuari d'arrel."
@@ -158,6 +161,9 @@ export default {
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Se suprimirà qualsevol partició existent i es perdran totes les dades del disc."
+  ],
+  "Apply selected solution": [
+    "Aplica la solució seleccionada"
   ],
   "As a new partition on %s": [
     "Com a partició nova a %s"
@@ -338,6 +344,9 @@ export default {
   ],
   "Configure zFCP": [
     "Configuració de zFCP"
+  ],
+  "Configured for installation only": [
+    "Configuració només per a la instal·lació"
   ],
   "Configuring the product, please wait ...": [
     "Configurant el producte. Espereu, si us plau..."
@@ -808,6 +817,9 @@ export default {
   "Installation will take %s.": [
     "La instal·lació necessitarà %s."
   ],
+  "Installed system may not have network connections": [
+    "El sistema instal·lat pot no tenir connexions de xarxa."
+  ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "Instal·lar un paquet trencat afecta l'estabilitat del sistema i és un risc important de seguretat!"
   ],
@@ -1001,7 +1013,7 @@ export default {
     "Multicamí"
   ],
   "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
-    ""
+    "S'han trobat diversos conflictes. Podeu abordar-los en qualsevol ordre i, si se'n resol un, potser se'n resolen d'altres."
   ],
   "NFS": [
     "NFS"
@@ -1038,6 +1050,9 @@ export default {
   ],
   "No additional software was selected.": [
     "No s'ha seleccionat cap programari addicional."
+  ],
+  "No conflicts to address": [
+    "No hi ha conflictes per abordar"
   ],
   "No content found": [
     "No s'ha trobat contingut."
@@ -1298,7 +1313,7 @@ export default {
     "Resultat"
   ],
   "Review and fix": [
-    ""
+    "Revisa i corregeix"
   ],
   "Root authentication methods": [
     "Mètodes d'autenticació d'arrel"
@@ -1356,6 +1371,9 @@ export default {
   ],
   "Select a product": [
     "Seleccioneu un producte"
+  ],
+  "Select a solution to continue": [
+    "Seleccioneu una solució per continuar"
   ],
   "Select another disk to define partitions": [
     "Seleccioneu un altre disc per definir-ne les particions"
@@ -1415,6 +1433,12 @@ export default {
   "Show information about %s": [
     "Mostra informació quant a %s"
   ],
+  "Show less actions": [
+    "Mostra menys accions"
+  ],
+  "Show more actions": [
+    "Mostra més accions"
+  ],
   "Shrink existing partitions": [
     "Encongeix les particions existents"
   ],
@@ -1424,11 +1448,17 @@ export default {
   "Size": [
     "Mida"
   ],
+  "Size limits must be numbers followed by a unit like GiB or GB": [
+    "Els límits de mida han de ser números seguits d'una unitat com ara GiB o GB."
+  ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Els límits de mida han de ser números seguits opcionalment d'una unitat com ara GiB o GB"
   ],
   "Size options": [
     "Opcions de mida"
+  ],
+  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
+    "Les mides s'han d'introduir com a números seguits d'una unitat                del tipus GiB (potència de 2) o GB (potència de 10)."
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     "Les mides s'han d'introduir com a números opcionalment seguits d'una unitat."
@@ -1436,14 +1466,20 @@ export default {
   "Skip to content": [
     "Omet i ves al contingut"
   ],
+  "Skip to next": [
+    "Salta al següent"
+  ],
   "Skip to previous": [
-    ""
+    "Salta a l'anterior"
   ],
   "Software": [
     "Programari"
   ],
   "Software %s": [
     "Programari %s"
+  ],
+  "Software conflicts resolution": [
+    "Resolució de conflictes de programari"
   ],
   "Software selection": [
     "Selecció de programari"
@@ -1508,6 +1544,9 @@ export default {
   "The configured LVM groups will remain at %s": [
     "Els grups d'LVM configurats es mantindran a %s"
   ],
+  "The connection will be used only during installation and not available in the installed system.": [
+    "La connexió només s'usarà durant la instal·lació i no estarà disponible al sistema instal·lat."
+  ],
   "The content may be deleted": [
     "El contingut pot suprimir-se"
   ],
@@ -1568,6 +1607,9 @@ export default {
   "The installation will take %s including:": [
     "La instal·lació necessitarà %s, incloent-hi el següent:"
   ],
+  "The installer interface is no longer available, so you can safely close this window.": [
+    "La interfície de l'instal·lador ja no està disponible, així que podeu tancar aquesta finestra de manera segura."
+  ],
   "The installer requires [root] user privileges.": [
     "L'instal·lador requereix privilegis de l'usuari [root]."
   ],
@@ -1580,11 +1622,17 @@ export default {
   "The logical volume is created exactly with the given size": [
     "El volum lògic es crea exactament amb la mida introduïda"
   ],
+  "The maximum must be a number followed by a unit like GiB or GB": [
+    "El màxim ha de ser un número seguit d'una unitat com ara GiB o GB."
+  ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
     "El màxim ha de ser un número seguit opcionalment d'una unitat com ara GiB o GB"
   ],
   "The minimum cannot be greater than the maximum": [
     "El mínim no pot ser superior al màxim"
+  ],
+  "The minimum must be a number followed by a unit like GiB or GB": [
+    "El mínim ha de ser un número seguit d'una unitat com ara GiB o GB"
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "El mínim ha de ser un número seguit opcionalment d'una unitat com ara GiB o GB"
@@ -1799,6 +1847,9 @@ export default {
   "Use available space": [
     "Usa l'espai disponible"
   ],
+  "Use for installation only": [
+    "Usa-la només per a la instal·lació"
+  ],
   "Use for the selected product too": [
     "Usa-la també per al producte seleccionat"
   ],
@@ -1903,6 +1954,9 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Us connectareu a una xarxa pública sense encriptació. És possible que les vostres dades no estiguin segures."
+  ],
+  "Your system is rebooting": [
+    "El sistema es reinicia"
   ],
   "ZFCP": [
     "ZFCP"

@@ -27,11 +27,17 @@ import { DevicesFormSelect } from "~/components/storage";
 import { Page, SubtleContent } from "~/components/core";
 import { deviceLabel } from "~/components/storage/utils";
 import { StorageDevice } from "~/types/storage";
-import { useAvailableDevices } from "~/queries/storage";
+import { useCandidateDevices } from "~/hooks/storage/system";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { useBoot } from "~/queries/storage/config-model";
+import { useDevices } from "~/queries/storage";
+import { useModel } from "~/hooks/storage/model";
+import {
+  useSetBootDevice,
+  useSetDefaultBootDevice,
+  useDisableBootConfig,
+} from "~/hooks/storage/boot";
 
 // FIXME: improve classNames
 // FIXME: improve and rename to BootSelectionDialog
@@ -46,7 +52,7 @@ type BootSelectionState = {
   configureBoot?: boolean;
   bootDevice?: StorageDevice;
   defaultBootDevice?: StorageDevice;
-  availableDevices?: StorageDevice[];
+  candidateDevices?: StorageDevice[];
 };
 
 /**
@@ -54,13 +60,18 @@ type BootSelectionState = {
  */
 export default function BootSelectionDialog() {
   const [state, setState] = useState<BootSelectionState>({ load: false });
-  const availableDevices = useAvailableDevices();
   const navigate = useNavigate();
-  const boot = useBoot();
+  const devices = useDevices("system");
+  const candidateDevices = useCandidateDevices();
+  const model = useModel({ suspense: true });
+  const setBootDevice = useSetBootDevice();
+  const setDefaultBootDevice = useSetDefaultBootDevice();
+  const disableBootConfig = useDisableBootConfig();
 
   useEffect(() => {
-    if (state.load) return;
+    if (state.load || !model) return;
 
+    const boot = model.boot;
     let selectedOption: string;
 
     if (!boot.configure) {
@@ -71,33 +82,38 @@ export default function BootSelectionDialog() {
       selectedOption = BOOT_MANUAL_ID;
     }
 
-    const bootDevice = availableDevices.find((d) => d.name === boot.deviceName);
+    const bootDevice = devices.find((d) => d.name === boot.getDevice()?.name);
     const defaultBootDevice = boot.isDefault ? bootDevice : undefined;
+    let candidates = [...candidateDevices];
+    // Add the current boot device if it does not belong to the candidate devices.
+    if (bootDevice && !candidates.includes(bootDevice)) {
+      candidates = [bootDevice, ...candidates];
+    }
 
     setState({
       load: true,
-      bootDevice: bootDevice || availableDevices[0],
+      bootDevice: bootDevice || candidateDevices[0],
       configureBoot: boot.configure,
       defaultBootDevice,
-      availableDevices,
+      candidateDevices: candidates,
       selectedOption,
     });
-  }, [availableDevices, boot, state.load]);
+  }, [devices, candidateDevices, model, state.load]);
 
-  if (!state.load) return;
+  if (!state.load || !model) return;
 
   const onSubmit = async (e) => {
     e.preventDefault();
 
     switch (state.selectedOption) {
       case BOOT_DISABLED_ID:
-        boot.disable();
+        disableBootConfig();
         break;
       case BOOT_AUTO_ID:
-        boot.setDefault();
+        setDefaultBootDevice();
         break;
       default:
-        boot.setDevice(state.bootDevice?.name);
+        setBootDevice(state.bootDevice?.name);
     }
 
     navigate("..");
@@ -178,11 +194,11 @@ partitions in the appropriate disk.",
               }
               body={
                 <Stack hasGutter>
-                  <div>{_("Partitions to boot will be allocated at the following device.")}</div>
+                  <p>{_("Partitions to boot will be allocated at the following device.")}</p>
                   <DevicesFormSelect
                     aria-label={_("Choose a disk for placing the boot loader")}
                     name="bootDevice"
-                    devices={state?.availableDevices || []}
+                    devices={state?.candidateDevices || []}
                     selectedDevice={state.bootDevice}
                     onChange={changeBootDevice}
                     isDisabled={state.selectedOption !== BOOT_MANUAL_ID}

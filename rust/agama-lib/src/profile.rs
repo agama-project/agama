@@ -184,7 +184,7 @@ impl ProfileEvaluator {
     pub fn evaluate_string(&self, profile: &str) -> anyhow::Result<String> {
         let dir = tempdir()?;
         let working_path = dir.path().join("profile.jsonnet");
-        fs::write(working_path, dbg!(profile))?;
+        fs::write(working_path, profile)?;
         self.evaluate_profile_jsonnet(&dir)
     }
 

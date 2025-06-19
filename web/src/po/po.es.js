@@ -19,7 +19,7 @@ export default {
     "%1$s aún contendrán el grupo LVM '%2$s' y cualquier partición necesaria para arrancar"
   ],
   "%d of %d": [
-    ""
+    "%d de %d"
   ],
   "%s - %s": [
     "%s - %s"
@@ -142,13 +142,16 @@ export default {
     "Ajuste las opciones debajo para hacer el sistema nuevo quepa dentro del espacio disponible."
   ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
-    ""
+    "Todos los conflictos se han resuelto o no se ha detectado ninguno. Puede continuar con la configuración de forma segura."
   ],
   "All content will be deleted": [
     "Todo el contenido será borrado"
   ],
   "All fields are required": [
     "Todos los campos son obligatorios"
+  ],
+  "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
+    "Todas las conexiones de red gestionadas mediante esta interfaz están definidas para usarse solo durante la instalación y no se copiarán en el sistema instalado"
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Junto a definir el primer usuario, pueden ser configurados los métodos de autenticación para el usuario root."
@@ -158,6 +161,9 @@ export default {
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Cualquier partición existente será eliminada y todos los datos en el disco se perderán."
+  ],
+  "Apply selected solution": [
+    "Aplicar solución seleccionada"
   ],
   "As a new partition on %s": [
     "Como una partición nueva en %s"
@@ -338,6 +344,9 @@ export default {
   ],
   "Configure zFCP": [
     "Configurar zFCP"
+  ],
+  "Configured for installation only": [
+    "Configurado solo para la instalación"
   ],
   "Configuring the product, please wait ...": [
     "Configurando el producto, por favor espere..."
@@ -808,6 +817,9 @@ export default {
   "Installation will take %s.": [
     "La instalación ocupará %s."
   ],
+  "Installed system may not have network connections": [
+    "Puede que el sistema instalado no tenga conexiones de red"
+  ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "¡Instalar un paquete estropeado afecta la estabilidad del sistema y es un riesgo alto de seguridad!"
   ],
@@ -1001,7 +1013,7 @@ export default {
     "Ruta múltiple"
   ],
   "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
-    ""
+    "Se han encontrado numerosos conflictos. Puede abordarlos en cualquier orden y resolver uno podría resolver otros."
   ],
   "NFS": [
     "NFS"
@@ -1038,6 +1050,9 @@ export default {
   ],
   "No additional software was selected.": [
     "No se seleccionó software adicional."
+  ],
+  "No conflicts to address": [
+    "No hay ningún conflicto que abordar"
   ],
   "No content found": [
     "No se encontró contenido"
@@ -1298,7 +1313,7 @@ export default {
     "Resultado"
   ],
   "Review and fix": [
-    ""
+    "Revisar y arreglar"
   ],
   "Root authentication methods": [
     "Métodos de autenticación de root"
@@ -1356,6 +1371,9 @@ export default {
   ],
   "Select a product": [
     "Seleccione un producto"
+  ],
+  "Select a solution to continue": [
+    "Seleccione una solución para continuar"
   ],
   "Select another disk to define partitions": [
     "Seleccione otro disco para definir particiones"
@@ -1415,6 +1433,12 @@ export default {
   "Show information about %s": [
     "Mostrar información sobre %s"
   ],
+  "Show less actions": [
+    "Mostrar menos acciones"
+  ],
+  "Show more actions": [
+    "Mostrar más acciones"
+  ],
   "Shrink existing partitions": [
     "Reducir las particiones existentes"
   ],
@@ -1424,11 +1448,17 @@ export default {
   "Size": [
     "Tamaño"
   ],
+  "Size limits must be numbers followed by a unit like GiB or GB": [
+    "Los límites de tamaño deben ser números seguidos por una unidad como Gib o GB"
+  ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Límites de tamaño deben ser números opcionalmente seguidos por una unidad como Gib o Gb"
   ],
   "Size options": [
     "Opciones del tamaño"
+  ],
+  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
+    "Los tamaños se deben introducir como números seguidos por una unidad de               con formato GiB (potencia de 2) o GB (potencia de 10)."
   ],
   "Sizes must be entered as a numbers optionally followed by a unit.": [
     "Los tamaños deben ser introducidos como un número seguido opcionalmente por una unidad."
@@ -1436,14 +1466,20 @@ export default {
   "Skip to content": [
     "Saltar a contenido"
   ],
+  "Skip to next": [
+    "Saltar al siguiente"
+  ],
   "Skip to previous": [
-    ""
+    "Saltar al anterior"
   ],
   "Software": [
     "Software"
   ],
   "Software %s": [
     "Software %s"
+  ],
+  "Software conflicts resolution": [
+    "Resolución de conflictos de software"
   ],
   "Software selection": [
     "Selección de software"
@@ -1508,6 +1544,9 @@ export default {
   "The configured LVM groups will remain at %s": [
     "Los grupos LVM configurados permanecerán en %s"
   ],
+  "The connection will be used only during installation and not available in the installed system.": [
+    "La conexión se usará solo durante la instalación, y no estará disponible en el sistema instalado."
+  ],
   "The content may be deleted": [
     "El contenido puede ser eliminado"
   ],
@@ -1568,6 +1607,9 @@ export default {
   "The installation will take %s including:": [
     "La instalación ocupará %s incluyendo:"
   ],
+  "The installer interface is no longer available, so you can safely close this window.": [
+    "El interfaz de instalador no está más disponible, por tanto puede cerrar con seguridad esta ventana."
+  ],
   "The installer requires [root] user privileges.": [
     "El instalador requiere privilegios de usuario [root]."
   ],
@@ -1580,11 +1622,17 @@ export default {
   "The logical volume is created exactly with the given size": [
     "El volumen lógico se crea exactamente con el tamaño proporcionado"
   ],
+  "The maximum must be a number followed by a unit like GiB or GB": [
+    "El máximo debe ser un número seguido por una unidad como GiB o GB"
+  ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
     "El máximo debe ser un número opcional seguido por una unidad como GiB o Gb"
   ],
   "The minimum cannot be greater than the maximum": [
     "El mínimo no puede ser mayor que el máximo"
+  ],
+  "The minimum must be a number followed by a unit like GiB or GB": [
+    "El mínimo debe ser un número seguido por una unidad como GiB o GB"
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "El mínimo debe ser un número opcionalmente seguido por una unidad como GiB o Gb"
@@ -1799,6 +1847,9 @@ export default {
   "Use available space": [
     "Utilice el espacio disponible"
   ],
+  "Use for installation only": [
+    "Usar solo para la instalación"
+  ],
   "Use for the selected product too": [
     "Usar también para el producto seleccionado"
   ],
@@ -1903,6 +1954,9 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Se conectará a una red pública sin cifrado. Es posible que sus datos no estén seguros."
+  ],
+  "Your system is rebooting": [
+    "Su sistema se está reiniciando"
   ],
   "ZFCP": [
     "ZFCP"

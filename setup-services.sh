@@ -132,7 +132,7 @@ fi
 # Rust service, CLI and auto-installation.
 
 # Only install cargo if it is not available (avoid conflicts with rustup)
-which cargo || $SUDO $ZYPPER install cargo
+type cargo || $SUDO $ZYPPER install cargo
 
 # Packages required by Rust code (see ./rust/package/agama.spec)
 $SUDO $ZYPPER install \

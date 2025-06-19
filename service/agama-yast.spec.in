@@ -1,7 +1,7 @@
 #
 # spec file for package agama-yast
 #
-# Copyright (c) 2024 SUSE LLC
+# Copyright (c) 2024-2025 SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -30,7 +30,7 @@ Requires:       rubygem(agama-yast)
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  ruby-macros >= 5
 
-URL:            https://github.com/openSUSE/agama
+URL:            https://github.com/agama-project/agama
 Source:         %{mod_full_name}.gem
 Source1:        po.tar.bz2
 Source2:        install_translations.sh
