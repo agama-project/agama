@@ -25,6 +25,7 @@ use std::{
 };
 
 use serde::{Deserialize, Serialize};
+use strum::{EnumIter, IntoEnumIterator};
 
 use super::ScriptError;
 use crate::file_source::{FileSource, WithFileSource};
@@ -46,7 +47,15 @@ macro_rules! impl_with_file_source {
 }
 
 #[derive(
-    Debug, Clone, Copy, PartialEq, strum::Display, Serialize, Deserialize, utoipa::ToSchema,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    strum::Display,
+    EnumIter,
+    Serialize,
+    Deserialize,
+    utoipa::ToSchema,
 )]
 #[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
@@ -312,10 +321,13 @@ impl ScriptsRepository {
 
     /// Removes all the scripts from the repository.
     pub fn clear(&mut self) -> Result<(), ScriptError> {
-        self.scripts.clear();
-        if self.workdir.exists() {
-            std::fs::remove_dir_all(&self.workdir)?;
+        for group in ScriptsGroup::iter() {
+            let path = self.workdir.join(group.to_string());
+            if path.exists() {
+                std::fs::remove_dir_all(path)?;
+            }
         }
+        self.scripts.clear();
         Ok(())
     }
 
@@ -457,9 +469,15 @@ mod test {
         let script = Script::Pre(PreScript { base });
         repo.add(script).expect("add the script to the repository");
 
+        let autoyast_path = tmp_dir.path().join("autoyast");
+        std::fs::create_dir(&autoyast_path).unwrap();
+
         let script_path = tmp_dir.path().join("pre").join("test");
         assert!(script_path.exists());
         _ = repo.clear();
         assert!(!script_path.exists());
+
+        // the directory for AutoYaST scripts is not removed
+        assert!(autoyast_path.exists())
     }
 }
