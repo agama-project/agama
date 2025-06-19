@@ -37,14 +37,6 @@ module Agama
   # TBD:
   # * WAITING (?)
   class Ipmi
-    class << self
-      attr_reader :current
-
-      def setup(logger)
-        @current = Ipmi.new(logger)
-      end
-    end
-
     # @return [Logger]
     attr_reader :logger
 
@@ -83,7 +75,7 @@ module Agama
       File.exist?("/dev/ipmi0") && File.exist?("/usr/bin/ipmitool")
     end
 
-    # Sends an event to IPMI
+    # Sends an event to IPMI when /dev/ipmi0 device is available
     #
     # Events are 7B long but differs only in the command code.
     #

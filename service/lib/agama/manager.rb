@@ -72,9 +72,9 @@ module Agama
       @installation_phase = InstallationPhase.new
       @service_status_recorder = ServiceStatusRecorder.new
       @service_status = DBus::ServiceStatus.new.busy
+      @ipmi = Ipmi.new(logger)
 
       on_progress_change { logger.info progress.to_s }
-      Ipmi.setup(logger)
     end
 
     # Runs the startup phase
@@ -117,7 +117,7 @@ module Agama
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def install_phase
       service_status.busy
-      Ipmi.current.started
+      @ipmi.started
 
       installation_phase.install
       start_progress_with_descriptions(
@@ -148,11 +148,11 @@ module Agama
         end
       end
 
-      Ipmi.current.finished
+      @ipmi.finished
 
       logger.info("Install phase done")
     rescue StandardError => e
-      Ipmi.current.failed
+      @ipmi.failed
       logger.error "Installation error: #{e.inspect}. Backtrace: #{e.backtrace}"
     ensure
       service_status.idle
