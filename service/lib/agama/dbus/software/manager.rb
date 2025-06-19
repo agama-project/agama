@@ -66,6 +66,30 @@ module Agama
           backend.issues
         end
 
+        def only_required
+          case backend.proposal.only_required
+          when nil then 0
+          when false then 1
+          when true then 2
+          else
+            @logger.warn(
+              "Unexpected value in only_required #{backend.proposal.only_required.inspect}"
+            )
+            0
+          end
+        end
+
+        def only_required=(flag)
+          value = case flag
+          when 0 then nil
+          when 1 then false
+          when 2 then true
+          else
+            @logger.warn "Unexpected value in only_required #{flag.inspect}"
+          end
+          backend.proposal.only_required = value
+        end
+
         SOFTWARE_INTERFACE = "org.opensuse.Agama.Software1"
         private_constant :SOFTWARE_INTERFACE
 
@@ -187,30 +211,6 @@ module Agama
           busy_while do
             backend.locale = locale
           end
-        end
-
-        def only_required
-          case backend.proposal.only_required
-          when nil then 0
-          when false then 1
-          when true then 2
-          else
-            @logger.warn(
-              "Unexpected value in only_required #{backend.proposal.only_required.inspect}"
-            )
-            0
-          end
-        end
-
-        def only_required=(flag)
-          value = case flag
-          when 0 then nil
-          when 1 then false
-          when 2 then true
-          else
-            @logger.warn "Unexpected value in only_required #{flag.inspect}"
-          end
-          backend.proposal.only_required = value
         end
 
         def ssl_fingerprints

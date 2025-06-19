@@ -80,7 +80,7 @@ module Agama
         @addon_products = []
         @conflicts = []
         @conflicts_change_callbacks = []
-        @only_required = false
+        @only_required = nil
       end
 
       # Adds the given list of resolvables to the proposal
@@ -201,7 +201,7 @@ module Agama
         Yast::Pkg.SetAdditionalLocales(additional)
 
         Yast::Pkg.SetSolverFlags("ignoreAlreadyRecommended" => false,
-          "onlyRequires" => @only_required)
+          "onlyRequires" => !!@only_required)
       end
 
       # Selects the base product
