@@ -20,22 +20,21 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Split, Flex, Label, Divider } from "@patternfly/react-core";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
-import MenuDeviceDescription from "./MenuDeviceDescription";
+import { Divider } from "@patternfly/react-core";
 import { useCandidateDevices, useLongestDiskTitle } from "~/hooks/storage/system";
 import { useModel } from "~/hooks/storage/model";
 import { useAddDrive } from "~/hooks/storage/drive";
 import { useAddReusedMdRaid } from "~/hooks/storage/md-raid";
-import { deviceLabel } from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 import { StorageDevice } from "~/types/storage";
+import DeviceSelectorModal from "./DeviceSelectorModal";
 
-type DisksDrillDownMenuItemProps = {
+type AddDeviceMenuItemProps = {
   /** Available devices to be chosen */
   devices: StorageDevice[];
   /** The total amount of drives and RAIDs already configured */
@@ -47,13 +46,16 @@ type DisksDrillDownMenuItemProps = {
 /**
  * Internal component holding the logic for rendering the disks drilldown menu
  */
-const DisksDrillDownMenuItem = ({
+const AddDeviceMenuItem = ({
   usedCount,
   devices,
   onDeviceClick,
-}: DisksDrillDownMenuItemProps): React.ReactNode => {
-  const isDisabled = !devices.length;
+}: AddDeviceMenuItemProps): React.ReactNode => {
+  const [deviceSelectorOpen, setDeviceSelectorOpen] = useState(false);
+  const openDeviceSelector = () => setDeviceSelectorOpen(true);
+  const closeDeviceSelector = () => setDeviceSelectorOpen(false);
 
+  const isDisabled = !devices.length;
   const disabledDescription = _("Already using all available disks");
   const enabledDescription = usedCount
     ? sprintf(
@@ -70,31 +72,27 @@ const DisksDrillDownMenuItem = ({
     : _("Select a disk to define partitions");
 
   return (
-    <MenuButtonItem
-      aria-label={_("Add device menu")}
-      isDisabled={isDisabled}
-      description={isDisabled ? disabledDescription : enabledDescription}
-      items={devices.map((device) => (
-        <MenuButtonItem
-          key={device.sid}
-          description={<MenuDeviceDescription device={device} />}
-          onClick={() => onDeviceClick(device)}
-        >
-          <Split hasGutter>
-            {deviceLabel(device, true)}
-            <Flex columnGap={{ default: "columnGapXs" }}>
-              {device.systems.map((s, i) => (
-                <Label key={i} isCompact>
-                  {s}
-                </Label>
-              ))}
-            </Flex>
-          </Split>
-        </MenuButtonItem>
-      ))}
-    >
-      {title}
-    </MenuButtonItem>
+    <>
+      <MenuButtonItem
+        aria-label={_("Add device menu")}
+        isDisabled={isDisabled}
+        description={isDisabled ? disabledDescription : enabledDescription}
+        onClick={openDeviceSelector}
+      >
+        {title}
+      </MenuButtonItem>
+      {deviceSelectorOpen && (
+        <DeviceSelectorModal
+          devices={devices}
+          title={title}
+          onCancel={closeDeviceSelector}
+          onAccept={([device]) => {
+            onDeviceClick(device.name);
+            closeDeviceSelector();
+          }}
+        />
+      )}
+    </>
   );
 };
 
@@ -110,8 +108,8 @@ const DisksDrillDownMenuItem = ({
  */
 export default function ConfigureDeviceMenu(): React.ReactNode {
   const navigate = useNavigate();
-  const model = useModel({ suspense: true });
 
+  const model = useModel({ suspense: true });
   const addDrive = useAddDrive();
   const addReusedMdRaid = useAddReusedMdRaid();
   const allDevices = useCandidateDevices();
@@ -137,7 +135,7 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
         popperProps: { minWidth: `min(${longestTitle * 0.75}em, 75vw)`, width: "max-content" },
       }}
       items={[
-        <DisksDrillDownMenuItem
+        <AddDeviceMenuItem
           key="select-disk-option"
           usedCount={usedDevicesCount}
           devices={devices}
