@@ -106,13 +106,18 @@ pub fn connection_to_dbus<'a>(
     result.insert("match", match_config_to_dbus(&conn.match_config));
 
     if conn.is_ethernet() {
-        let ethernet_config = HashMap::from([
+        let mut ethernet_config = HashMap::from([
             (
                 "assigned-mac-address",
-                Value::new(conn.mac_address.to_string()),
+                Value::new(conn.custom_mac_address.to_string()),
             ),
             ("mtu", Value::new(conn.mtu)),
         ]);
+
+        if let Some(mac) = conn.mac_address {
+            ethernet_config.insert("mac-address", Value::new(mac.as_bytes()));
+        }
+
         result.insert(ETHERNET_KEY, ethernet_config);
     }
 
@@ -125,9 +130,13 @@ pub fn connection_to_dbus<'a>(
                     ("mtu", Value::new(conn.mtu)),
                     (
                         "assigned-mac-address",
-                        Value::new(conn.mac_address.to_string()),
+                        Value::new(conn.custom_mac_address.to_string()),
                     ),
                 ]));
+
+                if let Some(mac) = conn.mac_address {
+                    wireless_dbus_key.insert("mac-address", Value::new(mac.as_bytes()));
+                }
             }
 
             result.extend(wireless_dbus);
@@ -810,10 +819,12 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Result<Connection, NmErr
     }
 
     if let Some(ethernet_config) = conn.get(ETHERNET_KEY) {
-        base_connection.mac_address = mac_address_from_dbus(ethernet_config)?;
+        base_connection.mac_address = mac_address6_from_dbus(ethernet_config)?;
+        base_connection.custom_mac_address = custom_mac_address_from_dbus(ethernet_config)?;
         base_connection.mtu = mtu_from_dbus(ethernet_config);
     } else if let Some(wireless_config) = conn.get(WIRELESS_KEY) {
-        base_connection.mac_address = mac_address_from_dbus(wireless_config)?;
+        base_connection.mac_address = mac_address6_from_dbus(wireless_config)?;
+        base_connection.custom_mac_address = custom_mac_address_from_dbus(wireless_config)?;
         base_connection.mtu = mtu_from_dbus(wireless_config);
     }
 
@@ -822,7 +833,32 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Result<Connection, NmErr
     Ok(base_connection)
 }
 
-fn mac_address_from_dbus(config: &HashMap<String, OwnedValue>) -> Result<MacAddress, NmError> {
+fn mac_address6_from_dbus(
+    config: &HashMap<String, OwnedValue>,
+) -> Result<Option<MacAddr6>, NmError> {
+    if let Some(mac) = get_optional_property::<zvariant::Array>(config, "mac-address")? {
+        let mac: Vec<u8> = mac
+            .iter()
+            .map(|u| u.downcast_ref::<u8>())
+            .collect::<Result<Vec<u8>, _>>()?;
+
+        // FIXME: properly handle the failing case
+        Ok(Some(MacAddr6::new(
+            *mac.first().unwrap(),
+            *mac.get(1).unwrap(),
+            *mac.get(2).unwrap(),
+            *mac.get(3).unwrap(),
+            *mac.get(4).unwrap(),
+            *mac.get(5).unwrap(),
+        )))
+    } else {
+        Ok(None)
+    }
+}
+
+fn custom_mac_address_from_dbus(
+    config: &HashMap<String, OwnedValue>,
+) -> Result<MacAddress, NmError> {
     let Ok(mac_address) = get_property::<String>(config, "assigned-mac-address") else {
         return Ok(MacAddress::Unset);
     };
@@ -1414,6 +1450,7 @@ mod test {
         },
     };
     use cidr::IpInet;
+    use macaddr::MacAddr6;
     use std::{collections::HashMap, net::IpAddr, str::FromStr};
     use uuid::Uuid;
     use zbus::zvariant::{self, Array, Dict, OwnedValue, Value};
@@ -1504,7 +1541,10 @@ mod test {
         let match_config = connection.match_config;
         assert_eq!(match_config.kernel, vec!["pci-0000:00:19.0"]);
 
-        assert_eq!(connection.mac_address.to_string(), "12:34:56:78:9A:BC");
+        assert_eq!(
+            connection.mac_address,
+            Some(MacAddr6::from_str("12:34:56:78:9A:BC").unwrap())
+        );
 
         assert_eq!(connection.mtu, 9000_u32);
 
@@ -1582,11 +1622,15 @@ mod test {
     fn test_connection_from_dbus_wireless() -> anyhow::Result<()> {
         let uuid = Uuid::new_v4().to_string();
         let connection_section = HashMap::from([hi("id", "wlan0")?, hi("uuid", uuid)?]);
+        let mac = MacAddr6::from_str("13:45:67:89:AB:CD")?;
 
         let wireless_section = HashMap::from([
             hi("mode", "infrastructure")?,
             hi("ssid", "agama".as_bytes())?,
-            hi("assigned-mac-address", "13:45:67:89:AB:CD")?,
+            hi(
+                "mac-address",
+                vec![19_u8, 69_u8, 103_u8, 137_u8, 171_u8, 205_u8],
+            )?,
             hi("band", "a")?,
             hi("channel", 32_u32)?,
             hi("bssid", vec![18_u8, 52_u8, 86_u8, 120_u8, 154_u8, 188_u8])?,
@@ -1611,7 +1655,10 @@ mod test {
         ]);
 
         let connection = connection_from_dbus(dbus_conn).unwrap();
-        assert_eq!(connection.mac_address.to_string(), "13:45:67:89:AB:CD");
+        assert_eq!(
+            connection.mac_address,
+            Some(MacAddr6::from_str("13:45:67:89:AB:CD").unwrap())
+        );
         assert!(matches!(connection.config, ConnectionConfig::Wireless(_)));
         if let ConnectionConfig::Wireless(wireless) = &connection.config {
             assert_eq!(wireless.ssid, SSID(vec![97, 103, 97, 109, 97]));
@@ -2128,7 +2175,7 @@ mod test {
 
         let updated = Connection {
             interface: Some("".to_string()),
-            mac_address: MacAddress::Unset,
+            mac_address: None,
             ..Default::default()
         };
         let updated = connection_to_dbus(&updated, None, semver::Version::new(1, 50, 0));
@@ -2185,7 +2232,7 @@ mod test {
             }),
             ..Default::default()
         };
-        let mac_address = MacAddress::from_str("FD:CB:A9:87:65:43").unwrap();
+        let mac_address = Some(MacAddr6::from_str("FD:CB:A9:87:65:43").unwrap());
         Connection {
             id: "agama".to_string(),
             ip_config,
