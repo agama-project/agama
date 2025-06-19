@@ -24,11 +24,16 @@ import React from "react";
 import { Content, Radio, RadioProps } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
-type RadioEnhancedProps = Omit<RadioProps, "ref" | "label"> & {
-  /** Must describe the isChecked="true" state. */
-  label: React.ReactNode;
-};
+type RadioEnhancedProps = Omit<RadioProps, "ref">;
 
+/**
+ * A wrapper around PF/Radio component, intended to ensure a consistent
+ * appearance across Agama without code repetition.
+ *
+ * It automatically applies a slightly larger font size to the `label`.
+ * Additionally, when the radio button is checked, the label becomes bold,
+ * providing a clear visual cue for the selected state.
+ */
 export default function RadioEnhanced({ label, isChecked, ...props }: RadioEnhancedProps) {
   return (
     <Radio
