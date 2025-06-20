@@ -88,6 +88,8 @@ module Agama
             @logger.warn "Unexpected value in only_required #{flag.inspect}"
           end
           backend.proposal.only_required = value
+          # propose again after changing solver flag
+          propose
         end
 
         SOFTWARE_INTERFACE = "org.opensuse.Agama.Software1"
