@@ -40,8 +40,20 @@ import { Connection, Device } from "~/types/network";
 import Radio from "~/components/core/RadioEnhanced";
 
 type DevicesSelectProps = Omit<FormSelectProps, "children" | "ref"> & {
+  /**
+   * The key from the device object whose value should be used for a select value
+   */
   valueKey: keyof Device;
 };
+
+/**
+ * A specialized `FormSelect` component for displaying and selecting network
+ * devices.
+ *
+ * The options' labels are formatted as "Device Name - MAC Address" or "MAC
+ * Address - Device Name" based on the `valueKey` prop, ensuring both key
+ * identifiers are visible.
+ */
 function DevicesSelect({
   value,
   valueKey,
@@ -69,8 +81,16 @@ function DevicesSelect({
  * Represents the form state.
  */
 type FormState = {
+  /**
+   * The  binding mode for the connection
+   *  - "none":  No specific interface binding.
+   *  - "mac":   Bind to a specific MAC address.
+   *  - "iface": Bind to a specific interface name.
+   */
   mode: "none" | "mac" | "iface";
+  /** The selected interface name for "iface" mode */
   iface: Device["name"];
+  /** The selected MAC address for "mac" mode */
   mac: Device["macAddress"];
 };
 
@@ -82,6 +102,9 @@ type FormAction =
   | { type: "SET_IFACE"; iface: FormState["iface"] }
   | { type: "SET_MAC"; mac: FormState["mac"] };
 
+/**
+ * Reducer for form state updates.
+ */
 const formReducer = (state: FormState, action: FormAction): FormState => {
   switch (action.type) {
     case "SET_MODE": {
@@ -98,6 +121,9 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
   }
 };
 
+/**
+ * Calculates the initial binding mode for the form based on connection data.
+ */
 const initialMode = (connection: Connection): FormState["mode"] => {
   if (connection.macAddress) {
     return "mac";
@@ -108,21 +134,32 @@ const initialMode = (connection: Connection): FormState["mode"] => {
   }
 };
 
+/**
+ * Allows to configure how a network connection is associated with a specific
+ * network interface.
+ *
+ * Users can choose to bind by interface name, MAC address, or allow the
+ * connection on any interface.
+ */
 export default function BindingSettingsForm() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { mutateAsync: updateConnection } = useConnectionMutation();
   const connection = useConnection(id);
+  const devices = useNetworkDevices();
+  const navigate = useNavigate();
   const [state, dispatch] = useReducer(formReducer, {
     mode: initialMode(connection),
-    mac: connection.macAddress,
-    iface: connection.iface,
+    mac: connection.macAddress || devices[0].macAddress,
+    iface: connection.iface || devices[0].name,
   });
 
   const onSubmitForm = (e) => {
     e.preventDefault();
 
-    const updatedConnection = new Connection(connection.id, {
+    const { id, ...connectionOptions } = connection;
+
+    const updatedConnection = new Connection(id, {
+      ...connectionOptions,
       iface: state.mode === "iface" ? state.iface : undefined,
       macAddress: state.mode === "mac" ? state.mac : undefined,
     });
@@ -165,7 +202,7 @@ export default function BindingSettingsForm() {
               body={
                 <Stack hasGutter>
                   <DevicesSelect
-                    aria-label={_("Available newtwork devices")}
+                    aria-label={_("Choose device to bind by name")}
                     valueKey="name"
                     value={state.iface}
                     name="device-limit-name"
@@ -184,7 +221,7 @@ export default function BindingSettingsForm() {
               body={
                 <Stack hasGutter>
                   <DevicesSelect
-                    aria-label={_("Available newtwork devices")}
+                    aria-label={_("Choose device to bind by MAC")}
                     valueKey="macAddress"
                     value={state.mac}
                     name="mac-limit-name"
