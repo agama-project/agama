@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockParams, mockRoutes, plainRender } from "~/test-utils";
+import { installerRender, mockParams } from "~/test-utils";
 import BindingSettingsForm from "./BindingSettingsForm";
 import {
   Connection,
