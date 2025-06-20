@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 20 14:57:08 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Install "gdm-systemd" and enable "gdm.service" to start the
+  graphical desktop, this is a new way for starting display managers
+
+-------------------------------------------------------------------
 Thu Jun 19 09:06:50 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Add hyper-v on x86_64 and aarch64 only (related to bsc#1236961).
