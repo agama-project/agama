@@ -49,9 +49,8 @@ const mockDevice: Device = {
   routes6: [],
 };
 
-const mockConnection: Connection = new Connection("Network 1", {
+let mockConnection: Connection = new Connection("Network 1", {
   state: ConnectionState.activated,
-  iface: "enp1s0",
 });
 
 const mockMutation = jest.fn(() => Promise.resolve());
@@ -130,5 +129,58 @@ describe("BindingSettingsForm", () => {
 
     const expected = { ...mockConnection, iface: undefined, macAddress: mockDevice.macAddress };
     expect(mockMutation).toHaveBeenCalledWith(expected);
+  });
+
+  describe("when connection is not bind", () => {
+    it("set 'none' mode checked by default", () => {
+      installerRender(<BindingSettingsForm />);
+      const noBindOption = screen.getByRole("radio", { name: "Any interface" });
+      const byNameOption = screen.getByRole("radio", { name: "Bind to interface name" });
+      const byMacOption = screen.getByRole("radio", { name: "Bind to MAC address" });
+
+      expect(noBindOption).toBeChecked();
+      expect(byNameOption).not.toBeChecked();
+      expect(byMacOption).not.toBeChecked();
+    });
+  });
+
+  describe("when connection is bind to an interface by its name", () => {
+    beforeEach(() => {
+      mockConnection = new Connection("Network 1", {
+        state: ConnectionState.activated,
+        iface: "enp1s0",
+      });
+    });
+
+    it("set 'iface' mode checked by default", () => {
+      installerRender(<BindingSettingsForm />);
+      const noBindOption = screen.getByRole("radio", { name: "Any interface" });
+      const byNameOption = screen.getByRole("radio", { name: "Bind to interface name" });
+      const byMacOption = screen.getByRole("radio", { name: "Bind to MAC address" });
+
+      expect(noBindOption).not.toBeChecked();
+      expect(byNameOption).toBeChecked();
+      expect(byMacOption).not.toBeChecked();
+    });
+  });
+
+  describe("when connection is bind to an interface by its MAC address", () => {
+    beforeEach(() => {
+      mockConnection = new Connection("Network 1", {
+        state: ConnectionState.activated,
+        macAddress: "52:54:00:46:2A:F9",
+      });
+    });
+
+    it("set 'mac' mode checked by default", () => {
+      installerRender(<BindingSettingsForm />);
+      const noBindOption = screen.getByRole("radio", { name: "Any interface" });
+      const byNameOption = screen.getByRole("radio", { name: "Bind to interface name" });
+      const byMacOption = screen.getByRole("radio", { name: "Bind to MAC address" });
+
+      expect(noBindOption).not.toBeChecked();
+      expect(byNameOption).not.toBeChecked();
+      expect(byMacOption).toBeChecked();
+    });
   });
 });
