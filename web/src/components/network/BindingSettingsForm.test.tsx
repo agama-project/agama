@@ -66,6 +66,14 @@ jest.mock("~/queries/network", () => ({
   useConnectionMutation: () => ({ mutateAsync: mockMutation }),
 }));
 
+const getOptions = () => {
+  const noBind = screen.getByRole("radio", { name: "Any interface" });
+  const byName = screen.getByRole("radio", { name: "Bind to interface name" });
+  const byMac = screen.getByRole("radio", { name: "Bind to MAC address" });
+
+  return { noBind, byName, byMac };
+};
+
 describe("BindingSettingsForm", () => {
   beforeEach(() => {
     mockParams(mockConnection.id);
@@ -73,31 +81,29 @@ describe("BindingSettingsForm", () => {
 
   it("offers multiple binding options and disables unselected device selectors", async () => {
     const { user } = installerRender(<BindingSettingsForm />);
-    const noBindOption = screen.getByRole("radio", { name: "Any interface" });
-    const byNameOption = screen.getByRole("radio", { name: "Bind to interface name" });
-    const byMacOption = screen.getByRole("radio", { name: "Bind to MAC address" });
+    const { noBind, byName, byMac } = getOptions();
     const devicesByName = screen.getByRole("combobox", { name: "Choose device to bind by name" });
     const devicesByMac = screen.getByRole("combobox", { name: "Choose device to bind by MAC" });
 
-    await user.click(noBindOption);
+    await user.click(noBind);
     expect(devicesByName).toBeDisabled();
     expect(devicesByMac).toBeDisabled();
 
-    await user.click(byNameOption);
+    await user.click(byName);
     expect(devicesByName).toBeEnabled();
     expect(devicesByMac).toBeDisabled();
 
-    await user.click(byMacOption);
+    await user.click(byMac);
     expect(devicesByName).toBeDisabled();
     expect(devicesByMac).toBeEnabled();
   });
 
   it("allows configuring connection with no binding", async () => {
     const { user } = installerRender(<BindingSettingsForm />);
-    const noBindOption = screen.getByRole("radio", { name: "Any interface" });
+    const { noBind } = getOptions();
     const acceptButton = screen.getByRole("button", { name: "Accept" });
 
-    await user.click(noBindOption);
+    await user.click(noBind);
     await user.click(acceptButton);
 
     // Sadly, expect.objectContaining does not match properties set to
@@ -109,10 +115,10 @@ describe("BindingSettingsForm", () => {
 
   it("supports binding connection to a specific interface name", async () => {
     const { user } = installerRender(<BindingSettingsForm />);
-    const byNameOption = screen.getByRole("radio", { name: "Bind to interface name" });
+    const { byName } = getOptions();
     const acceptButton = screen.getByRole("button", { name: "Accept" });
 
-    await user.click(byNameOption);
+    await user.click(byName);
     await user.click(acceptButton);
 
     const expected = { ...mockConnection, iface: mockDevice.name, macAddress: undefined };
@@ -121,10 +127,10 @@ describe("BindingSettingsForm", () => {
 
   it("supports binding connection to a specific MAC address", async () => {
     const { user } = installerRender(<BindingSettingsForm />);
-    const byMacOption = screen.getByRole("radio", { name: "Bind to MAC address" });
+    const { byMac } = getOptions();
     const acceptButton = screen.getByRole("button", { name: "Accept" });
 
-    await user.click(byMacOption);
+    await user.click(byMac);
     await user.click(acceptButton);
 
     const expected = { ...mockConnection, iface: undefined, macAddress: mockDevice.macAddress };
@@ -134,13 +140,11 @@ describe("BindingSettingsForm", () => {
   describe("when connection is not bind", () => {
     it("set 'none' mode checked by default", () => {
       installerRender(<BindingSettingsForm />);
-      const noBindOption = screen.getByRole("radio", { name: "Any interface" });
-      const byNameOption = screen.getByRole("radio", { name: "Bind to interface name" });
-      const byMacOption = screen.getByRole("radio", { name: "Bind to MAC address" });
+      const { noBind, byName, byMac } = getOptions();
 
-      expect(noBindOption).toBeChecked();
-      expect(byNameOption).not.toBeChecked();
-      expect(byMacOption).not.toBeChecked();
+      expect(noBind).toBeChecked();
+      expect(byName).not.toBeChecked();
+      expect(byMac).not.toBeChecked();
     });
   });
 
@@ -154,13 +158,11 @@ describe("BindingSettingsForm", () => {
 
     it("set 'iface' mode checked by default", () => {
       installerRender(<BindingSettingsForm />);
-      const noBindOption = screen.getByRole("radio", { name: "Any interface" });
-      const byNameOption = screen.getByRole("radio", { name: "Bind to interface name" });
-      const byMacOption = screen.getByRole("radio", { name: "Bind to MAC address" });
+      const { noBind, byName, byMac } = getOptions();
 
-      expect(noBindOption).not.toBeChecked();
-      expect(byNameOption).toBeChecked();
-      expect(byMacOption).not.toBeChecked();
+      expect(noBind).not.toBeChecked();
+      expect(byName).toBeChecked();
+      expect(byMac).not.toBeChecked();
     });
   });
 
@@ -174,13 +176,11 @@ describe("BindingSettingsForm", () => {
 
     it("set 'mac' mode checked by default", () => {
       installerRender(<BindingSettingsForm />);
-      const noBindOption = screen.getByRole("radio", { name: "Any interface" });
-      const byNameOption = screen.getByRole("radio", { name: "Bind to interface name" });
-      const byMacOption = screen.getByRole("radio", { name: "Bind to MAC address" });
+      const { noBind, byName, byMac } = getOptions();
 
-      expect(noBindOption).not.toBeChecked();
-      expect(byNameOption).not.toBeChecked();
-      expect(byMacOption).toBeChecked();
+      expect(noBind).not.toBeChecked();
+      expect(byName).not.toBeChecked();
+      expect(byMac).toBeChecked();
     });
   });
 });
