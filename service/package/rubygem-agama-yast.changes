@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jun 20 08:03:13 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- jsc#PED-12285
+  - initial implementation for installer state status report via
+    IPMI
+
+-------------------------------------------------------------------
 Mon Jun 16 14:26:06 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Initial support for sorting storage devices when searching them
