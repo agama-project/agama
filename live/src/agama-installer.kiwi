@@ -163,7 +163,6 @@
         <archive name="live-root.tar.xz"/>
         <!-- IPMI support -->
         <package name="ipmitool" />
-        <package name="OpenIPMI"/>
     </packages>
 
     <!-- packages for local installation (desktop, browser, etc.) -->
