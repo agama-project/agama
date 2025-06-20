@@ -83,6 +83,7 @@ impl SoftwareHTTPClient {
             patterns: Some(patterns),
             packages: None,
             extra_repositories: None,
+            only_required: None,
         };
         self.set_config(&config).await
     }

@@ -338,4 +338,25 @@ impl<'a> SoftwareClient<'a> {
             .await?;
         Ok(packages)
     }
+
+    /// Sets onlyRequired flag for proposal.
+    ///
+    /// * `value`: if flag is enabled or not.
+    pub async fn set_only_required(&self, value: bool) -> Result<(), ServiceError> {
+        let dbus_value = if value { 2 } else { 1 };
+        self.software_proxy.set_only_required(dbus_value).await?;
+        Ok(())
+    }
+
+    /// Gets onlyRequired flag for proposal.
+    pub async fn get_only_required(&self) -> Result<Option<bool>, ServiceError> {
+        let dbus_value = self.software_proxy.only_required().await?;
+        let res = match dbus_value {
+            0 => None,
+            1 => Some(false),
+            2 => Some(true),
+            _ => None, // should not happen
+        };
+        Ok(res)
+    }
 }
