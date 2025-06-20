@@ -41,6 +41,7 @@ import {
   Split,
   SplitItem,
   Stack,
+  StackItem,
   TextInput,
 } from "@patternfly/react-core";
 import { NestedContent, Page, SelectWrapper as Select, SubtleContent } from "~/components/core/";
@@ -183,7 +184,8 @@ function toFormValue(partitionConfig: apiModel.Partition): FormValue {
     return "custom";
   };
 
-  const size = (value: number | undefined): string => (value ? deviceSize(value) : NO_VALUE);
+  const size = (value: number | undefined): string =>
+    value ? deviceSize(value, { exact: true }) : NO_VALUE;
 
   return {
     mountPoint: mountPoint(),
@@ -783,6 +785,22 @@ function CustomSizeOptions(): React.ReactNode {
   );
 }
 
+/**
+ * Tip for the approximated size that will be shown by the UI (e.g., in the result).
+ */
+function ApproxSize({ size }: { size: string | null }): React.ReactNode {
+  if (!size) return null;
+
+  const minify = (size: string): string => size.replaceAll(" ", "");
+  const approxSize = deviceSize(parseToBytes(size));
+
+  if (minify(approxSize) === minify(size)) return null;
+  if (parseToBytes(approxSize) === parseToBytes(size)) return null;
+
+  // TRANSLATORS: %s is a disk size (e.g., "10 GiB").
+  return sprintf(_("approx. %s"), approxSize);
+}
+
 type CustomSizeProps = {
   value: FormValue;
   onChange: (size: SizeRange) => void;
@@ -837,37 +855,59 @@ function CustomSize({ value, onChange }: CustomSizeProps) {
         <Flex>
           <FlexItem>
             <FormGroup fieldId="minSizeValue" label={_("Minimum")}>
-              <TextInput
-                id="minSizeValue"
-                className="w-14ch"
-                value={value.minSize}
-                aria-label={_("Minimum size value")}
-                onChange={(_, v) => changeMinSize(v)}
-              />
+              <Stack>
+                <StackItem>
+                  <TextInput
+                    id="minSizeValue"
+                    className="w-14ch"
+                    value={value.minSize}
+                    aria-label={_("Minimum size value")}
+                    onChange={(_, v) => changeMinSize(v)}
+                  />
+                </StackItem>
+                {!error && (
+                  <StackItem>
+                    <ApproxSize size={value.minSize} />
+                  </StackItem>
+                )}
+              </Stack>
             </FormGroup>
           </FlexItem>
           <FlexItem>
             <FormGroup fieldId="maxSize" label={_("Maximum")}>
-              <Split hasGutter>
-                <Select
-                  id="maxSize"
-                  value={option}
-                  label={<CustomSizeOptionLabel value={option} />}
-                  onChange={changeOption}
-                  toggleName={_("Maximum size mode")}
-                >
-                  <CustomSizeOptions />
-                </Select>
+              <Flex>
+                <FlexItem>
+                  <Select
+                    id="maxSize"
+                    value={option}
+                    label={<CustomSizeOptionLabel value={option} />}
+                    onChange={changeOption}
+                    toggleName={_("Maximum size mode")}
+                  >
+                    <CustomSizeOptions />
+                  </Select>
+                </FlexItem>
                 {option === "range" && (
-                  <TextInput
-                    id="maxSizeValue"
-                    className="w-14ch"
-                    value={value.maxSize}
-                    aria-label={_("Maximum size value")}
-                    onChange={(_, v) => changeMaxSize(v)}
-                  />
+                  <FlexItem>
+                    <Stack>
+                      <StackItem>
+                        <TextInput
+                          id="maxSizeValue"
+                          className="w-14ch"
+                          value={value.maxSize}
+                          aria-label={_("Maximum size value")}
+                          onChange={(_, v) => changeMaxSize(v)}
+                        />
+                      </StackItem>
+                      {!error && (
+                        <StackItem>
+                          <ApproxSize size={value.maxSize} />
+                        </StackItem>
+                      )}
+                    </Stack>
+                  </FlexItem>
                 )}
-              </Split>
+              </Flex>
             </FormGroup>
           </FlexItem>
         </Flex>
