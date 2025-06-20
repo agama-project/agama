@@ -171,7 +171,7 @@
         <package name="fonts-config"/>
         <package name="xauth"/>
         <package name="MozillaFirefox"/>
-        <package name="gdm"/>
+        <package name="gdm-systemd"/>
         <package name="gnome-shell"/>
         <package name="gnome-session-wayland"/>
         <package name="gnome-kiosk"/>
