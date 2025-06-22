@@ -1606,7 +1606,7 @@ export default {
     "安裝將會佔用 %s，包括："
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
-    ""
+    "安裝程式介面已不再可用，因此您可以安全關閉此視窗。"
   ],
   "The installer requires [root] user privileges.": [
     "安裝程式要求您具有 [root] 使用者權限。"
@@ -1954,7 +1954,7 @@ export default {
     "您將連接至未加密的公用網路。資料可能存在安全風險。"
   ],
   "Your system is rebooting": [
-    ""
+    "系統正在重新開機"
   ],
   "ZFCP": [
     "ZFCP"
