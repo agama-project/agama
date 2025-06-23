@@ -256,12 +256,26 @@ module Agama
 
       # Adds the required packages to the list of resolvables to install
       def add_packages
-        devicegraph = Y2Storage::StorageManager.instance.staging
         packages = devicegraph.used_features.pkg_list
+        packages += ISCSI::Manager::PACKAGES if need_iscsi?
         return if packages.empty?
 
         logger.info "Selecting these packages for installation: #{packages}"
         Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :package, packages)
+      end
+
+      # Whether iSCSI is needed in the target system.
+      #
+      # @return [Boolean]
+      def need_iscsi?
+        iscsi.configured? || devicegraph.used_features.any? { |f| f.id == :UF_ISCSI }
+      end
+
+      # Staging devicegraph
+      #
+      # @return [Y2Storage::Devicegraph]
+      def devicegraph
+        Y2Storage::StorageManager.instance.staging
       end
 
       # Prepares the storage devices for installation

@@ -1,4 +1,23 @@
 -------------------------------------------------------------------
+Mon Jun 23 07:22:22 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- jsc#PED-12285
+  - initial implementation for installer state status report via
+    IPMI
+
+-------------------------------------------------------------------
+Thu Jun 19 10:21:13 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add missing steps for iSCSI installation
+  (gh#agama-project/agama#2473).
+
+-------------------------------------------------------------------
+Wed Jun 18 12:28:14 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Disable local installation repositories instead of removing them
+  (bsc#1243064)
+
+-------------------------------------------------------------------
 Wed Jun 18 07:17:23 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Preserve AutoYaST pre-scripts artifacts (bsc#1243776, gh#agama-project/agama#2344).

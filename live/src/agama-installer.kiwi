@@ -108,7 +108,7 @@
         <package name="systemd"/>
         <package name="procps"/>
         <package name="iputils"/>
-        <package name="hyper-v"/>
+        <package name="hyper-v" arch="aarch64,x86_64"/>
         <package name="vim"/>
         <package name="vim-data"/>
         <package name="grub2"/>
@@ -161,6 +161,8 @@
         <!-- it can be used by users in AutoYaST pre-scripts -->
         <package name="perl-XML-Simple"/>
         <archive name="live-root.tar.xz"/>
+        <!-- IPMI support -->
+        <package name="ipmitool" />
     </packages>
 
     <!-- packages for local installation (desktop, browser, etc.) -->
@@ -171,7 +173,7 @@
         <package name="fonts-config"/>
         <package name="xauth"/>
         <package name="MozillaFirefox"/>
-        <package name="gdm"/>
+        <package name="gdm-systemd"/>
         <package name="gnome-shell"/>
         <package name="gnome-session-wayland"/>
         <package name="gnome-kiosk"/>
