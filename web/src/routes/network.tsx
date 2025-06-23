@@ -27,6 +27,7 @@ import {
   WifiNetworkPage,
   WiredConnectionPage,
 } from "~/components/network";
+import BindingSettingsForm from "~/components/network/BindingSettingsForm";
 import { Route } from "~/types/routes";
 import { NETWORK as PATHS } from "~/routes/paths";
 import { N_ } from "~/i18n";
@@ -42,6 +43,10 @@ const routes = (): Route => ({
     {
       path: PATHS.editConnection,
       element: <IpSettingsForm />,
+    },
+    {
+      path: PATHS.editBindingSettings,
+      element: <BindingSettingsForm />,
     },
     {
       path: PATHS.wifiNetwork,
