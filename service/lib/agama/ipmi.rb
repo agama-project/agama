@@ -33,9 +33,6 @@ module Agama
   # * FAILED
   # * FINISHED
   # * ABORTED
-  #
-  # TBD:
-  # * WAITING (?)
   class Ipmi
     # @return [Logger]
     attr_reader :logger
