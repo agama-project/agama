@@ -261,12 +261,25 @@ pub fn merge_dbus_connections<'a>(
     original: &'a OwnedNestedHash,
     updated: &'a NestedHash,
 ) -> Result<NestedHash<'a>, zvariant::Error> {
+    // FIXME: it should contain all the sections and attributes which can be absent and known by
+    // agama in order to allow the user to remove them otherwise the original value will be kept
+    let handled_by_agama: Vec<&str> = vec!["interface-name", "mac-address"];
+
     let mut merged = HashMap::with_capacity(original.len());
     for (key, orig_section) in original {
         let mut inner: HashMap<&str, zbus::zvariant::Value> =
             HashMap::with_capacity(orig_section.len());
+
         for (inner_key, value) in orig_section {
-            inner.insert(inner_key.as_str(), value.try_into()?);
+            if handled_by_agama.contains(&inner_key.as_str()) {
+                tracing::info!(
+                    "Do not insert '{}' from the original section '{}' as it is handled by agama",
+                    &inner_key,
+                    &key
+                );
+            } else {
+                inner.insert(inner_key.as_str(), value.try_into()?);
+            }
         }
         if let Some(upd_section) = updated.get(key.as_str()) {
             for (inner_key, value) in upd_section {
@@ -314,6 +327,10 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
     if let Some(connection) = conn.get_mut("connection") {
         if connection.get("interface-name").is_some_and(is_empty_value) {
             connection.remove("interface-name");
+        }
+
+        if connection.get("mac-address").is_some_and(is_empty_value) {
+            connection.remove("mac-address");
         }
 
         if connection.get("master").is_some_and(is_empty_value) {
@@ -842,15 +859,15 @@ fn mac_address6_from_dbus(
             .map(|u| u.downcast_ref::<u8>())
             .collect::<Result<Vec<u8>, _>>()?;
 
-        // FIXME: properly handle the failing case
-        Ok(Some(MacAddr6::new(
-            *mac.first().unwrap(),
-            *mac.get(1).unwrap(),
-            *mac.get(2).unwrap(),
-            *mac.get(3).unwrap(),
-            *mac.get(4).unwrap(),
-            *mac.get(5).unwrap(),
-        )))
+        if mac.len() != 6 {
+            return Err(NmError::InvalidDBUSValue("mac-address".to_string()));
+        }
+
+        let [a, b, c, d, e, f] = mac[0..6] else {
+            return Err(NmError::InvalidDBUSValue("mac-address".to_string()));
+        };
+
+        Ok(Some(MacAddr6::new(a, b, c, d, e, f)))
     } else {
         Ok(None)
     }
@@ -1541,10 +1558,7 @@ mod test {
         let match_config = connection.match_config;
         assert_eq!(match_config.kernel, vec!["pci-0000:00:19.0"]);
 
-        assert_eq!(
-            connection.mac_address,
-            Some(MacAddr6::from_str("12:34:56:78:9A:BC").unwrap())
-        );
+        assert_eq!(connection.mac_address, None);
 
         assert_eq!(connection.mtu, 9000_u32);
 
@@ -1627,10 +1641,7 @@ mod test {
         let wireless_section = HashMap::from([
             hi("mode", "infrastructure")?,
             hi("ssid", "agama".as_bytes())?,
-            hi(
-                "mac-address",
-                vec![19_u8, 69_u8, 103_u8, 137_u8, 171_u8, 205_u8],
-            )?,
+            hi("mac-address", mac.as_bytes())?,
             hi("band", "a")?,
             hi("channel", 32_u32)?,
             hi("bssid", vec![18_u8, 52_u8, 86_u8, 120_u8, 154_u8, 188_u8])?,
@@ -1891,12 +1902,20 @@ mod test {
         let wireless = wireless_dbus.get(WIRELESS_KEY).unwrap();
         let mode: &str = wireless.get("mode").unwrap().downcast_ref().unwrap();
         assert_eq!(mode, "infrastructure");
-        let mac_address: &str = wireless
+        let custom_mac_address: &str = wireless
             .get("assigned-mac-address")
             .unwrap()
             .downcast_ref()
             .unwrap();
-        assert_eq!(mac_address, "FD:CB:A9:87:65:43");
+        assert_eq!(custom_mac_address, "");
+        let mac_address: &zvariant::Array =
+            wireless.get("mac-address").unwrap().downcast_ref().unwrap();
+        let mac_address: Vec<u8> = mac_address
+            .iter()
+            .map(|u| u.downcast_ref::<u8>().unwrap())
+            .collect();
+        let mac = MacAddr6::from_str("FD:CB:A9:87:65:43")?;
+        assert_eq!(mac_address, mac.as_bytes());
 
         let ssid: &zvariant::Array = wireless.get("ssid").unwrap().downcast_ref().unwrap();
         let ssid: Vec<u8> = ssid
@@ -2101,7 +2120,12 @@ mod test {
     #[test]
     fn test_merge_dbus_connections() -> anyhow::Result<()> {
         let mut original = OwnedNestedHash::new();
-        let connection = HashMap::from([hi("id", "conn0")?, hi("type", ETHERNET_KEY)?]);
+        let mac = MacAddr6::from_str("13:45:67:89:AB:CD")?;
+        let connection = HashMap::from([
+            hi("id", "conn0")?,
+            hi("type", ETHERNET_KEY)?,
+            hi("mac-address", mac.as_bytes())?,
+        ]);
 
         let ipv4 = HashMap::from([
             hi("method", "manual")?,
@@ -2137,6 +2161,9 @@ mod test {
             *connection.get("interface-name").unwrap(),
             Value::new("eth0".to_string())
         );
+
+        // Ensure the mac-address is not used because it is not declared in the updated profile
+        assert!(connection.get("mac-address").is_none());
 
         let ipv4 = merged.get("ipv4").unwrap();
         assert_eq!(
@@ -2261,7 +2288,7 @@ mod test {
             .unwrap()
             .downcast_ref()
             .unwrap();
-        assert_eq!(mac_address, "FD:CB:A9:87:65:43");
+        assert_eq!(mac_address, "");
 
         assert_eq!(
             ethernet_connection
