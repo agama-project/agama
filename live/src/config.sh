@@ -71,8 +71,8 @@ systemctl enable live-root-shell.service
 systemctl enable checkmedia.service
 systemctl enable qemu-guest-agent.service
 systemctl enable setup-systemd-proxy-env.path
-systemctl enable gdm.service
-test -f  /usr/lib/systemd/system/spice-vdagentd.service && systemctl enable spice-vdagentd.service
+test -f /usr/lib/systemd/system/gdm.service && systemctl enable gdm.service
+test -f /usr/lib/systemd/system/spice-vdagentd.service && systemctl enable spice-vdagentd.service
 systemctl enable zramswap
 
 # set the default target
