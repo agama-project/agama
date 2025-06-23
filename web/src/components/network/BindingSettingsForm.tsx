@@ -33,11 +33,11 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
-import { sprintf } from "sprintf-js";
 import { useConnection, useConnectionMutation, useNetworkDevices } from "~/queries/network";
-import { _ } from "~/i18n";
 import { Connection, Device } from "~/types/network";
 import Radio from "~/components/core/RadioEnhanced";
+import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
 type DevicesSelectProps = Omit<FormSelectProps, "children" | "ref"> & {
   /**
@@ -61,18 +61,20 @@ function DevicesSelect({
 }: DevicesSelectProps): React.ReactNode {
   const devices = useNetworkDevices();
 
-  const labelAttributes =
-    valueKey === "macAddress" ? ["macAddress", "name"] : ["name", "macAddress"];
+  const labelAttrs = valueKey === "macAddress" ? ["macAddress", "name"] : ["name", "macAddress"];
 
   return (
     <FormSelect value={value} {...formSelectProps}>
-      {devices.map((device, index) => (
-        <FormSelectOption
-          key={index}
-          value={device[valueKey]}
-          label={labelAttributes.map((attr) => device[attr]).join(" - ")}
-        />
-      ))}
+      {devices.map((device, index) => {
+        // TRANSLATORS: A label shown in a dropdown for selecting a network
+        // device. It combines the device name and MAC address, with the order
+        // determined by the component settings: some selectors will show the
+        // name first, others the MAC address. I.e. "enp1s0 - CC-7F-C8-FC-7A-A1"
+        // or "CC-7F-C8-FC-7A-A1 - enp1s0". You may change the separator, but
+        // please keep both %s placeholders.
+        const label = sprintf(_("%s - %s"), device[labelAttrs[0]], device[labelAttrs[1]]);
+        return <FormSelectOption key={index} value={device[valueKey]} label={label} />;
+      })}
     </FormSelect>
   );
 }
@@ -169,10 +171,14 @@ export default function BindingSettingsForm() {
       .catch(console.error);
   };
 
+  // TRANSLATORS: The title of the page. %s will be replaced with the connection
+  // name. I.e., "Binding settings for 'Wired connection 1'"
+  const title = sprintf(_("Binding settings for '%s'"), connection.id);
+
   return (
     <Page>
       <Page.Header>
-        <Content component="h2">{sprintf(_("Binding settings for '%s'"), connection.id)}</Content>
+        <Content component="h2">{title}</Content>
         <SubtleContent>
           {_(
             "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.",
