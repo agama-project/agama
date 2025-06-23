@@ -35,7 +35,10 @@ use crate::{
     security::store::{SecurityStore, SecurityStoreError},
     software::{SoftwareStore, SoftwareStoreError},
     storage::{
-        http_client::iscsi::{ISCSIHTTPClient, ISCSIHTTPClientError},
+        http_client::{
+            iscsi::{ISCSIHTTPClient, ISCSIHTTPClientError},
+            StorageHTTPClient,
+        },
         store::dasd::{DASDStore, DASDStoreError},
         StorageStore, StorageStoreError,
     },
@@ -203,6 +206,12 @@ impl Store {
         if let Some(dasd) = &settings.dasd {
             self.dasd.store(dasd).await?
         }
+
+        // here we need to check if storage has dirty flag and if so, do the reprobe
+        // it is done this way for efficience, so zFCP, DASD and iSCSI do not need after
+        // for themself after each step. So it is done here before storage loads its setting.
+        self.reprobe_storage().await?;
+
         if settings.storage.is_some() || settings.storage_autoyast.is_some() {
             self.storage.store(&settings.into()).await?
         }
@@ -213,6 +222,14 @@ impl Store {
             self.hostname.store(hostname).await?;
         }
 
+        Ok(())
+    }
+
+    async fn reprobe_storage(&self) -> Result<(), StorageStoreError> {
+        let storage_client = StorageHTTPClient::new(self.http_client.clone());
+        if storage_client.is_dirty().await? {
+            storage_client.reprobe().await?;
+        }
         Ok(())
     }
 
