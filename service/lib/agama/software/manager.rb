@@ -765,7 +765,7 @@ module Agama
         end
 
         def self.final_path(path)
-          ::File.join("/mnt", path)
+          ::File.join(Yast::Installation.destdir, path)
         end
         private_class_method :final_path
       end
@@ -781,7 +781,7 @@ module Agama
           tree = ::CFA::AugeasTree.new
           zypp_conf.generic_get("main", tree)
         end
-        zypp_conf.generic_set("solver.onlyRequires", "true", tree)
+        zypp_conf.generic_set("solver.onlyRequires", "#{!!proposal.only_required}", tree)
         zypp_conf.save
       end
 

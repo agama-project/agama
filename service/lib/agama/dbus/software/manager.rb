@@ -97,7 +97,7 @@ module Agama
 
         dbus_interface SOFTWARE_INTERFACE do
           # Flag for proposing required only dependencies
-          # Do not forget to call Propose method after changing flag
+          # Propose is called automatically whenever the value is assigned.
           # value mapping 0 for not set, 1 for false and 2 for true
           dbus_accessor :only_required, "u"
 
