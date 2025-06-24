@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jun 23 10:24:01 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to bind a connection to an specific interface based on its
+  mac address or its name (gh#agama-project/agama#2488,
+  bsc#1244259).
+
+-------------------------------------------------------------------
 Wed Jun 18 08:42:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Improve multilingual font support by fixing the font-face rule for

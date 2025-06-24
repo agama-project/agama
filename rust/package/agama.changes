@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 18 14:36:50 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to bind a connection to an specific device mac address
+   (bsc#1244259).
+
+-------------------------------------------------------------------
 Wed Jun 18 07:17:30 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Preserve AutoYaST pre-scripts artifacts (bsc#1243776, gh#agama-project/agama#2344).

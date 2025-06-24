@@ -247,8 +247,11 @@ pub struct NetworkConnection {
     /// Bridge settings if part of a bridge
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bridge: Option<BridgeSettings>,
+    /// Custom MAC address of the connection's interface
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub custom_mac_address: Option<String>,
     /// MAC address of the connection's interface
-    #[serde(rename = "mac-address", skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub mac_address: Option<String>,
     /// Current status of the network connection
     #[serde(skip_serializing_if = "Option::is_none")]

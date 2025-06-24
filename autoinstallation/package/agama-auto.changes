@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 24 07:57:56 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Use more consistent "agama config generate" command instead of
+  "agama profile import" (gh#agama-project/agama#2347)
+
+-------------------------------------------------------------------
 Mon May 26 19:51:55 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 15
