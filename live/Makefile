@@ -84,9 +84,9 @@ check:
 # in full mode with warnings but ignore the failures (some are false positives).
 # TODO: Fix/disable the warnings and run it in more strict mode.
 shellcheck:
-	@find config-cdroot root src -type f -exec grep -l -E "^#! *(/usr/|)/bin/(ba|)sh" \{\} \; \
+	@find config-cdroot live-root src -type f -exec grep -l -E "^#! *(/usr/|)/bin/(ba|)sh" \{\} \; \
 	  | xargs -I% bash -c "echo 'Checking errors in %...' && shellcheck --severity=error %"
-	@find config-cdroot root src -type f -exec grep -l -E "^#! *(/usr/|)/bin/(ba|)sh" \{\} \; \
+	@find config-cdroot live-root src -type f -exec grep -l -E "^#! *(/usr/|)/bin/(ba|)sh" \{\} \; \
 	  | xargs -I% bash -c "echo 'Checking warnings in %...' && shellcheck %" || true
 
 .PHONY: build all sles clean shellcheck
