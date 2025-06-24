@@ -37,7 +37,7 @@ pub struct SoftwareSettings {
     /// List of user specified repositories to use on top of default ones.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra_repositories: Option<Vec<RepositoryParams>>,
-    /// List of user specified repositories to use on top of default ones.
+    /// Flag indicating if only hard requirements should be used by solver.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub only_required: Option<bool>,
 }
