@@ -40,6 +40,7 @@ require "agama/with_locale"
 require "agama/with_progress"
 require "agama/with_issues"
 
+Yast.import "Installation"
 Yast.import "Language"
 Yast.import "Package"
 Yast.import "Packages"
