@@ -782,7 +782,7 @@ module Agama
           tree = ::CFA::AugeasTree.new
           zypp_conf.generic_get("main", tree)
         end
-        zypp_conf.generic_set("solver.onlyRequires", "#{!!proposal.only_required}", tree)
+        zypp_conf.generic_set("solver.onlyRequires", (!!proposal.only_required).to_s, tree)
         zypp_conf.save
       end
 
