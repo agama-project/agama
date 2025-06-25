@@ -772,8 +772,15 @@ module Agama
       end
 
       def modify_zypp_conf
-        # use defaults unless user explicitelly wants only required packages
-        return unless proposal.only_required
+        # use defaults unless user explicitelly sets flag
+        return if proposal.only_required.nil?
+
+        # minimal system does not need to have libzypp, so in this case do not
+        # modify zypp.conf
+        if !File.exist?(File.join(Yast::Installation.destdir, "/etc/zypp/zypp.conf"))
+          logger.info "Target system does not have zypp.conf so skipping modification of it"
+          return
+        end
 
         zypp_conf = Yast::Packager::CFA::ZyppConf.new(file_handler: TargetFile)
         zypp_conf.load
