@@ -207,9 +207,10 @@ impl Store {
             self.dasd.store(dasd).await?
         }
 
-        // here we need to check if storage has dirty flag and if so, do the reprobe
-        // it is done this way for efficience, so zFCP, DASD and iSCSI do not need after
-        // for themself after each step. So it is done here before storage loads its setting.
+        // Reprobing storage is not directly done by zFCP, DASD or iSCSI services for a matter of
+        // efficiency. For now, clients are expected to explicitly repobe. It is important to
+        // reprobe here before loading the storage settings. Otherwise, the new storage devices are
+        // not used.
         self.reprobe_storage().await?;
 
         if settings.storage.is_some() || settings.storage_autoyast.is_some() {
@@ -225,6 +226,7 @@ impl Store {
         Ok(())
     }
 
+    // Reprobes the storage devices if the system was marked as deprecated.
     async fn reprobe_storage(&self) -> Result<(), StorageStoreError> {
         let storage_client = StorageHTTPClient::new(self.http_client.clone());
         if storage_client.is_dirty().await? {
