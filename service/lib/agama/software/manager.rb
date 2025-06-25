@@ -23,6 +23,8 @@ require "fileutils"
 require "json"
 require "shellwords"
 require "yast"
+require "packager/cfa/zypp_conf"
+require "cfa/augeas_parser"
 require "y2packager/product"
 require "y2packager/resolvable"
 require "agama/config"
@@ -38,6 +40,7 @@ require "agama/with_locale"
 require "agama/with_progress"
 require "agama/with_issues"
 
+Yast.import "Installation"
 Yast.import "Language"
 Yast.import "Package"
 Yast.import "Packages"
@@ -229,6 +232,7 @@ module Agama
           copy_zypp_to_target
         end
         registration.finish
+        modify_zypp_conf
       end
 
       # Determine whether the given tag is provided by the selected packages
@@ -745,6 +749,41 @@ module Agama
         target_dir = File.join(Yast::Installation.destdir, "/etc/zypp")
         FileUtils.mkdir_p(target_dir)
         FileUtils.copy(glob_credentials, target_dir)
+      end
+
+      # private class to ensure that cfa reads installed system
+      # YaST target file does not work reliably as Agama does not have
+      # always switched SCR
+      class TargetFile
+        # Reads file content with respect of changed root in installation.
+        def self.read(path)
+          ::File.read(final_path(path))
+        end
+
+        # Writes file content with respect of changed root in installation.
+        def self.write(path, content)
+          ::File.write(final_path(path), content)
+        end
+
+        def self.final_path(path)
+          ::File.join(Yast::Installation.destdir, path)
+        end
+        private_class_method :final_path
+      end
+
+      def modify_zypp_conf
+        # use defaults unless user explicitelly wants only required packages
+        return unless proposal.only_required
+
+        zypp_conf = Yast::Packager::CFA::ZyppConf.new(file_handler: TargetFile)
+        zypp_conf.load
+        tree = zypp_conf.generic_get("main")
+        if !tree
+          tree = ::CFA::AugeasTree.new
+          zypp_conf.generic_get("main", tree)
+        end
+        zypp_conf.generic_set("solver.onlyRequires", (!!proposal.only_required).to_s, tree)
+        zypp_conf.save
       end
 
       # Is any local repository (CD/DVD, disk) currently used?
