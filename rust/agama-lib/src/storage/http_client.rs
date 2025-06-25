@@ -52,10 +52,10 @@ impl StorageHTTPClient {
     }
 
     pub async fn is_dirty(&self) -> Result<bool, StorageHTTPClientError> {
-        Ok(self.client.get("/devices/dirty").await?)
+        Ok(self.client.get("/storage/devices/dirty").await?)
     }
 
     pub async fn reprobe(&self) -> Result<(), StorageHTTPClientError> {
-        Ok(self.client.post_void("/reprobe", &()).await?)
+        Ok(self.client.post_void("/storage/reprobe", &()).await?)
     }
 }
