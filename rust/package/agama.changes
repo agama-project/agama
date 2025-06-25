@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jun 25 10:02:43 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Reprobe storage if need while loading a config (bsc#1245114).
+
+-------------------------------------------------------------------
 Wed Jun 25 07:56:57 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow to specify onlyRequired in software config and in software
