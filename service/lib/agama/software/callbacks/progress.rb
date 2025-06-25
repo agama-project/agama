@@ -32,6 +32,8 @@ module Agama
     module Callbacks
       # This class represents the installer status
       class Progress < Base
+        include Yast::I18n
+
         class << self
           def setup(pkg_count, progress, logger)
             new(pkg_count, progress, logger).setup
@@ -61,6 +63,19 @@ module Agama
               method(:done_package), "string (integer, string)"
             )
           )
+
+          # new libzypp callbacks
+          Yast::Pkg.CallbackStartInstallResolvableSA(
+            Yast::FunRef.new(
+              method(:start_resolvable), "void (map)"
+            )
+          )
+
+          Yast::Pkg.CallbackFinishInstallResolvableSA(
+            Yast::FunRef.new(
+              method(:done_resolvable), "void (map)"
+            )
+          )
         end
 
       private
@@ -79,8 +94,18 @@ module Agama
           @questions_client ||= Agama::DBus::Clients::Questions.new(logger: logger)
         end
 
+        def start_resolvable(resolvable)
+          logger.info "Started installing resolvable #{resolvable.inspect}"
+          name = resolvable["name"]
+          progress.step(_("Installing %s") % name)
+        end
+
+        def done_resolvable(resolvable)
+          logger.info "Finished installing resolvable #{resolvable.inspect}"
+        end
+
         def start_package(package, _file, _summary, _size, _other)
-          progress.step("Installing #{package}")
+          progress.step(_("Installing %s") % package)
           self.current_package = package
         end
 
