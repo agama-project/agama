@@ -140,7 +140,7 @@ mod test {
             when.method(PUT)
                 .path("/api/software/config")
                 .header("content-type", "application/json")
-                .body(r#"{"patterns":{"xfce":true},"packages":["vim"],"product":null,"extraRepositories":null}"#);
+                .body(r#"{"patterns":{"xfce":true},"packages":["vim"],"product":null,"extraRepositories":null,"onlyRequired":null}"#);
             then.status(200);
         });
         let url = server.url("/api");
@@ -170,7 +170,7 @@ mod test {
             when.method(PUT)
                 .path("/api/software/config")
                 .header("content-type", "application/json")
-                .body(r#"{"patterns":{"no_such_pattern":true},"packages":["vim"],"product":null,"extraRepositories":null}"#);
+                .body(r#"{"patterns":{"no_such_pattern":true},"packages":["vim"],"product":null,"extraRepositories":null,"onlyRequired":null}"#);
             then.status(400)
                 .body(r#"'{"error":"Agama service error: Failed to find these patterns: [\"no_such_pattern\"]"}"#);
         });
