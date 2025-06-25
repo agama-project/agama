@@ -129,7 +129,8 @@ jobs:
     - name: Install packages
       run: |
         sudo apt-get update
-        sudo apt-get -y install libclang-18-dev libpam0g-dev python3-langtable
+        # locales are needed for tests
+        sudo apt-get -y install libclang-18-dev libpam0g-dev python3-langtable locales
         # the langtable data location is different in SUSE/openSUSE, create a symlink
         sudo mkdir -p /usr/share/langtable
         sudo ln -s /usr/lib/python3/dist-packages/langtable/data /usr/share/langtable/data
