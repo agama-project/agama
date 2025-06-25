@@ -105,6 +105,49 @@ jobs:
     - name: Run clippy linter
       run: cargo clippy
 
+  # run simple unit tests without code coverage, that's too slow
+  # let's have test results faster
+  unit-tests:
+    # the default timeout is 6 hours, that's too much if the job gets stuck
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./rust
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v4
+
+    - name: Rust toolchain
+      run: |
+        rustup show
+        cargo --version
+
+    - name: Install packages
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install libclang-18-dev libpam0g-dev python3-langtable
+        # the langtable data location is different in SUSE/openSUSE, create a symlink
+        sudo mkdir -p /usr/share/langtable
+        sudo ln -s /usr/lib/python3/dist-packages/langtable/data /usr/share/langtable/data
+
+    - name: Installed packages
+      run: apt list --installed
+
+    - name: Rust cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo
+          rust/target
+        key: ${{ runner.os }}-cargo-unit-tests-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Run the tests
+      run: cargo test
+
   tests:
     # the default timeout is 6 hours, that's too much if the job gets stuck
     timeout-minutes: 30
