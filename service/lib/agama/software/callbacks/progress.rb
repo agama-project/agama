@@ -105,11 +105,13 @@ module Agama
         end
 
         def start_package(package, _file, _summary, _size, _other)
+          logger.info "Started installing package #{package}"
           progress.step(_("Installing %s") % package)
           self.current_package = package
         end
 
         def done_package(error_code, description)
+          logger.info "Finished installing package #{package}"
           return "" if error_code == 0
 
           logger.error("Package #{current_package} failed: #{description}")
