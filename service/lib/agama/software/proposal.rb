@@ -22,6 +22,7 @@
 require "yast"
 require "agama/issue"
 require "agama/with_issues"
+require "agama/software/repository"
 
 Yast.import "Stage"
 Yast.import "Installation"
@@ -159,6 +160,35 @@ module Agama
       # @return [Integer] count of packages to install
       def packages_count
         Yast::Pkg.PkgMediaCount.reduce(0) { |sum, res| sum + res.reduce(0, :+) }
+      end
+
+      # Returns the count of packages to download
+      #
+      # @return [Integer] count of packages to install
+      def packages_download_count
+        # all enabled remote repositories
+        remote_repos = Agama::Software::Repository.all
+          .select(&:enabled?).reject(&:local?).map(&:repo_id)
+        logger.info "Remote repositories: #{remote_repos.inspect}"
+
+        # shortcut, no remote repository
+        return 0 if remote_repos.empty?
+
+        # count the packages to download from each medium,
+        # the Pkg.PkgMediaCount and Pkg.PkgMediaNames refer to the same repository at the same index
+        counts = Yast::Pkg.PkgMediaCount
+        media = Yast::Pkg.PkgMediaNames
+        download = 0
+
+        media.each_with_index do |medium, index|
+          name, src_id = medium
+
+          # is it a remote repository?
+          download += counts[index].sum if remote_repos.include?(src_id)
+        end
+
+        logger.info "Number of packages to download: #{download}"
+        download
       end
 
       # Returns the size of the packages to install

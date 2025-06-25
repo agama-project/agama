@@ -60,6 +60,8 @@ module Agama
   #   progress.step("Installing packages") { installing } # overwrite the description
   #   progress.current_step.description                   # "Installing packages"
   class Progress
+    include Yast::I18n
+
     # Step of the progress
     class Step
       # Id of the step
@@ -184,7 +186,8 @@ module Agama
     #
     # @return [String]
     def to_s
-      return "Finished" if finished?
+      # TRANSLATORS: progress message, the task has been finished
+      return _("Finished") if finished?
 
       "#{current_step.description} (#{@counter}/#{total_steps})"
     end

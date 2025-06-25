@@ -201,7 +201,8 @@ module Agama
         Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
         Yast::Pkg.TargetLoad
 
-        steps = proposal.packages_count
+        # TODO: FIXME: distinguish between the download and install steps
+        steps = proposal.packages_count + proposal.packages_download_count
         start_progress_with_size(steps)
         Callbacks::Progress.setup(steps, progress, logger)
 
