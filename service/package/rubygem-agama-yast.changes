@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 25 07:55:53 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- allow to set onlyRequired flag for software service
+  (jsc#AGM-154)
+
+-------------------------------------------------------------------
 Mon Jun 23 07:22:22 UTC 2025 - Michal Filka <mfilka@suse.com>
 
 - jsc#PED-12285

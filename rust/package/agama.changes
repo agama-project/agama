@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 25 07:56:57 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify onlyRequired in software config and in software
+  section of agama profile (jsc#AGM-154)
+
+-------------------------------------------------------------------
 Wed Jun 18 14:36:50 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow to bind a connection to an specific device mac address
