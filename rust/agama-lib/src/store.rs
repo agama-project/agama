@@ -208,7 +208,7 @@ impl Store {
         }
 
         // Reprobing storage is not directly done by zFCP, DASD or iSCSI services for a matter of
-        // efficiency. For now, clients are expected to explicitly repobe. It is important to
+        // efficiency. For now, clients are expected to explicitly reprobe. It is important to
         // reprobe here before loading the storage settings. Otherwise, the new storage devices are
         // not used.
         self.reprobe_storage().await?;
