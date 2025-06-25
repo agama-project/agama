@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 25 20:29:58 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- do not crash if onlyRequired flag is set and libzypp is not
+  installed on target system (jsc#AGM-154)
+
+-------------------------------------------------------------------
 Wed Jun 25 07:55:53 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - allow to set onlyRequired flag for software service
