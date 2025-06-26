@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jun 26 13:46:24 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Warn the user when using a weak user password (bsc#1237480).
+
+-------------------------------------------------------------------
 Mon Jun 23 10:24:01 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow to bind a connection to an specific interface based on its

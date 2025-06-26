@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jun 26 13:45:39 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add an end-point to check passwords strenght (bsc#1237480).
+
+-------------------------------------------------------------------
 Wed Jun 25 07:56:57 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow to specify onlyRequired in software config and in software
