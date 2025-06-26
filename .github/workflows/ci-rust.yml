@@ -139,8 +139,6 @@ jobs:
         # create the /etc/agama.d/locales file with list of locales
         sudo mkdir /etc/agama.d
         sudo bash -c 'ls -1 -d /usr/share/i18n/locales/* | sed -e "s#/usr/share/i18n/locales/##" >/etc/agama.d/locales'
-        ls -l /etc/agama.d/locales
-        cat /etc/agama.d/locales
 
     - name: Installed packages
       run: apt list --installed
