@@ -67,12 +67,16 @@ const DeviceSelector = ({
 export default function DeviceSelectorModal({
   title,
   selected = undefined,
+  onConfirm,
   onCancel,
-  onAccept,
   devices,
 }): React.ReactNode {
   // FIXME: improve initial selection handling
   const [selectedDevices, setSelectedDevices] = useState(selected ? [selected] : []);
+
+  const onAccept = () => {
+    selectedDevices !== Array(selected) && onConfirm(selectedDevices);
+  };
 
   return (
     <Popup isOpen variant="medium" title={title}>
@@ -82,8 +86,8 @@ export default function DeviceSelectorModal({
         onSelectionChange={setSelectedDevices}
       />
       <Popup.Actions>
+        <Popup.Confirm onClick={onAccept} />
         <Popup.Cancel onClick={onCancel} />
-        <Popup.Confirm onClick={() => onAccept(selectedDevices)} />
       </Popup.Actions>
     </Popup>
   );
