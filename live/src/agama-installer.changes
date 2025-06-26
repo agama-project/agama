@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jun 26 18:58:27 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add orca to the image (gh#agama-project/agama#2481).
+
+-------------------------------------------------------------------
 Fri Jun 20 14:57:08 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Install "gdm-systemd" and enable "gdm.service" to start the
