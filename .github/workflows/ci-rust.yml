@@ -170,6 +170,8 @@ jobs:
         # use the "stable" tool chain (installed by default) instead of the "nightly" default in tarpaulin
         RUSTC_BOOTSTRAP: 1
         RUSTUP_TOOLCHAIN: stable
+        RUST_BACKTRACE: 1
+        RUSTFLAGS: --cfg ci
 
     # send the code coverage for the Rust part to the coveralls.io
     - name: Send coverage data to Coveralls
