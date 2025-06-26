@@ -129,11 +129,15 @@ jobs:
     - name: Install packages
       run: |
         sudo apt-get update
-        # locales are needed for tests
-        sudo apt-get -y install libclang-18-dev libpam0g-dev python3-langtable locales
+        sudo apt-get -y install libclang-18-dev libpam0g-dev python3-langtable
+
+    - name: Prepare for tests
+      run: |
         # the langtable data location is different in SUSE/openSUSE, create a symlink
         sudo mkdir -p /usr/share/langtable
         sudo ln -s /usr/lib/python3/dist-packages/langtable/data /usr/share/langtable/data
+        # create the /etc/agama.d/locales file with list of locales
+        ls -1 -d /usr/lib/locale/*.utf8 | sed -e "s#/usr/lib/locale/##" -e "s#utf8#UTF-8#" >/etc/agama.d/locales
 
     - name: Installed packages
       run: apt list --installed
