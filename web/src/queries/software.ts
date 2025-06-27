@@ -99,14 +99,6 @@ const licensesQuery = () => ({
 });
 
 /**
- * Query to retrieve selected product
- */
-const selectedProductQuery = () => ({
-  queryKey: ["software", "product"],
-  queryFn: () => fetchConfig().then(({ product }) => product),
-});
-
-/**
  * Query to retrieve registration info
  */
 const registrationQuery = () => ({
@@ -238,20 +230,20 @@ const useProduct = (
 ): { products?: Product[]; selectedProduct?: Product } => {
   const func = options?.suspense ? useSuspenseQueries : useQueries;
   const [
-    { data: selected, isPending: isSelectedPending },
+    { data: config, isPending: isConfigPending },
     { data: products, isPending: isProductsPending },
   ] = func({
-    queries: [selectedProductQuery(), productsQuery()],
-  }) as [{ data: string; isPending: boolean }, { data: Product[]; isPending: boolean }];
+    queries: [configQuery(), productsQuery()],
+  }) as [{ data: SoftwareConfig; isPending: boolean }, { data: Product[]; isPending: boolean }];
 
-  if (isSelectedPending || isProductsPending) {
+  if (isConfigPending || isProductsPending) {
     return {
       products: [],
       selectedProduct: undefined,
     };
   }
 
-  const selectedProduct = products.find((p: Product) => p.id === selected);
+  const selectedProduct = products.find((p: Product) => p.id === config.product);
   return {
     products,
     selectedProduct,
@@ -423,7 +415,6 @@ const useConflictsChanges = () => {
 export {
   configQuery,
   productsQuery,
-  selectedProductQuery,
   useAddons,
   useConfigMutation,
   useConflicts,
