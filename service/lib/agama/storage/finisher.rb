@@ -23,6 +23,7 @@ require "yast"
 require "yast/i18n"
 require "yast2/execute"
 require "yast2/systemd/service"
+require "yast2/fs_snapshot"
 require "bootloader/finish_client"
 require "y2storage/storage_manager"
 require "agama/with_progress"
@@ -34,7 +35,6 @@ require "fileutils"
 
 Yast.import "Arch"
 Yast.import "Installation"
-Yast.import "FsSnapshot"
 
 module Agama
   module Storage
@@ -237,7 +237,7 @@ module Agama
         end
 
         def run?
-          Yast::FsSnapshot.configure_on_install?
+          Yast2::FsSnapshot.configure_on_install?
         end
 
         def run
