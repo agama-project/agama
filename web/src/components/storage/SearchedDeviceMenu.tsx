@@ -34,6 +34,7 @@ import { sprintf } from "sprintf-js";
 import { _, formatList } from "~/i18n";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 import { MenuItemProps } from "@patternfly/react-core";
+import { Icon } from "../layout";
 
 const baseName = (device: StorageDevice): string => deviceBaseName(device, true);
 
@@ -263,7 +264,6 @@ export default function SearchedDeviceMenu({
   const switchToDrive = useSwitchToDrive();
   const switchToMdRaid = useSwitchToMdRaid();
   const changeTargetFn = (device: StorageDevice) => {
-    console.log("device is drive", device, device.isDrive);
     const hook = device.isDrive ? switchToDrive : switchToMdRaid;
     hook(modelDevice.name, { name: device.name });
   };
@@ -283,7 +283,7 @@ export default function SearchedDeviceMenu({
           popperProps: { minWidth: `min(${longestTitle * 0.75}em, 75vw)`, width: "max-content" },
         }}
         toggleProps={{
-          className: "agm-inline-toggle",
+          variant: "plain",
         }}
         items={[
           <ChangeDeviceMenuItem
@@ -296,7 +296,7 @@ export default function SearchedDeviceMenu({
           <RemoveEntryOption key="delete-disk-option" device={modelDevice} onClick={deleteFn} />,
         ]}
       >
-        {<b>{_("Change")}</b>}
+        {_("More actions")} <Icon name="more_horiz" className="agm-strong-icon" />
       </MenuButton>
       {isSelectorOpen && (
         <DeviceSelectorModal

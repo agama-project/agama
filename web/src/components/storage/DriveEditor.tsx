@@ -29,21 +29,22 @@ import PartitionsMenu from "~/components/storage/PartitionsMenu";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
 import { Card, CardBody, CardHeader, CardTitle, Flex } from "@patternfly/react-core";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import { deviceLabel } from "./utils";
 
 export type DriveEditorProps = { drive: Drive; driveDevice: StorageDevice };
 
 const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
-  return (
-    <PartitionableHeader device={drive}>
-      <DriveDeviceMenu drive={drive} selected={driveDevice} />
-    </PartitionableHeader>
-  );
+  return <PartitionableHeader device={drive}>{deviceLabel(driveDevice)}</PartitionableHeader>;
 };
 
 export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
   return (
     <Card isCompact>
-      <CardHeader>
+      <CardHeader
+        actions={{
+          actions: <DriveDeviceMenu drive={drive} selected={driveDevice} />,
+        }}
+      >
         <CardTitle>
           <DriveHeader drive={drive} driveDevice={driveDevice} />{" "}
         </CardTitle>
