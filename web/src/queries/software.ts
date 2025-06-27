@@ -158,9 +158,7 @@ const useConfigMutation = () => {
   const query = {
     mutationFn: updateConfig,
     onSuccess: async (_, config: SoftwareConfig) => {
-      queryClient.invalidateQueries({ queryKey: ["software", "config"] });
-      queryClient.invalidateQueries({ queryKey: ["software", "product"] });
-      queryClient.invalidateQueries({ queryKey: ["software", "proposal"] });
+      queryClient.invalidateQueries({ queryKey: ["software"] });
       if (config.product) {
         await systemProbe();
         queryClient.invalidateQueries({ queryKey: ["storage"] });
@@ -363,7 +361,7 @@ const useProductChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "ProductChanged") {
-        queryClient.invalidateQueries({ queryKey: ["software", "config"] });
+        queryClient.invalidateQueries({ queryKey: ["software"] });
       }
 
       if (event.type === "LocaleChanged") {
