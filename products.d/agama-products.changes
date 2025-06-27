@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jun 27 12:08:23 UTC 2025 - Shawn Dunn <sfalken@opensuse.org>
+
+- Added Kalpa to Products
+
+-------------------------------------------------------------------
 Thu May 29 14:41:10 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Change the SLES and SLES_SAP version from "16-0" to "16.0",
