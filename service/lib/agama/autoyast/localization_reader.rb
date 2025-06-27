@@ -38,7 +38,7 @@ module Agama
       # @return [Hash] Agama "localization" section
       def read
         localization = keyboard
-          .merge(languages)
+          .merge(language)
           .merge(timezone)
         localization.empty? ? {} : { "localization" => localization }
       end
@@ -61,20 +61,13 @@ module Agama
         { "keyboard" => keymap.to_s }
       end
 
-      def languages
+      def language
         section = profile.fetch_as_hash("language")
-        primary = section["language"]
-        secondary = section["languages"].to_s.split(",").map(&:strip)
+        lang = section["language"].to_s
+        return {} if lang.empty?
 
-        languages = []
-        languages.push(primary.to_s) unless primary.nil?
-        languages.concat(secondary)
-
-        with_encoding = languages.map do |lang|
-          lang.include?(".") ? lang : "#{lang}.UTF-8"
-        end
-
-        with_encoding.empty? ? {} : { "languages" => with_encoding.uniq }
+        lang = lang.include?(".") ? lang : "#{lang}.UTF-8"
+        { "language" => lang }
       end
 
       def timezone
