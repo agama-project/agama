@@ -34,6 +34,7 @@ require "fileutils"
 
 Yast.import "Arch"
 Yast.import "Installation"
+Yast.import "FsSnapshot"
 
 module Agama
   module Storage
@@ -235,8 +236,13 @@ module Agama
           _("Configuring file systems snapshots")
         end
 
+        def run?
+          Yast::FsSnapshot.configure_on_install?
+        end
+
         def run
-          wfm_write("snapshots_finish")
+          logger.info("Finishing Snapper configuration")
+          Yast2::FsSnapshot.configure_snapper
         end
       end
 
