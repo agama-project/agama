@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 27 12:07:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the conversion of the "language" section from AutoYaST profiles
+  (gh#agama-project/agama#2516).
+
+-------------------------------------------------------------------
 Wed Jun 25 20:29:58 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - do not crash if onlyRequired flag is set and libzypp is not
