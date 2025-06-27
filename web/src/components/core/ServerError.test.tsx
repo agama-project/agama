@@ -23,9 +23,9 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { ServerError } from "~/components/core";
 import { noop } from "radashi";
 import * as utils from "~/utils";
+import ServerError from "./ServerError";
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>

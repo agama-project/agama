@@ -1,5 +1,27 @@
 -------------------------------------------------------------------
+Mon Jun 23 10:24:01 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
+- Allow to bind a connection to an specific interface based on its
+  mac address or its name (gh#agama-project/agama#2488,
+  bsc#1244259).
+
+-------------------------------------------------------------------
+Wed Jun 18 08:42:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Improve multilingual font support by fixing the font-face rule for
+  Chinese, adding Noto Sans Georgian, and setting Noto Sans as the
+  primary fallback (gh#agama-project/agama#2488, bsc#1236261).
+
+-------------------------------------------------------------------
+Tue Jun 17 12:22:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Make sure queries data is in sync with the WebSocket messages
+  (bsc#1243276, gh#agama-project/agama#2479).
+- Properly jump to the progress page when the product is selected
+  by a third party (e.g., "agama config load").
+- Log WebSocket messages in the console with "debug" log level.
+
+-------------------------------------------------------------------
 Fri Jun 13 08:24:59 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow registering against an RMT without a registration code.

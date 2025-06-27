@@ -130,6 +130,27 @@ describe Agama::Storage::ConfigSolvers::DrivesSearch do
         expect(drive3.search.solved?).to eq(true)
         expect(drive3.search.device.name).to eq("/dev/vdc")
       end
+
+      context "but ordering by descending device name" do
+        let(:drives) do
+          [
+            { search: { sort: { name: "desc" } } }
+          ]
+        end
+
+        it "expands the number of drive configs to match all the existing disks in order" do
+          subject.solve(config)
+          expect(config.drives.size).to eq(3)
+
+          drive1, drive2, drive3 = config.drives
+          expect(drive1.search.solved?).to eq(true)
+          expect(drive1.search.device.name).to eq("/dev/vdc")
+          expect(drive2.search.solved?).to eq(true)
+          expect(drive2.search.device.name).to eq("/dev/vdb")
+          expect(drive3.search.solved?).to eq(true)
+          expect(drive3.search.device.name).to eq("/dev/vda")
+        end
+      end
     end
 
     context "if a drive config contains a search without conditions but with a max" do
@@ -151,6 +172,25 @@ describe Agama::Storage::ConfigSolvers::DrivesSearch do
           expect(drive1.search.device.name).to eq("/dev/vda")
           expect(drive2.search.solved?).to eq(true)
           expect(drive2.search.device.name).to eq("/dev/vdb")
+        end
+
+        context "but ordering by descending device name" do
+          let(:drives) do
+            [
+              { search: { sort: { name: "desc" }, max: max } }
+            ]
+          end
+
+          it "expands the number of drive configs to match the max" do
+            subject.solve(config)
+            expect(config.drives.size).to eq(2)
+
+            drive1, drive2 = config.drives
+            expect(drive1.search.solved?).to eq(true)
+            expect(drive1.search.device.name).to eq("/dev/vdc")
+            expect(drive2.search.solved?).to eq(true)
+            expect(drive2.search.device.name).to eq("/dev/vdb")
+          end
         end
       end
 
@@ -294,8 +334,8 @@ describe Agama::Storage::ConfigSolvers::DrivesSearch do
         let(:size) { { equal: value } }
 
         context "and there is a disk with equal size" do
-          let(:value) { "200 GiB" }
-          include_examples "find device", "/dev/vdb"
+          let(:value) { "150 GiB" }
+          include_examples "find device", "/dev/vdc"
         end
 
         context "and there is no disk with equal size" do
@@ -308,12 +348,12 @@ describe Agama::Storage::ConfigSolvers::DrivesSearch do
         let(:size) { { greater: value } }
 
         context "and there is a disk with greater size" do
-          let(:value) { "100 GiB" }
-          include_examples "find device", "/dev/vdb"
+          let(:value) { "400 GiB" }
+          include_examples "find device", "/dev/vde"
         end
 
         context "and there is no disk with greater size" do
-          let(:value) { "200 GiB" }
+          let(:value) { "500 GiB" }
           include_examples "do not find device"
         end
       end
@@ -322,7 +362,7 @@ describe Agama::Storage::ConfigSolvers::DrivesSearch do
         let(:size) { { less: value } }
 
         context "and there is a disk with less size" do
-          let(:value) { "200 GiB" }
+          let(:value) { "150 GiB" }
           include_examples "find device", "/dev/vda"
         end
 
@@ -356,6 +396,91 @@ describe Agama::Storage::ConfigSolvers::DrivesSearch do
         expect(p2.search.device.name).to eq("/dev/vda2")
         expect(p3.search.solved?).to eq(true)
         expect(p3.search.device.name).to eq("/dev/vda3")
+      end
+    end
+
+    context "if a drive config sorts the search" do
+      let(:scenario) { "sizes.yaml" }
+
+      let(:drives) do
+        [
+          {
+            search: {
+              condition: condition,
+              sort:      sort,
+              max:       max
+            }
+          }
+        ]
+      end
+
+      let(:max) { 4 }
+      let(:condition) { nil }
+
+      context "by size specified as a string" do
+        let(:sort) { "size" }
+
+        it "matches the disks in the expected order" do
+          subject.solve(config)
+          expect(config.drives.map(&:search).map(&:device).map(&:name)).to eq [
+            "/dev/vda", "/dev/vdc", "/dev/vdb", "/dev/vdd"
+          ]
+        end
+      end
+
+      context "by size specified as 'asc'" do
+        let(:sort) { { size: "asc" } }
+
+        it "matches the disks in the expected order" do
+          subject.solve(config)
+          expect(config.drives.map(&:search).map(&:device).map(&:name)).to eq [
+            "/dev/vda", "/dev/vdc", "/dev/vdb", "/dev/vdd"
+          ]
+        end
+      end
+
+      context "by size specified as 'desc'" do
+        let(:sort) { { size: "desc" } }
+
+        it "matches the disks in the expected order" do
+          subject.solve(config)
+          expect(config.drives.map(&:search).map(&:device).map(&:name)).to eq [
+            "/dev/vde", "/dev/vdb", "/dev/vdd", "/dev/vdc"
+          ]
+        end
+
+        context "but leaving the biggest disks out" do
+          let(:condition) { { size: { less: "200 GiB" } } }
+
+          it "matches the filtered disks in the expected order" do
+            subject.solve(config)
+            expect(config.drives.map(&:search).map(&:device).map(&:name)).to eq [
+              "/dev/vdc", "/dev/vda"
+            ]
+          end
+        end
+      end
+
+      context "by size and then by ascending name" do
+        let(:sort) { ["size", "name"] }
+
+        it "matches the disks in the expected order" do
+          subject.solve(config)
+          expect(config.drives.map(&:search).map(&:device).map(&:name)).to eq [
+            "/dev/vda", "/dev/vdc", "/dev/vdb", "/dev/vdd"
+          ]
+        end
+      end
+
+      context "by size and then by descending name" do
+        let(:sort) { [:size, { name: "desc" }] }
+
+        it "matches the disks in the expected order" do
+          subject.solve(config)
+          expect(config.drives.map(&:search).map(&:device).map(&:name)).to eq [
+            "/dev/vda", "/dev/vdc", "/dev/vdd", "/dev/vdb"
+          ]
+        end
       end
     end
   end

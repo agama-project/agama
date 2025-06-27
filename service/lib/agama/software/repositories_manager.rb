@@ -45,8 +45,13 @@ module Agama
       # Adds a new repository
       #
       # @param url [String] Repository URL
-      def add(url)
-        repositories << Repository.create(name: url, url: url)
+      # @param name [String] Repository name, if not specified the URL is used
+      # @param repo_alias [String] Repository alias, must be unique,
+      #   if not specified a random one is generated
+      # @param autorefresh [Boolean] Whether the repository should be autorefreshed
+      def add(url, name: nil, repo_alias: "", autorefresh: true)
+        repositories << Repository.create(name: name || url, url: url, repo_alias: repo_alias,
+          autorefresh: autorefresh)
       end
 
       # returns user repositories as it was previously specified

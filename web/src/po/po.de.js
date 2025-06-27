@@ -19,7 +19,7 @@ export default {
     "%1$s wird weiterhin die LVM-Gruppe ‚%2$s‘ und alle zum Booten benötigten Partitionen enthalten"
   ],
   "%d of %d": [
-    ""
+    "%d von %d"
   ],
   "%s - %s": [
     "%s - %s"
@@ -142,13 +142,16 @@ export default {
     "Passen Sie die Einstellungen unten an, damit das neue System in den verfügbaren Speicherplatz passt."
   ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
-    ""
+    "Alle Konflikte wurden gelöst, oder es wurden keine erkannt. Sie können gefahrlos mit Ihrer Einrichtung fortfahren."
   ],
   "All content will be deleted": [
     "Der gesamte Inhalt wird gelöscht"
   ],
   "All fields are required": [
     "Alle Felder sind erforderlich"
+  ],
+  "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
+    "Alle über diese Schnittstelle verwalteten Netzwerkverbindungen sind derzeit so eingestellt, dass sie nur während der Installation verwendet und nicht auf das installierte System kopiert werden"
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Neben der Definition des ersten Benutzers können auch die Authentifizierungsmethoden für den Root-Benutzer konfiguriert werden."
@@ -158,6 +161,9 @@ export default {
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Alle vorhandenen Partitionen werden entfernt und alle Daten auf der Festplatte gehen verloren."
+  ],
+  "Apply selected solution": [
+    "Ausgewählte Lösung anwenden"
   ],
   "As a new partition on %s": [
     "Als eine neue Partition auf %s"
@@ -183,20 +189,11 @@ export default {
   "Authentication by target": [
     "Authentifizierung durch das Ziel"
   ],
-  "Auto LUNs Scan": [
-    ""
-  ],
   "Automatic": [
     "Automatisch"
   ],
   "Automatic (DHCP)": [
     "Automatisch (DHCP)"
-  ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    ""
-  ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    ""
   ],
   "Available products": [
     "Verfügbare Produkte"
@@ -324,9 +321,6 @@ export default {
   "Configure LVM Volume Group": [
     "LVM-Volume-Gruppe konfigurieren"
   ],
-  "Configure LVM logical volume at %s volume group": [
-    ""
-  ],
   "Configure device menu": [
     "Gerätemenü konfigurieren"
   ],
@@ -338,6 +332,9 @@ export default {
   ],
   "Configure zFCP": [
     "zFCP konfigurieren"
+  ],
+  "Configured for installation only": [
+    "Nur für die Installation konfiguriert"
   ],
   "Configuring the product, please wait ...": [
     "Produkt wird konfiguriert, bitte warten ..."
@@ -624,12 +621,6 @@ export default {
   "Filter by language, territory or locale code": [
     "Nach Sprache, Gebiet oder Sprachumgebungscode filtern"
   ],
-  "Filter by max channel": [
-    ""
-  ],
-  "Filter by min channel": [
-    ""
-  ],
   "Filter by pattern title or description": [
     "Nach Mustertitel oder Beschreibung filtern"
   ],
@@ -754,9 +745,6 @@ export default {
   "Incorrect user name": [
     "Falscher Benutzername"
   ],
-  "Initiator": [
-    "Initiator"
-  ],
   "Initiator details": [
     "Initiatordetails"
   ],
@@ -804,6 +792,9 @@ export default {
   ],
   "Installation will take %s.": [
     "Installation wird %s in Anspruch nehmen."
+  ],
+  "Installed system may not have network connections": [
+    "Das installierte System verfügt möglicherweise nicht über Netzwerkverbindungen"
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "Die Installation eines defekten Pakets beeinträchtigt die Systemstabilität und stellt ein großes Sicherheitsrisiko dar!"
@@ -965,7 +956,7 @@ export default {
     "Weitere Geräte"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    "Weitere Tastaturbelegungen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar."
+    "Weitere Tastaturbelegungen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
     "Weitere Sprach- und Tastaturbelegungsoptionen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar."
@@ -998,7 +989,7 @@ export default {
     "Multipfad"
   ],
   "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
-    ""
+    "Mehrere Konflikte gefunden. Sie können sie in beliebiger Reihenfolge angehen, und die Lösung eines Konflikts kann andere Konflikte lösen."
   ],
   "NFS": [
     "NFS"
@@ -1032,6 +1023,9 @@ export default {
   ],
   "No additional software was selected.": [
     "Es wurde keine zusätzliche Software ausgewählt."
+  ],
+  "No conflicts to address": [
+    "Keine zu lösenden Konflikte"
   ],
   "No content found": [
     "Kein Inhalt gefunden"
@@ -1264,12 +1258,6 @@ export default {
   "Remove": [
     "Entfernen"
   ],
-  "Remove max channel filter": [
-    ""
-  ],
-  "Remove min channel filter": [
-    ""
-  ],
   "Remove the configuration for this disk": [
     "Konfiguration für diese Festplatte entfernen"
   ],
@@ -1286,7 +1274,7 @@ export default {
     "Ergebnis"
   ],
   "Review and fix": [
-    ""
+    "Überprüfen und korrigieren"
   ],
   "Root authentication methods": [
     "Methoden der Root-Authentifizierung"
@@ -1344,6 +1332,9 @@ export default {
   ],
   "Select a product": [
     "Wählen Sie ein Produkt aus"
+  ],
+  "Select a solution to continue": [
+    "Eine Lösung auswählen, um fortzufahren"
   ],
   "Select another disk to define partitions": [
     "Wählen Sie eine andere Festplatte aus, um Partitionen zu definieren"
@@ -1403,6 +1394,12 @@ export default {
   "Show information about %s": [
     "Informationen über %s anzeigen"
   ],
+  "Show less actions": [
+    "Weniger Aktionen anzeigen"
+  ],
+  "Show more actions": [
+    "Weitere Aktionen anzeigen"
+  ],
   "Shrink existing partitions": [
     "Vorhandene Partitionen verkleinern"
   ],
@@ -1411,6 +1408,9 @@ export default {
   ],
   "Size": [
     "Größe"
+  ],
+  "Size limits must be numbers followed by a unit like GiB or GB": [
+    "Größenbeschränkungen müssen Zahlen sein, gefolgt von einer Einheit wie GiB oder GB"
   ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Größenbeschränkungen müssen Zahlen sein, optional gefolgt von einer Einheit wie GiB oder GB"
@@ -1424,14 +1424,14 @@ export default {
   "Skip to content": [
     "Zum Inhalt springen"
   ],
-  "Skip to previous": [
-    ""
-  ],
   "Software": [
     "Software"
   ],
   "Software %s": [
     "Software %s"
+  ],
+  "Software conflicts resolution": [
+    "Lösung von Softwarekonflikten"
   ],
   "Software selection": [
     "Softwareauswahl"
@@ -1493,6 +1493,9 @@ export default {
   "The configured LVM groups will remain at %s": [
     "Die konfigurierten LVM-Gruppen bleiben bei %s"
   ],
+  "The connection will be used only during installation and not available in the installed system.": [
+    "Die Verbindung wird nur während der Installation verwendet und ist im installierten System nicht verfügbar."
+  ],
   "The content may be deleted": [
     "Der Inhalt kann gelöscht werden"
   ],
@@ -1551,7 +1554,10 @@ export default {
     "Die Installation benötigt"
   ],
   "The installation will take %s including:": [
-    "Die Installation dauert %s einschließlich:"
+    "Die Installation benötigt %s einschließlich:"
+  ],
+  "The installer interface is no longer available, so you can safely close this window.": [
+    "Die Oberfläche des Installationsprogramms ist nicht mehr verfügbar, daher können Sie dieses Fenster gefahrlos schließen."
   ],
   "The installer requires [root] user privileges.": [
     "Das Installationsprogramm erfordert [root]-Benutzerrechte."
@@ -1565,11 +1571,17 @@ export default {
   "The logical volume is created exactly with the given size": [
     "Das logische Volume wird genau mit der angegebenen Größe erstellt"
   ],
+  "The maximum must be a number followed by a unit like GiB or GB": [
+    "Das Maximum muss eine Zahl sein, gefolgt von einer Einheit wie GiB oder GB"
+  ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
     "Das Maximum muss eine Zahl sein, optional gefolgt von einer Einheit wie GiB oder GB"
   ],
   "The minimum cannot be greater than the maximum": [
     "Das Minimum darf nicht größer sein als das Maximum"
+  ],
+  "The minimum must be a number followed by a unit like GiB or GB": [
+    "Das Minimum muss eine Zahl sein, gefolgt von einer Einheit wie GiB oder GB"
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "Das Minimum muss eine Zahl sein, optional gefolgt von einer Einheit wie GiB oder GB"
@@ -1781,6 +1793,9 @@ export default {
   "Use available space": [
     "Verfügbaren Speicherplatz verwenden"
   ],
+  "Use for installation only": [
+    "Nur für die Installation verwenden"
+  ],
   "Use for the selected product too": [
     "Auch für das ausgewählte Produkt verwenden"
   ],
@@ -1876,6 +1891,9 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Sie stellen eine Verbindung zu einem öffentlichen Netzwerk ohne Verschlüsselung her. Ihre Daten sind möglicherweise nicht sicher."
+  ],
+  "Your system is rebooting": [
+    "Ihr System wird neu gebootet"
   ],
   "ZFCP": [
     "ZFCP"

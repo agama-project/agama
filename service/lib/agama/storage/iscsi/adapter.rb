@@ -25,6 +25,7 @@ require "yast"
 require "y2iscsi_client/authentication"
 
 Yast.import "IscsiClientLib"
+Yast.import "Service"
 
 module Agama
   module Storage
@@ -33,6 +34,7 @@ module Agama
       class Adapter
         # Performs actions for activating iSCSI.
         def activate
+          start_services
           Yast::IscsiClientLib.getiBFT
           # Check initiator name, creating one if missing.
           return false unless Yast::IscsiClientLib.checkInitiatorName(silent: true)
@@ -136,6 +138,13 @@ module Agama
         end
 
       private
+
+        # Starts the iSCSI services.
+        def start_services
+          Yast::Service.start("iscsi")
+          Yast::Service.start("iscsid")
+          Yast::Service.start("iscsiuio")
+        end
 
         # Creates an iSCSI authentication object.
         #

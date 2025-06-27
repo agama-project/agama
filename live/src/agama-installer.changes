@@ -1,4 +1,26 @@
 -------------------------------------------------------------------
+Fri Jun 20 14:57:08 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Install "gdm-systemd" and enable "gdm.service" to start the
+  graphical desktop, this is a new way for starting display managers
+
+-------------------------------------------------------------------
+Thu Jun 19 09:06:50 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Add hyper-v on x86_64 and aarch64 only (related to bsc#1236961).
+
+-------------------------------------------------------------------
+Wed Jun 18 11:29:08 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Make web bundled fonts available for the system via config
+  file (gh#agama-project/agama#2488, bsc#1236261).
+
+-------------------------------------------------------------------
+Tue Jun 17 08:47:46 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Add hyper-v package (bsc#1236961).
+
+-------------------------------------------------------------------
 Fri Jun 13 10:41:15 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add initial support to apply updates from RPM packages and DUD archives

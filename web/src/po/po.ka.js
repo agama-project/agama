@@ -19,7 +19,7 @@ export default {
     ""
   ],
   "%d of %d": [
-    ""
+    "%d %d-დან"
   ],
   "%s - %s": [
     "%s - %s"
@@ -31,7 +31,7 @@ export default {
     "%s დისკი"
   ],
   "%s has been registered with below information.": [
-    ""
+    "%s დარეგისტრირებულია შემდეგი ინფორმაციით ქვემოთ."
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     ""
@@ -150,6 +150,9 @@ export default {
   "All fields are required": [
     "ყველა ველი აუცილებელია"
   ],
+  "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
+    ""
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     ""
   ],
@@ -159,6 +162,9 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     ""
   ],
+  "Apply selected solution": [
+    "არჩეული გადაწყვეტის გადატარება"
+  ],
   "As a new partition on %s": [
     "როგორც ახალი დანაყოფი %s-ზე"
   ],
@@ -166,7 +172,7 @@ export default {
     ""
   ],
   "At least one partition will be deleted": [
-    ""
+    "წაიშლება, სულ ცოტა, ერთი დანაყოფი"
   ],
   "At this point you can power off the machine.": [
     ""
@@ -258,17 +264,26 @@ export default {
   "Change": [
     "შეცვლა"
   ],
+  "Change Language": [
+    "ენის შეცვლა"
+  ],
   "Change boot options": [
     "ჩატვირთვის პარამეტრების შეცვლა"
   ],
   "Change device menu": [
     "მოწყობილობის მენიუს შეცვლა"
   ],
+  "Change display language": [
+    "საჩვენებელი ენის შეცვლა"
+  ],
   "Change display language and keyboard layout": [
-    ""
+    "საჩვენებელი ენისა და კლავიატურის განლაგების შეცვლა"
   ],
   "Change keyboard": [
     "კლავიატურის შეცვლა"
+  ],
+  "Change keyboard layout": [
+    "კლავიატურის განლაგების შეცვლა"
   ],
   "Change product": [
     "პროდუქტის შეცვლა"
@@ -289,7 +304,7 @@ export default {
     "შეამოწმეთ შემდეგი ელემენტები გაგრძელებამდე"
   ],
   "Choose a disk for placing the boot loader": [
-    ""
+    "აირჩიეთ დისკის ჩამტვირთავის განსათავსებლად"
   ],
   "Choose what to with current content": [
     "აირჩიეთ, რა ვუყო არსებულ შემცველობას"
@@ -329,6 +344,9 @@ export default {
   ],
   "Configure zFCP": [
     "zFCP-ის მორგება"
+  ],
+  "Configured for installation only": [
+    "მორგებულია მხოლოდ დასაყენებლად"
   ],
   "Configuring the product, please wait ...": [
     "მიმდინარეობს პროდუქტის მორგება. მოითმინეთ ..."
@@ -442,10 +460,10 @@ export default {
     "ნაგულისხმევი ფაილური სისტემა ზოგადი დანაყოფებისთვის"
   ],
   "Define a custom size or a range": [
-    ""
+    "აღერეთ თქვენი ზომა ან შუალედი"
   ],
   "Define a new LVM on the disk": [
-    ""
+    "ახალი LVM-ის აღწერა დისკზე"
   ],
   "Define a new LVM on top of one or several disks": [
     ""
@@ -469,7 +487,7 @@ export default {
     "ტომების ჯგუფის წაშლა"
   ],
   "Destroy current data and format partition as": [
-    ""
+    "მიმდინარე მონაცემების განადგურება და დანაყოფის დაფორმატება, როგორც"
   ],
   "Details": [
     "დეტალები"
@@ -574,7 +592,7 @@ export default {
     "შეიყვანეთ სახელი"
   ],
   "Enter a name for the volume group.": [
-    ""
+    "შეიყვანეთ სახელი ტომების ჯგუფისთვის."
   ],
   "ExFAT": [
     "ExFAT"
@@ -616,7 +634,7 @@ export default {
     "გაფილტვრა აღწერით ან რილაკების რუკის კოდით"
   ],
   "Filter by language, territory or locale code": [
-    ""
+    "ფილტრი ენით, ტერიტორიით, ან ლოკალის კოდით"
   ],
   "Filter by max channel": [
     "გაფილვრა მაქს. არხით"
@@ -670,7 +688,7 @@ export default {
     "ნაგულისხმევი რაუტერი"
   ],
   "Gateway can be defined only in 'Manual' mode": [
-    ""
+    "ნაგულისხმევი რაუტერის მითითება, მხოლოდ, 'ხელით' რეჟიმში შეიძლება"
   ],
   "GiB": [
     "გიბ"
@@ -685,8 +703,8 @@ export default {
     "დამალვა"
   ],
   "Hide %d subvolume action": [
-    "",
-    ""
+    "%d ქვეტომის ქმედების დამალვა",
+    "%d ქვეტომის ქმედების დამალვა"
   ],
   "Hide details": [
     "დეტალების დამალვა"
@@ -799,6 +817,9 @@ export default {
   "Installation will take %s.": [
     "დაყენებას დასჭირდება %s."
   ],
+  "Installed system may not have network connections": [
+    "დაყენებულ სისტემას შეიძლება, ქსელი არ ჰქონდეს"
+  ],
   "Installing a broken package affects system stability and is a big security risk!": [
     ""
   ],
@@ -858,6 +879,9 @@ export default {
   ],
   "Language": [
     "ენა"
+  ],
+  "Language and keyboard": [
+    "ენა და კლავიატურა"
   ],
   "Let the installer propose a sensible range of sizes": [
     ""
@@ -1027,6 +1051,9 @@ export default {
   "No additional software was selected.": [
     "დამატებითი პროგრამები არ არჩეულა."
   ],
+  "No conflicts to address": [
+    "გასათვალისწინებელი კონფლიქტების გარეშე"
+  ],
   "No content found": [
     "შემცველობა აღმოჩენილი არაა"
   ],
@@ -1070,16 +1097,16 @@ export default {
     "არაფერი"
   ],
   "None of the keymaps match the filter.": [
-    ""
+    "ფილტრს არცერთი კლავიტურის განლაგება ემთხვევა."
   ],
   "None of the locales match the filter.": [
-    ""
+    "ლოკალების რაოდენობა, რომელიც ფილტრს ემთხვევა."
   ],
   "None of the patterns match the filter.": [
-    ""
+    "ფილტრს შაბლონებიდან არც ერთი ემთხვევა."
   ],
   "None of the time zones match the filter.": [
-    ""
+    "ფილტრს დროის სარტყლებიდან არცერთი ემთხვევა."
   ],
   "Not available": [
     "ხელმისაწვდომი არაა"
@@ -1109,7 +1136,7 @@ export default {
     "ჩატვირთვისას"
   ],
   "Only available if authentication by target is provided": [
-    ""
+    "ხელმისაწვდომია, მხოლოდ, მაშინ, თუ მითითებულია ავთენტიკაცია სამიზნით"
   ],
   "Options toggle": [
     "პარამეტრის გადართვა"
@@ -1286,7 +1313,7 @@ export default {
     "შედეგი"
   ],
   "Review and fix": [
-    ""
+    "გადახედვა და გასწორება"
   ],
   "Root authentication methods": [
     "Root-ით ავთენტიკაციის მეთოდები"
@@ -1345,6 +1372,9 @@ export default {
   "Select a product": [
     "აირჩიეთ პროდუქტი"
   ],
+  "Select a solution to continue": [
+    "გასაგრძელებლად აირჩიეთ გადაწყვეტილება"
+  ],
   "Select another disk to define partitions": [
     "აირჩიეთ სხვა დისკი დანაყოფების აღწერისთვის"
   ],
@@ -1358,7 +1388,7 @@ export default {
     ""
   ],
   "Select or enter a valid mount point": [
-    ""
+    "აირჩიეთ, ან შეიყვანეთ სწორი მიმაგრების წერტილი"
   ],
   "Select the disk to configure partitions for booting": [
     "აირჩიეთ დისკი ჩატვირთვადი დანაყოფების მოსარგებად"
@@ -1397,11 +1427,17 @@ export default {
     "ჩვენება"
   ],
   "Show %d subvolume action": [
-    "",
-    ""
+    "%d ქვეტომის ქმედების ჩვენება",
+    "%d ქვეტომის ქმედების ჩვენება"
   ],
   "Show information about %s": [
     "ინფორმაციის ჩვენება %s-ის შესახებ"
+  ],
+  "Show less actions": [
+    "ნაკლები ქმედების ჩვენება"
+  ],
+  "Show more actions": [
+    "მეტი ქმედების ჩვენება"
   ],
   "Shrink existing partitions": [
     "არსებული დანაყოფების დაპატარავება"
@@ -1428,19 +1464,22 @@ export default {
     ""
   ],
   "Skip to content": [
-    ""
+    "შემცველობაზე გადასვლა"
   ],
   "Skip to next": [
-    ""
+    "შემდეგზე გადასვლა"
   ],
   "Skip to previous": [
-    ""
+    "წინაზე დაბრუნება"
   ],
   "Software": [
     "პროგრამები"
   ],
   "Software %s": [
     "პროგრამული %s"
+  ],
+  "Software conflicts resolution": [
+    "პროგრამების კონფლიქტის გადაწყვეტილება"
   ],
   "Software selection": [
     "პროგრამების არჩევანი"
@@ -1467,7 +1506,7 @@ export default {
     "საბაზისო დაყენების მორგების დაწყება"
   ],
   "Start from scratch with the default configuration": [
-    ""
+    "დაწყება ნულიდან ნაგულისხმევი კონფიგურაციით"
   ],
   "Startup": [
     "გაშვება"
@@ -1505,6 +1544,9 @@ export default {
   "The configured LVM groups will remain at %s": [
     ""
   ],
+  "The connection will be used only during installation and not available in the installed system.": [
+    ""
+  ],
   "The content may be deleted": [
     "შეიძლება, შემცველობა წაიშალოს"
   ],
@@ -1527,7 +1569,7 @@ export default {
     "მოწყობილობის დაპატარავება შეუძლებელია:"
   ],
   "The device will be mounted at %s.": [
-    ""
+    "მოწყბილობა მიმაგრებული იქნება, როგორც %s."
   ],
   "The device will be used by the new system.": [
     ""
@@ -1551,7 +1593,7 @@ export default {
     ""
   ],
   "The following software patterns are selected for installation:": [
-    ""
+    "დაყენებისთვის არჩეულია შემდეგი პროგრამის შაბლონები:"
   ],
   "The initiator name cannot be blank": [
     "ინიციატორის სახელი არ შეიძლება, ცარიელი იყოს"
@@ -1564,6 +1606,9 @@ export default {
   ],
   "The installation will take %s including:": [
     "დაყენებას დასჭირდება %s ჩათვლით:"
+  ],
+  "The installer interface is no longer available, so you can safely close this window.": [
+    ""
   ],
   "The installer requires [root] user privileges.": [
     "დაყენების პროგრამას [root] მომხმარებლის პრივილეგიები სჭირდება."
@@ -1755,7 +1800,7 @@ export default {
     "ატვირთვა"
   ],
   "Upload, paste, or drop an SSH public key": [
-    ""
+    "ატვირთეთ, ჩასვით, ან დააგდეთ ზედ SSH-ის საჯარო გასაღები"
   ],
   "Use": [
     "გამოყენება"
@@ -1764,7 +1809,7 @@ export default {
     "%s-ის გამოყენება"
   ],
   "Use %s for LVM and additional partitions": [
-    ""
+    "%s-ის გამოყენება LVM-სთვის და დამატებითი დანაყოფებისთვის"
   ],
   "Use %s for LVM, additional partitions and booting": [
     ""
@@ -1782,7 +1827,7 @@ export default {
     "%s-ის გამოყენება LVM-ისთვის"
   ],
   "Use %s to host LVM and boot": [
-    ""
+    "%s-ის გამოყენება LVM-ისთვის და ჩასატვირთად"
   ],
   "Use %s to install": [
     "%s-ის გამოყენება დასაყენებლად"
@@ -1791,7 +1836,7 @@ export default {
     "%s-ის გამოყენება დასაყენებლად და ჩასატვირთად"
   ],
   "Use %s to install and host LVM": [
-    ""
+    "%s-ის გამოყენება დასაყენებლად და LVM-ის განთავსებისთვის"
   ],
   "Use %s to install, host LVM and boot": [
     ""
@@ -1802,8 +1847,11 @@ export default {
   "Use available space": [
     "ხელმისაწვდომი ადგილის გამოყენება"
   ],
+  "Use for installation only": [
+    "მხოლოდ დასაყენებლად გამოყენება"
+  ],
   "Use for the selected product too": [
-    ""
+    "გამოყენება მონიშნული პროდუქტისთვისაც"
   ],
   "Use password": [
     "პაროლის გამოყენება"
@@ -1834,6 +1882,9 @@ export default {
   ],
   "Username suggestion dropdown": [
     "მომხმარებლის სახელის მინიშნების ჩამოსაშლელი მენიუ"
+  ],
+  "Using [%s] keyboard": [
+    "გამოიყენება [%s] კლავიატურა"
   ],
   "Using a hashed password.": [
     "დაჰეშილი პაროლის გამოყენება."
@@ -1878,7 +1929,7 @@ export default {
     "Wi-Fi მხარდაჭერილი არაა"
   ],
   "Will be supported in a future version.": [
-    ""
+    "მხარდაჭერილი იქნება მომავალ ვერსიაში."
   ],
   "Wired connections": [
     "მავთულიანი კავშირები"
@@ -1904,11 +1955,14 @@ export default {
   "You will connect to a public network without encryption. Your data may not be secure.": [
     ""
   ],
+  "Your system is rebooting": [
+    "მიმდინარეობს თქენი სისტემის გადატვირთვა"
+  ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
-    ""
+    "[CAPS LOCK] ჩართულია"
   ],
   "at least %s": [
     "%s მაინც"

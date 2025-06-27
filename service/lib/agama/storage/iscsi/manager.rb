@@ -37,6 +37,7 @@ module Agama
         include Yast::I18n
 
         STARTUP_OPTIONS = ["onboot", "manual", "automatic"].freeze
+        PACKAGES = ["open-iscsi", "iscsiuio"].freeze
 
         # Config according to the JSON schema.
         #
@@ -61,7 +62,15 @@ module Agama
           @nodes = []
           @on_activate_callbacks = []
           @on_probe_callbacks = []
-          @on_sessions_change_callbacks = []
+          # Sets iSCSI as configured after any change on the sessions.
+          @on_sessions_change_callbacks = [proc { @configured = true }]
+        end
+
+        # Whether iSCSI was configured.
+        #
+        # @return [Boolean]
+        def configured?
+          !!@configured
         end
 
         # Performs actions for activating iSCSI.
