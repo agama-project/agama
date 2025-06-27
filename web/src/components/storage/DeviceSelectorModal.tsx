@@ -72,7 +72,7 @@ export default function DeviceSelectorModal({
   devices,
 }): React.ReactNode {
   // FIXME: improve initial selection handling
-  const [selectedDevices, setSelectedDevices] = useState(selected ? [selected] : []);
+  const [selectedDevices, setSelectedDevices] = useState(selected ? [selected] : [devices[0]]);
 
   const onAccept = () => {
     selectedDevices !== Array(selected) && onConfirm(selectedDevices);
