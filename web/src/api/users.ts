@@ -54,7 +54,7 @@ const fetchRoot = (): Promise<RootUser> => get("/api/users/root");
 const updateRoot = (changes: Partial<RootUser>) => patch("/api/users/root", changes);
 
 /**
- * Adds the password check result.
+ * Checks the strength of the given password.
  *
  * @param password - Password to check.
  */
