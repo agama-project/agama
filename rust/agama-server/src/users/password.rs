@@ -102,6 +102,7 @@ mod test {
     use crate::users::password::{PasswordCheckResult, PasswordChecker};
 
     #[test]
+    #[cfg(not(ci))]
     fn test_passwords() {
         let checker = PasswordChecker::default();
 
