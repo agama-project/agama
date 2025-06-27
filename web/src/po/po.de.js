@@ -189,20 +189,11 @@ export default {
   "Authentication by target": [
     "Authentifizierung durch das Ziel"
   ],
-  "Auto LUNs Scan": [
-    ""
-  ],
   "Automatic": [
     "Automatisch"
   ],
   "Automatic (DHCP)": [
     "Automatisch (DHCP)"
-  ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    ""
-  ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    ""
   ],
   "Available products": [
     "Verfügbare Produkte"
@@ -329,9 +320,6 @@ export default {
   ],
   "Configure LVM Volume Group": [
     "LVM-Volume-Gruppe konfigurieren"
-  ],
-  "Configure LVM logical volume at %s volume group": [
-    ""
   ],
   "Configure device menu": [
     "Gerätemenü konfigurieren"
@@ -633,12 +621,6 @@ export default {
   "Filter by language, territory or locale code": [
     "Nach Sprache, Gebiet oder Sprachumgebungscode filtern"
   ],
-  "Filter by max channel": [
-    ""
-  ],
-  "Filter by min channel": [
-    ""
-  ],
   "Filter by pattern title or description": [
     "Nach Mustertitel oder Beschreibung filtern"
   ],
@@ -762,9 +744,6 @@ export default {
   ],
   "Incorrect user name": [
     "Falscher Benutzername"
-  ],
-  "Initiator": [
-    "Initiator"
   ],
   "Initiator details": [
     "Initiatordetails"
@@ -977,7 +956,7 @@ export default {
     "Weitere Geräte"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    "Weitere Tastaturbelegungen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar."
+    "Weitere Tastaturbelegungen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
     "Weitere Sprach- und Tastaturbelegungsoptionen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar."
@@ -1279,12 +1258,6 @@ export default {
   "Remove": [
     "Entfernen"
   ],
-  "Remove max channel filter": [
-    ""
-  ],
-  "Remove min channel filter": [
-    ""
-  ],
   "Remove the configuration for this disk": [
     "Konfiguration für diese Festplatte entfernen"
   ],
@@ -1584,7 +1557,7 @@ export default {
     "Die Installation benötigt %s einschließlich:"
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
-    ""
+    "Die Oberfläche des Installationsprogramms ist nicht mehr verfügbar, daher können Sie dieses Fenster gefahrlos schließen."
   ],
   "The installer requires [root] user privileges.": [
     "Das Installationsprogramm erfordert [root]-Benutzerrechte."
@@ -1920,7 +1893,7 @@ export default {
     "Sie stellen eine Verbindung zu einem öffentlichen Netzwerk ohne Verschlüsselung her. Ihre Daten sind möglicherweise nicht sicher."
   ],
   "Your system is rebooting": [
-    ""
+    "Ihr System wird neu gebootet"
   ],
   "ZFCP": [
     "ZFCP"

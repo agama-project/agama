@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Thu Jun 26 13:46:24 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Fri Jun 27 06:30:11 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Warn the user when using a weak user password (bsc#1237480).
 

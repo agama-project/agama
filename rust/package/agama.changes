@@ -1,7 +1,12 @@
 -------------------------------------------------------------------
-Thu Jun 26 13:45:39 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Fri Jun 27 06:29:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add an end-point to check passwords strenght (bsc#1237480).
+
+-------------------------------------------------------------------
+Fri Jun 27 05:29:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix error messages formatting (gh#agama-project/agama#2471).
 
 -------------------------------------------------------------------
 Wed Jun 25 07:56:57 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
