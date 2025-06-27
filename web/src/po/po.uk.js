@@ -1610,7 +1610,7 @@ export default {
     "Встановлення займе %s, включаючи:"
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
-    ""
+    "Інтерфейс програми встановлення більше недоступний. Це вікно можна закрити."
   ],
   "The installer requires [root] user privileges.": [
     "Програма встановлення вимагає привілеїв користувача [root]."
@@ -1958,7 +1958,7 @@ export default {
     "Ви підключитеся до публічної мережі без шифрування. Дані, передані через неї можуть бути незахищеними."
   ],
   "Your system is rebooting": [
-    ""
+    "Система перезапускається"
   ],
   "ZFCP": [
     "ZFCP"

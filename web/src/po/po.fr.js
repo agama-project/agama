@@ -1608,7 +1608,7 @@ export default {
     "L'installation utilisera %s, y compris :"
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
-    ""
+    "L'interface du programme d'installation n'est plus disponible, vous pouvez donc fermer cette fenêtre en toute sécurité."
   ],
   "The installer requires [root] user privileges.": [
     "Le programme d'installation requiert les privilèges de l'utilisateur [root]."
@@ -1725,7 +1725,7 @@ export default {
     "Ce disque contiendra le groupe LVM '%s'"
   ],
   "This disk will contain the LVM group '%s' and any partition needed to boot": [
-    "Ce disque contiendra le groupe LVM '%s' et toute partition nécessaire au démarrage."
+    "Ce disque contiendra le groupe LVM '%s' et toute partition nécessaire au démarrage"
   ],
   "This disk will contain the configured LVM groups": [
     "Ce disque contiendra les groupes LVM configurés"
@@ -1956,7 +1956,7 @@ export default {
     "Vous allez vous connecter à un réseau public non chiffré. Cela peut présenter un risque pour vos données."
   ],
   "Your system is rebooting": [
-    ""
+    "Votre système est en cours de redémarrage"
   ],
   "ZFCP": [
     "ZFCP"
