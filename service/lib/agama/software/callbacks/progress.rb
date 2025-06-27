@@ -52,18 +52,6 @@ module Agama
         end
 
         def setup
-          Yast::Pkg.CallbackStartPackage(
-            Yast::FunRef.new(
-              method(:start_package), "void (string, string, string, integer, boolean)"
-            )
-          )
-
-          Yast::Pkg.CallbackDonePackage(
-            Yast::FunRef.new(
-              method(:done_package), "string (integer, string)"
-            )
-          )
-
           # new libzypp callbacks
           Yast::Pkg.CallbackStartInstallResolvableSA(
             Yast::FunRef.new(
@@ -76,15 +64,16 @@ module Agama
               method(:done_resolvable), "void (map)"
             )
           )
+
+          Yast::Pkg.CallbackStartProvide(
+            Yast::FunRef.new(method(:start_provide), "void (string, integer, boolean)")
+          )
         end
 
       private
 
         # @return [Agama::Progress]
         attr_reader :progress
-
-        # @return [String,nil]
-        attr_accessor :current_package
 
         # @return [Logger]
         attr_reader :logger
@@ -96,51 +85,21 @@ module Agama
 
         def start_resolvable(resolvable)
           logger.info "Started installing resolvable #{resolvable.inspect}"
+          return if resolvable["kind"] != "package"
+
           name = resolvable["name"]
+          # TRANSLATORS: progress message, %s is the package name
           progress.step(_("Installing %s") % name)
         end
 
         def done_resolvable(resolvable)
           logger.info "Finished installing resolvable #{resolvable.inspect}"
+          @installed += 1 if resolvable["kind"] == "package"
         end
 
-        def start_package(package, _file, _summary, _size, _other)
-          logger.info "Started installing package #{package}"
-          progress.step(_("Installing %s") % package)
-          self.current_package = package
-        end
-
-        def done_package(error_code, description)
-          logger.info "Finished installing package #{package}"
-          return "" if error_code == 0
-
-          logger.error("Package #{current_package} failed: #{description}")
-
-          question = Agama::Question.new(
-            qclass:         "software.package_error.install_error",
-            text:           description,
-            # FIXME: temporarily removed the "Abort" option until the final failed
-            # state is handled properly
-            options:        [retry_label.to_sym, continue_label.to_sym],
-            default_option: retry_label.to_sym,
-            data:           { "package" => current_package }
-          )
-
-          questions_client.ask(question) do |question_client|
-            case question_client.answer
-            when retry_label.to_sym
-              "R"
-            # FIXME: temporarily disabled
-            # when abort_label.to_sym
-            #   "C"
-            when continue_label.to_sym
-              "I"
-            else
-              logger.error("Unexpected response #{question_client.answer.inspect}, " \
-                           "ignoring the package error")
-              "I"
-            end
-          end
+        def start_provide(name, size, remote)
+          # TRANSLATORS: progress message, %s is the package name
+          progress.step(_("Downloading %s") % name)
         end
 
         def msg
