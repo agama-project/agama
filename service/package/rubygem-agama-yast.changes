@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 27 14:02:57 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- jsc#PED-11193
+  - do not create the "after install" snapshot 
+
+-------------------------------------------------------------------
 Fri Jun 27 12:07:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the conversion of the "language" section from AutoYaST profiles
