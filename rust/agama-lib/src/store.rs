@@ -35,7 +35,10 @@ use crate::{
     security::store::{SecurityStore, SecurityStoreError},
     software::{SoftwareStore, SoftwareStoreError},
     storage::{
-        http_client::iscsi::{ISCSIHTTPClient, ISCSIHTTPClientError},
+        http_client::{
+            iscsi::{ISCSIHTTPClient, ISCSIHTTPClientError},
+            StorageHTTPClient,
+        },
         store::dasd::{DASDStore, DASDStoreError},
         StorageStore, StorageStoreError,
     },
@@ -203,6 +206,13 @@ impl Store {
         if let Some(dasd) = &settings.dasd {
             self.dasd.store(dasd).await?
         }
+
+        // Reprobing storage is not directly done by zFCP, DASD or iSCSI services for a matter of
+        // efficiency. For now, clients are expected to explicitly reprobe. It is important to
+        // reprobe here before loading the storage settings. Otherwise, the new storage devices are
+        // not used.
+        self.reprobe_storage().await?;
+
         if settings.storage.is_some() || settings.storage_autoyast.is_some() {
             self.storage.store(&settings.into()).await?
         }
@@ -213,6 +223,15 @@ impl Store {
             self.hostname.store(hostname).await?;
         }
 
+        Ok(())
+    }
+
+    // Reprobes the storage devices if the system was marked as deprecated.
+    async fn reprobe_storage(&self) -> Result<(), StorageStoreError> {
+        let storage_client = StorageHTTPClient::new(self.http_client.clone());
+        if storage_client.is_dirty().await? {
+            storage_client.reprobe().await?;
+        }
         Ok(())
     }
 
