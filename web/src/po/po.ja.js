@@ -162,6 +162,9 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "全てのパーティションを削除し、ディスク内に存在するデータを全て消去します。"
   ],
+  "Any interface": [
+    "任意のインターフェイス"
+  ],
   "Apply selected solution": [
     "選択したソリューションを適用する"
   ],
@@ -234,6 +237,15 @@ export default {
   "Beta": [
     "ベータ"
   ],
+  "Bind to MAC address": [
+    "MAC アドレスにバインド"
+  ],
+  "Bind to interface name": [
+    "インターフェイス名にバインド"
+  ],
+  "Binding settings for '%s'": [
+    "'%s' に対するバインディング設定"
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -245,9 +257,6 @@ export default {
   ],
   "Btrfs with snapshots": [
     "スナップショット有りの btrfs"
-  ],
-  "Calculated automatically": [
-    "自動計算"
   ],
   "Cancel": [
     "キャンセル"
@@ -305,6 +314,15 @@ export default {
   ],
   "Choose a disk for placing the boot loader": [
     "ブートローダを配置するディスクを選択してください"
+  ],
+  "Choose device to bind by MAC": [
+    "MAC アドレスでデバイスを識別します"
+  ],
+  "Choose device to bind by name": [
+    "名前でデバイスを識別します"
+  ],
+  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
+    "接続とネットワークインターフェイスとの結びつけ方法を選択してください。これにより、接続が使用するインターフェイスを制御することができます。"
   ],
   "Choose what to with current content": [
     "既にストレージに記録されている情報の取り扱い"
@@ -459,9 +477,6 @@ export default {
   "Default file system for generic partitions": [
     "汎用パーティションに対する既定のファイルシステム"
   ],
-  "Define a custom size or a range": [
-    "独自にサイズや範囲を指定する"
-  ],
   "Define a new LVM on the disk": [
     "ディスクに対して新しい LVM を設定する"
   ],
@@ -548,6 +563,9 @@ export default {
   ],
   "Edit %s": [
     "%s の編集"
+  ],
+  "Edit binding settings": [
+    "バインディング設定の編集"
   ],
   "Edit connection %s": [
     "接続 %s の編集"
@@ -744,9 +762,6 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "このインストーラの起動に際してローカルメディアを使用している場合は、次回の再起動までの間にメディアを取り出しておいてください。"
   ],
-  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "単位を省略した場合はバイト (B) 単位であるものとみなされます。なお、単位は GiB のように 2 のべき乗のほか、 GB のように 10 のべき乗でも指定することができます。"
-  ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "続行すると、お使いのコンピュータのハードディスクにあるパーティションは、ここまでのダイアログで設定したとおりに変更されます。"
   ],
@@ -855,9 +870,6 @@ export default {
   "JFS": [
     "JFS"
   ],
-  "Keep size of %s": [
-    "%s のサイズを維持"
-  ],
   "Keyboard": [
     "キーボード"
   ],
@@ -882,14 +894,8 @@ export default {
   "Language and keyboard": [
     "言語とキーボード"
   ],
-  "Let the installer propose a sensible range of sizes": [
-    "インストーラでのサイズ範囲の提案"
-  ],
   "License language": [
     "ライセンスの言語"
-  ],
-  "Limited": [
-    "制限"
   ],
   "Loading": [
     "読み込んでいます"
@@ -945,26 +951,8 @@ export default {
   "Manual": [
     "手動"
   ],
-  "Maximum": [
-    "最大"
-  ],
-  "Maximum size mode": [
-    "最大サイズのモード"
-  ],
-  "Maximum size options": [
-    "最大サイズのオプション"
-  ],
-  "Maximum size value": [
-    "最大サイズの値"
-  ],
   "MiB": [
     "MiB"
-  ],
-  "Minimum": [
-    "最小"
-  ],
-  "Minimum size value": [
-    "最小サイズの値"
   ],
   "Mode": [
     "モード"
@@ -1335,9 +1323,6 @@ export default {
   "SSID": [
     "SSID"
   ],
-  "Same as minimum": [
-    "最小値と同じ"
-  ],
   "Search": [
     "検索"
   ],
@@ -1452,15 +1437,6 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "サイズ制限は数値でなければいけません。なお、 GiB や GB のように単位を付けることもできます"
   ],
-  "Size options": [
-    "サイズのオプション"
-  ],
-  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
-    "サイズは、数値の後に GiB (2 のべき乗で指定する場合) や GB (10 のべき乗で指定する場合) の形式の単位を付けて入力する必要があります。"
-  ],
-  "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "サイズには単位付きもしくは単位無しの数値を入力しなければなりません。"
-  ],
   "Skip to content": [
     "コンテンツに移動"
   ],
@@ -1542,6 +1518,9 @@ export default {
   "The configured LVM groups will remain at %s": [
     "設定済みの LVM グループが %s に残されます"
   ],
+  "The connection can be used by any available interface.": [
+    "利用可能な任意のインターフェイスを使用するようにします。"
+  ],
   "The connection will be used only during installation and not available in the installed system.": [
     "接続はインストール時にのみ使用され、インストールされたシステムでは利用できません。"
   ],
@@ -1611,15 +1590,6 @@ export default {
   "The installer requires [root] user privileges.": [
     "インストーラを使用するには [root] 権限が必要です。"
   ],
-  "The logical volume can grow to use all the contiguous free space": [
-    "連続した空き領域の範囲まで論理ボリュームを拡大できます"
-  ],
-  "The logical volume can grow until a given limit size": [
-    "指定した上限サイズまで論理ボリュームを拡大できます"
-  ],
-  "The logical volume is created exactly with the given size": [
-    "指定したサイズで論理ボリュームを作成します"
-  ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "最大値は GiB や GB のような単位を付けた数値でなければなりません"
   ],
@@ -1638,47 +1608,11 @@ export default {
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "必要な LVM 物理ボリュームは、論理ボリュームのサイズを元に、選択したディスク内のパーティションとして追加されます。複数のディスクを選択した場合、物理ボリュームはそれらのディスクに分散して配置されます。"
   ],
-  "The partition can grow to use all the contiguous free space": [
-    "連続した空き領域の範囲までパーティションを拡大できます"
-  ],
-  "The partition can grow until a given limit size": [
-    "指定した上限サイズまでパーティションを拡大できます"
-  ],
-  "The partition is created exactly with the given size": [
-    "指定したサイズでパーティションを作成します"
-  ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "TPM 側でシステムの一貫性検証が成功すると、起動とデータへのアクセス処理に際してパスワードが不要になります。 TPM シーリングを使用するには、新しいシステムの初回起動時に直接起動を行う必要があります。"
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "システムのメモリサイズと %2$s 向けの個別ファイルシステムの存在に応じて %1$s 向けのサイズ範囲を動的に調整します。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "システムのメモリサイズと %2$s 向けの個別ファイルシステムの存在に応じて %1$s 向けのサイズ範囲を動的に調整します。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "システムのメモリサイズと btrfs スナップショットの使用方法、そして %2$s 向けの個別ファイルシステムの存在に応じて %1$s 向けのサイズ範囲を動的に調整します。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "システムのメモリサイズと btrfs スナップショットの使用方法、そして %2$s 向けの個別ファイルシステムの存在に応じて %1$s 向けのサイズ範囲を動的に調整します。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "%2$s 向けの個別ファイルシステムの存在に応じて %1$s 向けのサイズ範囲を動的に調整します。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "%2$s 向けの個別ファイルシステムの存在に応じて %1$s 向けのサイズ範囲を動的に調整します。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "btrfs スナップショットの使用方法と %2$s 向けの個別ファイルシステムの存在に応じて %1$s 向けのサイズ範囲を動的に調整します。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "btrfs スナップショットの使用方法と %2$s 向けに個別のファイルシステムの存在に応じて %1$s 向けのサイズ範囲を動的に調整します。"
-  ],
-  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "システムのメモリサイズと btrfs スナップショットの使用方法に応じて %s 向けのサイズ範囲を動的に調整します。"
-  ],
-  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "btrfs スナップショットの使用方法に応じて %s 向けのサイズ範囲を動的に調整します。"
+  "The size is configured as a range between %s and %s, but defining a range of sizes is not supported by the UI.": [
+    ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "ストレージ設定は下記の結果の通り有効ではありますが、このインターフェイスではいくつかの要素がサポートされていません。"
@@ -1961,6 +1895,9 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] が有効化されています"
+  ],
+  "approx. %s": [
+    ""
   ],
   "at least %s": [
     "少なくとも %s"
