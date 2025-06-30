@@ -301,6 +301,7 @@ export default function SearchedDeviceMenu({
       {isSelectorOpen && (
         <DeviceSelectorModal
           title={<ChangeDeviceTitle modelDevice={modelDevice} />}
+          description={<ChangeDeviceDescription modelDevice={modelDevice} device={selected} />}
           selected={selected}
           devices={devices}
           onConfirm={onDeviceChange}

@@ -473,6 +473,10 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   --pf-v6-c-data-list__item--hover--BackgroundColor: var(--agm-t--action--background--color--hover);
 }
 
+.pf-v6-c-modal-box {
+  --pf-v6-c-modal-box__header--Gap: var(--pf-t--global--spacer--xs);
+}
+
 // Nested content inside forms should respect parent grid gap
 .pf-v6-c-form [class*="pf-v6-u-mx"] {
   display: grid;

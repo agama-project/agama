@@ -46,17 +46,10 @@ const AddDeviceTitle = ({ usedCount }) =>
     ? _("Select another disk to define partitions")
     : _("Select a disk to define partitions");
 
-/**
- * Internal component holding the logic for rendering the disks drilldown menu
- */
-const AddDeviceMenuItem = ({
-  usedCount,
-  devices,
-  onClick,
-}: AddDeviceMenuItemProps): React.ReactNode => {
-  const isDisabled = !devices.length;
-  const disabledDescription = _("Already using all available disks");
-  const enabledDescription = usedCount
+const AddDeviceDescription = ({ usedCount, isDisabled = false }) => {
+  if (isDisabled) return _("Already using all available disks");
+
+  return usedCount
     ? sprintf(
         n_(
           "Extend the installation beyond the currently selected disk",
@@ -66,13 +59,23 @@ const AddDeviceMenuItem = ({
         usedCount,
       )
     : _("Start configuring a basic installation");
+};
 
+/**
+ * Internal component holding the logic for rendering the disks drilldown menu
+ */
+const AddDeviceMenuItem = ({
+  usedCount,
+  devices,
+  onClick,
+}: AddDeviceMenuItemProps): React.ReactNode => {
+  const isDisabled = !devices.length;
   return (
     <>
       <MenuButtonItem
         aria-label={_("Add device menu")}
         isDisabled={isDisabled}
-        description={isDisabled ? disabledDescription : enabledDescription}
+        description={<AddDeviceDescription usedCount={usedCount} isDisabled={isDisabled} />}
         onClick={onClick}
       >
         <AddDeviceTitle usedCount={usedCount} />
@@ -147,6 +150,7 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
         <DeviceSelectorModal
           devices={devices}
           title={<AddDeviceTitle usedCount={usedDevicesCount} />}
+          description={<AddDeviceDescription usedCount={usedDevicesCount} />}
           onCancel={closeDeviceSelector}
           onConfirm={([device]) => {
             addDevice(device);

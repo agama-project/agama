@@ -114,7 +114,7 @@ export type SelectableDataTableColumn = {
  * The selection API (`itemsSelected` and `onSelectionChange`) always uses arrays,
  * even in single selection mode, to maintain consistency.
  */
-export type SelectableDataTableProps = {
+export type SelectableDataTableProps<T = any> = {
   /**
    * Defines the columns of the table.
    *
@@ -144,25 +144,25 @@ export type SelectableDataTableProps = {
    * A function that returns the child items of a given item (for expandable
    * items).
    */
-  itemChildren?: (item: object) => object[];
+  itemChildren?: (item: T) => T[];
 
   /**
    * A function to determine if a given item is selectable.
    *
    * Return `false` to disable the selection.
    */
-  itemSelectable?: (item: object) => boolean;
+  itemSelectable?: (item: T) => boolean;
 
   /**
    * A function to add custom CSS class names to the row corresponding to a
    * given item.
    */
-  itemClassNames?: (item: object) => string | undefined;
+  itemClassNames?: (item: T) => string | undefined;
 
   /**
    * Array of currently selected items.
    */
-  itemsSelected?: object[];
+  itemsSelected?: T[];
 
   /**
    * Keys of items that should be initially expanded (for expandable rows).
@@ -174,7 +174,7 @@ export type SelectableDataTableProps = {
    *
    * Receives the updated array of selected items.
    */
-  onSelectionChange?: (selection: object[]) => void;
+  onSelectionChange?: (selection: T[]) => void;
 } & TableProps;
 
 /**

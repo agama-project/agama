@@ -30,12 +30,14 @@ import {
   filesystemLabels,
 } from "~/components/storage/utils/device";
 import { _ } from "~/i18n";
+import { PopupProps } from "../core/Popup";
+import { ButtonProps } from "@patternfly/react-core";
 
 type DeviceSelectorProps = {
   devices: StorageDevice[];
   selectedDevices?: StorageDevice[];
-  onSelectionChange: SelectableDataTableProps["onSelectionChange"];
-  selectionMode?: SelectableDataTableProps["selectionMode"];
+  onSelectionChange: SelectableDataTableProps<StorageDevice>["onSelectionChange"];
+  selectionMode?: SelectableDataTableProps<StorageDevice>["selectionMode"];
 };
 
 // TODO: document
@@ -64,22 +66,31 @@ const DeviceSelector = ({
   );
 };
 
+type DeviceSelectorModalProps = Omit<PopupProps, "children" | "selected"> & {
+  selected?: StorageDevice;
+  devices: StorageDevice[];
+  onConfirm: (selection: StorageDevice[]) => void;
+  onCancel: ButtonProps["onClick"];
+};
+
 export default function DeviceSelectorModal({
-  title,
   selected = undefined,
   onConfirm,
   onCancel,
   devices,
-}): React.ReactNode {
+  ...popupProps
+}: DeviceSelectorModalProps): React.ReactNode {
   // FIXME: improve initial selection handling
-  const [selectedDevices, setSelectedDevices] = useState(selected ? [selected] : [devices[0]]);
+  const [selectedDevices, setSelectedDevices] = useState<StorageDevice[]>(
+    selected ? [selected] : [devices[0]],
+  );
 
   const onAccept = () => {
     selectedDevices !== Array(selected) && onConfirm(selectedDevices);
   };
 
   return (
-    <Popup isOpen variant="medium" title={title}>
+    <Popup isOpen variant="medium" {...popupProps}>
       <DeviceSelector
         devices={devices}
         selectedDevices={selectedDevices}
