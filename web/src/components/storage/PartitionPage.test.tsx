@@ -358,7 +358,7 @@ describe("PartitionPage", () => {
 
       it("allows switching to a fixed size", async () => {
         const { user } = installerRender(<PartitionPage />);
-        const switchButton = screen.getByRole("button", { name: /redefine the size limits\?/ });
+        const switchButton = screen.getByRole("button", { name: /Discard the maximum/ });
         await user.click(switchButton);
         const sizeInput = screen.getByRole("textbox", { name: "Size" });
         expect(sizeInput).toHaveValue("5 GiB");

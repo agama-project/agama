@@ -80,7 +80,7 @@ function UnsupportedSize({ value, onClick }: UnsupportedSizeProps): React.ReactN
         </StackItem>
         <StackItem>
           <Button variant="link" isInline onClick={onClick}>
-            {_("Do you want to redefine the size limits?")}
+            {_("Discard the maximum size and continue with simplified configuration")}
           </Button>
         </StackItem>
       </Stack>
