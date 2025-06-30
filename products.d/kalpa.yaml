@@ -5,14 +5,14 @@ name: Kalpa Desktop
 # at the at translations/description key below to avoid using obsolete
 # translations!!
 # ------------------------------------------------------------------------------
-description: 'A rolling release immutable desktop product, using the Plasma
+description: "A rolling release immutable desktop product, using the Plasma
   Desktop, leveraging Flatpak for Application Delivery, a Read-Only base, and
-  automatic and atomic updates of your system'
+  automatic and atomic updates of your system"
 icon: Kalpa.svg
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:
-
+software:
   installation_repositories:
     - url: https://download.opensuse.org/tumbleweed/repo/oss/
       archs: x86_64
