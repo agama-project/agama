@@ -72,7 +72,7 @@ function UnsupportedSize({ value, onClick }: UnsupportedSizeProps): React.ReactN
         <StackItem>
           {sprintf(
             _(
-              "The size is configured as a range between %s and %s, but defining a range of sizes is not supported by the UI.",
+              "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.",
             ),
             value.min,
             value.max,
@@ -80,7 +80,7 @@ function UnsupportedSize({ value, onClick }: UnsupportedSizeProps): React.ReactN
         </StackItem>
         <StackItem>
           <Button variant="link" isInline onClick={onClick}>
-            {_("Do you want to use a supported size?")}
+            {_("Do you want to redefine the size limits?")}
           </Button>
         </StackItem>
       </Stack>
@@ -156,7 +156,7 @@ function CustomSize({ value, onChange }: CustomSizeProps) {
       <StackItem>
         <Checkbox id="setGrow" label={_("Allow growing")} isChecked={grow} onChange={toggleGrow} />
         <SubtleContent>
-          {_("The final size can be bigger in order to fill the contiguous free space.")}
+          {_("The final size can be bigger in order to fill the extra free space.")}
         </SubtleContent>
       </StackItem>
     </Stack>
@@ -186,7 +186,7 @@ export default function SizeModeSelect({
         <Select
           id={id || "sizeMode"}
           value={value}
-          label={value === "auto" ? _("Automatic") : _("Custom")}
+          label={value === "auto" ? _("Automatic") : _("Manual")}
           onChange={(v: SizeMode) => onChange(v, size)}
         >
           <SelectList aria-label={_("Size modes")}>
@@ -194,7 +194,7 @@ export default function SizeModeSelect({
               {_("Automatic")}
             </SelectOption>
             <SelectOption value="custom" description={_("Define a custom size")}>
-              {_("Custom")}
+              {_("Manual")}
             </SelectOption>
           </SelectList>
         </Select>
