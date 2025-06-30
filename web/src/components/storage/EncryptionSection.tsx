@@ -27,6 +27,7 @@ import { useEncryption } from "~/queries/storage/config-model";
 import { apiModel } from "~/api/storage/types";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
+import PasswordCheck from "~/components/users/PasswordCheck";
 
 function encryptionLabel(method?: apiModel.EncryptionMethod) {
   if (!method) return _("Encryption is disabled");
@@ -38,6 +39,7 @@ function encryptionLabel(method?: apiModel.EncryptionMethod) {
 export default function EncryptionSection() {
   const { encryption } = useEncryption();
   const method = encryption?.method;
+  const password = encryption?.password;
 
   return (
     <Page.Section
@@ -52,6 +54,7 @@ the new file systems, including data, programs, and system files.",
       <Card isCompact isPlain>
         <CardBody>
           <Content component="p">{encryptionLabel(method)}</Content>
+          {password && <PasswordCheck password={password} />}
         </CardBody>
       </Card>
     </Page.Section>
