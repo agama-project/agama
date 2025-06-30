@@ -27,9 +27,10 @@ import DriveDeviceMenu from "~/components/storage/DriveDeviceMenu";
 import PartitionableHeader from "~/components/storage/PartitionableHeader";
 import PartitionsMenu from "~/components/storage/PartitionsMenu";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
-import { Card, CardBody, CardHeader, CardTitle, Flex } from "@patternfly/react-core";
+import { Card, CardBody, CardHeader, CardTitle, Flex, Label } from "@patternfly/react-core";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { deviceLabel } from "./utils";
+import { contentDescription } from "./utils/device";
 
 export type DriveEditorProps = { drive: Drive; driveDevice: StorageDevice };
 
@@ -46,8 +47,9 @@ export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
         }}
       >
         <CardTitle>
-          <DriveHeader drive={drive} driveDevice={driveDevice} />{" "}
+          <DriveHeader drive={drive} driveDevice={driveDevice} />
         </CardTitle>
+        <Label isCompact>{contentDescription(driveDevice)}</Label>
       </CardHeader>
       <CardBody className={spacingStyles.plLg}>
         <Flex direction={{ default: "column" }}>
