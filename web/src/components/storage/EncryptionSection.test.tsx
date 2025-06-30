@@ -32,6 +32,8 @@ jest.mock("~/queries/storage/config-model", () => ({
   useEncryption: () => mockUseEncryption(),
 }));
 
+jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Mock</div>);
+
 describe("EncryptionSection", () => {
   describe("if encryption is enabled", () => {
     beforeEach(() => {
