@@ -71,7 +71,7 @@ const sdb: StorageDevice = {
 };
 
 const onCancelMock = jest.fn();
-const onAcceptMock = jest.fn();
+const onConfirmMock = jest.fn();
 
 describe("DeviceSelectorModal", () => {
   it("renders a modal dialog with a table for selecting a device", () => {
@@ -80,7 +80,7 @@ describe("DeviceSelectorModal", () => {
         devices={[sda, sdb]}
         title="Select a device"
         onCancel={onCancelMock}
-        onAccept={onAcceptMock}
+        onConfirm={onConfirmMock}
       />,
     );
     screen.getByRole("dialog", { name: "Select a device" });
@@ -92,7 +92,7 @@ describe("DeviceSelectorModal", () => {
         devices={[sda, sdb]}
         title="Select a device"
         onCancel={onCancelMock}
-        onAccept={onAcceptMock}
+        onConfirm={onConfirmMock}
       />,
     );
     const table = screen.getByRole("grid");
@@ -111,7 +111,7 @@ describe("DeviceSelectorModal", () => {
         devices={[sda, sdb]}
         title="Select a device"
         onCancel={onCancelMock}
-        onAccept={onAcceptMock}
+        onConfirm={onConfirmMock}
       />,
     );
 
@@ -126,7 +126,7 @@ describe("DeviceSelectorModal", () => {
         devices={[sda, sdb]}
         title="Select a device"
         onCancel={onCancelMock}
-        onAccept={onAcceptMock}
+        onConfirm={onConfirmMock}
       />,
     );
 
@@ -135,13 +135,13 @@ describe("DeviceSelectorModal", () => {
     expect(onCancelMock).toHaveBeenCalled();
   });
 
-  it("triggers `onAccept` callback with selected devices when users selects `Confirm` action", async () => {
+  it("triggers `onConfirm` callback with selected devices when users selects `Confirm` action", async () => {
     const { user } = plainRender(
       <DeviceSelectorModal
         devices={[sda, sdb]}
         title="Select a device"
         onCancel={onCancelMock}
-        onAccept={onAcceptMock}
+        onConfirm={onConfirmMock}
       />,
     );
 
@@ -150,6 +150,6 @@ describe("DeviceSelectorModal", () => {
     await user.click(sdbRadio);
     const confirmAction = screen.getByRole("button", { name: "Confirm" });
     await user.click(confirmAction);
-    expect(onAcceptMock).toHaveBeenCalledWith([sdb]);
+    expect(onConfirmMock).toHaveBeenCalledWith([sdb]);
   });
 });
