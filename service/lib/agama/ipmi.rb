@@ -84,7 +84,7 @@ module Agama
       # pass it directly as an argument
       file = Tempfile.new("agama-ipmi")
 
-      file.write("0x4 0x1F 0x0 0x6f %#{code} 0x0 0x0\n")
+      file.write("0x4 0x1F 0x0 0x6f 0x#{code.to_s(16)} 0x0 0x0\n")
       file.close
 
       system("ipmitool event file #{file.path}")
