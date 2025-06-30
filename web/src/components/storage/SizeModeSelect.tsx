@@ -94,7 +94,7 @@ type CustomSizeProps = {
 };
 
 function CustomSize({ value, onChange }: CustomSizeProps) {
-  const [grow, setGrow] = useState(value.max === NO_VALUE);
+  const [grow, setGrow] = useState(value.min !== value.max);
 
   const changeSize = (min: string) => {
     const max = grow ? NO_VALUE : min;

@@ -363,7 +363,7 @@ describe("PartitionPage", () => {
         const sizeInput = screen.getByRole("textbox", { name: "Size" });
         expect(sizeInput).toHaveValue("5 GiB");
         const growCheck = screen.getByRole("checkbox", { name: "Allow growing" });
-        expect(growCheck).not.toBeChecked();
+        expect(growCheck).toBeChecked();
       });
     });
   });
