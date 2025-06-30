@@ -296,7 +296,7 @@ export default function SearchedDeviceMenu({
           <RemoveEntryOption key="delete-disk-option" device={modelDevice} onClick={deleteFn} />,
         ]}
       >
-        {_("More actions")} <Icon name="more_horiz" className="agm-strong-icon" />
+        {_("Change")} <Icon name="more_horiz" className="agm-strong-icon" />
       </MenuButton>
       {isSelectorOpen && (
         <DeviceSelectorModal
