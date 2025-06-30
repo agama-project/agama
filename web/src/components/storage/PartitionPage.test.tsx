@@ -214,7 +214,7 @@ describe("PartitionPage", () => {
     await user.click(size);
     const sizeModes = screen.getByRole("listbox", { name: "Size modes" });
     // Display custom size
-    const customSize = within(sizeModes).getByRole("option", { name: /Custom/ });
+    const customSize = within(sizeModes).getByRole("option", { name: /Manual/ });
     await user.click(customSize);
     screen.getByRole("textbox", { name: "Size" });
     screen.getByRole("checkbox", { name: "Allow growing" });
@@ -269,7 +269,7 @@ describe("PartitionPage", () => {
     await user.click(sizeMode);
     const sizeModes = screen.getByRole("listbox", { name: "Size modes" });
     // Display custom size
-    const customSize = within(sizeModes).getByRole("option", { name: /Custom/ });
+    const customSize = within(sizeModes).getByRole("option", { name: /Manual/ });
     await user.click(customSize);
     const size = screen.getByRole("textbox", { name: "Size" });
 
@@ -309,7 +309,7 @@ describe("PartitionPage", () => {
       const label = screen.getByRole("textbox", { name: "File system label" });
       expect(label).toHaveValue("HOME");
       const sizeModeButton = screen.getByRole("button", { name: "Size mode" });
-      within(sizeModeButton).getByText("Custom");
+      within(sizeModeButton).getByText("Manual");
       const sizeInput = screen.getByRole("textbox", { name: "Size" });
       expect(sizeInput).toHaveValue("5 GiB");
       const growCheck = screen.getByRole("checkbox", { name: "Allow growing" });
@@ -358,7 +358,7 @@ describe("PartitionPage", () => {
 
       it("allows switching to a fixed size", async () => {
         const { user } = installerRender(<PartitionPage />);
-        const switchButton = screen.getByRole("button", { name: /use a supported size\?/ });
+        const switchButton = screen.getByRole("button", { name: /redefine the size limits\?/ });
         await user.click(switchButton);
         const sizeInput = screen.getByRole("textbox", { name: "Size" });
         expect(sizeInput).toHaveValue("5 GiB");
@@ -389,7 +389,7 @@ describe("PartitionPage", () => {
         const sizeModeButton = screen.getByRole("button", { name: "Size mode" });
         await user.click(sizeModeButton);
         const sizeModes = screen.getByRole("listbox", { name: "Size modes" });
-        const customSize = within(sizeModes).getByRole("option", { name: /Custom/ });
+        const customSize = within(sizeModes).getByRole("option", { name: /Manual/ });
         await user.click(customSize);
         const sizeInput = screen.getByRole("textbox", { name: "Size" });
         expect(sizeInput).toHaveValue("5 GiB");
