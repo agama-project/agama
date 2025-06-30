@@ -175,13 +175,13 @@ describe Agama::Software::Proposal do
     end
 
     before do
-      allow(Yast::Pkg).to receive(:PkgMediaCount).and_return([
-        [500], [300], [100]
-      ])
+      allow(Yast::Pkg).to receive(:PkgMediaCount).and_return(
+        [[500], [300], [100]]
+      )
 
-      allow(Yast::Pkg).to receive(:PkgMediaNames).and_return([
-        ["Base", 0], ["Disabled", 1], ["Remote", 2]
-      ])
+      allow(Yast::Pkg).to receive(:PkgMediaNames).and_return(
+        [["Base", 0], ["Disabled", 1], ["Remote", 2]]
+      )
     end
 
     it "returns the selected packages" do
