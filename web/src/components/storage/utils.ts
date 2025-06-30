@@ -249,7 +249,7 @@ const deviceLabel = (device: StorageDevice, truncate?: boolean): string => {
   const name = deviceBaseName(device, truncate);
   const size = device.size;
 
-  return size ? `${name}, ${deviceSize(size)}` : name;
+  return size ? `${name} (${deviceSize(size)})` : name;
 };
 
 /**

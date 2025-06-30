@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,7 +24,7 @@
 
 import React from "react";
 import { FormSelect, FormSelectOption } from "@patternfly/react-core";
-import { deviceSize } from "~/components/storage/utils";
+import { deviceLabel } from "~/components/storage/utils";
 
 /**
  * @typedef {import ("@patternfly/react-core").FormSelectProps} PFFormSelectProps
@@ -56,11 +56,7 @@ export default function DevicesFormSelect({ devices, selectedDevice, onChange, .
       onChange={(_, value) => onChange(devices.find((d) => d.sid === Number(value)))}
     >
       {devices.map((device) => (
-        <FormSelectOption
-          key={device.sid}
-          value={device.sid}
-          label={`${device.name}, ${deviceSize(device.size)}`}
-        />
+        <FormSelectOption key={device.sid} value={device.sid} label={deviceLabel(device)} />
       ))}
     </FormSelect>
   );
