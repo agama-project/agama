@@ -366,5 +366,36 @@ describe("PartitionPage", () => {
         expect(growCheck).toBeChecked();
       });
     });
+
+    describe("if the default size has a max value", () => {
+      beforeEach(() => {
+        mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
+        mockGetPartition.mockReturnValue({
+          mountPath: "/home",
+          size: {
+            default: true,
+            min: gib(5),
+            max: gib(10),
+          },
+          filesystem: {
+            default: false,
+            type: "xfs",
+          },
+        });
+      });
+
+      it("allows switching to a custom size", async () => {
+        const { user } = installerRender(<PartitionPage />);
+        const sizeModeButton = screen.getByRole("button", { name: "Size mode" });
+        await user.click(sizeModeButton);
+        const sizeModes = screen.getByRole("listbox", { name: "Size modes" });
+        const customSize = within(sizeModes).getByRole("option", { name: /Custom/ });
+        await user.click(customSize);
+        const sizeInput = screen.getByRole("textbox", { name: "Size" });
+        expect(sizeInput).toHaveValue("5 GiB");
+        const growCheck = screen.getByRole("checkbox", { name: "Allow growing" });
+        expect(growCheck).toBeChecked();
+      });
+    });
   });
 });
