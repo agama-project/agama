@@ -164,7 +164,7 @@ module Agama
 
       # Returns the count of packages to download
       #
-      # @return [Integer] count of packages to install
+      # @return [Integer] count of packages to download
       def packages_download_count
         # all enabled remote repositories
         remote_repos = Agama::Software::Repository.all

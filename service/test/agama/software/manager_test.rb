@@ -59,8 +59,9 @@ describe Agama::Software::Manager do
       calculate:        nil,
       :languages= =>    nil,
       set_resolvables:  nil,
-      packages_count:   "500 MB",
+      packages_count:   500,
       issues:           proposal_issues,
+      packages_download_count: 450,
       on_issues_change: nil,
       only_required:    nil
     )

@@ -156,6 +156,39 @@ describe Agama::Software::Proposal do
     end
   end
 
+  describe "#packages_download_count" do
+    let(:local_enabled) do
+      instance_double(Agama::Software::Repository, enabled?: true, local?: true, repo_id: 0)
+    end
+
+    let(:disabled) do
+      instance_double(Agama::Software::Repository, enabled?: false, local?: true, repo_id: 1)
+    end
+
+    let(:remote) do
+      instance_double(Agama::Software::Repository, enabled?: true, local?: false, repo_id: 2)
+    end
+
+    before do
+      allow(Agama::Software::Repository).to receive(:all)
+        .and_return([local_enabled, disabled, remote])
+    end
+
+    before do
+      allow(Yast::Pkg).to receive(:PkgMediaCount).and_return([
+        [500], [300], [100]
+      ])
+
+      allow(Yast::Pkg).to receive(:PkgMediaNames).and_return([
+        ["Base", 0], ["Disabled", 1], ["Remote", 2]
+      ])
+    end
+
+    it "returns the selected packages" do
+      expect(subject.packages_download_count).to eq(100)
+    end
+  end
+
   describe "#packages_size" do
     before do
       allow(Yast::Pkg).to receive(:PkgMediaSizes)
