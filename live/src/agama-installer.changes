@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jun 30 15:51:37 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 16
+
+-------------------------------------------------------------------
 Fri Jun 20 14:57:08 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Install "gdm-systemd" and enable "gdm.service" to start the

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jun 30 15:51:41 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 16
+
+-------------------------------------------------------------------
 Tue Jun 24 07:57:56 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Use more consistent "agama config generate" command instead of

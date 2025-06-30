@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jun 30 15:51:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 16
+
+-------------------------------------------------------------------
 Mon Jun 30 11:23:03 UTC 2025 - Martin Vidner <mvidner@suse.com>
 
 - ipmitool invocation: do not write spurious % percent sign
