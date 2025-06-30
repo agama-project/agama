@@ -234,6 +234,12 @@ export default {
   "Beta": [
     "Bêta"
   ],
+  "Bind to interface name": [
+    ""
+  ],
+  "Binding settings for '%s'": [
+    ""
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -245,9 +251,6 @@ export default {
   ],
   "Btrfs with snapshots": [
     "Btrfs avec clichés"
-  ],
-  "Calculated automatically": [
-    "Calculé automatiquement"
   ],
   "Cancel": [
     "Annuler"
@@ -305,6 +308,15 @@ export default {
   ],
   "Choose a disk for placing the boot loader": [
     "Choisir un disque pour placer le chargeur d'amorçage"
+  ],
+  "Choose device to bind by MAC": [
+    ""
+  ],
+  "Choose device to bind by name": [
+    ""
+  ],
+  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
+    ""
   ],
   "Choose what to with current content": [
     "Choisir ce qu'il faut faire avec le contenu actuel"
@@ -458,9 +470,6 @@ export default {
   ],
   "Default file system for generic partitions": [
     "Système de fichiers par défaut pour les partitions génériques"
-  ],
-  "Define a custom size or a range": [
-    "Définir une taille ou une plage personnalisée"
   ],
   "Define a new LVM on the disk": [
     "Définir un nouveau LVM sur le disque"
@@ -745,9 +754,6 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Si un périphérique local a été utilisé pour exécuter ce programme d'installation, retirez-le avant le prochain démarrage."
   ],
-  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "Si l'unité est omise, des octets (o) seront utilisés. Les unités supérieures peuvent se présenter sous la forme Gio (puissance de 2) ou Go (puissance de 10)."
-  ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Si vous continuez, les partitions de votre disque dur seront modifiées selon les paramètres d'installation fournis."
   ],
@@ -856,9 +862,6 @@ export default {
   "JFS": [
     "JFS"
   ],
-  "Keep size of %s": [
-    "Conserver la taille de %s"
-  ],
   "Keyboard": [
     "Clavier"
   ],
@@ -883,14 +886,8 @@ export default {
   "Language and keyboard": [
     "Langue et clavier"
   ],
-  "Let the installer propose a sensible range of sizes": [
-    "Laisser le programme d'installation proposer une plage de tailles adaptée"
-  ],
   "License language": [
     "Langue de la licence"
-  ],
-  "Limited": [
-    "Limité"
   ],
   "Loading": [
     "Chargement"
@@ -946,26 +943,8 @@ export default {
   "Manual": [
     "Manuel"
   ],
-  "Maximum": [
-    "Maximum"
-  ],
-  "Maximum size mode": [
-    "Mode de la taille maximale"
-  ],
-  "Maximum size options": [
-    "Options de taille maximale"
-  ],
-  "Maximum size value": [
-    "Valeur maximale de la taille"
-  ],
   "MiB": [
     "MiB"
-  ],
-  "Minimum": [
-    "Minimum"
-  ],
-  "Minimum size value": [
-    "Valeur minimale de la taille"
   ],
   "Mode": [
     "Mode"
@@ -1336,9 +1315,6 @@ export default {
   "SSID": [
     "SSID"
   ],
-  "Same as minimum": [
-    "Identique au minimum"
-  ],
   "Search": [
     "Rechercher"
   ],
@@ -1453,15 +1429,6 @@ export default {
   ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Les limites de taille doivent être des nombres suivis éventuellement d'une unité comme Gio ou Go"
-  ],
-  "Size options": [
-    "Options de taille"
-  ],
-  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
-    "Les tailles doivent être saisies en tant que nombres suivis d'une unité de la forme Gio (puissance de 2) ou Go (puissance de 10)."
-  ],
-  "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "Les tailles doivent être saisies sous forme de nombres suivis éventuellement d'une unité."
   ],
   "Skip to content": [
     "Passer au contenu"
@@ -1613,15 +1580,6 @@ export default {
   "The installer requires [root] user privileges.": [
     "Le programme d'installation requiert les privilèges de l'utilisateur [root]."
   ],
-  "The logical volume can grow to use all the contiguous free space": [
-    "Le volume logique peut grandir jusqu'à utiliser tout l'espace libre contigu"
-  ],
-  "The logical volume can grow until a given limit size": [
-    "Le volume logique peut grandir jusqu'à une taille limite spécifiée"
-  ],
-  "The logical volume is created exactly with the given size": [
-    "Le volume logique est créé exactement avec la taille spécifiée"
-  ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Le maximum doit être un nombre suivi d'une unité comme Gio ou Go"
   ],
@@ -1640,47 +1598,11 @@ export default {
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "Les volumes physiques LVM nécessaires seront ajoutés en tant que partitions sur les disques choisis, en fonction de la taille des volumes logiques. Si vous sélectionnez plus d'un disque, les volumes physiques peuvent être répartis sur plusieurs disques."
   ],
-  "The partition can grow to use all the contiguous free space": [
-    "La partition peut grandir jusqu'à utiliser tout l'espace libre contigu"
-  ],
-  "The partition can grow until a given limit size": [
-    "La partition peut croître jusqu'à une taille limite donnée"
-  ],
-  "The partition is created exactly with the given size": [
-    "La partition est créée exactement avec la taille stipulée"
-  ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Le mot de passe ne sera pas nécessaire pour démarrer et accéder aux données si le TPM peut vérifier l'intégrité du système. Le verrouillage du TPM requiert que le nouveau système soit démarré directement lors de sa première exécution."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "La plage de tailles de %1$s sera ajustée dynamiquement en fonction de la quantité de mémoire vive du système et de la présence d'un système de fichiers distinct pour %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "La plage de tailles de %1$s sera ajustée dynamiquement en fonction de la quantité de mémoire vive du système et de la présence de systèmes de fichiers distincts pour %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "La plage de tailles de %1$s sera ajustée dynamiquement en fonction de la quantité de mémoire vive du système, de l'utilisation d'instantanés Btrfs et de la présence d'un système de fichiers distinct pour %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "La plage de tailles de %1$s sera ajustée dynamiquement en fonction de la quantité de mémoire vive du système, de l'utilisation d'instantanés Btrfs et de la présence de systèmes de fichiers distincts pour %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "La plage de tailles de %1$s sera ajustée dynamiquement en fonction de la présence d'un système de fichiers distinct pour %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "La plage de tailles de %1$s sera ajustée dynamiquement en fonction de la présence de systèmes de fichiers distincts pour %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "La plage de tailles de %1$s sera ajustée dynamiquement en fonction de l'utilisation d'instantanés Btrfs et de la présence d'un système de fichiers distinct pour %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "La plage de tailles de %1$s sera ajustée dynamiquement en fonction de l'utilisation d'instantanés Btrfs et de la présence de systèmes de fichiers distincts pour %2$s."
-  ],
-  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "La plage de tailles de %s sera ajustée dynamiquement en fonction de la quantité de mémoire vive du système et de l'utilisation d'instantanés Btrfs."
-  ],
-  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "La plage de tailles de %s sera ajustée dynamiquement en fonction de l'utilisation d'instantanés Btrfs."
+  "The size is configured as a range between %s and %s, but defining a range of sizes is not supported by the UI.": [
+    ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "La configuration du stockage est valide (voir le résultat ci-dessous), mais utilise des éléments qui ne sont pas pris en charge par cette interface."
@@ -1963,6 +1885,9 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "La fonction [VERR MAJ] est activée"
+  ],
+  "approx. %s": [
+    ""
   ],
   "at least %s": [
     "au moins %s"

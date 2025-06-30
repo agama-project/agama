@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Fri Jun 27 14:02:57 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- jsc#PED-11193
+  - do not create the "after install" snapshot 
+
+-------------------------------------------------------------------
+Fri Jun 27 12:07:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the conversion of the "language" section from AutoYaST profiles
+  (gh#agama-project/agama#2516).
+
+-------------------------------------------------------------------
 Wed Jun 25 20:29:58 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - do not crash if onlyRequired flag is set and libzypp is not

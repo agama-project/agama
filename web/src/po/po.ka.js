@@ -162,6 +162,9 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     ""
   ],
+  "Any interface": [
+    "ნებისმიერი ინტერფეისი"
+  ],
   "Apply selected solution": [
     "არჩეული გადაწყვეტის გადატარება"
   ],
@@ -234,6 +237,15 @@ export default {
   "Beta": [
     "ბეტა"
   ],
+  "Bind to MAC address": [
+    "მიბმა MAC მისამართზე"
+  ],
+  "Bind to interface name": [
+    "მიბმა ინტერფეისის სახელზე"
+  ],
+  "Binding settings for '%s'": [
+    "მიბმის პარამეტრები '%s'-სთვის"
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -245,9 +257,6 @@ export default {
   ],
   "Btrfs with snapshots": [
     "Btrfs სწრაფი ასლებით"
-  ],
-  "Calculated automatically": [
-    "ავტომატურად გამოთვლილი"
   ],
   "Cancel": [
     "გაუქმება"
@@ -305,6 +314,15 @@ export default {
   ],
   "Choose a disk for placing the boot loader": [
     "აირჩიეთ დისკის ჩამტვირთავის განსათავსებლად"
+  ],
+  "Choose device to bind by MAC": [
+    ""
+  ],
+  "Choose device to bind by name": [
+    "აირჩიეთ მოწყობილობა, რომლის სახელზეც მიბმა გნებავთ"
+  ],
+  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
+    ""
   ],
   "Choose what to with current content": [
     "აირჩიეთ, რა ვუყო არსებულ შემცველობას"
@@ -459,9 +477,6 @@ export default {
   "Default file system for generic partitions": [
     "ნაგულისხმევი ფაილური სისტემა ზოგადი დანაყოფებისთვის"
   ],
-  "Define a custom size or a range": [
-    "აღერეთ თქვენი ზომა ან შუალედი"
-  ],
   "Define a new LVM on the disk": [
     "ახალი LVM-ის აღწერა დისკზე"
   ],
@@ -537,6 +552,9 @@ export default {
   "Do not use": [
     "არ გამოიყენო"
   ],
+  "Do you want to use a supported size?": [
+    ""
+  ],
   "Download logs": [
     "ჟურნალის გადმოწერა"
   ],
@@ -548,6 +566,9 @@ export default {
   ],
   "Edit %s": [
     "%s-ის ჩასწორება"
+  ],
+  "Edit binding settings": [
+    "მიბმის პარამეტრების ჩასწორება"
   ],
   "Edit connection %s": [
     "%s მიერთების ჩასწორება"
@@ -745,9 +766,6 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     ""
   ],
-  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    ""
-  ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     ""
   ],
@@ -856,9 +874,6 @@ export default {
   "JFS": [
     "JFS"
   ],
-  "Keep size of %s": [
-    "%s-ის ზომის შენარჩუნება"
-  ],
   "Keyboard": [
     "კლავიატურა"
   ],
@@ -883,14 +898,11 @@ export default {
   "Language and keyboard": [
     "ენა და კლავიატურა"
   ],
-  "Let the installer propose a sensible range of sizes": [
+  "Let the installer propose a sensible size": [
     ""
   ],
   "License language": [
     "ლიცენზიის ენა"
-  ],
-  "Limited": [
-    "შეზღუდული"
   ],
   "Loading": [
     "იტვირთება"
@@ -946,26 +958,8 @@ export default {
   "Manual": [
     "ხელით"
   ],
-  "Maximum": [
-    "მაქსიმუმი"
-  ],
-  "Maximum size mode": [
-    "მაქსიმალური ზომის რეჟიმი"
-  ],
-  "Maximum size options": [
-    "მაქსიმალური ზომის მორგება"
-  ],
-  "Maximum size value": [
-    "მაქსიმალური ზომის მნიშვნელობა"
-  ],
   "MiB": [
     "მიბ"
-  ],
-  "Minimum": [
-    "მინიმუმი"
-  ],
-  "Minimum size value": [
-    "მინიმალური ზომის მნიშვნელობა"
   ],
   "Mode": [
     "რეჟიმი"
@@ -1336,9 +1330,6 @@ export default {
   "SSID": [
     "SSID"
   ],
-  "Same as minimum": [
-    "იგივე, რაც მინიმალური"
-  ],
   "Search": [
     "ძებნა"
   ],
@@ -1454,15 +1445,6 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     ""
   ],
-  "Size options": [
-    "ზომის მორგება"
-  ],
-  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
-    ""
-  ],
-  "Sizes must be entered as a numbers optionally followed by a unit.": [
-    ""
-  ],
   "Skip to content": [
     "შემცველობაზე გადასვლა"
   ],
@@ -1544,6 +1526,9 @@ export default {
   "The configured LVM groups will remain at %s": [
     ""
   ],
+  "The connection can be used by any available interface.": [
+    ""
+  ],
   "The connection will be used only during installation and not available in the installed system.": [
     ""
   ],
@@ -1589,6 +1574,9 @@ export default {
   "The extension has been registered with key %s.": [
     ""
   ],
+  "The final size can be bigger in order to fill the contiguous free space.": [
+    ""
+  ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     ""
   ],
@@ -1613,15 +1601,6 @@ export default {
   "The installer requires [root] user privileges.": [
     "დაყენების პროგრამას [root] მომხმარებლის პრივილეგიები სჭირდება."
   ],
-  "The logical volume can grow to use all the contiguous free space": [
-    ""
-  ],
-  "The logical volume can grow until a given limit size": [
-    ""
-  ],
-  "The logical volume is created exactly with the given size": [
-    ""
-  ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     ""
   ],
@@ -1640,46 +1619,43 @@ export default {
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     ""
   ],
-  "The partition can grow to use all the contiguous free space": [
-    ""
-  ],
-  "The partition can grow until a given limit size": [
-    ""
-  ],
-  "The partition is created exactly with the given size": [
-    ""
-  ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     ""
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     ""
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
     ""
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
     ""
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
     ""
   ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
+  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
     ""
   ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
+  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
     ""
   ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
     ""
   ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
     ""
   ],
-  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
+  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
     ""
   ],
-  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
+  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
+    ""
+  ],
+  "The size is configured as a range between %s and %s, but defining a range of sizes is not supported by the UI.": [
+    ""
+  ],
+  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
     ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
@@ -1963,6 +1939,9 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] ჩართულია"
+  ],
+  "approx. %s": [
+    ""
   ],
   "at least %s": [
     "%s მაინც"

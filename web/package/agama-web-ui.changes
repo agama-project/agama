@@ -1,4 +1,21 @@
 -------------------------------------------------------------------
+Fri Jun 27 15:14:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Invalidate all software queries when the selected product changes
+  (gh#agama-project/agama#2517).
+
+-------------------------------------------------------------------
+Fri Jun 27 11:23:29 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Improve usability for defining the size of a partition or logical
+  volume (gh#agama-project/agama#2496).
+
+-------------------------------------------------------------------
+Fri Jun 27 06:30:11 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Warn the user when using a weak user password (bsc#1237480).
+
+-------------------------------------------------------------------
 Mon Jun 23 10:24:01 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow to bind a connection to an specific interface based on its

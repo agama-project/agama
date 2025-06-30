@@ -37,6 +37,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Loading } from "~/components/layout";
 import { PasswordAndConfirmationInput, Page } from "~/components/core";
+import PasswordCheck from "~/components/users/PasswordCheck";
 import { suggestUsernames } from "~/components/users/utils";
 import { useFirstUser, useFirstUserMutation } from "~/queries/users";
 import { FirstUser } from "~/types/users";
@@ -236,12 +237,15 @@ export default function FirstUserForm() {
             </Content>
           )}
           {!usingHashedPassword && (
-            <PasswordAndConfirmationInput
-              inputRef={passwordRef}
-              value={password}
-              showErrors={false}
-              onChange={(_, value) => setPassword(value)}
-            />
+            <>
+              <PasswordAndConfirmationInput
+                inputRef={passwordRef}
+                value={password}
+                showErrors={false}
+                onChange={(_, value) => setPassword(value)}
+              />
+              <PasswordCheck password={password} />
+            </>
           )}
           <ActionGroup>
             <Page.Submit form="firstUserForm" />

@@ -164,7 +164,7 @@ function AutoSizeTextDynamic({
         return sprintf(
           // TRANSLATORS: %1$s is a mount point (eg. /) and %2$s is another one (eg. /home)
           _(
-            "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.",
+            "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.",
           ),
           path,
           otherPaths[0],
@@ -175,7 +175,7 @@ function AutoSizeTextDynamic({
         // TRANSLATORS: %1$s is a mount point and %2$s is a list of other paths
         return sprintf(
           _(
-            "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.",
+            "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.",
           ),
           path,
           formatList(otherPaths),
@@ -185,7 +185,7 @@ function AutoSizeTextDynamic({
       return sprintf(
         // TRANSLATORS: %s is a mount point (eg. /)
         _(
-          "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.",
+          "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.",
         ),
         path,
       );
@@ -196,7 +196,7 @@ function AutoSizeTextDynamic({
         return sprintf(
           // TRANSLATORS: %1$s is a mount point (eg. /) and %2$s is another one (eg. /home)
           _(
-            "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.",
+            "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.",
           ),
           path,
           otherPaths[0],
@@ -206,7 +206,7 @@ function AutoSizeTextDynamic({
       return sprintf(
         // TRANSLATORS: %1$s is a mount point and %2$s is a list of other paths
         _(
-          "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.",
+          "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.",
         ),
         path,
         formatList(otherPaths),
@@ -218,7 +218,7 @@ function AutoSizeTextDynamic({
         return sprintf(
           // TRANSLATORS: %1$s is a mount point (eg. /) and %2$s is another one (eg. /home)
           _(
-            "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.",
+            "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.",
           ),
           path,
           otherPaths[0],
@@ -229,7 +229,7 @@ function AutoSizeTextDynamic({
         // TRANSLATORS: %1$s is a mount point and %2$s is a list of other paths
         return sprintf(
           _(
-            "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.",
+            "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.",
           ),
           path,
           formatList(otherPaths),
@@ -238,9 +238,7 @@ function AutoSizeTextDynamic({
 
       return sprintf(
         // TRANSLATORS: %s is a mount point (eg. /)
-        _(
-          "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.",
-        ),
+        _("The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots."),
         path,
       );
     }
@@ -249,7 +247,7 @@ function AutoSizeTextDynamic({
       return sprintf(
         // TRANSLATORS: %1$s is a mount point (eg. /) and %2$s is another one (eg. /home)
         _(
-          "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.",
+          "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.",
         ),
         path,
         otherPaths[0],
@@ -259,7 +257,7 @@ function AutoSizeTextDynamic({
     return sprintf(
       // TRANSLATORS: %1$s is a mount point and %2$s is a list of other paths
       _(
-        "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.",
+        "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.",
       ),
       path,
       formatList(otherPaths),

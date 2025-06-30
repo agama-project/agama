@@ -99,14 +99,6 @@ const licensesQuery = () => ({
 });
 
 /**
- * Query to retrieve selected product
- */
-const selectedProductQuery = () => ({
-  queryKey: ["software", "product"],
-  queryFn: () => fetchConfig().then(({ product }) => product),
-});
-
-/**
  * Query to retrieve registration info
  */
 const registrationQuery = () => ({
@@ -166,9 +158,7 @@ const useConfigMutation = () => {
   const query = {
     mutationFn: updateConfig,
     onSuccess: async (_, config: SoftwareConfig) => {
-      queryClient.invalidateQueries({ queryKey: ["software", "config"] });
-      queryClient.invalidateQueries({ queryKey: ["software", "product"] });
-      queryClient.invalidateQueries({ queryKey: ["software", "proposal"] });
+      queryClient.invalidateQueries({ queryKey: ["software"] });
       if (config.product) {
         await systemProbe();
         queryClient.invalidateQueries({ queryKey: ["storage"] });
@@ -238,20 +228,20 @@ const useProduct = (
 ): { products?: Product[]; selectedProduct?: Product } => {
   const func = options?.suspense ? useSuspenseQueries : useQueries;
   const [
-    { data: selected, isPending: isSelectedPending },
+    { data: config, isPending: isConfigPending },
     { data: products, isPending: isProductsPending },
   ] = func({
-    queries: [selectedProductQuery(), productsQuery()],
-  }) as [{ data: string; isPending: boolean }, { data: Product[]; isPending: boolean }];
+    queries: [configQuery(), productsQuery()],
+  }) as [{ data: SoftwareConfig; isPending: boolean }, { data: Product[]; isPending: boolean }];
 
-  if (isSelectedPending || isProductsPending) {
+  if (isConfigPending || isProductsPending) {
     return {
       products: [],
       selectedProduct: undefined,
     };
   }
 
-  const selectedProduct = products.find((p: Product) => p.id === selected);
+  const selectedProduct = products.find((p: Product) => p.id === config.product);
   return {
     products,
     selectedProduct,
@@ -371,7 +361,7 @@ const useProductChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "ProductChanged") {
-        queryClient.invalidateQueries({ queryKey: ["software", "config"] });
+        queryClient.invalidateQueries({ queryKey: ["software"] });
       }
 
       if (event.type === "LocaleChanged") {
@@ -423,7 +413,6 @@ const useConflictsChanges = () => {
 export {
   configQuery,
   productsQuery,
-  selectedProductQuery,
   useAddons,
   useConfigMutation,
   useConflicts,

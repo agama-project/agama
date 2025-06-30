@@ -23,6 +23,7 @@ require "yast"
 require "yast/i18n"
 require "yast2/execute"
 require "yast2/systemd/service"
+require "yast2/fs_snapshot"
 require "bootloader/finish_client"
 require "y2storage/storage_manager"
 require "agama/with_progress"
@@ -85,7 +86,6 @@ module Agama
           StorageStep.new(logger),
           IscsiStep.new(logger),
           BootloaderStep.new(logger),
-          IguanaStep.new(logger),
           SnapshotsStep.new(logger),
           FilesStep.new(logger),
           PostScripts.new(logger),
@@ -236,8 +236,13 @@ module Agama
           _("Configuring file systems snapshots")
         end
 
+        def run?
+          Yast2::FsSnapshot.configure_on_install?
+        end
+
         def run
-          wfm_write("snapshots_finish")
+          logger.info("Finishing Snapper configuration")
+          Yast2::FsSnapshot.configure_snapper
         end
       end
 
@@ -343,58 +348,6 @@ module Agama
 
         def run
           wfm_write("umount_finish")
-        end
-      end
-
-      # Step to write the mountlist file for Iguana, if needed
-      class IguanaStep < Step
-        IGUANA_PATH = "/iguana"
-        private_constant :IGUANA_PATH
-        IGUANA_MOUNTLIST = File.join(IGUANA_PATH, "mountlist").freeze
-        private_constant :IGUANA_MOUNTLIST
-
-        def label
-          _("Configuring Iguana")
-        end
-
-        def run?
-          File.directory?(IGUANA_PATH)
-        end
-
-        def run
-          File.open(IGUANA_MOUNTLIST, "w") do |list|
-            list.puts "#{root_device_name} /sysroot #{root_mount_options}"
-          end
-        end
-
-      private
-
-        def root_device_name
-          fs = root_mount_point&.filesystem
-          # This should never happen, we must have a root file-system
-          return "" unless fs
-
-          fs.respond_to?(:preferred_name) ? fs.preferred_name : fs.name
-        end
-
-        def root_mount_options
-          options = root_mount_point&.mount_options
-          # This should never happen, we must have a root mount point
-          return "" unless options
-
-          options.empty? ? "defaults" : options.join(",")
-        end
-
-        # Representation on the staging devicegraph of the root mount point
-        #
-        # @return [Y2Storage::MountPoint]
-        def root_mount_point
-          staging_graph.mount_points.find(&:root?)
-        end
-
-        # @return [Y2Storage::Devicegraph]
-        def staging_graph
-          Y2Storage::StorageManager.instance.staging
         end
       end
     end

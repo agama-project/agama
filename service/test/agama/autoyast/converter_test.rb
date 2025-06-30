@@ -113,9 +113,9 @@ describe Agama::AutoYaST::Converter do
     it "exports l10n settings" do
       result = subject.to_agama(profile)
       expect(result["localization"]).to include(
-        "languages" => ["en_US.UTF-8"],
-        "timezone"  => "Atlantic/Canary",
-        "keyboard"  => "us"
+        "language" => "en_US.UTF-8",
+        "timezone" => "Atlantic/Canary",
+        "keyboard" => "us"
       )
     end
 
