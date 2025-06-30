@@ -61,6 +61,7 @@ module Agama
 
   private
 
+    # See the body of #command for specification links
     IPMI_STARTED = 0x7
     IPMI_FINISHED = 0x8
     IPMI_ABORTED = 0x9
@@ -84,7 +85,29 @@ module Agama
       # pass it directly as an argument
       file = Tempfile.new("agama-ipmi")
 
-      file.write("0x4 0x1F 0x0 0x6f %#{code} 0x0 0x0\n")
+      # man ipmitool:
+      #
+      # The format of each line in the file is as follows:
+      # <{EvM Revision} {Sensor Type} {Sensor Num} {Event Dir/Type}
+      #  {Event Data 0} {Event Data 1} {Event Data 2}>[# COMMENT]
+      # ...
+      # EvM Revision - The "Event Message Revision" is 0x04 for messages that
+      #                comply with the IPMI 2.0 Specification
+      #                and 0x03 for messages that comply with the IPMI 1.0 Specification.
+      # Sensor Type - Indicates the Event Type or Class.
+      # Sensor Num - Represents the 'sensor' within the management controller
+      #              that generated the Event Message.
+      # Event  Dir/Type - This field is encoded with the event direction as the high bit (bit 7)
+      #                   and the event type as the low 7 bits.  Event direction is
+      #                   0 for an assertion event and 1 for a deassertion event.
+
+      # https://www.intel.com/content/www/us/en/products/docs/servers/ipmi/ipmi-second-gen-interface-spec-v2-rev1-1.html
+      #
+      # 42.2 Sensor Type Codes and Data (page 512)
+      # Sensor Type: 0x1f, Base OS Boot / Installation Status
+      #
+      # Event Type: 0x6f, Sensor-specific (page 503)
+      file.write("0x4 0x1F 0x0 0x6f 0x#{code.to_s(16)} 0x0 0x0\n")
       file.close
 
       system("ipmitool event file #{file.path}")
