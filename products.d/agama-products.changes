@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jun 30 05:44:18 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix Kalpa product definition (gh#agama-project/agama#2520).
+
+-------------------------------------------------------------------
 Fri Jun 27 12:08:23 UTC 2025 - Shawn Dunn <sfalken@opensuse.org>
 
 - Added Kalpa to Products (gh#agama-project/agama#2484).
@@ -22,12 +27,12 @@ Mon May 26 19:51:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Tue Apr 29 14:07:48 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
-- Bump openSUSE Leap 16.0 to Beta 
+- Bump openSUSE Leap 16.0 to Beta
 
 -------------------------------------------------------------------
 Tue Apr 22 14:27:59 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
-- Add NetworkManager-config-server package to SLES 16.0 and 
+- Add NetworkManager-config-server package to SLES 16.0 and
   SLES_SAP 16.0 as mandatory (bsc#1241224, bsc#1224868).
 
 -------------------------------------------------------------------
@@ -63,7 +68,7 @@ Mon Mar 24 14:08:29 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Drop basic-desktop pulling IceWM from Leap 16.0
   installation profiles jsc#PED-1721 code-o-o#leap/features#183
-   
+
 
 -------------------------------------------------------------------
 Fri Mar 21 16:58:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
@@ -121,7 +126,7 @@ Thu Feb 13 11:19:19 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Change the default lsm to SELinux in enforcing for both Leap and Tumblweed
   keep AppArmor around as an option jsc#PED-12021
-  https://news.opensuse.org/2025/02/13/tw-plans-to-adopt-selinux-as-default/ 
+  https://news.opensuse.org/2025/02/13/tw-plans-to-adopt-selinux-as-default/
 
 -------------------------------------------------------------------
 Fri Jan 24 06:45:45 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
