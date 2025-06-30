@@ -332,11 +332,9 @@ export default function SelectableDataTable({
       onToggle: () => toggleExpanded(itemKey),
     };
 
-    const onSelect = () => updateSelection(item);
-
     const selectProps = {
       rowIndex,
-      onSelect,
+      onSelect: () => updateSelection(item),
       isSelected: isItemSelected(item),
       variant: allowMultiple ? RowSelectVariant.checkbox : RowSelectVariant.radio,
     };
@@ -350,7 +348,7 @@ export default function SelectableDataTable({
     // TODO: Add label to Tbody?
     return (
       <Tbody key={rowIndex} isExpanded={isItemExpanded(itemKey)}>
-        <Tr className={itemClassNames(item)} isClickable onRowClick={onSelect}>
+        <Tr className={itemClassNames(item)}>
           <Td expand={expandProps} />
           <Td select={itemSelectable(item) ? selectProps : undefined} />
           {columns?.map((column, index) => (
