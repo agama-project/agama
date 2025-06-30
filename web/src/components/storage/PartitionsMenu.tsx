@@ -29,10 +29,17 @@ import * as driveUtils from "~/components/storage/utils/drive";
 import DeviceMenu from "~/components/storage/DeviceMenu";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
 import { Divider, Flex, MenuItem, MenuList } from "@patternfly/react-core";
+import { Link } from "../core";
 
 const PartitionsNoContentSelector = ({ device, toggleAriaLabel }) => {
   const navigate = useNavigate();
   const { list, listIndex } = device;
+
+  return (
+    <Link variant="link" isInline to={generatePath(PATHS.addPartition, { list, listIndex })}>
+      {_("Add a new partition or mount an existing one")}
+    </Link>
+  );
 
   return (
     <DeviceMenu
@@ -111,8 +118,18 @@ const PartitionsWithContentSelector = ({ device, toggleAriaLabel }) => {
 
 export default function PartitionsMenu({ device }) {
   if (device.partitions.some((p) => p.mountPath)) {
-    return <PartitionsWithContentSelector device={device} toggleAriaLabel={_("Partitions")} />;
+    return (
+      <Flex gap={{ default: "gapSm" }}>
+        <strong>{_("Planned content")}</strong>{" "}
+        <PartitionsWithContentSelector device={device} toggleAriaLabel={_("Partitions")} />
+      </Flex>
+    );
   }
 
-  return <PartitionsNoContentSelector device={device} toggleAriaLabel={_("Partitions")} />;
+  return (
+    <Flex gap={{ default: "gapSm" }}>
+      <strong>{_("No planned content yet")}</strong>{" "}
+      <PartitionsNoContentSelector device={device} toggleAriaLabel={_("Partitions")} />
+    </Flex>
+  );
 }

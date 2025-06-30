@@ -49,12 +49,14 @@ export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
         <CardTitle>
           <DriveHeader drive={drive} driveDevice={driveDevice} />
         </CardTitle>
-        <Label isCompact>{contentDescription(driveDevice)}</Label>
+        <Label isCompact variant="outline">
+          {contentDescription(driveDevice)}
+        </Label>
       </CardHeader>
       <CardBody className={spacingStyles.plLg}>
-        <Flex direction={{ default: "column" }}>
-          <SpacePolicyMenu modelDevice={drive} device={driveDevice} />
+        <Flex direction={{ default: "column" }} gap={{ default: "gapXs" }}>
           <PartitionsMenu device={drive} />
+          <SpacePolicyMenu modelDevice={drive} device={driveDevice} />
         </Flex>
       </CardBody>
     </Card>

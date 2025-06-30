@@ -31,7 +31,7 @@ import * as driveUtils from "~/components/storage/utils/drive";
 import { contentDescription } from "~/components/storage/utils/device";
 import DeviceMenu from "~/components/storage/DeviceMenu";
 import { MenuHeader } from "~/components/core";
-import { Divider, Label, Split, MenuItem, MenuList, MenuGroup } from "@patternfly/react-core";
+import { Divider, Label, Split, MenuItem, MenuList, MenuGroup, Flex } from "@patternfly/react-core";
 
 // FIXME: Presentation is quite poor
 const SpacePolicySelectorIntro = ({ device }) => {
@@ -88,18 +88,21 @@ export default function SpacePolicyMenu({ modelDevice, device }) {
   };
 
   return (
-    <DeviceMenu
-      title={<span>{driveUtils.contentActionsDescription(modelDevice)}</span>}
-      activeItemId={currentPolicy.id}
-    >
-      <MenuGroup label={<SpacePolicySelectorIntro device={device} />}>
-        <MenuList>
-          <Divider />
-          {SPACE_POLICIES.map((policy) => (
-            <PolicyItem key={policy.id} policy={policy} />
-          ))}
-        </MenuList>
-      </MenuGroup>
-    </DeviceMenu>
+    <Flex gap={{ default: "gapSm" }}>
+      <strong>{_("Handling existing data")}</strong>
+      <DeviceMenu
+        title={<span>{driveUtils.contentActionsDescription(modelDevice)}</span>}
+        activeItemId={currentPolicy.id}
+      >
+        <MenuGroup label={<SpacePolicySelectorIntro device={device} />}>
+          <MenuList>
+            <Divider />
+            {SPACE_POLICIES.map((policy) => (
+              <PolicyItem key={policy.id} policy={policy} />
+            ))}
+          </MenuList>
+        </MenuGroup>
+      </DeviceMenu>
+    </Flex>
   );
 }

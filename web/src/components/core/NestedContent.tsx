@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Content, ContentProps } from "@patternfly/react-core";
+import { ContentProps } from "@patternfly/react-core";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 type NestedContentProps = {
