@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 30 15:07:39 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Extra usability improvements defining the size of partitions and
+  logical volumes (related to gh#agama-project/agama#2496).
+
+-------------------------------------------------------------------
 Mon Jun 30 11:30:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Warn the user about using a weak encryption password

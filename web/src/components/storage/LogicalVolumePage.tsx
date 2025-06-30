@@ -650,8 +650,13 @@ export default function LogicalVolumePage() {
 
   const changeSizeMode = (mode: SizeMode, size: SizeRange) => {
     setSizeOption(mode);
-    if (size.min !== undefined) setMinSize(size.min);
-    if (size.max !== undefined) setMaxSize(size.max);
+    setMinSize(size.min);
+    if (mode === "custom" && initialValue.sizeOption === "auto" && size.min !== size.max) {
+      // Automatically stop using a range of sizes when a range is used by default.
+      setMaxSize("");
+    } else {
+      setMaxSize(size.max);
+    }
   };
 
   const onSubmit = () => {
