@@ -16,13 +16,18 @@ suseSetupProduct
 # kiwi_metainfo_helper service before starting the build
 mkdir -p /var/log/build
 cat << EOF > /var/log/build/info
-Build date:    $(LC_ALL=C date -u "+%F %T %Z")
+Build date:    $(LC_ALL=C date -u -d "@${SOURCE_DATE_EPOCH:-$(date +%s)}" "+%F %T %Z")
 Build number:  Build%RELEASE%
 Image profile: $kiwi_profiles
 Image version: $kiwi_iversion
 Image type:    $kiwi_type
 Source URL:    %SOURCEURL%
 EOF
+
+# for reproducible builds:
+echo -n > /var/log/alternatives.log
+sed -i 's/# AutoInstalled generated.*/# AutoInstalled generated in kiwi reproducible build/' /var/lib/zypp/AutoInstalled # drop timestamp
+rm /var/tmp/rpm-tmp.*
 
 # enable the corresponding repository
 DISTRO=$(grep "^NAME" /etc/os-release | cut -f2 -d\= | tr -d '"' | tr " " "_")
