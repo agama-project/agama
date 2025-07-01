@@ -61,7 +61,6 @@ def start_service(name)
 
   logger = logger_for(name)
   service_runner = Agama::DBus::ServiceRunner.new(name, logger: logger)
-  logger.info "Starting the service"
   service_runner.run
 end
 
@@ -100,9 +99,5 @@ elsif ["-d", "--daemon"].include?(ARGV[0])
 else
   dbus_server_manager.find_or_start_server
   name = ARGV[0]
-  Signal.trap("SIGINT") do
-    puts "Stopping #{name} service..."
-    exit
-  end
   start_service(name.to_sym)
 end
