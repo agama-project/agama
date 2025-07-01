@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jul  1 13:21:01 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Inhibit storage subsystems (bsc#1245159).
+
+-------------------------------------------------------------------
 Mon Jun 30 15:51:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 16
