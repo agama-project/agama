@@ -23,43 +23,38 @@
 import React from "react";
 import { useNavigate, generatePath } from "react-router-dom";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
-import { _ } from "~/i18n";
 import { SPACE_POLICIES } from "~/components/storage/utils";
 import { apiModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
-import { contentDescription } from "~/components/storage/utils/device";
 import DeviceMenu from "~/components/storage/DeviceMenu";
-import { MenuHeader } from "~/components/core";
-import { Divider, Label, Split, MenuItem, MenuList, MenuGroup, Flex } from "@patternfly/react-core";
+import { MenuItem, MenuList, Flex, Content } from "@patternfly/react-core";
+import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
+import { isEmpty } from "radashi";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
-// FIXME: Presentation is quite poor
-const SpacePolicySelectorIntro = ({ device }) => {
-  const main = _("Choose what to with current content");
-  const description = contentDescription(device);
-  const systems = device.systems;
-
+const PolicyItem = ({ policy, isSelected, onClick }) => {
   return (
-    <MenuHeader
-      title={main}
-      description={
-        <Split hasGutter>
-          <span className="pf-v5-c-menu__item-description">{description}</span>
-          {systems.map((s, i) => (
-            <Label key={i} isCompact>
-              {s}
-            </Label>
-          ))}
-        </Split>
-      }
-    />
+    <MenuItem
+      itemId={policy.id}
+      isSelected={isSelected}
+      description={policy.description}
+      onClick={() => onClick(policy.id)}
+    >
+      <Content className={isSelected && textStyles.fontWeightBold}>{policy.label}</Content>
+    </MenuItem>
   );
 };
 
 export default function SpacePolicyMenu({ modelDevice, device }) {
   const navigate = useNavigate();
-  const { list, listIndex } = modelDevice;
   const setSpacePolicy = useSetSpacePolicy();
+  const { list, listIndex } = modelDevice;
+  const existingPartitions = device.partitionTable?.partitions.length;
+
+  if (isEmpty(existingPartitions)) return;
+
   const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
       return navigate(generatePath(PATHS.editSpacePolicy, { list, listIndex }));
@@ -70,38 +65,23 @@ export default function SpacePolicyMenu({ modelDevice, device }) {
 
   const currentPolicy = driveUtils.spacePolicyEntry(modelDevice);
 
-  const PolicyItem = ({ policy }) => {
-    const isSelected = policy.id === currentPolicy.id;
-    // FIXME: use PF/Content with #component prop instead when migrating to PF6
-    const Name = () => (isSelected ? <b>{policy.label}</b> : policy.label);
-
-    return (
-      <MenuItem
-        itemId={policy.id}
-        isSelected={isSelected}
-        description={policy.description}
-        onClick={() => onSpacePolicyChange(policy.id)}
-      >
-        <Name />
-      </MenuItem>
-    );
-  };
-
   return (
     <Flex gap={{ default: "gapSm" }}>
-      <strong>{_("Handling existing data")}</strong>
+      <strong>{sprintf(_("Action for %s existing partitions"), existingPartitions)}</strong>
       <DeviceMenu
         title={<span>{driveUtils.contentActionsDescription(modelDevice)}</span>}
         activeItemId={currentPolicy.id}
       >
-        <MenuGroup label={<SpacePolicySelectorIntro device={device} />}>
-          <MenuList>
-            <Divider />
-            {SPACE_POLICIES.map((policy) => (
-              <PolicyItem key={policy.id} policy={policy} />
-            ))}
-          </MenuList>
-        </MenuGroup>
+        <MenuList>
+          {SPACE_POLICIES.map((policy) => (
+            <PolicyItem
+              key={policy.id}
+              policy={policy}
+              isSelected={policy.id === currentPolicy.id}
+              onClick={onSpacePolicyChange}
+            />
+          ))}
+        </MenuList>
       </DeviceMenu>
     </Flex>
   );
