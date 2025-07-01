@@ -21,45 +21,24 @@
  */
 
 import React from "react";
+import { Divider, Flex, MenuItem, MenuList } from "@patternfly/react-core";
 import { useNavigate, generatePath } from "react-router-dom";
-import { _ } from "~/i18n";
+import Link from "~/components/core/Link";
+import DeviceMenu from "~/components/storage/DeviceMenu";
+import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useDeletePartition } from "~/hooks/storage/partition";
 import * as driveUtils from "~/components/storage/utils/drive";
-import DeviceMenu from "~/components/storage/DeviceMenu";
-import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
-import { Divider, Flex, MenuItem, MenuList } from "@patternfly/react-core";
-import { Link } from "../core";
+import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
-const PartitionsNoContentSelector = ({ device, toggleAriaLabel }) => {
-  const navigate = useNavigate();
+const PartitionsNoContentSelector = ({ device }) => {
   const { list, listIndex } = device;
 
   return (
     <Link variant="link" isInline to={generatePath(PATHS.addPartition, { list, listIndex })}>
       {_("Add a new partition or mount an existing one")}
     </Link>
-  );
-
-  return (
-    <DeviceMenu
-      title={<span aria-hidden>{_("No additional partitions will be created")}</span>}
-      ariaLabel={toggleAriaLabel}
-    >
-      <MenuList>
-        <MenuItem
-          key="add-partition"
-          itemId="add-partition"
-          description={_("Add another partition or mount an existing one")}
-          role="menuitem"
-          onClick={() => navigate(generatePath(PATHS.addPartition, { list, listIndex }))}
-        >
-          <Flex component="span" justifyContent={{ default: "justifyContentSpaceBetween" }}>
-            <span>{_("Add or use partition")}</span>
-          </Flex>
-        </MenuItem>
-      </MenuList>
-    </DeviceMenu>
   );
 };
 
@@ -117,19 +96,20 @@ const PartitionsWithContentSelector = ({ device, toggleAriaLabel }) => {
 };
 
 export default function PartitionsMenu({ device }) {
-  if (device.partitions.some((p) => p.mountPath)) {
-    return (
-      <Flex gap={{ default: "gapSm" }}>
-        <strong>{_("Planned content")}</strong>{" "}
-        <PartitionsWithContentSelector device={device} toggleAriaLabel={_("Partitions")} />
-      </Flex>
-    );
-  }
+  const { isBoot, isTargetDevice: hasPv } = device;
+  const isAdditional = isBoot || hasPv;
+  const moreContentLabel = isAdditional ? _("Additional content") : _("Content");
+  const moreContentAriaLabel = isAdditional ? _("Additional content for %s") : _("Content for %s");
+  const addContentLabel = isAdditional ? _("No additional content yet") : _("No content yet");
+  const hasDefinedContent = device.partitions.some((p) => p.mountPath);
+
+  const Selector = hasDefinedContent ? PartitionsWithContentSelector : PartitionsNoContentSelector;
+  const label = hasDefinedContent ? moreContentLabel : addContentLabel;
 
   return (
     <Flex gap={{ default: "gapSm" }}>
-      <strong>{_("No planned content yet")}</strong>{" "}
-      <PartitionsNoContentSelector device={device} toggleAriaLabel={_("Partitions")} />
+      <strong>{label}</strong>{" "}
+      <Selector device={device} toggleAriaLabel={sprintf(moreContentAriaLabel, device.name)} />
     </Flex>
   );
 }
