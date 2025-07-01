@@ -21,19 +21,20 @@
  */
 
 import React from "react";
-import { Content } from "@patternfly/react-core";
+import { Title, TitleProps } from "@patternfly/react-core";
 
 export type DeviceHeaderProps = {
   title: string;
+  headingLevel?: TitleProps["headingLevel"];
   children: React.ReactNode;
 };
 
-export default function DeviceHeader({ title, children }: DeviceHeaderProps) {
+export default function DeviceHeader({ title, headingLevel = "h4", children }: DeviceHeaderProps) {
   const [txt1, txt2] = title.split("%s");
 
   return (
-    <Content component="h4">
+    <Title headingLevel={headingLevel}>
       {txt1} {children} {txt2}
-    </Content>
+    </Title>
   );
 }

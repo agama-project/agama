@@ -21,44 +21,44 @@
  */
 
 import React from "react";
-import { Drive } from "~/types/storage/model";
-import { StorageDevice } from "~/types/storage";
+import {
+  DataListAction,
+  DataListCell,
+  DataListItemCells,
+  DataListItemRow,
+  Flex,
+} from "@patternfly/react-core";
+import NestedContent from "~/components/core/NestedContent";
 import DriveDeviceMenu from "~/components/storage/DriveDeviceMenu";
 import PartitionableHeader from "~/components/storage/PartitionableHeader";
 import PartitionsMenu from "~/components/storage/PartitionsMenu";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
-import { Card, CardBody, CardHeader, CardTitle, Flex, Label } from "@patternfly/react-core";
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import { Drive } from "~/types/storage/model";
+import { StorageDevice } from "~/types/storage";
 import { deviceLabel } from "./utils";
-import { contentDescription } from "./utils/device";
 
 export type DriveEditorProps = { drive: Drive; driveDevice: StorageDevice };
 
-const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
-  return <PartitionableHeader device={drive}>{deviceLabel(driveDevice)}</PartitionableHeader>;
-};
-
 export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
   return (
-    <Card isCompact>
-      <CardHeader
-        actions={{
-          actions: <DriveDeviceMenu drive={drive} selected={driveDevice} />,
-        }}
-      >
-        <CardTitle>
-          <DriveHeader drive={drive} driveDevice={driveDevice} />
-        </CardTitle>
-        <Label isCompact variant="outline">
-          {contentDescription(driveDevice)}
-        </Label>
-      </CardHeader>
-      <CardBody className={spacingStyles.plLg}>
-        <Flex direction={{ default: "column" }} gap={{ default: "gapXs" }}>
-          <PartitionsMenu device={drive} />
-          <SpacePolicyMenu modelDevice={drive} device={driveDevice} />
-        </Flex>
-      </CardBody>
-    </Card>
+    <DataListItemRow>
+      <DataListItemCells
+        dataListCells={[
+          <DataListCell key="content" isFilled={false}>
+            <Flex direction={{ default: "column" }}>
+              <PartitionableHeader device={drive}>{deviceLabel(driveDevice)}</PartitionableHeader>
+              <NestedContent>
+                <PartitionsMenu device={drive} />
+                <SpacePolicyMenu modelDevice={drive} device={driveDevice} />
+              </NestedContent>
+            </Flex>
+          </DataListCell>,
+        ]}
+      />
+      {/** @ts-expect-error: props required but not used, see https://github.com/patternfly/patternfly-react/issues/9823 **/}
+      <DataListAction>
+        <DriveDeviceMenu drive={drive} selected={driveDevice} />
+      </DataListAction>
+    </DataListItemRow>
   );
 }

@@ -38,6 +38,9 @@ import {
   CardBody,
   CardHeader,
   CardTitle,
+  DataListCell,
+  DataListItemCells,
+  DataListItemRow,
   Divider,
   Flex,
   MenuItem,
@@ -123,7 +126,7 @@ const VgHeader = ({ vg }: { vg: model.VolumeGroup }) => {
     : _("Empty LVM volume group %s");
 
   return (
-    <DeviceHeader title={title}>
+    <DeviceHeader id={`vg-editor-header-${vg.vgName}`} title={title}>
       <VgMenu vg={vg} />
     </DeviceHeader>
   );
@@ -175,6 +178,20 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
 export type VolumeGroupEditorProps = { vg: model.VolumeGroup };
 
 export default function VolumeGroupEditor({ vg }: VolumeGroupEditorProps) {
+  return (
+    <DataListItemRow>
+      <DataListItemCells
+        dataListCells={[
+          <DataListCell key="content">
+            <Flex direction={{ default: "column" }}>
+              <VgHeader vg={vg} />
+              <LogicalVolumes vg={vg} />
+            </Flex>
+          </DataListCell>,
+        ]}
+      />
+    </DataListItemRow>
+  );
   return (
     <Card isCompact>
       <CardHeader>

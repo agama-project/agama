@@ -21,16 +21,22 @@
  */
 
 import React from "react";
-import { _ } from "~/i18n";
-import { model } from "~/types/storage";
+import { TitleProps } from "@patternfly/react-core";
 import DeviceHeader from "~/components/storage/DeviceHeader";
+import { model } from "~/types/storage";
+import { _ } from "~/i18n";
 
 export type PartitionableHeaderProps = {
   device: model.Drive | model.MdRaid;
   children: React.ReactNode;
+  headingLevel?: TitleProps["headingLevel"];
 };
 
-export default function PartitionableHeader({ device, children }: PartitionableHeaderProps) {
+export default function PartitionableHeader({
+  device,
+  headingLevel = "h4",
+  children,
+}: PartitionableHeaderProps) {
   const { isBoot, isTargetDevice: hasPv } = device;
   const isRoot = !!device.getPartition("/");
   const hasFs = !!device.getMountPaths().length;
@@ -89,5 +95,9 @@ export default function PartitionableHeader({ device, children }: PartitionableH
     return _("Use %s");
   };
 
-  return <DeviceHeader title={text()}>{children}</DeviceHeader>;
+  return (
+    <DeviceHeader title={text()} headingLevel={headingLevel}>
+      {children}
+    </DeviceHeader>
+  );
 }

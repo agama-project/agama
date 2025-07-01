@@ -21,13 +21,13 @@
  */
 
 import React from "react";
-import { _ } from "~/i18n";
-import { useDevices, useResetConfigMutation } from "~/queries/storage";
-import { useModel } from "~/hooks/storage/model";
+import { Alert, Button, DataList, DataListItem } from "@patternfly/react-core";
 import DriveEditor from "~/components/storage/DriveEditor";
 import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
 import MdRaidEditor from "~/components/storage/MdRaidEditor";
-import { Alert, Button, List, ListItem } from "@patternfly/react-core";
+import { useDevices, useResetConfigMutation } from "~/queries/storage";
+import { useModel } from "~/hooks/storage/model";
+import { _ } from "~/i18n";
 
 const NoDevicesConfiguredAlert = () => {
   const { mutate: reset } = useResetConfigMutation();
@@ -81,21 +81,25 @@ export default function ConfigEditor() {
   }
 
   return (
-    <List isPlain>
+    <DataList aria-label={_("[FIXME]")} isCompact>
       {volumeGroups.map((vg, i) => {
         return (
-          <ListItem key={`vg-${i}`}>
+          <DataListItem
+            key={`vg-${i}`}
+            style={{ fontWeight: "bold" }}
+            aria-labelledby={`vg-editor-header-${vg.vgName}`}
+          >
             <VolumeGroupEditor vg={vg} />
-          </ListItem>
+          </DataListItem>
         );
       })}
       {mdRaids.map((raid, i) => {
         const device = devices.find((d) => d.name === raid.name);
 
         return (
-          <ListItem key={`md-${i}`}>
+          <DataListItem key={`md-${i}`}>
             <MdRaidEditor raid={raid} raidDevice={device} />
-          </ListItem>
+          </DataListItem>
         );
       })}
       {drives.map((drive, i) => {
@@ -108,11 +112,11 @@ export default function ConfigEditor() {
         if (device === undefined) return null;
 
         return (
-          <ListItem key={`drive-${i}`}>
+          <DataListItem key={`drive-${i}`}>
             <DriveEditor drive={drive} driveDevice={device} />
-          </ListItem>
+          </DataListItem>
         );
       })}
-    </List>
+    </DataList>
   );
 }
