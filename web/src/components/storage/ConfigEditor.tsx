@@ -81,7 +81,7 @@ export default function ConfigEditor() {
   }
 
   return (
-    <DataList aria-label={_("[FIXME]")} isCompact>
+    <DataList aria-label={_("[FIXME]")} isCompact className="storage-structure">
       {volumeGroups.map((vg, i) => {
         return (
           <DataListItem
