@@ -28,7 +28,7 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
  * Wrapper on top of PF/Content using subtle text color by default
  *
  */
-export default function NestedContent({ className, children, ...props }: ContentProps) {
+export default function SubtleContent({ className, children, ...props }: ContentProps) {
   const classNames = [className, textStyles.textColorSubtle].join(" ");
   return (
     <Content {...props} className={classNames}>
