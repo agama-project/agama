@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useId } from "react";
 import {
   DataListAction,
   DataListCell,
@@ -129,20 +129,14 @@ const VgHeader = ({ vg }: { vg: model.VolumeGroup }) => {
 const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
   const navigate = useNavigate();
   const deleteLogicalVolume = useDeleteLogicalVolume();
-
-  const editPath = (lv: model.LogicalVolume): string => {
-    return generatePath(PATHS.volumeGroup.logicalVolume.edit, {
-      id: vg.vgName,
-      logicalVolumeId: encodeURIComponent(lv.mountPath),
-    });
-  };
-  const deleteLv = (lv: model.LogicalVolume) => deleteLogicalVolume(vg.vgName, lv.mountPath);
-
-  const pathToNewLv = generatePath(PATHS.volumeGroup.logicalVolume.add, { id: vg.vgName });
+  const ariaLabelId = useId();
+  const toggleTextId = useId();
+  const newLvPath = generatePath(PATHS.volumeGroup.logicalVolume.add, { id: vg.vgName });
+  const menuAriaLabel = sprintf(_("Logical volumes for %s"), vg.vgName);
 
   if (isEmpty(vg.logicalVolumes)) {
     return (
-      <Link to={pathToNewLv} variant="link" isInline>
+      <Link to={newLvPath} variant="link" isInline>
         {_("Add logical volume")}
       </Link>
     );
@@ -150,41 +144,46 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
 
   return (
     <Flex gap={{ default: "gapXs" }}>
-      <Text isBold>{_("Logical volumes")}</Text>
+      <Text isBold aria-hidden>
+        {_("Logical volumes")}
+      </Text>
+      <Text id={ariaLabelId} srOnly>
+        {menuAriaLabel}
+      </Text>
       <MenuButton
         menuProps={{
-          "aria-label": _("Logical volumes"),
+          "aria-labelledby": ariaLabelId,
         }}
         toggleProps={{
           variant: "plainText",
+          "aria-labelledby": `${ariaLabelId} ${toggleTextId}`,
         }}
-        items={[
-          vg.logicalVolumes
-            .map((lv) => {
-              return (
-                <MountPathMenuItem
-                  key={lv.mountPath}
-                  device={lv}
-                  editPath={editPath(lv)}
-                  deleteFn={() => deleteLv(lv)}
-                />
-              );
-            })
-            .concat(
-              <Divider component="li" />,
-              <MenuButton.Item
-                key="add-logical-volume"
-                itemId="add-logical-volume"
-                onClick={() =>
-                  navigate(generatePath(PATHS.volumeGroup.logicalVolume.add, { id: vg.vgName }))
-                }
-              >
-                {_("Add logical volume")}
-              </MenuButton.Item>,
-            ),
-        ]}
+        items={vg.logicalVolumes
+          .map((lv) => {
+            return (
+              <MountPathMenuItem
+                key={lv.mountPath}
+                device={lv}
+                editPath={generatePath(PATHS.volumeGroup.logicalVolume.edit, {
+                  id: vg.vgName,
+                  logicalVolumeId: encodeURIComponent(lv.mountPath),
+                })}
+                deleteFn={() => deleteLogicalVolume(vg.vgName, lv.mountPath)}
+              />
+            );
+          })
+          .concat(
+            <Divider key="divider" component="li" />,
+            <MenuButton.Item
+              key="add-logical-volume"
+              itemId="add-logical-volume"
+              onClick={() => navigate(newLvPath)}
+            >
+              {_("Add logical volume")}
+            </MenuButton.Item>,
+          )}
       >
-        {contentDescription(vg)}
+        <Text id={toggleTextId}>{contentDescription(vg)}</Text>
       </MenuButton>
     </Flex>
   );
