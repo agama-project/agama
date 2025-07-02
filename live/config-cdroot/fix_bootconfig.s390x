@@ -62,6 +62,7 @@ fi
 #
 
 boot_dir=$dst/boot/s390x
+grub_dir=$dst/boot/grub2
 
 # if files are in a 'loader' subdir, move them out
 if [ -d $boot_dir/loader ] ; then
@@ -149,6 +150,12 @@ SAY 'LOADING SLES FILES INTO READER...'
 'PUNCH SLES INITRD A (NOH'                                                      
 'IPL 00C'                                                                       
 XXX
+
+# Strip CDLABEL from the kiwi-generated grub configuration
+# We are specifying the correct one in /etc/cmdline.d (see config.sh)
+# and having it here might be confusing to repackers such as
+# mksusecd (bsc#1245453)
+sed -i -E 's|root=live:CDLABEL=[^ ]+||g' $grub_dir/grub.cfg
 
 # Note:
 #
