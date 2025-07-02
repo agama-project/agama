@@ -21,40 +21,44 @@
  */
 
 import React from "react";
-import { MdRaid } from "~/types/storage/model";
-import { StorageDevice } from "~/types/storage";
+import {
+  DataListAction,
+  DataListCell,
+  DataListItemCells,
+  DataListItemRow,
+  Flex,
+} from "@patternfly/react-core";
+import NestedContent from "~/components/core/NestedContent";
 import PartitionableHeader from "~/components/storage/PartitionableHeader";
 import PartitionsMenu from "~/components/storage/PartitionsMenu";
 import MdRaidDeviceMenu from "~/components/storage/MdRaidDeviceMenu";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
-import { Card, CardBody, CardHeader, CardTitle, Flex } from "@patternfly/react-core";
-
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import { MdRaid } from "~/types/storage/model";
+import { StorageDevice } from "~/types/storage";
+import { deviceLabel } from "./utils";
 
 export type MdRaidEditorProps = { raid: MdRaid; raidDevice: StorageDevice };
 
-const MdRaidHeader = ({ raid, raidDevice }: MdRaidEditorProps) => {
-  return (
-    <PartitionableHeader device={raid}>
-      <MdRaidDeviceMenu raid={raid} selected={raidDevice} />
-    </PartitionableHeader>
-  );
-};
-
 export default function MdRaidEditor({ raid, raidDevice }: MdRaidEditorProps) {
   return (
-    <Card isCompact>
-      <CardHeader>
-        <CardTitle>
-          <MdRaidHeader raid={raid} raidDevice={raidDevice} />
-        </CardTitle>
-      </CardHeader>
-      <CardBody className={spacingStyles.plLg}>
-        <Flex direction={{ default: "column" }}>
-          <SpacePolicyMenu modelDevice={raid} device={raidDevice} />
-          <PartitionsMenu device={raid} />
-        </Flex>
-      </CardBody>
-    </Card>
+    <DataListItemRow>
+      <DataListItemCells
+        dataListCells={[
+          <DataListCell key="content" isFilled={false}>
+            <Flex direction={{ default: "column" }}>
+              <PartitionableHeader device={raid}>{deviceLabel(raidDevice)}</PartitionableHeader>
+              <NestedContent>
+                <PartitionsMenu device={raid} />
+                <SpacePolicyMenu modelDevice={raid} device={raidDevice} />
+              </NestedContent>
+            </Flex>
+          </DataListCell>,
+        ]}
+      />
+      {/** @ts-expect-error: props required but not used, see https://github.com/patternfly/patternfly-react/issues/9823 **/}
+      <DataListAction>
+        <MdRaidDeviceMenu raid={raid} selected={raidDevice} />
+      </DataListAction>
+    </DataListItemRow>
   );
 }
