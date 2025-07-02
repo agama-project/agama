@@ -21,33 +21,30 @@
  */
 
 import React from "react";
+import {
+  DataListAction,
+  DataListCell,
+  DataListItemCells,
+  DataListItemRow,
+  Divider,
+  Flex,
+} from "@patternfly/react-core";
 import { useNavigate, generatePath } from "react-router-dom";
-import { sprintf } from "sprintf-js";
-import { _, n_, formatList } from "~/i18n";
+import Link from "~/components/core/Link";
+import MenuButton from "~/components/core/MenuButton";
+import NestedContent from "~/components/core/NestedContent";
+import DeviceHeader from "~/components/storage/DeviceHeader";
+import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
+import Icon from "~/components/layout/Icon";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { model } from "~/types/storage";
 import { baseName, formattedPath } from "~/components/storage/utils";
 import { contentDescription } from "~/components/storage/utils/volume-group";
 import { useDeleteVolumeGroup } from "~/hooks/storage/volume-group";
 import { useDeleteLogicalVolume } from "~/hooks/storage/logical-volume";
-import DeviceMenu from "~/components/storage/DeviceMenu";
-import DeviceHeader from "~/components/storage/DeviceHeader";
-import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
-  DataListCell,
-  DataListItemCells,
-  DataListItemRow,
-  Divider,
-  Flex,
-  MenuItem,
-  MenuList,
-} from "@patternfly/react-core";
-
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import { _, n_, formatList } from "~/i18n";
+import { sprintf } from "sprintf-js";
+import { isEmpty } from "radashi";
 
 const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
   const deleteVolumeGroup = useDeleteVolumeGroup();
@@ -80,16 +77,15 @@ const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
   }
 
   return (
-    <MenuItem
+    <MenuButton.Item
+      isDanger
       key="delete-volume-group"
       itemId="delete-volume-group"
-      isDanger
       description={description}
-      role="menuitem"
       onClick={() => deleteVolumeGroup(vg.vgName, convert)}
     >
       <span>{_("Delete volume group")}</span>
-    </MenuItem>
+    </MenuButton.Item>
   );
 };
 
@@ -97,7 +93,7 @@ const EditVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
   const navigate = useNavigate();
 
   return (
-    <MenuItem
+    <MenuButton.Item
       key="edit-volume-group"
       itemId="edit-volume-group"
       description={_("Modify settings and physical volumes")}
@@ -105,18 +101,19 @@ const EditVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
       onClick={() => navigate(generatePath(PATHS.volumeGroup.edit, { id: vg.vgName }))}
     >
       <span>{_("Edit volume group")}</span>
-    </MenuItem>
+    </MenuButton.Item>
   );
 };
 
 const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
   return (
-    <DeviceMenu title={<b aria-hidden>{vg.vgName}</b>}>
-      <MenuList>
-        <EditVgOption vg={vg} />
-        <DeleteVgOption vg={vg} />
-      </MenuList>
-    </DeviceMenu>
+    <MenuButton
+      toggleProps={{ variant: "plain" }}
+      items={[<EditVgOption key="edit" vg={vg} />, <DeleteVgOption key="delete" vg={vg} />]}
+    >
+      <span className="action-text">{_("Change")}</span>{" "}
+      <Icon name="more_horiz" className="agm-strong-icon" />
+    </MenuButton>
   );
 };
 
@@ -125,11 +122,7 @@ const VgHeader = ({ vg }: { vg: model.VolumeGroup }) => {
     ? _("Create LVM volume group %s")
     : _("Empty LVM volume group %s");
 
-  return (
-    <DeviceHeader id={`vg-editor-header-${vg.vgName}`} title={title}>
-      <VgMenu vg={vg} />
-    </DeviceHeader>
-  );
+  return <DeviceHeader title={title}>{vg.vgName}</DeviceHeader>;
 };
 
 const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
@@ -144,34 +137,55 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
   };
   const deleteLv = (lv: model.LogicalVolume) => deleteLogicalVolume(vg.vgName, lv.mountPath);
 
+  const pathToNewLv = generatePath(PATHS.volumeGroup.logicalVolume.add, { id: vg.vgName });
+
+  if (isEmpty(vg.logicalVolumes)) {
+    return (
+      <Link to={pathToNewLv} variant="link" isInline>
+        {_("Add logical volume")}
+      </Link>
+    );
+  }
+
   return (
-    <DeviceMenu
-      title={<span aria-hidden>{contentDescription(vg)}</span>}
-      ariaLabel={_("Logical volumes")}
-    >
-      <MenuList>
-        {vg.logicalVolumes.map((lv) => {
-          return (
-            <MountPathMenuItem
-              key={lv.mountPath}
-              device={lv}
-              editPath={editPath(lv)}
-              deleteFn={() => deleteLv(lv)}
-            />
-          );
-        })}
-        {vg.logicalVolumes.length > 0 && <Divider component="li" />}
-        <MenuItem
-          key="add-logical-volume"
-          itemId="add-logical-volume"
-          onClick={() =>
-            navigate(generatePath(PATHS.volumeGroup.logicalVolume.add, { id: vg.vgName }))
-          }
-        >
-          <span>{_("Add logical volume")}</span>
-        </MenuItem>
-      </MenuList>
-    </DeviceMenu>
+    <Flex gap={{ default: "gapXs" }}>
+      {_("Logical volumes")}
+      <MenuButton
+        menuProps={{
+          "aria-label": _("Logical volumes"),
+        }}
+        toggleProps={{
+          variant: "plainText",
+        }}
+        items={[
+          vg.logicalVolumes
+            .map((lv) => {
+              return (
+                <MountPathMenuItem
+                  key={lv.mountPath}
+                  device={lv}
+                  editPath={editPath(lv)}
+                  deleteFn={() => deleteLv(lv)}
+                />
+              );
+            })
+            .concat(
+              <Divider component="li" />,
+              <MenuButton.Item
+                key="add-logical-volume"
+                itemId="add-logical-volume"
+                onClick={() =>
+                  navigate(generatePath(PATHS.volumeGroup.logicalVolume.add, { id: vg.vgName }))
+                }
+              >
+                <span>{_("Add logical volume")}</span>
+              </MenuButton.Item>,
+            ),
+        ]}
+      >
+        {contentDescription(vg)}
+      </MenuButton>
+    </Flex>
   );
 };
 
@@ -185,25 +199,17 @@ export default function VolumeGroupEditor({ vg }: VolumeGroupEditorProps) {
           <DataListCell key="content">
             <Flex direction={{ default: "column" }}>
               <VgHeader vg={vg} />
-              <LogicalVolumes vg={vg} />
+              <NestedContent>
+                <LogicalVolumes vg={vg} />
+              </NestedContent>
             </Flex>
           </DataListCell>,
         ]}
       />
+      {/** @ts-expect-error: props required but not used, see https://github.com/patternfly/patternfly-react/issues/9823 **/}
+      <DataListAction>
+        <VgMenu vg={vg} />
+      </DataListAction>
     </DataListItemRow>
-  );
-  return (
-    <Card isCompact>
-      <CardHeader>
-        <CardTitle>
-          <VgHeader vg={vg} />
-        </CardTitle>
-      </CardHeader>
-      <CardBody className={spacingStyles.plLg}>
-        <Flex direction={{ default: "column" }}>
-          <LogicalVolumes vg={vg} />
-        </Flex>
-      </CardBody>
-    </Card>
   );
 }
