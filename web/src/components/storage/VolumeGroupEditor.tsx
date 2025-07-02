@@ -31,6 +31,7 @@ import {
 } from "@patternfly/react-core";
 import { useNavigate, generatePath } from "react-router-dom";
 import Link from "~/components/core/Link";
+import Text from "~/components/core/Text";
 import MenuButton from "~/components/core/MenuButton";
 import NestedContent from "~/components/core/NestedContent";
 import DeviceHeader from "~/components/storage/DeviceHeader";
@@ -84,7 +85,7 @@ const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
       description={description}
       onClick={() => deleteVolumeGroup(vg.vgName, convert)}
     >
-      <span>{_("Delete volume group")}</span>
+      {_("Delete volume group")}
     </MenuButton.Item>
   );
 };
@@ -100,7 +101,7 @@ const EditVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
       role="menuitem"
       onClick={() => navigate(generatePath(PATHS.volumeGroup.edit, { id: vg.vgName }))}
     >
-      <span>{_("Edit volume group")}</span>
+      {_("Edit volume group")}
     </MenuButton.Item>
   );
 };
@@ -111,7 +112,7 @@ const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
       toggleProps={{ variant: "plain" }}
       items={[<EditVgOption key="edit" vg={vg} />, <DeleteVgOption key="delete" vg={vg} />]}
     >
-      <span className="action-text">{_("Change")}</span>{" "}
+      <Text className="action-text">{_("Change")}</Text>{" "}
       <Icon name="more_horiz" className="agm-strong-icon" />
     </MenuButton>
   );
@@ -149,7 +150,7 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
 
   return (
     <Flex gap={{ default: "gapXs" }}>
-      {_("Logical volumes")}
+      <Text isBold>{_("Logical volumes")}</Text>
       <MenuButton
         menuProps={{
           "aria-label": _("Logical volumes"),
@@ -178,7 +179,7 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
                   navigate(generatePath(PATHS.volumeGroup.logicalVolume.add, { id: vg.vgName }))
                 }
               >
-                <span>{_("Add logical volume")}</span>
+                {_("Add logical volume")}
               </MenuButton.Item>,
             ),
         ]}
