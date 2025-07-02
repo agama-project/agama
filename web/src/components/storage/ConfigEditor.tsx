@@ -84,11 +84,7 @@ export default function ConfigEditor() {
     <DataList aria-label={_("[FIXME]")} isCompact className="storage-structure">
       {volumeGroups.map((vg, i) => {
         return (
-          <DataListItem
-            key={`vg-${i}`}
-            style={{ fontWeight: "bold" }}
-            aria-labelledby={`vg-editor-header-${vg.vgName}`}
-          >
+          <DataListItem key={`vg-${i}`}>
             <VolumeGroupEditor vg={vg} />
           </DataListItem>
         );
