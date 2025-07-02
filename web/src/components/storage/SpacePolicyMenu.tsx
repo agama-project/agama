@@ -21,29 +21,29 @@
  */
 
 import React from "react";
+import { Flex, Content } from "@patternfly/react-core";
+import MenuButton from "~/components/core/MenuButton";
 import { useNavigate, generatePath } from "react-router-dom";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { SPACE_POLICIES } from "~/components/storage/utils";
 import { apiModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
-import DeviceMenu from "~/components/storage/DeviceMenu";
-import { MenuItem, MenuList, Flex, Content } from "@patternfly/react-core";
+import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { isEmpty } from "radashi";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 const PolicyItem = ({ policy, isSelected, onClick }) => {
   return (
-    <MenuItem
+    <MenuButton.Item
       itemId={policy.id}
       isSelected={isSelected}
       description={policy.description}
       onClick={() => onClick(policy.id)}
     >
       <Content className={isSelected && textStyles.fontWeightBold}>{policy.label}</Content>
-    </MenuItem>
+    </MenuButton.Item>
   );
 };
 
@@ -66,23 +66,23 @@ export default function SpacePolicyMenu({ modelDevice, device }) {
   const currentPolicy = driveUtils.spacePolicyEntry(modelDevice);
 
   return (
-    <Flex gap={{ default: "gapSm" }}>
+    <Flex gap={{ default: "gapXs" }}>
       <strong>{sprintf(_("Action for %s existing partitions"), existingPartitions)}</strong>
-      <DeviceMenu
-        title={<span>{driveUtils.contentActionsDescription(modelDevice)}</span>}
-        activeItemId={currentPolicy.id}
+      <MenuButton
+        toggleProps={{
+          variant: "plainText",
+        }}
+        items={SPACE_POLICIES.map((policy) => (
+          <PolicyItem
+            key={policy.id}
+            policy={policy}
+            isSelected={policy.id === currentPolicy.id}
+            onClick={onSpacePolicyChange}
+          />
+        ))}
       >
-        <MenuList>
-          {SPACE_POLICIES.map((policy) => (
-            <PolicyItem
-              key={policy.id}
-              policy={policy}
-              isSelected={policy.id === currentPolicy.id}
-              onClick={onSpacePolicyChange}
-            />
-          ))}
-        </MenuList>
-      </DeviceMenu>
+        {driveUtils.contentActionsDescription(modelDevice)}
+      </MenuButton>
     </Flex>
   );
 }
