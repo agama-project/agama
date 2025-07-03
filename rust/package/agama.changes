@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jul 10 09:17:22 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add dns priority to network model (gh#agama-project/agama#2533).
+
+-------------------------------------------------------------------
 Wed Jul  9 12:25:08 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - unattended installation: allow registration to RMT when
