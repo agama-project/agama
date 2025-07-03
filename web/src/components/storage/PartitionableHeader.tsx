@@ -20,84 +20,74 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { TitleProps } from "@patternfly/react-core";
-import DeviceHeader from "~/components/storage/DeviceHeader";
-import { model } from "~/types/storage";
+import { model, StorageDevice } from "~/types/storage";
+import { sprintf } from "sprintf-js";
+import { deviceLabel } from "./utils";
 import { _ } from "~/i18n";
 
 export type PartitionableHeaderProps = {
-  device: model.Drive | model.MdRaid;
-  children: React.ReactNode;
-  headingLevel?: TitleProps["headingLevel"];
+  drive: model.Drive | model.MdRaid;
+  device: StorageDevice;
 };
 
-export default function PartitionableHeader({
-  device,
-  headingLevel = "h4",
-  children,
-}: PartitionableHeaderProps) {
-  const { isBoot, isTargetDevice: hasPv } = device;
-  const isRoot = !!device.getPartition("/");
-  const hasFs = !!device.getMountPaths().length;
+const text = (drive: model.Drive | model.MdRaid): string => {
+  const { isBoot, isTargetDevice: hasPv } = drive;
+  const isRoot = !!drive.getPartition("/");
+  const hasFs = !!drive.getMountPaths().length;
 
-  const text = (): string => {
-    if (isRoot) {
-      if (hasPv) {
-        if (isBoot) {
-          // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-          return _("Use %s to install, host LVM and boot");
-        }
-        // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-        return _("Use %s to install and host LVM");
-      }
-
-      if (isBoot) {
-        // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-        return _("Use %s to install and boot");
-      }
-      // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-      return _("Use %s to install");
-    }
-
-    if (hasFs) {
-      if (hasPv) {
-        if (isBoot) {
-          // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-          return _("Use %s for LVM, additional partitions and booting");
-        }
-        // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-        return _("Use %s for LVM and additional partitions");
-      }
-
-      if (isBoot) {
-        // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-        return _("Use %s for additional partitions and booting");
-      }
-      // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-      return _("Use %s for additional partitions");
-    }
-
+  if (isRoot) {
     if (hasPv) {
       if (isBoot) {
         // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-        return _("Use %s to host LVM and boot");
+        return _("Use %s to install, host LVM and boot");
       }
       // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-      return _("Use %s to host LVM");
+      return _("Use %s to install and host LVM");
     }
 
     if (isBoot) {
       // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-      return _("Use %s to configure boot partitions");
+      return _("Use %s to install and boot");
     }
     // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
-    return _("Use %s");
-  };
+    return _("Use %s to install");
+  }
 
-  return (
-    <DeviceHeader title={text()} headingLevel={headingLevel}>
-      {children}
-    </DeviceHeader>
-  );
+  if (hasFs) {
+    if (hasPv) {
+      if (isBoot) {
+        // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
+        return _("Use %s for LVM, additional partitions and booting");
+      }
+      // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
+      return _("Use %s for LVM and additional partitions");
+    }
+
+    if (isBoot) {
+      // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
+      return _("Use %s for additional partitions and booting");
+    }
+    // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
+    return _("Use %s for additional partitions");
+  }
+
+  if (hasPv) {
+    if (isBoot) {
+      // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
+      return _("Use %s to host LVM and boot");
+    }
+    // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
+    return _("Use %s to host LVM");
+  }
+
+  if (isBoot) {
+    // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
+    return _("Use %s to configure boot partitions");
+  }
+  // TRANSLATORS: %s will be replaced by the device name and its size - "/dev/sda, 20 GiB"
+  return _("Use %s");
+};
+
+export default function PartitionableHeader({ drive, device }: PartitionableHeaderProps) {
+  return sprintf(text(drive), deviceLabel(device));
 }

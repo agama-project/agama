@@ -21,44 +21,27 @@
  */
 
 import React from "react";
-import {
-  DataListAction,
-  DataListCell,
-  DataListItemCells,
-  DataListItemRow,
-  Flex,
-} from "@patternfly/react-core";
-import NestedContent from "~/components/core/NestedContent";
+import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
 import DriveDeviceMenu from "~/components/storage/DriveDeviceMenu";
 import PartitionableHeader from "~/components/storage/PartitionableHeader";
 import PartitionsMenu from "~/components/storage/PartitionsMenu";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
 import { Drive } from "~/types/storage/model";
 import { StorageDevice } from "~/types/storage";
-import { deviceLabel } from "./utils";
 
 export type DriveEditorProps = { drive: Drive; driveDevice: StorageDevice };
 
 export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
   return (
-    <DataListItemRow>
-      <DataListItemCells
-        dataListCells={[
-          <DataListCell key="content" isFilled={false}>
-            <Flex direction={{ default: "column" }}>
-              <PartitionableHeader device={drive}>{deviceLabel(driveDevice)}</PartitionableHeader>
-              <NestedContent>
-                <PartitionsMenu device={drive} />
-                <SpacePolicyMenu modelDevice={drive} device={driveDevice} />
-              </NestedContent>
-            </Flex>
-          </DataListCell>,
-        ]}
-      />
-      {/** @ts-expect-error: props required but not used, see https://github.com/patternfly/patternfly-react/issues/9823 **/}
-      <DataListAction>
-        <DriveDeviceMenu drive={drive} selected={driveDevice} />
-      </DataListAction>
-    </DataListItemRow>
+    <ConfigEditorItem
+      header={<PartitionableHeader drive={drive} device={driveDevice} />}
+      content={
+        <>
+          <PartitionsMenu device={drive} />
+          <SpacePolicyMenu modelDevice={drive} device={driveDevice} />
+        </>
+      }
+      actions={<DriveDeviceMenu drive={drive} selected={driveDevice} />}
+    />
   );
 }

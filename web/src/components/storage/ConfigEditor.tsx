@@ -21,7 +21,8 @@
  */
 
 import React from "react";
-import { Alert, Button, DataList, DataListItem } from "@patternfly/react-core";
+import { Alert, Button, DataList } from "@patternfly/react-core";
+import Text from "~/components/core/Text";
 import DriveEditor from "~/components/storage/DriveEditor";
 import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
 import MdRaidEditor from "~/components/storage/MdRaidEditor";
@@ -42,12 +43,12 @@ const NoDevicesConfiguredAlert = () => {
     <Alert title={title} variant="custom" isInline>
       {bodyStart}{" "}
       <Button variant="link" onClick={() => reset()} isInline>
-        <b>
+        <Text isBold>
           {
             // TRANSLATORS: label for a button
             _("reset to defaults")
           }
-        </b>
+        </Text>
       </Button>{" "}
       {bodyEnd}
     </Alert>
@@ -83,20 +84,12 @@ export default function ConfigEditor() {
   return (
     <DataList aria-label={_("[FIXME]")} isCompact className="storage-structure">
       {volumeGroups.map((vg, i) => {
-        return (
-          <DataListItem key={`vg-${i}`}>
-            <VolumeGroupEditor vg={vg} />
-          </DataListItem>
-        );
+        return <VolumeGroupEditor key={`vg-${i}`} vg={vg} />;
       })}
       {mdRaids.map((raid, i) => {
         const device = devices.find((d) => d.name === raid.name);
 
-        return (
-          <DataListItem key={`md-${i}`}>
-            <MdRaidEditor raid={raid} raidDevice={device} />
-          </DataListItem>
-        );
+        return <MdRaidEditor key={`md-${i}`} raid={raid} raidDevice={device} />;
       })}
       {drives.map((drive, i) => {
         const device = devices.find((d) => d.name === drive.name);
@@ -107,11 +100,7 @@ export default function ConfigEditor() {
          */
         if (device === undefined) return null;
 
-        return (
-          <DataListItem key={`drive-${i}`}>
-            <DriveEditor drive={drive} driveDevice={device} />
-          </DataListItem>
-        );
+        return <DriveEditor key={`drive-${i}`} drive={drive} driveDevice={device} />;
       })}
     </DataList>
   );

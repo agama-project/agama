@@ -21,20 +21,12 @@
  */
 
 import React, { useId } from "react";
-import {
-  DataListAction,
-  DataListCell,
-  DataListItemCells,
-  DataListItemRow,
-  Divider,
-  Flex,
-} from "@patternfly/react-core";
+import { Divider, Flex, Title } from "@patternfly/react-core";
 import { useNavigate, generatePath } from "react-router-dom";
 import Link from "~/components/core/Link";
 import Text from "~/components/core/Text";
 import MenuButton from "~/components/core/MenuButton";
-import NestedContent from "~/components/core/NestedContent";
-import DeviceHeader from "~/components/storage/DeviceHeader";
+import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
 import Icon from "~/components/layout/Icon";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -123,7 +115,7 @@ const VgHeader = ({ vg }: { vg: model.VolumeGroup }) => {
     ? _("Create LVM volume group %s")
     : _("Empty LVM volume group %s");
 
-  return <DeviceHeader title={title}>{vg.vgName}</DeviceHeader>;
+  return <Title headingLevel="h4">{sprintf(title, vg.vgName)}</Title>;
 };
 
 const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
@@ -193,23 +185,10 @@ export type VolumeGroupEditorProps = { vg: model.VolumeGroup };
 
 export default function VolumeGroupEditor({ vg }: VolumeGroupEditorProps) {
   return (
-    <DataListItemRow>
-      <DataListItemCells
-        dataListCells={[
-          <DataListCell key="content">
-            <Flex direction={{ default: "column" }}>
-              <VgHeader vg={vg} />
-              <NestedContent>
-                <LogicalVolumes vg={vg} />
-              </NestedContent>
-            </Flex>
-          </DataListCell>,
-        ]}
-      />
-      {/** @ts-expect-error: props required but not used, see https://github.com/patternfly/patternfly-react/issues/9823 **/}
-      <DataListAction>
-        <VgMenu vg={vg} />
-      </DataListAction>
-    </DataListItemRow>
+    <ConfigEditorItem
+      header={<VgHeader vg={vg} />}
+      content={<LogicalVolumes vg={vg} />}
+      actions={<VgMenu vg={vg} />}
+    />
   );
 }

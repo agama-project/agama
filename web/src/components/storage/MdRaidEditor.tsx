@@ -21,44 +21,27 @@
  */
 
 import React from "react";
-import {
-  DataListAction,
-  DataListCell,
-  DataListItemCells,
-  DataListItemRow,
-  Flex,
-} from "@patternfly/react-core";
-import NestedContent from "~/components/core/NestedContent";
+import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
 import PartitionableHeader from "~/components/storage/PartitionableHeader";
 import PartitionsMenu from "~/components/storage/PartitionsMenu";
 import MdRaidDeviceMenu from "~/components/storage/MdRaidDeviceMenu";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
 import { MdRaid } from "~/types/storage/model";
 import { StorageDevice } from "~/types/storage";
-import { deviceLabel } from "./utils";
 
 export type MdRaidEditorProps = { raid: MdRaid; raidDevice: StorageDevice };
 
 export default function MdRaidEditor({ raid, raidDevice }: MdRaidEditorProps) {
   return (
-    <DataListItemRow>
-      <DataListItemCells
-        dataListCells={[
-          <DataListCell key="content" isFilled={false}>
-            <Flex direction={{ default: "column" }}>
-              <PartitionableHeader device={raid}>{deviceLabel(raidDevice)}</PartitionableHeader>
-              <NestedContent>
-                <PartitionsMenu device={raid} />
-                <SpacePolicyMenu modelDevice={raid} device={raidDevice} />
-              </NestedContent>
-            </Flex>
-          </DataListCell>,
-        ]}
-      />
-      {/** @ts-expect-error: props required but not used, see https://github.com/patternfly/patternfly-react/issues/9823 **/}
-      <DataListAction>
-        <MdRaidDeviceMenu raid={raid} selected={raidDevice} />
-      </DataListAction>
-    </DataListItemRow>
+    <ConfigEditorItem
+      header={<PartitionableHeader drive={raid} device={raidDevice} />}
+      content={
+        <>
+          <PartitionsMenu device={raid} />
+          <SpacePolicyMenu modelDevice={raid} device={raidDevice} />
+        </>
+      }
+      actions={<MdRaidDeviceMenu raid={raid} selected={raidDevice} />}
+    />
   );
 }
