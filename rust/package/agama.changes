@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jul  3 16:01:22 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add dns priority to network model (gh#agama-project/agama#2533).
+
+-------------------------------------------------------------------
 Wed Jul  2 16:02:07 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Cache the list of products during the startup (bsc#1241208).
