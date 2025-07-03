@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jul 15 13:17:22 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add dns priority to network model (gh#agama-project/agama#2533).
+
+-------------------------------------------------------------------
 Tue Jul 15 09:00:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
 
 - Fix autoconnect setting for port interfaces (bsc#1246070).
