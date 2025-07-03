@@ -46,8 +46,12 @@ module Agama
       #
       # This method listens for D-Bus calls.
       def run
+        logger.info "Starting service ..."
+
         initialize_yast
-        service = build_service(name, logger)
+        @service = build_service(name, logger)
+        Signal.trap("SIGINT") { stop }
+
         # TODO: implement a #start method in all services,
         # which is equivalent to #export in most cases.
         service.respond_to?(:start) ? service.start : service.export
@@ -62,6 +66,15 @@ module Agama
     private
 
       attr_reader :name, :logger
+
+      attr_reader :service
+
+      # Stops the service.
+      def stop
+        puts "Stopping #{name} service ..."
+        service.tear_down if service.respond_to?(:tear_down)
+        exit
+      end
 
       # Configuration
       def config
