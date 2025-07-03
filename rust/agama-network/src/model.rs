@@ -879,6 +879,8 @@ pub struct IpConfig {
     pub dhcp4_settings: Option<Dhcp4Settings>,
     pub dhcp6_settings: Option<Dhcp6Settings>,
     pub ip6_privacy: Option<i32>,
+    pub dns_priority4: Option<i32>,
+    pub dns_priority6: Option<i32>,
 }
 
 #[skip_serializing_none]
