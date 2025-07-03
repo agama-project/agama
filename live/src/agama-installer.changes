@@ -5,6 +5,11 @@ Wed Jul  2 13:28:46 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com
   grub config (bsc#1245453)
 
 -------------------------------------------------------------------
+Tue Jul  1 15:29:36 UTC 2025 - Bernhard Wiedemann <bwiedemann@suse.com>
+
+- Make agama-installer build more reproducible (boo#1245501)
+
+-------------------------------------------------------------------
 Mon Jun 30 15:51:37 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 16
