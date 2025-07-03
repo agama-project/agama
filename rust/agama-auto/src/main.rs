@@ -42,7 +42,7 @@ async fn main() -> anyhow::Result<()> {
     let token = AuthToken::master().ok_or(anyhow!("Could not find the master token"))?;
     let http = BaseHTTPClient::new(API_URL)?.authenticated(&token)?;
 
-    let mut runner = AutoInstallRunner::new(http, &KNOWN_LOCATIONS);
+    let mut runner = AutoInstallRunner::new(http, &KNOWN_LOCATIONS)?;
     if let Some(user_url) = args.get("inst.auto") {
         runner.with_user_url(user_url);
     }

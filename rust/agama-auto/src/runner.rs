@@ -23,22 +23,11 @@ use std::{io::Write, process::Stdio};
 use agama_lib::{
     http::BaseHTTPClient,
     questions::{
-        http_client::{HTTPClient as QuestionsHTTPClient, QuestionsHTTPClientError},
+        http_client::HTTPClient as QuestionsHTTPClient,
         model::{GenericQuestion, Question},
     },
 };
-
-#[derive(thiserror::Error, Debug)]
-pub enum AutoInstallError {
-    #[error("Could not generate the configuration.")]
-    ConfigGenerationFailed,
-    #[error("Could not load the configuration.")]
-    ConfigLoadFailed,
-    #[error("Could not run the Agama CLI")]
-    CouldNotRunAgama(#[from] std::io::Error),
-    #[error("Could not communicate with the user.")]
-    UserCommunicationFailed(#[from] QuestionsHTTPClientError),
-}
+use anyhow::anyhow;
 
 /// It drives the auto-installation process.
 pub struct AutoInstallRunner {
@@ -52,13 +41,13 @@ pub struct AutoInstallRunner {
 
 impl AutoInstallRunner {
     /// Builds a new auto-installation runner.
-    pub fn new(http_client: BaseHTTPClient, locations: &[&str]) -> Self {
+    pub fn new(http_client: BaseHTTPClient, locations: &[&str]) -> anyhow::Result<Self> {
         let locations = locations.iter().map(|l| l.to_string()).collect();
-        Self {
-            questions: QuestionsHTTPClient::new(http_client).unwrap(),
+        Ok(Self {
+            questions: QuestionsHTTPClient::new(http_client)?,
             predefined_urls: locations,
             user_url: None,
-        }
+        })
     }
 
     /// Sets the user-defined URL.
@@ -73,7 +62,7 @@ impl AutoInstallRunner {
     ///
     /// If no user-defined URL is given, it searches for the configuration in
     /// the predefined locations.
-    pub async fn run(&self) -> Result<(), AutoInstallError> {
+    pub async fn run(&self) -> anyhow::Result<()> {
         if let Some(url) = &self.user_url {
             loop {
                 println!("Loading the configuration from {url}");
@@ -104,13 +93,16 @@ impl AutoInstallRunner {
     }
 
     /// Imports the configuration from the given URL.
-    fn import_config(url: &str) -> Result<(), AutoInstallError> {
+    fn import_config(url: &str) -> anyhow::Result<()> {
         let generate_cmd = std::process::Command::new("agama")
             .args(["config", "generate", url])
             .output()?;
 
         if !generate_cmd.status.success() {
-            return Err(AutoInstallError::ConfigGenerationFailed);
+            return Err(anyhow!(
+                "Could not run generate the configuration: {:?}",
+                generate_cmd.stderr,
+            ));
         }
 
         let child = std::process::Command::new("agama")
@@ -119,20 +111,27 @@ impl AutoInstallRunner {
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             .spawn();
-        let mut child = child.unwrap();
-        let mut stdin = child.stdin.take().unwrap();
+        let mut child = child?;
+        let mut stdin = child
+            .stdin
+            .take()
+            .ok_or(anyhow!("Could not write to \"config load\" stdin"))?;
         stdin.write_all(&generate_cmd.stdout)?;
         drop(stdin);
 
-        let output = child.wait()?;
-        if output.success() {
-            return Ok(());
+        let config_cmd = child.wait_with_output()?;
+        if !config_cmd.status.success() {
+            return Err(anyhow!(
+                "Could not run load the configuration: {:?}",
+                config_cmd.stderr,
+            ));
         }
-        Err(AutoInstallError::ConfigLoadFailed)
+
+        Ok(())
     }
 
     /// Asks the user whether to retry loading the profile.
-    async fn should_retry(&self, url: &str) -> Result<bool, AutoInstallError> {
+    async fn should_retry(&self, url: &str) -> anyhow::Result<bool> {
         let text = format!(
             "It was not possible to load the configuration from {url}. Do you want to try again?"
         );

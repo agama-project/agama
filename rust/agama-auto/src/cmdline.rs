@@ -20,9 +20,7 @@
 
 use std::{collections::HashMap, path::Path};
 
-#[derive(thiserror::Error, Debug)]
-#[error("I/O error when reading file {0}.")]
-pub struct CmdlineArgsFileError(String, #[source] std::io::Error);
+use anyhow::Context;
 
 /// Implements a mechanism to read the kernel's command-line arguments.
 pub struct CmdlineArgs(HashMap<String, String>);
@@ -31,11 +29,11 @@ impl CmdlineArgs {
     /// Builds an instance from the given file.
     ///
     /// * `content`: file containing the kernel's cmdline arguments.
-    pub fn parse_file<P: std::fmt::Display + AsRef<Path>>(
-        file: P,
-    ) -> Result<Self, CmdlineArgsFileError> {
-        let content = std::fs::read_to_string(&file)
-            .map_err(|e| CmdlineArgsFileError(file.to_string(), e))?;
+    pub fn parse_file<P: std::fmt::Display + AsRef<Path>>(file: P) -> anyhow::Result<Self> {
+        let content = std::fs::read_to_string(&file).context(format!(
+            "Could not read cmdline args file {}",
+            file.to_string()
+        ))?;
         Ok(Self::parse_str(&content))
     }
 

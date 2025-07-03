@@ -41,4 +41,4 @@ mod cmdline;
 pub use cmdline::CmdlineArgs;
 
 mod runner;
-pub use runner::{AutoInstallError, AutoInstallRunner};
+pub use runner::AutoInstallRunner;
