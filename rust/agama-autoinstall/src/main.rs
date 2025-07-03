@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_auto::{AutoInstallRunner, CmdlineArgs};
+use agama_autoinstall::{AutoInstallRunner, CmdlineArgs};
 use agama_lib::{auth::AuthToken, http::BaseHTTPClient};
 use anyhow::anyhow;
 

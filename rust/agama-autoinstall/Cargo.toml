@@ -1,5 +1,5 @@
 [package]
-name = "agama-auto"
+name = "agama-autoinstall"
 version = "0.1.0"
 rust-version.workspace = true
 edition.workspace = true

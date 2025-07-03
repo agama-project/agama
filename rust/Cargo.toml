@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "agama-auto",
+    "agama-autoinstall",
     "agama-cli",
     "agama-server",
     "agama-lib",
