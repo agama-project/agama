@@ -81,6 +81,15 @@ const proposalQuery = () => ({
 });
 
 /**
+ * Query to retrieve selected product
+ */
+const selectedProductQuery = () => ({
+  queryKey: ["software", "selectedProduct"],
+  queryFn: () => fetchConfig().then(({ product }) => product),
+  staleTime: Infinity,
+});
+
+/**
  * Query to retrieve available products
  */
 const productsQuery = () => ({
@@ -158,8 +167,10 @@ const useConfigMutation = () => {
   const query = {
     mutationFn: updateConfig,
     onSuccess: async (_, config: SoftwareConfig) => {
-      queryClient.invalidateQueries({ queryKey: ["software"] });
+      queryClient.invalidateQueries({ queryKey: ["software", "config"] });
+      queryClient.invalidateQueries({ queryKey: ["software", "proposal"] });
       if (config.product) {
+        queryClient.invalidateQueries({ queryKey: ["software", "selectedProduct"] });
         await systemProbe();
         queryClient.invalidateQueries({ queryKey: ["storage"] });
       }
@@ -228,20 +239,20 @@ const useProduct = (
 ): { products?: Product[]; selectedProduct?: Product } => {
   const func = options?.suspense ? useSuspenseQueries : useQueries;
   const [
-    { data: config, isPending: isConfigPending },
+    { data: product, isPending: isSelectedProductPending },
     { data: products, isPending: isProductsPending },
   ] = func({
-    queries: [configQuery(), productsQuery()],
+    queries: [selectedProductQuery(), productsQuery()],
   }) as [{ data: SoftwareConfig; isPending: boolean }, { data: Product[]; isPending: boolean }];
 
-  if (isConfigPending || isProductsPending) {
+  if (isSelectedProductPending || isProductsPending) {
     return {
       products: [],
       selectedProduct: undefined,
     };
   }
 
-  const selectedProduct = products.find((p: Product) => p.id === config.product);
+  const selectedProduct = products.find((p: Product) => p.id === product);
   return {
     products,
     selectedProduct,

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jul  4 14:51:14 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Avoid scroll to top on software selection (bsc#1245732).
+
+-------------------------------------------------------------------
 Tue Jul  1 12:57:50 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Add LeapMicro.svg
