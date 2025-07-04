@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul  2 10:50:56 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add missing iSCSI discovery when importing the iSCSI config
+  (bsc#1245171).
+
+-------------------------------------------------------------------
 Mon Jun 30 15:51:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 16

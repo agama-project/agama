@@ -63,6 +63,14 @@ module Agama
           Yast::IscsiClientLib.discover(host, port, authentication(credentials), silent: true)
         end
 
+        # Discovers iSCSI targets from a portal.
+        #
+        # @param portal [String]
+        # @param interfaces [Array<String>]
+        def discover_from_portal(portal, interfaces: [])
+          Yast::IscsiClientLib.discover_from_portal(portal, interfaces)
+        end
+
         # Reads the iSCSI initiator config.
         # @return [Initiator]
         def read_initiator
