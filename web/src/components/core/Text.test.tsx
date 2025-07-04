@@ -21,55 +21,56 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
+import { screen } from "@testing-library/dom";
+import { plainRender } from "~/test-utils";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";
 import Text from "./Text";
 
-describe("Text component", () => {
+describe("Text", () => {
   it("renders children", () => {
-    const { getByText } = render(<Text>Installer</Text>);
-    expect(getByText("Installer")).toBeInTheDocument();
+    plainRender(<Text>Installer</Text>);
+    expect(screen.getByText("Installer")).toBeInTheDocument();
   });
 
   it("applies bold style when isBold is true", () => {
-    const { getByText } = render(<Text isBold>Installer</Text>);
-    expect(getByText("Installer")).toHaveClass(textStyles.fontWeightBold);
+    plainRender(<Text isBold>Installer</Text>);
+    expect(screen.getByText("Installer")).toHaveClass(textStyles.fontWeightBold);
   });
 
   it("applies screenReader class when srOnly is true", () => {
-    const { getByText } = render(<Text srOnly>Installer</Text>);
-    expect(getByText("Installer")).toHaveClass(a11yStyles.screenReader);
+    plainRender(<Text srOnly>Installer</Text>);
+    expect(screen.getByText("Installer")).toHaveClass(a11yStyles.screenReader);
   });
 
   it("applies screenReader class when srOn is 'default'", () => {
-    const { getByText } = render(<Text srOn="default">Installer</Text>);
-    expect(getByText("Installer")).toHaveClass(a11yStyles.screenReader);
+    plainRender(<Text srOn="default">Installer</Text>);
+    expect(screen.getByText("Installer")).toHaveClass(a11yStyles.screenReader);
   });
 
   it("srOnly takes precedence over srOn", () => {
-    const { getByText } = render(
+    plainRender(
       <Text srOnly srOn="md">
         Installer
       </Text>,
     );
-    const element = getByText("Installer");
+    const element = screen.getByText("Installer");
 
     expect(element).toHaveClass(a11yStyles.screenReader);
     expect(element).not.toHaveClass(a11yStyles.screenReaderOnMd);
   });
 
   it("applies screenReaderOn class for non-default srOn", () => {
-    const { getByText } = render(<Text srOn="md">Installer</Text>);
-    expect(getByText("Installer")).toHaveClass(a11yStyles.screenReaderOnMd);
+    plainRender(<Text srOn="md">Installer</Text>);
+    expect(screen.getByText("Installer")).toHaveClass(a11yStyles.screenReaderOnMd);
   });
 
   it("merges custom className", () => {
-    const { getByText } = render(
+    plainRender(
       <Text className="custom-class" srOnly>
         Installer
       </Text>,
     );
-    expect(getByText("Installer")).toHaveClass("custom-class", a11yStyles.screenReader);
+    expect(screen.getByText("Installer")).toHaveClass("custom-class", a11yStyles.screenReader);
   });
 });
