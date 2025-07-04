@@ -91,12 +91,6 @@ module Agama
 
     # Runs the config phase
     def config_phase(reprobe: false)
-      service_status.busy
-
-      # FIXME: hot-fix for bsc#1234711. In auto-installation, the storage config could be applied
-      # before probing. In that case, the config has to be recovered.
-      reprobe ||= installation_phase.startup?
-
       installation_phase.config
       start_progress_with_descriptions(_("Analyze disks"), _("Configure software"))
       progress.step { reprobe ? storage.reprobe : storage.probe }
@@ -106,14 +100,12 @@ module Agama
       logger.error "Startup error: #{e.inspect}. Backtrace: #{e.backtrace}"
       # TODO: report errors
     ensure
-      service_status.idle
       finish_progress
     end
 
     # Runs the install phase
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def install_phase
-      service_status.busy
       @ipmi.started
 
       installation_phase.install
@@ -152,14 +144,12 @@ module Agama
       @ipmi.failed
       logger.error "Installation error: #{e.inspect}. Backtrace: #{e.backtrace}"
     ensure
-      service_status.idle
       installation_phase.finish
       finish_progress
     end
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     def locale=(locale)
-      service_status.busy
       change_process_locale(locale)
       users.update_issues
       start_progress_with_descriptions(
@@ -169,7 +159,6 @@ module Agama
       progress.step { software.locale = locale }
       progress.step { storage.locale = locale }
     ensure
-      service_status.idle
       finish_progress
     end
 
