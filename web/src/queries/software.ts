@@ -170,6 +170,7 @@ const useConfigMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["software", "config"] });
       queryClient.invalidateQueries({ queryKey: ["software", "proposal"] });
       if (config.product) {
+        queryClient.invalidateQueries({ queryKey: ["software", "selectedProduct"] });
         await systemProbe();
         queryClient.invalidateQueries({ queryKey: ["storage"] });
       }
