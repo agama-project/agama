@@ -21,45 +21,40 @@
  */
 
 import React from "react";
+import { Flex, Content } from "@patternfly/react-core";
+import MenuButton from "~/components/core/MenuButton";
 import { useNavigate, generatePath } from "react-router-dom";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
-import { _ } from "~/i18n";
 import { SPACE_POLICIES } from "~/components/storage/utils";
 import { apiModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
-import { contentDescription } from "~/components/storage/utils/device";
-import DeviceMenu from "~/components/storage/DeviceMenu";
-import { MenuHeader } from "~/components/core";
-import { Divider, Label, Split, MenuItem, MenuList, MenuGroup } from "@patternfly/react-core";
+import { isEmpty } from "radashi";
+import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
-// FIXME: Presentation is quite poor
-const SpacePolicySelectorIntro = ({ device }) => {
-  const main = _("Choose what to with current content");
-  const description = contentDescription(device);
-  const systems = device.systems;
-
+const PolicyItem = ({ policy, isSelected, onClick }) => {
   return (
-    <MenuHeader
-      title={main}
-      description={
-        <Split hasGutter>
-          <span className="pf-v5-c-menu__item-description">{description}</span>
-          {systems.map((s, i) => (
-            <Label key={i} isCompact>
-              {s}
-            </Label>
-          ))}
-        </Split>
-      }
-    />
+    <MenuButton.Item
+      itemId={policy.id}
+      isSelected={isSelected}
+      description={policy.description}
+      onClick={() => onClick(policy.id)}
+    >
+      <Content className={isSelected && textStyles.fontWeightBold}>{policy.label}</Content>
+    </MenuButton.Item>
   );
 };
 
 export default function SpacePolicyMenu({ modelDevice, device }) {
   const navigate = useNavigate();
-  const { list, listIndex } = modelDevice;
   const setSpacePolicy = useSetSpacePolicy();
+  const { list, listIndex } = modelDevice;
+  const existingPartitions = device.partitionTable?.partitions.length;
+
+  if (isEmpty(existingPartitions)) return;
+
   const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
       return navigate(generatePath(PATHS.editSpacePolicy, { list, listIndex }));
@@ -70,36 +65,24 @@ export default function SpacePolicyMenu({ modelDevice, device }) {
 
   const currentPolicy = driveUtils.spacePolicyEntry(modelDevice);
 
-  const PolicyItem = ({ policy }) => {
-    const isSelected = policy.id === currentPolicy.id;
-    // FIXME: use PF/Content with #component prop instead when migrating to PF6
-    const Name = () => (isSelected ? <b>{policy.label}</b> : policy.label);
-
-    return (
-      <MenuItem
-        itemId={policy.id}
-        isSelected={isSelected}
-        description={policy.description}
-        onClick={() => onSpacePolicyChange(policy.id)}
-      >
-        <Name />
-      </MenuItem>
-    );
-  };
-
   return (
-    <DeviceMenu
-      title={<span>{driveUtils.contentActionsDescription(modelDevice)}</span>}
-      activeItemId={currentPolicy.id}
-    >
-      <MenuGroup label={<SpacePolicySelectorIntro device={device} />}>
-        <MenuList>
-          <Divider />
-          {SPACE_POLICIES.map((policy) => (
-            <PolicyItem key={policy.id} policy={policy} />
-          ))}
-        </MenuList>
-      </MenuGroup>
-    </DeviceMenu>
+    <Flex gap={{ default: "gapXs" }}>
+      <strong>{sprintf(_("Action for %s existing partitions"), existingPartitions)}</strong>
+      <MenuButton
+        toggleProps={{
+          variant: "plainText",
+        }}
+        items={SPACE_POLICIES.map((policy) => (
+          <PolicyItem
+            key={policy.id}
+            policy={policy}
+            isSelected={policy.id === currentPolicy.id}
+            onClick={onSpacePolicyChange}
+          />
+        ))}
+      >
+        {driveUtils.contentActionsDescription(modelDevice)}
+      </MenuButton>
+    </Flex>
   );
 }
