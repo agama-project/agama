@@ -20,7 +20,7 @@
 
 use std::str::FromStr;
 
-use agama_autoinstall::{AutoInstallRunner, CmdlineArgs};
+use agama_autoinstall::{CmdlineArgs, ConfigLoader};
 use agama_lib::{
     auth::AuthToken,
     http::BaseHTTPClient,
@@ -46,16 +46,19 @@ async fn main() -> anyhow::Result<()> {
     let http = BaseHTTPClient::new(API_URL)?.authenticated(&token)?;
     let manager_client = ManagerHTTPClient::new(http.clone());
 
-    let mut runner = AutoInstallRunner::new(http.clone(), &KNOWN_LOCATIONS)?;
+    let mut loader = ConfigLoader::new(http.clone(), &KNOWN_LOCATIONS)?;
     if let Some(user_url) = args.get("inst.auto") {
-        runner.with_user_url(user_url);
+        loader.with_user_url(user_url);
     }
-    // FIXME: it should return whether a profile was loaded or not.
-    runner.run().await?;
+
+    if let Err(error) = loader.load().await {
+        eprintln!("Skipping the auto-installation: {error}");
+        return Ok(());
+    }
 
     if let Some(should_install) = args.get("inst.install") {
         if should_install == "0" {
-            println!("Skipping the installation");
+            println!("Skipping the auto-installation on user's request (inst.install=0)");
             return Ok(());
         }
     }

@@ -40,5 +40,5 @@
 mod cmdline;
 pub use cmdline::CmdlineArgs;
 
-mod runner;
-pub use runner::AutoInstallRunner;
+mod config;
+pub use config::ConfigLoader;

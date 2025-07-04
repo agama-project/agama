@@ -29,8 +29,8 @@ use agama_lib::{
 };
 use anyhow::anyhow;
 
-/// It drives the auto-installation process.
-pub struct AutoInstallRunner {
+/// It loads the user configuration for the unattended installation.
+pub struct ConfigLoader {
     /// Pre-defined URLs to search for configurations.
     predefined_urls: Vec<String>,
     /// User-defined URL to the configuration.
@@ -39,8 +39,8 @@ pub struct AutoInstallRunner {
     questions: QuestionsHTTPClient,
 }
 
-impl AutoInstallRunner {
-    /// Builds a new auto-installation runner.
+impl ConfigLoader {
+    /// Builds a new loader.
     pub fn new(http_client: BaseHTTPClient, locations: &[&str]) -> anyhow::Result<Self> {
         let locations = locations.iter().map(|l| l.to_string()).collect();
         Ok(Self {
@@ -55,19 +55,19 @@ impl AutoInstallRunner {
         self.user_url = Some(url.to_string());
     }
 
-    /// Runs the auto-installation process.
+    /// Loads the configuration for the unattended installation.
     ///
     /// If a user-defined URL is given, it tries to fetch the configuration from
     /// that location. If it fails, it asks the user whether it should retry.
     ///
     /// If no user-defined URL is given, it searches for the configuration in
     /// the predefined locations.
-    pub async fn run(&self) -> anyhow::Result<()> {
+    pub async fn load(&self) -> anyhow::Result<()> {
         if let Some(url) = &self.user_url {
             loop {
                 println!("Loading the configuration from {url}");
                 match Self::import_config(url) {
-                    Ok(_) => break,
+                    Ok(_) => return Ok(()),
                     Err(error) => {
                         if !self.should_retry(url).await? {
                             return Err(error);
@@ -75,7 +75,6 @@ impl AutoInstallRunner {
                     }
                 }
             }
-            Ok(())
         } else {
             for url in &self.predefined_urls {
                 match Self::import_config(url) {
@@ -88,7 +87,7 @@ impl AutoInstallRunner {
                     }
                 }
             }
-            Ok(())
+            Err(anyhow!("No configuration was found"))
         }
     }
 
@@ -121,10 +120,8 @@ impl AutoInstallRunner {
 
         let config_cmd = child.wait_with_output()?;
         if !config_cmd.status.success() {
-            return Err(anyhow!(
-                "Could not run load the configuration: {:?}",
-                config_cmd.stderr,
-            ));
+            let message = String::from_utf8_lossy(&config_cmd.stderr);
+            return Err(anyhow!("Could not load the configuration: {}", message));
         }
 
         Ok(())
