@@ -40,8 +40,10 @@ const questionsQuery = () => ({
  * TODO: improve/simplify it once the backend API is improved.
  */
 const useQuestionsConfig = () => {
+  const queryClient = useQueryClient();
   const query = {
     mutationFn: (question: Question) => updateAnswer(question),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["questions"] }),
   };
   return useMutation(query);
 };
