@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -56,7 +56,7 @@ describe Agama::Manager do
   let(:network) { instance_double(Agama::Network, install: nil, startup: nil) }
   let(:storage) do
     instance_double(
-      Agama::DBus::Clients::Storage, probe: nil, install: nil, finish: nil,
+      Agama::DBus::Clients::Storage, probe: nil, reprobe: nil, install: nil, finish: nil,
       on_service_status_change: nil, errors?: false
     )
   end
@@ -123,6 +123,18 @@ describe Agama::Manager do
       expect(storage).to receive(:probe)
       expect(software).to receive(:probe)
       subject.config_phase
+    end
+
+    context "if reprobe is requested" do
+      it "calls #reprobe method of the storage module" do
+        expect(storage).to receive(:reprobe)
+        subject.config_phase(reprobe: true)
+      end
+
+      it "calls #probe method of the software module" do
+        expect(software).to receive(:probe)
+        subject.config_phase(reprobe: true)
+      end
     end
   end
 

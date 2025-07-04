@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -78,6 +78,7 @@ impl ProductStore {
 
     pub async fn store(&self, settings: &ProductSettings) -> ProductStoreResult<()> {
         let mut probe = false;
+        let mut reprobe = false;
         if let Some(product) = &settings.id {
             let existing_product = self.product_client.product().await?;
             if *product != existing_product {
@@ -94,7 +95,7 @@ impl ProductStore {
 
             self.product_client.register(reg_code, email).await?;
             // TODO: avoid reprobing if the system has been already registered with the same code?
-            probe = true;
+            reprobe = true;
         }
         // register the addons in the order specified in the profile
         if let Some(addons) = &settings.addons {
@@ -105,6 +106,8 @@ impl ProductStore {
 
         if probe {
             self.manager_client.probe().await?;
+        } else if reprobe {
+            self.manager_client.reprobe().await?;
         }
 
         Ok(())

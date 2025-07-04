@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -51,6 +51,11 @@ module Agama
         # @param done [Proc] Block to execute once the probing is done
         def probe(&done)
           dbus_object[STORAGE_IFACE].Probe(&done)
+        end
+
+        # Reprobes (keeps the current settings).
+        def reprobe
+          dbus_object.Reprobe
         end
 
         # Performs the packages installation

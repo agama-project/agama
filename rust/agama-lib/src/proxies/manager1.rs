@@ -41,6 +41,9 @@ pub trait Manager1 {
     /// Probe method
     fn probe(&self) -> zbus::Result<()>;
 
+    /// Reprobe method
+    fn reprobe(&self) -> zbus::Result<()>;
+
     /// BusyServices property
     #[zbus(property)]
     fn busy_services(&self) -> zbus::Result<Vec<String>>;
