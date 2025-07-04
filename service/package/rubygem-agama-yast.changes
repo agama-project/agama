@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul  4 11:31:21 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Extend D-Bus API to allow reprobing the system
+  (gh#agama-project/agama#2532, bsc#1245400).
+
+-------------------------------------------------------------------
 Wed Jul  2 10:50:56 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Add missing iSCSI discovery when importing the iSCSI config
@@ -19,7 +25,7 @@ Mon Jun 30 11:23:03 UTC 2025 - Martin Vidner <mvidner@suse.com>
 Fri Jun 27 14:02:57 UTC 2025 - Michal Filka <mfilka@suse.com>
 
 - jsc#PED-11193
-  - do not create the "after install" snapshot 
+  - do not create the "after install" snapshot
 
 -------------------------------------------------------------------
 Fri Jun 27 12:07:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
