@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -62,7 +62,7 @@ import {
   updateConfig,
 } from "~/api/software";
 import { QueryHookOptions } from "~/types/queries";
-import { probe as systemProbe } from "~/api/manager";
+import { probe as systemProbe, reprobe as systemReprobe } from "~/api/manager";
 
 /**
  * Query to retrieve software configuration
@@ -180,7 +180,7 @@ const useRegisterMutation = () => {
   const query = {
     mutationFn: register,
     onSuccess: async () => {
-      await systemProbe();
+      await systemReprobe();
       queryClient.invalidateQueries({ queryKey: ["software", "registration"] });
       queryClient.invalidateQueries({ queryKey: ["storage"] });
     },
