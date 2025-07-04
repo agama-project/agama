@@ -18,8 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use std::str::FromStr;
+
 use agama_autoinstall::{AutoInstallRunner, CmdlineArgs};
-use agama_lib::{auth::AuthToken, http::BaseHTTPClient};
+use agama_lib::{
+    auth::AuthToken,
+    http::BaseHTTPClient,
+    manager::{FinishMethod, ManagerHTTPClient},
+};
 use anyhow::anyhow;
 
 const CMDLINE_FILE: &str = "/run/agama/cmdline.d/agama.conf";
@@ -33,19 +39,34 @@ const KNOWN_LOCATIONS: [&str; 6] = [
 ];
 const API_URL: &str = "http://localhost/api";
 
-// async fn run_auto_install() -> anyhow::Result<()> {
-// }
-
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let args = CmdlineArgs::parse_file(CMDLINE_FILE)?;
     let token = AuthToken::master().ok_or(anyhow!("Could not find the master token"))?;
     let http = BaseHTTPClient::new(API_URL)?.authenticated(&token)?;
+    let manager_client = ManagerHTTPClient::new(http.clone());
 
-    let mut runner = AutoInstallRunner::new(http, &KNOWN_LOCATIONS)?;
+    let mut runner = AutoInstallRunner::new(http.clone(), &KNOWN_LOCATIONS)?;
     if let Some(user_url) = args.get("inst.auto") {
         runner.with_user_url(user_url);
     }
+    // FIXME: it should return whether a profile was loaded or not.
     runner.run().await?;
+
+    if let Some(should_install) = args.get("inst.install") {
+        if should_install == "0" {
+            println!("Skipping the installation");
+            return Ok(());
+        }
+    }
+
+    manager_client.install().await?;
+
+    let method = args
+        .get("inst.finish")
+        .and_then(|m| FinishMethod::from_str(m).ok())
+        .unwrap_or_default();
+    manager_client.finish(method).await?;
+
     Ok(())
 }
