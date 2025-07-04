@@ -64,6 +64,7 @@ module Agama
 
       dbus_interface MANAGER_INTERFACE do
         dbus_method(:Probe, "") { config_phase }
+        dbus_method(:Reprobe, "") { config_phase(reprobe: true) }
         dbus_method(:Commit, "") { install_phase }
         dbus_method(:CanInstall, "out result:b") { can_install? }
         dbus_method(:CollectLogs, "out tarball_filesystem_path:s") { collect_logs }
@@ -75,9 +76,9 @@ module Agama
       end
 
       # Runs the config phase
-      def config_phase
+      def config_phase(reprobe: false)
         safe_run do
-          busy_while { backend.config_phase }
+          busy_while { backend.config_phase(reprobe: reprobe) }
         end
       end
 
