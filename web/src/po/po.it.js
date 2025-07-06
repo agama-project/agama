@@ -45,15 +45,6 @@ export default {
   "%s with %d partitions": [
     "%s con %d partizioni"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "Una %1$s di %2$s verrà creata per %3$s"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "Una %1$s di almeno %2$s verrà creata per %3$s"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "Una %1$s con una dimensione tra %2$s e %3$s verrà creata per %4$s"
-  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Una dimensione minima generica di %1$s sarà utilizzata per la nuova %2$s"
   ],
@@ -212,15 +203,6 @@ export default {
   ],
   "Back": [
     "Indietro"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "In base alla RAM del sistema, una %1s$ di %2$s verrà creata per %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "In base alla RAM del sistema, una %1s$ di almeno %2$s verrà creata per %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "In base alla RAM del sistema, una %1s$ di dimensione tra %2$s e %3$s verrà creata per %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -519,6 +501,9 @@ export default {
   "Discard": [
     "Ignora"
   ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
+  ],
   "Disconnected": [
     "Disconnesso"
   ],
@@ -548,9 +533,6 @@ export default {
   ],
   "Do not use": [
     "Non usare"
-  ],
-  "Do you want to use a supported size?": [
-    ""
   ],
   "Download logs": [
     "Scarica i logs"
@@ -1153,9 +1135,6 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     "Le partizioni per l'avvio saranno allocate sul seguente dispositivo."
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Le partizioni di avvio verranno allocate nel disco di installazione (%s)."
-  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Le partizioni di avvio verranno allocate sul disco di installazione."
   ],
@@ -1523,15 +1502,6 @@ export default {
   "The content may be deleted": [
     "Il contenuto potrebbe essere stato eliminato"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "La configurazione corrente darà come risultato un %1$s di %2$s."
-  ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "La configurazione attuale porterà a un %1$s di almeno %2$s."
-  ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "La configurazione attuale porterà a un %1$s con una dimensione compresa tra %2$s e %3$s."
-  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "I dati vengono mantenuti, ma le partizioni attuali saranno ridimensionate secondo necessità."
   ],
@@ -1607,7 +1577,7 @@ export default {
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Non sarà necessaria la password per avviare e accedere ai dati se TPM è in grado di verificare l'integrità del sistema. La sigillatura del TPM richiede che il nuovo sistema venga avviato direttamente alla sua prima esecuzione."
   ],
-  "The size is configured as a range between %s and %s, but defining a range of sizes is not supported by the UI.": [
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
     ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [

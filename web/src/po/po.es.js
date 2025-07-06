@@ -45,15 +45,6 @@ export default {
   "%s with %d partitions": [
     "%s con %d particiones"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "Un %1$s de %2$s será creado para %3$s"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "Será creado un %1$s de al menos %2$s para %3$s"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "Será creado un %1$s con un tamaño entre %2$s y %3$s para %4$s"
-  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Un tamaño mínimo genérico de %1$s será utilizado para el %2$s nuevo"
   ],
@@ -209,15 +200,6 @@ export default {
   ],
   "Back": [
     "Retroceder"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "Basado en la cantidad de RAM en el sistema, será creado un %1s$ de %2$s para %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "Basado en la cantidad de RAM en el sistema, será creado un %1s$ de al menos %2$s para %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "Basado en la cantidad de RAM en el sistema, será creado un %1s$ con un tamaño entre %2$s y %3$s para %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -515,6 +497,9 @@ export default {
   ],
   "Discard": [
     "Descartar"
+  ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
   ],
   "Disconnected": [
     "Desconectado"
@@ -1147,9 +1132,6 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     "Las particiones para arrancar estarán asignadas en el dispositivo siguiente."
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Las particiones para arrancar se asignarán en el disco de instalación (%s)."
-  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Las particiones para arrancar se asignarán en el disco de instalación."
   ],
@@ -1517,15 +1499,6 @@ export default {
   "The content may be deleted": [
     "El contenido puede ser eliminado"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "La actual configuración resultará en un %1$s de %2$s."
-  ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "La configuración actual resultará en un %1$s con al menos %2$s."
-  ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "La configuración actual resultará en un %1$s con un tamaño entre %2$s y %3$s."
-  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Los datos se conservan, pero las particiones actuales cambiarán de tamaño según sea necesario."
   ],
@@ -1601,7 +1574,7 @@ export default {
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "La contraseña no será necesaria para iniciar y acceder a los datos si TPM puede verificar la integridad del sistema. El sellado TPM requiere que el nuevo sistema se inicie directamente en su primera ejecución."
   ],
-  "The size is configured as a range between %s and %s, but defining a range of sizes is not supported by the UI.": [
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
     ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
