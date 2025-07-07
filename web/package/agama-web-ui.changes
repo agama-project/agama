@@ -4,6 +4,12 @@ Fri Jul  4 14:51:14 UTC 2025 - David Diaz <dgonzalez@suse.com>
 - Avoid scroll to top on software selection (bsc#1245732).
 
 -------------------------------------------------------------------
+Fri Jul  4 11:34:59 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Reprobe the system after registering the product
+  (gh#agama-project/agama#2532, bsc#1245400).
+
+-------------------------------------------------------------------
 Tue Jul  1 12:57:50 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Add LeapMicro.svg
