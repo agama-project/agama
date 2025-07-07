@@ -50,6 +50,7 @@ describe Agama::Storage::ISCSI::Manager do
     allow(Yast::IscsiClientLib).to receive(:iBFT?)
     allow(Yast::IscsiClientLib).to receive(:find_session)
     allow(Yast::IscsiClientLib).to receive(:getStartupStatus)
+    allow(Yast::IscsiClientLib).to receive(:discover_from_portal)
     allow(Yast::Service).to receive(:start)
     allow(subject).to receive(:adapter).and_return(adapter)
     allow(subject).to receive(:sleep)
@@ -614,6 +615,16 @@ describe Agama::Storage::ISCSI::Manager do
 
         before do
           allow(adapter).to receive(:login).and_return(true)
+        end
+
+        it "performs a discovery for each portal" do
+          expect(adapter).to receive(:discover_from_portal)
+            .with("192.168.100.151:3260", interfaces: ["default"])
+
+          expect(adapter).to receive(:discover_from_portal)
+            .with("192.168.100.152:3260", interfaces: ["default"])
+
+          subject.apply_config_json(config_json)
         end
 
         it "tries to login to each target" do

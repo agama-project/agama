@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -69,8 +69,6 @@ module Agama
       # @note The service runs its startup phase
       def start
         export
-        # We need locale for data from users
-        locale_client = Clients::Locale.instance
         manager.on_progress_change { dispatch } # make single thread more responsive
         manager.startup_phase
       end

@@ -1,4 +1,5 @@
 -------------------------------------------------------------------
+
 Mon Jul  7 13:22:05 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve handling of the inst.auto option (gh#agama-project/agama#2534):
@@ -7,6 +8,17 @@ Mon Jul  7 13:22:05 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   - Allow importing multiple configurations.
 - Add a new `inst.install` option to stop the installation after
   loading the configuration.
+
+-------------------------------------------------------------------
+Fri Jul  4 11:33:44 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Reprobe the system after registering the product
+  (gh#agama-project/agama#2532, bsc#1245400).
+
+-------------------------------------------------------------------
+Wed Jul  2 16:02:07 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Cache the list of products during the startup (bsc#1241208).
 
 -------------------------------------------------------------------
 Mon Jun 30 15:51:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

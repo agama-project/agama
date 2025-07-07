@@ -33,6 +33,27 @@ module Agama
         #
         # @return [Array<Configs::Target>, nil] If nil, then targets are not configured.
         attr_accessor :targets
+
+        # All portals.
+        #
+        # @return [Array<String>]
+        def portals
+          return [] unless targets
+
+          targets.map(&:portal).uniq
+        end
+
+        # All interfaces from a portal.
+        #
+        # @param portal [String]
+        # @return [Array<String>]
+        def interfaces(portal)
+          targets
+            .select { |t| t.portal?(portal) }
+            .map(&:interface)
+            .compact
+            .uniq
+        end
       end
     end
   end
