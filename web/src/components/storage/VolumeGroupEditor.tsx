@@ -101,6 +101,11 @@ const EditVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
 const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
   return (
     <MenuButton
+      menuProps={{
+        popperProps: {
+          position: "end",
+        },
+      }}
       toggleProps={{ variant: "plain" }}
       items={[<EditVgOption key="edit" vg={vg} />, <DeleteVgOption key="delete" vg={vg} />]}
     >

@@ -280,7 +280,11 @@ export default function SearchedDeviceMenu({
       <MenuButton
         menuProps={{
           "aria-label": sprintf(_("Device %s menu"), modelDevice.name),
-          popperProps: { minWidth: `min(${longestTitle * 0.75}em, 75vw)`, width: "max-content" },
+          popperProps: {
+            minWidth: `min(${longestTitle * 0.75}em, 75vw)`,
+            width: "max-content",
+            position: "end",
+          },
         }}
         toggleProps={{
           variant: "plain",
