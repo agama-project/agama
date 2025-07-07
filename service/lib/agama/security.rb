@@ -84,8 +84,10 @@ module Agama
     end
 
     def probe
+      pick_product
       lsm_config.select(config.data.dig("security", "lsm"))
       patterns = lsm_patterns
+      logger.info "Adding patterns #{patterns.inspect} for security module #{lsm_selected}"
       software_client.add_patterns(patterns) unless patterns.empty?
     end
 
@@ -99,6 +101,16 @@ module Agama
 
     def lsm_selected
       lsm_config.selected
+    end
+
+    def selected_product
+      software_client.config["product"]
+    end
+
+    def pick_product
+      product = selected_product
+      logger.info "Picking product #{product}"
+      config.pick_product(product)
     end
 
     def proposal_patterns

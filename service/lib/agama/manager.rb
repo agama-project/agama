@@ -24,6 +24,7 @@ require "shellwords"
 require "yast"
 require "agama/config"
 require "agama/network"
+require "agama/security"
 require "agama/proxy_setup"
 require "agama/with_locale"
 require "agama/with_progress"
@@ -63,6 +64,7 @@ module Agama
 
     # Constructor
     #
+    # @param config [Agama::Config]
     # @param logger [Logger]
     def initialize(config, logger)
       textdomain "agama"
@@ -203,6 +205,13 @@ module Agama
     # @return [Network]
     def network
       @network ||= Network.new(logger)
+    end
+
+    # Security manager
+    #
+    # @return [Security]
+    def security
+      @security ||= Agama::Security.new(logger, config)
     end
 
     # Storage manager
