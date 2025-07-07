@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,16 +19,25 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/http/clients/base"
+
 module Agama
   module HTTP
-    # Namespace for HTTP clients
     module Clients
+      # HTTP client to interact with the software API.
+      class Software < Base
+        def products
+          JSON.parse(get("software/products"))
+        end
+
+        def proposal
+          JSON.parse(get("software/proposal"))
+        end
+
+        def config
+          JSON.parse(get("software/config"))
+        end
+      end
     end
   end
 end
-
-require "agama/http/clients/base"
-require "agama/http/clients/files"
-require "agama/http/clients/network"
-require "agama/http/clients/scripts"
-require "agama/http/clients/software"

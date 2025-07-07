@@ -22,11 +22,11 @@
 require "yast"
 require "y2security/lsm"
 require "yast2/execute"
-
 require "agama/config"
+require "agama/http"
 
 # FIXME: monkey patching of security config to not read control.xml and
-# instead use DIinstaller::Config
+# instead use Agama::Config
 # TODO: add ability to set product features in LSM::Base
 module Y2Security
   module LSM
@@ -63,26 +63,29 @@ module Agama
     # @return [Logger]
     attr_reader :logger
 
+    # Constructor
+    #
+    # @param logger [Logger]
+    # @param config [Agama::Config]
     def initialize(logger, config)
       @config = config
       @logger = logger
     end
 
     def write
-      lsm_config.save
+      return if lsm_patterns.empty?
+
+      if (lsm_patterns - proposal_patterns).empty?
+        logger.info("The proposal patterns #{proposal_patterns.inspect} includes #{lsm_patterns.inspect}")
+        lsm_config.save
+      else
+        logger.error("The proposal patterns #{proposal_patterns.inspect} DO NOT include #{lsm_patterns.inspect}")
+      end
     end
 
     def probe
-      selected_lsm = config.data.dig("security", "lsm")
-      lsm_config.select(selected_lsm)
-
-      patterns = if selected_lsm.nil?
-        []
-      else
-        lsm_data = config.data["security"]["available_lsms"][selected_lsm]
-        lsm_data["patterns"]
-      end
-      Yast::PackagesProposal.SetResolvables("LSM", :pattern, patterns)
+      logger.info("The product security data is #{config.data["security"].inspect}")
+      lsm_config.select(config.data.dig("security", "lsm"))
     end
 
   private
@@ -91,6 +94,28 @@ module Agama
 
     def lsm_config
       Y2Security::LSM::Config.instance
+    end
+
+    def lsm_selected
+      lsm_config.selected
+    end
+
+    def proposal_patterns
+      proposal = software_client.proposal || {}
+
+      (proposal.dig("patterns") || []).select { |p,v| [0, 1].include? v }.keys
+    end
+
+    def lsm_patterns
+      return [] unless lsm_selected
+      config.data.dig("security","available_lsms", lsm_selected.id.to_s, "patterns") || []
+    end
+
+    # Returns the client to ask the software service
+    #
+    # @return [Agama::HTTP::Clients::Software]
+    def software_client
+      @software_client ||= Agama::HTTP::Clients::Software.new(logger)
     end
   end
 end
