@@ -26,27 +26,23 @@ import { plainRender } from "~/test-utils";
 import NestedContent from "./NestedContent";
 
 describe("NestedContent", () => {
-  it("wraps content in a PF/Content", () => {
+  it("wraps content in a <div> using medium margin when margin prop is not given", () => {
     plainRender(<NestedContent>Something</NestedContent>);
     const content = screen.getByText("Something");
-    expect(content.classList.contains("pf-v6-c-content")).toBe(true);
+    expect(content.tagName).toBe("DIV");
+    expect(content).toHaveClass("pf-v6-u-mx-md");
   });
 
-  it("uses inline medium margin when margin prop is not given", () => {
-    plainRender(<NestedContent>Something</NestedContent>);
-    const content = screen.getByText("Something");
-    expect(content.classList.contains("pf-v6-u-mx-md")).toBe(true);
-  });
-
-  it("uses given margin", () => {
+  it("wraps content in a <div> using given margin", () => {
     plainRender(<NestedContent margin="m_0">Something</NestedContent>);
     const content = screen.getByText("Something");
-    expect(content.classList.contains("pf-v6-u-m-0")).toBe(true);
+    expect(content.tagName).toBe("DIV");
+    expect(content).toHaveClass("pf-v6-u-m-0");
   });
 
-  it("allows PF/Content props", () => {
-    plainRender(<NestedContent isEditorial>Something</NestedContent>);
+  it("allows additional props to be passed to the <div>", () => {
+    plainRender(<NestedContent className="custom-class">Something</NestedContent>);
     const content = screen.getByText("Something");
-    expect(content.classList.contains("pf-m-editorial")).toBe(true);
+    expect(content).toHaveClass("custom-class");
   });
 });

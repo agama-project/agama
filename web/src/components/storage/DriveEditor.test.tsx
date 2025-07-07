@@ -211,6 +211,7 @@ jest.mock("~/queries/storage", () => ({
 
 jest.mock("~/hooks/storage/system", () => ({
   ...jest.requireActual("~/hooks/storage/system"),
+  useAvailableDevices: () => [sda, sdb],
   useCandidateDevices: () => [sda],
   useLongestDiskTitle: () => 20,
 }));
@@ -236,8 +237,8 @@ describe("RemoveDriveOption", () => {
     it("allows users to delete regular drives", async () => {
       const { user } = plainRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
 
-      const driveButton = screen.getByRole("button", { name: "sdb, 1 KiB" });
-      await user.click(driveButton);
+      const changeButton = screen.getByRole("button", { name: "Change" });
+      await user.click(changeButton);
       const drivesMenu = screen.getByRole("menu", { name: "Device /dev/sdb menu" });
       const deleteDriveButton = within(drivesMenu).getByRole("menuitem", {
         name: /Do not use/,
@@ -249,8 +250,8 @@ describe("RemoveDriveOption", () => {
     it("does not allow users to delete drives explicitly used to boot", async () => {
       const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
 
-      const driveButton = screen.getByRole("button", { name: "sda, 1 KiB" });
-      await user.click(driveButton);
+      const changeButton = screen.getByRole("button", { name: "Change" });
+      await user.click(changeButton);
       const drivesMenu = screen.getByRole("menu", { name: "Device /dev/sda menu" });
       const deleteDriveButton = within(drivesMenu).queryByRole("menuitem", {
         name: /Do not use/,
@@ -264,8 +265,8 @@ describe("RemoveDriveOption", () => {
       mockUseModel.mockReturnValue({ drives: [drive2], mdRaids: [] });
       const { user } = plainRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
 
-      const driveButton = screen.getByRole("button", { name: "sdb, 1 KiB" });
-      await user.click(driveButton);
+      const changeButton = screen.getByRole("button", { name: "Change" });
+      await user.click(changeButton);
       const drivesMenu = screen.getByRole("menu", { name: "Device /dev/sdb menu" });
       const deleteDriveButton = within(drivesMenu).queryByRole("menuitem", {
         name: /Do not use/,
@@ -277,8 +278,8 @@ describe("RemoveDriveOption", () => {
       mockUseModel.mockReturnValue({ drives: [drive1], mdRaids: [] });
       const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
 
-      const driveButton = screen.getByRole("button", { name: "sda, 1 KiB" });
-      await user.click(driveButton);
+      const changeButton = screen.getByRole("button", { name: "Change" });
+      await user.click(changeButton);
       const drivesMenu = screen.getByRole("menu", { name: "Device /dev/sda menu" });
       const deleteDriveButton = within(drivesMenu).queryByRole("menuitem", {
         name: /Do not use/,

@@ -101,6 +101,7 @@ export type MenuButtonProps = {
   items?: React.ReactNode[];
   menuProps?: {
     ["aria-label"]?: string;
+    ["aria-labelledby"]?: string;
     closeOnClick?: boolean;
     popperProps?: MenuPopperProps;
   };
@@ -204,7 +205,12 @@ export default function MenuButton({
           onClick={() => menuProps.closeOnClick && setIsOpen(false)}
         >
           <MenuContent menuHeight={`${menuHeights[activeMenu]}px`}>
-            <MenuList aria-label={menuProps["aria-label"]}>{items}</MenuList>
+            <MenuList
+              aria-label={menuProps["aria-label"]}
+              aria-labelledby={menuProps["aria-labelledby"]}
+            >
+              {items}
+            </MenuList>
           </MenuContent>
         </Menu>
       }

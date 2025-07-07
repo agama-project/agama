@@ -26,21 +26,16 @@ import { plainRender } from "~/test-utils";
 import SubtleContent from "./SubtleContent";
 
 describe("SubtleContent", () => {
-  it("wraps content in a PF/Content", () => {
+  it("wraps content in a <span> using subtle text color", () => {
     plainRender(<SubtleContent>Something</SubtleContent>);
     const content = screen.getByText("Something");
-    expect(content.classList.contains("pf-v6-c-content")).toBe(true);
+    expect(content.tagName).toBe("SPAN");
+    expect(content).toHaveClass("pf-v6-u-text-color-subtle");
   });
 
-  it("uses subtle text color", () => {
-    plainRender(<SubtleContent>Something</SubtleContent>);
+  it("allows additional props to be passed to the <span>", () => {
+    plainRender(<SubtleContent className="custom-class">Something</SubtleContent>);
     const content = screen.getByText("Something");
-    expect(content.classList.contains("pf-v6-u-text-color-subtle")).toBe(true);
-  });
-
-  it("allows PF/Content props", () => {
-    plainRender(<SubtleContent isEditorial>Something</SubtleContent>);
-    const content = screen.getByText("Something");
-    expect(content.classList.contains("pf-m-editorial")).toBe(true);
+    expect(content).toHaveClass("custom-class");
   });
 });

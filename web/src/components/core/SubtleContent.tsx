@@ -21,18 +21,22 @@
  */
 
 import React from "react";
-import { Content, ContentProps } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
+type SubtleContentProps = React.HTMLProps<HTMLSpanElement> & React.PropsWithChildren;
+
 /**
- * Wrapper on top of PF/Content using subtle text color by default
+ * A simple `<span>` wrapper component that applies a subtle text color by default.
  *
+ * Useful for rendering supporting or secondary content with reduced visual emphasis.
+ *
+ * Also accepts any standard `<div>` props.
  */
-export default function NestedContent({ className, children, ...props }: ContentProps) {
+export default function SubtleContent({ className, children, ...props }: SubtleContentProps) {
   const classNames = [className, textStyles.textColorSubtle].join(" ");
   return (
-    <Content {...props} className={classNames}>
+    <span {...props} className={classNames}>
       {children}
-    </Content>
+    </span>
   );
 }
