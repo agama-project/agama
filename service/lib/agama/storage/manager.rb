@@ -133,7 +133,6 @@ module Agama
         progress.step(_("Calculating the storage proposal")) do
           calculate_proposal(keep_config: keep_config)
         end
-        progress.step(_("Selecting Linux Security Modules")) { security.probe }
         # The system is not deprecated anymore
         self.deprecated_system = false
         update_issues

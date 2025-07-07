@@ -84,8 +84,9 @@ module Agama
     end
 
     def probe
-      logger.info("The product security data is #{config.data["security"].inspect}")
       lsm_config.select(config.data.dig("security", "lsm"))
+      patterns = lsm_patterns
+      software_client.add_patterns(patterns) unless patterns.empty?
     end
 
   private

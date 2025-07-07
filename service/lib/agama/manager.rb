@@ -94,7 +94,11 @@ module Agama
       installation_phase.config
       start_progress_with_descriptions(_("Analyze disks"), _("Configure software"))
       progress.step { reprobe ? storage.reprobe : storage.probe }
-      progress.step { software.probe }
+      progress.step do
+        software.probe
+        security.probe
+      end
+
       logger.info("Config phase done")
     rescue StandardError => e
       logger.error "Startup error: #{e.inspect}. Backtrace: #{e.backtrace}"

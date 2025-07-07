@@ -37,6 +37,22 @@ module Agama
         def config
           JSON.parse(get("software/config"))
         end
+
+        def add_patterns(patterns)
+          config_patterns = (config["patterns"] || {})
+          selected = config_patterns.select {|k,v| v}.keys
+          modified = false
+
+          patterns.each do |pattern|
+            unless selected.include?(pattern)
+              config_patterns[pattern] = true
+              modified = true
+            end
+          end
+          return unless modified
+
+          put("software/config", { "patterns" => config_patterns })
+        end
       end
     end
   end
