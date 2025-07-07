@@ -23,7 +23,9 @@ use std::{collections::HashMap, path::Path};
 use anyhow::Context;
 
 /// Implements a mechanism to read the kernel's command-line arguments.
-pub struct CmdlineArgs(HashMap<String, String>);
+///
+/// It supports multiple values for a single key.
+pub struct CmdlineArgs(HashMap<String, Vec<String>>);
 
 impl CmdlineArgs {
     /// Builds an instance from the given file.
@@ -41,22 +43,25 @@ impl CmdlineArgs {
     ///
     /// * `content`: string containing the kernel's cmdline arguments.
     pub fn parse_str(content: &str) -> Self {
-        let mut args: HashMap<String, String> = HashMap::default();
+        let mut args: HashMap<String, Vec<String>> = HashMap::default();
         for param in content.split_whitespace() {
-            if let Some((key, value)) = param.split_once("=") {
-                args.insert(key.to_string(), value.to_string());
-            } else {
-                args.insert(param.to_string(), "1".to_string());
-            }
+            let (key, value) = param
+                .split_once("=")
+                .map(|(k, v)| (k, v))
+                .unwrap_or_else(|| (param, "1"));
+
+            args.entry(key.to_string())
+                .and_modify(|v| v.push(value.to_string()))
+                .or_insert(vec![value.to_string()]);
         }
         Self(args)
     }
 
-    /// Returns the value for the argument.
+    /// Returns the values for the argument.
     ///
     /// * `name`: argument name.
-    pub fn get(&self, name: &str) -> Option<&str> {
-        self.0.get(name).map(|x| x.as_str())
+    pub fn get(&self, name: &str) -> Vec<String> {
+        self.0.get(name).cloned().unwrap_or(vec![])
     }
 }
 
@@ -69,8 +74,11 @@ mod tests {
         let args_str = r"rd.neednet inst.auto=file:///profile.json";
         let args = CmdlineArgs::parse_str(args_str);
 
-        assert_eq!(args.get("inst.auto"), Some("file:///profile.json"));
-        assert_eq!(args.get("rd.neednet"), Some("1"));
-        assert!(args.get("unknown").is_none());
+        assert_eq!(
+            args.get("inst.auto"),
+            vec!["file:///profile.json".to_string()]
+        );
+        assert_eq!(args.get("rd.neednet"), vec!["1".to_string()]);
+        assert!(args.get("unknown").is_empty());
     }
 }

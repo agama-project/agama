@@ -20,7 +20,7 @@
 
 use std::str::FromStr;
 
-use agama_autoinstall::{CmdlineArgs, ConfigLoader};
+use agama_autoinstall::{CmdlineArgs, ConfigAutoLoader};
 use agama_lib::{
     auth::AuthToken,
     http::BaseHTTPClient,
@@ -29,34 +29,27 @@ use agama_lib::{
 use anyhow::anyhow;
 
 const CMDLINE_FILE: &str = "/run/agama/cmdline.d/agama.conf";
-const KNOWN_LOCATIONS: [&str; 6] = [
-    "label://OEMDRV/autoinst.jsonnet",
-    "label://OEMDRV/autoinst.json",
-    "label://OEMDRV/autoinst.xml",
-    "file:///autoinst.jsonnet",
-    "file:///autoinst.json",
-    "file:///autoinst.xml",
-];
 const API_URL: &str = "http://localhost/api";
+
+pub fn build_base_client() -> anyhow::Result<BaseHTTPClient> {
+    let token = AuthToken::master().ok_or(anyhow!("Could not find the master token"))?;
+    Ok(BaseHTTPClient::new(API_URL)?.authenticated(&token)?)
+}
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let args = CmdlineArgs::parse_file(CMDLINE_FILE)?;
-    let token = AuthToken::master().ok_or(anyhow!("Could not find the master token"))?;
-    let http = BaseHTTPClient::new(API_URL)?.authenticated(&token)?;
+    let http = build_base_client()?;
     let manager_client = ManagerHTTPClient::new(http.clone());
+    let loader = ConfigAutoLoader::new(http.clone());
 
-    let mut loader = ConfigLoader::new(http.clone(), &KNOWN_LOCATIONS)?;
-    if let Some(user_url) = args.get("inst.auto") {
-        loader.with_user_url(user_url);
-    }
-
-    if let Err(error) = loader.load().await {
+    let urls = args.get("inst.auto");
+    if let Err(error) = loader.load(&urls).await {
         eprintln!("Skipping the auto-installation: {error}");
         return Ok(());
     }
 
-    if let Some(should_install) = args.get("inst.install") {
+    if let Some(should_install) = args.get("inst.install").first() {
         if should_install == "0" {
             println!("Skipping the auto-installation on user's request (inst.install=0)");
             return Ok(());
@@ -67,6 +60,7 @@ async fn main() -> anyhow::Result<()> {
 
     let method = args
         .get("inst.finish")
+        .first()
         .and_then(|m| FinishMethod::from_str(m).ok())
         .unwrap_or_default();
     manager_client.finish(method).await?;

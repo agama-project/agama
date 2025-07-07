@@ -29,70 +29,47 @@ use agama_lib::{
 };
 use anyhow::anyhow;
 
-/// It loads the user configuration for the unattended installation.
+/// It loads the an Agama configuration.
+///
+/// This struct is responsible for reading the configuration from a given URL and,
+/// if wanted, reporting and asking the user about potential problems.
+///
+/// It relies on Agama's command-line to generate and load the new
+/// configuration. In the future, it could rely directly on Agama libraries
+/// instaed of the command-line.
 pub struct ConfigLoader {
-    /// Pre-defined URLs to search for configurations.
-    predefined_urls: Vec<String>,
-    /// User-defined URL to the configuration.
-    user_url: Option<String>,
     /// Questions client to interact with the user.
     questions: QuestionsHTTPClient,
 }
 
 impl ConfigLoader {
     /// Builds a new loader.
-    pub fn new(http_client: BaseHTTPClient, locations: &[&str]) -> anyhow::Result<Self> {
-        let locations = locations.iter().map(|l| l.to_string()).collect();
+    pub fn new(http_client: BaseHTTPClient) -> anyhow::Result<Self> {
         Ok(Self {
             questions: QuestionsHTTPClient::new(http_client)?,
-            predefined_urls: locations,
-            user_url: None,
         })
     }
 
-    /// Sets the user-defined URL.
-    pub fn with_user_url(&mut self, url: &str) {
-        self.user_url = Some(url.to_string());
-    }
-
-    /// Loads the configuration for the unattended installation.
+    /// Loads the configuration from the given URL.
     ///
-    /// If a user-defined URL is given, it tries to fetch the configuration from
-    /// that location. If it fails, it asks the user whether it should retry.
-    ///
-    /// If no user-defined URL is given, it searches for the configuration in
-    /// the predefined locations.
-    pub async fn load(&self) -> anyhow::Result<()> {
-        if let Some(url) = &self.user_url {
-            loop {
-                println!("Loading the configuration from {url}");
-                match Self::import_config(url) {
-                    Ok(_) => return Ok(()),
-                    Err(error) => {
-                        if !self.should_retry(url).await? {
-                            return Err(error);
-                        }
+    /// When running in interactive mode, it report errors and ask the user
+    /// to continue.
+    pub async fn load(&self, url: &str, interactive: bool) -> anyhow::Result<()> {
+        loop {
+            println!("Loading the configuration from {url}");
+            match Self::load_config(url) {
+                Ok(_) => return Ok(()),
+                Err(error) => {
+                    if !interactive || !self.should_retry(url).await? {
+                        return Err(error);
                     }
                 }
             }
-        } else {
-            for url in &self.predefined_urls {
-                match Self::import_config(url) {
-                    Ok(_) => {
-                        println!("Configuration loaded from {url}");
-                        break;
-                    }
-                    Err(_) => {
-                        println!("Could not load any configuration from {url}")
-                    }
-                }
-            }
-            Err(anyhow!("No configuration was found"))
         }
     }
 
     /// Imports the configuration from the given URL.
-    fn import_config(url: &str) -> anyhow::Result<()> {
+    fn load_config(url: &str) -> anyhow::Result<()> {
         let generate_cmd = std::process::Command::new("agama")
             .args(["config", "generate", url])
             .output()?;
@@ -130,7 +107,9 @@ impl ConfigLoader {
     /// Asks the user whether to retry loading the profile.
     async fn should_retry(&self, url: &str) -> anyhow::Result<bool> {
         let text = format!(
-            "It was not possible to load the configuration from {url}. Do you want to try again?"
+            r#"
+            It was not possible to load the configuration from {url}. Do you want to try again?"
+            "#
         );
         let generic = GenericQuestion {
             id: None,

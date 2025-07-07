@@ -42,3 +42,6 @@ pub use cmdline::CmdlineArgs;
 
 mod config;
 pub use config::ConfigLoader;
+
+mod auto_loader;
+pub use auto_loader::ConfigAutoLoader;
