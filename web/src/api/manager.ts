@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -33,6 +33,11 @@ const startProbing = () => post("/api/manager/probe");
 const probe = () => post("/api/manager/probe_sync");
 
 /**
+ * Triggers a synchronous reprobing process.
+ */
+const reprobe = () => post("/api/manager/reprobe_sync");
+
+/**
  * Starts the installation process.
  *
  * The progress of the installation process can be tracked through installer signals.
@@ -49,4 +54,4 @@ const finishInstallation = () => post("/api/manager/finish");
  */
 const fetchLogs = () => get("/api/manager/logs/store");
 
-export { startProbing, probe, startInstallation, finishInstallation, fetchLogs };
+export { startProbing, probe, reprobe, startInstallation, finishInstallation, fetchLogs };
