@@ -21,6 +21,7 @@
  */
 
 import React from "react";
+import { Content } from "@patternfly/react-core";
 import { SubtleContent } from "~/components/core/";
 import { deviceSize } from "~/components/storage/utils";
 import { _, formatList } from "~/i18n";
@@ -296,8 +297,12 @@ function AutoSizeTextDynamic({
 
   return (
     <>
-      <SubtleContent component="p">{introText(volume)}</SubtleContent>
-      <SubtleContent component="p">{limitsText(size)}</SubtleContent>
+      <Content component="p">
+        <SubtleContent>{introText(volume)}</SubtleContent>
+      </Content>
+      <Content component="p">
+        <SubtleContent>{limitsText(size)}</SubtleContent>
+      </Content>
     </>
   );
 }
