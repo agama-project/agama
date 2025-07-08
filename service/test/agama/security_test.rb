@@ -35,8 +35,38 @@ describe Agama::Security do
     Agama::Config.new(YAML.safe_load(File.read(config_path)))
   end
 
+  let(:selected) { nil }
+
   let(:lsm_config) do
-    instance_double(Y2Security::LSM::Config, select: nil)
+    instance_double(Y2Security::LSM::Config, select: nil, selected: selected)
+  end
+
+  let(:apparmor) do
+    instance_double(Y2Security::LSM::AppArmor, id: :apparmor)
+  end
+
+  let(:selinux) do
+    instance_double(Y2Security::LSM::Selinux, id: :selinux)
+  end
+
+  let(:proposal) do
+    {
+      "size"     => "0 B",
+      "patterns" => {
+        "documentation" => 1,
+        "enhanced_base" => 1,
+        "sw_management" => 1,
+        "yast2_basis"   => 1,
+        "apparmor"      => 0,
+        "minimal_base"  => 1,
+        "base"          => 1,
+        "x86_64_v3"     => 1
+      }
+    }
+  end
+
+  let(:software_client) do
+    instance_double(Agama::HTTP::Clients::Software, proposal: proposal)
   end
 
   before do
@@ -44,18 +74,12 @@ describe Agama::Security do
   end
 
   describe "#probe" do
-    it "selects the default LSM" do
+    it "selects the default LSM based on the product definition" do
       expect(lsm_config).to receive(:select).with("apparmor")
       security.probe
     end
 
-    it "add LSM patterns for installation" do
-      expect(Yast::PackagesProposal).to receive(:SetResolvables)
-        .with("LSM", :pattern, ["apparmor"])
-      security.probe
-    end
-
-    context "when no LSM is selected" do
+    context "when no LSM is defined in the product definition" do
       before do
         allow(config).to receive(:data).and_return({ "security" => {} })
       end
@@ -64,18 +88,43 @@ describe Agama::Security do
         expect(lsm_config).to receive(:select).with(nil)
         security.probe
       end
-
-      it "removes the list of patterns to install" do
-        Yast::PackagesProposal.SetResolvables("LSM", :pattern, [])
-        security.probe
-      end
     end
   end
 
   describe "#write" do
-    it "saves the LSM configuration" do
-      expect(lsm_config).to receive(:save)
-      security.write
+    let(:selected) { apparmor }
+    before do
+      allow(subject).to receive(:software_client).and_return(software_client)
+    end
+
+    context "when the software proposal patterns includes the LSM patterns" do
+      it "saves the LSM configuration" do
+        expect(lsm_config).to receive(:save)
+        security.write
+      end
+    end
+
+    context "when the software proposal patterns does not include the LSM patterns" do
+      let(:proposal) do
+        {
+          "size"     => "0 B",
+          "patterns" => {
+            "documentation" => 1,
+            "enhanced_base" => 1,
+            "sw_management" => 1,
+            "yast2_basis"   => 1,
+            "selinux"       => 0,
+            "minimal_base"  => 1,
+            "base"          => 1,
+            "x86_64_v3"     => 1
+          }
+        }
+      end
+
+      it "does not save the LSM configuration" do
+        expect(lsm_config).to_not receive(:save)
+        security.write
+      end
     end
   end
 end
