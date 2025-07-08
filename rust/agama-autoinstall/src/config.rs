@@ -71,6 +71,8 @@ impl ConfigLoader {
     /// Imports the configuration from the given URL.
     fn load_config(url: &str) -> anyhow::Result<()> {
         let generate_cmd = std::process::Command::new("agama")
+            .env("YAST_SKIP_PROFILE_FETCH_ERROR", "1")
+            .env("YAST_SKIP_XML_VALIDATION", "1")
             .args(["config", "generate", url])
             .output()?;
 
