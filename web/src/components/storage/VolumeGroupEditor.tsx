@@ -26,6 +26,7 @@ import { useNavigate, generatePath } from "react-router-dom";
 import Link from "~/components/core/Link";
 import Text from "~/components/core/Text";
 import MenuButton from "~/components/core/MenuButton";
+import MenuHeader from "~/components/core/MenuHeader";
 import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
 import Icon from "~/components/layout/Icon";
@@ -139,10 +140,19 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
     );
   }
 
+  // FIXME: The markup is strange just for consistency with PartitionsMenu. See FIXME there.
+  // The markup should be fixed in both places (eg. to use MenuGroup) in a consistent way.
+
+  const description = n_(
+    "The following logical volume will be created",
+    "The following logical volumes will be created",
+    vg.logicalVolumes.length,
+  );
+
   return (
     <Flex gap={{ default: "gapXs" }}>
       <Text isBold aria-hidden>
-        {_("Logical volumes")}
+        {_("Details")}
       </Text>
       <Text id={ariaLabelId} srOnly>
         {menuAriaLabel}
@@ -155,22 +165,26 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
           variant: "plainText",
           "aria-labelledby": `${ariaLabelId} ${toggleTextId}`,
         }}
-        items={vg.logicalVolumes
-          .map((lv) => {
-            return (
-              <MountPathMenuItem
-                key={lv.mountPath}
-                device={lv}
-                editPath={generatePath(PATHS.volumeGroup.logicalVolume.edit, {
-                  id: vg.vgName,
-                  logicalVolumeId: encodeURIComponent(lv.mountPath),
-                })}
-                deleteFn={() => deleteLogicalVolume(vg.vgName, lv.mountPath)}
-              />
-            );
-          })
+        items={[
+          <MenuHeader key="head" description={description} />,
+          <Divider key="divider" component="li" />,
+        ]
           .concat(
-            <Divider key="divider" component="li" />,
+            vg.logicalVolumes.map((lv) => {
+              return (
+                <MountPathMenuItem
+                  key={lv.mountPath}
+                  device={lv}
+                  editPath={generatePath(PATHS.volumeGroup.logicalVolume.edit, {
+                    id: vg.vgName,
+                    logicalVolumeId: encodeURIComponent(lv.mountPath),
+                  })}
+                  deleteFn={() => deleteLogicalVolume(vg.vgName, lv.mountPath)}
+                />
+              );
+            }),
+          )
+          .concat(
             <MenuButton.Item
               key="add-logical-volume"
               itemId="add-logical-volume"

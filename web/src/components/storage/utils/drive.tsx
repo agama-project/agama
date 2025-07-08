@@ -94,18 +94,13 @@ const contentActionsDescription = (drive: apiModel.Drive): string => {
   return _(SPACE_POLICIES.find((p) => p.id === "keep").summaryLabel);
 };
 
-/**
- * FIXME: right now, this considers only the case in which the drive is going to host some formatted
- * partitions.
- */
 const contentDescription = (drive: apiModel.Drive): string => {
   const newPartitions = drive.partitions.filter((p) => !p.name);
   const reusedPartitions = drive.partitions.filter((p) => p.name && p.mountPath);
 
   if (newPartitions.length === 0) {
     if (reusedPartitions.length === 0) {
-      // fixme: this is one of the several cases we need to handle better
-      return "";
+      return _("No additional partitions will be created");
     }
 
     const mountPaths = reusedPartitions.map((p) => formattedPath(p.mountPath));
