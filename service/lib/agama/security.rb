@@ -77,18 +77,18 @@ module Agama
 
       # FIXME: Currently it only allows to deselect the LSM defined the selected product
       # definition but does not select it based on the software selection
-      if (lsm_patterns - proposal_patterns).empty?
-        lsm_config.save
-      end
+      return unless (lsm_patterns - proposal_patterns).empty?
+
+      lsm_config.save
     end
 
     def probe
       select_lsm
       patterns = lsm_patterns
-      unless patterns.empty?
-        logger.info "Adding patterns #{patterns.inspect} for security module #{lsm_selected.id}"
-        software_client.add_patterns(patterns)
-      end
+      return if patterns.empty?
+
+      logger.info "Adding patterns #{patterns.inspect} for security module #{lsm_selected.id}"
+      software_client.add_patterns(patterns)
     end
 
   private
@@ -109,9 +109,9 @@ module Agama
 
     def lsm_patterns
       return [] unless lsm_selected
-      patterns = config.data.dig("security", "available_lsms", lsm_selected.id.to_s, "patterns") || []
 
-      patterns
+      config.data.dig("security", "available_lsms", lsm_selected.id.to_s,
+        "patterns") || []
     end
 
     def proposal_patterns

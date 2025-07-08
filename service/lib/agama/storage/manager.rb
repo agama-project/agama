@@ -348,8 +348,6 @@ module Agama
           severity: Issue::Severity::ERROR)
       end
 
-
-
       # Returns the client to ask questions
       #
       # @return [Agama::DBus::Clients::Questions]
