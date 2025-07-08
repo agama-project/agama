@@ -26,7 +26,6 @@ import { fetchInstallerStatus } from "~/api/status";
 import { useInstallerClient } from "~/context/installer";
 import { InstallerStatus } from "~/types/status";
 import { QueryHookOptions } from "~/types/queries";
-import { selectedProductQuery } from "./software";
 
 const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
 
@@ -69,9 +68,6 @@ const useInstallerStatusChanges = () => {
       switch (type) {
         case "IssuesChanged":
           queryClient.invalidateQueries({ queryKey: ["status"] });
-          break;
-        case "ProductChanged":
-          queryClient.invalidateQueries({ queryKey: selectedProductQuery().queryKey });
           break;
         case "InstallationPhaseChanged":
           if (!data) {

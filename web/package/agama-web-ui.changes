@@ -1,4 +1,61 @@
 -------------------------------------------------------------------
+Fri Jul  4 14:51:14 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Avoid scroll to top on software selection (bsc#1245732).
+
+-------------------------------------------------------------------
+Fri Jul  4 11:34:59 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Reprobe the system after registering the product
+  (gh#agama-project/agama#2532, bsc#1245400).
+
+-------------------------------------------------------------------
+Tue Jul  1 12:57:50 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add LeapMicro.svg
+
+-------------------------------------------------------------------
+Mon Jun 30 15:51:36 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 16
+
+-------------------------------------------------------------------
+Mon Jun 30 15:07:39 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Extra usability improvements defining the size of partitions and
+  logical volumes (related to gh#agama-project/agama#2496).
+
+-------------------------------------------------------------------
+Mon Jun 30 11:30:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Warn the user about using a weak encryption password
+  (gh#agama-project/agama#2524).
+
+-------------------------------------------------------------------
+Fri Jun 27 15:14:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Invalidate all software queries when the selected product changes
+  (gh#agama-project/agama#2517).
+
+-------------------------------------------------------------------
+Fri Jun 27 11:23:29 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Improve usability for defining the size of a partition or logical
+  volume (gh#agama-project/agama#2496).
+
+-------------------------------------------------------------------
+Fri Jun 27 06:30:11 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Warn the user when using a weak user password (bsc#1237480).
+
+-------------------------------------------------------------------
+Mon Jun 23 10:24:01 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to bind a connection to an specific interface based on its
+  mac address or its name (gh#agama-project/agama#2488,
+  bsc#1244259).
+
+-------------------------------------------------------------------
 Wed Jun 18 08:42:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Improve multilingual font support by fixing the font-face rule for

@@ -223,6 +223,7 @@ type APIRoute = {
 type APIConnection = {
   id: string;
   interface?: string;
+  macAddress?: string;
   addresses?: string[];
   nameservers?: string[];
   gateway4?: string;
@@ -261,6 +262,7 @@ class Wireless {
 
 type ConnectionOptions = {
   iface?: string;
+  macAddress?: string;
   addresses?: IPAddress[];
   nameservers?: string[];
   gateway4?: string;
@@ -277,6 +279,7 @@ class Connection {
   status: ConnectionStatus = ConnectionStatus.UP;
   state: ConnectionState;
   iface: string;
+  macAddress?: string;
   addresses: IPAddress[] = [];
   nameservers: string[] = [];
   gateway4?: string = "";

@@ -494,6 +494,11 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   }
 }
 
+// Nested alerts should kept no header margin
+:is(.pf-v6-c-content--h4, .pf-v6-c-content h4) {
+  margin-block-start: 0;
+}
+
 // Some utilities not found at PF
 .w-14ch {
   inline-size: 14ch;

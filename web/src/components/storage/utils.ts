@@ -115,46 +115,6 @@ const SPACE_POLICIES: SpacePolicy[] = [
 ];
 
 /**
- * Convenience method for generating a size object based on given input
- *
- * It split given input when a string is given or the result of converting the
- * input otherwise. Note, however, that -1 number will treated as empty string
- * since it means nothing for Agama UI although it represents the "unlimited"
- * size in the backend.
- */
-const splitSize = (size: number | string | undefined): SizeObject => {
-  // From D-Bus, maxSize comes as undefined when set as "unlimited", but for Agama UI
-  // it means "leave it empty"
-  const sanitizedSize = size === undefined ? "" : size;
-  const parsedSize =
-    typeof sanitizedSize === "string" ? sanitizedSize : xbytes(sanitizedSize, { iec: true });
-  const [qty, unit] = parsedSize.split(" ");
-  // `Number` will remove trailing zeroes;
-  // parseFloat ensures Number does not transform "" into 0.
-  const sanitizedQty = Number(parseFloat(qty));
-
-  return {
-    unit,
-    size: isNaN(sanitizedQty) ? undefined : sanitizedQty,
-  };
-};
-
-/**
- * Generates a disk size representation
- *
- * @example
- * deviceSize(1024)
- * // returns "1 KiB"
- */
-const deviceSize = (size: number): string => {
-  // Sadly, we cannot returns directly the xbytes(size, { iec: true }) because
-  // it does not have an option for dropping/ignoring trailing zeroes and we do
-  // not want to render them.
-  const result = splitSize(size);
-  return `${Number(result.size)} ${result.unit}`;
-};
-
-/**
  * Returns the equivalent in bytes resulting from parsing given input
  *
  * @example
@@ -175,6 +135,77 @@ const parseToBytes = (size: string | number): number => {
 
   // Avoid decimals resulting from the conversion. D-Bus iface only accepts integer
   return Math.trunc(value);
+};
+
+type ExactSizeOptions = Pick<xbytes.MainOpts, "iec" | "prefixIndex">;
+
+/**
+ * Converts bytes to an exact size representation.
+ *
+ * An exact representation means that the same number of bytes is obtained when transforming the
+ * size string back to bytes. The feasible bigger size unit is used.
+ */
+function exactSize(bytes: number, options?: ExactSizeOptions): string {
+  options = { iec: true, ...options };
+
+  const size = xbytes(bytes, options);
+  const bytesFromSize = parseToBytes(size);
+
+  // The size represents the given amount of bytes.
+  if (bytes === bytesFromSize) return size;
+
+  if (options.iec) {
+    // Try without IEC unit
+    options = { ...options, iec: false };
+  } else {
+    // Try with smaller unit
+    const prefixIndex = xbytes.parseString(size).prefixIndex - 1;
+    options = { iec: true, prefixIndex };
+  }
+
+  return exactSize(bytes, options);
+}
+
+type SizeOptions = { exact: boolean };
+
+/**
+ * Convenience method for generating a size object based on given input
+ *
+ * It split given input when a string is given or the result of converting the
+ * input otherwise. Note, however, that -1 number will treated as empty string
+ * since it means nothing for Agama UI although it represents the "unlimited"
+ * size in the backend.
+ */
+const splitSize = (size: number | string | undefined, options?: SizeOptions): SizeObject => {
+  const strSize = (size) => (options?.exact ? exactSize(size) : xbytes(size, { iec: true }));
+  // From D-Bus, maxSize comes as undefined when set as "unlimited", but for Agama UI
+  // it means "leave it empty"
+  const sanitizedSize = size === undefined ? "" : size;
+  const parsedSize = typeof sanitizedSize === "string" ? sanitizedSize : strSize(size);
+  const [qty, unit] = parsedSize.split(" ");
+  // `Number` will remove trailing zeroes;
+  // parseFloat ensures Number does not transform "" into 0.
+  const sanitizedQty = Number(parseFloat(qty));
+
+  return {
+    unit,
+    size: isNaN(sanitizedQty) ? undefined : sanitizedQty,
+  };
+};
+
+/**
+ * Generates a disk size representation
+ *
+ * @example
+ * deviceSize(1024)
+ * // returns "1 KiB"
+ */
+const deviceSize = (size: number, options?: SizeOptions): string => {
+  // Sadly, we cannot returns directly the xbytes(size, { iec: true }) because
+  // it does not have an option for dropping/ignoring trailing zeroes and we do
+  // not want to render them.
+  const result = splitSize(size, options);
+  return `${Number(result.size)} ${result.unit}`;
 };
 
 const TRUNCATE_MAX_LENGTH = 17;
@@ -218,7 +249,7 @@ const deviceLabel = (device: StorageDevice, truncate?: boolean): string => {
   const name = deviceBaseName(device, truncate);
   const size = device.size;
 
-  return size ? `${name}, ${deviceSize(size)}` : name;
+  return size ? `${name} (${deviceSize(size)})` : name;
 };
 
 /**

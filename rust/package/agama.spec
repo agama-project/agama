@@ -42,6 +42,9 @@ BuildRequires:  pkgconfig(pam)
 BuildRequires:  jsonnet
 Requires:       jsonnet
 Requires:       lshw
+# required by the password checking
+BuildRequires:  libpwquality-tools
+Requires:       libpwquality-tools
 # required by "agama logs store"
 Requires:       gzip
 # required to compress the manual pages

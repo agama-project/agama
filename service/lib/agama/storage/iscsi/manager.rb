@@ -37,6 +37,7 @@ module Agama
         include Yast::I18n
 
         STARTUP_OPTIONS = ["onboot", "manual", "automatic"].freeze
+        PACKAGES = ["open-iscsi", "iscsiuio"].freeze
 
         # Config according to the JSON schema.
         #
@@ -61,7 +62,15 @@ module Agama
           @nodes = []
           @on_activate_callbacks = []
           @on_probe_callbacks = []
-          @on_sessions_change_callbacks = []
+          # Sets iSCSI as configured after any change on the sessions.
+          @on_sessions_change_callbacks = [proc { @configured = true }]
+        end
+
+        # Whether iSCSI was configured.
+        #
+        # @return [Boolean]
+        def configured?
+          !!@configured
         end
 
         # Performs actions for activating iSCSI.
@@ -287,9 +296,10 @@ module Agama
         def apply_targets_config(config)
           return unless config.targets
 
-          start_progress_with_size(2)
+          start_progress_with_size(3)
           progress.step(_("Logout iSCSI targets")) { logout_targets }
-          progress.step(_("Login iSCSI targets")) { login_targets(config.targets) }
+          progress.step(_("Discover iSCSI targets")) { discover_from_portals(config) }
+          progress.step(_("Login iSCSI targets")) { login_targets(config) }
         end
 
         # Tries to logout from all targets (nodes).
@@ -297,16 +307,26 @@ module Agama
           nodes.select(&:connected?).each { |n| adapter.logout(n) }
         end
 
-        # Tries to login to all given targets.
+        # Discovers iSCSI targets from all the portals.
+        #
+        # @param config [ISCSI::Config]
+        def discover_from_portals(config)
+          config.portals.each do |portal|
+            interfaces = config.interfaces(portal)
+            adapter.discover_from_portal(portal, interfaces: interfaces)
+          end
+        end
+
+        # Tries to login to all targets.
         #
         # @note If the login of a target fails, then an issue is generated. The process stops on
         #   the first failing login.
         #
-        # @param targets [Array<ISCSI::Config::Target>]
-        def login_targets(targets)
+        # @param config [ISCSI::Config]
+        def login_targets(config)
           issues = []
 
-          targets.each do |target|
+          config.targets.each do |target|
             success = apply_target_config(target)
             if !success
               issues << login_issue(target)

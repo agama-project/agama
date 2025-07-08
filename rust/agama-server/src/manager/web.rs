@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -104,6 +104,7 @@ pub async fn manager_service(
     Ok(Router::new()
         .route("/probe", post(probe_action))
         .route("/probe_sync", post(probe_sync_action))
+        .route("/reprobe_sync", post(reprobe_sync_action))
         .route("/install", post(install_action))
         .route("/finish", post(finish_action))
         .route("/installer", get(installer_status))
@@ -159,6 +160,20 @@ async fn probe_action(State(state): State<ManagerState<'_>>) -> Result<(), Error
 )]
 async fn probe_sync_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
     state.manager.probe().await?;
+    Ok(())
+}
+
+/// Starts the reprobing process and waits until it is done.
+#[utoipa::path(
+    post,
+    path = "/reprobe_sync",
+    context_path = "/api/manager",
+    responses(
+      (status = 200, description = "Re-probing done.")
+    )
+)]
+async fn reprobe_sync_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
+    state.manager.reprobe().await?;
     Ok(())
 }
 
