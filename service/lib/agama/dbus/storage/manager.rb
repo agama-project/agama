@@ -520,6 +520,8 @@ module Agama
           backend.software.on_probe_finished do
             # A PropertiesChanged signal is emitted (see ::DBus::Object.dbus_reader_attr_accessor).
             self.encryption_methods = read_encryption_methods
+            # Call it after the software has been probed in order to select the product defined LSM
+            # like as it was selected by the user allowing it to be deselected (bsc#1244431).
             backend.security.probe
           end
         end
