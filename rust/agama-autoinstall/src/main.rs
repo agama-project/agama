@@ -41,7 +41,7 @@ async fn main() -> anyhow::Result<()> {
     let args = KernelCmdline::parse_file(CMDLINE_FILE)?;
     let http = build_base_client()?;
     let manager_client = ManagerHTTPClient::new(http.clone());
-    let loader = ConfigAutoLoader::new(http.clone());
+    let loader = ConfigAutoLoader::new(http.clone())?;
 
     let urls = args.get("inst.auto");
     if let Err(error) = loader.load(&urls).await {

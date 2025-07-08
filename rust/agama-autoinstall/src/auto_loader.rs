@@ -19,7 +19,13 @@
 // find current contact information at www.suse.com.
 
 use crate::ConfigLoader;
-use agama_lib::http::BaseHTTPClient;
+use agama_lib::{
+    http::BaseHTTPClient,
+    questions::{
+        http_client::HTTPClient as QuestionsHTTPClient,
+        model::{GenericQuestion, Question},
+    },
+};
 use anyhow::anyhow;
 
 /// List of pre-defined locations for profiles.
@@ -39,15 +45,16 @@ const PREDEFINED_LOCATIONS: [&str; 6] = [
 ///
 /// Check the [Self::load] description for further information.
 pub struct ConfigAutoLoader {
-    http: BaseHTTPClient,
+    questions: QuestionsHTTPClient,
 }
 
 impl ConfigAutoLoader {
     /// Builds a new loader.
     ///
     /// * `http`: base client to connect to Agama.
-    pub fn new(http: BaseHTTPClient) -> Self {
-        Self { http }
+    pub fn new(http: BaseHTTPClient) -> anyhow::Result<Self> {
+        let questions = QuestionsHTTPClient::new(http)?;
+        Ok(Self { questions })
     }
 
     /// Loads the configuration for the unattended installation.
@@ -59,26 +66,32 @@ impl ConfigAutoLoader {
     ///
     /// See [Self::load] for further information.
     pub async fn load(&self, urls: &Vec<String>) -> anyhow::Result<()> {
-        let loader = ConfigLoader::new(self.http.clone())?;
+        let loader = ConfigLoader::default();
         if urls.is_empty() {
-            Self::load_predefined_config(loader).await
+            self.load_predefined_config(loader).await
         } else {
-            Self::load_user_config(loader, &urls).await
+            self.load_user_config(loader, &urls).await
         }
     }
 
     /// Loads configuration files specified by the user.
-    async fn load_user_config(loader: ConfigLoader, urls: &[String]) -> anyhow::Result<()> {
+    async fn load_user_config(&self, loader: ConfigLoader, urls: &[String]) -> anyhow::Result<()> {
         for url in urls {
-            loader.load(url, true).await?;
+            println!("Loading configuration from {url}");
+            while let Err(error) = loader.load(url).await {
+                if !self.should_retry(url).await? {
+                    return Err(error);
+                }
+            }
+            println!("Loaded configuration from {url}");
         }
         Ok(())
     }
 
     /// Loads configuration files from pre-defined locations.
-    async fn load_predefined_config(loader: ConfigLoader) -> anyhow::Result<()> {
+    async fn load_predefined_config(&self, loader: ConfigLoader) -> anyhow::Result<()> {
         for url in PREDEFINED_LOCATIONS {
-            match loader.load(&url, false).await {
+            match loader.load(&url).await {
                 Ok(()) => {
                     println!("Configuration loaded from {url}");
                     return Ok(());
@@ -87,5 +100,32 @@ impl ConfigAutoLoader {
             }
         }
         Err(anyhow!("No configuration was found"))
+    }
+
+    /// Asks the user whether to retry loading the profile.
+    async fn should_retry(&self, url: &str) -> anyhow::Result<bool> {
+        let text = format!(
+            r#"
+                It was not possible to load the configuration from {url}. Do you want to try again?"
+                "#
+        );
+        let generic = GenericQuestion {
+            id: None,
+            class: "config.load_error".to_string(),
+            text,
+            options: vec!["Yes".to_string(), "No".to_string()],
+            default_option: "No".to_string(),
+            data: Default::default(),
+        };
+        let question = Question {
+            generic,
+            with_password: None,
+        };
+        let question = self.questions.create_question(&question).await?;
+        let answer = self
+            .questions
+            .get_answer(question.generic.id.unwrap())
+            .await?;
+        Ok(answer.generic.answer == "Yes")
     }
 }
