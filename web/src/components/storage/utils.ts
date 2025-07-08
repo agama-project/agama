@@ -45,7 +45,6 @@ export type SpacePolicy = {
   id: string;
   label: string;
   description: string;
-  summaryLabel?: string;
 };
 
 export type SizeMethod = "auto" | "fixed" | "range";
@@ -90,27 +89,18 @@ const SPACE_POLICIES: SpacePolicy[] = [
   {
     id: "delete",
     label: N_("Delete current content"),
-    summaryLabel: N_("All content will be deleted"),
-    description: N_(
-      "Any existing partition will be removed and all data in the disk will be lost.",
-    ),
   },
   {
     id: "resize",
     label: N_("Shrink existing partitions"),
-    summaryLabel: N_("Some existing partitions may be shrunk"),
-    description: N_("The data is kept, but the current partitions will be resized as needed."),
   },
   {
     id: "keep",
     label: N_("Use available space"),
-    summaryLabel: N_("Content will be kept"),
-    description: N_("The data is kept. Only the space not assigned to any partition will be used."),
   },
   {
     id: "custom",
     label: N_("Custom"),
-    description: N_("Select what to do with each partition."),
   },
 ];
 
