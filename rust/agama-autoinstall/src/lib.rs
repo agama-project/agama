@@ -37,8 +37,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod cmdline;
-pub use cmdline::CmdlineArgs;
+mod kernel_cmdline;
+pub use kernel_cmdline::KernelCmdline;
 
 mod loader;
 pub use loader::ConfigLoader;

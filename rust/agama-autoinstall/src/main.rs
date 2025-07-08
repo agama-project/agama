@@ -20,7 +20,7 @@
 
 use std::str::FromStr;
 
-use agama_autoinstall::{CmdlineArgs, ConfigAutoLoader};
+use agama_autoinstall::{ConfigAutoLoader, KernelCmdline};
 use agama_lib::{
     auth::AuthToken,
     http::BaseHTTPClient,
@@ -38,7 +38,7 @@ pub fn build_base_client() -> anyhow::Result<BaseHTTPClient> {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let args = CmdlineArgs::parse_file(CMDLINE_FILE)?;
+    let args = KernelCmdline::parse_file(CMDLINE_FILE)?;
     let http = build_base_client()?;
     let manager_client = ManagerHTTPClient::new(http.clone());
     let loader = ConfigAutoLoader::new(http.clone());

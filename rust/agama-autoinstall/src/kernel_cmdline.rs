@@ -25,9 +25,9 @@ use anyhow::Context;
 /// Implements a mechanism to read the kernel's command-line arguments.
 ///
 /// It supports multiple values for a single key.
-pub struct CmdlineArgs(HashMap<String, Vec<String>>);
+pub struct KernelCmdline(HashMap<String, Vec<String>>);
 
-impl CmdlineArgs {
+impl KernelCmdline {
     /// Builds an instance from the given file.
     ///
     /// * `content`: file containing the kernel's cmdline arguments.
@@ -67,12 +67,12 @@ impl CmdlineArgs {
 
 #[cfg(test)]
 mod tests {
-    use crate::CmdlineArgs;
+    use crate::KernelCmdline;
 
     #[test]
     fn test_cmdline_args() {
         let args_str = r"rd.neednet inst.auto=file:///profile.json";
-        let args = CmdlineArgs::parse_str(args_str);
+        let args = KernelCmdline::parse_str(args_str);
 
         assert_eq!(
             args.get("inst.auto"),
