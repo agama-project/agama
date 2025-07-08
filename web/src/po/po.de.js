@@ -45,15 +45,6 @@ export default {
   "%s with %d partitions": [
     "%s mit %d Partitionen"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "Eine %1$s mit %2$s wird für %3$s erstellt"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "Eine %1$s mit mindestens %2$s wird für %3$s erstellt"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "Eine %1$s mit einer Größe zwischen %2$s und %3$s wird für %4$s erstellt"
-  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Eine generische Mindestgröße von %1$s wird für die neue %2$s verwendet"
   ],
@@ -153,6 +144,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Alle über diese Schnittstelle verwalteten Netzwerkverbindungen sind derzeit so eingestellt, dass sie nur während der Installation verwendet und nicht auf das installierte System kopiert werden"
   ],
+  "Allow growing": [
+    "Wachstum erlauben"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Neben der Definition des ersten Benutzers können auch die Authentifizierungsmethoden für den Root-Benutzer konfiguriert werden."
   ],
@@ -203,15 +197,6 @@ export default {
   ],
   "Back": [
     "Zurück"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "Basierend auf der Größe des RAM im System wird eine %1s$ mit %2$s für %3$s erstellt"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "Basierend auf der Größe des RAM im System wird eine %1s$ mit mindestens %2$s für %3$s erstellt"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "Basierend auf der Größe des RAM im System wird eine %1s$ mit einer Größe zwischen %2$s und %3$s für %4$s erstellt"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -462,6 +447,9 @@ export default {
   "Default file system for generic partitions": [
     "Standard-Dateisystem für generische Partitionen"
   ],
+  "Define a custom size": [
+    "Benutzerdefinierte Größe definieren"
+  ],
   "Define a new LVM on the disk": [
     "Einen neuen LVM auf der Festplatte definieren"
   ],
@@ -506,6 +494,9 @@ export default {
   ],
   "Discard": [
     "Verwerfen"
+  ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
   ],
   "Disconnected": [
     "Getrennt"
@@ -871,6 +862,9 @@ export default {
   "Language and keyboard": [
     "Sprache und Tastatur"
   ],
+  "Let the installer propose a sensible size": [
+    "Eine vernünftige Größe durch das Installationsprogramm vorschlagen lassen"
+  ],
   "License language": [
     "Lizenzsprache"
   ],
@@ -1122,9 +1116,6 @@ export default {
   ],
   "Partitions to boot will be allocated at the following device.": [
     "Die zu bootenden Partitionen werden auf dem folgenden Gerät zugewiesen."
-  ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Die zu bootenden Partitionen werden auf der Installationsfestplatte (%s) zugewiesen."
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Die zu bootenden Partitionen werden auf der Installationsfestplatte zugewiesen."
@@ -1400,6 +1391,9 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Größenbeschränkungen müssen Zahlen sein, optional gefolgt von einer Einheit wie GiB oder GB"
   ],
+  "Size modes": [
+    "Größenmodi"
+  ],
   "Skip to content": [
     "Zum Inhalt springen"
   ],
@@ -1481,15 +1475,6 @@ export default {
   "The content may be deleted": [
     "Der Inhalt kann gelöscht werden"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "Die aktuelle Konfiguration führt zu einer %1$s mit %2$s."
-  ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "Die aktuelle Konfiguration führt zu einer %1$s mit mindestens %2$s."
-  ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "Die aktuelle Konfiguration führt zu einer %1$s mit einer Größe zwischen %2$s und %3$s."
-  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Die Daten bleiben erhalten, aber die Größe der aktuellen Partitionen wird nach Bedarf geändert."
   ],
@@ -1562,11 +1547,14 @@ export default {
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "Die benötigten physikalischen LVM-Volumes werden als Partitionen auf den ausgewählten Festplatten hinzugefügt, basierend auf den Größen der logischen Volumes. Wenn Sie mehr als eine Festplatte auswählen, können die physikalischen Volumes auf mehrere Festplatten verteilt werden."
   ],
+  "The password is weak": [
+    "Das Passwort ist schwach"
+  ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Das Passwort wird nicht benötigt, um zu booten und auf die Daten zuzugreifen, wenn das TPM die Integrität des Systems verifizieren kann. Die TPM-Versiegelung erfordert, dass das neue System bei seinem ersten Start direkt gebootet wird."
   ],
-  "The size is configured as a range between %s and %s, but defining a range of sizes is not supported by the UI.": [
-    ""
+  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
+    "Die Größe muss eine Zahl sein, gefolgt von einer Einheit der Form GiB (Potenz von 2) oder GB (Potenz von 10)."
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "Die Speicherungskonfiguration ist gültig (siehe Ergebnis unten), verwendet aber Elemente, die von dieser Schnittstelle nicht unterstützt werden."
@@ -1839,7 +1827,7 @@ export default {
     "[CAPS LOCK] ist eingeschaltet"
   ],
   "approx. %s": [
-    ""
+    "ca. %s"
   ],
   "at least %s": [
     "mindestens %s"

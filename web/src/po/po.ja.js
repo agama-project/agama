@@ -45,15 +45,6 @@ export default {
   "%s with %d partitions": [
     "%s (%d 個のパーティション)"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "%2$s の %1$s を %3$s 向けに作成します"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "少なくとも %2$s の %1$s を %3$s 向けに作成します"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "%2$s から %3$s までの範囲で %1$s を %4$s 向けに作成します"
-  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "新しい %2$s に対しては少なくとも %1$s を使用します"
   ],
@@ -153,6 +144,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "このインターフェイスを通じて管理されるすべてのネットワーク接続は現在、インストール時にのみ使用されるように設定されており、インストールされたシステムにはコピーされません"
   ],
+  "Allow growing": [
+    "サイズ拡大を許可する"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "最初のユーザの作成とは別に、 root ユーザに対する認証方式を設定することができます。"
   ],
@@ -212,15 +206,6 @@ export default {
   ],
   "Back": [
     "戻る"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "システムのメモリサイズに応じて、 %2$s の %1$s を %3$s 向けに作成します"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "システムのメモリサイズに応じて、少なくとも %2$s の %1$s を %3$s 向けに作成します"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "システムのメモリサイズに応じて、 %2$s から %3$s までの範囲で %1$s を %4$s 向けに作成します"
   ],
   "Bcachefs": [
     "bcachefs"
@@ -477,6 +462,9 @@ export default {
   "Default file system for generic partitions": [
     "汎用パーティションに対する既定のファイルシステム"
   ],
+  "Define a custom size": [
+    "独自のサイズを指定する"
+  ],
   "Define a new LVM on the disk": [
     "ディスクに対して新しい LVM を設定する"
   ],
@@ -521,6 +509,9 @@ export default {
   ],
   "Discard": [
     "破棄"
+  ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
   ],
   "Disconnected": [
     "切断済み"
@@ -894,6 +885,9 @@ export default {
   "Language and keyboard": [
     "言語とキーボード"
   ],
+  "Let the installer propose a sensible size": [
+    "インストーラに適切なサイズを提案させる"
+  ],
   "License language": [
     "ライセンスの言語"
   ],
@@ -1154,9 +1148,6 @@ export default {
   ],
   "Partitions to boot will be allocated at the following device.": [
     "下記のデバイス内に起動用パーティションを割り当てます。"
-  ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "インストール先のディスク (%s) 内に起動用のパーティションを割り当てます。"
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "インストール先のディスク内に起動用のパーティションを割り当てます。"
@@ -1437,6 +1428,12 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "サイズ制限は数値でなければいけません。なお、 GiB や GB のように単位を付けることもできます"
   ],
+  "Size mode": [
+    "サイズのモード"
+  ],
+  "Size modes": [
+    "サイズのモード"
+  ],
   "Skip to content": [
     "コンテンツに移動"
   ],
@@ -1527,15 +1524,6 @@ export default {
   "The content may be deleted": [
     "内容が削除されるかもしれません"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "現在の設定では %2$s の %1$s になります。"
-  ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "現在の設定では少なくとも %2$s の %1$sになります。"
-  ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "現在の設定では %2$s から %3$s までの %1$s になります。"
-  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "既存のデータは保持しますが、必要に応じて既存のパーティションのサイズ変更を行います。"
   ],
@@ -1608,11 +1596,44 @@ export default {
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "必要な LVM 物理ボリュームは、論理ボリュームのサイズを元に、選択したディスク内のパーティションとして追加されます。複数のディスクを選択した場合、物理ボリュームはそれらのディスクに分散して配置されます。"
   ],
+  "The password is weak": [
+    "パスワードが弱すぎます"
+  ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "TPM 側でシステムの一貫性検証が成功すると、起動とデータへのアクセス処理に際してパスワードが不要になります。 TPM シーリングを使用するには、新しいシステムの初回起動時に直接起動を行う必要があります。"
   ],
-  "The size is configured as a range between %s and %s, but defining a range of sizes is not supported by the UI.": [
-    ""
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
+    "システムのメモリサイズと %2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
+  ],
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
+    "システムのメモリサイズと %2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
+  ],
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "システムのメモリサイズと btrfs スナップショットの使用可否、そして %2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
+  ],
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "システムのメモリサイズと btrfs スナップショットの使用可否、そして %2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
+  ],
+  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
+    "%2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
+  ],
+  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
+    "%2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
+  ],
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "btrfs スナップショットの使用可否と %2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
+  ],
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "btrfs スナップショットの使用可否と %2$s 向けの個別のファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
+  ],
+  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
+    "システムのメモリサイズと btrfs スナップショットの使用可否に応じて、 %s 向けのサイズを動的に調整します。"
+  ],
+  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
+    "btrfs スナップショットの使用可否に応じて、 %s 向けのサイズを動的に調整します。"
+  ],
+  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
+    "サイズは、数値の後に GiB (2 のべき乗で指定する場合) や GB (10 のべき乗で指定する場合) の形式で単位を付けて入力する必要があります。"
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "ストレージ設定は下記の結果の通り有効ではありますが、このインターフェイスではいくつかの要素がサポートされていません。"
@@ -1897,7 +1918,7 @@ export default {
     "[CAPS LOCK] が有効化されています"
   ],
   "approx. %s": [
-    ""
+    "おおよそ %s"
   ],
   "at least %s": [
     "少なくとも %s"
