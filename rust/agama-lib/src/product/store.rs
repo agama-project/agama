@@ -87,16 +87,21 @@ impl ProductStore {
                 probe = true;
             }
         }
-        if let Some(url) = &settings.registration_url {
-            self.product_client.set_registration_url(url).await?;
-        }
-        if let Some(reg_code) = &settings.registration_code {
+        // register system if either URL or reg code is provided as RMT does not need reg code and SCC uses default url
+        // bsc#1246069
+        if settings.registration_code.is_some() || settings.registration_url.is_some() {
+            if let Some(url) = &settings.registration_url {
+                self.product_client.set_registration_url(url).await?;
+            }
+            // lets use empty string if not defined
+            let reg_code = settings.registration_code.as_deref().unwrap_or("");
             let email = settings.registration_email.as_deref().unwrap_or("");
 
             self.product_client.register(reg_code, email).await?;
             // TODO: avoid reprobing if the system has been already registered with the same code?
             reprobe = true;
         }
+
         // register the addons in the order specified in the profile
         if let Some(addons) = &settings.addons {
             for addon in addons.iter() {
