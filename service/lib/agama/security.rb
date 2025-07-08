@@ -75,25 +75,29 @@ module Agama
     def write
       return if lsm_patterns.empty?
 
+      # FIXME: Currently it only allows to deselect the LSM defined the selected product
+      # definition but does not select it based on the software selection
       if (lsm_patterns - proposal_patterns).empty?
-        logger.info("The proposal patterns includes #{lsm_patterns.inspect}")
         lsm_config.save
-      else
-        logger.info("The proposal patterns NOT include #{lsm_patterns.inspect}")
       end
     end
 
     def probe
-      pick_product
-      lsm_config.select(config.data.dig("security", "lsm"))
+      select_lsm
       patterns = lsm_patterns
-      logger.info "Adding patterns #{patterns.inspect} for security module #{lsm_selected}"
-      software_client.add_patterns(patterns) unless patterns.empty?
+      unless patterns.empty?
+        logger.info "Adding patterns #{patterns.inspect} for security module #{lsm_selected.id}"
+        software_client.add_patterns(patterns)
+      end
     end
 
   private
 
     attr_reader :config
+
+    def select_lsm
+      lsm_config.select(config.data.dig("security", "lsm"))
+    end
 
     def lsm_config
       Y2Security::LSM::Config.instance
@@ -103,26 +107,17 @@ module Agama
       lsm_config.selected
     end
 
-    def selected_product
-      software_client.config["product"]
-    end
+    def lsm_patterns
+      return [] unless lsm_selected
+      patterns = config.data.dig("security", "available_lsms", lsm_selected.id.to_s, "patterns") || []
 
-    def pick_product
-      product = selected_product
-      logger.info "Picking product #{product}"
-      config.pick_product(product)
+      patterns
     end
 
     def proposal_patterns
       proposal = software_client.proposal || {}
 
       (proposal["patterns"] || {}).select { |_p, v| [0, 1].include? v }.keys
-    end
-
-    def lsm_patterns
-      return [] unless lsm_selected
-
-      config.data.dig("security", "available_lsms", lsm_selected.id.to_s, "patterns") || []
     end
 
     # Returns the client to ask the software service

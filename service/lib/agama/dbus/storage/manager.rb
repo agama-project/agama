@@ -520,6 +520,7 @@ module Agama
           backend.software.on_probe_finished do
             # A PropertiesChanged signal is emitted (see ::DBus::Object.dbus_reader_attr_accessor).
             self.encryption_methods = read_encryption_methods
+            backend.security.probe
           end
         end
 

@@ -96,10 +96,7 @@ module Agama
       installation_phase.config
       start_progress_with_descriptions(_("Analyze disks"), _("Configure software"))
       progress.step { reprobe ? storage.reprobe : storage.probe }
-      progress.step do
-        software.probe
-        security.probe
-      end
+      progress.step { software.probe }
 
       logger.info("Config phase done")
     rescue StandardError => e

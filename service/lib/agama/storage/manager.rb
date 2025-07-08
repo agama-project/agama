@@ -214,6 +214,13 @@ module Agama
         update_issues
       end
 
+      # Security manager
+      #
+      # @return [Security]
+      def security
+        @security ||= Security.new(logger, product_config)
+      end
+
     private
 
       PROPOSAL_ID = "storage_proposal"
@@ -341,12 +348,7 @@ module Agama
           severity: Issue::Severity::ERROR)
       end
 
-      # Security manager
-      #
-      # @return [Security]
-      def security
-        @security ||= Security.new(logger, product_config)
-      end
+
 
       # Returns the client to ask questions
       #
