@@ -107,7 +107,8 @@ impl ConfigAutoLoader {
     async fn should_retry(&self, url: &str) -> anyhow::Result<bool> {
         let text = format!(
             r#"
-                It was not possible to load the configuration from {url}. Do you want to try again?"
+                It was not possible to load the configuration from {url}.
+                It was unreachable or invalid. Do you want to try again?"
                 "#
         );
         let generic = GenericQuestion {
