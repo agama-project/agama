@@ -76,10 +76,10 @@ module Agama
       return if lsm_patterns.empty?
 
       if (lsm_patterns - proposal_patterns).empty?
-        logger.info("The proposal patterns #{proposal_patterns.inspect} includes #{lsm_patterns.inspect}")
+        logger.info("The proposal patterns includes #{lsm_patterns.inspect}")
         lsm_config.save
       else
-        logger.error("The proposal patterns #{proposal_patterns.inspect} DO NOT include #{lsm_patterns.inspect}")
+        logger.info("The proposal patterns NOT include #{lsm_patterns.inspect}")
       end
     end
 
@@ -116,12 +116,13 @@ module Agama
     def proposal_patterns
       proposal = software_client.proposal || {}
 
-      (proposal.dig("patterns") || []).select { |p,v| [0, 1].include? v }.keys
+      (proposal["patterns"] || {}).select { |_p, v| [0, 1].include? v }.keys
     end
 
     def lsm_patterns
       return [] unless lsm_selected
-      config.data.dig("security","available_lsms", lsm_selected.id.to_s, "patterns") || []
+
+      config.data.dig("security", "available_lsms", lsm_selected.id.to_s, "patterns") || []
     end
 
     # Returns the client to ask the software service

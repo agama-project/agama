@@ -119,7 +119,7 @@ module Agama
       # @param keep_config [Boolean] Whether to use the current storage config for calculating the
       #   proposal.
       def probe(keep_config: false)
-        start_progress_with_size(4)
+        start_progress_with_size(3)
         product_config.pick_product(software.selected_product)
 
         # Underlying yast-storage-ng has own mechanism for proposing boot strategies.

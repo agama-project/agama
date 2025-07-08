@@ -39,8 +39,8 @@ module Agama
         end
 
         def add_patterns(patterns)
-          config_patterns = (config["patterns"] || {})
-          selected = config_patterns.select {|k,v| v}.keys
+          config_patterns = config["patterns"] || {}
+          selected = config_patterns.select { |_k, v| v }.keys
           modified = false
 
           patterns.each do |pattern|
