@@ -236,25 +236,25 @@ describe Agama::Registration do
               .to raise_error(Timeout::Error)
           end
 
-          it "does not run the callbacks" do
-            expect(callback).to_not receive(:call)
-
-            expect { subject.register("11112222", email: "test@test.com") }
-              .to raise_error(Timeout::Error)
-          end
-
-          it "does not set the registration code" do
+          it "sets the registration code" do
             expect { subject.register("11112222", email: "test@test.com") }
               .to raise_error(Timeout::Error)
 
-            expect(subject.reg_code).to be_nil
+            expect(subject.reg_code).to eq("11112222")
           end
 
           it "does not set the email" do
             expect { subject.register("11112222", email: "test@test.com") }
               .to raise_error(Timeout::Error)
 
-            expect(subject.email).to be_nil
+            expect(subject.email).to eq("test@test.com")
+          end
+
+          it "runs the callbacks" do
+            expect(callback).to receive(:call)
+
+            expect { subject.register("11112222", email: "test@test.com") }
+              .to raise_error(Timeout::Error)
           end
         end
 
