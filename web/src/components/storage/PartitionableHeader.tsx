@@ -89,5 +89,5 @@ const text = (drive: model.Drive | model.MdRaid): string => {
 };
 
 export default function PartitionableHeader({ drive, device }: PartitionableHeaderProps) {
-  return sprintf(text(drive), deviceLabel(device));
+  return sprintf(text(drive), deviceLabel(device, true));
 }
