@@ -45,15 +45,6 @@ export default {
   "%s with %d partitions": [
     "%s з %d розділами"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "Для %3$s буде створено розділ %1$s розміром %2$s"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "Для %3$s буде створено розділ %1$s розміром щонайменше %2$s"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "Для %4$s буде створено розділ %1$s розміром від %2$s до %3$s"
-  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Для нового розділу %2$s буде використано типовий мінімальний розмір %1$s"
   ],
@@ -215,15 +206,6 @@ export default {
   ],
   "Back": [
     "Назад"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "На основі обсягу оперативної пам'яті в системі для %3$s буде створено розділ %1$s розміром %2$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "На основі обсягу оперативної пам'яті в системі, для %3$s буде створено розділ %1s$ розміром не менше %2$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "Виходячи з обсягу оперативної пам'яті в системі, для %4$s буде створено розділ %1s$ розміром від %2$s до %3$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -524,6 +506,9 @@ export default {
   ],
   "Discard": [
     "Відмовитись"
+  ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
   ],
   "Disconnected": [
     "Роз'єднано"
@@ -1160,9 +1145,6 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     "Розділи для завантаження буде виділено на наступному пристрої."
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Розділи для завантаження буде виділено на інсталяційному диску (%s)."
-  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Розділи для завантаження буде виділено на інсталяційному диску."
   ],
@@ -1534,15 +1516,6 @@ export default {
   "The content may be deleted": [
     "Вміст може бути видалений"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "Поточна конфігурація призведе до утворення розділу %1$s розміром %2$s."
-  ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "Поточна конфігурація призведе до створення розділу %1$s розміром щонайменше %2$s."
-  ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "Поточна конфігурація призведе до створення розділу %1$s розміром від %2$s до %3$s."
-  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Дані зберігаються, але розмір поточних розділів буде змінено в міру необхідності."
   ],
@@ -1618,7 +1591,7 @@ export default {
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Пароль не знадобиться для завантаження та доступу до даних, якщо TPM зможе перевірити цілісність системи. Запечатування TPM вимагає, щоб нова система завантажувалася безпосередньо під час першого запуску."
   ],
-  "The size is configured as a range between %s and %s, but defining a range of sizes is not supported by the UI.": [
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
     ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
