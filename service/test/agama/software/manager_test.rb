@@ -458,14 +458,14 @@ describe Agama::Software::Manager do
     context "only a local repository is used" do
       let(:repo_id) { 42 }
       before do
-        expect(Agama::Software::Repository).to receive(:all).and_return(
+        allow(Agama::Software::Repository).to receive(:all).and_return(
           [
             Agama::Software::Repository.new(
               repo_id: repo_id, repo_alias: "alias", name: "name",
               url: "dvd:/install?devices=/dev/sr0", enabled: true, autorefresh: false
             )
           ]
-        ).twice
+        )
       end
 
       it "disables the local repository" do

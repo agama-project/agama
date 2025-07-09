@@ -59,7 +59,7 @@ module Agama
     #   * Manages product selection.
     #   * Manages software and product related issues.
     #
-    #   It shoud be splitted in separate and smaller classes.
+    #   It should be splitted in separate and smaller classes.
     class Manager # rubocop:disable Metrics/ClassLength
       include Helpers
       include WithLocale
@@ -69,6 +69,23 @@ module Agama
 
       GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
       private_constant :GPG_KEYS_GLOB
+
+      # location of the custom DUD package repository,
+      # see the /usr/lib/dracut/modules.d/99agama-dud/agama-dud-apply.sh script
+      DUD_REPOSITORY_DIR = "/var/lib/agama/dud/repo"
+      private_constant :DUD_REPOSITORY_DIR
+
+      # name for the custom DUD package repository, use some special name to
+      # minimize possible conflicts with user defined repositories, ugly name
+      # does not matter, it is deleted in the end anyway
+      DUD_REPOSITORY_NAME = "AgamaDriverUpdate"
+      private_constant :DUD_REPOSITORY_NAME
+
+      # use a higher priority for the custom DUD package repository,
+      # the default priority is 99, the lower number the higher priority!
+      # the linuxrc default is 50, let's use the same value here as well
+      DUD_REPOSITORY_PRIORITY = 50
+      private_constant :DUD_REPOSITORY_PRIORITY
 
       # Selected product.
       #
@@ -223,6 +240,7 @@ module Agama
       def finish
         # disable local repositories (DVD, USB flash...)
         disable_local_repos
+        remove_dud_repo
         Yast::Pkg.SourceSaveAll
         Yast::Pkg.TargetFinish
         # copy the libzypp caches to the target
@@ -516,6 +534,7 @@ module Agama
       end
 
       def add_base_repos
+        add_dud_repo
         return if add_repos_by_label
         return if add_repos_by_dir
 
@@ -559,6 +578,18 @@ module Agama
         end
 
         false
+      end
+
+      # add a custom repository provided by DUD
+      def add_dud_repo
+        return unless File.directory?(DUD_REPOSITORY_DIR) && !Dir.empty?(DUD_REPOSITORY_DIR)
+
+        logger.info "Adding DUD repository at #{DUD_REPOSITORY_DIR}"
+        url = "dir:#{DUD_REPOSITORY_DIR}"
+        # if there is no repository metadata present in the dir:/ repository then libzypp
+        # automatically uses the "plaindir" repository type
+        repositories.add(url, repo_alias: DUD_REPOSITORY_NAME, name: DUD_REPOSITORY_NAME,
+          priority: DUD_REPOSITORY_PRIORITY)
       end
 
       # find all devices with the required disk label
@@ -834,6 +865,14 @@ module Agama
         new_url = "dvd:/install"
         logger.info "Changing repository URL from #{full_dvd_repo.url} to #{new_url}"
         full_dvd_repo.url = new_url
+      end
+
+      def remove_dud_repo
+        dud_repo = Agama::Software::Repository.all.find { |r| r.name == DUD_REPOSITORY_NAME }
+        return unless dud_repo
+
+        logger.info "Removing the temporary DUD repository"
+        dud_repo.delete!
       end
 
       # Return all enabled repositories belonging to the base product.
