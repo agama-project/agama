@@ -131,6 +131,7 @@ describe("ProductRegistrationPage", () => {
 
       expect(registerMutationMock).toHaveBeenCalledWith(
         {
+          url: "",
           email: "example@company.test",
           key: "INTERNAL-USE-ONLY-1234-5678",
         },
@@ -149,6 +150,7 @@ describe("ProductRegistrationPage", () => {
 
       expect(registerMutationMock).toHaveBeenCalledWith(
         {
+          url: "",
           key: "INTERNAL-USE-ONLY-1234-5678",
           email: "",
         },
