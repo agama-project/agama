@@ -387,6 +387,8 @@ module Agama
           connect_result_from_error(e, first_error_code + 8)
         rescue Agama::Software::ServiceError => e
           connect_result_from_error(e, first_error_code + 9)
+        rescue StandardError => e
+          connect_result_from_error(e, first_error_code + 10)
         end
 
         # Generates a result from a given error.
