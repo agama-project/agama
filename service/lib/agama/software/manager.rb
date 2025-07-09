@@ -131,6 +131,10 @@ module Agama
         initialize_target
       end
 
+      def self.dud_repository_url
+        "dir:#{DUD_REPOSITORY_DIR}"
+      end
+
       # Selects a product with the given id.
       #
       # @raise {ArgumentError} If id is unknown.
@@ -585,11 +589,10 @@ module Agama
         return unless File.directory?(DUD_REPOSITORY_DIR) && !Dir.empty?(DUD_REPOSITORY_DIR)
 
         logger.info "Adding DUD repository at #{DUD_REPOSITORY_DIR}"
-        url = "dir:#{DUD_REPOSITORY_DIR}"
         # if there is no repository metadata present in the dir:/ repository then libzypp
         # automatically uses the "plaindir" repository type
-        repositories.add(url, repo_alias: DUD_REPOSITORY_NAME, name: DUD_REPOSITORY_NAME,
-          priority: DUD_REPOSITORY_PRIORITY)
+        repositories.add(self.class.dud_repository_url, repo_alias: DUD_REPOSITORY_NAME,
+          name: DUD_REPOSITORY_NAME, priority: DUD_REPOSITORY_PRIORITY)
       end
 
       # find all devices with the required disk label

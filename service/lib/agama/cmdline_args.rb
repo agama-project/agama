@@ -59,7 +59,7 @@ module Agama
         # by now we will just convert Boolean values
         value = normalize(value)
         if key.include?(".")
-          section, key = key.split(".")
+          section, key = key.split(".", 2)
           args.data[section] = {} unless args.data.keys.include?(section)
           args.data[section][key] = value
         else
