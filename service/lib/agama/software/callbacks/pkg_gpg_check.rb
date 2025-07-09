@@ -44,7 +44,7 @@ module Agama
         # Register the callbacks
         def setup
           Yast::Pkg.CallbackPkgGpgCheck(
-            Yast::FunRef.new(method(:pkgGpgCheck), "string(map)")
+            Yast::FunRef.new(method(:pkg_gpg_check), "string(map)")
           )
         end
 
