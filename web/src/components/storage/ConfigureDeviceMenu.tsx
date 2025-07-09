@@ -24,7 +24,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import { Divider, MenuItemProps } from "@patternfly/react-core";
-import { useCandidateDevices, useLongestDiskTitle } from "~/hooks/storage/system";
+import { useCandidateDevices } from "~/hooks/storage/system";
 import { useModel } from "~/hooks/storage/model";
 import { useAddDrive } from "~/hooks/storage/drive";
 import { useAddReusedMdRaid } from "~/hooks/storage/md-raid";
@@ -109,7 +109,6 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
   const usedDevicesNames = model.drives.concat(model.mdRaids).map((d) => d.name);
   const usedDevicesCount = usedDevicesNames.length;
   const devices = allDevices.filter((d) => !usedDevicesNames.includes(d.name));
-  const longestTitle = useLongestDiskTitle();
 
   const addDevice = (device: StorageDevice) => {
     const hook = device.isDrive ? addDrive : addReusedMdRaid;
@@ -125,7 +124,6 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
       <MenuButton
         menuProps={{
           "aria-label": _("Configure device menu"),
-          popperProps: { minWidth: `min(${longestTitle * 0.75}em, 75vw)`, width: "max-content" },
         }}
         items={[
           <AddDeviceMenuItem

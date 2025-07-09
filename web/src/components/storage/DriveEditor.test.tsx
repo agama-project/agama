@@ -213,7 +213,6 @@ jest.mock("~/hooks/storage/system", () => ({
   ...jest.requireActual("~/hooks/storage/system"),
   useAvailableDevices: () => [sda, sdb],
   useCandidateDevices: () => [sda],
-  useLongestDiskTitle: () => 20,
 }));
 
 jest.mock("~/hooks/storage/drive", () => ({

@@ -23,7 +23,7 @@
 import React, { useState } from "react";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import NewVgMenuOption from "./NewVgMenuOption";
-import { useAvailableDevices, useLongestDiskTitle } from "~/hooks/storage/system";
+import { useAvailableDevices } from "~/hooks/storage/system";
 import { useModel } from "~/hooks/storage/model";
 import { useSwitchToDrive } from "~/hooks/storage/drive";
 import { useSwitchToMdRaid } from "~/hooks/storage/md-raid";
@@ -267,7 +267,6 @@ export default function SearchedDeviceMenu({
     const hook = device.isDrive ? switchToDrive : switchToMdRaid;
     hook(modelDevice.name, { name: device.name });
   };
-  const longestTitle = useLongestDiskTitle();
   const devices = useAvailableDevices();
 
   const onDeviceChange = ([drive]: StorageDevice[]) => {
@@ -280,11 +279,7 @@ export default function SearchedDeviceMenu({
       <MenuButton
         menuProps={{
           "aria-label": sprintf(_("Device %s menu"), modelDevice.name),
-          popperProps: {
-            minWidth: `min(${longestTitle * 0.75}em, 75vw)`,
-            width: "max-content",
-            position: "end",
-          },
+          popperProps: { position: "end" },
         }}
         toggleProps={{
           variant: "plain",
