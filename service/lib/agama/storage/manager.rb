@@ -119,7 +119,7 @@ module Agama
       # @param keep_config [Boolean] Whether to use the current storage config for calculating the
       #   proposal.
       def probe(keep_config: false)
-        start_progress_with_size(4)
+        start_progress_with_size(3)
         product_config.pick_product(software.selected_product)
 
         # Underlying yast-storage-ng has own mechanism for proposing boot strategies.
@@ -133,7 +133,6 @@ module Agama
         progress.step(_("Calculating the storage proposal")) do
           calculate_proposal(keep_config: keep_config)
         end
-        progress.step(_("Selecting Linux Security Modules")) { security.probe }
         # The system is not deprecated anymore
         self.deprecated_system = false
         update_issues
@@ -213,6 +212,13 @@ module Agama
       def locale=(locale)
         change_process_locale(locale)
         update_issues
+      end
+
+      # Security manager
+      #
+      # @return [Security]
+      def security
+        @security ||= Security.new(logger, product_config)
       end
 
     private
@@ -340,13 +346,6 @@ module Agama
         Issue.new("There is no suitable device for installation",
           source:   Issue::Source::SYSTEM,
           severity: Issue::Severity::ERROR)
-      end
-
-      # Security manager
-      #
-      # @return [Security]
-      def security
-        @security ||= Security.new(logger, product_config)
       end
 
       # Returns the client to ask questions

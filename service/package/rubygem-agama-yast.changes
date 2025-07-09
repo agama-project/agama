@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul  9 08:32:37 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Handle the LSM defined in the product definition as it was 
+  selected by the user allowing to deselect it (bsc#1244431).
+
+-------------------------------------------------------------------
 Fri Jul  4 11:31:21 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Extend D-Bus API to allow reprobing the system
