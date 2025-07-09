@@ -212,7 +212,7 @@ module Agama
           if !backend.product
             [1, "Product not selected yet"]
           # report success and do nothing when already registered with the same code
-          elsif backend.registration.reg_code == reg_code
+          elsif backend.registration.registered && backend.registration.reg_code == reg_code
             [0, ""]
           elsif backend.registration.registered
             [2, "Product already registered"]
