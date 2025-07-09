@@ -163,6 +163,8 @@
         <archive name="live-root.tar.xz"/>
         <!-- IPMI support -->
         <package name="ipmitool" />
+        <!-- jsc#PED-13114 -->
+        <package name="tpm2.0-tools" />
     </packages>
 
     <!-- packages for local installation (desktop, browser, etc.) -->
