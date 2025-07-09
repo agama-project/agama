@@ -186,7 +186,7 @@ const TableHeader = ({ columns }: { columns: SelectableDataTableColumn[] }) => (
       <Th />
       <Th />
       {columns?.map((c, i) => (
-        <Th key={i} className={c.classNames}>
+        <Th key={i} className={c.classNames} {...c.pfThProps}>
           {c.name}
         </Th>
       ))}
@@ -306,9 +306,9 @@ export default function SelectableDataTable({
       <Tr key={rowIndex} isExpanded={isExpanded} className={itemClassNames(item)}>
         <Td />
         <Td select={itemSelectable(item) ? selectProps : undefined} />
-        {columns?.map((column, index) => (
-          <Td key={index} dataLabel={column.name} className={column.classNames}>
-            <ExpandableRowContent>{column.value(item)}</ExpandableRowContent>
+        {columns?.map((c, index) => (
+          <Td key={index} dataLabel={c.name} className={c.classNames} {...c.pfTdProps}>
+            <ExpandableRowContent>{c.value(item)}</ExpandableRowContent>
           </Td>
         ))}
       </Tr>
@@ -351,9 +351,9 @@ export default function SelectableDataTable({
         <Tr className={itemClassNames(item)}>
           <Td expand={expandProps} />
           <Td select={itemSelectable(item) ? selectProps : undefined} />
-          {columns?.map((column, index) => (
-            <Td key={index} dataLabel={column.name} className={column.classNames}>
-              {column.value(item)}
+          {columns?.map((c, index) => (
+            <Td key={index} dataLabel={c.name} className={c.classNames} {...c.pfTdProps}>
+              {c.value(item)}
             </Td>
           ))}
         </Tr>
