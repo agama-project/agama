@@ -123,12 +123,12 @@ module Agama
         @logger.info "Activating product #{base_target_product.inspect}"
         service = SUSE::Connect::YaST.activate_product(base_target_product, activate_params, email)
         process_service(service)
-
         @registered = true
-        @reg_code = code
-        @email = email
-        run_on_change_callbacks
       end
+    ensure
+      @reg_code = code
+      @email = email
+      run_on_change_callbacks
     end
 
     def register_addon(name, version, code)
