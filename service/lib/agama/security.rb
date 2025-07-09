@@ -82,7 +82,7 @@ module Agama
 
     def probe
       select_default_lsm
-      patterns = lsm_patterns(lsm_selected)
+      patterns = lsm_patterns(lsm_selected&.id)
       return if patterns.empty?
 
       logger.info "Adding patterns #{patterns.inspect} for security module #{lsm_selected.id}"
@@ -98,7 +98,7 @@ module Agama
     end
 
     def select_software_lsm
-      candidates = [lsm_selected].compact | available_lsms.keys
+      candidates = [lsm_selected&.id&.to_s].compact | available_lsms.keys
 
       candidates.find { |c| proposal_patterns_include?(c) }
     end

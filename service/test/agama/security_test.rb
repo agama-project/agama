@@ -66,16 +66,25 @@ describe Agama::Security do
   end
 
   let(:software_client) do
-    instance_double(Agama::HTTP::Clients::Software, proposal: proposal)
+    instance_double(Agama::HTTP::Clients::Software, proposal: proposal, add_patterns: nil)
   end
 
   before do
     allow(Y2Security::LSM::Config).to receive(:instance).and_return(lsm_config)
+    allow(security).to receive(:software_client).and_return(software_client)
   end
 
   describe "#probe" do
+    let(:selected) { apparmor }
+
     it "selects the default LSM based on the product definition" do
       expect(lsm_config).to receive(:select).with("apparmor")
+      security.probe
+    end
+
+    it "selects the selected LSM patterns" do
+      expect(lsm_config).to receive(:select).with("apparmor")
+      expect(software_client).to receive(:add_patterns).with(["apparmor"])
       security.probe
     end
 
@@ -92,10 +101,7 @@ describe Agama::Security do
   end
 
   describe "#write" do
-    let(:selected) { "apparmor" }
-    before do
-      allow(subject).to receive(:software_client).and_return(software_client)
-    end
+    let(:selected) { apparmor }
 
     context "when the software proposal patterns includes the LSM patterns" do
       it "saves the LSM configuration" do
@@ -105,6 +111,8 @@ describe Agama::Security do
     end
 
     context "when the software proposal patterns does not include the LSM patterns" do
+      let(:selected) { apparmor }
+
       let(:proposal) do
         {
           "size"     => "0 B",
