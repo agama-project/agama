@@ -45,15 +45,6 @@ export default {
   "%s with %d partitions": [
     "%s %d დანაყოფით"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "%1$s ზომით %2$s შეიქმნება მიმაგრების წერტილზე %3$s"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    ""
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    ""
-  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     ""
   ],
@@ -213,13 +204,13 @@ export default {
   "Back": [
     "უკან"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
+  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
     ""
   ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
+  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
     ""
   ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
+  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
     ""
   ],
   "Bcachefs": [
@@ -522,6 +513,9 @@ export default {
   "Discard": [
     "მოცილება"
   ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
+  ],
   "Disconnected": [
     "გამოერთებული"
   ],
@@ -551,9 +545,6 @@ export default {
   ],
   "Do not use": [
     "არ გამოიყენო"
-  ],
-  "Do you want to use a supported size?": [
-    ""
   ],
   "Download logs": [
     "ჟურნალის გადმოწერა"
@@ -1162,9 +1153,6 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     ""
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    ""
-  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "ჩატვირთვადი დანაყოფები დაყენების დისკზე გამოიყოფა."
   ],
@@ -1535,13 +1523,13 @@ export default {
   "The content may be deleted": [
     "შეიძლება, შემცველობა წაიშალოს"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
+  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     ""
   ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
+  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
     ""
   ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
+  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
     ""
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
@@ -1574,7 +1562,7 @@ export default {
   "The extension has been registered with key %s.": [
     ""
   ],
-  "The final size can be bigger in order to fill the contiguous free space.": [
+  "The final size can be bigger in order to fill the extra free space.": [
     ""
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
@@ -1652,7 +1640,7 @@ export default {
   "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
     ""
   ],
-  "The size is configured as a range between %s and %s, but defining a range of sizes is not supported by the UI.": [
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
     ""
   ],
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [

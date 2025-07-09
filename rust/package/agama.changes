@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+
+Mon Jul  7 13:22:05 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve handling of the inst.auto option (gh#agama-project/agama#2534):
+  - Replace the "agama-auto" service with "agama-autoinstall".
+  - Report when the configuration could not be loaded.
+  - Allow importing multiple configurations.
+- Add a new `inst.install` option to stop the installation after
+  loading the configuration.
+
+-------------------------------------------------------------------
 Fri Jul  4 11:33:44 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Reprobe the system after registering the product
