@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -95,8 +95,13 @@ describe Agama::Registration do
       context "and the product is not registered yet" do
         it "announces the system" do
           expect(SUSE::Connect::YaST).to receive(:announce_system).with(
-            { language: anything, token: "11112222", email: "test@test.com",
-              verify_callback: anything },
+            {
+              language:        anything,
+              url:             "https://scc.suse.com",
+              token:           "11112222",
+              email:           "test@test.com",
+              verify_callback: anything
+            },
             "test-5-x86_64"
           )
 
@@ -105,8 +110,13 @@ describe Agama::Registration do
 
         it "sets the current language in the request" do
           expect(SUSE::Connect::YaST).to receive(:announce_system).with(
-            { language: "de-de", token: "11112222", email: "test@test.com",
-              verify_callback: anything },
+            {
+              language:        "de-de",
+              url:             anything,
+              token:           "11112222",
+              email:           "test@test.com",
+              verify_callback: anything
+            },
             "test-5-x86_64"
           )
 
@@ -437,8 +447,13 @@ describe Agama::Registration do
 
         it "deactivates the system" do
           expect(SUSE::Connect::YaST).to receive(:deactivate_system).with(
-            { token: "11112222", email: "test@test.com", verify_callback: anything,
-              language: anything }
+            {
+              url:             anything,
+              token:           "11112222",
+              email:           "test@test.com",
+              verify_callback: anything,
+              language:        anything
+            }
           )
 
           subject.deregister
