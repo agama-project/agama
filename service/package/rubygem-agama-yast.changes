@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Wed Jul  9 12:21:55 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
-- add autoyast convertion for RMT registration
+- Add AutoYaST conversion for RMT registration (gh#agama-project/agama#2545).
 
 -------------------------------------------------------------------
 Wed Jul  9 08:32:37 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
