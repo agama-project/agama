@@ -70,6 +70,9 @@ module Agama
         email = section["email"].to_s
         result["registrationEmail"] = email unless email.empty?
 
+        url = section["reg_server"].to_s
+        result["registrationUrl"] = url unless url.empty?
+
         # addons from the registration server
         converted_addons = convert_addons(section["addons"] || [])
         result["addons"] = converted_addons unless converted_addons.empty?

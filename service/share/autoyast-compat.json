@@ -589,7 +589,10 @@
         "support": "yes",
         "agama": "product.registrationCode"
       },
-      { "key": "reg_server", "support": "planned" },
+      { "key": "reg_server",
+        "support": "yes",
+        "agama": "product.registrationUrl"
+      },
       { "key": "reg_server_cert", "support": "no" },
       {
         "key": "reg_server_cert_fingerprint",
