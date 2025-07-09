@@ -73,18 +73,16 @@ module Agama
     end
 
     def write
-      return if lsm_patterns.empty?
+      candidate = select_software_lsm
+      return unless candidate
 
-      # FIXME: Currently it only allows to deselect the LSM defined the selected product
-      # definition but does not select it based on the software selection
-      return unless (lsm_patterns - proposal_patterns).empty?
-
+      lsm_config.select(candidate)
       lsm_config.save
     end
 
     def probe
-      select_lsm
-      patterns = lsm_patterns
+      select_default_lsm
+      patterns = lsm_patterns(lsm_selected)
       return if patterns.empty?
 
       logger.info "Adding patterns #{patterns.inspect} for security module #{lsm_selected.id}"
@@ -95,8 +93,24 @@ module Agama
 
     attr_reader :config
 
-    def select_lsm
+    def select_default_lsm
       lsm_config.select(config.data.dig("security", "lsm"))
+    end
+
+    def select_software_lsm
+      candidates = [lsm_selected].compact | available_lsms.keys
+
+      candidates.find { |c| proposal_patterns_include?(c) }
+    end
+
+    def available_lsms
+      config.data.dig("security", "available_lsms") || {}
+    end
+
+    def proposal_patterns_include?(lsm_id)
+      patterns = available_lsms.dig(lsm_id.to_s, "patterns") || []
+
+      (patterns - proposal_patterns).empty?
     end
 
     def lsm_config
@@ -107,17 +121,17 @@ module Agama
       lsm_config.selected
     end
 
-    def lsm_patterns
-      return [] unless lsm_selected
-
-      config.data.dig("security", "available_lsms", lsm_selected.id.to_s,
-        "patterns") || []
+    def lsm_patterns(lsm_id)
+      config.data.dig("security", "available_lsms", lsm_id.to_s, "patterns") || []
     end
 
     def proposal_patterns
+      return @proposal_patterns if @proposal_patterns
+
       proposal = software_client.proposal || {}
 
-      (proposal["patterns"] || {}).select { |_p, v| [0, 1].include? v }.keys
+      @proposal_patterns =
+        (proposal["patterns"] || {}).select { |_p, v| [0, 1].include? v }.keys
     end
 
     # Returns the client to ask the software service

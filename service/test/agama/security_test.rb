@@ -92,7 +92,7 @@ describe Agama::Security do
   end
 
   describe "#write" do
-    let(:selected) { apparmor }
+    let(:selected) { "apparmor" }
     before do
       allow(subject).to receive(:software_client).and_return(software_client)
     end
@@ -113,7 +113,6 @@ describe Agama::Security do
             "enhanced_base" => 1,
             "sw_management" => 1,
             "yast2_basis"   => 1,
-            "selinux"       => 0,
             "minimal_base"  => 1,
             "base"          => 1,
             "x86_64_v3"     => 1
@@ -121,8 +120,9 @@ describe Agama::Security do
         }
       end
 
-      it "does not save the LSM configuration" do
-        expect(lsm_config).to_not receive(:save)
+      it "fallback to the first LSM which patterns are included by the software proposal" do
+        expect(lsm_config).to receive(:select).with("none")
+        expect(lsm_config).to receive(:save)
         security.write
       end
     end
