@@ -8,7 +8,9 @@ export const useKeyLock = (targetKey: KeyLock) => {
 
   const checkKeyState = useCallback(
     (event: KeyboardEvent) => {
-      if (event.key !== targetKey) {
+      if (!event.getModifierState) return;
+
+      if (event.getModifierState && event.key !== targetKey) {
         setIsKeyLocked(event.getModifierState(targetKey));
         return;
       }
