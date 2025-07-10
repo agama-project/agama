@@ -49,15 +49,15 @@ module Agama
         end
 
         # Should be the DUD packages GPG signatures verified? The GPG errors can
-        # be ignored by using the "inst.dud.packages.gpg=0" boot option
+        # be ignored by using the "inst.dud_packages.gpg=0" boot option
         #
         # @return [Boolean] `true` if the GPG errors should be ignored, `false` otherwise
         def ignore_dud_packages_gpg_errors?
           return @ignore_dud_packages_gpg_errors if !@ignore_dud_packages_gpg_errors.nil?
 
           cmdline_args = CmdlineArgs.read
-          dud = cmdline_args.data["dud"]
-          gpg = dud && dud["packages.gpg"]
+          dud = cmdline_args.data["dud_packages"]
+          gpg = dud && dud["gpg"]
 
           @ignore_dud_packages_gpg_errors = [false, "0"].include?(gpg)
         end
