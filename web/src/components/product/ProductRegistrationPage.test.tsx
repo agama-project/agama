@@ -158,6 +158,31 @@ describe("ProductRegistrationPage", () => {
       );
     });
 
+    it.todo("allows registering using a custom server");
+
+    describe("if registering with the default server", () => {
+      it.todo("shows an error if there is no registration code");
+
+      describe("and 'provide email' was indicated", () => {
+        it.todo("does not show an error if there is an email");
+        it.todo("shows an error if there is no email");
+      });
+    });
+
+    describe("if registering with a custom server", () => {
+      it.todo("shows an error if there is no url");
+
+      describe("and 'provide registration code' was indicated", () => {
+        it.todo("does not show an error if there is a code");
+        it.todo("shows an error if there is no code");
+      });
+
+      describe("and 'provide email' was indicated", () => {
+        it.todo("does not show an error if there is an email");
+        it.todo("shows an error if there is no email");
+      });
+    });
+
     it.todo("handles and renders errors from server, if any");
   });
 
@@ -185,6 +210,8 @@ describe("ProductRegistrationPage", () => {
       ];
     });
 
+    it.todo("renders the registration server if a custom server was used");
+
     it("does not render a custom alert about hostname", () => {
       installerRender(<ProductRegistrationPage />, { withL10n: true });
 
@@ -206,6 +233,11 @@ describe("ProductRegistrationPage", () => {
       expect(screen.queryByText("INTERNAL-USE-ONLY-1234-5678")).toBeNull();
       screen.getByText(/\*?5678/);
     });
+
+    it.todo("renders the registration email");
+    it.todo("does not render the registration server if the default server was used");
+    it.todo("does not render the registration code if a code was not provided");
+    it.todo("does not render the registration email if an email was not provided");
 
     it("renders available extensions", async () => {
       const { container } = installerRender(<ProductRegistrationPage />, { withL10n: true });
