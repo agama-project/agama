@@ -96,10 +96,10 @@ describe("DeviceSelectorModal", () => {
       />,
     );
     const table = screen.getByRole("grid");
-    within(table).getByRole("columnheader", { name: "Type" });
-    within(table).getByRole("columnheader", { name: "Name" });
-    within(table).getByRole("columnheader", { name: "Content" });
-    within(table).getByRole("columnheader", { name: "Filesystems" });
+    within(table).getByRole("columnheader", { name: "Device" });
+    within(table).getByRole("columnheader", { name: "Size" });
+    within(table).getByRole("columnheader", { name: "Description" });
+    within(table).getByRole("columnheader", { name: "Current content" });
   });
 
   it.todo("renders type, name, content, and filesystems of each device");
@@ -145,7 +145,7 @@ describe("DeviceSelectorModal", () => {
       />,
     );
 
-    const sdbRow = screen.getByRole("row", { name: /IDE disk \/dev\/sdb/ });
+    const sdbRow = screen.getByRole("row", { name: /\/dev\/sdb/ });
     const sdbRadio = within(sdbRow).getByRole("radio");
     await user.click(sdbRadio);
     const confirmAction = screen.getByRole("button", { name: "Confirm" });

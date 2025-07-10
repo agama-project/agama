@@ -152,7 +152,7 @@ const drive1Partitions: model.Partition[] = [
   },
 ];
 
-const drive1: model.Drive = {
+const drive1: Partial<model.Drive> = {
   name: "/dev/sda",
   spacePolicy: "delete",
   partitions: drive1Partitions,
@@ -160,7 +160,6 @@ const drive1: model.Drive = {
   listIndex: 1,
   isUsed: true,
   isAddingPartitions: true,
-  isReusingPartitions: true,
   isTargetDevice: false,
   isBoot: true,
   isExplicitBoot: true,
@@ -185,7 +184,7 @@ const drive2Partitions: model.Partition[] = [
   },
 ];
 
-const drive2: model.Drive = {
+const drive2: Partial<model.Drive> = {
   name: "/dev/sdb",
   spacePolicy: "delete",
   partitions: drive2Partitions,
@@ -194,7 +193,6 @@ const drive2: model.Drive = {
   isExplicitBoot: false,
   isUsed: true,
   isAddingPartitions: true,
-  isReusingPartitions: true,
   isTargetDevice: false,
   isBoot: true,
   getVolumeGroups: () => [],
