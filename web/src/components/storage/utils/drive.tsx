@@ -63,11 +63,10 @@ const resizeTextFor = (partitions) => {
   return _("Some partitions may be shrunk");
 };
 
-const summaryForSpacePolicy = (drive: Drive, policyId: string | undefined): string | undefined => {
-  const { isBoot, isTargetDevice, isAddingPartitions, isReusingPartitions } = drive;
-  if (!policyId) policyId = drive.spacePolicy;
+const summaryForSpacePolicy = (drive: Drive): string | undefined => {
+  const { isBoot, isTargetDevice, isAddingPartitions, isReusingPartitions, spacePolicy } = drive;
 
-  switch (policyId) {
+  switch (spacePolicy) {
     case "delete":
       if (isReusingPartitions) return _("All content not configured to be mounted will be deleted");
       return _("All content will be deleted");
@@ -108,7 +107,10 @@ const contentActionsSummary = (drive: Drive): string => {
   if (deleteText) return deleteText;
   if (resizeText) return resizeText;
 
-  return summaryForSpacePolicy(drive, "keep");
+  // This scenario is unlikely, as the backend is expected to enforce the "keep"
+  // space policy when all partitions in a custom policy are set to "keep".
+  // However, to be safe, we return the same summary as the "keep" policy.
+  return _("Current partitions will be kept");
 };
 
 const contentActionsDescription = (drive: Drive, policyId: string | undefined): string => {
