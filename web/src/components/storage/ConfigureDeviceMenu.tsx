@@ -112,7 +112,7 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
 
   const addDevice = (device: StorageDevice) => {
     const hook = device.isDrive ? addDrive : addReusedMdRaid;
-    hook({ name: device.name });
+    hook({ name: device.name, spacePolicy: "keep" });
   };
 
   const lvmDescription = allDevices.length

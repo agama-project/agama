@@ -123,7 +123,7 @@ describe("ConfigureDeviceMenu", () => {
         const vdaItemRadio = within(vdaItemRow).getByRole("radio");
         await user.click(vdaItemRadio);
         await user.click(confirmButton);
-        expect(mockAddDrive).toHaveBeenCalledWith({ name: "/dev/vda" });
+        expect(mockAddDrive).toHaveBeenCalledWith({ name: "/dev/vda", spacePolicy: "keep" });
       });
     });
 
@@ -145,7 +145,7 @@ describe("ConfigureDeviceMenu", () => {
         const vdaItemRadio = within(vdaItemRow).getByRole("radio");
         await user.click(vdaItemRadio);
         await user.click(confirmButton);
-        expect(mockAddDrive).toHaveBeenCalledWith({ name: "/dev/vdb" });
+        expect(mockAddDrive).toHaveBeenCalledWith({ name: "/dev/vdb", spacePolicy: "keep" });
       });
     });
   });
