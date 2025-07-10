@@ -220,6 +220,13 @@ update_kernel_modules() {
   kernel_modules_dir="${NEWROOT}/lib/modules/$(uname -r)"
   local dud_modules_dir="${dud_dir}/modules"
 
+  # copy hardware information
+  local hardware_ids="${dud_modules_dir}/hd.ids"
+  if [ -f "$hardware_ids" ]; then
+    mkdir -p "${NEWROOT}/var/lib/hardware"
+    cat "$hardware_ids" >>"${NEWROOT}/var/lib/hardware"
+  fi
+
   local dud_modules
   find_kernel_modules "$dud_modules_dir" dud_modules
 
