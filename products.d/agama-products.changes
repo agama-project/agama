@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 10 13:39:30 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed base product names to install for Kalpa, Leap 16.0
+  and Leap-Micro 6.2 distributions (gh#agama-project/agama#2550)
+
+-------------------------------------------------------------------
 Tue Jul  1 12:58:07 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Add initial Leap Micro 6.2 product
