@@ -33,7 +33,8 @@ use crate::{
     error::ServiceError,
     storage::{
         model::zfcp::{ZFCPController, ZFCPDisk},
-        proxies::zfcp::{ControllerProxy, ManagerProxy}, settings::zfcp::ZFCPConfig,
+        proxies::zfcp::{ControllerProxy, ManagerProxy},
+        settings::zfcp::ZFCPConfig,
     },
 };
 use agama_utils::dbus::{extract_id_from_path, get_property};
@@ -230,7 +231,8 @@ impl ZFCPClient<'_> {
 
         // and then activate all disks
         for dev in &config.devices {
-            self.activate_disk(&dev.channel, &dev.wwpn, &dev.lun).await?;
+            self.activate_disk(&dev.channel, &dev.wwpn, &dev.lun)
+                .await?;
         }
 
         Ok(())

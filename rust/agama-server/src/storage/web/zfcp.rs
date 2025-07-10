@@ -28,7 +28,9 @@
 use agama_lib::{
     error::ServiceError,
     storage::{
-        model::zfcp::{ZFCPController, ZFCPDisk}, settings::zfcp::ZFCPConfig, ZFCPClient
+        model::zfcp::{ZFCPController, ZFCPDisk},
+        settings::zfcp::ZFCPConfig,
+        ZFCPClient,
     },
 };
 
@@ -123,9 +125,7 @@ async fn supported(State(state): State<ZFCPState<'_>>) -> Result<Json<bool>, Err
 )]
 async fn get_config(State(_state): State<ZFCPState<'_>>) -> Result<Json<ZFCPConfig>, Error> {
     // TODO: not implemented yet
-    Ok(Json(ZFCPConfig{
-        devices: vec![]
-    }))
+    Ok(Json(ZFCPConfig { devices: vec![] }))
 }
 
 /// Sets zFCP configuration. Mainly for unattended installation.
@@ -133,13 +133,14 @@ async fn get_config(State(_state): State<ZFCPState<'_>>) -> Result<Json<ZFCPConf
     put,
     path="/config",
     context_path="/api/storage/zfcp",
+    operation_id = "zfcp_set_config",
     responses(
         (status = OK, description = "Sets zFCP configuration")
     )
 )]
 async fn set_config(
     State(state): State<ZFCPState<'_>>,
-    Json(config): Json<ZFCPConfig>
+    Json(config): Json<ZFCPConfig>,
 ) -> Result<(), Error> {
     Ok(state.client.set_config(config).await?)
 }
@@ -161,7 +162,9 @@ pub struct ZFCPGlobalConfig {
         (status = OK, description = "Returns global zFCP configuration", body=ZFCPGlobalConfig)
     )
 )]
-async fn get_global_config(State(state): State<ZFCPState<'_>>) -> Result<Json<ZFCPGlobalConfig>, Error> {
+async fn get_global_config(
+    State(state): State<ZFCPState<'_>>,
+) -> Result<Json<ZFCPGlobalConfig>, Error> {
     let lun_scan = state.client.is_lun_scan_allowed().await?;
     Ok(Json(ZFCPGlobalConfig {
         allow_lun_scan: lun_scan,

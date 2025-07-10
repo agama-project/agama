@@ -53,7 +53,7 @@ impl ZFCPHTTPClient {
     pub async fn set_config(&self, config: &ZFCPConfig) -> Result<(), ZFCPHTTPClientError> {
         if !self.supported().await? {
             // TODO: should we add tracing error here?
-            return Ok(())
+            return Ok(());
         }
         Ok(self.client.put_void("/storage/zfcp/config", config).await?)
     }

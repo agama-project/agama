@@ -39,7 +39,10 @@ use crate::{
             iscsi::{ISCSIHTTPClient, ISCSIHTTPClientError},
             StorageHTTPClient,
         },
-        store::{dasd::{DASDStore, DASDStoreError}, zfcp::{ZFCPStore, ZFCPStoreError}},
+        store::{
+            dasd::{DASDStore, DASDStoreError},
+            zfcp::{ZFCPStore, ZFCPStoreError},
+        },
         StorageStore, StorageStoreError,
     },
     users::{UsersStore, UsersStoreError},

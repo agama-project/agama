@@ -53,7 +53,7 @@ impl DASDHTTPClient {
     pub async fn set_config(&self, config: &DASDConfig) -> Result<(), DASDHTTPClientError> {
         if !self.supported().await? {
             // TODO: should we add tracing error here?
-            return Ok(())
+            return Ok(());
         }
         Ok(self.client.put_void("/storage/dasd/config", config).await?)
     }
