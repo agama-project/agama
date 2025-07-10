@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jul  10 10:02:07 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Add initial support for ovs in agama network model (gh#agama-project/agama#2536).
+
+-------------------------------------------------------------------
 Wed Jul  9 12:25:08 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - unattended installation: allow registration to RMT when

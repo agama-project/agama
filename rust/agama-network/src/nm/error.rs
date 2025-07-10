@@ -78,6 +78,8 @@ pub enum NmError {
     FailedNmVersionParse(#[from] semver::Error),
     #[error("Invalid valud from DBUS: '{0}'")]
     InvalidDBUSValue(String),
+    #[error("Invalid ovs-interface type '{0}'")]
+    InvalidOvsInterfaceType(#[from] crate::model::InvalidOvsInterfaceType),
 }
 
 impl From<NmError> for NetworkStateError {
