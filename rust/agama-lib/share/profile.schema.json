@@ -86,7 +86,7 @@
       ]
     },
     "dasd": {
-      "title": "DASD device actiation (s390x only)",
+      "title": "DASD device activation (s390x only)",
       "type": "object",
       "properties": {
         "devices": {
@@ -183,7 +183,7 @@
           }
         },
         "onlyRequired": {
-          "title": "Flag if only minimal hard dependecies should be used in solver",
+          "title": "Flag if only minimal hard dependencies should be used in solver",
           "type": "boolean"
         },
         "extraRepositories": {
@@ -214,7 +214,7 @@
                 "type": "string"
               },
               "enabled": {
-                "title": "If repository should be enabled. Defaults to true. Useful when adding additional repo that should not be immediatelly use.",
+                "title": "If repository should be enabled. Defaults to true. Useful when adding additional repo that should not be immediately use.",
                 "type": "boolean"
               },
               "allowUnsigned": {
