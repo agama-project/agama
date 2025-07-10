@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jul 10 12:13:14 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Inhibit storage subsystems (bsc#1245159, bsc#1246133).
+
+-------------------------------------------------------------------
 Wed Jul  9 14:04:23 UTC 2025 - Martin Vidner <mvidner@suse.com>
 
 - Fix error at /api/manager/installer: initialize the backend value
@@ -12,7 +17,7 @@ Wed Jul  9 12:21:55 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 -------------------------------------------------------------------
 Wed Jul  9 08:32:37 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
-- Handle the LSM defined in the product definition as it was 
+- Handle the LSM defined in the product definition as it was
   selected by the user allowing to deselect it (bsc#1244431).
 
 -------------------------------------------------------------------
