@@ -76,6 +76,8 @@ impl ApiDocBuilder for StorageApiDocBuilder {
             .path_from::<crate::storage::web::zfcp::__path_get_wwpns>()
             .path_from::<crate::storage::web::zfcp::__path_probe>()
             .path_from::<crate::storage::web::zfcp::__path_supported>()
+            .path_from::<crate::storage::web::zfcp::__path_get_config>()
+            .path_from::<crate::storage::web::zfcp::__path_set_config>()
             .build()
     }
 
@@ -119,6 +121,7 @@ impl ApiDocBuilder for StorageApiDocBuilder {
             .schema_from::<agama_lib::storage::settings::dasd::DASDDeviceState>()
             .schema_from::<agama_lib::storage::model::zfcp::ZFCPController>()
             .schema_from::<agama_lib::storage::model::zfcp::ZFCPDisk>()
+            .schema_from::<agama_lib::storage::settings::zfcp::ZFCPConfig>()
             .schema_from::<crate::storage::web::ProductParams>()
             .schema_from::<crate::storage::web::iscsi::DiscoverParams>()
             .schema_from::<crate::storage::web::iscsi::InitiatorParams>()

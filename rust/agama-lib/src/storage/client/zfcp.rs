@@ -20,7 +20,7 @@
 
 //! Implements a client to access Agama's D-Bus API related to zFCP management.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use futures_util::future::join_all;
 use zbus::{
@@ -33,7 +33,7 @@ use crate::{
     error::ServiceError,
     storage::{
         model::zfcp::{ZFCPController, ZFCPDisk},
-        proxies::zfcp::{ControllerProxy, ManagerProxy},
+        proxies::zfcp::{ControllerProxy, ManagerProxy}, settings::zfcp::ZFCPConfig,
     },
 };
 use agama_utils::dbus::{extract_id_from_path, get_property};
@@ -216,5 +216,23 @@ impl ZFCPClient<'_> {
             let text = format!("Failed to deactivate disk. chzdev exit code {}", result);
             Err(ServiceError::UnsuccessfulAction(text))
         }
+    }
+
+    pub async fn set_config(&self, config: ZFCPConfig) -> Result<(), ServiceError> {
+        // collect controllers to activate it ( unique )
+        let mut channels: HashSet<String> = HashSet::new();
+        for dev in &config.devices {
+            channels.insert(dev.channel.clone());
+        }
+        for channel in channels {
+            self.activate_controller(&channel).await?;
+        }
+
+        // and then activate all disks
+        for dev in &config.devices {
+            self.activate_disk(&dev.channel, &dev.wwpn, &dev.lun).await?;
+        }
+
+        Ok(())
     }
 }

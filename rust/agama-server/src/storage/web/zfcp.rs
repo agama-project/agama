@@ -28,8 +28,7 @@
 use agama_lib::{
     error::ServiceError,
     storage::{
-        model::zfcp::{ZFCPController, ZFCPDisk},
-        ZFCPClient,
+        model::zfcp::{ZFCPController, ZFCPDisk}, settings::zfcp::ZFCPConfig, ZFCPClient
     },
 };
 
@@ -94,6 +93,7 @@ pub async fn zfcp_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Servi
         .route("/disks", get(get_disks))
         .route("/probe", post(probe))
         .route("/global_config", get(get_global_config))
+        .route("/config", get(get_config).put(set_config))
         .with_state(state);
     Ok(router)
 }
@@ -110,6 +110,38 @@ pub async fn zfcp_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Servi
 )]
 async fn supported(State(state): State<ZFCPState<'_>>) -> Result<Json<bool>, Error> {
     Ok(Json(state.client.supported().await?))
+}
+
+/// Returns zFCP configuration
+#[utoipa::path(
+    get,
+    path="/config",
+    context_path="/api/storage/zfcp",
+    responses(
+        (status = OK, description = "Returns zFCP configuration", body=ZFCPGlobalConfig)
+    )
+)]
+async fn get_config(State(_state): State<ZFCPState<'_>>) -> Result<Json<ZFCPConfig>, Error> {
+    // TODO: not implemented yet
+    Ok(Json(ZFCPConfig{
+        devices: vec![]
+    }))
+}
+
+/// Sets zFCP configuration. Mainly for unattended installation.
+#[utoipa::path(
+    put,
+    path="/config",
+    context_path="/api/storage/zfcp",
+    responses(
+        (status = OK, description = "Sets zFCP configuration")
+    )
+)]
+async fn set_config(
+    State(state): State<ZFCPState<'_>>,
+    Json(config): Json<ZFCPConfig>
+) -> Result<(), Error> {
+    Ok(state.client.set_config(config).await?)
 }
 
 /// Represents a zFCP global config (specific to s390x systems).
