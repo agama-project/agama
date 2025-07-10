@@ -56,7 +56,7 @@ const ChangeDeviceTitle = ({ modelDevice }) => {
   const hasMountPaths = mountPaths.length > 0;
 
   if (onlyOneOption) {
-    return _("Selected disk (cannot be changed)");
+    return _("Selected disk cannot be changed");
   }
 
   if (!hasMountPaths) {
@@ -99,27 +99,25 @@ const ChangeDeviceDescription = ({ modelDevice, device }) => {
     if (hasPv) {
       if (volumeGroups.length > 1) {
         if (isExplicitBoot) {
-          return _(
-            "This disk will contain the configured LVM groups and any partition needed to boot",
-          );
+          return _("It is chosen for booting and for some LVM groups");
         }
-        return _("This disk will contain the configured LVM groups");
+        return _("It is chosen for some LVM groups");
       }
       if (isExplicitBoot) {
         return sprintf(
           // TRANSLATORS: %s is the name of the LVM
-          _("This disk will contain the LVM group '%s' and any partition needed to boot"),
+          _("It is chosen for booting and for the LVM group '%s'"),
           vgName,
         );
       }
 
       // TRANSLATORS: %s is the name of the LVM
-      return sprintf(_("This disk will contain the LVM group '%s'"), vgName);
+      return sprintf(_("It is chosen for the LVM group '%s'"), vgName);
     }
 
     // The current device will be the only option to choose from
     if (isExplicitBoot) {
-      return _("This disk will contain any partition needed for booting");
+      return _("It is chosen for booting");
     }
   }
 
@@ -172,10 +170,13 @@ const ChangeDeviceMenuItem = ({
   device,
   ...props
 }: ChangeDeviceMenuItemProps): React.ReactNode => {
+  const onlyOneOption = UseOnlyOneOption(modelDevice);
+
   return (
     <MenuButtonItem
       aria-label={_("Change device menu")}
       description={<ChangeDeviceDescription modelDevice={modelDevice} device={device} />}
+      isDisabled={onlyOneOption}
       {...props}
     >
       <ChangeDeviceTitle modelDevice={modelDevice} />
@@ -207,6 +208,10 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
     const onlyToBoot = entries.find((e) => e.isExplicitBoot && !e.isUsed);
     return !onlyToBoot;
   };
+
+  // If the target device cannot be changed, this button will always be disabled and would only
+  // provide redundant information.
+  if (UseOnlyOneOption(device)) return;
 
   // When no additional drives has been added, the "Do not use" button can be confusing so it is
   // omitted for all drives.
