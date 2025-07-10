@@ -93,7 +93,7 @@ pub async fn zfcp_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Servi
         )
         .route("/disks", get(get_disks))
         .route("/probe", post(probe))
-        .route("/config", get(get_config))
+        .route("/global_config", get(get_global_config))
         .with_state(state);
     Ok(router)
 }
@@ -115,7 +115,7 @@ async fn supported(State(state): State<ZFCPState<'_>>) -> Result<Json<bool>, Err
 /// Represents a zFCP global config (specific to s390x systems).
 #[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct ZFCPConfig {
+pub struct ZFCPGlobalConfig {
     /// flag whenever allow_lun_scan is active
     pub allow_lun_scan: bool,
 }
@@ -123,15 +123,15 @@ pub struct ZFCPConfig {
 /// Returns global zFCP configuration
 #[utoipa::path(
     get,
-    path="/config",
+    path="/global_config",
     context_path="/api/storage/zfcp",
     responses(
-        (status = OK, description = "Returns global zFCP configuration", body=ZFCPConfig)
+        (status = OK, description = "Returns global zFCP configuration", body=ZFCPGlobalConfig)
     )
 )]
-async fn get_config(State(state): State<ZFCPState<'_>>) -> Result<Json<ZFCPConfig>, Error> {
+async fn get_global_config(State(state): State<ZFCPState<'_>>) -> Result<Json<ZFCPGlobalConfig>, Error> {
     let lun_scan = state.client.is_lun_scan_allowed().await?;
-    Ok(Json(ZFCPConfig {
+    Ok(Json(ZFCPGlobalConfig {
         allow_lun_scan: lun_scan,
     }))
 }

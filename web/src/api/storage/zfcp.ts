@@ -36,7 +36,7 @@ const fetchZFCPDisks = (): Promise<ZFCPDisk[]> => get("/api/storage/zfcp/disks")
 /**
  * Returns the global options for zFCP
  */
-const fetchZFCPConfig = (): Promise<ZFCPConfig> => get("/api/storage/zfcp/config");
+const fetchZFCPConfig = (): Promise<ZFCPConfig> => get("/api/storage/zfcp/global_config");
 
 /**
  * Returns if zFCP is supported at all
