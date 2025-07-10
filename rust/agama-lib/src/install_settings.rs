@@ -27,6 +27,7 @@ use crate::file_source::{FileSourceError, WithFileSource};
 use crate::files::model::UserFile;
 use crate::hostname::model::HostnameSettings;
 use crate::security::settings::SecuritySettings;
+use crate::storage::settings::zfcp::ZFCPConfig;
 use crate::{
     localization::LocalizationSettings, network::NetworkSettings, product::ProductSettings,
     scripts::ScriptsConfig, software::SoftwareSettings, storage::settings::dasd::DASDConfig,
@@ -96,6 +97,9 @@ pub struct InstallSettings {
     #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub scripts: Option<ScriptsConfig>,
+    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub zfcp: Option<ZFCPConfig>,
 }
 
 impl InstallSettings {

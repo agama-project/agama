@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,45 +18,33 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements a client to access Agama's storage service.
-
-pub mod dasd;
-pub mod iscsi;
-pub mod zfcp;
+//! Implements a client to access Agama's DASD service.
 
 use crate::{
     http::{BaseHTTPClient, BaseHTTPClientError},
-    storage::StorageSettings,
+    storage::settings::zfcp::ZFCPConfig,
 };
 
 #[derive(Debug, thiserror::Error)]
-pub enum StorageHTTPClientError {
+pub enum ZFCPHTTPClientError {
     #[error(transparent)]
-    Storage(#[from] BaseHTTPClientError),
+    ZFCP(#[from] BaseHTTPClientError),
 }
 
-pub struct StorageHTTPClient {
+pub struct ZFCPHTTPClient {
     client: BaseHTTPClient,
 }
 
-impl StorageHTTPClient {
-    pub fn new(client: BaseHTTPClient) -> Self {
-        Self { client }
+impl ZFCPHTTPClient {
+    pub fn new(base: BaseHTTPClient) -> Self {
+        Self { client: base }
     }
 
-    pub async fn get_config(&self) -> Result<Option<StorageSettings>, StorageHTTPClientError> {
-        Ok(self.client.get("/storage/config").await?)
+    pub async fn get_config(&self) -> Result<Option<ZFCPConfig>, ZFCPHTTPClientError> {
+        Ok(self.client.get("/storage/zfcp/config").await?)
     }
 
-    pub async fn set_config(&self, config: &StorageSettings) -> Result<(), StorageHTTPClientError> {
-        Ok(self.client.put_void("/storage/config", config).await?)
-    }
-
-    pub async fn is_dirty(&self) -> Result<bool, StorageHTTPClientError> {
-        Ok(self.client.get("/storage/devices/dirty").await?)
-    }
-
-    pub async fn reprobe(&self) -> Result<(), StorageHTTPClientError> {
-        Ok(self.client.post_void("/storage/reprobe", &()).await?)
+    pub async fn set_config(&self, config: &ZFCPConfig) -> Result<(), ZFCPHTTPClientError> {
+        Ok(self.client.put_void("/storage/zfcp/config", config).await?)
     }
 }
