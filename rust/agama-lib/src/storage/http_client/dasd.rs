@@ -41,10 +41,24 @@ impl DASDHTTPClient {
     }
 
     pub async fn get_config(&self) -> Result<Option<DASDConfig>, DASDHTTPClientError> {
-        Ok(self.client.get("/storage/dasd/config").await?)
+        let config: DASDConfig = self.client.get("/storage/dasd/config").await?;
+        // without any dasd devices config is nothing
+        if config.devices.is_empty() {
+            Ok(None)
+        } else {
+            Ok(Some(config))
+        }
     }
 
     pub async fn set_config(&self, config: &DASDConfig) -> Result<(), DASDHTTPClientError> {
+        if !self.supported().await? {
+            // TODO: should we add tracing error here?
+            return Ok(())
+        }
         Ok(self.client.put_void("/storage/dasd/config", config).await?)
+    }
+
+    pub async fn supported(&self) -> Result<bool, DASDHTTPClientError> {
+        Ok(self.client.get("/storage/dasd/supported").await?)
     }
 }
