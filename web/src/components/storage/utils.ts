@@ -44,7 +44,6 @@ export type SizeObject = {
 export type SpacePolicy = {
   id: string;
   label: string;
-  description: string;
 };
 
 export type SizeMethod = "auto" | "fixed" | "range";
