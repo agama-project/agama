@@ -46,7 +46,7 @@ software:
     - NetworkManager
     - openSUSE-repos-LeapMicro
   optional_packages: null
-  base_product: openSUSE
+  base_product: Leap-Micro
 
 security:
   lsm: selinux
