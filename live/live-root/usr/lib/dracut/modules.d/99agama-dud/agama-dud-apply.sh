@@ -210,6 +210,8 @@ copy_kernel_module() {
 
 # Updates kernel modules
 #
+# It copies the kernel modules and the hardware information for hwinfo.
+#
 # It copies the kernel modules from the Driver Update Disk to the system under
 # /sysroot. If it finds a `module.order` file, it unloads the modules included
 # in the list and them to /etc/modules-load.d/99-agama.conf file so they will be
@@ -227,15 +229,16 @@ update_kernel_modules() {
     cat "$hardware_ids" >>"${NEWROOT}/var/lib/hardware"
   fi
 
+  # find and copy kernel modules
   local dud_modules
   find_kernel_modules "$dud_modules_dir" dud_modules
-
   for module in "${dud_modules[@]}"; do
     echo "Processing ${module} module"
     copy_kernel_module "$dud_modules_dir" "$module" "${kernel_modules_dir}/kernel"
     rmmod "${module}" 2>&1
   done
 
+  # unload modules in the module.order file and make sure they will be loaded
   if [ -f "${dud_modules_dir}/module.order" ]; then
     module_order=$(<"${dud_modules_dir}/module.order")
     # unload the modules in reverse order
@@ -248,6 +251,7 @@ update_kernel_modules() {
     cp "${dud_modules_dir}/module.order" "${NEWROOT}/etc/modules-load.d/99-agama.conf"
   fi
 
+  # update modules dependencies on the live medium
   info "Updating modules dependencies..."
   depmod -a -b "$NEWROOT"
 }
