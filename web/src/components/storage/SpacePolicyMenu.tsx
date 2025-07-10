@@ -21,17 +21,18 @@
  */
 
 import React from "react";
-import { Flex, Content } from "@patternfly/react-core";
+import { Flex } from "@patternfly/react-core";
 import MenuButton from "~/components/core/MenuButton";
 import { useNavigate, generatePath } from "react-router-dom";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { SPACE_POLICIES } from "~/components/storage/utils";
 import { apiModel } from "~/api/storage/types";
+import { Partition } from "~/api/storage/types/model";
 import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import Text from "../core/Text";
 
 const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
   return (
@@ -41,7 +42,7 @@ const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
       description={driveUtils.contentActionsDescription(modelDevice, policy.id)}
       onClick={() => onClick(policy.id)}
     >
-      <Content className={isSelected && textStyles.fontWeightBold}>{policy.label}</Content>
+      <Text isBold={isSelected}>{policy.label}</Text>
     </MenuButton.Item>
   );
 };
