@@ -41,6 +41,10 @@ module Agama
         CHK_ERROR      = 5 # File does not exist or can't be opened
         CHK_NOSIG      = 6 # File has no gpg signature
 
+        def initialize(questions_client, logger)
+          super
+        end
+
         # Register the callbacks
         def setup
           Yast::Pkg.CallbackPkgGpgCheck(
