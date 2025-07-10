@@ -62,5 +62,10 @@ describe Agama::CmdlineArgs do
       broken_config = File.join(workdir, "/run/agama/cmdline.d/broken-agama.conf")
       expect { described_class.read_from(broken_config) }.to_not raise_error
     end
+
+    it "does not crash when parsing both nested option and plain option" do
+      broken_config = File.join(workdir, "/run/agama/cmdline.d/broken-agama2.conf")
+      expect { described_class.read_from(broken_config) }.to_not raise_error
+    end
   end
 end
