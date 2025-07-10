@@ -22,6 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
+import { partialMock } from "partial-mock";
 import { plainRender } from "~/test-utils";
 import DriveEditor from "~/components/storage/DriveEditor";
 import { StorageDevice, model } from "~/types/storage";
@@ -152,7 +153,7 @@ const drive1Partitions: model.Partition[] = [
   },
 ];
 
-const drive1: Partial<model.Drive> = {
+const drive1: model.Drive = partialMock({
   name: "/dev/sda",
   spacePolicy: "delete",
   partitions: drive1Partitions,
@@ -167,7 +168,7 @@ const drive1: Partial<model.Drive> = {
   getPartition: jest.fn(),
   getMountPaths: () => drive1Partitions.map((p) => p.mountPath),
   getConfiguredExistingPartitions: jest.fn(),
-};
+});
 
 const drive2Partitions: model.Partition[] = [
   {
@@ -184,7 +185,7 @@ const drive2Partitions: model.Partition[] = [
   },
 ];
 
-const drive2: Partial<model.Drive> = {
+const drive2: model.Drive = partialMock({
   name: "/dev/sdb",
   spacePolicy: "delete",
   partitions: drive2Partitions,
@@ -199,7 +200,7 @@ const drive2: Partial<model.Drive> = {
   getPartition: jest.fn(),
   getMountPaths: () => drive2Partitions.map((p) => p.mountPath),
   getConfiguredExistingPartitions: jest.fn(),
-};
+});
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
