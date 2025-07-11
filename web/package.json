@@ -72,7 +72,6 @@
     "jsdoc": "^4.0.4",
     "mini-css-extract-plugin": "^2.9.2",
     "neostandard": "^0.12.1",
-    "partial-mock": "^1.1.0",
     "prettier": "^3.5.3",
     "react-refresh": "^0.17.0",
     "react-refresh-typescript": "^2.0.10",

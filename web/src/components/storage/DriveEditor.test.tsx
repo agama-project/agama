@@ -22,7 +22,6 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { partialMock } from "partial-mock";
 import { plainRender } from "~/test-utils";
 import DriveEditor from "~/components/storage/DriveEditor";
 import { StorageDevice, model } from "~/types/storage";
@@ -153,7 +152,7 @@ const drive1Partitions: model.Partition[] = [
   },
 ];
 
-const drive1: model.Drive = partialMock({
+const drive1 = {
   name: "/dev/sda",
   spacePolicy: "delete",
   partitions: drive1Partitions,
@@ -168,7 +167,7 @@ const drive1: model.Drive = partialMock({
   getPartition: jest.fn(),
   getMountPaths: () => drive1Partitions.map((p) => p.mountPath),
   getConfiguredExistingPartitions: jest.fn(),
-});
+};
 
 const drive2Partitions: model.Partition[] = [
   {
@@ -185,7 +184,7 @@ const drive2Partitions: model.Partition[] = [
   },
 ];
 
-const drive2: model.Drive = partialMock({
+const drive2 = {
   name: "/dev/sdb",
   spacePolicy: "delete",
   partitions: drive2Partitions,
@@ -200,7 +199,7 @@ const drive2: model.Drive = partialMock({
   getPartition: jest.fn(),
   getMountPaths: () => drive2Partitions.map((p) => p.mountPath),
   getConfiguredExistingPartitions: jest.fn(),
-});
+};
 
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
@@ -233,6 +232,9 @@ describe("RemoveDriveOption", () => {
     });
 
     it("allows users to delete regular drives", async () => {
+      // @ts-expect-error: drives are not typed on purpose because
+      // isReusingPartitions should be a calculated data. Mocking needs a lot of
+      // improvements.
       const { user } = plainRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
 
       const changeButton = screen.getByRole("button", { name: "Change" });
@@ -246,6 +248,9 @@ describe("RemoveDriveOption", () => {
     });
 
     it("does not allow users to delete drives explicitly used to boot", async () => {
+      // @ts-expect-error: drives are not typed on purpose because
+      // isReusingPartitions should be a calculated data. Mocking needs a lot of
+      // improvements.
       const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
 
       const changeButton = screen.getByRole("button", { name: "Change" });
@@ -261,6 +266,9 @@ describe("RemoveDriveOption", () => {
   describe("if there are no additional drives", () => {
     it("does not allow users to delete regular drives", async () => {
       mockUseModel.mockReturnValue({ drives: [drive2], mdRaids: [] });
+      // @ts-expect-error: drives are not typed on purpose because
+      // isReusingPartitions should be a calculated data. Mocking needs a lot of
+      // improvements.
       const { user } = plainRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
 
       const changeButton = screen.getByRole("button", { name: "Change" });
@@ -274,6 +282,9 @@ describe("RemoveDriveOption", () => {
 
     it("does not allow users to delete drives explicitly used to boot", async () => {
       mockUseModel.mockReturnValue({ drives: [drive1], mdRaids: [] });
+      // @ts-expect-error: drives are not typed on purpose because
+      // isReusingPartitions should be a calculated data. Mocking needs a lot of
+      // improvements.
       const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
 
       const changeButton = screen.getByRole("button", { name: "Change" });
