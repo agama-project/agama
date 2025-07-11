@@ -49,8 +49,6 @@ apply_updates() {
 
     ((index++))
   done <$AGAMA_DUD_INFO
-
-  create_repo "$DUD_RPM_REPOSITORY"
 }
 
 # Applies an update from an RPM package
@@ -137,7 +135,7 @@ set_alternative() {
 # This function is mainly a PoC.
 #
 # This is a simplistic version that just copies all the RPMs to the new repository.
-# In the future, it might need to put each package under a different respository depending
+# In the future, it might need to put each package under a different repository depending
 # on the distribution (e.g., "/run/agama/dud/repo/tw" for "x86_64-tw").
 copy_packages() {
   dud_dir=$1
@@ -148,13 +146,6 @@ copy_packages() {
     mkdir -p "$repo_dir"
     cp "$rpm" "$repo_dir"
   done
-}
-
-# Creates the repository metadata.
-create_repo() {
-  repo_dir=$1
-
-  "$NEWROOT/usr/bin/chroot" "$NEWROOT" createrepo_c "${repo_dir##"$NEWROOT"}"
 }
 
 # Finds the kernel modules to update

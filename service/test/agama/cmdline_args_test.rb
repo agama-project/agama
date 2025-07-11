@@ -57,5 +57,15 @@ describe Agama::CmdlineArgs do
       args = described_class.read_from(File.join(workdir, "/run/agama/cmdline.d/agama.conf"))
       expect(args.data["install_url"]).to eq("cd:/?devices=/dev/sr1")
     end
+
+    it "does not crash when parsing both plain option and nested option" do
+      broken_config = File.join(workdir, "/run/agama/cmdline.d/broken-agama.conf")
+      expect { described_class.read_from(broken_config) }.to_not raise_error
+    end
+
+    it "does not crash when parsing both nested option and plain option" do
+      broken_config = File.join(workdir, "/run/agama/cmdline.d/broken-agama2.conf")
+      expect { described_class.read_from(broken_config) }.to_not raise_error
+    end
   end
 end
