@@ -1,4 +1,47 @@
 -------------------------------------------------------------------
+Fri Jul  4 11:33:44 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Reprobe the system after registering the product
+  (gh#agama-project/agama#2532, bsc#1245400).
+
+-------------------------------------------------------------------
+Wed Jul  2 16:02:07 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Cache the list of products during the startup (bsc#1241208).
+
+-------------------------------------------------------------------
+Mon Jun 30 15:51:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 16
+
+-------------------------------------------------------------------
+Fri Jun 27 10:02:43 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Reprobe storage if need while loading a config (bsc#1245114).
+
+-------------------------------------------------------------------
+Fri Jun 27 06:29:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add an end-point to check passwords strenght (bsc#1237480).
+
+-------------------------------------------------------------------
+Fri Jun 27 05:29:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix error messages formatting (gh#agama-project/agama#2471).
+
+-------------------------------------------------------------------
+Wed Jun 25 07:56:57 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify onlyRequired in software config and in software
+  section of agama profile (jsc#AGM-154)
+
+-------------------------------------------------------------------
+Wed Jun 18 14:36:50 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to bind a connection to an specific device mac address
+   (bsc#1244259).
+
+-------------------------------------------------------------------
 Wed Jun 18 07:17:30 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Preserve AutoYaST pre-scripts artifacts (bsc#1243776, gh#agama-project/agama#2344).

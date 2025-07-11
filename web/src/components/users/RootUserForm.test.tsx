@@ -34,6 +34,8 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
+jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Mock</div>);
+
 jest.mock("~/queries/users", () => ({
   ...jest.requireActual("~/queries/users"),
   useRootUser: () => ({

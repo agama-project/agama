@@ -71,7 +71,7 @@ struct SoftwareState<'a> {
     licenses: LicensesRepo,
     // cache the software values, during installation the software service is
     // not responsive (blocked in a libzypp call)
-    products: Arc<RwLock<Option<Vec<Product>>>>,
+    products: Arc<RwLock<Vec<Product>>>,
     config: Arc<RwLock<Option<SoftwareConfig>>>,
 }
 
@@ -224,12 +224,17 @@ fn reason_to_selected_by(
 /// * `products`: list of products (shared behind a mutex).
 pub async fn receive_events(
     mut events: EventsReceiver,
-    products: Arc<RwLock<Option<Vec<Product>>>>,
+    products: Arc<RwLock<Vec<Product>>>,
+    client: ProductClient<'_>,
 ) {
     while let Ok(event) = events.recv().await {
         if let Event::LocaleChanged { locale: _ } = event {
             let mut cached_products = products.write().await;
-            *cached_products = None;
+            if let Ok(products) = client.products().await {
+                *cached_products = products;
+            } else {
+                tracing::error!("Could not update the products cached");
+            }
         }
     }
 }
@@ -266,16 +271,19 @@ pub async fn software_service(
 
     let product = ProductClient::new(dbus.clone()).await?;
     let software = SoftwareClient::new(dbus).await?;
+    let all_products = product.products().await?;
+
     let state = SoftwareState {
         product,
         software,
         licenses: licenses_repo,
-        products: Arc::new(RwLock::new(None)),
+        products: Arc::new(RwLock::new(all_products)),
         config: Arc::new(RwLock::new(None)),
     };
 
     let cached_products = Arc::clone(&state.products);
-    tokio::spawn(async move { receive_events(events, cached_products).await });
+    let products_client = state.product.clone();
+    tokio::spawn(async move { receive_events(events, cached_products, products_client).await });
 
     let router = Router::new()
         .route("/patterns", get(patterns))
@@ -320,18 +328,7 @@ pub async fn software_service(
     )
 )]
 async fn products(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<Product>>, Error> {
-    let cached_products = state.products.read().await.clone();
-
-    if let Some(products) = cached_products {
-        tracing::info!("Returning cached products");
-        return Ok(Json(products));
-    }
-
-    let products = state.product.products().await?;
-
-    let mut cached_products_write = state.products.write().await;
-    *cached_products_write = Some(products.clone());
-
+    let products = state.products.read().await.clone();
     Ok(Json(products))
 }
 
@@ -603,6 +600,11 @@ async fn set_config(
     State(state): State<SoftwareState<'_>>,
     Json(config): Json<SoftwareConfig>,
 ) -> Result<(), Error> {
+    // first set only require flag to ensure that it is used for later computing of solver
+    if let Some(only_required) = config.only_required {
+        state.software.set_only_required(only_required).await?;
+    }
+
     if let Some(product) = config.product {
         state.product.select_product(&product).await?;
     }
@@ -682,6 +684,7 @@ async fn read_config(state: &SoftwareState<'_>) -> Result<SoftwareConfig, Error>
         packages: Some(packages),
         product,
         extra_repositories: if repos.is_empty() { None } else { Some(repos) },
+        only_required: state.software.get_only_required().await?,
     })
 }
 

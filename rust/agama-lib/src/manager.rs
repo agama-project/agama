@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -144,6 +144,12 @@ impl<'a> ManagerClient<'a> {
     pub async fn probe(&self) -> Result<(), ServiceError> {
         self.wait().await?;
         Ok(self.manager_proxy.probe().await?)
+    }
+
+    /// Starts the reprobing process.
+    pub async fn reprobe(&self) -> Result<(), ServiceError> {
+        self.wait().await?;
+        Ok(self.manager_proxy.reprobe().await?)
     }
 
     /// Starts the installation.

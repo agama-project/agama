@@ -56,23 +56,23 @@ use handlers::{DeviceHandler, GenericHandler, HdHandler, LabelHandler};
 
 #[derive(Error, Debug)]
 pub enum TransferError {
-    #[error("Could not retrieve the file: {0}")]
+    #[error("Could not retrieve the file")]
     CurlError(#[from] curl::Error),
-    #[error("Could not retrieve '{0}': {1}")]
+    #[error("Could not retrieve {0}")]
     CurlTransferError(String, #[source] curl::Error),
-    #[error("Could not parse the URL: {0}")]
+    #[error("Could not parse the URL")]
     ParseError(#[from] url::ParseError),
-    #[error("File not found: {0}")]
+    #[error("File not found {0}")]
     FileNotFound(String),
     #[error("IO error: {0}")]
     IO(#[from] std::io::Error),
     #[error("Could not mount the file system {0}")]
     FileSystemMount(String),
-    #[error("Missing file path: {0}")]
+    #[error("Missing file path {0}")]
     MissingPath(Url),
-    #[error("Missing device: {0}")]
+    #[error("Missing device {0}")]
     MissingDevice(Url),
-    #[error("Missing file system label: {0}")]
+    #[error("Missing file system label {0}")]
     MissingLabel(Url),
 }
 pub type TransferResult<T> = Result<T, TransferError>;

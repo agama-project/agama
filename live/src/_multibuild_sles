@@ -1,0 +1,5 @@
+<multibuild>
+  <flavor>SUSE_SLE_16</flavor>
+  <flavor>SUSE_SLE_16_PXE</flavor>
+  <flavor>SUSE_SLE_16_PXE_MINI</flavor>
+</multibuild>

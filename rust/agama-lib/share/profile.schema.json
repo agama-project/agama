@@ -182,6 +182,10 @@
             "examples": ["vim"]
           }
         },
+        "onlyRequired": {
+          "title": "Flag if only minimal hard dependecies should be used in solver",
+          "type": "boolean"
+        },
         "extraRepositories": {
           "title": "List of user specified repositories that will be used on top of default ones",
           "type": "array",
@@ -302,9 +306,13 @@
                 "title": "The name of the network interface bound to this connection",
                 "type": "string"
               },
-              "macAddress": {
-                "title": "Custom MAC address",
+              "customMacAddress": {
+                "title": "Custom MAC address to use",
                 "description": "Can also be 'preserve', 'permanent', 'random' or 'stable'.",
+                "type": "string"
+              },
+              "macAddress": {
+                "title": "The MAC address of the interface bound to this connection",
                 "type": "string"
               },
               "mtu": {
@@ -347,7 +355,7 @@
                   "type": "string"
                 }
               },
-              "dns_searchlist": {
+              "dnsSearchlist": {
                 "type": "array",
                 "items": {
                   "description": "DNS search domains",

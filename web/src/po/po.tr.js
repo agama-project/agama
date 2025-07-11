@@ -153,6 +153,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     ""
   ],
+  "Allow growing": [
+    ""
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "İlk kullanıcıyı tanımlamanın yanı sıra, root kullanıcı için kimlik doğrulama yöntemleri de yapılandırılabilir."
   ],
@@ -231,6 +234,12 @@ export default {
   "Beta": [
     "Beta"
   ],
+  "Bind to interface name": [
+    ""
+  ],
+  "Binding settings for '%s'": [
+    ""
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -242,9 +251,6 @@ export default {
   ],
   "Btrfs with snapshots": [
     "Anlık imajlarla Btrfs"
-  ],
-  "Calculated automatically": [
-    "Otomatik olarak hesaplandı"
   ],
   "Cancel": [
     "İptal"
@@ -290,6 +296,15 @@ export default {
   ],
   "Choose a disk for placing the boot loader": [
     "Önyükleme yükleyicisini yerleştirmek için bir disk seçin"
+  ],
+  "Choose device to bind by MAC": [
+    ""
+  ],
+  "Choose device to bind by name": [
+    ""
+  ],
+  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
+    ""
   ],
   "Choose what to with current content": [
     "Mevcut içerikle ne yapacağınızı seçin"
@@ -440,9 +455,6 @@ export default {
   ],
   "Default file system for generic partitions": [
     "Genel bölümler için varsayılan dosya sistemi"
-  ],
-  "Define a custom size or a range": [
-    "Özel bir boyut veya aralık tanımlayın"
   ],
   "Define a new LVM on the disk": [
     "Diskte yeni bir LVM tanımlayın"
@@ -727,9 +739,6 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Bu yükleyiciyi çalıştırmak için yerel medya kullanıldıysa bir sonraki önyüklemeden önce bunu kaldırın."
   ],
-  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "Birim atlanırsa, bayt (B) kullanılacaktır. Daha büyük birimler GiB                (2'nin kuvveti) veya GB (10'un kuvveti) biçiminde olabilir."
-  ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Devam ederseniz sabit diskinizdeki bölümler, sağlanan kurulum ayarlarına göre değiştirilecektir."
   ],
@@ -838,9 +847,6 @@ export default {
   "JFS": [
     "JFS"
   ],
-  "Keep size of %s": [
-    "%s boyutunu koru"
-  ],
   "Keyboard": [
     "Klavye"
   ],
@@ -862,14 +868,8 @@ export default {
   "Language": [
     "Dil"
   ],
-  "Let the installer propose a sensible range of sizes": [
-    "Kurulumcunun makul bir boyut aralığı önermesine izin verin"
-  ],
   "License language": [
     "Lisans dili"
-  ],
-  "Limited": [
-    "Sınırlı"
   ],
   "Loading": [
     "Yükleniyor"
@@ -925,26 +925,8 @@ export default {
   "Manual": [
     "Manuel"
   ],
-  "Maximum": [
-    "Maksimum"
-  ],
-  "Maximum size mode": [
-    "Maksimum boyut modu"
-  ],
-  "Maximum size options": [
-    "Maksimum boyut seçenekleri"
-  ],
-  "Maximum size value": [
-    "Maksimum boyut değeri"
-  ],
   "MiB": [
     "MB"
-  ],
-  "Minimum": [
-    "Minimum"
-  ],
-  "Minimum size value": [
-    "Minimum boyut değeri"
   ],
   "Mode": [
     "Mod"
@@ -1312,9 +1294,6 @@ export default {
   "SSID": [
     "SSID"
   ],
-  "Same as minimum": [
-    "Minimum ile aynı"
-  ],
   "Search": [
     "Arama"
   ],
@@ -1418,12 +1397,6 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Boyut sınırları, isteğe bağlı olarak GiB veya GB gibi bir birimin takip ettiği sayılar olmalıdır"
   ],
-  "Size options": [
-    "Boyut seçenekleri"
-  ],
-  "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "Boyutlar sayı olarak girilmeli, isteğe bağlı olarak birim eklenmelidir."
-  ],
   "Skip to content": [
     ""
   ],
@@ -1502,6 +1475,9 @@ export default {
   "The configured LVM groups will remain at %s": [
     "Yapılandırılan LVM grupları %s konumunda kalacaktır"
   ],
+  "The connection can be used by any available interface.": [
+    ""
+  ],
   "The connection will be used only during installation and not available in the installed system.": [
     ""
   ],
@@ -1571,15 +1547,6 @@ export default {
   "The installer requires [root] user privileges.": [
     "Yükleyici [root] kullanıcı ayrıcalıklarını gerektirir."
   ],
-  "The logical volume can grow to use all the contiguous free space": [
-    "Mantıksal birim, bitişikteki tüm boş alanı kullanacak şekilde büyüyebilir"
-  ],
-  "The logical volume can grow until a given limit size": [
-    "Mantıksal hacim, belirli bir sınır boyutuna kadar büyüyebilir"
-  ],
-  "The logical volume is created exactly with the given size": [
-    "Mantıksal birim tam olarak verilen boyutta oluşturulur"
-  ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
     "Maksimum, isteğe bağlı olarak GiB veya GB gibi bir birim tarafından takip edilen bir sayı olmalıdır"
   ],
@@ -1592,47 +1559,11 @@ export default {
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "Gerekli LVM fiziksel birimleri, mantıksal birimlerin boyutlarına göre seçilen disklere bölümler                  halinde eklenecektir. Birden fazla disk                  seçerseniz, fiziksel birimler birkaç diske dağıtılabilir."
   ],
-  "The partition can grow to use all the contiguous free space": [
-    "Bölüm, bitişikteki tüm boş alanı kullanacak şekilde büyüyebilir"
-  ],
-  "The partition can grow until a given limit size": [
-    "Bölüm, belirli bir sınır boyutuna kadar büyüyebilir"
-  ],
-  "The partition is created exactly with the given size": [
-    "Bölüm tam olarak belirtilen boyutta oluşturulur"
-  ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "TPM sistemin bütünlüğünü doğrulayabiliyorsa, verileri başlatmak ve erişmek için parolaya gerek kalmayacaktır. TPM yalıtımı, yeni sistemin ilk çalıştırmada doğrudan başlatılmasını gerektirir."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "%1$s için boyut aralığı, sistemdeki RAM miktarına ve %2$s için ayrı bir dosya sisteminin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "%1$s için boyut aralığı, sistemdeki RAM miktarına ve %2$s için ayrı dosya sistemlerinin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "%1$s için boyut aralığı, sistemdeki RAM miktarına, Btrfs anlık görüntülerinin kullanımına ve %2$s için ayrı bir dosya sisteminin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "%1$s için boyut aralığı, sistemdeki RAM miktarına, Btrfs anlık görüntülerinin kullanımına ve %2$s için ayrı dosya sistemlerinin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "%1$s için boyut aralığı, %2$s için ayrı bir dosya sisteminin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "%1$s için boyut aralığı, %2$s için ayrı dosya sistemlerinin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "%1$s için boyut aralığı, Btrfs anlık görüntülerinin kullanımına ve %2$s için ayrı bir dosya sisteminin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "%1$s için boyut aralığı, Btrfs anlık görüntülerinin kullanımı ve %2$s için ayrı dosya sistemlerinin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
-  ],
-  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "%s için boyut aralığı, sistemdeki RAM miktarına ve Btrfs anlık görüntülerinin kullanımına bağlı olarak dinamik olarak ayarlanacaktır."
-  ],
-  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "%s için boyut aralığı, Btrfs anlık görüntülerinin kullanımına bağlı olarak dinamik olarak ayarlanacaktır."
+  "The size is configured as a range between %s and %s, but defining a range of sizes is not supported by the UI.": [
+    ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "Depolama yapılandırması geçerli (aşağıdaki sonucu görün) ancak bu arayüz tarafından desteklenmeyen öğeler kullanıyor."
@@ -1911,6 +1842,9 @@ export default {
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
+    ""
+  ],
+  "approx. %s": [
     ""
   ],
   "at least %s": [

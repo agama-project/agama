@@ -45,7 +45,15 @@ const DeviceDetails = ({ device }: { device: Device }) => {
   if (!device) return;
 
   return (
-    <Page.Section title={_("Device")} pfCardProps={{ isPlain: false, isFullHeight: false }}>
+    <Page.Section
+      title={_("Device")}
+      pfCardProps={{ isPlain: false, isFullHeight: false }}
+      actions={
+        <Link to={generatePath(NETWORK.editBindingSettings, { id: device.connection })}>
+          {_("Edit binding settings")}
+        </Link>
+      }
+    >
       <DescriptionList aria-label={_("Device details")} isHorizontal>
         <DescriptionListGroup>
           <DescriptionListTerm>{_("Interface")}</DescriptionListTerm>

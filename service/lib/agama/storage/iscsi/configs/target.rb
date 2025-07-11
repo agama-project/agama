@@ -69,6 +69,23 @@ module Agama
           #
           # @return [String, nil]
           attr_accessor :initiator_password
+
+          # Target portal
+          #
+          # @return [String, nil]
+          def portal
+            return unless address && port
+
+            "#{address}:#{port}"
+          end
+
+          # Whether the target matches with the given portal.
+          #
+          # @param portal [String]
+          # @return [Boolean]
+          def portal?(portal)
+            self.portal == portal
+          end
         end
       end
     end

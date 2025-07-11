@@ -34,6 +34,7 @@ require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume"
 require "y2storage/issue"
+require "yast2/fs_snapshot"
 
 Yast.import "Installation"
 
@@ -319,7 +320,11 @@ describe Agama::Storage::Manager do
     end
 
     let(:used_features) do
-      instance_double(Y2Storage::StorageFeaturesList, pkg_list: ["btrfsprogs", "snapper"])
+      instance_double(
+        Y2Storage::StorageFeaturesList,
+        pkg_list: ["btrfsprogs", "snapper"],
+        any?:     false
+      )
     end
 
     let(:bootloader_proposal) { instance_double(Bootloader::ProposalClient, make_proposal: nil) }
@@ -343,6 +348,40 @@ describe Agama::Storage::Manager do
 
       storage.install
     end
+
+    context "if iSCSI was configured" do
+      before do
+        allow_any_instance_of(Agama::Storage::ISCSI::Manager)
+          .to receive(:configured?).and_return(true)
+      end
+
+      it "adds the iSCSI software to install" do
+        expect(Yast::PackagesProposal).to receive(:SetResolvables) do |_, _, packages|
+          expect(packages).to include("open-iscsi", "iscsiuio")
+        end
+
+        storage.install
+      end
+    end
+
+    context "if iSCSI was used" do
+      before do
+        allow_any_instance_of(Agama::Storage::ISCSI::Manager)
+          .to receive(:configured?).and_return(false)
+      end
+
+      let(:used_features) do
+        instance_double(Y2Storage::StorageFeaturesList, pkg_list: [], any?: true)
+      end
+
+      it "adds the iSCSI software to install" do
+        expect(Yast::PackagesProposal).to receive(:SetResolvables) do |_, _, packages|
+          expect(packages).to include("open-iscsi", "iscsiuio")
+        end
+
+        storage.install
+      end
+    end
   end
 
   describe "#proposal" do
@@ -354,15 +393,14 @@ describe Agama::Storage::Manager do
   describe "#finish" do
     before do
       allow(File).to receive(:directory?).and_call_original
-      allow(File).to receive(:directory?).with("/iguana").and_return iguana
       allow(copy_files_class).to receive(:new).and_return(copy_files)
       allow(Yast::Execute).to receive(:on_target!)
       allow(Yast::Execute).to receive(:local)
+      allow(Yast2::FsSnapshot).to receive(:configure_on_install?).and_return true
     end
     let(:copy_files_class) { Agama::Storage::Finisher::CopyFilesStep }
     let(:copy_files) { instance_double(copy_files_class, run?: true, run: true, label: "Copy") }
 
-    let(:iguana) { false }
     let(:scenario) { "staging-plain-partitions.yaml" }
 
     it "copy needed files, installs the bootloader, sets up the snapshots, " \
@@ -372,7 +410,8 @@ describe Agama::Storage::Manager do
       expect(copy_files).to receive(:run)
       expect(bootloader_finish).to receive(:write)
       expect(Yast::WFM).to receive(:CallFunction).with("storage_finish", ["Write"])
-      expect(Yast::WFM).to receive(:CallFunction).with("snapshots_finish", ["Write"])
+      expect(Yast::WFM).to receive(:CallFunction).with("iscsi-client_finish", ["Write"])
+      expect(Yast2::FsSnapshot).to receive(:configure_snapper)
       expect(network).to receive(:link_resolv)
       expect(scripts_client).to receive(:run).with("post")
       expect(files_client).to receive(:write)
@@ -397,40 +436,6 @@ describe Agama::Storage::Manager do
         storage.finish
         expect(File).to exist(File.join(tmp_dir, "mnt", "var", "log", "agama-installation",
           "scripts"))
-      end
-    end
-
-    context "when executed on top of iguana" do
-      let(:iguana) { true }
-
-      before do
-        allow(security).to receive(:write)
-        allow(bootloader_finish).to receive(:write)
-        allow(Yast::WFM).to receive(:CallFunction)
-      end
-
-      context "on a traditional installation over plain partitions" do
-        let(:scenario) { "staging-plain-partitions.yaml" }
-
-        it "writes the /iguana/mountlist file with the expected content" do
-          file = instance_double(File)
-          expect(File).to receive(:open).with("/iguana/mountlist", "w").and_yield file
-          expect(file).to receive(:puts).with "/dev/sda2 /sysroot defaults"
-
-          storage.finish
-        end
-      end
-
-      context "on a transactional system with encrypted partitions" do
-        let(:scenario) { "staging-ro-luks-partitions.yaml" }
-
-        it "writes the /iguana/mountlist file with the expected content" do
-          file = instance_double(File)
-          expect(File).to receive(:open).with("/iguana/mountlist", "w").and_yield file
-          expect(file).to receive(:puts).with "/dev/mapper/cr_root /sysroot ro"
-
-          storage.finish
-        end
       end
     end
   end

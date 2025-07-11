@@ -33,8 +33,8 @@ const contentDescription = (vg: model.VolumeGroup): string => {
     // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
     // single mount point in the singular case).
     n_(
-      "A new logical volume will be created for %s",
-      "New logical volumes will be created for %s",
+      "A new volume will be created for %s",
+      "New volumes will be created for %s",
       mountPaths.length,
     ),
     formatList(mountPaths),

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,8 +20,10 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "yast/i18n"
 require "yast2/execute"
 require "yast2/systemd/service"
+require "yast2/fs_snapshot"
 require "bootloader/finish_client"
 require "y2storage/storage_manager"
 require "agama/with_progress"
@@ -82,8 +84,8 @@ module Agama
           SecurityStep.new(logger, security),
           CopyFilesStep.new(logger),
           StorageStep.new(logger),
+          IscsiStep.new(logger),
           BootloaderStep.new(logger),
-          IguanaStep.new(logger),
           SnapshotsStep.new(logger),
           FilesStep.new(logger),
           PostScripts.new(logger),
@@ -94,8 +96,11 @@ module Agama
 
       # Base class for the Finisher steps containing some shared logic
       class Step
+        include Yast::I18n
+
         # Base constructor
         def initialize(logger)
+          textdomain "agama"
           @logger = logger
         end
 
@@ -137,7 +142,7 @@ module Agama
         ].freeze
 
         def label
-          "Copying important installation files to the target system"
+          _("Copying important installation files to the target system")
         end
 
         def run?
@@ -178,7 +183,7 @@ module Agama
         end
 
         def label
-          "Writing Linux Security Modules configuration"
+          _("Writing Linux Security Modules configuration")
         end
 
         def run
@@ -189,7 +194,7 @@ module Agama
       # Step to write the bootloader configuration
       class BootloaderStep < Step
         def label
-          "Installing bootloader"
+          _("Installing bootloader")
         end
 
         def run
@@ -206,7 +211,7 @@ module Agama
       # Step to finish the Y2Storage configuration
       class StorageStep < Step
         def label
-          "Adjusting storage configuration"
+          _("Adjusting storage configuration")
         end
 
         def run
@@ -214,14 +219,30 @@ module Agama
         end
       end
 
-      # Step to configure the file-system snapshots
-      class SnapshotsStep < Step
+      # Step to finish the iSCSI configuration
+      class IscsiStep < Step
         def label
-          "Configuring file systems snapshots"
+          _("Adjusting iSCSI configuration")
         end
 
         def run
-          wfm_write("snapshots_finish")
+          wfm_write("iscsi-client_finish")
+        end
+      end
+
+      # Step to configure the file-system snapshots
+      class SnapshotsStep < Step
+        def label
+          _("Configuring file systems snapshots")
+        end
+
+        def run?
+          Yast2::FsSnapshot.configure_on_install?
+        end
+
+        def run
+          logger.info("Finishing Snapper configuration")
+          Yast2::FsSnapshot.configure_snapper
         end
       end
 
@@ -230,7 +251,7 @@ module Agama
         SCRIPTS_DIR = "/run/agama/scripts"
 
         def label
-          "Copying logs"
+          _("Copying logs")
         end
 
         def run
@@ -264,7 +285,7 @@ module Agama
       # Executes post-installation scripts
       class PostScripts < Step
         def label
-          "Running user-defined scripts"
+          _("Running user-defined scripts")
         end
 
         def run
@@ -303,7 +324,7 @@ module Agama
       # Executes post-installation scripts
       class FilesStep < Step
         def label
-          "Deploying user-defined files"
+          _("Deploying user-defined files")
         end
 
         def run
@@ -322,63 +343,11 @@ module Agama
       # Step to unmount the target file-systems
       class UnmountStep < Step
         def label
-          "Unmounting storage devices"
+          _("Unmounting storage devices")
         end
 
         def run
           wfm_write("umount_finish")
-        end
-      end
-
-      # Step to write the mountlist file for Iguana, if needed
-      class IguanaStep < Step
-        IGUANA_PATH = "/iguana"
-        private_constant :IGUANA_PATH
-        IGUANA_MOUNTLIST = File.join(IGUANA_PATH, "mountlist").freeze
-        private_constant :IGUANA_MOUNTLIST
-
-        def label
-          "Configuring Iguana"
-        end
-
-        def run?
-          File.directory?(IGUANA_PATH)
-        end
-
-        def run
-          File.open(IGUANA_MOUNTLIST, "w") do |list|
-            list.puts "#{root_device_name} /sysroot #{root_mount_options}"
-          end
-        end
-
-      private
-
-        def root_device_name
-          fs = root_mount_point&.filesystem
-          # This should never happen, we must have a root file-system
-          return "" unless fs
-
-          fs.respond_to?(:preferred_name) ? fs.preferred_name : fs.name
-        end
-
-        def root_mount_options
-          options = root_mount_point&.mount_options
-          # This should never happen, we must have a root mount point
-          return "" unless options
-
-          options.empty? ? "defaults" : options.join(",")
-        end
-
-        # Representation on the staging devicegraph of the root mount point
-        #
-        # @return [Y2Storage::MountPoint]
-        def root_mount_point
-          staging_graph.mount_points.find(&:root?)
-        end
-
-        # @return [Y2Storage::Devicegraph]
-        def staging_graph
-          Y2Storage::StorageManager.instance.staging
         end
       end
     end

@@ -33,4 +33,9 @@ type RootUser = {
   sshPublicKey: string;
 };
 
-export type { FirstUser, RootUser };
+type PasswordCheckResult = {
+  success?: number;
+  failure?: string;
+};
+
+export type { FirstUser, RootUser, PasswordCheckResult };

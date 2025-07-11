@@ -116,7 +116,7 @@ describe("when the configuration contains one drive", () => {
     plainRender(<StorageSection />);
 
     await screen.findByText(/Install using device/);
-    await screen.findByText(/sda, 500 GiB/);
+    await screen.findByText(/sda \(500 GiB\)/);
     await screen.findByText(/and deleting all its content/);
   });
 

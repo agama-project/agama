@@ -29,15 +29,44 @@ import {
   contentDescription,
   filesystemLabels,
 } from "~/components/storage/utils/device";
+import { deviceSize } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { PopupProps } from "../core/Popup";
-import { ButtonProps } from "@patternfly/react-core";
+import { ButtonProps, Flex, Label } from "@patternfly/react-core";
 
 type DeviceSelectorProps = {
   devices: StorageDevice[];
   selectedDevices?: StorageDevice[];
   onSelectionChange: SelectableDataTableProps<StorageDevice>["onSelectionChange"];
   selectionMode?: SelectableDataTableProps<StorageDevice>["selectionMode"];
+};
+
+const size = (device: StorageDevice) => {
+  return deviceSize(device.size);
+};
+
+const description = (device: StorageDevice) => {
+  if (device.model && device.model.length) return device.model;
+
+  return typeDescription(device);
+};
+
+const details = (device: StorageDevice) => {
+  return (
+    <Flex columnGap={{ default: "columnGapXs" }}>
+      {contentDescription(device)}
+      {device.systems.map((s, i) => (
+        <Label key={`system-${i}`} isCompact>
+          {s}
+        </Label>
+      ))}
+      {filesystemLabels(device).map((s, i) => (
+        <Label key={`label-${i}`} variant="outline" isCompact>
+          {s}
+        </Label>
+      ))}
+    </Flex>
+  );
 };
 
 // TODO: document
@@ -51,10 +80,10 @@ const DeviceSelector = ({
     <>
       <SelectableDataTable
         columns={[
-          { name: _("Type"), value: typeDescription, pfThProps: { width: 10 } },
-          { name: _("Name"), value: (device: StorageDevice) => device.name },
-          { name: _("Content"), value: contentDescription },
-          { name: _("Filesystems"), value: filesystemLabels },
+          { name: _("Device"), value: (device: StorageDevice) => device.name },
+          { name: _("Size"), value: size, pfTdProps: { style: { width: "10ch" } } },
+          { name: _("Description"), value: description },
+          { name: _("Current content"), value: details },
         ]}
         items={devices}
         itemIdKey="sid"

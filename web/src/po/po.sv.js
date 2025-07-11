@@ -162,6 +162,9 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Alla befintliga partitioner kommer att tas bort och all data på disken kommer att gå förlorad."
   ],
+  "Any interface": [
+    "Vilket gränssnitt som helst"
+  ],
   "Apply selected solution": [
     "Använd den valda lösningen"
   ],
@@ -234,6 +237,15 @@ export default {
   "Beta": [
     "Beta"
   ],
+  "Bind to MAC address": [
+    "Bind till MAC-adress"
+  ],
+  "Bind to interface name": [
+    "Bind till gränssnittsnamn"
+  ],
+  "Binding settings for '%s'": [
+    "Bindningsinställningar för '%s'"
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -245,9 +257,6 @@ export default {
   ],
   "Btrfs with snapshots": [
     "Btrfs med ögonblicksavbilder"
-  ],
-  "Calculated automatically": [
-    "Beräknas automatiskt"
   ],
   "Cancel": [
     "Avbryt"
@@ -305,6 +314,15 @@ export default {
   ],
   "Choose a disk for placing the boot loader": [
     "Välj en disk för att placera uppstartsladdaren"
+  ],
+  "Choose device to bind by MAC": [
+    "Välj enhet att binda via MAC"
+  ],
+  "Choose device to bind by name": [
+    "Välj enhet att binda efter namn"
+  ],
+  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
+    "Välj hur anslutningen ska associeras med ett nätverksgränssnitt. Detta hjälper till att styra vilket gränssnitt anslutningen använder."
   ],
   "Choose what to with current content": [
     "Välj vad du vill ska hända med aktuellt innehåll"
@@ -459,9 +477,6 @@ export default {
   "Default file system for generic partitions": [
     "Standardfilsystem för generiska partitioner"
   ],
-  "Define a custom size or a range": [
-    "Definiera en anpassad storlek eller ett intervall"
-  ],
   "Define a new LVM on the disk": [
     "Definiera en ny LVM på disken"
   ],
@@ -548,6 +563,9 @@ export default {
   ],
   "Edit %s": [
     "Redigera %s"
+  ],
+  "Edit binding settings": [
+    "Redigera bindningsinställningar"
   ],
   "Edit connection %s": [
     "Redigera anslutning %s"
@@ -745,9 +763,6 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Om ett lokalt media användes för att köra det här installationsprogrammet, ta bort det före nästa uppstart."
   ],
-  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "Om enheten utelämnas kommer byte (B) att användas. Större enheter kan vara av              formen av GiB (effekt av 2) eller GB (effekt av 10)."
-  ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Om du fortsätter kommer partitionerna på din hårddisk att modifieras enligt de medföljande installationsinställningarna."
   ],
@@ -856,9 +871,6 @@ export default {
   "JFS": [
     "JFS"
   ],
-  "Keep size of %s": [
-    "Behåll storleken på %s"
-  ],
   "Keyboard": [
     "Tangentbord"
   ],
@@ -883,14 +895,8 @@ export default {
   "Language and keyboard": [
     "Språk och tangentbordslayout"
   ],
-  "Let the installer propose a sensible range of sizes": [
-    "Låt installationsprogrammet föreslå ett vettigt utbud av storlekar"
-  ],
   "License language": [
     "Licens språk"
-  ],
-  "Limited": [
-    "Begränsad"
   ],
   "Loading": [
     "Laddar"
@@ -946,26 +952,8 @@ export default {
   "Manual": [
     "Manuell"
   ],
-  "Maximum": [
-    "Maximal"
-  ],
-  "Maximum size mode": [
-    "Läget för maximal storlek"
-  ],
-  "Maximum size options": [
-    "Största storleksalternativ"
-  ],
-  "Maximum size value": [
-    "Maximalt storleksvärde"
-  ],
   "MiB": [
     "MiB"
-  ],
-  "Minimum": [
-    "Minst"
-  ],
-  "Minimum size value": [
-    "Minsta storleksvärde"
   ],
   "Mode": [
     "Läge"
@@ -1336,9 +1324,6 @@ export default {
   "SSID": [
     "SSID"
   ],
-  "Same as minimum": [
-    "Samma som minimum"
-  ],
   "Search": [
     "Sök"
   ],
@@ -1454,15 +1439,6 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Storleksgränser måste vara siffror, eventuellt följt av en enhet som GiB eller GB"
   ],
-  "Size options": [
-    "Storleksalternativ"
-  ],
-  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
-    "Storlekar måste anges som siffror följt av en enhet              formen GiB (potens av 2) eller GB (potens av 10)."
-  ],
-  "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "Storlekar måste anges som siffror, eventuellt följt av en enhet."
-  ],
   "Skip to content": [
     "Hoppa till innehåll"
   ],
@@ -1544,6 +1520,9 @@ export default {
   "The configured LVM groups will remain at %s": [
     "De konfigurerade LVM-grupperna kommer att finnas kvar på %s"
   ],
+  "The connection can be used by any available interface.": [
+    "Anslutningen kan användas av vilket tillgängligt gränssnitt som helst."
+  ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Anslutningen kommer endast att användas under installationen och är inte tillgänglig i det installerade systemet."
   ],
@@ -1613,15 +1592,6 @@ export default {
   "The installer requires [root] user privileges.": [
     "Installationsprogrammet kräver [root] användarrättigheter."
   ],
-  "The logical volume can grow to use all the contiguous free space": [
-    "Den logiska volymen kan växa för att använda allt angränsande ledigt utrymme"
-  ],
-  "The logical volume can grow until a given limit size": [
-    "Den logiska volymen kan växa tills en given gränsstorlek"
-  ],
-  "The logical volume is created exactly with the given size": [
-    "Den logiska volymen skapas exakt med den givna storleken"
-  ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Det maximala antalet måste vara ett tal följt av en enhet som GiB eller GB"
   ],
@@ -1640,47 +1610,11 @@ export default {
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "De fysiska LVM-volymerna som behövs kommer att läggas till som partitioner på de valda diskarna,                 baserat på storleken på de logiska volymerna. Om du väljer mer än en disk så kan,                 fysiska volymer vara fördelade på flera diskar."
   ],
-  "The partition can grow to use all the contiguous free space": [
-    "Partitionen kan växa för att använda allt angränsande ledigt utrymme"
-  ],
-  "The partition can grow until a given limit size": [
-    "Partitionen kan växa till en given storleksgräns"
-  ],
-  "The partition is created exactly with the given size": [
-    "Partitionen skapas exakt med den angivna storleken"
-  ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Lösenordet kommer inte att behövas för att starta och komma åt data om TPM kan verifiera systemets integritet. TPM-försegling kräver att det nya systemet startas upp direkt vid första körningen."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet och närvaro av ett separat filsystem för %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet och närvaro av separata filsystem för %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet, användningen av Btrfs-ögonblicksavbilder och närvaro av ett separat filsystem för %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet, användningen av Btrfs-ögonblicksavbilder och närvaro av separata filsystem för %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på närvaro av ett separat filsystem för %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på närvaro av separata filsystem för %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på användningen av Btrfs-ögonblicksavbilder och närvaro av ett separat filsystem för %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på användningen av Btrfs-ögonblicksavbilder och närvaro av separata filsystem för %2$s."
-  ],
-  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "Storleksintervallet för %s kommer att justeras dynamiskt baserat på mängden RAM i systemet och användningen av Btrfs ögonblicksavbilder."
-  ],
-  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "Storleksintervallet för %s kommer att justeras dynamiskt baserat på användningen av Btrfs ögonblicksavbilder."
+  "The size is configured as a range between %s and %s, but defining a range of sizes is not supported by the UI.": [
+    ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "Lagringskonfigurationen är giltig (se resultat nedan) men använder element som inte stöds av detta gränssnitt."
@@ -1963,6 +1897,9 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] är på"
+  ],
+  "approx. %s": [
+    ""
   ],
   "at least %s": [
     "åtminstone %s"

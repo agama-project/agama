@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -50,6 +50,13 @@ impl ManagerHTTPClient {
         // BaseHTTPClient did not anticipate POST without request body
         // so we pass () which is rendered as `null`
         Ok(self.client.post_void("/manager/probe_sync", &()).await?)
+    }
+
+    /// Starts a "reprobing".
+    pub async fn reprobe(&self) -> Result<(), ManagerHTTPClientError> {
+        // BaseHTTPClient did not anticipate POST without request body
+        // so we pass () which is rendered as `null`
+        Ok(self.client.post_void("/manager/reprobe_sync", &()).await?)
     }
 
     /// Starts the installation.

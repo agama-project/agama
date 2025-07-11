@@ -34,7 +34,7 @@ module Agama
 
           # @return [String]
           def convert
-            return "delete" if config.filesystem || delete_all_partition?
+            return "delete" if delete_all_partition?
             return "resize" if shrink_all_partition?
             return "custom" if delete_partition? || resize_partition?
 

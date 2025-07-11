@@ -135,7 +135,7 @@ partitions in the appropriate disk.",
 
     return sprintf(
       // TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-      _("Partitions to boot will be allocated at the installation disk (%s)."),
+      _("Partitions to boot will be allocated at the installation disk %s."),
       deviceLabel(state.defaultBootDevice),
     );
   };

@@ -33,6 +33,8 @@ pub struct SoftwareConfig {
     pub product: Option<String>,
     /// Extra repositories defined by user.
     pub extra_repositories: Option<Vec<RepositoryParams>>,
+    /// Flag if solver should use only hard dependencies.
+    pub only_required: Option<bool>,
 }
 
 /// Software resolvable type (package or pattern).

@@ -21,10 +21,11 @@
  */
 
 import { apiModel } from "~/api/storage/types";
-import { deleteIfUnused } from "~/helpers/storage/search";
+import { isUsed, deleteIfUnused } from "~/helpers/storage/search";
 import {
   copyApiModel,
   partitionables,
+  findDevice,
   buildVolumeGroup,
   buildLogicalVolumeFromPartition,
   buildPartitionFromLogicalVolume,
@@ -47,12 +48,29 @@ function movePartitions(
   ];
 }
 
+function adjustSpacePolicy(apiModel: apiModel.Config, list: string, index: number) {
+  const device = findDevice(apiModel, list, index);
+  if (device.spacePolicy !== "keep") return;
+  if (isUsed(apiModel, list, index)) return;
+
+  device.spacePolicy = null;
+}
+
+function adjustSpacePolicies(apiModel: apiModel.Config, targets: string[]) {
+  ["drives", "mdRaids"].forEach((list) => {
+    apiModel[list].forEach((dev, idx) => {
+      if (targets.includes(dev.name)) adjustSpacePolicy(apiModel, list, idx);
+    });
+  });
+}
+
 function addVolumeGroup(
   apiModel: apiModel.Config,
   data: data.VolumeGroup,
   moveContent: boolean,
 ): apiModel.Config {
   apiModel = copyApiModel(apiModel);
+  adjustSpacePolicies(apiModel, data.targetDevices);
 
   const volumeGroup = buildVolumeGroup(data);
 
@@ -103,6 +121,8 @@ function editVolumeGroup(
 
   const oldVolumeGroup = apiModel.volumeGroups[index];
   const newVolumeGroup = { ...oldVolumeGroup, ...buildVolumeGroup(data) };
+
+  adjustSpacePolicies(apiModel, newVolumeGroup.targetDevices);
 
   apiModel.volumeGroups.splice(index, 1, newVolumeGroup);
   (oldVolumeGroup.targetDevices || []).forEach((d) => {

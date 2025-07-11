@@ -65,6 +65,10 @@ module Agama
       # @return [Array<Hash<string, Object>>>] List of conflicts from the last solver run
       attr_reader :conflicts
 
+      # @return [boolean, nil] flag to indicate that solver should add only required packages
+      #   and not recommended. Nil means not set
+      attr_accessor :only_required
+
       # Constructor
       #
       # @param logger [Logger]
@@ -76,6 +80,7 @@ module Agama
         @addon_products = []
         @conflicts = []
         @conflicts_change_callbacks = []
+        @only_required = nil
       end
 
       # Adds the given list of resolvables to the proposal
@@ -195,7 +200,8 @@ module Agama
         Yast::Pkg.SetPackageLocale(preferred || "")
         Yast::Pkg.SetAdditionalLocales(additional)
 
-        Yast::Pkg.SetSolverFlags("ignoreAlreadyRecommended" => false, "onlyRequires" => false)
+        Yast::Pkg.SetSolverFlags("ignoreAlreadyRecommended" => false,
+          "onlyRequires" => !!@only_required)
       end
 
       # Selects the base product

@@ -60,12 +60,14 @@ type SpacePolicy = {
 // type is used for more operations.
 type MdRaid = {
   name: string;
+  spacePolicy?: apiModel.SpacePolicy;
 };
 
 // This type is used only for adding a disk device searched by name. See commend on MdRaid about
 // starting simple.
 type Drive = {
   name: string;
+  spacePolicy?: apiModel.SpacePolicy;
 };
 
 export type {

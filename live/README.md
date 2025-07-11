@@ -60,6 +60,15 @@ make clean
 
 or just simply delete the `dist` subdirectory.
 
+By default it builds the sources for openSUSE, if you want to build the sources for SLES run
+
+```shell
+make sles
+```
+
+It is recommended to run `make clean` before changing the target product to ensure there are no
+leftovers from the previous product.
+
 ## Building the ISO image
 
 To build the ISO locally run the

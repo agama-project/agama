@@ -152,7 +152,7 @@ const drive1Partitions: model.Partition[] = [
   },
 ];
 
-const drive1: model.Drive = {
+const drive1 = {
   name: "/dev/sda",
   spacePolicy: "delete",
   partitions: drive1Partitions,
@@ -160,7 +160,6 @@ const drive1: model.Drive = {
   listIndex: 1,
   isUsed: true,
   isAddingPartitions: true,
-  isReusingPartitions: true,
   isTargetDevice: false,
   isBoot: true,
   isExplicitBoot: true,
@@ -185,7 +184,7 @@ const drive2Partitions: model.Partition[] = [
   },
 ];
 
-const drive2: model.Drive = {
+const drive2 = {
   name: "/dev/sdb",
   spacePolicy: "delete",
   partitions: drive2Partitions,
@@ -194,7 +193,6 @@ const drive2: model.Drive = {
   isExplicitBoot: false,
   isUsed: true,
   isAddingPartitions: true,
-  isReusingPartitions: true,
   isTargetDevice: false,
   isBoot: true,
   getVolumeGroups: () => [],
@@ -213,7 +211,6 @@ jest.mock("~/hooks/storage/system", () => ({
   ...jest.requireActual("~/hooks/storage/system"),
   useAvailableDevices: () => [sda, sdb],
   useCandidateDevices: () => [sda],
-  useLongestDiskTitle: () => 20,
 }));
 
 jest.mock("~/hooks/storage/drive", () => ({
@@ -235,6 +232,9 @@ describe("RemoveDriveOption", () => {
     });
 
     it("allows users to delete regular drives", async () => {
+      // @ts-expect-error: drives are not typed on purpose because
+      // isReusingPartitions should be a calculated data. Mocking needs a lot of
+      // improvements.
       const { user } = plainRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
 
       const changeButton = screen.getByRole("button", { name: "Change" });
@@ -248,6 +248,9 @@ describe("RemoveDriveOption", () => {
     });
 
     it("does not allow users to delete drives explicitly used to boot", async () => {
+      // @ts-expect-error: drives are not typed on purpose because
+      // isReusingPartitions should be a calculated data. Mocking needs a lot of
+      // improvements.
       const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
 
       const changeButton = screen.getByRole("button", { name: "Change" });
@@ -263,6 +266,9 @@ describe("RemoveDriveOption", () => {
   describe("if there are no additional drives", () => {
     it("does not allow users to delete regular drives", async () => {
       mockUseModel.mockReturnValue({ drives: [drive2], mdRaids: [] });
+      // @ts-expect-error: drives are not typed on purpose because
+      // isReusingPartitions should be a calculated data. Mocking needs a lot of
+      // improvements.
       const { user } = plainRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
 
       const changeButton = screen.getByRole("button", { name: "Change" });
@@ -276,6 +282,9 @@ describe("RemoveDriveOption", () => {
 
     it("does not allow users to delete drives explicitly used to boot", async () => {
       mockUseModel.mockReturnValue({ drives: [drive1], mdRaids: [] });
+      // @ts-expect-error: drives are not typed on purpose because
+      // isReusingPartitions should be a calculated data. Mocking needs a lot of
+      // improvements.
       const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
 
       const changeButton = screen.getByRole("button", { name: "Change" });

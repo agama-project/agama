@@ -61,7 +61,8 @@ describe Agama::Software::Manager do
       set_resolvables:  nil,
       packages_count:   "500 MB",
       issues:           proposal_issues,
-      on_issues_change: nil
+      on_issues_change: nil,
+      only_required:    nil
     )
   end
 

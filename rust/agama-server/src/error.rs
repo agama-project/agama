@@ -29,6 +29,7 @@ use serde_json::json;
 use crate::{
     l10n::LocaleError,
     questions::QuestionsError,
+    users::password::PasswordCheckerError,
     web::common::{IssuesServiceError, ProgressServiceError},
 };
 
@@ -48,6 +49,8 @@ pub enum Error {
     Issues(#[from] IssuesServiceError),
     #[error("Progress service error: {0}")]
     Progress(#[from] ProgressServiceError),
+    #[error("Could not check the password")]
+    PasswordCheck(#[from] PasswordCheckerError),
 }
 
 // This would be nice, but using it for a return type

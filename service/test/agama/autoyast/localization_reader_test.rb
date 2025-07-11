@@ -75,9 +75,9 @@ describe Agama::AutoYaST::LocalizationReader do
         }
       end
 
-      it "includes a 'languages' key with all the languages" do
+      it "includes a 'language' key with the primary language" do
         localization = subject.read["localization"]
-        expect(localization["languages"]).to eq(["en_US.UTF-8", "es_ES.UTF-8", "cs_CZ.UTF-8"])
+        expect(localization["language"]).to eq("en_US.UTF-8")
       end
 
       context "when the encoding is not included" do
@@ -92,7 +92,7 @@ describe Agama::AutoYaST::LocalizationReader do
 
         it "uses the UTF-8 encoding" do
           localization = subject.read["localization"]
-          expect(localization["languages"]).to eq(["en_US.UTF-8", "es_ES.UTF-8"])
+          expect(localization["language"]).to eq("en_US.UTF-8")
         end
       end
     end

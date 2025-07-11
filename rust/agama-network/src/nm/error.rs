@@ -76,6 +76,8 @@ pub enum NmError {
     InvalidDeviceState(#[from] InvalidNmDeviceState),
     #[error("Failed to parse NetworkManager version: '{0}'")]
     FailedNmVersionParse(#[from] semver::Error),
+    #[error("Invalid valud from DBUS: '{0}'")]
+    InvalidDBUSValue(String),
 }
 
 impl From<NmError> for NetworkStateError {
