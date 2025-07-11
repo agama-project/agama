@@ -92,6 +92,11 @@ export default function RegistrationExtension({
 
   const isRegistered = !!registrationData;
 
+  const id = `${extension.id}-${extension.version}`;
+  const formId = `register-form-${id}`;
+  const inputId = `input-reg-code-${id}`;
+  const buttonId = `register-button-${id}`;
+
   const submit = async (e: React.SyntheticEvent | undefined) => {
     e?.preventDefault();
     setLoading(true);
@@ -136,24 +141,18 @@ export default function RegistrationExtension({
           <RegisteredExtensionStatus registrationCode={registrationData.registrationCode} />
         )}
         {!isRegistered && extension.available && !extension.free && (
-          <Form id={`register-form-${extension.id}-${extension.version}`} onSubmit={submit}>
+          <Form id={formId} onSubmit={submit}>
             {/* // TRANSLATORS: input field label */}
-            <FormGroup label={_("Registration code")}>
+            <FormGroup fieldId={inputId} label={_("Registration code")}>
               <RegistrationCodeInput
                 isDisabled={loading}
-                id={`input-reg-code-${extension.id}-${extension.version}`}
+                id={inputId}
                 value={regCode}
                 onChange={(_, v) => setRegCode(v)}
               />
             </FormGroup>
             <ActionGroup>
-              <Button
-                id={`register-button-${extension.id}-${extension.version}`}
-                variant="primary"
-                type="submit"
-                isInline
-                isLoading={loading}
-              >
+              <Button id={buttonId} variant="primary" type="submit" isInline isLoading={loading}>
                 {/* TRANSLATORS: button label */}
                 {_("Register")}
               </Button>

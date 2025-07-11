@@ -114,10 +114,9 @@ type RegistrationInfo = {
 };
 
 type RegistrationParams = {
-  registered?: boolean;
   key: string;
   email?: string;
-  url?: string;
+  url: string;
 };
 
 type AddonInfo = {
