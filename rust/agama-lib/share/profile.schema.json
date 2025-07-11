@@ -124,7 +124,7 @@
       "type": "object",
       "properties": {
         "devices": {
-          "title": "List of DASD devices",
+          "title": "List of zFCP devices",
           "type": "array",
           "items": {
             "type": "object",
