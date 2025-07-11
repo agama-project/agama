@@ -49,6 +49,7 @@ software:
   user_patterns:
     - gnome
     - kde
+    - xfce_wayland
     - multimedia
     - office
     - cockpit
