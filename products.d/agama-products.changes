@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jul 11 13:03:48 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add Experimental xfce_wayland to Leap 16.0
+
+-------------------------------------------------------------------
 Thu Jul 10 13:39:30 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed base product names to install for Kalpa, Leap 16.0
