@@ -209,12 +209,10 @@ copy_kernel_module() {
 
 # Updates kernel modules
 #
-# It copies the kernel modules and the hardware information for hwinfo.
-#
 # It copies the kernel modules from the Driver Update Disk to the system under
 # /sysroot. If it finds a `module.order` file, it unloads the modules included
-# in the list and them to /etc/modules-load.d/99-agama.conf file so they will be
-# loaded by systemd after pivoting.
+# in the list and add them to /etc/modules-load.d/99-agama.conf file so they
+# will be loaded by systemd after pivoting.
 update_kernel_modules() {
   local dud_dir=$1
   local kernel_modules_dir
