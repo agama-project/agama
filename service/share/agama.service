@@ -5,6 +5,9 @@ After=network-online.target
 [Service]
 Type=forking
 ExecStart=/usr/bin/agamactl --daemon
+# FIXME: for testing temporarily change the libzypp default,
+# can be removed when this is the default libzypp behavior
+Environment=ZYPP_SINGLE_RPMTRANS=1
 EnvironmentFile=-/run/agama/environment.conf
 PIDFile=/run/agama/bus.pid
 User=root
