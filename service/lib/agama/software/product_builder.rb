@@ -86,6 +86,7 @@ module Agama
         product.mandatory_packages = data[:mandatory_packages]
         product.optional_packages = data[:optional_packages]
         product.mandatory_patterns = data[:mandatory_patterns]
+        product.preselected_patterns = data[:preselected_patterns]
         product.optional_patterns = data[:optional_patterns]
         product.user_patterns = data[:user_patterns]
       end
@@ -116,6 +117,9 @@ module Agama
           ),
           mandatory_patterns: config.arch_elements_from(
             id, "software", "mandatory_patterns", property: :pattern
+          ),
+          preselected_patterns: config.arch_elements_from(
+            id, "software", "preselected_patterns", property: :pattern
           ),
           optional_patterns:  config.arch_elements_from(
             id, "software", "optional_patterns", property: :pattern

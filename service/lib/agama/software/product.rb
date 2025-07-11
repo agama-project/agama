@@ -82,7 +82,17 @@ module Agama
       # @return [Array<String>]
       attr_accessor :mandatory_patterns
 
+      # Preseleted patterns.
+      #
+      # These patterns are pre-selected if they are avaialble, but
+      # the user can unselect them.
+      #
+      # @return [Array<String>]
+      attr_accessor :preselected_patterns
+
       # Optional patterns.
+      #
+      # These patterns are always installed if they are available.
       #
       # @return [Array<String>]
       attr_accessor :optional_patterns
@@ -123,6 +133,7 @@ module Agama
         @optional_packages = []
         @mandatory_patterns = []
         @optional_patterns = []
+        @preselected_patterns = []
         # nil = display all visible patterns, [] = display no patterns
         @user_patterns = nil
         @registration = false

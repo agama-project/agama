@@ -186,7 +186,7 @@ module Agama
 
         proposal.base_product = product.name
         proposal.languages = languages
-        select_resolvables
+        select_resolvables(preselected: true)
         result = proposal.calculate
         update_issues
         logger.info "Proposal result: #{result.inspect}"
@@ -627,8 +627,12 @@ module Agama
       end
 
       # Adds resolvables for selected product
-      def select_resolvables
-        proposal.set_resolvables("agama", :pattern, product.mandatory_patterns)
+      #
+      # @param include_preselected [Boolean] Include the pre-selected packages too.
+      def select_resolvables(preselected: false)
+        patterns = product.mandatory_patterns
+        patterns = patterns + (product.preselected_patterns || []) if preselected
+        proposal.set_resolvables("agama", :pattern, patterns)
         proposal.set_resolvables("agama", :pattern, product.optional_patterns, optional: true)
         proposal.set_resolvables("agama", :package, product.mandatory_packages)
         proposal.set_resolvables("agama", :package, product.optional_packages, optional: true)
