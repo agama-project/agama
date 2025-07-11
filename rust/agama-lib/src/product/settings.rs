@@ -41,6 +41,7 @@ pub struct AddonSettings {
 #[serde(rename_all = "camelCase")]
 pub struct ProductSettings {
     /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.)
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub registration_code: Option<String>,

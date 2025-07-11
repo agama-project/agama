@@ -45,15 +45,6 @@ export default {
   "%s with %d partitions": [
     "%s amb %d particions"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "Es crearà una %1$s de %2$s per a %3$s"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "Es crearà una %1$s d'almenys %2$s per a %3$s"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "Es crearà una %1$s amb una mida d'entre %2$s i %3$s per a %4$s"
-  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "S'usarà una mida mínima genèrica de %1$s per a la %2$s nova"
   ],
@@ -153,6 +144,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Totes les connexions de xarxa gestionades a través d'aquesta interfície estan actualment configurades per usar-les només durant la instal·lació i no es copiaran al sistema instal·lat."
   ],
+  "Allow growing": [
+    "Permet-ne l'eixamplament"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "A més de definir el primer usuari, es poden configurar mètodes d'autenticació per a l'usuari d'arrel."
   ],
@@ -212,15 +206,6 @@ export default {
   ],
   "Back": [
     "Enrere"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "Segons la quantitat de memòria RAM del sistema, es crearà una %1s$ de %2$s per a %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "Segons la quantitat de memòria RAM del sistema, es crearà una %1s$ d'almenys %2$s per a %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "Segons la quantitat de memòria RAM del sistema, es crearà una %1s$ amb una mida d'entre %2$s i %3$s per a %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -477,6 +462,9 @@ export default {
   "Default file system for generic partitions": [
     "Sistema de fitxers per defecte per a particions genèriques"
   ],
+  "Define a custom size": [
+    "Definiu una mida personalitzada"
+  ],
   "Define a new LVM on the disk": [
     "Definiu un LVM nou al disc"
   ],
@@ -521,6 +509,9 @@ export default {
   ],
   "Discard": [
     "Descarta'l"
+  ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
   ],
   "Disconnected": [
     "Desconnectat"
@@ -895,6 +886,9 @@ export default {
   "Language and keyboard": [
     "Llengua i teclat"
   ],
+  "Let the installer propose a sensible size": [
+    "Permet que l'instal·lador proposi una mida raonable"
+  ],
   "License language": [
     "Llengua de la llicència"
   ],
@@ -1155,9 +1149,6 @@ export default {
   ],
   "Partitions to boot will be allocated at the following device.": [
     "Les particions per a l'arrencada s'assignaran al dispositiu següent."
-  ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Les particions per a l'arrencada s'assignaran al disc d'instal·lació (%s)."
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Les particions per a l'arrencada s'assignaran al disc d'instal·lació."
@@ -1439,6 +1430,12 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Els límits de mida han de ser números seguits opcionalment d'una unitat com ara GiB o GB"
   ],
+  "Size mode": [
+    "Mode de mida"
+  ],
+  "Size modes": [
+    "Modes de mida"
+  ],
   "Skip to content": [
     "Omet i ves al contingut"
   ],
@@ -1529,15 +1526,6 @@ export default {
   "The content may be deleted": [
     "El contingut pot suprimir-se"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "La configuració actual tindrà com a resultat una %1$s de %2$s."
-  ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "La configuració actual tindrà com a resultat una %1$s d'almenys %2$s."
-  ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "La configuració actual tindrà com a resultat una %1$s amb una mida d'entre %2$s i %3$s."
-  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Les dades es conserven, però les particions actuals es canviaran de mida segons calgui."
   ],
@@ -1610,11 +1598,44 @@ export default {
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "Els volums físics d'LVM necessaris s'afegiran com a particions als discs triats,                  segons les mides dels volums lògics. Si seleccioneu més d'un disc,                  els volums físics poden estar distribuïts en diversos discs."
   ],
+  "The password is weak": [
+    "La contrasenya és feble"
+  ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "La contrasenya no caldrà per arrencar i accedir a les dades si el TPM pot verificar la integritat del sistema. El segellat de TPM requereix que el nou sistema s'iniciï directament a la primera execució."
   ],
-  "The size is configured as a range between %s and %s, but defining a range of sizes is not supported by the UI.": [
-    ""
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
+    "La mida de %1$s s'ajustarà dinàmicament segons la quantitat de RAM del sistema i de la presència d'un sistema de fitxers separat per a %2$s."
+  ],
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
+    "La mida de %1$s s'ajustarà dinàmicament segons la quantitat de RAM del sistema i la presència de sistemes de fitxers separats per a %2$s."
+  ],
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "La mida de %1$s s'ajustarà dinàmicament segons la quantitat de RAM del sistema, l'ús de les instantànies de Btrfs i la presència d'un sistema de fitxers separat per a %2$s."
+  ],
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "La mida de %1$s s'ajustarà dinàmicament segons la quantitat de RAM del sistema, l'ús de les instantànies de Btrfs i la presència de sistemes de fitxers separats per a %2$s."
+  ],
+  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
+    "La mida de %1$s s'ajustarà dinàmicament segons la presència d'un sistema de fitxers separat per a %2$s."
+  ],
+  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
+    "La mida de %1$s s'ajustarà dinàmicament segons la presència de sistemes de fitxers separats per a %2$s."
+  ],
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "La mida de %1$s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs i la presència d'un sistema de fitxers separat per a %2$s."
+  ],
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "La mida de %1$s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs i la presència de sistemes de fitxers separats per a %2$s."
+  ],
+  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
+    "La mida de %s s'ajustarà dinàmicament segons la quantitat de RAM del sistema i l'ús de les instantànies de Btrfs."
+  ],
+  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
+    "La mida de %s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs."
+  ],
+  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
+    "La mida ha de ser un número seguit d'una unitat del tipus GiB (potència de 2) o GB (potència de 10)."
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "La configuració d'emmagatzematge és vàlida (vegeu-ne el resultat a continuació) però usa elements no compatibles amb aquesta interfície."
@@ -1899,7 +1920,7 @@ export default {
     "[CAPS LOCK] activat"
   ],
   "approx. %s": [
-    ""
+    "aprox. %s"
   ],
   "at least %s": [
     "almenys %s"

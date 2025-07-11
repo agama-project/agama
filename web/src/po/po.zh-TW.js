@@ -45,15 +45,6 @@ export default {
   "%s with %d partitions": [
     "%s (包含 %d 個分割區)"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "將建立一個 %1$s (%2$s)，以用於 %3$s"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "將建立一個 %1$s (至少 %2$s)，以用於 %3$s"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "將建立一個 %1$s (大小介於 %2$s 至 %3$s 之間)，以用於 %4$s"
-  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "至少 %1$s 的通用大小將用於新 %2$s"
   ],
@@ -212,15 +203,6 @@ export default {
   ],
   "Back": [
     "後退"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "將根據系統中的 RAM 容量建立一個 %1s$ (%2$s)，以用於 %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "將根據系統中的 RAM 容量建立一個 %1s$ (至少 %2$s)，以用於 %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "將根據系統中的 RAM 容量建立一個 %1s$ (大小介於 %2$s 至 %3$s 之間)，以用於 %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -519,6 +501,9 @@ export default {
   "Discard": [
     "捨棄"
   ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
+  ],
   "Disconnected": [
     "已中斷連接"
   ],
@@ -548,9 +533,6 @@ export default {
   ],
   "Do not use": [
     "不使用"
-  ],
-  "Do you want to use a supported size?": [
-    ""
   ],
   "Download logs": [
     "下載記錄"
@@ -1152,9 +1134,6 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     "將會在以下裝置上配置開機分割區。"
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "將會在安裝磁碟 (%s) 上配置開機分割區。"
-  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "將會在安裝磁碟上配置開機分割區。"
   ],
@@ -1521,15 +1500,6 @@ export default {
   "The content may be deleted": [
     "內容可能會刪除"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "目前的組態將會產生一個 %1$s (%2$s)。"
-  ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "目前的組態將會產生一個 %1$s (至少 %2$s)。"
-  ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "目前的組態將會產生一個 %1$s (大小介於 %2$s 至 %3$s 之間)。"
-  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "將會保留資料，但會視需要調整目前分割區的大小。"
   ],
@@ -1605,7 +1575,7 @@ export default {
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "如果 TPM 可以驗證系統的完整性，則開機和存取資料時將無需輸入密碼。TPM 封存功能要求新系統在首次執行時直接開機。"
   ],
-  "The size is configured as a range between %s and %s, but defining a range of sizes is not supported by the UI.": [
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
     ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [

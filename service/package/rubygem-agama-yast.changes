@@ -1,4 +1,26 @@
 -------------------------------------------------------------------
+Thu Jul 10 12:13:14 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Inhibit storage subsystems (bsc#1245159, bsc#1246133).
+
+-------------------------------------------------------------------
+Wed Jul  9 14:04:23 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- Fix error at /api/manager/installer: initialize the backend value
+  for org.opensuse.Agama1.Manager.CurrentInstallationPhase (bsc#1245760)
+
+-------------------------------------------------------------------
+Wed Jul  9 12:21:55 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add AutoYaST conversion for RMT registration (gh#agama-project/agama#2545).
+
+-------------------------------------------------------------------
+Wed Jul  9 08:32:37 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Handle the LSM defined in the product definition as it was
+  selected by the user allowing to deselect it (bsc#1244431).
+
+-------------------------------------------------------------------
 Fri Jul  4 11:31:21 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Extend D-Bus API to allow reprobing the system

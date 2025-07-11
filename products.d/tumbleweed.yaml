@@ -110,6 +110,8 @@ software:
     - yast2_server
     - multimedia
     - office
+    - selinux
+    - apparmor
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-Tumbleweed

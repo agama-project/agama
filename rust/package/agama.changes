@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Fri Jul 11 06:56:29 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not exported null values for localization, hostname
+  and product settings (gh#agama-project/agama#2543).
+
+-------------------------------------------------------------------
+Wed Jul  9 12:25:08 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- unattended installation: allow registration to RMT when
+  registration code is ommited (bsc#1246069)
+
+-------------------------------------------------------------------
 
 Mon Jul  7 13:22:05 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
