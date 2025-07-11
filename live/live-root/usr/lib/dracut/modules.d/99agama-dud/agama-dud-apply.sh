@@ -172,7 +172,7 @@ find_kernel_modules() {
     module_name=${module#"${directory}/"}
     module_name=${module_name%.ko*}
 
-    if [[ ! " ${modules[*]} " =~ \ ${module_name}\  ]]; then
+    if [[ ! " ${modules[*]} " =~ " ${module_name} " ]]; then
       modules+=("$module_name")
     fi
   done
@@ -195,7 +195,6 @@ copy_kernel_module() {
   # expect a single file with $module.ko* name
   source_file=("${source_dir}/${module}".ko*)
 
-  echo old "${target_dir}/**/*/${module}.ko*"
   old_module=("${target_dir}"/**/*/"${module}".ko*)
   if [ "${#old_module[@]}" -eq "1" ]; then
     info "  Replacing the module ${old_module[0]}"
