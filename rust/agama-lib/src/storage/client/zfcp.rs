@@ -219,7 +219,7 @@ impl ZFCPClient<'_> {
         }
     }
 
-    pub async fn set_config(&self, config: ZFCPConfig) -> Result<(), ServiceError> {
+    pub async fn set_config(&self, config: &ZFCPConfig) -> Result<(), ServiceError> {
         // collect controllers to activate it ( unique )
         let mut channels: HashSet<String> = HashSet::new();
         for dev in &config.devices {

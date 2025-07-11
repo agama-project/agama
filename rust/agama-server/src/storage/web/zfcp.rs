@@ -142,7 +142,7 @@ async fn set_config(
     State(state): State<ZFCPState<'_>>,
     Json(config): Json<ZFCPConfig>,
 ) -> Result<(), Error> {
-    Ok(state.client.set_config(config).await?)
+    Ok(state.client.set_config(&config).await?)
 }
 
 /// Represents a zFCP global config (specific to s390x systems).
