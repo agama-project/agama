@@ -99,6 +99,8 @@ software:
       archs: ppc
   mandatory_patterns:
     - enhanced_base # only pattern that is shared among all roles on TW
+  preselected_patterns:
+    - selinux
   optional_patterns: null # no optional pattern shared
   user_patterns:
     - basic_desktop
