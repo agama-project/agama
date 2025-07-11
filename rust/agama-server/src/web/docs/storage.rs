@@ -129,7 +129,6 @@ impl ApiDocBuilder for StorageApiDocBuilder {
             .schema_from::<crate::storage::web::iscsi::InitiatorParams>()
             .schema_from::<crate::storage::web::iscsi::LoginParams>()
             .schema_from::<crate::storage::web::iscsi::NodeParams>()
-            
             .build()
     }
 
