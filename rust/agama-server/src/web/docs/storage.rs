@@ -122,12 +122,14 @@ impl ApiDocBuilder for StorageApiDocBuilder {
             .schema_from::<agama_lib::storage::model::zfcp::ZFCPController>()
             .schema_from::<agama_lib::storage::model::zfcp::ZFCPDisk>()
             .schema_from::<agama_lib::storage::settings::zfcp::ZFCPConfig>()
+            .schema_from::<agama_lib::storage::settings::zfcp::ZFCPDeviceConfig>()
+            .schema_from::<crate::storage::web::zfcp::ZFCPGlobalConfig>()
             .schema_from::<crate::storage::web::ProductParams>()
             .schema_from::<crate::storage::web::iscsi::DiscoverParams>()
             .schema_from::<crate::storage::web::iscsi::InitiatorParams>()
             .schema_from::<crate::storage::web::iscsi::LoginParams>()
             .schema_from::<crate::storage::web::iscsi::NodeParams>()
-            .schema_from::<crate::storage::web::zfcp::ZFCPGlobalConfig>()
+            
             .build()
     }
 
