@@ -67,6 +67,8 @@ software:
   mandatory_patterns:
     - enhanced_base
     - bootloader
+  preselected_patterns:
+    - selinux
   optional_patterns: null # no optional pattern shared
   user_patterns:
     - cockpit
