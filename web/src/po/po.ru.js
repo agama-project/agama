@@ -45,6 +45,15 @@ export default {
   "%s with %d partitions": [
     "%s с %d разделами"
   ],
+  "A %1$s of %2$s will be created for %3$s if possible": [
+    "Для %3$s будет создан раздел %1$s размером %2$s, если это возможно"
+  ],
+  "A %1$s of at least %2$s will be created for %3$s if possible": [
+    "Для %3$s будет создан раздел %1$s с размером не менее %2$s, если это возможно"
+  ],
+  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
+    "Для %4$s будет создан раздел %1$s с размером между %2$s и %3$s, если это возможно"
+  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Для нового раздела %2$s будет использоваться минимум %1$s"
   ],
@@ -206,6 +215,15 @@ export default {
   ],
   "Back": [
     "Назад"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
+    "Исходя из объема оперативной памяти в системе, для %3$s будет запланирован раздел %1s$ размером %2$s"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
+    "Исходя из объема оперативной памяти в системе, для %3$s будет запланирован раздел %1s$ размером не менее %2$s"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
+    "Исходя из объема оперативной памяти в системе, для %4$s будет запланирован раздел %1s$ размером от %2$s до %3$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -511,7 +529,7 @@ export default {
     "Отказаться"
   ],
   "Discard the maximum size and continue with simplified configuration": [
-    ""
+    "Откажитесь от максимального размера и продолжите работу с упрощенной конфигурацией"
   ],
   "Disconnected": [
     "Отключено"
@@ -1151,6 +1169,9 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     "Загрузочные разделы будут выделены на следующем устройстве."
   ],
+  "Partitions to boot will be allocated at the installation disk %s.": [
+    "Загрузочные разделы будут выделены на установочном диске %s."
+  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Загрузочные разделы будут выделены на установочном диске."
   ],
@@ -1528,6 +1549,15 @@ export default {
   "The content may be deleted": [
     "Содержимое может быть удалено"
   ],
+  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
+    "Текущая конфигурация приведет к попытке создания раздела %1$s размером %2$s."
+  ],
+  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
+    "Текущая конфигурация приведет к попытке создания раздела %1$s размером не менее %2$s."
+  ],
+  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
+    "Текущая конфигурация приведет к попытке создания раздела %1$s размером от %2$s до %3$s."
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Данные сохраняются, но размер текущих разделов будет изменен по мере необходимости."
   ],
@@ -1557,6 +1587,9 @@ export default {
   ],
   "The extension has been registered with key %s.": [
     "Расширение было зарегистрировано с ключом %s."
+  ],
+  "The final size can be bigger in order to fill the extra free space.": [
+    "Итоговый размер может быть больше, чтобы заполнить свободное пространство."
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Последний шаг по настройке Доверенного платформенного модуля (TPM) на автоматическое открытие зашифрованных устройств будет выполнен во время первой загрузки новой системы. Чтобы это сработало, машина должна загрузиться непосредственно в новый загрузчик."
@@ -1635,6 +1668,9 @@ export default {
   ],
   "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
     "Размер для %s будет динамически корректироваться в зависимости от использования моментальных снимков Btrfs."
+  ],
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
+    "Размер настроен как диапазон между %s и %s, но этот интерфейс не может обрабатывать диапазоны с заданным максимальным размером."
   ],
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
     "Размер должен быть числом, за которым следует единица измерения в виде GiB (степень 2) или GB (степень 10)."

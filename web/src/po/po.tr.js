@@ -19,7 +19,7 @@ export default {
     "%1$s hala '%2$s' LVM grubunu ve önyükleme için gereken herhangi bir bölümü içerecektir"
   ],
   "%d of %d": [
-    ""
+    "%d'den %d"
   ],
   "%s - %s": [
     "%s - %s"
@@ -44,6 +44,15 @@ export default {
   ],
   "%s with %d partitions": [
     "%s ile %d bölümler"
+  ],
+  "A %1$s of %2$s will be created for %3$s if possible": [
+    "Mümkünse %3$s için %2$s'den %1$s oluşturulacak"
+  ],
+  "A %1$s of at least %2$s will be created for %3$s if possible": [
+    "Mümkünse %3$s için en az %2$s'lik bir %1$s oluşturulacak"
+  ],
+  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
+    "Mümkünse %4$s için %2$s ile %3$s arasında bir boyuta sahip %1$s oluşturulacak"
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Yeni %2$s için genel bir asgari %1$s boyutu kullanılacak"
@@ -133,7 +142,7 @@ export default {
     "Yeni sistemin mevcut alana sığması için aşağıdaki ayarları düzenleyin."
   ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
-    ""
+    "Tüm çakışmalar çözüldü veya hiçbiri tespit edilmedi. Kurulumunuza güvenle devam edebilirsiniz."
   ],
   "All content will be deleted": [
     "Tüm içerik silinecek"
@@ -142,10 +151,10 @@ export default {
     "Tüm alanlar zorunludur"
   ],
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
-    ""
+    "Bu arayüz üzerinden yönetilen tüm ağ bağlantıları şu anda yalnızca kurulum sırasında kullanılacak şekilde ayarlanmıştır ve kurulu sisteme kopyalanmayacaktır"
   ],
   "Allow growing": [
-    ""
+    "Büyümeye izin ver"
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "İlk kullanıcıyı tanımlamanın yanı sıra, root kullanıcı için kimlik doğrulama yöntemleri de yapılandırılabilir."
@@ -155,6 +164,12 @@ export default {
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Mevcut herhangi bir bölüm kaldırılacak ve diskteki tüm veriler kaybolacaktır."
+  ],
+  "Any interface": [
+    "Herhangi bir arayüz"
+  ],
+  "Apply selected solution": [
+    "Seçilen çözümü uygula"
   ],
   "As a new partition on %s": [
     "%s üzerinde yeni bir bölüm olarak"
@@ -201,6 +216,15 @@ export default {
   "Back": [
     "Geri"
   ],
+  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
+    "Sistemdeki Bellek miktarına bağlı olarak, %3$s için %2$s'lik bir %1s$ planlanacaktır"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
+    "Sistemdeki bellek miktarına bağlı olarak, %3$s için en az %2$s'lik bir %1s$ planlanacaktır"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
+    "Sistemdeki bellek miktarına bağlı olarak, %4$s için %2$s ile %3$s arasında bir boyutta %1s$ planlanacaktır."
+  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -216,11 +240,14 @@ export default {
   "Beta": [
     "Beta"
   ],
+  "Bind to MAC address": [
+    "MAC adresine bağlan"
+  ],
   "Bind to interface name": [
-    ""
+    "Arayüz adına bağlan"
   ],
   "Binding settings for '%s'": [
-    ""
+    "'%s' için bağlama ayarları"
   ],
   "BitLocker": [
     "BitLocker"
@@ -249,14 +276,26 @@ export default {
   "Change": [
     "Değiştir"
   ],
+  "Change Language": [
+    "Dili değiştir"
+  ],
   "Change boot options": [
     "Önyükleme seçeneklerini değiştir"
   ],
   "Change device menu": [
     "Cihaz menüsünü değiştir"
   ],
+  "Change display language": [
+    "Görüntüleme dilini değiştir"
+  ],
   "Change display language and keyboard layout": [
-    ""
+    "Görüntüleme dilini ve klavye düzenini değiştir"
+  ],
+  "Change keyboard": [
+    "Klavyeyi değiştir"
+  ],
+  "Change keyboard layout": [
+    "Klavye düzenini değiştir"
   ],
   "Change product": [
     "Ürünü değiştir"
@@ -280,13 +319,13 @@ export default {
     "Önyükleme yükleyicisini yerleştirmek için bir disk seçin"
   ],
   "Choose device to bind by MAC": [
-    ""
+    "Bağlanacak cihazı MAC ile seçin"
   ],
   "Choose device to bind by name": [
-    ""
+    "Adına göre bağlanacak cihazı seçin"
   ],
   "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
-    ""
+    "Bağlantının bir ağ arayüzüyle nasıl ilişkilendirileceğini seçin. Bu, bağlantının hangi arayüzü kullandığını kontrol etmeye yardımcı olur."
   ],
   "Choose what to with current content": [
     "Mevcut içerikle ne yapacağınızı seçin"
@@ -326,6 +365,9 @@ export default {
   ],
   "Configure zFCP": [
     "zFCP'yi yapılandırın"
+  ],
+  "Configured for installation only": [
+    "Yalnızca kurulum için yapılandırıldı"
   ],
   "Configuring the product, please wait ...": [
     "Ürün yapılandırılıyor, lütfen bekleyin..."
@@ -438,6 +480,9 @@ export default {
   "Default file system for generic partitions": [
     "Genel bölümler için varsayılan dosya sistemi"
   ],
+  "Define a custom size": [
+    "Özel bir boyut tanımlayın"
+  ],
   "Define a new LVM on the disk": [
     "Diskte yeni bir LVM tanımlayın"
   ],
@@ -484,7 +529,7 @@ export default {
     "At"
   ],
   "Discard the maximum size and continue with simplified configuration": [
-    ""
+    "Maksimum boyutu atın ve basitleştirilmiş yapılandırmayla devam edin"
   ],
   "Disconnected": [
     "Bağlantısı Kesildi"
@@ -527,6 +572,9 @@ export default {
   ],
   "Edit %s": [
     "%s'yi düzenle"
+  ],
+  "Edit binding settings": [
+    "Bağlama ayarlarını düzenle"
   ],
   "Edit connection %s": [
     "Bağlantıyı düzenle %s"
@@ -794,7 +842,7 @@ export default {
     "Kurulum %s kadar olacak."
   ],
   "Installed system may not have network connections": [
-    ""
+    "Kurulu sistemde ağ bağlantıları olmayabilir"
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
     "Bozuk bir paketin kurulumu sistem kararlılığını etkiler ve büyük bir güvenlik riski oluşturur!"
@@ -818,10 +866,10 @@ export default {
     "Yayıncı"
   ],
   "It is not possible to allocate space for %s.": [
-    ""
+    "%s için alan ayırmak mümkün değil."
   ],
   "It is not possible to allocate space for the boot partition and for %s.": [
-    ""
+    "Önyükleme bölümü ve %s için alan ayırmak mümkün değil."
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Mevcut yapılandırma ile sistemi kurmak mümkün değildir. Aşağıdaki ayarları düzenleyin."
@@ -852,6 +900,12 @@ export default {
   ],
   "Language": [
     "Dil"
+  ],
+  "Language and keyboard": [
+    "Dil ve klavye"
+  ],
+  "Let the installer propose a sensible size": [
+    "Kurulumcunun makul bir boyut önermesine izin verin"
   ],
   "License language": [
     "Lisans dili"
@@ -926,13 +980,13 @@ export default {
     "Daha fazla cihaz"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    ""
+    "Seçili ürün için daha fazla tuş haritası düzeni [Yerelleştirme] sayfasında mevcut olabilir"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    ""
+    "Seçili ürün için daha fazla dil ve klavye düzeni seçeneği [Yerelleştirme] sayfasında bulunabilir."
   ],
   "More languages might be available for the selected product at [Localization] page": [
-    ""
+    "Seçili ürün için [Yerelleştirme] sayfasında daha fazla dil mevcut olabilir"
   ],
   "Mount Point": [
     "Bağlantı Noktası"
@@ -959,7 +1013,7 @@ export default {
     "Çoklu yol"
   ],
   "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
-    ""
+    "Birden fazla çakışma bulundu. Bunları herhangi bir sırayla ele alabilirsiniz ve birini çözmek diğerlerini de çözebilir."
   ],
   "NFS": [
     "NFS"
@@ -996,6 +1050,9 @@ export default {
   ],
   "No additional software was selected.": [
     "Hiçbir ek yazılım seçilmedi."
+  ],
+  "No conflicts to address": [
+    "Ele alınacak bir çatışma yok"
   ],
   "No content found": [
     "İçerik bulunamadı"
@@ -1110,6 +1167,9 @@ export default {
   ],
   "Partitions to boot will be allocated at the following device.": [
     "Önyükleme için bölümler aşağıdaki aygıta tahsis edilecektir."
+  ],
+  "Partitions to boot will be allocated at the installation disk %s.": [
+    "Önyükleme için bölümler kurulum diski %s'de tahsis edilecektir."
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Önyükleme için gerekli bölümler kurulum diskinde tahsis edilecektir."
@@ -1253,7 +1313,7 @@ export default {
     "Sonuç"
   ],
   "Review and fix": [
-    ""
+    "Gözden geçir ve düzelt"
   ],
   "Root authentication methods": [
     "Root kimlik doğrulama yöntemleri"
@@ -1308,6 +1368,9 @@ export default {
   ],
   "Select a product": [
     "Bir ürün seçin"
+  ],
+  "Select a solution to continue": [
+    "Devam etmek için bir çözüm seçin"
   ],
   "Select another disk to define partitions": [
     "Bölümleri tanımlamak için başka bir disk seçin"
@@ -1367,6 +1430,12 @@ export default {
   "Show information about %s": [
     "%s hakkında bilgi göster"
   ],
+  "Show less actions": [
+    "Daha az eylem göster"
+  ],
+  "Show more actions": [
+    "Daha fazla eylem göster"
+  ],
   "Shrink existing partitions": [
     "Mevcut bölümleri küçült"
   ],
@@ -1376,23 +1445,35 @@ export default {
   "Size": [
     "Boyut"
   ],
+  "Size limits must be numbers followed by a unit like GiB or GB": [
+    "Boyut sınırları GiB veya GB gibi bir birimin ardından gelen sayılar olmalıdır"
+  ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Boyut sınırları, isteğe bağlı olarak GiB veya GB gibi bir birimin takip ettiği sayılar olmalıdır"
   ],
+  "Size mode": [
+    "Boyut modu"
+  ],
+  "Size modes": [
+    "Boyut modları"
+  ],
   "Skip to content": [
-    ""
+    "İçeriğe geç"
   ],
   "Skip to next": [
-    ""
+    "Sonrakine atla"
   ],
   "Skip to previous": [
-    ""
+    "Öncekine atla"
   ],
   "Software": [
     "Yazılım"
   ],
   "Software %s": [
     "Yazılım %s"
+  ],
+  "Software conflicts resolution": [
+    "Yazılım çatışmalarının çözümü"
   ],
   "Software selection": [
     "Yazılım seçimi"
@@ -1458,13 +1539,22 @@ export default {
     "Yapılandırılan LVM grupları %s konumunda kalacaktır"
   ],
   "The connection can be used by any available interface.": [
-    ""
+    "Bağlantı herhangi bir mevcut arayüz tarafından kullanılabilir."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
-    ""
+    "Bağlantı sadece kurulum sırasında kullanılacak olup, kurulu sistemde mevcut olmayacaktır."
   ],
   "The content may be deleted": [
     "İçerik silinmiş olabilir"
+  ],
+  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
+    "Mevcut yapılandırma %2$s'nin %1$s'sini oluşturma girişimiyle sonuçlanacaktır."
+  ],
+  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
+    "Mevcut yapılandırma en az %2$s değerinde bir %1$s oluşturma girişimine yol açacaktır."
+  ],
+  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
+    "Mevcut yapılandırma, %2$s ile %3$s arasında bir boyutta %1$s oluşturma girişimine yol açacaktır."
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Veriler tutulacak, ancak mevcut bölümler ihtiyaç halinde yeniden boyutlandırılacak."
@@ -1496,6 +1586,9 @@ export default {
   "The extension has been registered with key %s.": [
     "Uzantı %s anahtarıyla kaydedildi."
   ],
+  "The final size can be bigger in order to fill the extra free space.": [
+    "Ekstra boş alanı doldurmak için son boyut daha büyük olabilir."
+  ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Güvenilir Platform Modülünü (Trusted Platform Module) (TPM) şifrelenmiş cihazları otomatik olarak açacak şekilde yapılandırmanın son adımı, yeni sistemin ilk önyüklemesi sırasında gerçekleştirilecektir. Bunun çalışması için makinenin doğrudan yeni önyükleyiciye önyükleme yapması gerekir."
   ],
@@ -1515,10 +1608,13 @@ export default {
     "Kurulum %s kadar olacaktır ve şunları içerecektir:"
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
-    ""
+    "Kurulum arayüzü artık kullanılamıyor, bu nedenle bu pencereyi güvenle kapatabilirsiniz."
   ],
   "The installer requires [root] user privileges.": [
     "Yükleyici [root] kullanıcı ayrıcalıklarını gerektirir."
+  ],
+  "The maximum must be a number followed by a unit like GiB or GB": [
+    "Maksimum, GiB veya GB gibi bir birimin izlediği bir sayı olmalıdır"
   ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
     "Maksimum, isteğe bağlı olarak GiB veya GB gibi bir birim tarafından takip edilen bir sayı olmalıdır"
@@ -1526,17 +1622,56 @@ export default {
   "The minimum cannot be greater than the maximum": [
     "Minimum, maksimumdan büyük olamaz"
   ],
+  "The minimum must be a number followed by a unit like GiB or GB": [
+    "Minimum, GiB veya GB gibi bir birimin izlediği bir sayı olmalıdır"
+  ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "Minimum, isteğe bağlı olarak GiB veya GB gibi bir birimin izlediği bir sayı olmalıdır"
   ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "Gerekli LVM fiziksel birimleri, mantıksal birimlerin boyutlarına göre seçilen disklere bölümler                  halinde eklenecektir. Birden fazla disk                  seçerseniz, fiziksel birimler birkaç diske dağıtılabilir."
   ],
+  "The password is weak": [
+    "Şifre zayıf"
+  ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "TPM sistemin bütünlüğünü doğrulayabiliyorsa, verileri başlatmak ve erişmek için parolaya gerek kalmayacaktır. TPM yalıtımı, yeni sistemin ilk çalıştırmada doğrudan başlatılmasını gerektirir."
   ],
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
+    "%1$s için boyut, sistemdeki RAM miktarına ve %2$s için ayrı bir dosya sisteminin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
+  ],
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
+    "%1$s için boyut, sistemdeki RAM miktarına ve %2$s için ayrı dosya sistemlerinin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
+  ],
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "%1$s için boyut, sistemdeki RAM miktarına, Btrfs anlık görüntülerinin kullanımına ve %2$s için ayrı bir dosya sisteminin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
+  ],
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "%1$s için boyut, sistemdeki RAM miktarına, Btrfs anlık görüntülerinin kullanımına ve %2$s için ayrı dosya sistemlerinin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
+  ],
+  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
+    "%1$s için boyut, %2$s için ayrı bir dosya sisteminin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
+  ],
+  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
+    "%1$s için boyut, %2$s için ayrı dosya sistemlerinin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
+  ],
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "%1$s için boyut, Btrfs anlık görüntülerinin kullanımına ve %2$s için ayrı bir dosya sisteminin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
+  ],
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "%1$s için boyut, Btrfs anlık görüntülerinin kullanımına ve %2$s için ayrı dosya sistemlerinin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
+  ],
+  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
+    "%s boyutu, sistemdeki RAM miktarına ve Btrfs anlık görüntülerinin kullanımına bağlı olarak dinamik olarak ayarlanacaktır."
+  ],
+  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
+    "%s boyutu, Btrfs anlık görüntülerinin kullanımına bağlı olarak dinamik olarak ayarlanacaktır."
+  ],
   "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
-    ""
+    "Boyut %s ile %s arasında bir aralık olarak yapılandırılmıştır, ancak bu arayüz belirli bir maksimum boyuta sahip aralıkları işleyemez."
+  ],
+  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
+    "Boyut, GiB (2'nin kuvveti) veya GB (10'un kuvveti) biçiminde bir birimin izlediği bir sayı olmalıdır."
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "Depolama yapılandırması geçerli (aşağıdaki sonucu görün) ancak bu arayüz tarafından desteklenmeyen öğeler kullanıyor."
@@ -1566,10 +1701,10 @@ export default {
     "Bunlar en alakalı kurulum ayarlarıdır. Daha fazla ayrıntı için menüdeki bölümlere göz atmaktan çekinmeyin."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "Bunlar, ürünün kurulacağı ayarlardır. Yükleyici dili ve klavye düzeni, üst çubuktan erişilebilen [ayarlar paneli] aracılığıyla ayarlanabilir."
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "Bunlar, yüklenecek ürün için ayarlardır. Yükleyici dili, üst çubuktan erişilebilen [ayarlar paneli] aracılığıyla ayarlanabilir."
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Bu eylem aşağıda listelenen cihazlarda depolanan tüm verileri yok edebilir. Lütfen devam etmek istediğinizi onaylayın."
@@ -1605,7 +1740,7 @@ export default {
     "Bu, diskteki mevcut bölümleri kullanır"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    ""
+    "Bu yalnızca yükleyici arayüzünü etkileyecektir, yüklenecek ürünü değil. Ürünün yerelleştirmesini daha sonra Yerelleştirme ayarları sayfasında ayarlayabilirsiniz."
   ],
   "TiB": [
     "TB"
@@ -1703,8 +1838,11 @@ export default {
   "Use available space": [
     "Mevcut alanı kullan"
   ],
+  "Use for installation only": [
+    "Sadece kurulum için kullanın"
+  ],
   "Use for the selected product too": [
-    ""
+    "Seçili ürün için de kullanın"
   ],
   "Use password": [
     "Şifre kullan"
@@ -1722,7 +1860,7 @@ export default {
     "Her önyüklemede otomatik olarak şifre çözmek için Güvenilir Platform Modülünü (TPM) kullanın"
   ],
   "Use these same settings for the selected product": [
-    ""
+    "Seçili ürün için aynı ayarları kullanın"
   ],
   "Used space": [
     "Kullanılan alan"
@@ -1737,7 +1875,7 @@ export default {
     "Kullanıcı adı önerisi açılır listesi"
   ],
   "Using [%s] keyboard": [
-    ""
+    "[%s] klavyesi kullanılıyor"
   ],
   "Using a hashed password.": [
     "Karma şifre kullanımı."
@@ -1809,16 +1947,16 @@ export default {
     "Şifreleme olmadan halka açık bir ağa bağlanacaksınız. Verileriniz güvenli olmayabilir."
   ],
   "Your system is rebooting": [
-    ""
+    "Sisteminiz yeniden başlatılıyor"
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
-    ""
+    "[CAPS LOCK] açık"
   ],
   "approx. %s": [
-    ""
+    "yaklaşık %s"
   ],
   "at least %s": [
     "en az %s"
