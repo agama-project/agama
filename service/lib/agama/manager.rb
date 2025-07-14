@@ -63,6 +63,7 @@ module Agama
 
     # Constructor
     #
+    # @param config [Agama::Config]
     # @param logger [Logger]
     def initialize(config, logger)
       textdomain "agama"
@@ -95,6 +96,7 @@ module Agama
       start_progress_with_descriptions(_("Analyze disks"), _("Configure software"))
       progress.step { reprobe ? storage.reprobe : storage.probe }
       progress.step { software.probe }
+
       logger.info("Config phase done")
     rescue StandardError => e
       logger.error "Startup error: #{e.inspect}. Backtrace: #{e.backtrace}"

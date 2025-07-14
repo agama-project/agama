@@ -45,15 +45,6 @@ export default {
   "%s with %d partitions": [
     "%s （包含 %d 个分区）"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "将创建一个 %1$s (%2$s)，以用于 %3$s"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "将创建一个 %1$s（至少 %2$s），以用于 %3$s"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "将创建一个 %1$s（大小介于 %2$s 至 %3$s 之间），以用于 %4$s"
-  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "至少 %1$s 的通用大小将用于新 %2$s"
   ],
@@ -209,15 +200,6 @@ export default {
   ],
   "Back": [
     "返回"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "将根据系统中的 RAM 容量创建一个 %1s$ (%2$s)，以用于 %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "将根据系统中的 RAM 容量创建一个 %1s$（至少 %2$s），以用于 %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "将根据系统中的 RAM 容量创建一个 %1s$（大小介于 %2$s 至 %3$s 之间），以用于 %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -515,6 +497,9 @@ export default {
   ],
   "Discard": [
     "丢弃"
+  ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
   ],
   "Disconnected": [
     "已断开连接"
@@ -1146,9 +1131,6 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     "引导分区将在以下设备上分配。"
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "引导分区将在安装磁盘（%s）上进行分配。"
-  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "引导分区将会分配在安装磁盘上。"
   ],
@@ -1515,15 +1497,6 @@ export default {
   "The content may be deleted": [
     "内容可能会被删除"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "当前配置将会产生一个 %1$s (%2$s)。"
-  ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "当前配置将会产生一个 %1$s（至少 %2$s）。"
-  ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "当前配置将会产生一个 %1$s（大小介于 %2$s 至 %3$s 之间）。"
-  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "数据将被保留，但当前分区的大小将会按需调整。"
   ],
@@ -1599,7 +1572,7 @@ export default {
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "若 TPM 可以验证系统的完整性，启动和访问数据的时候将无需使用密码。 TPM 密封要求新系统在首次启动时直接开始引导。"
   ],
-  "The size is configured as a range between %s and %s, but defining a range of sizes is not supported by the UI.": [
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
     ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [

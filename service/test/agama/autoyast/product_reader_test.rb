@@ -38,7 +38,7 @@ describe Agama::AutoYaST::ProductReader do
   end
 
   let(:suse_register_section) do
-    { "reg_code" => "123456", "email" => "test@opensuse.org" }
+    { "reg_code" => "123456", "email" => "test@opensuse.org", "reg_server" => "http://test.com" }
   end
 
   subject do
@@ -66,6 +66,7 @@ describe Agama::AutoYaST::ProductReader do
         product = subject.read["product"]
         expect(product["registrationCode"]).to eq("123456")
         expect(product["registrationEmail"]).to eq("test@opensuse.org")
+        expect(product["registrationUrl"]).to eq("http://test.com")
       end
     end
   end

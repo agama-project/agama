@@ -145,7 +145,7 @@
         <package name="agama-web-ui"/>
         <package name="agama-cli"/>
         <package name="agama-cli-bash-completion"/>
-        <package name="agama-auto"/>
+        <package name="agama-autoinstall"/>
         <package name="rubygem(agama-yast)"/>
         <package name="rubygem(byebug)"/>
         <package name="psmisc"/>
@@ -163,6 +163,8 @@
         <archive name="live-root.tar.xz"/>
         <!-- IPMI support -->
         <package name="ipmitool" />
+        <!-- jsc#PED-13114 -->
+        <package name="tpm2.0-tools" />
     </packages>
 
     <!-- packages for local installation (desktop, browser, etc.) -->

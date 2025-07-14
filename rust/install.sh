@@ -34,9 +34,10 @@ install6() {
     install -m 0644 "$@"
 }
 
-install -D -t "${DESTDIR}${bindir}" "${SRCDIR}"/target/${RUST_TARGET}/agama
-install -D -t "${DESTDIR}${bindir}" "${SRCDIR}"/target/${RUST_TARGET}/agama-dbus-server
-install -D -t "${DESTDIR}${bindir}" "${SRCDIR}"/target/${RUST_TARGET}/agama-web-server
+install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama"
+install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama-autoinstall"
+install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama-dbus-server"
+install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama-web-server"
 
 install6 -D -p "${SRCDIR}"/share/agama.pam "${DESTDIR}${pamvendordir}"/agama
 
@@ -50,8 +51,9 @@ install6 -D -t "${DESTDIR}${datadir}"/dbus-1/agama-services "${SRCDIR}"/share/or
 
 install -D -t "${DESTDIR}${libexecdir}" "${SRCDIR}"/share/agama-scripts.sh
 
-install6 -D -t  "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-scripts.service
-install6 -D -t  "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-web-server.service
+install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-autoinstall.service
+install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-scripts.service
+install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-web-server.service
 
 # install manpages
 install6 -D -t "${DESTDIR}${mandir}"/man1 "${SRCDIR}"/out/man/* 

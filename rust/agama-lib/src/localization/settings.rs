@@ -28,9 +28,12 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct LocalizationSettings {
     /// like "en_US.UTF-8"
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub language: Option<String>,
     /// like "cz(qwerty)"
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub keyboard: Option<String>,
     /// like "Europe/Berlin"
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub timezone: Option<String>,
 }

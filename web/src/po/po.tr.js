@@ -45,15 +45,6 @@ export default {
   "%s with %d partitions": [
     "%s ile %d bölümler"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "%3$s için %2$s'nin %1$s'i oluşturulacak"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "En az %2$s'lik bir %1$s %3$s için oluşturulacak"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "%4$s için %2$s ile %3$s arasında bir boyuta sahip %1$s oluşturulacak"
-  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Yeni %2$s için genel bir asgari %1$s boyutu kullanılacak"
   ],
@@ -209,15 +200,6 @@ export default {
   ],
   "Back": [
     "Geri"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "Sistemdeki RAM miktarına bağlı olarak, %3$s için %2$s'lik bir %1s$ oluşturulacak"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "Sistemdeki RAM miktarına bağlı olarak, %3$s için en az %2$s'lik bir %1s$ oluşturulacak"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "Sistemdeki RAM miktarına bağlı olarak, %4$s için %2$s ile %3$s arasında bir boyutta %1s$ oluşturulacak"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -500,6 +482,9 @@ export default {
   ],
   "Discard": [
     "At"
+  ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
   ],
   "Disconnected": [
     "Bağlantısı Kesildi"
@@ -1126,9 +1111,6 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     "Önyükleme için bölümler aşağıdaki aygıta tahsis edilecektir."
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Önyükleme için bölümler kurulum diskinde (%s) tahsis edilecektir."
-  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Önyükleme için gerekli bölümler kurulum diskinde tahsis edilecektir."
   ],
@@ -1484,15 +1466,6 @@ export default {
   "The content may be deleted": [
     "İçerik silinmiş olabilir"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "Mevcut yapılandırma %1$s veya %2$s sonucunu verecektir."
-  ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "Mevcut yapılandırma en az %2$s değerinde bir %1$s ile sonuçlanacaktır."
-  ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "Mevcut yapılandırma, %2$s ile %3$s arasında bir boyuta sahip %1$s ile sonuçlanacaktır."
-  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Veriler tutulacak, ancak mevcut bölümler ihtiyaç halinde yeniden boyutlandırılacak."
   ],
@@ -1562,7 +1535,7 @@ export default {
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "TPM sistemin bütünlüğünü doğrulayabiliyorsa, verileri başlatmak ve erişmek için parolaya gerek kalmayacaktır. TPM yalıtımı, yeni sistemin ilk çalıştırmada doğrudan başlatılmasını gerektirir."
   ],
-  "The size is configured as a range between %s and %s, but defining a range of sizes is not supported by the UI.": [
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
     ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [

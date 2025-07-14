@@ -37,7 +37,7 @@ software:
     - NetworkManager
     - openSUSE-repos-MicroOS
   optional_packages: null
-  base_product: MicroOS
+  base_product: Kalpa
 
 security:
   lsm: selinux

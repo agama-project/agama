@@ -24,7 +24,6 @@
     - [Avahi/mDNS](#avahimdns)
       - [The Default Hostname](#the-default-hostname)
       - [Service Advertisement](#service-advertisement)
-    - [Autoinstallation support](#autoinstallation-support)
     - [Firmware cleanup](#firmware-cleanup)
 
 ---
@@ -241,12 +240,6 @@ That allows scanning all running Agama instances in the local network with comma
 ```shell
 avahi-browse -t -r _agama._sub._https._tcp
 ```
-
-### Autoinstallation support
-
-The autoinstallation is started using the [agama-auto](root/etc/systemd/system/agama-auto.service)
-service which starts the [auto.sh](root/usr/bin/auto.sh) script. This script downloads the
-installation profile, applies it to Agama and starts the installation.
 
 ### Firmware cleanup
 
