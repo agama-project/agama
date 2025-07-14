@@ -21,6 +21,7 @@
 
 require "logger"
 require "yast"
+require "agama/cmdline_args"
 require "agama/question"
 require "agama/software/manager"
 require "agama/software/callbacks/base"
@@ -46,20 +47,6 @@ module Agama
           Yast::Pkg.CallbackPkgGpgCheck(
             Yast::FunRef.new(method(:pkg_gpg_check), "string(map)")
           )
-        end
-
-        # Should be the DUD packages GPG signatures verified? The GPG errors can
-        # be ignored by using the "inst.dud_packages.gpg=0" boot option
-        #
-        # @return [Boolean] `true` if the GPG errors should be ignored, `false` otherwise
-        def ignore_dud_packages_gpg_errors?
-          return @ignore_dud_packages_gpg_errors if !@ignore_dud_packages_gpg_errors.nil?
-
-          cmdline_args = CmdlineArgs.read
-          dud = cmdline_args.data["dud_packages"]
-          gpg = dud && dud["gpg"]
-
-          @ignore_dud_packages_gpg_errors = [false, "0"].include?(gpg)
         end
 
         # Package GPG check callback
@@ -91,6 +78,22 @@ module Agama
 
           # no decision made, the error will be reported by the DoneProvide callback again
           ""
+        end
+
+      private
+
+        # Should be the DUD packages GPG signatures verified? The GPG errors can
+        # be ignored by using the "inst.dud_packages.gpg=0" boot option
+        #
+        # @return [Boolean] `true` if the GPG errors should be ignored, `false` otherwise
+        def ignore_dud_packages_gpg_errors?
+          return @ignore_dud_packages_gpg_errors unless @ignore_dud_packages_gpg_errors.nil?
+
+          cmdline_args = CmdlineArgs.read
+          dud = cmdline_args.data["dud_packages"]
+          gpg = dud && dud["gpg"]
+
+          @ignore_dud_packages_gpg_errors = [false, "0"].include?(gpg)
         end
       end
     end
