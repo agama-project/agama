@@ -112,7 +112,7 @@ if [ -n "$CLEANUP" ] || [ -n "$OBSOLETE" ]; then
         config=$(gh -R "$repo_slug" variable get OBS_PROJECTS 2> /dev/null)
         if [ -n "$config" ]; then
           # remove the mapping for the deleted project
-          echo "$config" | jq "del(.[\"$project\"])" | gh -R "$repo_slug" variable set OBS_PROJECTS
+          echo "$config" | jq "del(.[\"$branch_name\"])" | gh -R "$repo_slug" variable set OBS_PROJECTS
         fi
       else
         echo "Found obsolete project: $project"
