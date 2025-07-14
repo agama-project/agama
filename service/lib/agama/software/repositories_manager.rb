@@ -49,9 +49,11 @@ module Agama
       # @param repo_alias [String] Repository alias, must be unique,
       #   if not specified a random one is generated
       # @param autorefresh [Boolean] Whether the repository should be autorefreshed
-      def add(url, name: nil, repo_alias: "", autorefresh: true)
+      # @param priority    [Integer] Repository priority, the lower number the higher (!)
+      #                              priority, the default libzypp priority is 99
+      def add(url, name: nil, repo_alias: "", autorefresh: true, priority: 99)
         repositories << Repository.create(name: name || url, url: url, repo_alias: repo_alias,
-          autorefresh: autorefresh)
+          autorefresh: autorefresh, priority: priority)
       end
 
       # returns user repositories as it was previously specified

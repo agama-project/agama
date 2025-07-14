@@ -53,6 +53,10 @@ module Yast
       Agama::Software::Callbacks::Script.new(
         questions_client, logger
       ).setup
+
+      Agama::Software::Callbacks::PkgGpgCheck.new(
+        questions_client, logger
+      ).setup
     end
 
     # Returns the client to ask questions
