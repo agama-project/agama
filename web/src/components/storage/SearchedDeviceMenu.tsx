@@ -209,10 +209,6 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
     return !onlyToBoot;
   };
 
-  // If the target device cannot be changed, this button will always be disabled and would only
-  // provide redundant information.
-  if (UseOnlyOneOption(device)) return;
-
   // When no additional drives has been added, the "Do not use" button can be confusing so it is
   // omitted for all drives.
   if (!hasAdditionalDrives(model)) return;
@@ -221,6 +217,10 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
   const isExplicitBoot = device.isExplicitBoot;
   const hasPv = device.isTargetDevice;
   const isDisabled = isExplicitBoot || hasPv;
+
+  // If these cases, the target device cannot be changed and this disabled button would only provide
+  // information that is redundant to the one already displayed at the disabled "change device" one.
+  if (!device.getMountPaths().length && (hasPv || isExplicitBoot)) return;
 
   if (isExplicitBoot) {
     if (hasPv) {
