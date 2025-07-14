@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul 14 15:57:59 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Save registration code and email, even if registration fails
+  (related to jsc#AGM-156).
+
+-------------------------------------------------------------------
 Mon Jul 14 11:32:19 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Install the packages from DUD to the target system
