@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jul 14 06:58:04 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Improve UX around non-persistent connections (bsc#1245187).
+
+-------------------------------------------------------------------
 Fri Jul  4 14:51:14 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Avoid scroll to top on software selection (bsc#1245732).
