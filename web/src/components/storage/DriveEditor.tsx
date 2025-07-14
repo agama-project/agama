@@ -22,7 +22,7 @@
 
 import React from "react";
 import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
-import PartitionableHeader from "~/components/storage/PartitionableHeader";
+import DriveHeader from "~/components/storage/DriveHeader";
 import PartitionsMenu from "~/components/storage/PartitionsMenu";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
 import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
@@ -54,7 +54,7 @@ export type DriveEditorProps = { drive: Drive; driveDevice: StorageDevice };
 export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
   return (
     <ConfigEditorItem
-      header={<PartitionableHeader drive={drive} device={driveDevice} />}
+      header={<DriveHeader drive={drive} device={driveDevice} />}
       content={
         <>
           <PartitionsMenu device={drive} />

@@ -22,7 +22,7 @@
 
 import React from "react";
 import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
-import PartitionableHeader from "~/components/storage/PartitionableHeader";
+import MdRaidHeader from "~/components/storage/MdRaidHeader";
 import PartitionsMenu from "~/components/storage/PartitionsMenu";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
 import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
@@ -54,7 +54,7 @@ type MdRaidEditorProps = { raid: MdRaid; raidDevice: StorageDevice };
 export default function MdRaidEditor({ raid, raidDevice }: MdRaidEditorProps) {
   return (
     <ConfigEditorItem
-      header={<PartitionableHeader drive={raid} device={raidDevice} />}
+      header={<MdRaidHeader raid={raid} device={raidDevice} />}
       content={
         <>
           <PartitionsMenu device={raid} />
