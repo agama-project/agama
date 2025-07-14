@@ -101,30 +101,30 @@ module Agama
       # @return [Hash]
       def product_data_from_config(id)
         {
-          name:               config.products.dig(id, "software", "base_product"),
-          icon:               config.products.dig(id, "software", "icon"),
-          labels:             config.arch_elements_from(
+          name:                 config.products.dig(id, "software", "base_product"),
+          icon:                 config.products.dig(id, "software", "icon"),
+          labels:               config.arch_elements_from(
             id, "software", "installation_labels", property: :label
           ),
-          repositories:       config.arch_elements_from(
+          repositories:         config.arch_elements_from(
             id, "software", "installation_repositories", property: :url
           ),
-          mandatory_packages: config.arch_elements_from(
+          mandatory_packages:   config.arch_elements_from(
             id, "software", "mandatory_packages", property: :package
           ),
-          optional_packages:  config.arch_elements_from(
+          optional_packages:    config.arch_elements_from(
             id, "software", "optional_packages", property: :package
           ),
-          mandatory_patterns: config.arch_elements_from(
+          mandatory_patterns:   config.arch_elements_from(
             id, "software", "mandatory_patterns", property: :pattern
           ),
           preselected_patterns: config.arch_elements_from(
             id, "software", "preselected_patterns", property: :pattern
           ),
-          optional_patterns:  config.arch_elements_from(
+          optional_patterns:    config.arch_elements_from(
             id, "software", "optional_patterns", property: :pattern
           ),
-          user_patterns:      config.arch_elements_from(
+          user_patterns:        config.arch_elements_from(
             id, "software", "user_patterns", property: :pattern, default: nil
           )
         }
