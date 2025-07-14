@@ -21,30 +21,30 @@
 
 module Agama
   module AutoYaST
-    # Builds the Agama "zfcp" section from an AutoYaST profile.
-    class ZFCPReader
+    # Builds the Agama "dasd" section from an AutoYaST profile.
+    class DASDReader
       # @param profile [ProfileHash] AutoYaST profile
       def initialize(profile)
         @profile = profile
       end
 
-      # Returns a hash that corresponds to Agama "zfcp" section.
+      # Returns a hash that corresponds to Agama "dasd" section.
       #
-      # @return [Hash] Agama "zfcp" section
+      # @return [Hash] Agama "dasd" section
       def read
-        devices = profile.fetch_as_hash("zfcp").fetch_as_array("devices")
+        devices = profile.fetch_as_hash("dasd").fetch_as_array("devices")
         return {} if devices.empty?
 
-        zfcp_devices = devices.map do |device|
-          {
-            "channel" => device["controller_id"],
-            "wwpn"    => device["wwpn"],
-            "lun"     => device["lun"]
+        dasd_devices = devices.map do |device|
+          res = {
+            "channel" => device["channel"]
           }
+          res["diag"] = device["diag"] if device.key?("diag")
+          res
         end
 
-        { "zfcp" => {
-          "devices" => zfcp_devices
+        { "dasd" => {
+          "devices" => dasd_devices
         } }
       end
 

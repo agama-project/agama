@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/autoyast/bootloader_reader"
+require "agama/autoyast/dasd_reader"
 require "agama/autoyast/files_reader"
 require "agama/autoyast/hostname_reader"
 require "agama/autoyast/iscsi_reader"
@@ -50,6 +51,7 @@ module Agama
       def to_agama(profile)
         [
           BootloaderReader.new(profile).read,
+          DASDReader.new(profile).read,
           FilesReader.new(profile).read,
           HostnameReader.new(profile).read,
           IscsiReader.new(profile).read,

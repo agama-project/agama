@@ -21,13 +21,13 @@
 
 require_relative "../../test_helper"
 require "yast"
-require "agama/autoyast/zfcp_reader"
+require "agama/autoyast/dasd_reader"
 
 Yast.import "Profile"
 
-describe Agama::AutoYaST::ZFCPReader do
+describe Agama::AutoYaST::DASDReader do
   let(:profile) do
-    { "zfcp" => { "devices" => devices } }
+    { "dasd" => { "devices" => devices } }
   end
   let(:devices) { [] }
 
@@ -36,7 +36,7 @@ describe Agama::AutoYaST::ZFCPReader do
   end
 
   describe "#read" do
-    context "when there is no 'zfcp' section" do
+    context "when there is no 'dasd' section" do
       let(:profile) { {} }
 
       it "returns an empty hash" do
@@ -44,24 +44,33 @@ describe Agama::AutoYaST::ZFCPReader do
       end
     end
 
-    context "when there are some zfcp devices" do
+    context "when there are some dasd devices" do
       let(:devices) do
         [
           {
-            "controller_id" => "0.0.fa00",
-            "wwpn"          => "0x500507630300c562",
-            "lun"           => "0x4010403300000000"
+            "device"   => "DASD",
+            "dev_name" => "/dev/dasda",
+            "channel"  => "0.0.0150",
+            "diag"     => false
+          },
+          {
+            "device"  => "DASD",
+            "channel" => "0.0.0151"
           }
         ]
       end
 
       it "returns a hash including the 'zfcp' with devices key" do
-        expect(subject.read["zfcp"]).to include(
-          "devices" => [{
-            "channel" => "0.0.fa00",
-            "wwpn"    => "0x500507630300c562",
-            "lun"     => "0x4010403300000000"
-          }]
+        expect(subject.read["dasd"]).to include(
+          "devices" => [
+            {
+              "channel" => "0.0.0150",
+              "diag"    => false
+            },
+            {
+              "channel" => "0.0.0151"
+            }
+          ]
         )
       end
     end
