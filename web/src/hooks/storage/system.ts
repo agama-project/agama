@@ -30,7 +30,6 @@ import {
   candidateMdRaidsQuery,
 } from "~/queries/storage";
 import { StorageDevice } from "~/types/storage";
-import { deviceLabel } from "~/components/storage/utils";
 
 function findDevice(devices: StorageDevice[], sid: number): StorageDevice | undefined {
   const device = devices.find((d) => d.sid === sid);
@@ -113,30 +112,6 @@ const useCandidateDevices = (): StorageDevice[] => {
   );
 };
 
-/**
- * Temporary hook that calculates the longest string the UI could need to use to identify a disk.
- *
- * FIXME: This is part of a very hacky solution used to enforce the width of the drill-down menus.
- * That is needed because our MenuButton widget is somehow buggy and it cannot properly set the
- * width of its elements. This hook is totally coupled to the format used in those menus to
- * represent the devices (with a first line including name, size and operating systems).
- */
-const useLongestDiskTitle = (): number => {
-  const availableDevices = useAvailableDevices();
-
-  const longest = useMemo(() => {
-    const titles = availableDevices.map((dev) => {
-      const label = deviceLabel(dev, true).length;
-      const systems = dev.systems.join(" ").length;
-      return label + systems;
-    });
-
-    return Math.max(...titles);
-  }, [availableDevices]);
-
-  return longest;
-};
-
 export {
   useAvailableDrives,
   useCandidateDrives,
@@ -144,5 +119,4 @@ export {
   useCandidateMdRaids,
   useAvailableDevices,
   useCandidateDevices,
-  useLongestDiskTitle,
 };

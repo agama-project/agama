@@ -20,42 +20,36 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Split, Flex, Label, Divider } from "@patternfly/react-core";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
-import MenuDeviceDescription from "./MenuDeviceDescription";
-import { useCandidateDevices, useLongestDiskTitle } from "~/hooks/storage/system";
+import { Divider, MenuItemProps } from "@patternfly/react-core";
+import { useCandidateDevices } from "~/hooks/storage/system";
 import { useModel } from "~/hooks/storage/model";
 import { useAddDrive } from "~/hooks/storage/drive";
 import { useAddReusedMdRaid } from "~/hooks/storage/md-raid";
-import { deviceLabel } from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 import { StorageDevice } from "~/types/storage";
+import DeviceSelectorModal from "./DeviceSelectorModal";
 
-type DisksDrillDownMenuItemProps = {
+type AddDeviceMenuItemProps = {
   /** Available devices to be chosen */
   devices: StorageDevice[];
   /** The total amount of drives and RAIDs already configured */
   usedCount: number;
-  /** Callback function to be triggered when a device is selected */
-  onDeviceClick: (device: StorageDevice) => void;
-};
+} & MenuItemProps;
 
-/**
- * Internal component holding the logic for rendering the disks drilldown menu
- */
-const DisksDrillDownMenuItem = ({
-  usedCount,
-  devices,
-  onDeviceClick,
-}: DisksDrillDownMenuItemProps): React.ReactNode => {
-  const isDisabled = !devices.length;
+const AddDeviceTitle = ({ usedCount }) =>
+  usedCount
+    ? _("Select another disk to define partitions")
+    : _("Select a disk to define partitions");
 
-  const disabledDescription = _("Already using all available disks");
-  const enabledDescription = usedCount
+const AddDeviceDescription = ({ usedCount, isDisabled = false }) => {
+  if (isDisabled) return _("Already using all available disks");
+
+  return usedCount
     ? sprintf(
         n_(
           "Extend the installation beyond the currently selected disk",
@@ -65,36 +59,28 @@ const DisksDrillDownMenuItem = ({
         usedCount,
       )
     : _("Start configuring a basic installation");
-  const title = usedCount
-    ? _("Select another disk to define partitions")
-    : _("Select a disk to define partitions");
+};
 
+/**
+ * Internal component holding the logic for rendering the disks drilldown menu
+ */
+const AddDeviceMenuItem = ({
+  usedCount,
+  devices,
+  onClick,
+}: AddDeviceMenuItemProps): React.ReactNode => {
+  const isDisabled = !devices.length;
   return (
-    <MenuButtonItem
-      aria-label={_("Add device menu")}
-      isDisabled={isDisabled}
-      description={isDisabled ? disabledDescription : enabledDescription}
-      items={devices.map((device) => (
-        <MenuButtonItem
-          key={device.sid}
-          description={<MenuDeviceDescription device={device} />}
-          onClick={() => onDeviceClick(device)}
-        >
-          <Split hasGutter>
-            {deviceLabel(device, true)}
-            <Flex columnGap={{ default: "columnGapXs" }}>
-              {device.systems.map((s, i) => (
-                <Label key={i} isCompact>
-                  {s}
-                </Label>
-              ))}
-            </Flex>
-          </Split>
-        </MenuButtonItem>
-      ))}
-    >
-      {title}
-    </MenuButtonItem>
+    <>
+      <MenuButtonItem
+        aria-label={_("Add device menu")}
+        isDisabled={isDisabled}
+        description={<AddDeviceDescription usedCount={usedCount} isDisabled={isDisabled} />}
+        onClick={onClick}
+      >
+        <AddDeviceTitle usedCount={usedCount} />
+      </MenuButtonItem>
+    </>
   );
 };
 
@@ -109,9 +95,13 @@ const DisksDrillDownMenuItem = ({
  * approach.
  */
 export default function ConfigureDeviceMenu(): React.ReactNode {
-  const navigate = useNavigate();
-  const model = useModel({ suspense: true });
+  const [deviceSelectorOpen, setDeviceSelectorOpen] = useState(false);
+  const openDeviceSelector = () => setDeviceSelectorOpen(true);
+  const closeDeviceSelector = () => setDeviceSelectorOpen(false);
 
+  const navigate = useNavigate();
+
+  const model = useModel({ suspense: true });
   const addDrive = useAddDrive();
   const addReusedMdRaid = useAddReusedMdRaid();
   const allDevices = useCandidateDevices();
@@ -119,11 +109,10 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
   const usedDevicesNames = model.drives.concat(model.mdRaids).map((d) => d.name);
   const usedDevicesCount = usedDevicesNames.length;
   const devices = allDevices.filter((d) => !usedDevicesNames.includes(d.name));
-  const longestTitle = useLongestDiskTitle();
 
   const addDevice = (device: StorageDevice) => {
     const hook = device.isDrive ? addDrive : addReusedMdRaid;
-    hook({ name: device.name });
+    hook({ name: device.name, spacePolicy: "keep" });
   };
 
   const lvmDescription = allDevices.length
@@ -131,29 +120,42 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
     : _("Define a new LVM on the disk");
 
   return (
-    <MenuButton
-      menuProps={{
-        "aria-label": _("Configure device menu"),
-        popperProps: { minWidth: `min(${longestTitle * 0.75}em, 75vw)`, width: "max-content" },
-      }}
-      items={[
-        <DisksDrillDownMenuItem
-          key="select-disk-option"
-          usedCount={usedDevicesCount}
+    <>
+      <MenuButton
+        menuProps={{
+          "aria-label": _("Configure device menu"),
+        }}
+        items={[
+          <AddDeviceMenuItem
+            key="select-disk-option"
+            usedCount={usedDevicesCount}
+            devices={devices}
+            onClick={openDeviceSelector}
+          />,
+          <Divider key="divider-option" />,
+          <MenuButtonItem
+            key="add-lvm-option"
+            onClick={() => navigate(PATHS.volumeGroup.add)}
+            description={lvmDescription}
+          >
+            {_("Add LVM volume group")}
+          </MenuButtonItem>,
+        ]}
+      >
+        {_("More devices")}
+      </MenuButton>
+      {deviceSelectorOpen && (
+        <DeviceSelectorModal
           devices={devices}
-          onDeviceClick={addDevice}
-        />,
-        <Divider key="divider-option" />,
-        <MenuButtonItem
-          key="add-lvm-option"
-          onClick={() => navigate(PATHS.volumeGroup.add)}
-          description={lvmDescription}
-        >
-          {_("Add LVM volume group")}
-        </MenuButtonItem>,
-      ]}
-    >
-      {_("More devices")}
-    </MenuButton>
+          title={<AddDeviceTitle usedCount={usedDevicesCount} />}
+          description={<AddDeviceDescription usedCount={usedDevicesCount} />}
+          onCancel={closeDeviceSelector}
+          onConfirm={([device]) => {
+            addDevice(device);
+            closeDeviceSelector();
+          }}
+        />
+      )}
+    </>
   );
 }
