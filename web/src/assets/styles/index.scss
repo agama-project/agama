@@ -473,6 +473,10 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   --pf-v6-c-data-list__item--hover--BackgroundColor: var(--agm-t--action--background--color--hover);
 }
 
+.pf-v6-c-modal-box {
+  --pf-v6-c-modal-box__header--Gap: var(--pf-t--global--spacer--xs);
+}
+
 // Nested content inside forms should respect parent grid gap
 .pf-v6-c-form [class*="pf-v6-u-mx"] {
   display: grid;
@@ -514,4 +518,15 @@ a:focus-visible,
 button:focus-visible {
   outline: 2px solid var(--agm-t--color--waterhole);
   outline-offset: 3px;
+}
+
+.agm-strong-icon {
+  font-size: 1.6rem;
+  vertical-align: middle;
+}
+
+// FIXME: make ir more generic, if possible, or even without CSS but not
+// rendering such a label if "storage instructions" are more than one
+.storage-structure:has(> li:nth-child(2)) span.action-text {
+  display: none;
 }
