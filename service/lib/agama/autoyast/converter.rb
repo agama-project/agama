@@ -32,6 +32,7 @@ require "agama/autoyast/security_reader"
 require "agama/autoyast/software_reader"
 require "agama/autoyast/storage_reader"
 require "agama/autoyast/user_reader"
+require "agama/autoyast/zfcp_reader"
 
 module Agama
   module AutoYaST
@@ -60,7 +61,8 @@ module Agama
           SecurityReader.new(profile).read,
           SoftwareReader.new(profile).read,
           StorageReader.new(profile).read,
-          UserReader.new(profile).read
+          UserReader.new(profile).read,
+          ZFCPReader.new(profile).read
         ].inject(:merge)
       end
     end

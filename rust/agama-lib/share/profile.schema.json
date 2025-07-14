@@ -134,7 +134,7 @@
                 "type": "string"
               },
               "wwpn": {
-                "title": "WWPN of the targer port (e.g., 0x500507630300c562)",
+                "title": "WWPN of the target port (e.g., 0x500507630300c562)",
                 "type": "string"
               },
               "lun": {
