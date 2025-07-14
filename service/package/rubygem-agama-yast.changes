@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Mon Jul 14 11:32:19 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Install the packages from DUD to the target system
+  (gh#agama-project/agama#2543)
+- Allow ignoring GPG signature problems for the DUD packages using
+  the "inst.dud_packages.gpg=0" boot parameter
+  (problems for packages from other repositories are still reported)
+- Fixed parsing the boot command line options,
+  using both nested and parent option would crash the installer
+  (like "inst.foo" with "inst.foo.bar")
+
+-------------------------------------------------------------------
 Thu Jul 10 12:13:14 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Inhibit storage subsystems (bsc#1245159, bsc#1246133).
