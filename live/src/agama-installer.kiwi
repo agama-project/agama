@@ -21,7 +21,7 @@
         <profile name="Leap_16.0_PXE" description="openSUSE Leap OEM image for remote installation" import="true" />
     </profiles>
     <preferences>
-        <version>16.pre.0.0</version>
+        <version>16.0.0</version>
         <packagemanager>zypper</packagemanager>
         <locale>en_US</locale>
         <keytable>us</keytable>
@@ -108,7 +108,7 @@
         <package name="systemd"/>
         <package name="procps"/>
         <package name="iputils"/>
-        <package name="hyper-v"/>
+        <package name="hyper-v" arch="aarch64,x86_64"/>
         <package name="vim"/>
         <package name="vim-data"/>
         <package name="grub2"/>
@@ -145,7 +145,7 @@
         <package name="agama-web-ui"/>
         <package name="agama-cli"/>
         <package name="agama-cli-bash-completion"/>
-        <package name="agama-auto"/>
+        <package name="agama-autoinstall"/>
         <package name="rubygem(agama-yast)"/>
         <package name="rubygem(byebug)"/>
         <package name="psmisc"/>
@@ -161,6 +161,10 @@
         <!-- it can be used by users in AutoYaST pre-scripts -->
         <package name="perl-XML-Simple"/>
         <archive name="live-root.tar.xz"/>
+        <!-- IPMI support -->
+        <package name="ipmitool" />
+        <!-- jsc#PED-13114 -->
+        <package name="tpm2.0-tools" />
     </packages>
 
     <!-- packages for local installation (desktop, browser, etc.) -->
@@ -171,7 +175,7 @@
         <package name="fonts-config"/>
         <package name="xauth"/>
         <package name="MozillaFirefox"/>
-        <package name="gdm"/>
+        <package name="gdm-systemd"/>
         <package name="gnome-shell"/>
         <package name="gnome-session-wayland"/>
         <package name="gnome-kiosk"/>

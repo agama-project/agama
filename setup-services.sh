@@ -142,6 +142,7 @@ $SUDO $ZYPPER install \
   lshw \
   NetworkManager \
   pam-devel \
+  libpwquality-tools \
   python-langtable-data \
   tar \
   timezone \

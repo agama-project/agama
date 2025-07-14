@@ -45,15 +45,6 @@ export default {
   "%s with %d partitions": [
     "%s (包含 %d 個分割區)"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "將建立一個 %1$s (%2$s)，以用於 %3$s"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "將建立一個 %1$s (至少 %2$s)，以用於 %3$s"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "將建立一個 %1$s (大小介於 %2$s 至 %3$s 之間)，以用於 %4$s"
-  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "至少 %1$s 的通用大小將用於新 %2$s"
   ],
@@ -153,6 +144,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "透過此介面管理的所有網路連接目前都設定為僅在安裝期間使用，並且不會複製到安裝好的系統中"
   ],
+  "Allow growing": [
+    ""
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "除了定義首個使用者外，還可設定 root 使用者的驗證方法。"
   ],
@@ -210,15 +204,6 @@ export default {
   "Back": [
     "後退"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "將根據系統中的 RAM 容量建立一個 %1s$ (%2$s)，以用於 %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "將根據系統中的 RAM 容量建立一個 %1s$ (至少 %2$s)，以用於 %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "將根據系統中的 RAM 容量建立一個 %1s$ (大小介於 %2$s 至 %3$s 之間)，以用於 %4$s"
-  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -234,6 +219,12 @@ export default {
   "Beta": [
     "Beta 版"
   ],
+  "Bind to interface name": [
+    ""
+  ],
+  "Binding settings for '%s'": [
+    ""
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -245,9 +236,6 @@ export default {
   ],
   "Btrfs with snapshots": [
     "含快照的 Btrfs"
-  ],
-  "Calculated automatically": [
-    "已自動計算"
   ],
   "Cancel": [
     "取消"
@@ -305,6 +293,15 @@ export default {
   ],
   "Choose a disk for placing the boot loader": [
     "選擇一個存放開機載入程式的磁碟"
+  ],
+  "Choose device to bind by MAC": [
+    ""
+  ],
+  "Choose device to bind by name": [
+    ""
+  ],
+  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
+    ""
   ],
   "Choose what to with current content": [
     "選擇如何處理目前內容"
@@ -459,9 +456,6 @@ export default {
   "Default file system for generic partitions": [
     "通用分割區的預設檔案系統"
   ],
-  "Define a custom size or a range": [
-    "定義自訂大小或範圍"
-  ],
   "Define a new LVM on the disk": [
     "在該磁碟上定義新 LVM"
   ],
@@ -506,6 +500,9 @@ export default {
   ],
   "Discard": [
     "捨棄"
+  ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
   ],
   "Disconnected": [
     "已中斷連接"
@@ -744,9 +741,6 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "如果執行此次安裝時使用了本地媒體，請在下次開機前移除。"
   ],
-  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "如果未指定單位，則使用位元組 (B)。更大的單位可以採用               GiB (2 的次方) 或 GB (10 的次方) 形式。"
-  ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "如果繼續操作，系統將依照提供的安裝設定修改硬碟上的分割區。"
   ],
@@ -855,9 +849,6 @@ export default {
   "JFS": [
     "JFS"
   ],
-  "Keep size of %s": [
-    "保留 %s 的大小"
-  ],
   "Keyboard": [
     "鍵盤"
   ],
@@ -882,14 +873,8 @@ export default {
   "Language and keyboard": [
     "語言與鍵盤"
   ],
-  "Let the installer propose a sensible range of sizes": [
-    "讓安裝程式建議適當的大小範圍"
-  ],
   "License language": [
     "授權語言"
-  ],
-  "Limited": [
-    "有限制"
   ],
   "Loading": [
     "正在載入"
@@ -945,26 +930,8 @@ export default {
   "Manual": [
     "手動"
   ],
-  "Maximum": [
-    "上限"
-  ],
-  "Maximum size mode": [
-    "大小上限模式"
-  ],
-  "Maximum size options": [
-    "大小上限選項"
-  ],
-  "Maximum size value": [
-    "大小上限值"
-  ],
   "MiB": [
     "MiB"
-  ],
-  "Minimum": [
-    "下限"
-  ],
-  "Minimum size value": [
-    "大小下限值"
   ],
   "Mode": [
     "模式"
@@ -1167,9 +1134,6 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     "將會在以下裝置上配置開機分割區。"
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "將會在安裝磁碟 (%s) 上配置開機分割區。"
-  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "將會在安裝磁碟上配置開機分割區。"
   ],
@@ -1335,9 +1299,6 @@ export default {
   "SSID": [
     "SSID"
   ],
-  "Same as minimum": [
-    "與下限相同"
-  ],
   "Search": [
     "搜尋"
   ],
@@ -1452,15 +1413,6 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "大小限制必須為數字，後面可跟 GiB 或 GB 等單位"
   ],
-  "Size options": [
-    "大小選項"
-  ],
-  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
-    "輸入的大小必須為數字，且後跟               GiB (2 的次方) 或 GB (10 的次方) 形式的單位。"
-  ],
-  "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "輸入的大小必須為數字，後面可跟單位。"
-  ],
   "Skip to content": [
     "跳到內容"
   ],
@@ -1548,15 +1500,6 @@ export default {
   "The content may be deleted": [
     "內容可能會刪除"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "目前的組態將會產生一個 %1$s (%2$s)。"
-  ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "目前的組態將會產生一個 %1$s (至少 %2$s)。"
-  ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "目前的組態將會產生一個 %1$s (大小介於 %2$s 至 %3$s 之間)。"
-  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "將會保留資料，但會視需要調整目前分割區的大小。"
   ],
@@ -1606,19 +1549,10 @@ export default {
     "安裝將會佔用 %s，包括："
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
-    ""
+    "安裝程式介面已不再可用，因此您可以安全關閉此視窗。"
   ],
   "The installer requires [root] user privileges.": [
     "安裝程式要求您具有 [root] 使用者權限。"
-  ],
-  "The logical volume can grow to use all the contiguous free space": [
-    "邏輯磁碟區可增長，直至使用所有連續的可用空間"
-  ],
-  "The logical volume can grow until a given limit size": [
-    "邏輯磁碟區可增長至給定的限制大小"
-  ],
-  "The logical volume is created exactly with the given size": [
-    "嚴格依照給定大小建立邏輯磁碟區"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "上限必須為數字且後跟單位 (如 GiB 或 GB)"
@@ -1638,47 +1572,11 @@ export default {
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "將根據邏輯磁碟區的大小，將所需的 LVM 實體磁碟區做為                 分割區新增至所選磁碟上。如果選取多個磁碟，                 實體磁碟區可能會分散在多個磁碟上。"
   ],
-  "The partition can grow to use all the contiguous free space": [
-    "分割區可增長，直至使用所有連續的可用空間"
-  ],
-  "The partition can grow until a given limit size": [
-    "分割區可增長至給定的限制大小"
-  ],
-  "The partition is created exactly with the given size": [
-    "嚴格依照給定大小建立分割區"
-  ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "如果 TPM 可以驗證系統的完整性，則開機和存取資料時將無需輸入密碼。TPM 封存功能要求新系統在首次執行時直接開機。"
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "%1$s 的大小範圍將會動態調整，考量因素包括系統中的 RAM 容量以及 %2$s 是否存在單獨的檔案系統。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "%1$s 的大小範圍將會動態調整，考量因素包括系統中的 RAM 容量以及 %2$s 是否存在單獨的檔案系統。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "%1$s 的大小範圍將會動態調整，考量因素包括系統中的 RAM 容量、Btrfs 快照的使用情況，以及 %2$s 是否存在單獨的檔案系統。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "%1$s 的大小範圍將會動態調整，考量因素包括系統中的 RAM 容量、Btrfs 快照的使用情況，以及 %2$s 是否存在單獨的檔案系統。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "%1$s 的大小範圍將會根據 %2$s 是否存在單獨的檔案系統動態調整。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "%1$s 的大小範圍將會根據 %2$s 是否存在單獨的檔案系統動態調整。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "%1$s 的大小範圍將會動態調整，考量因素包括 Btrfs 快照的使用情況以及 %2$s 是否存在單獨的檔案系統。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "%1$s 的大小範圍將會動態調整，考量因素包括 Btrfs 快照的使用情況以及 %2$s 是否存在單獨的檔案系統。"
-  ],
-  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "%s 的大小範圍將會動態調整，考量因素包括系統中的 RAM 容量以及 Btrfs 快照的使用情況。"
-  ],
-  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "%s 的大小範圍將會根據 Btrfs 快照的使用情況動態調整。"
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
+    ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "該儲存組態有效 (請參閱下面的結果)，但使用了此介面不支援的元素。"
@@ -1954,13 +1852,16 @@ export default {
     "您將連接至未加密的公用網路。資料可能存在安全風險。"
   ],
   "Your system is rebooting": [
-    ""
+    "系統正在重新開機"
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "已開啟 [大寫鎖定]"
+  ],
+  "approx. %s": [
+    ""
   ],
   "at least %s": [
     "至少 %s"

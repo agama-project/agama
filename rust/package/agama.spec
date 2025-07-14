@@ -42,6 +42,9 @@ BuildRequires:  pkgconfig(pam)
 BuildRequires:  jsonnet
 Requires:       jsonnet
 Requires:       lshw
+# required by the password checking
+BuildRequires:  libpwquality-tools
+Requires:       libpwquality-tools
 # required by "agama logs store"
 Requires:       gzip
 # required to compress the manual pages
@@ -65,6 +68,17 @@ Conflicts:      agama-dbus-server
 Agama is a service-based Linux installer. It is composed of an HTTP-based API,
 a web user interface, a command-line interface and a D-Bus service which exposes
 part of the YaST libraries.
+
+%package -n agama-autoinstall
+Version:        0
+Release:        0
+Summary:        Agama auto-installation service
+License:        GPL-2.0-or-later
+Url:            https://github.com/agama-project/agama
+
+%description -n agama-autoinstall
+Agama is a service-based Linux installer. This package contains the
+auto-installation service.
 
 %package -n agama-cli
 #               This will be set by osc services, that will run after this.
@@ -166,11 +180,17 @@ echo $PATH
 %pre
 %service_add_pre agama-web-server.service
 
+%pre -n agama-autoinstall
+%service_add_pre agama-autoinstall.service
+
 %pre -n agama-scripts
 %service_add_pre agama-scripts.service
 
 %post
 %service_add_post agama-web-server.service
+
+%post -n agama-autoinstall
+%service_add_post agama-autoinstall.service
 
 %post -n agama-scripts
 %service_add_post agama-scripts.service
@@ -178,11 +198,17 @@ echo $PATH
 %preun
 %service_del_preun agama-web-server.service
 
+%preun -n agama-autoinstall
+%service_del_preun agama-autoinstall.service
+
 %preun -n agama-scripts
 %service_del_preun agama-scripts.service
 
 %postun
 %service_del_postun_with_restart agama-web-server.service
+
+%postun -n agama-autoinstall
+%service_del_postun_with_restart agama-autoinstall.service
 
 %postun -n agama-scripts
 %service_del_postun_with_restart agama-scripts.service
@@ -195,6 +221,10 @@ echo $PATH
 %{_datadir}/dbus-1/agama-services
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
+
+%files -n agama-autoinstall
+%{_bindir}/agama-autoinstall
+%{_unitdir}/agama-autoinstall.service
 
 %files -n agama-cli
 %{_bindir}/agama

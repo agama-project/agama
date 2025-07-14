@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -78,6 +78,7 @@ impl ProductStore {
 
     pub async fn store(&self, settings: &ProductSettings) -> ProductStoreResult<()> {
         let mut probe = false;
+        let mut reprobe = false;
         if let Some(product) = &settings.id {
             let existing_product = self.product_client.product().await?;
             if *product != existing_product {
@@ -86,16 +87,21 @@ impl ProductStore {
                 probe = true;
             }
         }
-        if let Some(url) = &settings.registration_url {
-            self.product_client.set_registration_url(url).await?;
-        }
-        if let Some(reg_code) = &settings.registration_code {
+        // register system if either URL or reg code is provided as RMT does not need reg code and SCC uses default url
+        // bsc#1246069
+        if settings.registration_code.is_some() || settings.registration_url.is_some() {
+            if let Some(url) = &settings.registration_url {
+                self.product_client.set_registration_url(url).await?;
+            }
+            // lets use empty string if not defined
+            let reg_code = settings.registration_code.as_deref().unwrap_or("");
             let email = settings.registration_email.as_deref().unwrap_or("");
 
             self.product_client.register(reg_code, email).await?;
             // TODO: avoid reprobing if the system has been already registered with the same code?
-            probe = true;
+            reprobe = true;
         }
+
         // register the addons in the order specified in the profile
         if let Some(addons) = &settings.addons {
             for addon in addons.iter() {
@@ -105,6 +111,8 @@ impl ProductStore {
 
         if probe {
             self.manager_client.probe().await?;
+        } else if reprobe {
+            self.manager_client.reprobe().await?;
         }
 
         Ok(())
@@ -205,7 +213,7 @@ mod test {
             when.method(PUT)
                 .path("/api/software/config")
                 .header("content-type", "application/json")
-                .body(r#"{"patterns":null,"packages":null,"product":"Tumbleweed","extraRepositories":null}"#);
+                .body(r#"{"patterns":null,"packages":null,"product":"Tumbleweed","extraRepositories":null,"onlyRequired":null}"#);
             then.status(200);
         });
         let manager_mock = server.mock(|when, then| {

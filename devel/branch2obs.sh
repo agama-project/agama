@@ -145,6 +145,11 @@ else
       osc meta prj -F - "$PROJECT"
   fi
 
+  # disable building the agama-installer-Leap image for Tumbleweed, that does not work
+  osc meta pkg "$PROJECT" agama-installer-Leap | \
+    sed 's#</package>#<build><disable repository="images"/></build></package>##' | \
+    osc meta pkg -F - "$PROJECT" agama-installer-Leap
+
   # enable publishing of the built packages and images (delete the disabled publish section)
   echo "Enable publishing of the build results"
   osc meta prj "$PROJECT" | sed "/^\s*<publish>\s*$/,/^\s*<\/publish>\s*$/d" | \
@@ -172,7 +177,7 @@ echo "$projects" | jq ". += { \"$BRANCH\" : \"$PROJECT\" } " | gh -R "$repo_slug
 
 # to really synchronize the GitHub content with OBS trigger the autosubmission jobs if the remote
 # brach already exists or print the instructions for later
-workflows=(obs-staging-autoinstallation.yml obs-staging-live.yml obs-staging-products.yml obs-staging-rust.yml obs-staging-service.yml obs-staging-web.yml)
+workflows=(obs-staging-live.yml obs-staging-products.yml obs-staging-rust.yml obs-staging-service.yml obs-staging-web.yml)
 if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null; then
   for workflow in "${workflows[@]}"; do
     echo "Starting GitHub Action $workflow..."

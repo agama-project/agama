@@ -1,4 +1,86 @@
 -------------------------------------------------------------------
+Thu Jul 10 12:13:14 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Inhibit storage subsystems (bsc#1245159, bsc#1246133).
+
+-------------------------------------------------------------------
+Wed Jul  9 14:04:23 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- Fix error at /api/manager/installer: initialize the backend value
+  for org.opensuse.Agama1.Manager.CurrentInstallationPhase (bsc#1245760)
+
+-------------------------------------------------------------------
+Wed Jul  9 12:21:55 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add AutoYaST conversion for RMT registration (gh#agama-project/agama#2545).
+
+-------------------------------------------------------------------
+Wed Jul  9 08:32:37 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Handle the LSM defined in the product definition as it was
+  selected by the user allowing to deselect it (bsc#1244431).
+
+-------------------------------------------------------------------
+Fri Jul  4 11:31:21 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Extend D-Bus API to allow reprobing the system
+  (gh#agama-project/agama#2532, bsc#1245400).
+
+-------------------------------------------------------------------
+Wed Jul  2 10:50:56 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add missing iSCSI discovery when importing the iSCSI config
+  (bsc#1245171).
+
+-------------------------------------------------------------------
+Mon Jun 30 15:51:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 16
+
+-------------------------------------------------------------------
+Mon Jun 30 11:23:03 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- ipmitool invocation: do not write spurious % percent sign
+  (jsc#PED-12285)
+
+-------------------------------------------------------------------
+Fri Jun 27 14:02:57 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- jsc#PED-11193
+  - do not create the "after install" snapshot
+
+-------------------------------------------------------------------
+Fri Jun 27 12:07:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the conversion of the "language" section from AutoYaST profiles
+  (gh#agama-project/agama#2516).
+
+-------------------------------------------------------------------
+Wed Jun 25 20:29:58 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- do not crash if onlyRequired flag is set and libzypp is not
+  installed on target system (jsc#AGM-154)
+
+-------------------------------------------------------------------
+Wed Jun 25 07:55:53 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- allow to set onlyRequired flag for software service
+  (jsc#AGM-154)
+
+-------------------------------------------------------------------
+Mon Jun 23 07:22:22 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- jsc#PED-12285
+  - initial implementation for installer state status report via
+    IPMI
+
+-------------------------------------------------------------------
+Thu Jun 19 10:21:13 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add missing steps for iSCSI installation
+  (gh#agama-project/agama#2473).
+
+-------------------------------------------------------------------
 Wed Jun 18 12:28:14 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Disable local installation repositories instead of removing them

@@ -189,16 +189,17 @@ describe("PartitionPage", () => {
     const mountPoint = screen.getByRole("button", { name: "Mount point toggle" });
     const mountPointMode = screen.getByRole("button", { name: "Mount point mode" });
     const filesystem = screen.getByRole("button", { name: "File system" });
-    const size = screen.getByRole("button", { name: "Size" });
+    const waitingSize = screen.getByRole("button", { name: "Size mode" });
     // File system and size fields disabled until valid mount point selected
     expect(filesystem).toBeDisabled();
     expect(screen.queryByRole("textbox", { name: "File system label" })).not.toBeInTheDocument();
-    expect(size).toBeDisabled();
+    expect(waitingSize).toBeDisabled();
 
     await user.click(mountPoint);
     const mountPointOptions = screen.getByRole("listbox", { name: "Suggested mount points" });
     const homeMountPoint = within(mountPointOptions).getByRole("option", { name: "/home" });
     await user.click(homeMountPoint);
+    const size = screen.getByRole("button", { name: "Size mode" });
     // Valid mount point selected, enable file system and size fields
     expect(filesystem).toBeEnabled();
     expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
@@ -209,21 +210,14 @@ describe("PartitionPage", () => {
     // Display available file systems
     await user.click(filesystem);
     screen.getByRole("listbox", { name: "Available file systems" });
-    // Display available size options
+    // Display size modes
     await user.click(size);
-    const sizeOptions = screen.getByRole("listbox", { name: "Size options" });
+    const sizeModes = screen.getByRole("listbox", { name: "Size modes" });
     // Display custom size
-    const customSize = within(sizeOptions).getByRole("option", { name: /Custom/ });
+    const customSize = within(sizeModes).getByRole("option", { name: /Manual/ });
     await user.click(customSize);
-    screen.getByRole("textbox", { name: "Minimum size value" });
-    const maxSizeModeToggle = screen.getByRole("button", { name: "Maximum size mode" });
-    // Do not display input for a maximum size value by default
-    expect(screen.queryByRole("textbox", { name: "Maximum size value" })).toBeNull();
-    await user.click(maxSizeModeToggle);
-    const maxSizeOptions = screen.getByRole("listbox", { name: "Maximum size options" });
-    const limitedMaxSizeOption = within(maxSizeOptions).getByRole("option", { name: /Limited/ });
-    await user.click(limitedMaxSizeOption);
-    screen.getByRole("textbox", { name: "Maximum size value" });
+    screen.getByRole("textbox", { name: "Size" });
+    screen.getByRole("checkbox", { name: "Allow growing" });
   });
 
   it("allows reseting the chosen mount point", async () => {
@@ -231,7 +225,7 @@ describe("PartitionPage", () => {
     // Note that the underline PF component gives the role combobox to the input
     const mountPoint = screen.getByRole("combobox", { name: "Mount point" });
     const filesystem = screen.getByRole("button", { name: "File system" });
-    const size = screen.getByRole("button", { name: "Size" });
+    let size = screen.getByRole("button", { name: "Size mode" });
     expect(mountPoint).toHaveValue("");
     // File system and size fields disabled until valid mount point selected
     expect(filesystem).toBeDisabled();
@@ -244,6 +238,7 @@ describe("PartitionPage", () => {
     expect(mountPoint).toHaveValue("/home");
     expect(filesystem).toBeEnabled();
     expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
+    size = screen.getByRole("button", { name: "Size mode" });
     expect(size).toBeEnabled();
     const clearMountPointButton = screen.getByRole("button", {
       name: "Clear selected mount point",
@@ -253,6 +248,7 @@ describe("PartitionPage", () => {
     // File system and size fields disabled until valid mount point selected
     expect(filesystem).toBeDisabled();
     expect(screen.queryByRole("textbox", { name: "File system label" })).not.toBeInTheDocument();
+    size = screen.getByRole("button", { name: "Size mode" });
     expect(size).toBeDisabled();
   });
 
@@ -260,37 +256,27 @@ describe("PartitionPage", () => {
     const { user } = installerRender(<PartitionPage />);
     screen.getByRole("form", { name: "Configure partition at /dev/sda" });
     const mountPoint = screen.getByRole("button", { name: "Mount point toggle" });
-    const size = screen.getByRole("button", { name: "Size" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
 
     await user.click(mountPoint);
     const mountPointOptions = screen.getByRole("listbox", { name: "Suggested mount points" });
     const homeMountPoint = within(mountPointOptions).getByRole("option", { name: "/home" });
     await user.click(homeMountPoint);
-    // Display available size options
-    await user.click(size);
-    const sizeOptions = screen.getByRole("listbox", { name: "Size options" });
-    // Display custom size
-    const customSize = within(sizeOptions).getByRole("option", { name: /Custom/ });
-    await user.click(customSize);
-    const minSizeInput = screen.getByRole("textbox", { name: "Minimum size value" });
-    const maxSizeModeToggle = screen.getByRole("button", { name: "Maximum size mode" });
-    await user.click(maxSizeModeToggle);
-    const maxSizeOptions = screen.getByRole("listbox", { name: "Maximum size options" });
-    const limitedMaxSizeOption = within(maxSizeOptions).getByRole("option", { name: /Limited/ });
-    await user.click(limitedMaxSizeOption);
-    const maxSizeInput = screen.getByRole("textbox", { name: "Maximum size value" });
+    expect(acceptButton).toBeEnabled();
 
-    await user.clear(minSizeInput);
-    await user.type(minSizeInput, "1");
-    screen.getByText(/The minimum must be.*followed by a unit/);
-    await user.clear(maxSizeInput);
-    await user.type(maxSizeInput, "3");
-    screen.getByText(/Size limits must be.*followed by a unit/);
-    await user.type(minSizeInput, " GiB");
-    await user.type(maxSizeInput, " TiB");
-    expect(screen.queryByText(/The minimum must be.*followed by a unit/)).toBeNull();
-    expect(screen.queryByText(/Size limits must be.*followed by a unit/)).toBeNull();
+    // Display size modes
+    const sizeMode = screen.getByRole("button", { name: "Size mode" });
+    await user.click(sizeMode);
+    const sizeModes = screen.getByRole("listbox", { name: "Size modes" });
+    // Display custom size
+    const customSize = within(sizeModes).getByRole("option", { name: /Manual/ });
+    await user.click(customSize);
+    const size = screen.getByRole("textbox", { name: "Size" });
+
+    await user.clear(size);
+    await user.type(size, "1");
+    expect(acceptButton).toBeDisabled();
+    await user.type(size, " GiB");
     expect(acceptButton).toBeEnabled();
   });
 
@@ -302,7 +288,7 @@ describe("PartitionPage", () => {
         size: {
           default: false,
           min: gib(5),
-          max: gib(15),
+          max: gib(5),
         },
         filesystem: {
           default: false,
@@ -322,14 +308,94 @@ describe("PartitionPage", () => {
       within(filesystemButton).getByText("XFS");
       const label = screen.getByRole("textbox", { name: "File system label" });
       expect(label).toHaveValue("HOME");
-      const sizeOptionButton = screen.getByRole("button", { name: "Size" });
-      within(sizeOptionButton).getByText("Custom");
-      const minSizeInput = screen.getByRole("textbox", { name: "Minimum size value" });
-      expect(minSizeInput).toHaveValue("5 GiB");
-      const maximumButton = screen.getByRole("button", { name: "Maximum size mode" });
-      within(maximumButton).getByText("Limited");
-      const maxSizeInput = screen.getByRole("textbox", { name: "Maximum size value" });
-      expect(maxSizeInput).toHaveValue("15 GiB");
+      const sizeModeButton = screen.getByRole("button", { name: "Size mode" });
+      within(sizeModeButton).getByText("Manual");
+      const sizeInput = screen.getByRole("textbox", { name: "Size" });
+      expect(sizeInput).toHaveValue("5 GiB");
+      const growCheck = screen.getByRole("checkbox", { name: "Allow growing" });
+      expect(growCheck).not.toBeChecked();
+    });
+
+    describe("if the max size is unlimited", () => {
+      beforeEach(() => {
+        mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
+        mockGetPartition.mockReturnValue({
+          mountPath: "/home",
+          size: {
+            default: false,
+            min: gib(5),
+          },
+          filesystem: {
+            default: false,
+            type: "xfs",
+          },
+        });
+      });
+
+      it("checks allow growing", async () => {
+        installerRender(<PartitionPage />);
+        const growCheck = screen.getByRole("checkbox", { name: "Allow growing" });
+        expect(growCheck).toBeChecked();
+      });
+    });
+
+    describe("if the max size has a value", () => {
+      beforeEach(() => {
+        mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
+        mockGetPartition.mockReturnValue({
+          mountPath: "/home",
+          size: {
+            default: false,
+            min: gib(5),
+            max: gib(10),
+          },
+          filesystem: {
+            default: false,
+            type: "xfs",
+          },
+        });
+      });
+
+      it("allows switching to a fixed size", async () => {
+        const { user } = installerRender(<PartitionPage />);
+        const switchButton = screen.getByRole("button", { name: /Discard the maximum/ });
+        await user.click(switchButton);
+        const sizeInput = screen.getByRole("textbox", { name: "Size" });
+        expect(sizeInput).toHaveValue("5 GiB");
+        const growCheck = screen.getByRole("checkbox", { name: "Allow growing" });
+        expect(growCheck).toBeChecked();
+      });
+    });
+
+    describe("if the default size has a max value", () => {
+      beforeEach(() => {
+        mockParams({ list: "drives", listIndex: "0", partitionId: "/home" });
+        mockGetPartition.mockReturnValue({
+          mountPath: "/home",
+          size: {
+            default: true,
+            min: gib(5),
+            max: gib(10),
+          },
+          filesystem: {
+            default: false,
+            type: "xfs",
+          },
+        });
+      });
+
+      it("allows switching to a custom size", async () => {
+        const { user } = installerRender(<PartitionPage />);
+        const sizeModeButton = screen.getByRole("button", { name: "Size mode" });
+        await user.click(sizeModeButton);
+        const sizeModes = screen.getByRole("listbox", { name: "Size modes" });
+        const customSize = within(sizeModes).getByRole("option", { name: /Manual/ });
+        await user.click(customSize);
+        const sizeInput = screen.getByRole("textbox", { name: "Size" });
+        expect(sizeInput).toHaveValue("5 GiB");
+        const growCheck = screen.getByRole("checkbox", { name: "Allow growing" });
+        expect(growCheck).toBeChecked();
+      });
     });
   });
 });

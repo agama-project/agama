@@ -45,15 +45,6 @@ export default {
   "%s with %d partitions": [
     "%s com %d partições"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "%1$s de %2$s será criado para %3$s"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "%1$s de pelo menos %2$s será criado para %3$s"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "%1$s com tamanho entre %2$s e %3$s será criado para %4$s"
-  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Um tamanho mínimo genérico de %1$s será usado para o novo %2$s"
   ],
@@ -210,15 +201,6 @@ export default {
   "Back": [
     "Voltar"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "Com base na quantidade de RAM no sistema, %1s$ de %2$s será criado para %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "Com base na quantidade de RAM no sistema, %1s$ de pelo menos %2$s será criado para %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "Com base na quantidade de RAM no sistema, %1s$ com tamanho entre %2$s e %3$s será criado para %4$s"
-  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -234,6 +216,12 @@ export default {
   "Beta": [
     "Beta"
   ],
+  "Bind to interface name": [
+    ""
+  ],
+  "Binding settings for '%s'": [
+    ""
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -245,9 +233,6 @@ export default {
   ],
   "Btrfs with snapshots": [
     "Btrfs com instantâneos"
-  ],
-  "Calculated automatically": [
-    "Calculado automaticamente"
   ],
   "Cancel": [
     "Cancelar"
@@ -305,6 +290,15 @@ export default {
   ],
   "Choose a disk for placing the boot loader": [
     "Escolha um disco para colocar o carregador de inicialização"
+  ],
+  "Choose device to bind by MAC": [
+    ""
+  ],
+  "Choose device to bind by name": [
+    ""
+  ],
+  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
+    ""
   ],
   "Choose what to with current content": [
     "Escolher o que fazer com o conteúdo atual"
@@ -459,9 +453,6 @@ export default {
   "Default file system for generic partitions": [
     "Sistema de arquivos padrão para partições genéricas"
   ],
-  "Define a custom size or a range": [
-    "Definir um tamanho ou uma faixa personalizada"
-  ],
   "Define a new LVM on the disk": [
     "Definir uma nova LVM no disco"
   ],
@@ -506,6 +497,9 @@ export default {
   ],
   "Discard": [
     "Descartar"
+  ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
   ],
   "Disconnected": [
     "Desconectado"
@@ -745,9 +739,6 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Se uma mídia local foi usada para executar este instalador, remova-a antes da próxima inicialização."
   ],
-  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "Se a unidade for omitida, serão usados bytes (B). Unidades maiores podem usar               o formato GiB (potência de 2) ou GB (potência de 10)."
-  ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Se você continuar, as partições do seu disco rígido serão modificadas de acordo com as configurações de instalação fornecidas."
   ],
@@ -856,9 +847,6 @@ export default {
   "JFS": [
     "JFS"
   ],
-  "Keep size of %s": [
-    "Manter o tamanho de %s"
-  ],
   "Keyboard": [
     "Teclado"
   ],
@@ -883,14 +871,8 @@ export default {
   "Language and keyboard": [
     "Idioma e teclado"
   ],
-  "Let the installer propose a sensible range of sizes": [
-    "Permitir que o instalador sugira uma faixa adequada de tamanhos"
-  ],
   "License language": [
     "Idioma da licença"
-  ],
-  "Limited": [
-    "Limitado"
   ],
   "Loading": [
     "Carregando"
@@ -946,26 +928,8 @@ export default {
   "Manual": [
     "Manual"
   ],
-  "Maximum": [
-    "Máximo"
-  ],
-  "Maximum size mode": [
-    "Modo de tamanho máximo"
-  ],
-  "Maximum size options": [
-    "Opções de tamanho máximo"
-  ],
-  "Maximum size value": [
-    "Valor de tamanho máximo"
-  ],
   "MiB": [
     "MiB"
-  ],
-  "Minimum": [
-    "Mínimo"
-  ],
-  "Minimum size value": [
-    "Valor de tamanho mínimo"
   ],
   "Mode": [
     "Modo"
@@ -1168,9 +1132,6 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     "As partições para inicialização serão alocadas no seguinte dispositivo."
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "As partições para inicialização serão alocadas no disco de instalação (%s)."
-  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "As partições para inicialização serão alocadas no disco de instalação."
   ],
@@ -1336,9 +1297,6 @@ export default {
   "SSID": [
     "SSID"
   ],
-  "Same as minimum": [
-    "Igual ao mínimo"
-  ],
   "Search": [
     "Pesquisar"
   ],
@@ -1454,15 +1412,6 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Os limites de tamanho devem ser números que podem ser seguidos de uma unidade, como GiB ou GB"
   ],
-  "Size options": [
-    "Opções de tamanho"
-  ],
-  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
-    "É necessário inserir os tamanhos como números seguidos de uma unidade de               formato GiB (potência de 2) ou GB (potência de 10)."
-  ],
-  "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "É necessário inserir os tamanhos como números que podem ser seguidos por uma unidade."
-  ],
   "Skip to content": [
     "Pular para conteúdo"
   ],
@@ -1550,15 +1499,6 @@ export default {
   "The content may be deleted": [
     "O conteúdo pode ser excluído"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "A configuração atual resultará em %1$s de %2$s."
-  ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "A configuração atual resultará em %1$s de pelo menos %2$s."
-  ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "A configuração atual resultará em %1$s com tamanho entre %2$s e %3$s."
-  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Os dados são mantidos, mas as partições atuais serão redimensionadas conforme necessário."
   ],
@@ -1613,15 +1553,6 @@ export default {
   "The installer requires [root] user privileges.": [
     "O instalador requer privilégios de usuário [root]."
   ],
-  "The logical volume can grow to use all the contiguous free space": [
-    "O volume lógico pode aumentar até usar todo o espaço livre contíguo"
-  ],
-  "The logical volume can grow until a given limit size": [
-    "O volume lógico pode aumentar até um tamanho de limite especificado"
-  ],
-  "The logical volume is created exactly with the given size": [
-    "O volume lógico foi criado exatamente com o tamanho especificado"
-  ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "O máximo deve ser um número seguido de uma unidade, como GiB ou GB"
   ],
@@ -1640,47 +1571,11 @@ export default {
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "Os volumes físicos LVM necessários serão adicionados como partições nos discos escolhidos,                 com base nos tamanhos dos volumes lógicos. Se você selecionar mais de um disco, os                 volumes físicos poderão ser distribuídos por vários discos."
   ],
-  "The partition can grow to use all the contiguous free space": [
-    "A partição pode aumentar até usar todo o espaço livre contíguo"
-  ],
-  "The partition can grow until a given limit size": [
-    "A partição pode aumentar até o tamanho de limite especificado"
-  ],
-  "The partition is created exactly with the given size": [
-    "A partição é criada exatamente com o tamanho especificado"
-  ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "A senha não será necessária para inicializar e acessar os dados se o TPM puder verificar a integridade do sistema. A vedação do TPM exige que o novo sistema seja inicializado diretamente em sua primeira execução."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "A faixa de tamanhos para %1$s será ajustada dinamicamente com base na quantidade de RAM no sistema e na presença de um sistema de arquivos separado para %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "A faixa de tamanhos para %1$s será ajustada dinamicamente com base na quantidade de RAM no sistema e na presença de sistemas de arquivos separados para %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "A faixa de tamanhos para %1$s será ajustada dinamicamente com base na quantidade de RAM no sistema, no uso de instantâneos Btrfs e na presença de um sistema de arquivos separado para %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "A faixa de tamanhos para %1$s será ajustada dinamicamente com base na quantidade de RAM no sistema, no uso de instantâneos Btrfs e na presença de sistemas de arquivos separados para %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "A faixa de tamanhos para %1$s será ajustada dinamicamente com base na presença de um sistema de arquivos separado para %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "A faixa de tamanhos para %1$s será ajustada dinamicamente com base na presença de sistemas de arquivos separados para %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "A faixa de tamanhos para %1$s será ajustada dinamicamente com base no uso de instantâneos Btrfs e na presença de um sistema de arquivos separado para %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "A faixa de tamanhos para %1$s será ajustada dinamicamente com base no uso de instantâneos Btrfs e na presença de sistemas de arquivos separados para %2$s."
-  ],
-  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "A faixa de tamanhos para %s será ajustada dinamicamente com base na quantidade de RAM no sistema e no uso de instantâneos Btrfs."
-  ],
-  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "A faixa de tamanhos para %s será ajustada dinamicamente com base no uso de instantâneos Btrfs."
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
+    ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "A configuração de armazenamento é válida (veja o resultado abaixo), mas usa elementos não suportados por esta interface."
@@ -1963,6 +1858,9 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] ativado"
+  ],
+  "approx. %s": [
+    ""
   ],
   "at least %s": [
     "Pelo menos %s"

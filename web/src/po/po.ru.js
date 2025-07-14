@@ -45,15 +45,6 @@ export default {
   "%s with %d partitions": [
     "%s с %d разделами"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "Для %3$s будет создан раздел %1$s размером %2$s"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "Для %3$s будет создан раздел %1$s с размером не менее %2$s"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "Для %4$s будет создан раздел %1$s с размером между %2$s и %3$s"
-  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Для нового раздела %2$s будет использоваться минимум %1$s"
   ],
@@ -153,6 +144,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Все сетевые подключения, управляемые через этот интерфейс, в настоящее время настроены на использование только во время установки и не будут скопированы в установленную систему"
   ],
+  "Allow growing": [
+    "Разрешить рост"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Наряду с определением первого пользователя можно настроить методы аутентификации для root-пользователя."
   ],
@@ -161,6 +155,9 @@ export default {
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Все существующие разделы будут удалены, а все данные на диске будут потеряны."
+  ],
+  "Any interface": [
+    "Любой интерфейс"
   ],
   "Apply selected solution": [
     "Применить выбранное решение"
@@ -175,10 +172,10 @@ export default {
     "По крайней мере один раздел будет удален"
   ],
   "At this point you can power off the machine.": [
-    "На этом этапе вы можете выключить устройство."
+    "На этом этапе устройство можно выключить."
   ],
   "At this point you can reboot the machine to log in to the new system.": [
-    "На этом этапе вы можете перезагрузить устройство, чтобы войти в новую систему."
+    "На этом этапе можно перезагрузить устройство, чтобы войти в новую систему."
   ],
   "Authentication": [
     "Аутентификация"
@@ -210,15 +207,6 @@ export default {
   "Back": [
     "Назад"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "Исходя из объема оперативной памяти в системе, для %3$s будет создан раздел %1s$ размером %2$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "Исходя из объема оперативной памяти в системе, для %3$s будет создан раздел %1s$ размером не менее %2$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "Исходя из объема оперативной памяти в системе, для %4$s будет создан раздел %1s$ размером от %2$s до %3$s"
-  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -234,6 +222,15 @@ export default {
   "Beta": [
     "Бета-версия"
   ],
+  "Bind to MAC address": [
+    "Привязать к MAC-адресу"
+  ],
+  "Bind to interface name": [
+    "Привязать к имени интерфейса"
+  ],
+  "Binding settings for '%s'": [
+    "Настройки привязки для «%s»"
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -245,9 +242,6 @@ export default {
   ],
   "Btrfs with snapshots": [
     "Btrfs с моментальными снимками"
-  ],
-  "Calculated automatically": [
-    "Рассчитывается автоматически"
   ],
   "Cancel": [
     "Отмена"
@@ -305,6 +299,15 @@ export default {
   ],
   "Choose a disk for placing the boot loader": [
     "Выберите диск для размещения загрузчика"
+  ],
+  "Choose device to bind by MAC": [
+    "Выберите устройство для привязки по MAC-адресу"
+  ],
+  "Choose device to bind by name": [
+    "Выберите устройство для привязки по имени"
+  ],
+  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
+    "Выберите, как это подключение должно быть связано с сетевым интерфейсом. Это поможет контролировать, какой интерфейс будет использоваться для подключения."
   ],
   "Choose what to with current content": [
     "Выберите, что делать с текущим содержимым"
@@ -459,8 +462,8 @@ export default {
   "Default file system for generic partitions": [
     "Файловая система по умолчанию для общих разделов"
   ],
-  "Define a custom size or a range": [
-    "Определить пользовательский размер или диапазон"
+  "Define a custom size": [
+    "Определить пользовательский размер"
   ],
   "Define a new LVM on the disk": [
     "Определить новый LVM на диске"
@@ -507,6 +510,9 @@ export default {
   "Discard": [
     "Отказаться"
   ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
+  ],
   "Disconnected": [
     "Отключено"
   ],
@@ -549,8 +555,11 @@ export default {
   "Edit %s": [
     "Изменить %s"
   ],
+  "Edit binding settings": [
+    "Изменить настройки привязки"
+  ],
   "Edit connection %s": [
-    "Отредактировать подключение %s"
+    "Редактировать подключение %s"
   ],
   "Edit user": [
     "Изменить пользователя"
@@ -746,11 +755,8 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Если для запуска этой программы установки использовался локальный носитель, извлеките его перед следующей загрузкой."
   ],
-  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "Если единица измерения не указана, будут использоваться байты (B). Более крупные единицы могут                 иметь вид GiB (степень 2) или GB (степень 10)."
-  ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Если вы продолжите, разделы на вашем жестком диске будут изменены в соответствии с заданными настройками установки."
+    "Если продолжите, разделы на жестком диске будут изменены в соответствии с заданными настройками установки."
   ],
   "In progress": [
     "В процессе"
@@ -857,9 +863,6 @@ export default {
   "JFS": [
     "JFS"
   ],
-  "Keep size of %s": [
-    "Сохранить размер %s"
-  ],
   "Keyboard": [
     "Клавиатура"
   ],
@@ -884,14 +887,11 @@ export default {
   "Language and keyboard": [
     "Язык и клавиатура"
   ],
-  "Let the installer propose a sensible range of sizes": [
-    "Программа установки предложит разумный диапазон размеров"
+  "Let the installer propose a sensible size": [
+    "Программа установки предложит разумный размер"
   ],
   "License language": [
     "Язык лицензии"
-  ],
-  "Limited": [
-    "Ограниченный"
   ],
   "Loading": [
     "Загрузка"
@@ -947,26 +947,8 @@ export default {
   "Manual": [
     "Вручную"
   ],
-  "Maximum": [
-    "Максимум"
-  ],
-  "Maximum size mode": [
-    "Режим максимального размера"
-  ],
-  "Maximum size options": [
-    "Опции максимального размера"
-  ],
-  "Maximum size value": [
-    "Максимальное значение размера"
-  ],
   "MiB": [
     "МиБ"
-  ],
-  "Minimum": [
-    "Минимум"
-  ],
-  "Minimum size value": [
-    "Минимальное значение размера"
   ],
   "Mode": [
     "Режим"
@@ -981,13 +963,13 @@ export default {
     "Другие устройства"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    "Больше раскладок клавиатуры может быть доступно на странице [Локализации]"
+    "Для выбранного продукта могут быть доступны другие раскладки клавиатуры в разделе [Локализации]"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    "Больше вариантов языков и раскладок клавиатуры может быть доступно на странице [Локализации]."
+    "Для выбранного продукта могут быть доступны другие варианты языков и раскладок клавиатуры в разделе [Локализации]."
   ],
   "More languages might be available for the selected product at [Localization] page": [
-    "Больше языков может быть доступно на странице [Локализации]"
+    "Для выбранного продукта могут быть доступны другие языки в разделе [Локализации]"
   ],
   "Mount Point": [
     "Точка монтирования"
@@ -1169,9 +1151,6 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     "Загрузочные разделы будут выделены на следующем устройстве."
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Загрузочные разделы будут выделены на установочном диске (%s)."
-  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Загрузочные разделы будут выделены на установочном диске."
   ],
@@ -1209,7 +1188,7 @@ export default {
     "ПиБ"
   ],
   "Please, cancel and check the settings if you are unsure.": [
-    "Пожалуйста, отмените и проверьте настройки, если вы не уверены."
+    "Пожалуйста, отмените и проверьте настройки, если не уверены."
   ],
   "Please, check whether it is running.": [
     "Пожалуйста, проверьте, запущен ли он."
@@ -1263,7 +1242,7 @@ export default {
     "Прочитать устройства zFCP"
   ],
   "Reboot": [
-    "Перезагрузка"
+    "Перезагрузить"
   ],
   "Recommended": [
     "Рекомендуется"
@@ -1336,9 +1315,6 @@ export default {
   ],
   "SSID": [
     "Имя сети"
-  ],
-  "Same as minimum": [
-    "Аналогично минимальному"
   ],
   "Search": [
     "Поиск"
@@ -1456,14 +1432,11 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Ограничения на размер должны быть числами, за которыми могут следовать единицы измерения, например GiB или GB"
   ],
-  "Size options": [
-    "Опции размера"
+  "Size mode": [
+    "Режим размера"
   ],
-  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
-    "Размеры должны вводиться в виде чисел, за которыми следует единица измерения                 в виде GiB (степень 2) или GB (степень 10)."
-  ],
-  "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "Размеры должны быть введены в виде чисел, за которыми по желанию может следовать единица измерения."
+  "Size modes": [
+    "Режимы размера"
   ],
   "Skip to content": [
     "Перейти к содержимому"
@@ -1546,20 +1519,14 @@ export default {
   "The configured LVM groups will remain at %s": [
     "Настроенные группы LVM останутся на диске %s"
   ],
+  "The connection can be used by any available interface.": [
+    "Это подключение может использоваться любым доступным интерфейсом."
+  ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Это подключение будет использоваться только во время установки и не будет доступно в установленной системе."
   ],
   "The content may be deleted": [
     "Содержимое может быть удалено"
-  ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "Текущая конфигурация приведет к образованию раздела %1$s размером %2$s."
-  ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "Текущая конфигурация приведет к образованию раздела %1$s размером не менее %2$s."
-  ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "Текущая конфигурация приведет к образованию раздела %1$s размером от %2$s до %3$s."
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Данные сохраняются, но размер текущих разделов будет изменен по мере необходимости."
@@ -1601,7 +1568,7 @@ export default {
     "Имя инициатора не может быть пустым"
   ],
   "The installation on your machine is complete.": [
-    "Установка на ваш компьютер завершена."
+    "Установка на устройство завершена."
   ],
   "The installation will take": [
     "Установка займёт"
@@ -1614,15 +1581,6 @@ export default {
   ],
   "The installer requires [root] user privileges.": [
     "Программа установки требует привилегий пользователя [root]."
-  ],
-  "The logical volume can grow to use all the contiguous free space": [
-    "Логический том может расти и использовать всё смежное свободное пространство"
-  ],
-  "The logical volume can grow until a given limit size": [
-    "Логический том может расти до заданного предельного размера"
-  ],
-  "The logical volume is created exactly with the given size": [
-    "Логический том создается точно с заданным размером"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Максимальное значение должно быть числом, за которым следует единица измерения, например GiB или GB"
@@ -1642,47 +1600,44 @@ export default {
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "Необходимые физические тома LVM будут добавлены в качестве разделов на выбранных дисках, исходя из размеров логических томов. Если вы выберете несколько дисков, физические тома могут быть распределены по нескольким дискам."
   ],
-  "The partition can grow to use all the contiguous free space": [
-    "Раздел может увеличиваться и использовать все свободное пространство"
-  ],
-  "The partition can grow until a given limit size": [
-    "Раздел может расти до заданного предельного размера"
-  ],
-  "The partition is created exactly with the given size": [
-    "Раздел создается точно с заданным размером"
+  "The password is weak": [
+    "Слабый пароль"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Пароль не понадобится для загрузки и доступа к данным, если TPM может проверить целостность системы. Запечатывание TPM требует непосредственной загрузки новой системы при первом запуске."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "Диапазон размеров для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе и наличия отдельной файловой системы для %2$s."
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
+    "Размер для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе и наличия отдельной файловой системы для %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "Диапазон размеров для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе и наличия отдельных файловых систем для %2$s."
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
+    "Размер для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе и наличия отдельных файловых систем для %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Диапазон размеров для %1$s будет динамически изменяться в зависимости от объема оперативной памяти в системе, использования моментальных снимков Btrfs и наличия отдельной файловой системы для %2$s."
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "Размер для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе, использования моментальных снимков Btrfs и наличия отдельной файловой системы для %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Диапазон размеров для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе, использования моментальных снимков Btrfs и наличия отдельных файловых систем для %2$s."
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "Размер для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе, использования моментальных снимков Btrfs и наличия отдельных файловых систем для %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "Диапазон размеров для %1$s будет динамически корректироваться в зависимости от наличия отдельной файловой системы для %2$s."
+  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
+    "Размер для %1$s будет динамически корректироваться в зависимости от наличия отдельной файловой системы для %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "Диапазон размеров для %1$s будет динамически корректироваться в зависимости от наличия отдельных файловых систем для %2$s."
+  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
+    "Размер для %1$s будет динамически корректироваться в зависимости от наличия отдельных файловых систем для %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Диапазон размеров для %1$s будет динамически корректироваться в зависимости от использования моментальных снимков Btrfs и наличия отдельной файловой системы для %2$s."
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "Размер для %1$s будет динамически корректироваться в зависимости от использования моментальных снимков Btrfs и наличия отдельной файловой системы для %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Диапазон размеров для %1$s будет динамически корректироваться в зависимости от использования моментальных снимков Btrfs и наличия отдельных файловых систем для %2$s."
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "Размер для %1$s будет динамически корректироваться в зависимости от использования моментальных снимков Btrfs и наличия отдельных файловых систем для %2$s."
   ],
-  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "Диапазон размеров для %s будет динамически изменяться в зависимости от объема оперативной памяти в системе и использования моментальных снимков Btrfs."
+  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
+    "Размер для %s будет динамически корректироваться в зависимости от объема оперативной памяти в системе и использования моментальных снимков Btrfs."
   ],
-  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "Диапазон размеров для %s будет динамически корректироваться в зависимости от использования моментальных снимков Btrfs."
+  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
+    "Размер для %s будет динамически корректироваться в зависимости от использования моментальных снимков Btrfs."
+  ],
+  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
+    "Размер должен быть числом, за которым следует единица измерения в виде GiB (степень 2) или GB (степень 10)."
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "Конфигурация хранилища правильна (см. результат ниже), но использует элементы, не поддерживаемые данным интерфейсом."
@@ -1751,7 +1706,7 @@ export default {
     "При этом используются существующие разделы на диске"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "Это повлияет только на интерфейс установщика, не на устанавливаемый продукт. Изменить параметры локализации продукта вы сможете позже на странице настроек локализации."
+    "Это повлияет только на интерфейс программы установки, не на устанавливаемый продукт. Настроить локализацию продукта Вы сможете позже в разделе «Локализация»."
   ],
   "TiB": [
     "ТиБ"
@@ -1886,7 +1841,7 @@ export default {
     "Выпадающий список с предложением имени пользователя"
   ],
   "Using [%s] keyboard": [
-    "Раскладка клавиатуры [%s]"
+    "Раскладка клавиатуры: [%s]"
   ],
   "Using a hashed password.": [
     "Используя хэшированный пароль."
@@ -1965,6 +1920,9 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] включён"
+  ],
+  "approx. %s": [
+    "прибл. %s"
   ],
   "at least %s": [
     "не менее %s"

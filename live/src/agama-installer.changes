@@ -1,4 +1,42 @@
 -------------------------------------------------------------------
+Thu Jul 10 13:09:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support to update kernel modules from a Driver Update Disk
+  (jsc#AGM-158, jsc#PED-3670, gh#agama-project/agama#2548).
+
+-------------------------------------------------------------------
+Wed Jul  9 12:07:21 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the tpm2.0-tools package (jsc#PED-13114).
+
+-------------------------------------------------------------------
+Wed Jul  2 13:28:46 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- live: fix_bootconfig.s390x: strip CDLABEL from the kiwi-generated
+  grub config (bsc#1245453)
+
+-------------------------------------------------------------------
+Tue Jul  1 15:29:36 UTC 2025 - Bernhard Wiedemann <bwiedemann@suse.com>
+
+- Make agama-installer build more reproducible (boo#1245501)
+
+-------------------------------------------------------------------
+Mon Jun 30 15:51:37 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 16
+
+-------------------------------------------------------------------
+Fri Jun 20 14:57:08 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Install "gdm-systemd" and enable "gdm.service" to start the
+  graphical desktop, this is a new way for starting display managers
+
+-------------------------------------------------------------------
+Thu Jun 19 09:06:50 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Add hyper-v on x86_64 and aarch64 only (related to bsc#1236961).
+
+-------------------------------------------------------------------
 Wed Jun 18 11:29:08 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Make web bundled fonts available for the system via config

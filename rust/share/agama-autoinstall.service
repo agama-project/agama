@@ -6,7 +6,7 @@ After=agama-web-server.service
 BindsTo=agama-web-server.service
 
 [Service]
-ExecStart=/usr/bin/agama-auto
+ExecStart=/usr/bin/agama-autoinstall
 # it has to be simple and not one shot as install can take time and we need to
 # display web ui
 Type=simple

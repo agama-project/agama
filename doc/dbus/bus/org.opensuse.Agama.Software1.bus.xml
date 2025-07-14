@@ -83,6 +83,7 @@
     </method>
     <property type="a{sy}" name="SelectedPatterns" access="read"/>
     <property type="a(ussa(uss))" name="Conflicts" access="read"/>
+    <property type="u" name="OnlyRequired" access="readwrite"/>
   </interface>
   <interface name="org.opensuse.Agama1.Issues">
     <property type="a(ssuu)" name="All" access="read"/>

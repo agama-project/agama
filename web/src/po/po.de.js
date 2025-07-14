@@ -45,15 +45,6 @@ export default {
   "%s with %d partitions": [
     "%s mit %d Partitionen"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "Eine %1$s mit %2$s wird für %3$s erstellt"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "Eine %1$s mit mindestens %2$s wird für %3$s erstellt"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "Eine %1$s mit einer Größe zwischen %2$s und %3$s wird für %4$s erstellt"
-  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Eine generische Mindestgröße von %1$s wird für die neue %2$s verwendet"
   ],
@@ -153,6 +144,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Alle über diese Schnittstelle verwalteten Netzwerkverbindungen sind derzeit so eingestellt, dass sie nur während der Installation verwendet und nicht auf das installierte System kopiert werden"
   ],
+  "Allow growing": [
+    "Wachstum erlauben"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Neben der Definition des ersten Benutzers können auch die Authentifizierungsmethoden für den Root-Benutzer konfiguriert werden."
   ],
@@ -161,6 +155,9 @@ export default {
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Alle vorhandenen Partitionen werden entfernt und alle Daten auf der Festplatte gehen verloren."
+  ],
+  "Any interface": [
+    "Jede Schnittstelle"
   ],
   "Apply selected solution": [
     "Ausgewählte Lösung anwenden"
@@ -189,35 +186,17 @@ export default {
   "Authentication by target": [
     "Authentifizierung durch das Ziel"
   ],
-  "Auto LUNs Scan": [
-    ""
-  ],
   "Automatic": [
     "Automatisch"
   ],
   "Automatic (DHCP)": [
     "Automatisch (DHCP)"
   ],
-  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    ""
-  ],
-  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    ""
-  ],
   "Available products": [
     "Verfügbare Produkte"
   ],
   "Back": [
     "Zurück"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "Basierend auf der Größe des RAM im System wird eine %1s$ mit %2$s für %3$s erstellt"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "Basierend auf der Größe des RAM im System wird eine %1s$ mit mindestens %2$s für %3$s erstellt"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "Basierend auf der Größe des RAM im System wird eine %1s$ mit einer Größe zwischen %2$s und %3$s für %4$s erstellt"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -234,6 +213,15 @@ export default {
   "Beta": [
     "Beta"
   ],
+  "Bind to MAC address": [
+    "Mit MAC-Adresse verknüpfen"
+  ],
+  "Bind to interface name": [
+    "Mit dem Namen der Schnittstelle verknüpfen"
+  ],
+  "Binding settings for '%s'": [
+    "Verknüpfungseinstellungen für ‚%s‘"
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -245,9 +233,6 @@ export default {
   ],
   "Btrfs with snapshots": [
     "Btrfs mit Schnappschüssen"
-  ],
-  "Calculated automatically": [
-    "Automatisch berechnet"
   ],
   "Cancel": [
     "Abbrechen"
@@ -306,6 +291,15 @@ export default {
   "Choose a disk for placing the boot loader": [
     "Wählen Sie eine Festplatte für den Bootloader aus"
   ],
+  "Choose device to bind by MAC": [
+    "Zu verknüpfendes Gerät nach MAC auswählen"
+  ],
+  "Choose device to bind by name": [
+    "Zu verknüpfendes Gerät nach Namen auswählen"
+  ],
+  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
+    "Wählen Sie aus, wie die Verbindung mit einer Netzwerkschnittstelle verknüpft werden soll. Damit lässt sich steuern, welche Schnittstelle die Verbindung verwendet."
+  ],
   "Choose what to with current content": [
     "Auswählen, was mit dem aktuellen Inhalt geschehen soll"
   ],
@@ -329,9 +323,6 @@ export default {
   ],
   "Configure LVM Volume Group": [
     "LVM-Volume-Gruppe konfigurieren"
-  ],
-  "Configure LVM logical volume at %s volume group": [
-    ""
   ],
   "Configure device menu": [
     "Gerätemenü konfigurieren"
@@ -456,8 +447,8 @@ export default {
   "Default file system for generic partitions": [
     "Standard-Dateisystem für generische Partitionen"
   ],
-  "Define a custom size or a range": [
-    "Benutzerdefinierte Größe oder einen Bereich definieren"
+  "Define a custom size": [
+    "Benutzerdefinierte Größe definieren"
   ],
   "Define a new LVM on the disk": [
     "Einen neuen LVM auf der Festplatte definieren"
@@ -504,6 +495,9 @@ export default {
   "Discard": [
     "Verwerfen"
   ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
+  ],
   "Disconnected": [
     "Getrennt"
   ],
@@ -545,6 +539,9 @@ export default {
   ],
   "Edit %s": [
     "%s bearbeiten"
+  ],
+  "Edit binding settings": [
+    "Verknüpfungseinstellungen bearbeiten"
   ],
   "Edit connection %s": [
     "Verbindung %s bearbeiten"
@@ -632,12 +629,6 @@ export default {
   ],
   "Filter by language, territory or locale code": [
     "Nach Sprache, Gebiet oder Sprachumgebungscode filtern"
-  ],
-  "Filter by max channel": [
-    ""
-  ],
-  "Filter by min channel": [
-    ""
   ],
   "Filter by pattern title or description": [
     "Nach Mustertitel oder Beschreibung filtern"
@@ -742,9 +733,6 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Wenn ein lokales Medium zur Ausführung dieses Installationsprogramms verwendet wurde, entfernen Sie es vor dem nächsten Start."
   ],
-  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "Wenn die Einheit weggelassen wird, werden Bytes (B) verwendet. Größere Einheiten können in der Form GiB (Potenz von 2) oder GB (Potenz von 10) angegeben werden."
-  ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Wenn Sie fortfahren, werden die Partitionen auf Ihrer Festplatte entsprechend den vorgegebenen Installationseinstellungen geändert."
   ],
@@ -762,9 +750,6 @@ export default {
   ],
   "Incorrect user name": [
     "Falscher Benutzername"
-  ],
-  "Initiator": [
-    "Initiator"
   ],
   "Initiator details": [
     "Initiatordetails"
@@ -853,9 +838,6 @@ export default {
   "JFS": [
     "JFS"
   ],
-  "Keep size of %s": [
-    "Größe von %s beibehalten"
-  ],
   "Keyboard": [
     "Tastatur"
   ],
@@ -880,14 +862,11 @@ export default {
   "Language and keyboard": [
     "Sprache und Tastatur"
   ],
-  "Let the installer propose a sensible range of sizes": [
-    "Eine vernünftige Auswahl an Größen durch das Installationsprogramm vorschlagen lassen"
+  "Let the installer propose a sensible size": [
+    "Eine vernünftige Größe durch das Installationsprogramm vorschlagen lassen"
   ],
   "License language": [
     "Lizenzsprache"
-  ],
-  "Limited": [
-    "Begrenzt"
   ],
   "Loading": [
     "Wird geladen"
@@ -943,26 +922,8 @@ export default {
   "Manual": [
     "Manuell"
   ],
-  "Maximum": [
-    "Maximum"
-  ],
-  "Maximum size mode": [
-    "Modus der Maximalgröße"
-  ],
-  "Maximum size options": [
-    "Optionen für die maximale Größe"
-  ],
-  "Maximum size value": [
-    "Wert der Maximalgröße"
-  ],
   "MiB": [
     "MiB"
-  ],
-  "Minimum": [
-    "Minimum"
-  ],
-  "Minimum size value": [
-    "Wert der Mindestgröße"
   ],
   "Mode": [
     "Modus"
@@ -977,7 +938,7 @@ export default {
     "Weitere Geräte"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    "Weitere Tastaturbelegungen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar."
+    "Weitere Tastaturbelegungen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
     "Weitere Sprach- und Tastaturbelegungsoptionen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar."
@@ -1156,9 +1117,6 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     "Die zu bootenden Partitionen werden auf dem folgenden Gerät zugewiesen."
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Die zu bootenden Partitionen werden auf der Installationsfestplatte (%s) zugewiesen."
-  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Die zu bootenden Partitionen werden auf der Installationsfestplatte zugewiesen."
   ],
@@ -1279,12 +1237,6 @@ export default {
   "Remove": [
     "Entfernen"
   ],
-  "Remove max channel filter": [
-    ""
-  ],
-  "Remove min channel filter": [
-    ""
-  ],
   "Remove the configuration for this disk": [
     "Konfiguration für diese Festplatte entfernen"
   ],
@@ -1323,9 +1275,6 @@ export default {
   ],
   "SSID": [
     "SSID"
-  ],
-  "Same as minimum": [
-    "Gleich wie Minimum"
   ],
   "Search": [
     "Suchen"
@@ -1442,11 +1391,8 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Größenbeschränkungen müssen Zahlen sein, optional gefolgt von einer Einheit wie GiB oder GB"
   ],
-  "Size options": [
-    "Größenoptionen"
-  ],
-  "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "Größen müssen als Zahlen eingegeben werden, optional gefolgt von einer Einheit."
+  "Size modes": [
+    "Größenmodi"
   ],
   "Skip to content": [
     "Zum Inhalt springen"
@@ -1520,20 +1466,14 @@ export default {
   "The configured LVM groups will remain at %s": [
     "Die konfigurierten LVM-Gruppen bleiben bei %s"
   ],
+  "The connection can be used by any available interface.": [
+    "Die Verbindung kann von jeder verfügbaren Schnittstelle genutzt werden."
+  ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Die Verbindung wird nur während der Installation verwendet und ist im installierten System nicht verfügbar."
   ],
   "The content may be deleted": [
     "Der Inhalt kann gelöscht werden"
-  ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "Die aktuelle Konfiguration führt zu einer %1$s mit %2$s."
-  ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "Die aktuelle Konfiguration führt zu einer %1$s mit mindestens %2$s."
-  ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "Die aktuelle Konfiguration führt zu einer %1$s mit einer Größe zwischen %2$s und %3$s."
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Die Daten bleiben erhalten, aber die Größe der aktuellen Partitionen wird nach Bedarf geändert."
@@ -1584,19 +1524,10 @@ export default {
     "Die Installation benötigt %s einschließlich:"
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
-    ""
+    "Die Oberfläche des Installationsprogramms ist nicht mehr verfügbar, daher können Sie dieses Fenster gefahrlos schließen."
   ],
   "The installer requires [root] user privileges.": [
     "Das Installationsprogramm erfordert [root]-Benutzerrechte."
-  ],
-  "The logical volume can grow to use all the contiguous free space": [
-    "Das logische Volume kann so lange wachsen, bis es den gesamten zusammenhängenden freien Speicherplatz belegt"
-  ],
-  "The logical volume can grow until a given limit size": [
-    "Das logische Volume kann bis zu einer bestimmten Maximalgröße wachsen"
-  ],
-  "The logical volume is created exactly with the given size": [
-    "Das logische Volume wird genau mit der angegebenen Größe erstellt"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Das Maximum muss eine Zahl sein, gefolgt von einer Einheit wie GiB oder GB"
@@ -1616,47 +1547,14 @@ export default {
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "Die benötigten physikalischen LVM-Volumes werden als Partitionen auf den ausgewählten Festplatten hinzugefügt, basierend auf den Größen der logischen Volumes. Wenn Sie mehr als eine Festplatte auswählen, können die physikalischen Volumes auf mehrere Festplatten verteilt werden."
   ],
-  "The partition can grow to use all the contiguous free space": [
-    "Die Partition kann so lange wachsen, bis sie den gesamten zusammenhängenden freien Speicherplatz belegt"
-  ],
-  "The partition can grow until a given limit size": [
-    "Die Partition kann bis zu einer bestimmten Maximalgröße wachsen"
-  ],
-  "The partition is created exactly with the given size": [
-    "Die Partition wird genau mit der angegebenen Größe erstellt"
+  "The password is weak": [
+    "Das Passwort ist schwach"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Das Passwort wird nicht benötigt, um zu booten und auf die Daten zuzugreifen, wenn das TPM die Integrität des Systems verifizieren kann. Die TPM-Versiegelung erfordert, dass das neue System bei seinem ersten Start direkt gebootet wird."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "Der Größenbereich für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System und dem Vorhandensein eines separaten Dateisystems für %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "Der Größenbereich für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System und dem Vorhandensein von separaten Dateisystemen für %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Der Größenbereich für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System, der Verwendung von Btrfs-Schnappschüssen und dem Vorhandensein eines separaten Dateisystems für %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Der Größenbereich für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System, der Verwendung von Btrfs-Schnappschüssen und dem Vorhandensein von separaten Dateisystemen für %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "Der Größenbereich für %1$s wird dynamisch angepasst, basierend auf dem Vorhandensein eines separaten Dateisystems für %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "Der Größenbereich für %1$s wird dynamisch angepasst, basierend auf dem Vorhandensein von separaten Dateisystemen für %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Der Größenbereich für %1$s wird dynamisch angepasst, basierend auf der Verwendung von Btrfs-Schnappschüssen und dem Vorhandensein eines separaten Dateisystems für %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Der Größenbereich für %1$s wird dynamisch angepasst, basierend auf der Verwendung von Btrfs-Schnappschüssen und dem Vorhandensein von separaten Dateisystemen für %2$s."
-  ],
-  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "Der Größenbereich für %s wird dynamisch angepasst, basierend auf der Menge an RAM im System und der Verwendung von Btrfs-Schnappschüssen."
-  ],
-  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "Der Größenbereich für %s wird dynamisch angepasst, basierend auf der Verwendung von Btrfs-Schnappschüssen."
+  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
+    "Die Größe muss eine Zahl sein, gefolgt von einer Einheit der Form GiB (Potenz von 2) oder GB (Potenz von 10)."
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "Die Speicherungskonfiguration ist gültig (siehe Ergebnis unten), verwendet aber Elemente, die von dieser Schnittstelle nicht unterstützt werden."
@@ -1920,13 +1818,16 @@ export default {
     "Sie stellen eine Verbindung zu einem öffentlichen Netzwerk ohne Verschlüsselung her. Ihre Daten sind möglicherweise nicht sicher."
   ],
   "Your system is rebooting": [
-    ""
+    "Ihr System wird neu gebootet"
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] ist eingeschaltet"
+  ],
+  "approx. %s": [
+    "ca. %s"
   ],
   "at least %s": [
     "mindestens %s"

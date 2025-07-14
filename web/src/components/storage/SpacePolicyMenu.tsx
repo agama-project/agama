@@ -21,28 +21,28 @@
  */
 
 import React from "react";
-import { Flex, Content } from "@patternfly/react-core";
+import { Flex } from "@patternfly/react-core";
 import MenuButton from "~/components/core/MenuButton";
 import { useNavigate, generatePath } from "react-router-dom";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { SPACE_POLICIES } from "~/components/storage/utils";
 import { apiModel } from "~/api/storage/types";
+import { Partition } from "~/api/storage/types/model";
 import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
-import { sprintf } from "sprintf-js";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import Text from "../core/Text";
 
-const PolicyItem = ({ policy, isSelected, onClick }) => {
+const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
   return (
     <MenuButton.Item
       itemId={policy.id}
       isSelected={isSelected}
-      description={policy.description}
+      description={driveUtils.contentActionsDescription(modelDevice, policy.id)}
       onClick={() => onClick(policy.id)}
     >
-      <Content className={isSelected && textStyles.fontWeightBold}>{policy.label}</Content>
+      <Text isBold={isSelected}>{policy.label}</Text>
     </MenuButton.Item>
   );
 };
@@ -50,10 +50,12 @@ const PolicyItem = ({ policy, isSelected, onClick }) => {
 export default function SpacePolicyMenu({ modelDevice, device }) {
   const navigate = useNavigate();
   const setSpacePolicy = useSetSpacePolicy();
-  const { list, listIndex } = modelDevice;
+  const { isBoot, isTargetDevice, list, listIndex } = modelDevice;
   const existingPartitions = device.partitionTable?.partitions.length;
+  const hasPartitions = modelDevice.partitions.some((p: Partition) => p.mountPath);
 
   if (isEmpty(existingPartitions)) return;
+  if (!isBoot && !isTargetDevice && !hasPartitions) return;
 
   const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
@@ -67,7 +69,7 @@ export default function SpacePolicyMenu({ modelDevice, device }) {
 
   return (
     <Flex gap={{ default: "gapXs" }}>
-      <strong>{sprintf(_("Action for %s existing partitions"), existingPartitions)}</strong>
+      <strong>{_("Find space")}</strong>
       <MenuButton
         toggleProps={{
           variant: "plainText",
@@ -76,12 +78,13 @@ export default function SpacePolicyMenu({ modelDevice, device }) {
           <PolicyItem
             key={policy.id}
             policy={policy}
+            modelDevice={modelDevice}
             isSelected={policy.id === currentPolicy.id}
             onClick={onSpacePolicyChange}
           />
         ))}
       >
-        {driveUtils.contentActionsDescription(modelDevice)}
+        {driveUtils.contentActionsSummary(modelDevice)}
       </MenuButton>
     </Flex>
   );

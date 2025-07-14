@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -35,6 +35,7 @@ require "agama/dbus/clients/software"
 require "agama/dbus/clients/storage"
 require "agama/helpers"
 require "agama/http"
+require "agama/ipmi"
 
 Yast.import "Stage"
 
@@ -62,6 +63,7 @@ module Agama
 
     # Constructor
     #
+    # @param config [Agama::Config]
     # @param logger [Logger]
     def initialize(config, logger)
       textdomain "agama"
@@ -71,6 +73,8 @@ module Agama
       @installation_phase = InstallationPhase.new
       @service_status_recorder = ServiceStatusRecorder.new
       @service_status = DBus::ServiceStatus.new.busy
+      @ipmi = Ipmi.new(logger)
+
       on_progress_change { logger.info progress.to_s }
     end
 
@@ -87,18 +91,10 @@ module Agama
     end
 
     # Runs the config phase
-    def config_phase
-      service_status.busy
-      first_time = installation_phase.startup?
+    def config_phase(reprobe: false)
       installation_phase.config
-
-      start_progress_with_descriptions(
-        _("Analyze disks"), _("Configure software")
-      )
-      # FIXME: hot-fix for bsc#1234711, see {#probe_and_recover_storage}. In autoinstallation, the
-      #   storage config could be applied before probing. In that case, the config has to be
-      #   recovered.
-      progress.step { first_time ? probe_and_recover_storage : storage.probe }
+      start_progress_with_descriptions(_("Analyze disks"), _("Configure software"))
+      progress.step { reprobe ? storage.reprobe : storage.probe }
       progress.step { software.probe }
 
       logger.info("Config phase done")
@@ -106,14 +102,14 @@ module Agama
       logger.error "Startup error: #{e.inspect}. Backtrace: #{e.backtrace}"
       # TODO: report errors
     ensure
-      service_status.idle
       finish_progress
     end
 
     # Runs the install phase
     # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def install_phase
-      service_status.busy
+      @ipmi.started
+
       installation_phase.install
       start_progress_with_descriptions(
         _("Prepare disks"),
@@ -143,18 +139,19 @@ module Agama
         end
       end
 
+      @ipmi.finished
+
       logger.info("Install phase done")
     rescue StandardError => e
+      @ipmi.failed
       logger.error "Installation error: #{e.inspect}. Backtrace: #{e.backtrace}"
     ensure
-      service_status.idle
       installation_phase.finish
       finish_progress
     end
     # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
     def locale=(locale)
-      service_status.busy
       change_process_locale(locale)
       users.update_issues
       start_progress_with_descriptions(
@@ -164,7 +161,6 @@ module Agama
       progress.step { software.locale = locale }
       progress.step { storage.locale = locale }
     ensure
-      service_status.idle
       finish_progress
     end
 
@@ -313,13 +309,6 @@ module Agama
 
     # @return [ServiceStatusRecorder]
     attr_reader :service_status_recorder
-
-    # Probes storage and recover the current config, if any.
-    def probe_and_recover_storage
-      storage_config = storage.config
-      storage.probe
-      storage.config = storage_config if storage_config
-    end
 
     # Runs post partitioning scripts
     def run_post_partitioning_scripts

@@ -45,15 +45,6 @@ export default {
   "%s with %d partitions": [
     "%s （包含 %d 个分区）"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "将创建一个 %1$s (%2$s)，以用于 %3$s"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "将创建一个 %1$s（至少 %2$s），以用于 %3$s"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "将创建一个 %1$s（大小介于 %2$s 至 %3$s 之间），以用于 %4$s"
-  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "至少 %1$s 的通用大小将用于新 %2$s"
   ],
@@ -210,15 +201,6 @@ export default {
   "Back": [
     "返回"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "将根据系统中的 RAM 容量创建一个 %1s$ (%2$s)，以用于 %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "将根据系统中的 RAM 容量创建一个 %1s$（至少 %2$s），以用于 %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "将根据系统中的 RAM 容量创建一个 %1s$（大小介于 %2$s 至 %3$s 之间），以用于 %4$s"
-  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -234,6 +216,12 @@ export default {
   "Beta": [
     "Beta 版"
   ],
+  "Bind to interface name": [
+    ""
+  ],
+  "Binding settings for '%s'": [
+    ""
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -245,9 +233,6 @@ export default {
   ],
   "Btrfs with snapshots": [
     "带快照的 Btrfs"
-  ],
-  "Calculated automatically": [
-    "已自动计算"
   ],
   "Cancel": [
     "取消"
@@ -305,6 +290,15 @@ export default {
   ],
   "Choose a disk for placing the boot loader": [
     "选择一个放置引导加载器的磁盘"
+  ],
+  "Choose device to bind by MAC": [
+    ""
+  ],
+  "Choose device to bind by name": [
+    ""
+  ],
+  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
+    ""
   ],
   "Choose what to with current content": [
     "选择如何处理当前内容"
@@ -459,9 +453,6 @@ export default {
   "Default file system for generic partitions": [
     "通用分区的默认文件系统"
   ],
-  "Define a custom size or a range": [
-    "指定自定义大小或范围"
-  ],
   "Define a new LVM on the disk": [
     "在该磁盘上定义新 LVM"
   ],
@@ -506,6 +497,9 @@ export default {
   ],
   "Discard": [
     "丢弃"
+  ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
   ],
   "Disconnected": [
     "已断开连接"
@@ -744,9 +738,6 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "如果运行此次安装时使用了本地介质，请在下次启动前移除。"
   ],
-  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "如果未指定单位，则使用字节 (B)。更大的单位可以采用               GiB（2 的幂次）或 GB（10 的幂次）的形式。"
-  ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "如果继续，硬盘上的分区将会根据已提供的安装设置进行修改。"
   ],
@@ -855,9 +846,6 @@ export default {
   "JFS": [
     "JFS"
   ],
-  "Keep size of %s": [
-    "保留 %s 的大小"
-  ],
   "Keyboard": [
     "键盘"
   ],
@@ -882,14 +870,8 @@ export default {
   "Language and keyboard": [
     "语言和键盘"
   ],
-  "Let the installer propose a sensible range of sizes": [
-    "让安装程序建议适当的大小范围"
-  ],
   "License language": [
     "许可语言"
-  ],
-  "Limited": [
-    "有限制"
   ],
   "Loading": [
     "正在加载"
@@ -945,26 +927,8 @@ export default {
   "Manual": [
     "手动"
   ],
-  "Maximum": [
-    "最大"
-  ],
-  "Maximum size mode": [
-    "大小上限模式"
-  ],
-  "Maximum size options": [
-    "大小上限选项"
-  ],
-  "Maximum size value": [
-    "大小上限值"
-  ],
   "MiB": [
     "MiB"
-  ],
-  "Minimum": [
-    "最小"
-  ],
-  "Minimum size value": [
-    "大小下限值"
   ],
   "Mode": [
     "模式"
@@ -1167,9 +1131,6 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     "引导分区将在以下设备上分配。"
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "引导分区将在安装磁盘（%s）上进行分配。"
-  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "引导分区将会分配在安装磁盘上。"
   ],
@@ -1335,9 +1296,6 @@ export default {
   "SSID": [
     "SSID"
   ],
-  "Same as minimum": [
-    "与下限相同"
-  ],
   "Search": [
     "搜索"
   ],
@@ -1452,15 +1410,6 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "大小限制必须为数字，可选择性附带 GiB 或 GB 等单位"
   ],
-  "Size options": [
-    "大小选项"
-  ],
-  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
-    "输入的大小必须为数字，可选择性附带               GiB（2 的幂次）或 GB（10 的幂次）形式的单位。"
-  ],
-  "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "输入的大小必须为数字，可选择性附带单位。"
-  ],
   "Skip to content": [
     "跳到内容"
   ],
@@ -1548,15 +1497,6 @@ export default {
   "The content may be deleted": [
     "内容可能会被删除"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "当前配置将会产生一个 %1$s (%2$s)。"
-  ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "当前配置将会产生一个 %1$s（至少 %2$s）。"
-  ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "当前配置将会产生一个 %1$s（大小介于 %2$s 至 %3$s 之间）。"
-  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "数据将被保留，但当前分区的大小将会按需调整。"
   ],
@@ -1606,19 +1546,10 @@ export default {
     "安装将会占用 %s，包括："
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
-    ""
+    "安装程序界面已不再可用，因此您可以安全关闭此窗口。"
   ],
   "The installer requires [root] user privileges.": [
     "安装程序要求 [root] 用户权限。"
-  ],
-  "The logical volume can grow to use all the contiguous free space": [
-    "逻辑卷可扩展，直至使用所有连续的可用空间"
-  ],
-  "The logical volume can grow until a given limit size": [
-    "逻辑卷可扩展至给定的限制大小"
-  ],
-  "The logical volume is created exactly with the given size": [
-    "逻辑卷将严格按给定大小创建"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "上限必须为带单位（如 GiB 或 GB）的数字"
@@ -1638,47 +1569,11 @@ export default {
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "所需的 LVM 物理卷将根据逻辑卷的大小，作为分区                 添加到所选磁盘上。如果选择多个磁盘，                 物理卷可能会分布在多个磁盘上。"
   ],
-  "The partition can grow to use all the contiguous free space": [
-    "分区可扩展以使用所有连续的可用空间"
-  ],
-  "The partition can grow until a given limit size": [
-    "分区可扩展至给定的限制大小"
-  ],
-  "The partition is created exactly with the given size": [
-    "分区将严格按给定大小创建"
-  ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "若 TPM 可以验证系统的完整性，启动和访问数据的时候将无需使用密码。 TPM 密封要求新系统在首次启动时直接开始引导。"
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "%1$s 的大小范围将会动态调整，考量因素包括系统中的 RAM 容量以及 %2$s 是否存在单独的文件系统。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "%1$s 的大小范围将会动态调整，考量因素包括系统中的 RAM 容量以及 %2$s 是否存在单独的文件系统。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "%1$s 的大小范围将会动态调整，考量因素包括系统中的 RAM 容量、Btrfs 快照的使用情况，以及 %2$s 是否存在单独的文件系统。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "%1$s 的大小范围将会动态调整，考量因素包括系统中的 RAM 容量、Btrfs 快照的使用情况，以及 %2$s 是否存在单独的文件系统。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "%1$s 的大小范围将会根据 %2$s 是否存在单独的文件系统动态调整。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "%1$s 的大小范围将会根据 %2$s 是否存在单独的文件系统动态调整。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "%1$s 的大小范围将会动态调整，考量因素包括 Btrfs 快照的使用情况以及 %2$s 是否存在单独的文件系统。"
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "%1$s 的大小范围将会动态调整，考量因素包括 Btrfs 快照的使用情况以及 %2$s 是否存在单独的文件系统。"
-  ],
-  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "%s 的大小范围将会动态调整，考量因素包括系统中的 RAM 容量以及 Btrfs 快照的使用情况。"
-  ],
-  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "%s 的大小范围将会根据 Btrfs 快照的使用情况动态调整。"
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
+    ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "该存储配置有效（请参见下面的结果），但使用了此界面不支持的元素。"
@@ -1954,13 +1849,16 @@ export default {
     "您将连接到未加密的公共网络。数据可能存在安全风险。"
   ],
   "Your system is rebooting": [
-    ""
+    "系统正在重新引导"
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "大写锁定已开启"
+  ],
+  "approx. %s": [
+    ""
   ],
   "at least %s": [
     "至少 %s"

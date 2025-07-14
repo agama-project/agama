@@ -45,15 +45,6 @@ export default {
   "%s with %d partitions": [
     "%s з %d розділами"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "Для %3$s буде створено розділ %1$s розміром %2$s"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "Для %3$s буде створено розділ %1$s розміром щонайменше %2$s"
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "Для %4$s буде створено розділ %1$s розміром від %2$s до %3$s"
-  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Для нового розділу %2$s буде використано типовий мінімальний розмір %1$s"
   ],
@@ -153,6 +144,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Усі мережеві з'єднання, керовані через цей інтерфейс, наразі налаштовані на використання лише під час інсталяції і не будуть скопійовані до інстальованої системи"
   ],
+  "Allow growing": [
+    ""
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Крім зазначення першого користувача, можна налаштувати методи автентифікації для root-користувача."
   ],
@@ -161,6 +155,9 @@ export default {
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Всі розділи буде видалено, а всі дані на диску буде втрачено."
+  ],
+  "Any interface": [
+    "Будь-який інтерфейс"
   ],
   "Apply selected solution": [
     "Застосувати обране рішення"
@@ -210,15 +207,6 @@ export default {
   "Back": [
     "Назад"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "На основі обсягу оперативної пам'яті в системі для %3$s буде створено розділ %1$s розміром %2$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "На основі обсягу оперативної пам'яті в системі, для %3$s буде створено розділ %1s$ розміром не менше %2$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "Виходячи з обсягу оперативної пам'яті в системі, для %4$s буде створено розділ %1s$ розміром від %2$s до %3$s"
-  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -234,6 +222,15 @@ export default {
   "Beta": [
     "Бета"
   ],
+  "Bind to MAC address": [
+    "Прив'язати до MAC-адреси"
+  ],
+  "Bind to interface name": [
+    "Прив'язати до назви інтерфейсу"
+  ],
+  "Binding settings for '%s'": [
+    "Налаштування прив'язки для «%s»"
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -245,9 +242,6 @@ export default {
   ],
   "Btrfs with snapshots": [
     "Btrfs з моментальними знімками"
-  ],
-  "Calculated automatically": [
-    "Розраховується автоматично"
   ],
   "Cancel": [
     "Скасувати"
@@ -305,6 +299,15 @@ export default {
   ],
   "Choose a disk for placing the boot loader": [
     "Оберіть диск для розміщення завантажувача"
+  ],
+  "Choose device to bind by MAC": [
+    "Виберіть пристрій для прив'язки за MAC-адресою"
+  ],
+  "Choose device to bind by name": [
+    "Виберіть пристрій для прив'язки за назвою"
+  ],
+  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
+    "Виберіть, як це підключення має бути пов'язане з мережевим інтерфейсом. Це допоможе контролювати, який інтерфейс буде використовуватися для підключення."
   ],
   "Choose what to with current content": [
     "Оберіть, що робити з поточним контентом"
@@ -459,9 +462,6 @@ export default {
   "Default file system for generic partitions": [
     "Типова файлова система для звичайних розділів"
   ],
-  "Define a custom size or a range": [
-    "Вказати власний розмір або діапазон"
-  ],
   "Define a new LVM on the disk": [
     "Задати новий LVM на диску"
   ],
@@ -507,6 +507,9 @@ export default {
   "Discard": [
     "Відмовитись"
   ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
+  ],
   "Disconnected": [
     "Роз'єднано"
   ],
@@ -548,6 +551,9 @@ export default {
   ],
   "Edit %s": [
     "Змінити %s"
+  ],
+  "Edit binding settings": [
+    "Змінити налаштування прив'язки"
   ],
   "Edit connection %s": [
     "Редагувати з'єднання %s"
@@ -746,9 +752,6 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Якщо для запуску цієї програми використовувався локальний носій, витягніть його перед наступним завантаженням."
   ],
-  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "Якщо одиницю виміру не вказано, буде використано байти (B). Більші одиниці можуть мати                 вигляд GiB (кратно 2) або GB (кратно 10)."
-  ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Якщо Ви продовжите, розділи на вашому жорсткому диску буде змінено відповідно до наданих налаштувань встановлення."
   ],
@@ -857,9 +860,6 @@ export default {
   "JFS": [
     "JFS"
   ],
-  "Keep size of %s": [
-    "Зберегти розмір %s"
-  ],
   "Keyboard": [
     "Клавіатура"
   ],
@@ -884,14 +884,8 @@ export default {
   "Language and keyboard": [
     "Мова і клавіатура"
   ],
-  "Let the installer propose a sensible range of sizes": [
-    "Дозволити інсталятору запропонувати розумний діапазон розмірів"
-  ],
   "License language": [
     "Мова ліцензії"
-  ],
-  "Limited": [
-    "Обмежено"
   ],
   "Loading": [
     "Завантаження"
@@ -947,26 +941,8 @@ export default {
   "Manual": [
     "Вручну"
   ],
-  "Maximum": [
-    "Максимум"
-  ],
-  "Maximum size mode": [
-    "Режим максимального розміру"
-  ],
-  "Maximum size options": [
-    "Параметри максимального розміру"
-  ],
-  "Maximum size value": [
-    "Значення максимального розміру"
-  ],
   "MiB": [
     "МіБ"
-  ],
-  "Minimum": [
-    "Мінімум"
-  ],
-  "Minimum size value": [
-    "Значення мінімального розміру"
   ],
   "Mode": [
     "Режим"
@@ -1169,9 +1145,6 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     "Розділи для завантаження буде виділено на наступному пристрої."
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Розділи для завантаження буде виділено на інсталяційному диску (%s)."
-  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Розділи для завантаження буде виділено на інсталяційному диску."
   ],
@@ -1337,9 +1310,6 @@ export default {
   "SSID": [
     "Назва мережі"
   ],
-  "Same as minimum": [
-    "Те саме, що й мінімум"
-  ],
   "Search": [
     "Пошук"
   ],
@@ -1456,15 +1426,6 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Обмеження розміру повинні бути числами, до яких можна додати одиницю виміру, наприклад, GiB або GB"
   ],
-  "Size options": [
-    "Варіанти розмірів"
-  ],
-  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
-    "Розміри мають вводитися у вигляді чисел, за якими слідує одиниця виміру                 у вигляді GiB (кратно 2) або GB (кратно 10)."
-  ],
-  "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "Розміри повинні бути введені у вигляді чисел, після чого можна вказати одиницю виміру."
-  ],
   "Skip to content": [
     "Перейти до вмісту"
   ],
@@ -1546,20 +1507,14 @@ export default {
   "The configured LVM groups will remain at %s": [
     "Налаштовані групи LVM залишаться у %s"
   ],
+  "The connection can be used by any available interface.": [
+    "Це підключення може використовуватися будь-яким доступним інтерфейсом."
+  ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Це з'єднання буде використовуватися тільки під час встановлення і не буде доступним у встановленій системі."
   ],
   "The content may be deleted": [
     "Вміст може бути видалений"
-  ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "Поточна конфігурація призведе до утворення розділу %1$s розміром %2$s."
-  ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "Поточна конфігурація призведе до створення розділу %1$s розміром щонайменше %2$s."
-  ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "Поточна конфігурація призведе до створення розділу %1$s розміром від %2$s до %3$s."
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Дані зберігаються, але розмір поточних розділів буде змінено в міру необхідності."
@@ -1610,19 +1565,10 @@ export default {
     "Встановлення займе %s, включаючи:"
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
-    ""
+    "Інтерфейс програми встановлення більше недоступний. Це вікно можна закрити."
   ],
   "The installer requires [root] user privileges.": [
     "Програма встановлення вимагає привілеїв користувача [root]."
-  ],
-  "The logical volume can grow to use all the contiguous free space": [
-    "Логічний том може розростатися, щоб використовувати весь суміжний вільний простір"
-  ],
-  "The logical volume can grow until a given limit size": [
-    "Логічний том може збільшуватися до заданого граничного розміру"
-  ],
-  "The logical volume is created exactly with the given size": [
-    "Логічний том буде створено точно з заданим розміром"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Максимальне значення повинно бути числом, за яким слідує одиниця виміру, наприклад, GiB або GB"
@@ -1642,47 +1588,11 @@ export default {
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "Необхідні фізичні томи LVM будуть додані як розділи на обраних дисках, виходячи з розмірів логічних томів. Якщо Ви виберете кілька дисків, фізичні томи можуть бути розподілені по кількох дисках."
   ],
-  "The partition can grow to use all the contiguous free space": [
-    "Розділ може розростатися, щоб використовувати весь суміжний вільний простір"
-  ],
-  "The partition can grow until a given limit size": [
-    "Розділ може збільшуватися до заданого граничного розміру"
-  ],
-  "The partition is created exactly with the given size": [
-    "Розділ буде створено точно з заданим розміром"
-  ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Пароль не знадобиться для завантаження та доступу до даних, якщо TPM зможе перевірити цілісність системи. Запечатування TPM вимагає, щоб нова система завантажувалася безпосередньо під час першого запуску."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "Діапазон розмірів для %1$s буде динамічно змінюватися залежно від обсягу оперативної пам'яті в системі та наявності окремої файлової системи для %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "Діапазон розмірів для %1$s буде динамічно змінюватися залежно від обсягу оперативної пам'яті в системі та наявності окремих файлових систем для %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Діапазон розмірів для %1$s буде динамічно змінюватися залежно від обсягу оперативної пам'яті в системі, використання знімків Btrfs і наявності окремої файлової системи для %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Діапазон розмірів для %1$s буде динамічно змінюватися залежно від обсягу оперативної пам'яті в системі, використання знімків Btrfs і наявності окремих файлових систем для %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "Діапазон розмірів для %1$s буде динамічно змінюватися залежно від наявності окремої файлової системи для %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "Діапазон розмірів для %1$s буде динамічно змінюватися залежно від наявності окремих файлових систем для %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Діапазон розмірів для %1$s буде динамічно змінюватися на основі використання знімків Btrfs і наявності окремої файлової системи для %2$s."
-  ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Діапазон розмірів для %1$s буде динамічно змінено на основі використання знімків Btrfs та наявності окремих файлових систем для %2$s."
-  ],
-  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "Діапазон розмірів для %s буде динамічно змінюватися залежно від обсягу оперативної пам'яті в системі та використання знімків Btrfs."
-  ],
-  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "Діапазон розмірів для %s буде динамічно коригуватися на основі використання знімків Btrfs."
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
+    ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "Конфігурація сховища є правильною (див. результат нижче), але використовує елементи, які не підтримуються цим інтерфейсом."
@@ -1958,13 +1868,16 @@ export default {
     "Ви підключитеся до публічної мережі без шифрування. Дані, передані через неї можуть бути незахищеними."
   ],
   "Your system is rebooting": [
-    ""
+    "Система перезапускається"
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] увімкнений"
+  ],
+  "approx. %s": [
+    ""
   ],
   "at least %s": [
     "не менше %s"

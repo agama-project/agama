@@ -19,7 +19,7 @@ export default {
     ""
   ],
   "%d of %d": [
-    ""
+    "%d %d-დან"
   ],
   "%s - %s": [
     "%s - %s"
@@ -31,7 +31,7 @@ export default {
     "%s დისკი"
   ],
   "%s has been registered with below information.": [
-    ""
+    "%s დარეგისტრირებულია შემდეგი ინფორმაციით ქვემოთ."
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
     ""
@@ -44,15 +44,6 @@ export default {
   ],
   "%s with %d partitions": [
     "%s %d დანაყოფით"
-  ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "%1$s ზომით %2$s შეიქმნება მიმაგრების წერტილზე %3$s"
-  ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    ""
-  ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    ""
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     ""
@@ -162,6 +153,12 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     ""
   ],
+  "Any interface": [
+    "ნებისმიერი ინტერფეისი"
+  ],
+  "Apply selected solution": [
+    "არჩეული გადაწყვეტის გადატარება"
+  ],
   "As a new partition on %s": [
     "როგორც ახალი დანაყოფი %s-ზე"
   ],
@@ -169,7 +166,7 @@ export default {
     ""
   ],
   "At least one partition will be deleted": [
-    ""
+    "წაიშლება, სულ ცოტა, ერთი დანაყოფი"
   ],
   "At this point you can power off the machine.": [
     ""
@@ -207,13 +204,13 @@ export default {
   "Back": [
     "უკან"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
+  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
     ""
   ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
+  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
     ""
   ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
+  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
     ""
   ],
   "Bcachefs": [
@@ -231,6 +228,15 @@ export default {
   "Beta": [
     "ბეტა"
   ],
+  "Bind to MAC address": [
+    "მიბმა MAC მისამართზე"
+  ],
+  "Bind to interface name": [
+    "მიბმა ინტერფეისის სახელზე"
+  ],
+  "Binding settings for '%s'": [
+    "მიბმის პარამეტრები '%s'-სთვის"
+  ],
   "BitLocker": [
     "BitLocker"
   ],
@@ -242,9 +248,6 @@ export default {
   ],
   "Btrfs with snapshots": [
     "Btrfs სწრაფი ასლებით"
-  ],
-  "Calculated automatically": [
-    "ავტომატურად გამოთვლილი"
   ],
   "Cancel": [
     "გაუქმება"
@@ -261,17 +264,26 @@ export default {
   "Change": [
     "შეცვლა"
   ],
+  "Change Language": [
+    "ენის შეცვლა"
+  ],
   "Change boot options": [
     "ჩატვირთვის პარამეტრების შეცვლა"
   ],
   "Change device menu": [
     "მოწყობილობის მენიუს შეცვლა"
   ],
+  "Change display language": [
+    "საჩვენებელი ენის შეცვლა"
+  ],
   "Change display language and keyboard layout": [
-    ""
+    "საჩვენებელი ენისა და კლავიატურის განლაგების შეცვლა"
   ],
   "Change keyboard": [
     "კლავიატურის შეცვლა"
+  ],
+  "Change keyboard layout": [
+    "კლავიატურის განლაგების შეცვლა"
   ],
   "Change product": [
     "პროდუქტის შეცვლა"
@@ -292,6 +304,15 @@ export default {
     "შეამოწმეთ შემდეგი ელემენტები გაგრძელებამდე"
   ],
   "Choose a disk for placing the boot loader": [
+    "აირჩიეთ დისკის ჩამტვირთავის განსათავსებლად"
+  ],
+  "Choose device to bind by MAC": [
+    ""
+  ],
+  "Choose device to bind by name": [
+    "აირჩიეთ მოწყობილობა, რომლის სახელზეც მიბმა გნებავთ"
+  ],
+  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
     ""
   ],
   "Choose what to with current content": [
@@ -332,6 +353,9 @@ export default {
   ],
   "Configure zFCP": [
     "zFCP-ის მორგება"
+  ],
+  "Configured for installation only": [
+    "მორგებულია მხოლოდ დასაყენებლად"
   ],
   "Configuring the product, please wait ...": [
     "მიმდინარეობს პროდუქტის მორგება. მოითმინეთ ..."
@@ -444,11 +468,8 @@ export default {
   "Default file system for generic partitions": [
     "ნაგულისხმევი ფაილური სისტემა ზოგადი დანაყოფებისთვის"
   ],
-  "Define a custom size or a range": [
-    ""
-  ],
   "Define a new LVM on the disk": [
-    ""
+    "ახალი LVM-ის აღწერა დისკზე"
   ],
   "Define a new LVM on top of one or several disks": [
     ""
@@ -472,7 +493,7 @@ export default {
     "ტომების ჯგუფის წაშლა"
   ],
   "Destroy current data and format partition as": [
-    ""
+    "მიმდინარე მონაცემების განადგურება და დანაყოფის დაფორმატება, როგორც"
   ],
   "Details": [
     "დეტალები"
@@ -491,6 +512,9 @@ export default {
   ],
   "Discard": [
     "მოცილება"
+  ],
+  "Discard the maximum size and continue with simplified configuration": [
+    ""
   ],
   "Disconnected": [
     "გამოერთებული"
@@ -533,6 +557,9 @@ export default {
   ],
   "Edit %s": [
     "%s-ის ჩასწორება"
+  ],
+  "Edit binding settings": [
+    "მიბმის პარამეტრების ჩასწორება"
   ],
   "Edit connection %s": [
     "%s მიერთების ჩასწორება"
@@ -577,7 +604,7 @@ export default {
     "შეიყვანეთ სახელი"
   ],
   "Enter a name for the volume group.": [
-    ""
+    "შეიყვანეთ სახელი ტომების ჯგუფისთვის."
   ],
   "ExFAT": [
     "ExFAT"
@@ -619,7 +646,7 @@ export default {
     "გაფილტვრა აღწერით ან რილაკების რუკის კოდით"
   ],
   "Filter by language, territory or locale code": [
-    ""
+    "ფილტრი ენით, ტერიტორიით, ან ლოკალის კოდით"
   ],
   "Filter by max channel": [
     "გაფილვრა მაქს. არხით"
@@ -673,7 +700,7 @@ export default {
     "ნაგულისხმევი რაუტერი"
   ],
   "Gateway can be defined only in 'Manual' mode": [
-    ""
+    "ნაგულისხმევი რაუტერის მითითება, მხოლოდ, 'ხელით' რეჟიმში შეიძლება"
   ],
   "GiB": [
     "გიბ"
@@ -688,8 +715,8 @@ export default {
     "დამალვა"
   ],
   "Hide %d subvolume action": [
-    "",
-    ""
+    "%d ქვეტომის ქმედების დამალვა",
+    "%d ქვეტომის ქმედების დამალვა"
   ],
   "Hide details": [
     "დეტალების დამალვა"
@@ -728,9 +755,6 @@ export default {
     "IPv6"
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
-    ""
-  ],
-  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
     ""
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
@@ -803,7 +827,7 @@ export default {
     "დაყენებას დასჭირდება %s."
   ],
   "Installed system may not have network connections": [
-    ""
+    "დაყენებულ სისტემას შეიძლება, ქსელი არ ჰქონდეს"
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
     ""
@@ -841,9 +865,6 @@ export default {
   "JFS": [
     "JFS"
   ],
-  "Keep size of %s": [
-    "%s-ის ზომის შენარჩუნება"
-  ],
   "Keyboard": [
     "კლავიატურა"
   ],
@@ -865,14 +886,14 @@ export default {
   "Language": [
     "ენა"
   ],
-  "Let the installer propose a sensible range of sizes": [
+  "Language and keyboard": [
+    "ენა და კლავიატურა"
+  ],
+  "Let the installer propose a sensible size": [
     ""
   ],
   "License language": [
     "ლიცენზიის ენა"
-  ],
-  "Limited": [
-    "შეზღუდული"
   ],
   "Loading": [
     "იტვირთება"
@@ -928,26 +949,8 @@ export default {
   "Manual": [
     "ხელით"
   ],
-  "Maximum": [
-    "მაქსიმუმი"
-  ],
-  "Maximum size mode": [
-    "მაქსიმალური ზომის რეჟიმი"
-  ],
-  "Maximum size options": [
-    "მაქსიმალური ზომის მორგება"
-  ],
-  "Maximum size value": [
-    "მაქსიმალური ზომის მნიშვნელობა"
-  ],
   "MiB": [
     "მიბ"
-  ],
-  "Minimum": [
-    "მინიმუმი"
-  ],
-  "Minimum size value": [
-    "მინიმალური ზომის მნიშვნელობა"
   ],
   "Mode": [
     "რეჟიმი"
@@ -1033,6 +1036,9 @@ export default {
   "No additional software was selected.": [
     "დამატებითი პროგრამები არ არჩეულა."
   ],
+  "No conflicts to address": [
+    "გასათვალისწინებელი კონფლიქტების გარეშე"
+  ],
   "No content found": [
     "შემცველობა აღმოჩენილი არაა"
   ],
@@ -1076,16 +1082,16 @@ export default {
     "არაფერი"
   ],
   "None of the keymaps match the filter.": [
-    ""
+    "ფილტრს არცერთი კლავიტურის განლაგება ემთხვევა."
   ],
   "None of the locales match the filter.": [
-    ""
+    "ლოკალების რაოდენობა, რომელიც ფილტრს ემთხვევა."
   ],
   "None of the patterns match the filter.": [
-    ""
+    "ფილტრს შაბლონებიდან არც ერთი ემთხვევა."
   ],
   "None of the time zones match the filter.": [
-    ""
+    "ფილტრს დროის სარტყლებიდან არცერთი ემთხვევა."
   ],
   "Not available": [
     "ხელმისაწვდომი არაა"
@@ -1115,7 +1121,7 @@ export default {
     "ჩატვირთვისას"
   ],
   "Only available if authentication by target is provided": [
-    ""
+    "ხელმისაწვდომია, მხოლოდ, მაშინ, თუ მითითებულია ავთენტიკაცია სამიზნით"
   ],
   "Options toggle": [
     "პარამეტრის გადართვა"
@@ -1145,9 +1151,6 @@ export default {
     "ჩასატვირთად საჭირო დანაყოფები %s-ზე დარჩება"
   ],
   "Partitions to boot will be allocated at the following device.": [
-    ""
-  ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
     ""
   ],
   "Partitions to boot will be allocated at the installation disk.": [
@@ -1292,7 +1295,7 @@ export default {
     "შედეგი"
   ],
   "Review and fix": [
-    ""
+    "გადახედვა და გასწორება"
   ],
   "Root authentication methods": [
     "Root-ით ავთენტიკაციის მეთოდები"
@@ -1314,9 +1317,6 @@ export default {
   ],
   "SSID": [
     "SSID"
-  ],
-  "Same as minimum": [
-    "იგივე, რაც მინიმალური"
   ],
   "Search": [
     "ძებნა"
@@ -1351,6 +1351,9 @@ export default {
   "Select a product": [
     "აირჩიეთ პროდუქტი"
   ],
+  "Select a solution to continue": [
+    "გასაგრძელებლად აირჩიეთ გადაწყვეტილება"
+  ],
   "Select another disk to define partitions": [
     "აირჩიეთ სხვა დისკი დანაყოფების აღწერისთვის"
   ],
@@ -1364,7 +1367,7 @@ export default {
     ""
   ],
   "Select or enter a valid mount point": [
-    ""
+    "აირჩიეთ, ან შეიყვანეთ სწორი მიმაგრების წერტილი"
   ],
   "Select the disk to configure partitions for booting": [
     "აირჩიეთ დისკი ჩატვირთვადი დანაყოფების მოსარგებად"
@@ -1403,11 +1406,17 @@ export default {
     "ჩვენება"
   ],
   "Show %d subvolume action": [
-    "",
-    ""
+    "%d ქვეტომის ქმედების ჩვენება",
+    "%d ქვეტომის ქმედების ჩვენება"
   ],
   "Show information about %s": [
     "ინფორმაციის ჩვენება %s-ის შესახებ"
+  ],
+  "Show less actions": [
+    "ნაკლები ქმედების ჩვენება"
+  ],
+  "Show more actions": [
+    "მეტი ქმედების ჩვენება"
   ],
   "Shrink existing partitions": [
     "არსებული დანაყოფების დაპატარავება"
@@ -1424,29 +1433,23 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     ""
   ],
-  "Size options": [
-    "ზომის მორგება"
-  ],
-  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
-    ""
-  ],
-  "Sizes must be entered as a numbers optionally followed by a unit.": [
-    ""
-  ],
   "Skip to content": [
-    ""
+    "შემცველობაზე გადასვლა"
   ],
   "Skip to next": [
-    ""
+    "შემდეგზე გადასვლა"
   ],
   "Skip to previous": [
-    ""
+    "წინაზე დაბრუნება"
   ],
   "Software": [
     "პროგრამები"
   ],
   "Software %s": [
     "პროგრამული %s"
+  ],
+  "Software conflicts resolution": [
+    "პროგრამების კონფლიქტის გადაწყვეტილება"
   ],
   "Software selection": [
     "პროგრამების არჩევანი"
@@ -1473,7 +1476,7 @@ export default {
     "საბაზისო დაყენების მორგების დაწყება"
   ],
   "Start from scratch with the default configuration": [
-    ""
+    "დაწყება ნულიდან ნაგულისხმევი კონფიგურაციით"
   ],
   "Startup": [
     "გაშვება"
@@ -1511,19 +1514,22 @@ export default {
   "The configured LVM groups will remain at %s": [
     ""
   ],
+  "The connection can be used by any available interface.": [
+    ""
+  ],
   "The connection will be used only during installation and not available in the installed system.": [
     ""
   ],
   "The content may be deleted": [
     "შეიძლება, შემცველობა წაიშალოს"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
+  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     ""
   ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
+  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
     ""
   ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
+  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
     ""
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
@@ -1536,7 +1542,7 @@ export default {
     "მოწყობილობის დაპატარავება შეუძლებელია:"
   ],
   "The device will be mounted at %s.": [
-    ""
+    "მოწყბილობა მიმაგრებული იქნება, როგორც %s."
   ],
   "The device will be used by the new system.": [
     ""
@@ -1556,11 +1562,14 @@ export default {
   "The extension has been registered with key %s.": [
     ""
   ],
+  "The final size can be bigger in order to fill the extra free space.": [
+    ""
+  ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     ""
   ],
   "The following software patterns are selected for installation:": [
-    ""
+    "დაყენებისთვის არჩეულია შემდეგი პროგრამის შაბლონები:"
   ],
   "The initiator name cannot be blank": [
     "ინიციატორის სახელი არ შეიძლება, ცარიელი იყოს"
@@ -1580,15 +1589,6 @@ export default {
   "The installer requires [root] user privileges.": [
     "დაყენების პროგრამას [root] მომხმარებლის პრივილეგიები სჭირდება."
   ],
-  "The logical volume can grow to use all the contiguous free space": [
-    ""
-  ],
-  "The logical volume can grow until a given limit size": [
-    ""
-  ],
-  "The logical volume is created exactly with the given size": [
-    ""
-  ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     ""
   ],
@@ -1607,46 +1607,43 @@ export default {
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     ""
   ],
-  "The partition can grow to use all the contiguous free space": [
-    ""
-  ],
-  "The partition can grow until a given limit size": [
-    ""
-  ],
-  "The partition is created exactly with the given size": [
-    ""
-  ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     ""
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     ""
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
     ""
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
     ""
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
     ""
   ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
+  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
     ""
   ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
+  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
     ""
   ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
     ""
   ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
     ""
   ],
-  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
+  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
     ""
   ],
-  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
+  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
+    ""
+  ],
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
+    ""
+  ],
+  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
     ""
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
@@ -1767,7 +1764,7 @@ export default {
     "ატვირთვა"
   ],
   "Upload, paste, or drop an SSH public key": [
-    ""
+    "ატვირთეთ, ჩასვით, ან დააგდეთ ზედ SSH-ის საჯარო გასაღები"
   ],
   "Use": [
     "გამოყენება"
@@ -1776,7 +1773,7 @@ export default {
     "%s-ის გამოყენება"
   ],
   "Use %s for LVM and additional partitions": [
-    ""
+    "%s-ის გამოყენება LVM-სთვის და დამატებითი დანაყოფებისთვის"
   ],
   "Use %s for LVM, additional partitions and booting": [
     ""
@@ -1794,7 +1791,7 @@ export default {
     "%s-ის გამოყენება LVM-ისთვის"
   ],
   "Use %s to host LVM and boot": [
-    ""
+    "%s-ის გამოყენება LVM-ისთვის და ჩასატვირთად"
   ],
   "Use %s to install": [
     "%s-ის გამოყენება დასაყენებლად"
@@ -1803,7 +1800,7 @@ export default {
     "%s-ის გამოყენება დასაყენებლად და ჩასატვირთად"
   ],
   "Use %s to install and host LVM": [
-    ""
+    "%s-ის გამოყენება დასაყენებლად და LVM-ის განთავსებისთვის"
   ],
   "Use %s to install, host LVM and boot": [
     ""
@@ -1814,8 +1811,11 @@ export default {
   "Use available space": [
     "ხელმისაწვდომი ადგილის გამოყენება"
   ],
+  "Use for installation only": [
+    "მხოლოდ დასაყენებლად გამოყენება"
+  ],
   "Use for the selected product too": [
-    ""
+    "გამოყენება მონიშნული პროდუქტისთვისაც"
   ],
   "Use password": [
     "პაროლის გამოყენება"
@@ -1846,6 +1846,9 @@ export default {
   ],
   "Username suggestion dropdown": [
     "მომხმარებლის სახელის მინიშნების ჩამოსაშლელი მენიუ"
+  ],
+  "Using [%s] keyboard": [
+    "გამოიყენება [%s] კლავიატურა"
   ],
   "Using a hashed password.": [
     "დაჰეშილი პაროლის გამოყენება."
@@ -1890,7 +1893,7 @@ export default {
     "Wi-Fi მხარდაჭერილი არაა"
   ],
   "Will be supported in a future version.": [
-    ""
+    "მხარდაჭერილი იქნება მომავალ ვერსიაში."
   ],
   "Wired connections": [
     "მავთულიანი კავშირები"
@@ -1917,12 +1920,15 @@ export default {
     ""
   ],
   "Your system is rebooting": [
-    ""
+    "მიმდინარეობს თქენი სისტემის გადატვირთვა"
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
+    "[CAPS LOCK] ჩართულია"
+  ],
+  "approx. %s": [
     ""
   ],
   "at least %s": [

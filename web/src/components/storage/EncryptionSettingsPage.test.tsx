@@ -26,6 +26,8 @@ import { installerRender } from "~/test-utils";
 import EncryptionSettingsPage from "./EncryptionSettingsPage";
 import { EncryptionHook } from "~/queries/storage/config-model";
 
+jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Mock</div>);
+
 const mockLuks2Encryption: EncryptionHook = {
   encryption: {
     method: "luks2",
