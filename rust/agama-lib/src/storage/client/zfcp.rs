@@ -220,19 +220,31 @@ impl ZFCPClient<'_> {
     }
 
     pub async fn set_config(&self, config: &ZFCPConfig) -> Result<(), ServiceError> {
+        // at first probe zfcp to ensure controller are on dbus
+        self.probe().await?;
         // collect controllers to activate it ( unique )
+        let controllers = self.get_controllers().await?;
         let mut channels: HashSet<String> = HashSet::new();
         for dev in &config.devices {
             channels.insert(dev.channel.clone());
         }
+        let mut channel_mapping: HashMap<String, String> = HashMap::new();
+        for controller in controllers {
+            channel_mapping.insert(controller.1.channel.clone(), controller.1.id.clone());
+        }
         for channel in channels {
-            self.activate_controller(&channel).await?;
+            let id = channel_mapping
+                .get(&channel)
+                .ok_or_else(|| ServiceError::ZFCPControllerNotFound(channel))?;
+            self.activate_controller(id).await?;
         }
 
         // and then activate all disks
         for dev in &config.devices {
-            self.activate_disk(&dev.channel, &dev.wwpn, &dev.lun)
-                .await?;
+            let id = channel_mapping
+                .get(&dev.channel)
+                .ok_or_else(|| ServiceError::ZFCPControllerNotFound(dev.channel.clone()))?;
+            self.activate_disk(&id, &dev.wwpn, &dev.lun).await?;
         }
 
         Ok(())
