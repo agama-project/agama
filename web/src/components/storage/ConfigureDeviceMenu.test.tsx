@@ -72,7 +72,7 @@ const mockUseModel = jest.fn();
 
 jest.mock("~/hooks/storage/system", () => ({
   ...jest.requireActual("~/hooks/storage/system"),
-  useCandidateDevices: () => [vda, vdb],
+  useAvailableDevices: () => [vda, vdb],
 }));
 
 jest.mock("~/hooks/storage/model", () => ({
