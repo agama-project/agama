@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 15 10:55:21 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt the products definition to the new way of pre-selecting
+  user patterns (gh#agama-project/agama#2560).
+
+-------------------------------------------------------------------
 Fri Jul 11 13:03:48 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Add Experimental xfce_wayland to Leap 16.0

@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Jul 15 10:53:18 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not overwrite the list of chosen patterns when selecting an LSM
+  (gh#agama-project/agama#2560).
+- Extend products definition with the possibility to define whether a
+  user pattern should be pre-selected or not.
+
+-------------------------------------------------------------------
 Thu Jul 10 12:13:14 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Inhibit storage subsystems (bsc#1245159, bsc#1246133).
