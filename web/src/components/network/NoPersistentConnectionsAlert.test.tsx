@@ -33,7 +33,7 @@ jest.mock("~/queries/network", () => ({
   useConnections: () => mockConnections,
 }));
 
-describe("NoPersistentConnectionsAlert", () => {
+describe("<NoPersistentConnectionsAlert />", () => {
   describe("when there are persistent connections", () => {
     beforeEach(() => {
       mockConnections = [
@@ -84,10 +84,10 @@ describe("NoPersistentConnectionsAlert", () => {
       ];
     });
 
-    it("renders a 'full-transient' alert", () => {
+    it("renders a custom alert to notify the user", () => {
       plainRender(<NoPersistentConnectionsAlert />);
 
-      screen.getByText("Warning alert:");
+      screen.getByText("Custom alert:");
       screen.getByText("Installed system may not have network connections");
       screen.getByText(/All.*managed through this interface.*not be copied.*/);
     });

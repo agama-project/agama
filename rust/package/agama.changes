@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jul 15 09:00:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Fix autoconnect setting for port interfaces (bsc#1246070).
+
+-------------------------------------------------------------------
 Fri Jul 11 06:56:29 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not exported null values for localization, hostname

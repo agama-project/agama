@@ -86,8 +86,6 @@ pub fn connection_to_dbus<'a>(
             .as_deref()
             .unwrap_or(controller.id.as_str());
         connection_dbus.insert("master", master.into());
-        connection_dbus.remove("autoconnect");
-        connection_dbus.insert("autoconnect", false.into());
     } else {
         if VersionReq::parse(">=1.46.0").unwrap().matches(&nm_version) {
             connection_dbus.insert("port-type", "".into());
