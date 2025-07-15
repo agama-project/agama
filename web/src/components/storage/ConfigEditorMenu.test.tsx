@@ -25,6 +25,7 @@ import { screen, within } from "@testing-library/react";
 import { plainRender, mockNavigateFn } from "~/test-utils";
 import ConfigEditorMenu from "./ConfigEditorMenu";
 import { STORAGE as PATHS } from "~/routes/paths";
+import { useReprobeMutation } from "~/queries/storage";
 
 const mockUseZFCPSupported = jest.fn();
 jest.mock("~/queries/storage/zfcp", () => ({
@@ -39,16 +40,20 @@ jest.mock("~/queries/storage/dasd", () => ({
 }));
 
 const mockUseResetConfigMutation = jest.fn();
+const mockUseReprobeMutation = jest.fn();
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useResetConfigMutation: () => mockUseResetConfigMutation(),
+  useReprobeMutation: () => mockUseReprobeMutation(),
 }));
 
 const mockReset = jest.fn();
+const mockReprobe = jest.fn();
 beforeEach(() => {
   mockUseZFCPSupported.mockReturnValue(false);
   mockUseDASDSupported.mockReturnValue(false);
   mockUseResetConfigMutation.mockReturnValue({ mutate: mockReset });
+  mockUseReprobeMutation.mockReturnValue({ mutate: mockReprobe });
 });
 
 async function openMenu() {
@@ -76,6 +81,13 @@ it("allows users to reset the config", async () => {
   const resetItem = within(menu).getByRole("menuitem", { name: /Reset to/ });
   await user.click(resetItem);
   expect(mockReset).toHaveBeenCalled();
+});
+
+it("allows users to reprobe devices", async () => {
+  const { user, menu } = await openMenu();
+  const reprobeItem = within(menu).getByRole("menuitem", { name: /Reprobe/ });
+  await user.click(reprobeItem);
+  expect(mockReprobe).toHaveBeenCalled();
 });
 
 it("allows users to configure iSCSI", async () => {

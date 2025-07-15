@@ -31,7 +31,7 @@ import {
   DropdownItem,
   Divider,
 } from "@patternfly/react-core";
-import { useResetConfigMutation } from "~/queries/storage";
+import { useReprobeMutation, useResetConfigMutation } from "~/queries/storage";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useZFCPSupported } from "~/queries/storage/zfcp";
 import { useDASDSupported } from "~/queries/storage/dasd";
@@ -41,6 +41,7 @@ export default function ConfigEditorMenu() {
   const isZFCPSupported = useZFCPSupported();
   const isDASDSupported = useDASDSupported();
   const { mutate: reset } = useResetConfigMutation();
+  const { mutate: reprobe } = useReprobeMutation();
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
 
@@ -68,6 +69,13 @@ export default function ConfigEditorMenu() {
           description={_("Select the disk to configure partitions for booting")}
         >
           {_("Change boot options")}
+        </DropdownItem>
+        <DropdownItem
+          key="reprobe-link"
+          onClick={() => reprobe()}
+          description={_("Reprobe available devices. Useful when activating them outside of agama")}
+        >
+          {_("Reprobe devices")}
         </DropdownItem>
         <DropdownItem
           key="reset-link"
