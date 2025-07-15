@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 15 11:03:12 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Display only Tumblweed based distros in Tumbleweed installer
+  and vice versa.
+
+-------------------------------------------------------------------
 Fri Jul 11 13:03:48 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Add Experimental xfce_wayland to Leap 16.0
