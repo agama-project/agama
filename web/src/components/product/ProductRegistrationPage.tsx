@@ -131,7 +131,7 @@ function RegistrationServer({
         onChange={(v: ServerOption) => onChange(v)}
       >
         <SelectList aria-label={_("Server options")}>
-          <SelectOption value="default" description={_("Register to scc.suse.com")}>
+          <SelectOption value="default" description={_("Register using SUSE server")}>
             {SCC_SERVER_LABEL}
           </SelectOption>
           <SelectOption

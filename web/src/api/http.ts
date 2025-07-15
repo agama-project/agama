@@ -47,6 +47,7 @@ const patch = (url: string, data?: object) => http.patch(url, data);
  *
  * @param url - endpoint URL
  * @param data - request payload
+ * @param config - request config (optional)
  */
 const put = (url: string, data: object | string, config?: AxiosRequestConfig) =>
   http.put(url, data, config);

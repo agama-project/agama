@@ -243,7 +243,7 @@ describe Agama::Registration do
             expect(subject.reg_code).to eq("11112222")
           end
 
-          it "does not set the email" do
+          it "sets the email" do
             expect { subject.register("11112222", email: "test@test.com") }
               .to raise_error(Timeout::Error)
 

@@ -115,6 +115,8 @@ const register = ({ key, email }: { key: string; email?: string }) =>
  * Updates the URL for the registration
  */
 const updateRegistrationUrl = (url: string) =>
+  // Explicit content type is needed because the content is a string. The application/json type is
+  // automatically set only if the content is an object.
   put("/api/software/registration/url", url, { headers: { "Content-Type": "application/json" } });
 
 /**
