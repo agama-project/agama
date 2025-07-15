@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 15 15:52:42 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add button to allow re-probing storage devices.
+  (gh#agama-project/agama#2565)
+
+-------------------------------------------------------------------
 Mon Jul 14 16:02:55 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Allow specifying the registration server (jsc#AGM-156).
