@@ -64,6 +64,7 @@ const useInstallerStatusChanges = () => {
     return client.onEvent((event) => {
       const { type } = event;
       const data = queryClient.getQueryData(["status"]) as object;
+      console.log("onEvent(useInstallerStatusChanges)");
 
       switch (type) {
         case "IssuesChanged":

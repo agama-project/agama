@@ -375,7 +375,9 @@ const useProductChanges = () => {
   React.useEffect(() => {
     if (!client) return;
 
+    console.log("Listening to product changes");
     return client.onEvent((event) => {
+      console.log("onEvent(useProductChanges)");
       if (event.type === "ProductChanged") {
         queryClient.invalidateQueries({ queryKey: ["software"] });
       }
