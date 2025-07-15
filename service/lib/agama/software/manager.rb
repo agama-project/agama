@@ -253,6 +253,7 @@ module Agama
       #                           Filtering criteria can change.
       # @return [Array<Y2Packager::Resolvable>]
       # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/PerceivedComplexity
       def patterns(filtered)
         # huge speed up, preload the used attributes to avoid querying libzypp again,
         # see "ListPatterns" method in service/lib/agama/dbus/software/manager.rb
@@ -274,6 +275,7 @@ module Agama
         patterns
       end
       # rubocop:enable Metrics/CyclomaticComplexity
+      # rubocop:enable Metrics/PerceivedComplexity
 
       def add_pattern(id)
         return false unless pattern_exist?(id)
