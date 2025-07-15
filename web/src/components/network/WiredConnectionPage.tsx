@@ -36,6 +36,7 @@ import { sprintf } from "sprintf-js";
 import WiredConnectionDetails from "./WiredConnectionDetails";
 import { Icon } from "../layout";
 import { NETWORK } from "~/routes/paths";
+import NoPersistentConnectionsAlert from "./NoPersistentConnectionsAlert";
 
 const ConnectionNotFound = ({ id }) => {
   // TRANSLATORS: %s will be replaced with connection id
@@ -73,6 +74,7 @@ export default function WiredConnectionPage() {
         <Content component="h2">{title}</Content>
       </Page.Header>
       <Page.Content>
+        <NoPersistentConnectionsAlert />
         {connection ? (
           <WiredConnectionDetails connection={connection} />
         ) : (
