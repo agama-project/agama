@@ -23,6 +23,9 @@ require "agama/registration"
 
 module Agama
   module Software
+    # Represents a user selectable product.
+    UserPattern = Struct.new(:name, :selected)
+
     # Represents a product that Agama can install.
     class Product
       # Product id.
@@ -82,14 +85,6 @@ module Agama
       # @return [Array<String>]
       attr_accessor :mandatory_patterns
 
-      # Preseleted patterns.
-      #
-      # These patterns are pre-selected if they are avaialble, but
-      # the user can unselect them.
-      #
-      # @return [Array<String>]
-      attr_accessor :preselected_patterns
-
       # Optional patterns.
       #
       # These patterns are always installed if they are available.
@@ -99,7 +94,7 @@ module Agama
 
       # Optional user selectable patterns
       #
-      # @return [Array<String>]
+      # @return [Array<UserPattern>, nil]
       attr_accessor :user_patterns
 
       # Whether the registration is enabled for the product.
@@ -133,7 +128,6 @@ module Agama
         @optional_packages = []
         @mandatory_patterns = []
         @optional_patterns = []
-        @preselected_patterns = []
         # nil = display all visible patterns, [] = display no patterns
         @user_patterns = nil
         @registration = false
@@ -166,6 +160,18 @@ module Agama
 
         # Fallback to original untranslated description.
         description
+      end
+
+      # Preselected patterns.
+      #
+      # These patterns are pre-selected if they are available, but
+      # the user can unselect them.
+      #
+      # @return [Array<String>]
+      def preselected_patterns
+        return [] if self.user_patterns.nil?
+
+        self.user_patterns.filter_map { |p| p.name if p.selected }
       end
     end
   end

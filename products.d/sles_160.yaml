@@ -67,14 +67,13 @@ software:
   mandatory_patterns:
     - enhanced_base
     - bootloader
-  preselected_patterns:
-    - selinux
   optional_patterns: null # no optional pattern shared
   user_patterns:
     - cockpit
     - sles_sap_minimal_sap
     - fips
-    - selinux
+    - name: selinux
+      selected: true
     - documentation
     - sw_management
     - container_runtime_podman

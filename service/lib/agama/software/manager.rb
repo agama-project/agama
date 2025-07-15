@@ -127,8 +127,9 @@ module Agama
 
         raise ArgumentError unless new_product
 
+        logger.info "#{new_product.preselected_patterns}"
         proposal.set_resolvables(
-          PROPOSAL_ID, :pattern, new_product.preselected_patterns || []
+          PROPOSAL_ID, :pattern, new_product.preselected_patterns
         )
         update_repositories(new_product)
 
@@ -263,9 +264,10 @@ module Agama
         if product.user_patterns && filtered
           base_repos = base_repositories
 
+          user_patterns_names = (product.user_patterns || []).map(&:name)
           patterns.select! do |p|
             # the pattern is not from a base repository or is included in the display list
-            !base_repos.include?(p.source) || product.user_patterns.include?(p.name)
+            !base_repos.include?(p.source) || user_patterns_names.include?(p.name)
           end
         end
 
