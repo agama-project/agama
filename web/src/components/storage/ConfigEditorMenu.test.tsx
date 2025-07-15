@@ -25,7 +25,6 @@ import { screen, within } from "@testing-library/react";
 import { plainRender, mockNavigateFn } from "~/test-utils";
 import ConfigEditorMenu from "./ConfigEditorMenu";
 import { STORAGE as PATHS } from "~/routes/paths";
-import { useReprobeMutation } from "~/queries/storage";
 
 const mockUseZFCPSupported = jest.fn();
 jest.mock("~/queries/storage/zfcp", () => ({
