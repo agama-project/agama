@@ -48,7 +48,7 @@ import { useAddFilesystem } from "~/hooks/storage/filesystem";
 import { useModel } from "~/hooks/storage/model";
 import { useDevices } from "~/queries/storage";
 import { data, model, StorageDevice } from "~/types/storage";
-import { filesystemLabel } from "~/components/storage/utils";
+import { deviceBaseName, filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { apiModel } from "~/api/storage/types";
@@ -310,8 +310,10 @@ function FilesystemOptions({ mountPoint }: FilesystemOptionsProps): React.ReactN
       {mountPoint !== NO_VALUE && canReuse && (
         <SelectOption
           value={REUSE_FILESYSTEM}
-          // TRANSLATORS: %s is the name of a device, like /dev/vda
-          description={sprintf(_("Do not format %s and keep the current data"), device.name)}
+          description={
+            // TRANSLATORS: %s is the name of a device, like vda
+            sprintf(_("Do not format %s and keep the current data"), deviceBaseName(device, true))
+          }
         >
           <FilesystemOptionLabel value={REUSE_FILESYSTEM} />
         </SelectOption>
