@@ -38,9 +38,11 @@ import { Icon } from "../layout";
 
 const baseName = (device: StorageDevice): string => deviceBaseName(device, true);
 
-const UseOnlyOneOption = (device: model.Drive | model.MdRaid): boolean => {
-  const hasPv = device.isTargetDevice;
-  if (!device.getMountPaths().length && (hasPv || device.isExplicitBoot)) return true;
+const useOnlyOneOption = (device: model.Drive | model.MdRaid): boolean => {
+  if (device.filesystem && device.filesystem.reuse) return true;
+
+  const { isTargetDevice, isExplicitBoot } = device;
+  if (!device.getMountPaths().length && (isTargetDevice || isExplicitBoot)) return true;
 
   return device.isReusingPartitions;
 };
@@ -51,13 +53,18 @@ type ChangeDeviceMenuItemProps = {
 } & MenuItemProps;
 
 const ChangeDeviceTitle = ({ modelDevice }) => {
-  const onlyOneOption = UseOnlyOneOption(modelDevice);
-  const mountPaths = modelDevice.getMountPaths();
-  const hasMountPaths = mountPaths.length > 0;
-
+  const onlyOneOption = useOnlyOneOption(modelDevice);
   if (onlyOneOption) {
     return _("Selected disk cannot be changed");
   }
+
+  if (modelDevice.filesystem) {
+    // TRANSLATORS: %s is a formatted mount point like '"/home"'
+    return sprintf(_("Select a disk to format as %s"), formattedPath(modelDevice.mountPath));
+  }
+
+  const mountPaths = modelDevice.getMountPaths();
+  const hasMountPaths = mountPaths.length > 0;
 
   if (!hasMountPaths) {
     return _("Select a disk to configure");
@@ -88,6 +95,9 @@ const ChangeDeviceDescription = ({ modelDevice, device }) => {
   const hasMountPaths = mountPaths.length > 0;
   const hasPv = volumeGroups.length > 0;
   const vgName = volumeGroups[0]?.vgName;
+
+  if (modelDevice.filesystem && modelDevice.filesystem.reuse)
+    return _("This uses the existing file system at the disk");
 
   if (modelDevice.isReusingPartitions) {
     // The current device will be the only option to choose from
@@ -163,14 +173,14 @@ const ChangeDeviceDescription = ({ modelDevice, device }) => {
 };
 
 /**
- * Internal component holding the logic for rendering the disks drilldown menu
+ * Internal component holding the presentation of the option to change the device
  */
 const ChangeDeviceMenuItem = ({
   modelDevice,
   device,
   ...props
 }: ChangeDeviceMenuItemProps): React.ReactNode => {
-  const onlyOneOption = UseOnlyOneOption(modelDevice);
+  const onlyOneOption = useOnlyOneOption(modelDevice);
 
   return (
     <MenuButtonItem
@@ -249,6 +259,18 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
   );
 };
 
+const targetDevices = (modelDevice, model, availableDevices): StorageDevice[] => {
+  return availableDevices.filter((availableDev) => {
+    if (modelDevice.name === availableDev.name) return true;
+
+    const collection = availableDev.isDrive ? model.drives : model.mdRaids;
+    const device = collection.find((d) => d.name === availableDev.name);
+    if (!device) return true;
+
+    return modelDevice.filesystem ? !device.isUsed : !device.filesystem;
+  });
+};
+
 export type SearchedDeviceMenuProps = {
   modelDevice: model.Drive | model.MdRaid;
   selected: StorageDevice;
@@ -272,7 +294,7 @@ export default function SearchedDeviceMenu({
     const hook = device.isDrive ? switchToDrive : switchToMdRaid;
     hook(modelDevice.name, { name: device.name });
   };
-  const devices = useAvailableDevices();
+  const devices = targetDevices(modelDevice, useModel(), useAvailableDevices());
 
   const onDeviceChange = ([drive]: StorageDevice[]) => {
     setIsSelectorOpen(false);
