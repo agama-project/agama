@@ -21,17 +21,19 @@
  */
 
 import React from "react";
-import { Content, ContentProps } from "@patternfly/react-core";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
-type NestedContentProps = {
-  margin?: keyof typeof spacingStyles;
-} & ContentProps;
+type NestedContentProps = React.HTMLProps<HTMLDivElement> &
+  React.PropsWithChildren<{
+    margin?: keyof typeof spacingStyles;
+  }>;
 
 /**
- * Wrapper on top of PF/Content to allow visually nesting its content by adding
- * given margin
+ * A simple `<div>` wrapper component used to visually nest its children
+ * with a configurable horizontal margin. By default, it applies a medium
+ * horizontal margin ("mxMd").
  *
+ * Also accepts any standard <div> props.
  */
 export default function NestedContent({
   margin = "mxMd",
@@ -41,8 +43,8 @@ export default function NestedContent({
 }: NestedContentProps) {
   const classNames = [className, spacingStyles[margin]].join(" ");
   return (
-    <Content {...props} className={classNames}>
+    <div {...props} className={classNames}>
       {children}
-    </Content>
+    </div>
   );
 }

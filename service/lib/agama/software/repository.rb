@@ -48,11 +48,16 @@ module Agama
         # @param product_dir [String]       Product directory
         # @param enabled     [Boolean]      Is the repository enabled?
         # @param autorefresh [Boolean]      Is auto-refresh enabled for this repository?
+        # @param priority    [Integer]      Repository priority, the lower number the higher (!)
+        #                                   priority, the default libzypp priority is 99
         # @return [Y2Packager::Repository,nil] New repository or nil if creation failed
-        def create(name:, url:, repo_alias: "", product_dir: "", enabled: true, autorefresh: true)
+        def create(name:, url:, repo_alias: "", product_dir: "", enabled: true, autorefresh: true,
+          priority: 99)
+
           repo_id = Yast::Pkg.RepositoryAdd(
             "name" => name, "base_urls" => [url.to_s], "enabled" => enabled,
-            "autorefresh" => autorefresh, "prod_dir" => product_dir, "alias" => repo_alias
+            "autorefresh" => autorefresh, "prod_dir" => product_dir, "alias" => repo_alias,
+            "priority" => priority
           )
 
           repo_id ? find(repo_id) : nil
