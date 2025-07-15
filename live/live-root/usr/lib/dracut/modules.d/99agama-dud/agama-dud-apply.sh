@@ -21,6 +21,9 @@ apply_updates() {
   local dud_root
   index=0
 
+  # make sure the HTTPS downloads work correctly
+  configure_ssl
+
   while read -r dud_url; do
     mkdir -p "$DUD_DIR"
     filename=${dud_url##*/}
@@ -122,7 +125,7 @@ set_alternative() {
 
   executables=("$dud_instsys/usr/bin/${name}.ruby"*-*)
   executable=${executables[0]}
-  if [ ! -z "$executable" ]; then
+  if [ -n "$executable" ]; then
     "$NEWROOT/usr/bin/chroot" "$NEWROOT" /usr/sbin/update-alternatives \
       --install "/usr/bin/$name" "$name" "${executable##"$dud_instsys"}" "$priority"
     "$NEWROOT/usr/bin/chroot" "$NEWROOT" /usr/sbin/update-alternatives \
@@ -235,6 +238,16 @@ update_kernel_modules() {
   # update modules dependencies on the live medium
   info "Updating modules dependencies..."
   depmod -a -b "$NEWROOT"
+}
+
+# link the SSL certificates and related configuration from the root image so "agama download"
+# works correctly with the HTTPS resources (expects using correct and well-known certificates)
+configure_ssl() {
+  # link the SSL certificates
+  ! [ -d /etc/ssl ] && ln -s "$NEWROOT/etc/ssl" /etc
+
+  # link crypto configuration (which ciphers are allowed, etc)
+  ! [ -d /etc/crypto-policies ] && ln -s "$NEWROOT/etc/crypto-policies" /etc
 }
 
 if [ -f "$AGAMA_DUD_INFO" ]; then

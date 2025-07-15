@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul 15 16:19:21 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed downloading DUD files from HTTPS URL
+  (link the SSL certificates and config from the root image)
+  (bsc#1245393)
+
+-------------------------------------------------------------------
 Mon Jul 14 11:25:22 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Use "plaindir" repository type for the DUD package repository,
