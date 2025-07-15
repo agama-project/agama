@@ -112,6 +112,14 @@ const register = ({ key, email }: { key: string; email?: string }) =>
   post("/api/software/registration", { key, email });
 
 /**
+ * Updates the URL for the registration
+ */
+const updateRegistrationUrl = (url: string) =>
+  // Explicit content type is needed because the content is a string. The application/json type is
+  // automatically set only if the content is an object.
+  put("/api/software/registration/url", url, { headers: { "Content-Type": "application/json" } });
+
+/**
  * Request registration of the selected addon
  */
 const registerAddon = (addon: RegisteredAddonInfo) =>
@@ -136,6 +144,7 @@ export {
   fetchRepositories,
   probe,
   register,
+  updateRegistrationUrl,
   registerAddon,
   solveConflict,
   updateConfig,

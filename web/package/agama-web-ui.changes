@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jul 14 16:02:55 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Allow specifying the registration server (jsc#AGM-156).
+
+-------------------------------------------------------------------
 Mon Jul 14 11:58:04 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Improve UX around non-persistent connections (bsc#1245187).
