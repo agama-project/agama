@@ -11,17 +11,27 @@ usage () {
   echo "  -b <branch|tag> - source git branch or tag (default: current git branch)"
   echo "  -p <project>    - target OBS project (based on the git branch)"
   echo "  -t              - keep all original build targets (default: disable Leap 16.0)"
+  echo "  -c              - cleanup (delete) all obsolete projects, exclusive option,"
+  echo "                    all other options are ignored"
+  echo "  -o              - print obsolete projects, similar to -c but only print"
+  echo "                    the projects instead of deleting them"
   echo "  -h              - print this help"
 }
 
 # process command line arguments
-while getopts ":ab:hp:t" opt; do
+while getopts ":ab:chop:t" opt; do
   case ${opt} in
     a)
       ALL_ARCHS=true
       ;;
     b)
       branch="${OPTARG}"
+      ;;
+    c)
+      CLEANUP=true
+      ;;
+    o)
+      OBSOLETE=true
       ;;
     p)
       PROJECT="${OPTARG}"
@@ -71,11 +81,56 @@ if ! gh auth status --active > /dev/null 2>&1; then
   exit 1
 fi
 
+repo_slug=$(gh repo view --json nameWithOwner -q ".nameWithOwner")
+
+if [ -n "$CLEANUP" ] || [ -n "$OBSOLETE" ]; then
+  if [ "$repo_slug" = "agama-project/agama" ]; then
+    # the upstream repository
+    prefix="systemsmanagement:Agama:branches"
+  else
+    # a fork
+    prefix="home:${osc_user}:Agama:branches"
+  fi
+
+  echo "Scanning obsolete projects..."
+
+  # find the matching projects
+  mapfile -t obs_projects < <(osc search --substring --project "$prefix" | grep "$prefix" | grep -v "^matches for")
+
+  # count the obsolete projects for the final summary
+  counter=0
+
+  for project in "${obs_projects[@]}"; do
+    # remove the prefix to get the related Git branch
+    branch_name=$(echo -n "$project" | sed -e "s/^$prefix://")
+    if ! git ls-remote --exit-code --heads origin "$branch_name" > /dev/null; then
+      if [ -n "$CLEANUP" ]; then
+        echo "Deleting obsolete project $project..."
+        # recursive remote delete (allows deleting a non-empty project)
+        osc rdelete --recursive --force --message "Deleting obsolete project" "$project"
+
+        config=$(gh -R "$repo_slug" variable get OBS_PROJECTS 2> /dev/null)
+        if [ -n "$config" ]; then
+          # remove the mapping for the deleted project
+          echo "$config" | jq "del(.[\"$branch_name\"])" | gh -R "$repo_slug" variable set OBS_PROJECTS
+        fi
+      else
+        echo "Found obsolete project: $project"
+      fi
+      ((counter++))
+    fi
+  done
+
+  # print a summary
+  echo "Found $counter obsolete projects"
+
+  # cleanup and check are exclusive options, finish the script
+  exit 0
+fi
+
 # git branch from the command line or the current git branch
 BRANCH=${branch-$(git rev-parse --abbrev-ref HEAD)}
 echo "Git branch: $BRANCH"
-
-repo_slug=$(gh repo view --json nameWithOwner -q ".nameWithOwner")
 
 # is this repository a GitHub fork?
 if [ "$repo_slug" = "agama-project/agama" ]; then

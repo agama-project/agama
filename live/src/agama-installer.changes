@@ -1,4 +1,21 @@
 -------------------------------------------------------------------
+Mon Jul 14 11:25:22 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Use "plaindir" repository type for the DUD package repository,
+  we do not need to create any repository index
+  (gh#agama-project/agama#2543)
+- Automatically configure network when a remote DUD is used,
+  the "rd.neednet=1" boot option is not required anymore
+  (by default uses the DHCP configuration, can be changed via the
+  "ip=" boot option)
+
+-------------------------------------------------------------------
+Thu Jul 10 13:09:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support to update kernel modules from a Driver Update Disk
+  (jsc#AGM-158, jsc#PED-3670, gh#agama-project/agama#2548).
+
+-------------------------------------------------------------------
 Wed Jul  9 12:07:21 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add the tpm2.0-tools package (jsc#PED-13114).
