@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 15 11:33:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt the products definition to the new way of pre-selecting
+  user patterns (gh#agama-project/agama#2560).
+
+-------------------------------------------------------------------
 Tue Jul 15 11:03:12 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Display only Tumblweed based distros in Tumbleweed installer

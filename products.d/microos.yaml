@@ -114,6 +114,7 @@ software:
     - microos_base_zypper
     - microos_defaults
     - microos_hardware
+    - microos_selinux
   optional_patterns: null
   user_patterns:
     - container_runtime

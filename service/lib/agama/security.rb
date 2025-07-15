@@ -80,22 +80,9 @@ module Agama
       lsm_config.save
     end
 
-    def probe
-      select_default_lsm
-      patterns = lsm_patterns(lsm_selected&.id)
-      return if patterns.empty?
-
-      logger.info "Adding patterns #{patterns.inspect} for security module #{lsm_selected.id}"
-      software_client.add_patterns(patterns)
-    end
-
   private
 
     attr_reader :config
-
-    def select_default_lsm
-      lsm_config.select(config.data.dig("security", "lsm"))
-    end
 
     def select_software_lsm
       candidates = [lsm_selected&.id&.to_s].compact | available_lsms.keys
