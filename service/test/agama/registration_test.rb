@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -95,8 +95,13 @@ describe Agama::Registration do
       context "and the product is not registered yet" do
         it "announces the system" do
           expect(SUSE::Connect::YaST).to receive(:announce_system).with(
-            { language: anything, token: "11112222", email: "test@test.com",
-              verify_callback: anything },
+            {
+              language:        anything,
+              url:             "https://scc.suse.com",
+              token:           "11112222",
+              email:           "test@test.com",
+              verify_callback: anything
+            },
             "test-5-x86_64"
           )
 
@@ -105,8 +110,13 @@ describe Agama::Registration do
 
         it "sets the current language in the request" do
           expect(SUSE::Connect::YaST).to receive(:announce_system).with(
-            { language: "de-de", token: "11112222", email: "test@test.com",
-              verify_callback: anything },
+            {
+              language:        "de-de",
+              url:             anything,
+              token:           "11112222",
+              email:           "test@test.com",
+              verify_callback: anything
+            },
             "test-5-x86_64"
           )
 
@@ -226,25 +236,25 @@ describe Agama::Registration do
               .to raise_error(Timeout::Error)
           end
 
-          it "does not run the callbacks" do
-            expect(callback).to_not receive(:call)
-
+          it "sets the registration code" do
             expect { subject.register("11112222", email: "test@test.com") }
               .to raise_error(Timeout::Error)
+
+            expect(subject.reg_code).to eq("11112222")
           end
 
-          it "does not set the registration code" do
+          it "sets the email" do
             expect { subject.register("11112222", email: "test@test.com") }
               .to raise_error(Timeout::Error)
 
-            expect(subject.reg_code).to be_nil
+            expect(subject.email).to eq("test@test.com")
           end
 
-          it "does not set the email" do
+          it "runs the callbacks" do
+            expect(callback).to receive(:call)
+
             expect { subject.register("11112222", email: "test@test.com") }
               .to raise_error(Timeout::Error)
-
-            expect(subject.email).to be_nil
           end
         end
 
@@ -437,8 +447,13 @@ describe Agama::Registration do
 
         it "deactivates the system" do
           expect(SUSE::Connect::YaST).to receive(:deactivate_system).with(
-            { token: "11112222", email: "test@test.com", verify_callback: anything,
-              language: anything }
+            {
+              url:             anything,
+              token:           "11112222",
+              email:           "test@test.com",
+              verify_callback: anything,
+              language:        anything
+            }
           )
 
           subject.deregister

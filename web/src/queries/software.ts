@@ -58,6 +58,7 @@ import {
   probe,
   register,
   registerAddon,
+  updateRegistrationUrl,
   solveConflict,
   updateConfig,
 } from "~/api/software";
@@ -189,10 +190,14 @@ const useRegisterMutation = () => {
   const queryClient = useQueryClient();
 
   const query = {
-    mutationFn: register,
+    mutationFn: async ({ url, key, email }: { url: string; key: string; email?: string }) => {
+      await updateRegistrationUrl(url).then(() => register({ key, email }));
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["software", "registration"] });
+    },
     onSuccess: async () => {
       await systemReprobe();
-      queryClient.invalidateQueries({ queryKey: ["software", "registration"] });
       queryClient.invalidateQueries({ queryKey: ["storage"] });
     },
   };
