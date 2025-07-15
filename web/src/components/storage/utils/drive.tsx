@@ -23,7 +23,13 @@
 import { _, n_, formatList } from "~/i18n";
 import { apiModel } from "~/api/storage/types";
 import { Drive } from "~/types/storage/model";
-import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
+import {
+  SpacePolicy,
+  SPACE_POLICIES,
+  baseName,
+  formattedPath,
+  filesystemType,
+} from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 
 /**
@@ -146,6 +152,14 @@ const contentActionsDescription = (drive: Drive, policyId: string | undefined): 
 const contentDescription = (drive: apiModel.Drive): string => {
   const newPartitions = drive.partitions.filter((p) => !p.name);
   const reusedPartitions = drive.partitions.filter((p) => p.name && p.mountPath);
+
+  if (drive.filesystem) {
+    if (drive.mountPath) {
+      return sprintf(_("The device will be used for %s"), drive.mountPath);
+    } else {
+      return sprintf(_("The device will formatted as %s"), filesystemType(drive.filesystem));
+    }
+  }
 
   if (newPartitions.length === 0) {
     if (reusedPartitions.length === 0) {
