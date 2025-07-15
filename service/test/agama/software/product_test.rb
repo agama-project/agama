@@ -27,7 +27,7 @@ describe Agama::Software::Product do
     described_class.new("Test").tap do |product|
       product.user_patterns = [
         Agama::Software::UserPattern.new("kde", false),
-        Agama::Software::UserPattern.new("selinux", true),
+        Agama::Software::UserPattern.new("selinux", true)
       ]
     end
   end

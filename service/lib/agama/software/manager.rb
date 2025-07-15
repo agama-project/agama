@@ -127,7 +127,6 @@ module Agama
 
         raise ArgumentError unless new_product
 
-        logger.info "#{new_product.preselected_patterns}"
         proposal.set_resolvables(
           PROPOSAL_ID, :pattern, new_product.preselected_patterns
         )
@@ -253,6 +252,7 @@ module Agama
       # @param filtered [Boolean] If list of patterns should be filtered.
       #                           Filtering criteria can change.
       # @return [Array<Y2Packager::Resolvable>]
+      # rubocop:disable Metrics/CyclomaticComplexity
       def patterns(filtered)
         # huge speed up, preload the used attributes to avoid querying libzypp again,
         # see "ListPatterns" method in service/lib/agama/dbus/software/manager.rb
@@ -273,6 +273,7 @@ module Agama
 
         patterns
       end
+      # rubocop:enable Metrics/CyclomaticComplexity
 
       def add_pattern(id)
         return false unless pattern_exist?(id)

@@ -169,9 +169,9 @@ module Agama
       #
       # @return [Array<String>]
       def preselected_patterns
-        return [] if self.user_patterns.nil?
+        return [] if user_patterns.nil?
 
-        self.user_patterns.filter_map { |p| p.name if p.selected }
+        user_patterns.filter_map { |p| p.name if p.selected }
       end
     end
   end
