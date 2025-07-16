@@ -34,9 +34,11 @@ const MissingTranslation = ({ missing }) => {
   const missingLanguage = supportedLanguages[missing];
 
   return (
-    <Alert title={sprintf(_("Not available in %s"), missingLanguage)}>
-      {sprintf(_("This license is not translated to %s."), missingLanguage)}
-    </Alert>
+    <Alert
+      isPlain
+      variant="info"
+      title={sprintf(_("This license is not available in %s."), missingLanguage)}
+    />
   );
 };
 
@@ -62,12 +64,10 @@ function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; p
 
   return (
     <Popup isOpen title={product.name} width="auto">
-      {licenseLanguage && !languagesMatches(uiLanguage, licenseLanguage) && (
-        <Stack hasGutter>
-          <MissingTranslation missing={uiLanguage} />
-        </Stack>
-      )}
       <Stack hasGutter>
+        {licenseLanguage && !languagesMatches(uiLanguage, licenseLanguage) && (
+          <MissingTranslation missing={uiLanguage} />
+        )}
         <pre>{license}</pre>
       </Stack>
       <Popup.Actions>
