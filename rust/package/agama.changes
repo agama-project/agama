@@ -1,8 +1,18 @@
 -------------------------------------------------------------------
-Wed Jul 16 09:21:30 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+Wed Jul 16 14:21:30 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Make the method4 and method6 default to be "auto" in case of
   absense (bsc#1246194).
+
+-------------------------------------------------------------------
+Wed Jul  16 13:22:07 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Add initial support for ovs in agama network model (gh#agama-project/agama#2536).
+
+-------------------------------------------------------------------
+Wed Jul 16 13:17:22 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add dns priority to network model (gh#agama-project/agama#2533).
 
 -------------------------------------------------------------------
 Wed Jul 16 08:42:59 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
