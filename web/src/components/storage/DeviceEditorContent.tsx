@@ -21,40 +21,11 @@
  */
 
 import React from "react";
-import { Stack, Flex, StackItem } from "@patternfly/react-core";
-import { generatePath } from "react-router-dom";
-import Link from "~/components/core/Link";
-import { STORAGE as PATHS } from "~/routes/paths";
+import UnusedMenu from "~/components/storage/UnusedMenu";
 import FilesystemMenu from "~/components/storage/FilesystemMenu";
 import PartitionsMenu from "~/components/storage/PartitionsMenu";
 import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
 import { model, StorageDevice } from "~/types/storage";
-import { _ } from "~/i18n";
-
-type DeviceEmptyStateProps = Pick<DeviceEditorContentProps, "deviceModel">;
-
-function DeviceEmptyState({ deviceModel }: DeviceEmptyStateProps): React.ReactNode {
-  const { list, listIndex } = deviceModel;
-  const newPartitionPath = generatePath(PATHS.addPartition, { list, listIndex });
-  const formatDevicePath = generatePath(PATHS.formatDevice, { list, listIndex });
-
-  return (
-    <Flex gap={{ default: "gapXs" }}>
-      <Stack>
-        <StackItem>
-          <Link variant="link" isInline to={newPartitionPath}>
-            {_("Add a new partition or mount an existing one")}
-          </Link>
-        </StackItem>
-        <StackItem>
-          <Link variant="link" isInline to={formatDevicePath}>
-            {_("Mount the device")}
-          </Link>
-        </StackItem>
-      </Stack>
-    </Flex>
-  );
-}
 
 type DeviceEditorContentProps = { deviceModel: model.Drive | model.MdRaid; device: StorageDevice };
 
@@ -62,7 +33,7 @@ export default function DeviceEditorContent({
   deviceModel,
   device,
 }: DeviceEditorContentProps): React.ReactNode {
-  if (!deviceModel.isUsed) return <DeviceEmptyState deviceModel={deviceModel} />;
+  if (!deviceModel.isUsed) return <UnusedMenu deviceModel={deviceModel} />;
 
   return (
     <>
