@@ -75,6 +75,7 @@ const SOFTWARE = {
 
 const STORAGE = {
   root: "/storage",
+  progress: "/storage/progress",
   editBootDevice: "/storage/boot-device/edit",
   editEncryption: "/storage/encryption/edit",
   editSpacePolicy: "/storage/:list/:listIndex/space-policy/edit",
@@ -118,6 +119,7 @@ const SIDE_PATHS = [
   ROOT.installationProgress,
   ROOT.installationFinished,
   ROOT.installationExit,
+  ROOT.rescanDevices,
 ];
 
 export {

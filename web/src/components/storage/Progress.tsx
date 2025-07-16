@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -28,13 +28,12 @@ import {
   ProgressStepper,
   ProgressStepProps,
   Spinner,
-  Stack,
-  Truncate,
 } from "@patternfly/react-core";
-import { useProgress, useProgressChanges, useResetProgress } from "~/queries/progress";
-import { Progress as ProgressType } from "~/types/progress";
-import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
 import { _ } from "~/i18n";
+import { useProgress, useProgressChanges, useResetProgress } from "~/queries/progress";
+import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
+import { STORAGE } from "~/routes/paths";
+import { useNavigate } from "react-router-dom";
 
 type StepProps = {
   id: string;
@@ -44,7 +43,7 @@ type StepProps = {
   description?: ProgressStepProps["description"];
 };
 
-const Progress = ({ steps, step, firstStep, detail }) => {
+const ProgressContent = ({ steps, step }) => {
   const stepProperties = (stepNumber: number): StepProps => {
     const properties: StepProps = {
       isCurrent: stepNumber === step.current,
@@ -59,21 +58,6 @@ const Progress = ({ steps, step, firstStep, detail }) => {
 
     if (properties.isCurrent) {
       properties.variant = "info";
-      if (detail && detail.message !== "") {
-        const { message, current, total } = detail;
-        properties.description = (
-          <Stack hasGutter>
-            <div>{_("In progress")}</div>
-            <div>
-              <Truncate
-                content={`${message} (${current}/${total})`}
-                trailingNumChars={12}
-                position="middle"
-              />
-            </div>
-          </Stack>
-        );
-      }
     }
 
     if (stepNumber < step.current || step.finished) {
@@ -89,11 +73,6 @@ const Progress = ({ steps, step, firstStep, detail }) => {
       isCenterAligned
       className={[sizingStyles.w_100, sizingStyles.h_33OnMd].join(" ")}
     >
-      {firstStep && (
-        <ProgressStep key="initial" variant="success">
-          {firstStep}
-        </ProgressStep>
-      )}
       {steps.map((description: StepProps["description"], idx: number) => {
         return (
           <ProgressStep key={idx} {...stepProperties(idx + 1)}>
@@ -105,30 +84,26 @@ const Progress = ({ steps, step, firstStep, detail }) => {
   );
 };
 
-function findDetail(progresses: ProgressType[]) {
-  return progresses.find((progress) => {
-    return progress?.finished === false;
-  });
-}
-
 /**
  * Shows progress steps when a product is selected.
  */
-function ProgressReport({ title, firstStep }: { title: string; firstStep?: React.ReactNode }) {
+function Progress() {
   useResetProgress();
-  // TODO: add a way to retrieve the right progress for rescan.
-  const progress = useProgress("manager", { suspense: true });
-  const [steps, setSteps] = useState(progress.steps);
-  const softwareProgress = useProgress("software");
-  const storageProgress = useProgress("storage");
   useProgressChanges();
+  const navigate = useNavigate();
+
+  const progress = useProgress("storage");
+  const [steps, setSteps] = useState(progress?.steps);
 
   useEffect(() => {
+    if (!progress) return;
     if (progress.steps.length === 0) return;
+    if (progress.finished) navigate(STORAGE.root);
 
     setSteps(progress.steps);
-  }, [progress, steps]);
-  const detail = findDetail([softwareProgress, storageProgress]);
+  }, [progress, steps, navigate]);
+
+  if (!progress) return;
 
   return (
     <Flex
@@ -139,10 +114,10 @@ function ProgressReport({ title, firstStep }: { title: string; firstStep?: React
       className={sizingStyles.h_100OnMd}
     >
       <Spinner size="xl" />
-      <Content component="h1">{title}</Content>
-      <Progress steps={steps} step={progress} detail={detail} firstStep={firstStep} />
+      <Content component="h1">{_("Loading storage, this might take a while.")}</Content>
+      <ProgressContent steps={steps} step={progress} />
     </Flex>
   );
 }
 
-export default ProgressReport;
+export default Progress;
