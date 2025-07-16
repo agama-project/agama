@@ -23,13 +23,7 @@
 import { _, n_, formatList } from "~/i18n";
 import { apiModel } from "~/api/storage/types";
 import { Drive } from "~/types/storage/model";
-import {
-  SpacePolicy,
-  SPACE_POLICIES,
-  baseName,
-  formattedPath,
-  filesystemType,
-} from "~/components/storage/utils";
+import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 
 /**
@@ -155,10 +149,11 @@ const contentDescription = (drive: apiModel.Drive): string => {
 
   if (drive.filesystem) {
     if (drive.mountPath) {
-      return sprintf(_("The device will be used for %s"), drive.mountPath);
-    } else {
-      return sprintf(_("The device will formatted as %s"), filesystemType(drive.filesystem));
+      return sprintf(_("The whole device will be used for %s"), formattedPath(drive.mountPath));
     }
+
+    // I don't think this can happen, maybe when loading a configuration not created with the UI
+    return _("A file system will be used for the whole device");
   }
 
   if (newPartitions.length === 0) {

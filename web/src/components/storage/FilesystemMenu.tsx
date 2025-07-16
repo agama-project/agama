@@ -31,24 +31,26 @@ import { model } from "~/types/storage";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { filesystemType } from "~/components/storage/utils";
+import { filesystemType, formattedPath } from "~/components/storage/utils";
 
 function deviceDescription(deviceModel: FilesystemMenuProps["deviceModel"]): string {
   const fs = filesystemType(deviceModel.filesystem);
   const mountPath = deviceModel.mountPath;
   const reuse = deviceModel.filesystem.reuse;
-  // TRANSLATORS: %1$s is a filesystem type (eg. Btrfs), %2$s is a mount point (eg. /home).
-  if (reuse && fs && mountPath) return sprintf(_("Mount current %1$s at %2$s"), fs, mountPath);
-  // TRANSLATORS: %1$s is a mount point (eg. /home).
-  if (reuse && mountPath) return sprintf(_("Mount at %1$s"), mountPath);
-  // TRANSLATORS: %1$s is a filesystem type (eg. Btrfs).
-  if (reuse && fs) return sprintf(_("Reuse current %1$s"), fs);
-  if (reuse) return _("Reuse current file system");
-  // TRANSLATORS: %1$s is a filesystem type (eg. Btrfs), %2$s is a mount point (eg. /home).
-  if (mountPath) return sprintf(_("Format as %1$s for %2$s"), fs, mountPath);
 
-  // TRANSLATORS: %1$s is a filesystem type (eg. Btrfs).
-  return sprintf(_("Format as %1$s"), fs);
+  // I don't think this can happen, maybe when loading a configuration not created with the UI
+  if (!mountPath) {
+    if (reuse) return _("The device will be mounted");
+    return _("The device will be formatted");
+  }
+
+  const path = formattedPath(mountPath);
+
+  // TRANSLATORS: %s is a formatted mount point (eg. '"/home'").
+  if (reuse) return sprintf(_("The current file system will be mounted at %s"), path);
+
+  // TRANSLATORS: %1$s is a filesystem type (eg. Btrfs), %2$s is a mount point (eg. '"/home"').
+  return sprintf(_("The device will be formatted as %1$s and mounted at %2$s"), fs, path);
 }
 
 type FilesystemMenuProps = { deviceModel: model.Drive | model.MdRaid };
