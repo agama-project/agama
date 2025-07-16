@@ -1074,8 +1074,8 @@ pub struct UnknownIpMethod(String);
 #[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Ipv4Method {
-    #[default]
     Disabled = 0,
+    #[default]
     Auto = 1,
     Manual = 2,
     LinkLocal = 3,
@@ -1110,8 +1110,8 @@ impl FromStr for Ipv4Method {
 #[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Ipv6Method {
-    #[default]
     Disabled = 0,
+    #[default]
     Auto = 1,
     Manual = 2,
     LinkLocal = 3,
