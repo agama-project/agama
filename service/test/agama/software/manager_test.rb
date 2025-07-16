@@ -311,7 +311,8 @@ describe Agama::Software::Manager do
         ]
       )
 
-      allow(subject.product).to receive(:user_patterns).and_return(["kde"])
+      kde = Agama::Software::UserPattern.new("kde", false)
+      allow(subject.product).to receive(:user_patterns).and_return([kde])
       patterns = subject.patterns(true)
 
       expect(patterns).to contain_exactly(

@@ -45,6 +45,15 @@ export default {
   "%s with %d partitions": [
     "%s amb %d particions"
   ],
+  "A %1$s of %2$s will be created for %3$s if possible": [
+    "Si és possible, es crearà una %1$s de %2$s per a %3$s"
+  ],
+  "A %1$s of at least %2$s will be created for %3$s if possible": [
+    "Si és possible es crearà una %1$s de com a mínim %2$s per a %3$s"
+  ],
+  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
+    "Si és possible, es crearà una %1$s amb una mida entre %2$s i %3$s per a %4$s"
+  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "S'usarà una mida mínima genèrica de %1$s per a la %2$s nova"
   ],
@@ -206,6 +215,15 @@ export default {
   ],
   "Back": [
     "Enrere"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
+    "Segons la quantitat de memòria RAM del sistema, es planificarà una %1s$ de %2$s per a %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
+    "Segons la quantitat de memòria RAM del sistema, es planificarà una %1s$ d'almenys %2$s per a %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
+    "Segons la quantitat de memòria RAM del sistema, es planificarà una %1s$ amb una mida d'entre %2$s i %3$s per a %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -511,7 +529,7 @@ export default {
     "Descarta'l"
   ],
   "Discard the maximum size and continue with simplified configuration": [
-    ""
+    "Descarta la mida màxima i continua la configuració simplificada"
   ],
   "Disconnected": [
     "Desconnectat"
@@ -526,7 +544,7 @@ export default {
     "Descobreix les destinacions iSCSI"
   ],
   "Discover iSCSI targets": [
-    "Descobreix destinacions iSCSI"
+    "Descobreix objectius iSCSI"
   ],
   "Disk": [
     "Disc"
@@ -1150,6 +1168,9 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     "Les particions per a l'arrencada s'assignaran al dispositiu següent."
   ],
+  "Partitions to boot will be allocated at the installation disk %s.": [
+    "Les particions per a l'arrencada s'assignaran al disc d'instal·lació %s."
+  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Les particions per a l'arrencada s'assignaran al disc d'instal·lació."
   ],
@@ -1526,6 +1547,15 @@ export default {
   "The content may be deleted": [
     "El contingut pot suprimir-se"
   ],
+  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
+    "La configuració actual tindrà com a resultat un intent de crear una %1$s de %2$s."
+  ],
+  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
+    "La configuració actual tindrà com a resultat un intent de crear una %1$s d'almenys %2$s."
+  ],
+  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
+    "La configuració actual tindrà com a resultat un intent de crear una %1$s amb una mida d'entre %2$s i %3$s."
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Les dades es conserven, però les particions actuals es canviaran de mida segons calgui."
   ],
@@ -1555,6 +1585,9 @@ export default {
   ],
   "The extension has been registered with key %s.": [
     "L'extensió s'ha registrat amb la clau %s."
+  ],
+  "The final size can be bigger in order to fill the extra free space.": [
+    "La mida final pot ser més grossa per omplir l'espai lliure extra."
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "El pas final per configurar el Mòdul de plataforma de confiança (TPM) per obrir automàticament dispositius encriptats es farà durant la primera arrencada del nou sistema. Perquè això funcioni, la màquina ha d'arrencar directament amb el carregador d'arrencada nou."
@@ -1633,6 +1666,9 @@ export default {
   ],
   "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
     "La mida de %s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs."
+  ],
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
+    "La mida està configurada com a interval entre %s i %s, però aquesta interfície no pot gestionar intervals amb una mida màxima determinada."
   ],
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
     "La mida ha de ser un número seguit d'una unitat del tipus GiB (potència de 2) o GB (potència de 10)."
