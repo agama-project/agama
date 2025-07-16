@@ -169,7 +169,7 @@ async fn wait_until_idle(monitor: MonitorClient) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn download_file(url: &str, path: &PathBuf) -> anyhow::Result<()> {
+pub fn download_file(url: &str, path: &PathBuf, insecure: bool) -> anyhow::Result<()> {
     let mut file = fs::OpenOptions::new()
         .create(true)
         .write(true)
@@ -186,7 +186,7 @@ pub fn download_file(url: &str, path: &PathBuf) -> anyhow::Result<()> {
         uri.resolve_against(&context.source)?.to_string()
     };
 
-    Transfer::get(&absolute_url, &mut file)?;
+    Transfer::get(&absolute_url, &mut file, insecure)?;
     println!("File saved to {}", path.display());
     Ok(())
 }
@@ -322,7 +322,11 @@ pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
             let client = build_http_client(api_url, cli.opts.insecure, true).await?;
             run_logs_cmd(client, subcommand).await?
         }
-        Commands::Download { url, destination } => download_file(&url, &destination)?,
+        Commands::Download {
+            url,
+            destination,
+            insecure,
+        } => download_file(&url, &destination, insecure)?,
         Commands::Auth(subcommand) => {
             let client = build_http_client(api_url, cli.opts.insecure, false).await?;
             run_auth_cmd(client, subcommand).await?;
