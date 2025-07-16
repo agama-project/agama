@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jul 16 13:17:22 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add dns priority to network model (gh#agama-project/agama#2533).
+
+-------------------------------------------------------------------
 Wed Jul 16 08:42:59 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Added -i/--insecure optional argument to the "agama download"
