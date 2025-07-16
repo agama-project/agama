@@ -42,6 +42,7 @@ import usersRoutes from "~/routes/users";
 import { HOSTNAME, ROOT as PATHS } from "./routes/paths";
 import { N_ } from "~/i18n";
 import HostnamePage from "./components/system/HostnamePage";
+import RescanDevicesProgress from "./components/storage/RescanDevicesProgress";
 
 const rootRoutes = () => [
   {
@@ -97,6 +98,10 @@ const protectedRoutes = () => [
       {
         path: PATHS.installationFinished,
         element: <InstallationFinished />,
+      },
+      {
+        path: PATHS.rescanDevices,
+        element: <RescanDevicesProgress />,
       },
     ],
   },

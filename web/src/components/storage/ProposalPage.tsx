@@ -56,8 +56,10 @@ import { useConfigModel } from "~/queries/storage/config-model";
 import { useZFCPSupported } from "~/queries/storage/zfcp";
 import { useDASDSupported } from "~/queries/storage/dasd";
 import { useSystemErrors, useConfigErrors } from "~/queries/issues";
-import { STORAGE as PATHS } from "~/routes/paths";
+import { ROOT as ROOT_PATHS, STORAGE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
+import { useProgress, useProgressChanges } from "~/queries/progress";
+import { useNavigate } from "react-router-dom";
 
 function InvalidConfigEmptyState(): React.ReactNode {
   const errors = useConfigErrors("storage");
@@ -230,12 +232,21 @@ export default function ProposalPage(): React.ReactNode {
   const systemErrors = useSystemErrors("storage");
   const configErrors = useConfigErrors("storage");
   const { mutateAsync: reprobe } = useReprobeMutation();
+  const progress = useProgress("storage");
+  const navigate = useNavigate();
 
+  useProgressChanges();
   useDeprecatedChanges();
 
   React.useEffect(() => {
     if (isDeprecated) reprobe().catch(console.log);
   }, [isDeprecated, reprobe]);
+
+  React.useEffect(() => {
+    if (!progress || progress.finished) return;
+
+    return navigate(ROOT_PATHS.rescanDevices);
+  }, [progress, navigate]);
 
   const fixable = ["no_root", "required_filesystems", "vg_target_devices", "reused_md_member"];
   const unfixableErrors = configErrors.filter((e) => !fixable.includes(e.kind));

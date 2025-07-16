@@ -54,6 +54,7 @@ const ROOT = {
   installationFinished: "/installation/finished",
   installationExit: "/installation/exit",
   logs: "/api/manager/logs/store",
+  rescanDevices: "/rescan",
 };
 
 const USER = {
@@ -118,6 +119,7 @@ const SIDE_PATHS = [
   ROOT.installationProgress,
   ROOT.installationFinished,
   ROOT.installationExit,
+  ROOT.rescanDevices,
 ];
 
 export {
