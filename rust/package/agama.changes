@@ -1,9 +1,9 @@
 -------------------------------------------------------------------
 Wed Jul 16 07:30:02 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
-- Add support for activating zfcp disks to agama unattended profile
+- Add support for activating zFCP disks to Agama unattended profile
   (gh#agama-project/agama#2551)
-- Fix export of empty dasd section leading to failure on non s390
+- Fix export of empty DASD section leading to failure on non s390
   system (bsc#1246102)
 
 -------------------------------------------------------------------
