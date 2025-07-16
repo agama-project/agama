@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 16 09:21:30 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Make the method4 and method6 default to be "auto" in case of
+ absense (bsc#1246194).
+
+-------------------------------------------------------------------
 Wed Jul 16 07:30:02 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Add support for activating zFCP disks to Agama unattended profile
