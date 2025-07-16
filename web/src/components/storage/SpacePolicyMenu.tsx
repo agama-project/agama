@@ -27,7 +27,6 @@ import { useNavigate, generatePath } from "react-router-dom";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { SPACE_POLICIES } from "~/components/storage/utils";
 import { apiModel } from "~/api/storage/types";
-import { Partition } from "~/api/storage/types/model";
 import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { isEmpty } from "radashi";
@@ -50,12 +49,10 @@ const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
 export default function SpacePolicyMenu({ modelDevice, device }) {
   const navigate = useNavigate();
   const setSpacePolicy = useSetSpacePolicy();
-  const { isBoot, isTargetDevice, list, listIndex } = modelDevice;
+  const { list, listIndex } = modelDevice;
   const existingPartitions = device.partitionTable?.partitions.length;
-  const hasPartitions = modelDevice.partitions.some((p: Partition) => p.mountPath);
 
   if (isEmpty(existingPartitions)) return;
-  if (!isBoot && !isTargetDevice && !hasPartitions) return;
 
   const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
     if (spacePolicy === "custom") {

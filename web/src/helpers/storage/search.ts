@@ -79,6 +79,26 @@ function switchSearched(
 
   const device = findDevice(apiModel, oldList, index);
   const deviceModel = buildModelDevice(apiModel, oldList, index);
+  const targetIndex = findDeviceIndex(apiModel, list, name);
+  const target = targetIndex === -1 ? null : findDevice(apiModel, list, targetIndex);
+
+  if (deviceModel.filesystem) {
+    if (target) {
+      target.mountPath = device.mountPath;
+      target.filesystem = device.filesystem;
+      target.spacePolicy = "keep";
+    } else {
+      apiModel[list].push({
+        name,
+        mountPath: device.mountPath,
+        filesystem: device.filesystem,
+        spacePolicy: "keep",
+      });
+    }
+
+    apiModel[oldList].splice(index, 1);
+    return apiModel;
+  }
 
   const [newPartitions, existingPartitions] = fork(deviceModel.partitions, (p) => p.isNew);
   const reusedPartitions = existingPartitions.filter((p) => p.isReused);
@@ -90,9 +110,7 @@ function switchSearched(
     apiModel[oldList].splice(index, 1);
   }
 
-  const targetIndex = findDeviceIndex(apiModel, list, name);
-  if (targetIndex !== -1) {
-    const target = findDevice(apiModel, list, targetIndex);
+  if (target) {
     target.partitions ||= [];
     target.partitions = [...target.partitions, ...newPartitions];
   } else {
