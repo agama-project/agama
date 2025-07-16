@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Jul 16 07:30:02 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for activating zfcp disks to agama unattended profile
+  (gh#agama-project/agama#2551)
+- Fix export of empty dasd section leading to failure on non s390
+  system (bsc#1246102)
+
+-------------------------------------------------------------------
 Fri Jul 11 06:56:29 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not exported null values for localization, hostname
