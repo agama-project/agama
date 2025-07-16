@@ -39,10 +39,17 @@ function deviceLocation(apiModel: apiModel.Config, name: string) {
 function buildModelDevice(
   apiModel: apiModel.Config,
   list: string,
-  index: number,
+  index: number | string,
 ): model.Drive | model.MdRaid | undefined {
   const model = buildModel(apiModel);
   return model[list].at(index);
+}
+
+function isUsed(apiModel: apiModel.Config, list: string, index: number | string): boolean {
+  const device = buildModelDevice(apiModel, list, index);
+  if (!device) return false;
+
+  return device.isUsed;
 }
 
 function deleteIfUnused(apiModel: apiModel.Config, name: string): apiModel.Config {
@@ -51,8 +58,7 @@ function deleteIfUnused(apiModel: apiModel.Config, name: string): apiModel.Confi
   const { list, index } = deviceLocation(apiModel, name);
   if (!list) return apiModel;
 
-  const device = buildModelDevice(apiModel, list, index);
-  if (!device || device.isUsed) return apiModel;
+  if (isUsed(apiModel, list, index)) return apiModel;
 
   apiModel[list].splice(index, 1);
   return apiModel;
@@ -100,4 +106,4 @@ function switchSearched(
   return apiModel;
 }
 
-export { deleteIfUnused, switchSearched };
+export { deleteIfUnused, isUsed, switchSearched };

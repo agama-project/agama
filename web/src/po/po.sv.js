@@ -45,6 +45,15 @@ export default {
   "%s with %d partitions": [
     "%s med %d partitioner"
   ],
+  "A %1$s of %2$s will be created for %3$s if possible": [
+    "En %1$s av %2$s kommer att skapas för %3$s om möjligt"
+  ],
+  "A %1$s of at least %2$s will be created for %3$s if possible": [
+    "En %1$s på minst %2$s kommer att skapas för %3$s om möjligt"
+  ],
+  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
+    "En %1$s med en storlek mellan %2$s och %3$s kommer att skapas för %4$s om möjligt"
+  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "En generisk minimistorlek av%1$s kommer att användas för den nya %2$s"
   ],
@@ -206,6 +215,15 @@ export default {
   ],
   "Back": [
     "Bakåt"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
+    "Baserat på mängden RAM i systemet kommer en $1s$ av %2$s att planeras för %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
+    "Baserat på mängden RAM i systemet kommer en %1s$ på minst %2$s att planeras för %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
+    "Baserat på mängden RAM i systemet kommer en %1s$ med en storlek mellan %2$s och %3$s att planeras för %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -511,7 +529,7 @@ export default {
     "Kasta bort"
   ],
   "Discard the maximum size and continue with simplified configuration": [
-    ""
+    "Kassera den maximala storleken och fortsätt med förenklad konfiguration"
   ],
   "Disconnected": [
     "Frånkopplad"
@@ -1150,6 +1168,9 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     "Partitioner för att uppstart kommer att tilldelas på följande enhet."
   ],
+  "Partitions to boot will be allocated at the installation disk %s.": [
+    "Partitioner att starta kommer att allokeras på installationsdisken %s."
+  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Partitioner som ska startas upp kommer att tilldelas på installationsdisken."
   ],
@@ -1526,6 +1547,15 @@ export default {
   "The content may be deleted": [
     "Innehållet kan komma att raderas"
   ],
+  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
+    "Den nuvarande konfigurationen kommer att resultera i ett försök att skapa en %1$s på %2$s."
+  ],
+  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
+    "Den nuvarande konfigurationen kommer att resultera i ett försök att skapa en %1$s på minst %2$s."
+  ],
+  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
+    "Den nuvarande konfigurationen kommer att resultera i ett försök att skapa en %1$s med en storlek mellan %2$s och %3$s."
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Data bevaras, men storleken på de aktuella partitionerna kommer att ändras efter behov."
   ],
@@ -1555,6 +1585,9 @@ export default {
   ],
   "The extension has been registered with key %s.": [
     "Tillägget har registrerats med nyckeln %s."
+  ],
+  "The final size can be bigger in order to fill the extra free space.": [
+    "Den slutliga storleken kan bli större för att fylla det extra fria utrymmet."
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Det sista steget för att konfigurera Trusted Platform Module (TPM) för att automatiskt öppna krypterade enheter kommer att ske under den första uppstarten av det nya systemet. För att det ska fungera måste maskinen startas direkt till den nya uppstartshanteraren."
@@ -1633,6 +1666,9 @@ export default {
   ],
   "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
     "Storleken för %s kommer att justeras dynamiskt baserat på användningen av Btrfs-ögonblicksavbilder."
+  ],
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
+    "Storleken är konfigurerad som ett intervall mellan %s och %s, men det här gränssnittet kan inte hantera intervall med en given maxstorlek."
   ],
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
     "Storleken måste vara ett tal följt av en enhet av formen GiB (potens 2) eller GB (potens 10)."

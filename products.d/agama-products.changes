@@ -1,4 +1,27 @@
 -------------------------------------------------------------------
+Tue Jul 15 11:33:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt the products definition to the new way of pre-selecting
+  user patterns (gh#agama-project/agama#2560).
+
+-------------------------------------------------------------------
+Tue Jul 15 11:03:12 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Display only Tumblweed based distros in Tumbleweed installer
+  and vice versa.
+
+-------------------------------------------------------------------
+Fri Jul 11 13:03:48 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add Experimental xfce_wayland to Leap 16.0
+
+-------------------------------------------------------------------
+Thu Jul 10 13:39:30 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed base product names to install for Kalpa, Leap 16.0
+  and Leap-Micro 6.2 distributions (gh#agama-project/agama#2550)
+
+-------------------------------------------------------------------
 Tue Jul  1 12:58:07 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Add initial Leap Micro 6.2 product

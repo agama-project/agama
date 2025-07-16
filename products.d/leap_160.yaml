@@ -49,11 +49,13 @@ software:
   user_patterns:
     - gnome
     - kde
+    - xfce_wayland
     - multimedia
     - office
     - cockpit
     - fips
-    - selinux
+    - name: selinux
+      selected: true
     - documentation
     - sw_management
     - container_runtime_podman
@@ -71,7 +73,7 @@ software:
     - openSUSE-repos-Leap
     - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
   optional_packages: null
-  base_product: openSUSE
+  base_product: Leap
 
 security:
   lsm: selinux

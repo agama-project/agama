@@ -24,10 +24,11 @@ software:
 
   mandatory_patterns:
     - cockpit
-    - base 
+    - base
     - transactional
     - traditional
     - hardware
+    - selinux
 
   optional_patterns: null
 
@@ -46,7 +47,7 @@ software:
     - NetworkManager
     - openSUSE-repos-LeapMicro
   optional_packages: null
-  base_product: openSUSE
+  base_product: Leap-Micro
 
 security:
   lsm: selinux

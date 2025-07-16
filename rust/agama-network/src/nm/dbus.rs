@@ -91,8 +91,6 @@ pub fn connection_to_dbus<'a>(
             .as_deref()
             .unwrap_or(controller.id.as_str());
         connection_dbus.insert("master", master.into());
-        connection_dbus.remove("autoconnect");
-        connection_dbus.insert("autoconnect", false.into());
     } else {
         if VersionReq::parse(">=1.46.0").unwrap().matches(&nm_version) {
             connection_dbus.insert("port-type", "".into());
@@ -460,6 +458,10 @@ fn ip_config_to_ipv4_dbus<'a>(
         ipv4_dbus.insert("gateway", gateway.to_string().into());
     }
 
+    if let Some(dns_priority4) = &ip_config.dns_priority4 {
+        ipv4_dbus.insert("dns-priority", dns_priority4.into());
+    }
+
     if let Some(dhcp4_settings) = &ip_config.dhcp4_settings {
         if VersionReq::parse(">=1.52.0").unwrap().matches(nm_version) {
             let dhcp_send_hostname = match dhcp4_settings.send_hostname {
@@ -558,6 +560,10 @@ fn ip_config_to_ipv6_dbus<'a>(
 
     if let Some(ip6_privacy) = &ip_config.ip6_privacy {
         ipv6_dbus.insert("ip6-privacy", ip6_privacy.into());
+    }
+
+    if let Some(dns_priority6) = &ip_config.dns_priority6 {
+        ipv6_dbus.insert("dns-priority", dns_priority6.into());
     }
 
     if let Some(dhcp6_settings) = &ip_config.dhcp6_settings {
@@ -1071,6 +1077,10 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Result<IpConfig, NmError> {
             ip_config.gateway4 = gateway.parse().ok();
         }
 
+        if let Some(dns_priority4) = get_optional_property(ipv4, "dns-priority")? {
+            ip_config.dns_priority4 = Some(dns_priority4);
+        }
+
         let mut dhcp4_settings = Dhcp4Settings::default();
         if let Some(dhcp_send_hostname) = get_optional_property(ipv4, "dhcp-send-hostname-v2")? {
             dhcp4_settings.send_hostname = match dhcp_send_hostname {
@@ -1139,6 +1149,10 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Result<IpConfig, NmError> {
 
         if let Some(ip6_privacy) = get_optional_property(ipv6, "ip6-privacy")? {
             ip_config.ip6_privacy = Some(ip6_privacy);
+        }
+
+        if let Some(dns_priority6) = get_optional_property(ipv6, "dns-priority")? {
+            ip_config.dns_priority6 = Some(dns_priority6);
         }
 
         let mut dhcp6_settings = Dhcp6Settings::default();

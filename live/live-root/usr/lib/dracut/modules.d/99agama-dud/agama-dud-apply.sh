@@ -12,14 +12,17 @@ DUD_RPM_REPOSITORY="$NEWROOT/var/lib/agama/dud/repo"
 
 shopt -s nullglob
 
-# Apply all the updates.
+# Applies all the updates
 #
-# Read the URL of the updates from $AGAMA_DUD_INFO and process each one.
+# Reads the URL of the updates from $AGAMA_DUD_INFO and process each one.
 apply_updates() {
   local file
   local dud_url
   local dud_root
   index=0
+
+  # make sure the HTTPS downloads work correctly
+  configure_ssl
 
   while read -r dud_url; do
     mkdir -p "$DUD_DIR"
@@ -49,8 +52,6 @@ apply_updates() {
 
     ((index++))
   done <$AGAMA_DUD_INFO
-
-  create_repo "$DUD_RPM_REPOSITORY"
 }
 
 # Applies an update from an RPM package
@@ -81,6 +82,7 @@ apply_dud_update() {
   dud_root=$(echo "${dir}/linux/suse/${arch}"-*)
   install_update "${dud_root}/inst-sys"
   copy_packages "$dud_root" "$DUD_RPM_REPOSITORY"
+  update_kernel_modules "$dud_root"
 }
 
 # Extracts an RPM file
@@ -98,7 +100,7 @@ unpack_rpm() {
   popd || exit 1
 }
 
-# Applies an update to the installation system.
+# Applies an update to the installation system
 #
 # Updates are applied by copying files instead of installing packages. For that
 # reason, it might be needed to do some adjustments "manually", like settings
@@ -114,7 +116,7 @@ install_update() {
   set_alternative "$dud_dir" "agama-proxy-setup"
 }
 
-# Sets the alternative links.
+# Sets the alternative links
 set_alternative() {
   dud_instsys=$1
   name=$2
@@ -123,7 +125,7 @@ set_alternative() {
 
   executables=("$dud_instsys/usr/bin/${name}.ruby"*-*)
   executable=${executables[0]}
-  if [ ! -z "$executable" ]; then
+  if [ -n "$executable" ]; then
     "$NEWROOT/usr/bin/chroot" "$NEWROOT" /usr/sbin/update-alternatives \
       --install "/usr/bin/$name" "$name" "${executable##"$dud_instsys"}" "$priority"
     "$NEWROOT/usr/bin/chroot" "$NEWROOT" /usr/sbin/update-alternatives \
@@ -136,7 +138,7 @@ set_alternative() {
 # This function is mainly a PoC.
 #
 # This is a simplistic version that just copies all the RPMs to the new repository.
-# In the future, it might need to put each package under a different respository depending
+# In the future, it might need to put each package under a different repository depending
 # on the distribution (e.g., "/run/agama/dud/repo/tw" for "x86_64-tw").
 copy_packages() {
   dud_dir=$1
@@ -149,11 +151,103 @@ copy_packages() {
   done
 }
 
-# Creates the repository metadata.
-create_repo() {
-  repo_dir=$1
+# Finds the kernel modules to update
+#
+# It searches for the modules in the modules/ directory of the update.
+find_kernel_modules() {
+  local directory=$1
+  local -n modules=$2
+  local module_name
+  local files
 
-  "$NEWROOT/usr/bin/chroot" "$NEWROOT" createrepo_c "${repo_dir##"$NEWROOT"}"
+  modules=()
+  files=("${directory}"/*.ko*)
+  for module in "${files[@]}"; do
+    module_name=${module#"${directory}/"}
+    module_name=${module_name%.ko*}
+
+    if [[ ! " ${modules[*]} " =~ " ${module_name} " ]]; then
+      modules+=("$module_name")
+    fi
+  done
+
+  echo "Found ${#files[@]} kernel modules"
+}
+
+# Copies a kernel module
+#
+# It searches for a module with the same name. If found, it replaces it.
+# Otherwise, it copies the module to the top-level modules directory.
+copy_kernel_module() {
+  local source_dir=$1
+  local module=$2
+  local target_dir=$3
+  local source_file
+
+  echo "Copying ${module}..."
+
+  # expect a single file with $module.ko* name
+  source_file=("${source_dir}/${module}".ko*)
+
+  old_module=("${target_dir}"/**/*/"${module}".ko*)
+  if [ "${#old_module[@]}" -eq "1" ]; then
+    info "  Replacing the module ${old_module[0]}"
+    cp "${source_file[0]}" "${old_module[0]}"
+  elif [ "${#old_module[@]}" -eq "0" ]; then
+    info "  Not found the module to replace, so copying to kernel/ directory."
+    cp "${source_file[0]}" "${target_dir}"
+  else
+    info "  Skipping the module because several modules with the same name were found."
+  fi
+}
+
+# Updates kernel modules
+#
+# It copies the kernel modules from the Driver Update Disk to the system under
+# /sysroot. If it finds a `module.order` file, it unloads the modules included
+# in the list and add them to /etc/modules-load.d/99-agama.conf file so they
+# will be loaded by systemd after pivoting.
+update_kernel_modules() {
+  local dud_dir=$1
+  local kernel_modules_dir
+  kernel_modules_dir="${NEWROOT}/lib/modules/$(uname -r)"
+  local dud_modules_dir="${dud_dir}/modules"
+
+  # find and copy kernel modules
+  local dud_modules
+  find_kernel_modules "$dud_modules_dir" dud_modules
+  for module in "${dud_modules[@]}"; do
+    echo "Processing ${module} module"
+    copy_kernel_module "$dud_modules_dir" "$module" "${kernel_modules_dir}/kernel"
+    rmmod "${module}" 2>&1
+  done
+
+  # unload modules in the module.order file and make sure they will be loaded
+  if [ -f "${dud_modules_dir}/module.order" ]; then
+    module_order=$(<"${dud_modules_dir}/module.order")
+    # unload the modules in reverse order
+    local idx
+    idx=("${!module_order[@]}")
+    for ((i = ${#idx[@]} - 1; i >= 0; i--)); do
+      rmmod "${module_order[$i]}" 2>&1
+    done
+
+    cp "${dud_modules_dir}/module.order" "${NEWROOT}/etc/modules-load.d/99-agama.conf"
+  fi
+
+  # update modules dependencies on the live medium
+  info "Updating modules dependencies..."
+  depmod -a -b "$NEWROOT"
+}
+
+# link the SSL certificates and related configuration from the root image so "agama download"
+# works correctly with the HTTPS resources (expects using correct and well-known certificates)
+configure_ssl() {
+  # link the SSL certificates
+  ! [ -d /etc/ssl ] && ln -s "$NEWROOT/etc/ssl" /etc
+
+  # link crypto configuration (which ciphers are allowed, etc)
+  ! [ -d /etc/crypto-policies ] && ln -s "$NEWROOT/etc/crypto-policies" /etc
 }
 
 if [ -f "$AGAMA_DUD_INFO" ]; then
