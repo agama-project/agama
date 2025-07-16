@@ -73,9 +73,9 @@ export default function ConfigEditorMenu() {
         <DropdownItem
           key="reprobe-link"
           onClick={() => reprobe()}
-          description={_("Reprobe available devices. Useful when activating them outside of agama")}
+          description={_("Detect newly connected or activated devices")}
         >
-          {_("Reprobe devices")}
+          {_("Rescan Devices")}
         </DropdownItem>
         <DropdownItem
           key="reset-link"

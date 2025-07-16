@@ -82,9 +82,9 @@ it("allows users to reset the config", async () => {
   expect(mockReset).toHaveBeenCalled();
 });
 
-it("allows users to reprobe devices", async () => {
+it("allows users to rescan devices", async () => {
   const { user, menu } = await openMenu();
-  const reprobeItem = within(menu).getByRole("menuitem", { name: /Reprobe/ });
+  const reprobeItem = within(menu).getByRole("menuitem", { name: /Rescan/ });
   await user.click(reprobeItem);
   expect(mockReprobe).toHaveBeenCalled();
 });
