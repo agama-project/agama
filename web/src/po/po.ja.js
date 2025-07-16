@@ -45,6 +45,15 @@ export default {
   "%s with %d partitions": [
     "%s (%d 個のパーティション)"
   ],
+  "A %1$s of %2$s will be created for %3$s if possible": [
+    "可能であれば、 %2$s の %1$s を %3$s 向けに作成します"
+  ],
+  "A %1$s of at least %2$s will be created for %3$s if possible": [
+    "可能であれば、少なくとも %2$s の %1$s を %3$s 向けに作成します"
+  ],
+  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
+    "可能であれば、 %2$s から %3$s までの範囲で %1$s を %4$s 向けに作成します"
+  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "新しい %2$s に対しては少なくとも %1$s を使用します"
   ],
@@ -206,6 +215,15 @@ export default {
   ],
   "Back": [
     "戻る"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
+    "システムのメモリサイズに応じて、 %2$s の %1$s を %3$s 向けに計画します"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
+    "システムのメモリサイズに応じて、少なくとも %2$s の %1$s を %3$s 向けに計画します"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
+    "システムのメモリサイズに応じて、 %2$s から %3$s までの範囲で %1$s を %4$s 向けに計画します"
   ],
   "Bcachefs": [
     "bcachefs"
@@ -511,7 +529,7 @@ export default {
     "破棄"
   ],
   "Discard the maximum size and continue with simplified configuration": [
-    ""
+    "最大サイズの設定を破棄してシンプルな設定にして続ける"
   ],
   "Disconnected": [
     "切断済み"
@@ -526,7 +544,7 @@ export default {
     "iSCSI ターゲットの検出"
   ],
   "Discover iSCSI targets": [
-    "iSCSI ターゲットの検索"
+    "iSCSI ターゲットの検出"
   ],
   "Disk": [
     "ディスク"
@@ -1149,6 +1167,9 @@ export default {
   "Partitions to boot will be allocated at the following device.": [
     "下記のデバイス内に起動用パーティションを割り当てます。"
   ],
+  "Partitions to boot will be allocated at the installation disk %s.": [
+    "インストール先のディスク %s 内で起動用のパーティションを割り当てます。"
+  ],
   "Partitions to boot will be allocated at the installation disk.": [
     "インストール先のディスク内に起動用のパーティションを割り当てます。"
   ],
@@ -1524,6 +1545,15 @@ export default {
   "The content may be deleted": [
     "内容が削除されるかもしれません"
   ],
+  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
+    "現在の設定では %2$s の %1$s を作成する予定になります。"
+  ],
+  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
+    "現在の設定では少なくとも %2$s の %1$s を作成する予定になります。"
+  ],
+  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
+    "現在の設定では %2$s から %3$s までの %1$s を作成する予定になります。"
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "既存のデータは保持しますが、必要に応じて既存のパーティションのサイズ変更を行います。"
   ],
@@ -1553,6 +1583,9 @@ export default {
   ],
   "The extension has been registered with key %s.": [
     "拡張を %s の鍵で登録しました。"
+  ],
+  "The final size can be bigger in order to fill the extra free space.": [
+    "最終的なサイズは、連続した空き領域にあわせて拡大される可能性があります。"
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Trusted Platform Module (TPM) の設定の最後では、新しいシステムの初回起動時に暗号化されたデバイスを自動で解除するよう設定します。これを動作させるためには、マシンが新しいブートローダを直接起動するように設定しておく必要があります。"
@@ -1632,6 +1665,9 @@ export default {
   "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
     "btrfs スナップショットの使用可否に応じて、 %s 向けのサイズを動的に調整します。"
   ],
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
+    "サイズを %s から %s までの範囲で設定していますが、この最大値の設定は UI ではサポートされていません。"
+  ],
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
     "サイズは、数値の後に GiB (2 のべき乗で指定する場合) や GB (10 のべき乗で指定する場合) の形式で単位を付けて入力する必要があります。"
   ],
@@ -1663,10 +1699,10 @@ export default {
     "インストールにあたっての主要な項目のみを表示しています。さらに詳しい設定を確認したい場合は、それぞれのセクションを開いてください。"
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    "インストールする製品に対する設定があります。インストーラの言語やキーボードレイアウトの設定は、上部バーの [設定パネル] から変更できます。"
+    "こちらはインストールする製品に対する設定です。インストーラの言語やキーボードレイアウトの設定は、上部バーの [設定パネル] から変更できます。"
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    "インストールする製品に対する設定があります。インストーラの言語の設定は、上部バーの [設定パネル] から変更できます。"
+    "こちらはインストールする製品に対する設定です。インストーラの言語の設定は、上部バーの [設定パネル] から変更できます。"
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "この処理により、下記に示したデバイス内のデータが全て消去されます。続行して問題ないかどうか、ご確認ください。"
