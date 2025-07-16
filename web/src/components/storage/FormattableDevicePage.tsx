@@ -20,6 +20,11 @@
  * find current contact information at www.suse.com.
  */
 
+/**
+ * @fixme This file, PartitionPage and LogicalVolumePage need to be refactored in order to avoid
+ *  code duplication.
+ */
+
 import React, { useId } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -383,18 +388,14 @@ function FilesystemLabel({ id, value, onChange }: FilesystemLabelProps): React.R
   );
 }
 
-/**
- * @fixme This component has to be adapted to use the new hooks from ~/hooks/storage/ instead of the
- * deprecated hooks from ~/queries/storage/config-model.
- */
 export default function FormattableDevicePage() {
   const navigate = useNavigate();
   const headingId = useId();
   const [mountPoint, setMountPoint] = React.useState(NO_VALUE);
   const [filesystem, setFilesystem] = React.useState(NO_VALUE);
   const [filesystemLabel, setFilesystemLabel] = React.useState(NO_VALUE);
-  // Filesystem and size selectors should not be auto refreshed before the user interacts with other
-  // selectors like the mount point or the target selectors.
+  // Filesystem selectors should not be auto refreshed before the user interacts with the mount
+  // point selector.
   const [autoRefreshFilesystem, setAutoRefreshFilesystem] = React.useState(false);
 
   const initialValue = useInitialFormValue();
