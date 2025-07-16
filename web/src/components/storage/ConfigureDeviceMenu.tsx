@@ -24,7 +24,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
 import { Divider, MenuItemProps } from "@patternfly/react-core";
-import { useCandidateDevices } from "~/hooks/storage/system";
+import { useAvailableDevices } from "~/hooks/storage/system";
 import { useModel } from "~/hooks/storage/model";
 import { useAddDrive } from "~/hooks/storage/drive";
 import { useAddReusedMdRaid } from "~/hooks/storage/md-raid";
@@ -35,36 +35,59 @@ import { StorageDevice } from "~/types/storage";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 
 type AddDeviceMenuItemProps = {
+  /** Whether some of the available devices is an MD RAID */
+  withRaids: boolean;
   /** Available devices to be chosen */
   devices: StorageDevice[];
   /** The total amount of drives and RAIDs already configured */
   usedCount: number;
 } & MenuItemProps;
 
-const AddDeviceTitle = ({ usedCount }) =>
-  usedCount
-    ? _("Select another disk to define partitions")
-    : _("Select a disk to define partitions");
+const AddDeviceTitle = ({ withRaids, usedCount }) => {
+  if (withRaids) {
+    if (usedCount === 0) return _("Select a device to define partitions or to mount");
+    return _("Select another device to define partitions or to mount");
+  }
 
-const AddDeviceDescription = ({ usedCount, isDisabled = false }) => {
-  if (isDisabled) return _("Already using all available disks");
+  if (usedCount === 0) return _("Select a disk to define partitions or to mount");
+  return _("Select another disk to define partitions or to mount");
+};
 
-  return usedCount
-    ? sprintf(
+const AddDeviceDescription = ({ withRaids, usedCount, isDisabled = false }) => {
+  if (isDisabled) {
+    if (withRaids) return _("Already using all available devices");
+    return _("Already using all available disks");
+  }
+
+  if (usedCount) {
+    if (withRaids)
+      return sprintf(
         n_(
-          "Extend the installation beyond the currently selected disk",
-          "Extend the installation beyond the current %d disks",
+          "Extend the installation beyond the currently selected device",
+          "Extend the installation beyond the current %d devices",
           usedCount,
         ),
         usedCount,
-      )
-    : _("Start configuring a basic installation");
+      );
+
+    return sprintf(
+      n_(
+        "Extend the installation beyond the currently selected disk",
+        "Extend the installation beyond the current %d disks",
+        usedCount,
+      ),
+      usedCount,
+    );
+  }
+
+  return _("Start configuring a basic installation");
 };
 
 /**
  * Internal component holding the logic for rendering the disks drilldown menu
  */
 const AddDeviceMenuItem = ({
+  withRaids,
   usedCount,
   devices,
   onClick,
@@ -75,10 +98,16 @@ const AddDeviceMenuItem = ({
       <MenuButtonItem
         aria-label={_("Add device menu")}
         isDisabled={isDisabled}
-        description={<AddDeviceDescription usedCount={usedCount} isDisabled={isDisabled} />}
+        description={
+          <AddDeviceDescription
+            withRaids={withRaids}
+            usedCount={usedCount}
+            isDisabled={isDisabled}
+          />
+        }
         onClick={onClick}
       >
-        <AddDeviceTitle usedCount={usedCount} />
+        <AddDeviceTitle withRaids={withRaids} usedCount={usedCount} />
       </MenuButtonItem>
     </>
   );
@@ -87,12 +116,6 @@ const AddDeviceMenuItem = ({
 /**
  * Menu that provides options for users to configure storage drives
  *
- * It uses a drilled-down menu approach for disks, making the available options less
- * overwhelming by presenting them in a more organized manner.
- *
- * TODO: Refactor and test the component after extracting a basic DrillDown menu to
- * share the internal logic with other potential menus that could benefit from a similar
- * approach.
  */
 export default function ConfigureDeviceMenu(): React.ReactNode {
   const [deviceSelectorOpen, setDeviceSelectorOpen] = useState(false);
@@ -104,11 +127,12 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
   const model = useModel({ suspense: true });
   const addDrive = useAddDrive();
   const addReusedMdRaid = useAddReusedMdRaid();
-  const allDevices = useCandidateDevices();
+  const allDevices = useAvailableDevices();
 
   const usedDevicesNames = model.drives.concat(model.mdRaids).map((d) => d.name);
   const usedDevicesCount = usedDevicesNames.length;
   const devices = allDevices.filter((d) => !usedDevicesNames.includes(d.name));
+  const withRaids = !!allDevices.filter((d) => !d.isDrive).length;
 
   const addDevice = (device: StorageDevice) => {
     const hook = device.isDrive ? addDrive : addReusedMdRaid;
@@ -130,6 +154,7 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
             key="select-disk-option"
             usedCount={usedDevicesCount}
             devices={devices}
+            withRaids={withRaids}
             onClick={openDeviceSelector}
           />,
           <Divider key="divider-option" />,
@@ -147,8 +172,8 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
       {deviceSelectorOpen && (
         <DeviceSelectorModal
           devices={devices}
-          title={<AddDeviceTitle usedCount={usedDevicesCount} />}
-          description={<AddDeviceDescription usedCount={usedDevicesCount} />}
+          title={<AddDeviceTitle withRaids={withRaids} usedCount={usedDevicesCount} />}
+          description={<AddDeviceDescription withRaids={withRaids} usedCount={usedDevicesCount} />}
           onCancel={closeDeviceSelector}
           onConfirm={([device]) => {
             addDevice(device);

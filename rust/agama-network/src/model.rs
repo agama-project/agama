@@ -761,6 +761,9 @@ pub enum ConnectionConfig {
     Bridge(BridgeConfig),
     Infiniband(InfinibandConfig),
     Tun(TunConfig),
+    OvsBridge(OvsBridgeConfig),
+    OvsPort(OvsPortConfig),
+    OvsInterface(OvsInterfaceConfig),
 }
 
 #[derive(Default, Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
@@ -768,6 +771,7 @@ pub enum PortConfig {
     #[default]
     None,
     Bridge(BridgePortConfig),
+    OvsBridge(OvsBridgePortConfig),
 }
 
 impl From<BridgeConfig> for ConnectionConfig {
@@ -879,6 +883,8 @@ pub struct IpConfig {
     pub dhcp4_settings: Option<Dhcp4Settings>,
     pub dhcp6_settings: Option<Dhcp6Settings>,
     pub ip6_privacy: Option<i32>,
+    pub dns_priority4: Option<i32>,
+    pub dns_priority6: Option<i32>,
 }
 
 #[skip_serializing_none]
@@ -1074,8 +1080,8 @@ pub struct UnknownIpMethod(String);
 #[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Ipv4Method {
-    #[default]
     Disabled = 0,
+    #[default]
     Auto = 1,
     Manual = 2,
     LinkLocal = 3,
@@ -1110,8 +1116,8 @@ impl FromStr for Ipv4Method {
 #[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Ipv6Method {
-    #[default]
     Disabled = 0,
+    #[default]
     Auto = 1,
     Manual = 2,
     LinkLocal = 3,
@@ -1726,19 +1732,14 @@ impl TryFrom<BondConfig> for BondSettings {
     }
 }
 
+#[skip_serializing_none]
 #[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 pub struct BridgeConfig {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub stp: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub priority: Option<u32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub forward_delay: Option<u32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub hello_time: Option<u32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub max_age: Option<u32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub ageing_time: Option<u32>,
 }
 
@@ -2044,3 +2045,71 @@ impl fmt::Display for Phase2AuthMethod {
         write!(f, "{}", value)
     }
 }
+
+#[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+pub struct OvsBridgeConfig {
+    pub mcast_snooping_enable: Option<bool>,
+    pub rstp_enable: Option<bool>,
+    pub stp_enable: Option<bool>,
+}
+
+#[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+pub struct OvsPortConfig {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tag: Option<u16>,
+}
+
+#[derive(Debug, Error)]
+#[error("Invalid OvsInterfaceType: {0}")]
+pub struct InvalidOvsInterfaceType(String);
+
+impl FromStr for OvsInterfaceType {
+    type Err = InvalidOvsInterfaceType;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "" => Ok(Self::Empty),
+            "internal" => Ok(Self::Internal),
+            "system" => Ok(Self::System),
+            "patch" => Ok(Self::Patch),
+            "dpdk" => Ok(Self::Dpdk),
+            _ => Err(InvalidOvsInterfaceType(s.to_string())),
+        }
+    }
+}
+
+impl From<InvalidOvsInterfaceType> for zbus::fdo::Error {
+    fn from(value: InvalidOvsInterfaceType) -> Self {
+        zbus::fdo::Error::Failed(value.to_string())
+    }
+}
+
+impl fmt::Display for OvsInterfaceType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let value = match self {
+            Self::Empty => "",
+            Self::Internal => "internal",
+            Self::System => "system",
+            Self::Patch => "patch",
+            Self::Dpdk => "dpdk",
+        };
+        write!(f, "{}", value)
+    }
+}
+#[derive(Default, Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+pub enum OvsInterfaceType {
+    #[default]
+    Empty,
+    Internal,
+    System,
+    Patch,
+    Dpdk,
+}
+
+#[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+pub struct OvsInterfaceConfig {
+    pub interface_type: OvsInterfaceType,
+}
+
+#[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+pub struct OvsBridgePortConfig {}

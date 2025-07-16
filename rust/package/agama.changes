@@ -6,6 +6,35 @@ Wed Jul 16 19:05:48 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
   done before or in same profile (bsc#1246601)
 
 -------------------------------------------------------------------
+Wed Jul 16 14:55:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Fix deletion of controller connections (gh#agama-project/agama#2564)
+
+-------------------------------------------------------------------
+Wed Jul 16 14:21:30 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Make the method4 and method6 default to be "auto" in case of
+  absense (bsc#1246194).
+
+-------------------------------------------------------------------
+Wed Jul  16 13:22:07 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Add initial support for ovs in agama network model (gh#agama-project/agama#2536).
+
+-------------------------------------------------------------------
+Wed Jul 16 13:17:22 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add dns priority to network model (gh#agama-project/agama#2533).
+
+-------------------------------------------------------------------
+Wed Jul 16 08:42:59 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Added -i/--insecure optional argument to the "agama download"
+  command to ignore SSL problems in HTTPS downloads (self-signed
+  certificate, non-matching host, unknown CA...)
+  (related to bsc#1245393)
+
+-------------------------------------------------------------------
 Wed Jul 16 07:30:02 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Add support for activating zFCP disks to Agama unattended profile

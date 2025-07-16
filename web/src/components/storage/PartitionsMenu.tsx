@@ -24,7 +24,6 @@ import React, { useId } from "react";
 import { Divider, Stack, Flex } from "@patternfly/react-core";
 import { useNavigate, generatePath } from "react-router-dom";
 import Text from "~/components/core/Text";
-import Link from "~/components/core/Link";
 import MenuButton from "~/components/core/MenuButton";
 import MenuHeader from "~/components/core/MenuHeader";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
@@ -136,22 +135,11 @@ export default function PartitionsMenu({ device }) {
   const navigate = useNavigate();
   const ariaLabelId = useId();
   const toggleTextId = useId();
-  const { isBoot, isTargetDevice, list, listIndex } = device;
+  const { list, listIndex } = device;
   const newPartitionPath = generatePath(PATHS.addPartition, { list, listIndex });
   // TRANSLATORS: %s is the name of device, like '/dev/sda'.
   const detailsAriaLabel = sprintf(_("Details for %s"), device.name);
-
   const hasPartitions = device.partitions.some((p: Partition) => p.mountPath);
-
-  if (!isBoot && !isTargetDevice && !hasPartitions) {
-    return (
-      <Flex gap={{ default: "gapXs" }}>
-        <Link variant="link" isInline to={newPartitionPath}>
-          {_("Add a new partition or mount an existing one")}
-        </Link>
-      </Flex>
-    );
-  }
 
   // FIXME: All strings and widgets are now calculated and assembled here. But we are actually
   // aiming for a different organization of the widgets (eg. using a MenuGroup with a label to

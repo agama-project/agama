@@ -55,6 +55,11 @@ type SpacePolicy = {
   actions?: SpacePolicyAction[];
 };
 
+type Formattable = {
+  mountPath?: string;
+  filesystem?: Filesystem;
+};
+
 // So far this type is used only for adding a pre-existing RAID searched by name. So we are starting
 // with this simplistic definition. Such a definition will likely grow in the future if the same
 // type is used for more operations.
@@ -72,12 +77,13 @@ type Drive = {
 
 export type {
   Drive,
+  Filesystem,
+  Formattable,
+  LogicalVolume,
   MdRaid,
   Partition,
-  VolumeGroup,
-  LogicalVolume,
-  Filesystem,
   Size,
   SpacePolicy,
   SpacePolicyAction,
+  VolumeGroup,
 };

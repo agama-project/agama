@@ -23,8 +23,7 @@
 import React from "react";
 import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
 import MdRaidHeader from "~/components/storage/MdRaidHeader";
-import PartitionsMenu from "~/components/storage/PartitionsMenu";
-import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
+import DeviceEditorContent from "~/components/storage/DeviceEditorContent";
 import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
 import { model, StorageDevice } from "~/types/storage";
 import { MdRaid } from "~/types/storage/model";
@@ -55,12 +54,7 @@ export default function MdRaidEditor({ raid, raidDevice }: MdRaidEditorProps) {
   return (
     <ConfigEditorItem
       header={<MdRaidHeader raid={raid} device={raidDevice} />}
-      content={
-        <>
-          <PartitionsMenu device={raid} />
-          <SpacePolicyMenu modelDevice={raid} device={raidDevice} />
-        </>
-      }
+      content={<DeviceEditorContent deviceModel={raid} device={raidDevice} />}
       actions={<MdRaidDeviceMenu raid={raid} selected={raidDevice} />}
     />
   );

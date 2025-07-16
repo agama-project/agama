@@ -124,7 +124,7 @@ impl ProfileQuery {
     fn retrieve_profile(&self) -> Result<Option<String>, ProfileServiceError> {
         if let Some(url_string) = &self.url {
             let mut bytebuf = Vec::new();
-            Transfer::get(url_string, &mut bytebuf)
+            Transfer::get(url_string, &mut bytebuf, false)
                 .context(format!("Retrieving data from URL {}", url_string))?;
             let s = String::from_utf8(bytebuf)
                 .context(format!("Invalid UTF-8 data at URL {}", url_string))?;
