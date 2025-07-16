@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 16 14:46:32 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Allow to use a whole disk or MD RAID without a partition table
+  (gh#agama-project/agama#2559).
+
+-------------------------------------------------------------------
 Mon Jul 14 16:02:55 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Allow specifying the registration server (jsc#AGM-156).
