@@ -110,7 +110,8 @@ software:
     - yast2_server
     - multimedia
     - office
-    - selinux
+    - name: selinux
+      selected: true
     - apparmor
   mandatory_packages:
     - NetworkManager

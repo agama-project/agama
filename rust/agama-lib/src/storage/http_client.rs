@@ -22,6 +22,7 @@
 
 pub mod dasd;
 pub mod iscsi;
+pub mod zfcp;
 
 use crate::{
     http::{BaseHTTPClient, BaseHTTPClientError},

@@ -35,7 +35,8 @@ software:
     - cockpit
     - sles_sap_minimal_sap
     - fips
-    - selinux
+    - name: selinux
+      selected: true
     - documentation
     - sw_management
     - container_runtime_podman

@@ -63,6 +63,8 @@ pub enum ServiceError {
     UnsupportedSSLFingerprintAlgorithm(String),
     #[error("DASD with channel '#{0}' not found.")]
     DASDChannelNotFound(String),
+    #[error("zFCP controller with channel '#{0}' not found.")]
+    ZFCPControllerNotFound(String),
 }
 
 #[derive(Error, Debug)]

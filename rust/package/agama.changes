@@ -1,7 +1,23 @@
 -------------------------------------------------------------------
-Tue Jul 15 13:17:22 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+Wed Jul 16 13:17:22 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
 - Add dns priority to network model (gh#agama-project/agama#2533).
+
+-------------------------------------------------------------------
+Wed Jul 16 08:42:59 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Added -i/--insecure optional argument to the "agama download"
+  command to ignore SSL problems in HTTPS downloads (self-signed
+  certificate, non-matching host, unknown CA...)
+  (related to bsc#1245393)
+
+-------------------------------------------------------------------
+Wed Jul 16 07:30:02 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for activating zFCP disks to Agama unattended profile
+  (gh#agama-project/agama#2551)
+- Fix export of empty DASD section leading to failure on non s390
+  system (bsc#1246102)
 
 -------------------------------------------------------------------
 Tue Jul 15 09:00:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>

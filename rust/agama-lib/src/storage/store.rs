@@ -21,6 +21,7 @@
 //! Implements the store for the storage settings.
 
 pub mod dasd;
+pub mod zfcp;
 
 use super::{http_client::StorageHTTPClientError, StorageSettings};
 use crate::{http::BaseHTTPClient, storage::http_client::StorageHTTPClient};

@@ -39,7 +39,7 @@ describe Agama::Storage::Finisher do
 
   let(:destdir) { File.join(FIXTURES_PATH, "target_dir") }
   let(:config) { Agama::Config.from_file(config_path) }
-  let(:security) { instance_double(Agama::Security, probe: nil, write: nil) }
+  let(:security) { instance_double(Agama::Security, write: nil) }
   let(:copy_files) { Agama::Storage::Finisher::CopyFilesStep.new(logger) }
   let(:progress) { instance_double(Agama::Progress, step: nil) }
 

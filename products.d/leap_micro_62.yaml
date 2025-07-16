@@ -24,10 +24,11 @@ software:
 
   mandatory_patterns:
     - cockpit
-    - base 
+    - base
     - transactional
     - traditional
     - hardware
+    - selinux
 
   optional_patterns: null
 
