@@ -71,13 +71,6 @@ export default function ConfigEditorMenu() {
           {_("Change boot options")}
         </DropdownItem>
         <DropdownItem
-          key="reprobe-link"
-          onClick={() => reprobe()}
-          description={_("Detect newly connected or activated devices")}
-        >
-          {_("Rescan Devices")}
-        </DropdownItem>
-        <DropdownItem
           key="reset-link"
           onClick={() => reset()}
           description={_("Start from scratch with the default configuration")}
@@ -110,6 +103,13 @@ export default function ConfigEditorMenu() {
             {_("Configure DASD")}
           </DropdownItem>
         )}
+        <DropdownItem
+          key="reprobe-link"
+          onClick={() => reprobe()}
+          description={_("Update the list of available disks and activate crypt devices")}
+        >
+          {_("Rescan devices")}
+        </DropdownItem>
       </DropdownList>
     </Dropdown>
   );
