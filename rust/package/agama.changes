@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 16 19:05:48 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix crash when agama profile contain only zfcp section by
+  providing better error report when product selection have to be
+  done before or in same profile (bsc#1246601)
+
+-------------------------------------------------------------------
 Wed Jul 16 07:30:02 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Add support for activating zFCP disks to Agama unattended profile
