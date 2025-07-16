@@ -472,9 +472,10 @@ type FilesystemOptionsProps = {
 function FilesystemOptions({ mountPoint }: FilesystemOptionsProps): React.ReactNode {
   const defaultFilesystem = useDefaultFilesystem(mountPoint);
   const usableFilesystems = useUsableFilesystems(mountPoint);
+  const volume = useVolume(mountPoint);
 
   const defaultOptText =
-    mountPoint !== NO_VALUE
+    mountPoint !== NO_VALUE && volume.mountPath
       ? sprintf(_("Default file system for %s"), mountPoint)
       : _("Default file system for generic logical volumes");
 
