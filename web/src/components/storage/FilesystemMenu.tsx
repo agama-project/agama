@@ -26,7 +26,6 @@ import { useNavigate, generatePath } from "react-router-dom";
 import Text from "~/components/core/Text";
 import MenuHeader from "~/components/core/MenuHeader";
 import MenuButton from "~/components/core/MenuButton";
-import { useDeleteFilesystem } from "~/hooks/storage/filesystem";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { model } from "~/types/storage";
 import * as driveUtils from "~/components/storage/utils/drive";
@@ -58,7 +57,6 @@ export default function FilesystemMenu({ deviceModel }: FilesystemMenuProps): Re
   const navigate = useNavigate();
   const ariaLabelId = useId();
   const toggleTextId = useId();
-  const deleteFilesystem = useDeleteFilesystem();
   const { list, listIndex } = deviceModel;
   const editFilesystemPath = generatePath(PATHS.formatDevice, { list, listIndex });
 
@@ -91,14 +89,6 @@ export default function FilesystemMenu({ deviceModel }: FilesystemMenuProps): Re
             onClick={() => navigate(editFilesystemPath)}
           >
             {_("Edit")}
-          </MenuButton.Item>,
-          <MenuButton.Item
-            key="delete-filesystem"
-            itemId="delete-filesystem"
-            description={_("Neither format nor mount the device")}
-            onClick={() => deleteFilesystem(list, listIndex)}
-          >
-            {_("Do not configure")}
           </MenuButton.Item>,
         ]}
       >
