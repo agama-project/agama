@@ -133,8 +133,7 @@ impl LicensesRepo {
     ///
     /// If a translation is not found for the given language, it returns the default text.
     pub fn find(&self, id: &str, language: &LanguageTag) -> Option<LicenseContent> {
-        let license = self.licenses.iter().find(|l| l.id.as_str() == id).unwrap();
-
+        let license = self.licenses.iter().find(|l| l.id.as_str() == id)?;
         let license_language = self.find_language(&license, &language).unwrap_or_default();
         self.read_license_content(id, &license_language).ok()
     }
