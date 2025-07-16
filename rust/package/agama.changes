@@ -2,7 +2,15 @@
 Wed Jul 16 09:21:30 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Make the method4 and method6 default to be "auto" in case of
- absense (bsc#1246194).
+  absense (bsc#1246194).
+
+-------------------------------------------------------------------
+Wed Jul 16 08:42:59 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Added -i/--insecure optional argument to the "agama download"
+  command to ignore SSL problems in HTTPS downloads (self-signed
+  certificate, non-matching host, unknown CA...)
+  (related to bsc#1245393)
 
 -------------------------------------------------------------------
 Wed Jul 16 07:30:02 UTC 2025 - Josef Reidinger <jreidinger@suse.com>

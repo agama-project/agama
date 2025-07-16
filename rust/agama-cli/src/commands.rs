@@ -104,6 +104,9 @@ pub enum Commands {
         url: String,
         /// File name
         destination: PathBuf,
+        /// Disables SSL verification for HTTPS downloads
+        #[arg(short, long)]
+        insecure: bool,
     },
     /// Finish the installation.
     Finish {
