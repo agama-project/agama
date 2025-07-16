@@ -39,7 +39,10 @@ use crate::{
             iscsi::{ISCSIHTTPClient, ISCSIHTTPClientError},
             StorageHTTPClient,
         },
-        store::dasd::{DASDStore, DASDStoreError},
+        store::{
+            dasd::{DASDStore, DASDStoreError},
+            zfcp::{ZFCPStore, ZFCPStoreError},
+        },
         StorageStore, StorageStoreError,
     },
     users::{UsersStore, UsersStoreError},
@@ -78,6 +81,8 @@ pub enum StoreError {
     ScriptsClient(#[from] ScriptsClientError),
     #[error(transparent)]
     Manager(#[from] ManagerHTTPClientError),
+    #[error(transparent)]
+    ZFCP(#[from] ZFCPStoreError),
     #[error("Could not calculate the context")]
     InvalidStoreContext,
 }
@@ -104,6 +109,7 @@ pub struct Store {
     iscsi_client: ISCSIHTTPClient,
     manager_client: ManagerHTTPClient,
     http_client: BaseHTTPClient,
+    zfcp: ZFCPStore,
 }
 
 impl Store {
@@ -123,6 +129,7 @@ impl Store {
             scripts: ScriptsStore::new(http_client.clone()),
             manager_client: ManagerHTTPClient::new(http_client.clone()),
             iscsi_client: ISCSIHTTPClient::new(http_client.clone()),
+            zfcp: ZFCPStore::new(http_client.clone()),
             http_client,
         })
     }
@@ -141,6 +148,7 @@ impl Store {
             product: Some(self.product.load().await?),
             localization: Some(self.localization.load().await?),
             scripts: self.scripts.load().await?.to_option(),
+            zfcp: self.zfcp.load().await?,
             ..Default::default()
         };
 
@@ -206,7 +214,10 @@ impl Store {
         if let Some(dasd) = &settings.dasd {
             self.dasd.store(dasd).await?
         }
-
+        // zfcp devices has to be activated before storage
+        if let Some(zfcp) = &settings.zfcp {
+            self.zfcp.store(zfcp).await?
+        }
         // Reprobing storage is not directly done by zFCP, DASD or iSCSI services for a matter of
         // efficiency. For now, clients are expected to explicitly reprobe. It is important to
         // reprobe here before loading the storage settings. Otherwise, the new storage devices are

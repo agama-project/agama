@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Jul 16 07:30:02 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for activating zFCP disks to Agama unattended profile
+  (gh#agama-project/agama#2551)
+- Fix export of empty DASD section leading to failure on non s390
+  system (bsc#1246102)
+
+-------------------------------------------------------------------
 Tue Jul 15 09:00:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
 
 - Fix autoconnect setting for port interfaces (bsc#1246070).

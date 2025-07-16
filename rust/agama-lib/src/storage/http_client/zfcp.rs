@@ -22,27 +22,27 @@
 
 use crate::{
     http::{BaseHTTPClient, BaseHTTPClientError},
-    storage::settings::dasd::DASDConfig,
+    storage::settings::zfcp::ZFCPConfig,
 };
 
 #[derive(Debug, thiserror::Error)]
-pub enum DASDHTTPClientError {
+pub enum ZFCPHTTPClientError {
     #[error(transparent)]
-    DASD(#[from] BaseHTTPClientError),
+    ZFCP(#[from] BaseHTTPClientError),
 }
 
-pub struct DASDHTTPClient {
+pub struct ZFCPHTTPClient {
     client: BaseHTTPClient,
 }
 
-impl DASDHTTPClient {
+impl ZFCPHTTPClient {
     pub fn new(base: BaseHTTPClient) -> Self {
         Self { client: base }
     }
 
-    pub async fn get_config(&self) -> Result<Option<DASDConfig>, DASDHTTPClientError> {
-        let config: DASDConfig = self.client.get("/storage/dasd/config").await?;
-        // without any dasd devices config is nothing
+    pub async fn get_config(&self) -> Result<Option<ZFCPConfig>, ZFCPHTTPClientError> {
+        let config: ZFCPConfig = self.client.get("/storage/zfcp/config").await?;
+        // without any zfcp devices config is nothing
         if config.devices.is_empty() {
             Ok(None)
         } else {
@@ -50,15 +50,15 @@ impl DASDHTTPClient {
         }
     }
 
-    pub async fn set_config(&self, config: &DASDConfig) -> Result<(), DASDHTTPClientError> {
+    pub async fn set_config(&self, config: &ZFCPConfig) -> Result<(), ZFCPHTTPClientError> {
         if !self.supported().await? {
             // TODO: should we add tracing error here?
             return Ok(());
         }
-        Ok(self.client.put_void("/storage/dasd/config", config).await?)
+        Ok(self.client.put_void("/storage/zfcp/config", config).await?)
     }
 
-    pub async fn supported(&self) -> Result<bool, DASDHTTPClientError> {
-        Ok(self.client.get("/storage/dasd/supported").await?)
+    pub async fn supported(&self) -> Result<bool, ZFCPHTTPClientError> {
+        Ok(self.client.get("/storage/zfcp/supported").await?)
     }
 }

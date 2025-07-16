@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 16 07:29:03 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add AutoYaST conversion for DASD and zFCP sections
+  (gh#agama-project/agama#2551)
+
+-------------------------------------------------------------------
 Tue Jul 15 10:53:18 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not overwrite the list of chosen patterns when selecting an LSM
