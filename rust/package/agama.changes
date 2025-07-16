@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jul  16 13:22:07 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Add initial support for ovs in agama network model (gh#agama-project/agama#2536).
+
+-------------------------------------------------------------------
 Wed Jul 16 13:17:22 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
 - Add dns priority to network model (gh#agama-project/agama#2533).

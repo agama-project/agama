@@ -47,6 +47,9 @@ const BRIDGE_PORT_KEY: &str = "bridge-port";
 const INFINIBAND_KEY: &str = "infiniband";
 const TUN_KEY: &str = "tun";
 const IEEE_8021X_KEY: &str = "802-1x";
+const OVS_PORT: &str = "ovs-port";
+const OVS_INTERFACE: &str = "ovs-interface";
+const OVS_BRIDGE: &str = "ovs-bridge";
 
 /// Converts a connection struct into a HashMap that can be sent over D-Bus.
 ///
@@ -71,6 +74,8 @@ pub fn connection_to_dbus<'a>(
         let port_type = match controller.config {
             ConnectionConfig::Bond(_) => BOND_KEY,
             ConnectionConfig::Bridge(_) => BRIDGE_KEY,
+            ConnectionConfig::OvsPort(_) => OVS_PORT,
+            ConnectionConfig::OvsBridge(_) => OVS_BRIDGE,
             _ => {
                 tracing::error!("Controller {} has unhandled config type", controller.id);
                 ""
@@ -170,6 +175,20 @@ pub fn connection_to_dbus<'a>(
             connection_dbus.insert("type", TUN_KEY.into());
             result.insert(TUN_KEY, tun_config_to_dbus(tun));
         }
+        ConnectionConfig::OvsBridge(bridge) => {
+            connection_dbus.insert("type", OVS_BRIDGE.into());
+            connection_dbus.insert("autoconnect-slaves", 1.into());
+            result.insert(OVS_BRIDGE, ovs_bridge_config_to_dbus(bridge));
+        }
+        ConnectionConfig::OvsInterface(ifc) => {
+            connection_dbus.insert("type", OVS_INTERFACE.into());
+            result.insert(OVS_INTERFACE, ovs_interface_config_to_dbus(ifc));
+        }
+        ConnectionConfig::OvsPort(port) => {
+            connection_dbus.insert("type", OVS_PORT.into());
+            connection_dbus.insert("autoconnect-slaves", 1.into());
+            result.insert(OVS_PORT, ovs_port_config_to_dbus(port));
+        }
         _ => {}
     }
 
@@ -177,6 +196,7 @@ pub fn connection_to_dbus<'a>(
         PortConfig::Bridge(bridge_port) => {
             result.insert(BRIDGE_PORT_KEY, bridge_port_config_to_dbus(bridge_port));
         }
+        PortConfig::OvsBridge(_ovs_port) => {}
         PortConfig::None => {}
     }
 
@@ -229,6 +249,21 @@ pub fn connection_from_dbus(conn: OwnedNestedHash) -> Result<Connection, NmError
 
     if let Some(tun_config) = tun_config_from_dbus(&conn)? {
         connection.config = ConnectionConfig::Tun(tun_config);
+        return Ok(connection);
+    }
+
+    if let Some(ovs_bridge) = ovs_bridge_from_dbus(&conn)? {
+        connection.config = ConnectionConfig::OvsBridge(ovs_bridge);
+        return Ok(connection);
+    }
+
+    if let Some(ovs_port) = ovs_port_from_dbus(&conn)? {
+        connection.config = ConnectionConfig::OvsPort(ovs_port);
+        return Ok(connection);
+    }
+
+    if let Some(ovs_interface) = ovs_interface_from_dbus(&conn)? {
+        connection.config = ConnectionConfig::OvsInterface(ovs_interface);
         return Ok(connection);
     }
 
@@ -795,6 +830,75 @@ fn tun_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<TunConfig>, NmE
         mode,
         group: get_optional_property(tun, "group")?,
         owner: get_optional_property(tun, "owner")?,
+    }))
+}
+
+fn ovs_bridge_config_to_dbus(br: &OvsBridgeConfig) -> HashMap<&str, zvariant::Value> {
+    let mut br_config: HashMap<&str, zvariant::Value> = HashMap::new();
+
+    if let Some(mcast_snooping) = br.mcast_snooping_enable {
+        br_config.insert("mcast-snooping-enable", mcast_snooping.into());
+    }
+
+    if let Some(rstp) = br.rstp_enable {
+        br_config.insert("rstp-enable", rstp.into());
+    }
+
+    if let Some(stp) = br.stp_enable {
+        br_config.insert("stp-enable", stp.into());
+    }
+
+    br_config
+}
+
+fn ovs_bridge_from_dbus(conn: &OwnedNestedHash) -> Result<Option<OvsBridgeConfig>, NmError> {
+    let Some(ovs_bridge) = conn.get(OVS_BRIDGE) else {
+        return Ok(None);
+    };
+
+    Ok(Some(OvsBridgeConfig {
+        mcast_snooping_enable: get_optional_property::<bool>(ovs_bridge, "mcast-snooping-enable")?,
+        rstp_enable: get_optional_property::<bool>(ovs_bridge, "srtp-enable")?,
+        stp_enable: get_optional_property::<bool>(ovs_bridge, "stp")?,
+    }))
+}
+
+fn ovs_port_config_to_dbus(config: &OvsPortConfig) -> HashMap<&str, zvariant::Value> {
+    let mut port_config: HashMap<&str, zvariant::Value> = HashMap::new();
+
+    if let Some(tag) = &config.tag {
+        port_config.insert("tag", tag.into());
+    }
+
+    port_config
+}
+
+fn ovs_port_from_dbus(conn: &OwnedNestedHash) -> Result<Option<OvsPortConfig>, NmError> {
+    let Some(ovs_port) = conn.get(OVS_PORT) else {
+        return Ok(None);
+    };
+
+    Ok(Some(OvsPortConfig {
+        tag: get_optional_property(ovs_port, "tag")?,
+    }))
+}
+
+fn ovs_interface_config_to_dbus(config: &OvsInterfaceConfig) -> HashMap<&str, zvariant::Value> {
+    let mut ifc_config: HashMap<&str, zvariant::Value> = HashMap::new();
+
+    ifc_config.insert("type", config.interface_type.to_string().clone().into());
+    ifc_config
+}
+
+fn ovs_interface_from_dbus(conn: &OwnedNestedHash) -> Result<Option<OvsInterfaceConfig>, NmError> {
+    let Some(ovs_interface) = conn.get(OVS_INTERFACE) else {
+        return Ok(None);
+    };
+
+    let ifc_type: String = get_property(ovs_interface, "type")?;
+    let ifc_type = OvsInterfaceType::from_str(&ifc_type)?;
+    Ok(Some(OvsInterfaceConfig {
+        interface_type: ifc_type,
     }))
 }
 
