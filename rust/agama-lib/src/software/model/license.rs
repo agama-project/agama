@@ -205,27 +205,21 @@ impl LicensesRepo {
     /// not the case, it searches for a "compatible" language (the main language
     /// on the same territory, if given).
     fn find_language(&self, license: &License, candidate: &LanguageTag) -> Option<LanguageTag> {
-        if license.languages.contains(&candidate) {
-            return Some(candidate.clone());
-        }
-
-        if let Some(language) = license
-            .languages
-            .iter()
-            .find(|l| l.language == candidate.language)
-        {
-            return Some(language.clone());
-        }
+        let mut candidates: Vec<LanguageTag> = vec![candidate.clone()];
+        candidates.push(LanguageTag {
+            language: candidate.language.clone(),
+            territory: None,
+        });
 
         if let Some(territory) = &candidate.territory {
             if let Some(fallback) = self.fallback.get(territory) {
-                if license.languages.contains(&fallback) {
-                    return Some(fallback.clone());
-                }
+                candidates.push(fallback.clone());
             }
         }
 
-        None
+        candidates
+            .into_iter()
+            .find(|c| license.languages.contains(&c))
     }
 }
 
