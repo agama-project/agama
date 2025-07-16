@@ -176,6 +176,7 @@ impl LicensesRepo {
         code.try_into().ok()
     }
 
+    /// Read a license content for a given language.
     fn read_license_content(
         &self,
         id: &str,
@@ -204,25 +205,23 @@ impl LicensesRepo {
     /// not the case, it searches for a "compatible" language (the main language
     /// on the same territory, if given).
     fn find_language(&self, license: &License, candidate: &LanguageTag) -> Option<LanguageTag> {
-        let found = license
+        if license.languages.contains(&candidate) {
+            return Some(candidate.clone());
+        }
+
+        if let Some(language) = license
             .languages
             .iter()
-            .find(|l| *l == candidate)
-            .or_else(|| {
-                license
-                    .languages
-                    .iter()
-                    .find(|l| l.language == candidate.language)
-            });
-
-        if found.is_some() {
-            return found.cloned();
+            .find(|l| l.language == candidate.language)
+        {
+            return Some(language.clone());
         }
 
         if let Some(territory) = &candidate.territory {
-            let fallback = self.fallback.get(territory);
-            if fallback.is_some() {
-                return fallback.cloned();
+            if let Some(fallback) = self.fallback.get(territory) {
+                if license.languages.contains(&fallback) {
+                    return Some(fallback.clone());
+                }
             }
         }
 
