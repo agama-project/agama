@@ -2284,19 +2284,13 @@ mod test {
         assert!(connection.get("mac-address").is_none());
 
         let ipv4 = merged.get("ipv4").unwrap();
-        assert_eq!(
-            *ipv4.get("method").unwrap(),
-            Value::new("disabled".to_string())
-        );
+        assert_eq!(*ipv4.get("method").unwrap(), Value::new("auto".to_string()));
         // there are not addresses ("address-data"), so no gateway is allowed
         assert!(ipv4.get("gateway").is_none());
         assert!(ipv4.get("addresses").is_none());
 
         let ipv6 = merged.get("ipv6").unwrap();
-        assert_eq!(
-            *ipv6.get("method").unwrap(),
-            Value::new("disabled".to_string())
-        );
+        assert_eq!(*ipv6.get("method").unwrap(), Value::new("auto".to_string()));
         // there are not addresses ("address-data"), so no gateway is allowed
         assert!(ipv6.get("gateway").is_none());
 
