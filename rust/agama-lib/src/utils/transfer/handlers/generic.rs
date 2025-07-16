@@ -32,11 +32,18 @@ use crate::utils::{TransferError, TransferResult};
 pub struct GenericHandler {}
 
 impl GenericHandler {
-    pub fn get(&self, url: Url, out_fd: &mut impl Write) -> TransferResult<()> {
+    pub fn get(&self, url: Url, out_fd: &mut impl Write, insecure: bool) -> TransferResult<()> {
         let mut handle = Easy::new();
         handle.follow_location(true)?;
         handle.fail_on_error(true)?;
         handle.url(url.as_ref())?;
+
+        if insecure {
+            // allow self-signed certificate, ignore verification failures
+            handle.ssl_verify_peer(false)?;
+            // allow not matching hostname
+            handle.ssl_verify_host(false)?;
+        }
 
         let mut transfer = handle.transfer();
         transfer.write_function(|buf| Ok(out_fd.write(buf).unwrap()))?;
