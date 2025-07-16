@@ -300,7 +300,7 @@ function FilesystemOptions({ mountPoint }: FilesystemOptionsProps): React.ReactN
 
   const defaultOptText = volume.mountPath
     ? sprintf(_("Default file system for %s"), mountPoint)
-    : _("Default file system");
+    : _("Default file system for generic mount paths");
   const formatText = currentFilesystem
     ? _("Destroy current data and format device as")
     : _("Format device as");
@@ -317,7 +317,7 @@ function FilesystemOptions({ mountPoint }: FilesystemOptionsProps): React.ReactN
           value={REUSE_FILESYSTEM}
           description={
             // TRANSLATORS: %s is the name of a device, like vda
-            sprintf(_("Do not format %s and keep the current data"), deviceBaseName(device, true))
+            sprintf(_("Do not format %s and keep the data"), deviceBaseName(device, true))
           }
         >
           <FilesystemOptionLabel value={REUSE_FILESYSTEM} />
