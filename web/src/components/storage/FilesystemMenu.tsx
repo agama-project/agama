@@ -22,16 +22,17 @@
 
 import React, { useId } from "react";
 import { Divider, Flex } from "@patternfly/react-core";
-import { useNavigate, generatePath } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Text from "~/components/core/Text";
 import MenuHeader from "~/components/core/MenuHeader";
 import MenuButton from "~/components/core/MenuButton";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { model } from "~/types/storage";
 import * as driveUtils from "~/components/storage/utils/drive";
+import { filesystemType, formattedPath } from "~/components/storage/utils";
+import { generateEncodedPath } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
-import { filesystemType, formattedPath } from "~/components/storage/utils";
 
 function deviceDescription(deviceModel: FilesystemMenuProps["deviceModel"]): string {
   const fs = filesystemType(deviceModel.filesystem);
@@ -60,7 +61,7 @@ export default function FilesystemMenu({ deviceModel }: FilesystemMenuProps): Re
   const ariaLabelId = useId();
   const toggleTextId = useId();
   const { list, listIndex } = deviceModel;
-  const editFilesystemPath = generatePath(PATHS.formatDevice, { list, listIndex });
+  const editFilesystemPath = generateEncodedPath(PATHS.formatDevice, { list, listIndex });
 
   // TRANSLATORS: %s is the name of device, like '/dev/sda'.
   const detailsAriaLabel = sprintf(_("Details for %s"), deviceModel.name);

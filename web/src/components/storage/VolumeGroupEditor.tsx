@@ -22,7 +22,7 @@
 
 import React, { useId } from "react";
 import { Divider, Flex, Title } from "@patternfly/react-core";
-import { useNavigate, generatePath } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Link from "~/components/core/Link";
 import Text from "~/components/core/Text";
 import MenuButton from "~/components/core/MenuButton";
@@ -36,9 +36,10 @@ import { baseName, formattedPath } from "~/components/storage/utils";
 import { contentDescription } from "~/components/storage/utils/volume-group";
 import { useDeleteVolumeGroup } from "~/hooks/storage/volume-group";
 import { useDeleteLogicalVolume } from "~/hooks/storage/logical-volume";
-import { _, n_, formatList } from "~/i18n";
-import { sprintf } from "sprintf-js";
+import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
+import { sprintf } from "sprintf-js";
+import { _, n_, formatList } from "~/i18n";
 
 const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
   const deleteVolumeGroup = useDeleteVolumeGroup();
@@ -92,7 +93,7 @@ const EditVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
       itemId="edit-volume-group"
       description={_("Modify settings and physical volumes")}
       role="menuitem"
-      onClick={() => navigate(generatePath(PATHS.volumeGroup.edit, { id: vg.vgName }))}
+      onClick={() => navigate(generateEncodedPath(PATHS.volumeGroup.edit, { id: vg.vgName }))}
     >
       {_("Edit volume group")}
     </MenuButton.Item>
@@ -129,7 +130,7 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
   const deleteLogicalVolume = useDeleteLogicalVolume();
   const ariaLabelId = useId();
   const toggleTextId = useId();
-  const newLvPath = generatePath(PATHS.volumeGroup.logicalVolume.add, { id: vg.vgName });
+  const newLvPath = generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: vg.vgName });
   const menuAriaLabel = sprintf(_("Logical volumes for %s"), vg.vgName);
 
   if (isEmpty(vg.logicalVolumes)) {
@@ -175,9 +176,9 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
                 <MountPathMenuItem
                   key={lv.mountPath}
                   device={lv}
-                  editPath={generatePath(PATHS.volumeGroup.logicalVolume.edit, {
+                  editPath={generateEncodedPath(PATHS.volumeGroup.logicalVolume.edit, {
                     id: vg.vgName,
-                    logicalVolumeId: encodeURIComponent(lv.mountPath),
+                    logicalVolumeId: lv.mountPath,
                   })}
                   deleteFn={() => deleteLogicalVolume(vg.vgName, lv.mountPath)}
                 />

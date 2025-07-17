@@ -20,6 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
+import { mapEntries } from "radashi";
+import { generatePath } from "react-router-dom";
+
 /**
  * Generates a new array without null and undefined values.
  */
@@ -156,4 +159,32 @@ const mask = (value: string, visible: number = 4, maskChar: string = "*"): strin
   return maskChar.repeat(maskedLength) + visiblePart;
 };
 
-export { compact, hex, locationReload, setLocationSearch, localConnection, timezoneTime, mask };
+/**
+ * A wrapper around React Router's `generatePath` that ensures all path parameters
+ * are URI-encoded using `encodeURIComponent`. This prevents broken URLs caused by
+ * special characters such as spaces, `#`, `$`, and others.
+ *
+ * @example
+ * ```ts
+ *   // Returns "/network/Wired%20%231"
+ *   generateEncodedPath("/network/:id", { id: "Wired #1" });
+ * ```
+ */
+const generateEncodedPath = (...args: Parameters<typeof generatePath>) => {
+  const [path, params] = args;
+  return generatePath(
+    path,
+    mapEntries(params, (key, value) => [key, encodeURIComponent(value)]),
+  );
+};
+
+export {
+  compact,
+  hex,
+  locationReload,
+  setLocationSearch,
+  localConnection,
+  timezoneTime,
+  mask,
+  generateEncodedPath,
+};

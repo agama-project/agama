@@ -138,7 +138,7 @@ describe("WifiNetworksList", () => {
         const { user } = installerRender(<WifiNetworksList />);
         const network1 = screen.getByLabelText("Secured network Network 1 Weak signal");
         await user.click(network1);
-        expect(mockNavigateFn).toHaveBeenCalledWith(expect.stringContaining("Network 1"));
+        expect(mockNavigateFn).toHaveBeenCalledWith(expect.stringContaining("Network%201"));
       });
     });
 

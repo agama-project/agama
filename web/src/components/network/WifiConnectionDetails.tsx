@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { generatePath } from "react-router-dom";
 import {
   DescriptionList,
   DescriptionListDescription,
@@ -36,8 +35,9 @@ import {
 import { Link, Page } from "~/components/core";
 import InstallationOnlySwitch from "./InstallationOnlySwitch";
 import { Device, WifiNetwork } from "~/types/network";
-import { formatIp } from "~/utils/network";
 import { NETWORK } from "~/routes/paths";
+import { formatIp } from "~/utils/network";
+import { generateEncodedPath } from "~/utils";
 import { _ } from "~/i18n";
 
 const NetworkDetails = ({ network }: { network: WifiNetwork }) => {
@@ -96,7 +96,7 @@ const IpDetails = ({ device, settings }: { device: Device; settings: WifiNetwork
       title={_("IP settings")}
       pfCardProps={{ isPlain: false, isFullHeight: false }}
       actions={
-        <Link to={generatePath(NETWORK.editConnection, { id: device.connection })}>
+        <Link to={generateEncodedPath(NETWORK.editConnection, { id: device.connection })}>
           {_("Edit")}
         </Link>
       }
