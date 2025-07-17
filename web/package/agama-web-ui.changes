@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jul 17 11:26:17 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Replaced all usage of generatePath with generateEncodedPath to
+  ensure proper URL encoding of route parameters and prevent issues
+  with special characters (bsc#1246551).
+
+-------------------------------------------------------------------
 Wed Jul 16 15:39:14 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Display a message when the license is not available in the
