@@ -28,7 +28,6 @@ import BootSelection from "~/components/storage/BootSelection";
 import EncryptionSettingsPage from "~/components/storage/EncryptionSettingsPage";
 import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
 import ProposalPage from "~/components/storage/ProposalPage";
-import Progress from "~/components/storage/Progress";
 import ISCSIPage from "~/components/storage/ISCSIPage";
 import FormattableDevicePage from "~/components/storage/FormattableDevicePage";
 import PartitionPage from "~/components/storage/PartitionPage";
@@ -49,10 +48,6 @@ const routes = (): Route => ({
     {
       index: true,
       element: <ProposalPage />,
-    },
-    {
-      path: PATHS.progress,
-      element: <Progress />,
     },
     {
       path: PATHS.editBootDevice,
