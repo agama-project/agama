@@ -673,6 +673,29 @@
                     "type": "boolean"
                   }
                 }
+              },
+              "vlan": {
+                "type": "object",
+                "title": "VLAN configuration",
+                "additionalProperties": false,
+                "required": ["id"],
+                "properties": {
+                  "id": {
+                    "title": "VLAN Identifier",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4095
+                  },
+                  "parent": {
+                    "title": "VLAN protocol for encapsulation",
+                    "type": "string"
+                  },
+                  "protocol": {
+                    "title": "VLAN protocol for encapsulation",
+                    "type": "string",
+                    "enum": ["802.1Q", "802.1ad"]
+                  }
+                }
               }
             }
           }
