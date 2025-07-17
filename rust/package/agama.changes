@@ -1,3 +1,12 @@
+
+-------------------------------------------------------------------
+Wed Jul 16 19:05:48 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix crash when an Agama profile contains only the zfcp section by
+  providing better error report when product selection have to be
+  done before or in the same profile (bsc#1246601)
+
+
 -------------------------------------------------------------------
 Wed Jul 16 15:37:34 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
