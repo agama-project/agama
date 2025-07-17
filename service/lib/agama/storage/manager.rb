@@ -122,22 +122,23 @@ module Agama
       # @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided LUKS
       #   passwords).
       def probe(keep_config: false, keep_activation: true)
-        start_progress_with_size(3)
-        product_config.pick_product(software.selected_product)
+        start_progress_with_descriptions(
+          _("Activating storage devices"),
+          _("Probing storage devices"),
+          _("Calculating the storage proposal")
+        )
 
+        product_config.pick_product(software.selected_product)
         # Underlying yast-storage-ng has own mechanism for proposing boot strategies.
         # However, we don't always want to use BLS when it proposes so. Currently
         # we want to use BLS only for Tumbleweed / Slowroll
         prohibit_bls_boot if !product_config.boot_strategy&.casecmp("BLS")
-
         check_multipath
-        progress.step(_("Activating storage devices")) do
-          activate_devices(keep_activation: keep_activation)
-        end
-        progress.step(_("Probing storage devices")) { probe_devices }
-        progress.step(_("Calculating the storage proposal")) do
-          calculate_proposal(keep_config: keep_config)
-        end
+
+        progress.step { activate_devices(keep_activation: keep_activation) }
+        progress.step { probe_devices }
+        progress.step { calculate_proposal(keep_config: keep_config) }
+
         # The system is not deprecated anymore
         self.deprecated_system = false
         update_issues
