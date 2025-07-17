@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 17 21:51:19 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Masked some systemd services that interfere with the activation
+  process of libstorage-ng (bsc#1246133).
+
+-------------------------------------------------------------------
 Thu Jul 17 08:08:40 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Added "inst.dud_insecure" boot option for ignoring SSL
