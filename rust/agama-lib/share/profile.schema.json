@@ -147,6 +147,18 @@
         }
       }
     },
+    "multipath": {
+      "title": "Configuration of multipath device mapping",
+      "type": "object",
+      "properties": {
+        "start": {
+          "title": "Whether multipath should be activated during the installation process.",
+          "type": "string",
+          "enum": ["yes", "no", "askIfFound"],
+          "default": "askIfFound"
+        }
+      }
+    },
     "hostname": {
       "title": "Hostname settings",
       "type": "object",
