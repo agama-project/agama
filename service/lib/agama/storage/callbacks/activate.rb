@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -33,11 +33,13 @@ module Agama
 
         # Constructor
         #
+        # @param config [Agama::Config]
         # @param questions_client [Agama::DBus::Clients::Questions]
         # @param logger [Logger]
-        def initialize(questions_client, logger)
+        def initialize(config, questions_client, logger)
           super()
 
+          @config = config
           @questions_client = questions_client
           @logger = logger
           @issues = Y2Issues::List.new
@@ -56,7 +58,7 @@ module Agama
         #   device.
         # @return [Boolean]
         def multipath(looks_like_real_multipath)
-          callback = ActivateMultipath.new(questions_client, logger)
+          callback = ActivateMultipath.new(config, questions_client, logger)
 
           callback.call(looks_like_real_multipath)
         end
@@ -78,6 +80,10 @@ module Agama
         end
 
       private
+
+        # Current configuration of Agama
+        # @return [Agama::Config]
+        attr_reader :config
 
         # @return [Agama::DBus::Clients::Questions]
         attr_reader :questions_client

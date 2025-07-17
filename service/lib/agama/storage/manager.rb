@@ -246,7 +246,7 @@ module Agama
 
       # Activates the devices, calling activation callbacks if needed
       def activate_devices
-        callbacks = Callbacks::Activate.new(questions_client, logger)
+        callbacks = Callbacks::Activate.new(product_config, questions_client, logger)
         iscsi.activate
         Y2Storage::StorageManager.instance.activate(callbacks)
       end
