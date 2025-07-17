@@ -31,7 +31,8 @@ import {
   DropdownItem,
   Divider,
 } from "@patternfly/react-core";
-import { useReprobeMutation, useResetConfigMutation } from "~/queries/storage";
+import { useResetConfigMutation } from "~/queries/storage";
+import { useReactivateSystem } from "~/hooks/storage/system";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useZFCPSupported } from "~/queries/storage/zfcp";
 import { useDASDSupported } from "~/queries/storage/dasd";
@@ -41,7 +42,7 @@ export default function ConfigEditorMenu() {
   const isZFCPSupported = useZFCPSupported();
   const isDASDSupported = useDASDSupported();
   const { mutate: reset } = useResetConfigMutation();
-  const { mutate: reprobe } = useReprobeMutation();
+  const reactivate = useReactivateSystem();
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
 
@@ -105,7 +106,7 @@ export default function ConfigEditorMenu() {
         )}
         <DropdownItem
           key="reprobe-link"
-          onClick={() => reprobe()}
+          onClick={reactivate}
           description={_("Update the list of available disks and activate crypt devices")}
         >
           {_("Rescan devices")}

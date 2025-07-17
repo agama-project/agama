@@ -39,20 +39,22 @@ jest.mock("~/queries/storage/dasd", () => ({
 }));
 
 const mockUseResetConfigMutation = jest.fn();
-const mockUseReprobeMutation = jest.fn();
 jest.mock("~/queries/storage", () => ({
   ...jest.requireActual("~/queries/storage"),
   useResetConfigMutation: () => mockUseResetConfigMutation(),
-  useReprobeMutation: () => mockUseReprobeMutation(),
+}));
+
+const mockReactivateSystem = jest.fn();
+jest.mock("~/hooks/storage/system", () => ({
+  ...jest.requireActual("~/hooks/storage/system"),
+  useReactivateSystem: () => mockReactivateSystem(),
 }));
 
 const mockReset = jest.fn();
-const mockReprobe = jest.fn();
 beforeEach(() => {
   mockUseZFCPSupported.mockReturnValue(false);
   mockUseDASDSupported.mockReturnValue(false);
   mockUseResetConfigMutation.mockReturnValue({ mutate: mockReset });
-  mockUseReprobeMutation.mockReturnValue({ mutate: mockReprobe });
 });
 
 async function openMenu() {
@@ -86,7 +88,7 @@ it("allows users to rescan devices", async () => {
   const { user, menu } = await openMenu();
   const reprobeItem = within(menu).getByRole("menuitem", { name: /Rescan/ });
   await user.click(reprobeItem);
-  expect(mockReprobe).toHaveBeenCalled();
+  expect(mockReactivateSystem).toHaveBeenCalled();
 });
 
 it("allows users to configure iSCSI", async () => {
