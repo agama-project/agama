@@ -96,6 +96,11 @@ systemctl disable snapper-timeline.timer
 systemctl disable YaST2-Firstboot.service
 systemctl disable YaST2-Second-Stage.service
 
+# disable storage services (bsc#1246133)
+systemctl disable lvm2-monitor.service
+systemctl disable lvm-activate-system.service
+systemctl disable systemd-udev.service
+
 # the "eurlatgr" is the default font for the English locale
 echo -e "\nFONT=eurlatgr.psfu" >> /etc/vconsole.conf
 
