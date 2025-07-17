@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jul 17 10:35:10 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adjust the information included in the logs (gh#agama-project/agama#2575).
+
+-------------------------------------------------------------------
 Wed Jul 16 14:55:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
 
 - Fix deletion of controller connections (gh#agama-project/agama#2564)
