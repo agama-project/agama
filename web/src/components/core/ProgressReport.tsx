@@ -116,7 +116,6 @@ function findDetail(progresses: ProgressType[]) {
  */
 function ProgressReport({ title, firstStep }: { title: string; firstStep?: React.ReactNode }) {
   useResetProgress();
-  // TODO: add a way to retrieve the right progress for rescan.
   const progress = useProgress("manager", { suspense: true });
   const [steps, setSteps] = useState(progress.steps);
   const softwareProgress = useProgress("software");
