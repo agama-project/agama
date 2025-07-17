@@ -120,7 +120,7 @@ const SIDE_PATHS = [
   ROOT.installationProgress,
   ROOT.installationFinished,
   ROOT.installationExit,
-  ROOT.rescanDevices,
+  STORAGE.progress,
 ];
 
 export {
