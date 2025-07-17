@@ -37,6 +37,7 @@ require "agama/with_progress"
 require "yast"
 require "bootloader/proposal_client"
 require "y2storage/clients/inst_prepdisk"
+require "y2storage/luks"
 require "y2storage/storage_env"
 require "y2storage/storage_manager"
 
@@ -118,21 +119,26 @@ module Agama
       #
       # @param keep_config [Boolean] Whether to use the current storage config for calculating the
       #   proposal.
-      def probe(keep_config: false)
-        start_progress_with_size(3)
-        product_config.pick_product(software.selected_product)
+      # @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided LUKS
+      #   passwords).
+      def probe(keep_config: false, keep_activation: true)
+        start_progress_with_descriptions(
+          _("Activating storage devices"),
+          _("Probing storage devices"),
+          _("Calculating the storage proposal")
+        )
 
+        product_config.pick_product(software.selected_product)
         # Underlying yast-storage-ng has own mechanism for proposing boot strategies.
         # However, we don't always want to use BLS when it proposes so. Currently
         # we want to use BLS only for Tumbleweed / Slowroll
         prohibit_bls_boot if !product_config.boot_strategy&.casecmp("BLS")
-
         check_multipath
-        progress.step(_("Activating storage devices")) { activate_devices }
-        progress.step(_("Probing storage devices")) { probe_devices }
-        progress.step(_("Calculating the storage proposal")) do
-          calculate_proposal(keep_config: keep_config)
-        end
+
+        progress.step { activate_devices(keep_activation: keep_activation) }
+        progress.step { probe_devices }
+        progress.step { calculate_proposal(keep_config: keep_config) }
+
         # The system is not deprecated anymore
         self.deprecated_system = false
         update_issues
@@ -245,7 +251,12 @@ module Agama
       end
 
       # Activates the devices, calling activation callbacks if needed
-      def activate_devices
+      #
+      # @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided LUKS
+      #   passwords).
+      def activate_devices(keep_activation: true)
+        Y2Storage::Luks.reset_activation_infos unless keep_activation
+
         callbacks = Callbacks::Activate.new(questions_client, logger)
         iscsi.activate
         Y2Storage::StorageManager.instance.activate(callbacks)

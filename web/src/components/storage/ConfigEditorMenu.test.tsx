@@ -44,6 +44,12 @@ jest.mock("~/queries/storage", () => ({
   useResetConfigMutation: () => mockUseResetConfigMutation(),
 }));
 
+const mockReactivateSystem = jest.fn();
+jest.mock("~/hooks/storage/system", () => ({
+  ...jest.requireActual("~/hooks/storage/system"),
+  useReactivateSystem: () => mockReactivateSystem(),
+}));
+
 const mockReset = jest.fn();
 beforeEach(() => {
   mockUseZFCPSupported.mockReturnValue(false);
@@ -76,6 +82,13 @@ it("allows users to reset the config", async () => {
   const resetItem = within(menu).getByRole("menuitem", { name: /Reset to/ });
   await user.click(resetItem);
   expect(mockReset).toHaveBeenCalled();
+});
+
+it("allows users to rescan devices", async () => {
+  const { user, menu } = await openMenu();
+  const reprobeItem = within(menu).getByRole("menuitem", { name: /Rescan/ });
+  await user.click(reprobeItem);
+  expect(mockReactivateSystem).toHaveBeenCalled();
 });
 
 it("allows users to configure iSCSI", async () => {

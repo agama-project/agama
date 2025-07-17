@@ -34,6 +34,7 @@ require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume"
 require "y2storage/issue"
+require "y2storage/luks"
 require "yast2/fs_snapshot"
 
 Yast.import "Installation"
@@ -278,6 +279,24 @@ describe Agama::Storage::Manager do
       end
     end
 
+    context "if :keep_activation is false" do
+      let(:keep_activation) { false }
+
+      it "resets information from previous activation" do
+        expect(Y2Storage::Luks).to receive(:reset_activation_infos)
+        storage.probe(keep_activation: keep_activation)
+      end
+    end
+
+    context "if :keep_activation is true" do
+      let(:keep_activation) { true }
+
+      it "does not reset information from previous activation" do
+        expect(Y2Storage::Luks).to_not receive(:reset_activation_infos)
+        storage.probe(keep_activation: keep_activation)
+      end
+    end
+
     context "if there are available devices" do
       let(:devices) { [disk1] }
 
@@ -397,6 +416,7 @@ describe Agama::Storage::Manager do
       allow(Yast::Execute).to receive(:on_target!)
       allow(Yast::Execute).to receive(:local)
       allow(Yast2::FsSnapshot).to receive(:configure_on_install?).and_return true
+      allow(Yast2::FsSnapshot).to receive(:configure_snapper)
     end
     let(:copy_files_class) { Agama::Storage::Finisher::CopyFilesStep }
     let(:copy_files) { instance_double(copy_files_class, run?: true, run: true, label: "Copy") }

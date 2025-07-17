@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import {
   useDevices,
@@ -29,6 +29,7 @@ import {
   availableMdRaidsQuery,
   candidateMdRaidsQuery,
 } from "~/queries/storage";
+import { reactivate } from "~/api/storage";
 import { StorageDevice } from "~/types/storage";
 
 function findDevice(devices: StorageDevice[], sid: number): StorageDevice | undefined {
@@ -112,6 +113,19 @@ const useCandidateDevices = (): StorageDevice[] => {
   );
 };
 
+type ReactivateSystemFn = () => void;
+
+function useReactivateSystem(): ReactivateSystemFn {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: reactivate,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
+  };
+
+  const { mutate } = useMutation(query);
+  return mutate;
+}
+
 export {
   useAvailableDrives,
   useCandidateDrives,
@@ -119,4 +133,7 @@ export {
   useCandidateMdRaids,
   useAvailableDevices,
   useCandidateDevices,
+  useReactivateSystem,
 };
+
+export type { ReactivateSystemFn };

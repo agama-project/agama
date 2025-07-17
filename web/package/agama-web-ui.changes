@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 17 15:32:42 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add button to allow re-probing storage devices.
+  (gh#agama-project/agama#2565)
+
+-------------------------------------------------------------------
 Wed Jul 16 15:39:14 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Display a message when the license is not available in the
