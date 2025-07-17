@@ -2,7 +2,11 @@
 
 [ -e /dracut-state.sh ] && . /dracut-state.sh
 
+# see /usr/lib/dracut/modules.d/99base/dracut-lib.sh
+# or https://github.com/dracut-ng/dracut-ng/blob/main/modules.d/80base/dracut-lib.sh
 . /lib/dracut-lib.sh
+# see /usr/lib/dracut/modules.d/99img-lib/img-lib.sh
+# or https://github.com/dracut-ng/dracut-ng/blob/main/modules.d/70img-lib/img-lib.sh
 . /lib/img-lib.sh
 
 DUD_DIR="$NEWROOT/run/agama/dud"
@@ -19,10 +23,17 @@ apply_updates() {
   local file
   local dud_url
   local dud_root
+  local options
   index=0
 
   # make sure the HTTPS downloads work correctly
   configure_ssl
+
+  # ignore SSL problems when the "inst.dud_insecure" or "inst.dud_insecure=1" boot options are present
+  if getargbool 0 inst.dud_insecure; then
+    echo "WARNING: Disabling SSL checks in DUD downloads"
+    options="--insecure"
+  fi
 
   while read -r dud_url; do
     mkdir -p "$DUD_DIR"
@@ -30,7 +41,7 @@ apply_updates() {
     file="${DUD_DIR}/${filename}"
     # FIXME: use an index because two updates, coming from different places, can have the same name.
     echo "Fetching a Driver Update Disk from $dud_url to ${file}"
-    if ! $AGAMA_CLI download "$dud_url" "${file}"; then
+    if ! $AGAMA_CLI download $options "$dud_url" "${file}"; then
       warn "Failed to fetch the Driver Update Disk"
       continue
     fi
@@ -216,6 +227,13 @@ update_kernel_modules() {
   # find and copy kernel modules
   local dud_modules
   find_kernel_modules "$dud_modules_dir" dud_modules
+
+  # finish if no kernel module is included in DUD
+  if (( ${#dud_modules[@]} == 0 )); then
+    echo "Skipping kernel modules update"
+    return
+  fi
+
   for module in "${dud_modules[@]}"; do
     echo "Processing ${module} module"
     copy_kernel_module "$dud_modules_dir" "$module" "${kernel_modules_dir}/kernel"
