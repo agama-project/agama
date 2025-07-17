@@ -86,7 +86,7 @@ pub enum StoreError {
     #[error("Could not calculate the context")]
     InvalidStoreContext,
     #[error("Cannot proceed with profile without specified product")]
-    ProductMissing,
+    MissingProduct,
 }
 
 /// Struct that loads/stores the settings from/to the D-Bus services.
@@ -196,35 +196,35 @@ impl Store {
         let is_product_selected = self.detect_selected_product().await?;
         // ordering: localization after product as some product may miss some locales
         if let Some(localization) = &settings.localization {
-            Store::check_selected_product(is_product_selected)?;
+            Store::ensure_selected_product(is_product_selected)?;
             self.localization.store(localization).await?;
         }
         // import the users (esp. the root password) before initializing software,
         // if software fails the Web UI would be stuck in the root password dialog
         if let Some(user) = &settings.user {
-            Store::check_selected_product(is_product_selected)?;
+            Store::ensure_selected_product(is_product_selected)?;
             self.users.store(user).await?;
         }
         if let Some(software) = &settings.software {
-            Store::check_selected_product(is_product_selected)?;
+            Store::ensure_selected_product(is_product_selected)?;
             self.software.store(software).await?;
         }
         let mut dirty_flag_set = false;
         // iscsi has to be done before storage
         if let Some(iscsi) = &settings.iscsi {
-            Store::check_selected_product(is_product_selected)?;
+            Store::ensure_selected_product(is_product_selected)?;
             dirty_flag_set = true;
             self.iscsi_client.set_config(iscsi).await?
         }
         // dasd devices has to be activated before storage
         if let Some(dasd) = &settings.dasd {
-            Store::check_selected_product(is_product_selected)?;
+            Store::ensure_selected_product(is_product_selected)?;
             dirty_flag_set = true;
             self.dasd.store(dasd).await?
         }
         // zfcp devices has to be activated before storage
         if let Some(zfcp) = &settings.zfcp {
-            Store::check_selected_product(is_product_selected)?;
+            Store::ensure_selected_product(is_product_selected)?;
             dirty_flag_set = true;
             self.zfcp.store(zfcp).await?
         }
@@ -233,24 +233,24 @@ impl Store {
         // reprobe here before loading the storage settings. Otherwise, the new storage devices are
         // not used.
         if dirty_flag_set {
-            Store::check_selected_product(is_product_selected)?;
+            Store::ensure_selected_product(is_product_selected)?;
             self.reprobe_storage().await?;
         }
 
         if settings.storage.is_some() || settings.storage_autoyast.is_some() {
-            Store::check_selected_product(is_product_selected)?;
+            Store::ensure_selected_product(is_product_selected)?;
             self.storage.store(&settings.into()).await?
         }
         if let Some(bootloader) = &settings.bootloader {
-            Store::check_selected_product(is_product_selected)?;
+            Store::ensure_selected_product(is_product_selected)?;
             self.bootloader.store(bootloader).await?;
         }
         if let Some(hostname) = &settings.hostname {
-            Store::check_selected_product(is_product_selected)?;
+            Store::ensure_selected_product(is_product_selected)?;
             self.hostname.store(hostname).await?;
         }
         if let Some(files) = &settings.files {
-            Store::check_selected_product(is_product_selected)?;
+            Store::ensure_selected_product(is_product_selected)?;
             self.files.store(files).await?;
         }
 
@@ -272,11 +272,11 @@ impl Store {
         Ok(!product.is_empty())
     }
 
-    fn check_selected_product(selected: bool) -> Result<(), StoreError> {
+    fn ensure_selected_product(selected: bool) -> Result<(), StoreError> {
         if selected {
             Ok(())
         } else {
-            Err(StoreError::ProductMissing)
+            Err(StoreError::MissingProduct)
         }
     }
 
