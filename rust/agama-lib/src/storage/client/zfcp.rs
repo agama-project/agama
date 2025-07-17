@@ -20,7 +20,7 @@
 
 //! Implements a client to access Agama's D-Bus API related to zFCP management.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use futures_util::future::join_all;
 use zbus::{
@@ -34,6 +34,7 @@ use crate::{
     storage::{
         model::zfcp::{ZFCPController, ZFCPDisk},
         proxies::zfcp::{ControllerProxy, ManagerProxy},
+        settings::zfcp::ZFCPConfig,
     },
 };
 use agama_utils::dbus::{extract_id_from_path, get_property};
@@ -216,5 +217,36 @@ impl ZFCPClient<'_> {
             let text = format!("Failed to deactivate disk. chzdev exit code {}", result);
             Err(ServiceError::UnsuccessfulAction(text))
         }
+    }
+
+    pub async fn set_config(&self, config: &ZFCPConfig) -> Result<(), ServiceError> {
+        // at first probe zfcp to ensure controller are on dbus
+        self.probe().await?;
+        // collect controllers to activate it ( unique )
+        let controllers = self.get_controllers().await?;
+        let mut channels: HashSet<String> = HashSet::new();
+        for dev in &config.devices {
+            channels.insert(dev.channel.clone());
+        }
+        let mut channel_mapping: HashMap<String, String> = HashMap::new();
+        for controller in controllers {
+            channel_mapping.insert(controller.1.channel.clone(), controller.1.id.clone());
+        }
+        for channel in channels {
+            let id = channel_mapping
+                .get(&channel)
+                .ok_or_else(|| ServiceError::ZFCPControllerNotFound(channel))?;
+            self.activate_controller(id).await?;
+        }
+
+        // and then activate all disks
+        for dev in &config.devices {
+            let id = channel_mapping
+                .get(&dev.channel)
+                .ok_or_else(|| ServiceError::ZFCPControllerNotFound(dev.channel.clone()))?;
+            self.activate_disk(&id, &dev.wwpn, &dev.lun).await?;
+        }
+
+        Ok(())
     }
 }

@@ -23,8 +23,7 @@
 import React from "react";
 import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
 import DriveHeader from "~/components/storage/DriveHeader";
-import PartitionsMenu from "~/components/storage/PartitionsMenu";
-import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
+import DeviceEditorContent from "~/components/storage/DeviceEditorContent";
 import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
 import { Drive } from "~/types/storage/model";
 import { model, StorageDevice } from "~/types/storage";
@@ -55,12 +54,7 @@ export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
   return (
     <ConfigEditorItem
       header={<DriveHeader drive={drive} device={driveDevice} />}
-      content={
-        <>
-          <PartitionsMenu device={drive} />
-          <SpacePolicyMenu modelDevice={drive} device={driveDevice} />
-        </>
-      }
+      content={<DeviceEditorContent deviceModel={drive} device={driveDevice} />}
       actions={<DriveDeviceMenu drive={drive} selected={driveDevice} />}
     />
   );

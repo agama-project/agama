@@ -189,7 +189,10 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
     tokio::pin!(stream);
     let e = events.clone();
     while let Some((_, event)) = stream.next().await {
-        tracing::info!("event: {:?}", &event);
+        match serde_json::to_string(&event) {
+            Ok(json) => tracing::info!("event: {json}"),
+            Err(_) => tracing::info!("event (not serialized): {:?}", &event),
+        }
         _ = e.send(event);
     }
     Ok(())

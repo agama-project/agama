@@ -128,11 +128,10 @@ impl LocalesDatabase {
                 consolefont,
             };
 
-            tracing::info!("Using locale data {:?}", entry);
-
             result.push(entry)
         }
 
+        tracing::info!("Read {} locales", result.len());
         Ok(result)
     }
 

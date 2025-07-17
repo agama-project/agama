@@ -28,6 +28,13 @@ import { _ } from "~/i18n";
 export type DriveHeaderProps = { drive: model.Drive; device: StorageDevice };
 
 const text = (drive: model.Drive): string => {
+  if (drive.filesystem) {
+    // TRANSLATORS: %s will be replaced by a disk name and its size - "sda (20 GiB)"
+    if (drive.filesystem.reuse) return _("Mount disk %s");
+    // TRANSLATORS: %s will be replaced by a disk name and its size - "sda (20 GiB)"
+    return _("Format disk %s");
+  }
+
   const { isBoot, isTargetDevice: hasPv } = drive;
   const isRoot = !!drive.getPartition("/");
   const hasFs = !!drive.getMountPaths().length;

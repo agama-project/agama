@@ -50,6 +50,7 @@ module Agama
       # @return [Agama::Config]
       attr_reader :config
 
+      # @return [Agama::Software::Product]
       def create_product(id, data, attrs, cmdline_args)
         product = initialize_product(id, data, attrs)
         set_repositories(product, data, cmdline_args)
@@ -87,7 +88,7 @@ module Agama
         product.optional_packages = data[:optional_packages]
         product.mandatory_patterns = data[:mandatory_patterns]
         product.optional_patterns = data[:optional_patterns]
-        product.user_patterns = data[:user_patterns]
+        product.user_patterns = build_user_patterns(data[:user_patterns])
       end
 
       def set_translations(product, attrs)
@@ -121,9 +122,24 @@ module Agama
             id, "software", "optional_patterns", property: :pattern
           ),
           user_patterns:      config.arch_elements_from(
-            id, "software", "user_patterns", property: :pattern, default: nil
+            id, "software", "user_patterns", property: nil, default: nil
           )
         }
+      end
+
+      # Build the list of user patterns.
+      #
+      # @param [Array<String|Hash>, nil] user_patterns
+      def build_user_patterns(user_patterns)
+        return nil if user_patterns.nil?
+
+        user_patterns.map do |d|
+          if d.is_a?(Hash)
+            UserPattern.new(d["name"], d["selected"])
+          else
+            UserPattern.new(d, false)
+          end
+        end
       end
     end
   end

@@ -1,3 +1,62 @@
+
+-------------------------------------------------------------------
+Wed Jul 16 19:05:48 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix crash when an Agama profile contains only the zfcp section by
+  providing better error report when product selection have to be
+  done before or in the same profile (bsc#1246601)
+
+
+-------------------------------------------------------------------
+Wed Jul 16 15:37:34 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- When searching for a translation of a license, use the first
+  language in the same territory as fallback (bsc#1238364,
+  gh#agama-project/agama#2571).
+- Add the language tag to the /licences/:id endpoint.
+
+-------------------------------------------------------------------
+Thu Jul 17 10:35:10 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adjust the information included in the logs (gh#agama-project/agama#2575).
+
+-------------------------------------------------------------------
+Wed Jul 16 14:55:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Fix deletion of controller connections (gh#agama-project/agama#2564)
+
+-------------------------------------------------------------------
+Wed Jul 16 14:21:30 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Make the method4 and method6 default to be "auto" in case of
+  absense (bsc#1246194).
+
+-------------------------------------------------------------------
+Wed Jul  16 13:22:07 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Add initial support for ovs in agama network model (gh#agama-project/agama#2536).
+
+-------------------------------------------------------------------
+Wed Jul 16 13:17:22 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add dns priority to network model (gh#agama-project/agama#2533).
+
+-------------------------------------------------------------------
+Wed Jul 16 08:42:59 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Added -i/--insecure optional argument to the "agama download"
+  command to ignore SSL problems in HTTPS downloads (self-signed
+  certificate, non-matching host, unknown CA...)
+  (related to bsc#1245393)
+
+-------------------------------------------------------------------
+Wed Jul 16 07:30:02 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for activating zFCP disks to Agama unattended profile
+  (gh#agama-project/agama#2551)
+- Fix export of empty DASD section leading to failure on non s390
+  system (bsc#1246102)
+
 -------------------------------------------------------------------
 Tue Jul 15 09:00:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
 

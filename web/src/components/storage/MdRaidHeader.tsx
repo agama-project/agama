@@ -28,6 +28,13 @@ import { _ } from "~/i18n";
 export type MdRaidHeaderProps = { raid: model.MdRaid; device: StorageDevice };
 
 const text = (raid: model.MdRaid): string => {
+  if (raid.filesystem) {
+    // TRANSLATORS: %s will be replaced by a RAID name and its size - "md0 (20 GiB)"
+    if (raid.filesystem.reuse) return _("Mount RAID %s");
+    // TRANSLATORS: %s will be replaced by a RAID name and its size - "md0 (20 GiB)"
+    return _("Format RAID %s");
+  }
+
   const { isBoot, isTargetDevice: hasPv } = raid;
   const isRoot = !!raid.getPartition("/");
   const hasFs = !!raid.getMountPaths().length;

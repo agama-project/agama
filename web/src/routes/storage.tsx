@@ -30,6 +30,7 @@ import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
 import ProposalPage from "~/components/storage/ProposalPage";
 import Progress from "~/components/storage/Progress";
 import ISCSIPage from "~/components/storage/ISCSIPage";
+import FormattableDevicePage from "~/components/storage/FormattableDevicePage";
 import PartitionPage from "~/components/storage/PartitionPage";
 import LvmPage from "~/components/storage/LvmPage";
 import LogicalVolumePage from "~/components/storage/LogicalVolumePage";
@@ -68,6 +69,10 @@ const routes = (): Route => ({
     {
       path: PATHS.editSpacePolicy,
       element: <SpacePolicySelection />,
+    },
+    {
+      path: PATHS.formatDevice,
+      element: <FormattableDevicePage />,
     },
     {
       path: PATHS.addPartition,

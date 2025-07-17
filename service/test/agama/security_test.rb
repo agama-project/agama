@@ -74,32 +74,6 @@ describe Agama::Security do
     allow(security).to receive(:software_client).and_return(software_client)
   end
 
-  describe "#probe" do
-    let(:selected) { apparmor }
-
-    it "selects the default LSM based on the product definition" do
-      expect(lsm_config).to receive(:select).with("apparmor")
-      security.probe
-    end
-
-    it "selects the selected LSM patterns" do
-      expect(lsm_config).to receive(:select).with("apparmor")
-      expect(software_client).to receive(:add_patterns).with(["apparmor"])
-      security.probe
-    end
-
-    context "when no LSM is defined in the product definition" do
-      before do
-        allow(config).to receive(:data).and_return({ "security" => {} })
-      end
-
-      it "unselects the LSM" do
-        expect(lsm_config).to receive(:select).with(nil)
-        security.probe
-      end
-    end
-  end
-
   describe "#write" do
     let(:selected) { apparmor }
 

@@ -21,72 +21,53 @@
  */
 
 import React, { useEffect, useState } from "react";
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownList,
-  MenuToggle,
-  ModalProps,
-  Stack,
-} from "@patternfly/react-core";
+import { Alert, ModalProps, Stack } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { Product } from "~/types/software";
 import { fetchLicense } from "~/api/software";
 import { useInstallerL10n } from "~/context/installerL10n";
+import { sprintf } from "sprintf-js";
 import supportedLanguages from "~/languages.json";
 import { _ } from "~/i18n";
 
-function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; product: Product }) {
-  const { language: uiLanguage } = useInstallerL10n();
-  const [language, setLanguage] = useState<string>(uiLanguage);
-  const [license, setLicense] = useState<string>();
-  const [languageSelectorOpen, setLanguageSelectorOpen] = useState(false);
-  const localesToggler = (toggleRef) => (
-    <MenuToggle
-      aria-label={_("License language")}
-      ref={toggleRef}
-      onClick={() => setLanguageSelectorOpen(!languageSelectorOpen)}
-      isExpanded={languageSelectorOpen}
-    >
-      {supportedLanguages[language]}
-    </MenuToggle>
-  );
-
-  useEffect(() => {
-    language && fetchLicense(product.license, language).then(({ body }) => setLicense(body));
-  }, [language, product.license]);
-
-  const onLocaleSelection = (_, lang: string) => {
-    setLanguage(lang);
-    setLanguageSelectorOpen(false);
-  };
+const MissingTranslation = ({ missing }) => {
+  const missingLanguage = supportedLanguages[missing];
 
   return (
-    <Popup
-      isOpen
-      title={product.name}
-      titleAddon={
-        <Dropdown
-          isOpen={languageSelectorOpen}
-          selected={language}
-          onSelect={onLocaleSelection}
-          onOpenChange={(isOpen) => setLanguageSelectorOpen(!isOpen)}
-          toggle={localesToggler}
-          isScrollable
-          popperProps={{ position: "right" }}
-        >
-          <DropdownList>
-            {Object.entries(supportedLanguages).map(([id, name]) => (
-              <DropdownItem key={id} value={id}>
-                {name}
-              </DropdownItem>
-            ))}
-          </DropdownList>
-        </Dropdown>
-      }
-      width="auto"
-    >
+    <Alert
+      isPlain
+      variant="info"
+      title={sprintf(_("This license is not available in %s."), missingLanguage)}
+    />
+  );
+};
+
+const languagesMatches = (language1: string, language2: string) => {
+  const [lang1] = language1.split("-");
+  const [lang2] = language2.split("-");
+  return lang1 === lang2;
+};
+
+function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; product: Product }) {
+  const { language: uiLanguage } = useInstallerL10n();
+  const [language] = useState<string>(uiLanguage);
+  const [licenseLanguage, setLicenseLanguage] = useState<string | null>(undefined);
+  const [license, setLicense] = useState<string>();
+
+  useEffect(() => {
+    language &&
+      fetchLicense(product.license, language).then(({ body, language: foundLanguage }) => {
+        setLicense(body);
+        setLicenseLanguage(foundLanguage);
+      });
+  }, [language, product.license]);
+
+  return (
+    <Popup isOpen title={product.name} width="auto">
       <Stack hasGutter>
+        {licenseLanguage && !languagesMatches(uiLanguage, licenseLanguage) && (
+          <MissingTranslation missing={uiLanguage} />
+        )}
         <pre>{license}</pre>
       </Stack>
       <Popup.Actions>

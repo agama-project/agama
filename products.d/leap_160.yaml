@@ -54,7 +54,8 @@ software:
     - office
     - cockpit
     - fips
-    - selinux
+    - name: selinux
+      selected: true
     - documentation
     - sw_management
     - container_runtime_podman

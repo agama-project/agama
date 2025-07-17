@@ -83,7 +83,7 @@ describe Agama::Storage::Manager do
   end
   let(:network) { instance_double(Agama::Network, link_resolv: nil, unlink_resolv: nil) }
   let(:bootloader_finish) { instance_double(Bootloader::FinishClient, write: nil) }
-  let(:security) { instance_double(Agama::Security, probe: nil, write: nil) }
+  let(:security) { instance_double(Agama::Security, write: nil) }
 
   let(:scenario) { "empty-hd-50GiB.yaml" }
 

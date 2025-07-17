@@ -1,4 +1,23 @@
 -------------------------------------------------------------------
+Thu Jul 17 10:34:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adjust the information included in the logs (gh#agama-project/agama#2575).
+
+-------------------------------------------------------------------
+Wed Jul 16 07:29:03 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add AutoYaST conversion for DASD and zFCP sections
+  (gh#agama-project/agama#2551)
+
+-------------------------------------------------------------------
+Tue Jul 15 10:53:18 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not overwrite the list of chosen patterns when selecting an LSM
+  (gh#agama-project/agama#2560).
+- Extend products definition with the possibility to define whether a
+  user pattern should be pre-selected or not.
+
+-------------------------------------------------------------------
 Mon Jul 14 15:57:59 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Save registration code and email, even if registration fails

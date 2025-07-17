@@ -2,7 +2,11 @@
 
 [ -e /dracut-state.sh ] && . /dracut-state.sh
 
+# see /usr/lib/dracut/modules.d/99base/dracut-lib.sh
+# or https://github.com/dracut-ng/dracut-ng/blob/main/modules.d/80base/dracut-lib.sh
 . /lib/dracut-lib.sh
+# see /usr/lib/dracut/modules.d/99img-lib/img-lib.sh
+# or https://github.com/dracut-ng/dracut-ng/blob/main/modules.d/70img-lib/img-lib.sh
 . /lib/img-lib.sh
 
 DUD_DIR="$NEWROOT/run/agama/dud"
@@ -19,7 +23,17 @@ apply_updates() {
   local file
   local dud_url
   local dud_root
+  local options
   index=0
+
+  # make sure the HTTPS downloads work correctly
+  configure_ssl
+
+  # ignore SSL problems when the "inst.dud_insecure" or "inst.dud_insecure=1" boot options are present
+  if getargbool 0 inst.dud_insecure; then
+    echo "WARNING: Disabling SSL checks in DUD downloads"
+    options="--insecure"
+  fi
 
   while read -r dud_url; do
     mkdir -p "$DUD_DIR"
@@ -27,7 +41,7 @@ apply_updates() {
     file="${DUD_DIR}/${filename}"
     # FIXME: use an index because two updates, coming from different places, can have the same name.
     echo "Fetching a Driver Update Disk from $dud_url to ${file}"
-    if ! $AGAMA_CLI download "$dud_url" "${file}"; then
+    if ! $AGAMA_CLI download $options "$dud_url" "${file}"; then
       warn "Failed to fetch the Driver Update Disk"
       continue
     fi
@@ -122,7 +136,7 @@ set_alternative() {
 
   executables=("$dud_instsys/usr/bin/${name}.ruby"*-*)
   executable=${executables[0]}
-  if [ ! -z "$executable" ]; then
+  if [ -n "$executable" ]; then
     "$NEWROOT/usr/bin/chroot" "$NEWROOT" /usr/sbin/update-alternatives \
       --install "/usr/bin/$name" "$name" "${executable##"$dud_instsys"}" "$priority"
     "$NEWROOT/usr/bin/chroot" "$NEWROOT" /usr/sbin/update-alternatives \
@@ -213,6 +227,13 @@ update_kernel_modules() {
   # find and copy kernel modules
   local dud_modules
   find_kernel_modules "$dud_modules_dir" dud_modules
+
+  # finish if no kernel module is included in DUD
+  if (( ${#dud_modules[@]} == 0 )); then
+    echo "Skipping kernel modules update"
+    return
+  fi
+
   for module in "${dud_modules[@]}"; do
     echo "Processing ${module} module"
     copy_kernel_module "$dud_modules_dir" "$module" "${kernel_modules_dir}/kernel"
@@ -235,6 +256,16 @@ update_kernel_modules() {
   # update modules dependencies on the live medium
   info "Updating modules dependencies..."
   depmod -a -b "$NEWROOT"
+}
+
+# link the SSL certificates and related configuration from the root image so "agama download"
+# works correctly with the HTTPS resources (expects using correct and well-known certificates)
+configure_ssl() {
+  # link the SSL certificates
+  ! [ -d /etc/ssl ] && ln -s "$NEWROOT/etc/ssl" /etc
+
+  # link crypto configuration (which ciphers are allowed, etc)
+  ! [ -d /etc/crypto-policies ] && ln -s "$NEWROOT/etc/crypto-policies" /etc
 }
 
 if [ -f "$AGAMA_DUD_INFO" ]; then

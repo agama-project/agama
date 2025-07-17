@@ -95,4 +95,6 @@ interface VolumeGroup extends Omit<apiModel.VolumeGroup, "targetDevices" | "logi
 
 type LogicalVolume = apiModel.LogicalVolume;
 
-export type { Model, Boot, Drive, MdRaid, Partition, VolumeGroup, LogicalVolume };
+type Formattable = Drive | MdRaid | Partition | LogicalVolume;
+
+export type { Model, Boot, Drive, MdRaid, Partition, VolumeGroup, LogicalVolume, Formattable };
