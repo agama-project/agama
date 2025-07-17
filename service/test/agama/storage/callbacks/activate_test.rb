@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,14 +20,15 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
+require "agama/config"
 require "agama/storage/callbacks/activate"
 require "agama/dbus/clients/questions"
 
 describe Agama::Storage::Callbacks::Activate do
-  subject { described_class.new(questions_client, logger) }
+  subject { described_class.new(config, questions_client, logger) }
 
+  let(:config) { Agama::Config.new({}) }
   let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
-
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   describe "#multipath" do

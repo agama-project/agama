@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -29,9 +29,11 @@ module Agama
       class ActivateMultipath
         # Constructor
         #
+        # @param config [Agama::Config]
         # @param questions_client [Agama::DBus::Clients::Questions]
         # @param logger [Logger]
-        def initialize(questions_client, logger)
+        def initialize(config, questions_client, logger)
+          @config = config
           @questions_client = questions_client
           @logger = logger
         end
@@ -44,6 +46,14 @@ module Agama
         # @return [Boolean]
         def call(looks_like_real_multipath)
           return true if Y2Storage::StorageEnv.instance.forced_multipath?
+
+          start = config.data.dig("multipath", "start")
+          return true if start == "yes"
+          return false if start == "no"
+
+          # Only the values "yes", "no" and "askIfFound" are supported.
+          # At this point we are clearly in the third case.
+
           return false unless looks_like_real_multipath
 
           questions_client.ask(question) do |question_client|
@@ -52,6 +62,10 @@ module Agama
         end
 
       private
+
+        # Current configuration of Agama
+        # @return [Agama::Config]
+        attr_reader :config
 
         # @return [Agama::DBus::Clients::Questions]
         attr_reader :questions_client
