@@ -23,15 +23,16 @@
 import React from "react";
 import { Flex } from "@patternfly/react-core";
 import MenuButton from "~/components/core/MenuButton";
-import { useNavigate, generatePath } from "react-router-dom";
+import Text from "~/components/core/Text";
+import { useNavigate } from "react-router-dom";
 import { useSetSpacePolicy } from "~/hooks/storage/space-policy";
 import { SPACE_POLICIES } from "~/components/storage/utils";
 import { apiModel } from "~/api/storage/types";
 import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
+import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
-import Text from "../core/Text";
 
 const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
   return (
@@ -56,7 +57,7 @@ export default function SpacePolicyMenu({ modelDevice, device }) {
 
   const onSpacePolicyChange = (spacePolicy: apiModel.SpacePolicy) => {
     if (spacePolicy === "custom") {
-      return navigate(generatePath(PATHS.editSpacePolicy, { list, listIndex }));
+      return navigate(generateEncodedPath(PATHS.editSpacePolicy, { list, listIndex }));
     } else {
       setSpacePolicy(list, listIndex, { type: spacePolicy });
     }

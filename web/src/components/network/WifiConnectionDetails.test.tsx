@@ -104,7 +104,7 @@ describe("WifiConnectionDetails", () => {
     plainRender(<WifiConnectionDetails network={mockNetwork} />);
     const section = screen.getByRole("region", { name: "IP settings" });
     const editLink = within(section).getByRole("link", { name: "Edit" });
-    expect(editLink).toHaveAttribute("href", "/network/connections/Network 1/edit");
+    expect(editLink).toHaveAttribute("href", "/network/connections/Network%201/edit");
   });
 
   it("renders the switch for making connection available only during installation", () => {

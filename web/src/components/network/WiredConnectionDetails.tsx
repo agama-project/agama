@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { generatePath } from "react-router-dom";
 import {
   DescriptionList,
   DescriptionListDescription,
@@ -39,6 +38,7 @@ import { Connection, Device } from "~/types/network";
 import { formatIp } from "~/utils/network";
 import { NETWORK } from "~/routes/paths";
 import { useNetworkDevices } from "~/queries/network";
+import { generateEncodedPath } from "~/utils";
 import { _ } from "~/i18n";
 
 const DeviceDetails = ({ device }: { device: Device }) => {
@@ -49,7 +49,11 @@ const DeviceDetails = ({ device }: { device: Device }) => {
       title={_("Device")}
       pfCardProps={{ isPlain: false, isFullHeight: false }}
       actions={
-        <Link to={generatePath(NETWORK.editBindingSettings, { id: device.connection })}>
+        <Link
+          to={generateEncodedPath(NETWORK.editBindingSettings, {
+            id: device.connection,
+          })}
+        >
           {_("Edit binding settings")}
         </Link>
       }
@@ -80,7 +84,7 @@ const IpDetails = ({ connection, device }: { connection: Connection; device: Dev
       title={_("IP settings")}
       pfCardProps={{ isPlain: false, isFullHeight: false }}
       actions={
-        <Link to={generatePath(NETWORK.editConnection, { id: device.connection })}>
+        <Link to={generateEncodedPath(NETWORK.editConnection, { id: device.connection })}>
           {_("Edit")}
         </Link>
       }
