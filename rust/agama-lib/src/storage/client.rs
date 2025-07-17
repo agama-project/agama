@@ -159,6 +159,11 @@ impl<'a> StorageClient<'a> {
         Ok(self.storage_proxy.reprobe().await?)
     }
 
+    /// Runs the reactivation process
+    pub async fn reactivate(&self) -> Result<(), ServiceError> {
+        Ok(self.storage_proxy.reactivate().await?)
+    }
+
     /// Set the storage config according to the JSON schema
     pub async fn set_config(&self, settings: StorageSettings) -> Result<u32, ServiceError> {
         Ok(self
