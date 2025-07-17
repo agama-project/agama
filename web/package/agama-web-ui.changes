@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 16 15:39:14 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Display a message when the license is not available in the
+  selected language (bsc#1238364, gh#agama-project/agama#2571).
+
+-------------------------------------------------------------------
 Wed Jul 16 14:46:32 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Allow to use a whole disk or MD RAID without a partition table

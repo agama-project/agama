@@ -20,10 +20,12 @@
 
 //! Implements support for reading software licenses.
 
+use agama_locale_data::get_territories;
 use regex::Regex;
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
 use std::{
+    collections::HashMap,
     fmt::Display,
     fs::read_dir,
     path::{Path, PathBuf},
@@ -48,12 +50,16 @@ pub struct License {
 /// It contains the license ID and the body.
 ///
 /// TODO: in the future it might contain a title, extracted from the text.
+#[serde_as]
 #[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 pub struct LicenseContent {
     /// License ID.
     pub id: String,
     /// License text.
     pub body: String,
+    /// License language.
+    #[serde_as(as = "DisplayFromStr")]
+    pub language: LanguageTag,
 }
 
 /// Represents a repository of software licenses.
@@ -70,6 +76,8 @@ pub struct LicensesRepo {
     pub path: std::path::PathBuf,
     /// Licenses in the repository.
     pub licenses: Vec<License>,
+    /// Fallback languages per territory.
+    fallback: HashMap<String, LanguageTag>,
 }
 
 impl LicensesRepo {
@@ -77,6 +85,7 @@ impl LicensesRepo {
         Self {
             path: path.as_ref().to_owned(),
             licenses: vec![],
+            fallback: HashMap::new(),
         }
     }
 
@@ -97,6 +106,26 @@ impl LicensesRepo {
                 self.licenses.push(license);
             }
         }
+
+        self.fallback.clear();
+
+        let territories = get_territories().map_err(|e| {
+            std::io::Error::new(
+                std::io::ErrorKind::Other,
+                format!("Cannot read the territories list: {}", e),
+            )
+        })?;
+
+        for territory in territories.territory {
+            if let Some(language) = territory.languages.language.first() {
+                let fallback = LanguageTag {
+                    language: language.id.to_string(),
+                    territory: None,
+                };
+                self.fallback.insert(territory.id, fallback);
+            }
+        }
+
         Ok(())
     }
 
@@ -104,26 +133,9 @@ impl LicensesRepo {
     ///
     /// If a translation is not found for the given language, it returns the default text.
     pub fn find(&self, id: &str, language: &LanguageTag) -> Option<LicenseContent> {
-        let mut candidates: Vec<String> = vec![];
-        if let Some(territory) = &language.territory {
-            candidates.push(format!("license.{}_{}.txt", language.language, territory));
-        }
-        candidates.push(format!("license.{}.txt", language.language));
-        candidates.push("license.txt".to_string());
-        log::info!("Searching for license: {:?}", &candidates);
-
-        let license_path = candidates
-            .into_iter()
-            .map(|p| self.path.join(id).join(p))
-            .find(|p| p.exists())?;
-        log::info!("Reading license from {}", &license_path.display());
-
-        let body: String = std::fs::read_to_string(license_path).ok()?;
-
-        Some(LicenseContent {
-            id: id.to_string(),
-            body,
-        })
+        let license = self.licenses.iter().find(|l| l.id.as_str() == id)?;
+        let license_language = self.find_language(&license, &language).unwrap_or_default();
+        self.read_license_content(id, &license_language).ok()
     }
 
     /// Finds translations in the given directory.
@@ -161,6 +173,52 @@ impl LicensesRepo {
         }
 
         code.try_into().ok()
+    }
+
+    /// Read a license content for a given language.
+    fn read_license_content(
+        &self,
+        id: &str,
+        language: &LanguageTag,
+    ) -> std::io::Result<LicenseContent> {
+        let file_name = if *language == LanguageTag::default() {
+            "license.txt".to_string()
+        } else if let Some(territory) = &language.territory {
+            format!("license.{}_{}.txt", language.language, territory)
+        } else {
+            format!("license.{}.txt", language.language)
+        };
+
+        let license_path = self.path.join(id).join(file_name);
+        let body = std::fs::read_to_string(license_path)?;
+        Ok(LicenseContent {
+            id: id.to_string(),
+            body,
+            language: language.clone(),
+        })
+    }
+
+    /// It search for an available language for the translation.
+    ///
+    /// If translated to the given language, it returns that language. If that's
+    /// not the case, it searches for a "compatible" language (the main language
+    /// on the same territory, if given).
+    fn find_language(&self, license: &License, candidate: &LanguageTag) -> Option<LanguageTag> {
+        let mut candidates: Vec<LanguageTag> = vec![candidate.clone()];
+        candidates.push(LanguageTag {
+            language: candidate.language.clone(),
+            territory: None,
+        });
+
+        if let Some(territory) = &candidate.territory {
+            if let Some(fallback) = self.fallback.get(territory) {
+                candidates.push(fallback.clone());
+            }
+        }
+
+        candidates
+            .into_iter()
+            .find(|c| license.languages.contains(&c))
     }
 }
 
@@ -248,17 +306,36 @@ mod test {
     #[test]
     fn test_find_license() {
         let repo = build_repo();
-        let language: LanguageTag = "es".try_into().unwrap();
-        let license = repo.find("license.final", &language).unwrap();
+        let es_language: LanguageTag = "es".try_into().unwrap();
+        let license = repo.find("license.final", &es_language).unwrap();
         assert!(license.body.starts_with("Acuerdo de licencia"));
+        assert_eq!(license.language, es_language);
 
         let language: LanguageTag = "es-ES".try_into().unwrap();
         let license = repo.find("license.final", &language).unwrap();
         assert!(license.body.starts_with("Acuerdo de licencia"));
+        assert_eq!(license.language, es_language);
+
+        let language: LanguageTag = "zh-CN".try_into().unwrap();
+        let license = repo.find("license.final", &language).unwrap();
+        assert!(license.body.starts_with("SUSE 软件"));
+        assert_eq!(license.language, language);
 
         let language: LanguageTag = "xx".try_into().unwrap();
         let license = repo.find("license.final", &language).unwrap();
         assert!(license.body.starts_with("End User License"));
+        assert_eq!(license.language, LanguageTag::default());
+    }
+
+    #[test]
+    fn test_find_alternate_license() {
+        let repo = build_repo();
+
+        // Tries to use the main language for the territory.
+        let ca_language: LanguageTag = "ca-ES".try_into().unwrap();
+        let es_language: LanguageTag = "es".try_into().unwrap();
+        let license = repo.find("license.final", &ca_language).unwrap();
+        assert_eq!(license.language, es_language);
     }
 
     #[test]

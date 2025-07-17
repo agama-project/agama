@@ -9,6 +9,7 @@ edition = "2021"
 anyhow = "1.0"
 agama-utils = { path = "../agama-utils" }
 agama-network = { path = "../agama-network" }
+agama-locale-data = { path = "../agama-locale-data" }
 async-trait = "0.1.83"
 futures-util = "0.3.30"
 jsonschema = { version = "0.30.0", default-features = false, features = [

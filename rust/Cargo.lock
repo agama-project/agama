@@ -54,6 +54,7 @@ dependencies = [
 name = "agama-lib"
 version = "1.0.0"
 dependencies = [
+ "agama-locale-data",
  "agama-network",
  "agama-utils",
  "anyhow",
