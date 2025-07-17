@@ -107,7 +107,7 @@ export default function ConfigEditorMenu() {
         <DropdownItem
           key="reprobe-link"
           onClick={reactivate}
-          description={_("Update the list of available disks and activate crypt devices")}
+          description={_("Update available disks and activate crypt devices")}
         >
           {_("Rescan devices")}
         </DropdownItem>
