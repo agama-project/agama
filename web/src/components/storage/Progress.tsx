@@ -114,7 +114,7 @@ function Progress() {
       className={sizingStyles.h_100OnMd}
     >
       <Spinner size="xl" />
-      <Content component="h1">{_("Loading storage, this might take a while.")}</Content>
+      <Content component="h1">{_("Loading storage")}</Content>
       <ProgressContent steps={steps} step={progress} />
     </Flex>
   );
