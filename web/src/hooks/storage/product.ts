@@ -47,6 +47,12 @@ function useMissingMountPaths(options?: QueryHookOptions): string[] {
 
 function useVolume(mountPath: string, options?: QueryHookOptions): Volume {
   const func = options?.suspense ? useSuspenseQuery : useQuery;
+  const { mountPoints } = useProductParams(options);
+
+  // The query returns a volume with the given mount path, but we need the "generic" volume without
+  // mount path for an arbitrary mount path. Take it into account while refactoring the backend side
+  // in order to report all the volumes in a single call (e.g., as part of the product params).
+  if (!mountPoints.includes(mountPath)) mountPath = "";
   const { data } = func(volumeQuery(mountPath));
   return data;
 }

@@ -147,6 +147,15 @@ const contentDescription = (drive: apiModel.Drive): string => {
   const newPartitions = drive.partitions.filter((p) => !p.name);
   const reusedPartitions = drive.partitions.filter((p) => p.name && p.mountPath);
 
+  if (drive.filesystem) {
+    if (drive.mountPath) {
+      return sprintf(_("The whole device will be used for %s"), formattedPath(drive.mountPath));
+    }
+
+    // I don't think this can happen, maybe when loading a configuration not created with the UI
+    return _("A file system will be used for the whole device");
+  }
+
   if (newPartitions.length === 0) {
     if (reusedPartitions.length === 0) {
       return _("No additional partitions will be created");

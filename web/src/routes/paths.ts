@@ -78,6 +78,7 @@ const STORAGE = {
   editBootDevice: "/storage/boot-device/edit",
   editEncryption: "/storage/encryption/edit",
   editSpacePolicy: "/storage/:list/:listIndex/space-policy/edit",
+  formatDevice: "/storage/:list/:listIndex/format",
   addPartition: "/storage/:list/:listIndex/partitions/add",
   editPartition: "/storage/:list/:listIndex/partitions/:partitionId/edit",
   selectDevice: "/storage/devices/select",
