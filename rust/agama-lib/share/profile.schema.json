@@ -687,7 +687,7 @@
                     "maximum": 4095
                   },
                   "parent": {
-                    "title": "VLAN protocol for encapsulation",
+                    "title": "Parent interface",
                     "type": "string"
                   },
                   "protocol": {
