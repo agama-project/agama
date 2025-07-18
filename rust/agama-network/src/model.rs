@@ -1337,7 +1337,7 @@ impl TryFrom<WirelessSettings> for WirelessConfig {
         let bssid = if let Some(bssid) = &settings.bssid {
             Some(
                 macaddr::MacAddr6::from_str(bssid)
-                    .map_err(|_| NetworkStateError::InvalidVlanProtocol(bssid.to_string()))?,
+                    .map_err(|_| NetworkStateError::InvalidBssid(bssid.to_string()))?,
             )
         } else {
             None
