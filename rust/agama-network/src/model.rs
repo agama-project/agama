@@ -24,7 +24,8 @@
 //!   agnostic from the real network service (e.g., NetworkManager).
 use crate::error::NetworkStateError;
 use crate::settings::{
-    BondSettings, BridgeSettings, IEEE8021XSettings, NetworkConnection, WirelessSettings,
+    BondSettings, BridgeSettings, IEEE8021XSettings, NetworkConnection, VlanSettings,
+    WirelessSettings,
 };
 use crate::types::{BondMode, ConnectionState, DeviceState, DeviceType, Status, SSID};
 use agama_utils::openapi::schemas;
@@ -649,6 +650,10 @@ impl TryFrom<NetworkConnection> for Connection {
             connection.ip_config.ignore_auto_dns = ignore_auto_dns;
         }
 
+        if let Some(vlan_config) = conn.vlan {
+            let config = VlanConfig::try_from(vlan_config)?;
+            connection.config = config.into();
+        }
         if let Some(wireless_config) = conn.wireless {
             let config = WirelessConfig::try_from(wireless_config)?;
             connection.config = config.into();
@@ -742,6 +747,9 @@ impl TryFrom<Connection> for NetworkConnection {
             ConnectionConfig::Bridge(config) => {
                 connection.bridge = Some(BridgeSettings::try_from(config)?);
             }
+            ConnectionConfig::Vlan(config) => {
+                connection.vlan = Some(VlanSettings::try_from(config)?);
+            }
             _ => {}
         }
 
@@ -783,6 +791,12 @@ impl From<BridgeConfig> for ConnectionConfig {
 impl From<BondConfig> for ConnectionConfig {
     fn from(value: BondConfig) -> Self {
         Self::Bond(value)
+    }
+}
+
+impl From<VlanConfig> for ConnectionConfig {
+    fn from(value: VlanConfig) -> Self {
+        Self::Vlan(value)
     }
 }
 
@@ -1268,6 +1282,40 @@ impl TryFrom<ConnectionConfig> for WirelessConfig {
             ConnectionConfig::Wireless(config) => Ok(config),
             _ => Err(NetworkStateError::UnexpectedConfiguration),
         }
+    }
+}
+
+impl TryFrom<VlanSettings> for VlanConfig {
+    type Error = NetworkStateError;
+
+    fn try_from(settings: VlanSettings) -> Result<Self, Self::Error> {
+        let id = settings.id;
+        let parent = settings.parent;
+
+        let mut config = VlanConfig {
+            id,
+            parent,
+            ..Default::default()
+        };
+
+        if let Some(protocol) = &settings.protocol {
+            config.protocol = VlanProtocol::from_str(protocol)
+                .map_err(|_| NetworkStateError::InvalidVlanProtocol(protocol.to_string()))?;
+        }
+
+        Ok(config)
+    }
+}
+
+impl TryFrom<VlanConfig> for VlanSettings {
+    type Error = NetworkStateError;
+
+    fn try_from(vlan: VlanConfig) -> Result<Self, Self::Error> {
+        Ok(VlanSettings {
+            id: vlan.id,
+            parent: vlan.parent,
+            protocol: Some(vlan.protocol.to_string()),
+        })
     }
 }
 
