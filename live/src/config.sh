@@ -99,6 +99,7 @@ systemctl disable YaST2-Second-Stage.service
 # mask storage services and disable lvm auto assembly (bsc#1246133)
 systemctl mask lvm2-monitor.service
 sed -i 's:# udev_rules = 1:udev_rules = 0:' /etc/lvm/lvm.conf
+sed -i 's:# event_activation = 1:event_activation = 0:' /etc/lvm/lvm.conf
 
 # the "eurlatgr" is the default font for the English locale
 echo -e "\nFONT=eurlatgr.psfu" >> /etc/vconsole.conf
