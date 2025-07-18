@@ -1,3 +1,8 @@
+-------------------------------------------------------------------
+Fri Jul 18 06:54:08 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Add support to configure VLANs through the CLI or HTTP API
+  (gh#agama-project/agama#2580).
 
 -------------------------------------------------------------------
 Wed Jul 16 19:05:48 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
