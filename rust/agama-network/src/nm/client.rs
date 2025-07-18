@@ -411,6 +411,18 @@ impl<'a> NetworkManagerClient<'a> {
         Ok(proxy)
     }
 
+    /// Retrieves the `org.freedesktop.NetworkManager.ActiveConnection` object
+    /// path corresponding to a given `org.freedesktop.NetworkManager.Settings` object path.
+    ///
+    /// # Arguments
+    ///
+    /// * `path`: D-Bus settings path of the connection
+    ///
+    /// # Returns
+    ///
+    /// * `Ok(Some(OwnedObjectPath))` - If the `ActiveConnection` was found.
+    /// * `Ok(None)` - If the `ActiveConnection` wasn't found.
+    /// * `Err(NmError)` - On an unexpected error.
     async fn settings_active_connection(
         &self,
         path: OwnedObjectPath,
@@ -421,9 +433,19 @@ impl<'a> NetworkManagerClient<'a> {
                 .build()
                 .await?;
 
-            let connection = proxy.connection().await?;
-            if path == connection {
-                return Ok(Some(active_path.to_owned()));
+            match proxy.connection().await {
+                /* Don't error out, if the ActiveConnection was deactivated and removed,
+                 * after the above call of `nm_proxy.active_connections()` */
+                Err(e) => {
+                    if !e.to_string().contains("Object does not exist") {
+                        return Err(NmError::DBus(e));
+                    }
+                }
+                Ok(connection) => {
+                    if path == connection {
+                        return Ok(Some(active_path.to_owned()));
+                    }
+                }
             };
         }
 
