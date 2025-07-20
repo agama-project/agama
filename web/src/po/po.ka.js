@@ -45,6 +45,18 @@ export default {
   "%s with %d partitions": [
     "%s %d დანაყოფით"
   ],
+  "A %1$s of %2$s will be created for %3$s if possible": [
+    "%1$s ზომით %2$s შეიქმნება %3$s-სთვის, თუ ეს შესაძლებელია"
+  ],
+  "A %1$s of at least %2$s will be created for %3$s if possible": [
+    "%1$s ზომით %2$s შეიქმნება %3$s-სთვის, თუ შესაძლებელია"
+  ],
+  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
+    "%1$s ზომით %2$s-%3$s შეიქმნება %4$s-სთვის, თუ ეს შესაძლებელია"
+  ],
+  "A file system will be used for the whole device": [
+    ""
+  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     ""
   ],
@@ -99,6 +111,9 @@ export default {
   "Add LVM volume group": [
     "LVM ტომების ჯგუფის დამატება"
   ],
+  "Add a partition or mount an existing one": [
+    "დაამატეთ დანაყოფი, ან მიამაგრეთ არსებული"
+  ],
   "Add an address": [
     "მისამართის დამატება"
   ],
@@ -109,7 +124,7 @@ export default {
     "სხვა მისამართის დამატება"
   ],
   "Add another partition or mount an existing one": [
-    ""
+    "დაამატეთ კიდევ ერთი დანაყოფი ან მიამაგრეთ არსებული"
   ],
   "Add device menu": [
     "მოწყობილობის მენიუს დამატება"
@@ -135,6 +150,9 @@ export default {
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     ""
   ],
+  "All content not configured to be mounted will be deleted": [
+    "შემცველობა, რომელიც მორგებული არაა მისამაგრებლად, წაიშლება"
+  ],
   "All content will be deleted": [
     "შემცველობა სრულად წაიშლება"
   ],
@@ -144,8 +162,14 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     ""
   ],
+  "Allow growing": [
+    "გაზრდის დაშვება"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     ""
+  ],
+  "Already using all available devices": [
+    "უკვე გამოიყენება ყველა ხელმისაწვდომი მოწყობილობა"
   ],
   "Already using all available disks": [
     "უკვე ვიყენებ ყველა ხელმისაწვდომ დისკს"
@@ -155,6 +179,9 @@ export default {
   ],
   "Any interface": [
     "ნებისმიერი ინტერფეისი"
+  ],
+  "Any partition needed to boot will be configured.": [
+    "ასევე მოხდება ჩასატვირთად საჭირო დანაყოფების მორგება."
   ],
   "Apply selected solution": [
     "არჩეული გადაწყვეტის გადატარება"
@@ -291,6 +318,9 @@ export default {
   "Change selection": [
     "მონიშნულის შეცვლა"
   ],
+  "Change the file system or mount point": [
+    "ფილური სისტემის ან მიმაგრების წერტილის შეცვლა"
+  ],
   "Channel ID": [
     "არხის ID"
   ],
@@ -307,16 +337,13 @@ export default {
     "აირჩიეთ დისკის ჩამტვირთავის განსათავსებლად"
   ],
   "Choose device to bind by MAC": [
-    ""
+    "აირჩიეთ მოწყობილობა MAC-ით მისაბმელად"
   ],
   "Choose device to bind by name": [
     "აირჩიეთ მოწყობილობა, რომლის სახელზეც მიბმა გნებავთ"
   ],
   "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
     ""
-  ],
-  "Choose what to with current content": [
-    "აირჩიეთ, რა ვუყო არსებულ შემცველობას"
   ],
   "Clear": [
     "გაწმენდა"
@@ -341,6 +368,9 @@ export default {
   ],
   "Configure LVM logical volume at %s volume group": [
     ""
+  ],
+  "Configure device %s": [
+    "მორგება მოწყობილობისთვის %s"
   ],
   "Configure device menu": [
     "მოწყობილობის მენიუს მორგება"
@@ -393,8 +423,8 @@ export default {
   "Connection not found or lost": [
     "კავშირის ვერ ვიპოვე, ან დაიკარგა"
   ],
-  "Content will be kept": [
-    "შემცველობა შენარჩუნებული იქნება"
+  "Content": [
+    "შემცველობა"
   ],
   "Continue": [
     "გაგრძელება"
@@ -432,6 +462,12 @@ export default {
   "Current %s": [
     "მიმდინარეა %s"
   ],
+  "Current content": [
+    "მიმდინარე შემცველობა"
+  ],
+  "Current partitions will be kept": [
+    "არსებული დანაყოფები შენარჩუნდება"
+  ],
   "Custom": [
     "მორგებული"
   ],
@@ -465,8 +501,14 @@ export default {
   "Default file system for generic logical volumes": [
     "ნაგულისხმევი ფაილური ზოგადი ლოგიკური ტომებისთვის"
   ],
+  "Default file system for generic mount paths": [
+    "ნაგულისხმევი ფაილური სისტემა ზოგადი მიმაგრების წერტილებისთვის"
+  ],
   "Default file system for generic partitions": [
     "ნაგულისხმევი ფაილური სისტემა ზოგადი დანაყოფებისთვის"
+  ],
+  "Define a custom size": [
+    "აღერეთ თქვენი ზომა"
   ],
   "Define a new LVM on the disk": [
     "ახალი LVM-ის აღწერა დისკზე"
@@ -492,11 +534,20 @@ export default {
   "Delete volume group": [
     "ტომების ჯგუფის წაშლა"
   ],
+  "Description": [
+    "აღწერა"
+  ],
+  "Destroy current data and format device as": [
+    "არსებული მონაცემების განადგურება და დანაყოფის დაფორმატება, როგორც"
+  ],
   "Destroy current data and format partition as": [
     "მიმდინარე მონაცემების განადგურება და დანაყოფის დაფორმატება, როგორც"
   ],
   "Details": [
     "დეტალები"
+  ],
+  "Details for %s": [
+    "%s-ის დეტალები"
   ],
   "Details will appear after the connection is successfully established.": [
     ""
@@ -506,6 +557,9 @@ export default {
   ],
   "Device %s menu": [
     "მოწყობილობის მენიუ %s"
+  ],
+  "Device Selection": [
+    "მოწყობილობის არჩევანი"
   ],
   "Device details": [
     "მოწყობილობის დეტალები"
@@ -541,7 +595,7 @@ export default {
     "მორგება არ მოხდება"
   ],
   "Do not format %s and keep the data": [
-    ""
+    "%s-ის არდაფორმატებადა მონაცემების შენარჩუნება"
   ],
   "Do not use": [
     "არ გამოიყენო"
@@ -569,6 +623,9 @@ export default {
   ],
   "Edit volume group": [
     "ტომების ჯგუფის ჩასწორება"
+  ],
+  "Email": [
+    "ელფოსტა"
   ],
   "Empty LVM volume group %s": [
     "ცარიელი LVM ტომების ჯგუფი %s"
@@ -609,6 +666,9 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
+  "Example: https://myserver.com": [
+    "მაგ: https://ჩემისერვერი.ცომ"
+  ],
   "Excellent signal": [
     "ძალიან კარგი სიგნალი"
   ],
@@ -642,6 +702,9 @@ export default {
   "File system label": [
     "ფაილური სისტემის ჭდე"
   ],
+  "Filesystems": [
+    "ფაილური სისტემები"
+  ],
   "Filter by description or keymap code": [
     "გაფილტვრა აღწერით ან რილაკების რუკის კოდით"
   ],
@@ -660,6 +723,9 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     ""
   ],
+  "Find space": [
+    "ადგილის პოვნა"
+  ],
   "Find space in %s": [
     "ადგილის პოვნა %s-ში"
   ],
@@ -672,8 +738,20 @@ export default {
   "First user": [
     "პირველი მომხმარებელი"
   ],
+  "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
+    ""
+  ],
   "Format": [
     "დაფორმატება"
+  ],
+  "Format RAID %s": [
+    "RAID %s-ის დაფორმატება"
+  ],
+  "Format device as": [
+    "მოწყობილობების დაფორმატება, როგორც"
+  ],
+  "Format disk %s": [
+    "%s-ის დაფორმატება"
   ],
   "Format logical volume as": [
     "ლოგიკური ტომის დაფორმატება, როგორც"
@@ -683,6 +761,9 @@ export default {
   ],
   "Format selected devices?": [
     "დავაფორმატო არჩეული მოწყობილობები?"
+  ],
+  "Format the whole device or mount an existing file system": [
+    ""
   ],
   "Formatted": [
     "დაფორმატებული"
@@ -806,7 +887,7 @@ export default {
     ""
   ],
   "Install using device %s without modifying existing partitions.": [
-    ""
+    "დაყენება მოწყობილობაზე %s არსებული დანაყოფების შეცვლის გარეშე."
   ],
   "Install using several devices and deleting all its content.": [
     ""
@@ -818,7 +899,7 @@ export default {
     ""
   ],
   "Install using several devices without modifying existing partitions.": [
-    ""
+    "დაყენება რამდენიმე მოწყობილობის გამოყენებით არსებული დანაყოფების შეცვლის გარეშე."
   ],
   "Installation Devices": [
     "დაყენების მოწყობილობები"
@@ -849,6 +930,21 @@ export default {
   ],
   "Issuer": [
     "გამომცემელი"
+  ],
+  "It is chosen for booting": [
+    "არჩეულია ჩასატვირთად"
+  ],
+  "It is chosen for booting and for some LVM groups": [
+    ""
+  ],
+  "It is chosen for booting and for the LVM group '%s'": [
+    ""
+  ],
+  "It is chosen for some LVM groups": [
+    "ის არჩეულია ზოგიერთი LVM ჯგუფისთვის"
+  ],
+  "It is chosen for the LVM group '%s'": [
+    ""
   ],
   "It is not possible to allocate space for %s.": [
     ""
@@ -890,10 +986,7 @@ export default {
     "ენა და კლავიატურა"
   ],
   "Let the installer propose a sensible size": [
-    ""
-  ],
-  "License language": [
-    "ლიცენზიის ენა"
+    "დაყენების პროგრამისთვის ზომის შეთავაზების უფლების დართვა"
   ],
   "Loading": [
     "იტვირთება"
@@ -919,8 +1012,8 @@ export default {
   "Logical volume name": [
     "ლოგიკური ტომის სახელი"
   ],
-  "Logical volumes": [
-    "ლოგიკური ტომები"
+  "Logical volumes for %s": [
+    "ლოგიკური ტომები %s-სთვის"
   ],
   "Login": [
     "შესვლა"
@@ -973,8 +1066,17 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     ""
   ],
+  "Moreover, the following partitions will be created or mounted": [
+    "კიდევ შეიქმნება, ან მიმაგრდება დამატებითი დანაყოფები"
+  ],
   "Mount Point": [
     "მიმაგრების წერტილი"
+  ],
+  "Mount RAID %s": [
+    "RAID %s-ის მიმაგრება"
+  ],
+  "Mount disk %s": [
+    "%s დისკის მიმაგრება"
   ],
   "Mount point": [
     "მიმაგრების წერტილი"
@@ -1096,6 +1198,9 @@ export default {
   "Not available": [
     "ხელმისაწვდომი არაა"
   ],
+  "Not configured yet": [
+    "ჯერ მორგებული არაა"
+  ],
   "Not defined": [
     "აღწერილი არაა"
   ],
@@ -1123,6 +1228,12 @@ export default {
   "Only available if authentication by target is provided": [
     "ხელმისაწვდომია, მხოლოდ, მაშინ, თუ მითითებულია ავთენტიკაცია სამიზნით"
   ],
+  "Only reused partitions and space not assigned to any partition will be used.": [
+    ""
+  ],
+  "Only reused partitions will be used.": [
+    "გამოყენებული იქნება, მხოლოდ, თავიდან გამოყენებული დანაყოფები."
+  ],
   "Options toggle": [
     "პარამეტრის გადართვა"
   ],
@@ -1141,23 +1252,32 @@ export default {
   "Partition Info": [
     "დანაყოფის ინფორმაცია"
   ],
-  "Partitions": [
-    "დანაყოფები"
-  ],
   "Partitions needed for booting will also be adapted": [
     "ასევე მოხდება ჩასატვირთად საჭირო დანაყოფების მორგება"
   ],
   "Partitions needed for booting will remain at %s": [
     "ჩასატვირთად საჭირო დანაყოფები %s-ზე დარჩება"
   ],
+  "Partitions that are not reused will be removed and that data will be lost.": [
+    ""
+  ],
+  "Partitions that are not reused will be resized as needed.": [
+    ""
+  ],
+  "Partitions that are not reused would be resized if needed.": [
+    ""
+  ],
   "Partitions to boot will be allocated at the following device.": [
     ""
+  ],
+  "Partitions to boot will be allocated at the installation disk %s.": [
+    "ჩატვირთვადი დანაყოფები გამოიყოფა დაყენების დისკზე %s."
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "ჩატვირთვადი დანაყოფები დაყენების დისკზე გამოიყოფა."
   ],
   "Partitions will be used and created for %s": [
-    ""
+    "დანაყოფები, რომლებიც გამოყენებული და შექმნილი იქნება '%s'-სთვის"
   ],
   "Password": [
     "პაროლი"
@@ -1228,6 +1348,9 @@ export default {
   "Provide email address": [
     "შეიყვანეთ ელფოსტის მისამართი"
   ],
+  "Provide registration code": [
+    "შეიყვანეთ რეგისტრაციის კოდი"
+  ],
   "Public SSH Key": [
     "საჯარო SSH გასაღები"
   ],
@@ -1252,6 +1375,12 @@ export default {
   "Register": [
     "რესგისტრაცია"
   ],
+  "Register using SUSE server": [
+    "რეგისტრაცია SUSE Server-ის გამოყენებით"
+  ],
+  "Register using a custom registration server": [
+    "რეგისტრაცია მორგებული რეგისტრაციის სერვერით"
+  ],
   "Registration": [
     "რეგისტრაცია"
   ],
@@ -1260,6 +1389,9 @@ export default {
   ],
   "Registration code": [
     "რეგისტრაციის კოდი"
+  ],
+  "Registration server": [
+    "რეგისტრაციის სერვერი"
   ],
   "ReiserFS": [
     "ReiserFS"
@@ -1294,6 +1426,9 @@ export default {
   "Result": [
     "შედეგი"
   ],
+  "Reused partitions will not be shrunk": [
+    "თავიდან გამოყენებული დანაყოფების დაპატარავება შეუძლებელია"
+  ],
   "Review and fix": [
     "გადახედვა და გასწორება"
   ],
@@ -1318,6 +1453,9 @@ export default {
   "SSID": [
     "SSID"
   ],
+  "SUSE Customer Center (SCC)": [
+    "SUSE Customer Center (SCC)"
+  ],
   "Search": [
     "ძებნა"
   ],
@@ -1333,6 +1471,9 @@ export default {
   "Select": [
     "აირჩიეთ"
   ],
+  "Select a device to define partitions or to mount": [
+    "აირჩიეთ დისკი დანაყოფების აღწერისთვის, ან მისამაგრებლად"
+  ],
   "Select a disk": [
     "აირჩიეთ დისკი"
   ],
@@ -1342,8 +1483,11 @@ export default {
   "Select a disk to create %s": [
     "აირჩიეთ დისკი %s-ის შესაქმნელად"
   ],
-  "Select a disk to define partitions": [
-    "აირჩიეთ დისკი დანაყოფების აღწერისთვის"
+  "Select a disk to define partitions or to mount": [
+    "აირჩიეთ დისკი დანაყოფების აღწერისთვის, ან მიმაგრებისთვის"
+  ],
+  "Select a disk to format as %s": [
+    "აირჩიეთ დისკი, რომელიც დაფორმატდება, როგორც %s"
   ],
   "Select a disk to install the system": [
     "აირჩიეთ დისკი სისტემის დასაყენებლად"
@@ -1354,8 +1498,11 @@ export default {
   "Select a solution to continue": [
     "გასაგრძელებლად აირჩიეთ გადაწყვეტილება"
   ],
-  "Select another disk to define partitions": [
-    "აირჩიეთ სხვა დისკი დანაყოფების აღწერისთვის"
+  "Select another device to define partitions or to mount": [
+    "აირჩიეთ სხვა დისკი დანაყოფების აღწერის, ან მიმაგრებისთვის"
+  ],
+  "Select another disk to define partitions or to mount": [
+    "აირჩიეთ სხვა დისკი დანაყოფების აღწერისთვის, ან მიმაგრებისთვის"
   ],
   "Select at least one disk.": [
     "აირჩიეთ, სულ ცოტა, ერთი დისკი."
@@ -1378,14 +1525,20 @@ export default {
   "Select what to do with each partition.": [
     "აირჩიეთ, რა მოუვა თითოეულ დანაყოფს."
   ],
-  "Selected disk (cannot be changed)": [
-    "არჩეული დისკი (შეცვლა შეუძლებელია)"
+  "Selected disk cannot be changed": [
+    "არჩეული დისკის შეცვლა შეუძლებელია"
   ],
   "Selected patterns": [
     "მონიშნული ნიმუშები"
   ],
   "Server IP": [
     "სერვერის IP"
+  ],
+  "Server URL": [
+    "სერვერის URL"
+  ],
+  "Server options": [
+    "სერვერის პარამეტრები"
   ],
   "Set DIAG Off": [
     "დიაგნოსტიკის გამორთვა"
@@ -1432,6 +1585,12 @@ export default {
   ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     ""
+  ],
+  "Size mode": [
+    "ზომის რეჟიმი"
+  ],
+  "Size modes": [
+    "ზომის რეჟიმები"
   ],
   "Skip to content": [
     "შემცველობაზე გადასვლა"
@@ -1509,10 +1668,10 @@ export default {
     "სამიზნეები"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
-    ""
+    "LVM ჯგუფი '%1$s' დარჩება დისკზე '%2$s'"
   ],
   "The configured LVM groups will remain at %s": [
-    ""
+    "მორგებული LVM ჯგუფები დარჩება დისკზე %s"
   ],
   "The connection can be used by any available interface.": [
     ""
@@ -1532,6 +1691,9 @@ export default {
   "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
     ""
   ],
+  "The current file system will be mounted at %s": [
+    "მიმდინარე ფაილური სისტემა მიმაგრდება წერტილზე %s"
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     ""
   ],
@@ -1540,6 +1702,15 @@ export default {
   ],
   "The device cannot be shrunk:": [
     "მოწყობილობის დაპატარავება შეუძლებელია:"
+  ],
+  "The device will be formatted": [
+    "მოწყობილობა დაფორმატდება"
+  ],
+  "The device will be formatted as %1$s and mounted at %2$s": [
+    "მოწყობილობა დაფორმატდება, როგორც %1$s და მიმაგრდება წერტილზე %2$s"
+  ],
+  "The device will be mounted": [
+    "მოწყბილობა მიმაგრებული იქნება"
   ],
   "The device will be mounted at %s.": [
     "მოწყბილობა მიმაგრებული იქნება, როგორც %s."
@@ -1567,6 +1738,9 @@ export default {
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     ""
+  ],
+  "The following partitions will be created or mounted": [
+    "შემდეგი დანაყოფები შეიქმნება, ან მიმაგრდება"
   ],
   "The following software patterns are selected for installation:": [
     "დაყენებისთვის არჩეულია შემდეგი პროგრამის შაბლონები:"
@@ -1596,12 +1770,15 @@ export default {
     ""
   ],
   "The minimum cannot be greater than the maximum": [
-    ""
+    "მინიმუმი მაქსიმუმზე მეტი ვერ იქნება"
   ],
   "The minimum must be a number followed by a unit like GiB or GB": [
     ""
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
+    ""
+  ],
+  "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     ""
   ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
@@ -1661,11 +1838,14 @@ export default {
   "The system will use %s as its default language.": [
     ""
   ],
+  "The whole device will be used for %s": [
+    "%s-სთვის გამოყენებული იქნება მთლიანი მოწყობილობა"
+  ],
   "The zFCP disk was not activated.": [
     "zFCP დისკის გააქტიურება შეუძლებელია."
   ],
   "There are no disks available for the installation.": [
-    ""
+    "დაყენებისთვის დისკები ხელმისაწვდომი არაა."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     ""
@@ -1685,25 +1865,16 @@ export default {
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     ""
   ],
-  "This disk will contain any partition needed for booting": [
-    "ეს დისკი შეიცავს ნებისმიერ დანაყოფს, რომელიც საჭიროა ჩასატვირთად"
-  ],
-  "This disk will contain the LVM group '%s'": [
-    ""
-  ],
-  "This disk will contain the LVM group '%s' and any partition needed to boot": [
-    "ეს დისკი შეიცავს მორგებულ LVM ჯგუფს '%s' და ყველა დანაყოფს, რომელიც ჩატვირთვისაა საჭირო"
-  ],
-  "This disk will contain the configured LVM groups": [
-    ""
-  ],
-  "This disk will contain the configured LVM groups and any partition needed to boot": [
-    "ეს დისკი შეიცავს მორგებულ LVM ჯგუფებს და ყველა დანაყოფს, რომელიც ჩატვირთვისაა საჭირო"
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     ""
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
+    ""
+  ],
+  "This license is not available in %s.": [
+    ""
+  ],
+  "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     ""
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
@@ -1714,6 +1885,9 @@ export default {
   ],
   "This uses existing partitions at the disk": [
     "ეს იყენებს დისკზე არსებულ დანაყოფებს"
+  ],
+  "This uses the existing file system at the disk": [
+    "ეს იყენებს დისკზე არსებულ ფაილურ სისტემას"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     ""
@@ -1757,6 +1931,9 @@ export default {
   "Up to %s can be recovered by shrinking the device.": [
     ""
   ],
+  "Update available disks and activate crypt devices": [
+    ""
+  ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     ""
   ],
@@ -1772,47 +1949,83 @@ export default {
   "Use": [
     "გამოყენება"
   ],
-  "Use %s": [
-    "%s-ის გამოყენება"
+  "Use RAID %s": [
+    "RAID %s-ის გამოყენება"
   ],
-  "Use %s for LVM and additional partitions": [
-    "%s-ის გამოყენება LVM-სთვის და დამატებითი დანაყოფებისთვის"
+  "Use RAID %s for LVM and additional partitions": [
+    "RAID %s-ის გამოყენება LVM-სთვის და დამატებითი დანაყოფებისთვის"
   ],
-  "Use %s for LVM, additional partitions and booting": [
-    ""
+  "Use RAID %s for LVM, additional partitions and booting": [
+    "RAID %s-ის გამოყენება LVM-სთვის, დამატებითი დანაყოფებისთვის და ჩასატვირთად"
   ],
-  "Use %s for additional partitions": [
-    "%s-ის გამოყენება დამატებითი დანაყოფებისთვის"
+  "Use RAID %s for additional partitions": [
+    "RAID %s-ის გამოყენება დამატებითი დანაყოფებისთვის"
   ],
-  "Use %s for additional partitions and booting": [
-    "%s-ის გამოყენება დამატებითი დანაყოფებისთვის და ჩასატვირთად"
+  "Use RAID %s for additional partitions and booting": [
+    "RAID %s-ის გამოყენება დამატებითი დანაყოფებისთვის და ჩასატვირთად"
   ],
-  "Use %s to configure boot partitions": [
-    "%s-ის გამოყენება ჩასატვირთი დანაყოფების მოსარგებად"
+  "Use RAID %s to configure boot partitions": [
+    "RAID %s-ის გამოყენება ჩასატვირთი დანაყოფების მოსარგებად"
   ],
-  "Use %s to host LVM": [
-    "%s-ის გამოყენება LVM-ისთვის"
+  "Use RAID %s to host LVM": [
+    "RAID %s-ის გამოყენება LVM-ისთვის"
   ],
-  "Use %s to host LVM and boot": [
-    "%s-ის გამოყენება LVM-ისთვის და ჩასატვირთად"
+  "Use RAID %s to host LVM and boot": [
+    "RAID %s-ის გამოყენება LVM-ისთვის და ჩასატვირთად"
   ],
-  "Use %s to install": [
-    "%s-ის გამოყენება დასაყენებლად"
+  "Use RAID %s to install": [
+    "RAID %s-ის გამოყენება დასაყენებლად"
   ],
-  "Use %s to install and boot": [
-    "%s-ის გამოყენება დასაყენებლად და ჩასატვირთად"
+  "Use RAID %s to install and boot": [
+    "RAID %s-ის გამოყენება დასაყენებლად და ჩასატვირთად"
   ],
-  "Use %s to install and host LVM": [
-    "%s-ის გამოყენება დასაყენებლად და LVM-ის განთავსებისთვის"
+  "Use RAID %s to install and host LVM": [
+    "RAID %s-ის გამოყენება დასაყენებლად და LVM-სთვის"
   ],
-  "Use %s to install, host LVM and boot": [
-    ""
+  "Use RAID %s to install, host LVM and boot": [
+    "RAID %s-ის გამოყენება დასაყენებლად, LVM-ისთვის და ჩასატვირთად"
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
     ""
   ],
   "Use available space": [
     "ხელმისაწვდომი ადგილის გამოყენება"
+  ],
+  "Use disk %s": [
+    "%s-ის გამოყენება"
+  ],
+  "Use disk %s for LVM and additional partitions": [
+    "%s-ის გამოყენება LVM-სთვის და დამატებითი დანაყოფებისთვის"
+  ],
+  "Use disk %s for LVM, additional partitions and booting": [
+    "%s-ის გამოყენება LVM-სთვის, დამატებითი დანაყოფებისთვის და ჩასატვირთად"
+  ],
+  "Use disk %s for additional partitions": [
+    "%s-ის გამოყენება დამატებითი დანაყოფებისთვის"
+  ],
+  "Use disk %s for additional partitions and booting": [
+    "%s-ის გამოყენება დამატებითი დანაყოფებისთვის და ჩასატვირთად"
+  ],
+  "Use disk %s to configure boot partitions": [
+    "%s-ის გამოყენება ჩასატვირთი დანაყოფების მოსარგებად"
+  ],
+  "Use disk %s to host LVM": [
+    "%s-ის გამოყენება LVM-ისთვის"
+  ],
+  "Use disk %s to host LVM and boot": [
+    "%s-ის გამოყენება LVM-ისთვის და ჩასატვირთად"
+  ],
+  "Use disk %s to install": [
+    "%s-ის გამოყენება დასაყენებლად"
+  ],
+  "Use disk %s to install and boot": [
+    "%s-ის გამოყენება დასაყენებლად და ჩასატვირთად"
+  ],
+  "Use disk %s to install and host LVM": [
+    "%s-ის გამოყენება დასაყენებლად და LVM-ის განთავსებისთვის"
+  ],
+  "Use disk %s to install, host LVM and boot": [
+    "%s-ის გამოყენება დასაყენებლად, LVM-ისთვის და ჩასატვირთად"
   ],
   "Use for installation only": [
     "მხოლოდ დასაყენებლად გამოყენება"
@@ -1832,8 +2045,14 @@ export default {
   "Use suggested username": [
     "მინიშნებული მომხმარებლის სახელის გამოყენება"
   ],
+  "Use the RAID without partitions": [
+    "RAID-ის გამოყენება დანაყოფების გარეშე"
+  ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     ""
+  ],
+  "Use the disk without partitions": [
+    "დისკის გამოყენება დანაყოფების გარეშე"
   ],
   "Use these same settings for the selected product": [
     ""
@@ -1931,8 +2150,11 @@ export default {
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] ჩართულია"
   ],
+  "[FIXME]": [
+    "[გამასწორე]"
+  ],
   "approx. %s": [
-    ""
+    "დაახლ. %s"
   ],
   "at least %s": [
     "%s მაინც"

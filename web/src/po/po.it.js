@@ -303,9 +303,6 @@ export default {
   "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
     ""
   ],
-  "Choose what to with current content": [
-    "Scegli cosa fare con il contenuto attuale"
-  ],
   "Clear": [
     "Cancella"
   ],
@@ -380,9 +377,6 @@ export default {
   ],
   "Connection not found or lost": [
     "Connessione non trovata o persa"
-  ],
-  "Content will be kept": [
-    "I contenuti saranno mantenuti"
   ],
   "Continue": [
     "Continua"
@@ -555,6 +549,9 @@ export default {
   "Edit volume group": [
     "Modifica gruppo di volumi"
   ],
+  "Email": [
+    ""
+  ],
   "Empty LVM volume group %s": [
     "Gruppo di volumi LVM %s vuoto"
   ],
@@ -593,6 +590,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Example: https://myserver.com": [
+    ""
   ],
   "Excellent signal": [
     "Segnale eccellente"
@@ -657,6 +657,9 @@ export default {
   "First user": [
     "Primo utente"
   ],
+  "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
+    ""
+  ],
   "Format": [
     "Formatta"
   ],
@@ -668,6 +671,9 @@ export default {
   ],
   "Format selected devices?": [
     "Formattare i dispositivi selezionati?"
+  ],
+  "Format the whole device or mount an existing file system": [
+    ""
   ],
   "Formatted": [
     "Formattato"
@@ -835,6 +841,12 @@ export default {
   "Issuer": [
     "Emittente"
   ],
+  "It is chosen for booting and for some LVM groups": [
+    ""
+  ],
+  "It is chosen for some LVM groups": [
+    ""
+  ],
   "It is not possible to allocate space for %s.": [
     "Impossibile allocare spazio per %s."
   ],
@@ -874,9 +886,6 @@ export default {
   "Language and keyboard": [
     "Lingua e tastiera"
   ],
-  "License language": [
-    "Lingua del contratto di licenza"
-  ],
   "Loading": [
     "Caricamento"
   ],
@@ -900,9 +909,6 @@ export default {
   ],
   "Logical volume name": [
     "Nome volume logico"
-  ],
-  "Logical volumes": [
-    "Volumi logici"
   ],
   "Login": [
     "Login"
@@ -1123,14 +1129,14 @@ export default {
   "Partition Info": [
     "Informazioni sulla partizione"
   ],
-  "Partitions": [
-    "Partizioni"
-  ],
   "Partitions needed for booting will also be adapted": [
     "Le partizioni necessarie per l'avvio saranno anche adattate"
   ],
   "Partitions needed for booting will remain at %s": [
     "Le partizioni necessarie per l'avvio rimarranno su %s"
+  ],
+  "Partitions that are not reused would be resized if needed.": [
+    ""
   ],
   "Partitions to boot will be allocated at the following device.": [
     "Le partizioni per l'avvio saranno allocate sul seguente dispositivo."
@@ -1234,6 +1240,12 @@ export default {
   "Register": [
     "Registrare"
   ],
+  "Register using SUSE server": [
+    ""
+  ],
+  "Register using a custom registration server": [
+    ""
+  ],
   "Registration": [
     "Registrazione"
   ],
@@ -1300,6 +1312,9 @@ export default {
   "SSID": [
     "SSID"
   ],
+  "SUSE Customer Center (SCC)": [
+    ""
+  ],
   "Search": [
     "Ricerca"
   ],
@@ -1324,9 +1339,6 @@ export default {
   "Select a disk to create %s": [
     "Seleziona un disco per creare %s"
   ],
-  "Select a disk to define partitions": [
-    "Seleziona un disco per definire le partizioni"
-  ],
   "Select a disk to install the system": [
     "Seleziona un disco su cui installare il sistema"
   ],
@@ -1335,9 +1347,6 @@ export default {
   ],
   "Select a solution to continue": [
     "Selezionare una soluzione per continuare"
-  ],
-  "Select another disk to define partitions": [
-    "Seleziona un altro disco per definire le partizioni"
   ],
   "Select at least one disk.": [
     "Selezionare almeno un disco."
@@ -1359,9 +1368,6 @@ export default {
   ],
   "Select what to do with each partition.": [
     "Selezionare le azioni da eseguire con ogni partizione."
-  ],
-  "Selected disk (cannot be changed)": [
-    "Disco selezionato (non modificabile)"
   ],
   "Selected patterns": [
     "Pattern selezionati"
@@ -1571,6 +1577,9 @@ export default {
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "Il valore minimo deve essere un numero seguito facoltativamente da un'unità come GiB o GB"
   ],
+  "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
+    ""
+  ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "I volumi fisici LVM necessari saranno aggiunti come partizioni sui dischi selezionati,                 in base alle dimensioni dei volumi logici. Se si selezionano più dischi, i                 volumi fisici potrebbero essere distribuiti in diveresi dischi."
   ],
@@ -1616,26 +1625,17 @@ export default {
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Questa azione potrebbe distruggere i dati memorizzati nei dispositivi elencati sotto. Confermare che si desidera continuare."
   ],
-  "This disk will contain any partition needed for booting": [
-    "Questo disco conterrà le partizioni necessarie per l'avvio"
-  ],
-  "This disk will contain the LVM group '%s'": [
-    "Questo disco conterrà il gruppo LVM '%s'"
-  ],
-  "This disk will contain the LVM group '%s' and any partition needed to boot": [
-    "Questo disco conterrà il gruppo LVM '%s' e le partizioni necessarie per l'avvio"
-  ],
-  "This disk will contain the configured LVM groups": [
-    "Questo disco conterrà i gruppi LVM configurati"
-  ],
-  "This disk will contain the configured LVM groups and any partition needed to boot": [
-    "Questo disco conterrà i gruppi LVM configurati e le partizioni necessarie per l'avvio"
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Questa estensione non è disponibile sul server. Chiedere all'amministratore del server di eseguire il mirroring dell'estensione."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "Questo nome host è dinamico e potrebbe cambiare dopo un riavvio o una aggiornamento della rete, in base alla configurazione dell'amministratore di rete locale."
+  ],
+  "This license is not available in %s.": [
+    ""
+  ],
+  "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
+    ""
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "Questo prodotto non consente di selezionare pattern software durante l'installazione. Tuttavia, è possibile aggiungere software aggiuntivo una volta completata l'installazione."
@@ -1688,6 +1688,9 @@ export default {
   "Up to %s can be recovered by shrinking the device.": [
     "È possibile recuparare fino a %s riducendo il dispositivo."
   ],
+  "Update available disks and activate crypt devices": [
+    ""
+  ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "L'aggiornamento immediato o successivo del nome host non modificherà il nome host attuamente registrato."
   ],
@@ -1702,42 +1705,6 @@ export default {
   ],
   "Use": [
     "Usa"
-  ],
-  "Use %s": [
-    "Usa %s"
-  ],
-  "Use %s for LVM and additional partitions": [
-    "Usa %s per LVM e le partizioni aggiuntive"
-  ],
-  "Use %s for LVM, additional partitions and booting": [
-    "Usa %s per LVM, partizioni aggiuntive e l'avvio"
-  ],
-  "Use %s for additional partitions": [
-    "Usa %s per le partizioni aggiuntive"
-  ],
-  "Use %s for additional partitions and booting": [
-    "Usa %s per le partizioni aggiuntive e l'avvio"
-  ],
-  "Use %s to configure boot partitions": [
-    "Usa %s per la configurazione delle partizioni di avvio"
-  ],
-  "Use %s to host LVM": [
-    "Usa %s per l'hosting di LVM"
-  ],
-  "Use %s to host LVM and boot": [
-    "Usa %s per l'hosting di LVM e l'avvio"
-  ],
-  "Use %s to install": [
-    "Usa %s per l'installazione"
-  ],
-  "Use %s to install and boot": [
-    "Usa %s per l'installazione e l'avvio"
-  ],
-  "Use %s to install and host LVM": [
-    "Usa %s per l'installazione e l'hosting di LVM"
-  ],
-  "Use %s to install, host LVM and boot": [
-    "Usa %s per l'installazione, l'hosting di LVM e l'avvio"
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
     "Usare le azioni seguenti per configurare i dispositivi o fare clic su %s per iniziare da zero con la configurazione predefinita."
@@ -1861,6 +1828,9 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[BLOC MAIUSC] attivo"
+  ],
+  "[FIXME]": [
+    ""
   ],
   "approx. %s": [
     ""

@@ -4,7 +4,7 @@ export default {
     "language": "es"
   },
   " Timezone selection": [
-    " Selección de zona horaria"
+    " · Selección de zona horaria"
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -153,6 +153,9 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Cualquier partición existente será eliminada y todos los datos en el disco se perderán."
   ],
+  "Any interface": [
+    "Cualquier interfaz"
+  ],
   "Apply selected solution": [
     "Aplicar solución seleccionada"
   ],
@@ -216,11 +219,14 @@ export default {
   "Beta": [
     "Beta"
   ],
+  "Bind to MAC address": [
+    "Vincular a dirección MAC"
+  ],
   "Bind to interface name": [
-    ""
+    "Vincular al nombre de la interfaz"
   ],
   "Binding settings for '%s'": [
-    ""
+    "Configuración de conexión para '%s'"
   ],
   "BitLocker": [
     "BitLocker"
@@ -292,16 +298,13 @@ export default {
     "Escoger un disco para colocar el cargador de arranque"
   ],
   "Choose device to bind by MAC": [
-    ""
+    "Escoger dispositivo para vincular por dirección MAC"
   ],
   "Choose device to bind by name": [
-    ""
+    "Escoger dispositivo para vincular por nombre"
   ],
   "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
-    ""
-  ],
-  "Choose what to with current content": [
-    "Elija que hacer con el contenido actual"
+    "Elige cómo debe asociarse la conexión con una interfaz de red. Esto ayuda a controlar qué interfaz utiliza la conexión."
   ],
   "Clear": [
     "Vaciar"
@@ -378,8 +381,8 @@ export default {
   "Connection not found or lost": [
     "Conexión no encontrada o perdida"
   ],
-  "Content will be kept": [
-    "El contenido será conservado"
+  "Content": [
+    "Contenido"
   ],
   "Continue": [
     "Continuar"
@@ -416,6 +419,9 @@ export default {
   ],
   "Current %s": [
     "Actual %s"
+  ],
+  "Current content": [
+    "Contenido actual"
   ],
   "Custom": [
     "Personalizado"
@@ -477,6 +483,9 @@ export default {
   "Delete volume group": [
     "Borrar grupo del volumen"
   ],
+  "Description": [
+    "Descripción"
+  ],
   "Destroy current data and format partition as": [
     "Destruye datos actuales y da formato de partición como"
   ],
@@ -491,6 +500,9 @@ export default {
   ],
   "Device %s menu": [
     "Menú del dispositivo %s"
+  ],
+  "Device Selection": [
+    "Selección de dispositivo"
   ],
   "Device details": [
     "Detalles del dispositivo"
@@ -552,6 +564,9 @@ export default {
   "Edit volume group": [
     "Editar grupo de volumen"
   ],
+  "Email": [
+    "Correo electrónico"
+  ],
   "Empty LVM volume group %s": [
     "Grupo de volumen LVM %s vacío"
   ],
@@ -568,13 +583,13 @@ export default {
     "Contraseña de cifrado"
   ],
   "Encryption is disabled": [
-    "Cifrado está inhabilitado"
+    "El cifrado está deshabilitado"
   ],
   "Encryption is enabled": [
-    "Cifrado está habilitado"
+    "El cifrado está habilitado"
   ],
   "Encryption is enabled using TPM unlocking": [
-    "Cifrado está habilitado utilizando desbloqueo TPM"
+    "El cifrado se activa utilizando el desbloqueo TPM"
   ],
   "Encryption settings": [
     "Configuraciones del cifrado"
@@ -590,6 +605,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Example: https://myserver.com": [
+    "Ejemplo: https://miservidor.com"
   ],
   "Excellent signal": [
     "Señal excelente"
@@ -624,6 +642,9 @@ export default {
   "File system label": [
     "Etiqueta del sistema de archivo"
   ],
+  "Filesystems": [
+    "Sistemas de archivos"
+  ],
   "Filter by description or keymap code": [
     "Filtrar por descripción o código de mapa de teclas"
   ],
@@ -654,6 +675,9 @@ export default {
   "First user": [
     "Primer usuario"
   ],
+  "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
+    ""
+  ],
   "Format": [
     "Formatear"
   ],
@@ -665,6 +689,9 @@ export default {
   ],
   "Format selected devices?": [
     "¿Formatear los dispositivos seleccionados?"
+  ],
+  "Format the whole device or mount an existing file system": [
+    ""
   ],
   "Formatted": [
     "Formateado"
@@ -832,6 +859,12 @@ export default {
   "Issuer": [
     "Emisor"
   ],
+  "It is chosen for booting and for some LVM groups": [
+    ""
+  ],
+  "It is chosen for some LVM groups": [
+    ""
+  ],
   "It is not possible to allocate space for %s.": [
     "No es posible asignar espacio para %s."
   ],
@@ -851,7 +884,7 @@ export default {
     "Teclado"
   ],
   "Keyboard layout": [
-    "Esquema del teclado"
+    "Distribución del teclado"
   ],
   "Keyboard selection": [
     "Selección de teclado"
@@ -870,9 +903,6 @@ export default {
   ],
   "Language and keyboard": [
     "Idioma y teclado"
-  ],
-  "License language": [
-    "Idioma de la licencia"
   ],
   "Loading": [
     "Cargando..."
@@ -897,9 +927,6 @@ export default {
   ],
   "Logical volume name": [
     "Nombre de volumen lógico"
-  ],
-  "Logical volumes": [
-    "Volúmenes lógicos"
   ],
   "Login": [
     "Acceder"
@@ -1120,14 +1147,14 @@ export default {
   "Partition Info": [
     "Información de la partición"
   ],
-  "Partitions": [
-    "Particiones"
-  ],
   "Partitions needed for booting will also be adapted": [
     "Particiones necesarias para arrancar además estarán adaptadas"
   ],
   "Partitions needed for booting will remain at %s": [
     "Particiones necesarias para arrancar permanecerán en %s"
+  ],
+  "Partitions that are not reused would be resized if needed.": [
+    ""
   ],
   "Partitions to boot will be allocated at the following device.": [
     "Las particiones para arrancar estarán asignadas en el dispositivo siguiente."
@@ -1151,7 +1178,7 @@ export default {
     "Entrada de contraseña"
   ],
   "Password is empty.": [
-    "Contraseña está vacía."
+    "La contraseña está vacía."
   ],
   "Password visibility button": [
     "Botón de visibilidad de contraseña"
@@ -1202,7 +1229,7 @@ export default {
     "Producto ya está registrado"
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Protección de la información almacenada en los sistemas de archivo nuevo, incluyendo datos, programas y archivos del sistema."
+    "Protección de la información almacenada en los nuevos sistemas de archivo, incluyendo datos, programas y archivos del sistema."
   ],
   "Provide email address": [
     "Proporcione una dirección de correo-e"
@@ -1230,6 +1257,12 @@ export default {
   ],
   "Register": [
     "Registrar"
+  ],
+  "Register using SUSE server": [
+    "Registrarse usando el servidor SUSE"
+  ],
+  "Register using a custom registration server": [
+    "Registrarse usando un servidor de registro personalizado"
   ],
   "Registration": [
     "Registro"
@@ -1297,6 +1330,9 @@ export default {
   "SSID": [
     "SSID"
   ],
+  "SUSE Customer Center (SCC)": [
+    "Centro de Atención al Cliente de SUSE (SCC)"
+  ],
   "Search": [
     "Buscar"
   ],
@@ -1321,9 +1357,6 @@ export default {
   "Select a disk to create %s": [
     "Seleccione un disco para crear %s"
   ],
-  "Select a disk to define partitions": [
-    "Seleccione un disco para definir particiones"
-  ],
   "Select a disk to install the system": [
     "Seleccione un disco para instalar el sistema"
   ],
@@ -1332,9 +1365,6 @@ export default {
   ],
   "Select a solution to continue": [
     "Seleccione una solución para continuar"
-  ],
-  "Select another disk to define partitions": [
-    "Seleccione otro disco para definir particiones"
   ],
   "Select at least one disk.": [
     "Seleccione al menos un disco."
@@ -1356,9 +1386,6 @@ export default {
   ],
   "Select what to do with each partition.": [
     "Seleccione qué hacer con cada partición."
-  ],
-  "Selected disk (cannot be changed)": [
-    "Disco seleccionado (no se puede cambiar)"
   ],
   "Selected patterns": [
     "Seleccione los patrones"
@@ -1410,7 +1437,10 @@ export default {
     "Los límites de tamaño deben ser números seguidos por una unidad como Gib o GB"
   ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
-    "Límites de tamaño deben ser números opcionalmente seguidos por una unidad como Gib o Gb"
+    "Los límites de tamaño deben ser números, opcionalmente seguidos por una unidad como Gib o Gb"
+  ],
+  "Size mode": [
+    "Modo de tamaño"
   ],
   "Skip to content": [
     "Saltar a contenido"
@@ -1493,6 +1523,9 @@ export default {
   "The configured LVM groups will remain at %s": [
     "Los grupos LVM configurados permanecerán en %s"
   ],
+  "The connection can be used by any available interface.": [
+    "Cualquier interfaz disponible puede usar la conexión."
+  ],
   "The connection will be used only during installation and not available in the installed system.": [
     "La conexión se usará solo durante la instalación, y no estará disponible en el sistema instalado."
   ],
@@ -1548,7 +1581,7 @@ export default {
     "La instalación ocupará %s incluyendo:"
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
-    "El interfaz de instalador no está más disponible, por tanto puede cerrar con seguridad esta ventana."
+    "El interfaz del instalador no está disponible, por tanto puede cerrar con seguridad esta ventana."
   ],
   "The installer requires [root] user privileges.": [
     "El instalador requiere privilegios de usuario [root]."
@@ -1557,7 +1590,7 @@ export default {
     "El máximo debe ser un número seguido por una unidad como GiB o GB"
   ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
-    "El máximo debe ser un número opcional seguido por una unidad como GiB o Gb"
+    "El máximo debe ser un número, opcionalmente seguido por una unidad como GiB o Gb"
   ],
   "The minimum cannot be greater than the maximum": [
     "El mínimo no puede ser mayor que el máximo"
@@ -1566,7 +1599,10 @@ export default {
     "El mínimo debe ser un número seguido por una unidad como GiB o GB"
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
-    "El mínimo debe ser un número opcionalmente seguido por una unidad como GiB o Gb"
+    "El mínimo debe ser un número, opcionalmente seguido por una unidad como GiB o Gb"
+  ],
+  "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
+    "El selector modal ofrece una interfaz simplificada y diseñada para un uso rápido y directo, sin agobiar al usuario."
   ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "Los volúmenes físicos de LVM necesarios serán añadidos como particiones sobre los discos elegidos,     basados en los tamaños de los volúmenes lógicos. Si selecciona más de un disco, los                        volúmenes físicos pueden ser distribuidos a lo largo de varios discos."
@@ -1613,26 +1649,14 @@ export default {
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Esta acción podría destruir cualquier dato almacenado en los dispositivos listados debajo. Confirme que realmente desea continuar."
   ],
-  "This disk will contain any partition needed for booting": [
-    "Este disco contendrá cualquier partición necesaria para el arranque"
-  ],
-  "This disk will contain the LVM group '%s'": [
-    "Este disco contendrá el grupo de LVM '%s'"
-  ],
-  "This disk will contain the LVM group '%s' and any partition needed to boot": [
-    "Este disco contendrá el grupo de LVM '%s' y cualquier partición necesaria para arrancar"
-  ],
-  "This disk will contain the configured LVM groups": [
-    "Este disco contendrá los grupos configurados de LVM"
-  ],
-  "This disk will contain the configured LVM groups and any partition needed to boot": [
-    "Este disco contendrá los grupos de LVM configurados y cualquier partición necesaria para arrancar"
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Esta extensión no está disponible en el servidor. Pregunte al administrador del servidor para hacer un mirror de la extensión."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "Este nombre de hospedaje es dinámico y puede cambiar tras un rearranque o actualización de red, como configuró por el administrador de la red local."
+  ],
+  "This license is not available in %s.": [
+    ""
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "Este producto no permite seleccionar patrones de software durante la instalación. Sin embargo, puede agregar software adicional una vez finalizada la instalación."
@@ -1662,7 +1686,7 @@ export default {
     "Sistema de archivos raíz transaccional"
   ],
   "Try again": [
-    "Probar otra vez"
+    "Probar de nuevo"
   ],
   "Type": [
     "Tipo"
@@ -1685,6 +1709,9 @@ export default {
   "Up to %s can be recovered by shrinking the device.": [
     "Se pueden recuperar hasta %s reduciendo el dispositivo."
   ],
+  "Update available disks and activate crypt devices": [
+    ""
+  ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Actualizar el nombre de hospedaje ahora o posteriormente no cambiará el nombre de hospedaje registrado actualmente."
   ],
@@ -1700,47 +1727,47 @@ export default {
   "Use": [
     "Emplear"
   ],
-  "Use %s": [
-    "Utiliza %s"
-  ],
-  "Use %s for LVM and additional partitions": [
-    "Utilice %s para LVM y particiones adicionales"
-  ],
-  "Use %s for LVM, additional partitions and booting": [
-    "Utilice %s para LVM, particiones adicionales y arrancar"
-  ],
-  "Use %s for additional partitions": [
-    "Utilice %s para particiones adicionales"
-  ],
-  "Use %s for additional partitions and booting": [
-    "Utilizar %s para particiones y arranques adicionales"
-  ],
-  "Use %s to configure boot partitions": [
-    "Utilice %s para configurar particiones de arranque"
-  ],
-  "Use %s to host LVM": [
-    "Utilice %s para hospedar LVM"
-  ],
-  "Use %s to host LVM and boot": [
-    "Utilice %s para hospedar LVM y arrancar"
-  ],
-  "Use %s to install": [
-    "Utilice %s para instalar"
-  ],
-  "Use %s to install and boot": [
-    "Utilice %s para instalar y arrancar"
-  ],
-  "Use %s to install and host LVM": [
-    "Utilice %s para instalar y hospedar LVM"
-  ],
-  "Use %s to install, host LVM and boot": [
-    "Utilice %s para instalar, hospedaje LVM y boot"
-  ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
     "Utilice operaciones debajo para configurar sus dispositivos o pulse %s para iniciar todo con la configuración predeterminada."
   ],
   "Use available space": [
     "Utilice el espacio disponible"
+  ],
+  "Use disk %s": [
+    "Utilizar el disco %s"
+  ],
+  "Use disk %s for LVM and additional partitions": [
+    "Utilizar disco %s para LVM y particiones adicionales"
+  ],
+  "Use disk %s for LVM, additional partitions and booting": [
+    "Utilizar disco %s para LVM, particiones adicionales y arranque"
+  ],
+  "Use disk %s for additional partitions": [
+    "Utilizar el disco %s para particiones adicionales"
+  ],
+  "Use disk %s for additional partitions and booting": [
+    "Utilizar el disco %s para particiones adicionales y arranques"
+  ],
+  "Use disk %s to configure boot partitions": [
+    "Utilizar el disco %s para configurar particiones de arranque"
+  ],
+  "Use disk %s to host LVM": [
+    "Utilizar el disco %s para hospedar LVM"
+  ],
+  "Use disk %s to host LVM and boot": [
+    "Utilizar disco %s para hospedar LVM y arrancar"
+  ],
+  "Use disk %s to install": [
+    "Utilizar %s para instalar"
+  ],
+  "Use disk %s to install and boot": [
+    "Utilizar %s para instalar y arrancar"
+  ],
+  "Use disk %s to install and host LVM": [
+    "Utilizar %s para instalar y hospedar LVM"
+  ],
+  "Use disk %s to install, host LVM and boot": [
+    "Utilizar %s para instalar, hospedar LVM y boot"
   ],
   "Use for installation only": [
     "Usar solo para la instalación"
@@ -1761,7 +1788,7 @@ export default {
     "Usar nombre de usuario sugerido"
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
-    "Utilizar Trusted Platform Module(TPM) para descifrar automáticamente en cada arranque"
+    "Utilizar Trusted Platform Module (TPM) para descifrar automáticamente en cada arranque"
   ],
   "Use these same settings for the selected product": [
     "Usar estas mismas configuraciones para el producto seleccionado"
@@ -1858,6 +1885,9 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[BLOQ MAYÚS] está activado"
+  ],
+  "[FIXME]": [
+    ""
   ],
   "approx. %s": [
     ""
