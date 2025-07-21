@@ -20,7 +20,7 @@
 
 use std::str::FromStr;
 
-use agama_autoinstall::{ConfigAutoLoader, KernelCmdline};
+use agama_autoinstall::{ConfigAutoLoader, KernelCmdline, ScriptsRunner};
 use agama_lib::{
     auth::AuthToken,
     http::BaseHTTPClient,
@@ -42,6 +42,15 @@ async fn main() -> anyhow::Result<()> {
     let http = build_base_client()?;
     let manager_client = ManagerHTTPClient::new(http.clone());
     let loader = ConfigAutoLoader::new(http.clone())?;
+
+    let scripts = args.get("inst.script");
+    let runner = ScriptsRunner::new("/run/agama/inst-scripts", false);
+    for url in scripts {
+        println!("Running script from {}", &url);
+        if let Err(error) = runner.run(&url) {
+            eprintln!("Error running the script from {url}: {}", error);
+        }
+    }
 
     let urls = args.get("inst.auto");
     if let Err(error) = loader.load(&urls).await {
