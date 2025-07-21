@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jul 21 15:07:42 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 17
+
+-------------------------------------------------------------------
 Mon Jul 21 14:12:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Disabled udev rules that interfere with the activation process of
