@@ -29,7 +29,7 @@ use std::{
 use agama_lib::utils::Transfer;
 use url::Url;
 
-/// Downloads and runs user-defined scripts.
+/// Downloads and runs user-defined scripts for inst.script.
 pub struct ScriptsRunner {
     pub path: PathBuf,
     insecure: bool,
@@ -54,7 +54,7 @@ impl ScriptsRunner {
     /// It downloads the script from the given URL to the runner directory.
     /// It saves the stdout, stderr and exit code to separate files.
     ///
-    /// * url: script URL.
+    /// * url: script URL, supporting agama-specific schemes.
     pub fn run(&mut self, url: &str) -> anyhow::Result<()> {
         create_dir_all(&self.path)?;
 
@@ -98,7 +98,7 @@ impl ScriptsRunner {
     fn save_logs(&self, path: &Path, output: Output) -> anyhow::Result<()> {
         if !output.stdout.is_empty() {
             let mut file = Self::create_file(&path.with_extension("stdout"), 0o600)?;
-            file.write_all(&output.stdout).unwrap();
+            file.write_all(&output.stdout)?;
         }
 
         if !output.stderr.is_empty() {
