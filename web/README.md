@@ -77,20 +77,6 @@ switcher is displayed only in local installation because it cannot work in
 remote connection. This option will force displaying it even in a remote
 connection.
 
-## TypeDoc Documentation
-
-This project uses [TypeDoc](https://typedoc.org/) to generate the API documentation. The `typedoc`
-task generates the documentation to the `typedoc.out` directory. If you need to adjust any TypeDoc
-option, please check the [`typedoc.json` file](./typedoc.json).
-
-```
-npm run typedoc
-xdg-open typedoc.out/client/index.html
-xdg-open typedoc.out/components/index.html
-```
-
-GitHub Actions will automatically publish the result to <https://agama-frontend.surge.sh/>.
-
 ## Type-Checking Support
 
 This module started as a JavaScript-only project. We have decided to add type-checking support, but
