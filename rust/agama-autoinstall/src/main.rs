@@ -44,6 +44,7 @@ async fn main() -> anyhow::Result<()> {
     let loader = ConfigAutoLoader::new(http.clone())?;
 
     let scripts = args.get("inst.script");
+    // TODO: add support to disable SSL checks.
     let runner = ScriptsRunner::new("/run/agama/inst-scripts", false);
     for url in scripts {
         println!("Running script from {}", &url);
