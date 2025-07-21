@@ -148,15 +148,12 @@ module Agama
 
         raise ArgumentError unless new_product
 
-        # order is important here as we want to first set internally new product to ensure that cache read will read it properly
-        @product = new_product
-
-        update_repositories(new_product)
-
-        # here it will reset config cache, so do it last to have all stuff in place
         proposal.set_resolvables(
           PROPOSAL_ID, :pattern, new_product.preselected_patterns
         )
+        update_repositories(new_product)
+
+        @product = new_product
 
         update_issues
         true
