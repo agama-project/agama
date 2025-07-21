@@ -29,16 +29,26 @@ use anyhow::anyhow;
 /// It relies on Agama's command-line to generate and load the new
 /// configuration. In the future, it could rely directly on Agama libraries
 /// instead of the command-line.
-#[derive(Default)]
-pub struct ConfigLoader;
+pub struct ConfigLoader {
+    insecure: bool,
+}
 
 impl ConfigLoader {
+    pub fn new(insecure: bool) -> Self {
+        Self { insecure }
+    }
+
     /// Loads the configuration from the given URL.
     pub async fn load(&self, url: &str) -> anyhow::Result<()> {
+        let mut generate_args = vec!["config", "generate", url];
+        if self.insecure {
+            generate_args.insert(0, "--insecure");
+        }
+
         let generate_cmd = std::process::Command::new("agama")
             .env("YAST_SKIP_PROFILE_FETCH_ERROR", "1")
             .env("YAST_SKIP_XML_VALIDATION", "1")
-            .args(["config", "generate", url])
+            .args(generate_args)
             .output()?;
 
         if !generate_cmd.status.success() {
@@ -48,8 +58,13 @@ impl ConfigLoader {
             ));
         }
 
+        let mut load_args = vec!["config", "load"];
+        if self.insecure {
+            load_args.insert(0, "--insecure");
+        }
+
         let child = std::process::Command::new("agama")
-            .args(["config", "load"])
+            .args(load_args)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())

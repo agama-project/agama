@@ -46,15 +46,19 @@ const PREDEFINED_LOCATIONS: [&str; 6] = [
 /// Check the [Self::load] description for further information.
 pub struct ConfigAutoLoader {
     questions: QuestionsHTTPClient,
+    insecure: bool,
 }
 
 impl ConfigAutoLoader {
     /// Builds a new loader.
     ///
     /// * `http`: base client to connect to Agama.
-    pub fn new(http: BaseHTTPClient) -> anyhow::Result<Self> {
+    pub fn new(http: BaseHTTPClient, insecure: bool) -> anyhow::Result<Self> {
         let questions = QuestionsHTTPClient::new(http)?;
-        Ok(Self { questions })
+        Ok(Self {
+            questions,
+            insecure,
+        })
     }
 
     /// Loads the configuration for the unattended installation.
@@ -66,7 +70,7 @@ impl ConfigAutoLoader {
     ///
     /// See [Self::load] for further information.
     pub async fn load(&self, urls: &Vec<String>) -> anyhow::Result<()> {
-        let loader = ConfigLoader::default();
+        let loader = ConfigLoader::new(self.insecure);
         if urls.is_empty() {
             self.load_predefined_config(loader).await
         } else {

@@ -57,6 +57,8 @@ async fn main() -> anyhow::Result<()> {
         }
     }
 
+    let auto_insecure = insecure_from(&args, "inst.auto_insecure");
+    let loader = ConfigAutoLoader::new(http.clone(), auto_insecure)?;
     let urls = args.get("inst.auto");
     if let Err(error) = loader.load(&urls).await {
         eprintln!("Skipping the auto-installation: {error}");
