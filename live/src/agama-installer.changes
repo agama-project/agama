@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul 21 14:12:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Disabled udev rules that interfere with the activation process of
+  libstorage-ng (bsc#1246133 and bsc#1245159).
+
+-------------------------------------------------------------------
 Thu Jul 17 21:51:19 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Masked some systemd services that interfere with the activation
