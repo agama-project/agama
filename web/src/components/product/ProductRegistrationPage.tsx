@@ -41,7 +41,6 @@ import {
   List,
   ListItem,
   Divider,
-  Stack,
 } from "@patternfly/react-core";
 import {
   Link,
@@ -418,7 +417,11 @@ const Extensions = () => {
     <>
       <Divider />
       <Title headingLevel="h3">{_("Extensions")}</Title>
-      <Stack hasGutter>{extensionComponents}</Stack>
+      <NestedContent>
+        <Flex gap={{ default: "gap2xl" }} direction={{ default: "column" }}>
+          {extensionComponents}
+        </Flex>
+      </NestedContent>
     </>
   );
 };
