@@ -30,7 +30,6 @@ import {
   FormGroup,
   Label,
   Title,
-  Stack,
 } from "@patternfly/react-core";
 import { AddonInfo, RegisteredAddonInfo } from "~/types/software";
 import { useRegisteredAddons, useRegisterAddonMutation } from "~/queries/software";
@@ -44,11 +43,16 @@ import RegistrationCodeInput from "./RegistrationCodeInput";
  * @param param0
  * @returns
  */
-const RegisteredExtensionStatus = ({ registrationCode }: { registrationCode: string }) => {
+const RegisteredExtensionStatus = ({ registrationCode }: { registrationCode: string | null }) => {
   const [showCode, setShowCode] = useState(false);
 
   // TRANSLATORS: %s will be replaced by the registration key.
   const [msg1, msg2] = _("The extension has been registered with key %s.").split("%s");
+
+  // free extension or registered via RMT
+  if (registrationCode === null) {
+    return <span>{_("The extension was registered without any registration code.")}</span>;
+  }
 
   return (
     <span>
@@ -117,7 +121,7 @@ export default function RegistrationExtension({
   };
 
   return (
-    <Stack hasGutter>
+    <Content>
       {/* remove the "(BETA)" suffix, we display a Beta label instead */}
       <Title headingLevel="h4">
         {extension.label.replace(/\s*\(beta\)$/i, "")}{" "}
@@ -183,6 +187,6 @@ export default function RegistrationExtension({
           </Alert>
         )}
       </Content>
-    </Stack>
+    </Content>
   );
 }

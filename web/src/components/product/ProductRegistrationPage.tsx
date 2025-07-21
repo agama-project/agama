@@ -40,6 +40,7 @@ import {
   TextInput,
   List,
   ListItem,
+  Divider,
 } from "@patternfly/react-core";
 import {
   Link,
@@ -414,8 +415,13 @@ const Extensions = () => {
 
   return (
     <>
-      <Title headingLevel="h2">{_("Extensions")}</Title>
-      {extensionComponents}
+      <Divider />
+      <Title headingLevel="h3">{_("Extensions")}</Title>
+      <NestedContent>
+        <Flex gap={{ default: "gap2xl" }} direction={{ default: "column" }}>
+          {extensionComponents}
+        </Flex>
+      </NestedContent>
     </>
   );
 };

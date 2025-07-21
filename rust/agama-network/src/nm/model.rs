@@ -103,6 +103,7 @@ impl TryFrom<NmDeviceType> for DeviceType {
             NmDeviceType(1) => Ok(DeviceType::Ethernet),
             NmDeviceType(2) => Ok(DeviceType::Wireless),
             NmDeviceType(10) => Ok(DeviceType::Bond),
+            NmDeviceType(11) => Ok(DeviceType::Vlan),
             NmDeviceType(13) => Ok(DeviceType::Bridge),
             NmDeviceType(22) => Ok(DeviceType::Dummy),
             NmDeviceType(32) => Ok(DeviceType::Loopback),
