@@ -22,11 +22,12 @@
 
 import React, { useId } from "react";
 import { Flex } from "@patternfly/react-core";
-import { useNavigate, generatePath } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Text from "~/components/core/Text";
 import MenuButton from "~/components/core/MenuButton";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { model } from "~/types/storage";
+import { generateEncodedPath } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
@@ -37,8 +38,8 @@ export default function UnusedMenu({ deviceModel }: UnusedMenuProps): React.Reac
   const ariaLabelId = useId();
   const toggleTextId = useId();
   const { list, listIndex } = deviceModel;
-  const newPartitionPath = generatePath(PATHS.addPartition, { list, listIndex });
-  const formatDevicePath = generatePath(PATHS.formatDevice, { list, listIndex });
+  const newPartitionPath = generateEncodedPath(PATHS.addPartition, { list, listIndex });
+  const formatDevicePath = generateEncodedPath(PATHS.formatDevice, { list, listIndex });
 
   // TRANSLATORS: %s is the name of device, like '/dev/sda'.
   const detailsAriaLabel = sprintf(_("Details for %s"), deviceModel.name);

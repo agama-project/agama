@@ -39,7 +39,7 @@ jest.mock("~/components/network/InstallationOnlySwitch", () => () => (
 
 const mockDevice: Device = {
   name: "enp1s0",
-  connection: "Network 1",
+  connection: "Network #1",
   type: ConnectionType.ETHERNET,
   state: DeviceState.CONNECTED,
   addresses: [{ address: "192.168.69.201", prefix: 24 }],
@@ -53,7 +53,7 @@ const mockDevice: Device = {
   routes6: [],
 };
 
-const mockConnection: Connection = new Connection("Network 1", {
+const mockConnection: Connection = new Connection("Network #1", {
   state: ConnectionState.activated,
   iface: "enp1s0",
 });
@@ -91,7 +91,7 @@ describe("WiredConnectionDetails", () => {
     plainRender(<WiredConnectionDetails connection={mockConnection} />);
     const section = screen.getByRole("region", { name: "IP settings" });
     const editLink = within(section).getByRole("link", { name: "Edit" });
-    expect(editLink).toHaveAttribute("href", "/network/connections/Network 1/edit");
+    expect(editLink).toHaveAttribute("href", "/network/connections/Network%20%231/edit");
   });
 
   it("renders the switch for making connection available only during installation", () => {
