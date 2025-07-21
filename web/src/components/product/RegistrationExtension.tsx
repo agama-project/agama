@@ -44,11 +44,16 @@ import RegistrationCodeInput from "./RegistrationCodeInput";
  * @param param0
  * @returns
  */
-const RegisteredExtensionStatus = ({ registrationCode }: { registrationCode: string }) => {
+const RegisteredExtensionStatus = ({ registrationCode }: { registrationCode: string | null }) => {
   const [showCode, setShowCode] = useState(false);
 
   // TRANSLATORS: %s will be replaced by the registration key.
   const [msg1, msg2] = _("The extension has been registered with key %s.").split("%s");
+
+  // free extension or registered via RMT
+  if (registrationCode === null) {
+    return <span>{_("The extension was registered without any registration code.")}</span>;
+  }
 
   return (
     <span>
