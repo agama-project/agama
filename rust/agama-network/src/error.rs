@@ -52,6 +52,8 @@ pub enum NetworkStateError {
     NotControllerConnection(String),
     #[error("Unexpected configuration")]
     UnexpectedConfiguration,
+    #[error("Invalid Vlan protocol: '{0}'")]
+    InvalidVlanProtocol(String),
     #[error("Invalid WEP authentication algorithm: '{0}'")]
     InvalidWEPAuthAlg(String),
     #[error("Invalid WEP key type: '{0}'")]

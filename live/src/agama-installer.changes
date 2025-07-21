@@ -1,4 +1,19 @@
 -------------------------------------------------------------------
+Thu Jul 17 21:51:19 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Masked some systemd services that interfere with the activation
+  process of libstorage-ng (bsc#1246133).
+
+-------------------------------------------------------------------
+Thu Jul 17 08:08:40 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Added "inst.dud_insecure" boot option for ignoring SSL
+  certificate problems when downloading DUD from an HTTPS server
+  (related to bsc#1245393)
+- Skip updating kernel module dependencies if the DUD image does
+  not provide any kernel module
+
+-------------------------------------------------------------------
 Tue Jul 15 16:19:21 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed downloading DUD files from HTTPS URL

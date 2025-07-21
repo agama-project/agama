@@ -54,6 +54,9 @@ export default {
   "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
     "Mümkünse %4$s için %2$s ile %3$s arasında bir boyuta sahip %1$s oluşturulacak"
   ],
+  "A file system will be used for the whole device": [
+    "Tüm cihaz için bir dosya sistemi kullanılacak"
+  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Yeni %2$s için genel bir asgari %1$s boyutu kullanılacak"
   ],
@@ -108,6 +111,9 @@ export default {
   "Add LVM volume group": [
     "LVM disk grubu ekle"
   ],
+  "Add a partition or mount an existing one": [
+    "Bir bölüm ekleyin veya mevcut bir bölümü bağlayın"
+  ],
   "Add an address": [
     "Adres ekle"
   ],
@@ -144,6 +150,9 @@ export default {
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     "Tüm çakışmalar çözüldü veya hiçbiri tespit edilmedi. Kurulumunuza güvenle devam edebilirsiniz."
   ],
+  "All content not configured to be mounted will be deleted": [
+    "Bağlanmak üzere yapılandırılmayan tüm içerikler silinecektir"
+  ],
   "All content will be deleted": [
     "Tüm içerik silinecek"
   ],
@@ -159,6 +168,9 @@ export default {
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "İlk kullanıcıyı tanımlamanın yanı sıra, root kullanıcı için kimlik doğrulama yöntemleri de yapılandırılabilir."
   ],
+  "Already using all available devices": [
+    "Zaten mevcut tüm cihazları kullanılıyor"
+  ],
   "Already using all available disks": [
     "Zaten tüm kullanılabilir diskler kullanılıyor"
   ],
@@ -167,6 +179,9 @@ export default {
   ],
   "Any interface": [
     "Herhangi bir arayüz"
+  ],
+  "Any partition needed to boot will be configured.": [
+    "Önyükleme için gereken herhangi bir bölüm yapılandırılacaktır."
   ],
   "Apply selected solution": [
     "Seçilen çözümü uygula"
@@ -303,6 +318,9 @@ export default {
   "Change selection": [
     "Seçimi değiştir"
   ],
+  "Change the file system or mount point": [
+    "Dosya sistemini veya bağlama noktasını değiştirin"
+  ],
   "Channel ID": [
     "Kanal Kimliği"
   ],
@@ -327,9 +345,6 @@ export default {
   "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
     "Bağlantının bir ağ arayüzüyle nasıl ilişkilendirileceğini seçin. Bu, bağlantının hangi arayüzü kullandığını kontrol etmeye yardımcı olur."
   ],
-  "Choose what to with current content": [
-    "Mevcut içerikle ne yapacağınızı seçin"
-  ],
   "Clear": [
     "Temizle"
   ],
@@ -353,6 +368,9 @@ export default {
   ],
   "Configure LVM logical volume at %s volume group": [
     "LVM mantıksal birimini %s birim grubunda yapılandırın"
+  ],
+  "Configure device %s": [
+    "%s aygıtını yapılandır"
   ],
   "Configure device menu": [
     "Cihaz yapılandırma menüsü"
@@ -405,8 +423,8 @@ export default {
   "Connection not found or lost": [
     "Bağlantı bulunamadı veya kayboldu"
   ],
-  "Content will be kept": [
-    "İçerik saklanacak"
+  "Content": [
+    "İçerik"
   ],
   "Continue": [
     "Devam et"
@@ -444,6 +462,12 @@ export default {
   "Current %s": [
     "Mevcut %s"
   ],
+  "Current content": [
+    "Güncel içerik"
+  ],
+  "Current partitions will be kept": [
+    "Mevcut bölümler korunacaktır"
+  ],
   "Custom": [
     "Özel"
   ],
@@ -477,6 +501,9 @@ export default {
   "Default file system for generic logical volumes": [
     "Genel mantıksal birimler için varsayılan dosya sistemi"
   ],
+  "Default file system for generic mount paths": [
+    "Genel bağlama yolları için varsayılan dosya sistemi"
+  ],
   "Default file system for generic partitions": [
     "Genel bölümler için varsayılan dosya sistemi"
   ],
@@ -507,11 +534,20 @@ export default {
   "Delete volume group": [
     "Birim grubunu sil"
   ],
+  "Description": [
+    "Açıklama"
+  ],
+  "Destroy current data and format device as": [
+    "Mevcut veriler silinecek ve cihaz şu şekilde biçimlendirilecek"
+  ],
   "Destroy current data and format partition as": [
     "Mevcut verileri yok edin ve bölümü şu şekilde biçimlendirin"
   ],
   "Details": [
     "Detaylar"
+  ],
+  "Details for %s": [
+    "%s için ayrıntılar"
   ],
   "Details will appear after the connection is successfully established.": [
     "Bağlantı başarıyla kurulduktan sonra detaylar görünecektir."
@@ -521,6 +557,9 @@ export default {
   ],
   "Device %s menu": [
     "Cihaz %s menüsü"
+  ],
+  "Device Selection": [
+    "Cihaz Seçimi"
   ],
   "Device details": [
     "Cihaz detayları"
@@ -585,6 +624,9 @@ export default {
   "Edit volume group": [
     "Birim grubunu düzenle"
   ],
+  "Email": [
+    "E-posta"
+  ],
   "Empty LVM volume group %s": [
     "Boş LVM birim grubu %s"
   ],
@@ -624,6 +666,9 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
+  "Example: https://myserver.com": [
+    "Örnek: https://sunucum.com"
+  ],
   "Excellent signal": [
     "Mükemmel sinyal"
   ],
@@ -657,6 +702,9 @@ export default {
   "File system label": [
     "Dosya sistemi etiketi"
   ],
+  "Filesystems": [
+    "Dosya sistemleri"
+  ],
   "Filter by description or keymap code": [
     "Açıklamaya veya tuş haritası koduna göre filtreleyin"
   ],
@@ -675,6 +723,9 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Bölgeye, saat dilimi koduna veya UTC farkına göre filtreleyin"
   ],
+  "Find space": [
+    "Boşluk bul"
+  ],
   "Find space in %s": [
     "%s'de boşluk bul"
   ],
@@ -687,8 +738,20 @@ export default {
   "First user": [
     "İlk kullanıcı"
   ],
+  "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
+    "Daha gelişmiş gereksinimler için kullanıcılar, ayrıntılı görünümler, ek sütunlar, filtreler ve genişletilmiş işlevsellik için daha fazla alan sağlayan bu tam sayfa, özel yol sürümüne geçebilirler."
+  ],
   "Format": [
     "Biçim"
+  ],
+  "Format RAID %s": [
+    "RAID %s'yi biçimlendir"
+  ],
+  "Format device as": [
+    "Aygıt şu şekilde biçimlendirilecek"
+  ],
+  "Format disk %s": [
+    "%s diski biçimlendir"
   ],
   "Format logical volume as": [
     "Mantıksal birimi şu şekilde biçimlendir"
@@ -698,6 +761,9 @@ export default {
   ],
   "Format selected devices?": [
     "Seçili cihazlar biçimlendirilsin mi?"
+  ],
+  "Format the whole device or mount an existing file system": [
+    "Tüm cihazı biçimlendirin veya mevcut bir dosya sistemini bağlayın"
   ],
   "Formatted": [
     "Biçimlendirilmiş"
@@ -865,6 +931,21 @@ export default {
   "Issuer": [
     "Yayıncı"
   ],
+  "It is chosen for booting": [
+    "Önyükleme için seçildi"
+  ],
+  "It is chosen for booting and for some LVM groups": [
+    "Önyükleme ve bazı LVM grupları için seçilir"
+  ],
+  "It is chosen for booting and for the LVM group '%s'": [
+    "Önyükleme ve '%s' LVM grubu için seçilir"
+  ],
+  "It is chosen for some LVM groups": [
+    "Bazı LVM grupları için seçilmiştir"
+  ],
+  "It is chosen for the LVM group '%s'": [
+    "LVM grubu '%s' için seçildi"
+  ],
   "It is not possible to allocate space for %s.": [
     "%s için alan ayırmak mümkün değil."
   ],
@@ -907,9 +988,6 @@ export default {
   "Let the installer propose a sensible size": [
     "Kurulumcunun makul bir boyut önermesine izin verin"
   ],
-  "License language": [
-    "Lisans dili"
-  ],
   "Loading": [
     "Yükleniyor"
   ],
@@ -934,8 +1012,8 @@ export default {
   "Logical volume name": [
     "Mantıksal birim adı"
   ],
-  "Logical volumes": [
-    "Mantıksal birimler"
+  "Logical volumes for %s": [
+    "%s için mantıksal birimler"
   ],
   "Login": [
     "Oturum aç"
@@ -988,8 +1066,17 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "Seçili ürün için [Yerelleştirme] sayfasında daha fazla dil mevcut olabilir"
   ],
+  "Moreover, the following partitions will be created or mounted": [
+    "Ayrıca, aşağıdaki bölümler oluşturulacak veya bağlanacaktır"
+  ],
   "Mount Point": [
     "Bağlantı Noktası"
+  ],
+  "Mount RAID %s": [
+    "RAID %s'yi Bağla"
+  ],
+  "Mount disk %s": [
+    "%s diski bağla"
   ],
   "Mount point": [
     "Bağlantı noktası"
@@ -1111,6 +1198,9 @@ export default {
   "Not available": [
     "Müsait değil"
   ],
+  "Not configured yet": [
+    "Henüz yapılandırılmadı"
+  ],
   "Not defined": [
     "Tanımlanmamış"
   ],
@@ -1138,6 +1228,12 @@ export default {
   "Only available if authentication by target is provided": [
     "Yalnızca hedef tarafından kimlik doğrulaması sağlandığında kullanılabilir"
   ],
+  "Only reused partitions and space not assigned to any partition will be used.": [
+    "Sadece yeniden kullanılan bölümler ve herhangi bir bölüme atanmamış alanlar kullanılacaktır."
+  ],
+  "Only reused partitions will be used.": [
+    "Sadece yeniden kullanılan bölümler kullanılacaktır."
+  ],
   "Options toggle": [
     "Seçenekler geçişi"
   ],
@@ -1156,14 +1252,20 @@ export default {
   "Partition Info": [
     "Bölüm Bilgisi"
   ],
-  "Partitions": [
-    "Bölümler"
-  ],
   "Partitions needed for booting will also be adapted": [
     "Önyükleme için gereken bölümler de uyarlanacak"
   ],
   "Partitions needed for booting will remain at %s": [
     "Önyükleme için gereken bölümler %s konumunda kalacak"
+  ],
+  "Partitions that are not reused will be removed and that data will be lost.": [
+    "Tekrar kullanılmayan bölümler kaldırılacak ve bu veriler kaybolacaktır."
+  ],
+  "Partitions that are not reused will be resized as needed.": [
+    "Tekrar kullanılmayan bölümler ihtiyaç halinde yeniden boyutlandırılacaktır."
+  ],
+  "Partitions that are not reused would be resized if needed.": [
+    "Tekrar kullanılmayan bölümler gerektiğinde yeniden boyutlandırılacaktır."
   ],
   "Partitions to boot will be allocated at the following device.": [
     "Önyükleme için bölümler aşağıdaki aygıta tahsis edilecektir."
@@ -1246,6 +1348,9 @@ export default {
   "Provide email address": [
     "E-posta adresini belirtin"
   ],
+  "Provide registration code": [
+    "Kayıt kodunu sağlayın"
+  ],
   "Public SSH Key": [
     "Genel SSH Anahtarı"
   ],
@@ -1270,6 +1375,12 @@ export default {
   "Register": [
     "Kaydol"
   ],
+  "Register using SUSE server": [
+    "SUSE sunucusunu kullanarak kaydol"
+  ],
+  "Register using a custom registration server": [
+    "Özel bir kayıt sunucusu kullanarak kaydol"
+  ],
   "Registration": [
     "Kayıt"
   ],
@@ -1278,6 +1389,9 @@ export default {
   ],
   "Registration code": [
     "Kayıt kodu"
+  ],
+  "Registration server": [
+    "Kayıt sunucusu"
   ],
   "ReiserFS": [
     "ReiserFS"
@@ -1312,6 +1426,9 @@ export default {
   "Result": [
     "Sonuç"
   ],
+  "Reused partitions will not be shrunk": [
+    "Yeniden kullanılan bölümler küçültülmeyecektir"
+  ],
   "Review and fix": [
     "Gözden geçir ve düzelt"
   ],
@@ -1336,6 +1453,9 @@ export default {
   "SSID": [
     "SSID"
   ],
+  "SUSE Customer Center (SCC)": [
+    "SUSE Müşteri Merkezi (SMM)"
+  ],
   "Search": [
     "Arama"
   ],
@@ -1351,6 +1471,9 @@ export default {
   "Select": [
     "Seç"
   ],
+  "Select a device to define partitions or to mount": [
+    "Bölümleri tanımlamak veya bağlamak için bir aygıt seçin"
+  ],
   "Select a disk": [
     "Bir disk seçin"
   ],
@@ -1360,8 +1483,11 @@ export default {
   "Select a disk to create %s": [
     "%s oluşturmak için bir disk seçin"
   ],
-  "Select a disk to define partitions": [
-    "Bölümleri tanımlamak için bir disk seçin"
+  "Select a disk to define partitions or to mount": [
+    "Bölümleri tanımlamak veya bağlamak için bir disk seçin"
+  ],
+  "Select a disk to format as %s": [
+    "%s olarak biçimlendirilecek bir disk seçin"
   ],
   "Select a disk to install the system": [
     "Sistemi kurmak için bir disk seçin"
@@ -1372,8 +1498,11 @@ export default {
   "Select a solution to continue": [
     "Devam etmek için bir çözüm seçin"
   ],
-  "Select another disk to define partitions": [
-    "Bölümleri tanımlamak için başka bir disk seçin"
+  "Select another device to define partitions or to mount": [
+    "Bölümleri tanımlamak veya bağlamak için başka bir cihaz seçin"
+  ],
+  "Select another disk to define partitions or to mount": [
+    "Bölümleri tanımlamak veya bağlamak için başka bir disk seçin"
   ],
   "Select at least one disk.": [
     "En az bir disk seçin."
@@ -1396,14 +1525,20 @@ export default {
   "Select what to do with each partition.": [
     "Her bölümle ne yapılacağını seçin."
   ],
-  "Selected disk (cannot be changed)": [
-    "Seçili disk (değiştirilemez)"
+  "Selected disk cannot be changed": [
+    "Seçilen disk değiştirilemez"
   ],
   "Selected patterns": [
     "Seçilmiş desenler"
   ],
   "Server IP": [
     "Sunucu IP'si"
+  ],
+  "Server URL": [
+    "Sunucu URL'si"
+  ],
+  "Server options": [
+    "Sunucu seçenekleri"
   ],
   "Set DIAG Off": [
     "DIAG'ı Kapalı Olarak Ayarla"
@@ -1556,6 +1691,9 @@ export default {
   "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
     "Mevcut yapılandırma, %2$s ile %3$s arasında bir boyutta %1$s oluşturma girişimine yol açacaktır."
   ],
+  "The current file system will be mounted at %s": [
+    "Mevcut dosya sistemi %s konumuna bağlanacak"
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Veriler tutulacak, ancak mevcut bölümler ihtiyaç halinde yeniden boyutlandırılacak."
   ],
@@ -1564,6 +1702,15 @@ export default {
   ],
   "The device cannot be shrunk:": [
     "Cihaz daraltılamaz:"
+  ],
+  "The device will be formatted": [
+    "Cihaz biçimlendirilecek"
+  ],
+  "The device will be formatted as %1$s and mounted at %2$s": [
+    "Aygıt %1$s olarak biçimlendirilecek ve %2$s'ye bağlanacak"
+  ],
+  "The device will be mounted": [
+    "Cihaz bağlanacak"
   ],
   "The device will be mounted at %s.": [
     "Cihaz %s konumuna bağlanacak."
@@ -1591,6 +1738,9 @@ export default {
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Güvenilir Platform Modülünü (Trusted Platform Module) (TPM) şifrelenmiş cihazları otomatik olarak açacak şekilde yapılandırmanın son adımı, yeni sistemin ilk önyüklemesi sırasında gerçekleştirilecektir. Bunun çalışması için makinenin doğrudan yeni önyükleyiciye önyükleme yapması gerekir."
+  ],
+  "The following partitions will be created or mounted": [
+    "Aşağıdaki bölümler oluşturulacak veya bağlanacak"
   ],
   "The following software patterns are selected for installation:": [
     "Kurulum için aşağıdaki yazılım desenleri seçilmiştir:"
@@ -1627,6 +1777,9 @@ export default {
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "Minimum, isteğe bağlı olarak GiB veya GB gibi bir birimin izlediği bir sayı olmalıdır"
+  ],
+  "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
+    "Modal seçici, kullanıcıyı bunaltmadan, hızlı ve kolay kullanım için tasarlanmış basitleştirilmiş bir arayüz sunar."
   ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "Gerekli LVM fiziksel birimleri, mantıksal birimlerin boyutlarına göre seçilen disklere bölümler                  halinde eklenecektir. Birden fazla disk                  seçerseniz, fiziksel birimler birkaç diske dağıtılabilir."
@@ -1685,6 +1838,9 @@ export default {
   "The system will use %s as its default language.": [
     "Sistem varsayılan dil olarak %s dilini kullanacaktır."
   ],
+  "The whole device will be used for %s": [
+    "Tüm cihaz %s için kullanılacak"
+  ],
   "The zFCP disk was not activated.": [
     "zFCP diski etkinleştirilmedi."
   ],
@@ -1709,26 +1865,17 @@ export default {
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Bu eylem aşağıda listelenen cihazlarda depolanan tüm verileri yok edebilir. Lütfen devam etmek istediğinizi onaylayın."
   ],
-  "This disk will contain any partition needed for booting": [
-    "Bu disk, önyükleme için gereken tüm bölümleri içerecektir"
-  ],
-  "This disk will contain the LVM group '%s'": [
-    "Bu disk '%s' LVM grubunu içerecektir"
-  ],
-  "This disk will contain the LVM group '%s' and any partition needed to boot": [
-    "Bu disk, '%s' LVM grubunu ve önyükleme için gereken herhangi bir bölümü içerecektir"
-  ],
-  "This disk will contain the configured LVM groups": [
-    "Bu disk yapılandırılmış LVM gruplarını içerecektir"
-  ],
-  "This disk will contain the configured LVM groups and any partition needed to boot": [
-    "Bu disk, yapılandırılmış LVM gruplarını ve önyükleme için gereken tüm bölümleri içerecektir"
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Bu uzantı sunucuda mevcut değil. Sunucu yöneticisinden uzantıyı yansıtmasını isteyin."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "Bu ana bilgisayar adı dinamiktir ve yerel ağ yöneticisi tarafından yapılandırıldığı şekilde yeniden başlatma veya ağ güncellemesinden sonra değişebilir."
+  ],
+  "This license is not available in %s.": [
+    ""
+  ],
+  "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
+    "Bu desen, netlik ve verimlilik arasında bir denge kurar: modal, basit seçimler için her şeyi hafif tutarken, tam görünüm daha derin keşifleri ve özellikle çok sayıda cihaza sahip kullanıcılar için daha karmaşık eylemleri destekler."
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "Bu ürün kurulum sırasında yazılım desenlerinin seçilmesine izin vermez. Ancak kurulum tamamlandıktan sonra ek yazılım ekleyebilirsiniz."
@@ -1738,6 +1885,9 @@ export default {
   ],
   "This uses existing partitions at the disk": [
     "Bu, diskteki mevcut bölümleri kullanır"
+  ],
+  "This uses the existing file system at the disk": [
+    "Bu, diskteki mevcut dosya sistemini kullanır"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Bu yalnızca yükleyici arayüzünü etkileyecektir, yüklenecek ürünü değil. Ürünün yerelleştirmesini daha sonra Yerelleştirme ayarları sayfasında ayarlayabilirsiniz."
@@ -1781,6 +1931,9 @@ export default {
   "Up to %s can be recovered by shrinking the device.": [
     "Cihazın küçültülmesiyle %s'ye kadar geri kazanılabilir."
   ],
+  "Update available disks and activate crypt devices": [
+    ""
+  ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Ana bilgisayar adını şimdi veya daha sonra güncellemeniz, şu anda kayıtlı olan ana bilgisayar adını değiştirmeyecektir."
   ],
@@ -1796,47 +1949,83 @@ export default {
   "Use": [
     "Kullan"
   ],
-  "Use %s": [
-    "%s kullan"
+  "Use RAID %s": [
+    "RAID %s'yi kullan"
   ],
-  "Use %s for LVM and additional partitions": [
-    "LVM ve ek bölümler için %s kullanın"
+  "Use RAID %s for LVM and additional partitions": [
+    "LVM ve ek bölümler için RAID %s kullanın"
   ],
-  "Use %s for LVM, additional partitions and booting": [
-    "LVM, ek bölümler ve önyükleme için %s kullanın"
+  "Use RAID %s for LVM, additional partitions and booting": [
+    "LVM, ek bölümler ve önyükleme için RAID %s kullanın"
   ],
-  "Use %s for additional partitions": [
-    "Ek bölümler için %s kullanın"
+  "Use RAID %s for additional partitions": [
+    "Ek bölümler için RAID %s kullanın"
   ],
-  "Use %s for additional partitions and booting": [
-    "Ek bölümler ve önyükleme için %s kullanın"
+  "Use RAID %s for additional partitions and booting": [
+    "Ek bölümler ve önyükleme için RAID %s kullanın"
   ],
-  "Use %s to configure boot partitions": [
-    "Önyükleme bölümlerini yapılandırmak için %s kullanın"
+  "Use RAID %s to configure boot partitions": [
+    "Önyükleme bölümlerini yapılandırmak için RAID %s kullanın"
   ],
-  "Use %s to host LVM": [
-    "LVM'yi barındırmak için %s kullanın"
+  "Use RAID %s to host LVM": [
+    "LVM'yi barındırmak için RAID %s kullanın"
   ],
-  "Use %s to host LVM and boot": [
-    "LVM'yi barındırmak ve önyüklemek için %s kullanın"
+  "Use RAID %s to host LVM and boot": [
+    "LVM'yi barındırmak ve önyükleme yapmak için RAID %s'yi kullanın"
   ],
-  "Use %s to install": [
-    "Yüklemek için %s kullanın"
+  "Use RAID %s to install": [
+    "Kurulum için RAID %s kullanın"
   ],
-  "Use %s to install and boot": [
-    "Yüklemek ve önyüklemek için %s kullanın"
+  "Use RAID %s to install and boot": [
+    "Yükleme ve önyükleme için RAID %s kullanın"
   ],
-  "Use %s to install and host LVM": [
-    "LVM'yi yüklemek ve barındırmak için %s kullanın"
+  "Use RAID %s to install and host LVM": [
+    "LVM'yi yüklemek ve barındırmak için RAID %s'yi kullanın"
   ],
-  "Use %s to install, host LVM and boot": [
-    "LVM'yi yüklemek, barındırmak ve önyüklemek için %s kullanın"
+  "Use RAID %s to install, host LVM and boot": [
+    "LVM'yi yüklemek, barındırmak ve önyüklemek için RAID %s'yi kullanın"
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
     "Aygıtlarınızı ayarlamak için aşağıdaki eylemleri kullanın veya varsayılan yapılandırmayla sıfırdan başlamak için %s öğesine tıklayın."
   ],
   "Use available space": [
     "Mevcut alanı kullan"
+  ],
+  "Use disk %s": [
+    "%s diskini kullan"
+  ],
+  "Use disk %s for LVM and additional partitions": [
+    "LVM ve ek bölümler için %s diskini kullan"
+  ],
+  "Use disk %s for LVM, additional partitions and booting": [
+    "LVM, ek bölümler ve önyükleme için %s diskini kullanın"
+  ],
+  "Use disk %s for additional partitions": [
+    "Ek bölümler için %s diskini kullan"
+  ],
+  "Use disk %s for additional partitions and booting": [
+    "Ek bölümler ve önyükleme için %s diskini kullan"
+  ],
+  "Use disk %s to configure boot partitions": [
+    "Önyükleme bölümlerini yapılandırmak için %s diskini kullanın"
+  ],
+  "Use disk %s to host LVM": [
+    "LVM'yi barındırmak için %s diskini kullanın"
+  ],
+  "Use disk %s to host LVM and boot": [
+    "LVM'yi barındırmak ve önyükleme yapmak için %s diskini kullanın"
+  ],
+  "Use disk %s to install": [
+    "Yüklemek için %s diskini kullanın"
+  ],
+  "Use disk %s to install and boot": [
+    "Yükleme ve önyükleme için %s diskini kullanın"
+  ],
+  "Use disk %s to install and host LVM": [
+    "LVM'yi yüklemek ve barındırmak için %s diskini kullanın"
+  ],
+  "Use disk %s to install, host LVM and boot": [
+    "LVM'yi yüklemek, barındırmak ve önyüklemek için %s diskini kullanın"
   ],
   "Use for installation only": [
     "Sadece kurulum için kullanın"
@@ -1856,8 +2045,14 @@ export default {
   "Use suggested username": [
     "Önerilen kullanıcı adını kullan"
   ],
+  "Use the RAID without partitions": [
+    "RAID'i bölümler olmadan kullan"
+  ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     "Her önyüklemede otomatik olarak şifre çözmek için Güvenilir Platform Modülünü (TPM) kullanın"
+  ],
+  "Use the disk without partitions": [
+    "Bölümlendirme olmadan diski kullan"
   ],
   "Use these same settings for the selected product": [
     "Seçili ürün için aynı ayarları kullanın"
@@ -1954,6 +2149,9 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] açık"
+  ],
+  "[FIXME]": [
+    "[FIXME]"
   ],
   "approx. %s": [
     "yaklaşık %s"

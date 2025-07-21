@@ -59,7 +59,7 @@ module Agama
         #   false for local packages
         def start_provide(name, size, _remote)
           self.attempt = 1
-          logger.info("Downloading #{name}, size: #{size}")
+          logger.debug("Downloading #{name}, size: #{size}")
         end
 
         # Media change callback
@@ -91,7 +91,7 @@ module Agama
           # in other cases automatic retry usually does not make much sense
           if ["IO", "IO_SOFT"].include?(error_code) && attempt <= Repository::RETRY_COUNT
             self.attempt += 1
-            logger.info("Retry in #{Repository::RETRY_DELAY} seconds, attempt #{attempt}...")
+            logger.debug("Retry in #{Repository::RETRY_DELAY} seconds, attempt #{attempt}...")
             sleep(Repository::RETRY_DELAY)
 
             # retry

@@ -130,6 +130,7 @@ pub async fn storage_service(
         .route("/config_model/solve", get(solve_config_model))
         .route("/probe", post(probe))
         .route("/reprobe", post(reprobe))
+        .route("/reactivate", post(reactivate))
         .route("/devices/dirty", get(devices_dirty))
         .route("/devices/system", get(system_devices))
         .route("/devices/result", get(staging_devices))
@@ -329,6 +330,21 @@ async fn probe(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error>
 )]
 async fn reprobe(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
     Ok(Json(state.client.reprobe().await?))
+}
+
+/// Reactivate the storage devices.
+#[utoipa::path(
+    post,
+    path = "/reactivate",
+    context_path = "/api/reactivate",
+    responses(
+        (status = 200, description = "Devices were reactivated and probed, and the proposal was recalculated"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    ),
+    operation_id = "storage_reactivate"
+)]
+async fn reactivate(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
+    Ok(Json(state.client.reactivate().await?))
 }
 
 /// Gets whether the system is in a deprecated status.

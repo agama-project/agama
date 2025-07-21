@@ -95,13 +95,15 @@ module Agama
 
         # @param keep_config [Boolean] Whether to use the current storage config for calculating
         #   the proposal.
-        def probe(keep_config: false)
+        # @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided
+        #   LUKS passwords).
+        def probe(keep_config: false, keep_activation: true)
           busy_while do
             # Clean trees in advance to avoid having old objects exported in D-Bus.
             system_devices_tree.clean
             staging_devices_tree.clean
 
-            backend.probe(keep_config: keep_config)
+            backend.probe(keep_config: keep_config, keep_activation: keep_activation)
           end
         end
 
@@ -195,6 +197,7 @@ module Agama
         dbus_interface STORAGE_INTERFACE do
           dbus_method(:Probe) { probe }
           dbus_method(:Reprobe) { probe(keep_config: true) }
+          dbus_method(:Reactivate) { probe(keep_config: true, keep_activation: false) }
           dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
             busy_while { apply_config(serialized_config) }
           end

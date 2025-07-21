@@ -16,6 +16,11 @@
     <method name="Reprobe">
     </method>
     <!--
+      Similar to Reprobe, but resetting the previous activation (e.g., provided LUKS passwords).
+    -->
+    <method name="Reactivate">
+    </method>
+    <!--
       Sets the storage config.
     -->
     <method name="SetConfig">

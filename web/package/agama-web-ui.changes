@@ -1,9 +1,15 @@
 -------------------------------------------------------------------
-Thu Jul 17 11:26:17 UTC 2025 - David Diaz <dgonzalez@suse.com>
+Thu Jul 17 19:26:17 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Replaced all usage of generatePath with generateEncodedPath to
   ensure proper URL encoding of route parameters and prevent issues
   with special characters (bsc#1246551).
+  
+-------------------------------------------------------------------
+Thu Jul 17 15:32:42 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add button to allow re-probing storage devices.
+  (gh#agama-project/agama#2565)
 
 -------------------------------------------------------------------
 Wed Jul 16 15:39:14 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

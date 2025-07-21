@@ -303,9 +303,6 @@ export default {
   "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
     ""
   ],
-  "Choose what to with current content": [
-    "選擇如何處理目前內容"
-  ],
   "Clear": [
     "清除"
   ],
@@ -380,9 +377,6 @@ export default {
   ],
   "Connection not found or lost": [
     "未找到連接，或者連接中斷"
-  ],
-  "Content will be kept": [
-    "將會保留內容"
   ],
   "Continue": [
     "繼續"
@@ -555,6 +549,9 @@ export default {
   "Edit volume group": [
     "編輯磁碟區群組"
   ],
+  "Email": [
+    ""
+  ],
   "Empty LVM volume group %s": [
     "清空 LVM 磁碟區群組 %s"
   ],
@@ -593,6 +590,9 @@ export default {
   ],
   "ExFAT": [
     "ExFAT"
+  ],
+  "Example: https://myserver.com": [
+    ""
   ],
   "Excellent signal": [
     "訊號極佳"
@@ -657,6 +657,9 @@ export default {
   "First user": [
     "首個使用者"
   ],
+  "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
+    ""
+  ],
   "Format": [
     "格式化"
   ],
@@ -668,6 +671,9 @@ export default {
   ],
   "Format selected devices?": [
     "要格式化所選裝置？"
+  ],
+  "Format the whole device or mount an existing file system": [
+    ""
   ],
   "Formatted": [
     "已格式化"
@@ -834,6 +840,12 @@ export default {
   "Issuer": [
     "核發者"
   ],
+  "It is chosen for booting and for some LVM groups": [
+    ""
+  ],
+  "It is chosen for some LVM groups": [
+    ""
+  ],
   "It is not possible to allocate space for %s.": [
     "無法為 %s 配置空間。"
   ],
@@ -873,9 +885,6 @@ export default {
   "Language and keyboard": [
     "語言與鍵盤"
   ],
-  "License language": [
-    "授權語言"
-  ],
   "Loading": [
     "正在載入"
   ],
@@ -899,9 +908,6 @@ export default {
   ],
   "Logical volume name": [
     "邏輯磁碟區名稱"
-  ],
-  "Logical volumes": [
-    "邏輯磁碟區"
   ],
   "Login": [
     "登入"
@@ -1122,14 +1128,14 @@ export default {
   "Partition Info": [
     "分割區資訊"
   ],
-  "Partitions": [
-    "分割區"
-  ],
   "Partitions needed for booting will also be adapted": [
     "開機所需的分割區也將進行調整"
   ],
   "Partitions needed for booting will remain at %s": [
     "開機所需的分割區將保留在 %s 中"
+  ],
+  "Partitions that are not reused would be resized if needed.": [
+    ""
   ],
   "Partitions to boot will be allocated at the following device.": [
     "將會在以下裝置上配置開機分割區。"
@@ -1233,6 +1239,12 @@ export default {
   "Register": [
     "註冊"
   ],
+  "Register using SUSE server": [
+    ""
+  ],
+  "Register using a custom registration server": [
+    ""
+  ],
   "Registration": [
     "註冊"
   ],
@@ -1299,6 +1311,9 @@ export default {
   "SSID": [
     "SSID"
   ],
+  "SUSE Customer Center (SCC)": [
+    ""
+  ],
   "Search": [
     "搜尋"
   ],
@@ -1323,9 +1338,6 @@ export default {
   "Select a disk to create %s": [
     "選取用於建立 %s 的磁碟"
   ],
-  "Select a disk to define partitions": [
-    "選取一個要定義分割區的磁碟"
-  ],
   "Select a disk to install the system": [
     "選取用於安裝系統的磁碟"
   ],
@@ -1334,9 +1346,6 @@ export default {
   ],
   "Select a solution to continue": [
     "選取一個解決方案以繼續"
-  ],
-  "Select another disk to define partitions": [
-    "選取另一個要定義分割區的磁碟"
   ],
   "Select at least one disk.": [
     "請至少選取一個磁碟。"
@@ -1358,9 +1367,6 @@ export default {
   ],
   "Select what to do with each partition.": [
     "選取對每個分割區執行的動作。"
-  ],
-  "Selected disk (cannot be changed)": [
-    "所選磁碟 (無法變更)"
   ],
   "Selected patterns": [
     "選取的模式"
@@ -1569,6 +1575,9 @@ export default {
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "下限必須為數字，後面可跟 GiB 或 GB 等單位"
   ],
+  "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
+    ""
+  ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "將根據邏輯磁碟區的大小，將所需的 LVM 實體磁碟區做為                 分割區新增至所選磁碟上。如果選取多個磁碟，                 實體磁碟區可能會分散在多個磁碟上。"
   ],
@@ -1614,26 +1623,17 @@ export default {
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "此動作無法刪除下列裝置上儲存的任何資料。請確認您確定要繼續。"
   ],
-  "This disk will contain any partition needed for booting": [
-    "此磁碟將包含開機所需的任何分割區"
-  ],
-  "This disk will contain the LVM group '%s'": [
-    "此磁碟將包含 LVM 群組 '%s'"
-  ],
-  "This disk will contain the LVM group '%s' and any partition needed to boot": [
-    "此磁碟將包含 LVM 群組 '%s' 和開機所需的任何分割區"
-  ],
-  "This disk will contain the configured LVM groups": [
-    "此磁碟將包含設定的 LVM 群組"
-  ],
-  "This disk will contain the configured LVM groups and any partition needed to boot": [
-    "此磁碟將包含設定的 LVM 群組和開機所需的任何分割區"
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "無法在該伺服器上使用此延伸。您可以讓伺服器管理員鏡像該延伸。"
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "此主機名稱是動態的，可能會在重新開機或網路更新後變更，具體由本地網路系統管理員設定。"
+  ],
+  "This license is not available in %s.": [
+    ""
+  ],
+  "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
+    ""
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "此產品不允許在安裝期間選取軟體模式。不過，您可以在完成安裝後新增其他軟體。"
@@ -1686,6 +1686,9 @@ export default {
   "Up to %s can be recovered by shrinking the device.": [
     "透過縮小裝置最多可回收 %s 的空間。"
   ],
+  "Update available disks and activate crypt devices": [
+    ""
+  ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "現在或以後更新主機名稱不會變更目前註冊的主機名稱。"
   ],
@@ -1700,42 +1703,6 @@ export default {
   ],
   "Use": [
     "使用"
-  ],
-  "Use %s": [
-    "使用 %s"
-  ],
-  "Use %s for LVM and additional partitions": [
-    "將 %s 用於 LVM 及其他分割區"
-  ],
-  "Use %s for LVM, additional partitions and booting": [
-    "將 %s 用於 LVM、其他分割區及開機"
-  ],
-  "Use %s for additional partitions": [
-    "將 %s 用於其他分割區"
-  ],
-  "Use %s for additional partitions and booting": [
-    "將 %s 用於其他分割區及開機"
-  ],
-  "Use %s to configure boot partitions": [
-    "使用 %s 設定開機分割區"
-  ],
-  "Use %s to host LVM": [
-    "使用 %s 代管 LVM"
-  ],
-  "Use %s to host LVM and boot": [
-    "使用 %s 代管 LVM 及開機"
-  ],
-  "Use %s to install": [
-    "使用 %s 安裝"
-  ],
-  "Use %s to install and boot": [
-    "使用 %s 安裝及開機"
-  ],
-  "Use %s to install and host LVM": [
-    "使用 %s 安裝及代管 LVM"
-  ],
-  "Use %s to install, host LVM and boot": [
-    "使用 %s 安裝、代管 LVM 及開機"
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
     "使用下方動作設定您的裝置，或按一下 %s 以採用預設組態從頭開始。"
@@ -1859,6 +1826,9 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "已開啟 [大寫鎖定]"
+  ],
+  "[FIXME]": [
+    ""
   ],
   "approx. %s": [
     ""

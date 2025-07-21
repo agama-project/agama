@@ -54,6 +54,9 @@ export default {
   "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
     "Для %4$s буде створено розділ %1$s розміром від %2$s до %3$s, якщо це можливо"
   ],
+  "A file system will be used for the whole device": [
+    "Файлову систему буде використано для всього пристрою"
+  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Для нового розділу %2$s буде використано типовий мінімальний розмір %1$s"
   ],
@@ -108,6 +111,9 @@ export default {
   "Add LVM volume group": [
     "Додати групу томів LVM"
   ],
+  "Add a partition or mount an existing one": [
+    "Додати розділ або змонтувати наявний"
+  ],
   "Add an address": [
     "Додати адресу"
   ],
@@ -144,6 +150,9 @@ export default {
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     "Всі конфлікти вирішено, або не виявлено жодного. Ви можете безпечно продовжити встановлення."
   ],
+  "All content not configured to be mounted will be deleted": [
+    "Весь вміст, не налаштований на монтування, буде видалений"
+  ],
   "All content will be deleted": [
     "Весь вміст буде видалений"
   ],
@@ -159,6 +168,9 @@ export default {
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Крім зазначення першого користувача, можна налаштувати методи автентифікації для root-користувача."
   ],
+  "Already using all available devices": [
+    "Вже використані всі наявні пристрої"
+  ],
   "Already using all available disks": [
     "Вже використані всі наявні диски"
   ],
@@ -167,6 +179,9 @@ export default {
   ],
   "Any interface": [
     "Будь-який інтерфейс"
+  ],
+  "Any partition needed to boot will be configured.": [
+    "Усі розділи, необхідні для завантаження, буде налаштовано."
   ],
   "Apply selected solution": [
     "Застосувати обране рішення"
@@ -303,6 +318,9 @@ export default {
   "Change selection": [
     "Змінити вибір"
   ],
+  "Change the file system or mount point": [
+    "Змінити файлову систему або точку монтування"
+  ],
   "Channel ID": [
     "Ідентифікатор каналу"
   ],
@@ -327,9 +345,6 @@ export default {
   "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
     "Виберіть, як це підключення має бути пов'язане з мережевим інтерфейсом. Це допоможе контролювати, який інтерфейс буде використовуватися для підключення."
   ],
-  "Choose what to with current content": [
-    "Оберіть, що робити з поточним контентом"
-  ],
   "Clear": [
     "Очистити"
   ],
@@ -353,6 +368,9 @@ export default {
   ],
   "Configure LVM logical volume at %s volume group": [
     "Налаштування логічного тому LVM у групі томів %s"
+  ],
+  "Configure device %s": [
+    "Налаштувати пристрій %s"
   ],
   "Configure device menu": [
     "Меню налаштування пристрою"
@@ -405,8 +423,8 @@ export default {
   "Connection not found or lost": [
     "З'єднання не знайдено або втрачено"
   ],
-  "Content will be kept": [
-    "Вміст буде збережено"
+  "Content": [
+    "Вміст"
   ],
   "Continue": [
     "Продовжити"
@@ -444,6 +462,12 @@ export default {
   "Current %s": [
     "Поточна %s"
   ],
+  "Current content": [
+    "Поточний вміст"
+  ],
+  "Current partitions will be kept": [
+    "Поточні розділи буде збережено"
+  ],
   "Custom": [
     "По-своєму"
   ],
@@ -477,6 +501,9 @@ export default {
   "Default file system for generic logical volumes": [
     "Типова файлова система для звичайних логічних томів"
   ],
+  "Default file system for generic mount paths": [
+    "Типова файлова система для звичайних шляхів монтування"
+  ],
   "Default file system for generic partitions": [
     "Типова файлова система для звичайних розділів"
   ],
@@ -507,11 +534,20 @@ export default {
   "Delete volume group": [
     "Видалити групу томів"
   ],
+  "Description": [
+    "Опис"
+  ],
+  "Destroy current data and format device as": [
+    "Знищити поточні дані і відформатувати пристрій як"
+  ],
   "Destroy current data and format partition as": [
     "Знищити поточні дані і відформатувати розділ як"
   ],
   "Details": [
     "Подробиці"
+  ],
+  "Details for %s": [
+    "Подробиці для %s"
   ],
   "Details will appear after the connection is successfully established.": [
     "Подробиці з'являться після того як з'єднання буде успішно встановлено."
@@ -521,6 +557,9 @@ export default {
   ],
   "Device %s menu": [
     "Меню пристрою %s"
+  ],
+  "Device Selection": [
+    "Вибір пристрою"
   ],
   "Device details": [
     "Відомості про пристрій"
@@ -585,6 +624,9 @@ export default {
   "Edit volume group": [
     "Змінити групу томів"
   ],
+  "Email": [
+    "Електронна пошта"
+  ],
   "Empty LVM volume group %s": [
     "Очистити групу томів LVM %s"
   ],
@@ -624,6 +666,9 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
+  "Example: https://myserver.com": [
+    "Приклад: https://myserver.com"
+  ],
   "Excellent signal": [
     "Відмінний сигнал"
   ],
@@ -657,6 +702,9 @@ export default {
   "File system label": [
     "Ярлик файлової системи"
   ],
+  "Filesystems": [
+    "Файлові системи"
+  ],
   "Filter by description or keymap code": [
     "Фільтр за описом або кодом клавішної карти"
   ],
@@ -675,6 +723,9 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "Фільтр за територією, коду часового пояса або зміщенню UTC"
   ],
+  "Find space": [
+    "Знайти місце"
+  ],
   "Find space in %s": [
     "Знайти місце в %s"
   ],
@@ -687,8 +738,20 @@ export default {
   "First user": [
     "Перший користувач"
   ],
+  "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
+    "Для більш просунутих завдань користувачі можуть переключитися на повносторінкову, виділену версію, яка надає більше місця для деталізованого перегляду, додаткові стовпці, фільтри і розширену функціональність."
+  ],
   "Format": [
     "Формат"
+  ],
+  "Format RAID %s": [
+    "Форматувати RAID-масив %s"
+  ],
+  "Format device as": [
+    "Форматувати пристрій як"
+  ],
+  "Format disk %s": [
+    "Форматувати диск %s"
   ],
   "Format logical volume as": [
     "Форматувати логічний том як"
@@ -698,6 +761,9 @@ export default {
   ],
   "Format selected devices?": [
     "Відформатувати обрані пристрої?"
+  ],
+  "Format the whole device or mount an existing file system": [
+    "Відформатувати весь пристрій або змонтувати наявну файлову систему"
   ],
   "Formatted": [
     "Відформатовано"
@@ -866,6 +932,21 @@ export default {
   "Issuer": [
     "Сертифікаційний центр"
   ],
+  "It is chosen for booting": [
+    "Його обрано для завантаження"
+  ],
+  "It is chosen for booting and for some LVM groups": [
+    "Його обрано для завантаження та для деяких груп LVM"
+  ],
+  "It is chosen for booting and for the LVM group '%s'": [
+    "Його обрано для завантаження і для групи LVM «%s»"
+  ],
+  "It is chosen for some LVM groups": [
+    "Його обрано для деяких груп LVM"
+  ],
+  "It is chosen for the LVM group '%s'": [
+    "Його обрано для групи LVM '%s'"
+  ],
   "It is not possible to allocate space for %s.": [
     "Неможливо виділити простір для %s."
   ],
@@ -908,9 +989,6 @@ export default {
   "Let the installer propose a sensible size": [
     "Дозволити інсталятору запропонувати розумний розмір"
   ],
-  "License language": [
-    "Мова ліцензії"
-  ],
   "Loading": [
     "Завантаження"
   ],
@@ -935,8 +1013,8 @@ export default {
   "Logical volume name": [
     "Назва логічного тому"
   ],
-  "Logical volumes": [
-    "Логічні томи"
+  "Logical volumes for %s": [
+    "Логічні томи для %s"
   ],
   "Login": [
     "Вхід"
@@ -989,8 +1067,17 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "Більше мов може бути доступно на сторінці [Локалізації]"
   ],
+  "Moreover, the following partitions will be created or mounted": [
+    "Крім того, буде створено або змонтовано такі розділи"
+  ],
   "Mount Point": [
     "Точка монтування"
+  ],
+  "Mount RAID %s": [
+    "Монтувати RAID-масив %s"
+  ],
+  "Mount disk %s": [
+    "Монтувати диск %s"
   ],
   "Mount point": [
     "Точка монтування"
@@ -1112,6 +1199,9 @@ export default {
   "Not available": [
     "Недоступно"
   ],
+  "Not configured yet": [
+    "Ще не налаштовано"
+  ],
   "Not defined": [
     "Не заданий"
   ],
@@ -1139,6 +1229,12 @@ export default {
   "Only available if authentication by target is provided": [
     "Доступно тільки за умови аутентифікації за ціллю"
   ],
+  "Only reused partitions and space not assigned to any partition will be used.": [
+    "Будуть використовуватися тільки повторно використовувані розділи і простір, не призначений жодному розділу."
+  ],
+  "Only reused partitions will be used.": [
+    "Буде використано лише повторно використовувані розділи."
+  ],
   "Options toggle": [
     "Показ налаштувань"
   ],
@@ -1157,14 +1253,20 @@ export default {
   "Partition Info": [
     "Інформація про розділ"
   ],
-  "Partitions": [
-    "Розділи"
-  ],
   "Partitions needed for booting will also be adapted": [
     "Розділи, необхідні для завантаження, також будуть адаптовані"
   ],
   "Partitions needed for booting will remain at %s": [
     "Розділи, необхідні для завантаження, залишаться на %s"
+  ],
+  "Partitions that are not reused will be removed and that data will be lost.": [
+    "Розділи, які не використовуються повторно, буде видалено, а дані втрачено."
+  ],
+  "Partitions that are not reused will be resized as needed.": [
+    "Розділи, які не використовуються повторно, будуть змінені в розмірі в міру необхідності."
+  ],
+  "Partitions that are not reused would be resized if needed.": [
+    "Розділи, які не використовуються повторно, за необхідності будуть змінені в розмірах."
   ],
   "Partitions to boot will be allocated at the following device.": [
     "Розділи для завантаження буде виділено на наступному пристрої."
@@ -1247,6 +1349,9 @@ export default {
   "Provide email address": [
     "Вкажіть адресу електронної пошти"
   ],
+  "Provide registration code": [
+    "Вкажіть код реєстрації"
+  ],
   "Public SSH Key": [
     "Відкритий SSH-ключ"
   ],
@@ -1271,6 +1376,12 @@ export default {
   "Register": [
     "Зареєструвати"
   ],
+  "Register using SUSE server": [
+    "Реєстрація з допомогою сервера SUSE"
+  ],
+  "Register using a custom registration server": [
+    "Реєстрація за допомогою спеціального реєстраційного сервера"
+  ],
   "Registration": [
     "Реєстрація"
   ],
@@ -1279,6 +1390,9 @@ export default {
   ],
   "Registration code": [
     "Код реєстрації"
+  ],
+  "Registration server": [
+    "Сервер реєстрації"
   ],
   "ReiserFS": [
     "ReiserFS"
@@ -1313,6 +1427,9 @@ export default {
   "Result": [
     "Результат"
   ],
+  "Reused partitions will not be shrunk": [
+    "Повторно використані розділи не будуть зменшені"
+  ],
   "Review and fix": [
     "Переглянути та виправити"
   ],
@@ -1337,6 +1454,9 @@ export default {
   "SSID": [
     "Назва мережі"
   ],
+  "SUSE Customer Center (SCC)": [
+    "Центр обслуговування клієнтів SUSE (SCC)"
+  ],
   "Search": [
     "Пошук"
   ],
@@ -1352,6 +1472,9 @@ export default {
   "Select": [
     "Вибір"
   ],
+  "Select a device to define partitions or to mount": [
+    "Виберіть пристрій для визначення розділів або монтування"
+  ],
   "Select a disk": [
     "Оберіть диск"
   ],
@@ -1361,8 +1484,11 @@ export default {
   "Select a disk to create %s": [
     "Виберіть диск для створення %s"
   ],
-  "Select a disk to define partitions": [
-    "Виберіть диск для визначення розділів"
+  "Select a disk to define partitions or to mount": [
+    "Виберіть диск для визначення розділів або монтування"
+  ],
+  "Select a disk to format as %s": [
+    "Виберіть диск для форматування як %s"
   ],
   "Select a disk to install the system": [
     "Оберіть диск для встановлення системи"
@@ -1373,8 +1499,11 @@ export default {
   "Select a solution to continue": [
     "Виберіть рішення для продовження"
   ],
-  "Select another disk to define partitions": [
-    "Виберіть інший диск для створення розділів"
+  "Select another device to define partitions or to mount": [
+    "Виберіть інший пристрій для створення розділів або монтування"
+  ],
+  "Select another disk to define partitions or to mount": [
+    "Виберіть інший диск для створення розділів або монтування"
   ],
   "Select at least one disk.": [
     "Оберіть хоча б один диск."
@@ -1397,14 +1526,20 @@ export default {
   "Select what to do with each partition.": [
     "Оберіть, що робити з кожним розділом."
   ],
-  "Selected disk (cannot be changed)": [
-    "Обраний диск (неможливо змінити)"
+  "Selected disk cannot be changed": [
+    "Обраний диск неможливо змінити"
   ],
   "Selected patterns": [
     "Обрані шаблони"
   ],
   "Server IP": [
     "IP сервера"
+  ],
+  "Server URL": [
+    "URL сервера"
+  ],
+  "Server options": [
+    "Параметри сервера"
   ],
   "Set DIAG Off": [
     "Вимкнути DIAG"
@@ -1558,6 +1693,9 @@ export default {
   "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
     "Поточна конфігурація призведе до спроби утворення розділу %1$s розміром від %2$s до %3$s."
   ],
+  "The current file system will be mounted at %s": [
+    "Поточна файлова система буде змонтована за шляхом %s"
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Дані зберігаються, але розмір поточних розділів буде змінено в міру необхідності."
   ],
@@ -1566,6 +1704,15 @@ export default {
   ],
   "The device cannot be shrunk:": [
     "Пристрій не може бути зменшений:"
+  ],
+  "The device will be formatted": [
+    "Пристрій буде відформатований"
+  ],
+  "The device will be formatted as %1$s and mounted at %2$s": [
+    "Пристрій буде відформатовано як %1$s та змонтовано за шляхом %2$s"
+  ],
+  "The device will be mounted": [
+    "Пристрій буде змонтовано"
   ],
   "The device will be mounted at %s.": [
     "Пристрій буде змонтовано у %s."
@@ -1593,6 +1740,9 @@ export default {
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Останній крок з налаштування модуля довіреної платформи (TPM) для автоматичного відкриття зашифрованих пристроїв відбудеться під час першого завантаження нової системи. Щоб це спрацювало, комп'ютер повинен завантажитися безпосередньо з новим завантажувачем."
+  ],
+  "The following partitions will be created or mounted": [
+    "Будуть створені або змонтовані такі розділи"
   ],
   "The following software patterns are selected for installation:": [
     "Для інсталяції обрано наступні шаблони програмного забезпечення:"
@@ -1629,6 +1779,9 @@ export default {
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "Мінімальне значення повинно бути числом, за яким може слідувати одиниця виміру, наприклад, GiB або GB"
+  ],
+  "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
+    "Модальний селектор пропонує спрощений інтерфейс, розроблений для швидкого і прямого використання, не перевантажуючи користувача."
   ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "Необхідні фізичні томи LVM будуть додані як розділи на обраних дисках, виходячи з розмірів логічних томів. Якщо Ви виберете кілька дисків, фізичні томи можуть бути розподілені по кількох дисках."
@@ -1687,6 +1840,9 @@ export default {
   "The system will use %s as its default language.": [
     "Система буде використовувати %s як типову мову."
   ],
+  "The whole device will be used for %s": [
+    "Весь пристрій буде використано для %s"
+  ],
   "The zFCP disk was not activated.": [
     "Диск zFCP не було активовано."
   ],
@@ -1711,26 +1867,17 @@ export default {
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     "Ця дія може знищити будь-які дані, що зберігаються на перелічених нижче пристроях. Будь ласка, підтвердьте, що Ви дійсно хочете продовжити."
   ],
-  "This disk will contain any partition needed for booting": [
-    "Цей диск буде містити всі розділи, необхідні для завантаження"
-  ],
-  "This disk will contain the LVM group '%s'": [
-    "Цей диск міститиме групу LVM '%s'"
-  ],
-  "This disk will contain the LVM group '%s' and any partition needed to boot": [
-    "Цей диск міститиме групу LVM '%s' і будь-який розділ, необхідний для завантаження"
-  ],
-  "This disk will contain the configured LVM groups": [
-    "Цей диск міститиме налаштовані групи LVM"
-  ],
-  "This disk will contain the configured LVM groups and any partition needed to boot": [
-    "Цей диск міститиме налаштовані групи LVM і будь-який розділ, необхідний для завантаження"
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Це розширення недоступне на сервері. Попросіть адміністратора сервера віддзеркалити розширення."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "Це ім'я хоста є динамічним і може змінитися після перезавантаження або оновлення мережі, як це налаштовано адміністратором локальної мережі."
+  ],
+  "This license is not available in %s.": [
+    ""
+  ],
+  "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
+    "Цей підхід забезпечує баланс між ясністю та ефективністю: модальне вікно зберігає легкість для простого вибору, в той час як повноекранний режим підтримує глибше вивчення і складніші дії, спеціально для користувачів з великою кількістю пристроїв."
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "Цей продукт не дозволяє вибирати шаблони програмного забезпечення під час інсталяції. Однак Ви можете додати додаткове програмне забезпечення після завершення інсталяції."
@@ -1740,6 +1887,9 @@ export default {
   ],
   "This uses existing partitions at the disk": [
     "Для цього використовуються наявні розділи на диску"
+  ],
+  "This uses the existing file system at the disk": [
+    "Для цього використовується наявна файлова система на диску"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Це вплине тільки на інтерфейс установника, не на продукт, що встановлюється. Змінити параметри локалізації продукту Ви зможете пізніше на сторінці налаштувань локалізації."
@@ -1783,6 +1933,9 @@ export default {
   "Up to %s can be recovered by shrinking the device.": [
     "До %s можна відновити шляхом стискання пристрою."
   ],
+  "Update available disks and activate crypt devices": [
+    ""
+  ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Оновлення імені хоста зараз або пізніше не змінить поточне зареєстроване ім'я хоста."
   ],
@@ -1798,47 +1951,83 @@ export default {
   "Use": [
     "Використати"
   ],
-  "Use %s": [
-    "Використати %s"
+  "Use RAID %s": [
+    "Використати RAID-масив %s"
   ],
-  "Use %s for LVM and additional partitions": [
-    "Використати %s для LVM і додаткових розділів"
+  "Use RAID %s for LVM and additional partitions": [
+    "Використати RAID-масив %s для LVM і додаткових розділів"
   ],
-  "Use %s for LVM, additional partitions and booting": [
-    "Використати %s для розміщення LVM, додаткових розділів та тавантаження"
+  "Use RAID %s for LVM, additional partitions and booting": [
+    "Використати RAID-масив %s для LVM, додаткових розділів та завантаження"
   ],
-  "Use %s for additional partitions": [
-    "Використати %s для додаткових розділів"
+  "Use RAID %s for additional partitions": [
+    "Використати RAID-масив %s для додаткових розділів"
   ],
-  "Use %s for additional partitions and booting": [
-    "Використовувати %s для додаткових розділів і завантаження"
+  "Use RAID %s for additional partitions and booting": [
+    "Використати RAID-масив %s для додаткових розділів і завантаження"
   ],
-  "Use %s to configure boot partitions": [
-    "Використати %s для налаштування завантажувальних розділів"
+  "Use RAID %s to configure boot partitions": [
+    "Використати RAID-масив %s для налаштування завантажувальних розділів"
   ],
-  "Use %s to host LVM": [
-    "Використати %s для розміщення LVM"
+  "Use RAID %s to host LVM": [
+    "Використати RAID-масив %s для розміщення LVM"
   ],
-  "Use %s to host LVM and boot": [
-    "Використати %s для розміщення LVM і завантаження"
+  "Use RAID %s to host LVM and boot": [
+    "Використати RAID-масив %s для розміщення LVM і завантаження"
   ],
-  "Use %s to install": [
-    "Використати %s для встановлення"
+  "Use RAID %s to install": [
+    "Використати RAID-масив %s для встановлення"
   ],
-  "Use %s to install and boot": [
-    "Використати %s для встановлення та завантаження"
+  "Use RAID %s to install and boot": [
+    "Використати RAID-масив %s для встановлення та завантаження"
   ],
-  "Use %s to install and host LVM": [
-    "Використати %s для встановлення та розміщення LVM"
+  "Use RAID %s to install and host LVM": [
+    "Використати RAID-масив %s для встановлення та розміщення LVM"
   ],
-  "Use %s to install, host LVM and boot": [
-    "Використати %s для встановлення, розміщення LVM та завантаження"
+  "Use RAID %s to install, host LVM and boot": [
+    "Використати RAID-масив %s для встановлення, розміщення LVM та завантаження"
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
     "Виконайте наведені нижче дії, щоб налаштувати ваші пристрої, або натисніть %s, щоб почати з нуля з типовою конфігурацією."
   ],
   "Use available space": [
     "Використати вільний простір"
+  ],
+  "Use disk %s": [
+    "Використати диск %s"
+  ],
+  "Use disk %s for LVM and additional partitions": [
+    "Використати диск %s для LVM і додаткових розділів"
+  ],
+  "Use disk %s for LVM, additional partitions and booting": [
+    "Використати диск %s для LVM, додаткових розділів та завантаження"
+  ],
+  "Use disk %s for additional partitions": [
+    "Використати диск %s для додаткових розділів"
+  ],
+  "Use disk %s for additional partitions and booting": [
+    "Використати диск %s для додаткових розділів і завантаження"
+  ],
+  "Use disk %s to configure boot partitions": [
+    "Використати диск %s для налаштування завантажувальних розділів"
+  ],
+  "Use disk %s to host LVM": [
+    "Використати диск %s для розміщення LVM"
+  ],
+  "Use disk %s to host LVM and boot": [
+    "Використати диск %s для розміщення LVM і завантаження"
+  ],
+  "Use disk %s to install": [
+    "Використати диск %s для встановлення"
+  ],
+  "Use disk %s to install and boot": [
+    "Використати диск %s для встановлення та завантаження"
+  ],
+  "Use disk %s to install and host LVM": [
+    "Використати диск %s для встановлення та розміщення LVM"
+  ],
+  "Use disk %s to install, host LVM and boot": [
+    "Використати диск %s для встановлення, розміщення LVM та завантаження"
   ],
   "Use for installation only": [
     "Використовувати тільки при встановленні"
@@ -1858,8 +2047,14 @@ export default {
   "Use suggested username": [
     "Використайте запропоноване ім'я користувача"
   ],
+  "Use the RAID without partitions": [
+    "Використати RAID-масив без розділів"
+  ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     "Використовуйте довірений платформний модуль (TPM) для автоматичного розшифрування під час кожного завантаження"
+  ],
+  "Use the disk without partitions": [
+    "Використати диск без розділів"
   ],
   "Use these same settings for the selected product": [
     "Використовувати ці ж налаштування для обраного продукту"
@@ -1956,6 +2151,9 @@ export default {
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] увімкнений"
+  ],
+  "[FIXME]": [
+    "[FIXME]"
   ],
   "approx. %s": [
     "прибл. %s"

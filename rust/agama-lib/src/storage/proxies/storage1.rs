@@ -59,6 +59,9 @@ pub trait Storage1 {
     /// Reprobe method
     fn reprobe(&self) -> zbus::Result<()>;
 
+    /// Reactivate method
+    fn reactivate(&self) -> zbus::Result<()>;
+
     /// Set the storage config according to the JSON schema
     fn set_config(&self, settings: &str) -> zbus::Result<u32>;
 
