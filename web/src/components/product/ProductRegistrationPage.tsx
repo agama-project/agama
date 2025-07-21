@@ -40,6 +40,7 @@ import {
   TextInput,
   List,
   ListItem,
+  Divider,
   Stack,
 } from "@patternfly/react-core";
 import {
@@ -415,7 +416,8 @@ const Extensions = () => {
 
   return (
     <>
-      <Title headingLevel="h2">{_("Extensions")}</Title>
+      <Divider />
+      <Title headingLevel="h3">{_("Extensions")}</Title>
       <Stack hasGutter>{extensionComponents}</Stack>
     </>
   );
