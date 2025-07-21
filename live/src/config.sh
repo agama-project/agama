@@ -96,9 +96,12 @@ systemctl disable snapper-timeline.timer
 systemctl disable YaST2-Firstboot.service
 systemctl disable YaST2-Second-Stage.service
 
-# mask storage services (bsc#1246133)
+# Prevent premature activation of LVM (bsc#1246133)
 systemctl mask lvm2-monitor.service
-systemctl mask lvm-activate-system.service
+sed -i 's:# event_activation = 1:event_activation = 0:' /etc/lvm/lvm.conf
+
+# Prevent premature assembly of MD RAIDs (bsc#1245159)
+touch /etc/udev/rules.d/64-md-raid-assembly.rules
 
 # the "eurlatgr" is the default font for the English locale
 echo -e "\nFONT=eurlatgr.psfu" >> /etc/vconsole.conf
