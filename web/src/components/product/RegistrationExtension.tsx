@@ -30,7 +30,6 @@ import {
   FormGroup,
   Label,
   Title,
-  Stack,
 } from "@patternfly/react-core";
 import { AddonInfo, RegisteredAddonInfo } from "~/types/software";
 import { useRegisteredAddons, useRegisterAddonMutation } from "~/queries/software";
@@ -122,7 +121,7 @@ export default function RegistrationExtension({
   };
 
   return (
-    <Stack hasGutter>
+    <Content>
       {/* remove the "(BETA)" suffix, we display a Beta label instead */}
       <Title headingLevel="h4">
         {extension.label.replace(/\s*\(beta\)$/i, "")}{" "}
@@ -188,6 +187,6 @@ export default function RegistrationExtension({
           </Alert>
         )}
       </Content>
-    </Stack>
+    </Content>
   );
 }
