@@ -33,6 +33,7 @@ use url::Url;
 pub struct ScriptsRunner {
     pub path: PathBuf,
     insecure: bool,
+    idx: usize,
 }
 
 impl ScriptsRunner {
@@ -44,6 +45,7 @@ impl ScriptsRunner {
         Self {
             path: path.as_ref().to_path_buf(),
             insecure,
+            idx: 0,
         }
     }
 
@@ -53,12 +55,10 @@ impl ScriptsRunner {
     /// It saves the stdout, stderr and exit code to separate files.
     ///
     /// * url: script URL.
-    pub fn run(&self, url: &str) -> anyhow::Result<()> {
+    pub fn run(&mut self, url: &str) -> anyhow::Result<()> {
         create_dir_all(&self.path)?;
 
-        let file_name = self
-            .file_name_for(&url)
-            .unwrap_or(PathBuf::from("unnamed.sh"));
+        let file_name = self.file_name_for(&url)?;
 
         let path = self.path.join(&file_name);
         self.save_script(url, &path)?;
@@ -73,13 +73,20 @@ impl ScriptsRunner {
         &self.path
     }
 
-    fn file_name_for(&self, url: &str) -> Option<PathBuf> {
-        let parsed = Url::parse(&url).ok()?;
+    fn file_name_for(&mut self, url: &str) -> anyhow::Result<PathBuf> {
+        let parsed = Url::parse(&url)?;
+
+        self.idx += 1;
+        let unnamed = PathBuf::from(format!("{}-unnamed.sh", self.idx));
+
         let Some(path) = parsed.path_segments() else {
-            return None;
+            return Ok(unnamed);
         };
 
-        path.last().map(|s| PathBuf::from(s))
+        Ok(path
+            .last()
+            .map(|p| PathBuf::from(format!("{}-{p}", self.idx)))
+            .unwrap_or(unnamed))
     }
 
     fn save_script(&self, url: &str, path: &PathBuf) -> anyhow::Result<()> {
@@ -134,24 +141,24 @@ mod tests {
     #[test]
     fn test_run_script() {
         let url = script_path("success.sh");
-        let runner = script_runner();
+        let mut runner = script_runner();
         runner.run(&url).unwrap();
 
-        let contents = std::fs::read_to_string(runner.path().join("success.stderr")).unwrap();
+        let contents = std::fs::read_to_string(runner.path().join("1-success.stdout")).unwrap();
         assert_eq!(&contents, "SUCCESS\n");
-        let contents = std::fs::read_to_string(runner.path().join("success.exit")).unwrap();
+        let contents = std::fs::read_to_string(runner.path().join("1-success.exit")).unwrap();
         assert_eq!(&contents, "0");
     }
 
     #[test]
     fn test_run_script_failed() {
         let url = script_path("error.sh");
-        let runner = script_runner();
+        let mut runner = script_runner();
         runner.run(&url).unwrap();
 
-        let contents = std::fs::read_to_string(runner.path().join("error.stderr")).unwrap();
+        let contents = std::fs::read_to_string(runner.path().join("1-error.stderr")).unwrap();
         assert_eq!(&contents, "ERROR\n");
-        let contents = std::fs::read_to_string(runner.path().join("error.exit")).unwrap();
+        let contents = std::fs::read_to_string(runner.path().join("1-error.exit")).unwrap();
         assert_eq!(&contents, "1");
     }
 }

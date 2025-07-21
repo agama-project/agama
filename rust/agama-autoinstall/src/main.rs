@@ -45,7 +45,7 @@ async fn main() -> anyhow::Result<()> {
 
     let scripts = args.get("inst.script");
     // TODO: add support to disable SSL checks.
-    let runner = ScriptsRunner::new("/run/agama/inst-scripts", false);
+    let mut runner = ScriptsRunner::new("/run/agama/inst-scripts", false);
     for url in scripts {
         println!("Running script from {}", &url);
         if let Err(error) = runner.run(&url) {
