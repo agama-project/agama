@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 24 13:19:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Introduce inst.auto_insecure and inst.script_insecure to disable
+  SSL checks for inst.auto and inst.script (bsc#1246836).
+
+-------------------------------------------------------------------
 Wed Jul 23 14:48:53 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Added "--insecure" option to "agama config load" and
@@ -24,8 +30,8 @@ Mon Jul 21 15:07:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Mon Jul 21 14:35:57 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Add support for an inst.script that allows to run an arbitrary
-  script (bsc#1246702, gh#agama-project/agama#2589).
+- Add support for an inst.script option that allows to run an
+  arbitrary script (bsc#1246702, gh#agama-project/agama#2589).
 
 -------------------------------------------------------------------
 Mon Jul 21 14:17:25 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
@@ -56,7 +62,6 @@ Wed Jul 16 19:05:48 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 - Fix crash when an Agama profile contains only the zfcp section by
   providing better error report when product selection have to be
   done before or in the same profile (bsc#1246601)
-
 
 -------------------------------------------------------------------
 Wed Jul 16 15:37:34 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
