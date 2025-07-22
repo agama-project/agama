@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 22 07:53:34 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- fix .changes errors reported by obs-service-source_validator
+  (gh#agama-project/agama#2593)
+
+-------------------------------------------------------------------
 Mon Jul 21 15:07:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 17
@@ -28,6 +34,11 @@ Fri Jul 18 06:54:08 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
   (gh#agama-project/agama#2580).
 
 -------------------------------------------------------------------
+Thu Jul 17 10:35:10 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adjust the information included in the logs (gh#agama-project/agama#2575).
+
+-------------------------------------------------------------------
 Wed Jul 16 19:05:48 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix crash when an Agama profile contains only the zfcp section by
@@ -42,11 +53,6 @@ Wed Jul 16 15:37:34 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   language in the same territory as fallback (bsc#1238364,
   gh#agama-project/agama#2571).
 - Add the language tag to the /licences/:id endpoint.
-
--------------------------------------------------------------------
-Thu Jul 17 10:35:10 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
-
-- Adjust the information included in the logs (gh#agama-project/agama#2575).
 
 -------------------------------------------------------------------
 Wed Jul 16 14:55:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
@@ -103,7 +109,6 @@ Wed Jul  9 12:25:08 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
   registration code is ommited (bsc#1246069)
 
 -------------------------------------------------------------------
-
 Mon Jul  7 13:22:05 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve handling of the inst.auto option (gh#agama-project/agama#2534):
