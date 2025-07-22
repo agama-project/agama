@@ -1,4 +1,7 @@
-name: CI - ISO definition
+name: "CI - Changes"
+
+# Manually run the OBS source validator service to mainly check the consistency
+# of the *.changes files.
 
 permissions:
   contents: read
@@ -10,9 +13,9 @@ on:
       # list is used below for the pull request event. Keep both lists in sync!!
 
       # this file as well
-      - .github/workflows/ci-live.yml
-      # any change in the service subfolder
-      - live/**
+      - .github/workflows/ci-changes.yml
+      # any .changes file
+      - "**/*.changes"
 
   pull_request:
     paths:
@@ -20,30 +23,16 @@ on:
       # list is used above for the push event. Keep both lists in sync!!
 
       # this file as well
-      - .github/workflows/ci-live.yml
-      # any change in the service subfolder
-      - live/**
-
-  # allow running manually
-  workflow_dispatch:
+      - .github/workflows/ci-changes.yml
+      # any .changes file
+      - "**/*.changes"
 
 jobs:
-  live_tests:
+  check:
     runs-on: ubuntu-latest
-    env:
-      COVERAGE: 1
-
-    defaults:
-      run:
-        working-directory: ./live
-
-    strategy:
-      fail-fast: false
-      matrix:
-        distro: [ "tumbleweed" ]
 
     container:
-      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
 
     steps:
 
@@ -54,11 +43,9 @@ jobs:
       # disable unused repositories to have faster refresh
       run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
 
-    - name: Install development files
-      run: zypper --non-interactive install ShellCheck make agama-cli
+    - name: Install OBS service
+      run: zypper --non-interactive install --no-recommends --allow-downgrade obs-service-source_validator
 
-    - name: Run shellcheck
-      run: make shellcheck
-
-    - name: Run the tests
-      run: make check
+    - name: Check the sources
+      # %h prints the directory name of the file
+      run: find . -name "*.changes" -type f -printf "%h\n" | xargs -I @ bash -c "echo 'Checking sources in @...' && cd @ && /usr/lib/obs/service/source_validator"
