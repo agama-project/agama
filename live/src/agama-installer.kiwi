@@ -157,6 +157,8 @@
         <package name="qrencode"/>
         <package name="qemu-guest-agent" />
         <package name="aaa_base-extras"/>
+        <!-- to work correctly with the fips=1 boot parameter -->
+        <package name="libopenssl-3-fips-provider"/>
         <!-- it can be used by users in AutoYaST pre-scripts -->
         <package name="perl-XML-Simple"/>
         <archive name="live-root.tar.xz"/>
