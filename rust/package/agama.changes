@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 22 10:00:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Fixed a potential race condition when deleting network connections
+  in deactivate_connection() (gh#agama-project/agama#2582).
+
+-------------------------------------------------------------------
 Mon Jul 21 15:07:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 17
