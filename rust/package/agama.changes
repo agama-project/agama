@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jul 22 10:47:36 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Log ProgressChanged events (gh#agama-project/agama#2597).
+
+-------------------------------------------------------------------
 Tue Jul 22 07:53:34 UTC 2025 - Martin Vidner <mvidner@suse.com>
 
 - fix .changes errors reported by obs-service-source_validator
