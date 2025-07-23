@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 23 08:08:23 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- In Firefox disable downloading the binary H.264 codec from
+  ciscobinary.openh264.org
+
+-------------------------------------------------------------------
 Tue Jul 22 10:05:30 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Include the "libopenssl-3-fips-provider" package in the installer
