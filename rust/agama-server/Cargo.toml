@@ -66,3 +66,6 @@ path = "src/agama-web-server.rs"
 [dev-dependencies]
 http-body-util = "0.1.2"
 tokio-test = "0.4.4"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ci)'] }
