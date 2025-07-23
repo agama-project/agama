@@ -30,18 +30,22 @@ use agama_lib::{
     error::ServiceError,
     http::Event,
     proxies::questions::{GenericQuestionProxy, QuestionWithPasswordProxy, QuestionsProxy},
-    questions::model::{Answer, GenericQuestion, PasswordAnswer, Question, QuestionWithPassword},
+    questions::{
+        config::QuestionsConfig,
+        model::{Answer, GenericQuestion, PasswordAnswer, Question, QuestionWithPassword},
+    },
 };
 use agama_utils::dbus::{extract_id_from_path, get_property};
-use anyhow::Context;
+use anyhow::{anyhow, Context};
 use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::{IntoResponse, Response},
-    routing::{delete, get},
+    routing::{delete, get, put},
     Json, Router,
 };
-use std::{collections::HashMap, pin::Pin};
+use std::{collections::HashMap, io::Write, pin::Pin};
+use tempfile::NamedTempFile;
 use tokio_stream::{Stream, StreamExt};
 use zbus::{
     fdo::ObjectManagerProxy,
@@ -238,6 +242,24 @@ impl QuestionsClient<'_> {
             .await?;
         Ok(())
     }
+
+    pub async fn set_interactive(&self, value: bool) -> Result<(), ServiceError> {
+        self.questions_proxy.set_interactive(value).await?;
+        Ok(())
+    }
+
+    pub async fn set_answers(&self, answers: Vec<Answer>) -> Result<(), ServiceError> {
+        let mut file = NamedTempFile::new().context("Cannot create the answers file")?;
+        let json = serde_json::to_string(&answers)?;
+        write!(file, "{}", &json).context("Cannot write the answers file")?;
+        self.questions_proxy.remove_answers().await?;
+        let path = file
+            .path()
+            .to_str()
+            .ok_or(anyhow!("Could not create the answers file"))?;
+        self.questions_proxy.add_answer_file(path).await?;
+        Ok(())
+    }
 }
 
 #[derive(Clone)]
@@ -253,6 +275,7 @@ pub async fn questions_service(dbus: zbus::Connection) -> Result<Router, Service
         .route("/", get(list_questions).post(create_question))
         .route("/:id", delete(delete_question))
         .route("/:id/answer", get(get_answer).put(answer_question))
+        .route("/config", put(set_config))
         .with_state(state);
     Ok(router)
 }
@@ -390,4 +413,28 @@ async fn create_question(
 ) -> Result<Json<Question>, Error> {
     let res = state.questions.create_question(question).await?;
     Ok(Json(res))
+}
+
+#[utoipa::path(
+    put,
+    path = "/config",
+    context_path = "/api/questions",
+    responses(
+        (status = 200, description = "set questions configuration"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn set_config(
+    State(state): State<QuestionsState<'_>>,
+    Json(config): Json<QuestionsConfig>,
+) -> Result<(), Error> {
+    if let Some(interactive) = config.interactive {
+        state.questions.set_interactive(interactive).await?;
+    }
+
+    if let Some(answers) = config.answers {
+        state.questions.set_answers(answers).await?;
+    }
+
+    Ok(())
 }
