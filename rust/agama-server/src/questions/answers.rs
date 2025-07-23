@@ -23,6 +23,8 @@ use std::collections::HashMap;
 use agama_lib::questions::GenericQuestion;
 use serde::{Deserialize, Serialize};
 
+use crate::questions::AnswerStrategy;
+
 use super::QuestionsError;
 
 /// Data structure for single JSON answer. For variables specification see
@@ -97,7 +99,7 @@ impl Answers {
     }
 }
 
-impl crate::questions::AnswerStrategy for Answers {
+impl AnswerStrategy for Answers {
     fn id(&self) -> u8 {
         Answers::id()
     }

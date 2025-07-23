@@ -51,6 +51,9 @@ pub trait Questions {
     /// AddAnswerFile method
     fn add_answer_file(&self, path: &str) -> zbus::Result<()>;
 
+    /// Remove Answers method
+    fn remove_answers(&self) -> zbus::Result<()>;
+
     /// Delete method
     fn delete(&self, question: &zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()>;
 

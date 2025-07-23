@@ -20,7 +20,8 @@
 
 use std::collections::HashMap;
 
-use agama_lib::questions::{self, GenericQuestion, WithPassword};
+use agama_lib::questions::{self, model::Answer, GenericQuestion, WithPassword};
+use serde::Serialize;
 use zbus::{fdo::ObjectManager, interface, zvariant::ObjectPath, Connection};
 
 mod answers;
@@ -299,6 +300,12 @@ impl Questions {
         let answers = answers::Answers::new_from_file(path.as_str())
             .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
         self.answer_strategies.push(Box::new(answers));
+        Ok(())
+    }
+
+    fn remove_answers(&mut self) -> zbus::fdo::Result<()> {
+        self.answer_strategies
+            .retain(|s| s.id() == DefaultAnswers::id());
         Ok(())
     }
 }
