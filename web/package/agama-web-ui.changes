@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jul 23 14:54:43 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Display RAID level at the storage results table (bsc#1244697).
+
+-------------------------------------------------------------------
 Mon Jul 21 15:07:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 17
