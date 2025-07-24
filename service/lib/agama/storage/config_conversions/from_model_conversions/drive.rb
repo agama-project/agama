@@ -75,12 +75,6 @@ module Agama
               partitions:  convert_partitions(encryption_model)
             }
           end
-
-          # @see WithEncryption
-          def convert_encryption
-            # Do not encrypt if the drive is not going to be formatted.
-            super if drive_model[:filesystem]
-          end
         end
       end
     end

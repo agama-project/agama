@@ -29,6 +29,12 @@ module Agama
         module WithEncryption
           # @return [Configs::Encryption, nil]
           def convert_encryption
+            # Do not encrypt a device that is not really going to be used
+            return if model_json[:name] && !model_json[:mountPath]
+
+            # Do not encrypt a reused device
+            return if model_json[:name] && model_json.dig(:filesystem, :reuse)
+
             return if encryption_model.nil?
 
             FromModelConversions::Encryption.new(encryption_model).convert
