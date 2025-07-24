@@ -155,8 +155,8 @@ describe Agama::Storage::ModelSupportChecker do
       context "and the device is not going to be skipped" do
         let(:condition) { nil }
 
-        it "returns false" do
-          expect(subject.supported?).to eq(false)
+        it "returns true" do
+          expect(subject.supported?).to eq(true)
         end
       end
     end
@@ -492,7 +492,10 @@ describe Agama::Storage::ModelSupportChecker do
               partitions: [
                 { search: "*", delete: true },
                 {
-                  filesystem: { path: "/home", type: "xfs" }
+                  filesystem: { path: "/home", type: "xfs" },
+                  encryption: {
+                    luks1: { password: "12345" }
+                  }
                 }
               ]
             }
@@ -500,7 +503,16 @@ describe Agama::Storage::ModelSupportChecker do
           volumeGroups: [
             {
               name:            "data",
-              physicalVolumes: [{ generate: ["pv"] }],
+              physicalVolumes: [
+                {
+                  generate: {
+                    targetDevices: ["pv"],
+                    encryption: {
+                      luks1: { password: "12345" }
+                    }
+                  }
+                }
+              ],
               logicalVolumes:  [
                 {
                   filesystem: { path: "/data" },
