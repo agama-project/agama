@@ -407,9 +407,11 @@ describe Agama::Storage::Proposal do
             storage: {
               drives: [
                 {
-                  encryption: {
-                    luks1: { password: "12345" }
-                  }
+                  partitions: [
+                    {
+                      encryption: { luks1: { password: "12345" } }
+                    }
+                  ]
                 }
               ]
             }

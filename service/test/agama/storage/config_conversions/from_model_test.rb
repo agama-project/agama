@@ -1123,6 +1123,11 @@ describe Agama::Storage::ConfigConversions::FromModel do
                   name:      "/dev/vda1",
                   mountPath: "/test"
                 },
+                {
+                  name:       "/dev/vda2",
+                  mountPath:  "/test2",
+                  filesystem: { reuse: true }
+                },
                 {}
               ]
             }
@@ -1145,15 +1150,20 @@ describe Agama::Storage::ConfigConversions::FromModel do
         }
       end
 
-      it "sets #encryption to the new partitions" do
+      it "sets #encryption to the newly formatted partitions" do
         config = subject.convert
         partitions = config.partitions
         new_partitions = partitions.reject(&:search)
         reused_partitions = partitions.select(&:search)
+        mounted_partitions, reformatted_partitions = reused_partitions.partition do |part|
+          part.filesystem.reuse?
+        end
 
         expect(new_partitions.map { |p| p.encryption.method.id }).to all(eq(:luks1))
         expect(new_partitions.map { |p| p.encryption.password }).to all(eq("12345"))
-        expect(reused_partitions.map(&:encryption)).to all(be_nil)
+        expect(reformatted_partitions.map { |p| p.encryption.method.id }).to all(eq(:luks1))
+        expect(reformatted_partitions.map { |p| p.encryption.password }).to all(eq("12345"))
+        expect(mounted_partitions.map(&:encryption)).to all(be_nil)
       end
 
       it "sets #encryption for the automatically created physical volumes" do

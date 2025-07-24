@@ -50,15 +50,17 @@ module Agama
       # Whether the config is not supported by the config model.
       #
       # @return [Boolean]
-      def unsupported_config? # rubocop:disable Metrics/CyclomaticComplexity
+      def unsupported_config? # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         any_unsupported_device? ||
           any_partitionable_without_name? ||
-          any_partitionable_with_encryption? ||
           any_volume_group_without_name? ||
           any_volume_group_with_pvs? ||
           any_partition_without_mount_path? ||
           any_logical_volume_without_mount_path? ||
-          any_logical_volume_with_encryption?
+          any_logical_volume_with_encryption? ||
+          any_different_encryption? ||
+          any_missing_encryption? ||
+          any_extra_encryption?
       end
 
       # Whether there is any device that is not supported by the model.
@@ -87,13 +89,6 @@ module Agama
             !device_config.search&.skip_device? &&
             !device_config.search&.name
         end
-      end
-
-      # Whether there is any mandatory drive with encryption.
-      #
-      # @return [Boolean]
-      def any_partitionable_with_encryption?
-        config.supporting_partitions.any? { |d| !d.search&.skip_device? && !d.encryption.nil? }
       end
 
       # Whether there is any volume group without a name.
@@ -198,6 +193,64 @@ module Agama
           partition_config.size &&
           !partition_config.size.default? &&
           partition_config.size.min == Y2Storage::DiskSize.zero
+      end
+
+      # Whether there are different encryptions.
+      #
+      # The model only supports a general encryption that applies to everything.
+      #
+      # @return [Boolean]
+      def any_different_encryption?
+        config.valid_encryptions.uniq.size > 1
+      end
+
+      # Whether an encryption is missing.
+      #
+      # @return [Boolean]
+      def any_missing_encryption?
+        any_missing_device_encryption? || any_missing_volume_group_encryption?
+      end
+
+      # The model generates an encryption for all formatted devices if the filesystem is not reused.
+      # @see #any_missing_encryption?
+      #
+      # @return [Boolean]
+      def any_missing_device_encryption?
+        return false if config.valid_encryptions.none?
+
+        [config.valid_drives, config.valid_md_raids, config.valid_partitions]
+          .flatten
+          .reject(&:encryption)
+          .select(&:filesystem)
+          .reject { |c| c.filesystem.reuse? }
+          .any?
+      end
+
+      # The model generates a encryption for the target devices for physical volumes.
+      # @see #any_missing_encryption?
+      #
+      # @return [Boolean]
+      def any_missing_volume_group_encryption?
+        return false if config.valid_encryptions.none?
+
+        config.volume_groups
+          .reject { |c| c.physical_volumes_devices.none? }
+          .reject(&:physical_volumes_encryption)
+          .any?
+      end
+
+      # Whether there is an extra encryption.
+      #
+      # The model does not encrypt a device if the device is not formatted or its filesystem is
+      # reused.
+      #
+      # @return [Boolean]
+      def any_extra_encryption?
+        [config.valid_drives, config.valid_md_raids, config.valid_partitions]
+          .flatten
+          .select(&:encryption)
+          .select { |c| c.filesystem.nil? || c.filesystem.reuse? }
+          .any?
       end
     end
   end

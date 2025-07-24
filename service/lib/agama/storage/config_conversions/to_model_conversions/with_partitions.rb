@@ -29,14 +29,10 @@ module Agama
         module WithPartitions
           # @return [Array<Hash>]
           def convert_partitions
-            valid_partitions
+            config.partitions
+              .reject(&:skipped?)
               .map { |p| ToModelConversions::Partition.new(p).convert }
               .compact
-          end
-
-          # @return [Array<Configs::Partition>]
-          def valid_partitions
-            config.partitions.reject { |p| p.search&.skip_device? }
           end
         end
       end
