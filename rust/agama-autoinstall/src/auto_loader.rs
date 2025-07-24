@@ -112,7 +112,7 @@ impl ConfigAutoLoader {
         let text = format!(
             r#"
                 It was not possible to load the configuration from {url}.
-                It was unreachable or invalid. Do you want to try again?"
+                It was unreachable or invalid. Do you want to try again?
                 "#
         );
         let generic = GenericQuestion {
