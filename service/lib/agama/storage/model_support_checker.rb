@@ -53,7 +53,6 @@ module Agama
       def unsupported_config? # rubocop:disable Metrics/CyclomaticComplexity
         any_unsupported_device? ||
           any_partitionable_without_name? ||
-          any_partitionable_with_encryption? ||
           any_volume_group_without_name? ||
           any_volume_group_with_pvs? ||
           any_partition_without_mount_path? ||
@@ -87,13 +86,6 @@ module Agama
             !device_config.search&.skip_device? &&
             !device_config.search&.name
         end
-      end
-
-      # Whether there is any mandatory drive with encryption.
-      #
-      # @return [Boolean]
-      def any_partitionable_with_encryption?
-        config.supporting_partitions.any? { |d| !d.search&.skip_device? && !d.encryption.nil? }
       end
 
       # Whether there is any volume group without a name.
