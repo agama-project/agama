@@ -72,12 +72,6 @@ module Agama
             }
           end
 
-          # @see WithEncryption
-          def convert_encryption
-            # Do not encrypt if the partition is going to be deleted.
-            super unless partition_model[:delete] || partition_model[:deleteIfNeeded]
-          end
-
           # @return [Y2Storage::PartitionId, nil]
           def convert_id
             value = partition_model[:id]
