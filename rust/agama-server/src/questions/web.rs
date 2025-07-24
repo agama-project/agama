@@ -31,8 +31,9 @@ use agama_lib::{
     http::Event,
     proxies::questions::{GenericQuestionProxy, QuestionWithPasswordProxy, QuestionsProxy},
     questions::{
+        answers::{self, Answers},
         config::QuestionsConfig,
-        model::{Answer, GenericQuestion, PasswordAnswer, Question, QuestionWithPassword},
+        model::{self, GenericQuestion, PasswordAnswer, Question, QuestionWithPassword},
     },
 };
 use agama_utils::dbus::{extract_id_from_path, get_property};
@@ -181,7 +182,7 @@ impl QuestionsClient<'_> {
             .map_err(|e| e.into())
     }
 
-    pub async fn get_answer(&self, id: u32) -> Result<Option<Answer>, ServiceError> {
+    pub async fn get_answer(&self, id: u32) -> Result<Option<model::Answer>, ServiceError> {
         let question_path = OwnedObjectPath::from(
             ObjectPath::try_from(format!("/org/opensuse/Agama1/Questions/{}", id))
                 .context("Failed to create dbus path")?,
@@ -191,7 +192,7 @@ impl QuestionsClient<'_> {
             InterfaceName::from_static_str("org.opensuse.Agama1.Questions.WithPassword")
                 .context("Failed to create interface name for question with password")?,
         );
-        let mut result = Answer::default();
+        let mut result = model::Answer::default();
         let question = objects
             .get(&question_path)
             .ok_or(ServiceError::QuestionNotExist(id))?;
@@ -217,7 +218,7 @@ impl QuestionsClient<'_> {
         }
     }
 
-    pub async fn answer(&self, id: u32, answer: Answer) -> Result<(), ServiceError> {
+    pub async fn answer(&self, id: u32, answer: model::Answer) -> Result<(), ServiceError> {
         let question_path = OwnedObjectPath::from(
             ObjectPath::try_from(format!("/org/opensuse/Agama1/Questions/{}", id))
                 .context("Failed to create dbus path")?,
@@ -248,9 +249,10 @@ impl QuestionsClient<'_> {
         Ok(())
     }
 
-    pub async fn set_answers(&self, answers: Vec<Answer>) -> Result<(), ServiceError> {
+    pub async fn set_answers(&self, answers: Vec<answers::Answer>) -> Result<(), ServiceError> {
         let mut file = NamedTempFile::new().context("Cannot create the answers file")?;
-        let json = serde_json::to_string(&answers)?;
+        let all_answers = Answers::new(answers);
+        let json = serde_json::to_string(&all_answers)?;
         write!(file, "{}", &json).context("Cannot write the answers file")?;
         self.questions_proxy.remove_answers().await?;
         let path = file
@@ -367,7 +369,7 @@ async fn get_answer(
 async fn answer_question(
     State(state): State<QuestionsState<'_>>,
     Path(question_id): Path<u32>,
-    Json(answer): Json<Answer>,
+    Json(answer): Json<model::Answer>,
 ) -> Result<(), Error> {
     let res = state.questions.answer(question_id, answer).await;
     Ok(res?)
