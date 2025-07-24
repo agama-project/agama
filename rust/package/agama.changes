@@ -5,6 +5,12 @@ Wed Jul 23 14:48:53 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
   "agama config generate" commands (related to bsc#1246836)
 
 -------------------------------------------------------------------
+Wed Jul 23 11:37:04 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix CLI connection update when using an special character in
+  the connection ID (bsc#1246930, gh#agama-project/agama#2605).
+
+-------------------------------------------------------------------
 Tue Jul 22 07:53:34 UTC 2025 - Martin Vidner <mvidner@suse.com>
 
 - fix .changes errors reported by obs-service-source_validator

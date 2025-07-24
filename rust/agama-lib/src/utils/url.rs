@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,11 +18,21 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Utility module for Agama.
+use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 
-mod file_format;
-mod transfer;
-pub mod url;
+pub fn encode(value: &str) -> String {
+    utf8_percent_encode(value, NON_ALPHANUMERIC).to_string()
+}
 
-pub use file_format::*;
-pub use transfer::*;
+#[cfg(test)]
+mod tests {
+
+    use super::encode;
+
+    #[test]
+    fn test_encode_value() {
+        let id = "Wired #1";
+        let encoded_id = encode(id);
+        assert_eq!(encoded_id, "Wired%20%231");
+    }
+}
