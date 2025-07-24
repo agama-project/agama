@@ -58,8 +58,9 @@ module Agama
           any_partition_without_mount_path? ||
           any_logical_volume_without_mount_path? ||
           any_logical_volume_with_encryption? ||
+          any_different_encryption? ||
           any_missing_encryption? ||
-          any_different_encryption?
+          any_extra_encryption?
       end
 
       # Whether there is any device that is not supported by the model.
@@ -194,68 +195,62 @@ module Agama
           partition_config.size.min == Y2Storage::DiskSize.zero
       end
 
-      # Whether an encryption is missing.
+      # Whether there are different encryptions.
       #
-      # Right now, the model only supports a general encryption that applies to everything.
+      # The model only supports a general encryption that applies to everything.
+      #
+      # @return [Boolean]
+      def any_different_encryption?
+        config.encryptions.uniq.size > 1
+      end
+
+      # Whether an encryption is missing.
       #
       # @return [Boolean]
       def any_missing_encryption?
+        any_missing_device_encryption? || any_missing_volume_group_encryption?
+      end
+
+      # The model generates an encryption for all formatted devices if the filesystem is not reused.
+      # @see #any_missing_encryption?
+      #
+      # @return [Boolean]
+      def any_missing_device_encryption?
         return false if config.encryptions.none?
 
-        any_missing_drive_encryption? ||
-          any_missing_md_raid_encryption? ||
-          any_missing_partition_encryption? ||
-          any_missing_volume_group_encryption?
-      end
-
-      # Whether there is a drive with a missing encryption (see {#any_missing_encryption?}).
-      #
-      # @return [Boolean]
-      def any_missing_drive_encryption?
-        config.drives
+        [config.drives, config.md_raids, config.partitions]
+          .flatten
+          .reject(&:encryption)
           .select(&:filesystem)
-          .reject(&:encryption)
+          .reject { |c| c.filesystem.reuse? }
           .any?
       end
 
-      # Whether there is a MD RAID with a missing encryption (see {#any_missing_encryption?}).
-      #
-      # @return [Boolean]
-      def any_missing_md_raid_encryption?
-        config.md_raids
-          .select(&:filesystem)
-          .reject(&:encryption)
-          .any?
-      end
-
-      # Whether there is a partition with a missing encryption (see {#any_missing_encryption?}).
-      #
-      # @return [Boolean]
-      def any_missing_partition_encryption?
-        config.partitions
-          .reject(&:delete?)
-          .reject(&:delete_if_needed?)
-          .reject(&:encryption)
-          .any?
-      end
-
-      # Whether there is a volume group with a missing encryption (see {#any_missing_encryption?}).
+      # The model generates a encryption for the target devices for physical volumes.
+      # @see #any_missing_encryption?
       #
       # @return [Boolean]
       def any_missing_volume_group_encryption?
+        return false if config.encryptions.none?
+
         config.volume_groups
           .reject { |c| c.physical_volumes_devices.none? }
           .reject(&:physical_volumes_encryption)
           .any?
       end
 
-      # Whether there are different encryptions.
+      # Whether there is an extra encryption.
       #
-      # Right now, the model only supports a general encryption that applies to everything.
+      # The model does not encrypt a device if the device is not formatted or its filesystem is
+      # reused.
       #
       # @return [Boolean]
-      def any_different_encryption?
-        config.encryptions.uniq.size > 1
+      def any_extra_encryption?
+        [config.drives, config.md_raids, config.partitions]
+          .flatten
+          .select(&:encryption)
+          .select { |c| c.filesystem.nil? || c.filesystem.reuse? }
+          .any?
       end
     end
   end

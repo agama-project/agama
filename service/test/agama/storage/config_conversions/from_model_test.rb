@@ -1120,8 +1120,8 @@ describe Agama::Storage::ConfigConversions::FromModel do
               name:       "/dev/vda",
               partitions: [
                 {
-                  name:       "/dev/vda1",
-                  mountPath:  "/test"
+                  name:      "/dev/vda1",
+                  mountPath: "/test"
                 },
                 {
                   name:       "/dev/vda2",

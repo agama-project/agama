@@ -507,7 +507,7 @@ describe Agama::Storage::ModelSupportChecker do
                 {
                   generate: {
                     targetDevices: ["pv"],
-                    encryption: {
+                    encryption:    {
                       luks1: { password: "12345" }
                     }
                   }
