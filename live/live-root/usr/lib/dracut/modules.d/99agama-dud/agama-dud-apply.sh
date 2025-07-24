@@ -41,7 +41,7 @@ apply_updates() {
     file="${DUD_DIR}/${filename}"
     # FIXME: use an index because two updates, coming from different places, can have the same name.
     echo "Fetching a Driver Update Disk from $dud_url to ${file}"
-    if ! $AGAMA_CLI download $options "$dud_url" "${file}"; then
+    if ! $AGAMA_CLI $options download "$dud_url" "${file}"; then
       warn "Failed to fetch the Driver Update Disk"
       continue
     fi
