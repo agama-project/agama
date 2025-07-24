@@ -99,7 +99,7 @@ pub async fn run(
     http_client: BaseHTTPClient,
     monitor: MonitorClient,
     subcommand: ConfigCommands,
-    insecure: bool
+    insecure: bool,
 ) -> anyhow::Result<()> {
     let store = SettingsStore::new(http_client.clone()).await?;
 
@@ -115,9 +115,7 @@ pub async fn run(
             validate(&http_client, CliInput::Full(json.clone())).await?;
             Ok(())
         }
-        ConfigCommands::Load {
-            url_or_path,
-        } => {
+        ConfigCommands::Load { url_or_path } => {
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
             let contents = url_or_path.read_to_string(insecure)?;
             // FIXME: invalid profile still gets loaded
@@ -130,9 +128,7 @@ pub async fn run(
             Ok(())
         }
         ConfigCommands::Validate { url_or_path } => validate(&http_client, url_or_path).await,
-        ConfigCommands::Generate {
-            url_or_path,
-        } => {
+        ConfigCommands::Generate { url_or_path } => {
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
 
             generate(&http_client, url_or_path, insecure).await

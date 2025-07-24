@@ -322,10 +322,9 @@ pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
             let client = build_http_client(api_url, cli.opts.insecure, true).await?;
             run_logs_cmd(client, subcommand).await?
         }
-        Commands::Download {
-            url,
-            destination,
-        } => download_file(&url, &destination, cli.opts.insecure)?,
+        Commands::Download { url, destination } => {
+            download_file(&url, &destination, cli.opts.insecure)?
+        }
         Commands::Auth(subcommand) => {
             let client = build_http_client(api_url, cli.opts.insecure, false).await?;
             run_auth_cmd(client, subcommand).await?;
