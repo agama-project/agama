@@ -190,6 +190,16 @@ module Agama
         drives + drives.flat_map(&:partitions)
       end
 
+      # All encryption configs.
+      #
+      # @return [Array<Configs::Encryption>]
+      def encryptions
+        [
+          supporting_encryption.map(&:encryption),
+          volume_groups.map(&:physical_volumes_encryption)
+        ].flatten.compact
+      end
+
       # Configs directly using a device with the given alias.
       #
       # @note Devices using the given alias as a target device (e.g., for creating physical volumes)
