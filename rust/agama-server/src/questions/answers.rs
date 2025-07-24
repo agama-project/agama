@@ -23,7 +23,7 @@ use std::collections::HashMap;
 use agama_lib::questions::GenericQuestion;
 use serde::{Deserialize, Serialize};
 
-use crate::questions::AnswerStrategy;
+use agama_lib::questions::answers::AnswerStrategy;
 
 use super::QuestionsError;
 
@@ -125,9 +125,7 @@ impl AnswerStrategy for Answers {
 
 #[cfg(test)]
 mod tests {
-    use agama_lib::questions::{GenericQuestion, WithPassword};
-
-    use crate::questions::AnswerStrategy;
+    use agama_lib::questions::{answers::AnswerStrategy, GenericQuestion, WithPassword};
 
     use super::*;
 

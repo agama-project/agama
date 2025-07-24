@@ -20,8 +20,7 @@
 
 use std::collections::HashMap;
 
-use agama_lib::questions::{self, model::Answer, GenericQuestion, WithPassword};
-use serde::Serialize;
+use agama_lib::questions::{self, answers::AnswerStrategy, GenericQuestion, WithPassword};
 use zbus::{fdo::ObjectManager, interface, zvariant::ObjectPath, Connection};
 
 mod answers;
@@ -104,30 +103,6 @@ impl WithPasswordObject {
 enum QuestionType {
     Base,
     BaseWithPassword,
-}
-
-/// Trait for objects that can provide answers to all kind of Question.
-///
-/// If no strategy is selected or the answer is unknown, then ask to the user.
-trait AnswerStrategy {
-    /// Id for quick runtime inspection of strategy type
-    fn id(&self) -> u8;
-    /// Provides answer for generic question
-    ///
-    /// I gets as argument the question to answer. Returned value is `answer`
-    /// property or None. If `None` is used, it means that this object does not
-    /// answer to given question.
-    fn answer(&self, question: &GenericQuestion) -> Option<String>;
-    /// Provides answer and password for base question with password
-    ///
-    /// I gets as argument the question to answer. Returned value is pair
-    /// of `answer` and `password` properties. If `None` is used in any
-    /// position it means that this object does not respond to given property.
-    ///
-    /// It is object responsibility to provide correct pair. For example if
-    /// possible answer can be "Ok" and "Cancel". Then for `Ok` password value
-    /// should be provided and for `Cancel` it can be `None`.
-    fn answer_with_password(&self, question: &WithPassword) -> (Option<String>, Option<String>);
 }
 
 /// AnswerStrategy that provides as answer the default option.
