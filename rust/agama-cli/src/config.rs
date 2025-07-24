@@ -52,9 +52,6 @@ pub enum ConfigCommands {
     Load {
         /// JSON file: URL or path or `-` for standard input
         url_or_path: Option<CliInput>,
-        /// Disables SSL verification for HTTPS downloads
-        #[arg(short, long)]
-        insecure: bool,
     },
 
     /// Validate a profile using JSON Schema
@@ -83,9 +80,6 @@ pub enum ConfigCommands {
     Generate {
         /// JSON file: URL or path or `-` for standard input
         url_or_path: Option<CliInput>,
-        /// Disables SSL verification for HTTPS downloads
-        #[arg(short, long)]
-        insecure: bool,
     },
 
     /// Edit and update installation option using an external editor.
@@ -105,6 +99,7 @@ pub async fn run(
     http_client: BaseHTTPClient,
     monitor: MonitorClient,
     subcommand: ConfigCommands,
+    insecure: bool
 ) -> anyhow::Result<()> {
     let store = SettingsStore::new(http_client.clone()).await?;
 
@@ -122,7 +117,6 @@ pub async fn run(
         }
         ConfigCommands::Load {
             url_or_path,
-            insecure,
         } => {
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
             let contents = url_or_path.read_to_string(insecure)?;
@@ -138,7 +132,6 @@ pub async fn run(
         ConfigCommands::Validate { url_or_path } => validate(&http_client, url_or_path).await,
         ConfigCommands::Generate {
             url_or_path,
-            insecure,
         } => {
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
 
