@@ -190,14 +190,37 @@ module Agama
         drives + drives.flat_map(&:partitions)
       end
 
-      # All encryption configs.
+      # Encryption configs, excluding encryptions from skipped devices.
       #
       # @return [Array<Configs::Encryption>]
-      def encryptions
+      def valid_encryptions
+        valid_devices = supporting_encryption.reject { |c| skipped?(c) }
+
         [
-          supporting_encryption.map(&:encryption),
+          valid_devices.map(&:encryption),
           volume_groups.map(&:physical_volumes_encryption)
         ].flatten.compact
+      end
+
+      # Drive configs, excluding skipped ones.
+      #
+      # @return [Array<Configs::Drive>]
+      def valid_drives
+        drives.reject { |d| skipped?(d) }
+      end
+
+      # MD RAID configs, excluding skipped ones.
+      #
+      # @return [Array<Configs::MdRaid>]
+      def valid_md_raids
+        md_raids.reject { |r| skipped?(r) }
+      end
+
+      # Partitions configs, excluding skipped ones.
+      #
+      # @return [Array<Configs::Partition>]
+      def valid_partitions
+        partitions.reject { |p| skipped?(p) }
       end
 
       # Configs directly using a device with the given alias.
@@ -277,6 +300,16 @@ module Agama
         else
           false
         end
+      end
+
+      # Whether the config is skipped.
+      #
+      # @param config
+      # @return [Boolean]
+      def skipped?(config)
+        return false unless config.respond_to?(:skipped?)
+
+        config.skipped?
       end
     end
   end

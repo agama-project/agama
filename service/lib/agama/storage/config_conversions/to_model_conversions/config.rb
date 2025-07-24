@@ -58,7 +58,7 @@ module Agama
 
           # @return [Hash]
           def convert_encryption
-            encryption = config.encryptions.first
+            encryption = config.valid_encryptions.first
             return unless encryption
 
             ToModelConversions::Encryption.new(encryption).convert
@@ -66,27 +66,17 @@ module Agama
 
           # @return [Array<Hash>]
           def convert_drives
-            valid_drives.map { |d| ToModelConversions::Drive.new(d).convert }
+            config.valid_drives.map { |d| ToModelConversions::Drive.new(d).convert }
           end
 
           # @return [Array<Hash>]
           def convert_md_raids
-            valid_md_raids.map { |r| ToModelConversions::MdRaid.new(r).convert }
+            config.valid_md_raids.map { |r| ToModelConversions::MdRaid.new(r).convert }
           end
 
           # @return [Array<Hash>]
           def convert_volume_groups
             config.volume_groups.map { |v| ToModelConversions::VolumeGroup.new(v, config).convert }
-          end
-
-          # @return [Array<Configs::Drive>]
-          def valid_drives
-            config.drives.reject { |d| d.search&.skip_device? }
-          end
-
-          # @return [Array<Configs::MdRaid>]
-          def valid_md_raids
-            config.md_raids.reject { |r| r.search&.skip_device? }
           end
         end
       end

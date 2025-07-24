@@ -201,7 +201,7 @@ module Agama
       #
       # @return [Boolean]
       def any_different_encryption?
-        config.encryptions.uniq.size > 1
+        config.valid_encryptions.uniq.size > 1
       end
 
       # Whether an encryption is missing.
@@ -216,9 +216,9 @@ module Agama
       #
       # @return [Boolean]
       def any_missing_device_encryption?
-        return false if config.encryptions.none?
+        return false if config.valid_encryptions.none?
 
-        [config.drives, config.md_raids, config.partitions]
+        [config.valid_drives, config.valid_md_raids, config.valid_partitions]
           .flatten
           .reject(&:encryption)
           .select(&:filesystem)
@@ -231,7 +231,7 @@ module Agama
       #
       # @return [Boolean]
       def any_missing_volume_group_encryption?
-        return false if config.encryptions.none?
+        return false if config.valid_encryptions.none?
 
         config.volume_groups
           .reject { |c| c.physical_volumes_devices.none? }
@@ -246,7 +246,7 @@ module Agama
       #
       # @return [Boolean]
       def any_extra_encryption?
-        [config.drives, config.md_raids, config.partitions]
+        [config.valid_drives, config.valid_md_raids, config.valid_partitions]
           .flatten
           .select(&:encryption)
           .select { |c| c.filesystem.nil? || c.filesystem.reuse? }
