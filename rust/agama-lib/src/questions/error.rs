@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2024] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,11 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod strategy;
-pub use strategy::AnswerStrategy;
-
-mod default;
-pub use default::DefaultAnswers;
-
-mod custom;
-pub use custom::{Answer, Answers};
+#[derive(thiserror::Error, Debug)]
+pub enum QuestionsError {
+    #[error("Could not read the answers file: {0}")]
+    IO(std::io::Error),
+    #[error("Could not deserialize the answers file: {0}")]
+    Deserialize(serde_json::Error),
+}
