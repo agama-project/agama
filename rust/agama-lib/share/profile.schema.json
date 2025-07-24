@@ -262,6 +262,25 @@
         }
       }
     },
+    "questions": {
+      "title": "How to handle Agama questions",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "interactive": {
+          "title": "Interactive mode",
+          "description": "Whether to run Agama in interactive mode. If set to false, Agama will use the default values for each question.",
+          "type": "boolean"
+        },
+        "answers": {
+          "title": "Pre-defined answer for each question.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/answer"
+          }
+        }
+      }
+    },
     "product": {
       "title": "Product to install",
       "type": "object",
@@ -954,6 +973,34 @@
       },
       "required": ["destination"],
       "oneOf": [{ "required": ["url"] }, { "required": ["content"] }]
+    },
+    "answer": {
+      "title": "Automatic answer to questions",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "class": {
+          "title": "Question class",
+          "description": "Each question has a \"class\" which works as an identifier.",
+          "type": "string",
+          "examples": ["storage.activate_multipath"]
+        },
+        "text": {
+          "title": "Question text",
+          "description": "Question full text",
+          "type": "string"
+        },
+        "answer": {
+          "title": "Question answer",
+          "description": "Answer to use for the question.",
+          "type": "string"
+        },
+        "password": {
+          "title": "Answer for a password-based question",
+          "description": "Answer to use for a question that expects an answer",
+          "type": "string"
+        }
+      }
     }
   }
 }
