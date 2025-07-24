@@ -30,7 +30,7 @@ use console::style;
 use fluent_uri::Uri;
 use tempfile::Builder;
 
-use crate::{cli_input::CliInput, cli_output::CliOutput, show_progress};
+use crate::{cli_input::CliInput, cli_output::CliOutput, show_progress, GlobalOpts};
 
 const DEFAULT_EDITOR: &str = "/usr/bin/vi";
 
@@ -99,7 +99,7 @@ pub async fn run(
     http_client: BaseHTTPClient,
     monitor: MonitorClient,
     subcommand: ConfigCommands,
-    insecure: bool,
+    opts: GlobalOpts,
 ) -> anyhow::Result<()> {
     let store = SettingsStore::new(http_client.clone()).await?;
 
@@ -117,7 +117,7 @@ pub async fn run(
         }
         ConfigCommands::Load { url_or_path } => {
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
-            let contents = url_or_path.read_to_string(insecure)?;
+            let contents = url_or_path.read_to_string(opts.insecure)?;
             // FIXME: invalid profile still gets loaded
             validate(&http_client, CliInput::Full(contents.clone())).await?;
             let result = InstallSettings::from_json(&contents, &InstallationContext::from_env()?)?;
@@ -131,7 +131,7 @@ pub async fn run(
         ConfigCommands::Generate { url_or_path } => {
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
 
-            generate(&http_client, url_or_path, insecure).await
+            generate(&http_client, url_or_path, opts.insecure).await
         }
         ConfigCommands::Edit { editor } => {
             let model = store.load().await?;
