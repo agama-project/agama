@@ -18,10 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use url::form_urlencoded::byte_serialize;
+use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 
-pub fn encoded(value: String) -> String {
-    let serialized_value: String = byte_serialize(value.as_bytes()).collect();
+pub fn encode(value: &str) -> String {
+    let serialized_value: String = utf8_percent_encode(value, NON_ALPHANUMERIC).to_string();
     // Encode space to '%20' as per url standard
     // Should be fixed by https://github.com/servo/rust-url/pull/1028
     serialized_value.replace("+", "%20")
@@ -30,12 +30,12 @@ pub fn encoded(value: String) -> String {
 #[cfg(test)]
 mod tests {
 
-    use super::encoded;
+    use super::encode;
 
     #[test]
     fn test_encode_value() {
         let id = "Wired #1";
-        let encoded_id = encoded(id.to_string());
+        let encoded_id = encode(id);
         assert_eq!(encoded_id, "Wired%20%231");
     }
 }
