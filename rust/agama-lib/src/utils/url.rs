@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,11 +18,24 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Utility module for Agama.
+use url::form_urlencoded::byte_serialize;
 
-mod file_format;
-mod transfer;
-pub mod url;
+pub fn encoded(value: String) -> String {
+    let serialized_value: String = byte_serialize(value.as_bytes()).collect();
+    // Encode space to '%20' as per url standard
+    // Should be fixed by https://github.com/servo/rust-url/pull/1028
+    serialized_value.replace("+", "%20")
+}
 
-pub use file_format::*;
-pub use transfer::*;
+#[cfg(test)]
+mod tests {
+
+    use super::encoded;
+
+    #[test]
+    fn test_encode_value() {
+        let id = "Wired #1";
+        let encoded_id = encoded(id.to_string());
+        assert_eq!(encoded_id, "Wired%20%231");
+    }
+}
