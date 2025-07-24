@@ -21,10 +21,7 @@
 use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 
 pub fn encode(value: &str) -> String {
-    let serialized_value: String = utf8_percent_encode(value, NON_ALPHANUMERIC).to_string();
-    // Encode space to '%20' as per url standard
-    // Should be fixed by https://github.com/servo/rust-url/pull/1028
-    serialized_value.replace("+", "%20")
+    utf8_percent_encode(value, NON_ALPHANUMERIC).to_string()
 }
 
 #[cfg(test)]
