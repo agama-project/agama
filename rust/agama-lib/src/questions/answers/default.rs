@@ -18,11 +18,29 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod strategy;
-pub use strategy::AnswerStrategy;
+use crate::questions::{GenericQuestion, WithPassword};
 
-mod default;
-pub use default::DefaultAnswers;
+use super::AnswerStrategy;
 
-mod custom;
-pub use custom::{Answer, Answers};
+/// AnswerStrategy that provides as answer the default option.
+pub struct DefaultAnswers;
+
+impl DefaultAnswers {
+    pub fn id() -> u8 {
+        1
+    }
+}
+
+impl AnswerStrategy for DefaultAnswers {
+    fn id(&self) -> u8 {
+        DefaultAnswers::id()
+    }
+
+    fn answer(&self, question: &GenericQuestion) -> Option<String> {
+        Some(question.default_option.clone())
+    }
+
+    fn answer_with_password(&self, question: &WithPassword) -> (Option<String>, Option<String>) {
+        (Some(question.base.default_option.clone()), None)
+    }
+}

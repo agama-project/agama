@@ -20,19 +20,17 @@
 
 use std::collections::HashMap;
 
-use agama_lib::questions::GenericQuestion;
+use crate::questions::{GenericQuestion, QuestionsError};
 use serde::{Deserialize, Serialize};
 
-use agama_lib::questions::answers::AnswerStrategy;
-
-use super::QuestionsError;
+use super::AnswerStrategy;
 
 /// Data structure for single JSON answer. For variables specification see
 /// corresponding [agama_lib::questions::GenericQuestion] fields.
 /// The *matcher* part is: `class`, `text`, `data`.
 /// The *answer* part is: `answer`, `password`.
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
-struct Answer {
+pub struct Answer {
     pub class: Option<String>,
     pub text: Option<String>,
     /// A matching GenericQuestion can have other data fields too
@@ -111,7 +109,7 @@ impl AnswerStrategy for Answers {
 
     fn answer_with_password(
         &self,
-        question: &agama_lib::questions::WithPassword,
+        question: &crate::questions::WithPassword,
     ) -> (Option<String>, Option<String>) {
         // use here fact that with password share same matchers as generic one
         let answer = self.find_answer(&question.base);
@@ -125,7 +123,7 @@ impl AnswerStrategy for Answers {
 
 #[cfg(test)]
 mod tests {
-    use agama_lib::questions::{answers::AnswerStrategy, GenericQuestion, WithPassword};
+    use crate::questions::{answers::AnswerStrategy, GenericQuestion, WithPassword};
 
     use super::*;
 

@@ -20,19 +20,14 @@
 
 use std::collections::HashMap;
 
-use agama_lib::questions::{self, answers::AnswerStrategy, GenericQuestion, WithPassword};
+use agama_lib::questions::{
+    self,
+    answers::{AnswerStrategy, Answers, DefaultAnswers},
+    GenericQuestion, WithPassword,
+};
 use zbus::{fdo::ObjectManager, interface, zvariant::ObjectPath, Connection};
 
-mod answers;
 pub mod web;
-
-#[derive(thiserror::Error, Debug)]
-pub enum QuestionsError {
-    #[error("Could not read the answers file: {0}")]
-    IO(std::io::Error),
-    #[error("Could not deserialize the answers file: {0}")]
-    Deserialize(serde_json::Error),
-}
 
 #[derive(Clone, Debug)]
 struct GenericQuestionObject(questions::GenericQuestion);
@@ -103,29 +98,6 @@ impl WithPasswordObject {
 enum QuestionType {
     Base,
     BaseWithPassword,
-}
-
-/// AnswerStrategy that provides as answer the default option.
-struct DefaultAnswers;
-
-impl DefaultAnswers {
-    pub fn id() -> u8 {
-        1
-    }
-}
-
-impl AnswerStrategy for DefaultAnswers {
-    fn id(&self) -> u8 {
-        DefaultAnswers::id()
-    }
-
-    fn answer(&self, question: &GenericQuestion) -> Option<String> {
-        Some(question.default_option.clone())
-    }
-
-    fn answer_with_password(&self, question: &WithPassword) -> (Option<String>, Option<String>) {
-        (Some(question.base.default_option.clone()), None)
-    }
 }
 
 pub struct Questions {
@@ -272,7 +244,7 @@ impl Questions {
 
     fn add_answer_file(&mut self, path: String) -> zbus::fdo::Result<()> {
         tracing::info!("Adding answer file {}", path);
-        let answers = answers::Answers::new_from_file(path.as_str())
+        let answers = Answers::new_from_file(path.as_str())
             .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
         self.answer_strategies.push(Box::new(answers));
         Ok(())
