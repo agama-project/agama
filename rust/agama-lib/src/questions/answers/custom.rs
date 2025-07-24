@@ -29,15 +29,19 @@ use super::AnswerStrategy;
 /// corresponding [agama_lib::questions::GenericQuestion] fields.
 /// The *matcher* part is: `class`, `text`, `data`.
 /// The *answer* part is: `answer`, `password`.
-#[derive(Serialize, Deserialize, PartialEq, Debug)]
+#[derive(Clone, Serialize, Deserialize, PartialEq, Debug, utoipa::ToSchema)]
 pub struct Answer {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub class: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub text: Option<String>,
     /// A matching GenericQuestion can have other data fields too
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<HashMap<String, String>>,
     /// The answer text is the only mandatory part of an Answer
     pub answer: String,
     /// All possible mixins have to be here, so they can be specified in an Answer
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
 }
 
@@ -81,6 +85,9 @@ pub struct Answers {
 }
 
 impl Answers {
+    pub fn new(answers: Vec<Answer>) -> Self {
+        Self { answers }
+    }
     pub fn new_from_file(path: &str) -> Result<Self, QuestionsError> {
         let f = std::fs::File::open(path).map_err(QuestionsError::IO)?;
         let result: Self = serde_json::from_reader(f).map_err(QuestionsError::Deserialize)?;

@@ -20,7 +20,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use super::model::Answer;
+use super::answers::Answer;
 
 /// Questions configuration.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
