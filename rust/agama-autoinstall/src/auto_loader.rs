@@ -18,14 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::ConfigLoader;
-use agama_lib::{
-    http::BaseHTTPClient,
-    questions::{
-        http_client::HTTPClient as QuestionsHTTPClient,
-        model::{GenericQuestion, Question},
-    },
-};
+use crate::{ConfigLoader, UserQuestions};
+use agama_lib::http::BaseHTTPClient;
 use anyhow::anyhow;
 
 /// List of pre-defined locations for profiles.
@@ -45,16 +39,20 @@ const PREDEFINED_LOCATIONS: [&str; 6] = [
 ///
 /// Check the [Self::load] description for further information.
 pub struct ConfigAutoLoader {
-    questions: QuestionsHTTPClient,
+    questions: UserQuestions,
+    insecure: bool,
 }
 
 impl ConfigAutoLoader {
     /// Builds a new loader.
     ///
     /// * `http`: base client to connect to Agama.
-    pub fn new(http: BaseHTTPClient) -> anyhow::Result<Self> {
-        let questions = QuestionsHTTPClient::new(http)?;
-        Ok(Self { questions })
+    /// * `insecure`: whether to skip SSL cert checks.
+    pub fn new(http: BaseHTTPClient, insecure: bool) -> anyhow::Result<Self> {
+        Ok(Self {
+            questions: UserQuestions::new(http),
+            insecure,
+        })
     }
 
     /// Loads the configuration for the unattended installation.
@@ -66,7 +64,7 @@ impl ConfigAutoLoader {
     ///
     /// See [Self::load] for further information.
     pub async fn load(&self, urls: &Vec<String>) -> anyhow::Result<()> {
-        let loader = ConfigLoader::default();
+        let loader = ConfigLoader::new(self.insecure);
         if urls.is_empty() {
             self.load_predefined_config(loader).await
         } else {
@@ -103,31 +101,13 @@ impl ConfigAutoLoader {
         Err(anyhow!("No configuration was found"))
     }
 
-    /// Asks the user whether to retry loading the profile.
     async fn should_retry(&self, url: &str) -> anyhow::Result<bool> {
-        let text = format!(
+        let msg = format!(
             r#"
                 It was not possible to load the configuration from {url}.
-                It was unreachable or invalid. Do you want to try again?"
+                It was unreachable or invalid. Do you want to try again?
                 "#
         );
-        let generic = GenericQuestion {
-            id: None,
-            class: "config.load_error".to_string(),
-            text,
-            options: vec!["Yes".to_string(), "No".to_string()],
-            default_option: "No".to_string(),
-            data: Default::default(),
-        };
-        let question = Question {
-            generic,
-            with_password: None,
-        };
-        let question = self.questions.create_question(&question).await?;
-        let answer = self
-            .questions
-            .get_answer(question.generic.id.unwrap())
-            .await?;
-        Ok(answer.generic.answer == "Yes")
+        self.questions.should_retry(&msg).await
     }
 }
