@@ -47,6 +47,7 @@ impl ConfigAutoLoader {
     /// Builds a new loader.
     ///
     /// * `http`: base client to connect to Agama.
+    /// * `insecure`: whether to skip SSL cert checks.
     pub fn new(http: BaseHTTPClient, insecure: bool) -> anyhow::Result<Self> {
         Ok(Self {
             questions: UserQuestions::new(http),

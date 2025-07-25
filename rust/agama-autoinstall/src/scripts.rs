@@ -43,8 +43,9 @@ pub struct ScriptsRunner {
 impl ScriptsRunner {
     /// Creates a new scripts runner.
     ///
-    /// * path: working directory for the runner.
-    /// * insecure: whether to check certificates when downloading scripts.
+    /// * `http`: base client to connect to Agama.
+    /// * `path`: working directory for the runner.
+    /// * `insecure`: whether to check certificates when downloading scripts.
     pub fn new<P: AsRef<Path>>(http: BaseHTTPClient, path: P, insecure: bool) -> Self {
         Self {
             path: path.as_ref().to_path_buf(),
