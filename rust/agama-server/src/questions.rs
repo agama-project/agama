@@ -244,17 +244,13 @@ impl Questions {
         tracing::info!("Adding answer file {}", path);
         let answers = Answers::new_from_file(path.as_str())
             .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
-        self.answer_strategies.push(Box::new(answers));
+        self.answer_strategies.insert(0, Box::new(answers));
         Ok(())
     }
 
     fn remove_answers(&mut self) -> zbus::fdo::Result<()> {
-        let ids: Vec<_> = self.answer_strategies.iter().map(|s| s.id()).collect();
-        tracing::info!("before ids: {ids:?}");
         self.answer_strategies
             .retain(|s| s.id() == DefaultAnswers::id());
-        let ids: Vec<_> = self.answer_strategies.iter().map(|s| s.id()).collect();
-        tracing::info!("after ids: {ids:?}");
         Ok(())
     }
 }
