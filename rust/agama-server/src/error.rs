@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::error::ServiceError;
+use agama_lib::{error::ServiceError, questions::QuestionsError};
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
@@ -28,7 +28,6 @@ use serde_json::json;
 
 use crate::{
     l10n::LocaleError,
-    questions::QuestionsError,
     users::password::PasswordCheckerError,
     web::common::{IssuesServiceError, ProgressServiceError},
 };
