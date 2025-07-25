@@ -219,12 +219,9 @@ impl Questions {
     /// default answer
     #[zbus(property)]
     fn interactive(&self) -> bool {
-        let last = self.answer_strategies.last();
-        if let Some(real_strategy) = last {
-            real_strategy.id() != DefaultAnswers::id()
-        } else {
-            true
-        }
+        self.answer_strategies
+            .iter()
+            .all(|s| s.id() != DefaultAnswers::id())
     }
 
     #[zbus(property)]
@@ -236,7 +233,8 @@ impl Questions {
 
         tracing::info!("set interactive to {}", value);
         if value {
-            self.answer_strategies.pop();
+            self.answer_strategies
+                .retain(|s| s.id() == DefaultAnswers::id());
         } else {
             self.answer_strategies.push(Box::new(DefaultAnswers {}));
         }
@@ -251,8 +249,12 @@ impl Questions {
     }
 
     fn remove_answers(&mut self) -> zbus::fdo::Result<()> {
+        let ids: Vec<_> = self.answer_strategies.iter().map(|s| s.id()).collect();
+        tracing::info!("before ids: {ids:?}");
         self.answer_strategies
             .retain(|s| s.id() == DefaultAnswers::id());
+        let ids: Vec<_> = self.answer_strategies.iter().map(|s| s.id()).collect();
+        tracing::info!("after ids: {ids:?}");
         Ok(())
     }
 }
