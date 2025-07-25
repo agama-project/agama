@@ -52,10 +52,8 @@ impl ConfigLoader {
             .output()?;
 
         if !generate_cmd.status.success() {
-            return Err(anyhow!(
-                "Could not run generate the configuration: {:?}",
-                generate_cmd.stderr,
-            ));
+            let message = String::from_utf8_lossy(&generate_cmd.stderr);
+            return Err(anyhow!("Could not generate the configuration: {}", message));
         }
 
         let mut load_args = vec!["config", "load"];
