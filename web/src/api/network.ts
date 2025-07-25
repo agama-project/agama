@@ -91,7 +91,7 @@ const disconnect = (name: string) =>
  * Make the connection persistent after the installation
  */
 const persist = (name: string, value: boolean) =>
-  post(`/api/network/connections/persist`, { only: [encodeURIComponent(name)], value });
+  post(`/api/network/connections/persist`, { only: [name], value });
 
 export {
   fetchState,

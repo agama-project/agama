@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jul 25 19:42:18 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Fix an issue preventing connections from being set as
+  "installation-only" in the web interface
+  (gh#agama-project/agama#2613).
+
+-------------------------------------------------------------------
 Mon Jul 21 15:07:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 17
