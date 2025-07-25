@@ -49,10 +49,10 @@ async fn main() -> anyhow::Result<()> {
 
     let scripts = args.get("inst.script");
     let script_insecure = insecure_from(&args, "inst.script_insecure");
-    let mut runner = ScriptsRunner::new("/run/agama/inst-scripts", script_insecure);
+    let mut runner = ScriptsRunner::new(http.clone(), "/run/agama/inst-scripts", script_insecure);
     for url in scripts {
         println!("Running script from {}", &url);
-        if let Err(error) = runner.run(&url) {
+        if let Err(error) = runner.run(&url).await {
             eprintln!("Error running the script from {url}: {}", error);
         }
     }

@@ -26,12 +26,16 @@ use std::{
     process::Output,
 };
 
-use agama_lib::utils::Transfer;
+use agama_lib::{http::BaseHTTPClient, utils::Transfer};
+use anyhow::anyhow;
 use url::Url;
+
+use crate::UserQuestions;
 
 /// Downloads and runs user-defined scripts for inst.script.
 pub struct ScriptsRunner {
     pub path: PathBuf,
+    questions: UserQuestions,
     insecure: bool,
     idx: usize,
 }
@@ -41,9 +45,10 @@ impl ScriptsRunner {
     ///
     /// * path: working directory for the runner.
     /// * insecure: whether to check certificates when downloading scripts.
-    pub fn new<P: AsRef<Path>>(path: P, insecure: bool) -> Self {
+    pub fn new<P: AsRef<Path>>(http: BaseHTTPClient, path: P, insecure: bool) -> Self {
         Self {
             path: path.as_ref().to_path_buf(),
+            questions: UserQuestions::new(http),
             insecure,
             idx: 0,
         }
@@ -55,13 +60,13 @@ impl ScriptsRunner {
     /// It saves the stdout, stderr and exit code to separate files.
     ///
     /// * url: script URL, supporting agama-specific schemes.
-    pub fn run(&mut self, url: &str) -> anyhow::Result<()> {
+    pub async fn run(&mut self, url: &str) -> anyhow::Result<()> {
         create_dir_all(&self.path)?;
 
         let file_name = self.file_name_for(&url)?;
 
         let path = self.path.join(&file_name);
-        self.save_script(url, &path)?;
+        self.save_script(url, &path).await?;
 
         let output = std::process::Command::new(&path).output()?;
         self.save_logs(&path, output)?;
@@ -89,9 +94,14 @@ impl ScriptsRunner {
             .unwrap_or(unnamed))
     }
 
-    fn save_script(&self, url: &str, path: &PathBuf) -> anyhow::Result<()> {
+    async fn save_script(&self, url: &str, path: &PathBuf) -> anyhow::Result<()> {
         let mut file = Self::create_file(&path, 0o700)?;
-        Transfer::get(url, &mut file, self.insecure)?;
+        while let Err(error) = Transfer::get(url, &mut file, self.insecure) {
+            if !self.should_retry(&url).await? {
+                println!("Could not load configuration from {url}");
+                return Err(anyhow!(error));
+            }
+        }
         Ok(())
     }
 
@@ -122,11 +132,22 @@ impl ScriptsRunner {
             .mode(perms)
             .open(path)
     }
+
+    async fn should_retry(&self, url: &str) -> anyhow::Result<bool> {
+        let msg = format!(
+            r#"
+                It was not possible to load the script from {url}. Do you want to try again?
+                "#
+        );
+        self.questions.should_retry(&msg).await
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::ScriptsRunner;
+    use agama_lib::http::BaseHTTPClient;
+    use tokio::test;
 
     fn script_path(name: &str) -> String {
         let current = std::env::current_dir().unwrap();
@@ -135,14 +156,15 @@ mod tests {
 
     fn script_runner() -> ScriptsRunner {
         let dir = tempfile::tempdir().unwrap();
-        ScriptsRunner::new(dir.path(), false)
+        let http = BaseHTTPClient::new("http://localhost").unwrap();
+        ScriptsRunner::new(http, dir.path(), false)
     }
 
     #[test]
-    fn test_run_script() {
+    async fn test_run_script() {
         let url = script_path("success.sh");
         let mut runner = script_runner();
-        runner.run(&url).unwrap();
+        runner.run(&url).await.unwrap();
 
         let contents = std::fs::read_to_string(runner.path().join("1-success.stdout")).unwrap();
         assert_eq!(&contents, "SUCCESS\n");
@@ -151,10 +173,10 @@ mod tests {
     }
 
     #[test]
-    fn test_run_script_failed() {
+    async fn test_run_script_failed() {
         let url = script_path("error.sh");
         let mut runner = script_runner();
-        runner.run(&url).unwrap();
+        runner.run(&url).await.unwrap();
 
         let contents = std::fs::read_to_string(runner.path().join("1-error.stderr")).unwrap();
         assert_eq!(&contents, "ERROR\n");
