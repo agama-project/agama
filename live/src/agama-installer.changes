@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sun Jul 27 09:44:04 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- Do not fail if there are no rpm scriptlets to clean. 
+
+-------------------------------------------------------------------
 Tue Jul 22 10:05:30 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Include the "libopenssl-3-fips-provider" package in the installer

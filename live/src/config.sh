@@ -27,7 +27,7 @@ EOF
 # for reproducible builds:
 echo -n > /var/log/alternatives.log
 sed -i 's/# AutoInstalled generated.*/# AutoInstalled generated in kiwi reproducible build/' /var/lib/zypp/AutoInstalled # drop timestamp
-rm /var/tmp/rpm-tmp.*
+rm -f /var/tmp/rpm-tmp.*
 
 # enable the corresponding repository
 DISTRO=$(grep "^NAME" /etc/os-release | cut -f2 -d\= | tr -d '"' | tr " " "_")
