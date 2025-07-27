@@ -994,6 +994,9 @@ export default {
   "Loading data...": [
     "Laddar data..."
   ],
+  "Loading storage": [
+    "Laddar lagring..."
+  ],
   "Loading the installation repositories...": [
     "Laddar installationsförråd..."
   ],
@@ -1416,6 +1419,9 @@ export default {
   ],
   "Repository load failed": [
     "Det gick inte att ladda förråd"
+  ],
+  "Rescan devices": [
+    "Skanna om enheter"
   ],
   "Reset to defaults": [
     "Återställ till standard"
@@ -1872,7 +1878,7 @@ export default {
     "Detta värdnamn är dynamiskt och kan ändras efter en omstart eller nätverksuppdatering, som konfigurerats av den lokala nätverksadministratören."
   ],
   "This license is not available in %s.": [
-    ""
+    "Den här licensen är inte tillgänglig i %s."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Detta mönster skapar en balans mellan tydlighet och effektivitet: modalvyn gör det lätt för enkla val, medan helvyn stöder djupare utforskning och mer komplexa åtgärder, särskilt för användare med massor av enheter."
@@ -1932,7 +1938,7 @@ export default {
     "Upp till %s kan återställas genom att krympa enheten."
   ],
   "Update available disks and activate crypt devices": [
-    ""
+    "Uppdatera tillgängliga diskar och aktivera krypteringsenheter"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Att uppdatera värdnamnet nu eller senare kommer inte att ändra det för närvarande registrerade värdnamnet."

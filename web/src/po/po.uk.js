@@ -995,6 +995,9 @@ export default {
   "Loading data...": [
     "Завантаження даних..."
   ],
+  "Loading storage": [
+    "Завантаження сховища"
+  ],
   "Loading the installation repositories...": [
     "Завантаження інсталяційних репозиторіїв..."
   ],
@@ -1418,6 +1421,9 @@ export default {
   "Repository load failed": [
     "Не вдалося завантажити репозиторій"
   ],
+  "Rescan devices": [
+    "Пересканувати пристрої"
+  ],
   "Reset to defaults": [
     "Скинути до типових налаштувань"
   ],
@@ -1735,6 +1741,9 @@ export default {
   "The extension has been registered with key %s.": [
     "Розширення було зареєстровано з ключем %s."
   ],
+  "The extension was registered without any registration code.": [
+    "Розширення було зареєстровано без коду реєстрації."
+  ],
   "The final size can be bigger in order to fill the extra free space.": [
     "Кінцевий розмір може бути більшим, щоб заповнити вільний простір."
   ],
@@ -1874,7 +1883,7 @@ export default {
     "Це ім'я хоста є динамічним і може змінитися після перезавантаження або оновлення мережі, як це налаштовано адміністратором локальної мережі."
   ],
   "This license is not available in %s.": [
-    ""
+    "Ліцензія недоступна цією мовою: %s."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Цей підхід забезпечує баланс між ясністю та ефективністю: модальне вікно зберігає легкість для простого вибору, в той час як повноекранний режим підтримує глибше вивчення і складніші дії, спеціально для користувачів з великою кількістю пристроїв."
@@ -1934,7 +1943,7 @@ export default {
     "До %s можна відновити шляхом стискання пристрою."
   ],
   "Update available disks and activate crypt devices": [
-    ""
+    "Оновлення доступних дисків і активація криптопристроїв"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Оновлення імені хоста зараз або пізніше не змінить поточне зареєстроване ім'я хоста."

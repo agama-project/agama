@@ -196,7 +196,7 @@ export default {
     "წაიშლება, სულ ცოტა, ერთი დანაყოფი"
   ],
   "At this point you can power off the machine.": [
-    ""
+    "ახლა შეგიძლიათ, გამორთოთ მანქანა."
   ],
   "At this point you can reboot the machine to log in to the new system.": [
     ""
@@ -367,7 +367,7 @@ export default {
     "LVM ტომების ჯგუფის მორგება"
   ],
   "Configure LVM logical volume at %s volume group": [
-    ""
+    "LVM ლოგიკური ტომის გააქტიურება %s ტომების ჯგუფში"
   ],
   "Configure device %s": [
     "მორგება მოწყობილობისთვის %s"
@@ -944,7 +944,7 @@ export default {
     "ის არჩეულია ზოგიერთი LVM ჯგუფისთვის"
   ],
   "It is chosen for the LVM group '%s'": [
-    ""
+    "არჩეულია LVM ჯგუფისთვის '%s'"
   ],
   "It is not possible to allocate space for %s.": [
     ""
@@ -993,6 +993,9 @@ export default {
   ],
   "Loading data...": [
     "მონაცემების ჩატვირთვა..."
+  ],
+  "Loading storage": [
+    "საცავის ჩატვირთვა"
   ],
   "Loading the installation repositories...": [
     "დაყენების რეპოზიტორიების ჩატვირთვა..."
@@ -1417,6 +1420,9 @@ export default {
   "Repository load failed": [
     "რეპოზიტორიის ჩატვირთვა ჩავარდა"
   ],
+  "Rescan devices": [
+    "მოწყობილობების თავიდან სკანირება"
+  ],
   "Reset to defaults": [
     "ნაგულისხმები პარამეტრების დაყენება"
   ],
@@ -1722,7 +1728,7 @@ export default {
     "დისკი გამოიყენება LVM-სთვის"
   ],
   "The disk is used for LVM and boot": [
-    ""
+    "დისკი გამოიყენება LVM-სთვის და ჩასატვირთად"
   ],
   "The disk is used for booting": [
     "დისკი გამოიყენება ჩასატვირთად"
@@ -1731,7 +1737,7 @@ export default {
     "დაშიფვრის პაროლმა არ იმუშავა"
   ],
   "The extension has been registered with key %s.": [
-    ""
+    "ეს გაფართოება დარეგისტრირებულია გასაღებით %s."
   ],
   "The final size can be bigger in order to fill the extra free space.": [
     ""
@@ -1836,7 +1842,7 @@ export default {
     ""
   ],
   "The system will use %s as its default language.": [
-    ""
+    "სისტემა ნაგულისხმევ ენად %s-ს გამოიყენებს."
   ],
   "The whole device will be used for %s": [
     "%s-სთვის გამოყენებული იქნება მთლიანი მოწყობილობა"
@@ -1872,7 +1878,7 @@ export default {
     ""
   ],
   "This license is not available in %s.": [
-    ""
+    "ეს ლიცენზია %s-ში ხელმისაწვდომი არაა."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     ""
@@ -1932,7 +1938,7 @@ export default {
     ""
   ],
   "Update available disks and activate crypt devices": [
-    ""
+    "ხელმისაწვდომი დისკების განახლება და კრიპტოგრაფიული მოწყობილობების გააქტიურება"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     ""
@@ -2055,7 +2061,7 @@ export default {
     "დისკის გამოყენება დანაყოფების გარეშე"
   ],
   "Use these same settings for the selected product": [
-    ""
+    "იგივე პარამეტრების გამოყენება მონიშნული პროდუქტისთვის"
   ],
   "Used space": [
     "გამოყენებული ადგილი"
