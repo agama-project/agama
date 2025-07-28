@@ -999,6 +999,12 @@
           "title": "Answer for a password-based question",
           "description": "Answer to use for a question that expects an answer",
           "type": "string"
+        },
+        "data": {
+          "title": "Additional data for matching questions",
+          "description": "Additional data for matching questions and answers",
+          "type": "object",
+          "example": [{ "device": "/dev/sda" }]
         }
       }
     }
