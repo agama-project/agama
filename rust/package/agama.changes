@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul 28 08:18:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- When the files in inst.auto or inst.script cannot be downloaded,
+  write the errors earlier (gh#agama-project/agama#2168).
+
+-------------------------------------------------------------------
 Thu Jul 24 13:19:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Introduce inst.auto_insecure and inst.script_insecure to disable
