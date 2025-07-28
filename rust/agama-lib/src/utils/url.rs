@@ -18,17 +18,21 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod kernel_cmdline;
-pub use kernel_cmdline::KernelCmdline;
+use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 
-mod loader;
-pub use loader::ConfigLoader;
+pub fn encode(value: &str) -> String {
+    utf8_percent_encode(value, NON_ALPHANUMERIC).to_string()
+}
 
-mod auto_loader;
-pub use auto_loader::ConfigAutoLoader;
+#[cfg(test)]
+mod tests {
 
-mod scripts;
-pub use scripts::ScriptsRunner;
+    use super::encode;
 
-mod questions;
-pub use questions::UserQuestions;
+    #[test]
+    fn test_encode_value() {
+        let id = "Wired #1";
+        let encoded_id = encode(id);
+        assert_eq!(encoded_id, "Wired%20%231");
+    }
+}
