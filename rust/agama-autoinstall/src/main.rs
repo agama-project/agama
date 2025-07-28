@@ -36,23 +36,29 @@ pub fn build_base_client() -> anyhow::Result<BaseHTTPClient> {
     Ok(BaseHTTPClient::new(API_URL)?.authenticated(&token)?)
 }
 
+pub fn insecure_from(cmdline: &KernelCmdline, key: &str) -> bool {
+    let value = cmdline.get_last(key);
+    Some("1".to_string()) == value
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let args = KernelCmdline::parse_file(CMDLINE_FILE)?;
     let http = build_base_client()?;
     let manager_client = ManagerHTTPClient::new(http.clone());
-    let loader = ConfigAutoLoader::new(http.clone())?;
 
     let scripts = args.get("inst.script");
-    // TODO: add support to disable SSL checks.
-    let mut runner = ScriptsRunner::new("/run/agama/inst-scripts", false);
+    let script_insecure = insecure_from(&args, "inst.script_insecure");
+    let mut runner = ScriptsRunner::new(http.clone(), "/run/agama/inst-scripts", script_insecure);
     for url in scripts {
         println!("Running script from {}", &url);
-        if let Err(error) = runner.run(&url) {
+        if let Err(error) = runner.run(&url).await {
             eprintln!("Error running the script from {url}: {}", error);
         }
     }
 
+    let auto_insecure = insecure_from(&args, "inst.auto_insecure");
+    let loader = ConfigAutoLoader::new(http.clone(), auto_insecure)?;
     let urls = args.get("inst.auto");
     if let Err(error) = loader.load(&urls).await {
         eprintln!("Skipping the auto-installation: {error}");

@@ -26,6 +26,7 @@ import React from "react";
 import { Label } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 import { deviceBaseName, deviceSize } from "~/components/storage/utils";
 import { PartitionSlot, StorageDevice } from "~/types/storage";
 
@@ -76,6 +77,12 @@ const DeviceDetails = ({ item }: { item: PartitionSlot | StorageDevice }) => {
 
   const renderContent = (device: StorageDevice) => {
     if (!device.partitionTable && device.systems?.length > 0) return device.systems.join(", ");
+
+    if (device.type === "md") {
+      // TRANSLATORS: %1$s is a description of the device (eg. "Encrypted XFS RAID") and %2$s is
+      // the RAID level (eg. "RAID0")
+      return sprintf(_("%1$s (%2$s)"), device.description, device.level.toUpperCase());
+    }
 
     return device.description;
   };

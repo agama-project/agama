@@ -27,7 +27,7 @@ EOF
 # for reproducible builds:
 echo -n > /var/log/alternatives.log
 sed -i 's/# AutoInstalled generated.*/# AutoInstalled generated in kiwi reproducible build/' /var/lib/zypp/AutoInstalled # drop timestamp
-rm /var/tmp/rpm-tmp.*
+rm -f /var/tmp/rpm-tmp.*
 
 # enable the corresponding repository
 DISTRO=$(grep "^NAME" /etc/os-release | cut -f2 -d\= | tr -d '"' | tr " " "_")
@@ -146,6 +146,9 @@ fi
 
 # Remove nvme hostid and hostnqn (bsc#1238038)
 rm -f /etc/nvme/host*
+
+# Remove default iSCSI initiator name (bsc#1246280)
+rm -f /etc/iscsi/initiatorname.iscsi
 
 # replace the @@LIVE_MEDIUM_LABEL@@ with the real Live partition label name from KIWI
 sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/live-password

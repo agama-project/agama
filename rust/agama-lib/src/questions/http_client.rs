@@ -38,8 +38,8 @@ pub struct HTTPClient {
 }
 
 impl HTTPClient {
-    pub fn new(client: BaseHTTPClient) -> Result<Self, QuestionsHTTPClientError> {
-        Ok(Self { client })
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self { client }
     }
 
     pub async fn list_questions(&self) -> Result<Vec<model::Question>, QuestionsHTTPClientError> {
