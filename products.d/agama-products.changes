@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul 28 11:05:31 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Set configuration for selinux for SLES4SAP to permissive
+  (bsc#1247046)
+
+-------------------------------------------------------------------
 Mon Jul 21 15:07:41 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 17
