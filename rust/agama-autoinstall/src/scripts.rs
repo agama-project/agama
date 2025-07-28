@@ -98,8 +98,8 @@ impl ScriptsRunner {
     async fn save_script(&self, url: &str, path: &PathBuf) -> anyhow::Result<()> {
         let mut file = Self::create_file(&path, 0o700)?;
         while let Err(error) = Transfer::get(url, &mut file, self.insecure) {
+            eprintln!("Could not load configuration from {url}: {error}");
             if !self.should_retry(&url).await? {
-                println!("Could not load configuration from {url}");
                 return Err(anyhow!(error));
             }
         }

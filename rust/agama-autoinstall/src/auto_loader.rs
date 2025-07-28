@@ -77,8 +77,8 @@ impl ConfigAutoLoader {
         for url in urls {
             println!("Loading configuration from {url}");
             while let Err(error) = loader.load(url).await {
+                eprintln!("Could not load configuration from {url}: {error}");
                 if !self.should_retry(url).await? {
-                    println!("Could not load configuration from {url}");
                     return Err(error);
                 }
             }
