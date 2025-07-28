@@ -74,7 +74,7 @@ security:
     selinux:
       patterns:
         - selinux
-      policy: enforcing
+      policy: permissive
     none:
       patterns: null
 
