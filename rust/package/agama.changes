@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul 28 12:40:40 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- update pam crate not to use a vulnerable users dependency
+  (bsc#1244200, CVE-2025-5791)
+
+-------------------------------------------------------------------
 Mon Jul 28 08:18:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - When the files in inst.auto or inst.script cannot be downloaded,
