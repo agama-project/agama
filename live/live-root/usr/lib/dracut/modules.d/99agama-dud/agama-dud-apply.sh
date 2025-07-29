@@ -232,7 +232,7 @@ update_kernel_modules() {
   find_kernel_modules "$dud_modules_dir" dud_modules
 
   # finish if no kernel module is included in DUD
-  if (( ${#dud_modules[@]} == 0 )); then
+  if ((${#dud_modules[@]} == 0)); then
     echo "Skipping kernel modules update"
     return
   fi
