@@ -67,7 +67,8 @@ apply_updates() {
 
 # Applies an update from an RPM package
 #
-# It extracts the RPM content and adjust the alternative links.
+#   1. It extracts the RPM content and adjust the alternative links.
+#   2. Copy the packages to the $DUD_RPM_REPOSITORY.
 apply_rpm_update() {
   file=$1
   dir=$2
@@ -75,6 +76,8 @@ apply_rpm_update() {
   echo "Apply update from an RPM package"
   unpack_rpm "$file" "$dir"
   install_update "$dir"
+  mkdir -p "$DUD_RPM_REPOSITORY"
+  cp "$file" "$DUD_RPM_REPOSITORY"
 }
 
 # Applies an update from an RPM package
