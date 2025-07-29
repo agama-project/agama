@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jul 29 14:13:55 UTC 2025 - Frederic Crozat <fcrozat@suse.com>
+
+- Add more patterns to installation UI (bsc#1246947)
+
+-------------------------------------------------------------------
 Mon Jul 28 11:05:31 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Set configuration for selinux for SLES4SAP to permissive

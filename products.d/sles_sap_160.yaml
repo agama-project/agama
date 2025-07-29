@@ -28,6 +28,7 @@ software:
   mandatory_patterns:
     - base
     - enhanced_base
+    - bootloader
     - sles_sap_base_sap_server
   optional_patterns: null # no optional pattern shared
   user_patterns:
@@ -39,6 +40,7 @@ software:
       selected: true
     - documentation
     - sw_management
+    - container_runtime_docker
     - container_runtime_podman
     - dhcp_dns_server
     - directory_server
@@ -48,8 +50,12 @@ software:
     - kvm_tools
     - lamp_server
     - mail_server
-    - printing
     - gnome
+    - gnome_internet
+    - devel_basis
+    - devel_kernel
+    - oracle_server
+    - print_server
     # Second, all patterns for SAP only
     - sles_sap_DB
     - sles_sap_HADB

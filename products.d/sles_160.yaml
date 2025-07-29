@@ -76,6 +76,7 @@ software:
       selected: true
     - documentation
     - sw_management
+    - container_runtime_docker
     - container_runtime_podman
     - dhcp_dns_server
     - directory_server
@@ -85,8 +86,12 @@ software:
     - kvm_tools
     - lamp_server
     - mail_server
-    - printing
     - gnome
+    - gnome_internet
+    - devel_basis
+    - devel_kernel
+    - oracle_server
+    - print_server
   mandatory_packages:
     - NetworkManager
     # bsc#1241224, bsc#1224868 avoid probe DHCP over all ethernet devices and ignore carrier
