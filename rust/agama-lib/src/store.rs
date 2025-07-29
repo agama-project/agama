@@ -187,6 +187,9 @@ impl Store {
         if let Some(security) = &settings.security {
             self.security.store(security).await?;
         }
+        if let Some(user) = &settings.user {
+            self.users.store(user).await?;
+        }
         // order is important here as network can be critical for connection
         // to registration server and selecting product is important for rest
         if let Some(product) = &settings.product {
@@ -198,12 +201,6 @@ impl Store {
         if let Some(localization) = &settings.localization {
             Store::ensure_selected_product(is_product_selected)?;
             self.localization.store(localization).await?;
-        }
-        // import the users (esp. the root password) before initializing software,
-        // if software fails the Web UI would be stuck in the root password dialog
-        if let Some(user) = &settings.user {
-            Store::ensure_selected_product(is_product_selected)?;
-            self.users.store(user).await?;
         }
         if let Some(software) = &settings.software {
             Store::ensure_selected_product(is_product_selected)?;
