@@ -30,6 +30,8 @@ use std::sync::Arc;
 use agama_lib::{
     auth::ClientId,
     error::ServiceError,
+    event,
+    http::Event,
     storage::{
         model::{Action, Device, DeviceSid, ProposalSettings, ProposalSettingsPatch, Volume},
         proxies::Storage1Proxy,
@@ -63,7 +65,6 @@ use crate::{
         ProgressClient, ProgressRouterBuilder,
     },
 };
-use agama_lib::http::Event;
 
 pub async fn storage_streams(dbus: zbus::Connection) -> Result<EventStreams, Error> {
     let mut result: EventStreams = vec![(
@@ -87,7 +88,7 @@ async fn devices_dirty_stream(dbus: zbus::Connection) -> Result<impl Stream<Item
         .await
         .then(|change| async move {
             if let Ok(value) = change.get().await {
-                return Some(Event::DevicesDirty { dirty: value });
+                return Some(event!(DevicesDirty { dirty: value }));
             }
             None
         })

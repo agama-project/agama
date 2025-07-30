@@ -23,7 +23,7 @@
 use std::sync::Arc;
 
 use super::{state::ServiceState, EventsSender};
-use agama_lib::{auth::ClientId, http::Event};
+use agama_lib::auth::ClientId;
 use axum::{
     extract::{
         ws::{Message, WebSocket},
@@ -44,9 +44,7 @@ pub async fn ws_handler(
 async fn handle_socket(mut socket: WebSocket, events: EventsSender, client_id: Arc<ClientId>) {
     let mut rx = events.subscribe();
 
-    let conn_event = Event::ClientConnected {
-        client_id: client_id.as_ref().clone(),
-    };
+    let conn_event = agama_lib::event!(ClientConnected, client_id.as_ref());
     if let Ok(json) = serde_json::to_string(&conn_event) {
         _ = socket.send(Message::Text(json)).await;
     }

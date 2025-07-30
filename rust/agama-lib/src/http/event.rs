@@ -40,14 +40,47 @@ use std::collections::HashMap;
 
 use crate::issue::Issue;
 
+/// Agama event.
+///
+/// It represents an event that occurs in Agama.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Event {
+    /// The identifier of the client which caused the event.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub client_id: Option<ClientId>,
+    /// Event payload.
+    #[serde(flatten)]
+    pub payload: EventPayload,
+}
+
+impl Event {
+    /// Creates a new event.
+    ///
+    /// * `payload`: event payload.
+    pub fn new(payload: EventPayload) -> Self {
+        Event {
+            client_id: None,
+            payload,
+        }
+    }
+
+    /// Creates a new event with a client ID.
+    ///
+    /// * `payload`: event payload.
+    /// * `client_id`: client ID.
+    pub fn new_with_client_id(payload: EventPayload, client_id: &ClientId) -> Self {
+        Event {
+            client_id: Some(client_id.clone()),
+            payload,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "type")]
-pub enum Event {
-    ClientConnected {
-        // FIXME: use #[serde(rename_all = "camelCase")]
-        #[serde(rename = "clientId")]
-        client_id: ClientId,
-    },
+pub enum EventPayload {
+    ClientConnected,
     L10nConfigChanged(LocaleConfig),
     LocaleChanged {
         locale: String,
@@ -149,4 +182,60 @@ pub enum Event {
     ZFCPControllerRemoved {
         device: ZFCPController,
     },
+}
+
+#[macro_export]
+macro_rules! event {
+    ($variant:ident) => {
+        agama_lib::http::Event::new(agama_lib::http::EventPayload::$variant)
+    };
+    ($variant:ident, $client:expr) => {
+        agama_lib::http::Event::new_with_client_id(
+            agama_lib::http::EventPayload::$variant,
+            $client,
+        )
+    };
+    ($variant:ident $inner:tt, $client:expr) => {
+        agama_lib::http::Event::new_with_client_id(
+            agama_lib::http::EventPayload::$variant $inner,
+            $client
+        )
+    };
+    ($variant:ident $inner:tt) => {
+        agama_lib::http::Event::new(agama_lib::http::EventPayload::$variant $inner)
+    };
+}
+
+#[cfg(test)]
+mod test {
+    use crate as agama_lib;
+    use crate::{auth::ClientId, http::EventPayload};
+
+    #[test]
+    fn test_event_macro() {
+        let subject = event!(ClientConnected);
+        assert!(matches!(subject.payload, EventPayload::ClientConnected));
+        assert!(subject.client_id.is_none());
+
+        let subject = event!(LocaleChanged {
+            locale: "es_ES".to_string()
+        });
+        assert!(matches!(
+            subject.payload,
+            EventPayload::LocaleChanged { locale: _ }
+        ));
+
+        let client_id = ClientId::new();
+        let subject = event!(ClientConnected, &client_id);
+        assert_eq!(subject.client_id, Some(client_id));
+
+        let client_id = ClientId::new();
+        let subject = event!(
+            LocaleChanged {
+                locale: "es_ES".to_string()
+            },
+            &client_id
+        );
+        assert_eq!(subject.client_id, Some(client_id));
+    }
 }

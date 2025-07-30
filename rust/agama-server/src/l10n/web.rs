@@ -26,7 +26,9 @@ use super::{
 };
 use crate::{error::Error, web::EventsSender};
 use agama_lib::{
-    error::ServiceError, http::Event, localization::model::LocaleConfig, localization::LocaleProxy,
+    error::ServiceError,
+    event,
+    localization::{model::LocaleConfig, LocaleProxy},
     proxies::LocaleMixinProxy as ManagerLocaleProxy,
 };
 use agama_locale_data::LocaleId;
@@ -160,10 +162,9 @@ async fn set_config(
         let locale_string = locale.to_string();
         state.manager_proxy.set_locale(&locale_string).await?;
         changes.ui_locale = Some(locale_string);
-
-        _ = state.events.send(Event::LocaleChanged {
+        _ = state.events.send(event!(LocaleChanged {
             locale: locale.to_string(),
-        });
+        }));
     }
 
     if let Some(ui_keymap) = &value.ui_keymap {
@@ -174,7 +175,7 @@ async fn set_config(
     if let Err(e) = update_dbus(&state.proxy, &changes).await {
         tracing::warn!("Could not synchronize settings in the localization D-Bus service: {e}");
     }
-    _ = state.events.send(Event::L10nConfigChanged(changes));
+    _ = state.events.send(event!(L10nConfigChanged(changes)));
 
     Ok(StatusCode::NO_CONTENT)
 }

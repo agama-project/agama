@@ -22,7 +22,7 @@ mod base_http_client;
 pub use base_http_client::{BaseHTTPClient, BaseHTTPClientError};
 
 mod event;
-pub use event::Event;
+pub use event::{Event, EventPayload};
 
 mod websocket;
 pub use websocket::{WebSocketClient, WebSocketError};

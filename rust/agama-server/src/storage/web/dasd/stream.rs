@@ -24,6 +24,7 @@ use std::{collections::HashMap, task::Poll};
 
 use agama_lib::{
     error::ServiceError,
+    event,
     http::Event,
     storage::{
         client::dasd::DASDClient,
@@ -137,19 +138,19 @@ impl DASDDeviceStream {
         match change {
             DBusObjectChange::Added(path, values) => {
                 let device = Self::update_device(cache, path, values)?;
-                Ok(Event::DASDDeviceAdded {
+                Ok(event!(DASDDeviceAdded {
                     device: device.clone(),
-                })
+                }))
             }
             DBusObjectChange::Changed(path, updated) => {
                 let device = Self::update_device(cache, path, updated)?;
-                Ok(Event::DASDDeviceChanged {
+                Ok(event!(DASDDeviceChanged {
                     device: device.clone(),
-                })
+                }))
             }
             DBusObjectChange::Removed(path) => {
                 let device = Self::remove_device(cache, path)?;
-                Ok(Event::DASDDeviceRemoved { device })
+                Ok(event!(DASDDeviceRemoved { device }))
             }
         }
     }
@@ -251,10 +252,10 @@ impl DASDFormatJobStream {
             );
         }
 
-        Some(Event::DASDFormatJobChanged {
+        Some(event!(DASDFormatJobChanged {
             job_id: path.to_string(),
             summary: format_summary,
-        })
+        }))
     }
 }
 
