@@ -26,6 +26,7 @@ use super::{
 };
 use crate::{error::Error, web::EventsSender};
 use agama_lib::{
+    auth::ClientId,
     error::ServiceError,
     event,
     localization::{model::LocaleConfig, LocaleProxy},
@@ -37,7 +38,7 @@ use axum::{
     http::StatusCode,
     response::IntoResponse,
     routing::{get, patch},
-    Json, Router,
+    Extension, Json, Router,
 };
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -132,6 +133,7 @@ async fn keymaps(State(state): State<LocaleState<'_>>) -> Json<Vec<Keymap>> {
 )]
 async fn set_config(
     State(state): State<LocaleState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
     Json(value): Json<LocaleConfig>,
 ) -> Result<impl IntoResponse, Error> {
     let mut data = state.locale.write().await;
@@ -175,7 +177,9 @@ async fn set_config(
     if let Err(e) = update_dbus(&state.proxy, &changes).await {
         tracing::warn!("Could not synchronize settings in the localization D-Bus service: {e}");
     }
-    _ = state.events.send(event!(L10nConfigChanged(changes)));
+    _ = state
+        .events
+        .send(event!(L10nConfigChanged(changes), client_id.as_ref()));
 
     Ok(StatusCode::NO_CONTENT)
 }
