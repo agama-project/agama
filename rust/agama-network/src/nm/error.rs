@@ -48,6 +48,8 @@ pub enum NmError {
     UnsupporedWirelessMode(String),
     #[error("Missing connection information")]
     MissingConnectionSection,
+    #[error("Invalid device name: '{0}'")]
+    InvalidDeviceName(String),
     #[error("Invalid network UUID")]
     InvalidNetworkUUID(#[from] uuid::Error),
     #[error("Connection type not supported for '{0}'")]
