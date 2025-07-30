@@ -1,4 +1,34 @@
 -------------------------------------------------------------------
+Tue Jul 29 09:50:59 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not complain about missing a selected product when it is not
+  required (bsc#1247248).
+
+-------------------------------------------------------------------
+Mon Jul 28 08:18:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- When the files in inst.auto or inst.script cannot be downloaded,
+  write the errors earlier (gh#agama-project/agama#2168).
+
+-------------------------------------------------------------------
+Thu Jul 24 13:19:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Introduce inst.auto_insecure and inst.script_insecure to disable
+  SSL checks for inst.auto and inst.script (bsc#1246836).
+
+-------------------------------------------------------------------
+Wed Jul 23 14:48:53 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Added "--insecure" option to "agama config load" and
+  "agama config generate" commands (related to bsc#1246836)
+
+-------------------------------------------------------------------
+Wed Jul 23 11:37:04 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix CLI connection update when using an special character in
+  the connection ID (bsc#1246930, gh#agama-project/agama#2605).
+
+-------------------------------------------------------------------
 Thu Jul 22 11:00:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
 
 - Fixed a potential race condition when deleting network connections
@@ -23,8 +53,8 @@ Mon Jul 21 15:07:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Mon Jul 21 14:35:57 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Add support for an inst.script that allows to run an arbitrary
-  script (bsc#1246702, gh#agama-project/agama#2589).
+- Add support for an inst.script option that allows to run an
+  arbitrary script (bsc#1246702, gh#agama-project/agama#2589).
 
 -------------------------------------------------------------------
 Mon Jul 21 14:17:25 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
@@ -55,7 +85,6 @@ Wed Jul 16 19:05:48 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 - Fix crash when an Agama profile contains only the zfcp section by
   providing better error report when product selection have to be
   done before or in the same profile (bsc#1246601)
-
 
 -------------------------------------------------------------------
 Wed Jul 16 15:37:34 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

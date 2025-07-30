@@ -86,7 +86,7 @@ shared_examples "without partitions" do
 
     it "generates the expected JSON" do
       config_json = subject.convert
-      expect(config_json[:partitions]).to eq([])
+      expect(config_json.keys).to_not include(:partitions)
     end
   end
 end

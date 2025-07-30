@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -27,8 +27,10 @@ module Agama
       module ToJSONConversions
         # Mixin for partitions conversion to JSON.
         module WithPartitions
-          # @return [Array<Hash>]
+          # @return [Array<Hash>, nil]
           def convert_partitions
+            return if config.partitions.none?
+
             config.partitions
               .map { |p| ToJSONConversions::Partition.new(p).convert }
               .compact
