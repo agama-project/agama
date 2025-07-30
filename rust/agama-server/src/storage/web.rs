@@ -25,7 +25,10 @@
 //! * `storage_service` which returns the Axum service.
 //! * `storage_stream` which offers an stream that emits the storage events coming from D-Bus.
 
+use std::sync::Arc;
+
 use agama_lib::{
+    auth::ClientId,
     error::ServiceError,
     storage::{
         model::{Action, Device, DeviceSid, ProposalSettings, ProposalSettingsPatch, Volume},
@@ -37,7 +40,7 @@ use anyhow::Context;
 use axum::{
     extract::{Query, State},
     routing::{get, post, put},
-    Json, Router,
+    Extension, Json, Router,
 };
 use iscsi::storage_iscsi_service;
 use serde::{Deserialize, Serialize};
@@ -218,7 +221,9 @@ async fn set_config(
 )]
 async fn get_config_model(
     State(state): State<StorageState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
 ) -> Result<Json<Box<RawValue>>, Error> {
+    tracing::debug!("{client_id:?}");
     let config_model = state
         .client
         .get_config_model()
