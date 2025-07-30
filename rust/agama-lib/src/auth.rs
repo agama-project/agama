@@ -56,6 +56,7 @@ use chrono::{Duration, Utc};
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
+use uuid::Uuid;
 
 #[derive(Error, Debug)]
 #[error("Invalid authentication token: {0}")]
@@ -195,8 +196,10 @@ impl Display for AuthToken {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TokenClaims {
     pub exp: i64,
+    pub client_id: ClientId,
 }
 
+// FIXME: replace with TokenClaims::new, as it does not exist a "default" token.
 impl Default for TokenClaims {
     fn default() -> Self {
         let mut exp = Utc::now();
@@ -207,7 +210,18 @@ impl Default for TokenClaims {
 
         Self {
             exp: exp.timestamp(),
+            client_id: ClientId::new(),
         }
+    }
+}
+
+/// Identifies a client.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ClientId(Uuid);
+
+impl ClientId {
+    pub fn new() -> Self {
+        ClientId(Uuid::new_v4())
     }
 }
 
