@@ -273,7 +273,7 @@
           "type": "boolean"
         },
         "answers": {
-          "title": "Pre-defined answer for each question.",
+          "title": "Pre-defined answer for a matching question",
           "type": "array",
           "items": {
             "$ref": "#/$defs/answer"
@@ -996,8 +996,7 @@
           "type": "string"
         },
         "password": {
-          "title": "Answer for a password-based question",
-          "description": "Answer to use for a question that expects an answer",
+          "title": "Password provided as response to a password-based question",
           "type": "string"
         },
         "data": {
