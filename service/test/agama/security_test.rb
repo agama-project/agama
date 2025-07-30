@@ -72,14 +72,17 @@ describe Agama::Security do
   before do
     allow(Y2Security::LSM::Config).to receive(:instance).and_return(lsm_config)
     allow(security).to receive(:software_client).and_return(software_client)
+    allow(Yast::Bootloader).to receive(:modify_kernel_params)
+    allow(lsm_config.selected).to receive(:reset_kernel_params)
+    allow(lsm_config.selected).to receive(:kernel_params)
   end
 
   describe "#write" do
     let(:selected) { apparmor }
 
     context "when the software proposal patterns includes the LSM patterns" do
-      it "saves the LSM configuration" do
-        expect(lsm_config).to receive(:save)
+      it "saves kernel parameters for the LSM configuration" do
+        expect(Yast::Bootloader).to receive(:modify_kernel_params)
         security.write
       end
     end
@@ -104,7 +107,12 @@ describe Agama::Security do
 
       it "fallback to the first LSM which patterns are included by the software proposal" do
         expect(lsm_config).to receive(:select).with("none")
-        expect(lsm_config).to receive(:save)
+        expect(Yast::Bootloader).to receive(:modify_kernel_params)
+        security.write
+      end
+
+      it "resets bootloader params for previous selection" do
+        expect(lsm_config.selected).to receive(:reset_kernel_params)
         security.write
       end
     end

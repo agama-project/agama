@@ -25,6 +25,8 @@ require "yast2/execute"
 require "agama/config"
 require "agama/http"
 
+Yast.import "Bootloader"
+
 # FIXME: monkey patching of security config to not read control.xml and
 # instead use Agama::Config
 # TODO: add ability to set product features in LSM::Base
@@ -73,11 +75,18 @@ module Agama
     end
 
     def write
+      # at first clear previous kernel params
+      selected = lsm_selected
+      selected.reset_kernel_params if selected
+
       candidate = select_software_lsm
       return unless candidate
 
       lsm_config.select(candidate)
-      lsm_config.save
+      kernel_params = lsm_selected.kernel_params
+      # write manually here to bootloader as lsm_config.save do more than agama wants (bsc#1247046)
+      @logger.info("Modifying Bootlooader kernel params using #{kernel_params}")
+      Yast::Bootloader.modify_kernel_params(kernel_params)
     end
 
   private
