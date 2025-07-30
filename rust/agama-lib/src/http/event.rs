@@ -103,6 +103,9 @@ pub enum EventPayload {
         #[serde(flatten)]
         change: NetworkChange,
     },
+    StorageChanged {
+        client_id: String,
+    },
     // TODO: it should include the full software proposal or, at least,
     // all the relevant changes.
     SoftwareProposalChanged {

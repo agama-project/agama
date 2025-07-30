@@ -150,16 +150,6 @@ module Agama
           configure
         end
 
-        # Configures storage.
-        #
-        # @param config_json [Hash, nil] Storage config according to the JSON schema. If nil, then
-        #   the default config is applied.
-        # @return [Integer] 0 success; 1 error
-        def configure(config_json = nil)
-          success = backend.configure(config_json)
-          success ? 0 : 1
-        end
-
         # Gets and serializes the storage config used for calculating the current proposal.
         #
         # @return [String]
@@ -208,19 +198,30 @@ module Agama
         #     they should return whether the config was actually applied.
         #   * Methods like #Probe or #Install return nothing.
         dbus_interface STORAGE_INTERFACE do
+          dbus_signal :Configured, "client_id:s"
           dbus_method(:Probe) { probe }
-          dbus_method(:Reprobe) { probe(keep_config: true) }
-          dbus_method(:Reactivate) { probe(keep_config: true, keep_activation: false) }
-          dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
-            busy_while { apply_config(serialized_config) }
+          dbus_method(:Reprobe, "in data:a{sv}") do |data|
+            busy_request(data) { probe(keep_config: true) }
           end
-          dbus_method(:ResetConfig, "out result:u") do
-            busy_while { reset_config }
+          dbus_method(:Reactivate, "in data:a{sv}") do |data|
+            busy_request(data) { probe(keep_config: true, keep_activation: false) }
+          end
+          dbus_method(
+            :SetConfig,
+            "in serialized_config:s, in data:a{sv}, out result:u"
+          ) do |serialized_config, data|
+            busy_request(data) { apply_config(serialized_config) }
+          end
+          dbus_method(:ResetConfig, "in data:a{sv}, out result:u") do |data|
+            busy_request(data) { reset_config }
+          end
+          dbus_method(
+            :SetConfigModel,
+            "in serialized_model:s, in data:a{sv}, out result:u"
+          ) do |serialized_model, data|
+            busy_request(data) { apply_config_model(serialized_model) }
           end
           dbus_method(:GetConfig, "out serialized_config:s") { recover_config }
-          dbus_method(:SetConfigModel, "in serialized_model:s, out result:u") do |serialized_model|
-            busy_while { apply_config_model(serialized_model) }
-          end
           dbus_method(:GetConfigModel, "out serialized_model:s") { recover_model }
           dbus_method(:SolveConfigModel, "in sparse_model:s, out solved_model:s") do |sparse_model|
             solve_model(sparse_model)
@@ -483,6 +484,30 @@ module Agama
         # @return [DBus::Storage::Proposal, nil]
         attr_reader :dbus_proposal
 
+        # Executes a request setting the service as busy.
+        #
+        # @see BaseObject#request
+        #
+        # @param data [Hash] see {BaseObject#request_data}.
+        # @param block [Proc]
+        def busy_request(data, &block)
+          busy_while { request(data, &block) }
+        end
+
+        # Configures storage.
+        #
+        # @param config_json [Hash, nil] Storage config according to the JSON schema. If nil, then
+        #   the default config is applied.
+        # @return [Integer] 0 success; 1 error
+        def configure(config_json = nil)
+          success = backend.configure(config_json)
+          success ? 0 : 1
+        end
+
+        def send_configured_signal
+          self.Configured(request_data["client_id"].to_s)
+        end
+
         def add_s390_interfaces
           require "agama/dbus/storage/interfaces/dasd_manager"
           require "agama/dbus/storage/interfaces/zfcp_manager"
@@ -508,6 +533,7 @@ module Agama
             proposal_properties_changed
             refresh_staging_devices
             update_actions
+            send_configured_signal
           end
         end
 
