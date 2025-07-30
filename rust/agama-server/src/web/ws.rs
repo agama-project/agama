@@ -20,24 +20,37 @@
 
 //! Implements the websocket handling.
 
+use std::sync::Arc;
+
 use super::{state::ServiceState, EventsSender};
+use agama_lib::{auth::ClientId, http::Event};
 use axum::{
     extract::{
         ws::{Message, WebSocket},
         State, WebSocketUpgrade,
     },
     response::IntoResponse,
+    Extension,
 };
 
 pub async fn ws_handler(
     State(state): State<ServiceState>,
+    Extension(client_id): Extension<Arc<ClientId>>,
     ws: WebSocketUpgrade,
 ) -> impl IntoResponse {
-    ws.on_upgrade(move |socket| handle_socket(socket, state.events))
+    ws.on_upgrade(move |socket| handle_socket(socket, state.events, client_id))
 }
 
-async fn handle_socket(mut socket: WebSocket, events: EventsSender) {
+async fn handle_socket(mut socket: WebSocket, events: EventsSender, client_id: Arc<ClientId>) {
     let mut rx = events.subscribe();
+
+    let conn_event = Event::ClientConnected {
+        client_id: client_id.as_ref().clone(),
+    };
+    if let Ok(json) = serde_json::to_string(&conn_event) {
+        _ = socket.send(Message::Text(json)).await;
+    }
+
     while let Ok(msg) = rx.recv().await {
         match serde_json::to_string(&msg) {
             Ok(json) => {

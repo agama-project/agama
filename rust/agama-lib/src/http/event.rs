@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::{
+    auth::ClientId,
     jobs::Job,
     localization::model::LocaleConfig,
     manager::InstallationPhase,
@@ -42,6 +43,11 @@ use crate::issue::Issue;
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "type")]
 pub enum Event {
+    ClientConnected {
+        // FIXME: use #[serde(rename_all = "camelCase")]
+        #[serde(rename = "clientId")]
+        client_id: ClientId,
+    },
     L10nConfigChanged(LocaleConfig),
     LocaleChanged {
         locale: String,
