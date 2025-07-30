@@ -31,7 +31,7 @@ describe Agama::Software::Callbacks::Script do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:answer) { :Retry }
+  let(:answer) { subject.retry_label.to_sym }
 
   let(:description) { "Some description" }
 
@@ -53,8 +53,8 @@ describe Agama::Software::Callbacks::Script do
       subject.script_problem(description)
     end
 
-    context "when the user answers :Retry" do
-      let(:answer) { :Retry }
+    context "when the user asks to retry" do
+      let(:answer) { subject.retry_label.to_sym }
 
       it "returns 'R'" do
         ret = subject.script_problem(description)
@@ -62,8 +62,8 @@ describe Agama::Software::Callbacks::Script do
       end
     end
 
-    context "when the user answers :Ignore" do
-      let(:answer) { :Ignore }
+    context "when the user asks to continue" do
+      let(:answer) { subject.continue_label.to_sym }
 
       it "returns 'I'" do
         ret = subject.script_problem(description)
