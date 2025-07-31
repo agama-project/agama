@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 31 09:13:09 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Allow displaying out-of-sync alerts by listening to changes
+  events (gh#agama-project/agama#2630).
+
+-------------------------------------------------------------------
 Mon Jul 21 15:07:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 17
