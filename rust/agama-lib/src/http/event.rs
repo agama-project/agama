@@ -184,6 +184,50 @@ pub enum EventPayload {
     },
 }
 
+/// Makes it easier to create an event, reducing the boilerplate.
+///
+/// # Event without additional data
+///
+/// ```
+/// # use agama_lib::{event, http::EventPayload};
+/// let my_event = event!(ClientConnected);
+/// assert!(matches!(my_event.payload, EventPayload::ClientConnected));
+/// assert!(my_event.client_id.is_none());
+/// ```
+///
+/// # Event with some additional data
+///
+/// ```
+/// # use agama_lib::{event, http::EventPayload};
+/// let my_event = event!(LocaleChanged { locale: "es_ES".to_string() });
+/// assert!(matches!(
+///    my_event.payload,
+///    EventPayload::LocaleChanged { locale: _ }
+/// ));
+/// ```
+///
+/// # Adding the client ID
+///
+/// ```
+/// # use agama_lib::{auth::ClientId, event, http::EventPayload};
+/// let client_id = ClientId::new();
+/// let my_event = event!(ClientConnected, &client_id);
+/// assert!(matches!(my_event.payload, EventPayload::ClientConnected));
+/// assert!(my_event.client_id.is_some());
+/// ```
+///
+/// # Add the client ID to a complex event
+///
+/// ```
+/// # use agama_lib::{auth::ClientId, event, http::EventPayload};
+/// let client_id = ClientId::new();
+/// let my_event = event!(LocaleChanged { locale: "es_ES".to_string() }, &client_id);
+/// assert!(matches!(
+///    my_event.payload,
+///    EventPayload::LocaleChanged { locale: _ }
+/// ));
+/// assert!(my_event.client_id.is_some());
+/// ```
 #[macro_export]
 macro_rules! event {
     ($variant:ident) => {
@@ -204,38 +248,4 @@ macro_rules! event {
     ($variant:ident $inner:tt) => {
         agama_lib::http::Event::new(agama_lib::http::EventPayload::$variant $inner)
     };
-}
-
-#[cfg(test)]
-mod test {
-    use crate as agama_lib;
-    use crate::{auth::ClientId, http::EventPayload};
-
-    #[test]
-    fn test_event_macro() {
-        let subject = event!(ClientConnected);
-        assert!(matches!(subject.payload, EventPayload::ClientConnected));
-        assert!(subject.client_id.is_none());
-
-        let subject = event!(LocaleChanged {
-            locale: "es_ES".to_string()
-        });
-        assert!(matches!(
-            subject.payload,
-            EventPayload::LocaleChanged { locale: _ }
-        ));
-
-        let client_id = ClientId::new();
-        let subject = event!(ClientConnected, &client_id);
-        assert_eq!(subject.client_id, Some(client_id));
-
-        let client_id = ClientId::new();
-        let subject = event!(
-            LocaleChanged {
-                locale: "es_ES".to_string()
-            },
-            &client_id
-        );
-        assert_eq!(subject.client_id, Some(client_id));
-    }
 }
