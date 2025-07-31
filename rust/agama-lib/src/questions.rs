@@ -21,8 +21,13 @@
 //! Data model for Agama questions
 
 use std::collections::HashMap;
+pub mod answers;
+pub mod config;
+pub mod error;
 pub mod http_client;
 pub mod model;
+pub mod store;
+pub use error::QuestionsError;
 
 /// Basic generic question that fits question without special needs
 ///

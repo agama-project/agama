@@ -21,6 +21,7 @@
 
 require "yast"
 require "agama/question"
+require "agama/software/callbacks/base"
 
 Yast.import "Pkg"
 
@@ -28,18 +29,8 @@ module Agama
   module Software
     module Callbacks
       # Script callbacks
-      class Script
+      class Script < Base
         include Yast::I18n
-
-        # Constructor
-        #
-        # @param questions_client [Agama::DBus::Clients::Questions]
-        # @param logger [Logger]
-        def initialize(questions_client, logger)
-          textdomain "agama"
-          @questions_client = questions_client
-          @logger = logger
-        end
 
         # Register the callbacks
         def setup
@@ -60,12 +51,12 @@ module Agama
           question = Agama::Question.new(
             qclass:         "software.script_problem",
             text:           message,
-            options:        [:Retry, :Ignore],
-            default_option: :Retry,
+            options:        [retry_label, continue_label],
+            default_option: retry_label.to_sym,
             data:           { "details" => description }
           )
           questions_client.ask(question) do |question_client|
-            (question_client.answer == :Retry) ? "R" : "I"
+            (question_client.answer == retry_label.to_sym) ? "R" : "I"
           end
         end
 
