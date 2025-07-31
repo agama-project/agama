@@ -78,6 +78,7 @@ describe("AlertOutOfSync", () => {
       eventCallback = cb;
       return () => {};
     });
+
     installerRender(<AlertOutOfSync scope="Watched" />);
 
     // Should not render the alert initially
@@ -114,10 +115,8 @@ describe("AlertOutOfSync", () => {
       eventCallback = cb;
       return () => {};
     });
-    installerRender(<AlertOutOfSync scope="Watched" />);
 
-    // Should not render the alert initially
-    expect(screen.queryByText("Info alert:")).toBeNull();
+    installerRender(<AlertOutOfSync scope="Watched" />);
 
     // Simulate a change event for the subscribed scope, from different client
     act(() => {
@@ -137,16 +136,14 @@ describe("AlertOutOfSync", () => {
     expect(screen.queryByText("Info alert:")).toBeNull();
   });
 
-  it("trigger a location relaod when clicking on `Reload now`", async () => {
+  it("triggers a location relaod when clicking on `Reload now`", async () => {
     let eventCallback;
     mockClient.onEvent.mockImplementation((cb) => {
       eventCallback = cb;
       return () => {};
     });
-    const { user } = installerRender(<AlertOutOfSync scope="Watched" />);
 
-    // Should not render the alert initially
-    expect(screen.queryByText("Info alert:")).toBeNull();
+    const { user } = installerRender(<AlertOutOfSync scope="Watched" />);
 
     // Simulate a change event for the subscribed scope, from different client
     act(() => {
