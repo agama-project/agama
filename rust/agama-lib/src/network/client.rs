@@ -20,6 +20,7 @@
 
 use super::{settings::NetworkConnection, types::Device};
 use crate::http::{BaseHTTPClient, BaseHTTPClientError};
+use crate::utils::url::encode;
 
 #[derive(Debug, thiserror::Error)]
 pub enum NetworkClientError {
@@ -56,9 +57,10 @@ impl NetworkClient {
 
     /// Returns an array of network connections
     pub async fn connection(&self, id: &str) -> Result<NetworkConnection, NetworkClientError> {
+        let encoded_id = encode(id);
         let json = self
             .client
-            .get::<NetworkConnection>(format!("/network/connections/{id}").as_str())
+            .get::<NetworkConnection>(format!("/network/connections/{encoded_id}").as_str())
             .await?;
 
         Ok(json)
@@ -70,10 +72,11 @@ impl NetworkClient {
         connection: NetworkConnection,
     ) -> Result<(), NetworkClientError> {
         let id = connection.id.clone();
+        let encoded_id = encode(id.as_str());
         let response = self.connection(id.as_str()).await;
 
         if response.is_ok() {
-            let path = format!("/network/connections/{id}");
+            let path = format!("/network/connections/{encoded_id}");
             self.client.put_void(path.as_str(), &connection).await?
         } else {
             self.client

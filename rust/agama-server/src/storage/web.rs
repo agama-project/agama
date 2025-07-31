@@ -25,8 +25,13 @@
 //! * `storage_service` which returns the Axum service.
 //! * `storage_stream` which offers an stream that emits the storage events coming from D-Bus.
 
+use std::sync::Arc;
+
 use agama_lib::{
+    auth::ClientId,
     error::ServiceError,
+    event,
+    http::Event,
     storage::{
         model::{Action, Device, DeviceSid, ProposalSettings, ProposalSettingsPatch, Volume},
         proxies::Storage1Proxy,
@@ -37,7 +42,7 @@ use anyhow::Context;
 use axum::{
     extract::{Query, State},
     routing::{get, post, put},
-    Json, Router,
+    Extension, Json, Router,
 };
 use iscsi::storage_iscsi_service;
 use serde::{Deserialize, Serialize};
@@ -60,7 +65,6 @@ use crate::{
         ProgressClient, ProgressRouterBuilder,
     },
 };
-use agama_lib::http::Event;
 
 pub async fn storage_streams(dbus: zbus::Connection) -> Result<EventStreams, Error> {
     let mut result: EventStreams = vec![(
@@ -84,7 +88,7 @@ async fn devices_dirty_stream(dbus: zbus::Connection) -> Result<impl Stream<Item
         .await
         .then(|change| async move {
             if let Ok(value) = change.get().await {
-                return Some(Event::DevicesDirty { dirty: value });
+                return Some(event!(DevicesDirty { dirty: value }));
             }
             None
         })
@@ -218,7 +222,9 @@ async fn set_config(
 )]
 async fn get_config_model(
     State(state): State<StorageState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
 ) -> Result<Json<Box<RawValue>>, Error> {
+    tracing::debug!("{client_id:?}");
     let config_model = state
         .client
         .get_config_model()

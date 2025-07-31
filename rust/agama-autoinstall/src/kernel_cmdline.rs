@@ -63,6 +63,12 @@ impl KernelCmdline {
     pub fn get(&self, name: &str) -> Vec<String> {
         self.0.get(name).cloned().unwrap_or(vec![])
     }
+
+    /// Returns the last value for the argument
+    pub fn get_last(&self, name: &str) -> Option<String> {
+        let values = self.0.get(name)?;
+        values.last().cloned()
+    }
 }
 
 #[cfg(test)]
@@ -80,5 +86,13 @@ mod tests {
         );
         assert_eq!(args.get("rd.neednet"), vec!["1".to_string()]);
         assert!(args.get("unknown").is_empty());
+    }
+
+    #[test]
+    fn test_cmdline_args_last() {
+        let args_str = r"inst.auto_insecure=1 inst.auto_insecure=0";
+        let args = KernelCmdline::parse_str(args_str);
+
+        assert_eq!(args.get_last("inst.auto_insecure"), Some("0".to_string()));
     }
 }

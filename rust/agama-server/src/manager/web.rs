@@ -27,7 +27,7 @@
 
 use agama_lib::{
     error::ServiceError,
-    logs,
+    event, logs,
     manager::{FinishMethod, InstallationPhase, InstallerStatus, ManagerClient},
     proxies::Manager1Proxy,
 };
@@ -71,7 +71,7 @@ pub async fn manager_stream(
         .then(|change| async move {
             if let Ok(phase) = change.get().await {
                 match InstallationPhase::try_from(phase) {
-                    Ok(phase) => Some(Event::InstallationPhaseChanged { phase }),
+                    Ok(phase) => Some(event!(InstallationPhaseChanged { phase })),
                     Err(error) => {
                         tracing::warn!("Ignoring the installation phase change. Error: {}", error);
                         None

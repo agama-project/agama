@@ -320,8 +320,8 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
 
             expect(encryption_model).to eq(
               {
-                method:   "luks2",
-                password: "54321"
+                method:   "luks1",
+                password: "12345"
               }
             )
           end

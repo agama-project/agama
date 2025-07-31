@@ -31,6 +31,7 @@ use crate::{
 };
 use agama_lib::{
     error::ServiceError,
+    event,
     http::Event,
     storage::{
         client::iscsi::{ISCSIAuth, ISCSIInitiator, ISCSINode, LoginResult},
@@ -104,7 +105,7 @@ fn handle_initiator_change(change: PropertiesChanged) -> Result<Option<Event>, S
     let changes = to_owned_hash(args.changed_properties())?;
     let name = get_optional_property(&changes, "InitiatorName")?;
     let ibft = get_optional_property(&changes, "IBFT")?;
-    Ok(Some(Event::ISCSIInitiatorChanged { ibft, name }))
+    Ok(Some(event!(ISCSIInitiatorChanged { ibft, name })))
 }
 
 #[derive(Clone)]

@@ -22,6 +22,7 @@ use std::{collections::HashMap, task::Poll};
 
 use agama_lib::{
     error::ServiceError,
+    event,
     http::Event,
     storage::{ISCSIClient, ISCSINode},
 };
@@ -131,15 +132,15 @@ impl ISCSINodeStream {
         match change {
             DBusObjectChange::Added(path, values) => {
                 let node = Self::update_node(cache, path, values)?;
-                Ok(Event::ISCSINodeAdded { node: node.clone() })
+                Ok(event!(ISCSINodeAdded { node: node.clone() }))
             }
             DBusObjectChange::Changed(path, updated) => {
                 let node = Self::update_node(cache, path, updated)?;
-                Ok(Event::ISCSINodeChanged { node: node.clone() })
+                Ok(event!(ISCSINodeChanged { node: node.clone() }))
             }
             DBusObjectChange::Removed(path) => {
                 let node = Self::remove_node(cache, path)?;
-                Ok(Event::ISCSINodeRemoved { node })
+                Ok(event!(ISCSINodeRemoved { node }))
             }
         }
     }

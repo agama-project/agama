@@ -60,7 +60,7 @@ use std::{
 use url::Url;
 
 /// Agama's CLI global options
-#[derive(Args)]
+#[derive(Args, Clone)]
 pub struct GlobalOpts {
     #[clap(long, default_value = "http://localhost")]
     /// URI pointing to Agama's remote host.
@@ -288,12 +288,12 @@ pub async fn show_progress(monitor: MonitorClient, stop_on_idle: bool) {
 }
 
 pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
-    let api_url = api_url(cli.opts.host)?;
+    let api_url = api_url(cli.opts.clone().host)?;
 
     match cli.command {
         Commands::Config(subcommand) => {
             let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
-            run_config_cmd(client, monitor, subcommand).await?
+            run_config_cmd(client, monitor, subcommand, cli.opts).await?
         }
         Commands::Probe => {
             let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
@@ -322,11 +322,9 @@ pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
             let client = build_http_client(api_url, cli.opts.insecure, true).await?;
             run_logs_cmd(client, subcommand).await?
         }
-        Commands::Download {
-            url,
-            destination,
-            insecure,
-        } => download_file(&url, &destination, insecure)?,
+        Commands::Download { url, destination } => {
+            download_file(&url, &destination, cli.opts.insecure)?
+        }
         Commands::Auth(subcommand) => {
             let client = build_http_client(api_url, cli.opts.insecure, false).await?;
             run_auth_cmd(client, subcommand).await?;

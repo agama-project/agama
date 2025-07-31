@@ -30,7 +30,7 @@ use console::style;
 use fluent_uri::Uri;
 use tempfile::Builder;
 
-use crate::{cli_input::CliInput, cli_output::CliOutput, show_progress};
+use crate::{cli_input::CliInput, cli_output::CliOutput, show_progress, GlobalOpts};
 
 const DEFAULT_EDITOR: &str = "/usr/bin/vi";
 
@@ -99,6 +99,7 @@ pub async fn run(
     http_client: BaseHTTPClient,
     monitor: MonitorClient,
     subcommand: ConfigCommands,
+    opts: GlobalOpts,
 ) -> anyhow::Result<()> {
     let store = SettingsStore::new(http_client.clone()).await?;
 
@@ -116,7 +117,7 @@ pub async fn run(
         }
         ConfigCommands::Load { url_or_path } => {
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
-            let contents = url_or_path.read_to_string()?;
+            let contents = url_or_path.read_to_string(opts.insecure)?;
             // FIXME: invalid profile still gets loaded
             validate(&http_client, CliInput::Full(contents.clone())).await?;
             let result = InstallSettings::from_json(&contents, &InstallationContext::from_env()?)?;
@@ -130,7 +131,7 @@ pub async fn run(
         ConfigCommands::Generate { url_or_path } => {
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
 
-            generate(&http_client, url_or_path).await
+            generate(&http_client, url_or_path, opts.insecure).await
         }
         ConfigCommands::Edit { editor } => {
             let model = store.load().await?;
@@ -197,13 +198,20 @@ fn is_autoyast(url_or_path: &CliInput) -> bool {
     path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/')
 }
 
-async fn generate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<()> {
+async fn generate(
+    client: &BaseHTTPClient,
+    url_or_path: CliInput,
+    insecure: bool,
+) -> anyhow::Result<()> {
     let context = match &url_or_path {
         CliInput::Stdin | CliInput::Full(_) => InstallationContext::from_env()?,
         CliInput::Url(url_str) => InstallationContext::from_url_str(url_str)?,
         CliInput::Path(pathbuf) => InstallationContext::from_file(pathbuf.as_path())?,
     };
 
+    // the AutoYaST profile is always downloaded insecurely
+    // (https://github.com/yast/yast-installation/blob/960c66658ab317007d2e241aab7b224657970bf9/src/lib/transfer/file_from_url.rb#L188)
+    // we can ignore the insecure option value in that case
     let profile_json = if is_autoyast(&url_or_path) {
         // AutoYaST specific download and convert to JSON
         let config_string = match url_or_path {
@@ -221,7 +229,7 @@ async fn generate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
         };
         config_string
     } else {
-        from_json_or_jsonnet(client, url_or_path).await?
+        from_json_or_jsonnet(client, url_or_path, insecure).await?
     };
 
     let validity = validate_client(client, CliInput::Full(profile_json.clone())).await?;
@@ -279,8 +287,9 @@ async fn autoyast_client(client: &BaseHTTPClient, url: &Uri<String>) -> anyhow::
 async fn from_json_or_jsonnet(
     client: &BaseHTTPClient,
     url_or_path: CliInput,
+    insecure: bool,
 ) -> anyhow::Result<String> {
-    let any_profile = url_or_path.read_to_string()?;
+    let any_profile = url_or_path.read_to_string(insecure)?;
 
     match FileFormat::from_string(&any_profile) {
         FileFormat::Jsonnet => {
