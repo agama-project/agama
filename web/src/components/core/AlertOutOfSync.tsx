@@ -28,7 +28,7 @@ import {
   AlertProps,
   Content,
 } from "@patternfly/react-core";
-import { Link } from "react-router-dom";
+import Link from "./Link";
 import Text from "./Text";
 import { useInstallerClient } from "~/context/installer";
 import { isEmpty } from "radashi";
@@ -105,7 +105,7 @@ export default function AlertOutOfSync({ scope, ...alertProps }: AlertOutOfSyncP
 Reload the page to get the latest data and avoid issues or data loss.",
             )}
           </Content>
-          <Link to="." replace>
+          <Link to="." variant="link" isInline replace>
             <Text isBold>{_("Reload now")}</Text>
           </Link>
         </Alert>
