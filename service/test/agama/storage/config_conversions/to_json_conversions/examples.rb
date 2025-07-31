@@ -386,7 +386,7 @@ shared_examples "with size" do
       end
     end
 
-    context "if size was solved" do
+    context "if size is default" do
       before do
         size_config = config.size
         size_config.default = true
@@ -396,12 +396,7 @@ shared_examples "with size" do
 
       it "generates the expected JSON" do
         config_json = subject.convert
-        expect(config_json[:size]).to eq(
-          {
-            min: 5.GiB.to_i,
-            max: 25.GiB.to_i
-          }
-        )
+        expect(config_json.keys).to_not include(:size)
       end
     end
   end
