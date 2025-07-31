@@ -96,6 +96,11 @@ jest.mock("react-router-dom", () => ({
   Navigate: ({ to: route }) => <>Navigating to {route}</>,
   Outlet: () => <>Outlet Content</>,
   useRevalidator: () => mockUseRevalidator,
+  useLinkClickHandler:
+    ({ to }) =>
+    () => {
+      to;
+    },
 }));
 
 const Providers = ({ children, withL10n }) => {
