@@ -26,13 +26,13 @@ import {
   AlertActionCloseButton,
   AlertGroup,
   AlertProps,
+  Button,
   Content,
 } from "@patternfly/react-core";
-import Link from "./Link";
-import Text from "./Text";
 import { useInstallerClient } from "~/context/installer";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
+import { locationReload } from "~/utils";
 
 type AlertOutOfSyncProps = Partial<AlertProps> & {
   /**
@@ -105,9 +105,9 @@ export default function AlertOutOfSync({ scope, ...alertProps }: AlertOutOfSyncP
 Reload the page to get the latest data and avoid issues or data loss.",
             )}
           </Content>
-          <Link to="." variant="link" isInline replace>
-            <Text isBold>{_("Reload now")}</Text>
-          </Link>
+          <Button size="sm" onClick={locationReload}>
+            {_("Reload now")}
+          </Button>
         </Alert>
       )}
     </AlertGroup>

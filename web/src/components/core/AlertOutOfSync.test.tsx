@@ -26,6 +26,7 @@ import { installerRender, plainRender } from "~/test-utils";
 import AlertOutOfSync from "./AlertOutOfSync";
 
 const mockOnEvent = jest.fn();
+const mockReload = jest.fn();
 
 const mockClient = {
   id: "current-client",
@@ -42,6 +43,10 @@ let consoleErrorSpy: jest.SpyInstance;
 jest.mock("~/context/installer", () => ({
   ...jest.requireActual("~/context/installer"),
   useInstallerClient: () => mockClient,
+}));
+jest.mock("~/utils", () => ({
+  ...jest.requireActual("~/utils"),
+  locationReload: () => mockReload(),
 }));
 
 describe("AlertOutOfSync", () => {
@@ -100,7 +105,7 @@ describe("AlertOutOfSync", () => {
     screen.getByText("Info alert:");
     screen.getByText("Configuration out of sync");
     screen.getByText(/issues or data loss/);
-    screen.getByRole("link", { name: "Reload now" });
+    screen.getByRole("button", { name: "Reload now" });
   });
 
   it("dismisses automatically the alert on matching changes event from current client for subscribed scope", () => {
@@ -122,7 +127,7 @@ describe("AlertOutOfSync", () => {
     screen.getByText("Info alert:");
     screen.getByText("Configuration out of sync");
     screen.getByText(/issues or data loss/);
-    screen.getByRole("link", { name: "Reload now" });
+    screen.getByRole("button", { name: "Reload now" });
 
     // Simulate a change event for the subscribed scope, from current client
     act(() => {
@@ -132,5 +137,24 @@ describe("AlertOutOfSync", () => {
     expect(screen.queryByText("Info alert:")).toBeNull();
   });
 
-  it.todo("refresh page when clicking on `Reload now`");
+  it("trigger a location relaod when clicking on `Reload now`", async () => {
+    let eventCallback;
+    mockClient.onEvent.mockImplementation((cb) => {
+      eventCallback = cb;
+      return () => {};
+    });
+    const { user } = installerRender(<AlertOutOfSync scope="Watched" />);
+
+    // Should not render the alert initially
+    expect(screen.queryByText("Info alert:")).toBeNull();
+
+    // Simulate a change event for the subscribed scope, from different client
+    act(() => {
+      eventCallback({ type: "WatchedChanged", clientId: "other-client" });
+    });
+
+    const reloadButton = screen.getByRole("button", { name: "Reload now" });
+    await user.click(reloadButton);
+    expect(mockReload).toHaveBeenCalled();
+  });
 });
