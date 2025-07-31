@@ -36,7 +36,7 @@
 //! At this point, it only handles the issues that are exposed through D-Bus.
 
 use crate::web::EventsSender;
-use agama_lib::{http::Event, issue::Issue};
+use agama_lib::{event, http::Event, issue::Issue};
 use agama_utils::dbus::build_properties_changed_stream;
 use axum::{extract::State, routing::get, Json, Router};
 use std::collections::HashMap;
@@ -172,10 +172,10 @@ impl IssuesService {
 
         self.cache.insert(path.to_string(), issues.clone());
 
-        let event = Event::IssuesChanged {
+        let event = event!(IssuesChanged {
             path: path.to_string(),
             issues,
-        };
+        });
         self.events.send(event)?;
         Ok(())
     }
