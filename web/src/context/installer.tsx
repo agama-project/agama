@@ -53,6 +53,13 @@ function InstallerClientProvider({ children, client = null }: InstallerClientPro
   useEffect(() => {
     const connectClient = async () => {
       const client = await createDefaultClient();
+
+      client.onEvent((event) => {
+        if (event.type === "ClientConnected") {
+          client.id = event.clientId;
+        }
+      });
+
       setValue(client);
     };
 
