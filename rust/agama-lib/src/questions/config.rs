@@ -22,12 +22,21 @@ use serde::{Deserialize, Serialize};
 
 use super::answers::Answer;
 
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum QuestionsPolicy {
+    /// Automatically answer questions.
+    Auto,
+    /// Ask the user.
+    User,
+}
+
 /// Questions configuration.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct QuestionsConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub interactive: Option<bool>,
+    pub policy: Option<QuestionsPolicy>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub answers: Option<Vec<Answer>>,
 }

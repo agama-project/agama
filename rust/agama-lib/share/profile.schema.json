@@ -267,10 +267,11 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "interactive": {
-          "title": "Interactive mode",
-          "description": "Whether to run Agama in interactive mode. If set to false, Agama will use the default values for each question.",
-          "type": "boolean"
+        "policy": {
+          "title": "Policy to answer questions",
+          "description": "Ask questions to the user or select the default value",
+          "type": "string",
+          "enum": ["auto", "user"]
         },
         "answers": {
           "title": "Pre-defined answer for a matching question",
