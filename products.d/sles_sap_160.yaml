@@ -80,7 +80,6 @@ security:
     selinux:
       patterns:
         - selinux
-      policy: permissive
     none:
       patterns: null
 
