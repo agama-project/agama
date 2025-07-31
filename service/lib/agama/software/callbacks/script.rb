@@ -32,16 +32,6 @@ module Agama
       class Script < Base
         include Yast::I18n
 
-        # Constructor
-        #
-        # @param questions_client [Agama::DBus::Clients::Questions]
-        # @param logger [Logger]
-        def initialize(questions_client, logger)
-          textdomain "agama"
-          @questions_client = questions_client
-          @logger = logger
-        end
-
         # Register the callbacks
         def setup
           Yast::Pkg.CallbackScriptProblem(
