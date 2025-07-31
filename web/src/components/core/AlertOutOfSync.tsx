@@ -72,7 +72,7 @@ export default function AlertOutOfSync({ scope, ...alertProps }: AlertOutOfSyncP
     if (missingScope) return;
 
     return client.onEvent((event) => {
-      event.type === `${scope}Changed` && setActive(event.clientId !== client.id);
+      event.type === `${scope}Changed` && setActive(event.client_id !== client.id);
     });
   });
 
