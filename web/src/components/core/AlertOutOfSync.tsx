@@ -101,8 +101,8 @@ export default function AlertOutOfSync({ scope, ...alertProps }: AlertOutOfSyncP
         >
           <Content component="p">
             {_(
-              "The configuration has been updated externally. To avoid issues or data loss, \
-please reload the page to ensure you're working with the latest data.",
+              "The configuration has been updated externally. \
+Reload the page to get the latest data and avoid issues or data loss.",
             )}
           </Content>
           <Link to="." replace>
