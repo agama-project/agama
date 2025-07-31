@@ -77,7 +77,7 @@ module Agama
     def write
       # at first clear previous kernel params
       selected = lsm_selected
-      selected.reset_kernel_params if selected
+      selected&.reset_kernel_params
 
       candidate = select_software_lsm
       return unless candidate
