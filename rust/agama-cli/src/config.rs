@@ -347,9 +347,8 @@ async fn edit(
     // TODO: do nothing if the content of the file is unchanged
     if status.success() {
         // FIXME: invalid profile still gets loaded
-        let cli_path = CliInput::Path(path.clone());
-        let is_insecure = false; // irrelevant for non-URL
-        let contents = cli_path.read_to_string(is_insecure)?;
+        let contents =
+            std::fs::read_to_string(&path).context(format!("Reading from file {:?}", path))?;
         validate(&http_client, CliInput::Full(contents)).await?;
         return Ok(InstallSettings::from_file(
             path,
