@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Aug  1 10:10:40 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- Fixed "agama config edit" when used with a remote --host option
+  (gh#agama-project/agama#2628).
+
+-------------------------------------------------------------------
 Thu Jul 31 11:54:49 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support for a "questions" section in the Agama configuration
