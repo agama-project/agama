@@ -48,6 +48,7 @@ import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapp
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import AutoSizeText from "~/components/storage/AutoSizeText";
 import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
+import AlertOutOfSync from "~/components/core/AlertOutOfSync";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import { useAddPartition, useEditPartition } from "~/hooks/storage/partition";
 import { useMissingMountPaths } from "~/hooks/storage/product";
@@ -814,6 +815,7 @@ const PartitionPageForm = () => {
       </Page.Header>
 
       <Page.Content>
+        <AlertOutOfSync scope={"Storage"} />
         <Form id="partitionForm" aria-labelledby={headingId} onSubmit={onSubmit}>
           <Stack hasGutter>
             <FormGroup fieldId="mountPoint" label={_("Mount point")}>

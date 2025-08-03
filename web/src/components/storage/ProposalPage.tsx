@@ -256,11 +256,11 @@ export default function ProposalPage(): React.ReactNode {
 
   return (
     <Page>
-      <AlertOutOfSync scope={"Storage"} />
       <Page.Header>
         <Content component="h2">{_("Storage")}</Content>
       </Page.Header>
       <Page.Content>
+        <AlertOutOfSync scope={"Storage"} />
         {isDeprecated && <Loading text={_("Reloading data, please wait...")} />}
         {!isDeprecated && !showSections && <ProposalEmptyState />}
         {!isDeprecated && showSections && <ProposalSections />}
