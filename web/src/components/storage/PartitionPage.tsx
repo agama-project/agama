@@ -47,6 +47,8 @@ import { Page, SelectWrapper as Select, SubtleContent } from "~/components/core/
 import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import AutoSizeText from "~/components/storage/AutoSizeText";
+import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
+import ResourceNotFound from "~/components/core/ResourceNotFound";
 import { useAddPartition, useEditPartition } from "~/hooks/storage/partition";
 import { useMissingMountPaths } from "~/hooks/storage/product";
 import { useModel } from "~/hooks/storage/model";
@@ -62,10 +64,9 @@ import { deviceSize, deviceLabel, filesystemLabel, parseToBytes } from "~/compon
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { apiModel } from "~/api/storage/types";
-import { STORAGE as PATHS } from "~/routes/paths";
-import { unique } from "radashi";
+import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
+import { isUndefined, unique } from "radashi";
 import { compact } from "~/utils";
-import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
 
 const NO_VALUE = "";
 const NEW_PARTITION = "new";
@@ -688,7 +689,7 @@ function AutoSizeInfo({ value }: AutoSizeInfoProps): React.ReactNode {
  * @fixme This component has to be adapted to use the new hooks from ~/hooks/storage/ instead of the
  * deprecated hooks from ~/queries/storage/config-model.
  */
-export default function PartitionPage() {
+const PartitionPageForm = () => {
   const navigate = useNavigate();
   const headingId = useId();
   const [mountPoint, setMountPoint] = React.useState(NO_VALUE);
@@ -708,6 +709,7 @@ export default function PartitionPage() {
   const { errors, getVisibleError } = useErrors(value);
 
   const device = useModelDevice();
+
   const unusedMountPoints = useUnusedMountPoints();
 
   const addPartition = useAddPartition();
@@ -904,5 +906,15 @@ export default function PartitionPage() {
         </Form>
       </Page.Content>
     </Page>
+  );
+};
+
+export default function PartitionPage() {
+  const device = useModelDevice();
+
+  return isUndefined(device) ? (
+    <ResourceNotFound linkText={_("Go to storage page")} linkPath={STORAGE.root} />
+  ) : (
+    <PartitionPageForm />
   );
 }
