@@ -995,7 +995,7 @@ export default {
     "Laddar data..."
   ],
   "Loading storage": [
-    "Laddar lagring..."
+    "Laddar lagring"
   ],
   "Loading the installation repositories...": [
     "Laddar installationsförråd..."
@@ -1738,6 +1738,9 @@ export default {
   ],
   "The extension has been registered with key %s.": [
     "Tillägget har registrerats med nyckeln %s."
+  ],
+  "The extension was registered without any registration code.": [
+    "Tillägget registrerades utan någon registreringskod."
   ],
   "The final size can be bigger in order to fill the extra free space.": [
     "Den slutliga storleken kan bli större för att fylla det extra fria utrymmet."
