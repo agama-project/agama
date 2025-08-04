@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Alert, ExpandableSection, Stack } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
@@ -30,9 +30,6 @@ import { _, n_, formatList } from "~/i18n";
 import { useActions, useDevices } from "~/queries/storage";
 import { sprintf } from "sprintf-js";
 import { useInstallerClient } from "~/context/installer";
-import { isNullish } from "radashi";
-import { StorageDevice } from "~/types/storage";
-import { Action } from "~/api/storage/types";
 
 /**
  * Renders information about delete actions
@@ -99,39 +96,42 @@ function ActionsList({ manager }: ActionsListProps) {
   );
 }
 
-type Result = {
-  system: StorageDevice[];
-  staging: StorageDevice[];
-  actions: Action[];
-};
+/**
+ * Stores the last value that satisfies the given condition.
+ * Returns undefined until the first valid value is stored.
+ */
+export function useLastValid<T>(value: T, condition: boolean): T | undefined {
+  const [initialized, setInitialized] = useState(false);
+  const lastValidRef = useRef<T>();
 
-const useProposalResult = () => {
+  useEffect(() => {
+    if (condition) {
+      lastValidRef.current = value;
+      if (!initialized) setInitialized(true);
+    }
+  }, [value, condition, initialized]);
+
+  return initialized ? lastValidRef.current : undefined;
+}
+
+export default function ProposalResultSection() {
   const client = useInstallerClient();
   const system = useDevices("system", { suspense: true });
   const staging = useDevices("result", { suspense: true });
   const actions = useActions();
-  const [result, setResult] = useState<Result>();
-
-  useEffect(() => {
-    if (isNullish(result) && [system, staging, actions].every((e) => e)) {
-      setResult({ system, staging, actions });
-    }
-  }, [result, system, staging, actions]);
+  const [shouldUpdate, setShouldUpdate] = useState(false);
 
   useEffect(() => {
     return client.onEvent((event) => {
-      event.type === "StorageChanged" &&
-        event.clientId === client.id &&
-        setResult({ system, staging, actions });
+      setShouldUpdate(event.type === "StorageChanged" && event.clientId === client.id);
     });
-  }, [client, result, system, staging, actions]);
+  }, [client]);
 
-  return { system, staging, actions };
-};
+  const result = useLastValid({ system, staging, actions }, shouldUpdate);
 
-export default function ProposalResultSection() {
-  const { system, staging, actions } = useProposalResult();
-  const devicesManager = new DevicesManager(system, staging, actions);
+  if (!result) return;
+
+  const devicesManager = new DevicesManager(result.system, result.staging, result.actions);
 
   return (
     <Page.Section
