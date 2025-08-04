@@ -292,7 +292,6 @@
         "id": {
           "title": "Product identifier",
           "description": "The id field from a products.d/foo.yaml file",
-          "icon": "Product Icon path specified in products.d/foo.yaml file",
           "type": "string"
         },
         "registrationCode": {
@@ -408,8 +407,7 @@
                 "type": "array",
                 "items": {
                   "description": "DNS search domains",
-                  "type": "string",
-                  "additionalProperties": false
+                  "type": "string"
                 }
               },
               "ignoreAutoDns": {
@@ -1005,7 +1003,7 @@
           "title": "Additional data for matching questions",
           "description": "Additional data for matching questions and answers",
           "type": "object",
-          "example": [{ "device": "/dev/sda" }]
+          "examples": [{ "device": "/dev/sda" }]
         }
       }
     }
