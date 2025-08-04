@@ -86,21 +86,21 @@ describe("AlertOutOfSync", () => {
 
     // Simulate a change event for a different scope
     act(() => {
-      eventCallback({ type: "NotWatchedChanged", client_id: "other-client" });
+      eventCallback({ type: "NotWatchedChanged", clientId: "other-client" });
     });
 
     expect(screen.queryByText("Info alert:")).toBeNull();
 
     // Simulate a change event for the subscribed scope, from current client
     act(() => {
-      eventCallback({ type: "WatchedChanged", client_id: "current-client" });
+      eventCallback({ type: "WatchedChanged", clientId: "current-client" });
     });
 
     expect(screen.queryByText("Info alert:")).toBeNull();
 
     // Simulate a change event for the subscribed scope, from different client
     act(() => {
-      eventCallback({ type: "WatchedChanged", client_id: "other-client" });
+      eventCallback({ type: "WatchedChanged", clientId: "other-client" });
     });
 
     screen.getByText("Info alert:");
@@ -120,7 +120,7 @@ describe("AlertOutOfSync", () => {
 
     // Simulate a change event for the subscribed scope, from different client
     act(() => {
-      eventCallback({ type: "WatchedChanged", client_id: "other-client" });
+      eventCallback({ type: "WatchedChanged", clientId: "other-client" });
     });
 
     screen.getByText("Info alert:");
@@ -130,7 +130,7 @@ describe("AlertOutOfSync", () => {
 
     // Simulate a change event for the subscribed scope, from current client
     act(() => {
-      eventCallback({ type: "WatchedChanged", client_id: "current-client" });
+      eventCallback({ type: "WatchedChanged", clientId: "current-client" });
     });
 
     expect(screen.queryByText("Info alert:")).toBeNull();
@@ -147,7 +147,7 @@ describe("AlertOutOfSync", () => {
 
     // Simulate a change event for the subscribed scope, from different client
     act(() => {
-      eventCallback({ type: "WatchedChanged", client_id: "other-client" });
+      eventCallback({ type: "WatchedChanged", clientId: "other-client" });
     });
 
     const reloadButton = screen.getByRole("button", { name: "Reload now" });
