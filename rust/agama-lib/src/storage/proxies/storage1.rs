@@ -58,7 +58,10 @@ pub trait Storage1 {
     fn install(&self) -> zbus::Result<()>;
 
     /// Probe method
-    fn probe(&self) -> zbus::Result<()>;
+    fn probe(
+        &self,
+        data: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+    ) -> zbus::Result<()>;
 
     /// Reprobe method
     fn reprobe(

@@ -199,7 +199,9 @@ module Agama
         #   * Methods like #Probe or #Install return nothing.
         dbus_interface STORAGE_INTERFACE do
           dbus_signal :Configured, "client_id:s"
-          dbus_method(:Probe) { probe }
+          dbus_method(:Probe, "in data:a{sv}") do |data|
+            busy_request(data) { probe }
+          end
           dbus_method(:Reprobe, "in data:a{sv}") do |data|
             busy_request(data) { probe(keep_config: true) }
           end
@@ -483,16 +485,6 @@ module Agama
 
         # @return [DBus::Storage::Proposal, nil]
         attr_reader :dbus_proposal
-
-        # Executes a request setting the service as busy.
-        #
-        # @see BaseObject#request
-        #
-        # @param data [Hash] see {BaseObject#request_data}.
-        # @param block [Proc]
-        def busy_request(data, &block)
-          busy_while { request(data, &block) }
-        end
 
         # Configures storage.
         #

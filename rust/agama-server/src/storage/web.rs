@@ -348,8 +348,11 @@ struct SolveModelQuery {
     ),
     operation_id = "storage_probe"
 )]
-async fn probe(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
-    Ok(Json(state.client.probe().await?))
+async fn probe(
+    State(state): State<StorageState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
+) -> Result<Json<()>, Error> {
+    Ok(Json(state.client.probe(client_id.to_string()).await?))
 }
 
 /// Reprobes the storage devices.

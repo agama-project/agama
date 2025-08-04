@@ -26,6 +26,7 @@
 //! * `manager_stream` which offers an stream that emits the manager events coming from D-Bus.
 
 use agama_lib::{
+    auth::ClientId,
     error::ServiceError,
     event, logs,
     manager::{FinishMethod, InstallationPhase, InstallerStatus, ManagerClient},
@@ -38,9 +39,11 @@ use axum::{
     http::{header, status::StatusCode, HeaderMap, HeaderValue},
     response::IntoResponse,
     routing::{get, post},
-    Json, Router,
+    Extension, Json, Router,
 };
+use std::collections::HashMap;
 use std::pin::Pin;
+use std::sync::Arc;
 use tokio_stream::{Stream, StreamExt};
 use tokio_util::io::ReaderStream;
 
@@ -129,7 +132,10 @@ pub async fn manager_service(
        )
     )
 )]
-async fn probe_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
+async fn probe_action(
+    State(state): State<ManagerState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
+) -> Result<(), Error> {
     let dbus = state.dbus.clone();
     tokio::spawn(async move {
         let result = dbus
@@ -138,7 +144,7 @@ async fn probe_action(State(state): State<ManagerState<'_>>) -> Result<(), Error
                 "/org/opensuse/Agama/Manager1",
                 Some("org.opensuse.Agama.Manager1"),
                 "Probe",
-                &(),
+                &HashMap::from([("client_id", client_id.to_string())]),
             )
             .await;
         if let Err(error) = result {
@@ -158,8 +164,11 @@ async fn probe_action(State(state): State<ManagerState<'_>>) -> Result<(), Error
       (status = 200, description = "Probing done.")
     )
 )]
-async fn probe_sync_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
-    state.manager.probe().await?;
+async fn probe_sync_action(
+    State(state): State<ManagerState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
+) -> Result<(), Error> {
+    state.manager.probe(client_id.to_string()).await?;
     Ok(())
 }
 
@@ -172,8 +181,11 @@ async fn probe_sync_action(State(state): State<ManagerState<'_>>) -> Result<(), 
       (status = 200, description = "Re-probing done.")
     )
 )]
-async fn reprobe_sync_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
-    state.manager.reprobe().await?;
+async fn reprobe_sync_action(
+    State(state): State<ManagerState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
+) -> Result<(), Error> {
+    state.manager.reprobe(client_id.to_string()).await?;
     Ok(())
 }
 

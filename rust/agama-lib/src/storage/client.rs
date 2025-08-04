@@ -150,8 +150,11 @@ impl<'a> StorageClient<'a> {
     }
 
     /// Runs the probing process
-    pub async fn probe(&self) -> Result<(), ServiceError> {
-        Ok(self.storage_proxy.probe().await?)
+    pub async fn probe(&self, client_id: String) -> Result<(), ServiceError> {
+        Ok(self
+            .storage_proxy
+            .probe(HashMap::from([("client_id", &client_id.into())]))
+            .await?)
     }
 
     /// Runs the reprobing process
