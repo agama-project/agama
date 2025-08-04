@@ -48,6 +48,7 @@ use iscsi::storage_iscsi_service;
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
 use tokio_stream::{Stream, StreamExt};
+use uuid::Uuid;
 use zfcp::{zfcp_service, zfcp_stream};
 
 pub mod dasd;
@@ -106,9 +107,9 @@ async fn configured_stream(dbus: zbus::Connection) -> Result<impl Stream<Item = 
     let proxy = Storage1Proxy::new(&dbus).await?;
     let stream = proxy.receive_configured().await?.filter_map(|signal| {
         if let Ok(args) = signal.args() {
-            return Some(event!(StorageChanged {
-                client_id: args.client_id.to_string()
-            }));
+            if let Ok(uuid) = Uuid::parse_str(args.client_id) {
+                return Some(event!(StorageChanged, &ClientId::new_from_uuid(uuid)));
+            }
         }
         None
     });

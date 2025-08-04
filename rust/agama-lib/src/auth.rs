@@ -223,6 +223,10 @@ impl ClientId {
     pub fn new() -> Self {
         ClientId(Uuid::new_v4())
     }
+
+    pub fn new_from_uuid(uuid: Uuid) -> Self {
+        ClientId(uuid)
+    }
 }
 
 impl fmt::Display for ClientId {
