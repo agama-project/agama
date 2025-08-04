@@ -333,16 +333,18 @@ impl<'a> NetworkManagerClient<'a> {
         if conn.is_up() {
             if let Some(interface) = &conn.interface {
                 for device in devices {
-                    if interface.to_string() == device.name {
-                        if let Some(device_conn) = device.connection {
-                            if device_conn != conn.id {
-                                tracing::info!(
-                                    "Disconnecting {} because the connection is {}",
-                                    &device_conn,
-                                    &conn.id,
-                                );
-                                self.disconnect_device(device.name).await?;
-                            }
+                    if interface != &device.name {
+                        continue;
+                    }
+
+                    if let Some(device_conn) = device.connection {
+                        if device_conn != conn.id {
+                            tracing::info!(
+                                "Disconnecting {} because the connection is {}",
+                                &device_conn,
+                                &conn.id,
+                            );
+                            self.disconnect_device(device.name).await?;
                         }
                     }
                 }
@@ -448,8 +450,10 @@ impl<'a> NetworkManagerClient<'a> {
         Ok(proxy)
     }
 
+    // Returns the DeviceProxy for the given device name
+    //
+    /// * `name`: Device name.
     async fn get_device_proxy(&self, name: String) -> Result<DeviceProxy, NmError> {
-        let proxy = NetworkManagerProxy::new(&self.connection).await?;
         let mut device_path: Option<OwnedObjectPath> = None;
         for path in &self.nm_proxy.get_all_devices().await? {
             let proxy = DeviceProxy::builder(&self.connection)
@@ -463,9 +467,8 @@ impl<'a> NetworkManagerClient<'a> {
             {
                 if device.name == name {
                     device_path = Some(path.to_owned());
+                    break;
                 }
-            } else {
-                tracing::warn!("Ignoring network device on path {}", &path);
             }
         }
 
