@@ -181,8 +181,6 @@ function ProposalEmptyState(): React.ReactNode {
 
 function ProposalSections(): React.ReactNode {
   const model = useConfigModel({ suspense: true });
-  const systemErrors = useSystemErrors("storage");
-  const hasResult = !systemErrors.length;
 
   return (
     <Grid hasGutter>
@@ -217,7 +215,7 @@ function ProposalSections(): React.ReactNode {
           </GridItem>
         </>
       )}
-      {hasResult && <ProposalResultSection />}
+      <ProposalResultSection />
     </Grid>
   );
 }
