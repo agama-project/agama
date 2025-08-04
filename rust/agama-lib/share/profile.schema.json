@@ -418,7 +418,7 @@
                 "title": "Connection status",
                 "description": "The status of the connection",
                 "type": "string",
-                "enum": ["up", "down", "removed"]
+                "enum": ["up", "down", "keep", "removed"]
               },
               "autoconnect": {
                 "title": "Auto-connected",

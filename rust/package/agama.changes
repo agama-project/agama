@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Aug  4 09:29:29 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Do not return an Err when a connection is not activated or 
+  deactivated when adding or updating it but just log the error
+  and write the connections profiles (bs#1245548).
+
+-------------------------------------------------------------------
 Fri Aug  1 10:10:40 UTC 2025 - Martin Vidner <mvidner@suse.com>
 
 - Fixed "agama config edit" when used with a remote --host option
