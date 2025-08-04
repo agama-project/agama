@@ -13,8 +13,7 @@ on:
       - .github/workflows/ci-profile-schema.yml
       # any change in the schema definitions
       - rust/agama-lib/share/*.schema.json
-      # except one old unused part
-      - "!rust/agama-lib/share/storage.model.schema.json"
+
   pull_request:
     paths:
       # NOTE: GitHub Actions do not allow using YAML references, the same path
@@ -24,8 +23,6 @@ on:
       - .github/workflows/ci-profile-schema.yml
       # any change in the schema definitions
       - rust/agama-lib/share/*.schema.json
-      # except one old unused part
-      - "!rust/agama-lib/share/storage.model.schema.json"
 
   # allow running manually
   workflow_dispatch:
