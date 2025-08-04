@@ -994,6 +994,9 @@ export default {
   "Loading data...": [
     "Veri yükleniyor..."
   ],
+  "Loading storage": [
+    "Depolama yükleniyor"
+  ],
   "Loading the installation repositories...": [
     "Kurulum depoları yükleniyor..."
   ],
@@ -1417,6 +1420,9 @@ export default {
   "Repository load failed": [
     "Depo yüklemesi başarısız oldu"
   ],
+  "Rescan devices": [
+    "Cihazları yeniden tara"
+  ],
   "Reset to defaults": [
     "Varsayılanlara sıfırla"
   ],
@@ -1733,6 +1739,9 @@ export default {
   "The extension has been registered with key %s.": [
     "Uzantı %s anahtarıyla kaydedildi."
   ],
+  "The extension was registered without any registration code.": [
+    "Uzantı herhangi bir kayıt kodu olmadan kaydedildi."
+  ],
   "The final size can be bigger in order to fill the extra free space.": [
     "Ekstra boş alanı doldurmak için son boyut daha büyük olabilir."
   ],
@@ -1872,7 +1881,7 @@ export default {
     "Bu ana bilgisayar adı dinamiktir ve yerel ağ yöneticisi tarafından yapılandırıldığı şekilde yeniden başlatma veya ağ güncellemesinden sonra değişebilir."
   ],
   "This license is not available in %s.": [
-    ""
+    "Bu lisans %s'de mevcut değil."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Bu desen, netlik ve verimlilik arasında bir denge kurar: modal, basit seçimler için her şeyi hafif tutarken, tam görünüm daha derin keşifleri ve özellikle çok sayıda cihaza sahip kullanıcılar için daha karmaşık eylemleri destekler."
@@ -1932,7 +1941,7 @@ export default {
     "Cihazın küçültülmesiyle %s'ye kadar geri kazanılabilir."
   ],
   "Update available disks and activate crypt devices": [
-    ""
+    "Kullanılabilir diskleri güncelleyin ve şifreleme aygıtlarını etkinleştirin"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Ana bilgisayar adını şimdi veya daha sonra güncellemeniz, şu anda kayıtlı olan ana bilgisayar adını değiştirmeyecektir."

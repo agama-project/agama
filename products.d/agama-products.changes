@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 31 07:44:04 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Remove selinux policy from products definition as it is noop
+  after changes to agama service (bsc#1247046)
+
+-------------------------------------------------------------------
 Tue Jul 29 14:13:55 UTC 2025 - Frederic Crozat <fcrozat@suse.com>
 
 - Add more patterns to installation UI (bsc#1246947)

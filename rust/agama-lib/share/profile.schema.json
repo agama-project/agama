@@ -262,6 +262,27 @@
         }
       }
     },
+    "questions": {
+      "title": "How to handle Agama questions",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "policy": {
+          "title": "Policy to answer questions",
+          "description": "Ask questions to the user or select the default value",
+          "type": "string",
+          "enum": ["auto", "user"],
+          "default": "user"
+        },
+        "answers": {
+          "title": "Pre-defined answer for a matching question",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/answer"
+          }
+        }
+      }
+    },
     "product": {
       "title": "Product to install",
       "type": "object",
@@ -954,6 +975,39 @@
       },
       "required": ["destination"],
       "oneOf": [{ "required": ["url"] }, { "required": ["content"] }]
+    },
+    "answer": {
+      "title": "Automatic answer to questions",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "class": {
+          "title": "Question class",
+          "description": "Each question has a \"class\" which works as an identifier.",
+          "type": "string",
+          "examples": ["storage.activate_multipath"]
+        },
+        "text": {
+          "title": "Question text",
+          "description": "Question full text",
+          "type": "string"
+        },
+        "answer": {
+          "title": "Question answer",
+          "description": "Answer to use for the question.",
+          "type": "string"
+        },
+        "password": {
+          "title": "Password provided as response to a password-based question",
+          "type": "string"
+        },
+        "data": {
+          "title": "Additional data for matching questions",
+          "description": "Additional data for matching questions and answers",
+          "type": "object",
+          "example": [{ "device": "/dev/sda" }]
+        }
+      }
     }
   }
 }

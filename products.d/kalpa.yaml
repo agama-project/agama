@@ -46,7 +46,6 @@ security:
     selinux:
       patterns:
         - microos_selinux
-      policy: enforcing
     none:
       patterns: null
 

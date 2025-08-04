@@ -20,24 +20,28 @@
 
 use std::collections::HashMap;
 
-use agama_lib::questions::GenericQuestion;
+use crate::questions::{GenericQuestion, QuestionsError};
 use serde::{Deserialize, Serialize};
 
-use super::QuestionsError;
+use super::AnswerStrategy;
 
 /// Data structure for single JSON answer. For variables specification see
 /// corresponding [agama_lib::questions::GenericQuestion] fields.
 /// The *matcher* part is: `class`, `text`, `data`.
 /// The *answer* part is: `answer`, `password`.
-#[derive(Serialize, Deserialize, PartialEq, Debug)]
-struct Answer {
+#[derive(Clone, Serialize, Deserialize, PartialEq, Debug, utoipa::ToSchema)]
+pub struct Answer {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub class: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub text: Option<String>,
     /// A matching GenericQuestion can have other data fields too
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<HashMap<String, String>>,
     /// The answer text is the only mandatory part of an Answer
     pub answer: String,
     /// All possible mixins have to be here, so they can be specified in an Answer
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
 }
 
@@ -81,6 +85,9 @@ pub struct Answers {
 }
 
 impl Answers {
+    pub fn new(answers: Vec<Answer>) -> Self {
+        Self { answers }
+    }
     pub fn new_from_file(path: &str) -> Result<Self, QuestionsError> {
         let f = std::fs::File::open(path).map_err(QuestionsError::IO)?;
         let result: Self = serde_json::from_reader(f).map_err(QuestionsError::Deserialize)?;
@@ -97,7 +104,7 @@ impl Answers {
     }
 }
 
-impl crate::questions::AnswerStrategy for Answers {
+impl AnswerStrategy for Answers {
     fn id(&self) -> u8 {
         Answers::id()
     }
@@ -109,7 +116,7 @@ impl crate::questions::AnswerStrategy for Answers {
 
     fn answer_with_password(
         &self,
-        question: &agama_lib::questions::WithPassword,
+        question: &crate::questions::WithPassword,
     ) -> (Option<String>, Option<String>) {
         // use here fact that with password share same matchers as generic one
         let answer = self.find_answer(&question.base);
@@ -123,9 +130,7 @@ impl crate::questions::AnswerStrategy for Answers {
 
 #[cfg(test)]
 mod tests {
-    use agama_lib::questions::{GenericQuestion, WithPassword};
-
-    use crate::questions::AnswerStrategy;
+    use crate::questions::{answers::AnswerStrategy, GenericQuestion, WithPassword};
 
     use super::*;
 

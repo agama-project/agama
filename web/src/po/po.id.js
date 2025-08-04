@@ -1,10 +1,10 @@
 export default {
   "": {
-    "plural-forms": (n) => n != 1,
-    "language": "ca"
+    "plural-forms": (n) => 0,
+    "language": "id"
   },
   " Timezone selection": [
-    " Selecció de la zona horària"
+    " Pemilihan zona waktu"
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -13,463 +13,463 @@ export default {
     "%1$s - %2$s"
   ],
   "%1$s at %2$s": [
-    "%1$s a %2$s"
+    "%1$s di %2$s"
   ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
-    "%1$s encara contindrà el grup d'LVM %2$s i qualsevol partició necessària per a arrencar"
+    "%1$s masih akan berisi grup LVM ‘%2$s’ dan partisi apa pun yang diperlukan untuk booting"
   ],
   "%d of %d": [
-    "%d de %d"
+    "%d dari %d"
   ],
   "%s - %s": [
     "%s - %s"
   ],
   "%s [must be registered].": [
-    "%s [ha d'estar registrat]."
+    "%s [harus terdaftar]."
   ],
   "%s disk": [
-    "Disc %s"
+    "%s diska"
   ],
   "%s has been registered with below information.": [
-    "%s s'ha registrat amb la informació següent."
+    "%s telah terdaftar dengan informasi di bawah ini."
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s és un sistema immutable amb actualitzacions atòmiques. Usa un sistema de fitxers Btrfs només de lectura actualitzat a través d'instantànies."
+    "%s adalah sistem yang tidak dapat diubah (immutable) dan mendukung pembaruan atomik. Sistem ini menggunakan file system Btrfs yang hanya-baca dan diperbarui melalui snapshot."
   ],
   "%s logo": [
-    "Logotip per a %s"
+    "logo %s"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
-    "%s encara contindrà els grups d'LVM configurats i qualsevol partició necessària per a arrencar"
+    "%s masih akan berisi grup LVM yang dikonfigurasi dan partisi apa pun yang diperlukan untuk booting"
   ],
   "%s with %d partitions": [
-    "%s amb %d particions"
+    "%s dengan partisi %d"
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
-    "Si és possible, es crearà una %1$s de %2$s per a %3$s"
+    "%1$s dari %2$s akan dibuat untuk %3$s jika memungkinkan"
   ],
   "A %1$s of at least %2$s will be created for %3$s if possible": [
-    "Si és possible es crearà una %1$s de com a mínim %2$s per a %3$s"
+    "%1$s dengan minimal %2$s akan dibuat untuk %3$s jika memungkinkan"
   ],
   "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
-    "Si és possible, es crearà una %1$s amb una mida entre %2$s i %3$s per a %4$s"
+    "%1$s dengan ukuran antara %2$s dan %3$s akan dibuat untuk %4$s jika memungkinkan"
   ],
   "A file system will be used for the whole device": [
-    "S'usarà un sistema de fitxers per al dispositiu sencer"
+    "Sistem berkas akan digunakan untuk seluruh perangkat"
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
-    "S'usarà una mida mínima genèrica de %1$s per a la %2$s nova"
+    "Ukuran minimum standar %1$s akan digunakan untuk %2$s yang baru"
   ],
   "A generic size of %s will be used for the new %2$s": [
-    "S'usarà una mida genèrica de %s per a la %2$s nova"
+    "Ukuran standar %s akan digunakan untuk %2$s yang baru"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
-    "S'usarà un interval de mida genèric entre %1$s i %2$s per a la %3$s nova"
+    "Rentang ukuran umum antara %1$s dan %2$s akan digunakan untuk %3$s yang baru"
   ],
   "A partition may be deleted": [
-    "Es pot suprimir una partició"
+    "Sebuah partisi dapat dihapus"
   ],
   "A partition may be shrunk": [
-    "Una partició es pot encongir"
+    "Partisi dapat diperkecil"
   ],
   "A partition will be deleted": [
-    "Se suprimirà una partició"
+    "Partisi akan dihapus"
   ],
   "Accept": [
-    "Accepta-ho"
+    "Terima"
   ],
   "Action": [
-    "Acció"
+    "Tindakan"
   ],
   "Actions": [
-    "Accions"
+    "Tindakan"
   ],
   "Activate": [
-    "Activa"
+    "Mengaktifkan"
   ],
   "Activate and format DASD devices": [
-    "Activa i formata dispositius DASD"
+    "Aktifkan dan format perangkat DASD"
   ],
   "Activate new disk": [
-    "Activa el disc nou"
+    "Aktifkan disk baru"
   ],
   "Activate zFCP disk": [
-    "Activa el disc zFCP"
+    "Mengaktifkan disk zFCP"
   ],
   "Activate zFCP disks": [
-    "Activa els discs zFCP"
+    "Aktifkan disk zFCP"
   ],
   "Activated": [
-    "Activat"
+    "Diaktifkan"
   ],
   "Add": [
-    "Afegeix"
+    "Tambahkan"
   ],
   "Add DNS": [
-    "Afegeix-hi un DNS"
+    "Tambahkan DNS"
   ],
   "Add LVM volume group": [
-    "Afegeix un grup de volums d'LVM"
+    "Tambahkan grup volume LVM"
   ],
   "Add a partition or mount an existing one": [
-    "Afegiu-hi una partició o munteu-ne una d'existent"
+    "Tambahkan partisi atau mount partisi yang sudah ada"
   ],
   "Add an address": [
-    "Afegeix-hi una adreça"
+    "Tambahkan alamat"
   ],
   "Add another DNS": [
-    "Afegeix-hi un altre DNS"
+    "Tambahkan DNS lain"
   ],
   "Add another address": [
-    "Afegeix-hi una altra adreça"
+    "Tambahkan alamat lain"
   ],
   "Add another partition or mount an existing one": [
-    "Afegiu-hi una altra partició o munteu-ne una d'existent"
+    "Tambahkan partisi lain atau pasang partisi yang sudah ada"
   ],
   "Add device menu": [
-    "Afegeix el menú del dispositiu"
+    "Tambahkan menu perangkat"
   ],
   "Add logical volume": [
-    "Afegeix un volum lògic"
+    "Tambahkan volume logis"
   ],
   "Add or use partition": [
-    "Afegiu o useu una partició"
+    "Tambahkan atau gunakan partisi"
   ],
   "Address": [
-    "Adreça"
+    "Alamat"
   ],
   "Addresses": [
-    "Adreces"
+    "Alamat"
   ],
   "Addresses data list": [
-    "Llista de dades d'adreces"
+    "Daftar data alamat"
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
-    "Ajusteu la configuració següent perquè el sistema nou s'adapti a l'espai disponible."
+    "Sesuaikan pengaturan di bawah ini agar sistem baru dapat disesuaikan dengan ruang yang tersedia."
   ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
-    "S'han resolt tots els conflictes o no se n'ha detectat cap. Podeu continuar la configuració de manera segura."
+    "Semua konflik telah diselesaikan, atau tidak ada yang terdeteksi. Anda dapat melanjutkan pengaturan Anda dengan aman."
   ],
   "All content not configured to be mounted will be deleted": [
-    "Se suprimirà tot el contingut que no estigui configurat per ser muntat"
+    "Semua konten yang tidak dikonfigurasi untuk di-mount akan dihapus"
   ],
   "All content will be deleted": [
-    "Se'n suprimirà tot el contingut"
+    "Semua konten akan dihapus"
   ],
   "All fields are required": [
-    "Tots els camps són obligatoris."
+    "Semua bidang wajib diisi"
   ],
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
-    "Totes les connexions de xarxa gestionades a través d'aquesta interfície estan actualment configurades per usar-les només durant la instal·lació i no es copiaran al sistema instal·lat."
+    "Semua koneksi jaringan yang dikelola melalui antarmuka ini saat ini diatur untuk hanya digunakan selama pemasangan dan tidak akan disalin ke sistem yang dipasang"
   ],
   "Allow growing": [
-    "Permet-ne l'eixamplament"
+    "Izinkan pertumbuhan"
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
-    "A més de definir el primer usuari, es poden configurar mètodes d'autenticació per a l'usuari d'arrel."
+    "Selain mendefinisikan pengguna pertama, metode autentikasi untuk pengguna root dapat dikonfigurasi."
   ],
   "Already using all available devices": [
-    "Ja s'usen tots els dispositius disponibles"
+    "Sudah menggunakan semua perangkat yang tersedia"
   ],
   "Already using all available disks": [
-    "Ja s'usen tots els discs disponibles"
+    "Sudah menggunakan semua disk yang tersedia"
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
-    "Se suprimirà qualsevol partició existent i es perdran totes les dades del disc."
+    "Semua partisi yang ada akan dihapus dan semua data di disk akan hilang."
   ],
   "Any interface": [
-    "Qualsevol interfície"
+    "Antarmuka apa pun"
   ],
   "Any partition needed to boot will be configured.": [
-    "Es configurarà qualsevol partició necessària per a arrencar."
+    "Partisi apa pun yang diperlukan untuk booting akan dikonfigurasi."
   ],
   "Apply selected solution": [
-    "Aplica la solució seleccionada"
+    "Pilih solusi untuk melanjutkan"
   ],
   "As a new partition on %s": [
-    "Com a partició nova a %s"
+    "Sebagai partisi baru di %s"
   ],
   "At least one address must be provided for selected mode": [
-    "S'ha de proporcionar almenys una adreça per al mode seleccionat."
+    "Setidaknya satu alamat harus disediakan untuk mode yang dipilih"
   ],
   "At least one partition will be deleted": [
-    "Se suprimirà almenys una partició"
+    "Setidaknya satu partisi akan dihapus"
   ],
   "At this point you can power off the machine.": [
-    "En aquest punt, podeu aturar la màquina."
+    "Pada titik ini, Anda dapat mematikan mesin."
   ],
   "At this point you can reboot the machine to log in to the new system.": [
-    "En aquest punt, podeu reiniciar la màquina per iniciar sessió al sistema nou."
+    "Pada titik ini, Anda dapat menyalakan ulang mesin untuk masuk ke sistem yang baru."
   ],
   "Authentication": [
-    "Autenticació"
+    "Autentikasi"
   ],
   "Authentication by initiator": [
-    "Autenticació per iniciador"
+    "Otentikasi oleh inisiator"
   ],
   "Authentication by target": [
-    "Autenticació per destinació"
+    "Otentikasi berdasarkan target"
   ],
   "Auto LUNs Scan": [
-    "Escaneig automàtic de LUN"
+    "Pemindaian LUN Otomatis"
   ],
   "Automatic": [
-    "Automàtica"
+    "Otomatis"
   ],
   "Automatic (DHCP)": [
-    "Automàtic (DHCP)"
+    "Otomatis (DHCP)"
   ],
   "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    "L'exploració automàtica de LUN està [desactivada]. Els LUN s'han de configurar       manualment després d'activar un controlador."
+    "Pemindaian LUN otomatis [dinonaktifkan]. LUN harus dikonfigurasi secara manual setelah mengaktifkan pengontrol."
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    "L'exploració automàtica de LUN està [activada]. L'activació d'un controlador       que s'executa en mode NPIV configurarà automàticament tots els seus LUN."
+    "Pemindaian LUN otomatis [diaktifkan]. Mengaktifkan pengontrol yang berjalan dalam mode NPIV akan secara otomatis mengonfigurasi semua LUN."
   ],
   "Available products": [
-    "Productes disponibles"
+    "Produk yang tersedia"
   ],
   "Back": [
-    "Enrere"
+    "Kembali"
   ],
   "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
-    "Segons la quantitat de memòria RAM del sistema, es planificarà una %1s$ de %2$s per a %3$s"
+    "Berdasarkan jumlah RAM yang tersedia di sistem, %1s$ dari %2$s akan dialokasikan untuk %3$s"
   ],
   "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
-    "Segons la quantitat de memòria RAM del sistema, es planificarà una %1s$ d'almenys %2$s per a %3$s"
+    "Berdasarkan jumlah RAM yang tersedia di sistem, %1s$ sebesar minimal %2$s akan dialokasikan untuk %3$s"
   ],
   "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
-    "Segons la quantitat de memòria RAM del sistema, es planificarà una %1s$ amb una mida d'entre %2$s i %3$s per a %4$s"
+    "Berdasarkan jumlah RAM yang tersedia di sistem, sebuah %1s$ dengan ukuran antara %2$s dan %3$s akan dialokasikan untuk %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"
   ],
   "Before %s": [
-    "Abans: %s"
+    "Sebelum %s"
   ],
   "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "Abans d'instal·lar, heu de prendre algunes decisions. Cliqueu a cada secció per revisar-ne la configuració."
+    "Sebelum menginstal, Anda harus membuat beberapa keputusan. Klik pada setiap bagian untuk meninjau pengaturan."
   ],
   "Before starting the installation, you need to address the following problems:": [
-    "Abans de començar la instal·lació, heu de resoldre els problemes següents:"
+    "Sebelum memulai penginstalan, Anda perlu mengatasi masalah berikut ini:"
   ],
   "Beta": [
     "Beta"
   ],
   "Bind to MAC address": [
-    "Vincula a l'adreça MAC"
+    "Mengikat ke alamat MAC"
   ],
   "Bind to interface name": [
-    "Vincula al nom de la interfície"
+    "Ikat ke nama antarmuka"
   ],
   "Binding settings for '%s'": [
-    "Configuració del vincle per a %s"
+    "Pengaturan pengikatan untuk '%s'"
   ],
   "BitLocker": [
     "BitLocker"
   ],
   "Boot options": [
-    "Opcions d'arrencada"
+    "Opsi boot"
   ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
-    "Btrfs amb instantànies"
+    "Btrfs dengan snapshot"
   ],
   "Cancel": [
-    "Cancel·la"
+    "Batal"
   ],
   "Cannot be changed in remote installation": [
-    "No es pot canviar a la instal·lació remota."
+    "Tidak dapat diubah dalam instalasi jarak jauh"
   ],
   "Cannot connect to Agama server": [
-    "No es pot connectar amb el servidor d'Agama."
+    "Tidak dapat terhubung ke server Agama"
   ],
   "Cannot format all selected devices": [
-    "No es poden formatar tots els dispositius seleccionats."
+    "Tidak dapat memformat semua perangkat yang dipilih"
   ],
   "Change": [
-    "Canvia"
+    "Ubah"
   ],
   "Change Language": [
-    "Canvia'n la llengua"
+    "Ubah Bahasa"
   ],
   "Change boot options": [
-    "Canvia les opcions d'arrencada"
+    "Mengubah opsi boot"
   ],
   "Change device menu": [
-    "Canvia el menú del dispositiu"
+    "Ubah menu perangkat"
   ],
   "Change display language": [
-    "Canvia la llengua de visualització"
+    "Ubah bahasa tampilan"
   ],
   "Change display language and keyboard layout": [
-    "Canvia la llengua de visualització i la disposició del teclat"
+    "Ubah bahasa tampilan dan tata letak keyboard"
   ],
   "Change keyboard": [
-    "Canvia el teclat"
+    "Ganti papan ketik"
   ],
   "Change keyboard layout": [
-    "Canvia la disposició del teclat"
+    "Ubah tata letak keyboard"
   ],
   "Change product": [
-    "Canvia el producte"
+    "Mengubah produk"
   ],
   "Change selection": [
-    "Canvia la selecció"
+    "Mengubah pilihan"
   ],
   "Change the file system or mount point": [
-    "Canvia'n el sistema de fitxers o el punt de muntatge"
+    "Ubah sistem berkas atau titik mount"
   ],
   "Channel ID": [
-    "Identificador del canal"
+    "ID saluran"
   ],
   "Check the %d planned actions": [
-    "Comproveu les %d accions planificades"
+    "Periksa %d tindakan yang direncanakan"
   ],
   "Check the authentication parameters.": [
-    "Comproveu els paràmetres d'autenticació."
+    "Periksa parameter otentikasi."
   ],
   "Check the following before continuing": [
-    "Comproveu el següent abans de continuar:"
+    "Periksa hal-hal berikut sebelum melanjutkan"
   ],
   "Choose a disk for placing the boot loader": [
-    "Trieu un disc per posar-hi el carregador d'arrencada"
+    "Pilih disk untuk menempatkan boot loader"
   ],
   "Choose device to bind by MAC": [
-    "Trieu el dispositiu per vincular per MAC"
+    "Pilih perangkat untuk diikat berdasarkan MAC"
   ],
   "Choose device to bind by name": [
-    "Trieu el dispositiu per vincular-lo per nom"
+    "Pilih perangkat untuk diikat berdasarkan nama"
   ],
   "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
-    "Trieu com s'ha d'associar la connexió amb una interfície de xarxa. Això ajuda a controlar quina interfície usa la connexió."
+    "Pilih bagaimana koneksi akan dihubungkan dengan antarmuka jaringan. Hal ini membantu mengontrol antarmuka mana yang digunakan oleh koneksi tersebut."
   ],
   "Clear": [
-    "Neteja"
+    "Hapus"
   ],
   "Clear selected mount point": [
-    "Suprimeix el punt de muntatge seleccionat"
+    "Hapus titik mount yang dipilih"
   ],
   "Close": [
-    "Tanca"
+    "Tutup"
   ],
   "Collapse the list of planned actions": [
-    "Replega la llista d'accions previstes"
+    "Lipat daftar tindakan yang direncanakan"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "Configuració llegida a la taula del microprogramari d'arrencada iSCSI (iBFT)."
+    "Konfigurasi dibaca dari Tabel Firmware Boot iSCSI (iBFT)."
   ],
   "Configure DASD": [
-    "Configuració de DASD"
+    "Konfigurasikan DASD"
   ],
   "Configure LVM Volume Group": [
-    "Configura un grup de volums d'LVM"
+    "Konfigurasi Grup Volume LVM"
   ],
   "Configure LVM logical volume at %s volume group": [
-    "Configura el volum lògic d'LVM al grup de volums %s"
+    "Konfigurasikan volume logis LVM di grup volume %s"
   ],
   "Configure device %s": [
-    "Configura el dispositiu %s"
+    "Konfigurasikan perangkat %s"
   ],
   "Configure device menu": [
-    "Configura el menú del dispositiu"
+    "Konfigurasi menu perangkat"
   ],
   "Configure iSCSI": [
-    "Configuració d'iSCSI"
+    "Konfigurasi iSCSI"
   ],
   "Configure partition at %s": [
-    "Configura la partició a %s"
+    "Konfigurasikan partisi di %s"
   ],
   "Configure zFCP": [
-    "Configuració de zFCP"
+    "Konfigurasikan zFCP"
   ],
   "Configured for installation only": [
-    "Configuració només per a la instal·lació"
+    "Dikonfigurasi hanya untuk pemasangan"
   ],
   "Configuring the product, please wait ...": [
-    "Configurant el producte. Espereu, si us plau..."
+    "Mengkonfigurasi produk, harap tunggu ..."
   ],
   "Confirm": [
-    "Confirmeu-ho"
+    "Konfirmasi"
   ],
   "Confirm Installation": [
-    "Confirmeu la instal·lació"
+    "Konfirmasi Instalasi"
   ],
   "Congratulations!": [
-    "Enhorabona!"
+    "Selamat!"
   ],
   "Connect": [
-    "Connecta't"
+    "Sambungkan"
   ],
   "Connect to %s": [
-    "Connecta amb %s"
+    "Hubungkan ke %s"
   ],
   "Connect to iSCSI targets": [
-    "Connecta amb objectius iSCSI"
+    "Menyambungkan ke target iSCSI"
   ],
   "Connected": [
-    "Connectat"
+    "Tersambung"
   ],
   "Connected (%s)": [
-    "Connectat (%s)"
+    "Tersambung (%s)"
   ],
   "Connecting to %s": [
-    "Es connecta amb %s"
+    "Menghubungkan ke %s"
   ],
   "Connection details": [
-    "Detalls de la connexió"
+    "Rincian koneksi"
   ],
   "Connection not found or lost": [
-    "Connexió no trobada o perduda"
+    "Koneksi tidak ditemukan atau terputus"
   ],
   "Content": [
-    "Contingut"
+    "Konten"
   ],
   "Continue": [
-    "Continua"
+    "Lanjutkan"
   ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
-    "Continuar sense instal·lar el paquet pot resultar en un sistema trencat. En alguns casos, és possible que el sistema ni tan sols arrenqui."
+    "Melanjutkan tanpa memasang paket dapat mengakibatkan sistem rusak. Dalam beberapa kasus, sistem bahkan mungkin tidak dapat melakukan booting."
   ],
   "Controllers": [
-    "Controladors"
+    "Kontroler"
   ],
   "Could not authenticate against the server, please check it.": [
-    "No s'ha pogut autenticar amb el servidor. Si us plau, reviseu-ho."
+    "Tidak dapat mengautentikasi server, silakan periksa."
   ],
   "Could not connect to %s": [
-    "No s'ha pogut connectar amb %s"
+    "Tidak dapat terhubung ke %s"
   ],
   "Could not log in. Please, make sure that the password is correct.": [
-    "No s'ha pogut iniciar la sessió. Si us plau, assegureu-vos que la contrasenya sigui correcta."
+    "Tidak dapat masuk. Harap pastikan kata sandi sudah benar."
   ],
   "Create LVM volume group %s": [
-    "Crea el grup de volums d'LVM %s"
+    "Buat grup volume LVM %s"
   ],
   "Create LVM volume group on %s": [
-    "Crea un grup de volums d'LVM a %s"
+    "Buat grup volume LVM di %s"
   ],
   "Create another LVM volume group on %s": [
-    "Crea un altre grup de volums d'LVM a %s"
+    "Buat grup volume LVM lain di %s"
   ],
   "Create user": [
-    "Crea un usuari"
+    "Membuat pengguna"
   ],
   "Current %1$s at %2$s": [
-    "%1$s actual a %2$s"
+    "Saat ini %1$s di %2$s"
   ],
   "Current %s": [
-    "Actual: %s"
+    "Saat ini %s"
   ],
   "Current content": [
-    "Contingut actual"
+    "Konten saat ini"
   ],
   "Current partitions will be kept": [
-    "Es conservaran les particions actuals"
+    "Partisi saat ini akan tetap dipertahankan"
   ],
   "Custom": [
-    "Personalitzat"
+    "Khusus"
   ],
   "DASD": [
     "DASD"
@@ -478,10 +478,10 @@ export default {
     "DASD %s"
   ],
   "DASD devices selection table": [
-    "Taula de selecció de dispositius DASD"
+    "Tabel pemilihan perangkat DASD"
   ],
   "DASDs table section": [
-    "Secció de taula DASD"
+    "Bagian tabel DASD"
   ],
   "DIAG": [
     "DIAG"
@@ -490,190 +490,190 @@ export default {
     "DNS"
   ],
   "Deactivate": [
-    "Desactiva"
+    "Nonaktifkan"
   ],
   "Deactivated": [
-    "Desactivat"
+    "Dinonaktifkan"
   ],
   "Default file system for %s": [
-    "Sistema de fitxers per defecte per a %s"
+    "Sistem berkas default untuk %s"
   ],
   "Default file system for generic logical volumes": [
-    "Sistema de fitxers per defecte per a volums lògics genèrics"
+    "Sistem berkas default untuk volume logis umum"
   ],
   "Default file system for generic mount paths": [
-    "Sistema de fitxers per defecte per als camins de muntatge genèrics"
+    "Sistem berkas default untuk jalur mount umum"
   ],
   "Default file system for generic partitions": [
-    "Sistema de fitxers per defecte per a particions genèriques"
+    "Sistem berkas default untuk partisi umum"
   ],
   "Define a custom size": [
-    "Definiu una mida personalitzada"
+    "Tentukan ukuran kustom"
   ],
   "Define a new LVM on the disk": [
-    "Definiu un LVM nou al disc"
+    "Buat partisi LVM baru di disk"
   ],
   "Define a new LVM on top of one or several disks": [
-    "Definiu un LVM nou en un o diversos discs"
+    "Buat partisi LVM baru di atas satu atau beberapa disk"
   ],
   "Define a user now": [
-    "Definiu un usuari ara"
+    "Tentukan pengguna sekarang"
   ],
   "Define the first user with admin (sudo) privileges for system management.": [
-    "Definiu el primer usuari amb privilegis d'administrador (sudo) per a la gestió del sistema."
+    "Tentukan pengguna pertama dengan hak akses admin (sudo) untuk pengelolaan sistem."
   ],
   "Defined (hidden)": [
-    "Definit (ocult)"
+    "Didefinisikan (tersembunyi)"
   ],
   "Delete": [
-    "Suprimeix"
+    "Menghapus"
   ],
   "Delete current content": [
-    "Suprimeix el contingut actual"
+    "Hapus konten saat ini"
   ],
   "Delete volume group": [
-    "Suprimeix el grup de volums"
+    "Hapus grup volume"
   ],
   "Description": [
-    "Descripció"
+    "Deskripsi"
   ],
   "Destroy current data and format device as": [
-    "Destrueix les dades actuals i formata el dispositiu com a"
+    "Hapus data saat ini dan format perangkat sebagai"
   ],
   "Destroy current data and format partition as": [
-    "Destrueix les dades actuals i formata la partició com a"
+    "Hapus data saat ini dan format partisi sebagai"
   ],
   "Details": [
-    "Detalls"
+    "Detail"
   ],
   "Details for %s": [
-    "Detalls per a %s"
+    "Rincian untuk %s"
   ],
   "Details will appear after the connection is successfully established.": [
-    "Els detalls apareixeran quan la connexió s'hagi establert correctament."
+    "Rincian akan ditampilkan setelah koneksi berhasil terhubung."
   ],
   "Device": [
-    "Dispositiu"
+    "Perangkat"
   ],
   "Device %s menu": [
-    "Menú del dispositiu %s"
+    "Menu Perangkat %s"
   ],
   "Device Selection": [
-    "Selecció de dispositiu"
+    "Pemilihan Perangkat"
   ],
   "Device details": [
-    "Detalls del dispositiu"
+    "Rincian perangkat"
   ],
   "Discard": [
-    "Descarta'l"
+    "Buang"
   ],
   "Discard the maximum size and continue with simplified configuration": [
-    "Descarta la mida màxima i continua la configuració simplificada"
+    "Buang ukuran maksimum dan lanjutkan dengan konfigurasi sederhana"
   ],
   "Disconnected": [
-    "Desconnectat"
+    "Terputus"
   ],
   "Discover": [
-    "Descobreix"
+    "Temukan"
   ],
   "Discover and connect to iSCSI targets": [
-    "Descobriu objectius iSCSI i connecteu-vos-hi"
+    "Temukan dan hubungkan ke target iSCSI"
   ],
   "Discover iSCSI Targets": [
-    "Descobreix les destinacions iSCSI"
+    "Menemukan Target iSCSI"
   ],
   "Discover iSCSI targets": [
-    "Descobreix objectius iSCSI"
+    "Menemukan target iSCSI"
   ],
   "Disk": [
-    "Disc"
+    "Disk"
   ],
   "Disks": [
-    "Discs"
+    "Disk"
   ],
   "Do not configure": [
-    "No ho configuris"
+    "Jangan konfigurasikan"
   ],
   "Do not format %s and keep the data": [
-    "No formatis %s i conserva'n les dades"
+    "Jangan memformat %s dan pertahankan data"
   ],
   "Do not use": [
-    "No l'usis"
+    "Jangan gunakan"
   ],
   "Download logs": [
-    "Baixa els registres"
+    "Unduh log"
   ],
   "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Durant la instal·lació, es fan diverses accions per configurar el disseny que es mostra a la taula següent."
+    "Selama pemasangan, beberapa tindakan akan dilakukan untuk mengatur tata letak yang ditunjukkan pada tabel di bawah ini."
   ],
   "Edit": [
-    "Edita"
+    "Edit"
   ],
   "Edit %s": [
-    "Edita %s"
+    "Edit %s"
   ],
   "Edit binding settings": [
-    "Edita la configuració de la vinculació"
+    "Edit pengaturan ikatan"
   ],
   "Edit connection %s": [
-    "Edita la connexió %s"
+    "Edit koneksi %s"
   ],
   "Edit user": [
-    "Edita l'usuari"
+    "Edit pengguna"
   ],
   "Edit volume group": [
-    "Edita el grup de volums"
+    "Edit grup volume"
   ],
   "Email": [
-    "Adreça electrònica"
+    "Email"
   ],
   "Empty LVM volume group %s": [
-    "Buida el grup de volums d'LVM %s"
+    "Kosongkan volume grup LVM %s"
   ],
   "Encrypt the system": [
-    "Encripta el sistema"
+    "Mengenkripsi sistem"
   ],
   "Encrypted Device": [
-    "Dispositiu encriptat"
+    "Perangkat Terenkripsi"
   ],
   "Encryption": [
-    "Encriptació"
+    "Enkripsi"
   ],
   "Encryption Password": [
-    "Contrasenya d'encriptació"
+    "Kata Sandi Enkripsi"
   ],
   "Encryption is disabled": [
-    "L'encriptació està inhabilitada"
+    "Enkripsi dinonaktifkan"
   ],
   "Encryption is enabled": [
-    "L'encriptació està habilitada"
+    "Enkripsi diaktifkan"
   ],
   "Encryption is enabled using TPM unlocking": [
-    "L'encriptació s'habilita amb el desblocatge de TPM"
+    "Enkripsi diaktifkan menggunakan pembukaan kunci TPM"
   ],
   "Encryption settings": [
-    "Configuració de l'encriptació"
+    "Pengaturan enkripsi"
   ],
   "Enter a hostname.": [
-    "Introduïu un nom d'amfitrió."
+    "Masukkan nama host."
   ],
   "Enter a name": [
-    "Introduïu un nom"
+    "Masukkan nama"
   ],
   "Enter a name for the volume group.": [
-    "Introduïu un nom per al grup de volums."
+    "Masukkan nama untuk grup volume."
   ],
   "ExFAT": [
     "ExFAT"
   ],
   "Example: https://myserver.com": [
-    "Exemple: https://elmeuservidor.com"
+    "Contoh: https://myserver.com"
   ],
   "Excellent signal": [
-    "Senyal excel·lent"
+    "Sinyal sangat baik"
   ],
   "Expiration date": [
-    "Data de venciment"
+    "Tanggal kadaluwarsa"
   ],
   "Ext2": [
     "Ext2"
@@ -685,7 +685,7 @@ export default {
     "Ext4"
   ],
   "Extensions": [
-    "Extensions"
+    "Ekstensi"
   ],
   "F2FS": [
     "F2FS"
@@ -694,140 +694,139 @@ export default {
     "FAT"
   ],
   "Failed to calculate a storage layout": [
-    "No s'ha pogut calcular un disseny d'emmagatzematge"
+    "Gagal menghitung tata letak penyimpanan"
   ],
   "File system": [
-    "Sistema de fitxers"
+    "Sistem berkas"
   ],
   "File system label": [
-    "Etiqueta del sistema de fitxers"
+    "Label sistem berkas"
   ],
   "Filesystems": [
-    "Sistemes de fitxers"
+    "Sistem berkas"
   ],
   "Filter by description or keymap code": [
-    "Filtra per descripció o codi de mapa de tecles"
+    "Filter berdasarkan deskripsi atau kode peta kunci"
   ],
   "Filter by language, territory or locale code": [
-    "Filtra per llengua, territori o codi local"
+    "Memfilter berdasarkan bahasa, wilayah, atau kode lokal"
   ],
   "Filter by max channel": [
-    "Filtra per canal màxim"
+    "Memfilter menurut saluran maks"
   ],
   "Filter by min channel": [
-    "Filtra per canal mínim"
+    "Memfilter menurut saluran min"
   ],
   "Filter by pattern title or description": [
-    "Filtra per títol o descripció del patró"
+    "Memfilter berdasarkan judul atau deskripsi pola"
   ],
   "Filter by territory, time zone code or UTC offset": [
-    "Filtra per territori, codi de zona horària o desplaçament d'UTC"
+    "Memfilter berdasarkan wilayah, kode zona waktu, atau offset UTC"
   ],
   "Find space": [
-    "Aconsegueix espai"
+    "Temukan ruang"
   ],
   "Find space in %s": [
-    "Cerca espai a %s"
+    "Temukan ruang di %s"
   ],
   "Finish": [
-    "Acaba"
+    "Selesai"
   ],
   "Finished": [
-    "Acabada"
+    "Selesai"
   ],
   "First user": [
-    "Usuari primer"
+    "Pengguna pertama"
   ],
   "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
-    "Per a necessitats més avançades, els usuaris poden canviar a aquesta pàgina completa, una versió de camí dedicat que ofereix més espai per a vistes detallades, columnes addicionals, filtres i funcionalitats ampliades."
+    "Untuk kebutuhan yang lebih canggih, pengguna dapat beralih ke versi jalur khusus halaman penuh ini yang menyediakan ruang lebih luas untuk tampilan detail, kolom tambahan, filter, dan fungsionalitas yang diperluas."
   ],
   "Format": [
-    "Formata"
+    "Format"
   ],
   "Format RAID %s": [
-    "Formata la RAID %s"
+    "Format RAID %s"
   ],
   "Format device as": [
-    "Formata el dispositiu com a"
+    "Format perangkat sebagai"
   ],
   "Format disk %s": [
-    "Formata el disc %s"
+    "Format disk %s"
   ],
   "Format logical volume as": [
-    "Formata el volum lògic com a"
+    "Format volume logis sebagai"
   ],
   "Format partition as": [
-    "Formata la partició com a"
+    "Format partisi sebagai"
   ],
   "Format selected devices?": [
-    "Voleu formatar els dispositius seleccionats?"
+    "Memformat perangkat yang dipilih?"
   ],
   "Format the whole device or mount an existing file system": [
-    "Formateu tot el dispositiu o munteu un sistema de fitxers existent"
+    "Memformat seluruh perangkat atau mount sistem berkas yang ada"
   ],
   "Formatted": [
-    "Formatat"
+    "Diformat"
   ],
   "Formatting DASD devices": [
-    "Formatatge de dispositius DASD"
+    "Memformat perangkat DASD"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
-    "L'encriptació de disc complet (FDE) permet protegir la informació emmagatzemada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
+    "Enkripsi Disk Penuh (FDE) memungkinkan untuk melindungi informasi yang disimpan di sistem berkas baru, termasuk data, program, dan berkas sistem."
   ],
   "Full name": [
-    "Nom complet"
+    "Nama lengkap"
   ],
   "Gateway": [
-    "Passarel·la"
+    "Gateway"
   ],
   "Gateway can be defined only in 'Manual' mode": [
-    "La passarel·la només es pot definir en mode manual."
+    "Gateway hanya dapat ditentukan dalam mode 'Manual'"
   ],
   "GiB": [
     "GiB"
   ],
   "Go to network page": [
-    "Ves a la pàgina de la xarxa"
+    "Buka halaman jaringan"
   ],
   "Good signal": [
-    "Senyal bo"
+    "Sinyal baik"
   ],
   "Hide": [
-    "Amaga"
+    "Sembunyikan"
   ],
   "Hide %d subvolume action": [
-    "Amaga %d acció de subvolum",
-    "Amaga %d accions de subvolum"
+    "Menyembunyikan tindakan subvolume %d"
   ],
   "Hide details": [
-    "Amaga els detalls"
+    "Sembunyikan detail"
   ],
   "Hostname": [
-    "Nom d'amfitrió"
+    "Nama host"
   ],
   "Hostname could not be updated": [
-    "No s'ha pogut actualitzar el nom d'amfitrió"
+    "Nama host tidak dapat diperbarui"
   ],
   "Hostname successfully updated": [
-    "El nom d'amfitrió s'ha actualitzat correctament"
+    "Nama host telah diperbarui dengan sukses"
   ],
   "I have read and accept the [license] for %s": [
-    "He llegit i accepto la [llicència] de %s"
+    "Saya telah membaca dan menerima [lisensi] untuk %s"
   ],
   "IP Address": [
-    "Adreça IP"
+    "Alamat IP"
   ],
   "IP Addresses": [
-    "Adreces IP"
+    "Alamat IP"
   ],
   "IP address": [
-    "Adreça IP"
+    "Alamat IP"
   ],
   "IP addresses": [
-    "Adreces IP"
+    "Alamat IP"
   ],
   "IP settings": [
-    "Paràmetres d'IP"
+    "Pengaturan IP"
   ],
   "IPv4": [
     "IPv4"
@@ -836,139 +835,139 @@ export default {
     "IPv6"
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
-    "Si s'ha usat un mitjà local per executar aquest instal·lador, traieu-lo abans de la propera arrencada."
+    "Jika media lokal digunakan untuk menjalankan penginstalasi ini, hapus media tersebut sebelum boot berikutnya."
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Si continueu, les particions del disc dur es modificaran segons la configuració d'instal·lació proporcionada."
+    "Jika Anda melanjutkan, partisi pada hard disk Anda akan dimodifikasi sesuai dengan pengaturan instalasi yang disediakan."
   ],
   "In progress": [
-    "En curs"
+    "Dalam proses"
   ],
   "Incorrect IP address": [
-    "Adreça IP incorrecta"
+    "Alamat IP salah"
   ],
   "Incorrect password": [
-    "Contrasenya incorrecta"
+    "Kata sandi salah"
   ],
   "Incorrect port": [
-    "Port incorrecte"
+    "Port salah"
   ],
   "Incorrect user name": [
-    "Nom d'usuari incorrecte"
+    "Nama pengguna salah"
   ],
   "Initiator": [
-    "Iniciador"
+    "Inisiator"
   ],
   "Initiator details": [
-    "Detalls de l'iniciador"
+    "Rincian inisiator"
   ],
   "Initiator name": [
-    "Nom de l'iniciador"
+    "Nama inisiator"
   ],
   "Initiator name could not be updated": [
-    "El nom de l'iniciador s'ha actualitzat correctament"
+    "Nama inisiator tidak dapat diperbarui"
   ],
   "Initiator name successfully updated": [
-    "El nom de l'iniciador s'ha actualitzat correctament"
+    "Nama inisiator telah berhasil diperbarui"
   ],
   "Install": [
-    "Instal·la"
+    "Instal"
   ],
   "Install using an advanced configuration.": [
-    "Instal·la mitjançant una configuració avançada."
+    "Instal menggunakan konfigurasi lanjutan."
   ],
   "Install using device %s and deleting all its content.": [
-    "Instal·la al dispositiu %s suprimint-ne tot el contingut."
+    "Menginstal menggunakan perangkat %s dan menghapus semua isinya."
   ],
   "Install using device %s shrinking existing partitions as needed.": [
-    "Instal·la al dispositiu %s encongint-ne les particions existents segons calgui."
+    "Instal menggunakan perangkat %s mengecilkan partisi yang ada sesuai kebutuhan."
   ],
   "Install using device %s with a custom strategy to find the needed space.": [
-    "Instal·la al dispositiu %s amb una estratègia personalitzada per trobar l'espai necessari."
+    "Pasang menggunakan perangkat %s dengan strategi khusus untuk menemukan ruang yang dibutuhkan."
   ],
   "Install using device %s without modifying existing partitions.": [
-    "Instal·la al dispositiu %s sense modificar-ne les particions existents."
+    "Menginstal menggunakan perangkat %s tanpa mengubah partisi yang ada."
   ],
   "Install using several devices and deleting all its content.": [
-    "Instal·la a dispositius diversos suprimint-ne tot el contingut."
+    "Pasang menggunakan beberapa perangkat dan hapus semua kontennya."
   ],
   "Install using several devices shrinking existing partitions as needed.": [
-    "Instal·la a dispositius diversos encongint-ne les particions existents segons calgui."
+    "Pasang menggunakan beberapa perangkat yang mengecilkan partisi yang ada sesuai kebutuhan."
   ],
   "Install using several devices with a custom strategy to find the needed space.": [
-    "Instal·la a dispositius diversos amb una estratègia personalitzada per trobar l'espai necessari."
+    "Pasang menggunakan beberapa perangkat dengan strategi khusus untuk menemukan ruang yang dibutuhkan."
   ],
   "Install using several devices without modifying existing partitions.": [
-    "Instal·la a dispositius diversos sense modificar-ne les particions existents."
+    "Pasang menggunakan beberapa perangkat tanpa mengubah partisi yang ada."
   ],
   "Installation Devices": [
-    "Dispositius d'instal·lació"
+    "Perangkat Pemasangan"
   ],
   "Installation will take %s.": [
-    "La instal·lació necessitarà %s."
+    "Penginstalan akan memakan waktu %s."
   ],
   "Installed system may not have network connections": [
-    "El sistema instal·lat pot no tenir connexions de xarxa."
+    "Sistem yang dipasang mungkin tidak memiliki koneksi jaringan"
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
-    "Instal·lar un paquet trencat afecta l'estabilitat del sistema i és un risc important de seguretat!"
+    "Memasang paket yang rusak akan memengaruhi stabilitas sistem dan menimbulkan risiko keamanan yang besar!"
   ],
   "Installing the system, please wait...": [
-    "Instal·lant el sistema. Espereu, si us plau..."
+    "Menginstal sistem, harap tunggu..."
   ],
   "Interface": [
-    "Interfície"
+    "Antarmuka"
   ],
   "Invalid storage settings": [
-    "Configuració d'emmagatzematge no vàlida"
+    "Pengaturan penyimpanan tidak valid"
   ],
   "Ip prefix or netmask": [
-    "Prefix IP o màscara de xarxa"
+    "Awalan IP atau netmask"
   ],
   "Issue date": [
-    "Data d'emissió"
+    "Tanggal penerbitan"
   ],
   "Issuer": [
-    "Emissor"
+    "Penerbit"
   ],
   "It is chosen for booting": [
-    "S'ha triat per a l'arrencada"
+    "Ini dipilih untuk booting"
   ],
   "It is chosen for booting and for some LVM groups": [
-    "S'ha triat per a l'arrencada i per a alguns grups d'LVM"
+    "Ini dipilih untuk booting dan untuk beberapa grup LVM"
   ],
   "It is chosen for booting and for the LVM group '%s'": [
-    "S'ha triat per a l'arrencada i per al grup d'LVM %s"
+    "Ini dipilih untuk booting dan untuk grup LVM '%s'"
   ],
   "It is chosen for some LVM groups": [
-    "S'ha triat per a alguns grups d'LVM"
+    "Ini dipilih untuk beberapa grup LVM"
   ],
   "It is chosen for the LVM group '%s'": [
-    "S'ha triat per al grup d'LVM %s"
+    "Ini dipilih untuk grup LVM '%s'"
   ],
   "It is not possible to allocate space for %s.": [
-    "No és possible assignar espai per a %s."
+    "Tidak mungkin mengalokasikan ruang untuk %s."
   ],
   "It is not possible to allocate space for the boot partition and for %s.": [
-    "No és possible assignar espai per a la partició d'arrencada i per a %s."
+    "Tidak mungkin mengalokasikan ruang untuk partisi boot dan untuk %s."
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
-    "No és possible instal·lar el sistema amb la configuració actual. Ajusteu els paràmetres que hi ha a continuació."
+    "Tidak mungkin memasang sistem dengan konfigurasi saat ini. Sesuaikan pengaturan di bawah ini."
   ],
   "It may take some time.": [
-    "Pot trigar una mica."
+    "Mungkin membutuhkan waktu."
   ],
   "JFS": [
     "JFS"
   ],
   "Keyboard": [
-    "Teclat"
+    "Papan ketik"
   ],
   "Keyboard layout": [
-    "Disposició del teclat"
+    "Tata letak keyboard"
   ],
   "Keyboard selection": [
-    "Selecció del teclat"
+    "Pemilihan keyboard"
   ],
   "KiB": [
     "KiB"
@@ -977,70 +976,70 @@ export default {
     "LUN"
   ],
   "Label": [
-    "Etiqueta"
+    "Label"
   ],
   "Language": [
-    "Llengua"
+    "Bahasa"
   ],
   "Language and keyboard": [
-    "Llengua i teclat"
+    "Bahasa dan keyboard"
   ],
   "Let the installer propose a sensible size": [
-    "Permet que l'instal·lador proposi una mida raonable"
+    "Biarkan penginstal mengusulkan ukuran yang masuk akal"
   ],
   "Loading": [
-    "Carregant"
+    "Memuat"
   ],
   "Loading data...": [
-    "Carregant dades..."
+    "Memuat data..."
   ],
   "Loading storage": [
-    "Carregant l'emmagatzematge"
+    "Memuat penyimpanan"
   ],
   "Loading the installation repositories...": [
-    "Carregant els repositoris d'instal·lació..."
+    "Memuat repositori instalasi..."
   ],
   "Locale selection": [
-    "Selecció de la llengua"
+    "Pemilihan lokasi"
   ],
   "Localization": [
-    "Localització"
+    "Pelokalan"
   ],
   "Log in": [
-    "Inicia la sessió"
+    "Masuk"
   ],
   "Log in as %s": [
-    "Inicieu sessió com a %s"
+    "Masuk sebagai %s"
   ],
   "Logical volume name": [
-    "Nom del volum lògic"
+    "Nama volume logis"
   ],
   "Logical volumes for %s": [
-    "Volums lògics per a %s"
+    "Volume logis untuk %s"
   ],
   "Login": [
-    "Entrada"
+    "Masuk"
   ],
   "Login %s": [
-    "Entrada per a %s"
+    "Login %s"
   ],
   "Login form": [
-    "Forma d'entrada"
+    "Formulir masuk"
   ],
   "Logout": [
-    "Sortida"
+    "Keluar"
   ],
   "MAC": [
     "MAC"
   ],
   "Main navigation": [
-    "Navegació principal"
+    "Navigasi utama"
   ],
   "Make sure you provide the correct values": [
-    "Assegureu-vos que proporcioneu els valors correctes"
+    "Pastikan Anda memberikan nilai yang benar"
   ],
   "Manage DASD devices": [
-    "Gestioneu els dispositius DASD"
+    "Kelola perangkat DASD"
   ],
   "Manual": [
     "Manual"
@@ -1052,58 +1051,58 @@ export default {
     "Mode"
   ],
   "Modify settings and physical volumes": [
-    "Modifica la configuració i els volums físics"
+    "Ubah pengaturan dan volume fisik"
   ],
   "More actions": [
-    "Més accions"
+    "Tindakan lainnya"
   ],
   "More devices": [
-    "Més dispositius"
+    "Lebih banyak perangkat"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    "Pot ser que hi hagi més disposicions de teclat disponibles per al producte seleccionat a la pàgina [Localitzation]"
+    "Mungkin ada lebih banyak tata letak keyboard yang tersedia untuk produk yang dipilih di halaman [Localization]"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    "És possible que hi hagi més opcions de llengua i disposicions de teclat per al producte seleccionat a la pàgina [Localization]."
+    "Opsi bahasa dan tata letak keyboard tambahan untuk produk yang dipilih mungkin tersedia di halaman [Localization]."
   ],
   "More languages might be available for the selected product at [Localization] page": [
-    "És possible que hi hagi més llengües disponibles per al producte seleccionat a la pàgina [Localitzation]"
+    "Bahasa lain mungkin tersedia untuk produk yang dipilih di halaman [Localization]"
   ],
   "Moreover, the following partitions will be created or mounted": [
-    "A més a més, es crearan o muntaran les particions següents:"
+    "Selain itu, partisi-partisi berikut akan dibuat atau di-mount"
   ],
   "Mount Point": [
-    "Punt de muntatge"
+    "Mount Point"
   ],
   "Mount RAID %s": [
-    "Munta la RAID %s"
+    "Mount RAID %s"
   ],
   "Mount disk %s": [
-    "Munta el disc %s"
+    "Mount disk %s"
   ],
   "Mount point": [
-    "Punt de muntatge"
+    "Titik pemasangan"
   ],
   "Mount point mode": [
-    "Mode de punt de muntatge"
+    "Mode titik mount"
   ],
   "Mount point options": [
-    "Opcions de punt de muntatge"
+    "Opsi titik mount"
   ],
   "Mount point toggle": [
-    "Commutació de punt de muntatge"
+    "Tombol titik mount"
   ],
   "Move mount points": [
-    "Mou els punts de muntatge"
+    "Pindahkan titik mount"
   ],
   "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    "Mou els punts de muntatge configurats actualment als discs seleccionats                    als volums lògics d'aquest grup de volums."
+    "Pindahkan titik mount yang saat ini dikonfigurasi pada disk yang dipilih ke volume logis dari grup volume ini."
   ],
   "Multipath": [
-    "Multicamí"
+    "Multipath"
   ],
   "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
-    "S'han trobat diversos conflictes. Podeu abordar-los en qualsevol ordre i, si se'n resol un, potser se'n resolen d'altres."
+    "Terdapat beberapa konflik yang ditemukan. Anda dapat menangani konflik-konflik tersebut dengan urutan apa pun, dan menyelesaikan salah satunya mungkin juga akan menyelesaikan konflik lainnya."
   ],
   "NFS": [
     "NFS"
@@ -1115,220 +1114,220 @@ export default {
     "NTFS"
   ],
   "Name": [
-    "Nom"
+    "Nama"
   ],
   "Network": [
-    "Xarxa"
+    "Jaringan"
   ],
   "Network details": [
-    "Detalls de la xarxa"
+    "Rincian jaringan"
   ],
   "Network not found or lost": [
-    "Xarxa no trobada o perduda"
+    "Jaringan tidak ditemukan atau terputus"
   ],
   "New": [
-    "Nova"
+    "Baru"
   ],
   "No": [
-    "No"
+    "Tidak"
   ],
   "No Wi-Fi networks were found": [
-    "No s'ha trobat cap xarxa sense fil"
+    "Tidak ditemukan jaringan Wi-Fi"
   ],
   "No additional partitions will be created": [
-    "No es crearan particions addicionals"
+    "Tidak akan dibuat partisi tambahan"
   ],
   "No additional software was selected.": [
-    "No s'ha seleccionat cap programari addicional."
+    "Tidak ada perangkat lunak tambahan yang dipilih."
   ],
   "No conflicts to address": [
-    "No hi ha conflictes per abordar"
+    "Terapkan solusi yang dipilih"
   ],
   "No content found": [
-    "No s'ha trobat contingut."
+    "Tidak ada konten yang ditemukan"
   ],
   "No device selected yet": [
-    "Encara no s'ha seleccionat cap dispositiu."
+    "Belum ada perangkat yang dipilih"
   ],
   "No devices configured yet": [
-    "Encara no s'ha configurat cap dispositiu"
+    "Belum ada perangkat yang dikonfigurasi"
   ],
   "No devices found": [
-    "No s'ha trobat cap dispositiu"
+    "Tidak ditemukan perangkat"
   ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "No s'ha trobat cap taula de microprogramari d'arrencada iSCSI (iBFT). L'iniciador es pot configurar manualment."
+    "Tidak ditemukan Tabel Firmware Boot iSCSI (iBFT). Inisiator dapat dikonfigurasi secara manual."
   ],
   "No iSCSI targets found.": [
-    "No s'ha trobat cap destinació iSCSI."
+    "Tidak ditemukan target iSCSI."
   ],
   "No logical volumes are defined yet": [
-    "Encara no s'ha definit cap volum lògic"
+    "Belum ada volume logis yang didefinisikan"
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
-    "No es configurarà automàticament cap partició per a l'arrencada. Useu-ho amb precaució."
+    "Tidak ada partisi yang akan dikonfigurasi secara otomatis untuk booting. Gunakan dengan hati-hati."
   ],
   "No support is planned.": [
-    "No té compatibilitat prevista."
+    "Tidak ada dukungan yang direncanakan."
   ],
   "No user defined yet.": [
-    "Encara no s'ha definit cap usuari."
+    "Belum ada pengguna yang ditetapkan."
   ],
   "No wired connections were found": [
-    "No s'ha trobat cap connexió amb fil"
+    "Tidak ditemukan koneksi kabel"
   ],
   "No zFCP controllers found.": [
-    "No s'ha trobat cap controlador de zFCP."
+    "Tidak ditemukan pengontrol zFCP."
   ],
   "No zFCP disks found.": [
-    "No s'ha trobat cap disc zFCP."
+    "Tidak ditemukan disk zFCP."
   ],
   "None": [
-    "Cap"
+    "Tidak ada"
   ],
   "None of the keymaps match the filter.": [
-    "Cap dels mapes de tecles coincideix amb el filtre."
+    "Tidak ada keymap yang cocok dengan filter."
   ],
   "None of the locales match the filter.": [
-    "Cap de les llengües coincideix amb el filtre."
+    "Tidak ada lokasi yang cocok dengan filter."
   ],
   "None of the patterns match the filter.": [
-    "Cap dels patrons coincideix amb el filtre."
+    "Tidak ada pola yang cocok dengan filter."
   ],
   "None of the time zones match the filter.": [
-    "Cap de les zones horàries coincideix amb el filtre."
+    "Tidak ada zona waktu yang cocok dengan filter."
   ],
   "Not available": [
-    "No disponible"
+    "Tidak tersedia"
   ],
   "Not configured yet": [
-    "Encara no s'ha configurat"
+    "Belum dikonfigurasi"
   ],
   "Not defined": [
-    "No definit"
+    "Tidak didefinisikan"
   ],
   "Not implemented yet (%s)": [
-    "Encara no s'ha implementat (%s)"
+    "Belum diimplementasikan (%s)"
   ],
   "Not possible with the current setup. Click to know more.": [
-    "No és possible amb la configuració actual. Feu clic per saber-ne més."
+    "Tidak memungkinkan dengan pengaturan saat ini. Klik untuk mengetahui lebih lanjut."
   ],
   "Not protected network": [
-    "Xarxa no protegida"
+    "Jaringan tidak dilindungi"
   ],
   "Not selected yet": [
-    "Encara no s'ha seleccionat."
+    "Belum dipilih"
   ],
   "Not supported (%s)": [
-    "No compatible (%s)"
+    "Tidak didukung (%s)"
   ],
   "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Els dispositius fora de línia s'han d'activar abans de formatar-los. Si us plau, desmarqueu o activeu els dispositius que s'indiquen a continuació i torneu-ho a provar."
+    "Perangkat offline harus diaktifkan sebelum memformatnya. Batalkan pilihan atau aktifkan perangkat yang tercantum di bawah ini dan coba lagi"
   ],
   "On boot": [
-    "A l'arrencada"
+    "Saat boot"
   ],
   "Only available if authentication by target is provided": [
-    "Només està disponible si es proporciona l'autenticació per destinació."
+    "Hanya tersedia jika autentikasi berdasarkan target disediakan"
   ],
   "Only reused partitions and space not assigned to any partition will be used.": [
-    "Només s'usaran les particions reutilitzades i l'espai no assignat a cap partició."
+    "Hanya partisi yang digunakan kembali dan ruang yang tidak dialokasikan ke partisi mana pun yang akan digunakan."
   ],
   "Only reused partitions will be used.": [
-    "Només s'usaran particions reutilitzades."
+    "Hanya partisi yang telah digunakan kembali yang akan digunakan."
   ],
   "Options toggle": [
-    "Canvi d'opcions"
+    "Sakelar opsi"
   ],
   "Other options": [
-    "Altres opcions"
+    "Opsi lain"
   ],
   "Other options toggle": [
-    "Canvi d'altres opcions"
+    "Tombol opsi lain"
   ],
   "Overview": [
-    "Resum"
+    "Ikhtisar"
   ],
   "Package installation failed": [
-    "Ha fallat instal·lació del paquet."
+    "Pemasangan paket gagal"
   ],
   "Partition Info": [
-    "Informació de la partició"
+    "Info Partisi"
   ],
   "Partitions needed for booting will also be adapted": [
-    "També s'adaptaran les particions necessàries per a l'arrencada"
+    "Partisi yang diperlukan untuk booting juga akan disesuaikan"
   ],
   "Partitions needed for booting will remain at %s": [
-    "Les particions necessàries per a arrencar es mantindran a %s"
+    "Partisi yang diperlukan untuk booting akan tetap berada di %s"
   ],
   "Partitions that are not reused will be removed and that data will be lost.": [
-    "Les particions que no es reutilitzin se suprimiran i se'n perdran les dades."
+    "Partisi yang tidak digunakan kembali akan dihapus dan data tersebut akan hilang."
   ],
   "Partitions that are not reused will be resized as needed.": [
-    "Es canviarà la mida segons calgui de les particions que no es reutilitzin."
+    "Partisi yang tidak digunakan kembali akan diubah ukurannya sesuai kebutuhan."
   ],
   "Partitions that are not reused would be resized if needed.": [
-    "Es canviarà la mida de les particions que no es reutilitzin, si cal."
+    "Partisi yang tidak digunakan ulang akan diubah ukurannya jika diperlukan."
   ],
   "Partitions to boot will be allocated at the following device.": [
-    "Les particions per a l'arrencada s'assignaran al dispositiu següent."
+    "Partisi untuk boot akan dialokasikan pada perangkat berikut."
   ],
   "Partitions to boot will be allocated at the installation disk %s.": [
-    "Les particions per a l'arrencada s'assignaran al disc d'instal·lació %s."
+    "Partisi untuk boot akan dialokasikan pada disk instalasi %s."
   ],
   "Partitions to boot will be allocated at the installation disk.": [
-    "Les particions per a l'arrencada s'assignaran al disc d'instal·lació."
+    "Partisi untuk boot akan dialokasikan pada disk instalasi."
   ],
   "Partitions will be used and created for %s": [
-    "Les particions s'usaran i es crearan per a %s"
+    "Partisi akan digunakan dan dibuat untuk %s"
   ],
   "Password": [
-    "Contrasenya"
+    "Kata sandi"
   ],
   "Password Required": [
-    "Cal una contrasenya."
+    "Diperlukan Kata Sandi"
   ],
   "Password confirmation": [
-    "Confirmació de la contrasenya"
+    "Konfirmasi kata sandi"
   ],
   "Password input": [
-    "Introducció de contrasenya"
+    "Masukan kata sandi"
   ],
   "Password is empty.": [
-    "La contrasenya està buida."
+    "Kata sandi kosong."
   ],
   "Password visibility button": [
-    "Botó de visibilitat de la contrasenya"
+    "Tombol visibilitas kata sandi"
   ],
   "Passwords do not match": [
-    "Les contrasenyes no coincideixen."
+    "Kata sandi tidak cocok"
   ],
   "Pending": [
-    "Pendent"
+    "Tertunda"
   ],
   "Perform an action": [
-    "Fes una acció"
+    "Melakukan tindakan"
   ],
   "PiB": [
     "PiB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
-    "Si us plau, cancel·leu i comproveu-ne la configuració si no n'esteu segur."
+    "Mohon batalkan dan periksa pengaturan jika Anda tidak yakin."
   ],
   "Please, check whether it is running.": [
-    "Si us plau, comproveu si s'executa."
+    "Silakan periksa apakah sudah berjalan."
   ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Si us plau, executeu un descobriment d'iSCSI per trobar destinacions iSCSI disponibles."
+    "Lakukan penemuan iSCSI untuk menemukan target iSCSI yang tersedia."
   ],
   "Please, provide its password to log in to the system.": [
-    "Si us plau, proporcioneu-ne la contrasenya per iniciar sessió al sistema."
+    "Harap berikan kata sandi untuk masuk ke sistem."
   ],
   "Please, try to activate a zFCP controller.": [
-    "Si us plau, proveu d'activar un controlador de zFCP."
+    "Silakan coba aktifkan pengontrol zFCP."
   ],
   "Please, try to activate a zFCP disk.": [
-    "Si us plau, proveu d'activar un disc zFCP."
+    "Silakan coba aktifkan disk zFCP."
   ],
   "Port": [
     "Port"
@@ -1337,842 +1336,838 @@ export default {
     "Portal"
   ],
   "Pre-installation checks": [
-    "Comprovacions prèvies a la instal·lació"
+    "Pemeriksaan pra-instalasi"
   ],
   "Prefix length or netmask": [
-    "Longitud del prefix o màscara de xarxa"
+    "Panjang awalan atau netmask"
   ],
   "Product is already registered": [
-    "El producte ja està registrat."
+    "Produk sudah terdaftar"
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Protecció de la informació emmagatzemada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
+    "Perlindungan untuk informasi yang disimpan di sistem berkas baru, termasuk data, program, dan berkas sistem."
   ],
   "Provide email address": [
-    "Proporcioneu una adreça de correu electrònic."
+    "Berikan alamat email"
   ],
   "Provide registration code": [
-    "Proporcioneu el codi de registre"
+    "Berikan kode pendaftaran"
   ],
   "Public SSH Key": [
-    "Clau pública SSH"
+    "Kunci SSH Publik"
   ],
   "Public SSH Key is empty.": [
-    "La clau SSH pública és buida."
+    "Kunci SSH Publik kosong."
   ],
   "Public network": [
-    "Xarxa pública"
+    "Jaringan publik"
   ],
   "Question": [
-    "Pregunta"
+    "Pertanyaan"
   ],
   "Read zFCP devices": [
-    "Llegeix els dispositius zFCP"
+    "Baca perangkat zFCP"
   ],
   "Reboot": [
-    "Reinicia"
+    "Maut ulang"
   ],
   "Recommended": [
-    "Recomanat"
+    "Direkomendasikan"
   ],
   "Register": [
-    "Registra"
+    "Mendaftar"
   ],
   "Register using SUSE server": [
-    "Registreu-vos amb el servidor SUSE"
+    "Daftar menggunakan server SUSE"
   ],
   "Register using a custom registration server": [
-    "Registreu-vos amb un servidor de registre personalitzat"
+    "Daftar menggunakan server pendaftaran kustom"
   ],
   "Registration": [
-    "Registre"
+    "Pendaftaran"
   ],
   "Registration certificate": [
-    "Certificat de registre"
+    "Sertifikat pendaftaran"
   ],
   "Registration code": [
-    "Codi de registre"
+    "Kode pendaftaran"
   ],
   "Registration server": [
-    "Servidor de registre"
+    "Server pendaftaran"
   ],
   "ReiserFS": [
     "ReiserFS"
   ],
   "Reload": [
-    "Torna a carregar"
+    "Muat ulang"
   ],
   "Reloading data, please wait...": [
-    "Tornant a carregar les dades; espereu, si us plau..."
+    "Muat ulang data, harap tunggu..."
   ],
   "Remove": [
-    "Suprimeix"
+    "Menghapus"
   ],
   "Remove max channel filter": [
-    "Suprimeix el filtre de canal màxim"
+    "Menghapus filter saluran maks"
   ],
   "Remove min channel filter": [
-    "Suprimeix el filtre del canal mínim"
+    "Menghapus filter saluran min"
   ],
   "Remove the configuration for this disk": [
-    "Suprimeix la configuració d'aquest disc"
+    "Hapus konfigurasi untuk disk ini"
   ],
   "Repository load failed": [
-    "Ha fallat carregar el repositori."
+    "Pemuatan repositori gagal"
   ],
   "Rescan devices": [
-    "Torna a escanejar els dispositius"
+    "Pindai ulang perangkat"
   ],
   "Reset to defaults": [
-    "Restableix els valors predeterminats"
+    "Mengatur ulang ke default"
   ],
   "Reset to the default configuration": [
-    "Restableix la configuració predeterminada"
+    "Kembalikan ke konfigurasi default"
   ],
   "Result": [
-    "Resultat"
+    "Hasil"
   ],
   "Reused partitions will not be shrunk": [
-    "Les particions reutilitzades no s'encongiran"
+    "Partisi yang digunakan kembali tidak akan diperkecil"
   ],
   "Review and fix": [
-    "Revisa i corregeix"
+    "Periksa dan perbaiki"
   ],
   "Root authentication methods": [
-    "Mètodes d'autenticació d'arrel"
+    "Metode otentikasi root"
   ],
   "Root user": [
-    "Usuari d'arrel"
+    "Pengguna root"
   ],
   "Routes": [
-    "Camins"
+    "Route"
   ],
   "SD Card": [
-    "Targeta SD"
+    "Kartu SD"
   ],
   "SHA1 fingerprint": [
-    "Empremta digital SHA1"
+    "Tanda tangan SHA1"
   ],
   "SHA256 fingerprint": [
-    "Empremta digital SHA256"
+    "Tanda tangan SHA256"
   ],
   "SSID": [
     "SSID"
   ],
   "SUSE Customer Center (SCC)": [
-    "Centre de clients de SUSE (SCC)"
+    "SUSE Customer Center (SCC)"
   ],
   "Search": [
-    "Cerca"
+    "Cari"
   ],
   "Secured network": [
-    "Xarxa amb seguretat"
+    "Jaringan aman"
   ],
   "Security": [
-    "Seguretat"
+    "Keamanan"
   ],
   "See more details": [
-    "Mostra'n més detalls"
+    "Lihat detail lebih lanjut"
   ],
   "Select": [
-    "Selecciona"
+    "Pilih"
   ],
   "Select a device to define partitions or to mount": [
-    "Seleccioneu un dispositiu per definir-ne les particions o per muntar-lo"
+    "Pilih perangkat untuk mendefinisikan partisi atau untuk mount"
   ],
   "Select a disk": [
-    "Seleccioneu un disc"
+    "Pilih disk"
   ],
   "Select a disk to configure": [
-    "Seleccioneu un disc per configurar-lo"
+    "Pilih disk yang akan dikonfigurasi"
   ],
   "Select a disk to create %s": [
-    "Seleccioneu un disc per crear-hi el punt de muntatge %s"
+    "Pilih disk untuk membuat %s"
   ],
   "Select a disk to define partitions or to mount": [
-    "Seleccioneu un disc per definir-ne les particions o per muntar-lo"
+    "Pilih perangkat lain untuk mendefinisikan partisi atau untuk mount"
   ],
   "Select a disk to format as %s": [
-    "Seleccioneu un disc per formatar-lo com a %s"
+    "Pilih disk yang akan diformat sebagai %s"
   ],
   "Select a disk to install the system": [
-    "Seleccioneu un disc per instal·lar-hi el sistema"
+    "Pilih disk untuk memasang sistem"
   ],
   "Select a product": [
-    "Seleccioneu un producte"
+    "Pilih produk"
   ],
   "Select a solution to continue": [
-    "Seleccioneu una solució per continuar"
+    "Pilih solusi untuk melanjutkan"
   ],
   "Select another device to define partitions or to mount": [
-    "Seleccioneu un altre dispositiu per definir-ne les particions o per muntar-lo"
+    "Pilih perangkat lain untuk mendefinisikan partisi atau untuk mount"
   ],
   "Select another disk to define partitions or to mount": [
-    "Seleccioneu un altre disc per definir-ne les particions o per muntar-lo"
+    "Pilih disk lain untuk mendefinisikan partisi atau untuk mount"
   ],
   "Select at least one disk.": [
-    "Seleccioneu almenys un disc."
+    "Pilih setidaknya satu disk."
   ],
   "Select or enter a mount point": [
-    "Seleccioneu o introduïu un punt de muntatge"
+    "Pilih atau masukkan titik mount"
   ],
   "Select or enter a mount point that is not already assigned to another device": [
-    "Seleccioneu o introduïu un punt de muntatge que no estigui assignat a un altre dispositiu"
+    "Pilih atau masukkan titik mount yang belum ditetapkan ke perangkat lain"
   ],
   "Select or enter a valid mount point": [
-    "Seleccioneu o introduïu un punt de muntatge vàlid"
+    "Pilih atau masukkan titik mount yang valid"
   ],
   "Select the disk to configure partitions for booting": [
-    "Seleccioneu el disc per configurar-hi les particions per a arrencar"
+    "Pilih disk yang akan dikonfigurasi partisi untuk booting"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
-    "Seleccioneu què fer de cada partició per trobar espai per assignar-hi el sistema nou."
+    "Pilih tindakan yang akan dilakukan pada setiap partisi untuk menemukan ruang yang cukup untuk mengalokasikan sistem baru."
   ],
   "Select what to do with each partition.": [
-    "Seleccioneu què voleu fer amb cada partició."
+    "Pilih apa yang akan dilakukan dengan setiap partisi."
   ],
   "Selected disk cannot be changed": [
-    "El disc seleccionat no es pot canviar"
+    "Disk yang dipilih tidak dapat diubah"
   ],
   "Selected patterns": [
-    "Patrons seleccionats"
+    "Pola yang dipilih"
   ],
   "Server IP": [
-    "IP del servidor"
+    "IP Server"
   ],
   "Server URL": [
-    "URL del servidor"
+    "URL Server"
   ],
   "Server options": [
-    "Opcions del servidor"
+    "Opsi server"
   ],
   "Set DIAG Off": [
-    "Desactiva la diagnosi"
+    "Mengatur DIAG Tidak Aktif"
   ],
   "Set DIAG On": [
-    "Activa la diagnosi"
+    "Mengatur DIAG Aktif"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
-    "Estableix un nom d'amfitrió permanent que no canviarà amb les actualitzacions per xarxa."
+    "Tetapkan nama host permanen yang tidak akan berubah saat pembaruan jaringan."
   ],
   "Setting up connection": [
-    "Establiment de la connexió"
+    "Mengatur koneksi"
   ],
   "Several partitions will be deleted": [
-    "Se suprimiran diverses particions"
+    "Beberapa partisi akan dihapus"
   ],
   "Show": [
-    "Mostra"
+    "Tampilkan"
   ],
   "Show %d subvolume action": [
-    "Mostra %d acció de subvolum",
-    "Mostra %d accions de subvolum"
+    "Tampilkan tindakan subvolume %d"
   ],
   "Show information about %s": [
-    "Mostra informació quant a %s"
+    "Menampilkan informasi tentang %s"
   ],
   "Show less actions": [
-    "Mostra menys accions"
+    "Tampilkan lebih sedikit tindakan"
   ],
   "Show more actions": [
-    "Mostra més accions"
+    "Tampilkan lebih banyak tindakan"
   ],
   "Shrink existing partitions": [
-    "Encongeix les particions existents"
+    "Perkecil partisi yang ada"
   ],
   "Signal strength": [
-    "Força del senyal"
+    "Kekuatan sinyal"
   ],
   "Size": [
-    "Mida"
+    "Ukuran"
   ],
   "Size limits must be numbers followed by a unit like GiB or GB": [
-    "Els límits de mida han de ser números seguits d'una unitat com ara GiB o GB."
+    "Batasan ukuran harus berupa angka diikuti dengan satuan seperti GiB atau GB"
   ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
-    "Els límits de mida han de ser números seguits opcionalment d'una unitat com ara GiB o GB"
+    "Batasan ukuran harus berupa angka, yang dapat diikuti oleh satuan seperti GiB atau GB"
   ],
   "Size mode": [
-    "Mode de mida"
+    "Mode ukuran"
   ],
   "Size modes": [
-    "Modes de mida"
+    "Mode ukuran"
   ],
   "Skip to content": [
-    "Omet i ves al contingut"
+    "Lewati ke konten"
   ],
   "Skip to next": [
-    "Salta al següent"
+    "Lewati ke berikutnya"
   ],
   "Skip to previous": [
-    "Salta a l'anterior"
+    "Lewati ke sebelumnya"
   ],
   "Software": [
-    "Programari"
+    "Perangkat lunak"
   ],
   "Software %s": [
-    "Programari %s"
+    "Perangkat Lunak %s"
   ],
   "Software conflicts resolution": [
-    "Resolució de conflictes de programari"
+    "Penyelesaian konflik perangkat lunak"
   ],
   "Software selection": [
-    "Selecció de programari"
+    "Pemilihan perangkat lunak"
   ],
   "Some existing partitions may be shrunk": [
-    "Algunes particions existents es poden encongir"
+    "Beberapa partisi yang sudah ada mungkin akan diperkecil"
   ],
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "Alguns repositoris d'instal·lació no s'han pogut carregar. El sistema no es pot instal·lar sense."
+    "Beberapa repositori instalasi tidak dapat dimuat. Sistem tidak dapat diinstal tanpa repositori tersebut."
   ],
   "Some of the elements in your AutoYaST profile are not supported.": [
-    "Alguns dels elements del vostre perfil d'AutoYaST no són compatibles."
+    "Beberapa elemen dalam profil AutoYaST Anda tidak didukung."
   ],
   "Some partitions may be deleted": [
-    "Algunes particions es poden suprimir"
+    "Beberapa partisi mungkin dihapus"
   ],
   "Some partitions may be shrunk": [
-    "Algunes particions es poden encongir"
+    "Beberapa partisi mungkin dapat diperkecil"
   ],
   "Something went wrong": [
-    "Alguna cosa ha anat malament."
+    "Ada yang tidak beres"
   ],
   "Start configuring a basic installation": [
-    "Comenceu a configurar una instal·lació bàsica"
+    "Mulai mengkonfigurasi instalasi dasar"
   ],
   "Start from scratch with the default configuration": [
-    "Comença des de zero amb la configuració predeterminada"
+    "Mulai dari awal dengan konfigurasi default"
   ],
   "Startup": [
-    "Inici"
+    "Startup"
   ],
   "Static hostname": [
-    "Nom d'amfitrió estàtic"
+    "Nama host statis"
   ],
   "Status": [
-    "Estat"
+    "Status"
   ],
   "Storage": [
-    "Emmagatzematge"
+    "Penyimpanan"
   ],
   "Structure of the new system, including disks to use and additional devices like LVM volume groups.": [
-    "Estructura del nou sistema, inclosos els discos per usar i els dispositius addicionals com ara els grups de volums d'LVM."
+    "Struktur sistem baru, termasuk disk yang akan digunakan dan perangkat tambahan seperti grup volume LVM."
   ],
   "Suggested mount points": [
-    "Punts de muntatge suggerits"
+    "Titik mount yang disarankan"
   ],
   "Swap": [
-    "Intercanvi"
+    "Swap"
   ],
   "TPM sealing requires the new system to be booted directly.": [
-    "El segellament TPM requereix que el sistema nou s'iniciï directament."
+    "Penyegelan TPM mengharuskan sistem baru untuk di-boot secara langsung."
   ],
   "Target Password": [
-    "Contrasenya de destinació"
+    "Kata sandi target"
   ],
   "Targets": [
-    "Destinacions"
+    "Target"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
-    "El grup d'LVM %1$s es mantindrà a %2$s"
+    "Grup LVM ‘%1$s’ akan tetap berada di %2$s"
   ],
   "The configured LVM groups will remain at %s": [
-    "Els grups d'LVM configurats es mantindran a %s"
+    "Grup LVM yang telah dikonfigurasi akan tetap berada di %s"
   ],
   "The connection can be used by any available interface.": [
-    "La connexió es pot usar des de qualsevol interfície disponible."
+    "Koneksi ini dapat digunakan oleh antarmuka mana pun yang tersedia."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
-    "La connexió només s'usarà durant la instal·lació i no estarà disponible al sistema instal·lat."
+    "Koneksi hanya akan digunakan selama pemasangan dan tidak tersedia dalam sistem yang telah dipasang."
   ],
   "The content may be deleted": [
-    "El contingut pot suprimir-se"
+    "Konten mungkin akan dihapus"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
-    "La configuració actual tindrà com a resultat un intent de crear una %1$s de %2$s."
+    "Konfigurasi saat ini akan mengakibatkan upaya untuk membuat %1$s dari %2$s."
   ],
   "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
-    "La configuració actual tindrà com a resultat un intent de crear una %1$s d'almenys %2$s."
+    "Konfigurasi saat ini akan mengakibatkan upaya untuk membuat %1$s dengan jumlah minimal %2$s."
   ],
   "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
-    "La configuració actual tindrà com a resultat un intent de crear una %1$s amb una mida d'entre %2$s i %3$s."
+    "Konfigurasi saat ini akan mengakibatkan upaya untuk membuat %1$s dengan ukuran antara %2$s dan %3$s."
   ],
   "The current file system will be mounted at %s": [
-    "El sistema de fitxers actual es muntarà a %s"
+    "Sistem berkas saat ini akan di-mount di %s"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
-    "Les dades es conserven, però les particions actuals es canviaran de mida segons calgui."
+    "Data tetap dipertahankan, tetapi partisi saat ini akan diubah ukurannya sesuai kebutuhan."
   ],
   "The data is kept. Only the space not assigned to any partition will be used.": [
-    "Es conserven les dades. Només s'usarà l'espai no assignat a cap partició."
+    "Data tetap dipertahankan. Hanya ruang yang tidak ditetapkan ke partisi mana pun yang akan digunakan."
   ],
   "The device cannot be shrunk:": [
-    "El dispositiu no es pot encongir:"
+    "Perangkat tidak dapat dikecilkan:"
   ],
   "The device will be formatted": [
-    "Es formatarà el dispositiu"
+    "Perangkat akan diformat"
   ],
   "The device will be formatted as %1$s and mounted at %2$s": [
-    "El dispositiu es formatarà com a %1$s i es muntarà a %2$s"
+    "Perangkat akan diformat sebagai %1$s dan di-mount di %2$s"
   ],
   "The device will be mounted": [
-    "Es muntarà el dispositiu"
+    "Perangkat akan di-mount"
   ],
   "The device will be mounted at %s.": [
-    "El dispositiu es muntarà a %s."
+    "Perangkat akan dipasang di %s."
   ],
   "The device will be used by the new system.": [
-    "El sistema nou usarà el dispositiu."
+    "Perangkat tersebut akan digunakan oleh sistem baru."
   ],
   "The disk is used for LVM": [
-    "El disc s'usa per a l'LVM"
+    "Disk digunakan untuk LVM"
   ],
   "The disk is used for LVM and boot": [
-    "El disc s'usa per a l'LVM i l'arrencada"
+    "Disk digunakan untuk LVM dan boot"
   ],
   "The disk is used for booting": [
-    "El disc s'usa per a l'arrencada"
+    "Disk digunakan untuk booting"
   ],
   "The encryption password did not work": [
-    "La contrasenya d'encriptació no ha funcionat."
+    "Kata sandi enkripsi tidak berfungsi"
   ],
   "The extension has been registered with key %s.": [
-    "L'extensió s'ha registrat amb la clau %s."
-  ],
-  "The extension was registered without any registration code.": [
-    "L'extensió s'ha registrat sense cap codi de registre."
+    "Ekstensi telah terdaftar dengan kunci %s."
   ],
   "The final size can be bigger in order to fill the extra free space.": [
-    "La mida final pot ser més grossa per omplir l'espai lliure extra."
+    "Ukuran akhir dapat dibuat lebih besar untuk mengisi ruang kosong yang tersisa."
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
-    "El pas final per configurar el Mòdul de plataforma de confiança (TPM) per obrir automàticament dispositius encriptats es farà durant la primera arrencada del nou sistema. Perquè això funcioni, la màquina ha d'arrencar directament amb el carregador d'arrencada nou."
+    "Langkah terakhir untuk mengonfigurasi Trusted Platform Module (TPM) agar dapat membuka perangkat yang dienkripsi secara otomatis selama booting pertama dari sistem yang baru. Agar dapat berfungsi, mesin harus melakukan booting secara langsung ke boot loader yang baru."
   ],
   "The following partitions will be created or mounted": [
-    "Es crearan o muntaran les particions següents:"
+    "Partisi-partisi berikut akan dibuat atau di-mount"
   ],
   "The following software patterns are selected for installation:": [
-    "S'han seleccionat els patrons de programari següents per a la instal·lació:"
+    "Pola perangkat lunak berikut ini dipilih untuk instalasi:"
   ],
   "The initiator name cannot be blank": [
-    "El nom de l'iniciador no pot estar en blanc"
+    "Nama inisiator tidak boleh kosong"
   ],
   "The installation on your machine is complete.": [
-    "La instal·lació a la màquina s'ha completat."
+    "Penginstalan pada mesin Anda sudah selesai."
   ],
   "The installation will take": [
-    "La instal·lació necessitarà"
+    "Instalasi akan memakan waktu"
   ],
   "The installation will take %s including:": [
-    "La instal·lació necessitarà %s, incloent-hi el següent:"
+    "Instalasi akan memakan waktu %s termasuk:"
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
-    "La interfície de l'instal·lador ja no està disponible, així que podeu tancar aquesta finestra de manera segura."
+    "Antarmuka penginstal tidak lagi tersedia, jadi Anda dapat menutup jendela ini dengan aman."
   ],
   "The installer requires [root] user privileges.": [
-    "L'instal·lador requereix privilegis de l'usuari [root]."
+    "Penginstal memerlukan hak akses pengguna [root]."
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
-    "El màxim ha de ser un número seguit d'una unitat com ara GiB o GB."
+    "Nilai maksimum harus berupa angka, yang diikuti oleh satuan seperti GiB atau GB"
   ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
-    "El màxim ha de ser un número seguit opcionalment d'una unitat com ara GiB o GB"
+    "Nilai maksimum harus berupa angka, yang dapat diikuti oleh satuan seperti GiB atau GB"
   ],
   "The minimum cannot be greater than the maximum": [
-    "El mínim no pot ser superior al màxim"
+    "Nilai minimum tidak boleh lebih besar dari nilai maksimum"
   ],
   "The minimum must be a number followed by a unit like GiB or GB": [
-    "El mínim ha de ser un número seguit d'una unitat com ara GiB o GB"
+    "Nilai minimum harus berupa angka, yang diikuti oleh satuan seperti GiB atau GB"
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
-    "El mínim ha de ser un número seguit opcionalment d'una unitat com ara GiB o GB"
+    "Nilai minimum harus berupa angka, yang dapat diikuti oleh satuan seperti GiB atau GB"
   ],
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
-    "El selector modal ofereix una interfície simplificada dissenyada per a un ús ràpid i senzill, sense sobrecarregar l'usuari."
+    "Pemilih mode menawarkan antarmuka yang disederhanakan yang dirancang untuk penggunaan cepat dan mudah, tanpa membingungkan pengguna."
   ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    "Els volums físics d'LVM necessaris s'afegiran com a particions als discs triats,                  segons les mides dels volums lògics. Si seleccioneu més d'un disc,                  els volums físics poden estar distribuïts en diversos discs."
+    "Volume fisik LVM yang diperlukan akan ditambahkan sebagai partisi pada disk yang dipilih,                 berdasarkan ukuran volume logis. Jika Anda memilih lebih dari satu disk,                 volume fisik mungkin didistribusikan ke beberapa disk."
   ],
   "The password is weak": [
-    "La contrasenya és feble"
+    "Kata sandi ini lemah"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
-    "La contrasenya no caldrà per arrencar i accedir a les dades si el TPM pot verificar la integritat del sistema. El segellat de TPM requereix que el nou sistema s'iniciï directament a la primera execució."
+    "Kata sandi tidak akan diperlukan untuk mem-boot dan mengakses data jika TPM dapat memverifikasi integritas sistem. Penyegelan TPM mengharuskan sistem baru untuk di-boot secara langsung saat pertama kali dijalankan."
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "La mida de %1$s s'ajustarà dinàmicament segons la quantitat de RAM del sistema i de la presència d'un sistema de fitxers separat per a %2$s."
+    "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan jumlah RAM dalam sistem dan keberadaan sistem berkas yang terpisah untuk %2$s."
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "La mida de %1$s s'ajustarà dinàmicament segons la quantitat de RAM del sistema i la presència de sistemes de fitxers separats per a %2$s."
+    "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan jumlah RAM dalam sistem dan keberadaan sistem berkas yang terpisah untuk %2$s."
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "La mida de %1$s s'ajustarà dinàmicament segons la quantitat de RAM del sistema, l'ús de les instantànies de Btrfs i la presència d'un sistema de fitxers separat per a %2$s."
+    "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan jumlah RAM dalam sistem, penggunaan snapshot Btrfs, dan keberadaan sistem berkas yang terpisah untuk %2$s."
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "La mida de %1$s s'ajustarà dinàmicament segons la quantitat de RAM del sistema, l'ús de les instantànies de Btrfs i la presència de sistemes de fitxers separats per a %2$s."
+    "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan jumlah RAM dalam sistem, penggunaan snapshot Btrfs, dan keberadaan sistem berkas yang terpisah untuk %2$s."
   ],
   "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "La mida de %1$s s'ajustarà dinàmicament segons la presència d'un sistema de fitxers separat per a %2$s."
+    "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan keberadaan sistem berkas terpisah untuk %2$s."
   ],
   "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "La mida de %1$s s'ajustarà dinàmicament segons la presència de sistemes de fitxers separats per a %2$s."
+    "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan keberadaan sistem berkas terpisah untuk %2$s."
   ],
   "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "La mida de %1$s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs i la presència d'un sistema de fitxers separat per a %2$s."
+    "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan penggunaan snapshot Btrfs dan keberadaan sistem berkas yang terpisah untuk %2$s."
   ],
   "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "La mida de %1$s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs i la presència de sistemes de fitxers separats per a %2$s."
+    "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan penggunaan snapshot Btrfs dan keberadaan sistem berkas yang terpisah untuk %2$s."
   ],
   "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "La mida de %s s'ajustarà dinàmicament segons la quantitat de RAM del sistema i l'ús de les instantànies de Btrfs."
+    "Ukuran untuk %s akan disesuaikan secara dinamis berdasarkan jumlah RAM yang tersedia di sistem dan penggunaan snapshot Btrfs."
   ],
   "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "La mida de %s s'ajustarà dinàmicament segons l'ús de les instantànies de Btrfs."
+    "Ukuran untuk %s akan disesuaikan secara dinamis berdasarkan penggunaan snapshot Btrfs."
   ],
   "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
-    "La mida està configurada com a interval entre %s i %s, però aquesta interfície no pot gestionar intervals amb una mida màxima determinada."
+    "Ukuran dikonfigurasi sebagai rentang antara %s dan %s, tetapi antarmuka ini tidak dapat menangani rentang dengan ukuran maksimum yang ditentukan."
   ],
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
-    "La mida ha de ser un número seguit d'una unitat del tipus GiB (potència de 2) o GB (potència de 10)."
+    "Ukuran harus berupa angka diikuti dengan satuan dalam bentuk GiB (pangkat 2) atau GB (pangkat 10)."
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
-    "La configuració d'emmagatzematge és vàlida (vegeu-ne el resultat a continuació) però usa elements no compatibles amb aquesta interfície."
+    "Konfigurasi penyimpanan valid (lihat hasil di bawah) tetapi menggunakan elemen yang tidak didukung oleh antarmuka ini."
   ],
   "The storage configuration uses elements not supported by this interface.": [
-    "La configuració d'emmagatzematge usa elements no compatibles amb aquesta interfície."
+    "Konfigurasi penyimpanan menggunakan elemen yang tidak didukung oleh antarmuka ini."
   ],
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
-    "El sistema no admet connexions de wifi, probablement a causa de maquinari que manca o que està inhabilitat."
+    "Sistem tidak mendukung koneksi Wi-Fi, mungkin karena perangkat keras yang tidak ada atau dinonaktifkan."
   ],
   "The system will use %s as its default language.": [
-    "El sistema usarà el %s com a llengua per defecte."
+    "Sistem akan menggunakan %s sebagai bahasa default."
   ],
   "The whole device will be used for %s": [
-    "S'usarà el dispositiu sencer per a %s"
+    "Seluruh perangkat akan digunakan untuk %s"
   ],
   "The zFCP disk was not activated.": [
-    "El disc zFCP no s'ha activat."
+    "Disk zFCP tidak diaktifkan."
   ],
   "There are no disks available for the installation.": [
-    "No hi ha discs disponibles per a la instal·lació."
+    "Tidak ada disk yang tersedia untuk pemasangan."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
-    "No hi ha discs disponibles per a la instal·lació. És possible que hàgiu de configurar algun dispositiu."
+    "Tidak ada disk yang tersedia untuk pemasangan. Anda mungkin perlu mengkonfigurasi beberapa perangkat."
   ],
   "There are not usable partitions": [
-    "No hi ha particions usables"
+    "Tidak ada partisi yang dapat digunakan"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Aquests són els paràmetres d'instal·lació més rellevants. No dubteu a navegar per les seccions del menú per a més detalls."
+    "Berikut ini adalah pengaturan instalasi yang paling relevan. Silakan telusuri bagian dalam menu untuk rincian lebih lanjut."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    "Aquests són els paràmetres per instal·lar el producte. La llengua de l'instal·lador i la disposició del teclat es poden ajustar a [settings panel] accessible des de la barra superior."
+    "Pengaturan untuk menginstal produk. Bahasa penginstal dan tata letak keyboard dapat disesuaikan melalui [panel pengaturan] yang dapat diakses dari bilah atas."
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    "Aquests són els paràmetres per instal·lar el producte. La llengua de l'instal·lador es pot ajustar a [settings panel] accessible des de la barra superior."
+    "Pengaturan untuk menginstal produk. Bahasa penginstal dan tata letak keyboard dapat disesuaikan melalui [panel pengaturan] yang dapat diakses dari bilah atas."
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Aquesta acció podria destruir qualsevol dada emmagatzemada als dispositius que s'indiquen a continuació. Si us plau, confirmeu que realment voleu continuar."
+    "Tindakan ini dapat menghapus data yang tersimpan pada perangkat yang tercantum di bawah ini. Harap konfirmasikan bahwa Anda benar-benar ingin melanjutkan."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
-    "Aquesta extensió no està disponible al servidor. Demaneu a l'administrador del servidor que repliqui l'extensió."
+    "Ekstensi ini tidak tersedia di server. Mintalah administrator server untuk menyalin ekstensi tersebut."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    "Aquest nom d'amfitrió és dinàmic i pot canviar després d'un reinici o una actualització per xarxa, tal com el configura l'administrador de la xarxa local."
+    "Nama host ini bersifat dinamis dan dapat berubah setelah reboot atau pembaruan jaringan, sesuai dengan konfigurasi yang ditetapkan oleh administrator jaringan lokal."
   ],
   "This license is not available in %s.": [
-    "Aquesta llicència no està disponible en %s."
+    "Lisensi ini tidak tersedia di %s."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
-    "Aquest patró aconsegueix un equilibri entre claredat i eficiència: el modal manté les coses lleugeres per a seleccions senzilles, mentre que la vista completa permet una exploració més profunda i accions més complexes, especialment per a usuaris amb molts dispositius."
+    "Polanya ini menyeimbangkan antara kejelasan dan efisiensi: mode ini menjaga kesederhanaan untuk pemilihan yang sederhana, sementara tampilan penuh mendukung eksplorasi yang lebih mendalam dan tindakan yang lebih kompleks, terutama untuk pengguna yang memiliki banyak perangkat."
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
-    "Aquest producte no permet seleccionar patrons de programari durant la instal·lació. Tanmateix, hi podeu afegir programari addicional un cop acabada la instal·lació."
+    "Produk ini tidak memungkinkan untuk memilih pola perangkat lunak selama instalasi. Namun demikian, Anda dapat menambahkan perangkat lunak tambahan setelah penginstalan selesai."
   ],
   "This space includes the base system and the selected software patterns, if any.": [
-    "Aquest espai inclou el sistema de base i els patrons de programari seleccionats, si n'hi ha."
+    "Ruang ini mencakup sistem dasar dan pola perangkat lunak yang dipilih, jika ada."
   ],
   "This uses existing partitions at the disk": [
-    "Això usa les particions existents al dispositiu"
+    "Ini menggunakan partisi yang sudah ada di disk"
   ],
   "This uses the existing file system at the disk": [
-    "Això usa el sistema de fitxers existent al disc"
+    "Ini menggunakan sistem berkas yang ada di disk"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "Això afectarà només la interfície de l'instal·lador, no el producte que s'ha d'instal·lar. Podeu ajustar la localització del producte més endavant a la pàgina de configuració de la localització."
+    "Hal ini hanya akan memengaruhi antarmuka penginstal, bukan produk yang akan diinstal. Anda dapat menyesuaikan lokalisasi produk nanti di halaman Pengaturan Lokalisasi."
   ],
   "TiB": [
     "TiB"
   ],
   "Time zone": [
-    "Zona horària"
+    "Zona waktu"
   ],
   "Tmpfs": [
     "Tmpfs"
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
-    "Per garantir que el sistema nou pugui arrencar, és possible que l'instal·lador hagi de crear o configurar algunes particions al disc adequat."
+    "Untuk memastikan sistem baru dapat melakukan booting, penginstal mungkin perlu membuat atau mengonfigurasi beberapa partisi di disk yang sesuai."
   ],
   "Transactional root file system": [
-    "Sistema de fitxers d'arrel transaccional"
+    "Sistem file root transaksional"
   ],
   "Try again": [
-    "Torna-ho a provar"
+    "Coba lagi"
   ],
   "Type": [
-    "Tipus"
+    "Jenis"
   ],
   "URL": [
     "URL"
   ],
   "Unable to modify the settings": [
-    "No es pot modificar la configuració"
+    "Tidak dapat mengubah pengaturan"
   ],
   "Unselect": [
-    "Desmarca"
+    "Batalkan pilihan"
   ],
   "Unsupported AutoYaST elements": [
-    "Elements d'AutoYaST no compatibles"
+    "Elemen AutoYaST tidak didukung"
   ],
   "Unused space": [
-    "Espai sense ús"
+    "Ruang tidak terpakai"
   ],
   "Up to %s can be recovered by shrinking the device.": [
-    "Es poden recuperar fins a %s encongint el dispositiu."
+    "Hingga %s dapat dipulihkan dengan mengecilkan perangkat."
   ],
   "Update available disks and activate crypt devices": [
-    "Actualitza els discs disponibles i activa els dispositius d'encriptació"
+    "Perbarui disk yang tersedia dan aktifkan perangkat enkripsi"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
-    "Actualitzar el nom d'amfitrió ara o més tard no canviarà el nom d'amfitrió registrat actualment."
+    "Mengubah nama host sekarang atau nanti tidak akan mengubah nama host yang saat ini terdaftar."
   ],
   "Updating the initiator name": [
-    "Actualitzant el nom de l'iniciador"
+    "Memperbarui nama inisiator"
   ],
   "Upload": [
-    "Carrega"
+    "Unggah"
   ],
   "Upload, paste, or drop an SSH public key": [
-    "Carregueu, enganxeu o deixeu-hi anar una clau pública SSH"
+    "Unggah, tempel, atau jatuhkan kunci publik SSH"
   ],
   "Use": [
-    "Usa'l"
+    "Gunakan"
   ],
   "Use RAID %s": [
-    "Usa la RAID %s"
+    "Gunakan RAID %s"
   ],
   "Use RAID %s for LVM and additional partitions": [
-    "Usa la RAID %s per a l'LVM i les particions addicionals"
+    "Gunakan RAID %s untuk LVM dan partisi tambahan"
   ],
   "Use RAID %s for LVM, additional partitions and booting": [
-    "Usa la RAID %s per a l'LVM, per a les particions addicionals i l'arrencada"
+    "Gunakan RAID %s untuk menginstal dan mem-boot"
   ],
   "Use RAID %s for additional partitions": [
-    "Usa la RAID %s per a les particions addicionals"
+    "Gunakan RAID %s untuk partisi tambahan"
   ],
   "Use RAID %s for additional partitions and booting": [
-    "Usa la RAID %s per a les particions addicionals i l'arrencada"
+    "Gunakan RAID %s untuk partisi tambahan dan booting"
   ],
   "Use RAID %s to configure boot partitions": [
-    "Usa la RAID %s per configurar les particions d'arrencada"
+    "Gunakan RAID %s untuk mengonfigurasi partisi boot"
   ],
   "Use RAID %s to host LVM": [
-    "Usa la RAID %s per a allotjar-hi l'LVM"
+    "Gunakan RAID %s untuk meng-host LVM"
   ],
   "Use RAID %s to host LVM and boot": [
-    "Usa la RAID %s per a allotjar-hi l'LVM i per a l'arrencada"
+    "Gunakan RAID %s untuk meng-host LVM dan boot"
   ],
   "Use RAID %s to install": [
-    "Usa la RAID %s per a la instal·lació"
+    "Gunakan RAID %s untuk memasang"
   ],
   "Use RAID %s to install and boot": [
-    "Usa la RAID %s per a la instal·lació i l'arrencada"
+    "Gunakan RAID %s untuk menginstal dan mem-boot"
   ],
   "Use RAID %s to install and host LVM": [
-    "Usa la RAID %s per a la instal·lació i per a allotjar-hi l'LVM"
+    "Gunakan RAID %s untuk memasang dan meng-host LVM"
   ],
   "Use RAID %s to install, host LVM and boot": [
-    "Usa la RAID %s per a la instal·lació, per a allotjar-hi l'LVM i per a l'arrencada"
+    "Gunakan RAID %s untuk memasang, meng-host LVM, dan mem-boot"
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
-    "Useu les accions següents per configurar els dispositius o cliqueu a %s per començar des de zero amb la configuració predeterminada."
+    "Gunakan tindakan di bawah ini untuk mengatur perangkat Anda atau klik %s untuk memulai dari awal dengan konfigurasi default."
   ],
   "Use available space": [
-    "Usa l'espai disponible"
+    "Gunakan ruang yang tersedia"
   ],
   "Use disk %s": [
-    "Usa el disc %s"
+    "Gunakan disk %s"
   ],
   "Use disk %s for LVM and additional partitions": [
-    "Usa el disc %s per a l'LVM i les particions addicionals"
+    "Gunakan disk %s untuk LVM dan partisi tambahan"
   ],
   "Use disk %s for LVM, additional partitions and booting": [
-    "Usa el disc %s per a l'LVM, les particions addicionals i l'arrencada"
+    "Gunakan disk %s untuk LVM, partisi tambahan, dan booting"
   ],
   "Use disk %s for additional partitions": [
-    "Usa el disc %s per a les particions addicionals"
+    "Gunakan disk %s untuk partisi tambahan"
   ],
   "Use disk %s for additional partitions and booting": [
-    "Usa el disc %s per a les particions addicionals i per a l'arrencada"
+    "Gunakan disk %s untuk partisi tambahan dan booting"
   ],
   "Use disk %s to configure boot partitions": [
-    "Usa el disc %s per configurar les particions d'arrencada"
+    "Gunakan disk %s untuk mengonfigurasi partisi boot"
   ],
   "Use disk %s to host LVM": [
-    "Usa el disc %s per a allotjar-hi l'LVM"
+    "Gunakan disk %s untuk meng-host LVM"
   ],
   "Use disk %s to host LVM and boot": [
-    "Usa el disc %s per a allotjar-hi l'LVM i per a l'arrencada"
+    "Gunakan disk %s untuk meng-host LVM dan boot"
   ],
   "Use disk %s to install": [
-    "Usa el disc %s per a la instal·lació"
+    "Gunakan disk %s untuk memasang"
   ],
   "Use disk %s to install and boot": [
-    "Usa el disc %s per a la instal·lació i per a l'arrencada"
+    "Gunakan disk %s untuk menginstal dan mem-boot"
   ],
   "Use disk %s to install and host LVM": [
-    "Usa el disc %s per a la instal·lació i per a allotjar-hi l'LVM"
+    "Gunakan disk %s untuk menginstal dan menghosting LVM"
   ],
   "Use disk %s to install, host LVM and boot": [
-    "Usa el disc %s per a la instal·lació, per a allotjar-hi l'LVM i per a l'arrencada"
+    "Gunakan disk %s untuk memasang, meng-host LVM, dan mem-boot"
   ],
   "Use for installation only": [
-    "Usa-la només per a la instal·lació"
+    "Hanya digunakan untuk pemasangan"
   ],
   "Use for the selected product too": [
-    "Usa-la també per al producte seleccionat"
+    "Gunakan juga untuk produk yang dipilih"
   ],
   "Use password": [
-    "Usa contrasenya"
+    "Gunakan kata sandi"
   ],
   "Use public SSH Key": [
-    "Usa una clau pública SSH"
+    "Gunakan Kunci SSH Publik"
   ],
   "Use static hostname": [
-    "Usa un nom d'amfitrió estàtic"
+    "Gunakan nama host statis"
   ],
   "Use suggested username": [
-    "Usa el nom d'usuari suggerit"
+    "Gunakan nama pengguna yang disarankan"
   ],
   "Use the RAID without partitions": [
-    "Usa la RAID sense particions"
+    "Gunakan RAID tanpa partisi"
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
-    "Useu el mòdul de plataforma de confiança (TPM) per fer-ne la desencriptació automàticament a cada arrencada."
+    "Gunakan Modul Platform Tepercaya (TPM) untuk mendekripsi secara otomatis pada setiap boot"
   ],
   "Use the disk without partitions": [
-    "Usa el disc sense particions"
+    "Gunakan disk tanpa partisi"
   ],
   "Use these same settings for the selected product": [
-    "Usa aquests mateixos paràmetres per al producte seleccionat"
+    "Gunakan pengaturan yang sama untuk produk yang dipilih"
   ],
   "Used space": [
-    "Espai usat"
+    "Ruang yang digunakan"
   ],
   "User name": [
-    "Nom d'usuari"
+    "Nama pengguna"
   ],
   "Username": [
-    "Nom d'usuari"
+    "Nama pengguna"
   ],
   "Username suggestion dropdown": [
-    "Menú desplegable de suggeriments de nom d'usuari"
+    "Tarik-turun saran nama pengguna"
   ],
   "Using [%s] keyboard": [
-    "S'usa el teclat per a [%s]"
+    "Menggunakan keyboard [%s]"
   ],
   "Using a hashed password.": [
-    "S'usa una contrasenya amb funció resum."
+    "Menggunakan kata sandi yang dienkripsi."
   ],
   "Using an existing partition": [
-    "S'usa una partició existent"
+    "Menggunakan partisi yang sudah ada"
   ],
   "Using partition %s": [
-    "S'usa la partició %s"
+    "Menggunakan partisi %s"
   ],
   "Using transient hostname: %s": [
-    "S'usa un nom d'amfitrió transitori: %s"
+    "Menggunakan nama host sementara: %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
-    "El grup de volums %s ja existeix. Introduïu un nom diferent."
+    "Grup volume ‘%s’ sudah ada. Masukkan nama yang berbeda."
   ],
   "WPA & WPA2 Personal": [
-    "WPA i WPA2 personal"
+    "WPA & WPA2 Pribadi"
   ],
   "WPA Password": [
-    "Contrasenya de WPA"
+    "Kata Sandi WPA"
   ],
   "WWPN": [
     "WWPN"
   ],
   "Waiting for a mount point": [
-    "S'espera un punt de muntatge"
+    "Menunggu titik mount"
   ],
   "Waiting for information about storage configuration": [
-    "Esperant informació sobre la configuració de l'emmagatzematge"
+    "Menunggu informasi tentang konfigurasi penyimpanan"
   ],
   "Weak signal": [
-    "Senyal dèbil"
+    "Sinyal lemah"
   ],
   "Wi-Fi connection form": [
-    "Formulari de connexió per WiFi"
+    "Formulir Koneksi Wi-Fi"
   ],
   "Wi-Fi networks": [
-    "Connexions sense fil"
+    "Jaringan Wi-Fi"
   ],
   "Wi-Fi not supported": [
-    "Wi-Fi no compatible"
+    "Wi-Fi tidak didukung"
   ],
   "Will be supported in a future version.": [
-    "Serà compatible en una versió futura."
+    "Akan didukung pada versi mendatang."
   ],
   "Wired connections": [
-    "Connexions amb fil"
+    "Koneksi kabel"
   ],
   "XFS": [
     "XFS"
   ],
   "Yes": [
-    "Sí"
+    "Ya"
   ],
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
-    "Podeu procedir a la instal·lació amb la configuració actual o potser voleu descartar-la i començar des de zero amb una de simple."
+    "Anda dapat melanjutkan untuk memasang dengan pengaturan saat ini atau Anda mungkin ingin membatalkan konfigurasi dan memulai dari awal dengan yang sederhana."
   ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "No ho podeu canviar més tard. Aneu a la secció %s si voleu modificar-la abans de procedir al registre."
+    "Anda tidak dapat mengubahnya nanti. Pergi ke bagian %s jika Anda ingin mengubahnya sebelum melanjutkan proses pendaftaran."
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
-    "És possible que vulgueu descartar la configuració actual i començar des de zero amb una configuració simple."
+    "Anda mungkin ingin menghapus pengaturan saat ini dan memulai dari awal dengan konfigurasi sederhana."
   ],
   "You may want to discard those settings and start from scratch with a simple configuration.": [
-    "És possible que vulgueu descartar aquests paràmetres i començar des de zero amb una configuració simple."
+    "Anda mungkin ingin menghapus pengaturan tersebut dan memulai dari awal dengan konfigurasi yang sederhana."
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
-    "Us connectareu a una xarxa pública sense encriptació. És possible que les vostres dades no estiguin segures."
+    "Anda akan terhubung ke jaringan publik tanpa enkripsi. Data Anda mungkin tidak aman."
   ],
   "Your system is rebooting": [
-    "El sistema es reinicia"
+    "Sistem Anda sedang melakukan reboot"
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
-    "[CAPS LOCK] activat"
+    "[CAPS LOCK] aktif"
   ],
   "[FIXME]": [
     "[FIXME]"
   ],
   "approx. %s": [
-    "aprox. %s"
+    "sekitar %s"
   ],
   "at least %s": [
-    "almenys %s"
+    "setidaknya %s"
   ],
   "auto selected": [
-    "seleccionat automàticament"
+    "otomatis dipilih"
   ],
   "hostname": [
-    "Nom d'amfitrió"
+    "hostname"
   ],
   "iBFT": [
     "iBFT"
@@ -2181,21 +2176,21 @@ export default {
     "iSCSI"
   ],
   "logical volume": [
-    "volum lògic"
+    "volume logis"
   ],
   "partition": [
-    "partició"
+    "partisi"
   ],
   "reset to defaults": [
-    "restableix els valors predeterminats"
+    "kembalikan ke default"
   ],
   "zFCP": [
     "zFCP"
   ],
   "zFCP Disk Activation": [
-    "Activació del disc zFCP"
+    "Aktivasi Disk zFCP"
   ],
   "zFCP Disk activation form": [
-    "Formulari d'activació del disc zFCP"
+    "Formulir aktivasi Disk zFCP"
   ]
 };

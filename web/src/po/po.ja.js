@@ -993,6 +993,9 @@ export default {
   "Loading data...": [
     "データを読み込んでいます..."
   ],
+  "Loading storage": [
+    "ストレージを読み込んでいます"
+  ],
   "Loading the installation repositories...": [
     "インストール用リポジトリを読み込んでいます..."
   ],
@@ -1416,6 +1419,9 @@ export default {
   "Repository load failed": [
     "リポジトリ読み込み失敗"
   ],
+  "Rescan devices": [
+    "デバイスの再検出"
+  ],
   "Reset to defaults": [
     "既定値に戻す"
   ],
@@ -1731,6 +1737,9 @@ export default {
   "The extension has been registered with key %s.": [
     "拡張を %s の鍵で登録しました。"
   ],
+  "The extension was registered without any registration code.": [
+    "登録コード無しで拡張の登録を行いました。"
+  ],
   "The final size can be bigger in order to fill the extra free space.": [
     "最終的なサイズは、連続した空き領域にあわせて拡大される可能性があります。"
   ],
@@ -1870,7 +1879,7 @@ export default {
     "ホスト名は動的なものとなります。ご利用のネットワークの設定に依存しますが、再起動やネットワーク側の変更によって変わってしまう場合があります。"
   ],
   "This license is not available in %s.": [
-    ""
+    "このライセンスは %s では提供されていません。"
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "このパターンは、明瞭性と効率性のバランスを取った形と言えます。モーダル型の表示により簡単に選択できますし、より詳しい調査や複雑な処理を必要とする場合であっても、フルビューへの切り替えで対応できます。特に、多数のデバイスを扱う必要がある場合に有用です。"
@@ -1930,7 +1939,7 @@ export default {
     "デバイスの縮小により、最大で %s が確保できます。"
   ],
   "Update available disks and activate crypt devices": [
-    ""
+    "利用可能なディスクの更新と暗号化デバイスの有効化"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "ここでホスト名を変更した場合も後から変更した場合も、登録済みのホスト名は変更されないことに注意してください。"

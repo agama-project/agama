@@ -325,7 +325,7 @@ export default {
     "Идентификатор канала"
   ],
   "Check the %d planned actions": [
-    "Проверьте запланированные действия: %d"
+    "Показать запланированные действия: %d"
   ],
   "Check the authentication parameters.": [
     "Проверьте параметры аутентификации."
@@ -604,7 +604,7 @@ export default {
     "Скачать журналы"
   ],
   "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Во время установки будет выполнено несколько действий по настройке макета, показанных в таблице ниже."
+    "В процессе установки будут произведены действия для создания структуры разделов, указанной в таблице ниже."
   ],
   "Edit": [
     "Изменить"
@@ -706,7 +706,7 @@ export default {
     "Файловые системы"
   ],
   "Filter by description or keymap code": [
-    "Фильтр по описанию или коду карты клавиш"
+    "Фильтр по описанию или коду раскладки"
   ],
   "Filter by language, territory or locale code": [
     "Фильтр по языку, территории или коду локали"
@@ -994,6 +994,9 @@ export default {
   ],
   "Loading data...": [
     "Загрузка данных..."
+  ],
+  "Loading storage": [
+    "Загрузка хранилища"
   ],
   "Loading the installation repositories...": [
     "Загрузка репозиториев установки..."
@@ -1418,6 +1421,9 @@ export default {
   "Repository load failed": [
     "Не удалось загрузить репозиторий"
   ],
+  "Rescan devices": [
+    "Сканировать у-ва повторно"
+  ],
   "Reset to defaults": [
     "Сбросить по умолчанию"
   ],
@@ -1735,6 +1741,9 @@ export default {
   "The extension has been registered with key %s.": [
     "Расширение было зарегистрировано с ключом %s."
   ],
+  "The extension was registered without any registration code.": [
+    "Расширение было зарегистрировано без кода регистрации."
+  ],
   "The final size can be bigger in order to fill the extra free space.": [
     "Итоговый размер может быть больше, чтобы заполнить свободное пространство."
   ],
@@ -1874,7 +1883,7 @@ export default {
     "Это имя узла является динамическим и может измениться после перезагрузки или обновления сети, как настроено администратором локальной сети."
   ],
   "This license is not available in %s.": [
-    ""
+    "Лицензия недоступна на этом языке: %s."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Этот подход обеспечивает баланс между ясностью и эффективностью: модальное окно сохраняет легкость для простого выбора, в то время как полноэкранный режим поддерживает более глубокое изучение и сложные действия, специально для пользователей с большим количеством устройств."
@@ -1934,7 +1943,7 @@ export default {
     "До %s можно освободить, сократив устройство."
   ],
   "Update available disks and activate crypt devices": [
-    ""
+    "Обновление доступных дисков и активация криптоустройств"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Обновление имени узла сейчас или позже не приведет к изменению текущего зарегистрированного имени узла."
