@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, ExpandableSection, Stack } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
@@ -30,6 +30,7 @@ import { _, n_, formatList } from "~/i18n";
 import { useActions, useDevices } from "~/queries/storage";
 import { sprintf } from "sprintf-js";
 import { useInstallerClient } from "~/context/installer";
+import { useLastValid } from "~/hooks/use-last-valid";
 
 /**
  * Renders information about delete actions
@@ -96,30 +97,12 @@ function ActionsList({ manager }: ActionsListProps) {
   );
 }
 
-/**
- * Stores the last value that satisfies the given condition.
- * Returns undefined until the first valid value is stored.
- */
-export function useLastValid<T>(value: T, condition: boolean): T | undefined {
-  const [initialized, setInitialized] = useState(false);
-  const lastValidRef = useRef<T>();
-
-  useEffect(() => {
-    if (condition) {
-      lastValidRef.current = value;
-      if (!initialized) setInitialized(true);
-    }
-  }, [value, condition, initialized]);
-
-  return initialized ? lastValidRef.current : undefined;
-}
-
 export default function ProposalResultSection() {
   const client = useInstallerClient();
   const system = useDevices("system", { suspense: true });
   const staging = useDevices("result", { suspense: true });
   const actions = useActions();
-  const [shouldUpdate, setShouldUpdate] = useState(false);
+  const [shouldUpdate, setShouldUpdate] = useState(true);
 
   useEffect(() => {
     return client.onEvent((event) => {
@@ -129,7 +112,10 @@ export default function ProposalResultSection() {
 
   const result = useLastValid({ system, staging, actions }, shouldUpdate);
 
-  if (!result) return;
+  console.log("su", shouldUpdate);
+  console.log("result is", result);
+
+  if (result?.actions?.length === 0) return;
 
   const devicesManager = new DevicesManager(result.system, result.staging, result.actions);
 

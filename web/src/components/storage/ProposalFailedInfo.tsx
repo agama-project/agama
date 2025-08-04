@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, Content } from "@patternfly/react-core";
 import { IssueSeverity } from "~/types/issues";
 import { useApiModel } from "~/hooks/storage/api-model";
@@ -28,6 +28,8 @@ import { useIssues, useConfigErrors } from "~/queries/issues";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { _, formatList } from "~/i18n";
 import { sprintf } from "sprintf-js";
+import { useInstallerClient } from "~/context/installer";
+import { useLastValid } from "~/hooks/use-last-valid";
 
 const Description = () => {
   const model = useApiModel({ suspense: true });
@@ -88,11 +90,21 @@ const Description = () => {
  *   - The generated proposal contains no errors.
  */
 export default function ProposalFailedInfo() {
+  const client = useInstallerClient();
   const configErrors = useConfigErrors("storage");
   const errors = useIssues("storage").filter((s) => s.severity === IssueSeverity.Error);
+  const [shouldUpdate, setShouldUpdate] = useState(false);
+
+  const result = useLastValid(errors, shouldUpdate);
+
+  useEffect(() => {
+    return client.onEvent((event) => {
+      setShouldUpdate(event.type === "StorageChanged" && event.clientId === client.id);
+    });
+  }, [client]);
 
   if (configErrors.length !== 0) return;
-  if (errors.length === 0) return;
+  if (result && result.length === 0) return;
 
   return (
     <Alert variant="warning" title={_("Failed to calculate a storage layout")}>
