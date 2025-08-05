@@ -195,12 +195,10 @@
       "type": "object",
       "properties": {
         "patterns": {
-          "title": "List of patterns to install",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "examples": ["minimal_base"]
-          }
+          "anyOf": [
+            { "$ref": "#/$defs/patternsArray" },
+            { "$ref": "#/$defs/patternsObject" }
+          ]
         },
         "packages": {
           "title": "List of packages to install",
@@ -1004,6 +1002,26 @@
           "description": "Additional data for matching questions and answers",
           "type": "object",
           "examples": [{ "device": "/dev/sda" }]
+        }
+      }
+    },
+    "patternsArray": {
+      "title": "List of user-selected patterns to install",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "examples": ["minimal_base"]
+      }
+    },
+    "patternsObject": {
+      "title": "Modifications for the list of user-selected patterns to install",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "add": {
+          "title": "List of user-selected patterns to add to the list",
+          "type": "array",
+          "items": { "type": "string" }
         }
       }
     }
