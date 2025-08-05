@@ -52,26 +52,38 @@ const mockDevice: Device = {
   routes4: [],
   routes6: [],
 };
+const mockAnotherDevice: Device = {
+  name: "enp1s1",
+  connection: "Network #1",
+  type: ConnectionType.ETHERNET,
+  state: DeviceState.CONNECTED,
+  addresses: [{ address: "192.168.69.101", prefix: 24 }],
+  nameservers: ["192.168.69.50"],
+  gateway4: "192.168.69.70",
+  gateway6: "192.168.69.80",
+  method4: ConnectionMethod.AUTO,
+  method6: ConnectionMethod.AUTO,
+  macAddress: "47:3F:0C:DB:D9:71",
+  // FIXME: provice a valid route for testing purpose
+  // routes4: ["108.109.107.106"],
+  routes4: [],
+  routes6: [],
+};
 
 const mockConnection: Connection = new Connection("Network #1", {
   state: ConnectionState.activated,
   iface: "enp1s0",
 });
 
+let mockNetworkDevices = [mockDevice];
+const networkDevices = () => mockNetworkDevices;
+
 jest.mock("~/queries/network", () => ({
   ...jest.requireActual("~/queries/network"),
-  useNetworkDevices: () => [mockDevice],
+  useNetworkDevices: () => networkDevices(),
 }));
 
 describe("WiredConnectionDetails", () => {
-  it("renders the device data", () => {
-    plainRender(<WiredConnectionDetails connection={mockConnection} />);
-    const section = screen.getByRole("region", { name: "Device" });
-    within(section).getByText("enp1s0");
-    within(section).getByText("connected");
-    within(section).getByText("AA:11:22:33:44::FF");
-  });
-
   describe("Binding settings section", () => {
     it("renders information aobut the binding mode", () => {
       const { rerender } = plainRender(
@@ -96,6 +108,44 @@ describe("WiredConnectionDetails", () => {
       const section = screen.getByRole("region", { name: "Binding settings" });
       const editLink = within(section).getByRole("link", { name: "Edit binding settings" });
       expect(editLink).toHaveAttribute("href", "/network/connections/Network%20%231/binding/edit");
+    });
+  });
+
+  describe("Connected devices", () => {
+    describe("when there is only one device connected", () => {
+      it("renders the device data", () => {
+        plainRender(<WiredConnectionDetails connection={mockConnection} />);
+        const section = screen.getByRole("region", { name: "Connected devices" });
+        within(section).getByText("enp1s0");
+        within(section).getByText("AA:11:22:33:44::FF");
+        within(section).getByText("192.168.69.100");
+        within(section).getByText("192.168.69.4");
+        within(section).getByText("192.168.69.6");
+        within(section).getByText("AA:11:22:33:44::FF");
+      });
+    });
+    describe("when there are multiple devices connected", () => {
+      beforeEach(() => {
+        mockNetworkDevices = [mockDevice, mockAnotherDevice];
+      });
+
+      it("renders data for all devices", () => {
+        plainRender(<WiredConnectionDetails connection={mockConnection} />);
+        const section = screen.getByRole("region", { name: "Connected devices" });
+
+        within(section).getByText("enp1s0");
+        within(section).getByText("192.168.69.201/24");
+        within(section).getByText("192.168.69.100");
+        within(section).getByText("192.168.69.4");
+        within(section).getByText("192.168.69.6");
+        within(section).getByText("AA:11:22:33:44::FF");
+
+        within(section).getByText("enp1s1");
+        within(section).getByText("192.168.69.101/24");
+        within(section).getByText("192.168.69.70");
+        within(section).getByText("192.168.69.80");
+        within(section).getByText("47:3F:0C:DB:D9:71");
+      });
     });
   });
 

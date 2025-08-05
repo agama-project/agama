@@ -27,13 +27,14 @@ import {
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
+  Divider,
   Flex,
   FlexItem,
   Grid,
   GridItem,
   Stack,
 } from "@patternfly/react-core";
-import { Link, Page } from "~/components/core";
+import { Link, NestedContent, Page } from "~/components/core";
 import InstallationOnlySwitch from "./InstallationOnlySwitch";
 import { Connection, Device } from "~/types/network";
 import { connectionBindingMode, formatIp } from "~/utils/network";
@@ -77,24 +78,85 @@ const BindingSettings = ({ connection }: { connection: Connection }) => {
 };
 
 const DeviceDetails = ({ device }: { device: Device }) => {
-  if (!device) return;
+  return (
+    <DescriptionList key={device.name} aria-label={_("Device details")} isHorizontal>
+      <DescriptionListGroup>
+        <DescriptionListTerm>{_("Interface")}</DescriptionListTerm>
+        <DescriptionListDescription>{device.name}</DescriptionListDescription>
+      </DescriptionListGroup>
+      <DescriptionListGroup>
+        <DescriptionListTerm>{_("Status")}</DescriptionListTerm>
+        <DescriptionListDescription>{device.state}</DescriptionListDescription>
+      </DescriptionListGroup>
+      <DescriptionListGroup>
+        <DescriptionListTerm>{_("MAC")}</DescriptionListTerm>
+        <DescriptionListDescription>{device.macAddress}</DescriptionListDescription>
+      </DescriptionListGroup>
+      <DescriptionListGroup>
+        <DescriptionListTerm>{_("Gateway")}</DescriptionListTerm>
+        <DescriptionListDescription>
+          <Flex direction={{ default: "column" }}>
+            <FlexItem>{device.gateway4}</FlexItem>
+            <FlexItem>{device.gateway6}</FlexItem>
+          </Flex>
+        </DescriptionListDescription>
+      </DescriptionListGroup>
+      <DescriptionListGroup>
+        <DescriptionListTerm>{_("IP Addresses")}</DescriptionListTerm>
+        <DescriptionListDescription>
+          <Flex direction={{ default: "column" }}>
+            {device.addresses.map((ip, idx) => (
+              <FlexItem key={idx}>{formatIp(ip)}</FlexItem>
+            ))}
+          </Flex>
+        </DescriptionListDescription>
+      </DescriptionListGroup>
+      <DescriptionListGroup>
+        <DescriptionListTerm>{_("DNS")}</DescriptionListTerm>
+        <DescriptionListDescription>
+          <Flex direction={{ default: "column" }}>
+            {device.nameservers.map((dns, idx) => (
+              <FlexItem key={idx}>{dns}</FlexItem>
+            ))}
+          </Flex>
+        </DescriptionListDescription>
+      </DescriptionListGroup>
+      <DescriptionListGroup>
+        <DescriptionListTerm>{_("Routes")}</DescriptionListTerm>
+        <DescriptionListDescription>
+          <Flex direction={{ default: "column" }}>
+            {device.routes4.map((route, idx) => (
+              <FlexItem key={idx}>{formatIp(route.destination)}</FlexItem>
+            ))}
+          </Flex>
+        </DescriptionListDescription>
+      </DescriptionListGroup>
+    </DescriptionList>
+  );
+};
+
+const DevicesDetails = ({ connection }: { connection: Connection }) => {
+  const devices = useNetworkDevices();
+
+  const connectedDevices = devices.filter(
+    ({ connection: deviceConnectionId }) => deviceConnectionId === connection.id,
+  );
 
   return (
-    <Page.Section title={_("Device")} pfCardProps={{ isPlain: false, isFullHeight: false }}>
-      <DescriptionList aria-label={_("Device details")} isHorizontal>
-        <DescriptionListGroup>
-          <DescriptionListTerm>{_("Interface")}</DescriptionListTerm>
-          <DescriptionListDescription>{device.name}</DescriptionListDescription>
-        </DescriptionListGroup>
-        <DescriptionListGroup>
-          <DescriptionListTerm>{_("Status")}</DescriptionListTerm>
-          <DescriptionListDescription>{device.state}</DescriptionListDescription>
-        </DescriptionListGroup>
-        <DescriptionListGroup>
-          <DescriptionListTerm>{_("MAC")}</DescriptionListTerm>
-          <DescriptionListDescription>{device.macAddress}</DescriptionListDescription>
-        </DescriptionListGroup>
-      </DescriptionList>
+    <Page.Section
+      title={_("Connected devices")}
+      pfCardProps={{ isPlain: false, isFullHeight: false }}
+    >
+      <NestedContent>
+        <Stack hasGutter>
+          {connectedDevices.map((device, index) => (
+            <React.Fragment key={device.name}>
+              <DeviceDetails key={device.name} device={device} />
+              {index < connectedDevices.length - 1 && <Divider />}
+            </React.Fragment>
+          ))}
+        </Stack>
+      </NestedContent>
     </Page.Section>
   );
 };
@@ -185,7 +247,7 @@ export default function WiredConnectionDetails({ connection }: { connection: Con
       <GridItem md={6} order={{ default: "1", md: "2" }}>
         <Stack hasGutter>
           <BindingSettings connection={connection} />
-          <DeviceDetails device={device} />
+          <DevicesDetails connection={connection} />
         </Stack>
       </GridItem>
       <GridItem md={6} order={{ default: "3" }}>
