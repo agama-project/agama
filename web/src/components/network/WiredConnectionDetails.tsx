@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Content,
   DescriptionList,
@@ -33,8 +33,11 @@ import {
   Grid,
   GridItem,
   Stack,
+  Tab,
+  Tabs,
+  TabTitleText,
 } from "@patternfly/react-core";
-import { Link, NestedContent, Page } from "~/components/core";
+import { Link, Page } from "~/components/core";
 import InstallationOnlySwitch from "./InstallationOnlySwitch";
 import { Connection, Device } from "~/types/network";
 import { connectionBindingMode, formatIp } from "~/utils/network";
@@ -44,6 +47,7 @@ import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 const BINDING_MODES = {
   none: _("to any interface"),
@@ -69,7 +73,7 @@ const BindingSettings = ({ connection }: { connection: Connection }) => {
         </Link>
       }
     >
-      <Content isEditorial>
+      <Content>
         {bindingMode === "none"
           ? sprintf(_("Connection is bind %s."), BINDING_MODES[bindingMode])
           : sprintf(_("Connection is bind %s to %s."), BINDING_MODES[bindingMode], bindingInfo)}
@@ -80,7 +84,12 @@ const BindingSettings = ({ connection }: { connection: Connection }) => {
 
 const DeviceDetails = ({ device }: { device: Device }) => {
   return (
-    <DescriptionList key={device.name} aria-label={_("Device details")} isHorizontal>
+    <DescriptionList
+      key={device.name}
+      aria-label={_("Device details")}
+      isHorizontal
+      className={spacingStyles.mSm}
+    >
       <DescriptionListGroup>
         <DescriptionListTerm>{_("Interface")}</DescriptionListTerm>
         <DescriptionListDescription>{device.name}</DescriptionListDescription>
@@ -138,26 +147,47 @@ const DeviceDetails = ({ device }: { device: Device }) => {
 
 const DevicesDetails = ({ connection }: { connection: Connection }) => {
   const devices = useNetworkDevices();
+  const [active, setActive] = useState(0);
+  const handleTabClick = (
+    event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
+    tabIndex: number,
+  ) => {
+    setActive(tabIndex);
+  };
 
   const connectedDevices = devices.filter(
     ({ connection: deviceConnectionId }) => deviceConnectionId === connection.id,
   );
 
+  const none = connectedDevices.length === 0;
+  const onlyOne = connectedDevices.length === 1;
+  const multiple = connectedDevices.length > 1;
+
   return (
     <Page.Section
-      title={_("Connected devices")}
+      title={onlyOne ? _("Connected device") : _("Connected devices")}
       pfCardProps={{ isPlain: false, isFullHeight: false }}
     >
-      <NestedContent>
-        <Stack hasGutter>
+      {none && _("None")}
+      {onlyOne && <DeviceDetails device={connectedDevices[0]} />}
+      {multiple && (
+        <Tabs
+          activeKey={active}
+          onSelect={handleTabClick}
+          aria-label={_("Connected devices tabs")}
+          role="region"
+        >
           {connectedDevices.map((device, index) => (
-            <React.Fragment key={device.name}>
+            <Tab
+              key={device.name}
+              eventKey={index}
+              title={<TabTitleText>{device.name}</TabTitleText>}
+            >
               <DeviceDetails key={device.name} device={device} />
-              {index < connectedDevices.length - 1 && <Divider />}
-            </React.Fragment>
+            </Tab>
           ))}
-        </Stack>
-      </NestedContent>
+        </Tabs>
+      )}
     </Page.Section>
   );
 };
@@ -174,62 +204,58 @@ const ConnectionDetails = ({ connection }: { connection: Connection }) => {
         </Link>
       }
     >
-      <NestedContent>
-        <Stack hasGutter>
-          <DescriptionList isHorizontal>
-            <DescriptionListGroup>
-              <DescriptionListTerm>{_("Mode")}</DescriptionListTerm>
-              <DescriptionListDescription>
-                <Flex direction={{ default: "column" }}>
-                  <FlexItem>
-                    {_("IPv4")} {connection.method4}
-                  </FlexItem>
-                  <FlexItem>
-                    {_("IPv6")} {connection.method6}
-                  </FlexItem>
-                </Flex>
-              </DescriptionListDescription>
-            </DescriptionListGroup>
-            <DescriptionListGroup>
-              <DescriptionListTerm>{_("Gateway")}</DescriptionListTerm>
-              <DescriptionListDescription>
-                <Flex direction={{ default: "column" }}>
-                  {gateways.every((g) => isEmpty(g))
-                    ? _("None set")
-                    : gateways.map((g, i) => <FlexItem key={i}>{g}</FlexItem>)}
-                </Flex>
-              </DescriptionListDescription>
-            </DescriptionListGroup>
-            <DescriptionListGroup>
-              <DescriptionListTerm>{_("IP Addresses")}</DescriptionListTerm>
-              <DescriptionListDescription>
-                <Flex direction={{ default: "column" }}>
-                  {isEmpty(connection.addresses)
-                    ? _("None set")
-                    : connection.addresses.map((ip, idx) => (
-                        <FlexItem key={idx}>{formatIp(ip)}</FlexItem>
-                      ))}
-                </Flex>
-              </DescriptionListDescription>
-            </DescriptionListGroup>
-            <DescriptionListGroup>
-              <DescriptionListTerm>{_("DNS")}</DescriptionListTerm>
-              <DescriptionListDescription>
-                <Flex direction={{ default: "column" }}>
-                  {isEmpty(connection.nameservers)
-                    ? _("None set")
-                    : connection.nameservers.map((dns, idx) => (
-                        <FlexItem key={idx}>{dns}</FlexItem>
-                      ))}
-                </Flex>
-              </DescriptionListDescription>
-            </DescriptionListGroup>
-          </DescriptionList>
-          <Divider />
-          <InstallationOnlySwitch connection={connection} />
-          <Divider />
-        </Stack>
-      </NestedContent>
+      <Stack hasGutter>
+        <DescriptionList isHorizontal>
+          <DescriptionListGroup>
+            <DescriptionListTerm>{_("Mode")}</DescriptionListTerm>
+            <DescriptionListDescription>
+              <Flex direction={{ default: "column" }}>
+                <FlexItem>
+                  {_("IPv4")} {connection.method4}
+                </FlexItem>
+                <FlexItem>
+                  {_("IPv6")} {connection.method6}
+                </FlexItem>
+              </Flex>
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>{_("Gateway")}</DescriptionListTerm>
+            <DescriptionListDescription>
+              <Flex direction={{ default: "column" }}>
+                {gateways.every((g) => isEmpty(g))
+                  ? _("None set")
+                  : gateways.map((g, i) => <FlexItem key={i}>{g}</FlexItem>)}
+              </Flex>
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>{_("IP Addresses")}</DescriptionListTerm>
+            <DescriptionListDescription>
+              <Flex direction={{ default: "column" }}>
+                {isEmpty(connection.addresses)
+                  ? _("None set")
+                  : connection.addresses.map((ip, idx) => (
+                      <FlexItem key={idx}>{formatIp(ip)}</FlexItem>
+                    ))}
+              </Flex>
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>{_("DNS")}</DescriptionListTerm>
+            <DescriptionListDescription>
+              <Flex direction={{ default: "column" }}>
+                {isEmpty(connection.nameservers)
+                  ? _("None set")
+                  : connection.nameservers.map((dns, idx) => <FlexItem key={idx}>{dns}</FlexItem>)}
+              </Flex>
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+        </DescriptionList>
+        <Divider />
+        <InstallationOnlySwitch connection={connection} />
+        <Divider />
+      </Stack>
     </Page.Section>
   );
 };

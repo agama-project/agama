@@ -162,10 +162,26 @@ describe("WiredConnectionDetails", () => {
   });
 
   describe("Connected devices", () => {
-    describe("when there is only one device connected", () => {
-      it("renders the device data", () => {
+    describe("when there is none device connected", () => {
+      beforeEach(() => {
+        mockNetworkDevices = [];
+      });
+
+      it("renders 'None'", () => {
         plainRender(<WiredConnectionDetails connection={mockConnection} />);
         const section = screen.getByRole("region", { name: "Connected devices" });
+        within(section).getByText("None");
+      });
+    });
+
+    describe("when there is only one device connected", () => {
+      beforeEach(() => {
+        mockNetworkDevices = [mockDevice];
+      });
+
+      it("renders title in singluar along with device data", () => {
+        plainRender(<WiredConnectionDetails connection={mockConnection} />);
+        const section = screen.getByRole("region", { name: "Connected device" });
         within(section).getByText("enp1s0");
         within(section).getByText("AA:11:22:33:44::FF");
         within(section).getByText("192.168.69.100");
@@ -174,27 +190,43 @@ describe("WiredConnectionDetails", () => {
         within(section).getByText("AA:11:22:33:44::FF");
       });
     });
+
     describe("when there are multiple devices connected", () => {
       beforeEach(() => {
         mockNetworkDevices = [mockDevice, mockAnotherDevice];
       });
 
-      it("renders data for all devices", () => {
-        plainRender(<WiredConnectionDetails connection={mockConnection} />);
+      it("renders title in plurarl and devices data in tabs", async () => {
+        const { user } = plainRender(<WiredConnectionDetails connection={mockConnection} />);
         const section = screen.getByRole("region", { name: "Connected devices" });
+        const enp1s0DeviceTab = within(section).getByRole("tab", { name: "enp1s0" });
+        const enp1s1DeviceTab = within(section).getByRole("tab", { name: "enp1s1" });
 
-        within(section).getByText("enp1s0");
-        within(section).getByText("192.168.69.201/24");
-        within(section).getByText("192.168.69.100");
-        within(section).getByText("192.168.69.4");
-        within(section).getByText("192.168.69.6");
-        within(section).getByText("AA:11:22:33:44::FF");
+        const enp1s0panel = within(section).getByRole("tabpanel", { name: "enp1s0" });
+        within(enp1s0panel).getByText("enp1s0");
+        within(enp1s0panel).getByText("192.168.69.201/24");
+        within(enp1s0panel).getByText("192.168.69.100");
+        within(enp1s0panel).getByText("192.168.69.4");
+        within(enp1s0panel).getByText("192.168.69.6");
+        within(enp1s0panel).getByText("AA:11:22:33:44::FF");
 
-        within(section).getByText("enp1s1");
-        within(section).getByText("192.168.69.101/24");
-        within(section).getByText("192.168.69.70");
-        within(section).getByText("192.168.69.80");
-        within(section).getByText("47:3F:0C:DB:D9:71");
+        await user.click(enp1s1DeviceTab);
+        const enp1s1panel = within(section).getByRole("tabpanel", { name: "enp1s1" });
+
+        within(enp1s1panel).getByText("enp1s1");
+        within(enp1s1panel).getByText("192.168.69.101/24");
+        within(enp1s1panel).getByText("192.168.69.70");
+        within(enp1s1panel).getByText("192.168.69.80");
+        within(enp1s1panel).getByText("47:3F:0C:DB:D9:71");
+
+        await user.click(enp1s0DeviceTab);
+
+        within(enp1s0panel).getByText("enp1s0");
+        within(enp1s0panel).getByText("192.168.69.201/24");
+        within(enp1s0panel).getByText("192.168.69.100");
+        within(enp1s0panel).getByText("192.168.69.4");
+        within(enp1s0panel).getByText("192.168.69.6");
+        within(enp1s0panel).getByText("AA:11:22:33:44::FF");
       });
     });
   });
