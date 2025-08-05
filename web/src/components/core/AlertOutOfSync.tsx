@@ -21,20 +21,14 @@
  */
 
 import React, { useEffect, useState } from "react";
-import {
-  Alert,
-  AlertActionCloseButton,
-  AlertGroup,
-  AlertProps,
-  Button,
-  Content,
-} from "@patternfly/react-core";
+import { Content } from "@patternfly/react-core";
 import { useInstallerClient } from "~/context/installer";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
 import { locationReload } from "~/utils";
+import Popup, { PopupProps } from "~/components/core/Popup";
 
-type AlertOutOfSyncProps = Partial<AlertProps> & {
+type AlertOutOfSyncProps = Partial<PopupProps> & {
   /**
    * The scope to listen for change events on (e.g., `SoftwareProposal`,
    * `L10nConfig`).
@@ -46,14 +40,12 @@ type AlertOutOfSyncProps = Partial<AlertProps> & {
  * Reactive alert shown when the configuration for a given scope has been
  * changed externally.
  *
- * It warns that the interface may be out of sync and recommends reloading
- * before continuing to avoid issues and data loss. Reloading is intentionally
- * left up to the user rather than forced automatically, to prevent confusion
- * caused by unexpected refreshes.
+ * It warns that the interface may be out of sync and forces reloading
+ * before continuing to avoid issues and data loss.
  *
  * It works by listening for "Changed" events on the specified scope:
  *
- * - Displays a toast alert if the event originates from a different client
+ * - Displays a popup if the event originates from a different client
  *   (based on client ID).
  * - Automatically dismisses the alert if a subsequent event originates from
  *   the current client.
@@ -84,32 +76,19 @@ export default function AlertOutOfSync({ scope, ...alertProps }: AlertOutOfSyncP
   const title = _("Configuration out of sync");
 
   return (
-    <AlertGroup hasAnimations isToast isLiveRegion aria-live="assertive">
-      {active && (
-        <Alert
-          variant="info"
-          title={title}
-          actionClose={
-            <AlertActionCloseButton
-              title={title as string}
-              variantLabel={_("Out of sync alert")}
-              onClose={() => setActive(false)}
-            />
-          }
-          {...alertProps}
-          key={`${scope}-out-of-sync`}
-        >
-          <Content component="p">
-            {_(
-              "The configuration has been updated externally. \
-Reload the page to get the latest data and avoid issues or data loss.",
-            )}
-          </Content>
-          <Button size="sm" onClick={locationReload}>
-            {_("Reload now")}
-          </Button>
-        </Alert>
-      )}
-    </AlertGroup>
+    <Popup
+      {...alertProps}
+      title={title}
+      isOpen={active}
+      backdropClassName="agm-backdrop-gray-and-blur"
+    >
+      <Content component="p">{_("The configuration has been updated externally.")}</Content>
+      <Content component="p">
+        {_("The page must be reloaded to get the latest data and avoid issues or data loss.")}
+      </Content>
+      <Popup.Actions>
+        <Popup.Confirm onClick={locationReload}>{_("Reload now")}</Popup.Confirm>
+      </Popup.Actions>
+    </Popup>
   );
 }

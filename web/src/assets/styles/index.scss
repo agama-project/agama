@@ -529,3 +529,8 @@ button:focus-visible {
 .storage-structure:has(> li:nth-child(2)) span.action-text {
   display: none;
 }
+
+.agm-backdrop-gray-and-blur {
+  background-color: rgb(0 0 0 / 30%);
+  backdrop-filter: grayscale(100%) blur(4px);
+}
