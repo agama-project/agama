@@ -57,7 +57,7 @@ const BindingSettings = ({ connection }: { connection: Connection }) => {
 
   return (
     <Page.Section
-      title={_("Binding settings")}
+      title={_("Binding")}
       pfCardProps={{ isPlain: false, isFullHeight: false }}
       actions={
         <Link
@@ -164,64 +164,72 @@ const DevicesDetails = ({ connection }: { connection: Connection }) => {
 
 const ConnectionDetails = ({ connection }: { connection: Connection }) => {
   const gateways = [connection.gateway4, connection.gateway6];
-
   return (
     <Page.Section
-      title={_("Connection settings")}
+      title={_("Settings")}
       pfCardProps={{ isPlain: false, isFullHeight: false }}
       actions={
         <Link to={generateEncodedPath(NETWORK.editConnection, { id: connection.id })}>
-          {_("Edit")}
+          {_("Edit connection settings")}
         </Link>
       }
     >
-      <DescriptionList isHorizontal>
-        <DescriptionListGroup>
-          <DescriptionListTerm>{_("Mode")}</DescriptionListTerm>
-          <DescriptionListDescription>
-            <Flex direction={{ default: "column" }}>
-              <FlexItem>
-                {_("IPv4")} {connection.method4}
-              </FlexItem>
-              <FlexItem>
-                {_("IPv6")} {connection.method6}
-              </FlexItem>
-            </Flex>
-          </DescriptionListDescription>
-        </DescriptionListGroup>
-        <DescriptionListGroup>
-          <DescriptionListTerm>{_("Gateway")}</DescriptionListTerm>
-          <DescriptionListDescription>
-            <Flex direction={{ default: "column" }}>
-              {gateways.every((g) => isEmpty(g))
-                ? _("None set")
-                : gateways.map((g, i) => <FlexItem key={i}>{g}</FlexItem>)}
-            </Flex>
-          </DescriptionListDescription>
-        </DescriptionListGroup>
-        <DescriptionListGroup>
-          <DescriptionListTerm>{_("IP Addresses")}</DescriptionListTerm>
-          <DescriptionListDescription>
-            <Flex direction={{ default: "column" }}>
-              {isEmpty(connection.addresses)
-                ? _("None set")
-                : connection.addresses.map((ip, idx) => (
-                    <FlexItem key={idx}>{formatIp(ip)}</FlexItem>
-                  ))}
-            </Flex>
-          </DescriptionListDescription>
-        </DescriptionListGroup>
-        <DescriptionListGroup>
-          <DescriptionListTerm>{_("DNS")}</DescriptionListTerm>
-          <DescriptionListDescription>
-            <Flex direction={{ default: "column" }}>
-              {isEmpty(connection.nameservers)
-                ? _("None set")
-                : connection.nameservers.map((dns, idx) => <FlexItem key={idx}>{dns}</FlexItem>)}
-            </Flex>
-          </DescriptionListDescription>
-        </DescriptionListGroup>
-      </DescriptionList>
+      <NestedContent>
+        <Stack hasGutter>
+          <DescriptionList isHorizontal>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{_("Mode")}</DescriptionListTerm>
+              <DescriptionListDescription>
+                <Flex direction={{ default: "column" }}>
+                  <FlexItem>
+                    {_("IPv4")} {connection.method4}
+                  </FlexItem>
+                  <FlexItem>
+                    {_("IPv6")} {connection.method6}
+                  </FlexItem>
+                </Flex>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{_("Gateway")}</DescriptionListTerm>
+              <DescriptionListDescription>
+                <Flex direction={{ default: "column" }}>
+                  {gateways.every((g) => isEmpty(g))
+                    ? _("None set")
+                    : gateways.map((g, i) => <FlexItem key={i}>{g}</FlexItem>)}
+                </Flex>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{_("IP Addresses")}</DescriptionListTerm>
+              <DescriptionListDescription>
+                <Flex direction={{ default: "column" }}>
+                  {isEmpty(connection.addresses)
+                    ? _("None set")
+                    : connection.addresses.map((ip, idx) => (
+                        <FlexItem key={idx}>{formatIp(ip)}</FlexItem>
+                      ))}
+                </Flex>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{_("DNS")}</DescriptionListTerm>
+              <DescriptionListDescription>
+                <Flex direction={{ default: "column" }}>
+                  {isEmpty(connection.nameservers)
+                    ? _("None set")
+                    : connection.nameservers.map((dns, idx) => (
+                        <FlexItem key={idx}>{dns}</FlexItem>
+                      ))}
+                </Flex>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+          </DescriptionList>
+          <Divider />
+          <InstallationOnlySwitch connection={connection} />
+          <Divider />
+        </Stack>
+      </NestedContent>
     </Page.Section>
   );
 };
@@ -229,17 +237,16 @@ const ConnectionDetails = ({ connection }: { connection: Connection }) => {
 export default function WiredConnectionDetails({ connection }: { connection: Connection }) {
   return (
     <Grid hasGutter>
-      <GridItem md={6} order={{ default: "2", md: "1" }} rowSpan={3}>
-        <ConnectionDetails connection={connection} />
+      <GridItem md={6}>
+        <Stack hasGutter>
+          <ConnectionDetails connection={connection} />
+          <BindingSettings connection={connection} />
+        </Stack>
       </GridItem>
       <GridItem md={6} order={{ default: "1", md: "2" }}>
         <Stack hasGutter>
-          <BindingSettings connection={connection} />
           <DevicesDetails connection={connection} />
         </Stack>
-      </GridItem>
-      <GridItem md={6} order={{ default: "3" }}>
-        <InstallationOnlySwitch connection={connection} />
       </GridItem>
     </Grid>
   );

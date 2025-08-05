@@ -84,10 +84,10 @@ jest.mock("~/queries/network", () => ({
 }));
 
 describe("WiredConnectionDetails", () => {
-  describe("Connections settings", () => {
+  describe("Settings", () => {
     it("renders the connection settings", () => {
       const { rerender } = plainRender(<WiredConnectionDetails connection={mockConnection} />);
-      const section = screen.getByRole("region", { name: "Connection settings" });
+      const section = screen.getByRole("region", { name: "Settings" });
 
       within(section).getByText("IPv4 auto");
       within(section).getByText("IPv6 auto");
@@ -120,10 +120,16 @@ describe("WiredConnectionDetails", () => {
       within(section).getByText("4.4.4.4");
     });
 
+    it("renders the switch for making connection available only during installation", () => {
+      plainRender(<WiredConnectionDetails connection={mockConnection} />);
+      const section = screen.getByRole("region", { name: "Settings" });
+      within(section).getByText("InstallationOnlySwitch mock");
+    });
+
     it("renders link for editing connection", () => {
       plainRender(<WiredConnectionDetails connection={mockConnection} />);
-      const section = screen.getByRole("region", { name: "Connection settings" });
-      const editLink = within(section).getByRole("link", { name: "Edit" });
+      const section = screen.getByRole("region", { name: "Settings" });
+      const editLink = within(section).getByRole("link", { name: "Edit connection settings" });
       expect(editLink).toHaveAttribute("href", "/network/connections/Network%20%231/edit");
     });
   });
@@ -133,7 +139,7 @@ describe("WiredConnectionDetails", () => {
       const { rerender } = plainRender(
         <WiredConnectionDetails connection={new Connection("Network #1")} />,
       );
-      const section = screen.getByRole("region", { name: "Binding settings" });
+      const section = screen.getByRole("region", { name: "Binding" });
       within(section).getByText("Connection is bind to any interface.");
       rerender(
         <WiredConnectionDetails
@@ -149,7 +155,7 @@ describe("WiredConnectionDetails", () => {
 
     it("renders a link to for editing binding settings", () => {
       plainRender(<WiredConnectionDetails connection={mockConnection} />);
-      const section = screen.getByRole("region", { name: "Binding settings" });
+      const section = screen.getByRole("region", { name: "Binding" });
       const editLink = within(section).getByRole("link", { name: "Edit binding settings" });
       expect(editLink).toHaveAttribute("href", "/network/connections/Network%20%231/binding/edit");
     });
@@ -191,10 +197,5 @@ describe("WiredConnectionDetails", () => {
         within(section).getByText("47:3F:0C:DB:D9:71");
       });
     });
-  });
-
-  it("renders the switch for making connection available only during installation", () => {
-    plainRender(<WiredConnectionDetails connection={mockConnection} />);
-    screen.getByText("InstallationOnlySwitch mock");
   });
 });
