@@ -20,8 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
-import { Alert, ExpandableSection, Stack } from "@patternfly/react-core";
+import React, { useState } from "react";
+import { Alert, ExpandableSection, Skeleton, Stack } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
@@ -29,10 +29,20 @@ import { ProposalActionsDialog } from "~/components/storage";
 import { _, n_, formatList } from "~/i18n";
 import { useActions, useDevices } from "~/queries/storage";
 import { sprintf } from "sprintf-js";
-import { useInstallerClient } from "~/context/installer";
-import { isNullish } from "radashi";
-import { StorageDevice } from "~/types/storage";
-import { Action } from "~/api/storage/types";
+
+/**
+ * @todo Create a component for rendering a customized skeleton
+ */
+const ResultSkeleton = () => (
+  <Stack hasGutter>
+    <Skeleton
+      screenreaderText={_("Waiting for information about storage configuration")}
+      width="80%"
+    />
+    <Skeleton width="65%" />
+    <Skeleton width="70%" />
+  </Stack>
+);
 
 /**
  * Renders information about delete actions
@@ -99,39 +109,17 @@ function ActionsList({ manager }: ActionsListProps) {
   );
 }
 
-type Result = {
-  system: StorageDevice[];
-  staging: StorageDevice[];
-  actions: Action[];
+export type ProposalResultSectionProps = {
+  isLoading?: boolean;
 };
 
-const useProposalResult = () => {
-  const client = useInstallerClient();
+export default function ProposalResultSection({ isLoading = false }: ProposalResultSectionProps) {
   const system = useDevices("system", { suspense: true });
   const staging = useDevices("result", { suspense: true });
   const actions = useActions();
-  const [result, setResult] = useState<Result>();
-
-  useEffect(() => {
-    if (isNullish(result) && [system, staging, actions].every((e) => e)) {
-      setResult({ system, staging, actions });
-    }
-  }, [result, system, staging, actions]);
-
-  useEffect(() => {
-    return client.onEvent((event) => {
-      event.type === "StorageChanged" &&
-        event.clientId === client.id &&
-        setResult({ system, staging, actions });
-    });
-  }, [client, result, system, staging, actions]);
-
-  return { system, staging, actions };
-};
-
-export default function ProposalResultSection() {
-  const { system, staging, actions } = useProposalResult();
   const devicesManager = new DevicesManager(system, staging, actions);
+
+  if (isLoading) return <ResultSkeleton />;
 
   return (
     <Page.Section
