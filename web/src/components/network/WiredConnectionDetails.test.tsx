@@ -72,6 +72,33 @@ describe("WiredConnectionDetails", () => {
     within(section).getByText("AA:11:22:33:44::FF");
   });
 
+  describe("Binding settings section", () => {
+    it("renders information aobut the binding mode", () => {
+      const { rerender } = plainRender(
+        <WiredConnectionDetails connection={new Connection("Network #1")} />,
+      );
+      const section = screen.getByRole("region", { name: "Binding settings" });
+      within(section).getByText("Connection is bind to any interface.");
+      rerender(
+        <WiredConnectionDetails
+          connection={new Connection("Network #1", { macAddress: "AA:11:22:33:44::FF" })}
+        />,
+      );
+      within(section).getByText("Connection is bind by MAC address to AA:11:22:33:44::FF.");
+      rerender(
+        <WiredConnectionDetails connection={new Connection("Network #1", { iface: "enp1s0" })} />,
+      );
+      within(section).getByText("Connection is bind by interface name to enp1s0.");
+    });
+
+    it("renders a link to for editing binding settings", () => {
+      plainRender(<WiredConnectionDetails connection={mockConnection} />);
+      const section = screen.getByRole("region", { name: "Binding settings" });
+      const editLink = within(section).getByRole("link", { name: "Edit binding settings" });
+      expect(editLink).toHaveAttribute("href", "/network/connections/Network%20%231/binding/edit");
+    });
+  });
+
   it("renders the IP data", () => {
     plainRender(<WiredConnectionDetails connection={mockConnection} />);
     const section = screen.getByRole("region", { name: "IP settings" });

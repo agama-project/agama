@@ -34,10 +34,11 @@ import {
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
 import { useConnection, useConnectionMutation, useNetworkDevices } from "~/queries/network";
-import { Connection, Device } from "~/types/network";
+import { Connection, ConnectionBindingMode, Device } from "~/types/network";
 import Radio from "~/components/core/RadioEnhanced";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import { connectionBindingMode } from "~/utils/network";
 
 type DevicesSelectProps = Omit<FormSelectProps, "children" | "ref"> & {
   /**
@@ -83,13 +84,7 @@ function DevicesSelect({
  * Represents the form state.
  */
 type FormState = {
-  /**
-   * The  binding mode for the connection
-   *  - "none":  No specific interface binding.
-   *  - "mac":   Bind to a specific MAC address.
-   *  - "iface": Bind to a specific interface name.
-   */
-  mode: "none" | "mac" | "iface";
+  mode: ConnectionBindingMode;
   /** The selected interface name for "iface" mode */
   iface: Device["name"];
   /** The selected MAC address for "mac" mode */
@@ -124,19 +119,6 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
 };
 
 /**
- * Calculates the initial binding mode for the form based on connection data.
- */
-const initialMode = (connection: Connection): FormState["mode"] => {
-  if (connection.macAddress) {
-    return "mac";
-  } else if (connection.iface) {
-    return "iface";
-  } else {
-    return "none";
-  }
-};
-
-/**
  * Allows to configure how a network connection is associated with a specific
  * network interface.
  *
@@ -150,7 +132,7 @@ export default function BindingSettingsForm() {
   const devices = useNetworkDevices();
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(formReducer, {
-    mode: initialMode(connection),
+    mode: connectionBindingMode(connection),
     mac: connection.macAddress || devices[0].macAddress,
     iface: connection.iface || devices[0].name,
   });

@@ -22,6 +22,7 @@
 
 import React from "react";
 import {
+  Content,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -35,29 +36,51 @@ import {
 import { Link, Page } from "~/components/core";
 import InstallationOnlySwitch from "./InstallationOnlySwitch";
 import { Connection, Device } from "~/types/network";
-import { formatIp } from "~/utils/network";
+import { connectionBindingMode, formatIp } from "~/utils/network";
 import { NETWORK } from "~/routes/paths";
 import { useNetworkDevices } from "~/queries/network";
 import { generateEncodedPath } from "~/utils";
+import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
-const DeviceDetails = ({ device }: { device: Device }) => {
-  if (!device) return;
+const BINDING_MODES = {
+  none: _("to any interface"),
+  mac: _("by MAC address"),
+  iface: _("by interface name"),
+};
+
+const BindingSettings = ({ connection }: { connection: Connection }) => {
+  const bindingMode = connectionBindingMode(connection);
+  const bindingInfo = bindingMode === "iface" ? connection.iface : connection.macAddress;
 
   return (
     <Page.Section
-      title={_("Device")}
+      title={_("Binding settings")}
       pfCardProps={{ isPlain: false, isFullHeight: false }}
       actions={
         <Link
           to={generateEncodedPath(NETWORK.editBindingSettings, {
-            id: device.connection,
+            id: connection.id,
           })}
         >
           {_("Edit binding settings")}
         </Link>
       }
     >
+      <Content isEditorial>
+        {bindingMode === "none"
+          ? sprintf(_("Connection is bind %s."), BINDING_MODES[bindingMode])
+          : sprintf(_("Connection is bind %s to %s."), BINDING_MODES[bindingMode], bindingInfo)}
+      </Content>
+    </Page.Section>
+  );
+};
+
+const DeviceDetails = ({ device }: { device: Device }) => {
+  if (!device) return;
+
+  return (
+    <Page.Section title={_("Device")} pfCardProps={{ isPlain: false, isFullHeight: false }}>
       <DescriptionList aria-label={_("Device details")} isHorizontal>
         <DescriptionListGroup>
           <DescriptionListTerm>{_("Interface")}</DescriptionListTerm>
@@ -161,6 +184,7 @@ export default function WiredConnectionDetails({ connection }: { connection: Con
       </GridItem>
       <GridItem md={6} order={{ default: "1", md: "2" }}>
         <Stack hasGutter>
+          <BindingSettings connection={connection} />
           <DeviceDetails device={device} />
         </Stack>
       </GridItem>
