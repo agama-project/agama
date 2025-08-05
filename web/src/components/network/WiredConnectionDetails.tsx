@@ -41,6 +41,7 @@ import { connectionBindingMode, formatIp } from "~/utils/network";
 import { NETWORK } from "~/routes/paths";
 import { useNetworkDevices } from "~/queries/network";
 import { generateEncodedPath } from "~/utils";
+import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
@@ -161,15 +162,15 @@ const DevicesDetails = ({ connection }: { connection: Connection }) => {
   );
 };
 
-const IpDetails = ({ connection, device }: { connection: Connection; device: Device }) => {
-  if (!device) return;
+const ConnectionDetails = ({ connection }: { connection: Connection }) => {
+  const gateways = [connection.gateway4, connection.gateway6];
 
   return (
     <Page.Section
-      title={_("IP settings")}
+      title={_("Connection settings")}
       pfCardProps={{ isPlain: false, isFullHeight: false }}
       actions={
-        <Link to={generateEncodedPath(NETWORK.editConnection, { id: device.connection })}>
+        <Link to={generateEncodedPath(NETWORK.editConnection, { id: connection.id })}>
           {_("Edit")}
         </Link>
       }
@@ -192,8 +193,9 @@ const IpDetails = ({ connection, device }: { connection: Connection; device: Dev
           <DescriptionListTerm>{_("Gateway")}</DescriptionListTerm>
           <DescriptionListDescription>
             <Flex direction={{ default: "column" }}>
-              <FlexItem>{device.gateway4}</FlexItem>
-              <FlexItem>{device.gateway6}</FlexItem>
+              {gateways.every((g) => isEmpty(g))
+                ? _("None set")
+                : gateways.map((g, i) => <FlexItem key={i}>{g}</FlexItem>)}
             </Flex>
           </DescriptionListDescription>
         </DescriptionListGroup>
@@ -201,9 +203,11 @@ const IpDetails = ({ connection, device }: { connection: Connection; device: Dev
           <DescriptionListTerm>{_("IP Addresses")}</DescriptionListTerm>
           <DescriptionListDescription>
             <Flex direction={{ default: "column" }}>
-              {device.addresses.map((ip, idx) => (
-                <FlexItem key={idx}>{formatIp(ip)}</FlexItem>
-              ))}
+              {isEmpty(connection.addresses)
+                ? _("None set")
+                : connection.addresses.map((ip, idx) => (
+                    <FlexItem key={idx}>{formatIp(ip)}</FlexItem>
+                  ))}
             </Flex>
           </DescriptionListDescription>
         </DescriptionListGroup>
@@ -211,19 +215,9 @@ const IpDetails = ({ connection, device }: { connection: Connection; device: Dev
           <DescriptionListTerm>{_("DNS")}</DescriptionListTerm>
           <DescriptionListDescription>
             <Flex direction={{ default: "column" }}>
-              {device.nameservers.map((dns, idx) => (
-                <FlexItem key={idx}>{dns}</FlexItem>
-              ))}
-            </Flex>
-          </DescriptionListDescription>
-        </DescriptionListGroup>
-        <DescriptionListGroup>
-          <DescriptionListTerm>{_("Routes")}</DescriptionListTerm>
-          <DescriptionListDescription>
-            <Flex direction={{ default: "column" }}>
-              {device.routes4.map((route, idx) => (
-                <FlexItem key={idx}>{formatIp(route.destination)}</FlexItem>
-              ))}
+              {isEmpty(connection.nameservers)
+                ? _("None set")
+                : connection.nameservers.map((dns, idx) => <FlexItem key={idx}>{dns}</FlexItem>)}
             </Flex>
           </DescriptionListDescription>
         </DescriptionListGroup>
@@ -233,16 +227,10 @@ const IpDetails = ({ connection, device }: { connection: Connection; device: Dev
 };
 
 export default function WiredConnectionDetails({ connection }: { connection: Connection }) {
-  const devices = useNetworkDevices();
-
-  const device = devices.find(
-    ({ connection: deviceConnectionId }) => deviceConnectionId === connection.id,
-  );
-
   return (
     <Grid hasGutter>
       <GridItem md={6} order={{ default: "2", md: "1" }} rowSpan={3}>
-        <IpDetails device={device} connection={connection} />
+        <ConnectionDetails connection={connection} />
       </GridItem>
       <GridItem md={6} order={{ default: "1", md: "2" }}>
         <Stack hasGutter>

@@ -84,6 +84,50 @@ jest.mock("~/queries/network", () => ({
 }));
 
 describe("WiredConnectionDetails", () => {
+  describe("Connections settings", () => {
+    it("renders the connection settings", () => {
+      const { rerender } = plainRender(<WiredConnectionDetails connection={mockConnection} />);
+      const section = screen.getByRole("region", { name: "Connection settings" });
+
+      within(section).getByText("IPv4 auto");
+      within(section).getByText("IPv6 auto");
+      // None other settings set
+      within(section).queryAllByText("None set");
+
+      rerender(
+        <WiredConnectionDetails
+          connection={
+            new Connection("Network #1", {
+              state: ConnectionState.activated,
+              iface: "enp1s0",
+              addresses: [{ address: "192.168.0.0", prefix: "24" }, { address: "192.168.20.20" }],
+              gateway4: "100.100.100.4",
+              gateway6: "200.200.200.6",
+              nameservers: ["4.4.4.4"],
+            })
+          }
+        />,
+      );
+
+      // IPs
+      within(section).getByText("192.168.0.0/24");
+      within(section).getByText("192.168.20.20");
+      // Gateway 4
+      within(section).getByText("100.100.100.4");
+      // Gateway 6
+      within(section).getByText("200.200.200.6");
+      // DNS
+      within(section).getByText("4.4.4.4");
+    });
+
+    it("renders link for editing connection", () => {
+      plainRender(<WiredConnectionDetails connection={mockConnection} />);
+      const section = screen.getByRole("region", { name: "Connection settings" });
+      const editLink = within(section).getByRole("link", { name: "Edit" });
+      expect(editLink).toHaveAttribute("href", "/network/connections/Network%20%231/edit");
+    });
+  });
+
   describe("Binding settings section", () => {
     it("renders information aobut the binding mode", () => {
       const { rerender } = plainRender(
@@ -147,28 +191,6 @@ describe("WiredConnectionDetails", () => {
         within(section).getByText("47:3F:0C:DB:D9:71");
       });
     });
-  });
-
-  it("renders the IP data", () => {
-    plainRender(<WiredConnectionDetails connection={mockConnection} />);
-    const section = screen.getByRole("region", { name: "IP settings" });
-    within(section).getByText("IPv4 auto");
-    within(section).getByText("IPv6 auto");
-    // IP
-    within(section).getByText("192.168.69.201/24");
-    // DNS
-    within(section).getByText("192.168.69.100");
-    // Gateway 4
-    within(section).getByText("192.168.69.4");
-    // Gateway 6
-    within(section).getByText("192.168.69.6");
-  });
-
-  it("renders link for editing connection", () => {
-    plainRender(<WiredConnectionDetails connection={mockConnection} />);
-    const section = screen.getByRole("region", { name: "IP settings" });
-    const editLink = within(section).getByRole("link", { name: "Edit" });
-    expect(editLink).toHaveAttribute("href", "/network/connections/Network%20%231/edit");
   });
 
   it("renders the switch for making connection available only during installation", () => {
