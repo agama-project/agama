@@ -45,7 +45,6 @@ import ProposalFailedInfo from "./ProposalFailedInfo";
 import ProposalResultSection from "./ProposalResultSection";
 import ProposalTransactionalInfo from "./ProposalTransactionalInfo";
 import UnsupportedModelInfo from "./UnsupportedModelInfo";
-import AlertOutOfSync from "~/components/core/AlertOutOfSync";
 import { useAvailableDevices } from "~/hooks/storage/system";
 import {
   useResetConfigMutation,
@@ -260,7 +259,6 @@ export default function ProposalPage(): React.ReactNode {
         <Content component="h2">{_("Storage")}</Content>
       </Page.Header>
       <Page.Content>
-        <AlertOutOfSync scope={"Storage"} />
         {isDeprecated && <Loading text={_("Reloading data, please wait...")} />}
         {!isDeprecated && !showSections && <ProposalEmptyState />}
         {!isDeprecated && showSections && <ProposalSections />}
