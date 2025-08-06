@@ -21,7 +21,7 @@
  */
 
 import React, { act } from "react";
-import { screen } from "@testing-library/dom";
+import { screen, within } from "@testing-library/dom";
 import { installerRender, plainRender } from "~/test-utils";
 import AlertOutOfSync from "./AlertOutOfSync";
 
@@ -82,31 +82,29 @@ describe("AlertOutOfSync", () => {
     installerRender(<AlertOutOfSync scope="Watched" />);
 
     // Should not render the alert initially
-    expect(screen.queryByText("Info alert:")).toBeNull();
+    expect(screen.queryByRole("dialog")).toBeNull();
 
     // Simulate a change event for a different scope
     act(() => {
       eventCallback({ type: "NotWatchedChanged", clientId: "other-client" });
     });
 
-    expect(screen.queryByText("Info alert:")).toBeNull();
+    expect(screen.queryByRole("dialog")).toBeNull();
 
     // Simulate a change event for the subscribed scope, from current client
     act(() => {
       eventCallback({ type: "WatchedChanged", clientId: "current-client" });
     });
 
-    expect(screen.queryByText("Info alert:")).toBeNull();
+    expect(screen.queryByRole("dialog")).toBeNull();
 
     // Simulate a change event for the subscribed scope, from different client
     act(() => {
       eventCallback({ type: "WatchedChanged", clientId: "other-client" });
     });
 
-    screen.getByText("Info alert:");
-    screen.getByText("Configuration out of sync");
-    screen.getByText(/issues or data loss/);
-    screen.getByRole("button", { name: "Reload now" });
+    const dialog = screen.getByRole("dialog", { name: "Configuration out of sync" });
+    within(dialog).getByRole("button", { name: "Reload now" });
   });
 
   it("dismisses automatically the alert on matching changes event from current client for subscribed scope", () => {
@@ -123,17 +121,14 @@ describe("AlertOutOfSync", () => {
       eventCallback({ type: "WatchedChanged", clientId: "other-client" });
     });
 
-    screen.getByText("Info alert:");
-    screen.getByText("Configuration out of sync");
-    screen.getByText(/issues or data loss/);
-    screen.getByRole("button", { name: "Reload now" });
+    screen.getByRole("dialog", { name: "Configuration out of sync" });
 
     // Simulate a change event for the subscribed scope, from current client
     act(() => {
       eventCallback({ type: "WatchedChanged", clientId: "current-client" });
     });
 
-    expect(screen.queryByText("Info alert:")).toBeNull();
+    expect(screen.queryByRole("dialog")).toBeNull();
   });
 
   it("triggers a location relaod when clicking on `Reload now`", async () => {

@@ -45,7 +45,7 @@ const USER_TOKEN_PATH: &str = ".local/agama/token";
 const AGAMA_TOKEN_FILE: &str = "/run/agama/token";
 
 use std::{
-    fmt::Display,
+    fmt,
     fs::{self, File},
     io::{self, BufRead, BufReader, Write},
     os::unix::fs::OpenOptionsExt,
@@ -184,8 +184,8 @@ impl AuthToken {
     }
 }
 
-impl Display for AuthToken {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl fmt::Display for AuthToken {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
     }
 }
@@ -222,6 +222,16 @@ pub struct ClientId(Uuid);
 impl ClientId {
     pub fn new() -> Self {
         ClientId(Uuid::new_v4())
+    }
+
+    pub fn new_from_uuid(uuid: Uuid) -> Self {
+        ClientId(uuid)
+    }
+}
+
+impl fmt::Display for ClientId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
 

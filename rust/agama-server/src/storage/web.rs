@@ -48,6 +48,7 @@ use iscsi::storage_iscsi_service;
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
 use tokio_stream::{Stream, StreamExt};
+use uuid::Uuid;
 use zfcp::{zfcp_service, zfcp_stream};
 
 pub mod dasd;
@@ -67,10 +68,16 @@ use crate::{
 };
 
 pub async fn storage_streams(dbus: zbus::Connection) -> Result<EventStreams, Error> {
-    let mut result: EventStreams = vec![(
-        "devices_dirty",
-        Box::pin(devices_dirty_stream(dbus.clone()).await?),
-    )];
+    let mut result: EventStreams = vec![
+        (
+            "devices_dirty",
+            Box::pin(devices_dirty_stream(dbus.clone()).await?),
+        ),
+        (
+            "configured",
+            Box::pin(configured_stream(dbus.clone()).await?),
+        ),
+    ];
     let mut iscsi = iscsi_stream(&dbus).await?;
     let mut dasd = dasd_stream(&dbus).await?;
     let mut zfcp = zfcp_stream(&dbus).await?;
@@ -93,6 +100,19 @@ async fn devices_dirty_stream(dbus: zbus::Connection) -> Result<impl Stream<Item
             None
         })
         .filter_map(|e| e);
+    Ok(stream)
+}
+
+async fn configured_stream(dbus: zbus::Connection) -> Result<impl Stream<Item = Event>, Error> {
+    let proxy = Storage1Proxy::new(&dbus).await?;
+    let stream = proxy.receive_configured().await?.filter_map(|signal| {
+        if let Ok(args) = signal.args() {
+            if let Ok(uuid) = Uuid::parse_str(args.client_id) {
+                return Some(event!(StorageChanged, &ClientId::new_from_uuid(uuid)));
+            }
+        }
+        None
+    });
     Ok(stream)
 }
 
@@ -197,11 +217,12 @@ async fn get_config(
 )]
 async fn set_config(
     State(state): State<StorageState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
     Json(settings): Json<StorageSettings>,
 ) -> Result<Json<()>, Error> {
     let _status: u32 = state
         .client
-        .set_config(settings)
+        .set_config(settings, client_id.to_string())
         .await
         .map_err(Error::Service)?;
     Ok(Json(()))
@@ -246,8 +267,15 @@ async fn get_config_model(
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
-async fn reset_config(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
-    let _status: u32 = state.client.reset_config().await.map_err(Error::Service)?;
+async fn reset_config(
+    State(state): State<StorageState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
+) -> Result<Json<()>, Error> {
+    let _status: u32 = state
+        .client
+        .reset_config(client_id.to_string())
+        .await
+        .map_err(Error::Service)?;
     Ok(Json(()))
 }
 
@@ -268,11 +296,12 @@ async fn reset_config(State(state): State<StorageState<'_>>) -> Result<Json<()>,
 )]
 async fn set_config_model(
     State(state): State<StorageState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
     Json(model): Json<Box<RawValue>>,
 ) -> Result<Json<()>, Error> {
     let _status: u32 = state
         .client
-        .set_config_model(model)
+        .set_config_model(model, client_id.to_string())
         .await
         .map_err(Error::Service)?;
     Ok(Json(()))
@@ -319,8 +348,11 @@ struct SolveModelQuery {
     ),
     operation_id = "storage_probe"
 )]
-async fn probe(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
-    Ok(Json(state.client.probe().await?))
+async fn probe(
+    State(state): State<StorageState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
+) -> Result<Json<()>, Error> {
+    Ok(Json(state.client.probe(client_id.to_string()).await?))
 }
 
 /// Reprobes the storage devices.
@@ -334,8 +366,11 @@ async fn probe(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error>
     ),
     operation_id = "storage_reprobe"
 )]
-async fn reprobe(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
-    Ok(Json(state.client.reprobe().await?))
+async fn reprobe(
+    State(state): State<StorageState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
+) -> Result<Json<()>, Error> {
+    Ok(Json(state.client.reprobe(client_id.to_string()).await?))
 }
 
 /// Reactivate the storage devices.
@@ -349,8 +384,11 @@ async fn reprobe(State(state): State<StorageState<'_>>) -> Result<Json<()>, Erro
     ),
     operation_id = "storage_reactivate"
 )]
-async fn reactivate(State(state): State<StorageState<'_>>) -> Result<Json<()>, Error> {
-    Ok(Json(state.client.reactivate().await?))
+async fn reactivate(
+    State(state): State<StorageState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
+) -> Result<Json<()>, Error> {
+    Ok(Json(state.client.reactivate(client_id.to_string()).await?))
 }
 
 /// Gets whether the system is in a deprecated status.

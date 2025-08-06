@@ -70,7 +70,6 @@ module Agama
         @bootloader = Bootloader.new(logger)
 
         register_progress_callbacks
-        register_proposal_callbacks
       end
 
       # Whether the system is in a deprecated status
@@ -115,6 +114,14 @@ module Agama
         @on_probe_callbacks << block
       end
 
+      # Registers a callback to be called when storage is configured.
+      #
+      # @param block [Proc]
+      def on_configure(&block)
+        @on_configure_callbacks ||= []
+        @on_configure_callbacks << block
+      end
+
       # Probes storage devices and performs an initial proposal
       #
       # @param keep_config [Boolean] Whether to use the current storage config for calculating the
@@ -137,7 +144,10 @@ module Agama
 
         progress.step { activate_devices(keep_activation: keep_activation) }
         progress.step { probe_devices }
-        progress.step { calculate_proposal(keep_config: keep_config) }
+        progress.step do
+          config_json = proposal.storage_json if keep_config
+          configure(config_json)
+        end
 
         # The system is not deprecated anymore
         self.deprecated_system = false
@@ -169,13 +179,16 @@ module Agama
         Finisher.new(logger, product_config, security).run
       end
 
-      # Calculates the proposal.
+      # Configures storage.
       #
-      # @param keep_config [Boolean] Whether to use the current storage config for calculating the
-      #   proposal. If false, then the default config from the product is used.
-      def calculate_proposal(keep_config: false)
-        config_json = proposal.storage_json if keep_config
-        Configurator.new(proposal).configure(config_json)
+      # @param config_json [Hash, nil] Storage config according to the JSON schema. If nil, then
+      #   the default config is applied.
+      # @return [Boolean] Whether storage was successfully configured.
+      def configure(config_json = nil)
+        result = Configurator.new(proposal).configure(config_json)
+        update_issues
+        @on_configure_callbacks&.each(&:call)
+        result
       end
 
       # Storage proposal manager
@@ -243,11 +256,6 @@ module Agama
 
       def register_progress_callbacks
         on_progress_change { logger.info(progress.to_s) }
-      end
-
-      # Issues are updated when the proposal is calculated
-      def register_proposal_callbacks
-        proposal.on_calculate { update_issues }
       end
 
       # Activates the devices, calling activation callbacks if needed
