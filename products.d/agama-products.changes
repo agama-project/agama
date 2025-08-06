@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Aug  6 12:44:13 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Drop Beta from Leap 16.0.
+  We've agreed to not use RC and simply go with Leap 16.0
+  just like on boot menu. 
+
+-------------------------------------------------------------------
 Thu Jul 31 07:44:04 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Remove selinux policy from products definition as it is noop
