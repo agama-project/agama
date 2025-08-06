@@ -28,7 +28,7 @@ import { _ } from "~/i18n";
 import { locationReload } from "~/utils";
 import Popup, { PopupProps } from "~/components/core/Popup";
 
-type AlertOutOfSyncProps = Partial<PopupProps> & {
+type AlertOutOfSyncProps = Partial<Omit<PopupProps, "title" | "isOpen" | "backdropClassName">> & {
   /**
    * The scope to listen for change events on (e.g., `SoftwareProposal`,
    * `L10nConfig`).
@@ -37,18 +37,13 @@ type AlertOutOfSyncProps = Partial<PopupProps> & {
 };
 
 /**
- * Reactive alert shown when the configuration for a given scope has been
- * changed externally.
+ * Reactive alert shown when the configuration for a given scope has been changed externally.
  *
- * It warns that the interface may be out of sync and forces reloading
- * before continuing to avoid issues and data loss.
+ * It warns that the interface may be out of sync and forces reloading before continuing to avoid
+ * issues and data loss.
  *
- * It works by listening for "Changed" events on the specified scope:
- *
- * - Displays a popup if the event originates from a different client
- *   (based on client ID).
- * - Automatically dismisses the alert if a subsequent event originates from
- *   the current client.
+ * It works by listening for "Changed" events on the specified scope and displays a popup if the
+ * event originates from a different client (based on client ID).
  *
  * @example
  * ```tsx
@@ -84,7 +79,7 @@ export default function AlertOutOfSync({ scope, ...alertProps }: AlertOutOfSyncP
     >
       <Content component="p">{_("The configuration has been updated externally.")}</Content>
       <Content component="p">
-        {_("The page must be reloaded to get the latest data and avoid issues or data loss.")}
+        {_("Reloading is required to get the latest data and avoid issues or data loss.")}
       </Content>
       <Popup.Actions>
         <Popup.Confirm onClick={locationReload}>{_("Reload now")}</Popup.Confirm>
