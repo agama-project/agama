@@ -1022,6 +1022,11 @@
           "title": "List of user-selected patterns to add to the list",
           "type": "array",
           "items": { "type": "string" }
+        },
+        "remove": {
+          "title": "List of user-selected patterns to remove from the list",
+          "type": "array",
+          "items": { "type": "string" }
         }
       }
     }
