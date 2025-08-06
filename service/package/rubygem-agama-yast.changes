@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug  6 12:47:13 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Emit D-Bus signal when storage is configured, including the
+  client id (gh#agama-project/agama#2640).
+
+-------------------------------------------------------------------
 Tue Aug  5 14:01:23 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Fix MD RAID config checker to avoid generating a list of issues
