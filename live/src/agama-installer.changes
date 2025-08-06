@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 31 16:58:42 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Boot by default from disk to avoid endless loop in unattended
+  installation (bsc#1247438)
+
+-------------------------------------------------------------------
 Sun Jul 27 09:44:04 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
 
 - Do not fail if there are no rpm scriptlets to clean

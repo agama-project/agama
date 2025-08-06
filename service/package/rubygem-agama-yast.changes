@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Tue Aug  5 14:01:23 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Fix MD RAID config checker to avoid generating a list of issues
+  including a false value (bsc#1247557, bsc#1247585).
+
+-------------------------------------------------------------------
+Thu Jul 31 07:34:52 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Do not set selinux policy during installation and lets keep
+  defaults provided by packages
+  (bsc#1247046)
+
+-------------------------------------------------------------------
 Thu Jul 24 21:09:25 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Make encryption work with whole formatted devices (bsc#1246939).
