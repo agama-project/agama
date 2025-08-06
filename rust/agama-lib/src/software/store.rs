@@ -23,8 +23,8 @@
 use std::collections::HashMap;
 
 use super::{
-    http_client::SoftwareHTTPClientError, model::SoftwareConfig, SoftwareHTTPClient,
-    SoftwareSettings,
+    http_client::SoftwareHTTPClientError, model::SoftwareConfig, settings::PatternsDefinition,
+    SoftwareHTTPClient, SoftwareSettings,
 };
 use crate::http::BaseHTTPClient;
 
@@ -54,7 +54,10 @@ impl SoftwareStore {
             patterns: if patterns.is_empty() {
                 None
             } else {
-                Some(patterns)
+                Some(PatternsDefinition {
+                    set: Some(patterns),
+                    ..Default::default()
+                })
             },
             packages: config.packages,
             extra_repositories: config.extra_repositories,
@@ -63,10 +66,45 @@ impl SoftwareStore {
     }
 
     pub async fn store(&self, settings: &SoftwareSettings) -> SoftwareStoreResult<()> {
-        let patterns: Option<HashMap<String, bool>> = settings
-            .patterns
-            .clone()
-            .map(|pat| pat.iter().map(|n| (n.to_owned(), true)).collect());
+        let patterns: Option<HashMap<String, bool>> =
+            if let Some(patterns) = settings.patterns.clone() {
+                let mut current_patterns: Vec<String>;
+
+                if let Some(patterns_set) = patterns.set {
+                    current_patterns = patterns_set;
+                } else {
+                    current_patterns = self.software_client.user_selected_patterns().await?;
+
+                    if let Some(patterns_add) = patterns.add {
+                        for pattern in patterns_add {
+                            if !current_patterns.contains(&pattern) {
+                                current_patterns.push(pattern);
+                            }
+                        }
+                    }
+
+                    if let Some(patterns_remove) = patterns.remove {
+                        let mut new_patterns: Vec<String> = vec![];
+
+                        for pattern in current_patterns {
+                            if !patterns_remove.contains(&pattern) {
+                                new_patterns.push(pattern)
+                            }
+                        }
+
+                        current_patterns = new_patterns;
+                    }
+                }
+
+                Some(
+                    current_patterns
+                        .iter()
+                        .map(|n| (n.to_owned(), true))
+                        .collect(),
+                )
+            } else {
+                None
+            };
 
         let config = SoftwareConfig {
             // do not change the product
