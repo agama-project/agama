@@ -19,11 +19,18 @@
 // find current contact information at www.suse.com.
 
 //! Implements the store for the product settings.
+use std::{thread, time};
+
 use super::{http_client::ProductHTTPClientError, ProductHTTPClient, ProductSettings};
 use crate::{
     http::BaseHTTPClient,
-    manager::http_client::{ManagerHTTPClient, ManagerHTTPClientError},
+    manager::http_client::{ManagerHTTPClient, ManagerHTTPClientError}, product::settings::AddonSettings,
 };
+
+// registration retry attempts
+const RETRY_ATTEMPTS: u32 = 3;
+// delay between attempts
+const RETRY_DELAY: time::Duration = time::Duration::from_secs(10);
 
 #[derive(Debug, thiserror::Error)]
 pub enum ProductStoreError {
@@ -96,8 +103,8 @@ impl ProductStore {
             // lets use empty string if not defined
             let reg_code = settings.registration_code.as_deref().unwrap_or("");
             let email = settings.registration_email.as_deref().unwrap_or("");
+            self.register_base_product(reg_code, email).await?;
 
-            self.product_client.register(reg_code, email).await?;
             // TODO: avoid reprobing if the system has been already registered with the same code?
             reprobe = true;
         }
@@ -105,7 +112,7 @@ impl ProductStore {
         // register the addons in the order specified in the profile
         if let Some(addons) = &settings.addons {
             for addon in addons.iter() {
-                self.product_client.register_addon(addon).await?;
+                self.register_addon(addon).await?;
             }
         }
 
@@ -116,6 +123,94 @@ impl ProductStore {
         }
 
         Ok(())
+    }
+
+    /// Register the base product
+    async fn register_base_product(
+        &self,
+        reg_code: &str,
+        email: &str,
+    ) -> Result<(), ProductHTTPClientError> {
+        // retry counter
+        let mut attempt = 0;
+        loop {
+            let result =  self.product_client.register(reg_code, email).await;
+
+            match result {
+                Err(ref error) => {
+                    match error {
+                        ProductHTTPClientError::FailedRegistration(_msg, code) => {
+                            match code {
+                                // see service/lib/agama/dbus/software/product.rb
+                                // 4 => network error, 5 => timeout error
+                                Some(4) | Some(5) => {
+                                    attempt += 1;
+                                    if attempt > RETRY_ATTEMPTS {
+                                        // still failing, report the error
+                                        return Ok(result?);
+                                    }
+
+                                    println!(
+                                        "Retrying registration in {} seconds...",
+                                        RETRY_DELAY.as_secs()
+                                    );
+                                    thread::sleep(RETRY_DELAY);
+                                }
+                                // other or unknown problem, fail
+                                _ => return Ok(result?),
+                            }
+                        }
+                        // an HTTP error, fail
+                        _ => return Ok(result?),
+                    }
+                }
+                // success, leave the loop
+                Ok(()) => return Ok(()),
+            }
+        }
+    }
+
+    /// Register an addon
+    async fn register_addon(
+        &self,
+        addon: &AddonSettings,
+    ) -> Result<(), ProductHTTPClientError> {
+        let mut attempt = 0;
+        loop {
+            let result = self.product_client.register_addon(addon).await;
+
+            match result {
+                Err(ref error) => {
+                    match error {
+                        ProductHTTPClientError::FailedRegistration(_msg, code) => {
+                            match code {
+                                // see service/lib/agama/dbus/software/product.rb
+                                // 4 => network error, 5 => timeout error
+                                Some(4) | Some(5) => {
+                                    attempt += 1;
+                                    if attempt > RETRY_ATTEMPTS {
+                                        // still failing, report the error
+                                        return Ok(result?);
+                                    }
+
+                                    println!(
+                                        "Retrying registration in {} seconds...",
+                                        RETRY_DELAY.as_secs()
+                                    );
+                                    thread::sleep(RETRY_DELAY);
+                                }
+                                // other or unknown problem, fail
+                                _ => return Ok(result?),
+                            }
+                        }
+                        // an HTTP error, fail
+                        _ => return Ok(result?),
+                    }
+                }
+                // success, leave the loop
+                Ok(()) => return Ok(()),
+            }
+        }
     }
 }
 
