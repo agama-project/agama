@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug  6 15:37:52 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Automatically retry registration when a network error happens
+  during autoinstallation (bsc#1246990)
+
+-------------------------------------------------------------------
 Mon Aug  4 09:29:29 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Do not return an Err when a connection is not activated or 
