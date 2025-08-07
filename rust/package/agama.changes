@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug  7 11:47:55 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to "add" or "remove" patterns from the current or defined
+  user selection patterns list (bsc#1247456).
+
+-------------------------------------------------------------------
 Wed Aug  6 12:52:41 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Emit HTTP event when storage is configured, including the client
@@ -9,7 +15,7 @@ Mon Aug  4 09:29:29 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Do not return an Err when a connection is not activated or 
   deactivated when adding or updating it but just log the error
-  and write the connections profiles (bs#1245548).
+  and write the connections profiles (bsc#1245548).
 
 -------------------------------------------------------------------
 Fri Aug  1 10:10:40 UTC 2025 - Martin Vidner <mvidner@suse.com>
