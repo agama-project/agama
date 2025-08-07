@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -45,7 +45,7 @@ module Agama
 
     # Default option to use as answer
     #
-    # @return [Symbol]
+    # @return [Symbol, nil]
     attr_reader :default_option
 
     # Answer of the question
@@ -59,7 +59,7 @@ module Agama
     # @return [Hash<String,String>]
     attr_reader :data
 
-    def initialize(qclass:, text:, options:, default_option:, data: {})
+    def initialize(qclass:, text:, options:, default_option: nil, data: {})
       @qclass = qclass
       @text = text
       @options = options
