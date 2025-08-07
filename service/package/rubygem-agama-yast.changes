@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Aug  7 10:57:30 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Do not use 'retry' as default answer for questions (bsc#1247436).
+
+-------------------------------------------------------------------
 Wed Aug  6 12:47:13 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Emit D-Bus signal when storage is configured, including the

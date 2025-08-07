@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021] SUSE LLC
+# Copyright (c) [2021-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -90,13 +90,12 @@ module Agama
           logger.error("Package #{current_package} failed: #{description}")
 
           question = Agama::Question.new(
-            qclass:         "software.package_error.install_error",
-            text:           description,
+            qclass:  "software.package_error.install_error",
+            text:    description,
             # FIXME: temporarily removed the "Abort" option until the final failed
             # state is handled properly
-            options:        [retry_label.to_sym, continue_label.to_sym],
-            default_option: retry_label.to_sym,
-            data:           { "package" => current_package }
+            options: [retry_label.to_sym, continue_label.to_sym],
+            data:    { "package" => current_package }
           )
 
           questions_client.ask(question) do |question_client|

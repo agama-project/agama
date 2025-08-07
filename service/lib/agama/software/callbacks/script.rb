@@ -49,11 +49,10 @@ module Agama
 
           message = _("There was a problem running a package script.")
           question = Agama::Question.new(
-            qclass:         "software.script_problem",
-            text:           message,
-            options:        [retry_label, continue_label],
-            default_option: retry_label.to_sym,
-            data:           { "details" => description }
+            qclass:  "software.script_problem",
+            text:    message,
+            options: [retry_label, continue_label],
+            data:    { "details" => description }
           )
           questions_client.ask(question) do |question_client|
             (question_client.answer == retry_label.to_sym) ? "R" : "I"

@@ -5,6 +5,12 @@ Thu Aug  7 11:47:55 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
   user selection patterns list (bsc#1247456).
 
 -------------------------------------------------------------------
+Wed Aug  6 15:37:52 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Automatically retry registration when a network error happens
+  during autoinstallation (bsc#1246990)
+
+-------------------------------------------------------------------
 Wed Aug  6 12:52:41 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Emit HTTP event when storage is configured, including the client

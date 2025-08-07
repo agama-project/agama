@@ -24,6 +24,13 @@ use crate::{
     http::BaseHTTPClient,
     manager::http_client::{ManagerHTTPClient, ManagerHTTPClientError},
 };
+use std::time;
+use tokio::time::sleep;
+
+// registration retry attempts
+const RETRY_ATTEMPTS: u32 = 4;
+// initial delay for exponential backoff in seconds, it doubles after every retry (2,4,8,16)
+const INITIAL_RETRY_DELAY: u64 = 2;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ProductStoreError {
@@ -97,7 +104,8 @@ impl ProductStore {
             let reg_code = settings.registration_code.as_deref().unwrap_or("");
             let email = settings.registration_email.as_deref().unwrap_or("");
 
-            self.product_client.register(reg_code, email).await?;
+            self.retry_registration(|| self.product_client.register(reg_code, email))
+                .await?;
             // TODO: avoid reprobing if the system has been already registered with the same code?
             reprobe = true;
         }
@@ -105,7 +113,8 @@ impl ProductStore {
         // register the addons in the order specified in the profile
         if let Some(addons) = &settings.addons {
             for addon in addons.iter() {
-                self.product_client.register_addon(addon).await?;
+                self.retry_registration(|| self.product_client.register_addon(addon))
+                    .await?;
             }
         }
 
@@ -116,6 +125,50 @@ impl ProductStore {
         }
 
         Ok(())
+    }
+
+    // shared retry logic for base product and addon registration
+    async fn retry_registration<F>(&self, block: F) -> Result<(), ProductHTTPClientError>
+    where
+        F: AsyncFn() -> Result<(), ProductHTTPClientError>,
+    {
+        // retry counter
+        let mut attempt = 0;
+        loop {
+            // call the passed block
+            let result = block().await;
+
+            match result {
+                // success, leave the loop
+                Ok(()) => return result,
+                Err(ref error) => {
+                    match error {
+                        ProductHTTPClientError::FailedRegistration(_msg, code) => {
+                            match code {
+                                // see service/lib/agama/dbus/software/product.rb
+                                // 4 => network error, 5 => timeout error
+                                Some(4) | Some(5) => {
+                                    if attempt >= RETRY_ATTEMPTS {
+                                        // still failing, report the error
+                                        return result;
+                                    }
+
+                                    // wait a bit then retry (run the loop again)
+                                    let delay = INITIAL_RETRY_DELAY << attempt;
+                                    eprintln!("Retrying registration in {} seconds...", delay);
+                                    sleep(time::Duration::from_secs(delay)).await;
+                                    attempt += 1;
+                                }
+                                // fail for other or unknown problems, retry very likely won't help
+                                _ => return result,
+                            }
+                        }
+                        // an HTTP error, fail
+                        _ => return result,
+                    }
+                }
+            }
+        }
     }
 }
 
