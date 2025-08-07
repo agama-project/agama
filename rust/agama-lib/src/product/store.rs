@@ -28,9 +28,9 @@ use std::time;
 use tokio::time::sleep;
 
 // registration retry attempts
-const RETRY_ATTEMPTS: u32 = 3;
-// delay between attempts
-const RETRY_DELAY: time::Duration = time::Duration::from_secs(10);
+const RETRY_ATTEMPTS: u32 = 4;
+// initial delay for exponential backoff in seconds, it doubles after every retry (2,4,8,16)
+const INITIAL_RETRY_DELAY: u64 = 2;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ProductStoreError {
@@ -140,7 +140,7 @@ impl ProductStore {
 
             match result {
                 // success, leave the loop
-                Ok(()) => return Ok(()),
+                Ok(()) => return result,
                 Err(ref error) => {
                     match error {
                         ProductHTTPClientError::FailedRegistration(_msg, code) => {
@@ -148,25 +148,23 @@ impl ProductStore {
                                 // see service/lib/agama/dbus/software/product.rb
                                 // 4 => network error, 5 => timeout error
                                 Some(4) | Some(5) => {
-                                    attempt += 1;
-                                    if attempt > RETRY_ATTEMPTS {
+                                    if attempt >= RETRY_ATTEMPTS {
                                         // still failing, report the error
-                                        return Ok(result?);
+                                        return result;
                                     }
 
                                     // wait a bit then retry (run the loop again)
-                                    println!(
-                                        "Retrying registration in {} seconds...",
-                                        RETRY_DELAY.as_secs()
-                                    );
-                                    sleep(RETRY_DELAY).await;
+                                    let delay = INITIAL_RETRY_DELAY << attempt;
+                                    eprintln!("Retrying registration in {} seconds...", delay);
+                                    sleep(time::Duration::from_secs(delay)).await;
+                                    attempt += 1;
                                 }
                                 // fail for other or unknown problems, retry very likely won't help
-                                _ => return Ok(result?),
+                                _ => return result,
                             }
                         }
                         // an HTTP error, fail
-                        _ => return Ok(result?),
+                        _ => return result,
                     }
                 }
             }

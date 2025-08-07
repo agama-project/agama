@@ -29,6 +29,7 @@ use super::settings::AddonSettings;
 pub enum ProductHTTPClientError {
     #[error(transparent)]
     HTTP(#[from] BaseHTTPClientError),
+    // If present, the number is already printed in the String part
     #[error("Registration failed: {0}")]
     FailedRegistration(String, Option<u32>),
 }
