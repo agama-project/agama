@@ -155,9 +155,13 @@ mod test {
 
         let store = software_store(url);
         let settings = store.load().await?;
+        let patterns_definition = PatternsDefinition {
+            set: Some(vec!["xfce".to_owned()]),
+            ..Default::default()
+        };
 
         let expected = SoftwareSettings {
-            patterns: Some(vec!["xfce".to_owned()]),
+            patterns: Some(patterns_definition),
             packages: Some(vec!["vim".to_owned()]),
             extra_repositories: None,
             only_required: None,
@@ -184,8 +188,13 @@ mod test {
         let url = server.url("/api");
 
         let store = software_store(url);
+        let patterns_definition = PatternsDefinition {
+            set: Some(vec!["xfce".to_owned()]),
+            ..Default::default()
+        };
+
         let settings = SoftwareSettings {
-            patterns: Some(vec!["xfce".to_owned()]),
+            patterns: Some(patterns_definition),
             packages: Some(vec!["vim".to_owned()]),
             extra_repositories: None,
             only_required: None,
@@ -215,8 +224,12 @@ mod test {
         let url = server.url("/api");
 
         let store = software_store(url);
+        let patterns_definition = PatternsDefinition {
+            set: Some(vec!["no_such_pattern".to_owned()]),
+            ..Default::default()
+        };
         let settings = SoftwareSettings {
-            patterns: Some(vec!["no_such_pattern".to_owned()]),
+            patterns: Some(patterns_definition),
             packages: Some(vec!["vim".to_owned()]),
             extra_repositories: None,
             only_required: None,
