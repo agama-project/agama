@@ -76,6 +76,7 @@ function buildLogicalVolume(data: data.LogicalVolume): apiModel.LogicalVolume {
 function buildPartition(data: data.Partition): apiModel.Partition {
   return {
     ...data,
+    id: data.mountPath === "/boot/efi" ? "esp" : undefined,
     filesystem: buildFilesystem(data.filesystem),
     size: buildSize(data.size),
   };
