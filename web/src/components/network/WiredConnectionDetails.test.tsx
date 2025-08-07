@@ -140,17 +140,17 @@ describe("WiredConnectionDetails", () => {
         <WiredConnectionDetails connection={new Connection("Network #1")} />,
       );
       const section = screen.getByRole("region", { name: "Binding" });
-      within(section).getByText("Connection is bind to any interface.");
+      within(section).getByText("Connection is available to all interfaces.");
       rerender(
         <WiredConnectionDetails
-          connection={new Connection("Network #1", { macAddress: "AA:11:22:33:44::FF" })}
+          connection={new Connection("Network #1", { macAddress: "AA:11:22:33:44:FF" })}
         />,
       );
-      within(section).getByText("Connection is bind by MAC address to AA:11:22:33:44::FF.");
+      within(section).getByText("Connection is bound to MAC address AA:11:22:33:44:FF.");
       rerender(
         <WiredConnectionDetails connection={new Connection("Network #1", { iface: "enp1s0" })} />,
       );
-      within(section).getByText("Connection is bind by interface name to enp1s0.");
+      within(section).getByText("Connection is bound to interface enp1s0.");
     });
 
     it("renders a link to for editing binding settings", () => {

@@ -49,16 +49,28 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
-const BINDING_MODES = {
-  none: _("to any interface"),
-  mac: _("by MAC address"),
-  iface: _("by interface name"),
+/**
+ * Returns a human-readable description of how a network connection is bound.
+ *
+ * Determines the binding mode of the given `connection` and returns a
+ * user-friendly string describing whether it is tied to a specific interface,
+ * MAC address, or available to all interfaces.
+ */
+const bindingModeFor = (connection: Connection) => {
+  const bindingMode = connectionBindingMode(connection);
+  switch (bindingMode) {
+    case "none":
+      return _("Connection is available to all interfaces.");
+    case "iface":
+      // TRANSLATORS: %s will be replaced by a network interface name, like eth0 or enp1s0
+      return sprintf(_("Connection is bound to interface %s."), connection.iface);
+    case "mac":
+      // TRANSLATORS: %s will be replaced by MAC addrss, like 7C:D7:11:28:F5:40
+      return sprintf(_("Connection is bound to MAC address %s."), connection.macAddress);
+  }
 };
 
 const BindingSettings = ({ connection }: { connection: Connection }) => {
-  const bindingMode = connectionBindingMode(connection);
-  const bindingInfo = bindingMode === "iface" ? connection.iface : connection.macAddress;
-
   return (
     <Page.Section
       title={_("Binding")}
@@ -73,11 +85,7 @@ const BindingSettings = ({ connection }: { connection: Connection }) => {
         </Link>
       }
     >
-      <Content>
-        {bindingMode === "none"
-          ? sprintf(_("Connection is bind %s."), BINDING_MODES[bindingMode])
-          : sprintf(_("Connection is bind %s to %s."), BINDING_MODES[bindingMode], bindingInfo)}
-      </Content>
+      <Content>{bindingModeFor(connection)}</Content>
     </Page.Section>
   );
 };
