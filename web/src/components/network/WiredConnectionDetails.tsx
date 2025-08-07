@@ -56,10 +56,10 @@ const bindingModeFor = (connection: Connection) => {
   const bindingMode = connectionBindingMode(connection);
   switch (bindingMode) {
     case "none":
-      return _("Connection is available to all interfaces.");
+      return _("Connection is available to all devices.");
     case "iface":
-      // TRANSLATORS: %s will be replaced by a network interface name, like eth0 or enp1s0
-      return sprintf(_("Connection is bound to interface %s."), connection.iface);
+      // TRANSLATORS: %s will be replaced by a network device name, like eth0 or enp1s0
+      return sprintf(_("Connection is bound to device %s."), connection.iface);
     case "mac":
       // TRANSLATORS: %s will be replaced by MAC addrss, like 7C:D7:11:28:F5:40
       return sprintf(_("Connection is bound to MAC address %s."), connection.macAddress);

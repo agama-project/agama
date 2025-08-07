@@ -163,7 +163,7 @@ export default function BindingSettingsForm() {
         <Content component="h2">{title}</Content>
         <SubtleContent>
           {_(
-            "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.",
+            "Choose how the connection should be associated with a network device. This helps control which device the connection uses.",
           )}
         </SubtleContent>
       </Page.Header>
@@ -174,10 +174,10 @@ export default function BindingSettingsForm() {
             <Radio
               id="binding-mode-none"
               name="binding-mode"
-              label={_("Any interface")}
+              label={_("Unbound")}
               body={
                 <SubtleContent>
-                  {_("The connection can be used by any available interface.")}
+                  {_("The connection can be used by any available device.")}
                 </SubtleContent>
               }
               isChecked={state.mode === "none"}
@@ -186,7 +186,7 @@ export default function BindingSettingsForm() {
             <Radio
               id="binding-mode-iface"
               name="binding-mode"
-              label={_("Bind to interface name")}
+              label={_("Bind to device name")}
               body={
                 <Stack hasGutter>
                   <DevicesSelect
