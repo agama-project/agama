@@ -51,10 +51,6 @@ import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacin
 
 /**
  * Returns a human-readable description of how a network connection is bound.
- *
- * Determines the binding mode of the given `connection` and returns a
- * user-friendly string describing whether it is tied to a specific interface,
- * MAC address, or available to all interfaces.
  */
 const bindingModeFor = (connection: Connection) => {
   const bindingMode = connectionBindingMode(connection);
