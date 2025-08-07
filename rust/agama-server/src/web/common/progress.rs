@@ -37,6 +37,7 @@
 
 use crate::web::{event::log_event, EventsSender};
 use agama_lib::{
+    event,
     http::Event,
     progress::{Progress, ProgressSequence},
     proxies::{ProgressChanged, ProgressProxy},
@@ -170,10 +171,10 @@ impl ProgressService {
         };
         self.cache.insert(path.to_string(), sequence.clone());
 
-        let event = Event::ProgressChanged {
+        let event = event!(ProgressChanged {
             path: path.to_string(),
             progress,
-        };
+        });
         log_event(&event);
         self.events.send(event)?;
         Ok(())

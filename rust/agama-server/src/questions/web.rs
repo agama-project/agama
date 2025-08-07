@@ -28,6 +28,7 @@
 use crate::error::Error;
 use agama_lib::{
     error::ServiceError,
+    event,
     http::Event,
     proxies::questions::{GenericQuestionProxy, QuestionWithPasswordProxy, QuestionsProxy},
     questions::{
@@ -299,11 +300,11 @@ pub async fn questions_stream(
     let add_stream = proxy
         .receive_interfaces_added()
         .await?
-        .then(|_| async move { Event::QuestionsChanged });
+        .then(|_| async move { event!(QuestionsChanged) });
     let remove_stream = proxy
         .receive_interfaces_removed()
         .await?
-        .then(|_| async move { Event::QuestionsChanged });
+        .then(|_| async move { event!(QuestionsChanged) });
     let stream = StreamExt::merge(add_stream, remove_stream);
     Ok(Box::pin(stream))
 }

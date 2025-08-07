@@ -45,7 +45,7 @@ const USER_TOKEN_PATH: &str = ".local/agama/token";
 const AGAMA_TOKEN_FILE: &str = "/run/agama/token";
 
 use std::{
-    fmt::Display,
+    fmt,
     fs::{self, File},
     io::{self, BufRead, BufReader, Write},
     os::unix::fs::OpenOptionsExt,
@@ -56,6 +56,7 @@ use chrono::{Duration, Utc};
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
+use uuid::Uuid;
 
 #[derive(Error, Debug)]
 #[error("Invalid authentication token: {0}")]
@@ -183,8 +184,8 @@ impl AuthToken {
     }
 }
 
-impl Display for AuthToken {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl fmt::Display for AuthToken {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
     }
 }
@@ -195,8 +196,10 @@ impl Display for AuthToken {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TokenClaims {
     pub exp: i64,
+    pub client_id: ClientId,
 }
 
+// FIXME: replace with TokenClaims::new, as it does not exist a "default" token.
 impl Default for TokenClaims {
     fn default() -> Self {
         let mut exp = Utc::now();
@@ -207,7 +210,28 @@ impl Default for TokenClaims {
 
         Self {
             exp: exp.timestamp(),
+            client_id: ClientId::new(),
         }
+    }
+}
+
+/// Identifies a client.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct ClientId(Uuid);
+
+impl ClientId {
+    pub fn new() -> Self {
+        ClientId(Uuid::new_v4())
+    }
+
+    pub fn new_from_uuid(uuid: Uuid) -> Self {
+        ClientId(uuid)
+    }
+}
+
+impl fmt::Display for ClientId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
 

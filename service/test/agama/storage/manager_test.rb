@@ -322,6 +322,86 @@ describe Agama::Storage::Manager do
     end
   end
 
+  describe "#configure" do
+    before do
+      allow(proposal).to receive(:issues).and_return(proposal_issues)
+      allow(proposal).to receive(:calculate_from_json)
+      allow(proposal).to receive(:storage_json).and_return(config_json)
+      allow_any_instance_of(Agama::Storage::Configurator)
+        .to receive(:generate_configs).and_return([default_config])
+    end
+
+    let(:proposal) { Agama::Storage::Proposal.new(config, logger: logger) }
+
+    let(:default_config) do
+      {
+        storage: {
+          drives: [
+            search: "/dev/vda1"
+          ]
+        }
+      }
+    end
+
+    let(:config_json) do
+      {
+        storage: {
+          drives: [
+            search: "/dev/vda2"
+          ]
+        }
+      }
+    end
+
+    let(:proposal_issues) { [Agama::Issue.new("proposal issue")] }
+
+    let(:callback) { proc {} }
+
+    it "calculates a proposal using the default config if no config is given" do
+      expect(proposal).to receive(:calculate_from_json).with(default_config)
+      storage.configure
+    end
+
+    it "calculates a proposal using the given config" do
+      expect(proposal).to receive(:calculate_from_json).with(config_json)
+      storage.configure(config_json)
+    end
+
+    it "adds the proposal issues" do
+      storage.configure
+
+      expect(storage.issues).to include(
+        an_object_having_attributes(description: /proposal issue/)
+      )
+    end
+
+    it "executes the on_configure callbacks" do
+      storage.on_configure(&callback)
+      expect(callback).to receive(:call)
+      storage.configure
+    end
+
+    context "if the proposal was correctly calculated" do
+      before do
+        allow(proposal).to receive(:success?).and_return(true)
+      end
+
+      it "returns true" do
+        expect(storage.configure).to eq(true)
+      end
+    end
+
+    context "if the proposal was not correctly calculated" do
+      before do
+        allow(proposal).to receive(:success?).and_return(false)
+      end
+
+      it "returns false" do
+        expect(storage.configure).to eq(false)
+      end
+    end
+  end
+
   describe "#install" do
     before do
       allow(y2storage_manager).to receive(:staging).and_return(proposed_devicegraph)

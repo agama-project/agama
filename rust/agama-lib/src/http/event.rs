@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::{
+    auth::ClientId,
     jobs::Job,
     localization::model::LocaleConfig,
     manager::InstallationPhase,
@@ -39,9 +40,47 @@ use std::collections::HashMap;
 
 use crate::issue::Issue;
 
+/// Agama event.
+///
+/// It represents an event that occurs in Agama.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Event {
+    /// The identifier of the client which caused the event.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub client_id: Option<ClientId>,
+    /// Event payload.
+    #[serde(flatten)]
+    pub payload: EventPayload,
+}
+
+impl Event {
+    /// Creates a new event.
+    ///
+    /// * `payload`: event payload.
+    pub fn new(payload: EventPayload) -> Self {
+        Event {
+            client_id: None,
+            payload,
+        }
+    }
+
+    /// Creates a new event with a client ID.
+    ///
+    /// * `payload`: event payload.
+    /// * `client_id`: client ID.
+    pub fn new_with_client_id(payload: EventPayload, client_id: &ClientId) -> Self {
+        Event {
+            client_id: Some(client_id.clone()),
+            payload,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "type")]
-pub enum Event {
+pub enum EventPayload {
+    ClientConnected,
     L10nConfigChanged(LocaleConfig),
     LocaleChanged {
         locale: String,
@@ -64,6 +103,7 @@ pub enum Event {
         #[serde(flatten)]
         change: NetworkChange,
     },
+    StorageChanged,
     // TODO: it should include the full software proposal or, at least,
     // all the relevant changes.
     SoftwareProposalChanged {
@@ -143,4 +183,70 @@ pub enum Event {
     ZFCPControllerRemoved {
         device: ZFCPController,
     },
+}
+
+/// Makes it easier to create an event, reducing the boilerplate.
+///
+/// # Event without additional data
+///
+/// ```
+/// # use agama_lib::{event, http::EventPayload};
+/// let my_event = event!(ClientConnected);
+/// assert!(matches!(my_event.payload, EventPayload::ClientConnected));
+/// assert!(my_event.client_id.is_none());
+/// ```
+///
+/// # Event with some additional data
+///
+/// ```
+/// # use agama_lib::{event, http::EventPayload};
+/// let my_event = event!(LocaleChanged { locale: "es_ES".to_string() });
+/// assert!(matches!(
+///    my_event.payload,
+///    EventPayload::LocaleChanged { locale: _ }
+/// ));
+/// ```
+///
+/// # Adding the client ID
+///
+/// ```
+/// # use agama_lib::{auth::ClientId, event, http::EventPayload};
+/// let client_id = ClientId::new();
+/// let my_event = event!(ClientConnected, &client_id);
+/// assert!(matches!(my_event.payload, EventPayload::ClientConnected));
+/// assert!(my_event.client_id.is_some());
+/// ```
+///
+/// # Add the client ID to a complex event
+///
+/// ```
+/// # use agama_lib::{auth::ClientId, event, http::EventPayload};
+/// let client_id = ClientId::new();
+/// let my_event = event!(LocaleChanged { locale: "es_ES".to_string() }, &client_id);
+/// assert!(matches!(
+///    my_event.payload,
+///    EventPayload::LocaleChanged { locale: _ }
+/// ));
+/// assert!(my_event.client_id.is_some());
+/// ```
+#[macro_export]
+macro_rules! event {
+    ($variant:ident) => {
+        agama_lib::http::Event::new(agama_lib::http::EventPayload::$variant)
+    };
+    ($variant:ident, $client:expr) => {
+        agama_lib::http::Event::new_with_client_id(
+            agama_lib::http::EventPayload::$variant,
+            $client,
+        )
+    };
+    ($variant:ident $inner:tt, $client:expr) => {
+        agama_lib::http::Event::new_with_client_id(
+            agama_lib::http::EventPayload::$variant $inner,
+            $client
+        )
+    };
+    ($variant:ident $inner:tt) => {
+        agama_lib::http::Event::new(agama_lib::http::EventPayload::$variant $inner)
+    };
 }

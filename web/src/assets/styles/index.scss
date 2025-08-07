@@ -339,7 +339,7 @@ strong {
 //   --pf-v6-c-nav--PaddingBlockStart: 0;
 // }
 
-.pf-v6-c-alert {
+:not(.pf-v6-c-alert-group__item) > .pf-v6-c-alert {
   --pf-v6-c-alert--m-info__title--Color: var(--agm-t--color--waterhole);
   --pf-v6-c-alert__icon--FontSize: var(--pf-t--global--font--size--md);
   --pf-v6-c-content--MarginBlockEnd: var(--pf-t--global--spacer--xs);
@@ -375,6 +375,10 @@ strong {
     border: 0;
     background: none;
   }
+}
+
+.pf-v6-c-alert-group.pf-m-toast {
+  padding: var(--pf-t--global--spacer--xl);
 }
 
 .pf-v6-c-alert__title {
@@ -524,4 +528,9 @@ button:focus-visible {
 // rendering such a label if "storage instructions" are more than one
 .storage-structure:has(> li:nth-child(2)) span.action-text {
   display: none;
+}
+
+.agm-backdrop-gray-and-blur {
+  background-color: rgb(0 0 0 / 30%);
+  backdrop-filter: grayscale(100%) blur(4px);
 }
