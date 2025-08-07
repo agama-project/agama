@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Aug  7 15:39:03 UTC 2025 - Steffen Winterfeldt <snwint@suse.com>
+
+- fix DUD application in 99-agama-dud-apply.sh (jsc#PED-13262)
+
+-------------------------------------------------------------------
 Thu Jul 31 16:58:42 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Boot by default from disk to avoid endless loop in unattended
