@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021-2023] SUSE LLC
+# Copyright (c) [2021-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -99,11 +99,10 @@ module Agama
           end
 
           question = Agama::Question.new(
-            qclass:         "software.package_error.medium_error",
-            text:           error,
-            options:        [retry_label.to_sym, continue_label.to_sym],
-            default_option: retry_label.to_sym,
-            data:           { "url" => url }
+            qclass:  "software.package_error.medium_error",
+            text:    error,
+            options: [retry_label.to_sym, continue_label.to_sym],
+            data:    { "url" => url }
           )
           questions_client.ask(question) do |question_client|
             if question_client.answer == retry_label.to_sym

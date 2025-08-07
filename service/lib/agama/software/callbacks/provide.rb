@@ -68,11 +68,10 @@ module Agama
           return nil if error_code.nil?
 
           question = Agama::Question.new(
-            qclass:         "software.package_error.provide_error",
-            text:           reason,
-            options:        [retry_label.to_sym, continue_label.to_sym],
-            default_option: retry_label.to_sym,
-            data:           { "package" => name, "error_code" => error_code }
+            qclass:  "software.package_error.provide_error",
+            text:    reason,
+            options: [retry_label.to_sym, continue_label.to_sym],
+            data:    { "package" => name, "error_code" => error_code }
           )
 
           questions_client.ask(question) do |question_client|
