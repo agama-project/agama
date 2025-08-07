@@ -55,7 +55,9 @@ use std::collections::HashMap;
 use tokio::sync::{broadcast, mpsc, oneshot};
 
 use crate::{
-    http::{BaseHTTPClient, BaseHTTPClientError, Event, WebSocketClient, WebSocketError},
+    http::{
+        BaseHTTPClient, BaseHTTPClientError, Event, EventPayload, WebSocketClient, WebSocketError,
+    },
     manager::{InstallationPhase, InstallerStatus},
     progress::Progress,
 };
@@ -223,16 +225,16 @@ impl Monitor {
     ///
     /// * `event`: Agama event.
     fn handle_event(&mut self, event: Event) {
-        match event {
-            Event::ProgressChanged { path, progress } => {
+        match event.payload {
+            EventPayload::ProgressChanged { path, progress } => {
                 self.status.update_progress(path, progress);
             }
-            Event::ServiceStatusChanged { service, status } => {
+            EventPayload::ServiceStatusChanged { service, status } => {
                 if service.as_str() == MANAGER_PROGRESS_OBJECT_PATH {
                     self.status.set_is_busy(status == 1);
                 }
             }
-            Event::InstallationPhaseChanged { phase } => {
+            EventPayload::InstallationPhaseChanged { phase } => {
                 self.status.set_phase(phase);
             }
             _ => {}

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 31 09:13:09 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Block UI if storage is configured by any other client
+  (gh#agama-project/agama#2640).
+  
+-------------------------------------------------------------------
 Fri Jul 25 19:42:18 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Fix an issue preventing connections from being set as

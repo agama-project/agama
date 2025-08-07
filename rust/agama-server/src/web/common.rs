@@ -22,7 +22,7 @@
 
 use std::pin::Pin;
 
-use agama_lib::{error::ServiceError, proxies::ServiceStatusProxy};
+use agama_lib::{error::ServiceError, event, proxies::ServiceStatusProxy};
 use axum::{extract::State, routing::get, Json, Router};
 use serde::Serialize;
 use tokio_stream::{Stream, StreamExt};
@@ -115,10 +115,10 @@ pub async fn service_status_stream(
         .await
         .then(move |change| async move {
             if let Ok(status) = change.get().await {
-                Some(Event::ServiceStatusChanged {
+                Some(event!(ServiceStatusChanged {
                     service: destination.to_string(),
                     status,
-                })
+                }))
             } else {
                 None
             }

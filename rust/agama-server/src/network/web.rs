@@ -21,7 +21,6 @@
 //! This module implements the web API for the network module.
 
 use crate::{error::Error, web::EventsSender};
-use agama_lib::http::Event;
 use anyhow::Context;
 use axum::{
     extract::{Path, State},
@@ -34,6 +33,7 @@ use uuid::Uuid;
 
 use agama_lib::{
     error::ServiceError,
+    event,
     network::{
         error::NetworkStateError,
         model::{AccessPoint, Connection, Device, GeneralState},
@@ -100,7 +100,8 @@ pub async fn network_service<T: Adapter + Send + Sync + 'static>(
         loop {
             match changes.recv().await {
                 Ok(message) => {
-                    if let Err(e) = events.send(Event::NetworkChange { change: message }) {
+                    let change = event!(NetworkChange { change: message });
+                    if let Err(e) = events.send(change) {
                         eprintln!("Could not send the event: {}", e);
                     }
                 }

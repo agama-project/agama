@@ -38,7 +38,8 @@ use crate::{
 
 use agama_lib::{
     error::ServiceError,
-    http::Event,
+    event,
+    http::{Event, EventPayload},
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
         model::{
@@ -116,7 +117,7 @@ async fn product_changed_stream(
         .await
         .then(|change| async move {
             if let Ok(id) = change.get().await {
-                return Some(Event::ProductChanged { id });
+                return Some(event!(ProductChanged { id }));
             }
             None
         })
@@ -143,7 +144,7 @@ async fn patterns_changed_stream(
             }
             None
         })
-        .filter_map(|e| e.map(|patterns| Event::SoftwareProposalChanged { patterns }));
+        .filter_map(|e| e.map(|patterns| event!(SoftwareProposalChanged { patterns })));
     Ok(stream)
 }
 
@@ -165,7 +166,7 @@ async fn conflicts_changed_stream(
             }
             None
         })
-        .filter_map(|e| e.map(|conflicts| Event::ConflictsChanged { conflicts }));
+        .filter_map(|e| e.map(|conflicts| event!(ConflictsChanged { conflicts })));
     Ok(stream)
 }
 
@@ -179,7 +180,7 @@ async fn registration_email_changed_stream(
         .then(|change| async move {
             if let Ok(_id) = change.get().await {
                 // TODO: add to stream also proxy and return whole cached registration info
-                return Some(Event::RegistrationChanged);
+                return Some(event!(RegistrationChanged));
             }
             None
         })
@@ -196,7 +197,7 @@ async fn registration_code_changed_stream(
         .await
         .then(|change| async move {
             if let Ok(_id) = change.get().await {
-                return Some(Event::RegistrationChanged);
+                return Some(event!(RegistrationChanged));
             }
             None
         })
@@ -228,7 +229,7 @@ pub async fn receive_events(
     client: ProductClient<'_>,
 ) {
     while let Ok(event) = events.recv().await {
-        if let Event::LocaleChanged { locale: _ } = event {
+        if let EventPayload::LocaleChanged { locale: _ } = event.payload {
             let mut cached_products = products.write().await;
             if let Ok(products) = client.products().await {
                 *cached_products = products;
