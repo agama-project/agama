@@ -167,10 +167,10 @@ describe("WiredConnectionDetails", () => {
         mockNetworkDevices = [];
       });
 
-      it("renders 'None'", () => {
+      it("renders information about no devices using the connection", () => {
         plainRender(<WiredConnectionDetails connection={mockConnection} />);
         const section = screen.getByRole("region", { name: "Connected devices" });
-        within(section).getByText("None");
+        within(section).getByText("No device is currently using this connection.");
       });
     });
 

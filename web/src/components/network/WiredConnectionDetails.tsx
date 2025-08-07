@@ -172,7 +172,7 @@ const DevicesDetails = ({ connection }: { connection: Connection }) => {
       title={onlyOne ? _("Connected device") : _("Connected devices")}
       pfCardProps={{ isPlain: false, isFullHeight: false }}
     >
-      {none && _("None")}
+      {none && _("No device is currently using this connection.")}
       {onlyOne && <DeviceDetails device={connectedDevices[0]} />}
       {multiple && (
         <Tabs
@@ -270,11 +270,11 @@ export default function WiredConnectionDetails({ connection }: { connection: Con
       <GridItem md={6}>
         <Stack hasGutter>
           <ConnectionDetails connection={connection} />
-          <BindingSettings connection={connection} />
         </Stack>
       </GridItem>
       <GridItem md={6} order={{ default: "1", md: "2" }}>
         <Stack hasGutter>
+          <BindingSettings connection={connection} />
           <DevicesDetails connection={connection} />
         </Stack>
       </GridItem>
