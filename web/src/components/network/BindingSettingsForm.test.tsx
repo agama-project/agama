@@ -67,11 +67,11 @@ jest.mock("~/queries/network", () => ({
 }));
 
 const getOptions = () => {
-  const noBind = screen.getByRole("radio", { name: "Any interface" });
-  const byName = screen.getByRole("radio", { name: "Bind to interface name" });
+  const unbound = screen.getByRole("radio", { name: "Unbound" });
+  const byName = screen.getByRole("radio", { name: "Bind to device name" });
   const byMac = screen.getByRole("radio", { name: "Bind to MAC address" });
 
-  return { noBind, byName, byMac };
+  return { unbound, byName, byMac };
 };
 
 describe("BindingSettingsForm", () => {
@@ -81,11 +81,11 @@ describe("BindingSettingsForm", () => {
 
   it("offers multiple binding options and disables unselected device selectors", async () => {
     const { user } = installerRender(<BindingSettingsForm />);
-    const { noBind, byName, byMac } = getOptions();
+    const { unbound, byName, byMac } = getOptions();
     const devicesByName = screen.getByRole("combobox", { name: "Choose device to bind by name" });
     const devicesByMac = screen.getByRole("combobox", { name: "Choose device to bind by MAC" });
 
-    await user.click(noBind);
+    await user.click(unbound);
     expect(devicesByName).toBeDisabled();
     expect(devicesByMac).toBeDisabled();
 
@@ -98,12 +98,12 @@ describe("BindingSettingsForm", () => {
     expect(devicesByMac).toBeEnabled();
   });
 
-  it("allows configuring connection with no binding", async () => {
+  it("allows configuring the connection as unbound", async () => {
     const { user } = installerRender(<BindingSettingsForm />);
-    const { noBind } = getOptions();
+    const { unbound } = getOptions();
     const acceptButton = screen.getByRole("button", { name: "Accept" });
 
-    await user.click(noBind);
+    await user.click(unbound);
     await user.click(acceptButton);
 
     // Sadly, expect.objectContaining does not match properties set to
@@ -113,7 +113,7 @@ describe("BindingSettingsForm", () => {
     expect(mockMutation).toHaveBeenCalledWith(expected);
   });
 
-  it("supports binding connection to a specific interface name", async () => {
+  it("supports binding the connection to a specific device name", async () => {
     const { user } = installerRender(<BindingSettingsForm />);
     const { byName } = getOptions();
     const acceptButton = screen.getByRole("button", { name: "Accept" });
@@ -125,7 +125,7 @@ describe("BindingSettingsForm", () => {
     expect(mockMutation).toHaveBeenCalledWith(expected);
   });
 
-  it("supports binding connection to a specific MAC address", async () => {
+  it("supports binding the connection to a specific MAC address", async () => {
     const { user } = installerRender(<BindingSettingsForm />);
     const { byMac } = getOptions();
     const acceptButton = screen.getByRole("button", { name: "Accept" });
@@ -137,18 +137,18 @@ describe("BindingSettingsForm", () => {
     expect(mockMutation).toHaveBeenCalledWith(expected);
   });
 
-  describe("when connection is not bind", () => {
-    it("set 'none' mode checked by default", () => {
+  describe("when the connection is unbound", () => {
+    it("sets 'none' (unbound) mode by default", () => {
       installerRender(<BindingSettingsForm />);
-      const { noBind, byName, byMac } = getOptions();
+      const { unbound, byName, byMac } = getOptions();
 
-      expect(noBind).toBeChecked();
+      expect(unbound).toBeChecked();
       expect(byName).not.toBeChecked();
       expect(byMac).not.toBeChecked();
     });
   });
 
-  describe("when connection is bind to an interface by its name", () => {
+  describe("when the connection is bound by device name", () => {
     beforeEach(() => {
       mockConnection = new Connection("Network 1", {
         state: ConnectionState.activated,
@@ -156,17 +156,17 @@ describe("BindingSettingsForm", () => {
       });
     });
 
-    it("set 'iface' mode checked by default", () => {
+    it("sets 'iface' mode by default", () => {
       installerRender(<BindingSettingsForm />);
-      const { noBind, byName, byMac } = getOptions();
+      const { unbound, byName, byMac } = getOptions();
 
-      expect(noBind).not.toBeChecked();
+      expect(unbound).not.toBeChecked();
       expect(byName).toBeChecked();
       expect(byMac).not.toBeChecked();
     });
   });
 
-  describe("when connection is bind to an interface by its MAC address", () => {
+  describe("when connection is bound MAC address", () => {
     beforeEach(() => {
       mockConnection = new Connection("Network 1", {
         state: ConnectionState.activated,
@@ -174,11 +174,11 @@ describe("BindingSettingsForm", () => {
       });
     });
 
-    it("set 'mac' mode checked by default", () => {
+    it("sets 'mac' mode  default", () => {
       installerRender(<BindingSettingsForm />);
-      const { noBind, byName, byMac } = getOptions();
+      const { unbound, byName, byMac } = getOptions();
 
-      expect(noBind).not.toBeChecked();
+      expect(unbound).not.toBeChecked();
       expect(byName).not.toBeChecked();
       expect(byMac).toBeChecked();
     });

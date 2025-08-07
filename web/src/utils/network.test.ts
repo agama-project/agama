@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,7 +22,7 @@
 
 // @ts-check
 
-import { SecurityProtocols } from "~/types/network";
+import { Connection, SecurityProtocols } from "~/types/network";
 import {
   isValidIp,
   isValidIpPrefix,
@@ -31,6 +31,7 @@ import {
   formatIp,
   ipPrefixFor,
   securityFromFlags,
+  connectionBindingMode,
 } from "./network";
 
 describe("#isValidIp", () => {
@@ -89,5 +90,29 @@ describe("securityFromFlags", () => {
   it("returns an array with the supported security protocols", () => {
     expect(securityFromFlags(0, 0, 0)).toEqual([]);
     expect(securityFromFlags(3, 392, 0)).toEqual([SecurityProtocols.WPA]);
+  });
+});
+
+describe("connectionBindingMode", () => {
+  describe("when the connection has a MAC address defined", () => {
+    it("returns 'mac'", () => {
+      expect(
+        connectionBindingMode(
+          new Connection("C#1", { macAddress: "AA:11:22:33:44::FF", iface: "enps10" }),
+        ),
+      ).toBe("mac");
+    });
+  });
+
+  describe("when the connection has an iface defined but no MAC address", () => {
+    it("returns 'iface'", () => {
+      expect(connectionBindingMode(new Connection("C#1", { iface: "enps10" }))).toBe("iface");
+    });
+  });
+
+  describe("when the connection has neither a MAC address nor an iface defined", () => {
+    it("returns 'none'", () => {
+      expect(connectionBindingMode(new Connection("C#1"))).toBe("none");
+    });
   });
 });
