@@ -36,7 +36,7 @@ describe Agama::Storage::Proposal do
 
   before do
     mock_storage(devicegraph: scenario)
-    allow(Y2Storage::StorageManager.instance).to receive(:arch).and_return(arch)
+    allow(Y2Storage::Arch).to receive(:new).and_return(arch)
   end
 
   let(:scenario) { "windows-linux-pc.yml" }
@@ -121,7 +121,7 @@ describe Agama::Storage::Proposal do
           expect(efi).to have_attributes(
             filesystem_type:       Y2Storage::Filesystems::Type::VFAT,
             filesystem_mountpoint: "/boot/efi",
-            size:                  1.GiB
+            size:                  512.MiB
           )
 
           expect(root).to have_attributes(
@@ -140,19 +140,6 @@ describe Agama::Storage::Proposal do
         it "registers no issues" do
           subject.calculate_autoyast(partitioning)
           expect(subject.issues).to be_empty
-        end
-
-        it "runs all the callbacks" do
-          callback1 = proc {}
-          callback2 = proc {}
-
-          subject.on_calculate(&callback1)
-          subject.on_calculate(&callback2)
-
-          expect(callback1).to receive(:call)
-          expect(callback2).to receive(:call)
-
-          subject.calculate_autoyast(partitioning)
         end
       end
 
@@ -183,19 +170,6 @@ describe Agama::Storage::Proposal do
               description: /No root/, severity: Agama::Issue::Severity::ERROR
             )
           )
-        end
-
-        it "runs all the callbacks" do
-          callback1 = proc {}
-          callback2 = proc {}
-
-          subject.on_calculate(&callback1)
-          subject.on_calculate(&callback2)
-
-          expect(callback1).to receive(:call)
-          expect(callback2).to receive(:call)
-
-          subject.calculate_autoyast(partitioning)
         end
       end
     end
@@ -292,7 +266,7 @@ describe Agama::Storage::Proposal do
           filesystem_type:       Y2Storage::Filesystems::Type::VFAT,
           filesystem_mountpoint: "/boot/efi",
           id:                    Y2Storage::PartitionId::ESP,
-          size:                  1.GiB
+          size:                  512.MiB
         )
       end
 
@@ -552,19 +526,6 @@ describe Agama::Storage::Proposal do
           root = root_filesystem(sda)
           expect(root.snapshots?).to eq(false)
         end
-      end
-
-      it "runs all the callbacks" do
-        callback1 = proc {}
-        callback2 = proc {}
-
-        subject.on_calculate(&callback1)
-        subject.on_calculate(&callback2)
-
-        expect(callback1).to receive(:call)
-        expect(callback2).to receive(:call)
-
-        subject.calculate_autoyast(partitioning)
       end
     end
   end

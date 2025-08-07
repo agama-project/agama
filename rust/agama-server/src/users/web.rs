@@ -31,6 +31,7 @@ use crate::{
 };
 use agama_lib::{
     error::ServiceError,
+    event,
     http::Event,
     users::{model::RootPatchSettings, proxies::Users1Proxy, FirstUser, RootUser, UsersClient},
 };
@@ -54,7 +55,7 @@ struct UsersState<'a> {
 
 /// Returns streams that emits users related events coming from D-Bus.
 ///
-/// It emits the Event::RootPasswordChange, Event::RootSSHKeyChanged and Event::FirstUserChanged events.
+/// It emits the RootPasswordChange, RootSSHKeyChanged and FirstUserChanged events.
 ///
 /// * `connection`: D-Bus connection to listen for events.
 pub async fn users_streams(dbus: zbus::Connection) -> Result<EventStreams, Error> {
@@ -89,7 +90,7 @@ async fn first_user_changed_stream(
                     password: user.2,
                     hashed_password: user.3,
                 };
-                return Some(Event::FirstUserChanged(user_struct));
+                return Some(event!(FirstUserChanged(user_struct)));
             }
             None
         })
@@ -107,7 +108,7 @@ async fn root_user_changed_stream(
         .then(|change| async move {
             if let Ok(user) = change.get().await {
                 if let Ok(root) = RootUser::from_dbus(user) {
-                    return Some(Event::RootUserChanged(root));
+                    return Some(event!(RootUserChanged(root)));
                 }
             }
             None

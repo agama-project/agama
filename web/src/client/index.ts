@@ -26,6 +26,8 @@ type VoidFn = () => void;
 type BooleanFn = () => boolean;
 
 export type InstallerClient = {
+  /** Unique client identifier. */
+  id?: string;
   /** Whether the client is connected. */
   isConnected: BooleanFn;
   /** Whether the client is recoverable after disconnecting. */

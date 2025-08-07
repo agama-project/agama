@@ -46,7 +46,6 @@ module Agama
 
         @product_config = product_config
         @logger = logger || Logger.new($stdout)
-        @on_calculate_callbacks = []
       end
 
       # Whether the proposal was already calculated.
@@ -61,11 +60,6 @@ module Agama
       # @return [Boolean]
       def success?
         calculated? && !proposal.failed? && issues.none?(&:error?)
-      end
-
-      # Stores callbacks to be called after calculating a proposal.
-      def on_calculate(&block)
-        @on_calculate_callbacks << block
       end
 
       # Default storage config according to the JSON schema.
@@ -152,18 +146,6 @@ module Agama
 
         @source_json = source_json
         success?
-      end
-
-      # Calculates a new proposal from a config model.
-      #
-      # @param model_json [Hash] Source config model according to the JSON schema.
-      # @return [Boolean] Whether the proposal successes.
-      def calculate_from_model(model_json)
-        config = ConfigConversions::FromModel
-          .new(model_json, product_config: product_config, storage_system: storage_system)
-          .convert
-
-        calculate_agama(config)
       end
 
       # Calculates a new proposal using the guided strategy.
@@ -342,7 +324,6 @@ module Agama
           raise e
         end
 
-        @on_calculate_callbacks.each(&:call)
         success?
       end
 

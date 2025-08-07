@@ -39,6 +39,14 @@ module Agama
       def busy_while(&block)
         service_status.busy_while(&block)
       end
+
+      # Executes a block setting the service as busy, see {BaseObject#request}.
+      #
+      # @param data [Hash] see {BaseObject#request_data}.
+      # @param block [Proc]
+      def busy_request(data, &block)
+        busy_while { request(data, &block) }
+      end
     end
   end
 end

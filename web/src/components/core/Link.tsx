@@ -22,11 +22,13 @@
 
 import React from "react";
 import { Button, ButtonProps } from "@patternfly/react-core";
-import { To, useHref } from "react-router-dom";
+import { To, useHref, useLinkClickHandler } from "react-router-dom";
 
 export type LinkProps = Omit<ButtonProps, "component"> & {
   /** The target route */
   to: string | To;
+  /** Whether the link should replace the current entry in the browser history */
+  replace?: boolean;
   /** Whether use PF/Button primary variant */
   isPrimary?: boolean;
 };
@@ -37,11 +39,29 @@ export type LinkProps = Omit<ButtonProps, "component"> & {
  * @note when isPrimary not given or false and props does not contain a variant prop,
  * it will default to "secondary" variant
  */
-export default function Link({ to, isPrimary, variant, children, ...props }: LinkProps) {
+export default function Link({
+  to,
+  replace = false,
+  isPrimary,
+  variant,
+  children,
+  onClick,
+  ...props
+}: LinkProps) {
   const href = useHref(to);
   const linkVariant = isPrimary ? "primary" : variant || "secondary";
+  const handleClick = useLinkClickHandler(to, { replace });
   return (
-    <Button component="a" href={href} variant={linkVariant} {...props}>
+    <Button
+      component="a"
+      href={href}
+      variant={linkVariant}
+      onClick={(event: React.MouseEvent<HTMLElement>) => {
+        onClick?.(event as React.MouseEvent<HTMLButtonElement, MouseEvent>);
+        handleClick(event as React.MouseEvent<HTMLAnchorElement, MouseEvent>);
+      }}
+      {...props}
+    >
       {children}
     </Button>
   );

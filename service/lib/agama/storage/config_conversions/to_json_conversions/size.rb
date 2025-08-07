@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -31,6 +31,13 @@ module Agama
           def initialize(config)
             super()
             @config = config
+          end
+
+          # The size is not generated for default size.
+          #
+          # @see Base#convert
+          def convert
+            super unless config.default?
           end
 
         private

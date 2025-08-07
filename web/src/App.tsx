@@ -31,6 +31,7 @@ import { useDeprecatedChanges } from "~/queries/storage";
 import { ROOT, PRODUCT } from "~/routes/paths";
 import { InstallationPhase } from "~/types/status";
 import { useQueryClient } from "@tanstack/react-query";
+import AlertOutOfSync from "~/components/core/AlertOutOfSync";
 
 /**
  * Main application component.
@@ -97,7 +98,13 @@ function App() {
     return <Outlet />;
   };
 
-  return <Content />;
+  return (
+    <>
+      {/* So far, only the storage backend is able to detect external changes.*/}
+      <AlertOutOfSync scope={"Storage"} />
+      <Content />
+    </>
+  );
 }
 
 export default App;
