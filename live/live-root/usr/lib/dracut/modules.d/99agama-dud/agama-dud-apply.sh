@@ -57,7 +57,8 @@ apply_updates() {
       ;;
 
     *)
-      apply_dud_update "$file" "$dir"
+      unpack_dud_update "$file" "$dir"
+      apply_dud_update "$dir"
       ;;
     esac
 
@@ -77,23 +78,44 @@ apply_rpm_update() {
   install_update "$dir"
 }
 
-# Applies an update from an RPM package
+# Unpacks a driver update archive (DUD) to a directory
+#
+unpack_dud_update() {
+  file=$1
+  dir=$2
+
+  echo "Unpack Driver Update Disk archive"
+  unpack_img "$file" "$dir"
+}
+
+# Applies a driver update (DUD)
 #
 #   1. Copy the inst-sys updates to the $NEWROOT system.
 #   2. Update agamactl, agama-autoyast and agama-proxy-setup alternative links.
 #   3. Copy the packages to the $DUD_RPM_REPOSITORY.
 apply_dud_update() {
-  file=$1
-  dir=$2
+  dir=$1
 
   echo "Apply update from a Driver Update Disk archive"
-  unpack_img "$file" "$dir"
+
   # FIXME: do not ignore the dist (e.g., "tw" in "x86_64-tw").
+
+  # notes:
+  # (1) there can be several updates in a single archive; each with a
+  #     prefix directory consisting of a number
+  # (2) there can be ARCH-DIST subdirs with multiple dists - pick one and
+  #     ignore the others
   arch=$(uname -m)
-  dud_root=$(echo "${dir}/linux/suse/${arch}"-*)
-  install_update "${dud_root}/inst-sys"
-  copy_packages "$dud_root" "$DUD_RPM_REPOSITORY"
-  update_kernel_modules "$dud_root"
+  for base_dir in "${dir}"/linux/suse "${dir}"/[0-9]*/linux/suse ; do
+    [ -d "$base_dir" ] || continue
+    for dud_root in "${base_dir}/${arch}"-* ; do
+      [ -d "$dud_root" ] || continue
+        install_update "${dud_root}/inst-sys"
+        copy_packages "$dud_root" "$DUD_RPM_REPOSITORY"
+        update_kernel_modules "$dud_root"
+      break
+    done
+  done
 }
 
 # Extracts an RPM file
@@ -267,6 +289,9 @@ configure_ssl() {
   # link crypto configuration (which ciphers are allowed, etc)
   ! [ -d /etc/crypto-policies ] && ln -s "$NEWROOT/etc/crypto-policies" /etc
 }
+
+# there can be (already unpacked) driver updates directly in the initrd
+apply_dud_update ""
 
 if [ -f "$AGAMA_DUD_INFO" ]; then
   apply_updates
