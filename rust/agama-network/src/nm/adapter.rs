@@ -130,12 +130,6 @@ impl Adapter for NetworkManagerAdapter<'_> {
             return Err(NetworkAdapterError::Write(anyhow!(e)));
         }
 
-        let devices = self
-            .client
-            .devices()
-            .await
-            .map_err(|e| NetworkAdapterError::Read(anyhow!(e)))?;
-
         for conn in ordered_connections(network) {
             let ctrl = conn
                 .controller

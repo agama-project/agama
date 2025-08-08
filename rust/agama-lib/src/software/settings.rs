@@ -20,6 +20,8 @@
 
 //! Representation of the software settings
 
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 
 use super::model::RepositoryParams;
@@ -30,7 +32,7 @@ use super::model::RepositoryParams;
 pub struct SoftwareSettings {
     /// List of user selected patterns to install.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub patterns: Option<Vec<String>>,
+    pub patterns: Option<PatternsSettings>,
     /// List of user selected packages to install.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub packages: Option<Vec<String>>,
@@ -40,6 +42,45 @@ pub struct SoftwareSettings {
     /// Flag indicating if only hard requirements should be used by solver.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub only_required: Option<bool>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(untagged)]
+pub enum PatternsSettings {
+    PatternsList(Vec<String>),
+    PatternsMap(PatternsMap),
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
+pub struct PatternsMap {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub add: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub remove: Option<Vec<String>>,
+}
+
+impl From<Vec<String>> for PatternsSettings {
+    fn from(list: Vec<String>) -> Self {
+        Self::PatternsList(list)
+    }
+}
+
+impl From<HashMap<String, Vec<String>>> for PatternsSettings {
+    fn from(map: HashMap<String, Vec<String>>) -> Self {
+        let add = if let Some(to_add) = map.get("add") {
+            Some(to_add.to_owned())
+        } else {
+            None
+        };
+
+        let remove = if let Some(to_remove) = map.get("remove") {
+            Some(to_remove.to_owned())
+        } else {
+            None
+        };
+
+        Self::PatternsMap(PatternsMap { add, remove })
+    }
 }
 
 impl SoftwareSettings {

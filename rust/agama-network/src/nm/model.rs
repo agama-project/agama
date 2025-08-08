@@ -282,11 +282,3 @@ impl fmt::Display for NmMethod {
         write!(f, "{}", &self.0)
     }
 }
-
-#[derive(Debug, Default, PartialEq)]
-pub struct NmIp4Config {
-    pub addresses: Vec<(String, u32)>,
-    pub nameservers: Vec<String>,
-    pub gateway: Option<String>,
-    pub method: NmMethod,
-}
