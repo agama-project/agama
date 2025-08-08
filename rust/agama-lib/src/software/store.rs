@@ -23,7 +23,7 @@
 use std::collections::HashMap;
 
 use super::{
-    http_client::SoftwareHTTPClientError, model::SoftwareConfig, settings::PatternsDefinition,
+    http_client::SoftwareHTTPClientError, model::SoftwareConfig, settings::PatternsSettings,
     SoftwareHTTPClient, SoftwareSettings,
 };
 use crate::http::BaseHTTPClient;
@@ -54,10 +54,7 @@ impl SoftwareStore {
             patterns: if patterns.is_empty() {
                 None
             } else {
-                Some(PatternsDefinition {
-                    set: Some(patterns),
-                    ..Default::default()
-                })
+                Some(PatternsSettings::from(patterns))
             },
             packages: config.packages,
             extra_repositories: config.extra_repositories,
@@ -70,29 +67,30 @@ impl SoftwareStore {
             if let Some(patterns) = settings.patterns.clone() {
                 let mut current_patterns: Vec<String>;
 
-                if let Some(patterns_set) = patterns.set {
-                    current_patterns = patterns_set;
-                } else {
-                    current_patterns = self.software_client.user_selected_patterns().await?;
+                match patterns {
+                    PatternsSettings::PatternsList(list) => current_patterns = list,
+                    PatternsSettings::PatternsMap(map) => {
+                        current_patterns = self.software_client.user_selected_patterns().await?;
 
-                    if let Some(patterns_add) = patterns.add {
-                        for pattern in patterns_add {
-                            if !current_patterns.contains(&pattern) {
-                                current_patterns.push(pattern);
-                            }
-                        }
-                    }
-
-                    if let Some(patterns_remove) = patterns.remove {
-                        let mut new_patterns: Vec<String> = vec![];
-
-                        for pattern in current_patterns {
-                            if !patterns_remove.contains(&pattern) {
-                                new_patterns.push(pattern)
+                        if let Some(patterns_add) = map.add {
+                            for pattern in patterns_add {
+                                if !current_patterns.contains(&pattern) {
+                                    current_patterns.push(pattern);
+                                }
                             }
                         }
 
-                        current_patterns = new_patterns;
+                        if let Some(patterns_remove) = map.remove {
+                            let mut new_patterns: Vec<String> = vec![];
+
+                            for pattern in current_patterns {
+                                if !patterns_remove.contains(&pattern) {
+                                    new_patterns.push(pattern)
+                                }
+                            }
+
+                            current_patterns = new_patterns;
+                        }
                     }
                 }
 
@@ -155,13 +153,10 @@ mod test {
 
         let store = software_store(url);
         let settings = store.load().await?;
-        let patterns_definition = PatternsDefinition {
-            set: Some(vec!["xfce".to_owned()]),
-            ..Default::default()
-        };
+        let patterns_settings = PatternsSettings::from(vec!["xfce".to_owned()]);
 
         let expected = SoftwareSettings {
-            patterns: Some(patterns_definition),
+            patterns: Some(patterns_settings),
             packages: Some(vec!["vim".to_owned()]),
             extra_repositories: None,
             only_required: None,
@@ -188,13 +183,10 @@ mod test {
         let url = server.url("/api");
 
         let store = software_store(url);
-        let patterns_definition = PatternsDefinition {
-            set: Some(vec!["xfce".to_owned()]),
-            ..Default::default()
-        };
+        let patterns_settings = PatternsSettings::from(vec!["xfce".to_owned()]);
 
         let settings = SoftwareSettings {
-            patterns: Some(patterns_definition),
+            patterns: Some(patterns_settings),
             packages: Some(vec!["vim".to_owned()]),
             extra_repositories: None,
             only_required: None,
@@ -224,12 +216,9 @@ mod test {
         let url = server.url("/api");
 
         let store = software_store(url);
-        let patterns_definition = PatternsDefinition {
-            set: Some(vec!["no_such_pattern".to_owned()]),
-            ..Default::default()
-        };
+        let patterns_settings = PatternsSettings::from(vec!["no_such_pattern".to_owned()]);
         let settings = SoftwareSettings {
-            patterns: Some(patterns_definition),
+            patterns: Some(patterns_settings),
             packages: Some(vec!["vim".to_owned()]),
             extra_repositories: None,
             only_required: None,

@@ -32,7 +32,7 @@ use super::model::RepositoryParams;
 pub struct SoftwareSettings {
     /// List of user selected patterns to install.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub patterns: Option<PatternsDefinition>,
+    pub patterns: Option<PatternsSettings>,
     /// List of user selected packages to install.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub packages: Option<Vec<String>>,
@@ -44,26 +44,28 @@ pub struct SoftwareSettings {
     pub only_required: Option<bool>,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(untagged)]
+pub enum PatternsSettings {
+    PatternsList(Vec<String>),
+    PatternsMap(PatternsMap),
+}
+
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
-pub struct PatternsDefinition {
+pub struct PatternsMap {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub add: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub remove: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub set: Option<Vec<String>>,
 }
 
-impl From<Vec<String>> for PatternsDefinition {
+impl From<Vec<String>> for PatternsSettings {
     fn from(list: Vec<String>) -> Self {
-        PatternsDefinition {
-            set: Some(list),
-            ..Default::default()
-        }
+        Self::PatternsList(list)
     }
 }
 
-impl From<HashMap<String, Vec<String>>> for PatternsDefinition {
+impl From<HashMap<String, Vec<String>>> for PatternsSettings {
     fn from(map: HashMap<String, Vec<String>>) -> Self {
         let add = if let Some(to_add) = map.get("add") {
             Some(to_add.to_owned())
@@ -77,11 +79,7 @@ impl From<HashMap<String, Vec<String>>> for PatternsDefinition {
             None
         };
 
-        PatternsDefinition {
-            add,
-            remove,
-            set: None,
-        }
+        Self::PatternsMap(PatternsMap { add, remove })
     }
 }
 
