@@ -43,8 +43,10 @@ pub struct GenericQuestion {
     pub class: String,
     /// Textual representation of question. Expected to be read by people
     pub text: String,
-    /// possible answers for question
+    /// possible answers for question. answer and default_option will be one of these.
     pub options: Vec<String>,
+    /// displayed (translated) labels for the options.
+    pub option_labels: Vec<String>,
     /// default answer. Can be used as hint or preselection and it is used as answer for unattended questions.
     pub default_option: String,
     /// additional data to help identify questions. Useful for automatic answers. It is question specific.
@@ -59,6 +61,7 @@ impl GenericQuestion {
         class: String,
         text: String,
         options: Vec<String>,
+        option_labels: Vec<String>,
         default_option: String,
         data: HashMap<String, String>,
     ) -> Self {
@@ -67,6 +70,7 @@ impl GenericQuestion {
             class,
             text,
             options,
+            option_labels,
             default_option,
             data,
             answer: String::from(""),
@@ -86,6 +90,7 @@ impl GenericQuestion {
     ///     "test_class".to_string(),
     ///     "Really?".to_string(),
     ///     vec!["Yes".to_string(), "No".to_string()],
+    ///     vec!["Ano".to_string(), "Ne".to_string()],
     ///     "No".to_string(),
     ///     HashMap::new()
     ///   );

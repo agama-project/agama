@@ -177,6 +177,7 @@ mod tests {
             class: "without_data".to_string(),
             text: "JFYI we will kill all bugs during installation.".to_string(),
             options: vec!["Ok".to_string(), "Cancel".to_string()],
+            option_labels: vec!["Oukej".to_string(), "Zrušit".to_string()],
             default_option: "Cancel".to_string(),
             data: HashMap::new(),
             answer: "".to_string(),
@@ -192,6 +193,7 @@ mod tests {
             class: "non-existing".to_string(),
             text: "Hard question?".to_string(),
             options: vec!["Ok".to_string(), "Cancel".to_string()],
+            option_labels: vec!["Oukej".to_string(), "Zrušit".to_string()],
             default_option: "Cancel".to_string(),
             data: HashMap::new(),
             answer: "".to_string(),
@@ -207,6 +209,7 @@ mod tests {
             class: "without_data".to_string(),
             text: "Please provide password for dooms day.".to_string(),
             options: vec!["Ok".to_string(), "Cancel".to_string()],
+            option_labels: vec!["Oukej".to_string(), "Zrušit".to_string()],
             default_option: "Cancel".to_string(),
             data: HashMap::new(),
             answer: "".to_string(),
@@ -229,6 +232,11 @@ mod tests {
             class: "with_data".to_string(),
             text: "Hard question?".to_string(),
             options: vec!["Ok2".to_string(), "Maybe".to_string(), "Cancel".to_string()],
+            option_labels: vec![
+                "Oukej2".to_string(),
+                "Možná".to_string(),
+                "Zrušit".to_string(),
+            ],
             default_option: "Cancel".to_string(),
             data: HashMap::from([
                 ("data1".to_string(), "value1".to_string()),
@@ -248,6 +256,11 @@ mod tests {
             class: "with_data".to_string(),
             text: "Hard question?".to_string(),
             options: vec!["Ok2".to_string(), "Maybe".to_string(), "Cancel".to_string()],
+            option_labels: vec![
+                "Oukej2".to_string(),
+                "Možná".to_string(),
+                "Zrušit".to_string(),
+            ],
             default_option: "Cancel".to_string(),
             data: HashMap::from([
                 ("data1".to_string(), "another_value1".to_string()),
@@ -267,6 +280,11 @@ mod tests {
             class: "with_data".to_string(),
             text: "Hard question?".to_string(),
             options: vec!["Ok2".to_string(), "Maybe".to_string(), "Cancel".to_string()],
+            option_labels: vec![
+                "Oukej2".to_string(),
+                "Možná".to_string(),
+                "Zrušit".to_string(),
+            ],
             default_option: "Cancel".to_string(),
             data: HashMap::from([
                 ("data1".to_string(), "different value".to_string()),
@@ -295,6 +313,7 @@ mod tests {
             class: "without_data".to_string(),
             text: "JFYI we will kill all bugs during installation.".to_string(),
             options: vec!["Ok".to_string(), "Cancel".to_string()],
+            option_labels: vec!["Oukej".to_string(), "Zrušit".to_string()],
             default_option: "Cancel".to_string(),
             data: HashMap::new(),
             answer: "".to_string(),

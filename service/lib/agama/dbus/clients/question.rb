@@ -25,6 +25,8 @@ module Agama
   module DBus
     module Clients
       # D-Bus client for asking a question.
+      # Actually, this class is used only to retrieve the answer to an asked question.
+      # To _ask_ one, see {Questions.ask}.
       class Question < Base
         WITH_PASSWORD_IFACE = "org.opensuse.Agama1.Questions.WithPassword"
         private_constant :WITH_PASSWORD_IFACE

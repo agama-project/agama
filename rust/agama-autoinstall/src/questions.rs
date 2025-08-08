@@ -45,7 +45,9 @@ impl UserQuestions {
             id: None,
             class: "load.retry".to_string(),
             text: text.to_string(),
+            // FIXME: translate
             options: vec!["Yes".to_string(), "No".to_string()],
+            option_labels: vec!["Yes".to_string(), "No".to_string()],
             default_option: "No".to_string(),
             data: Default::default(),
         };

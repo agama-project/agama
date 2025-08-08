@@ -116,6 +116,7 @@ impl Questions {
         class: &str,
         text: &str,
         options: Vec<&str>,
+        option_labels: Vec<&str>,
         default_option: &str,
         data: HashMap<String, String>,
     ) -> zbus::fdo::Result<ObjectPath> {
@@ -123,11 +124,13 @@ impl Questions {
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
         let options = options.iter().map(|o| o.to_string()).collect();
+        let option_labels = option_labels.iter().map(|o| o.to_string()).collect();
         let mut question = questions::GenericQuestion::new(
             id,
             class.to_string(),
             text.to_string(),
             options,
+            option_labels,
             default_option.to_string(),
             data,
         );
@@ -149,6 +152,7 @@ impl Questions {
         class: &str,
         text: &str,
         options: Vec<&str>,
+        option_labels: Vec<&str>,
         default_option: &str,
         data: HashMap<String, String>,
     ) -> zbus::fdo::Result<ObjectPath> {
@@ -157,11 +161,13 @@ impl Questions {
         self.last_id += 1; // TODO use some thread safety
                            // TODO: share code better
         let options = options.iter().map(|o| o.to_string()).collect();
+        let option_labels = option_labels.iter().map(|o| o.to_string()).collect();
         let base = questions::GenericQuestion::new(
             id,
             class.to_string(),
             text.to_string(),
             options,
+            option_labels,
             default_option.to_string(),
             data,
         );

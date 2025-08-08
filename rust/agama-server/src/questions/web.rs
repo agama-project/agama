@@ -92,6 +92,7 @@ impl QuestionsClient<'_> {
         // TODO: ugly API is caused by dbus method to create question. It can be changed in future as DBus is internal only API
         let generic = &question.generic;
         let options: Vec<&str> = generic.options.iter().map(String::as_ref).collect();
+        let option_labels: Vec<&str> = generic.option_labels.iter().map(String::as_ref).collect();
         let data: HashMap<&str, &str> = generic
             .data
             .iter()
@@ -104,6 +105,7 @@ impl QuestionsClient<'_> {
                     &generic.class,
                     &generic.text,
                     &options,
+                    &option_labels,
                     &generic.default_option,
                     data,
                 )
@@ -115,6 +117,7 @@ impl QuestionsClient<'_> {
                     &generic.class,
                     &generic.text,
                     &options,
+                    &option_labels,
                     &generic.default_option,
                     data,
                 )
@@ -164,6 +167,7 @@ impl QuestionsClient<'_> {
                 class: get_property(properties, "Class")?,
                 text: get_property(properties, "Text")?,
                 options: get_property(properties, "Options")?,
+                option_labels: get_property(properties, "OptionLabels")?,
                 default_option: get_property(properties, "DefaultOption")?,
                 data: get_property(properties, "Data")?,
             },

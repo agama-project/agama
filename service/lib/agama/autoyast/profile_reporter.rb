@@ -53,8 +53,8 @@ module Agama
         question = Agama::Question.new(
           qclass:         "autoyast.unsupported",
           text:           message,
-          options:        [:Continue, :Abort],
-          default_option: :Continue,
+          options:        [continue_id.to_sym, abort_id.to_sym],
+          default_option: continue_id.to_sym,
           data:           {
             "planned"     => planned.map(&:key).join(","),
             "unsupported" => unsupported.map(&:key).join(",")
@@ -69,6 +69,16 @@ module Agama
     private
 
       attr_reader :questions_client, :logger
+
+      def continue_id
+        # TRANSLATORS:
+        N_("Continue")
+      end
+
+      def abort_id
+        # TRANSLATORS:
+        N_("Abort")
+      end
     end
   end
 end
