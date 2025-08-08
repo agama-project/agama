@@ -34,6 +34,7 @@ import {
   ThProps,
   TdProps,
 } from "@patternfly/react-table";
+import { isEqual } from "radashi";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -279,7 +280,7 @@ export default function SelectableDataTable({
     }
 
     if (isItemSelected(item)) {
-      onSelectionChange(selection.filter((i) => i !== item));
+      onSelectionChange(selection.filter((i) => !isEqual(i, item)));
     } else {
       onSelectionChange([...selection, item]);
     }

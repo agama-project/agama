@@ -432,7 +432,7 @@ describe("SelectableDataTable", () => {
     describe("and user selects an already selected item", () => {
       it("triggers the `onSelectionChange` callback with a collection not including the item", async () => {
         const { user } = plainRender(
-          <SelectableDataTable {...props} itemsSelected={[sda1, sda2]} />,
+          <SelectableDataTable {...props} itemsSelected={[{ ...sda1 }, sda2]} />,
         );
         const sda1row = screen.getByRole("row", { name: /dev\/sda1/ });
         const sda1radio = within(sda1row).getByRole("checkbox");
