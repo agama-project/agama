@@ -120,7 +120,7 @@ const vg = {
 const columns: SelectableDataTableColumn[] = [
   // FIXME: do not use any but the right types once storage part is rewritten.
   // Or even better, write a test not coupled to storage
-  { name: "Device", value: (item: any) => item.name },
+  { name: "Device", value: (item: any) => item.name, sortingKey: "name" },
   {
     name: "Content",
     value: (item: any) => {
@@ -130,7 +130,7 @@ const columns: SelectableDataTableColumn[] = [
       return item.content;
     },
   },
-  { name: "Size", value: (item: any) => item.size },
+  { name: "Size", value: (item: any) => item.size, sortingKey: "size" },
 ];
 
 const onChangeFn = jest.fn();
@@ -448,6 +448,69 @@ describe("SelectableDataTable", () => {
         const sda2checkbox = within(sda2row).getByRole("checkbox");
         await user.click(sda2checkbox);
         expect(onChangeFn).toHaveBeenCalledWith([sda1, sda2]);
+      });
+    });
+  });
+
+  describe("sorting", () => {
+    const updateSorting = jest.fn();
+
+    beforeEach(() => updateSorting.mockClear());
+
+    it("calls updateSorting with correct next direction when clicking the currently sorted column", async () => {
+      const { user } = plainRender(
+        <SelectableDataTable
+          {...props}
+          itemsSelected={[sda1]}
+          sortedBy={{ index: 0, direction: "asc" }}
+          updateSorting={updateSorting}
+        />,
+      );
+
+      const deviceHeader = screen.getByRole("columnheader", { name: "Device" });
+      const deviceHeaderButton = within(deviceHeader).getByRole("button", { name: "Device" });
+      await user.click(deviceHeaderButton);
+
+      expect(updateSorting).toHaveBeenCalledWith({
+        index: 0,
+        direction: "desc",
+      });
+    });
+
+    it("does not call updateSorting when clicking on a non-sortable column", async () => {
+      const { user } = plainRender(
+        <SelectableDataTable
+          {...props}
+          itemsSelected={[sda1]}
+          sortedBy={{ index: 0, direction: "asc" }}
+          updateSorting={updateSorting}
+        />,
+      );
+
+      const contentHeader = screen.getByRole("columnheader", { name: "Content" });
+      expect(within(contentHeader).queryByRole("button", { name: "Content" })).toBeNull();
+      await user.click(contentHeader);
+
+      expect(updateSorting).not.toHaveBeenCalled();
+    });
+
+    it("calls updateSorting with ascending direction when clicking a new sortable column", async () => {
+      const { user } = plainRender(
+        <SelectableDataTable
+          {...props}
+          itemsSelected={[sda1]}
+          sortedBy={{ index: 0, direction: "asc" }}
+          updateSorting={updateSorting}
+        />,
+      );
+
+      const sizeHeader = screen.getByRole("columnheader", { name: "Size" });
+      const sizeHeaderButton = within(sizeHeader).getByRole("button", { name: "Size" });
+      await user.click(sizeHeaderButton);
+
+      expect(updateSorting).toHaveBeenCalledWith({
+        index: 2,
+        direction: "asc",
       });
     });
   });

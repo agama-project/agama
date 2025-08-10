@@ -34,22 +34,22 @@ import {
   ThProps,
   TdProps,
 } from "@patternfly/react-table";
-import { isEqual } from "radashi";
+import { isEqual, isFunction } from "radashi";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
- * An object for sharing data across nested maps
- *
- * Since function arguments are always passed by value, an object passed by
- * sharing is needed for sharing data that might be mutated from different
- * places, as it is the case of the rowIndex prop here.
- *
- * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions#passing_arguments
+ * Represents the current sorting configuration.
  */
-
-type SharedData = {
-  rowIndex: number;
+export type SortedBy = {
+  /**
+   * Index of the column being sorted (given by PatternFly/TableTypes#onShort).
+   */
+  index?: number;
+  /**
+   * Direction of the sort: ascending ("asc") or descending ("desc").
+   */
+  direction?: "asc" | "desc";
 };
 
 /**
@@ -80,6 +80,12 @@ export type SelectableDataTableColumn = {
    * ```
    */
   value: (item: object) => React.ReactNode;
+
+  /**
+   * If defined, marks the column as sortable and specifies the key used for
+   * sorting.
+   */
+  sortingKey?: string;
 
   /**
    * A space-separated string of additional CSS class names to apply to the column's cells.
@@ -171,6 +177,17 @@ export type SelectableDataTableProps<T = any> = {
   initialExpandedKeys?: any[];
 
   /**
+   * Current column index and direction used for sorting.
+   */
+  sortedBy?: SortedBy;
+
+  /**
+   * Optional callback to update sorting. If not provided, sorting is disabled.
+   * Called when a sortable column header is clicked.
+   */
+  updateSorting?: (v: SortedBy) => void;
+
+  /**
    * Callback fired when the selection changes.
    *
    * Receives the updated array of selected items.
@@ -179,21 +196,97 @@ export type SelectableDataTableProps<T = any> = {
 } & TableProps;
 
 /**
+ * An internal utility object used to pass context and state between deeply
+ * nested render functions, such as those involved in building table rows and
+ * headers.
+ *
+ * JavaScript function arguments are passed by value, but objects are passed
+ * by reference. This allows `SharedData` to expose shared and optionally mutable
+ * data across nested calls.
+ *
+ * - `rowIndex` is intentionally mutable and is updated as rows are rendered.
+ * - `sortedBy` and `updateSorting` are read-only references to external sorting state.
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions#passing_arguments
+ */
+type SharedData = {
+  /**
+   * Mutable counter tracking the current row index during rendering. Updated
+   * in-place to avoid recomputation or prop drilling.
+   */
+  rowIndex: number;
+  /**
+   * Current column index and direction used for sorting.
+   */
+  readonly sortedBy: SortedBy;
+  /**
+   * Callback to update sorting. If not provided, sorting is skipped.
+   */
+  readonly updateSorting: (v: SortedBy) => void;
+};
+
+/**
+ * Build sorting properties for a given column header, enabling PatternFly table sorting.
+ */
+const buildSorting = (
+  columnIndex: number,
+  column: SelectableDataTableColumn,
+  sharedData: SharedData,
+): ThProps["sort"] | undefined => {
+  const { sortedBy, updateSorting } = sharedData;
+  const { sortingKey } = column;
+
+  if (!sortedBy || !isFunction(updateSorting)) return undefined;
+
+  if (!sortingKey) {
+    process.env.NODE_ENV === "development" &&
+      console.error(
+        `Column ${column.name} (index ${columnIndex}) does not provide 'sortingKey', skipping sorting props`,
+      );
+    return undefined;
+  }
+
+  return {
+    sortBy: {
+      ...sortedBy,
+      defaultDirection: "asc",
+    },
+    onSort: (_event, index, direction) => {
+      updateSorting({ index, direction });
+    },
+    columnIndex,
+  };
+};
+
+/**
  * Internal component for building the table header
  */
-const TableHeader = ({ columns }: { columns: SelectableDataTableColumn[] }) => (
-  <Thead noWrap>
-    <Tr>
-      <Th />
-      <Th />
-      {columns?.map((c, i) => (
-        <Th key={i} className={c.classNames} {...c.pfThProps}>
-          {c.name}
-        </Th>
-      ))}
-    </Tr>
-  </Thead>
-);
+const TableHeader = ({
+  columns,
+  sharedData,
+}: {
+  columns: SelectableDataTableColumn[];
+  sharedData: SharedData;
+}) => {
+  return (
+    <Thead noWrap>
+      <Tr>
+        <Th />
+        <Th />
+        {columns?.map((c, i) => {
+          const sortProp =
+            sharedData.sortedBy && c.sortingKey ? buildSorting(i, c, sharedData) : undefined;
+
+          return (
+            <Th key={i} className={c.classNames} sort={sortProp} {...c.pfThProps}>
+              {c.name}
+            </Th>
+          );
+        })}
+      </Tr>
+    </Thead>
+  );
+};
 
 /**
  * Helper function to sanitize the `itemsSelected` prop value for the
@@ -250,6 +343,8 @@ export default function SelectableDataTable({
   itemsSelected = [],
   initialExpandedKeys = [],
   onSelectionChange,
+  sortedBy = {},
+  updateSorting = undefined,
   ...tableProps
 }: SelectableDataTableProps) {
   const [expandedItemsKeys, setExpandedItemsKeys] = useState(initialExpandedKeys);
@@ -364,13 +459,17 @@ export default function SelectableDataTable({
   };
 
   // @see SharedData
-  const sharedData = { rowIndex: 0 };
+  const sharedData = {
+    rowIndex: 0,
+    sortedBy,
+    updateSorting,
+  };
 
   const TableBody = () => items?.map((item) => renderItem(item, sharedData));
 
   return (
     <Table data-type="agama/expandable-selector" {...tableProps}>
-      <TableHeader columns={columns} />
+      <TableHeader columns={columns} sharedData={sharedData} />
       <TableBody />
     </Table>
   );
