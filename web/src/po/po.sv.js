@@ -177,9 +177,6 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Alla befintliga partitioner kommer att tas bort och all data på disken kommer att gå förlorad."
   ],
-  "Any interface": [
-    "Vilket gränssnitt som helst"
-  ],
   "Any partition needed to boot will be configured.": [
     "Alla partitioner som behövs för uppstart kommer att konfigureras."
   ],
@@ -257,9 +254,6 @@ export default {
   ],
   "Bind to MAC address": [
     "Bind till MAC-adress"
-  ],
-  "Bind to interface name": [
-    "Bind till gränssnittsnamn"
   ],
   "Binding settings for '%s'": [
     "Bindningsinställningar för '%s'"
@@ -342,9 +336,6 @@ export default {
   "Choose device to bind by name": [
     "Välj enhet att binda efter namn"
   ],
-  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
-    "Välj hur anslutningen ska associeras med ett nätverksgränssnitt. Detta hjälper till att styra vilket gränssnitt anslutningen använder."
-  ],
   "Clear": [
     "Rensa"
   ],
@@ -419,6 +410,9 @@ export default {
   ],
   "Connection details": [
     "Anslutningsdetaljer"
+  ],
+  "Connection is available to all devices.": [
+    ""
   ],
   "Connection not found or lost": [
     "Anslutningen hittades inte eller förlorades"
@@ -931,6 +925,9 @@ export default {
   "Issuer": [
     "Utfärdare"
   ],
+  "It doesn't exist or can't be reached.": [
+    ""
+  ],
   "It is chosen for booting": [
     "Den är vald för uppstart"
   ],
@@ -995,7 +992,7 @@ export default {
     "Laddar data..."
   ],
   "Loading storage": [
-    "Laddar lagring..."
+    "Laddar lagring"
   ],
   "Loading the installation repositories...": [
     "Laddar installationsförråd..."
@@ -1146,6 +1143,9 @@ export default {
   ],
   "No content found": [
     "Inget innehåll hittades"
+  ],
+  "No device is currently using this connection.": [
+    ""
   ],
   "No device selected yet": [
     "Ingen enhet vald ännu"
@@ -1405,6 +1405,9 @@ export default {
   "Reloading data, please wait...": [
     "Laddar om data, vänligen vänta..."
   ],
+  "Reloading is required to get the latest data and avoid issues or data loss.": [
+    ""
+  ],
   "Remove": [
     "Ta bort"
   ],
@@ -1558,6 +1561,9 @@ export default {
   "Setting up connection": [
     "Sätter upp anslutning"
   ],
+  "Settings": [
+    "Inställningar"
+  ],
   "Several partitions will be deleted": [
     "Flera partitioner kommer att tas bort"
   ],
@@ -1676,11 +1682,11 @@ export default {
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM-gruppen '%1$s' kommer att vara kvar på %2$s"
   ],
+  "The configuration has been updated externally.": [
+    ""
+  ],
   "The configured LVM groups will remain at %s": [
     "De konfigurerade LVM-grupperna kommer att finnas kvar på %s"
-  ],
-  "The connection can be used by any available interface.": [
-    "Anslutningen kan användas av vilket tillgängligt gränssnitt som helst."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Anslutningen kommer endast att användas under installationen och är inte tillgänglig i det installerade systemet."
@@ -1738,6 +1744,9 @@ export default {
   ],
   "The extension has been registered with key %s.": [
     "Tillägget har registrerats med nyckeln %s."
+  ],
+  "The extension was registered without any registration code.": [
+    "Tillägget registrerades utan någon registreringskod."
   ],
   "The final size can be bigger in order to fill the extra free space.": [
     "Den slutliga storleken kan bli större för att fylla det extra fria utrymmet."
@@ -1924,6 +1933,9 @@ export default {
   ],
   "Unable to modify the settings": [
     "Det går inte att ändra inställningarna"
+  ],
+  "Unbound": [
+    ""
   ],
   "Unselect": [
     "Avmarkera"

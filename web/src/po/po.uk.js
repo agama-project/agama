@@ -177,9 +177,6 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Всі розділи буде видалено, а всі дані на диску буде втрачено."
   ],
-  "Any interface": [
-    "Будь-який інтерфейс"
-  ],
   "Any partition needed to boot will be configured.": [
     "Усі розділи, необхідні для завантаження, буде налаштовано."
   ],
@@ -257,9 +254,6 @@ export default {
   ],
   "Bind to MAC address": [
     "Прив'язати до MAC-адреси"
-  ],
-  "Bind to interface name": [
-    "Прив'язати до назви інтерфейсу"
   ],
   "Binding settings for '%s'": [
     "Налаштування прив'язки для «%s»"
@@ -342,9 +336,6 @@ export default {
   "Choose device to bind by name": [
     "Виберіть пристрій для прив'язки за назвою"
   ],
-  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
-    "Виберіть, як це підключення має бути пов'язане з мережевим інтерфейсом. Це допоможе контролювати, який інтерфейс буде використовуватися для підключення."
-  ],
   "Clear": [
     "Очистити"
   ],
@@ -419,6 +410,9 @@ export default {
   ],
   "Connection details": [
     "Відомості про підключення"
+  ],
+  "Connection is available to all devices.": [
+    ""
   ],
   "Connection not found or lost": [
     "З'єднання не знайдено або втрачено"
@@ -932,6 +926,9 @@ export default {
   "Issuer": [
     "Сертифікаційний центр"
   ],
+  "It doesn't exist or can't be reached.": [
+    ""
+  ],
   "It is chosen for booting": [
     "Його обрано для завантаження"
   ],
@@ -1147,6 +1144,9 @@ export default {
   ],
   "No content found": [
     "Вміст не знайдено"
+  ],
+  "No device is currently using this connection.": [
+    ""
   ],
   "No device selected yet": [
     "Пристрій ще не обрано"
@@ -1405,6 +1405,9 @@ export default {
   ],
   "Reloading data, please wait...": [
     "Переміщення даних; будь ласка, зачекайте…"
+  ],
+  "Reloading is required to get the latest data and avoid issues or data loss.": [
+    ""
   ],
   "Remove": [
     "Видалити"
@@ -1678,11 +1681,11 @@ export default {
   "The LVM group '%1$s' will remain at %2$s": [
     "Група LVM '%1$s' залишиться на %2$s"
   ],
+  "The configuration has been updated externally.": [
+    ""
+  ],
   "The configured LVM groups will remain at %s": [
     "Налаштовані групи LVM залишаться у %s"
-  ],
-  "The connection can be used by any available interface.": [
-    "Це підключення може використовуватися будь-яким доступним інтерфейсом."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Це з'єднання буде використовуватися тільки під час встановлення і не буде доступним у встановленій системі."
@@ -1929,6 +1932,9 @@ export default {
   ],
   "Unable to modify the settings": [
     "Не вдається змінити налаштування"
+  ],
+  "Unbound": [
+    ""
   ],
   "Unselect": [
     "Відмінити обране"

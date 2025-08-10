@@ -177,9 +177,6 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     ""
   ],
-  "Any interface": [
-    "ნებისმიერი ინტერფეისი"
-  ],
   "Any partition needed to boot will be configured.": [
     "ასევე მოხდება ჩასატვირთად საჭირო დანაყოფების მორგება."
   ],
@@ -257,9 +254,6 @@ export default {
   ],
   "Bind to MAC address": [
     "მიბმა MAC მისამართზე"
-  ],
-  "Bind to interface name": [
-    "მიბმა ინტერფეისის სახელზე"
   ],
   "Binding settings for '%s'": [
     "მიბმის პარამეტრები '%s'-სთვის"
@@ -342,7 +336,7 @@ export default {
   "Choose device to bind by name": [
     "აირჩიეთ მოწყობილობა, რომლის სახელზეც მიბმა გნებავთ"
   ],
-  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
     ""
   ],
   "Clear": [
@@ -358,7 +352,7 @@ export default {
     "დაგეგმილი ქმედებების ჩამოშლა"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    ""
+    "iSCSI-დან ჩამტვირთავი მიკროკოდიდან (iBFT) წაკითხული კონფიგურაცია."
   ],
   "Configure DASD": [
     "DASD-ის მორგება"
@@ -420,6 +414,9 @@ export default {
   "Connection details": [
     "კავშირის დეტალები"
   ],
+  "Connection is available to all devices.": [
+    ""
+  ],
   "Connection not found or lost": [
     "კავშირის ვერ ვიპოვე, ან დაიკარგა"
   ],
@@ -436,7 +433,7 @@ export default {
     "კონტროლერები"
   ],
   "Could not authenticate against the server, please check it.": [
-    ""
+    "სერვერთან ავთენტიკაცია შეუძლებელია. გადაამოწმეთ."
   ],
   "Could not connect to %s": [
     "%s-სთან მიერთების შეცდომა"
@@ -550,7 +547,7 @@ export default {
     "%s-ის დეტალები"
   ],
   "Details will appear after the connection is successfully established.": [
-    ""
+    "დეტალები გამოჩნდება კავშირის წარმატებულად დამყარების შემდეგ."
   ],
   "Device": [
     "მოწყობილობა"
@@ -721,7 +718,7 @@ export default {
     "გაფილტვრა ნიმუშის სახელით ან აღწერით"
   ],
   "Filter by territory, time zone code or UTC offset": [
-    ""
+    "გაფილტვრა ტერიტორიით, დროის სარტყლით, ან UTC წანაცვლებით"
   ],
   "Find space": [
     "ადგილის პოვნა"
@@ -812,7 +809,7 @@ export default {
     "ჰოსტის სახელი წარმატებით განახლდა"
   ],
   "I have read and accept the [license] for %s": [
-    ""
+    "მე წავიკითხე და დავეთანხმე ლიცენზიას %s-სთვის"
   ],
   "IP Address": [
     "IP მისამართი"
@@ -878,25 +875,25 @@ export default {
     "დაყენება დამატებითი მორგებით."
   ],
   "Install using device %s and deleting all its content.": [
-    ""
+    "დაყენება მოწყობილობაზე %s მისი შემცველობის სრულად წაშლის გზით."
   ],
   "Install using device %s shrinking existing partitions as needed.": [
-    ""
+    "დაყენება მოწყობილობაზე %s არსებული დანაყოფების საჭიროებისამებრ შემცირების გზით."
   ],
   "Install using device %s with a custom strategy to find the needed space.": [
-    ""
+    "დაყენება მოწყობილობაზე %s საჭირო ადგილის საპოვნელად თქვენი სტრატეგიის გამოყენებით."
   ],
   "Install using device %s without modifying existing partitions.": [
     "დაყენება მოწყობილობაზე %s არსებული დანაყოფების შეცვლის გარეშე."
   ],
   "Install using several devices and deleting all its content.": [
-    ""
+    "დაყენება რამდენიმე მოწყობილობაზე მეტი შემცველობის სრულად წაშლის გზით."
   ],
   "Install using several devices shrinking existing partitions as needed.": [
-    ""
+    "დაყენება რამდენიმე მოწყობილობის გამოყენებით არსებული დანაყოფების საჭიროებისამებრ დაპატარავების გზით."
   ],
   "Install using several devices with a custom strategy to find the needed space.": [
-    ""
+    "დაყენება რამდენიმე მოწყობილობაზე საჭირო სივრცის საპოვნელად თქვენს მიერ მითითებული სტრატეგიით."
   ],
   "Install using several devices without modifying existing partitions.": [
     "დაყენება რამდენიმე მოწყობილობის გამოყენებით არსებული დანაყოფების შეცვლის გარეშე."
@@ -931,6 +928,9 @@ export default {
   "Issuer": [
     "გამომცემელი"
   ],
+  "It doesn't exist or can't be reached.": [
+    ""
+  ],
   "It is chosen for booting": [
     "არჩეულია ჩასატვირთად"
   ],
@@ -947,7 +947,7 @@ export default {
     "არჩეულია LVM ჯგუფისთვის '%s'"
   ],
   "It is not possible to allocate space for %s.": [
-    ""
+    "%s-სთვის სივრცის გამოყოფა შეუძლებელია."
   ],
   "It is not possible to allocate space for the boot partition and for %s.": [
     ""
@@ -1146,6 +1146,9 @@ export default {
   ],
   "No content found": [
     "შემცველობა აღმოჩენილი არაა"
+  ],
+  "No device is currently using this connection.": [
+    ""
   ],
   "No device selected yet": [
     "ჯერ მოწყობილობები არჩეული არაა"
@@ -1405,6 +1408,9 @@ export default {
   "Reloading data, please wait...": [
     "მიმდინარეობს მონაცემების თავიდან ჩატვირთვა. მოითმინეთ..."
   ],
+  "Reloading is required to get the latest data and avoid issues or data loss.": [
+    ""
+  ],
   "Remove": [
     "წაშლა"
   ],
@@ -1475,7 +1481,7 @@ export default {
     "მეტი დეტალების ნახვა"
   ],
   "Select": [
-    "აირჩიეთ"
+    "არჩევა"
   ],
   "Select a device to define partitions or to mount": [
     "აირჩიეთ დისკი დანაყოფების აღწერისთვის, ან მისამაგრებლად"
@@ -1676,11 +1682,11 @@ export default {
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM ჯგუფი '%1$s' დარჩება დისკზე '%2$s'"
   ],
+  "The configuration has been updated externally.": [
+    ""
+  ],
   "The configured LVM groups will remain at %s": [
     "მორგებული LVM ჯგუფები დარჩება დისკზე %s"
-  ],
-  "The connection can be used by any available interface.": [
-    ""
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     ""
@@ -1722,7 +1728,7 @@ export default {
     "მოწყბილობა მიმაგრებული იქნება, როგორც %s."
   ],
   "The device will be used by the new system.": [
-    ""
+    "მოწყობილობა გამოყენებული იქნება ახალი სისტემის მიერ."
   ],
   "The disk is used for LVM": [
     "დისკი გამოიყენება LVM-სთვის"
@@ -1738,6 +1744,9 @@ export default {
   ],
   "The extension has been registered with key %s.": [
     "ეს გაფართოება დარეგისტრირებულია გასაღებით %s."
+  ],
+  "The extension was registered without any registration code.": [
+    "ეს გაფართოება დარეგისტრირებულია რეგისტრაციის კოდის გარეშე."
   ],
   "The final size can be bigger in order to fill the extra free space.": [
     ""
@@ -1860,13 +1869,13 @@ export default {
     "გამოყენებადი დანაყოფები აღმოჩენილი არაა"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    ""
+    "ეს ყველაზე ხშირად არჩეული დაყენების პარამეტრებია. ნუ შეშინდებით, დაათვალიეროთ მენიუს სექციები დამატებითი დეტალებისთვის."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "ეს დასაყენებელი პროდუქტის პარამეტრებია. დაყენების პროგრამის ენა და კლავიატურის განლაგება შეგიძლიათ [მორგების პანელიდან] ზედა პანელიდან."
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    ""
+    "ეს დასაყენებელი პროდუქტის პარამეტრებია. დაყენების პროგრამის ენის მორგება [მორგების პანელიდან] ზედა ზოლიდანაა ხელმისაწვდომი."
   ],
   "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
     ""
@@ -1875,7 +1884,7 @@ export default {
     ""
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    ""
+    "ეს ჰოსტის სახელი დინამიკურია და შეიძლება, შეიცვალოს დაყენების ან ქსელური განახლების შემდეგ, როგორც ამას ლოკალური ქსელის ადმინისტრატორი მიუთითებს."
   ],
   "This license is not available in %s.": [
     "ეს ლიცენზია %s-ში ხელმისაწვდომი არაა."
@@ -1924,6 +1933,9 @@ export default {
   ],
   "Unable to modify the settings": [
     "პარამეტრების შეცვლა შეუძლებელია"
+  ],
+  "Unbound": [
+    ""
   ],
   "Unselect": [
     "მონიშვნის მოხსნა"
@@ -2091,7 +2103,7 @@ export default {
     "გამოიყენება გარდამავლი ჰოსტის სახელი: %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
-    ""
+    "ტომების ჯგუფი '%s' უკვე არსებობს. შეიყვანეთ განსხვავებული სახელი."
   ],
   "WPA & WPA2 Personal": [
     "WPA & WPA2 პერსონალური"

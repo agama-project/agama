@@ -177,9 +177,6 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "全てのパーティションを削除し、ディスク内に存在するデータを全て消去します。"
   ],
-  "Any interface": [
-    "任意のインターフェイス"
-  ],
   "Any partition needed to boot will be configured.": [
     "起動に必要なパーティションについても設定を行います。"
   ],
@@ -257,9 +254,6 @@ export default {
   ],
   "Bind to MAC address": [
     "MAC アドレスにバインド"
-  ],
-  "Bind to interface name": [
-    "インターフェイス名にバインド"
   ],
   "Binding settings for '%s'": [
     "'%s' に対するバインディング設定"
@@ -342,9 +336,6 @@ export default {
   "Choose device to bind by name": [
     "名前でデバイスを識別します"
   ],
-  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
-    "接続とネットワークインターフェイスとの結びつけ方法を選択してください。これにより、接続が使用するインターフェイスを制御することができます。"
-  ],
   "Clear": [
     "消去"
   ],
@@ -419,6 +410,9 @@ export default {
   ],
   "Connection details": [
     "接続の詳細"
+  ],
+  "Connection is available to all devices.": [
+    ""
   ],
   "Connection not found or lost": [
     "接続が見つからないか、接続が失われています"
@@ -930,6 +924,9 @@ export default {
   "Issuer": [
     "発行者"
   ],
+  "It doesn't exist or can't be reached.": [
+    ""
+  ],
   "It is chosen for booting": [
     "起動用に選択済み"
   ],
@@ -1145,6 +1142,9 @@ export default {
   ],
   "No content found": [
     "ストレージには何も記録されていないようです"
+  ],
+  "No device is currently using this connection.": [
+    ""
   ],
   "No device selected yet": [
     "まだ何もデバイスを選択していません"
@@ -1404,6 +1404,9 @@ export default {
   "Reloading data, please wait...": [
     "データを再読み込みしています。しばらくお待ちください..."
   ],
+  "Reloading is required to get the latest data and avoid issues or data loss.": [
+    ""
+  ],
   "Remove": [
     "削除"
   ],
@@ -1557,6 +1560,9 @@ export default {
   "Setting up connection": [
     "接続の設定"
   ],
+  "Settings": [
+    "設定"
+  ],
   "Several partitions will be deleted": [
     "いくつかのパーティションを削除します"
   ],
@@ -1674,11 +1680,11 @@ export default {
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM グループ '%1$s' が %2$s に残されます"
   ],
+  "The configuration has been updated externally.": [
+    ""
+  ],
   "The configured LVM groups will remain at %s": [
     "設定済みの LVM グループが %s に残されます"
-  ],
-  "The connection can be used by any available interface.": [
-    "利用可能な任意のインターフェイスを使用するようにします。"
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "接続はインストール時にのみ使用され、インストールされたシステムでは利用できません。"
@@ -1925,6 +1931,9 @@ export default {
   ],
   "Unable to modify the settings": [
     "設定を変更できませんでした"
+  ],
+  "Unbound": [
+    ""
   ],
   "Unselect": [
     "未選択"
