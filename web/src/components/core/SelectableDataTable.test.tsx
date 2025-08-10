@@ -514,4 +514,73 @@ describe("SelectableDataTable", () => {
       });
     });
   });
+
+  describe("select/unselect all checkbox", () => {
+    const onSelectionChange = jest.fn();
+
+    beforeEach(() => onSelectionChange.mockClear());
+
+    it("renders it only when selectionMode is multiple and allowSelectAll is true", () => {
+      const { rerender } = plainRender(
+        <SelectableDataTable {...props} selectionMode="single" allowSelectAll />,
+      );
+
+      expect(screen.queryByRole("checkbox", { name: /select all/i })).toBeNull();
+
+      rerender(<SelectableDataTable {...props} selectionMode="multiple" allowSelectAll={false} />);
+      expect(screen.queryByRole("checkbox", { name: /select all/i })).toBeNull();
+
+      rerender(<SelectableDataTable {...props} selectionMode="multiple" allowSelectAll />);
+      screen.getByRole("checkbox", { name: "Select all rows" });
+    });
+
+    it("selects all items if it is clicked and not all items are selected", async () => {
+      const { user, rerender } = plainRender(
+        <SelectableDataTable
+          {...props}
+          allowSelectAll
+          selectionMode="multiple"
+          itemsSelected={[]}
+          onSelectionChange={onSelectionChange}
+        />,
+      );
+
+      const selectAllCheckbox = screen.getByRole("checkbox", { name: "Select all rows" });
+      await user.click(selectAllCheckbox);
+
+      expect(onSelectionChange).toHaveBeenCalledWith(props.items);
+
+      rerender(
+        <SelectableDataTable
+          {...props}
+          allowSelectAll
+          selectionMode="multiple"
+          itemsSelected={[props.items[0]]}
+          onSelectionChange={onSelectionChange}
+        />,
+      );
+
+      await user.click(selectAllCheckbox);
+
+      expect(onSelectionChange).toHaveBeenCalledWith(props.items);
+    });
+
+    it("unselects all items if it is clicked when all items are selected", async () => {
+      const { user } = plainRender(
+        <SelectableDataTable
+          {...props}
+          allowSelectAll
+          selectionMode="multiple"
+          itemsSelected={props.items}
+          onSelectionChange={onSelectionChange}
+        />,
+      );
+
+      // FIXME: label should be "Unselect"
+      const selectAllCheckbox = screen.getByRole("checkbox", { name: "Select all rows" });
+      await user.click(selectAllCheckbox);
+
+      expect(onSelectionChange).toHaveBeenCalledWith([]);
+    });
+  });
 });

@@ -193,6 +193,20 @@ export type SelectableDataTableProps<T = any> = {
    * Receives the updated array of selected items.
    */
   onSelectionChange?: (selection: T[]) => void;
+
+  /**
+   * If true, allows the user to select all rows via the header checkbox.
+   *
+   * Only applicable when `allowMultiple` is also true. When enabled, a checkbox
+   * will appear in the header row, letting users select or deselect all rows in
+   * one action.
+   *
+   * When toggled, `onSelectionChange` will be called with either:
+   *   - the full `items` array (when selecting all), or
+   *   - an empty array (when deselecting all).
+   *
+   */
+  allowSelectAll?: boolean;
 } & TableProps;
 
 /**
@@ -223,10 +237,31 @@ type SharedData = {
    * Callback to update sorting. If not provided, sorting is skipped.
    */
   readonly updateSorting: (v: SortedBy) => void;
+  /**
+   * Whether the select/unselect-all feature is enabled and the header checkbox
+   * is shown.
+   */
+  readonly allowSelectAll: boolean;
+  /**
+   * Whether multiple item selection is allowed.
+   */
+  readonly allowMultiple: boolean;
+  /**
+   * Whether all items in the table are currently selected.
+   * Used to reflect checkbox state in the header.
+   */
+  readonly isAllSelected: boolean;
+  /**
+   * Handles toggling selection of all items in the table.
+   * If `isSelecting` is `true`, all items are passed to `onSelectionChange`.
+   * If `false`, an empty array is passed instead (deselect all).
+   */
+  readonly selectAll: (isSelecting: boolean) => void;
 };
 
 /**
- * Build sorting properties for a given column header, enabling PatternFly table sorting.
+ * Build sorting props for a given column header, enabling PatternFly table
+ * sorting.
  */
 const buildSorting = (
   columnIndex: number,
@@ -268,11 +303,21 @@ const TableHeader = ({
   columns: SelectableDataTableColumn[];
   sharedData: SharedData;
 }) => {
+  const { allowMultiple, allowSelectAll, isAllSelected, selectAll } = sharedData;
+
+  const selectAllProps =
+    allowMultiple && allowSelectAll
+      ? {
+          onSelect: (_event, isSelecting: boolean) => selectAll(isSelecting),
+          isSelected: isAllSelected,
+        }
+      : undefined;
+
   return (
     <Thead noWrap>
       <Tr>
         <Th />
-        <Th />
+        <Th select={selectAllProps} />
         {columns?.map((c, i) => {
           const sortProp =
             sharedData.sortedBy && c.sortingKey ? buildSorting(i, c, sharedData) : undefined;
@@ -345,6 +390,7 @@ export default function SelectableDataTable({
   onSelectionChange,
   sortedBy = {},
   updateSorting = undefined,
+  allowSelectAll = false,
   ...tableProps
 }: SelectableDataTableProps) {
   const [expandedItemsKeys, setExpandedItemsKeys] = useState(initialExpandedKeys);
@@ -463,6 +509,11 @@ export default function SelectableDataTable({
     rowIndex: 0,
     sortedBy,
     updateSorting,
+    allowMultiple,
+    allowSelectAll,
+    isAllSelected: itemsSelected.length === items.length,
+    selectAll: (isSelecting: boolean) =>
+      isSelecting ? onSelectionChange(items) : onSelectionChange([]),
   };
 
   const TableBody = () => items?.map((item) => renderItem(item, sharedData));
