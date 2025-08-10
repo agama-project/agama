@@ -127,14 +127,12 @@ describe "agama config" do
       let(:profile_body) do
         json = <<~JSON
           {
-            "scripts": {
-              "postPartitioning": [
+            "files": [
                 {
                   "name": "foo",
                   "url": "my-script.sh"
                 }
               ]
-            }
           }
         JSON
         json
