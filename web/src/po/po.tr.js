@@ -177,9 +177,6 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Mevcut herhangi bir bölüm kaldırılacak ve diskteki tüm veriler kaybolacaktır."
   ],
-  "Any interface": [
-    "Herhangi bir arayüz"
-  ],
   "Any partition needed to boot will be configured.": [
     "Önyükleme için gereken herhangi bir bölüm yapılandırılacaktır."
   ],
@@ -257,9 +254,6 @@ export default {
   ],
   "Bind to MAC address": [
     "MAC adresine bağlan"
-  ],
-  "Bind to interface name": [
-    "Arayüz adına bağlan"
   ],
   "Binding settings for '%s'": [
     "'%s' için bağlama ayarları"
@@ -342,9 +336,6 @@ export default {
   "Choose device to bind by name": [
     "Adına göre bağlanacak cihazı seçin"
   ],
-  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
-    "Bağlantının bir ağ arayüzüyle nasıl ilişkilendirileceğini seçin. Bu, bağlantının hangi arayüzü kullandığını kontrol etmeye yardımcı olur."
-  ],
   "Clear": [
     "Temizle"
   ],
@@ -419,6 +410,9 @@ export default {
   ],
   "Connection details": [
     "Bağlantı detayları"
+  ],
+  "Connection is available to all devices.": [
+    ""
   ],
   "Connection not found or lost": [
     "Bağlantı bulunamadı veya kayboldu"
@@ -931,6 +925,9 @@ export default {
   "Issuer": [
     "Yayıncı"
   ],
+  "It doesn't exist or can't be reached.": [
+    ""
+  ],
   "It is chosen for booting": [
     "Önyükleme için seçildi"
   ],
@@ -1146,6 +1143,9 @@ export default {
   ],
   "No content found": [
     "İçerik bulunamadı"
+  ],
+  "No device is currently using this connection.": [
+    ""
   ],
   "No device selected yet": [
     "Henüz hiçbir cihaz seçilmedi"
@@ -1404,6 +1404,9 @@ export default {
   ],
   "Reloading data, please wait...": [
     "Veriler yeniden yükleniyor, lütfen bekleyin..."
+  ],
+  "Reloading is required to get the latest data and avoid issues or data loss.": [
+    ""
   ],
   "Remove": [
     "Kaldır"
@@ -1676,11 +1679,11 @@ export default {
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM grubu '%1$s' %2$s konumunda kalacak"
   ],
+  "The configuration has been updated externally.": [
+    ""
+  ],
   "The configured LVM groups will remain at %s": [
     "Yapılandırılan LVM grupları %s konumunda kalacaktır"
-  ],
-  "The connection can be used by any available interface.": [
-    "Bağlantı herhangi bir mevcut arayüz tarafından kullanılabilir."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Bağlantı sadece kurulum sırasında kullanılacak olup, kurulu sistemde mevcut olmayacaktır."
@@ -1927,6 +1930,9 @@ export default {
   ],
   "Unable to modify the settings": [
     "Ayarlar değiştirilemiyor"
+  ],
+  "Unbound": [
+    ""
   ],
   "Unselect": [
     "Seçimi kaldır"
