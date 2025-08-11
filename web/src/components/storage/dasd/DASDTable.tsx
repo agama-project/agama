@@ -81,7 +81,7 @@ const columns = [
     // untranslated.
     name: _("DIAG"),
     value: (d: DASDDevice) => {
-      if (!d.enabled) return;
+      if (!d.enabled) return "";
       d.diag ? _("Yes") : _("No");
     },
     sortingKey: "diag",
