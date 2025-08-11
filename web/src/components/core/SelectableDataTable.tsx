@@ -34,7 +34,7 @@ import {
   ThProps,
   TdProps,
 } from "@patternfly/react-table";
-import { isEqual, isFunction } from "radashi";
+import { isFunction } from "radashi";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -165,6 +165,16 @@ export type SelectableDataTableProps<T = any> = {
    * given item.
    */
   itemClassNames?: (item: T) => string | undefined;
+
+  /**
+   * A function used to determine if two items are equal.
+   *
+   * It helps correctly identify and manipulate selected items, especially when
+   * items are objects that may not be referentially equal. The function should
+   * return `true` if `a` and `b` are considered the same item; `false`
+   * otherwise.
+   */
+  itemEqualityFn?: (a: T, b: T) => boolean;
 
   /**
    * Array of currently selected items.
@@ -375,6 +385,13 @@ const sanitizeSelection = (
  * For consistency, the selection API (`itemsSelected` and `onSelectionChange`)
  * always uses arrays, even when `selectionMode` is set to `"single"`.
  *
+ * By default, item equality is determined by comparing each item's `itemIdKey`
+ * property (which defaults to `"id"`). If the item does not have that key, a
+ * strict equality check (`===`) between the two items is performed.
+ *
+ * Such a comparasion can be overriden by providing a custom `itemEqualityFn`
+ * prop, for example, to perform deep comparison or other alternative logic.
+ *
  * @note It only accepts one nesting level.
  */
 export default function SelectableDataTable({
@@ -385,12 +402,19 @@ export default function SelectableDataTable({
   itemChildren = () => [],
   itemSelectable = () => true,
   itemClassNames = () => "",
+  itemEqualityFn = (a, b) => {
+    if (Object.hasOwn(a, itemIdKey)) {
+      return a[itemIdKey] === b[itemIdKey];
+    }
+    return a === b;
+  },
   itemsSelected = [],
   initialExpandedKeys = [],
   onSelectionChange,
   sortedBy = {},
   updateSorting = undefined,
   allowSelectAll = false,
+
   ...tableProps
 }: SelectableDataTableProps) {
   const [expandedItemsKeys, setExpandedItemsKeys] = useState(initialExpandedKeys);
@@ -398,9 +422,7 @@ export default function SelectableDataTable({
   const allowMultiple = selectionMode === "multiple";
   const isItemSelected = (item: object) => {
     const selected = selection.find((selectionItem) => {
-      return (
-        Object.hasOwn(selectionItem, itemIdKey) && selectionItem[itemIdKey] === item[itemIdKey]
-      );
+      return itemEqualityFn(item, selectionItem);
     });
 
     return selected !== undefined || selection.includes(item);
@@ -421,7 +443,7 @@ export default function SelectableDataTable({
     }
 
     if (isItemSelected(item)) {
-      onSelectionChange(selection.filter((i) => !isEqual(i, item)));
+      onSelectionChange(selection.filter((i) => !itemEqualityFn(i, item)));
     } else {
       onSelectionChange([...selection, item]);
     }
