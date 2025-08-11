@@ -40,49 +40,67 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { Page, Popup } from "~/components/core";
-import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
+import { Page, Popup, SelectableDataTable } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 import { hex } from "~/utils";
 import { sort } from "fast-sort";
 import { DASDDevice } from "~/types/dasd";
 import { useDASDDevices, useDASDMutation, useFormatDASDMutation } from "~/queries/storage/dasd";
-
-// FIXME: please, note that this file still requiring refinements until reach a
-//   reasonable stable version
-const columnData = (device: DASDDevice, column: { id: string; sortId?: string; label: string }) => {
-  let data = device[column.id];
-
-  switch (column.id) {
-    case "formatted":
-    case "diag":
-      if (!device.enabled) data = "";
-      break;
-    case "partitionInfo":
-      data = data.split(",").map((d: string) => <div key={d}>{d}</div>);
-      break;
-  }
-
-  if (typeof data === "boolean") {
-    return data ? _("Yes") : _("No");
-  }
-
-  return data;
-};
+import { SortedBy } from "~/components/core/SelectableDataTable";
 
 const columns = [
-  { id: "id", sortId: "hexId", label: _("Channel ID") },
-  { id: "status", label: _("Status") },
-  { id: "deviceName", label: _("Device") },
-  { id: "deviceType", label: _("Type") },
-  // TRANSLATORS: table header, the column contains "Yes"/"No" values
-  // for the DIAG access mode (special disk access mode on IBM mainframes),
-  // usually keep untranslated
-  { id: "diag", label: _("DIAG") },
-  { id: "formatted", label: _("Formatted") },
-  { id: "partitionInfo", label: _("Partition Info") },
+  {
+    // TRANSLATORS: table header for a DASD devices table
+    name: _("Channel ID"),
+    sortingKey: "hexId",
+    value: (d: DASDDevice) => d.id,
+  },
+
+  {
+    // TRANSLATORS: table header for a DASD devices table
+    name: _("Status"),
+    value: (d: DASDDevice) => d.status,
+    sortingKey: "status",
+  },
+  {
+    // TRANSLATORS: table header for a DASD devices table
+    name: _("Device"),
+    value: (d: DASDDevice) => d.deviceName,
+    sortingKey: "deviceName",
+  },
+  {
+    // TRANSLATORS: table header for a DASD devices table
+    name: _("Type"),
+    value: (d: DASDDevice) => d.deviceType,
+    sortingKey: "deviceType",
+  },
+  {
+    // TRANSLATORS: table header for `DIAG access mode` on DASD devices table.
+    // It refers to an special disk access mode on IBM mainframes. Keep
+    // untranslated.
+    name: _("DIAG"),
+    value: (d: DASDDevice) => {
+      if (!d.enabled) return;
+      d.diag ? _("Yes") : _("No");
+    },
+    sortingKey: "diag",
+  },
+  {
+    // TRANSLATORS: table header for a column in a DASD devices table that
+    // usually contents Yes or No values
+    name: _("Formatted"),
+    value: (d: DASDDevice) => (d.formatted ? _("Yes") : _("No")),
+    sortingKey: "formatted",
+  },
+  {
+    // TRANSLATORS: table header for a DASD devices table
+    name: _("Partition Info"),
+    value: (d: DASDDevice) => d.partitionInfo.split(",").map((d: string) => <div key={d}>{d}</div>),
+    sortingKey: "partitionInfo",
+  },
 ];
+
 const DevicesList = ({ devices }) => (
   <List>
     {devices.map((d: DASDDevice) => (
@@ -215,65 +233,24 @@ type FilterOptions = {
   minChannel?: string;
   maxChannel?: string;
 };
-type SelectionOptions = {
-  unselect?: boolean;
-  device?: DASDDevice;
-  devices?: DASDDevice[];
-};
 
 export default function DASDTable() {
   const devices = useDASDDevices();
+  const [sortedBy, updateSortedBy] = useState<SortedBy>({ index: 0, direction: "asc" });
+
   const [selectedDASD, setSelectedDASD] = useState<DASDDevice[]>([]);
   const [{ minChannel, maxChannel }, setFilters] = useState<FilterOptions>({
     minChannel: "",
     maxChannel: "",
   });
 
-  const [sortingColumn, setSortingColumn] = useState(columns[0]);
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-
-  const sortColumnIndex = () => columns.findIndex((c) => c.id === sortingColumn.id);
   const filteredDevices = filterDevices(devices, minChannel, maxChannel);
-  const selectedDevicesIds = selectedDASD.map((d) => d.id);
-
-  const changeSelected = (newSelection: SelectionOptions) => {
-    setSelectedDASD((prevSelection) => {
-      if (newSelection.unselect) {
-        if (newSelection.device)
-          return prevSelection.filter((d) => d.id !== newSelection.device.id);
-        if (newSelection.devices) return [];
-      } else {
-        if (newSelection.device) return [...prevSelection, newSelection.device];
-        if (newSelection.devices) return newSelection.devices;
-      }
-    });
-  };
-
-  // Selecting
-  const selectAll = (isSelecting = true) => {
-    changeSelected({ unselect: !isSelecting, devices: filteredDevices });
-  };
-
-  const selectDevice = (device, isSelecting = true) => {
-    changeSelected({ unselect: !isSelecting, device });
-  };
 
   // Sorting
   // See https://github.com/snovakovic/fast-sort
-  const sortBy = sortingColumn.sortId || sortingColumn.id;
-  const sortedDevices = sort(filteredDevices)[sortDirection]((d) => d[sortBy]);
-
-  // FIXME: this can be improved and even extracted to be used with other tables.
-  const getSortParams = (columnIndex) => {
-    return {
-      sortBy: { index: sortColumnIndex(), direction: sortDirection },
-      onSort: (_event, index, direction) => {
-        setSortingColumn(columns[index]);
-        setSortDirection(direction);
-      },
-      columnIndex,
-    };
-  };
+  const sortedDevices = sort(filteredDevices)[sortedBy.direction](
+    (d) => d[columns[sortedBy.index].sortingKey],
+  );
 
   const updateFilter = (newFilters: FilterOptions) => {
     setFilters((currentFilters) => ({ ...currentFilters, ...newFilters }));
@@ -281,44 +258,17 @@ export default function DASDTable() {
 
   const PageContent = () => {
     return (
-      <Table variant="compact">
-        <Thead>
-          <Tr>
-            <Th
-              aria-label="dasd-select"
-              select={{
-                onSelect: (_event, isSelecting) => selectAll(isSelecting),
-                isSelected: filteredDevices.length === selectedDASD.length,
-              }}
-            />
-            {columns.map((column, index) => (
-              <Th key={column.id} sort={getSortParams(index)}>
-                {column.label}
-              </Th>
-            ))}
-          </Tr>
-        </Thead>
-        <Tbody>
-          {sortedDevices.map((device, rowIndex) => (
-            <Tr key={device.id}>
-              <Td
-                dataLabel={device.id}
-                select={{
-                  rowIndex,
-                  onSelect: (_event, isSelecting) => selectDevice(device, isSelecting),
-                  isSelected: selectedDevicesIds.includes(device.id),
-                  isDisabled: false,
-                }}
-              />
-              {columns.map((column) => (
-                <Td key={column.id} dataLabel={column.label}>
-                  {columnData(device, column)}
-                </Td>
-              ))}
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
+      <SelectableDataTable
+        columns={columns}
+        items={sortedDevices}
+        selectionMode="multiple"
+        itemsSelected={selectedDASD}
+        variant="compact"
+        onSelectionChange={setSelectedDASD}
+        sortedBy={sortedBy}
+        updateSorting={updateSortedBy}
+        allowSelectAll
+      />
     );
   };
 
