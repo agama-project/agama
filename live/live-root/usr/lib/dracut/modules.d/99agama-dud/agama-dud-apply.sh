@@ -10,7 +10,7 @@
 . /lib/img-lib.sh
 
 DUD_DIR="$NEWROOT/run/agama/dud"
-AGAMA_CLI="$NEWROOT/usr/bin/agama"
+AGAMA_CLI="/usr/bin/agama"
 AGAMA_DUD_INFO="/tmp/agamadud.info"
 DUD_RPM_REPOSITORY="$NEWROOT/var/lib/agama/dud/repo"
 
@@ -25,6 +25,10 @@ apply_updates() {
   local dud_root
   local options
   index=0
+
+  # make local devices available to "agama download"
+  mount -o bind /dev "$NEWROOT"/dev
+  mount -o bind /sys "$NEWROOT"/sys
 
   # make sure the HTTPS downloads work correctly
   configure_ssl
@@ -41,7 +45,7 @@ apply_updates() {
     file="${DUD_DIR}/${filename}"
     # FIXME: use an index because two updates, coming from different places, can have the same name.
     echo "Fetching a Driver Update Disk from $dud_url to ${file}"
-    if ! $AGAMA_CLI $options download "$dud_url" "${file}"; then
+    if ! "$NEWROOT/usr/bin/chroot" "$NEWROOT" "$AGAMA_CLI" $options download "$dud_url" "${file##"$NEWROOT"}"; then
       warn "Failed to fetch the Driver Update Disk"
       continue
     fi
@@ -64,6 +68,9 @@ apply_updates() {
 
     ((index++))
   done <$AGAMA_DUD_INFO
+
+  umount "$NEWROOT"/dev
+  umount "$NEWROOT"/sys
 }
 
 # Applies an update from an RPM package
