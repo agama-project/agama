@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug 12 09:45:01 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Split progress details into two lines for better readability
+  (gh#agama-project/agama#2647).
+
+-------------------------------------------------------------------
 Tue Aug  5 23:28:43 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Improve layout and accuracy of wired connection details view
