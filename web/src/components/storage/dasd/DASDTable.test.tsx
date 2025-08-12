@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -70,49 +70,37 @@ describe("DASDTable", () => {
       screen.getByText("active");
     });
 
-    it("does not allow to perform any action if not selected any device", () => {
-      installerRender(<DASDTable />);
-      const button = screen.getByRole("button", { name: "Perform an action" });
-      expect(button).toHaveAttribute("disabled");
+    it("does not offer bulk actions until a device is selected", async () => {
+      const { user } = installerRender(<DASDTable />);
+      screen.getByText("Select devices to enable bulk actions.");
+      expect(screen.queryByRole("button", { name: "Activate" })).toBeNull();
+      const selection = screen.getByRole("checkbox", { name: "Select row 0" });
+      await user.click(selection);
+      expect(screen.queryByText("Select devices to enable bulk actions.")).toBeNull();
+      screen.getByRole("button", { name: "Activate" });
     });
 
-    describe("when there are some DASD selected", () => {
-      it("allows to perform a set of actions over them", async () => {
+    describe("when format action is requested", () => {
+      // TODO: Add more scenarios to individually test these cases
+      // for both situations: when a single device is selected and when multiple devices are selected.
+      it("shows a confirmation dialog if all the devices are online", async () => {
         const { user } = installerRender(<DASDTable />);
-        const selection = screen.getByRole("checkbox", { name: "Select row 0" });
+        const selection = screen.getByRole("checkbox", { name: "Select row 1" });
         await user.click(selection);
-        const button = screen.getByRole("button", { name: "Perform an action" });
-        expect(button).not.toHaveAttribute("disabled");
+        const button = screen.getByRole("button", { name: "Format" });
         await user.click(button);
-        screen.getByRole("menuitem", { name: "Format" });
+        screen.getByRole("dialog", { name: /Format/ });
       });
 
-      describe("and the user click on format", () => {
-        it("shows a confirmation dialog if all the devices are online", async () => {
-          const { user } = installerRender(<DASDTable />);
-          const selection = screen.getByRole("checkbox", { name: "Select row 1" });
-          await user.click(selection);
-          const button = screen.getByRole("button", { name: "Perform an action" });
-          expect(button).not.toHaveAttribute("disabled");
-          await user.click(button);
-          const format = screen.getByRole("menuitem", { name: "Format" });
-          await user.click(format);
-          screen.getByRole("dialog", { name: "Format selected devices?" });
-        });
-
-        it("shows a warning dialog if some device is offline", async () => {
-          const { user } = installerRender(<DASDTable />);
-          let selection = screen.getByRole("checkbox", { name: "Select row 0" });
-          await user.click(selection);
-          selection = screen.getByRole("checkbox", { name: "Select row 1" });
-          await user.click(selection);
-          const button = screen.getByRole("button", { name: "Perform an action" });
-          expect(button).not.toHaveAttribute("disabled");
-          await user.click(button);
-          const format = screen.getByRole("menuitem", { name: "Format" });
-          await user.click(format);
-          screen.getByRole("dialog", { name: "Cannot format all selected devices" });
-        });
+      it("shows a warning dialog if some device is offline", async () => {
+        const { user } = installerRender(<DASDTable />);
+        let selection = screen.getByRole("checkbox", { name: "Select row 0" });
+        await user.click(selection);
+        selection = screen.getByRole("checkbox", { name: "Select row 1" });
+        await user.click(selection);
+        const button = screen.getByRole("button", { name: "Format" });
+        await user.click(button);
+        screen.getByRole("dialog", { name: /Cannot/ });
       });
     });
   });

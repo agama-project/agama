@@ -20,17 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import {
   Button,
   Content,
   Divider,
-  Dropdown,
-  DropdownItem,
-  DropdownList,
   List,
   ListItem,
-  MenuToggle,
   Stack,
   TextInputGroup,
   TextInputGroupMain,
@@ -40,14 +36,16 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { Page, Popup, SelectableDataTable } from "~/components/core";
+import { Popup, SelectableDataTable } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { _ } from "~/i18n";
+import { _, n_ } from "~/i18n";
 import { hex } from "~/utils";
 import { sort } from "fast-sort";
 import { DASDDevice } from "~/types/dasd";
 import { useDASDDevices, useDASDMutation, useFormatDASDMutation } from "~/queries/storage/dasd";
-import { SortedBy } from "~/components/core/SelectableDataTable";
+import type { SortedBy } from "~/components/core/SelectableDataTable";
+import { sprintf } from "sprintf-js";
+import Text from "~/components/core/Text";
 
 const columns = [
   {
@@ -108,117 +106,120 @@ const DevicesList = ({ devices }) => (
     ))}
   </List>
 );
-const FormatNotPossible = ({ devices, onAccept }) => (
-  <Popup isOpen title={_("Cannot format all selected devices")}>
-    <Stack hasGutter>
-      <Content>
-        {_(
-          "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again",
-        )}
-      </Content>
-      <DevicesList devices={devices} />
-    </Stack>
-    <Popup.Actions>
-      <Popup.Confirm onClick={onAccept}>{_("Accept")}</Popup.Confirm>
-    </Popup.Actions>
-  </Popup>
-);
 
-const FormatConfirmation = ({ devices, onCancel, onConfirm }) => (
-  <Popup isOpen title={_("Format selected devices?")}>
-    <Stack hasGutter>
-      <Content>
-        {_(
-          "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.",
-        )}
-      </Content>
-      <DevicesList devices={devices} />
-    </Stack>
-    <Popup.Actions>
-      <Popup.Confirm onClick={onConfirm} />
-      <Popup.Cancel onClick={onCancel} autoFocus />
-    </Popup.Actions>
-  </Popup>
-);
-
-const Actions = ({ devices, isDisabled }: { devices: DASDDevice[]; isDisabled: boolean }) => {
-  const { mutate: updateDASD } = useDASDMutation();
-  const { mutate: formatDASD } = useFormatDASDMutation();
-  const [isOpen, setIsOpen] = useState(false);
-  const [requestFormat, setRequestFormat] = useState(false);
-
-  const onToggle = () => setIsOpen(!isOpen);
-  const onSelect = () => setIsOpen(false);
-  const cancelFormatRequest = () => setRequestFormat(false);
-
-  const deviceIds = devices.map((d) => d.id);
-  const offlineDevices = devices.filter((d) => !d.enabled);
-  const offlineDevicesSelected = offlineDevices.length > 0;
-  const activate = () => updateDASD({ action: "enable", devices: deviceIds });
-  const deactivate = () => updateDASD({ action: "disable", devices: deviceIds });
-  const setDiagOn = () => updateDASD({ action: "diagOn", devices: deviceIds });
-  const setDiagOff = () => updateDASD({ action: "diagOff", devices: deviceIds });
-  const format = () => formatDASD(devices.map((d) => d.id));
-
-  const Action = ({ children, ...props }) => (
-    <DropdownItem component="button" {...props}>
-      {children}
-    </DropdownItem>
+/**
+ * Renders a popup indicating a specific device is offline.
+ * Used when attempting to format a single device that is disabled.
+ */
+const DeviceOffline = ({ device, onCancel }) => {
+  return (
+    <Popup isOpen title={sprintf(_("Cannot format %s"), device.id)}>
+      <Stack hasGutter>
+        <Content>{_("It is offline and must be activated before formatting it.")}</Content>
+      </Stack>
+      <Popup.Actions>
+        <Popup.Confirm onClick={onCancel}>{_("Accept")}</Popup.Confirm>
+      </Popup.Actions>
+    </Popup>
   );
+};
+
+/**
+ * Shows a popup listing multiple offline devices,
+ * preventing a format action on them.
+ */
+const SomeDevicesOffline = ({ devices, onCancel }) => {
+  const offlineDevices = devices.filter((d) => !d.enabled);
+  const totalOffline = offlineDevices.length;
 
   return (
-    <>
-      {requestFormat && offlineDevicesSelected && (
-        <FormatNotPossible devices={offlineDevices} onAccept={cancelFormatRequest} />
-      )}
-
-      {requestFormat && !offlineDevicesSelected && (
-        <FormatConfirmation
-          devices={devices}
-          onCancel={cancelFormatRequest}
-          onConfirm={() => {
-            cancelFormatRequest();
-            format();
-          }}
-        />
-      )}
-      <Dropdown
-        isOpen={isOpen}
-        onSelect={onSelect}
-        toggle={(toggleRef) => (
-          <MenuToggle ref={toggleRef} variant="primary" isDisabled={isDisabled} onClick={onToggle}>
-            {/* TRANSLATORS: drop down menu label */}
-            {_("Perform an action")}
-          </MenuToggle>
-        )}
-      >
-        <DropdownList>
-          {/** TRANSLATORS: drop down menu action, activate the device */}
-          <Action key="activate" onClick={activate}>
-            {_("Activate")}
-          </Action>
-          {/** TRANSLATORS: drop down menu action, deactivate the device */}
-          <Action key="deactivate" onClick={deactivate}>
-            {_("Deactivate")}
-          </Action>
-          <Divider key="first-separator" />
-          {/** TRANSLATORS: drop down menu action, enable DIAG access method */}
-          <Action key="set_diag_on" onClick={setDiagOn}>
-            {_("Set DIAG On")}
-          </Action>
-          {/** TRANSLATORS: drop down menu action, disable DIAG access method */}
-          <Action key="set_diag_off" onClick={setDiagOff}>
-            {_("Set DIAG Off")}
-          </Action>
-          <Divider key="second-separator" />
-          {/** TRANSLATORS: drop down menu action, format the disk */}
-          <Action key="format" onClick={() => setRequestFormat(true)}>
-            {_("Format")}
-          </Action>
-        </DropdownList>
-      </Dropdown>
-    </>
+    <Popup isOpen title={_("Cannot format all selected devices")}>
+      <Stack hasGutter>
+        <Content>
+          {sprintf(_("Below %s devices are offline and cannot be formatted."), totalOffline)}
+        </Content>
+        <Content>{_("Unselect or activate them and try it again.")}</Content>
+        <DevicesList devices={offlineDevices} />
+      </Stack>
+      <Popup.Actions>
+        <Popup.Confirm onClick={onCancel}>{_("Accept")}</Popup.Confirm>
+      </Popup.Actions>
+    </Popup>
   );
+};
+
+/**
+ * Renders a format confirmation dialog for formatting a single device.
+ */
+const DeviceFormatConfirmation = ({ device, onAccept, onCancel }) => {
+  return (
+    <Popup isOpen title={sprintf(_("Format device %s"), device.id)}>
+      <Content>
+        <Stack hasGutter>
+          <Text isBold>{_("This action could destroy any data stored on the device.")}</Text>
+          <Text>{_("Confirm that you really want to continue.")}</Text>
+        </Stack>
+      </Content>
+      <Popup.Actions>
+        <Popup.DangerousAction onClick={onAccept}>{_("Format now")}</Popup.DangerousAction>
+        <Popup.Cancel onClick={onCancel} autoFocus />
+      </Popup.Actions>
+    </Popup>
+  );
+};
+
+/**
+ * Renders a confirmation dialog for formatting multiple selected devices.
+ */
+const MultipleDevicesFormatConfirmation = ({ devices, onAccept, onCancel }) => {
+  return (
+    <Popup isOpen title={_("Format selected devices?")}>
+      <Content isEditorial>
+        <Stack hasGutter>
+          <Text isBold>
+            {_("This action could destroy any data stored on the devices listed below.")}
+          </Text>
+          <DevicesList devices={devices} />
+          <Text>{_("Confirm that you really want to continue.")}</Text>
+        </Stack>
+      </Content>
+      <Popup.Actions>
+        <Popup.DangerousAction onClick={onAccept}>{_("Format now")}</Popup.DangerousAction>
+        <Popup.Cancel onClick={onCancel} autoFocus />
+      </Popup.Actions>
+    </Popup>
+  );
+};
+
+/**
+ * Central dispatcher component for rendering the appropriate format dialog,
+ * based on whether the selected devices are online/offline and how many are
+ * selected.
+ */
+const FormatRequestHandler = ({ devices, onAccept, onCancel }) => {
+  const { mutate: formatDASD } = useFormatDASDMutation();
+  const format = () => {
+    formatDASD(devices.map((d) => d.id));
+    onAccept();
+  };
+
+  if (devices.length === 1) {
+    const device = devices[0];
+
+    if (device.enabled) {
+      return <DeviceFormatConfirmation device={device} onAccept={format} onCancel={onCancel} />;
+    } else {
+      return <DeviceOffline device={device} onCancel={onCancel} />;
+    }
+  }
+
+  if (devices.some((d) => !d.enabled)) {
+    return <SomeDevicesOffline devices={devices} onCancel={onCancel} />;
+  } else {
+    return (
+      <MultipleDevicesFormatConfirmation devices={devices} onAccept={format} onCancel={onCancel} />
+    );
+  }
 };
 
 const filterDevices = (devices: DASDDevice[], from: string, to: string): DASDDevice[] => {
@@ -234,8 +235,124 @@ type FilterOptions = {
   maxChannel?: string;
 };
 
+/**
+ * Represents the component state.
+ */
+type DASDTableState = {
+  formatRequested: boolean;
+  selectedDevices: DASDDevice[];
+};
+
+/**
+ * Supported actions.
+ */
+type DASDTableAction =
+  | { type: "REQUEST_FORMAT"; devices: DASDTableState["selectedDevices"] }
+  | { type: "CANCEL_FORMAT_REQUEST" };
+
+/**
+ * Reducer for triggering actions.
+ */
+const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState => {
+  switch (action.type) {
+    case "REQUEST_FORMAT": {
+      return { ...state, formatRequested: true, selectedDevices: action.devices };
+    }
+
+    case "CANCEL_FORMAT_REQUEST": {
+      return { ...state, formatRequested: false, selectedDevices: [] };
+    }
+  }
+};
+
+/**
+ * Provides individual action buttons for a group of selected DASD devices.
+ */
+const BulkActions = ({ devices, onFormatRequest }) => {
+  const { mutate: updateDASD } = useDASDMutation();
+
+  const devicesIds = devices.map((d) => d.id);
+  const actions = [
+    {
+      title: _("Activate"),
+      onClick: () => updateDASD({ action: "enable", devices: devicesIds }),
+    },
+    {
+      title: _("Deactivate"),
+      onClick: () => updateDASD({ action: "disable", devices: devicesIds }),
+    },
+    {
+      isSeparator: true,
+    },
+    {
+      title: _("Set DIAG on"),
+      onClick: () => updateDASD({ action: "diagOn", devices: devicesIds }),
+    },
+    {
+      title: _("Set DIAG off"),
+      onClick: () => updateDASD({ action: "diagOff", devices: devicesIds }),
+    },
+    {
+      isSeparator: true,
+    },
+    {
+      title: _("Format"),
+      onClick: () => onFormatRequest(devices),
+    },
+  ];
+
+  return actions
+    .filter((a) => !a.isSeparator)
+    .map(({ onClick, title }, i) => (
+      <ToolbarItem key={i}>
+        <Button size="sm" key={i} onClick={onClick} variant="control">
+          {title}
+        </Button>
+      </ToolbarItem>
+    ));
+};
+/**
+ * Toolbar section displaying available bulk actions for selected devices.
+ * Dynamically adjusted based on selection count.
+ */
+const ActionsToolbar = ({ devices, onFormatRequest }) => {
+  const text = sprintf(
+    n_(
+      // TRANSLATORS: message shown in bulk action toolbar when just one device
+      // is selected
+      "Apply to the selected device",
+      // TRANSLATORS: message shown in bulk action toolbar when some devices are
+      // selected. %s is replaced with the amount of devices
+      "Apply to the %s selected devices",
+      devices.length,
+    ),
+    devices.length,
+  );
+
+  return (
+    <Toolbar>
+      <ToolbarContent>
+        <ToolbarGroup>
+          {devices.length ? (
+            <>
+              {text} <BulkActions devices={devices} onFormatRequest={onFormatRequest} />
+            </>
+          ) : (
+            _("Select devices to enable bulk actions.")
+          )}
+        </ToolbarGroup>
+      </ToolbarContent>
+    </Toolbar>
+  );
+};
+
 export default function DASDTable() {
   const devices = useDASDDevices();
+  const { mutate: updateDASD } = useDASDMutation();
+  const [state, dispatch] = useReducer(reducer, {
+    formatRequested: false,
+    selectedDevices: [],
+  });
   const [sortedBy, updateSortedBy] = useState<SortedBy>({ index: 0, direction: "asc" });
 
   const [selectedDASD, setSelectedDASD] = useState<DASDDevice[]>([]);
@@ -256,8 +373,74 @@ export default function DASDTable() {
     setFilters((currentFilters) => ({ ...currentFilters, ...newFilters }));
   };
 
-  const PageContent = () => {
-    return (
+  return (
+    <>
+      <Content>
+        <Toolbar>
+          <ToolbarContent>
+            <ToolbarGroup>
+              <ToolbarItem>
+                <TextInputGroup label="">
+                  <TextInputGroupMain
+                    value={minChannel}
+                    type="text"
+                    aria-label={_("Filter by min channel")}
+                    placeholder={_("Filter by min channel")}
+                    onChange={(_, minChannel) => updateFilter({ minChannel })}
+                  />
+                  {minChannel !== "" && (
+                    <TextInputGroupUtilities>
+                      <Button
+                        variant="plain"
+                        aria-label={_("Remove min channel filter")}
+                        onClick={() => updateFilter({ minChannel: "" })}
+                        icon={<Icon name="backspace" />}
+                      />
+                    </TextInputGroupUtilities>
+                  )}
+                </TextInputGroup>
+              </ToolbarItem>
+              <ToolbarItem>
+                <TextInputGroup>
+                  <TextInputGroupMain
+                    value={maxChannel}
+                    type="text"
+                    aria-label={_("Filter by max channel")}
+                    placeholder={_("Filter by max channel")}
+                    onChange={(_, maxChannel) => updateFilter({ maxChannel })}
+                  />
+                  {maxChannel !== "" && (
+                    <TextInputGroupUtilities>
+                      <Button
+                        variant="plain"
+                        aria-label={_("Remove max channel filter")}
+                        onClick={() => updateFilter({ maxChannel: "" })}
+                        icon={<Icon name="backspace" />}
+                      />
+                    </TextInputGroupUtilities>
+                  )}
+                </TextInputGroup>
+              </ToolbarItem>
+            </ToolbarGroup>
+          </ToolbarContent>
+        </Toolbar>
+        <Divider />
+        <ActionsToolbar
+          devices={selectedDASD}
+          onFormatRequest={() => dispatch({ type: "REQUEST_FORMAT", devices: selectedDASD })}
+        />
+        <Divider />
+      </Content>
+
+      {state.formatRequested && (
+        <FormatRequestHandler
+          devices={state.selectedDevices}
+          onAccept={() => {
+            dispatch({ type: "CANCEL_FORMAT_REQUEST" });
+          }}
+          onCancel={() => dispatch({ type: "CANCEL_FORMAT_REQUEST" })}
+        />
+      )}
       <SelectableDataTable
         columns={columns}
         items={sortedDevices}
@@ -268,70 +451,40 @@ export default function DASDTable() {
         sortedBy={sortedBy}
         updateSorting={updateSortedBy}
         allowSelectAll
+        itemActions={(d) => [
+          {
+            title: _("Activate"),
+            onClick: () => updateDASD({ action: "enable", devices: [d.id] }),
+          },
+          {
+            title: _("Deactivate"),
+            onClick: () => updateDASD({ action: "disable", devices: [d.id] }),
+          },
+          {
+            isSeparator: true,
+          },
+          {
+            title: _("Set DIAG on"),
+            onClick: () => updateDASD({ action: "diagOn", devices: [d.id] }),
+          },
+          {
+            title: _("Set DIAG off"),
+            onClick: () => updateDASD({ action: "diagOff", devices: [d.id] }),
+          },
+          {
+            isSeparator: true,
+          },
+          {
+            title: _("Format"),
+            isDanger: true,
+            onClick: () => {
+              dispatch({ type: "REQUEST_FORMAT", devices: [d] });
+              // formatDASD([d.id]),
+            },
+          },
+        ]}
+        itemActionsLabel={(d) => `Actions for ${d.id}`}
       />
-    );
-  };
-
-  return (
-    <>
-      <Toolbar>
-        <ToolbarContent>
-          <ToolbarGroup align={{ default: "alignEnd" }}>
-            <ToolbarItem>
-              <TextInputGroup>
-                <TextInputGroupMain
-                  value={minChannel}
-                  type="text"
-                  aria-label={_("Filter by min channel")}
-                  placeholder={_("Filter by min channel")}
-                  onChange={(_, minChannel) => updateFilter({ minChannel })}
-                />
-                {minChannel !== "" && (
-                  <TextInputGroupUtilities>
-                    <Button
-                      variant="plain"
-                      aria-label={_("Remove min channel filter")}
-                      onClick={() => updateFilter({ minChannel: "" })}
-                      icon={<Icon name="backspace" />}
-                    />
-                  </TextInputGroupUtilities>
-                )}
-              </TextInputGroup>
-            </ToolbarItem>
-            <ToolbarItem>
-              <TextInputGroup>
-                <TextInputGroupMain
-                  value={maxChannel}
-                  type="text"
-                  aria-label={_("Filter by max channel")}
-                  placeholder={_("Filter by max channel")}
-                  onChange={(_, maxChannel) => updateFilter({ maxChannel })}
-                />
-                {maxChannel !== "" && (
-                  <TextInputGroupUtilities>
-                    <Button
-                      variant="plain"
-                      aria-label={_("Remove max channel filter")}
-                      onClick={() => updateFilter({ maxChannel: "" })}
-                      icon={<Icon name="backspace" />}
-                    />
-                  </TextInputGroupUtilities>
-                )}
-              </TextInputGroup>
-            </ToolbarItem>
-
-            <ToolbarItem variant="separator" />
-
-            <ToolbarItem>
-              <Actions devices={selectedDASD} isDisabled={selectedDASD.length === 0} />
-            </ToolbarItem>
-          </ToolbarGroup>
-        </ToolbarContent>
-      </Toolbar>
-
-      <Page.Section aria-label={_("DASDs table section")}>
-        <PageContent />
-      </Page.Section>
     </>
   );
 }
