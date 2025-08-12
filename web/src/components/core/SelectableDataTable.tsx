@@ -271,46 +271,30 @@ type SharedData = {
    * in-place to avoid recomputation or prop drilling.
    */
   rowIndex: number;
-  /**
-   * Current column index and direction used for sorting.
-   */
-  readonly sortedBy: SortedBy;
-  /**
-   * Callback to update sorting. If not provided, sorting is skipped.
-   */
-  readonly updateSorting: (v: SortedBy) => void;
-  /**
-   * Whether the select/unselect-all feature is enabled and the header checkbox
-   * is shown.
-   */
-  readonly allowSelectAll: boolean;
+
   /**
    * Whether multiple item selection is allowed.
    */
   readonly allowMultiple: boolean;
+
   /**
    * Whether all items in the table are currently selected.
    * Used to reflect checkbox state in the header.
    */
   readonly isAllSelected: boolean;
+
   /**
    * Handles toggling selection of all items in the table.
    * If `isSelecting` is `true`, all items are passed to `onSelectionChange`.
    * If `false`, an empty array is passed instead (deselect all).
    */
   readonly selectAll: (isSelecting: boolean) => void;
-
-  /**
-   * Function to generate a list of row-level actions for a given item.
-   * If defined, a new actions column is rendered for contextual row menus.
-   */
-  readonly itemActions: SelectableDataTableProps["itemActions"];
-  /**
-   * Accessible label for the actions menu toggle in each row.
-   * Used as the `aria-label` for improved accessibility.
-   */
-  readonly itemActionsLabel: SelectableDataTableProps["itemActionsLabel"];
-};
+} & Readonly<
+  Pick<
+    SelectableDataTableProps,
+    "sortedBy" | "updateSorting" | "allowSelectAll" | "itemActions" | "itemActionsLabel"
+  >
+>;
 
 /**
  * Build sorting props for a given column header, enabling PatternFly table
