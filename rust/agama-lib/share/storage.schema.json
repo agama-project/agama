@@ -765,7 +765,7 @@
       }
     },
     "encryptionTPM": {
-      "description": "TPM-Based Full Disk Encrytion.",
+      "description": "TPM-Based Full Disk Encryption.",
       "type": "object",
       "additionalProperties": false,
       "required": ["tpmFde"],
