@@ -192,6 +192,31 @@ describe("SelectableDataTable", () => {
     within(table).getByRole("row", { name: /Personal Data/ });
   });
 
+  it("renders actions column when itemActions is provided", async () => {
+    const editFn = jest.fn();
+    const formatFn = jest.fn();
+
+    const { user } = plainRender(
+      <SelectableDataTable
+        {...props}
+        itemActions={(d) => [
+          { title: `Edit ${d.name}`, onClick: editFn },
+          { title: `Format ${d.name}`, onClick: formatFn },
+        ]}
+        itemActionsLabel="Actions"
+      />,
+    );
+
+    const table = screen.getByRole("grid");
+    const sda = within(table).getByRole("row", { name: /dev\/sda 1024/ });
+    const sdaActions = within(sda).getByRole("button", { name: "Actions" });
+    await user.click(sdaActions);
+    const menu = screen.getByRole("menu");
+    const edit = within(menu).getByRole("menuitem", { name: "Edit /dev/sda" });
+    await user.click(edit);
+    expect(editFn).toHaveBeenCalled();
+  });
+
   it("renders a expand toggler in items with children", () => {
     plainRender(<SelectableDataTable {...props} />);
     const table = screen.getByRole("grid");

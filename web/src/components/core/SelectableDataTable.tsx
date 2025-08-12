@@ -21,6 +21,7 @@
  */
 
 import React, { useState } from "react";
+import { MenuToggle } from "@patternfly/react-core";
 import {
   Table,
   TableProps,
@@ -33,8 +34,11 @@ import {
   RowSelectVariant,
   ThProps,
   TdProps,
+  IAction,
+  ActionsColumn,
 } from "@patternfly/react-table";
 import { isFunction } from "radashi";
+import Icon from "~/components/layout/Icon";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -177,6 +181,34 @@ export type SelectableDataTableProps<T = any> = {
   itemEqualityFn?: (a: T, b: T) => boolean;
 
   /**
+   * Function to generate a list of actions for a given row.
+   *
+   * If provided, an additional column is rendered to display contextual actions.
+   *
+   * @example
+   * itemActions={(item) => [
+   *   {
+   *     title: 'Edit',
+   *     onClick: () => handleEdit(item),
+   *   },
+   *   {
+   *     title: 'Delete',
+   *     onClick: () => handleDelete(item),
+   *     isDanger: true,
+   *   }
+   * ]}
+   */
+  itemActions?: (d: T) => IAction[];
+
+  /**
+   * Accessible label for the actions menu toggle button.
+   *
+   * Used as the `aria-label` for the row action menu's trigger to improve
+   * accessibility.
+   */
+  itemActionsLabel?: (d: T) => string | string;
+
+  /**
    * Array of currently selected items.
    */
   itemsSelected?: T[];
@@ -267,6 +299,17 @@ type SharedData = {
    * If `false`, an empty array is passed instead (deselect all).
    */
   readonly selectAll: (isSelecting: boolean) => void;
+
+  /**
+   * Function to generate a list of row-level actions for a given item.
+   * If defined, a new actions column is rendered for contextual row menus.
+   */
+  readonly itemActions: SelectableDataTableProps["itemActions"];
+  /**
+   * Accessible label for the actions menu toggle in each row.
+   * Used as the `aria-label` for improved accessibility.
+   */
+  readonly itemActionsLabel: SelectableDataTableProps["itemActionsLabel"];
 };
 
 /**
@@ -313,7 +356,7 @@ const TableHeader = ({
   columns: SelectableDataTableColumn[];
   sharedData: SharedData;
 }) => {
-  const { allowMultiple, allowSelectAll, isAllSelected, selectAll } = sharedData;
+  const { allowMultiple, allowSelectAll, isAllSelected, selectAll, itemActions } = sharedData;
 
   const selectAllProps =
     allowMultiple && allowSelectAll
@@ -338,6 +381,7 @@ const TableHeader = ({
             </Th>
           );
         })}
+        {itemActions && <Th />}
       </Tr>
     </Thead>
   );
@@ -414,7 +458,8 @@ export default function SelectableDataTable({
   sortedBy = {},
   updateSorting = undefined,
   allowSelectAll = false,
-
+  itemActions,
+  itemActionsLabel,
   ...tableProps
 }: SelectableDataTableProps) {
   const [expandedItemsKeys, setExpandedItemsKeys] = useState(initialExpandedKeys);
@@ -520,6 +565,25 @@ export default function SelectableDataTable({
               {c.value(item)}
             </Td>
           ))}
+          {itemActions && (
+            <Td isActionCell>
+              <ActionsColumn
+                items={itemActions(item)}
+                actionsToggle={({ toggleRef, onToggle }) => (
+                  <MenuToggle
+                    ref={toggleRef}
+                    onClick={onToggle}
+                    variant="plain"
+                    aria-label={
+                      isFunction(itemActionsLabel) ? itemActionsLabel(item) : itemActionsLabel
+                    }
+                  >
+                    <Icon name="more_horiz" />
+                  </MenuToggle>
+                )}
+              />
+            </Td>
+          )}
         </Tr>
         {renderChildren()}
       </Tbody>
@@ -533,6 +597,8 @@ export default function SelectableDataTable({
     updateSorting,
     allowMultiple,
     allowSelectAll,
+    itemActions,
+    itemActionsLabel,
     isAllSelected: itemsSelected.length === items.length,
     selectAll: (isSelecting: boolean) =>
       isSelecting ? onSelectionChange(items) : onSelectionChange([]),
