@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Aug 13 10:27:39 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Copy kernel modules from DUDs to the updates/ directory (bsc#1246061).
+
+-------------------------------------------------------------------
 Mon Aug 11 09:42:22 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix handling of Driver Update Disks when they are placed in local
