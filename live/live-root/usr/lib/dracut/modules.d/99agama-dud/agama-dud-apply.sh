@@ -113,13 +113,13 @@ apply_dud_update() {
   # (2) there can be ARCH-DIST subdirs with multiple dists - pick one and
   #     ignore the others
   arch=$(uname -m)
-  for base_dir in "${dir}"/linux/suse "${dir}"/[0-9]*/linux/suse ; do
+  for base_dir in "${dir}"/linux/suse "${dir}"/[0-9]*/linux/suse; do
     [ -d "$base_dir" ] || continue
-    for dud_root in "${base_dir}/${arch}"-* ; do
+    for dud_root in "${base_dir}/${arch}"-*; do
       [ -d "$dud_root" ] || continue
-        install_update "${dud_root}/inst-sys"
-        copy_packages "$dud_root" "$DUD_RPM_REPOSITORY"
-        update_kernel_modules "$dud_root"
+      install_update "${dud_root}/inst-sys"
+      copy_packages "$dud_root" "$DUD_RPM_REPOSITORY"
+      update_kernel_modules "$dud_root"
       break
     done
   done
