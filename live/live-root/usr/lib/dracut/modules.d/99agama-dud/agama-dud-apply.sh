@@ -191,29 +191,6 @@ copy_packages() {
   done
 }
 
-# Finds the kernel modules to update
-#
-# It searches for the modules in the modules/ directory of the update.
-find_kernel_modules() {
-  local directory=$1
-  local -n modules=$2
-  local module_name
-  local files
-
-  modules=()
-  files=("${directory}"/*.ko*)
-  for module in "${files[@]}"; do
-    module_name=${module#"${directory}/"}
-    module_name=${module_name%.ko*}
-
-    if [[ ! " ${modules[*]} " =~ " ${module_name} " ]]; then
-      modules+=("$module_name")
-    fi
-  done
-
-  echo "Found ${#files[@]} kernel modules"
-}
-
 # Updates kernel modules
 #
 # It copies the kernel modules from the Driver Update Disk to the system under
