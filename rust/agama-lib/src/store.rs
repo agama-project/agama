@@ -250,7 +250,6 @@ impl Store {
             self.storage.store(&settings.into()).await?
         }
         if let Some(bootloader) = &settings.bootloader {
-            Store::ensure_selected_product(is_product_selected)?;
             self.bootloader.store(bootloader).await?;
         }
         if let Some(hostname) = &settings.hostname {
@@ -258,7 +257,6 @@ impl Store {
             self.hostname.store(hostname).await?;
         }
         if let Some(files) = &settings.files {
-            Store::ensure_selected_product(is_product_selected)?;
             self.files.store(files).await?;
         }
 
