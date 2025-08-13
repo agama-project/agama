@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 13 13:20:17 UTC 2025 - Jan Papež <honyczek@centrum.cz>
+
+- Fix messages about automatic storage sizes
+  (gh#agama-project/agama#2657).
+
+-------------------------------------------------------------------
 Tue Aug 12 09:45:01 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Split progress details into two lines for better readability

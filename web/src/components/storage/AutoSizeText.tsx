@@ -43,15 +43,15 @@ function AutoSizeTextFallback({ size, deviceType }: AutoSizeTextFallbackProps): 
   if (size.max) {
     if (size.max === size.min) {
       return sprintf(
-        // TRANSLATORS: %1s$ is a size with units (eg. 3 GiB) and %1$s is a device type (eg. partition)
-        _("A generic size of %s will be used for the new %2$s"),
+        // TRANSLATORS: %1$s is a size with units (eg. 3 GiB) and %2$s is a device type (eg. partition)
+        _("A generic size of %1$s will be used for the new %2$s"),
         deviceSize(size.min),
         deviceTypeLabel(deviceType),
       );
     }
 
     return sprintf(
-      // TRANSLATORS: %1s$ and %2s$ are sizes with units (eg. 3 GiB) and %3$s is a device type (eg. partition)
+      // TRANSLATORS: %1$s and %2$s are sizes with units (eg. 3 GiB) and %3$s is a device type (eg. partition)
       _("A generic size range between %1$s and %2$s will be used for the new %3$s"),
       deviceSize(size.min),
       deviceSize(size.max),
@@ -60,7 +60,7 @@ function AutoSizeTextFallback({ size, deviceType }: AutoSizeTextFallbackProps): 
   }
 
   return sprintf(
-    // TRANSLATORS: %1s$ is a size with units (eg. 3 GiB) and %1$s is a device type (eg. partition)
+    // TRANSLATORS: %1$s is a size with units (eg. 3 GiB) and %1$s is a device type (eg. partition)
     _("A generic minimum size of %1$s will be used for the new %2$s"),
     deviceSize(size.min),
     deviceTypeLabel(deviceType),
@@ -115,7 +115,7 @@ function AutoSizeTextRam({ path, size, deviceType }: AutoSizeTextRamProps): Reac
     if (size.max === size.min) {
       return sprintf(
         // TRANSLATORS: %1$s is a device type (eg. partition), %2$s is a size with units (10 GiB) and %3$s is a mount path (/home)
-        _("Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s"),
+        _("Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s"),
         deviceTypeLabel(deviceType),
         deviceSize(size.min),
         path,
@@ -125,7 +125,7 @@ function AutoSizeTextRam({ path, size, deviceType }: AutoSizeTextRamProps): Reac
     return sprintf(
       // TRANSLATORS: %1$s is a device type (eg. partition), %2$s and %3$s are sizes with units (10 GiB), and %4$s is a mount path (/home)
       _(
-        "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s",
+        "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s",
       ),
       deviceTypeLabel(deviceType),
       deviceSize(size.min),
@@ -136,7 +136,7 @@ function AutoSizeTextRam({ path, size, deviceType }: AutoSizeTextRamProps): Reac
 
   return sprintf(
     // TRANSLATORS: %1$s is a device type (eg. partition), %2$s is a size with units (10 GiB) and %3$s is a mount path (/home)
-    _("Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s"),
+    _("Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s"),
     deviceTypeLabel(deviceType),
     deviceSize(size.min),
     path,
@@ -269,7 +269,7 @@ function AutoSizeTextDynamic({
     if (size.max) {
       if (size.max === size.min) {
         return sprintf(
-          // TRANSLATORS: %1$s is a device type (eg. partition) and %2s is a size with units (eg. 10 GiB)
+          // TRANSLATORS: %1$s is a device type (eg. partition) and %2$s is a size with units (eg. 10 GiB)
           _("The current configuration will result in an attempt to create a %1$s of %2$s."),
           deviceTypeLabel(deviceType),
           deviceSize(size.min),
