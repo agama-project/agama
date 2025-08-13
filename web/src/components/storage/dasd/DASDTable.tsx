@@ -45,58 +45,6 @@ import { hex } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 
-const columns = [
-  {
-    // TRANSLATORS: table header for a DASD devices table
-    name: _("Channel ID"),
-    sortingKey: "hexId",
-    value: (d: DASDDevice) => d.id,
-  },
-
-  {
-    // TRANSLATORS: table header for a DASD devices table
-    name: _("Status"),
-    value: (d: DASDDevice) => d.status,
-    sortingKey: "status",
-  },
-  {
-    // TRANSLATORS: table header for a DASD devices table
-    name: _("Device"),
-    value: (d: DASDDevice) => d.deviceName,
-    sortingKey: "deviceName",
-  },
-  {
-    // TRANSLATORS: table header for a DASD devices table
-    name: _("Type"),
-    value: (d: DASDDevice) => d.deviceType,
-    sortingKey: "deviceType",
-  },
-  {
-    // TRANSLATORS: table header for `DIAG access mode` on DASD devices table.
-    // It refers to an special disk access mode on IBM mainframes. Keep
-    // untranslated.
-    name: _("DIAG"),
-    value: (d: DASDDevice) => {
-      if (!d.enabled) return "";
-      d.diag ? _("Yes") : _("No");
-    },
-    sortingKey: "diag",
-  },
-  {
-    // TRANSLATORS: table header for a column in a DASD devices table that
-    // usually contents Yes or No values
-    name: _("Formatted"),
-    value: (d: DASDDevice) => (d.formatted ? _("Yes") : _("No")),
-    sortingKey: "formatted",
-  },
-  {
-    // TRANSLATORS: table header for a DASD devices table
-    name: _("Partition Info"),
-    value: (d: DASDDevice) => d.partitionInfo.split(",").map((d: string) => <div key={d}>{d}</div>),
-    sortingKey: "partitionInfo",
-  },
-];
-
 const filterDevices = (devices: DASDDevice[], from: string, to: string): DASDDevice[] => {
   const allChannels = devices.map((d) => d.hexId);
   const min = hex(from) || Math.min(...allChannels);
@@ -256,6 +204,70 @@ const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState
     }
   }
 };
+
+/**
+ * Column definitions for the DASD devices table.
+ *
+ * Each entry defines how a column is labeled, how its value is derived from a
+ * DASDDevice object, and which field is used for sorting.
+ *
+ * These columns are consumed by the core <SelectableDataTable> component.
+ */
+const columns = [
+  {
+    // TRANSLATORS: table header for a DASD devices table
+    name: _("Channel ID"),
+    value: (d: DASDDevice) => d.id,
+    sortingKey: "hexId", // uses the hexadecimal representation for sorting
+  },
+
+  {
+    // TRANSLATORS: table header for a DASD devices table
+    name: _("Status"),
+    value: (d: DASDDevice) => d.status,
+    sortingKey: "status",
+  },
+  {
+    // TRANSLATORS: table header for a DASD devices table
+    name: _("Device"),
+    value: (d: DASDDevice) => d.deviceName,
+    sortingKey: "deviceName",
+  },
+  {
+    // TRANSLATORS: table header for a DASD devices table
+    name: _("Type"),
+    value: (d: DASDDevice) => d.deviceType,
+    sortingKey: "deviceType",
+  },
+  {
+    // TRANSLATORS: table header for `DIAG access mode` on DASD devices table.
+    // It refers to an special disk access mode on IBM mainframes. Keep
+    // untranslated.
+    name: _("DIAG"),
+    value: (d: DASDDevice) => {
+      if (!d.enabled) return "";
+
+      return d.diag ? _("Yes") : _("No");
+    },
+    sortingKey: "diag",
+  },
+  {
+    // TRANSLATORS: table header for a column in a DASD devices table that
+    // usually contains "Yes" or "No"" values
+    name: _("Formatted"),
+    value: (d: DASDDevice) => (d.formatted ? _("Yes") : _("No")),
+    sortingKey: "formatted",
+  },
+  {
+    // TRANSLATORS: table header for a DASD devices table
+    name: _("Partition Info"),
+
+    value: (d: DASDDevice) =>
+      // Displays comma-separated partition info as individual lines using <div>
+      d.partitionInfo.split(",").map((d: string) => <div key={d}>{d}</div>),
+    sortingKey: "partitionInfo",
+  },
+];
 
 export default function DASDTable() {
   const devices = useDASDDevices();
