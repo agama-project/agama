@@ -25,9 +25,6 @@ import {
   Button,
   Content,
   Divider,
-  List,
-  ListItem,
-  Stack,
   TextInputGroup,
   TextInputGroupMain,
   TextInputGroupUtilities,
@@ -36,16 +33,16 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { Popup, SelectableDataTable } from "~/components/core";
-import { Icon } from "~/components/layout";
-import { _, n_ } from "~/i18n";
-import { hex } from "~/utils";
 import { sort } from "fast-sort";
-import { DASDDevice } from "~/types/dasd";
-import { useDASDDevices, useDASDMutation, useFormatDASDMutation } from "~/queries/storage/dasd";
+import Icon from "~/components/layout/Icon";
+import SelectableDataTable from "~/components/core/SelectableDataTable";
+import FormatActionHandler from "~/components/storage/dasd/FormatActionHandler";
 import type { SortedBy } from "~/components/core/SelectableDataTable";
+import { DASDDevice } from "~/types/dasd";
+import { useDASDDevices, useDASDMutation } from "~/queries/storage/dasd";
+import { hex } from "~/utils";
 import { sprintf } from "sprintf-js";
-import Text from "~/components/core/Text";
+import { _, n_ } from "~/i18n";
 
 const columns = [
   {
@@ -98,129 +95,6 @@ const columns = [
     sortingKey: "partitionInfo",
   },
 ];
-
-const DevicesList = ({ devices }) => (
-  <List>
-    {devices.map((d: DASDDevice) => (
-      <ListItem key={d.id}>{d.id}</ListItem>
-    ))}
-  </List>
-);
-
-/**
- * Renders a popup indicating a specific device is offline.
- * Used when attempting to format a single device that is disabled.
- */
-const DeviceOffline = ({ device, onCancel }) => {
-  return (
-    <Popup isOpen title={sprintf(_("Cannot format %s"), device.id)}>
-      <Stack hasGutter>
-        <Content>{_("It is offline and must be activated before formatting it.")}</Content>
-      </Stack>
-      <Popup.Actions>
-        <Popup.Confirm onClick={onCancel}>{_("Accept")}</Popup.Confirm>
-      </Popup.Actions>
-    </Popup>
-  );
-};
-
-/**
- * Shows a popup listing multiple offline devices,
- * preventing a format action on them.
- */
-const SomeDevicesOffline = ({ devices, onCancel }) => {
-  const offlineDevices = devices.filter((d) => !d.enabled);
-  const totalOffline = offlineDevices.length;
-
-  return (
-    <Popup isOpen title={_("Cannot format all selected devices")}>
-      <Stack hasGutter>
-        <Content>
-          {sprintf(_("Below %s devices are offline and cannot be formatted."), totalOffline)}
-        </Content>
-        <Content>{_("Unselect or activate them and try it again.")}</Content>
-        <DevicesList devices={offlineDevices} />
-      </Stack>
-      <Popup.Actions>
-        <Popup.Confirm onClick={onCancel}>{_("Accept")}</Popup.Confirm>
-      </Popup.Actions>
-    </Popup>
-  );
-};
-
-/**
- * Renders a format confirmation dialog for formatting a single device.
- */
-const DeviceFormatConfirmation = ({ device, onAccept, onCancel }) => {
-  return (
-    <Popup isOpen title={sprintf(_("Format device %s"), device.id)}>
-      <Content>
-        <Stack hasGutter>
-          <Text isBold>{_("This action could destroy any data stored on the device.")}</Text>
-          <Text>{_("Confirm that you really want to continue.")}</Text>
-        </Stack>
-      </Content>
-      <Popup.Actions>
-        <Popup.DangerousAction onClick={onAccept}>{_("Format now")}</Popup.DangerousAction>
-        <Popup.Cancel onClick={onCancel} autoFocus />
-      </Popup.Actions>
-    </Popup>
-  );
-};
-
-/**
- * Renders a confirmation dialog for formatting multiple selected devices.
- */
-const MultipleDevicesFormatConfirmation = ({ devices, onAccept, onCancel }) => {
-  return (
-    <Popup isOpen title={_("Format selected devices?")}>
-      <Content isEditorial>
-        <Stack hasGutter>
-          <Text isBold>
-            {_("This action could destroy any data stored on the devices listed below.")}
-          </Text>
-          <DevicesList devices={devices} />
-          <Text>{_("Confirm that you really want to continue.")}</Text>
-        </Stack>
-      </Content>
-      <Popup.Actions>
-        <Popup.DangerousAction onClick={onAccept}>{_("Format now")}</Popup.DangerousAction>
-        <Popup.Cancel onClick={onCancel} autoFocus />
-      </Popup.Actions>
-    </Popup>
-  );
-};
-
-/**
- * Central dispatcher component for rendering the appropriate format dialog,
- * based on whether the selected devices are online/offline and how many are
- * selected.
- */
-const FormatRequestHandler = ({ devices, onAccept, onCancel }) => {
-  const { mutate: formatDASD } = useFormatDASDMutation();
-  const format = () => {
-    formatDASD(devices.map((d) => d.id));
-    onAccept();
-  };
-
-  if (devices.length === 1) {
-    const device = devices[0];
-
-    if (device.enabled) {
-      return <DeviceFormatConfirmation device={device} onAccept={format} onCancel={onCancel} />;
-    } else {
-      return <DeviceOffline device={device} onCancel={onCancel} />;
-    }
-  }
-
-  if (devices.some((d) => !d.enabled)) {
-    return <SomeDevicesOffline devices={devices} onCancel={onCancel} />;
-  } else {
-    return (
-      <MultipleDevicesFormatConfirmation devices={devices} onAccept={format} onCancel={onCancel} />
-    );
-  }
-};
 
 const filterDevices = (devices: DASDDevice[], from: string, to: string): DASDDevice[] => {
   const allChannels = devices.map((d) => d.hexId);
@@ -433,7 +307,7 @@ export default function DASDTable() {
       </Content>
 
       {state.formatRequested && (
-        <FormatRequestHandler
+        <FormatActionHandler
           devices={state.selectedDevices}
           onAccept={() => {
             dispatch({ type: "CANCEL_FORMAT_REQUEST" });

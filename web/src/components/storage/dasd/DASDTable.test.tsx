@@ -34,6 +34,10 @@ jest.mock("~/queries/storage/dasd", () => ({
   useFormatDASDMutation: () => jest.fn(),
 }));
 
+jest.mock("~/components/storage/dasd/FormatActionHandler", () => () => (
+  <div>FormatActionHandler Mock</div>
+));
+
 describe("DASDTable", () => {
   describe("when there is some DASD devices available", () => {
     beforeEach(() => {
@@ -80,28 +84,13 @@ describe("DASDTable", () => {
       screen.getByRole("button", { name: "Activate" });
     });
 
-    describe("when format action is requested", () => {
-      // TODO: Add more scenarios to individually test these cases
-      // for both situations: when a single device is selected and when multiple devices are selected.
-      it("shows a confirmation dialog if all the devices are online", async () => {
-        const { user } = installerRender(<DASDTable />);
-        const selection = screen.getByRole("checkbox", { name: "Select row 1" });
-        await user.click(selection);
-        const button = screen.getByRole("button", { name: "Format" });
-        await user.click(button);
-        screen.getByRole("dialog", { name: /Format/ });
-      });
-
-      it("shows a warning dialog if some device is offline", async () => {
-        const { user } = installerRender(<DASDTable />);
-        let selection = screen.getByRole("checkbox", { name: "Select row 0" });
-        await user.click(selection);
-        selection = screen.getByRole("checkbox", { name: "Select row 1" });
-        await user.click(selection);
-        const button = screen.getByRole("button", { name: "Format" });
-        await user.click(button);
-        screen.getByRole("dialog", { name: /Cannot/ });
-      });
+    it("mounts FormatActionHandler on format action request", async () => {
+      const { user } = installerRender(<DASDTable />);
+      const selection = screen.getByRole("checkbox", { name: "Select row 1" });
+      await user.click(selection);
+      const button = screen.getByRole("button", { name: "Format" });
+      await user.click(button);
+      screen.getByText("FormatActionHandler Mock");
     });
   });
 });
