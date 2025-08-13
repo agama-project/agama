@@ -113,13 +113,13 @@ apply_dud_update() {
   # (2) there can be ARCH-DIST subdirs with multiple dists - pick one and
   #     ignore the others
   arch=$(uname -m)
-  for base_dir in "${dir}"/linux/suse "${dir}"/[0-9]*/linux/suse ; do
+  for base_dir in "${dir}"/linux/suse "${dir}"/[0-9]*/linux/suse; do
     [ -d "$base_dir" ] || continue
-    for dud_root in "${base_dir}/${arch}"-* ; do
+    for dud_root in "${base_dir}/${arch}"-*; do
       [ -d "$dud_root" ] || continue
-        install_update "${dud_root}/inst-sys"
-        copy_packages "$dud_root" "$DUD_RPM_REPOSITORY"
-        update_kernel_modules "$dud_root"
+      install_update "${dud_root}/inst-sys"
+      copy_packages "$dud_root" "$DUD_RPM_REPOSITORY"
+      update_kernel_modules "$dud_root"
       break
     done
   done
@@ -191,56 +191,6 @@ copy_packages() {
   done
 }
 
-# Finds the kernel modules to update
-#
-# It searches for the modules in the modules/ directory of the update.
-find_kernel_modules() {
-  local directory=$1
-  local -n modules=$2
-  local module_name
-  local files
-
-  modules=()
-  files=("${directory}"/*.ko*)
-  for module in "${files[@]}"; do
-    module_name=${module#"${directory}/"}
-    module_name=${module_name%.ko*}
-
-    if [[ ! " ${modules[*]} " =~ " ${module_name} " ]]; then
-      modules+=("$module_name")
-    fi
-  done
-
-  echo "Found ${#files[@]} kernel modules"
-}
-
-# Copies a kernel module
-#
-# It searches for a module with the same name. If found, it replaces it.
-# Otherwise, it copies the module to the top-level modules directory.
-copy_kernel_module() {
-  local source_dir=$1
-  local module=$2
-  local target_dir=$3
-  local source_file
-
-  echo "Copying ${module}..."
-
-  # expect a single file with $module.ko* name
-  source_file=("${source_dir}/${module}".ko*)
-
-  old_module=("${target_dir}"/**/*/"${module}".ko*)
-  if [ "${#old_module[@]}" -eq "1" ]; then
-    info "  Replacing the module ${old_module[0]}"
-    cp "${source_file[0]}" "${old_module[0]}"
-  elif [ "${#old_module[@]}" -eq "0" ]; then
-    info "  Not found the module to replace, so copying to kernel/ directory."
-    cp "${source_file[0]}" "${target_dir}"
-  else
-    info "  Skipping the module because several modules with the same name were found."
-  fi
-}
-
 # Updates kernel modules
 #
 # It copies the kernel modules from the Driver Update Disk to the system under
@@ -250,23 +200,30 @@ copy_kernel_module() {
 update_kernel_modules() {
   local dud_dir=$1
   local kernel_modules_dir
-  kernel_modules_dir="${NEWROOT}/lib/modules/$(uname -r)"
+  kernel_modules_dir="${NEWROOT}/lib/modules/$(uname -r)/updates"
   local dud_modules_dir="${dud_dir}/modules"
+  local module_name
 
-  # find and copy kernel modules
-  local dud_modules
-  find_kernel_modules "$dud_modules_dir" dud_modules
+  # find kernel modules in the DUD
+  local dud_modules=("${dud_modules_dir}"/*.ko*)
 
   # finish if no kernel module is included in DUD
-  if (( ${#dud_modules[@]} == 0 )); then
+  if ((${#dud_modules[@]} == 0)); then
     echo "Skipping kernel modules update"
     return
   fi
 
+  # copy the kernel modules
+  echo "Copying kernel modules to ${kernel_modules_dir}"
+  mkdir -p "${kernel_modules_dir}"
+  cp "${dud_modules[@]}" "${kernel_modules_dir}"
+
+  # unload the kernel modules
   for module in "${dud_modules[@]}"; do
-    echo "Processing ${module} module"
-    copy_kernel_module "$dud_modules_dir" "$module" "${kernel_modules_dir}/kernel"
-    rmmod "${module}" 2>&1
+    echo "Unloading kernel module ${module}"
+    module_name=${module#"${dud_modules_dir}/"}
+    module_name=${module_name%.ko*}
+    rmmod "${module_name}" 2>&1
   done
 
   # unload modules in the module.order file and make sure they will be loaded
