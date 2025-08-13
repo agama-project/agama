@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer, useState } from "react";
+import React, { useReducer } from "react";
 import {
   Button,
   Content,
@@ -34,6 +34,7 @@ import {
   ToolbarItem,
 } from "@patternfly/react-core";
 import { sort } from "fast-sort";
+import { isEmpty } from "radashi";
 import Icon from "~/components/layout/Icon";
 import SelectableDataTable from "~/components/core/SelectableDataTable";
 import FormatActionHandler from "~/components/storage/dasd/FormatActionHandler";
@@ -107,36 +108,6 @@ const filterDevices = (devices: DASDDevice[], from: string, to: string): DASDDev
 type FilterOptions = {
   minChannel?: string;
   maxChannel?: string;
-};
-
-/**
- * Represents the component state.
- */
-type DASDTableState = {
-  formatRequested: boolean;
-  selectedDevices: DASDDevice[];
-};
-
-/**
- * Supported actions.
- */
-type DASDTableAction =
-  | { type: "REQUEST_FORMAT"; devices: DASDTableState["selectedDevices"] }
-  | { type: "CANCEL_FORMAT_REQUEST" };
-
-/**
- * Reducer for triggering actions.
- */
-const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState => {
-  switch (action.type) {
-    case "REQUEST_FORMAT": {
-      return { ...state, formatRequested: true, selectedDevices: action.devices };
-    }
-
-    case "CANCEL_FORMAT_REQUEST": {
-      return { ...state, formatRequested: false, selectedDevices: [] };
-    }
-  }
 };
 
 /**
@@ -220,32 +191,102 @@ const ActionsToolbar = ({ devices, onFormatRequest }) => {
   );
 };
 
+/**
+ * Encapsulates all state used by the DASD table component, including filters,
+ * sorting configuration, current selection, and devices to be format.
+ */
+type DASDTableState = {
+  sortedBy: SortedBy;
+  filters: FilterOptions;
+  selectedDevices: DASDDevice[];
+  devicesToFormat: DASDDevice[];
+};
+
+/**
+ * Defines the initial state used by the DASD table reducer.
+ */
+const initialState: DASDTableState = {
+  sortedBy: { index: 0, direction: "asc" },
+  filters: {
+    minChannel: "",
+    maxChannel: "",
+  },
+  selectedDevices: [],
+  devicesToFormat: [],
+};
+
+/**
+ * Action types for updating the DASD table state via the reducer.
+ */
+type DASDTableAction =
+  | { type: "UPDATE_SORTING"; payload: DASDTableState["sortedBy"] }
+  | { type: "UPDATE_FILTERS"; payload: DASDTableState["filters"] }
+  | { type: "RESET_FILTERS" }
+  | { type: "UPDATE_SELECTION"; payload: DASDTableState["selectedDevices"] }
+  | { type: "REQUEST_FORMAT"; payload: DASDTableState["devicesToFormat"] }
+  | { type: "CANCEL_FORMAT_REQUEST" };
+
+/**
+ * Reducer function that handles all DASD table state transitions.
+ */
+const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState => {
+  switch (action.type) {
+    case "UPDATE_SORTING": {
+      return { ...state, sortedBy: action.payload };
+    }
+
+    case "UPDATE_FILTERS": {
+      return { ...state, filters: { ...state.filters, ...action.payload } };
+    }
+
+    case "RESET_FILTERS": {
+      return { ...state, filters: initialState.filters };
+    }
+
+    case "UPDATE_SELECTION": {
+      return { ...state, selectedDevices: action.payload };
+    }
+
+    case "REQUEST_FORMAT": {
+      return { ...state, devicesToFormat: action.payload };
+    }
+
+    case "CANCEL_FORMAT_REQUEST": {
+      return { ...state, devicesToFormat: [] };
+    }
+  }
+};
+
 export default function DASDTable() {
   const devices = useDASDDevices();
   const { mutate: updateDASD } = useDASDMutation();
-  const [state, dispatch] = useReducer(reducer, {
-    formatRequested: false,
-    selectedDevices: [],
-  });
-  const [sortedBy, updateSortedBy] = useState<SortedBy>({ index: 0, direction: "asc" });
 
-  const [selectedDASD, setSelectedDASD] = useState<DASDDevice[]>([]);
-  const [{ minChannel, maxChannel }, setFilters] = useState<FilterOptions>({
-    minChannel: "",
-    maxChannel: "",
-  });
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  const filteredDevices = filterDevices(devices, minChannel, maxChannel);
+  const onSortingChange = (sortedBy: SortedBy) => {
+    dispatch({ type: "UPDATE_SORTING", payload: sortedBy });
+  };
+
+  const onFilterChange = (filter: keyof FilterOptions, value) => {
+    dispatch({ type: "UPDATE_FILTERS", payload: { [filter]: value } });
+  };
+
+  const onSelectionChange = (devices: DASDDevice[]) => {
+    dispatch({ type: "UPDATE_SELECTION", payload: devices });
+  };
+
+  // Filtering
+  const filteredDevices = filterDevices(
+    devices,
+    state.filters.minChannel,
+    state.filters.maxChannel,
+  );
 
   // Sorting
   // See https://github.com/snovakovic/fast-sort
-  const sortedDevices = sort(filteredDevices)[sortedBy.direction](
-    (d) => d[columns[sortedBy.index].sortingKey],
+  const sortedDevices = sort(filteredDevices)[state.sortedBy.direction](
+    (d) => d[columns[state.sortedBy.index].sortingKey],
   );
-
-  const updateFilter = (newFilters: FilterOptions) => {
-    setFilters((currentFilters) => ({ ...currentFilters, ...newFilters }));
-  };
 
   return (
     <>
@@ -256,18 +297,18 @@ export default function DASDTable() {
               <ToolbarItem>
                 <TextInputGroup label="">
                   <TextInputGroupMain
-                    value={minChannel}
                     type="text"
+                    value={state.filters.minChannel}
                     aria-label={_("Filter by min channel")}
                     placeholder={_("Filter by min channel")}
-                    onChange={(_, minChannel) => updateFilter({ minChannel })}
+                    onChange={(_, v) => onFilterChange("minChannel", v)}
                   />
-                  {minChannel !== "" && (
+                  {state.filters.minChannel !== "" && (
                     <TextInputGroupUtilities>
                       <Button
                         variant="plain"
                         aria-label={_("Remove min channel filter")}
-                        onClick={() => updateFilter({ minChannel: "" })}
+                        onClick={() => onFilterChange("minChannel", "")}
                         icon={<Icon name="backspace" />}
                       />
                     </TextInputGroupUtilities>
@@ -277,18 +318,18 @@ export default function DASDTable() {
               <ToolbarItem>
                 <TextInputGroup>
                   <TextInputGroupMain
-                    value={maxChannel}
                     type="text"
+                    value={state.filters.maxChannel}
                     aria-label={_("Filter by max channel")}
                     placeholder={_("Filter by max channel")}
-                    onChange={(_, maxChannel) => updateFilter({ maxChannel })}
+                    onChange={(_, v) => onFilterChange("maxChannel", v)}
                   />
-                  {maxChannel !== "" && (
+                  {state.filters.maxChannel !== "" && (
                     <TextInputGroupUtilities>
                       <Button
                         variant="plain"
                         aria-label={_("Remove max channel filter")}
-                        onClick={() => updateFilter({ maxChannel: "" })}
+                        onClick={() => onFilterChange("maxChannel", "")}
                         icon={<Icon name="backspace" />}
                       />
                     </TextInputGroupUtilities>
@@ -300,15 +341,17 @@ export default function DASDTable() {
         </Toolbar>
         <Divider />
         <ActionsToolbar
-          devices={selectedDASD}
-          onFormatRequest={() => dispatch({ type: "REQUEST_FORMAT", devices: selectedDASD })}
+          devices={state.selectedDevices}
+          onFormatRequest={() =>
+            dispatch({ type: "REQUEST_FORMAT", payload: state.selectedDevices })
+          }
         />
         <Divider />
       </Content>
 
-      {state.formatRequested && (
+      {!isEmpty(state.devicesToFormat) && (
         <FormatActionHandler
-          devices={state.selectedDevices}
+          devices={state.devicesToFormat}
           onAccept={() => {
             dispatch({ type: "CANCEL_FORMAT_REQUEST" });
           }}
@@ -319,11 +362,11 @@ export default function DASDTable() {
         columns={columns}
         items={sortedDevices}
         selectionMode="multiple"
-        itemsSelected={selectedDASD}
+        itemsSelected={state.selectedDevices}
         variant="compact"
-        onSelectionChange={setSelectedDASD}
-        sortedBy={sortedBy}
-        updateSorting={updateSortedBy}
+        onSelectionChange={onSelectionChange}
+        sortedBy={state.sortedBy}
+        updateSorting={onSortingChange}
         allowSelectAll
         itemActions={(d) => [
           {
@@ -352,7 +395,7 @@ export default function DASDTable() {
             title: _("Format"),
             isDanger: true,
             onClick: () => {
-              dispatch({ type: "REQUEST_FORMAT", devices: [d] });
+              dispatch({ type: "REQUEST_FORMAT", payload: [d] });
               // formatDASD([d.id]),
             },
           },
