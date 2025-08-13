@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 13 15:16:25 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify "bootloader" and "files" section in agama
+  profile without specified product (bsc#1247248)
+
+-------------------------------------------------------------------
 Thu Aug  7 11:47:55 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow to "add" or "remove" patterns from the current or defined
