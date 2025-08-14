@@ -71,6 +71,11 @@ pub struct GlobalOpts {
     #[clap(long, default_value = "false")]
     /// Whether to accept invalid (self-signed, ...) certificates or not
     pub insecure: bool,
+
+    #[clap(long, default_value = "false")]
+    /// Some commands could be able to work even without connection to
+    /// the agama server
+    pub local: bool,
 }
 
 /// Agama's command-line interface
@@ -291,7 +296,7 @@ pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
     let api_url = api_url(cli.opts.clone().host)?;
 
     match cli.command {
-        Commands::Config(subcommand) => {
+        Commands::Config { local: _, subcommand } => {
             let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
             run_config_cmd(client, monitor, subcommand, cli.opts).await?
         }
