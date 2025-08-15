@@ -38,24 +38,55 @@ import { isEmpty } from "radashi";
 import Icon from "~/components/layout/Icon";
 import SelectableDataTable from "~/components/core/SelectableDataTable";
 import FormatActionHandler from "~/components/storage/dasd/FormatActionHandler";
-import type { SortedBy } from "~/components/core/SelectableDataTable";
+import StatusFilter from "~/components/storage/dasd/StatusFilter";
 import { DASDDevice } from "~/types/dasd";
+import type { SortedBy } from "~/components/core/SelectableDataTable";
 import { useDASDDevices, useDASDMutation } from "~/queries/storage/dasd";
 import { hex } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 
-const filterDevices = (devices: DASDDevice[], from: string, to: string): DASDDevice[] => {
-  const allChannels = devices.map((d) => d.hexId);
-  const min = hex(from) || Math.min(...allChannels);
-  const max = hex(to) || Math.max(...allChannels);
-
-  return devices.filter((d) => d.hexId >= min && d.hexId <= max);
+/**
+ * Filter options for narrowing down DASD devices shown in the table.
+ *
+ * All filters are optional and may be combined.
+ */
+type DASDDevicesFilters = {
+  /** Lower bound for channel ID filtering (inclusive). */
+  minChannel?: DASDDevice["id"];
+  /** Upper bound for channel ID filtering (inclusive). */
+  maxChannel?: DASDDevice["id"];
+  /** Only show devices with this status (e.g. "read_only", "offline"). */
+  status?: DASDDevice["status"];
 };
 
-type FilterOptions = {
-  minChannel?: string;
-  maxChannel?: string;
+type DASDDeviceCondition = (device: DASDDevice) => boolean;
+
+/**
+ * Filters an array of devices based on given filters.
+ *
+ * @param devices - The array of DASDDevice objects to filter.
+ * @param filters - The filters to apply.
+ * @returns The filtered array of DASDDevice objects matching all conditions.
+ */
+const filterDevices = (devices: DASDDevice[], filters: DASDDevicesFilters): DASDDevice[] => {
+  const { minChannel, maxChannel, status } = filters;
+
+  const conditions: DASDDeviceCondition[] = [];
+
+  if (minChannel || maxChannel) {
+    const allChannels = devices.map((d) => d.hexId);
+    const min = hex(minChannel) ?? Math.min(...allChannels);
+    const max = hex(maxChannel) ?? Math.max(...allChannels);
+
+    conditions.push((d) => d.hexId >= min && d.hexId <= max);
+  }
+
+  if (status && status !== "all") {
+    conditions.push((d) => d.status === status);
+  }
+
+  return devices.filter((device) => conditions.every((conditionFn) => conditionFn(device)));
 };
 
 /**
@@ -145,7 +176,7 @@ const ActionsToolbar = ({ devices, onFormatRequest }) => {
  */
 type DASDTableState = {
   sortedBy: SortedBy;
-  filters: FilterOptions;
+  filters: DASDDevicesFilters;
   selectedDevices: DASDDevice[];
   devicesToFormat: DASDDevice[];
 };
@@ -158,6 +189,7 @@ const initialState: DASDTableState = {
   filters: {
     minChannel: "",
     maxChannel: "",
+    status: "all",
   },
   selectedDevices: [],
   devicesToFormat: [],
@@ -171,6 +203,7 @@ type DASDTableAction =
   | { type: "UPDATE_FILTERS"; payload: DASDTableState["filters"] }
   | { type: "RESET_FILTERS" }
   | { type: "UPDATE_SELECTION"; payload: DASDTableState["selectedDevices"] }
+  | { type: "RESET_SELECTION" }
   | { type: "REQUEST_FORMAT"; payload: DASDTableState["devicesToFormat"] }
   | { type: "CANCEL_FORMAT_REQUEST" };
 
@@ -193,6 +226,10 @@ const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState
 
     case "UPDATE_SELECTION": {
       return { ...state, selectedDevices: action.payload };
+    }
+
+    case "RESET_SELECTION": {
+      return { ...state, selectedDevices: initialState.selectedDevices };
     }
 
     case "REQUEST_FORMAT": {
@@ -279,8 +316,9 @@ export default function DASDTable() {
     dispatch({ type: "UPDATE_SORTING", payload: sortedBy });
   };
 
-  const onFilterChange = (filter: keyof FilterOptions, value) => {
+  const onFilterChange = (filter: keyof DASDDevicesFilters, value) => {
     dispatch({ type: "UPDATE_FILTERS", payload: { [filter]: value } });
+    dispatch({ type: "RESET_SELECTION" });
   };
 
   const onSelectionChange = (devices: DASDDevice[]) => {
@@ -288,11 +326,7 @@ export default function DASDTable() {
   };
 
   // Filtering
-  const filteredDevices = filterDevices(
-    devices,
-    state.filters.minChannel,
-    state.filters.maxChannel,
-  );
+  const filteredDevices = filterDevices(devices, state.filters);
 
   // Sorting
   // See https://github.com/snovakovic/fast-sort
@@ -306,6 +340,12 @@ export default function DASDTable() {
         <Toolbar>
           <ToolbarContent>
             <ToolbarGroup>
+              <ToolbarItem>
+                <StatusFilter
+                  value={state.filters.status}
+                  onChange={(_, v) => onFilterChange("status", v)}
+                />
+              </ToolbarItem>
               <ToolbarItem>
                 <TextInputGroup label="">
                   <TextInputGroupMain
