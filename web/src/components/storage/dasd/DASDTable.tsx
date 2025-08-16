@@ -24,7 +24,6 @@ import React, { useReducer } from "react";
 import {
   Button,
   Content,
-  Divider,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -37,7 +36,7 @@ import StatusFilter from "~/components/storage/dasd/StatusFilter";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
 import { DASDDevice } from "~/types/dasd";
 import type { SortedBy } from "~/components/core/SelectableDataTable";
-import { useDASDDevices, useDASDMutation } from "~/queries/storage/dasd";
+import { DASDMutationFn, useDASDDevices, useDASDMutation } from "~/queries/storage/dasd";
 import { sort } from "fast-sort";
 import { isEmpty } from "radashi";
 import { hex } from "~/utils";
@@ -61,7 +60,26 @@ export type DASDDevicesFilters = {
   formatted?: "all" | "yes" | "no";
 };
 
+/**
+ * Predicate function for evaluating whether a DASD device meets a given
+ * condition.
+ *
+ * Used internally to compose filter logic when narrowing down the list of
+ * devices shown in the DASD table.
+ */
 type DASDDeviceCondition = (device: DASDDevice) => boolean;
+
+/**
+ * Props required to generate bulk actions for selected DASD devices.
+ */
+type DASDActionsBuilderProps = {
+  /** The list of selected DASD devices. */
+  devices: DASDDevice[];
+  /** Mutation function used to trigger backend updates (e.g. enable, disable). */
+  updater: DASDMutationFn;
+  /** State dispatcher for triggering actions */
+  dispatcher: (props: DASDTableAction) => void;
+};
 
 /**
  * Filters an array of devices based on given filters.
@@ -95,57 +113,102 @@ const filterDevices = (devices: DASDDevice[], filters: DASDDevicesFilters): DASD
 };
 
 /**
- * Provides individual action buttons for a group of selected DASD devices.
+ * Builds the list of available actions for given DASD devices.
+ *
+ * Returns an array of action objects, each with a label and an `onClick`
+ * handler. Some actions mutate device state directly (via `updater`), while
+ * others (like format) dispatch updates via `dispatcher`.
  */
-const BulkActions = ({ devices, onFormatRequest }) => {
-  const { mutate: updateDASD } = useDASDMutation();
-
-  const devicesIds = devices.map((d) => d.id);
-  const actions = [
+const buildActions = ({ devices, updater, dispatcher }: DASDActionsBuilderProps) => {
+  const ids = devices.map((d) => d.id);
+  return [
     {
       title: _("Activate"),
-      onClick: () => updateDASD({ action: "enable", devices: devicesIds }),
+      onClick: () => updater({ action: "enable", devices: ids }),
     },
     {
       title: _("Deactivate"),
-      onClick: () => updateDASD({ action: "disable", devices: devicesIds }),
+      onClick: () => updater({ action: "disable", devices: ids }),
     },
     {
       isSeparator: true,
     },
     {
       title: _("Set DIAG on"),
-      onClick: () => updateDASD({ action: "diagOn", devices: devicesIds }),
+      onClick: () => updater({ action: "diagOn", devices: ids }),
     },
     {
       title: _("Set DIAG off"),
-      onClick: () => updateDASD({ action: "diagOff", devices: devicesIds }),
+      onClick: () => updater({ action: "diagOff", devices: ids }),
     },
     {
       isSeparator: true,
     },
     {
       title: _("Format"),
-      onClick: () => onFormatRequest(devices),
+      isDanger: true,
+      onClick: () => {
+        dispatcher({ type: "REQUEST_FORMAT", payload: devices });
+      },
     },
   ];
-
-  return actions
-    .filter((a) => !a.isSeparator)
-    .map(({ onClick, title }, i) => (
-      <ToolbarItem key={i}>
-        <Button size="sm" key={i} onClick={onClick} variant="control">
-          {title}
-        </Button>
-      </ToolbarItem>
-    ));
 };
+
 /**
- * Toolbar section displaying available bulk actions for selected devices.
- * Dynamically adjusted based on selection count.
+ * Props for the FiltersToolbar component used in the DASD table.
  */
-const ActionsToolbar = ({ devices, onFormatRequest }) => {
-  const text = sprintf(
+type FiltersToolbarProps = {
+  /** Current filter state */
+  filters: DASDDevicesFilters;
+  /** Callback invoked when a filter value changes. */
+  onFilterChange: (filter: keyof DASDDevicesFilters, value: string | number) => void;
+};
+
+/**
+ * Renders the toolbar used to filter DASD devices.
+ */
+const FiltersToolbar = ({ filters, onFilterChange }: FiltersToolbarProps) => (
+  <Toolbar>
+    <ToolbarContent>
+      <ToolbarGroup>
+        <ToolbarItem>
+          <StatusFilter value={filters.status} onChange={(_, v) => onFilterChange("status", v)} />
+        </ToolbarItem>
+        <ToolbarItem>
+          <FormatFilter
+            value={filters.formatted}
+            onChange={(_, v) => onFilterChange("formatted", v)}
+          />
+        </ToolbarItem>
+        <ToolbarItem>
+          <TextinputFilter
+            id="dasd-minchannel-filter"
+            label={_("Min channel")}
+            value={filters.minChannel}
+            onChange={(_, v) => onFilterChange("minChannel", v)}
+          />
+        </ToolbarItem>
+        <ToolbarItem>
+          <TextinputFilter
+            id="dasd-maxchannel-filter"
+            label={_("Max channel")}
+            value={filters.maxChannel}
+            onChange={(_, v) => onFilterChange("maxChannel", v)}
+          />
+        </ToolbarItem>
+      </ToolbarGroup>
+    </ToolbarContent>
+  </Toolbar>
+);
+
+/**
+ * Displays a toolbar containing bulk action buttons for selected DASD devices.
+ *
+ * If devices are selected, shows available actions; otherwise, displays an
+ * instructional message. Depends on the same props as `buildActions`.
+ */
+const BulkActionsToolbar = ({ devices, updater, dispatcher }: DASDActionsBuilderProps) => {
+  const applyText = sprintf(
     n_(
       // TRANSLATORS: message shown in bulk action toolbar when just one device
       // is selected
@@ -164,7 +227,16 @@ const ActionsToolbar = ({ devices, onFormatRequest }) => {
         <ToolbarGroup>
           {devices.length ? (
             <>
-              {text} <BulkActions devices={devices} onFormatRequest={onFormatRequest} />
+              {applyText}{" "}
+              {buildActions({ devices, updater, dispatcher })
+                .filter((a) => !a.isSeparator)
+                .map(({ onClick, title }, i) => (
+                  <ToolbarItem key={i}>
+                    <Button size="sm" onClick={onClick} variant="control">
+                      {title}
+                    </Button>
+                  </ToolbarItem>
+                ))}
             </>
           ) : (
             _("Select devices to enable bulk actions.")
@@ -192,10 +264,10 @@ type DASDTableState = {
 const initialState: DASDTableState = {
   sortedBy: { index: 0, direction: "asc" },
   filters: {
-    minChannel: "",
-    maxChannel: "",
     status: "all",
     formatted: "all",
+    minChannel: "",
+    maxChannel: "",
   },
   selectedDevices: [],
   devicesToFormat: [],
@@ -341,51 +413,13 @@ export default function DASDTable() {
   );
 
   return (
-    <>
-      <Content>
-        <Toolbar>
-          <ToolbarContent>
-            <ToolbarGroup>
-              <ToolbarItem>
-                <StatusFilter
-                  value={state.filters.status}
-                  onChange={(_, v) => onFilterChange("status", v)}
-                />
-              </ToolbarItem>
-              <ToolbarItem>
-                <FormatFilter
-                  value={state.filters.formatted}
-                  onChange={(_, v) => onFilterChange("formatted", v)}
-                />
-              </ToolbarItem>
-              <ToolbarItem>
-                <TextinputFilter
-                  id="dasd-minchannel-filter"
-                  label={_("Min channel")}
-                  value={state.filters.minChannel}
-                  onChange={(_, v) => onFilterChange("minChannel", v)}
-                />
-              </ToolbarItem>
-              <ToolbarItem>
-                <TextinputFilter
-                  id="dasd-maxchannel-filter"
-                  label={_("Max channel")}
-                  value={state.filters.maxChannel}
-                  onChange={(_, v) => onFilterChange("maxChannel", v)}
-                />
-              </ToolbarItem>
-            </ToolbarGroup>
-          </ToolbarContent>
-        </Toolbar>
-        <Divider />
-        <ActionsToolbar
-          devices={state.selectedDevices}
-          onFormatRequest={() =>
-            dispatch({ type: "REQUEST_FORMAT", payload: state.selectedDevices })
-          }
-        />
-        <Divider />
-      </Content>
+    <Content>
+      <FiltersToolbar filters={state.filters} onFilterChange={onFilterChange} />
+      <BulkActionsToolbar
+        devices={state.selectedDevices}
+        updater={updateDASD}
+        dispatcher={dispatch}
+      />
 
       {!isEmpty(state.devicesToFormat) && (
         <FormatActionHandler
@@ -396,6 +430,7 @@ export default function DASDTable() {
           onCancel={() => dispatch({ type: "CANCEL_FORMAT_REQUEST" })}
         />
       )}
+
       <SelectableDataTable
         columns={columns}
         items={sortedDevices}
@@ -406,40 +441,15 @@ export default function DASDTable() {
         sortedBy={state.sortedBy}
         updateSorting={onSortingChange}
         allowSelectAll
-        itemActions={(d) => [
-          {
-            title: _("Activate"),
-            onClick: () => updateDASD({ action: "enable", devices: [d.id] }),
-          },
-          {
-            title: _("Deactivate"),
-            onClick: () => updateDASD({ action: "disable", devices: [d.id] }),
-          },
-          {
-            isSeparator: true,
-          },
-          {
-            title: _("Set DIAG on"),
-            onClick: () => updateDASD({ action: "diagOn", devices: [d.id] }),
-          },
-          {
-            title: _("Set DIAG off"),
-            onClick: () => updateDASD({ action: "diagOff", devices: [d.id] }),
-          },
-          {
-            isSeparator: true,
-          },
-          {
-            title: _("Format"),
-            isDanger: true,
-            onClick: () => {
-              dispatch({ type: "REQUEST_FORMAT", payload: [d] });
-              // formatDASD([d.id]),
-            },
-          },
-        ]}
+        itemActions={(d) =>
+          buildActions({
+            devices: [d],
+            updater: updateDASD,
+            dispatcher: dispatch,
+          })
+        }
         itemActionsLabel={(d) => `Actions for ${d.id}`}
       />
-    </>
+    </Content>
   );
 }
