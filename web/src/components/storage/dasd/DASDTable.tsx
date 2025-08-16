@@ -24,11 +24,16 @@ import React, { useReducer } from "react";
 import {
   Button,
   Content,
+  EmptyState,
+  EmptyStateActions,
+  EmptyStateBody,
+  EmptyStateFooter,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
+import Icon from "~/components/layout/Icon";
 import FormatActionHandler from "~/components/storage/dasd/FormatActionHandler";
 import FormatFilter from "~/components/storage/dasd/FormatFilter";
 import SelectableDataTable from "~/components/core/SelectableDataTable";
@@ -248,6 +253,33 @@ const BulkActionsToolbar = ({ devices, updater, dispatcher }: DASDActionsBuilder
 };
 
 /**
+ * Empty state UI displayed when the DASD table has no items to show.
+ *
+ * This typically occurs when active filters exclude all devices. The component
+ * provides a clear message and an action to reset filters.
+ *
+ */
+const DASDTableEmptyState = ({ clearFilters }) => {
+  return (
+    <EmptyState
+      headingLevel="h2"
+      titleText={_("No devices found")}
+      icon={() => <Icon name="search_off" />}
+      variant="sm"
+    >
+      <EmptyStateBody>{_("Change filters and try again.")}</EmptyStateBody>
+      <EmptyStateFooter>
+        <EmptyStateActions>
+          <Button variant="secondary" onClick={clearFilters}>
+            {_("Clear all filters")}
+          </Button>
+        </EmptyStateActions>
+      </EmptyStateFooter>
+    </EmptyState>
+  );
+};
+
+/**
  * Encapsulates all state used by the DASD table component, including filters,
  * sorting configuration, current selection, and devices to be format.
  */
@@ -449,6 +481,9 @@ export default function DASDTable() {
           })
         }
         itemActionsLabel={(d) => `Actions for ${d.id}`}
+        emptyState={
+          <DASDTableEmptyState clearFilters={() => dispatch({ type: "RESET_FILTERS" })} />
+        }
       />
     </Content>
   );

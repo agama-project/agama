@@ -93,4 +93,16 @@ describe("DASDTable", () => {
       screen.getByText("FormatActionHandler Mock");
     });
   });
+
+  describe("when there is some DASD devices available", () => {
+    beforeEach(() => {
+      mockDASDDevices = [];
+    });
+
+    it("renders empty state when there are no devices", () => {
+      installerRender(<DASDTable />);
+      screen.getByRole("heading", { name: "No devices found", level: 2 });
+      screen.getByRole("button", { name: "Clear all filters" });
+    });
+  });
 });
