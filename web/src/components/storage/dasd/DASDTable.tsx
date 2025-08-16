@@ -20,368 +20,426 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useReducer } from "react";
 import {
   Button,
   Content,
   Divider,
-  Dropdown,
-  DropdownItem,
-  DropdownList,
-  List,
-  ListItem,
-  MenuToggle,
-  Stack,
-  TextInputGroup,
-  TextInputGroupMain,
-  TextInputGroupUtilities,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { Page, Popup } from "~/components/core";
-import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
-import { Icon } from "~/components/layout";
-import { _ } from "~/i18n";
-import { hex } from "~/utils";
-import { sort } from "fast-sort";
+import FormatActionHandler from "~/components/storage/dasd/FormatActionHandler";
+import FormatFilter from "~/components/storage/dasd/FormatFilter";
+import SelectableDataTable from "~/components/core/SelectableDataTable";
+import StatusFilter from "~/components/storage/dasd/StatusFilter";
+import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
 import { DASDDevice } from "~/types/dasd";
-import { useDASDDevices, useDASDMutation, useFormatDASDMutation } from "~/queries/storage/dasd";
+import type { SortedBy } from "~/components/core/SelectableDataTable";
+import { useDASDDevices, useDASDMutation } from "~/queries/storage/dasd";
+import { sort } from "fast-sort";
+import { isEmpty } from "radashi";
+import { hex } from "~/utils";
+import { _, n_ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 
-// FIXME: please, note that this file still requiring refinements until reach a
-//   reasonable stable version
-const columnData = (device: DASDDevice, column: { id: string; sortId?: string; label: string }) => {
-  let data = device[column.id];
-
-  switch (column.id) {
-    case "formatted":
-    case "diag":
-      if (!device.enabled) data = "";
-      break;
-    case "partitionInfo":
-      data = data.split(",").map((d: string) => <div key={d}>{d}</div>);
-      break;
-  }
-
-  if (typeof data === "boolean") {
-    return data ? _("Yes") : _("No");
-  }
-
-  return data;
+/**
+ * Filter options for narrowing down DASD devices shown in the table.
+ *
+ * All filters are optional and may be combined.
+ */
+export type DASDDevicesFilters = {
+  /** Lower bound for channel ID filtering (inclusive). */
+  minChannel?: DASDDevice["id"];
+  /** Upper bound for channel ID filtering (inclusive). */
+  maxChannel?: DASDDevice["id"];
+  /** Only show devices with this status (e.g. "read_only", "offline"). */
+  status?: DASDDevice["status"];
+  /** Filter by formatting status: "yes" (formatted), "no" (not formatted), or
+   * "all" (all devices). */
+  formatted?: "all" | "yes" | "no";
 };
 
-const columns = [
-  { id: "id", sortId: "hexId", label: _("Channel ID") },
-  { id: "status", label: _("Status") },
-  { id: "deviceName", label: _("Device") },
-  { id: "deviceType", label: _("Type") },
-  // TRANSLATORS: table header, the column contains "Yes"/"No" values
-  // for the DIAG access mode (special disk access mode on IBM mainframes),
-  // usually keep untranslated
-  { id: "diag", label: _("DIAG") },
-  { id: "formatted", label: _("Formatted") },
-  { id: "partitionInfo", label: _("Partition Info") },
-];
-const DevicesList = ({ devices }) => (
-  <List>
-    {devices.map((d: DASDDevice) => (
-      <ListItem key={d.id}>{d.id}</ListItem>
-    ))}
-  </List>
-);
-const FormatNotPossible = ({ devices, onAccept }) => (
-  <Popup isOpen title={_("Cannot format all selected devices")}>
-    <Stack hasGutter>
-      <Content>
-        {_(
-          "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again",
-        )}
-      </Content>
-      <DevicesList devices={devices} />
-    </Stack>
-    <Popup.Actions>
-      <Popup.Confirm onClick={onAccept}>{_("Accept")}</Popup.Confirm>
-    </Popup.Actions>
-  </Popup>
-);
+type DASDDeviceCondition = (device: DASDDevice) => boolean;
 
-const FormatConfirmation = ({ devices, onCancel, onConfirm }) => (
-  <Popup isOpen title={_("Format selected devices?")}>
-    <Stack hasGutter>
-      <Content>
-        {_(
-          "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.",
-        )}
-      </Content>
-      <DevicesList devices={devices} />
-    </Stack>
-    <Popup.Actions>
-      <Popup.Confirm onClick={onConfirm} />
-      <Popup.Cancel onClick={onCancel} autoFocus />
-    </Popup.Actions>
-  </Popup>
-);
+/**
+ * Filters an array of devices based on given filters.
+ *
+ * @param devices - The array of DASDDevice objects to filter.
+ * @param filters - The filters to apply.
+ * @returns The filtered array of DASDDevice objects matching all conditions.
+ */
+const filterDevices = (devices: DASDDevice[], filters: DASDDevicesFilters): DASDDevice[] => {
+  const { minChannel, maxChannel, status, formatted } = filters;
 
-const Actions = ({ devices, isDisabled }: { devices: DASDDevice[]; isDisabled: boolean }) => {
+  const conditions: DASDDeviceCondition[] = [];
+
+  if (minChannel || maxChannel) {
+    const allChannels = devices.map((d) => d.hexId);
+    const min = hex(minChannel) || Math.min(...allChannels);
+    const max = hex(maxChannel) || Math.max(...allChannels);
+
+    conditions.push((d) => d.hexId >= min && d.hexId <= max);
+  }
+
+  if (status && status !== "all") {
+    conditions.push((d) => d.status === status);
+  }
+
+  if (formatted === "yes" || formatted === "no") {
+    conditions.push((d) => (formatted === "yes" ? d.formatted : !d.formatted));
+  }
+
+  return devices.filter((device) => conditions.every((conditionFn) => conditionFn(device)));
+};
+
+/**
+ * Provides individual action buttons for a group of selected DASD devices.
+ */
+const BulkActions = ({ devices, onFormatRequest }) => {
   const { mutate: updateDASD } = useDASDMutation();
-  const { mutate: formatDASD } = useFormatDASDMutation();
-  const [isOpen, setIsOpen] = useState(false);
-  const [requestFormat, setRequestFormat] = useState(false);
 
-  const onToggle = () => setIsOpen(!isOpen);
-  const onSelect = () => setIsOpen(false);
-  const cancelFormatRequest = () => setRequestFormat(false);
+  const devicesIds = devices.map((d) => d.id);
+  const actions = [
+    {
+      title: _("Activate"),
+      onClick: () => updateDASD({ action: "enable", devices: devicesIds }),
+    },
+    {
+      title: _("Deactivate"),
+      onClick: () => updateDASD({ action: "disable", devices: devicesIds }),
+    },
+    {
+      isSeparator: true,
+    },
+    {
+      title: _("Set DIAG on"),
+      onClick: () => updateDASD({ action: "diagOn", devices: devicesIds }),
+    },
+    {
+      title: _("Set DIAG off"),
+      onClick: () => updateDASD({ action: "diagOff", devices: devicesIds }),
+    },
+    {
+      isSeparator: true,
+    },
+    {
+      title: _("Format"),
+      onClick: () => onFormatRequest(devices),
+    },
+  ];
 
-  const deviceIds = devices.map((d) => d.id);
-  const offlineDevices = devices.filter((d) => !d.enabled);
-  const offlineDevicesSelected = offlineDevices.length > 0;
-  const activate = () => updateDASD({ action: "enable", devices: deviceIds });
-  const deactivate = () => updateDASD({ action: "disable", devices: deviceIds });
-  const setDiagOn = () => updateDASD({ action: "diagOn", devices: deviceIds });
-  const setDiagOff = () => updateDASD({ action: "diagOff", devices: deviceIds });
-  const format = () => formatDASD(devices.map((d) => d.id));
-
-  const Action = ({ children, ...props }) => (
-    <DropdownItem component="button" {...props}>
-      {children}
-    </DropdownItem>
+  return actions
+    .filter((a) => !a.isSeparator)
+    .map(({ onClick, title }, i) => (
+      <ToolbarItem key={i}>
+        <Button size="sm" key={i} onClick={onClick} variant="control">
+          {title}
+        </Button>
+      </ToolbarItem>
+    ));
+};
+/**
+ * Toolbar section displaying available bulk actions for selected devices.
+ * Dynamically adjusted based on selection count.
+ */
+const ActionsToolbar = ({ devices, onFormatRequest }) => {
+  const text = sprintf(
+    n_(
+      // TRANSLATORS: message shown in bulk action toolbar when just one device
+      // is selected
+      "Apply to the selected device",
+      // TRANSLATORS: message shown in bulk action toolbar when some devices are
+      // selected. %s is replaced with the amount of devices
+      "Apply to the %s selected devices",
+      devices.length,
+    ),
+    devices.length,
   );
 
   return (
-    <>
-      {requestFormat && offlineDevicesSelected && (
-        <FormatNotPossible devices={offlineDevices} onAccept={cancelFormatRequest} />
-      )}
-
-      {requestFormat && !offlineDevicesSelected && (
-        <FormatConfirmation
-          devices={devices}
-          onCancel={cancelFormatRequest}
-          onConfirm={() => {
-            cancelFormatRequest();
-            format();
-          }}
-        />
-      )}
-      <Dropdown
-        isOpen={isOpen}
-        onSelect={onSelect}
-        toggle={(toggleRef) => (
-          <MenuToggle ref={toggleRef} variant="primary" isDisabled={isDisabled} onClick={onToggle}>
-            {/* TRANSLATORS: drop down menu label */}
-            {_("Perform an action")}
-          </MenuToggle>
-        )}
-      >
-        <DropdownList>
-          {/** TRANSLATORS: drop down menu action, activate the device */}
-          <Action key="activate" onClick={activate}>
-            {_("Activate")}
-          </Action>
-          {/** TRANSLATORS: drop down menu action, deactivate the device */}
-          <Action key="deactivate" onClick={deactivate}>
-            {_("Deactivate")}
-          </Action>
-          <Divider key="first-separator" />
-          {/** TRANSLATORS: drop down menu action, enable DIAG access method */}
-          <Action key="set_diag_on" onClick={setDiagOn}>
-            {_("Set DIAG On")}
-          </Action>
-          {/** TRANSLATORS: drop down menu action, disable DIAG access method */}
-          <Action key="set_diag_off" onClick={setDiagOff}>
-            {_("Set DIAG Off")}
-          </Action>
-          <Divider key="second-separator" />
-          {/** TRANSLATORS: drop down menu action, format the disk */}
-          <Action key="format" onClick={() => setRequestFormat(true)}>
-            {_("Format")}
-          </Action>
-        </DropdownList>
-      </Dropdown>
-    </>
+    <Toolbar>
+      <ToolbarContent>
+        <ToolbarGroup>
+          {devices.length ? (
+            <>
+              {text} <BulkActions devices={devices} onFormatRequest={onFormatRequest} />
+            </>
+          ) : (
+            _("Select devices to enable bulk actions.")
+          )}
+        </ToolbarGroup>
+      </ToolbarContent>
+    </Toolbar>
   );
 };
 
-const filterDevices = (devices: DASDDevice[], from: string, to: string): DASDDevice[] => {
-  const allChannels = devices.map((d) => d.hexId);
-  const min = hex(from) || Math.min(...allChannels);
-  const max = hex(to) || Math.max(...allChannels);
-
-  return devices.filter((d) => d.hexId >= min && d.hexId <= max);
+/**
+ * Encapsulates all state used by the DASD table component, including filters,
+ * sorting configuration, current selection, and devices to be format.
+ */
+type DASDTableState = {
+  sortedBy: SortedBy;
+  filters: DASDDevicesFilters;
+  selectedDevices: DASDDevice[];
+  devicesToFormat: DASDDevice[];
 };
 
-type FilterOptions = {
-  minChannel?: string;
-  maxChannel?: string;
+/**
+ * Defines the initial state used by the DASD table reducer.
+ */
+const initialState: DASDTableState = {
+  sortedBy: { index: 0, direction: "asc" },
+  filters: {
+    minChannel: "",
+    maxChannel: "",
+    status: "all",
+    formatted: "all",
+  },
+  selectedDevices: [],
+  devicesToFormat: [],
 };
-type SelectionOptions = {
-  unselect?: boolean;
-  device?: DASDDevice;
-  devices?: DASDDevice[];
+
+/**
+ * Action types for updating the DASD table state via the reducer.
+ */
+type DASDTableAction =
+  | { type: "UPDATE_SORTING"; payload: DASDTableState["sortedBy"] }
+  | { type: "UPDATE_FILTERS"; payload: DASDTableState["filters"] }
+  | { type: "RESET_FILTERS" }
+  | { type: "UPDATE_SELECTION"; payload: DASDTableState["selectedDevices"] }
+  | { type: "RESET_SELECTION" }
+  | { type: "REQUEST_FORMAT"; payload: DASDTableState["devicesToFormat"] }
+  | { type: "CANCEL_FORMAT_REQUEST" };
+
+/**
+ * Reducer function that handles all DASD table state transitions.
+ */
+const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState => {
+  switch (action.type) {
+    case "UPDATE_SORTING": {
+      return { ...state, sortedBy: action.payload };
+    }
+
+    case "UPDATE_FILTERS": {
+      return { ...state, filters: { ...state.filters, ...action.payload } };
+    }
+
+    case "RESET_FILTERS": {
+      return { ...state, filters: initialState.filters };
+    }
+
+    case "UPDATE_SELECTION": {
+      return { ...state, selectedDevices: action.payload };
+    }
+
+    case "RESET_SELECTION": {
+      return { ...state, selectedDevices: initialState.selectedDevices };
+    }
+
+    case "REQUEST_FORMAT": {
+      return { ...state, devicesToFormat: action.payload };
+    }
+
+    case "CANCEL_FORMAT_REQUEST": {
+      return { ...state, devicesToFormat: [] };
+    }
+  }
 };
+
+/**
+ * Column definitions for the DASD devices table.
+ *
+ * Each entry defines how a column is labeled, how its value is derived from a
+ * DASDDevice object, and which field is used for sorting.
+ *
+ * These columns are consumed by the core <SelectableDataTable> component.
+ */
+const columns = [
+  {
+    // TRANSLATORS: table header for a DASD devices table
+    name: _("Channel ID"),
+    value: (d: DASDDevice) => d.id,
+    sortingKey: "hexId", // uses the hexadecimal representation for sorting
+  },
+
+  {
+    // TRANSLATORS: table header for a DASD devices table
+    name: _("Status"),
+    value: (d: DASDDevice) => d.status,
+    sortingKey: "status",
+  },
+  {
+    // TRANSLATORS: table header for a DASD devices table
+    name: _("Device"),
+    value: (d: DASDDevice) => d.deviceName,
+    sortingKey: "deviceName",
+  },
+  {
+    // TRANSLATORS: table header for a DASD devices table
+    name: _("Type"),
+    value: (d: DASDDevice) => d.deviceType,
+    sortingKey: "deviceType",
+  },
+  {
+    // TRANSLATORS: table header for `DIAG access mode` on DASD devices table.
+    // It refers to an special disk access mode on IBM mainframes. Keep
+    // untranslated.
+    name: _("DIAG"),
+    value: (d: DASDDevice) => {
+      if (!d.enabled) return "";
+
+      return d.diag ? _("Yes") : _("No");
+    },
+    sortingKey: "diag",
+  },
+  {
+    // TRANSLATORS: table header for a column in a DASD devices table that
+    // usually contains "Yes" or "No"" values
+    name: _("Formatted"),
+    value: (d: DASDDevice) => (d.formatted ? _("Yes") : _("No")),
+    sortingKey: "formatted",
+  },
+  {
+    // TRANSLATORS: table header for a DASD devices table
+    name: _("Partition Info"),
+
+    value: (d: DASDDevice) =>
+      // Displays comma-separated partition info as individual lines using <div>
+      d.partitionInfo.split(",").map((d: string) => <div key={d}>{d}</div>),
+    sortingKey: "partitionInfo",
+  },
+];
 
 export default function DASDTable() {
   const devices = useDASDDevices();
-  const [selectedDASD, setSelectedDASD] = useState<DASDDevice[]>([]);
-  const [{ minChannel, maxChannel }, setFilters] = useState<FilterOptions>({
-    minChannel: "",
-    maxChannel: "",
-  });
+  const { mutate: updateDASD } = useDASDMutation();
 
-  const [sortingColumn, setSortingColumn] = useState(columns[0]);
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  const sortColumnIndex = () => columns.findIndex((c) => c.id === sortingColumn.id);
-  const filteredDevices = filterDevices(devices, minChannel, maxChannel);
-  const selectedDevicesIds = selectedDASD.map((d) => d.id);
-
-  const changeSelected = (newSelection: SelectionOptions) => {
-    setSelectedDASD((prevSelection) => {
-      if (newSelection.unselect) {
-        if (newSelection.device)
-          return prevSelection.filter((d) => d.id !== newSelection.device.id);
-        if (newSelection.devices) return [];
-      } else {
-        if (newSelection.device) return [...prevSelection, newSelection.device];
-        if (newSelection.devices) return newSelection.devices;
-      }
-    });
+  const onSortingChange = (sortedBy: SortedBy) => {
+    dispatch({ type: "UPDATE_SORTING", payload: sortedBy });
   };
 
-  // Selecting
-  const selectAll = (isSelecting = true) => {
-    changeSelected({ unselect: !isSelecting, devices: filteredDevices });
+  const onFilterChange = (filter: keyof DASDDevicesFilters, value) => {
+    dispatch({ type: "UPDATE_FILTERS", payload: { [filter]: value } });
+    dispatch({ type: "RESET_SELECTION" });
   };
 
-  const selectDevice = (device, isSelecting = true) => {
-    changeSelected({ unselect: !isSelecting, device });
+  const onSelectionChange = (devices: DASDDevice[]) => {
+    dispatch({ type: "UPDATE_SELECTION", payload: devices });
   };
+
+  // Filtering
+  const filteredDevices = filterDevices(devices, state.filters);
 
   // Sorting
   // See https://github.com/snovakovic/fast-sort
-  const sortBy = sortingColumn.sortId || sortingColumn.id;
-  const sortedDevices = sort(filteredDevices)[sortDirection]((d) => d[sortBy]);
-
-  // FIXME: this can be improved and even extracted to be used with other tables.
-  const getSortParams = (columnIndex) => {
-    return {
-      sortBy: { index: sortColumnIndex(), direction: sortDirection },
-      onSort: (_event, index, direction) => {
-        setSortingColumn(columns[index]);
-        setSortDirection(direction);
-      },
-      columnIndex,
-    };
-  };
-
-  const updateFilter = (newFilters: FilterOptions) => {
-    setFilters((currentFilters) => ({ ...currentFilters, ...newFilters }));
-  };
-
-  const PageContent = () => {
-    return (
-      <Table variant="compact">
-        <Thead>
-          <Tr>
-            <Th
-              aria-label="dasd-select"
-              select={{
-                onSelect: (_event, isSelecting) => selectAll(isSelecting),
-                isSelected: filteredDevices.length === selectedDASD.length,
-              }}
-            />
-            {columns.map((column, index) => (
-              <Th key={column.id} sort={getSortParams(index)}>
-                {column.label}
-              </Th>
-            ))}
-          </Tr>
-        </Thead>
-        <Tbody>
-          {sortedDevices.map((device, rowIndex) => (
-            <Tr key={device.id}>
-              <Td
-                dataLabel={device.id}
-                select={{
-                  rowIndex,
-                  onSelect: (_event, isSelecting) => selectDevice(device, isSelecting),
-                  isSelected: selectedDevicesIds.includes(device.id),
-                  isDisabled: false,
-                }}
-              />
-              {columns.map((column) => (
-                <Td key={column.id} dataLabel={column.label}>
-                  {columnData(device, column)}
-                </Td>
-              ))}
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
-    );
-  };
+  const sortedDevices = sort(filteredDevices)[state.sortedBy.direction](
+    (d) => d[columns[state.sortedBy.index].sortingKey],
+  );
 
   return (
     <>
-      <Toolbar>
-        <ToolbarContent>
-          <ToolbarGroup align={{ default: "alignEnd" }}>
-            <ToolbarItem>
-              <TextInputGroup>
-                <TextInputGroupMain
-                  value={minChannel}
-                  type="text"
-                  aria-label={_("Filter by min channel")}
-                  placeholder={_("Filter by min channel")}
-                  onChange={(_, minChannel) => updateFilter({ minChannel })}
+      <Content>
+        <Toolbar>
+          <ToolbarContent>
+            <ToolbarGroup>
+              <ToolbarItem>
+                <StatusFilter
+                  value={state.filters.status}
+                  onChange={(_, v) => onFilterChange("status", v)}
                 />
-                {minChannel !== "" && (
-                  <TextInputGroupUtilities>
-                    <Button
-                      variant="plain"
-                      aria-label={_("Remove min channel filter")}
-                      onClick={() => updateFilter({ minChannel: "" })}
-                      icon={<Icon name="backspace" />}
-                    />
-                  </TextInputGroupUtilities>
-                )}
-              </TextInputGroup>
-            </ToolbarItem>
-            <ToolbarItem>
-              <TextInputGroup>
-                <TextInputGroupMain
-                  value={maxChannel}
-                  type="text"
-                  aria-label={_("Filter by max channel")}
-                  placeholder={_("Filter by max channel")}
-                  onChange={(_, maxChannel) => updateFilter({ maxChannel })}
+              </ToolbarItem>
+              <ToolbarItem>
+                <FormatFilter
+                  value={state.filters.formatted}
+                  onChange={(_, v) => onFilterChange("formatted", v)}
                 />
-                {maxChannel !== "" && (
-                  <TextInputGroupUtilities>
-                    <Button
-                      variant="plain"
-                      aria-label={_("Remove max channel filter")}
-                      onClick={() => updateFilter({ maxChannel: "" })}
-                      icon={<Icon name="backspace" />}
-                    />
-                  </TextInputGroupUtilities>
-                )}
-              </TextInputGroup>
-            </ToolbarItem>
+              </ToolbarItem>
+              <ToolbarItem>
+                <TextinputFilter
+                  id="dasd-minchannel-filter"
+                  label={_("Min channel")}
+                  value={state.filters.minChannel}
+                  onChange={(_, v) => onFilterChange("minChannel", v)}
+                />
+              </ToolbarItem>
+              <ToolbarItem>
+                <TextinputFilter
+                  id="dasd-maxchannel-filter"
+                  label={_("Max channel")}
+                  value={state.filters.maxChannel}
+                  onChange={(_, v) => onFilterChange("maxChannel", v)}
+                />
+              </ToolbarItem>
+            </ToolbarGroup>
+          </ToolbarContent>
+        </Toolbar>
+        <Divider />
+        <ActionsToolbar
+          devices={state.selectedDevices}
+          onFormatRequest={() =>
+            dispatch({ type: "REQUEST_FORMAT", payload: state.selectedDevices })
+          }
+        />
+        <Divider />
+      </Content>
 
-            <ToolbarItem variant="separator" />
-
-            <ToolbarItem>
-              <Actions devices={selectedDASD} isDisabled={selectedDASD.length === 0} />
-            </ToolbarItem>
-          </ToolbarGroup>
-        </ToolbarContent>
-      </Toolbar>
-
-      <Page.Section aria-label={_("DASDs table section")}>
-        <PageContent />
-      </Page.Section>
+      {!isEmpty(state.devicesToFormat) && (
+        <FormatActionHandler
+          devices={state.devicesToFormat}
+          onAccept={() => {
+            dispatch({ type: "CANCEL_FORMAT_REQUEST" });
+          }}
+          onCancel={() => dispatch({ type: "CANCEL_FORMAT_REQUEST" })}
+        />
+      )}
+      <SelectableDataTable
+        columns={columns}
+        items={sortedDevices}
+        selectionMode="multiple"
+        itemsSelected={state.selectedDevices}
+        variant="compact"
+        onSelectionChange={onSelectionChange}
+        sortedBy={state.sortedBy}
+        updateSorting={onSortingChange}
+        allowSelectAll
+        itemActions={(d) => [
+          {
+            title: _("Activate"),
+            onClick: () => updateDASD({ action: "enable", devices: [d.id] }),
+          },
+          {
+            title: _("Deactivate"),
+            onClick: () => updateDASD({ action: "disable", devices: [d.id] }),
+          },
+          {
+            isSeparator: true,
+          },
+          {
+            title: _("Set DIAG on"),
+            onClick: () => updateDASD({ action: "diagOn", devices: [d.id] }),
+          },
+          {
+            title: _("Set DIAG off"),
+            onClick: () => updateDASD({ action: "diagOff", devices: [d.id] }),
+          },
+          {
+            isSeparator: true,
+          },
+          {
+            title: _("Format"),
+            isDanger: true,
+            onClick: () => {
+              dispatch({ type: "REQUEST_FORMAT", payload: [d] });
+              // formatDASD([d.id]),
+            },
+          },
+        ]}
+        itemActionsLabel={(d) => `Actions for ${d.id}`}
+      />
     </>
   );
 }
