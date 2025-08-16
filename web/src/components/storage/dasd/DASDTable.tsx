@@ -39,6 +39,7 @@ import Icon from "~/components/layout/Icon";
 import SelectableDataTable from "~/components/core/SelectableDataTable";
 import FormatActionHandler from "~/components/storage/dasd/FormatActionHandler";
 import StatusFilter from "~/components/storage/dasd/StatusFilter";
+import FormattedFilter from "~/components/storage/dasd/FormattedFilter";
 import { DASDDevice } from "~/types/dasd";
 import type { SortedBy } from "~/components/core/SelectableDataTable";
 import { useDASDDevices, useDASDMutation } from "~/queries/storage/dasd";
@@ -51,13 +52,16 @@ import { _, n_ } from "~/i18n";
  *
  * All filters are optional and may be combined.
  */
-type DASDDevicesFilters = {
+export type DASDDevicesFilters = {
   /** Lower bound for channel ID filtering (inclusive). */
   minChannel?: DASDDevice["id"];
   /** Upper bound for channel ID filtering (inclusive). */
   maxChannel?: DASDDevice["id"];
   /** Only show devices with this status (e.g. "read_only", "offline"). */
   status?: DASDDevice["status"];
+  /** Filter by formatting status: "yes" (formatted), "no" (not formatted), or
+   * "both" (all devices). */
+  formatted?: "both" | "yes" | "no";
 };
 
 type DASDDeviceCondition = (device: DASDDevice) => boolean;
@@ -70,7 +74,7 @@ type DASDDeviceCondition = (device: DASDDevice) => boolean;
  * @returns The filtered array of DASDDevice objects matching all conditions.
  */
 const filterDevices = (devices: DASDDevice[], filters: DASDDevicesFilters): DASDDevice[] => {
-  const { minChannel, maxChannel, status } = filters;
+  const { minChannel, maxChannel, status, formatted } = filters;
 
   const conditions: DASDDeviceCondition[] = [];
 
@@ -84,6 +88,10 @@ const filterDevices = (devices: DASDDevice[], filters: DASDDevicesFilters): DASD
 
   if (status && status !== "all") {
     conditions.push((d) => d.status === status);
+  }
+
+  if (formatted === "yes" || formatted === "no") {
+    conditions.push((d) => (formatted === "yes" ? d.formatted : !d.formatted));
   }
 
   return devices.filter((device) => conditions.every((conditionFn) => conditionFn(device)));
@@ -190,6 +198,7 @@ const initialState: DASDTableState = {
     minChannel: "",
     maxChannel: "",
     status: "all",
+    formatted: "both",
   },
   selectedDevices: [],
   devicesToFormat: [],
@@ -344,6 +353,12 @@ export default function DASDTable() {
                 <StatusFilter
                   value={state.filters.status}
                   onChange={(_, v) => onFilterChange("status", v)}
+                />
+              </ToolbarItem>
+              <ToolbarItem>
+                <FormattedFilter
+                  value={state.filters.formatted}
+                  onChange={(_, v) => onFilterChange("formatted", v)}
                 />
               </ToolbarItem>
               <ToolbarItem>
