@@ -732,4 +732,36 @@ describe("SelectableDataTable", () => {
       expect(onSelectionChange).toHaveBeenCalledWith([]);
     });
   });
+
+  describe("EmptyState support", () => {
+    it("renders no tbody when items is empty and no emptyState is provided", () => {
+      plainRender(
+        <SelectableDataTable {...props} items={[]} allowSelectAll selectionMode="multiple" />,
+      );
+      const table = screen.getByRole("grid");
+      expect(table.querySelectorAll("tbody").length).toBe(0);
+    });
+
+    it("renders emptyState when items is empty", () => {
+      plainRender(
+        <SelectableDataTable
+          {...props}
+          items={[]}
+          allowSelectAll
+          selectionMode="multiple"
+          emptyState={<div>Resources not found</div>}
+        />,
+      );
+
+      expect(screen.getByText("Resources not found")).toBeInTheDocument();
+    });
+
+    it("does not render emptyState when items are present", () => {
+      plainRender(<SelectableDataTable {...props} emptyState={<div>Resources not found</div>} />);
+
+      expect(screen.queryByText("Resources not found")).toBeNull();
+      const table = screen.getByRole("grid");
+      within(table).getByRole("row", { name: /dev\/sda 1024/ });
+    });
+  });
 });

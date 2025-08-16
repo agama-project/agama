@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { MenuToggle } from "@patternfly/react-core";
+import { Bullseye, MenuToggle } from "@patternfly/react-core";
 import {
   Table,
   TableProps,
@@ -37,7 +37,7 @@ import {
   IAction,
   ActionsColumn,
 } from "@patternfly/react-table";
-import { isFunction } from "radashi";
+import { isEmpty, isFunction } from "radashi";
 import Icon from "~/components/layout/Icon";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -249,6 +249,15 @@ export type SelectableDataTableProps<T = any> = {
    *
    */
   allowSelectAll?: boolean;
+
+  /**
+   * Renders a custom empty state when `items` is empty.
+   *
+   * If not provided, the table will simply render no rows. When provided, this
+   * content will be shown inside a full-width row spanning all columns
+   * (including selection and action columns, if enabled).
+   */
+  emptyState?: React.ReactNode;
 } & TableProps;
 
 /**
@@ -444,6 +453,7 @@ export default function SelectableDataTable({
   allowSelectAll = false,
   itemActions,
   itemActionsLabel,
+  emptyState,
   ...tableProps
 }: SelectableDataTableProps) {
   const [expandedItemsKeys, setExpandedItemsKeys] = useState(initialExpandedKeys);
@@ -588,7 +598,26 @@ export default function SelectableDataTable({
       isSelecting ? onSelectionChange(items) : onSelectionChange([]),
   };
 
-  const TableBody = () => items?.map((item) => renderItem(item, sharedData));
+  // TODO: extract to a separate component and inject sharedData as prop
+  const TableEmptyState = () => {
+    const columnsCount =
+      columns.length + (sharedData.allowSelectAll && 1) + (sharedData.itemActions && 1);
+
+    return (
+      <Tr>
+        <Td colSpan={columnsCount}>
+          <Bullseye>{emptyState}</Bullseye>
+        </Td>
+      </Tr>
+    );
+  };
+
+  const TableBody = () => {
+    if (isEmpty(items) && emptyState) {
+      return <TableEmptyState />;
+    }
+    return items?.map((item) => renderItem(item, sharedData));
+  };
 
   return (
     <Table data-type="agama/expandable-selector" {...tableProps}>
