@@ -31,29 +31,29 @@ import {
   SelectProps,
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
+import { DASDDevicesFilters } from "~/components/storage/dasd/DASDTable";
 import { _ } from "~/i18n";
 
-type StatusFilterProps = {
-  value: string;
+type FormatFilterProps = {
+  value: DASDDevicesFilters["formatted"];
   onChange: SelectProps["onSelect"];
 };
 
 const options = {
   all: _("all"),
-  active: _("active"),
-  read_only: _("read_only"),
-  offline: _("offline"),
+  yes: _("yes"),
+  no: _("no"),
 };
 
-const ID = "dasd-status-filter";
+const ID = "dasd-format-filter";
 
 /**
- * Select component for filtering DASD devices by status.
+ * Select component for filtering DASD devices by format status.
  *
- * Renders a PF/Select input allowing users to choose one of the available DASD
- * statuses: "active", "read_only", "offline", or "all". The selected value is
- * passed to the parent via the `onChange` callback along with the event
- * originating the action.
+ * Renders a PF/Select input that lets users filter DASD devices based on
+ * whether they are formatted, unformatted, or both. The selected value is
+ * passed to the parent via the `onChange` callback, along with the event that
+ * triggered the change.
  *
  * Used as part of the DASD table filtering toolbar.
  *
@@ -61,7 +61,7 @@ const ID = "dasd-status-filter";
  * There is an issue with a11y label for the PF/MenuToggle, check
  * https://github.com/patternfly/patternfly-react/issues/11805
  */
-export default function StatusFilter({ value, onChange }: StatusFilterProps) {
+export default function FormattedFilter({ value, onChange }: FormatFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const onToggle = () => setIsOpen(!isOpen);
 
@@ -75,10 +75,9 @@ export default function StatusFilter({ value, onChange }: StatusFilterProps) {
     <Flex direction={{ default: "column" }} columnGap={{ default: "columnGapXs" }}>
       <label htmlFor={ID}>
         <Text isBold aria-hidden>
-          {_("Status")}
+          {_("Formatted")}
         </Text>
       </label>
-
       <Select
         isOpen={isOpen}
         selected={value}

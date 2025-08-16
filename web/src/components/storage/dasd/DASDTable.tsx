@@ -25,27 +25,24 @@ import {
   Button,
   Content,
   Divider,
-  TextInputGroup,
-  TextInputGroupMain,
-  TextInputGroupUtilities,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import { sort } from "fast-sort";
-import { isEmpty } from "radashi";
-import Icon from "~/components/layout/Icon";
-import SelectableDataTable from "~/components/core/SelectableDataTable";
 import FormatActionHandler from "~/components/storage/dasd/FormatActionHandler";
+import FormatFilter from "~/components/storage/dasd/FormatFilter";
+import SelectableDataTable from "~/components/core/SelectableDataTable";
 import StatusFilter from "~/components/storage/dasd/StatusFilter";
-import FormattedFilter from "~/components/storage/dasd/FormattedFilter";
+import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
 import { DASDDevice } from "~/types/dasd";
 import type { SortedBy } from "~/components/core/SelectableDataTable";
 import { useDASDDevices, useDASDMutation } from "~/queries/storage/dasd";
+import { sort } from "fast-sort";
+import { isEmpty } from "radashi";
 import { hex } from "~/utils";
-import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 
 /**
  * Filter options for narrowing down DASD devices shown in the table.
@@ -60,8 +57,8 @@ export type DASDDevicesFilters = {
   /** Only show devices with this status (e.g. "read_only", "offline"). */
   status?: DASDDevice["status"];
   /** Filter by formatting status: "yes" (formatted), "no" (not formatted), or
-   * "both" (all devices). */
-  formatted?: "both" | "yes" | "no";
+   * "all" (all devices). */
+  formatted?: "all" | "yes" | "no";
 };
 
 type DASDDeviceCondition = (device: DASDDevice) => boolean;
@@ -80,8 +77,8 @@ const filterDevices = (devices: DASDDevice[], filters: DASDDevicesFilters): DASD
 
   if (minChannel || maxChannel) {
     const allChannels = devices.map((d) => d.hexId);
-    const min = hex(minChannel) ?? Math.min(...allChannels);
-    const max = hex(maxChannel) ?? Math.max(...allChannels);
+    const min = hex(minChannel) || Math.min(...allChannels);
+    const max = hex(maxChannel) || Math.max(...allChannels);
 
     conditions.push((d) => d.hexId >= min && d.hexId <= max);
   }
@@ -198,7 +195,7 @@ const initialState: DASDTableState = {
     minChannel: "",
     maxChannel: "",
     status: "all",
-    formatted: "both",
+    formatted: "all",
   },
   selectedDevices: [],
   devicesToFormat: [],
@@ -356,52 +353,26 @@ export default function DASDTable() {
                 />
               </ToolbarItem>
               <ToolbarItem>
-                <FormattedFilter
+                <FormatFilter
                   value={state.filters.formatted}
                   onChange={(_, v) => onFilterChange("formatted", v)}
                 />
               </ToolbarItem>
               <ToolbarItem>
-                <TextInputGroup label="">
-                  <TextInputGroupMain
-                    type="text"
-                    value={state.filters.minChannel}
-                    aria-label={_("Filter by min channel")}
-                    placeholder={_("Filter by min channel")}
-                    onChange={(_, v) => onFilterChange("minChannel", v)}
-                  />
-                  {state.filters.minChannel !== "" && (
-                    <TextInputGroupUtilities>
-                      <Button
-                        variant="plain"
-                        aria-label={_("Remove min channel filter")}
-                        onClick={() => onFilterChange("minChannel", "")}
-                        icon={<Icon name="backspace" />}
-                      />
-                    </TextInputGroupUtilities>
-                  )}
-                </TextInputGroup>
+                <TextinputFilter
+                  id="dasd-minchannel-filter"
+                  label={_("Min channel")}
+                  value={state.filters.minChannel}
+                  onChange={(_, v) => onFilterChange("minChannel", v)}
+                />
               </ToolbarItem>
               <ToolbarItem>
-                <TextInputGroup>
-                  <TextInputGroupMain
-                    type="text"
-                    value={state.filters.maxChannel}
-                    aria-label={_("Filter by max channel")}
-                    placeholder={_("Filter by max channel")}
-                    onChange={(_, v) => onFilterChange("maxChannel", v)}
-                  />
-                  {state.filters.maxChannel !== "" && (
-                    <TextInputGroupUtilities>
-                      <Button
-                        variant="plain"
-                        aria-label={_("Remove max channel filter")}
-                        onClick={() => onFilterChange("maxChannel", "")}
-                        icon={<Icon name="backspace" />}
-                      />
-                    </TextInputGroupUtilities>
-                  )}
-                </TextInputGroup>
+                <TextinputFilter
+                  id="dasd-maxchannel-filter"
+                  label={_("Max channel")}
+                  value={state.filters.maxChannel}
+                  onChange={(_, v) => onFilterChange("maxChannel", v)}
+                />
               </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
