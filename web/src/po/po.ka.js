@@ -55,12 +55,9 @@ export default {
     "%1$s ზომით %2$s-%3$s შეიქმნება %4$s-სთვის, თუ ეს შესაძლებელია"
   ],
   "A file system will be used for the whole device": [
-    ""
+    "ფაილური სისტემა მთელი მოწყობილობისთვის იქნება გამოყენებული"
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
-    ""
-  ],
-  "A generic size of %s will be used for the new %2$s": [
     ""
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
@@ -187,7 +184,7 @@ export default {
     "როგორც ახალი დანაყოფი %s-ზე"
   ],
   "At least one address must be provided for selected mode": [
-    ""
+    "მონიშნული რეჟიმისთვის საჭიროა, სულ ცოტა, ერთი მისამართი"
   ],
   "At least one partition will be deleted": [
     "წაიშლება, სულ ცოტა, ერთი დანაყოფი"
@@ -228,13 +225,10 @@ export default {
   "Back": [
     "უკან"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
     ""
   ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
-    ""
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
     ""
   ],
   "Bcachefs": [
@@ -247,13 +241,19 @@ export default {
     ""
   ],
   "Before starting the installation, you need to address the following problems:": [
-    ""
+    "დაყენების დაწყებამდე საჭიროა შემდეგი პრობლემების გადაწყვეტა:"
   ],
   "Beta": [
     "ბეტა"
   ],
   "Bind to MAC address": [
     "მიბმა MAC მისამართზე"
+  ],
+  "Bind to device name": [
+    "მიბმა მოწყობილობის სახელზე"
+  ],
+  "Binding": [
+    "მიმაგრება"
   ],
   "Binding settings for '%s'": [
     "მიბმის პარამეტრები '%s'-სთვის"
@@ -351,6 +351,9 @@ export default {
   "Collapse the list of planned actions": [
     "დაგეგმილი ქმედებების ჩამოშლა"
   ],
+  "Configuration out of sync": [
+    "კონფიგურაციის სინქრონიზაცია დარღვეულია"
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "iSCSI-დან ჩამტვირთავი მიკროკოდიდან (iBFT) წაკითხული კონფიგურაცია."
   ],
@@ -408,6 +411,15 @@ export default {
   "Connected (%s)": [
     "მიერთებულია (%s)"
   ],
+  "Connected device": [
+    "დაკავშირებული მოწყობილობა"
+  ],
+  "Connected devices": [
+    "დაკავშირებული მოწყობილობები"
+  ],
+  "Connected devices tabs": [
+    "დაკავშირებული მოწყობილობის ჩანართები"
+  ],
   "Connecting to %s": [
     "%s-სთან მიერთება"
   ],
@@ -415,7 +427,13 @@ export default {
     "კავშირის დეტალები"
   ],
   "Connection is available to all devices.": [
-    ""
+    "კავშირი ხელმისაწვდომია ყველა მოწყობილობისთვის."
+  ],
+  "Connection is bound to MAC address %s.": [
+    "კავშირი მიბმულია MAC მისამართზე %s."
+  ],
+  "Connection is bound to device %s.": [
+    "კავშირი მიბმულია მოწყობილობაზე %s."
   ],
   "Connection not found or lost": [
     "კავშირის ვერ ვიპოვე, ან დაიკარგა"
@@ -565,7 +583,7 @@ export default {
     "მოცილება"
   ],
   "Discard the maximum size and continue with simplified configuration": [
-    ""
+    "მაქსიმალური ზომის მოცილება და გამარტივებული კონფიგურაციით გაგრძელება"
   ],
   "Disconnected": [
     "გამოერთებული"
@@ -614,6 +632,9 @@ export default {
   ],
   "Edit connection %s": [
     "%s მიერთების ჩასწორება"
+  ],
+  "Edit connection settings": [
+    "კავშირის პარამეტრების ჩასწორება"
   ],
   "Edit user": [
     "მომხმარებლის ჩასწორება"
@@ -760,7 +781,7 @@ export default {
     "დავაფორმატო არჩეული მოწყობილობები?"
   ],
   "Format the whole device or mount an existing file system": [
-    ""
+    "დააფორმატეთ მთელი მოწყობილობა და მიამაგრეთ არსებული ფაილური სისტემა"
   ],
   "Formatted": [
     "დაფორმატებული"
@@ -785,6 +806,9 @@ export default {
   ],
   "Go to network page": [
     "ქსელის გვერდზე გადასვლა"
+  ],
+  "Go to storage page": [
+    "საცავის გვერდზე გადასვლა"
   ],
   "Good signal": [
     "კარგი სიგნალი"
@@ -929,13 +953,13 @@ export default {
     "გამომცემელი"
   ],
   "It doesn't exist or can't be reached.": [
-    ""
+    "ის არ არსებობს, ან ხელმიუწვდომელია."
   ],
   "It is chosen for booting": [
     "არჩეულია ჩასატვირთად"
   ],
   "It is chosen for booting and for some LVM groups": [
-    ""
+    "ის არჩეულია ჩასატვირთად და ზოგიერთი LVM ჯგუფებისთვის"
   ],
   "It is chosen for booting and for the LVM group '%s'": [
     ""
@@ -1148,7 +1172,7 @@ export default {
     "შემცველობა აღმოჩენილი არაა"
   ],
   "No device is currently using this connection.": [
-    ""
+    "ამ კავშირს, ამჟამად, არც ერთი მოწყობილობა იყენებს."
   ],
   "No device selected yet": [
     "ჯერ მოწყობილობები არჩეული არაა"
@@ -1169,7 +1193,7 @@ export default {
     "ლოგიკური ტომები ჯერ აღწერილი არაა"
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
-    ""
+    "ჩასატვირთად დანაყოფების ავტომატური მორგება არ მოხდება. ფრთხილად გამოიყენეთ."
   ],
   "No support is planned.": [
     "მხარდაჭერა დაგეგმილი არაა."
@@ -1201,6 +1225,9 @@ export default {
   "None of the time zones match the filter.": [
     "ფილტრს დროის სარტყლებიდან არცერთი ემთხვევა."
   ],
+  "None set": [
+    "დაყენებული არაა"
+  ],
   "Not available": [
     "ხელმისაწვდომი არაა"
   ],
@@ -1214,7 +1241,7 @@ export default {
     "ჯერ განხორციელებული არაა (%s)"
   ],
   "Not possible with the current setup. Click to know more.": [
-    ""
+    "შეუძლებელია მიმდინარე კონფიგურაციით. დააწკაპუნეთ მეტის გასაგებად."
   ],
   "Not protected network": [
     "ქსელი დაცვის გარეშე"
@@ -1268,13 +1295,13 @@ export default {
     ""
   ],
   "Partitions that are not reused will be resized as needed.": [
-    ""
+    "დანაყოფები, რომლებიც არ გამოიყენება თავიდან, ზომა საჭიროებისამებრ შეეცვლებათ."
   ],
   "Partitions that are not reused would be resized if needed.": [
-    ""
+    "დანაყოფები, რომლებიც თავიდან არ გამოიყენება, შეიძლება, ზომა საჭიროებისამებრ შეეცვალოს."
   ],
   "Partitions to boot will be allocated at the following device.": [
-    ""
+    "ჩატვირთვადი დანაყოფები გამოიყოფა შემდეგი მოწყობილობიდან."
   ],
   "Partitions to boot will be allocated at the installation disk %s.": [
     "ჩატვირთვადი დანაყოფები გამოიყოფა დაყენების დისკზე %s."
@@ -1316,7 +1343,7 @@ export default {
     "პიბ"
   ],
   "Please, cancel and check the settings if you are unsure.": [
-    ""
+    "თუ დარწმუნებული არ ბრძანდებით, გააუქმეთ და პარამეტრები გადაამოწმეთ."
   ],
   "Please, check whether it is running.": [
     "შეამოწმეთ, გაშვებულია თუ არა ის."
@@ -1325,7 +1352,7 @@ export default {
     ""
   ],
   "Please, provide its password to log in to the system.": [
-    ""
+    "შეიყვანეთ პაროლი სისტემაში შესასვლელად."
   ],
   "Please, try to activate a zFCP controller.": [
     "სცადეთ, გაააქტიუროთ zFCP კონტროლერი."
@@ -1405,6 +1432,9 @@ export default {
   "Reload": [
     "თავიდან ჩატვირთვა"
   ],
+  "Reload now": [
+    "თავიდან ჩატვირთვა ახლავე"
+  ],
   "Reloading data, please wait...": [
     "მიმდინარეობს მონაცემების თავიდან ჩატვირთვა. მოითმინეთ..."
   ],
@@ -1434,6 +1464,9 @@ export default {
   ],
   "Reset to the default configuration": [
     "ჩამოყრა ნაგულისხმევ პარამეტრებზე"
+  ],
+  "Resource not found or lost": [
+    "რესურსი ვერ ვიპოვე, ან დაკარგულია"
   ],
   "Result": [
     "შედეგი"
@@ -1559,10 +1592,13 @@ export default {
     "დიაგნოსტიკის ჩართვა"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
-    ""
+    "დააყენეთ მუდმივი ჰოსტის სახელი, რომელიც არ შეიცვლება ქსელის განახლებებთან ერთად."
   ],
   "Setting up connection": [
     "მიმდინარეობს კავშირის მორგება"
+  ],
+  "Settings": [
+    "მორგება"
   ],
   "Several partitions will be deleted": [
     "წაიშლება რამდენიმე დანაყოფი"
@@ -1632,7 +1668,7 @@ export default {
     ""
   ],
   "Some of the elements in your AutoYaST profile are not supported.": [
-    ""
+    "AutoYaST-ის პროფილის ზოგიერთი ელემენტი მხარდაჭერილი არაა."
   ],
   "Some partitions may be deleted": [
     "ზოგიერთი დანაყოფი შეიძლება წაიშალოს"
@@ -1671,7 +1707,7 @@ export default {
     "Swap"
   ],
   "TPM sealing requires the new system to be booted directly.": [
-    ""
+    "TPM-ის დაბეჭდვას ახალი სისტემის პირდაპირ ჩატვირთვა სჭირდება."
   ],
   "Target Password": [
     "სამიზნე პაროლი"
@@ -1683,10 +1719,13 @@ export default {
     "LVM ჯგუფი '%1$s' დარჩება დისკზე '%2$s'"
   ],
   "The configuration has been updated externally.": [
-    ""
+    "კონფიგურაცია გარედან განახლდა."
   ],
   "The configured LVM groups will remain at %s": [
     "მორგებული LVM ჯგუფები დარჩება დისკზე %s"
+  ],
+  "The connection can be used by any available device.": [
+    "კავშირის გამოყენება ნებისმიერ ხელმისაწვდომ მოწყობილობას შეუძლია."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     ""
@@ -1845,7 +1884,7 @@ export default {
     ""
   ],
   "The storage configuration uses elements not supported by this interface.": [
-    ""
+    "საცავის კონფიგურაცია იყენებს ელემენტებს, რომლებიც მხარდაჭერილი არაა ამ ინტერფეისის მიერ."
   ],
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     ""
@@ -1935,7 +1974,7 @@ export default {
     "პარამეტრების შეცვლა შეუძლებელია"
   ],
   "Unbound": [
-    ""
+    "მოხსნა"
   ],
   "Unselect": [
     "მონიშვნის მოხსნა"
@@ -1947,7 +1986,7 @@ export default {
     "გამოუყენებელი ადგილი"
   ],
   "Up to %s can be recovered by shrinking the device.": [
-    ""
+    "შეიძლება %s-მდე აღდგენა მოწყობილობის დაპატარავებით."
   ],
   "Update available disks and activate crypt devices": [
     "ხელმისაწვდომი დისკების განახლება და კრიპტოგრაფიული მოწყობილობების გააქტიურება"
