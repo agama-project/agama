@@ -287,6 +287,11 @@ type SharedData = {
   readonly allowMultiple: boolean;
 
   /**
+   * Whether the select all checkbox is rendered or not.
+   */
+  readonly showSelectAll: boolean;
+
+  /**
    * Whether all items in the table are currently selected.
    * Used to reflect checkbox state in the header.
    */
@@ -349,10 +354,11 @@ const TableHeader = ({
   columns: SelectableDataTableColumn[];
   sharedData: SharedData;
 }) => {
-  const { allowMultiple, allowSelectAll, isAllSelected, selectAll, itemActions } = sharedData;
+  const { allowMultiple, allowSelectAll, isAllSelected, showSelectAll, selectAll, itemActions } =
+    sharedData;
 
   const selectAllProps =
-    allowMultiple && allowSelectAll
+    allowMultiple && allowSelectAll && showSelectAll
       ? {
           onSelect: (_event, isSelecting: boolean) => selectAll(isSelecting),
           isSelected: isAllSelected,
@@ -593,7 +599,9 @@ export default function SelectableDataTable({
     allowSelectAll,
     itemActions,
     itemActionsLabel,
-    isAllSelected: itemsSelected.length === items.length,
+    // FIXME: drop showSelectAll once items is part of SharedData
+    showSelectAll: allowSelectAll && items.length > 0,
+    isAllSelected: items.length > 0 && items.length === itemsSelected.length,
     selectAll: (isSelecting: boolean) =>
       isSelecting ? onSelectionChange(items) : onSelectionChange([]),
   };

@@ -669,7 +669,7 @@ describe("SelectableDataTable", () => {
 
     beforeEach(() => onSelectionChange.mockClear());
 
-    it("renders it only when selectionMode is multiple and allowSelectAll is true", () => {
+    it("renders it only when selectionMode is multiple and allowSelectAll is true and there are items to show", () => {
       const { rerender } = plainRender(
         <SelectableDataTable {...props} selectionMode="single" allowSelectAll />,
       );
@@ -677,6 +677,11 @@ describe("SelectableDataTable", () => {
       expect(screen.queryByRole("checkbox", { name: /select all/i })).toBeNull();
 
       rerender(<SelectableDataTable {...props} selectionMode="multiple" allowSelectAll={false} />);
+      expect(screen.queryByRole("checkbox", { name: /select all/i })).toBeNull();
+
+      rerender(
+        <SelectableDataTable {...props} items={[]} selectionMode="multiple" allowSelectAll />,
+      );
       expect(screen.queryByRole("checkbox", { name: /select all/i })).toBeNull();
 
       rerender(<SelectableDataTable {...props} selectionMode="multiple" allowSelectAll />);
