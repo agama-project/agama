@@ -253,30 +253,65 @@ const BulkActionsToolbar = ({ devices, updater, dispatcher }: DASDActionsBuilder
 };
 
 /**
- * Empty state UI displayed when the DASD table has no items to show.
+ * Represents the mode of the empty state shown in the DASD table.
  *
- * This typically occurs when active filters exclude all devices. The component
- * provides a clear message and an action to reset filters.
- *
+ * - "noDevices": No DASD devices are present on the system.
+ * - "noFilterResults": No matching results after appluing filters.
  */
-const DASDTableEmptyState = ({ clearFilters }) => {
-  return (
-    <EmptyState
-      headingLevel="h2"
-      titleText={_("No devices found")}
-      icon={() => <Icon name="search_off" />}
-      variant="sm"
-    >
-      <EmptyStateBody>{_("Change filters and try again.")}</EmptyStateBody>
-      <EmptyStateFooter>
-        <EmptyStateActions>
-          <Button variant="secondary" onClick={clearFilters}>
-            {_("Clear all filters")}
-          </Button>
-        </EmptyStateActions>
-      </EmptyStateFooter>
-    </EmptyState>
-  );
+type DASDEmptyStateMode = "noDevices" | "noFilterResults";
+
+/**
+ * Props for the DASDTableEmptyState component.
+ */
+type DASDTableEmptyStateProps = {
+  /**
+   * Determines the type of empty state to display.
+   */
+  mode: DASDEmptyStateMode;
+  /**
+   * Callback to reset filters when in "noFilterResults" mode.
+   */
+  resetFilters: () => void;
+};
+
+/**
+ * Displays an appropriate empty state interface for the DASD table,
+ * depending on the mode.
+ */
+const DASDTableEmptyState = ({ mode, resetFilters }: DASDTableEmptyStateProps) => {
+  switch (mode) {
+    case "noDevices": {
+      return (
+        <EmptyState
+          headingLevel="h2"
+          titleText={_("No devices available")}
+          icon={() => <Icon name="search_off" />}
+          variant="sm"
+        >
+          <EmptyStateBody>{_("No DASD devices were found in this machine.")}</EmptyStateBody>
+        </EmptyState>
+      );
+    }
+    case "noFilterResults": {
+      return (
+        <EmptyState
+          headingLevel="h2"
+          titleText={_("No devices found")}
+          icon={() => <Icon name="search_off" />}
+          variant="sm"
+        >
+          <EmptyStateBody>{_("Change filters and try again.")}</EmptyStateBody>
+          <EmptyStateFooter>
+            <EmptyStateActions>
+              <Button variant="secondary" onClick={resetFilters}>
+                {_("Clear all filters")}
+              </Button>
+            </EmptyStateActions>
+          </EmptyStateFooter>
+        </EmptyState>
+      );
+    }
+  }
 };
 
 /**
@@ -419,7 +454,6 @@ const columns = [
 export default function DASDTable() {
   const devices = useDASDDevices();
   const { mutate: updateDASD } = useDASDMutation();
-
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const onSortingChange = (sortedBy: SortedBy) => {
@@ -435,6 +469,8 @@ export default function DASDTable() {
     dispatch({ type: "UPDATE_SELECTION", payload: devices });
   };
 
+  const resetFilters = () => dispatch({ type: "RESET_FILTERS" });
+
   // Filtering
   const filteredDevices = filterDevices(devices, state.filters);
 
@@ -443,6 +479,12 @@ export default function DASDTable() {
   const sortedDevices = sort(filteredDevices)[state.sortedBy.direction](
     (d) => d[columns[state.sortedBy.index].sortingKey],
   );
+
+  // Determine the appropriate empty state mode, if needed
+  let emptyMode: DASDEmptyStateMode;
+  if (isEmpty(filteredDevices)) {
+    emptyMode = state.filters === initialState.filters ? "noDevices" : "noFilterResults";
+  }
 
   return (
     <Content>
@@ -481,9 +523,7 @@ export default function DASDTable() {
           })
         }
         itemActionsLabel={(d) => `Actions for ${d.id}`}
-        emptyState={
-          <DASDTableEmptyState clearFilters={() => dispatch({ type: "RESET_FILTERS" })} />
-        }
+        emptyState={<DASDTableEmptyState mode={emptyMode} resetFilters={resetFilters} />}
       />
     </Content>
   );

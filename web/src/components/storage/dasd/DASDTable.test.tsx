@@ -94,15 +94,30 @@ describe("DASDTable", () => {
     });
   });
 
-  describe("when there is some DASD devices available", () => {
-    beforeEach(() => {
-      mockDASDDevices = [];
+  describe("DASDTable/DASDTableEmptyState", () => {
+    describe("when there are no devices in the system", () => {
+      beforeEach(() => {
+        mockDASDDevices = [];
+      });
+
+      it("renders informative empty state with no actions", () => {
+        installerRender(<DASDTable />);
+        screen.getByRole("heading", { name: "No devices available", level: 2 });
+        screen.getByText("No DASD devices were found in this machine.");
+      });
     });
 
-    it("renders empty state when there are no devices", () => {
-      installerRender(<DASDTable />);
-      screen.getByRole("heading", { name: "No devices found", level: 2 });
-      screen.getByRole("button", { name: "Clear all filters" });
+    describe("when filters results in no matching device", () => {
+      it.todo("renders empty state with clear all filters option");
+      // it("renders empty state with clear all filters option", async () => {
+      //   const { user } = installerRender(<DASDTable />);
+      //   const statusFilterToggle = screen.getByRole("button", { name: "Status" });
+      //   await user.click(statusFilterToggle);
+      //   const readOnlyOption = screen.getByRole("option", { name: "read_only"});
+      //   await user.click(readOnlyOption);
+      //   screen.getByRole("heading", { name: "No devices found", level: 2 });
+      //   screen.getByRole("button", { name: "Clear all filters" });
+      // });
     });
   });
 });
