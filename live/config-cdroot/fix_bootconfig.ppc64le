@@ -87,7 +87,7 @@ cat >$dst/boot/grub2/grub.cfg <<XXX
 
 gfxmode=auto
 
-set default="Install $label"
+set default="Boot from Hard Disk"
 
 insmod gettext
 
