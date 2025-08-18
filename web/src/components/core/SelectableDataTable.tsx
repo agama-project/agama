@@ -39,6 +39,7 @@ import {
 } from "@patternfly/react-table";
 import { isEmpty, isFunction } from "radashi";
 import Icon from "~/components/layout/Icon";
+import { _ } from "~/i18n";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -365,11 +366,12 @@ const TableHeader = ({
         }
       : undefined;
 
+  // TODO: extract header ariaLabel to props instead of harconding them here.
   return (
     <Thead noWrap>
       <Tr>
-        <Th />
-        <Th select={selectAllProps} />
+        <Th aria-label={_("Row expansion")} />
+        <Th select={selectAllProps} aria-label={_("Row selection")} />
         {columns?.map((c, i) => {
           const sortProp =
             sharedData.sortedBy && c.sortingKey ? buildSorting(i, c, sharedData) : undefined;
@@ -380,7 +382,7 @@ const TableHeader = ({
             </Th>
           );
         })}
-        {itemActions && <Th />}
+        {itemActions && <Th aria-label={_("Row actions")} />}
       </Tr>
     </Thead>
   );
