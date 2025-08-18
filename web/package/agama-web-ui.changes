@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 18 13:07:07 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Refactor DASD page to make it more usable and improve its
+  performance (related to bsc#1247444, gh#agama-project/agama#2648).
+
+-------------------------------------------------------------------
 Tue Aug  5 23:28:43 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Improve layout and accuracy of wired connection details view
