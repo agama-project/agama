@@ -33,8 +33,8 @@ const compact = <T>(collection: Array<T>) => {
 /**
  * Parses a "numeric dot string" as a hexadecimal number.
  *
- * Accepts only strings containing digits (`0–9`) and dots (`.`),
- * for example: `"0.0.0160"` or `"123"`. Dots are removed before parsing.
+ * Accepts only strings containing hexadecimal numbers (`0–9a-fA-F`) and dots (`.`),
+ * for example: `"0.0.0160"` `"0.0.019d"` or `"123"`. Dots are removed before parsing.
  *
  * If the cleaned string contains any non-digit characters (such as letters),
  * or is not a valid integer string, the function returns `0`.
@@ -43,8 +43,8 @@ const compact = <T>(collection: Array<T>) => {
  *
  * ```ts
  * hex("0.0.0.160"); // Returns 352
+ * hex("0.0.0.19d"); // Returns 352
  * hex("1.2.3");     // Returns 291
- * hex("1.A.3");     // Returns 0 (letters are not allowed)
  * hex("..");        // Returns 0 (empty string before removing dots)
  * ```
  *
@@ -53,7 +53,7 @@ const compact = <T>(collection: Array<T>) => {
  */
 const hex = (value: string): number => {
   const sanitizedValued = value.replaceAll(".", "");
-  return /^[0-9]+$/.test(sanitizedValued) ? parseInt(sanitizedValued, 16) : 0;
+  return /^[0-9a-fA-F]+$/.test(sanitizedValued) ? parseInt(sanitizedValued, 16) : 0;
 };
 
 /**
