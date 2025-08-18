@@ -10,7 +10,7 @@
 . /lib/img-lib.sh
 
 DUD_DIR="$NEWROOT/run/agama/dud"
-AGAMA_CLI="$NEWROOT/usr/bin/agama"
+AGAMA_CLI="/usr/bin/agama"
 AGAMA_DUD_INFO="/tmp/agamadud.info"
 DUD_RPM_REPOSITORY="$NEWROOT/var/lib/agama/dud/repo"
 
@@ -25,6 +25,10 @@ apply_updates() {
   local dud_root
   local options
   index=0
+
+  # make local devices available to "agama download"
+  mount -o bind /dev "$NEWROOT"/dev
+  mount -o bind /sys "$NEWROOT"/sys
 
   # make sure the HTTPS downloads work correctly
   configure_ssl
@@ -41,7 +45,7 @@ apply_updates() {
     file="${DUD_DIR}/${filename}"
     # FIXME: use an index because two updates, coming from different places, can have the same name.
     echo "Fetching a Driver Update Disk from $dud_url to ${file}"
-    if ! $AGAMA_CLI $options download "$dud_url" "${file}"; then
+    if ! "$NEWROOT/usr/bin/chroot" "$NEWROOT" "$AGAMA_CLI" $options download "$dud_url" "${file##"$NEWROOT"}"; then
       warn "Failed to fetch the Driver Update Disk"
       continue
     fi
@@ -57,12 +61,16 @@ apply_updates() {
       ;;
 
     *)
-      apply_dud_update "$file" "$dir"
+      unpack_dud_update "$file" "$dir"
+      apply_dud_update "$dir"
       ;;
     esac
 
     ((index++))
   done <$AGAMA_DUD_INFO
+
+  umount "$NEWROOT"/dev
+  umount "$NEWROOT"/sys
 }
 
 # Applies an update from an RPM package
@@ -77,23 +85,44 @@ apply_rpm_update() {
   install_update "$dir"
 }
 
-# Applies an update from an RPM package
+# Unpacks a driver update archive (DUD) to a directory
+#
+unpack_dud_update() {
+  file=$1
+  dir=$2
+
+  echo "Unpack Driver Update Disk archive"
+  unpack_img "$file" "$dir"
+}
+
+# Applies a driver update (DUD)
 #
 #   1. Copy the inst-sys updates to the $NEWROOT system.
 #   2. Update agamactl, agama-autoyast and agama-proxy-setup alternative links.
 #   3. Copy the packages to the $DUD_RPM_REPOSITORY.
 apply_dud_update() {
-  file=$1
-  dir=$2
+  dir=$1
 
   echo "Apply update from a Driver Update Disk archive"
-  unpack_img "$file" "$dir"
+
   # FIXME: do not ignore the dist (e.g., "tw" in "x86_64-tw").
+
+  # notes:
+  # (1) there can be several updates in a single archive; each with a
+  #     prefix directory consisting of a number
+  # (2) there can be ARCH-DIST subdirs with multiple dists - pick one and
+  #     ignore the others
   arch=$(uname -m)
-  dud_root=$(echo "${dir}/linux/suse/${arch}"-*)
-  install_update "${dud_root}/inst-sys"
-  copy_packages "$dud_root" "$DUD_RPM_REPOSITORY"
-  update_kernel_modules "$dud_root"
+  for base_dir in "${dir}"/linux/suse "${dir}"/[0-9]*/linux/suse; do
+    [ -d "$base_dir" ] || continue
+    for dud_root in "${base_dir}/${arch}"-*; do
+      [ -d "$dud_root" ] || continue
+      install_update "${dud_root}/inst-sys"
+      copy_packages "$dud_root" "$DUD_RPM_REPOSITORY"
+      update_kernel_modules "$dud_root"
+      break
+    done
+  done
 }
 
 # Extracts an RPM file
@@ -162,100 +191,81 @@ copy_packages() {
   done
 }
 
-# Finds the kernel modules to update
-#
-# It searches for the modules in the modules/ directory of the update.
-find_kernel_modules() {
-  local directory=$1
-  local -n modules=$2
-  local module_name
-  local files
-
-  modules=()
-  files=("${directory}"/*.ko*)
-  for module in "${files[@]}"; do
-    module_name=${module#"${directory}/"}
-    module_name=${module_name%.ko*}
-
-    if [[ ! " ${modules[*]} " =~ " ${module_name} " ]]; then
-      modules+=("$module_name")
-    fi
-  done
-
-  echo "Found ${#files[@]} kernel modules"
-}
-
-# Copies a kernel module
-#
-# It searches for a module with the same name. If found, it replaces it.
-# Otherwise, it copies the module to the top-level modules directory.
-copy_kernel_module() {
-  local source_dir=$1
-  local module=$2
-  local target_dir=$3
-  local source_file
-
-  echo "Copying ${module}..."
-
-  # expect a single file with $module.ko* name
-  source_file=("${source_dir}/${module}".ko*)
-
-  old_module=("${target_dir}"/**/*/"${module}".ko*)
-  if [ "${#old_module[@]}" -eq "1" ]; then
-    info "  Replacing the module ${old_module[0]}"
-    cp "${source_file[0]}" "${old_module[0]}"
-  elif [ "${#old_module[@]}" -eq "0" ]; then
-    info "  Not found the module to replace, so copying to kernel/ directory."
-    cp "${source_file[0]}" "${target_dir}"
-  else
-    info "  Skipping the module because several modules with the same name were found."
-  fi
-}
-
 # Updates kernel modules
 #
 # It copies the kernel modules from the Driver Update Disk to the system under
 # /sysroot. If it finds a `module.order` file, it unloads the modules included
 # in the list and add them to /etc/modules-load.d/99-agama.conf file so they
 # will be loaded by systemd after pivoting.
+#
+# If the `module.order` file does not exits, it unloads all the modules and
+# adds the names to the 99-agama.conf file so the will be loaded.
 update_kernel_modules() {
   local dud_dir=$1
   local kernel_modules_dir
-  kernel_modules_dir="${NEWROOT}/lib/modules/$(uname -r)"
+  kernel_modules_dir="${NEWROOT}/lib/modules/$(uname -r)/updates"
   local dud_modules_dir="${dud_dir}/modules"
+  local module_name
 
-  # find and copy kernel modules
-  local dud_modules
-  find_kernel_modules "$dud_modules_dir" dud_modules
+  # find kernel modules in the DUD
+  local dud_modules=("${dud_modules_dir}"/*.ko*)
 
   # finish if no kernel module is included in DUD
-  if (( ${#dud_modules[@]} == 0 )); then
+  if ((${#dud_modules[@]} == 0)); then
     echo "Skipping kernel modules update"
     return
   fi
 
-  for module in "${dud_modules[@]}"; do
-    echo "Processing ${module} module"
-    copy_kernel_module "$dud_modules_dir" "$module" "${kernel_modules_dir}/kernel"
-    rmmod "${module}" 2>&1
-  done
+  # copy the kernel modules
+  echo "Copying kernel modules to ${kernel_modules_dir}"
+  mkdir -p "${kernel_modules_dir}"
+  cp "${dud_modules[@]}" "${kernel_modules_dir}"
 
   # unload modules in the module.order file and make sure they will be loaded
   if [ -f "${dud_modules_dir}/module.order" ]; then
-    module_order=$(<"${dud_modules_dir}/module.order")
-    # unload the modules in reverse order
-    local idx
-    idx=("${!module_order[@]}")
-    for ((i = ${#idx[@]} - 1; i >= 0; i--)); do
-      rmmod "${module_order[$i]}" 2>&1
-    done
-
-    cp "${dud_modules_dir}/module.order" "${NEWROOT}/etc/modules-load.d/99-agama.conf"
+    setup_from_modules_order "$dud_modules_dir"
+  else
+    setup_modules "${dud_modules[@]}"
   fi
 
   # update modules dependencies on the live medium
   info "Updating modules dependencies..."
   depmod -a -b "$NEWROOT"
+}
+
+# Sets up the kernel modules according to the modules.order file.
+#
+# Unloads the modules in reverse order and adds them to the 99-agama.conf file
+# to be loaded by systemd.
+setup_from_modules_order() {
+  dud_modules_dir=$1
+
+  module_order=$(<"${dud_modules_dir}/module.order")
+  # unload the modules in reverse order
+  local idx
+  idx=("${!module_order[@]}")
+  for ((i = ${#idx[@]} - 1; i >= 0; i--)); do
+    rmmod "${module_order[$i]}" 2>&1
+  done
+
+  cp "${dud_modules_dir}/module.order" "${NEWROOT}/etc/modules-load.d/99-agama.conf"
+}
+
+# Sets up the kernel modules.
+#
+# Unloads the modules and adds them to the 99-agama.conf file to be loaded by
+# systemd.
+setup_modules() {
+  dud_modules=("$@")
+
+  # unload the kernel modules
+  for module in "${dud_modules[@]}"; do
+    echo "Unloading kernel module ${module}"
+    module_name=$(basename "$module")
+    module_name=${module_name%.ko*}
+    rmmod "${module_name}" 2>&1
+    echo "${module_name}" >>"${NEWROOT}/etc/modules-load.d/99-agama.conf"
+  done
 }
 
 # link the SSL certificates and related configuration from the root image so "agama download"
@@ -267,6 +277,9 @@ configure_ssl() {
   # link crypto configuration (which ciphers are allowed, etc)
   ! [ -d /etc/crypto-policies ] && ln -s "$NEWROOT/etc/crypto-policies" /etc
 }
+
+# there can be (already unpacked) driver updates directly in the initrd
+apply_dud_update ""
 
 if [ -f "$AGAMA_DUD_INFO" ]; then
   apply_updates

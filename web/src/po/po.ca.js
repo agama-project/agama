@@ -177,9 +177,6 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Se suprimirà qualsevol partició existent i es perdran totes les dades del disc."
   ],
-  "Any interface": [
-    "Qualsevol interfície"
-  ],
   "Any partition needed to boot will be configured.": [
     "Es configurarà qualsevol partició necessària per a arrencar."
   ],
@@ -257,9 +254,6 @@ export default {
   ],
   "Bind to MAC address": [
     "Vincula a l'adreça MAC"
-  ],
-  "Bind to interface name": [
-    "Vincula al nom de la interfície"
   ],
   "Binding settings for '%s'": [
     "Configuració del vincle per a %s"
@@ -342,9 +336,6 @@ export default {
   "Choose device to bind by name": [
     "Trieu el dispositiu per vincular-lo per nom"
   ],
-  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
-    "Trieu com s'ha d'associar la connexió amb una interfície de xarxa. Això ajuda a controlar quina interfície usa la connexió."
-  ],
   "Clear": [
     "Neteja"
   ],
@@ -419,6 +410,9 @@ export default {
   ],
   "Connection details": [
     "Detalls de la connexió"
+  ],
+  "Connection is available to all devices.": [
+    ""
   ],
   "Connection not found or lost": [
     "Connexió no trobada o perduda"
@@ -931,6 +925,9 @@ export default {
   "Issuer": [
     "Emissor"
   ],
+  "It doesn't exist or can't be reached.": [
+    ""
+  ],
   "It is chosen for booting": [
     "S'ha triat per a l'arrencada"
   ],
@@ -1146,6 +1143,9 @@ export default {
   ],
   "No content found": [
     "No s'ha trobat contingut."
+  ],
+  "No device is currently using this connection.": [
+    ""
   ],
   "No device selected yet": [
     "Encara no s'ha seleccionat cap dispositiu."
@@ -1405,6 +1405,9 @@ export default {
   "Reloading data, please wait...": [
     "Tornant a carregar les dades; espereu, si us plau..."
   ],
+  "Reloading is required to get the latest data and avoid issues or data loss.": [
+    ""
+  ],
   "Remove": [
     "Suprimeix"
   ],
@@ -1558,6 +1561,9 @@ export default {
   "Setting up connection": [
     "Establiment de la connexió"
   ],
+  "Settings": [
+    "Configuració"
+  ],
   "Several partitions will be deleted": [
     "Se suprimiran diverses particions"
   ],
@@ -1676,11 +1682,11 @@ export default {
   "The LVM group '%1$s' will remain at %2$s": [
     "El grup d'LVM %1$s es mantindrà a %2$s"
   ],
+  "The configuration has been updated externally.": [
+    ""
+  ],
   "The configured LVM groups will remain at %s": [
     "Els grups d'LVM configurats es mantindran a %s"
-  ],
-  "The connection can be used by any available interface.": [
-    "La connexió es pot usar des de qualsevol interfície disponible."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "La connexió només s'usarà durant la instal·lació i no estarà disponible al sistema instal·lat."
@@ -1927,6 +1933,9 @@ export default {
   ],
   "Unable to modify the settings": [
     "No es pot modificar la configuració"
+  ],
+  "Unbound": [
+    ""
   ],
   "Unselect": [
     "Desmarca"

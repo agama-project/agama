@@ -177,9 +177,6 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Semua partisi yang ada akan dihapus dan semua data di disk akan hilang."
   ],
-  "Any interface": [
-    "Antarmuka apa pun"
-  ],
   "Any partition needed to boot will be configured.": [
     "Partisi apa pun yang diperlukan untuk booting akan dikonfigurasi."
   ],
@@ -257,9 +254,6 @@ export default {
   ],
   "Bind to MAC address": [
     "Mengikat ke alamat MAC"
-  ],
-  "Bind to interface name": [
-    "Ikat ke nama antarmuka"
   ],
   "Binding settings for '%s'": [
     "Pengaturan pengikatan untuk '%s'"
@@ -342,9 +336,6 @@ export default {
   "Choose device to bind by name": [
     "Pilih perangkat untuk diikat berdasarkan nama"
   ],
-  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
-    "Pilih bagaimana koneksi akan dihubungkan dengan antarmuka jaringan. Hal ini membantu mengontrol antarmuka mana yang digunakan oleh koneksi tersebut."
-  ],
   "Clear": [
     "Hapus"
   ],
@@ -419,6 +410,9 @@ export default {
   ],
   "Connection details": [
     "Rincian koneksi"
+  ],
+  "Connection is available to all devices.": [
+    ""
   ],
   "Connection not found or lost": [
     "Koneksi tidak ditemukan atau terputus"
@@ -930,6 +924,9 @@ export default {
   "Issuer": [
     "Penerbit"
   ],
+  "It doesn't exist or can't be reached.": [
+    ""
+  ],
   "It is chosen for booting": [
     "Ini dipilih untuk booting"
   ],
@@ -1145,6 +1142,9 @@ export default {
   ],
   "No content found": [
     "Tidak ada konten yang ditemukan"
+  ],
+  "No device is currently using this connection.": [
+    ""
   ],
   "No device selected yet": [
     "Belum ada perangkat yang dipilih"
@@ -1403,6 +1403,9 @@ export default {
   ],
   "Reloading data, please wait...": [
     "Muat ulang data, harap tunggu..."
+  ],
+  "Reloading is required to get the latest data and avoid issues or data loss.": [
+    ""
   ],
   "Remove": [
     "Menghapus"
@@ -1674,11 +1677,11 @@ export default {
   "The LVM group '%1$s' will remain at %2$s": [
     "Grup LVM ‘%1$s’ akan tetap berada di %2$s"
   ],
+  "The configuration has been updated externally.": [
+    ""
+  ],
   "The configured LVM groups will remain at %s": [
     "Grup LVM yang telah dikonfigurasi akan tetap berada di %s"
-  ],
-  "The connection can be used by any available interface.": [
-    "Koneksi ini dapat digunakan oleh antarmuka mana pun yang tersedia."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Koneksi hanya akan digunakan selama pemasangan dan tidak tersedia dalam sistem yang telah dipasang."
@@ -1922,6 +1925,9 @@ export default {
   ],
   "Unable to modify the settings": [
     "Tidak dapat mengubah pengaturan"
+  ],
+  "Unbound": [
+    ""
   ],
   "Unselect": [
     "Batalkan pilihan"

@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Wed Aug 13 15:16:25 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify "bootloader" and "files" section in agama
+  profile without specified product (bsc#1247248)
+
+-------------------------------------------------------------------
+Thu Aug  7 11:47:55 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to "add" or "remove" patterns from the current or defined
+  user selection patterns list (bsc#1247456).
+
+-------------------------------------------------------------------
 Wed Aug  6 15:37:52 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Automatically retry registration when a network error happens
@@ -15,7 +27,7 @@ Mon Aug  4 09:29:29 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
 - Do not return an Err when a connection is not activated or 
   deactivated when adding or updating it but just log the error
-  and write the connections profiles (bs#1245548).
+  and write the connections profiles (bsc#1245548).
 
 -------------------------------------------------------------------
 Fri Aug  1 10:10:40 UTC 2025 - Martin Vidner <mvidner@suse.com>
@@ -34,6 +46,12 @@ Tue Jul 29 09:50:59 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not complain about missing a selected product when it is not
   required (bsc#1247248).
+
+-------------------------------------------------------------------
+Mon Jul 28 12:40:40 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- update pam crate not to use a vulnerable users dependency
+  (bsc#1244200, CVE-2025-5791)
 
 -------------------------------------------------------------------
 Mon Jul 28 08:18:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

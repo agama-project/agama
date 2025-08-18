@@ -177,9 +177,6 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Alle vorhandenen Partitionen werden entfernt und alle Daten auf der Festplatte gehen verloren."
   ],
-  "Any interface": [
-    "Jede Schnittstelle"
-  ],
   "Any partition needed to boot will be configured.": [
     "Jede Partition, die zum Booten benötigt wird, wird konfiguriert."
   ],
@@ -210,11 +207,20 @@ export default {
   "Authentication by target": [
     "Authentifizierung durch das Ziel"
   ],
+  "Auto LUNs Scan": [
+    "Automatischer LUNs-Scan"
+  ],
   "Automatic": [
     "Automatisch"
   ],
   "Automatic (DHCP)": [
     "Automatisch (DHCP)"
+  ],
+  "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
+    "Der automatische LUN-Scan ist [deaktiviert]. LUNs müssen manuell       konfiguriert werden, nachdem ein Controller aktiviert wurde."
+  ],
+  "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
+    "Der automatische LUN-Scan ist [aktiviert]. Wenn Sie einen Controller aktivieren, der im       NPIV-Modus ausgeführt wird, werden alle seine LUNs automatisch konfiguriert."
   ],
   "Available products": [
     "Verfügbare Produkte"
@@ -248,9 +254,6 @@ export default {
   ],
   "Bind to MAC address": [
     "Mit MAC-Adresse verknüpfen"
-  ],
-  "Bind to interface name": [
-    "Mit dem Namen der Schnittstelle verknüpfen"
   ],
   "Binding settings for '%s'": [
     "Verknüpfungseinstellungen für ‚%s‘"
@@ -333,9 +336,6 @@ export default {
   "Choose device to bind by name": [
     "Zu verknüpfendes Gerät nach Namen auswählen"
   ],
-  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
-    "Wählen Sie aus, wie die Verbindung mit einer Netzwerkschnittstelle verknüpft werden soll. Damit lässt sich steuern, welche Schnittstelle die Verbindung verwendet."
-  ],
   "Clear": [
     "Leeren"
   ],
@@ -356,6 +356,9 @@ export default {
   ],
   "Configure LVM Volume Group": [
     "LVM-Volume-Gruppe konfigurieren"
+  ],
+  "Configure LVM logical volume at %s volume group": [
+    "Logisches LVM-Volume bei Volume-Gruppe '%s' konfigurieren"
   ],
   "Configure device %s": [
     "Gerät %s konfigurieren"
@@ -407,6 +410,9 @@ export default {
   ],
   "Connection details": [
     "Verbindungsdetails"
+  ],
+  "Connection is available to all devices.": [
+    ""
   ],
   "Connection not found or lost": [
     "Verbindung nicht gefunden oder verloren"
@@ -467,6 +473,9 @@ export default {
   ],
   "DASD devices selection table": [
     "DASD-Geräte-Auswahltabelle"
+  ],
+  "DASDs table section": [
+    "DASD-Tabellenabschnitt"
   ],
   "DIAG": [
     "DIAG"
@@ -568,7 +577,7 @@ export default {
     "iSCSI-Ziele erkennen"
   ],
   "Discover iSCSI targets": [
-    "iSCSI-Ziele erkennen"
+    "iSCSI-Ziele entdecken"
   ],
   "Disk": [
     "Festplatte"
@@ -695,6 +704,12 @@ export default {
   ],
   "Filter by language, territory or locale code": [
     "Nach Sprache, Gebiet oder Sprachumgebungscode filtern"
+  ],
+  "Filter by max channel": [
+    "Nach maximalem Kanal filtern"
+  ],
+  "Filter by min channel": [
+    "Nach minimalem Kanal filtern"
   ],
   "Filter by pattern title or description": [
     "Nach Mustertitel oder Beschreibung filtern"
@@ -910,6 +925,9 @@ export default {
   "Issuer": [
     "Aussteller"
   ],
+  "It doesn't exist or can't be reached.": [
+    ""
+  ],
   "It is chosen for booting": [
     "Es wird zum Booten ausgewählt"
   ],
@@ -1048,6 +1066,9 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "Weitere Sprachen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar"
   ],
+  "Moreover, the following partitions will be created or mounted": [
+    "Zudem werden die folgenden Partitionen erstellt oder eingehängt"
+  ],
   "Mount Point": [
     "Einhängepunkt"
   ],
@@ -1108,6 +1129,9 @@ export default {
   "No": [
     "Nein"
   ],
+  "No Wi-Fi networks were found": [
+    "Keine Wi-Fi-Netzwerke gefunden"
+  ],
   "No additional partitions will be created": [
     "Es werden keine zusätzlichen Partitionen erstellt"
   ],
@@ -1119,6 +1143,9 @@ export default {
   ],
   "No content found": [
     "Kein Inhalt gefunden"
+  ],
+  "No device is currently using this connection.": [
+    ""
   ],
   "No device selected yet": [
     "Noch kein Gerät ausgewählt"
@@ -1215,6 +1242,9 @@ export default {
   ],
   "Other options": [
     "Andere Optionen"
+  ],
+  "Other options toggle": [
+    "Umschalter für andere Optionen"
   ],
   "Overview": [
     "Übersicht"
@@ -1375,8 +1405,17 @@ export default {
   "Reloading data, please wait...": [
     "Daten werden neu geladen, bitte warten ..."
   ],
+  "Reloading is required to get the latest data and avoid issues or data loss.": [
+    ""
+  ],
   "Remove": [
     "Entfernen"
+  ],
+  "Remove max channel filter": [
+    "Filter für maximalen Kanal entfernen"
+  ],
+  "Remove min channel filter": [
+    "Filter für minimalen Kanal entfernen"
   ],
   "Remove the configuration for this disk": [
     "Konfiguration für diese Festplatte entfernen"
@@ -1522,6 +1561,9 @@ export default {
   "Setting up connection": [
     "Verbindung herstellen"
   ],
+  "Settings": [
+    "Einstellungen"
+  ],
   "Several partitions will be deleted": [
     "Mehrere Partitionen werden gelöscht"
   ],
@@ -1565,6 +1607,12 @@ export default {
   "Skip to content": [
     "Zum Inhalt springen"
   ],
+  "Skip to next": [
+    "Zum nächsten Punkt springen"
+  ],
+  "Skip to previous": [
+    "Zum vorherigen Punkt springen"
+  ],
   "Software": [
     "Software"
   ],
@@ -1601,6 +1649,9 @@ export default {
   "Start from scratch with the default configuration": [
     "Mit der Standardkonfiguration neu beginnen"
   ],
+  "Startup": [
+    "Start"
+  ],
   "Static hostname": [
     "Statischer Hostname"
   ],
@@ -1631,11 +1682,11 @@ export default {
   "The LVM group '%1$s' will remain at %2$s": [
     "Die LVM-Gruppe ‚%1$s‘ wird bei %2$s bleiben"
   ],
+  "The configuration has been updated externally.": [
+    ""
+  ],
   "The configured LVM groups will remain at %s": [
     "Die konfigurierten LVM-Gruppen bleiben bei %s"
-  ],
-  "The connection can be used by any available interface.": [
-    "Die Verbindung kann von jeder verfügbaren Schnittstelle genutzt werden."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Die Verbindung wird nur während der Installation verwendet und ist im installierten System nicht verfügbar."
@@ -1796,6 +1847,9 @@ export default {
   "The storage configuration uses elements not supported by this interface.": [
     "Die Speicherungskonfiguration verwendet Elemente, die von dieser Schnittstelle nicht unterstützt werden."
   ],
+  "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
+    "Das System unterstützt keine WiFi-Verbindungen, wahrscheinlich wegen fehlender oder deaktivierter Hardware."
+  ],
   "The system will use %s as its default language.": [
     "Das System wird %s als Standardsprache verwenden."
   ],
@@ -1879,6 +1933,9 @@ export default {
   ],
   "Unable to modify the settings": [
     "Einstellungen können nicht geändert werden"
+  ],
+  "Unbound": [
+    ""
   ],
   "Unselect": [
     "Abwählen"
@@ -2065,6 +2122,15 @@ export default {
   ],
   "Weak signal": [
     "Schwaches Signal"
+  ],
+  "Wi-Fi connection form": [
+    "Formular für die WiFi-Verbindung"
+  ],
+  "Wi-Fi networks": [
+    "Wi-Fi-Netzwerke"
+  ],
+  "Wi-Fi not supported": [
+    "Kein Wi-Fi unterstützt"
   ],
   "Will be supported in a future version.": [
     "Wird in einer zukünftigen Version unterstützt werden."

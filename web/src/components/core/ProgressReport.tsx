@@ -28,7 +28,6 @@ import {
   ProgressStepper,
   ProgressStepProps,
   Spinner,
-  Stack,
   Truncate,
 } from "@patternfly/react-core";
 import { useProgress, useProgressChanges, useResetProgress } from "~/queries/progress";
@@ -62,16 +61,13 @@ const Progress = ({ steps, step, firstStep, detail }) => {
       if (detail && detail.message !== "") {
         const { message, current, total } = detail;
         properties.description = (
-          <Stack hasGutter>
+          <Flex direction={{ default: "column" }} rowGap={{ default: "rowGapXs" }}>
             <div>{_("In progress")}</div>
             <div>
-              <Truncate
-                content={`${message} (${current}/${total})`}
-                trailingNumChars={12}
-                position="middle"
-              />
+              <Truncate content={message} trailingNumChars={12} position="middle" />
             </div>
-          </Stack>
+            <div>{`(${current}/${total})`}</div>
+          </Flex>
         );
       }
     }

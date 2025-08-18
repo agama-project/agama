@@ -177,9 +177,6 @@ export default {
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Все существующие разделы будут удалены, а все данные на диске будут потеряны."
   ],
-  "Any interface": [
-    "Любой интерфейс"
-  ],
   "Any partition needed to boot will be configured.": [
     "Все разделы, необходимые для загрузки, будут настроены."
   ],
@@ -257,9 +254,6 @@ export default {
   ],
   "Bind to MAC address": [
     "Привязать к MAC-адресу"
-  ],
-  "Bind to interface name": [
-    "Привязать к имени интерфейса"
   ],
   "Binding settings for '%s'": [
     "Настройки привязки для «%s»"
@@ -342,9 +336,6 @@ export default {
   "Choose device to bind by name": [
     "Выберите устройство для привязки по имени"
   ],
-  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
-    "Выберите, как это подключение должно быть связано с сетевым интерфейсом. Это поможет контролировать, какой интерфейс будет использоваться для подключения."
-  ],
   "Clear": [
     "Очистить"
   ],
@@ -419,6 +410,9 @@ export default {
   ],
   "Connection details": [
     "Сведения о подключении"
+  ],
+  "Connection is available to all devices.": [
+    ""
   ],
   "Connection not found or lost": [
     "Соединение не найдено или потеряно"
@@ -932,6 +926,9 @@ export default {
   "Issuer": [
     "Сертификационный центр"
   ],
+  "It doesn't exist or can't be reached.": [
+    ""
+  ],
   "It is chosen for booting": [
     "Он выбран для загрузки"
   ],
@@ -1147,6 +1144,9 @@ export default {
   ],
   "No content found": [
     "Содержимое не найдено"
+  ],
+  "No device is currently using this connection.": [
+    ""
   ],
   "No device selected yet": [
     "Устройство ещё не выбрано"
@@ -1405,6 +1405,9 @@ export default {
   ],
   "Reloading data, please wait...": [
     "Загрузка данных, подождите..."
+  ],
+  "Reloading is required to get the latest data and avoid issues or data loss.": [
+    ""
   ],
   "Remove": [
     "Удалить"
@@ -1678,11 +1681,11 @@ export default {
   "The LVM group '%1$s' will remain at %2$s": [
     "Группа LVM „%1$s“ останется на диске %2$s"
   ],
+  "The configuration has been updated externally.": [
+    ""
+  ],
   "The configured LVM groups will remain at %s": [
     "Настроенные группы LVM останутся на диске %s"
-  ],
-  "The connection can be used by any available interface.": [
-    "Это подключение может использоваться любым доступным интерфейсом."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Это подключение будет использоваться только во время установки и не будет доступно в установленной системе."
@@ -1929,6 +1932,9 @@ export default {
   ],
   "Unable to modify the settings": [
     "Невозможно изменить настройки"
+  ],
+  "Unbound": [
+    ""
   ],
   "Unselect": [
     "Отменить выбор"

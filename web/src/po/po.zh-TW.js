@@ -45,6 +45,18 @@ export default {
   "%s with %d partitions": [
     "%s (包含 %d 個分割區)"
   ],
+  "A %1$s of %2$s will be created for %3$s if possible": [
+    "將建立一個 %1$s (%2$s)，以用於 %3$s (如果可能)"
+  ],
+  "A %1$s of at least %2$s will be created for %3$s if possible": [
+    "將建立一個 %1$s (至少 %2$s)，以用於 %3$s (如果可能)"
+  ],
+  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
+    "將建立一個 %1$s (大小介於 %2$s 至 %3$s 之間)，以用於 %4$s (如果可能)"
+  ],
+  "A file system will be used for the whole device": [
+    "一個檔案系統將用於整部裝置"
+  ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "至少 %1$s 的通用大小將用於新 %2$s"
   ],
@@ -99,6 +111,9 @@ export default {
   "Add LVM volume group": [
     "新增 LVM 磁碟區群組"
   ],
+  "Add a partition or mount an existing one": [
+    "新增一個分割區或掛接一個現有分割區"
+  ],
   "Add an address": [
     "新增位址"
   ],
@@ -135,6 +150,9 @@ export default {
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     "所有衝突都已解決，或者未偵測到任何衝突。您可以安心繼續進行設定。"
   ],
+  "All content not configured to be mounted will be deleted": [
+    "將刪除未設定為待掛接的所有內容"
+  ],
   "All content will be deleted": [
     "將刪除所有內容"
   ],
@@ -145,16 +163,22 @@ export default {
     "透過此介面管理的所有網路連接目前都設定為僅在安裝期間使用，並且不會複製到安裝好的系統中"
   ],
   "Allow growing": [
-    ""
+    "允許增長"
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "除了定義首個使用者外，還可設定 root 使用者的驗證方法。"
+  ],
+  "Already using all available devices": [
+    "已在使用所有可用裝置"
   ],
   "Already using all available disks": [
     "已使用所有可用磁碟"
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "將移除所有現有分割區，並且磁碟上的所有資料都將遺失。"
+  ],
+  "Any partition needed to boot will be configured.": [
+    "將設定開機所需的所有分割區。"
   ],
   "Apply selected solution": [
     "套用所選的解決方案"
@@ -204,6 +228,15 @@ export default {
   "Back": [
     "後退"
   ],
+  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
+    "將根據系統中的 RAM 容量規劃一個 %1s$ (%2$s)，以用於 %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
+    "將根據系統中的 RAM 容量規劃一個 %1s$ (至少 %2$s)，以用於 %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
+    "將根據系統中的 RAM 容量規劃一個 %1s$ (大小介於 %2$s 至 %3$s 之間)，以用於 %4$s"
+  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -219,11 +252,11 @@ export default {
   "Beta": [
     "Beta 版"
   ],
-  "Bind to interface name": [
-    ""
+  "Bind to MAC address": [
+    "結合至 MAC 位址"
   ],
   "Binding settings for '%s'": [
-    ""
+    "'%s' 的結合設定"
   ],
   "BitLocker": [
     "BitLocker"
@@ -279,6 +312,9 @@ export default {
   "Change selection": [
     "變更選擇"
   ],
+  "Change the file system or mount point": [
+    "變更檔案系統或掛接點"
+  ],
   "Channel ID": [
     "通道 ID"
   ],
@@ -295,13 +331,10 @@ export default {
     "選擇一個存放開機載入程式的磁碟"
   ],
   "Choose device to bind by MAC": [
-    ""
+    "依 MAC 選擇要結合的裝置"
   ],
   "Choose device to bind by name": [
-    ""
-  ],
-  "Choose how the connection should be associated with a network interface. This helps control which interface the connection uses.": [
-    ""
+    "依名稱選擇要結合的裝置"
   ],
   "Clear": [
     "清除"
@@ -326,6 +359,9 @@ export default {
   ],
   "Configure LVM logical volume at %s volume group": [
     "在 %s 磁碟區群組上設定 LVM 邏輯磁碟區"
+  ],
+  "Configure device %s": [
+    "設定裝置 %s"
   ],
   "Configure device menu": [
     "設定裝置功能表"
@@ -375,8 +411,14 @@ export default {
   "Connection details": [
     "連接詳細資料"
   ],
+  "Connection is available to all devices.": [
+    ""
+  ],
   "Connection not found or lost": [
     "未找到連接，或者連接中斷"
+  ],
+  "Content": [
+    "內容"
   ],
   "Continue": [
     "繼續"
@@ -414,6 +456,12 @@ export default {
   "Current %s": [
     "目前 %s"
   ],
+  "Current content": [
+    "目前內容"
+  ],
+  "Current partitions will be kept": [
+    "將保留目前的分割區"
+  ],
   "Custom": [
     "自訂"
   ],
@@ -447,8 +495,14 @@ export default {
   "Default file system for generic logical volumes": [
     "通用邏輯磁碟區的預設檔案系統"
   ],
+  "Default file system for generic mount paths": [
+    "通用掛接路徑的預設檔案系統"
+  ],
   "Default file system for generic partitions": [
     "通用分割區的預設檔案系統"
+  ],
+  "Define a custom size": [
+    "指定自訂大小"
   ],
   "Define a new LVM on the disk": [
     "在該磁碟上定義新 LVM"
@@ -474,11 +528,20 @@ export default {
   "Delete volume group": [
     "刪除磁碟區群組"
   ],
+  "Description": [
+    "描述"
+  ],
+  "Destroy current data and format device as": [
+    "損毀目前的資料並將裝置格式化為"
+  ],
   "Destroy current data and format partition as": [
     "刪除目前資料並將分割區格式化為"
   ],
   "Details": [
     "詳細資料"
+  ],
+  "Details for %s": [
+    "%s 的詳細資料"
   ],
   "Details will appear after the connection is successfully established.": [
     "成功建立連接後將會顯示詳細資料。"
@@ -489,6 +552,9 @@ export default {
   "Device %s menu": [
     "裝置 %s 功能表"
   ],
+  "Device Selection": [
+    "選取裝置"
+  ],
   "Device details": [
     "裝置詳細資料"
   ],
@@ -496,7 +562,7 @@ export default {
     "捨棄"
   ],
   "Discard the maximum size and continue with simplified configuration": [
-    ""
+    "請忽略大小上限，繼續使用簡化組態"
   ],
   "Disconnected": [
     "已中斷連接"
@@ -540,6 +606,9 @@ export default {
   "Edit %s": [
     "編輯 %s"
   ],
+  "Edit binding settings": [
+    "編輯結合設定"
+  ],
   "Edit connection %s": [
     "編輯連接 %s"
   ],
@@ -550,7 +619,7 @@ export default {
     "編輯磁碟區群組"
   ],
   "Email": [
-    ""
+    "電子郵件"
   ],
   "Empty LVM volume group %s": [
     "清空 LVM 磁碟區群組 %s"
@@ -592,7 +661,7 @@ export default {
     "ExFAT"
   ],
   "Example: https://myserver.com": [
-    ""
+    "範例：https://myserver.com"
   ],
   "Excellent signal": [
     "訊號極佳"
@@ -627,6 +696,9 @@ export default {
   "File system label": [
     "檔案系統標籤"
   ],
+  "Filesystems": [
+    "檔案系統"
+  ],
   "Filter by description or keymap code": [
     "依描述或鍵盤對應代碼過濾"
   ],
@@ -645,6 +717,9 @@ export default {
   "Filter by territory, time zone code or UTC offset": [
     "依地區、時區代碼或 UTC 偏移過濾"
   ],
+  "Find space": [
+    "尋找空間"
+  ],
   "Find space in %s": [
     "在 %s 中尋找可用空間"
   ],
@@ -658,10 +733,19 @@ export default {
     "首個使用者"
   ],
   "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
-    ""
+    "如有更複雜的需求，使用者可切換到此顯示完整頁面的專屬路徑版本，它會提供更多空間，可呈現詳細檢視、更多的欄、過濾器及延伸功能。"
   ],
   "Format": [
     "格式化"
+  ],
+  "Format RAID %s": [
+    "格式化 RAID %s"
+  ],
+  "Format device as": [
+    "將裝置格式化為"
+  ],
+  "Format disk %s": [
+    "格式化磁碟 %s"
   ],
   "Format logical volume as": [
     "將邏輯磁碟區格式化為"
@@ -673,7 +757,7 @@ export default {
     "要格式化所選裝置？"
   ],
   "Format the whole device or mount an existing file system": [
-    ""
+    "格式化整部裝置或掛接現有檔案系統"
   ],
   "Formatted": [
     "已格式化"
@@ -840,11 +924,23 @@ export default {
   "Issuer": [
     "核發者"
   ],
-  "It is chosen for booting and for some LVM groups": [
+  "It doesn't exist or can't be reached.": [
     ""
   ],
+  "It is chosen for booting": [
+    "該裝置選定用於開機"
+  ],
+  "It is chosen for booting and for some LVM groups": [
+    "該裝置選定用於開機及部分 LVM 群組"
+  ],
+  "It is chosen for booting and for the LVM group '%s'": [
+    "該裝置選定用於開機及 LVM 群組 '%s'"
+  ],
   "It is chosen for some LVM groups": [
-    ""
+    "該裝置選定用於部分 LVM 群組"
+  ],
+  "It is chosen for the LVM group '%s'": [
+    "該裝置選定用於 LVM 群組 '%s'"
   ],
   "It is not possible to allocate space for %s.": [
     "無法為 %s 配置空間。"
@@ -885,11 +981,17 @@ export default {
   "Language and keyboard": [
     "語言與鍵盤"
   ],
+  "Let the installer propose a sensible size": [
+    "讓安裝程式建議適當的大小"
+  ],
   "Loading": [
     "正在載入"
   ],
   "Loading data...": [
     "正在載入資料..."
+  ],
+  "Loading storage": [
+    "正在載入儲存"
   ],
   "Loading the installation repositories...": [
     "正在載入安裝儲存庫..."
@@ -908,6 +1010,9 @@ export default {
   ],
   "Logical volume name": [
     "邏輯磁碟區名稱"
+  ],
+  "Logical volumes for %s": [
+    "%s 的邏輯磁碟區"
   ],
   "Login": [
     "登入"
@@ -960,8 +1065,17 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "[本土化] 頁面可能會提供更多適用於所選產品的語言"
   ],
+  "Moreover, the following partitions will be created or mounted": [
+    "此外，將會建立或掛接以下分割區"
+  ],
   "Mount Point": [
     "掛接點"
+  ],
+  "Mount RAID %s": [
+    "掛接 RAID %s"
+  ],
+  "Mount disk %s": [
+    "掛接磁碟 %s"
   ],
   "Mount point": [
     "掛接點"
@@ -1029,6 +1143,9 @@ export default {
   "No content found": [
     "未找到內容"
   ],
+  "No device is currently using this connection.": [
+    ""
+  ],
   "No device selected yet": [
     "尚未選取裝置"
   ],
@@ -1083,6 +1200,9 @@ export default {
   "Not available": [
     "不可用"
   ],
+  "Not configured yet": [
+    "尚未設定"
+  ],
   "Not defined": [
     "未定義"
   ],
@@ -1110,6 +1230,12 @@ export default {
   "Only available if authentication by target is provided": [
     "僅當目標提供驗證機制時可用"
   ],
+  "Only reused partitions and space not assigned to any partition will be used.": [
+    "將會僅使用重複使用的分割區及未指定給任何分割區的空間。"
+  ],
+  "Only reused partitions will be used.": [
+    "將會僅使用重複使用的分割區。"
+  ],
   "Options toggle": [
     "選項切換鈕"
   ],
@@ -1134,11 +1260,20 @@ export default {
   "Partitions needed for booting will remain at %s": [
     "開機所需的分割區將保留在 %s 中"
   ],
+  "Partitions that are not reused will be removed and that data will be lost.": [
+    "將移除不重複使用的分割區，其中的資料將會遺失。"
+  ],
+  "Partitions that are not reused will be resized as needed.": [
+    "將視需要調整不重複使用的分割區的大小。"
+  ],
   "Partitions that are not reused would be resized if needed.": [
-    ""
+    "將視需要調整不重複使用的分割區的大小。"
   ],
   "Partitions to boot will be allocated at the following device.": [
     "將會在以下裝置上配置開機分割區。"
+  ],
+  "Partitions to boot will be allocated at the installation disk %s.": [
+    "將會在安裝磁碟 %s 上配置開機分割區。"
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "將會在安裝磁碟上配置開機分割區。"
@@ -1215,6 +1350,9 @@ export default {
   "Provide email address": [
     "提供電子郵件地址"
   ],
+  "Provide registration code": [
+    "提供註冊代碼"
+  ],
   "Public SSH Key": [
     "SSH 公用金鑰"
   ],
@@ -1240,10 +1378,10 @@ export default {
     "註冊"
   ],
   "Register using SUSE server": [
-    ""
+    "使用 SUSE 伺服器註冊"
   ],
   "Register using a custom registration server": [
-    ""
+    "使用自訂註冊伺服器註冊"
   ],
   "Registration": [
     "註冊"
@@ -1254,6 +1392,9 @@ export default {
   "Registration code": [
     "註冊代碼"
   ],
+  "Registration server": [
+    "註冊伺服器"
+  ],
   "ReiserFS": [
     "ReiserFS"
   ],
@@ -1262,6 +1403,9 @@ export default {
   ],
   "Reloading data, please wait...": [
     "正在重新載入資料，請稍候..."
+  ],
+  "Reloading is required to get the latest data and avoid issues or data loss.": [
+    ""
   ],
   "Remove": [
     "移除"
@@ -1278,6 +1422,9 @@ export default {
   "Repository load failed": [
     "載入儲存庫失敗"
   ],
+  "Rescan devices": [
+    "重新掃描裝置"
+  ],
   "Reset to defaults": [
     "重設為預設值"
   ],
@@ -1286,6 +1433,9 @@ export default {
   ],
   "Result": [
     "結果"
+  ],
+  "Reused partitions will not be shrunk": [
+    "將不縮小重複使用的分割區"
   ],
   "Review and fix": [
     "檢查並修復"
@@ -1312,7 +1462,7 @@ export default {
     "SSID"
   ],
   "SUSE Customer Center (SCC)": [
-    ""
+    "SUSE Customer Center (SCC)"
   ],
   "Search": [
     "搜尋"
@@ -1329,6 +1479,9 @@ export default {
   "Select": [
     "選取"
   ],
+  "Select a device to define partitions or to mount": [
+    "選取一個要定義分割區或要掛接的裝置"
+  ],
   "Select a disk": [
     "選取一個磁碟"
   ],
@@ -1338,6 +1491,12 @@ export default {
   "Select a disk to create %s": [
     "選取用於建立 %s 的磁碟"
   ],
+  "Select a disk to define partitions or to mount": [
+    "選取一個要定義分割區或要掛接的磁碟"
+  ],
+  "Select a disk to format as %s": [
+    "選取一個要格式化為 %s 的磁碟"
+  ],
   "Select a disk to install the system": [
     "選取用於安裝系統的磁碟"
   ],
@@ -1346,6 +1505,12 @@ export default {
   ],
   "Select a solution to continue": [
     "選取一個解決方案以繼續"
+  ],
+  "Select another device to define partitions or to mount": [
+    "選取另一個要定義分割區或要掛接的裝置"
+  ],
+  "Select another disk to define partitions or to mount": [
+    "選取另一個要定義分割區或要掛接的磁碟"
   ],
   "Select at least one disk.": [
     "請至少選取一個磁碟。"
@@ -1368,11 +1533,20 @@ export default {
   "Select what to do with each partition.": [
     "選取對每個分割區執行的動作。"
   ],
+  "Selected disk cannot be changed": [
+    "無法變更所選磁碟"
+  ],
   "Selected patterns": [
     "選取的模式"
   ],
   "Server IP": [
     "伺服器 IP"
+  ],
+  "Server URL": [
+    "伺服器 URL"
+  ],
+  "Server options": [
+    "伺服器選項"
   ],
   "Set DIAG Off": [
     "關閉 DIAG"
@@ -1418,6 +1592,12 @@ export default {
   ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "大小限制必須為數字，後面可跟 GiB 或 GB 等單位"
+  ],
+  "Size mode": [
+    "大小模式"
+  ],
+  "Size modes": [
+    "大小模式"
   ],
   "Skip to content": [
     "跳到內容"
@@ -1497,6 +1677,9 @@ export default {
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM 群組 '%1$s' 將保留在 %2$s 中"
   ],
+  "The configuration has been updated externally.": [
+    ""
+  ],
   "The configured LVM groups will remain at %s": [
     "設定的 LVM 群組將保留在 %s 中"
   ],
@@ -1506,6 +1689,18 @@ export default {
   "The content may be deleted": [
     "內容可能會刪除"
   ],
+  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
+    "目前的組態將會導致嘗試建立一個 %1$s (%2$s)。"
+  ],
+  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
+    "目前的組態將會導致嘗試建立一個 %1$s (至少 %2$s)。"
+  ],
+  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
+    "目前的組態將會導致嘗試建立一個 %1$s (大小介於 %2$s 至 %3$s 之間)。"
+  ],
+  "The current file system will be mounted at %s": [
+    "目前的檔案系統將掛接到 %s 上"
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "將會保留資料，但會視需要調整目前分割區的大小。"
   ],
@@ -1514,6 +1709,15 @@ export default {
   ],
   "The device cannot be shrunk:": [
     "無法縮小該裝置："
+  ],
+  "The device will be formatted": [
+    "將格式化該裝置"
+  ],
+  "The device will be formatted as %1$s and mounted at %2$s": [
+    "該裝置將格式化為 %1$s 並掛接到 %2$s 上"
+  ],
+  "The device will be mounted": [
+    "將掛接該裝置"
   ],
   "The device will be mounted at %s.": [
     "該裝置將掛接到 %s 上。"
@@ -1536,8 +1740,17 @@ export default {
   "The extension has been registered with key %s.": [
     "已使用金鑰 %s 註冊該延伸。"
   ],
+  "The extension was registered without any registration code.": [
+    "已註冊該延伸，但未使用任何註冊代碼。"
+  ],
+  "The final size can be bigger in order to fill the extra free space.": [
+    "最終大小可增大，以便使用額外的可用空間。"
+  ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "設定可信平台模組 (TPM) 以自動開啟加密裝置的最後步驟，將會在新系統首次開機時進行。為了讓此程序順利執行，機器必須直接從新的開機載入程式開機。"
+  ],
+  "The following partitions will be created or mounted": [
+    "將建立或掛接以下分割區"
   ],
   "The following software patterns are selected for installation:": [
     "已選取下列軟體模式進行安裝："
@@ -1576,16 +1789,52 @@ export default {
     "下限必須為數字，後面可跟 GiB 或 GB 等單位"
   ],
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
-    ""
+    "該強制回應選擇器提供精簡的介面，方便快捷、簡單易用。"
   ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "將根據邏輯磁碟區的大小，將所需的 LVM 實體磁碟區做為                 分割區新增至所選磁碟上。如果選取多個磁碟，                 實體磁碟區可能會分散在多個磁碟上。"
   ],
+  "The password is weak": [
+    "密碼強度太弱"
+  ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "如果 TPM 可以驗證系統的完整性，則開機和存取資料時將無需輸入密碼。TPM 封存功能要求新系統在首次執行時直接開機。"
   ],
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
+    "%1$s 的大小將會動態調整，考量因素包括系統中的 RAM 容量以及 %2$s 是否存在單獨的檔案系統。"
+  ],
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
+    "%1$s 的大小將會動態調整，考量因素包括系統中的 RAM 容量以及 %2$s 是否存在單獨的檔案系統。"
+  ],
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "%1$s 的大小將會動態調整，考量因素包括系統中的 RAM 容量、Btrfs 快照的使用情況，以及 %2$s 是否存在單獨的檔案系統。"
+  ],
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "%1$s 的大小將會動態調整，考量因素包括系統中的 RAM 容量、Btrfs 快照的使用情況，以及 %2$s 是否存在單獨的檔案系統。"
+  ],
+  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
+    "%1$s 的大小將會根據 %2$s 是否存在單獨的檔案系統動態調整。"
+  ],
+  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
+    "%1$s 的大小將會根據 %2$s 是否存在單獨的檔案系統動態調整。"
+  ],
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "%1$s 的大小將會動態調整，考量因素包括 Btrfs 快照的使用情況以及 %2$s 是否存在單獨的檔案系統。"
+  ],
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "%1$s 的大小將會動態調整，考量因素包括 Btrfs 快照的使用情況以及 %2$s 是否存在單獨的檔案系統。"
+  ],
+  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
+    "%s 的大小將會動態調整，考量因素包括系統中的 RAM 容量以及 Btrfs 快照的使用情況。"
+  ],
+  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
+    "%s 的大小將會根據 Btrfs 快照的使用情況動態調整。"
+  ],
   "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
-    ""
+    "為大小設定了介於 %s 至 %s 的範圍，但此介面無法處理給定大小上限的範圍。"
+  ],
+  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
+    "大小必須為數字，且後跟 GiB (2 的次方) 或 GB (10 的次方) 形式的單位。"
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "該儲存組態有效 (請參閱下面的結果)，但使用了此介面不支援的元素。"
@@ -1598,6 +1847,9 @@ export default {
   ],
   "The system will use %s as its default language.": [
     "系統會使用 %s 做為預設語言。"
+  ],
+  "The whole device will be used for %s": [
+    "整部裝置將用於 %s"
   ],
   "The zFCP disk was not activated.": [
     "未啟用该 zFCP 磁碟。"
@@ -1630,10 +1882,10 @@ export default {
     "此主機名稱是動態的，可能會在重新開機或網路更新後變更，具體由本地網路系統管理員設定。"
   ],
   "This license is not available in %s.": [
-    ""
+    "此授權在 %s 中不可用。"
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
-    ""
+    "此模式力求在清楚具體和快捷高效之間取得平衡：強制回應視窗提供簡單、便捷的選擇介面，而完整檢視則支援更深入的探索和更複雜的動作，專為擁有大量裝置的使用者而設計。"
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "此產品不允許在安裝期間選取軟體模式。不過，您可以在完成安裝後新增其他軟體。"
@@ -1643,6 +1895,9 @@ export default {
   ],
   "This uses existing partitions at the disk": [
     "此設定會使用磁碟上的現有分割區"
+  ],
+  "This uses the existing file system at the disk": [
+    "此設定會使用磁碟上的現有檔案系統"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "此操作只會影響安裝程式介面，不會影響要安裝的產品。您稍後可以在 \"本土化設定\" 頁面調整產品的本土化。"
@@ -1674,6 +1929,9 @@ export default {
   "Unable to modify the settings": [
     "無法修改設定"
   ],
+  "Unbound": [
+    ""
+  ],
   "Unselect": [
     "取消選取"
   ],
@@ -1687,7 +1945,7 @@ export default {
     "透過縮小裝置最多可回收 %s 的空間。"
   ],
   "Update available disks and activate crypt devices": [
-    ""
+    "更新可用磁碟並啟用加密裝置"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "現在或以後更新主機名稱不會變更目前註冊的主機名稱。"
@@ -1704,11 +1962,83 @@ export default {
   "Use": [
     "使用"
   ],
+  "Use RAID %s": [
+    "使用 RAID %s"
+  ],
+  "Use RAID %s for LVM and additional partitions": [
+    "將 RAID %s 用於 LVM 及其他分割區"
+  ],
+  "Use RAID %s for LVM, additional partitions and booting": [
+    "將 RAID %s 用於 LVM、其他分割區及開機"
+  ],
+  "Use RAID %s for additional partitions": [
+    "將 RAID %s 用於其他分割區"
+  ],
+  "Use RAID %s for additional partitions and booting": [
+    "將 RAID %s 用於其他分割區及開機"
+  ],
+  "Use RAID %s to configure boot partitions": [
+    "使用 RAID %s 設定開機分割區"
+  ],
+  "Use RAID %s to host LVM": [
+    "使用 RAID %s 代管 LVM"
+  ],
+  "Use RAID %s to host LVM and boot": [
+    "使用 RAID %s 代管 LVM 及開機"
+  ],
+  "Use RAID %s to install": [
+    "使用 RAID %s 安裝"
+  ],
+  "Use RAID %s to install and boot": [
+    "使用 RAID %s 安裝及開機"
+  ],
+  "Use RAID %s to install and host LVM": [
+    "使用 RAID %s 安裝及代管 LVM"
+  ],
+  "Use RAID %s to install, host LVM and boot": [
+    "使用 RAID %s 安裝、代管 LVM 及開機"
+  ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
     "使用下方動作設定您的裝置，或按一下 %s 以採用預設組態從頭開始。"
   ],
   "Use available space": [
     "使用可用空間"
+  ],
+  "Use disk %s": [
+    "使用磁碟 %s"
+  ],
+  "Use disk %s for LVM and additional partitions": [
+    "將磁碟 %s 用於 LVM 及其他分割區"
+  ],
+  "Use disk %s for LVM, additional partitions and booting": [
+    "將磁碟 %s 用於 LVM、其他分割區及開機"
+  ],
+  "Use disk %s for additional partitions": [
+    "將磁碟 %s 用於其他分割區"
+  ],
+  "Use disk %s for additional partitions and booting": [
+    "將磁碟 %s 用於其他分割區及開機"
+  ],
+  "Use disk %s to configure boot partitions": [
+    "使用磁碟 %s 設定開機分割區"
+  ],
+  "Use disk %s to host LVM": [
+    "使用磁碟 %s 代管 LVM"
+  ],
+  "Use disk %s to host LVM and boot": [
+    "使用磁碟 %s 代管 LVM 及開機"
+  ],
+  "Use disk %s to install": [
+    "使用磁碟 %s 安裝"
+  ],
+  "Use disk %s to install and boot": [
+    "使用磁碟 %s 安裝及開機"
+  ],
+  "Use disk %s to install and host LVM": [
+    "使用磁碟 %s 安裝及代管 LVM"
+  ],
+  "Use disk %s to install, host LVM and boot": [
+    "使用磁碟 %s 安裝、代管 LVM 及開機"
   ],
   "Use for installation only": [
     "僅用於安裝"
@@ -1728,8 +2058,14 @@ export default {
   "Use suggested username": [
     "使用建議的使用者名稱"
   ],
+  "Use the RAID without partitions": [
+    "使用無分割區的 RAID"
+  ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     "使用可信平台模組 (TPM) 在每次開機時自動解密"
+  ],
+  "Use the disk without partitions": [
+    "使用無分割區的磁碟"
   ],
   "Use these same settings for the selected product": [
     "對所選產品使用同樣的設定"
@@ -1828,10 +2164,10 @@ export default {
     "已開啟 [大寫鎖定]"
   ],
   "[FIXME]": [
-    ""
+    "[請修復]"
   ],
   "approx. %s": [
-    ""
+    "大約為 %s"
   ],
   "at least %s": [
     "至少 %s"

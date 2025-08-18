@@ -602,7 +602,7 @@ async fn set_config(
     Json(config): Json<SoftwareConfig>,
 ) -> Result<(), Error> {
     {
-        // first invalidate cache, so it if failed later, we know we need to re-read recent data
+        // first invalidate cache, so if it fails later, we know we need to re-read recent data
         // use minimal context so it is released soon.
         let mut cached_config_invalidate = state.config.write().await;
         *cached_config_invalidate = None;
