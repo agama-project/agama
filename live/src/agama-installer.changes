@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Aug 18 15:48:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a "Boot from Hard Disk" option for ppc64le (bsc#1248161).
+
+-------------------------------------------------------------------
 Wed Aug 13 10:27:39 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Copy kernel modules from DUDs to the updates/ directory (bsc#1246061).
