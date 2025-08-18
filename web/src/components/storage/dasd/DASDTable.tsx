@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import {
   Button,
   Content,
@@ -34,6 +34,8 @@ import {
   ToolbarItem,
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
+import Popup from "~/components/core/Popup";
+import Text from "~/components/core/Text";
 import FormatActionHandler from "~/components/storage/dasd/FormatActionHandler";
 import FormatFilter from "~/components/storage/dasd/FormatFilter";
 import SelectableDataTable from "~/components/core/SelectableDataTable";
@@ -41,12 +43,18 @@ import StatusFilter from "~/components/storage/dasd/StatusFilter";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
 import { DASDDevice } from "~/types/dasd";
 import type { SortedBy } from "~/components/core/SelectableDataTable";
-import { DASDMutationFn, useDASDDevices, useDASDMutation } from "~/queries/storage/dasd";
+import {
+  DASDMutationFn,
+  DASDMutationFnProps,
+  useDASDDevices,
+  useDASDMutation,
+} from "~/queries/storage/dasd";
 import { sort } from "fast-sort";
 import { isEmpty } from "radashi";
 import { hex } from "~/utils";
 import { _, n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
+import { useInstallerClient } from "~/context/installer";
 
 /**
  * Filter options for narrowing down DASD devices shown in the table.
@@ -319,10 +327,16 @@ const DASDTableEmptyState = ({ mode, resetFilters }: DASDTableEmptyStateProps) =
  * sorting configuration, current selection, and devices to be format.
  */
 type DASDTableState = {
+  /** Current sorting state */
   sortedBy: SortedBy;
+  /** Current active filters applied to the device list */
   filters: DASDDevicesFilters;
+  /** Currently selected devices in the UI */
   selectedDevices: DASDDevice[];
+  /** Devices selected for formatting */
   devicesToFormat: DASDDevice[];
+  /** Device IDs currently undergoing an async operation */
+  waitingFor: DASDDevice["id"][];
 };
 
 /**
@@ -338,6 +352,7 @@ const initialState: DASDTableState = {
   },
   selectedDevices: [],
   devicesToFormat: [],
+  waitingFor: [],
 };
 
 /**
@@ -350,7 +365,9 @@ type DASDTableAction =
   | { type: "UPDATE_SELECTION"; payload: DASDTableState["selectedDevices"] }
   | { type: "RESET_SELECTION" }
   | { type: "REQUEST_FORMAT"; payload: DASDTableState["devicesToFormat"] }
-  | { type: "CANCEL_FORMAT_REQUEST" };
+  | { type: "CANCEL_FORMAT_REQUEST" }
+  | { type: "START_WAITING"; payload: DASDDevice["id"][] }
+  | { type: "UPDATE_WAITING"; payload: DASDDevice["id"] };
 
 /**
  * Reducer function that handles all DASD table state transitions.
@@ -383,6 +400,16 @@ const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState
 
     case "CANCEL_FORMAT_REQUEST": {
       return { ...state, devicesToFormat: [] };
+    }
+
+    case "START_WAITING": {
+      return { ...state, waitingFor: action.payload };
+    }
+
+    case "UPDATE_WAITING": {
+      const prev = state.waitingFor;
+      const waitingFor = prev.filter((id) => action.payload !== id);
+      return { ...state, waitingFor };
     }
   }
 };
@@ -452,9 +479,20 @@ const columns = [
 ];
 
 export default function DASDTable() {
+  const client = useInstallerClient();
   const devices = useDASDDevices();
   const { mutate: updateDASD } = useDASDMutation();
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    if (!client) return;
+
+    return client.onEvent((event) => {
+      if (event.type === "DASDDeviceChanged") {
+        dispatch({ type: "UPDATE_WAITING", payload: event.device.id });
+      }
+    });
+  }, [client, dispatch]);
 
   const onSortingChange = (sortedBy: SortedBy) => {
     dispatch({ type: "UPDATE_SORTING", payload: sortedBy });
@@ -485,15 +523,28 @@ export default function DASDTable() {
   if (isEmpty(filteredDevices)) {
     emptyMode = state.filters === initialState.filters ? "noDevices" : "noFilterResults";
   }
+  /**
+   * Dispatches a DASD mutation and marks devices as waiting.
+   *
+   * @param mutation Parameters describing the DASD update operation
+   */
+  const updater = (mutation: DASDMutationFnProps) => {
+    updateDASD(mutation);
+    dispatch({ type: "START_WAITING", payload: mutation.devices });
+  };
 
   return (
     <Content>
+      {!isEmpty(state.waitingFor) && (
+        <Popup isOpen title={_("Applying changes")} disableFocusTrap>
+          <Content component="p">{_("Applying changes to the requested DASD devices.")}</Content>
+          <Content component="p">
+            <Text isBold>{_("This dialog will dissapear when the work is finished.")}</Text>
+          </Content>
+        </Popup>
+      )}
       <FiltersToolbar filters={state.filters} onFilterChange={onFilterChange} />
-      <BulkActionsToolbar
-        devices={state.selectedDevices}
-        updater={updateDASD}
-        dispatcher={dispatch}
-      />
+      <BulkActionsToolbar devices={state.selectedDevices} updater={updater} dispatcher={dispatch} />
 
       {!isEmpty(state.devicesToFormat) && (
         <FormatActionHandler

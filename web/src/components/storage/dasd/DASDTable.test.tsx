@@ -20,17 +20,31 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { act } from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { DASDDevice } from "~/types/dasd";
 import DASDTable from "./DASDTable";
 
 let mockDASDDevices: DASDDevice[] = [];
+let eventCallback;
+const mockClient = {
+  onEvent: jest.fn().mockImplementation((cb) => {
+    eventCallback = cb;
+    return () => {};
+  }),
+};
+
+jest.mock("~/context/installer", () => ({
+  ...jest.requireActual("~/context/installer"),
+  useInstallerClient: () => mockClient,
+}));
 
 jest.mock("~/queries/storage/dasd", () => ({
   useDASDDevices: () => mockDASDDevices,
-  useDASDMutation: () => jest.fn(),
+  useDASDMutation: () => ({
+    mutate: jest.fn(),
+  }),
   useFormatDASDMutation: () => jest.fn(),
 }));
 
@@ -91,6 +105,39 @@ describe("DASDTable", () => {
       const button = screen.getByRole("button", { name: "Format" });
       await user.click(button);
       screen.getByText("FormatActionHandler Mock");
+    });
+
+    describe("when an action is requested", () => {
+      it("set component as busy", async () => {
+        const { user } = installerRender(<DASDTable />);
+        const selection = screen.getByRole("checkbox", { name: "Select row 0" });
+        await user.click(selection);
+        const button = screen.getByRole("button", { name: "Activate" });
+        await user.click(button);
+        screen.getByRole("dialog", { name: "Applying changes" });
+        expect(screen.queryByRole("checkbox", { name: "Select row 1" })).toBeNull();
+      });
+    });
+
+    describe("when all pending actions are done", () => {
+      it("set component as idle", async () => {
+        const { user } = installerRender(<DASDTable />);
+        const selection = screen.getByRole("checkbox", { name: "Select row 0" });
+        await user.click(selection);
+        const button = screen.getByRole("button", { name: "Activate" });
+        await user.click(button);
+        screen.getByRole("dialog", { name: "Applying changes" });
+        expect(screen.queryByRole("checkbox", { name: "Select row 0" })).toBeNull();
+
+        // Simulate a DASDDeviceChanged event
+        //
+        act(() => {
+          eventCallback({ type: "DASDDeviceChanged", device: mockDASDDevices[0] });
+        });
+
+        expect(screen.queryByRole("dialog", { name: "Applying changes" })).toBeNull();
+        screen.getByRole("checkbox", { name: "Select row 0" });
+      });
     });
   });
 
