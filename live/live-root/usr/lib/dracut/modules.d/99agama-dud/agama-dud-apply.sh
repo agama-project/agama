@@ -197,6 +197,9 @@ copy_packages() {
 # /sysroot. If it finds a `module.order` file, it unloads the modules included
 # in the list and add them to /etc/modules-load.d/99-agama.conf file so they
 # will be loaded by systemd after pivoting.
+#
+# If the `module.order` file does not exits, it unloads all the modules and
+# adds the names to the 99-agama.conf file so the will be loaded.
 update_kernel_modules() {
   local dud_dir=$1
   local kernel_modules_dir
@@ -218,30 +221,51 @@ update_kernel_modules() {
   mkdir -p "${kernel_modules_dir}"
   cp "${dud_modules[@]}" "${kernel_modules_dir}"
 
-  # unload the kernel modules
-  for module in "${dud_modules[@]}"; do
-    echo "Unloading kernel module ${module}"
-    module_name=${module#"${dud_modules_dir}/"}
-    module_name=${module_name%.ko*}
-    rmmod "${module_name}" 2>&1
-  done
-
   # unload modules in the module.order file and make sure they will be loaded
   if [ -f "${dud_modules_dir}/module.order" ]; then
-    module_order=$(<"${dud_modules_dir}/module.order")
-    # unload the modules in reverse order
-    local idx
-    idx=("${!module_order[@]}")
-    for ((i = ${#idx[@]} - 1; i >= 0; i--)); do
-      rmmod "${module_order[$i]}" 2>&1
-    done
-
-    cp "${dud_modules_dir}/module.order" "${NEWROOT}/etc/modules-load.d/99-agama.conf"
+    setup_from_modules_order "$dud_modules_dir"
+  else
+    setup_modules "${dud_modules[@]}"
   fi
 
   # update modules dependencies on the live medium
   info "Updating modules dependencies..."
   depmod -a -b "$NEWROOT"
+}
+
+# Sets up the kernel modules according to the modules.order file.
+#
+# Unloads the modules in reverse order and adds them to the 99-agama.conf file
+# to be loaded by systemd.
+setup_from_modules_order() {
+  dud_modules_dir=$1
+
+  module_order=$(<"${dud_modules_dir}/module.order")
+  # unload the modules in reverse order
+  local idx
+  idx=("${!module_order[@]}")
+  for ((i = ${#idx[@]} - 1; i >= 0; i--)); do
+    rmmod "${module_order[$i]}" 2>&1
+  done
+
+  cp "${dud_modules_dir}/module.order" "${NEWROOT}/etc/modules-load.d/99-agama.conf"
+}
+
+# Sets up the kernel modules.
+#
+# Unloads the modules and adds them to the 99-agama.conf file to be loaded by
+# systemd.
+setup_modules() {
+  dud_modules=("$@")
+
+  # unload the kernel modules
+  for module in "${dud_modules[@]}"; do
+    echo "Unloading kernel module ${module}"
+    module_name=$(basename "$module")
+    module_name=${module_name%.ko*}
+    rmmod "${module_name}" 2>&1
+    echo "${module_name}" >>"${NEWROOT}/etc/modules-load.d/99-agama.conf"
+  done
 }
 
 # link the SSL certificates and related configuration from the root image so "agama download"
