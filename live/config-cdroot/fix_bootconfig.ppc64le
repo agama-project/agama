@@ -119,16 +119,6 @@ menuentry "Rescue System" --class os --unrestricted {
   echo 'Loading initrd...'
   initrd /boot/ppc64le/initrd
 }
-
-submenu 'Other options...' {
- menuentry 'Reboot' {
- reboot
- }
-
- menuentry 'Exit to Open Firmware' {
- exit
- }
-}
 XXX
 
 # Create bootinfo.txt
