@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/model_refuse_encryption"
+
 module Agama
   module Storage
     # Class for checking whether a config is supported by the config model.
@@ -26,6 +28,8 @@ module Agama
     # Features will be added to the config model little by little. Ideally, this class will
     # dissapear once the model supports all the features provided by the config.
     class ModelSupportChecker
+      include ModelRefuseEncryption
+
       # @note A solved config is expected. Otherwise some checks cannot be done reliably.
       #
       # @param config [Storage::Config]
@@ -223,6 +227,7 @@ module Agama
           .reject(&:encryption)
           .select(&:filesystem)
           .reject { |c| c.filesystem.reuse? }
+          .reject { |c| c.filesystem.path && refuse_encryption_path?(c.filesystem.path) }
           .any?
       end
 

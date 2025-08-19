@@ -487,6 +487,50 @@ describe Agama::Storage::ModelSupportChecker do
       end
     end
 
+    context "if the config includes encryption for everything except an arbitrary partition" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                { filesystem: { path: "/home" } },
+                {
+                  encryption: { luks1: { password: "12345" } },
+                  filesystem: { path: "/" }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "returns false" do
+        expect(subject.supported?).to eq(false)
+      end
+    end
+
+    context "if the config includes encryption for everything except /boot/zipl" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                { filesystem: { path: "/boot/zipl" } },
+                {
+                  encryption: { luks1: { password: "12345" } },
+                  filesystem: { path: "/" }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "returns true" do
+        expect(subject.supported?).to eq(true)
+      end
+    end
+
     context "if the config is totally supported" do
       let(:scenario) { "md_raids.yaml" }
 
