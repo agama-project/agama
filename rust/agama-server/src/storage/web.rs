@@ -243,9 +243,7 @@ async fn set_config(
 )]
 async fn get_config_model(
     State(state): State<StorageState<'_>>,
-    Extension(client_id): Extension<Arc<ClientId>>,
 ) -> Result<Json<Box<RawValue>>, Error> {
-    tracing::debug!("{client_id:?}");
     let config_model = state
         .client
         .get_config_model()
