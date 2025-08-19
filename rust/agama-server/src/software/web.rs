@@ -392,6 +392,7 @@ async fn solve_conflicts(
 
     // refresh the config cache
     let config = read_config(&state).await?;
+    tracing::info!("Caching product configuration: {:?}", &config);
     let mut cached_config_write = state.config.write().await;
     *cached_config_write = Some(config);
 
@@ -604,6 +605,7 @@ async fn set_config(
     {
         // first invalidate cache, so if it fails later, we know we need to re-read recent data
         // use minimal context so it is released soon.
+        tracing::debug!("Invalidating product configuration cache");
         let mut cached_config_invalidate = state.config.write().await;
         *cached_config_invalidate = None;
     }
@@ -631,7 +633,7 @@ async fn set_config(
 
     // load the config cache
     let config = read_config(&state).await?;
-
+    tracing::debug!("Caching software configuration (set_config): {:?}", &config);
     let mut cached_config_write = state.config.write().await;
     *cached_config_write = Some(config);
 
@@ -656,12 +658,12 @@ async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<Softw
     let cached_config = state.config.read().await.clone();
 
     if let Some(config) = cached_config {
-        tracing::info!("Returning cached software config");
+        tracing::debug!("Returning cached software config: {:?}", &config);
         return Ok(Json(config));
     }
 
     let config = read_config(&state).await?;
-
+    tracing::debug!("Caching software configuration (get_config): {:?}", &config);
     let mut cached_config_write = state.config.write().await;
     *cached_config_write = Some(config.clone());
 
