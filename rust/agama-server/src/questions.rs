@@ -60,6 +60,11 @@ impl GenericQuestionObject {
     }
 
     #[zbus(property)]
+    pub fn option_labels(&self) -> Vec<String> {
+        self.0.option_labels.to_owned()
+    }
+
+    #[zbus(property)]
     pub fn default_option(&self) -> &str {
         self.0.default_option.as_str()
     }

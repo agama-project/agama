@@ -33,6 +33,7 @@ type Question = {
   type?: QuestionType;
   class?: string;
   options?: string[];
+  optionLabels?: string[];
   defaultOption?: string;
   text?: string;
   data?: { [key: string]: string };
