@@ -38,7 +38,7 @@ describe Agama::Storage::System do
 
     it "includes all devices suitable for installation" do
       expect(subject.candidate_devices.map(&:name))
-        .to contain_exactly("/dev/vda", "/dev/vdb", "/dev/md0", "/dev/md1")
+        .to contain_exactly("/dev/vda", "/dev/vdb")
     end
   end
 
@@ -81,12 +81,8 @@ describe Agama::Storage::System do
   describe "#candidate_md_raids" do
     let(:scenario) { "md_raids.yaml" }
 
-    before do
-      allow(disk_analyzer).to receive(:supports_boot_partitions?) { |d| d.name == "/dev/md1" }
-    end
-
-    it "includes all MD RAIDs considered by Y2Storage as suitable for installation" do
-      expect(subject.candidate_md_raids.map(&:name)).to contain_exactly("/dev/md1")
+    it "returns an empty list if there are only software RAIDs" do
+      expect(subject.candidate_md_raids).to be_empty
     end
   end
 end
