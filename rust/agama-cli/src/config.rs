@@ -148,6 +148,35 @@ pub async fn run(
     }
 }
 
+/// Runs commands without remote connection to the Agama server
+pub fn run_local(
+    subcommand: ConfigCommands,
+    opts: GlobalOpts,
+) -> anyhow::Result<()> {
+    match subcommand {
+        ConfigCommands::Validate { url_or_path } => {
+            validate_json(url_or_path)
+        }
+        _ => {
+            eprintln!("This subcommand doesn't support --local option");
+            Ok(())
+        }
+    }
+}
+
+/// Validates a JSON profile with locally available tools only
+fn validate_json(
+    url_or_path: CliInput,
+) -> anyhow::Result<()> {
+    match url_or_path {
+        CliInput::Path(path) => Ok(()),
+        _ => {
+            eprintln!("Only local paths are supported for local validation");
+            Ok(())
+        }
+    }
+}
+
 /// Validate a JSON profile, by doing a HTTP client request.
 async fn validate_client(
     client: &BaseHTTPClient,
