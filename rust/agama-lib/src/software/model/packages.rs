@@ -22,7 +22,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 /// Software service configuration (product, patterns, etc.).
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct SoftwareConfig {
     /// A map where the keys are the pattern names and the values whether to install them or not.
