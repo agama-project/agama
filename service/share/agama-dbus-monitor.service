@@ -4,7 +4,7 @@ After=agama.service
 
 [Service]
 Type=exec
-ExecStart=/usr/bin/busctl --address unix:path=/run/agama/bus --quiet --match type=error monitor
+ExecStart=/usr/bin/busctl --address unix:path=/run/agama/bus --quiet monitor
 StandardOutput=file:/run/agama/dbus.log
 Restart=always
 # increase timeout when agama is restarted to give it time to start new socket
