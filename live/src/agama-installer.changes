@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug 19 14:14:22 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Make /etc/resolv.conf available at /sysroot when applying the DUDs
+  (bsc#1248276).
+
+-------------------------------------------------------------------
 Mon Aug 18 15:48:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add a "Boot from Hard Disk" option for ppc64le and drop the
