@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Aug 20 10:16:04 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Removed the heuristic that used to consider some software RAID as
+  bootable devices under some circumstances (bsc#1248195).
+- Ensure that /boot/efi and /boot/zipl partitions created using the
+  web UI are never encrypted (bsc#1248189, bsc#1247447).
+
+-------------------------------------------------------------------
 Thu Aug  7 10:57:30 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Do not use 'retry' as default answer for questions (bsc#1247436).

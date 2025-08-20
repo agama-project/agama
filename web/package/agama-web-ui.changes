@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 20 10:20:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Enforce ESP partition id for /boot/efi partitions manually
+  defined (bsc#1248189).
+
+-------------------------------------------------------------------
 Wed Aug 13 13:20:17 UTC 2025 - Jan Papež <honyczek@centrum.cz>
 
 - Fix messages about automatic storage sizes
