@@ -1128,6 +1128,14 @@ describe Agama::Storage::ConfigConversions::FromModel do
                   mountPath:  "/test2",
                   filesystem: { reuse: true }
                 },
+                {
+                  size:      { default: false, min: 256.MiB.to_i },
+                  mountPath: "/boot/efi"
+                },
+                {
+                  size:      { default: false, min: 1.GiB.to_i },
+                  mountPath: "/test3"
+                },
                 {}
               ]
             }
@@ -1150,7 +1158,7 @@ describe Agama::Storage::ConfigConversions::FromModel do
         }
       end
 
-      it "sets #encryption to the newly formatted partitions" do
+      it "sets #encryption to the newly formatted partitions, except the boot-related ones" do
         config = subject.convert
         partitions = config.partitions
         new_partitions = partitions.reject(&:search)
@@ -1158,12 +1166,16 @@ describe Agama::Storage::ConfigConversions::FromModel do
         mounted_partitions, reformatted_partitions = reused_partitions.partition do |part|
           part.filesystem.reuse?
         end
+        new_non_boot_partitions, new_boot_partitions = new_partitions.partition do |part|
+          part.filesystem&.path != "/boot/efi"
+        end
 
-        expect(new_partitions.map { |p| p.encryption.method.id }).to all(eq(:luks1))
-        expect(new_partitions.map { |p| p.encryption.password }).to all(eq("12345"))
+        expect(new_non_boot_partitions.map { |p| p.encryption.method.id }).to all(eq(:luks1))
+        expect(new_non_boot_partitions.map { |p| p.encryption.password }).to all(eq("12345"))
         expect(reformatted_partitions.map { |p| p.encryption.method.id }).to all(eq(:luks1))
         expect(reformatted_partitions.map { |p| p.encryption.password }).to all(eq("12345"))
         expect(mounted_partitions.map(&:encryption)).to all(be_nil)
+        expect(new_boot_partitions.map(&:encryption)).to all(be_nil)
       end
 
       it "sets #encryption for the automatically created physical volumes" do
