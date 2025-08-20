@@ -71,6 +71,7 @@ apply_updates() {
     ((index++))
   done <$AGAMA_DUD_INFO
 
+  rm -r "$DUD_DIR"
   umount "$NEWROOT"/dev
   umount "$NEWROOT"/run
   umount "$NEWROOT"/sys
