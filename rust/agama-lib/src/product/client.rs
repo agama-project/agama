@@ -55,8 +55,12 @@ pub struct ProductClient<'a> {
 
 impl<'a> ProductClient<'a> {
     pub async fn new(connection: Connection) -> Result<ProductClient<'a>, ServiceError> {
+        let product_proxy = SoftwareProductProxy::builder(&connection)
+            .cache_properties(zbus::proxy::CacheProperties::No)
+            .build()
+            .await?;
         Ok(Self {
-            product_proxy: SoftwareProductProxy::new(&connection).await?,
+            product_proxy,
             registration_proxy: RegistrationProxy::new(&connection).await?,
         })
     }
