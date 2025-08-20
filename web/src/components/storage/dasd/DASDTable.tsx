@@ -35,7 +35,6 @@ import {
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Popup from "~/components/core/Popup";
-import Text from "~/components/core/Text";
 import FormatActionHandler from "~/components/storage/dasd/FormatActionHandler";
 import FormatFilter from "~/components/storage/dasd/FormatFilter";
 import SelectableDataTable from "~/components/core/SelectableDataTable";
@@ -537,9 +536,11 @@ export default function DASDTable() {
     <Content>
       {!isEmpty(state.waitingFor) && (
         <Popup isOpen title={_("Applying changes")} disableFocusTrap>
-          <Content component="p">{_("Applying changes to the requested DASD devices.")}</Content>
+          <Content component="p" isEditorial>
+            {_("This may take a moment while updates complete.")}
+          </Content>
           <Content component="p">
-            <Text isBold>{_("This dialog will dissapear when the work is finished.")}</Text>
+            {_("This message will close automatically when everything is done.")}
           </Content>
         </Popup>
       )}
