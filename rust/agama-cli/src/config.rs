@@ -22,7 +22,8 @@ use std::{io::Write, path::PathBuf, process::Command};
 
 use agama_lib::{
     context::InstallationContext, http::BaseHTTPClient, install_settings::InstallSettings,
-    monitor::MonitorClient, profile::ValidationOutcome, utils::FileFormat, Store as SettingsStore,
+    monitor::MonitorClient, profile::ProfileValidator, profile::ValidationOutcome, utils::FileFormat,
+    Store as SettingsStore,
 };
 use anyhow::{anyhow, Context};
 use clap::Subcommand;
@@ -155,7 +156,7 @@ pub fn run_local(
 ) -> anyhow::Result<()> {
     match subcommand {
         ConfigCommands::Validate { url_or_path } => {
-            validate_json(url_or_path)
+            validate_json(url_or_path, opts.insecure)
         }
         _ => {
             eprintln!("This subcommand doesn't support --local option");
@@ -167,11 +168,29 @@ pub fn run_local(
 /// Validates a JSON profile with locally available tools only
 fn validate_json(
     url_or_path: CliInput,
+    insecure: bool,
 ) -> anyhow::Result<()> {
-    match url_or_path {
-        CliInput::Path(path) => Ok(()),
-        _ => {
-            eprintln!("Only local paths are supported for local validation");
+    let profile_string = url_or_path.read_to_string(insecure)?;
+    let validator = ProfileValidator::default_schema().context("Setting up profile validator")?;
+    let result = validator
+        .validate_str(&profile_string);
+
+    match result {
+        Ok(validity) => {
+            match validity {
+                ValidationOutcome::Valid => {
+                    eprintln!("{} {}", style("\u{2713}").bold().green(), validity);
+                }
+                ValidationOutcome::NotValid(_) => {
+                    eprintln!("{} {}", style("\u{2717}").bold().red(), validity);
+                }
+            }
+
+            Ok(())
+        }
+        Err(err) => {
+            eprintln!("{} {}", style("\u{2717}").bold().red(), err);
+
             Ok(())
         }
     }
