@@ -180,6 +180,15 @@ describe("Popup.AncillaryAction", () => {
   });
 });
 
+describe("Popup.DangerousAction", () => {
+  it("renders a 'danger' button with given children as content", async () => {
+    installerRender(<Popup.DangerousAction>Format everything</Popup.DangerousAction>);
+
+    const button = screen.queryByRole("button", { name: "Format everything" });
+    expect(button.classList.contains("pf-m-danger")).toBe(true);
+  });
+});
+
 describe("Popup.Confirm", () => {
   describe("when holding no children", () => {
     it("renders a 'primary' button using 'Confirm' text as content", async () => {

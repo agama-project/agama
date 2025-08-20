@@ -498,6 +498,10 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   }
 }
 
+.pf-v6-c-table__sort-indicator {
+  --pf-v6-c-table__sort-indicator--MarginInlineStart: var(--pf-t--global--spacer--xs);
+}
+
 // Some utilities not found at PF
 .w-14ch {
   inline-size: 14ch;

@@ -37,15 +37,14 @@ describe("compact", () => {
 });
 
 describe("hex", () => {
-  it("parses numeric dot strings as hex", () => {
+  it("parses hexadecimal numeric dot strings as hex", () => {
     expect(hex("0.0.0160")).toBe(352); // "000160"
+    expect(hex("0.0.019d")).toBe(413); // "00019d"
     expect(hex("1.2.3")).toBe(291); // "123"
     expect(hex("123")).toBe(291); // "123"
   });
 
-  it("returns 0 for strings with letters or invalid characters", () => {
-    expect(hex("1A")).toBe(0);
-    expect(hex("1A.3F")).toBe(0);
+  it("returns 0 for strings invalid characters", () => {
     expect(hex("xyz")).toBe(0);
     expect(hex("123Z")).toBe(0);
   });

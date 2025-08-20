@@ -54,6 +54,7 @@ import NetworkWifi from "@icons/network_wifi.svg?component";
 import NetworkWifi1Bar from "@icons/network_wifi_1_bar.svg?component";
 import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
 import Translate from "@icons/translate.svg?component";
+import SearchOff from "@icons/search_off.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
 import UnfoldLess from "@icons/unfold_less.svg?component";
 import UnfoldMore from "@icons/unfold_more.svg?component";
@@ -92,6 +93,7 @@ const icons = {
   network_wifi: NetworkWifi,
   network_wifi_1_bar: NetworkWifi1Bar,
   network_wifi_3_bar: NetworkWifi3Bar,
+  search_off: SearchOff,
   settings_ethernet: SettingsEthernet,
   translate: Translate,
   unfold_less: UnfoldLess,

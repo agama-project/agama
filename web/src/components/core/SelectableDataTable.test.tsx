@@ -120,7 +120,7 @@ const vg = {
 const columns: SelectableDataTableColumn[] = [
   // FIXME: do not use any but the right types once storage part is rewritten.
   // Or even better, write a test not coupled to storage
-  { name: "Device", value: (item: any) => item.name },
+  { name: "Device", value: (item: any) => item.name, sortingKey: "name" },
   {
     name: "Content",
     value: (item: any) => {
@@ -130,7 +130,7 @@ const columns: SelectableDataTableColumn[] = [
       return item.content;
     },
   },
-  { name: "Size", value: (item: any) => item.size },
+  { name: "Size", value: (item: any) => item.size, sortingKey: "size" },
 ];
 
 const onChangeFn = jest.fn();
@@ -190,6 +190,31 @@ describe("SelectableDataTable", () => {
     within(table).getByRole("row", { name: /dev\/sda1 512/ });
     within(table).getByRole("row", { name: /dev\/sda2 512/ });
     within(table).getByRole("row", { name: /Personal Data/ });
+  });
+
+  it("renders actions column when itemActions is provided", async () => {
+    const editFn = jest.fn();
+    const formatFn = jest.fn();
+
+    const { user } = plainRender(
+      <SelectableDataTable
+        {...props}
+        itemActions={(d) => [
+          { title: `Edit ${d.name}`, onClick: editFn },
+          { title: `Format ${d.name}`, onClick: formatFn },
+        ]}
+        itemActionsLabel="Actions"
+      />,
+    );
+
+    const table = screen.getByRole("grid");
+    const sda = within(table).getByRole("row", { name: /dev\/sda 1024/ });
+    const sdaActions = within(sda).getByRole("button", { name: "Actions" });
+    await user.click(sdaActions);
+    const menu = screen.getByRole("menu");
+    const edit = within(menu).getByRole("menuitem", { name: "Edit /dev/sda" });
+    await user.click(edit);
+    expect(editFn).toHaveBeenCalled();
   });
 
   it("renders a expand toggler in items with children", () => {
@@ -257,6 +282,130 @@ describe("SelectableDataTable", () => {
     // children must be visible
     const sdaChild = within(table).queryByRole("row", { name: /dev\/sda1 512/ });
     expect(sdaChild).not.toBeNull();
+  });
+
+  describe("when not providing a custom item equality function", () => {
+    const onSelectionChange = jest.fn();
+
+    beforeEach(() => onSelectionChange.mockClear());
+
+    describe("and items has the given id property", () => {
+      it("selects an item correctly", async () => {
+        const { user } = plainRender(
+          <SelectableDataTable
+            {...props}
+            onSelectionChange={onSelectionChange}
+            selectionMode="multiple"
+          />,
+        );
+
+        const table = screen.getByRole("grid");
+        const sdaRow = within(table).getByRole("row", { name: /dev\/sda 1024/ });
+        const sdaCheckbox = within(sdaRow).getByRole("checkbox");
+        await user.click(sdaCheckbox);
+        expect(onSelectionChange).toHaveBeenCalledWith([sda]);
+      });
+
+      it("unselects an item correctly", async () => {
+        const { user } = plainRender(
+          <SelectableDataTable
+            {...props}
+            onSelectionChange={onSelectionChange}
+            itemsSelected={[sda]}
+            selectionMode="multiple"
+          />,
+        );
+
+        const table = screen.getByRole("grid");
+        const sdaRow = within(table).getByRole("row", { name: /dev\/sda 1024/ });
+        const sdaCheckbox = within(sdaRow).getByRole("checkbox");
+        await user.click(sdaCheckbox);
+        expect(onSelectionChange).toHaveBeenCalledWith([]);
+      });
+    });
+
+    describe("but items does not have the given id property", () => {
+      it("selects an item correctly", async () => {
+        const { user } = plainRender(
+          <SelectableDataTable
+            {...props}
+            items={[sda, sdb, { ...sda, name: "/dev/fake/sda" }]}
+            itemIdKey="fakeUUID"
+            selectionMode="multiple"
+            onSelectionChange={onSelectionChange}
+          />,
+        );
+
+        const table = screen.getByRole("grid");
+        const sdaRow = within(table).getByRole("row", { name: /dev\/sda 1024/ });
+        const sdaCheckbox = within(sdaRow).getByRole("checkbox");
+        await user.click(sdaCheckbox);
+        expect(onSelectionChange).toHaveBeenCalledWith([sda]);
+      });
+
+      it("unselects an item correctly", async () => {
+        const { user } = plainRender(
+          <SelectableDataTable
+            {...props}
+            items={[sda, sdb, { ...sda, name: "/dev/fake/sda" }]}
+            itemsSelected={[sda]}
+            itemIdKey="fakeUUID"
+            selectionMode="multiple"
+            onSelectionChange={onSelectionChange}
+          />,
+        );
+
+        const table = screen.getByRole("grid");
+        const sdaRow = within(table).getByRole("row", { name: /dev\/sda 1024/ });
+        const sdaCheckbox = within(sdaRow).getByRole("checkbox");
+        await user.click(sdaCheckbox);
+        expect(onSelectionChange).toHaveBeenCalledWith([]);
+      });
+    });
+  });
+
+  describe("when providing a custom item equality function", () => {
+    const onSelectionChange = jest.fn();
+    const itemEqualityFn = (a, b) => a.type === b.type && a.name === b.name;
+
+    beforeEach(() => onSelectionChange.mockClear());
+
+    it("selects an item correctly", async () => {
+      const { user } = plainRender(
+        <SelectableDataTable
+          {...props}
+          items={[sda, sdb, { ...sda, name: "/dev/fake/sda" }]}
+          itemEqualityFn={itemEqualityFn}
+          selectionMode="multiple"
+          onSelectionChange={onSelectionChange}
+        />,
+      );
+
+      const table = screen.getByRole("grid");
+      const sdaRow = within(table).getByRole("row", { name: /dev\/sda 1024/ });
+      const sdaCheckbox = within(sdaRow).getByRole("checkbox");
+      await user.click(sdaCheckbox);
+      expect(onSelectionChange).toHaveBeenCalledWith([sda]);
+    });
+
+    it("unselects an item correctly", async () => {
+      const { user } = plainRender(
+        <SelectableDataTable
+          {...props}
+          items={[sda, sdb, { ...sda, name: "/dev/fake/sda" }]}
+          itemsSelected={[sda]}
+          itemEqualityFn={itemEqualityFn}
+          selectionMode="multiple"
+          onSelectionChange={onSelectionChange}
+        />,
+      );
+
+      const table = screen.getByRole("grid");
+      const sdaRow = within(table).getByRole("row", { name: /dev\/sda 1024/ });
+      const sdaCheckbox = within(sdaRow).getByRole("checkbox");
+      await user.click(sdaCheckbox);
+      expect(onSelectionChange).toHaveBeenCalledWith([]);
+    });
   });
 
   describe("when `itemsSelected` is given", () => {
@@ -432,7 +581,7 @@ describe("SelectableDataTable", () => {
     describe("and user selects an already selected item", () => {
       it("triggers the `onSelectionChange` callback with a collection not including the item", async () => {
         const { user } = plainRender(
-          <SelectableDataTable {...props} itemsSelected={[sda1, sda2]} />,
+          <SelectableDataTable {...props} itemsSelected={[{ ...sda1 }, sda2]} />,
         );
         const sda1row = screen.getByRole("row", { name: /dev\/sda1/ });
         const sda1radio = within(sda1row).getByRole("checkbox");
@@ -449,6 +598,175 @@ describe("SelectableDataTable", () => {
         await user.click(sda2checkbox);
         expect(onChangeFn).toHaveBeenCalledWith([sda1, sda2]);
       });
+    });
+  });
+
+  describe("sorting", () => {
+    const updateSorting = jest.fn();
+
+    beforeEach(() => updateSorting.mockClear());
+
+    it("calls updateSorting with correct next direction when clicking the currently sorted column", async () => {
+      const { user } = plainRender(
+        <SelectableDataTable
+          {...props}
+          itemsSelected={[sda1]}
+          sortedBy={{ index: 0, direction: "asc" }}
+          updateSorting={updateSorting}
+        />,
+      );
+
+      const deviceHeader = screen.getByRole("columnheader", { name: "Device" });
+      const deviceHeaderButton = within(deviceHeader).getByRole("button", { name: "Device" });
+      await user.click(deviceHeaderButton);
+
+      expect(updateSorting).toHaveBeenCalledWith({
+        index: 0,
+        direction: "desc",
+      });
+    });
+
+    it("does not call updateSorting when clicking on a non-sortable column", async () => {
+      const { user } = plainRender(
+        <SelectableDataTable
+          {...props}
+          itemsSelected={[sda1]}
+          sortedBy={{ index: 0, direction: "asc" }}
+          updateSorting={updateSorting}
+        />,
+      );
+
+      const contentHeader = screen.getByRole("columnheader", { name: "Content" });
+      expect(within(contentHeader).queryByRole("button", { name: "Content" })).toBeNull();
+      await user.click(contentHeader);
+
+      expect(updateSorting).not.toHaveBeenCalled();
+    });
+
+    it("calls updateSorting with ascending direction when clicking a new sortable column", async () => {
+      const { user } = plainRender(
+        <SelectableDataTable
+          {...props}
+          itemsSelected={[sda1]}
+          sortedBy={{ index: 0, direction: "asc" }}
+          updateSorting={updateSorting}
+        />,
+      );
+
+      const sizeHeader = screen.getByRole("columnheader", { name: "Size" });
+      const sizeHeaderButton = within(sizeHeader).getByRole("button", { name: "Size" });
+      await user.click(sizeHeaderButton);
+
+      expect(updateSorting).toHaveBeenCalledWith({
+        index: 2,
+        direction: "asc",
+      });
+    });
+  });
+
+  describe("select/unselect all checkbox", () => {
+    const onSelectionChange = jest.fn();
+
+    beforeEach(() => onSelectionChange.mockClear());
+
+    it("renders it only when selectionMode is multiple and allowSelectAll is true and there are items to show", () => {
+      const { rerender } = plainRender(
+        <SelectableDataTable {...props} selectionMode="single" allowSelectAll />,
+      );
+
+      expect(screen.queryByRole("checkbox", { name: /select all/i })).toBeNull();
+
+      rerender(<SelectableDataTable {...props} selectionMode="multiple" allowSelectAll={false} />);
+      expect(screen.queryByRole("checkbox", { name: /select all/i })).toBeNull();
+
+      rerender(
+        <SelectableDataTable {...props} items={[]} selectionMode="multiple" allowSelectAll />,
+      );
+      expect(screen.queryByRole("checkbox", { name: /select all/i })).toBeNull();
+
+      rerender(<SelectableDataTable {...props} selectionMode="multiple" allowSelectAll />);
+      screen.getByRole("checkbox", { name: "Select all rows" });
+    });
+
+    it("selects all items if it is clicked and not all items are selected", async () => {
+      const { user, rerender } = plainRender(
+        <SelectableDataTable
+          {...props}
+          allowSelectAll
+          selectionMode="multiple"
+          itemsSelected={[]}
+          onSelectionChange={onSelectionChange}
+        />,
+      );
+
+      const selectAllCheckbox = screen.getByRole("checkbox", { name: "Select all rows" });
+      await user.click(selectAllCheckbox);
+
+      expect(onSelectionChange).toHaveBeenCalledWith(props.items);
+
+      rerender(
+        <SelectableDataTable
+          {...props}
+          allowSelectAll
+          selectionMode="multiple"
+          itemsSelected={[props.items[0]]}
+          onSelectionChange={onSelectionChange}
+        />,
+      );
+
+      await user.click(selectAllCheckbox);
+
+      expect(onSelectionChange).toHaveBeenCalledWith(props.items);
+    });
+
+    it("unselects all items if it is clicked when all items are selected", async () => {
+      const { user } = plainRender(
+        <SelectableDataTable
+          {...props}
+          allowSelectAll
+          selectionMode="multiple"
+          itemsSelected={props.items}
+          onSelectionChange={onSelectionChange}
+        />,
+      );
+
+      // FIXME: label should be "Unselect"
+      const selectAllCheckbox = screen.getByRole("checkbox", { name: "Select all rows" });
+      await user.click(selectAllCheckbox);
+
+      expect(onSelectionChange).toHaveBeenCalledWith([]);
+    });
+  });
+
+  describe("EmptyState support", () => {
+    it("renders no tbody when items is empty and no emptyState is provided", () => {
+      plainRender(
+        <SelectableDataTable {...props} items={[]} allowSelectAll selectionMode="multiple" />,
+      );
+      const table = screen.getByRole("grid");
+      expect(table.querySelectorAll("tbody").length).toBe(0);
+    });
+
+    it("renders emptyState when items is empty", () => {
+      plainRender(
+        <SelectableDataTable
+          {...props}
+          items={[]}
+          allowSelectAll
+          selectionMode="multiple"
+          emptyState={<div>Resources not found</div>}
+        />,
+      );
+
+      expect(screen.getByText("Resources not found")).toBeInTheDocument();
+    });
+
+    it("does not render emptyState when items are present", () => {
+      plainRender(<SelectableDataTable {...props} emptyState={<div>Resources not found</div>} />);
+
+      expect(screen.queryByText("Resources not found")).toBeNull();
+      const table = screen.getByRole("grid");
+      within(table).getByRole("row", { name: /dev\/sda 1024/ });
     });
   });
 });
