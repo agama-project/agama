@@ -176,18 +176,7 @@ fn validate_json(
         .validate_str(&profile_string);
 
     match result {
-        Ok(validity) => {
-            match validity {
-                ValidationOutcome::Valid => {
-                    eprintln!("{} {}", style("\u{2713}").bold().green(), validity);
-                }
-                ValidationOutcome::NotValid(_) => {
-                    eprintln!("{} {}", style("\u{2717}").bold().red(), validity);
-                }
-            }
-
-            Ok(())
-        }
+        Ok(validity) => validation_msg(validity),
         Err(err) => {
             eprintln!("{} {}", style("\u{2717}").bold().red(), err);
 
@@ -219,6 +208,10 @@ async fn validate_client(
 
 async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<()> {
     let validity = validate_client(client, url_or_path).await?;
+    validation_msg(validity)
+}
+
+fn validation_msg(validity: ValidationOutcome) -> anyhow::Result<()> {
     match validity {
         ValidationOutcome::Valid => {
             eprintln!("{} {}", style("\u{2713}").bold().green(), validity);
@@ -227,6 +220,7 @@ async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
             eprintln!("{} {}", style("\u{2717}").bold().red(), validity);
         }
     }
+
     Ok(())
 }
 
