@@ -434,7 +434,7 @@ const sanitizeSelection = (
  * property (which defaults to `"id"`). If the item does not have that key, a
  * strict equality check (`===`) between the two items is performed.
  *
- * Such a comparasion can be overriden by providing a custom `itemEqualityFn`
+ * Such comparison can be overridden by providing a custom `itemEqualityFn`
  * prop, for example, to perform deep comparison or other alternative logic.
  *
  * @note It only accepts one nesting level.
