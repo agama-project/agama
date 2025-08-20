@@ -60,9 +60,6 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Ukuran minimum standar %1$s akan digunakan untuk %2$s yang baru"
   ],
-  "A generic size of %s will be used for the new %2$s": [
-    "Ukuran standar %s akan digunakan untuk %2$s yang baru"
-  ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Rentang ukuran umum antara %1$s dan %2$s akan digunakan untuk %3$s yang baru"
   ],
@@ -227,15 +224,6 @@ export default {
   ],
   "Back": [
     "Kembali"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
-    "Berdasarkan jumlah RAM yang tersedia di sistem, %1s$ dari %2$s akan dialokasikan untuk %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
-    "Berdasarkan jumlah RAM yang tersedia di sistem, %1s$ sebesar minimal %2$s akan dialokasikan untuk %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
-    "Berdasarkan jumlah RAM yang tersedia di sistem, sebuah %1s$ dengan ukuran antara %2$s dan %3$s akan dialokasikan untuk %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"

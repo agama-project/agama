@@ -60,9 +60,6 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Eine generische Mindestgröße von %1$s wird für die neue %2$s verwendet"
   ],
-  "A generic size of %s will be used for the new %2$s": [
-    "Für die neue %2$s wird eine generische Größe von %s verwendet"
-  ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Ein generischer Größenbereich zwischen %1$s und %2$s wird für die neue %3$s verwendet"
   ],
@@ -228,15 +225,6 @@ export default {
   "Back": [
     "Zurück"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
-    "Basierend auf der Menge an RAM im System, wird ein %1s$ von %2$s für %3$s geplant"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
-    "Basierend auf der Menge an RAM im System wird ein %1s$ mit mindestens %2$s für %3$s geplant"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
-    "Basierend auf der Menge an RAM im System wird ein %1s$ mit einer Größe zwischen %2$s und %3$s für %4$s geplant"
-  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -254,6 +242,12 @@ export default {
   ],
   "Bind to MAC address": [
     "Mit MAC-Adresse verknüpfen"
+  ],
+  "Bind to device name": [
+    "Mit Gerätenamen verknüpfen"
+  ],
+  "Binding": [
+    "Bindung"
   ],
   "Binding settings for '%s'": [
     "Verknüpfungseinstellungen für ‚%s‘"
@@ -336,6 +330,9 @@ export default {
   "Choose device to bind by name": [
     "Zu verknüpfendes Gerät nach Namen auswählen"
   ],
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
+    "Wählen Sie aus, wie die Verbindung mit einem Netzwerkgerät verknüpft werden soll. Damit lässt sich steuern, welches Gerät die Verbindung verwendet."
+  ],
   "Clear": [
     "Leeren"
   ],
@@ -347,6 +344,9 @@ export default {
   ],
   "Collapse the list of planned actions": [
     "Liste der geplanten Aktionen einklappen"
+  ],
+  "Configuration out of sync": [
+    "Konfiguration nicht synchronisiert"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Konfiguration aus der iSCSI Boot-Firmware-Tabelle (iBFT) gelesen."
@@ -405,6 +405,15 @@ export default {
   "Connected (%s)": [
     "Verbunden (%s)"
   ],
+  "Connected device": [
+    "Verbundenes Gerät"
+  ],
+  "Connected devices": [
+    "Verbundene Geräte"
+  ],
+  "Connected devices tabs": [
+    "Tabs für verbundene Geräte"
+  ],
   "Connecting to %s": [
     "Verbindung zu %s wird hergestellt"
   ],
@@ -412,7 +421,13 @@ export default {
     "Verbindungsdetails"
   ],
   "Connection is available to all devices.": [
-    ""
+    "Die Verbindung ist für alle Geräte verfügbar."
+  ],
+  "Connection is bound to MAC address %s.": [
+    "Die Verbindung ist an die MAC-Adresse %s gebunden."
+  ],
+  "Connection is bound to device %s.": [
+    "Die Verbindung ist an das Gerät %s gebunden."
   ],
   "Connection not found or lost": [
     "Verbindung nicht gefunden oder verloren"
@@ -612,6 +627,9 @@ export default {
   "Edit connection %s": [
     "Verbindung %s bearbeiten"
   ],
+  "Edit connection settings": [
+    "Verbindungseinstellungen bearbeiten"
+  ],
   "Edit user": [
     "Benutzer bearbeiten"
   ],
@@ -783,6 +801,9 @@ export default {
   "Go to network page": [
     "Zur Netzwerkseite gehen"
   ],
+  "Go to storage page": [
+    "Zur Speicherungsseite gehen"
+  ],
   "Good signal": [
     "Gutes Signal"
   ],
@@ -926,7 +947,7 @@ export default {
     "Aussteller"
   ],
   "It doesn't exist or can't be reached.": [
-    ""
+    "Sie existiert nicht oder ist nicht erreichbar."
   ],
   "It is chosen for booting": [
     "Es wird zum Booten ausgewählt"
@@ -1145,7 +1166,7 @@ export default {
     "Kein Inhalt gefunden"
   ],
   "No device is currently using this connection.": [
-    ""
+    "Derzeit verwendet kein Gerät diese Verbindung."
   ],
   "No device selected yet": [
     "Noch kein Gerät ausgewählt"
@@ -1197,6 +1218,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "Keine der Zeitzonen entspricht dem Filter."
+  ],
+  "None set": [
+    "Keine festgelegt"
   ],
   "Not available": [
     "Nicht verfügbar"
@@ -1402,11 +1426,14 @@ export default {
   "Reload": [
     "Neu laden"
   ],
+  "Reload now": [
+    "Jetzt neu laden"
+  ],
   "Reloading data, please wait...": [
     "Daten werden neu geladen, bitte warten ..."
   ],
   "Reloading is required to get the latest data and avoid issues or data loss.": [
-    ""
+    "Ein Neuladen ist erforderlich, um die neuesten Daten abzurufen und Probleme oder Datenverluste zu vermeiden."
   ],
   "Remove": [
     "Entfernen"
@@ -1431,6 +1458,9 @@ export default {
   ],
   "Reset to the default configuration": [
     "Auf die Standardkonfiguration zurücksetzen"
+  ],
+  "Resource not found or lost": [
+    "Ressource nicht gefunden oder verloren"
   ],
   "Result": [
     "Ergebnis"
@@ -1683,10 +1713,13 @@ export default {
     "Die LVM-Gruppe ‚%1$s‘ wird bei %2$s bleiben"
   ],
   "The configuration has been updated externally.": [
-    ""
+    "Die Konfiguration wurde extern aktualisiert."
   ],
   "The configured LVM groups will remain at %s": [
     "Die konfigurierten LVM-Gruppen bleiben bei %s"
+  ],
+  "The connection can be used by any available device.": [
+    "Die Verbindung kann von jedem verfügbaren Gerät genutzt werden."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Die Verbindung wird nur während der Installation verwendet und ist im installierten System nicht verfügbar."
@@ -1935,7 +1968,7 @@ export default {
     "Einstellungen können nicht geändert werden"
   ],
   "Unbound": [
-    ""
+    "Ungebunden"
   ],
   "Unselect": [
     "Abwählen"

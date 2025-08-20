@@ -28,7 +28,9 @@ apply_updates() {
 
   # make local devices available to "agama download"
   mount -o bind /dev "$NEWROOT"/dev
+  mount -o bind /run "$NEWROOT"/run
   mount -o bind /sys "$NEWROOT"/sys
+  ln -s /run/NetworkManager/resolv.conf "$NEWROOT"/etc/resolv.conf
 
   # make sure the HTTPS downloads work correctly
   configure_ssl
@@ -69,8 +71,11 @@ apply_updates() {
     ((index++))
   done <$AGAMA_DUD_INFO
 
+  rm -r "$DUD_DIR"
   umount "$NEWROOT"/dev
+  umount "$NEWROOT"/run
   umount "$NEWROOT"/sys
+  rm "$NEWROOT"/etc/resolv.conf
 }
 
 # Applies an update from an RPM package

@@ -60,8 +60,8 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Для нового раздела %2$s будет использоваться минимум %1$s"
   ],
-  "A generic size of %s will be used for the new %2$s": [
-    "Для нового раздела %2$s будет использовано %s"
+  "A generic size of %1$s will be used for the new %2$s": [
+    "Для нового раздела %2$s будет использовано %1$s"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Для нового раздела %3$s будет использовано пространство в диапазоне между %1$s и %2$s"
@@ -228,14 +228,14 @@ export default {
   "Back": [
     "Назад"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
-    "Исходя из объема оперативной памяти в системе, для %3$s будет запланирован раздел %1s$ размером %2$s"
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
+    "Исходя из объема оперативной памяти в системе, для %3$s будет запланирован раздел %1$s размером %2$s"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
-    "Исходя из объема оперативной памяти в системе, для %3$s будет запланирован раздел %1s$ размером не менее %2$s"
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
+    "Исходя из объема оперативной памяти в системе, для %3$s будет запланирован раздел %1$s размером не менее %2$s"
   ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
-    "Исходя из объема оперативной памяти в системе, для %4$s будет запланирован раздел %1s$ размером от %2$s до %3$s"
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "Исходя из объема оперативной памяти в системе, для %4$s будет запланирован раздел %1$s размером от %2$s до %3$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -254,6 +254,12 @@ export default {
   ],
   "Bind to MAC address": [
     "Привязать к MAC-адресу"
+  ],
+  "Bind to device name": [
+    "Привязать к имени устройства"
+  ],
+  "Binding": [
+    "Привязка"
   ],
   "Binding settings for '%s'": [
     "Настройки привязки для «%s»"
@@ -336,6 +342,9 @@ export default {
   "Choose device to bind by name": [
     "Выберите устройство для привязки по имени"
   ],
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
+    "Выберите, как подключение должно быть связано с сетевым устройством. Это помогает контролировать, какое устройство используется подключением."
+  ],
   "Clear": [
     "Очистить"
   ],
@@ -347,6 +356,9 @@ export default {
   ],
   "Collapse the list of planned actions": [
     "Свернуть список запланированных действий"
+  ],
+  "Configuration out of sync": [
+    "Конфигурация рассинхронизирована"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Конфигурация, считанная из таблицы iSCSI Boot Firmware Table (iBFT)."
@@ -405,6 +417,15 @@ export default {
   "Connected (%s)": [
     "Подключено (%s)"
   ],
+  "Connected device": [
+    "Подключенное устройство"
+  ],
+  "Connected devices": [
+    "Подключенные устройства"
+  ],
+  "Connected devices tabs": [
+    "Вкладки подключенных устройств"
+  ],
   "Connecting to %s": [
     "Подключение к сети %s"
   ],
@@ -412,7 +433,13 @@ export default {
     "Сведения о подключении"
   ],
   "Connection is available to all devices.": [
-    ""
+    "Подключение доступно для всех устройств."
+  ],
+  "Connection is bound to MAC address %s.": [
+    "Подключение привязано к MAC-адресу %s."
+  ],
+  "Connection is bound to device %s.": [
+    "Подключение привязано к устройству %s."
   ],
   "Connection not found or lost": [
     "Соединение не найдено или потеряно"
@@ -612,6 +639,9 @@ export default {
   "Edit connection %s": [
     "Редактировать подключение %s"
   ],
+  "Edit connection settings": [
+    "Изменить настройки подключения"
+  ],
   "Edit user": [
     "Изменить пользователя"
   ],
@@ -783,6 +813,9 @@ export default {
   "Go to network page": [
     "Перейти к разделу «Сеть»"
   ],
+  "Go to storage page": [
+    "Перейти к разделу «Хранилище»"
+  ],
   "Good signal": [
     "Хороший сигнал"
   ],
@@ -927,7 +960,7 @@ export default {
     "Сертификационный центр"
   ],
   "It doesn't exist or can't be reached.": [
-    ""
+    "Его не существует или он недоступен."
   ],
   "It is chosen for booting": [
     "Он выбран для загрузки"
@@ -1146,7 +1179,7 @@ export default {
     "Содержимое не найдено"
   ],
   "No device is currently using this connection.": [
-    ""
+    "В настоящее время ни одно устройство не использует это подключение."
   ],
   "No device selected yet": [
     "Устройство ещё не выбрано"
@@ -1198,6 +1231,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "Ни один из часовых поясов не соответствует фильтру."
+  ],
+  "None set": [
+    "Не задано"
   ],
   "Not available": [
     "Недоступно"
@@ -1403,11 +1439,14 @@ export default {
   "Reload": [
     "Обновить"
   ],
+  "Reload now": [
+    "Обновить"
+  ],
   "Reloading data, please wait...": [
     "Загрузка данных, подождите..."
   ],
   "Reloading is required to get the latest data and avoid issues or data loss.": [
-    ""
+    "Чтобы получить актуальную информацию и избежать проблем или потери данных, требуется обновить страницу."
   ],
   "Remove": [
     "Удалить"
@@ -1432,6 +1471,9 @@ export default {
   ],
   "Reset to the default configuration": [
     "Сброс настроек по умолчанию"
+  ],
+  "Resource not found or lost": [
+    "Ресурс не найден или потерян"
   ],
   "Result": [
     "Результат"
@@ -1562,6 +1604,9 @@ export default {
   "Setting up connection": [
     "Настройка подключения"
   ],
+  "Settings": [
+    "Настройки"
+  ],
   "Several partitions will be deleted": [
     "Несколько разделов будут удалены"
   ],
@@ -1682,10 +1727,13 @@ export default {
     "Группа LVM „%1$s“ останется на диске %2$s"
   ],
   "The configuration has been updated externally.": [
-    ""
+    "Конфигурация была изменена извне."
   ],
   "The configured LVM groups will remain at %s": [
     "Настроенные группы LVM останутся на диске %s"
+  ],
+  "The connection can be used by any available device.": [
+    "Это подключение может использоваться любым доступным устройством."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Это подключение будет использоваться только во время установки и не будет доступно в установленной системе."
@@ -1934,7 +1982,7 @@ export default {
     "Невозможно изменить настройки"
   ],
   "Unbound": [
-    ""
+    "Без привязки"
   ],
   "Unselect": [
     "Отменить выбор"

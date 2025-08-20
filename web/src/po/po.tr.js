@@ -60,9 +60,6 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Yeni %2$s için genel bir asgari %1$s boyutu kullanılacak"
   ],
-  "A generic size of %s will be used for the new %2$s": [
-    "Yeni %2$s için genel bir %s boyutu kullanılacak"
-  ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Yeni %3$s için %1$s ile %2$s arasında genel bir boyut aralığı kullanılacak"
   ],
@@ -227,15 +224,6 @@ export default {
   ],
   "Back": [
     "Geri"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
-    "Sistemdeki Bellek miktarına bağlı olarak, %3$s için %2$s'lik bir %1s$ planlanacaktır"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
-    "Sistemdeki bellek miktarına bağlı olarak, %3$s için en az %2$s'lik bir %1s$ planlanacaktır"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
-    "Sistemdeki bellek miktarına bağlı olarak, %4$s için %2$s ile %3$s arasında bir boyutta %1s$ planlanacaktır."
   ],
   "Bcachefs": [
     "Bcachefs"

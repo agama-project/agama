@@ -60,8 +60,8 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "S'usarà una mida mínima genèrica de %1$s per a la %2$s nova"
   ],
-  "A generic size of %s will be used for the new %2$s": [
-    "S'usarà una mida genèrica de %s per a la %2$s nova"
+  "A generic size of %1$s will be used for the new %2$s": [
+    "S'usarà una mida genèrica de %1$s per a la %2$s nova"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "S'usarà un interval de mida genèric entre %1$s i %2$s per a la %3$s nova"
@@ -228,14 +228,14 @@ export default {
   "Back": [
     "Enrere"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
-    "Segons la quantitat de memòria RAM del sistema, es planificarà una %1s$ de %2$s per a %3$s"
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
+    "Segons la quantitat de memòria RAM del sistema, es planificarà una %1$s de %2$s per a %3$s"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
-    "Segons la quantitat de memòria RAM del sistema, es planificarà una %1s$ d'almenys %2$s per a %3$s"
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
+    "Segons la quantitat de memòria RAM del sistema, es planificarà una %1$s d'almenys %2$s per a %3$s"
   ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
-    "Segons la quantitat de memòria RAM del sistema, es planificarà una %1s$ amb una mida d'entre %2$s i %3$s per a %4$s"
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "Segons la quantitat de memòria RAM del sistema, es planificarà una %1$s amb una mida d'entre %2$s i %3$s per a %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -254,6 +254,12 @@ export default {
   ],
   "Bind to MAC address": [
     "Vincula a l'adreça MAC"
+  ],
+  "Bind to device name": [
+    "Vincula al nom del dispositiu"
+  ],
+  "Binding": [
+    "Vinculació"
   ],
   "Binding settings for '%s'": [
     "Configuració del vincle per a %s"
@@ -336,6 +342,9 @@ export default {
   "Choose device to bind by name": [
     "Trieu el dispositiu per vincular-lo per nom"
   ],
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
+    "Trieu com s'ha d'associar la connexió amb un dispositiu de xarxa. Això ajuda a controlar quin dispositiu usa la connexió."
+  ],
   "Clear": [
     "Neteja"
   ],
@@ -347,6 +356,9 @@ export default {
   ],
   "Collapse the list of planned actions": [
     "Replega la llista d'accions previstes"
+  ],
+  "Configuration out of sync": [
+    "Configuració no sincronitzada"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Configuració llegida a la taula del microprogramari d'arrencada iSCSI (iBFT)."
@@ -405,6 +417,15 @@ export default {
   "Connected (%s)": [
     "Connectat (%s)"
   ],
+  "Connected device": [
+    "Dispositiu connectat"
+  ],
+  "Connected devices": [
+    "Dispositius connectats"
+  ],
+  "Connected devices tabs": [
+    "Pestanyes de dispositius connectats"
+  ],
   "Connecting to %s": [
     "Es connecta amb %s"
   ],
@@ -412,7 +433,13 @@ export default {
     "Detalls de la connexió"
   ],
   "Connection is available to all devices.": [
-    ""
+    "La connexió està disponible per a tots els dispositius."
+  ],
+  "Connection is bound to MAC address %s.": [
+    "La connexió està vinculada a l'adreça MAC %s."
+  ],
+  "Connection is bound to device %s.": [
+    "La connexió està vinculada al dispositiu %s."
   ],
   "Connection not found or lost": [
     "Connexió no trobada o perduda"
@@ -612,6 +639,9 @@ export default {
   "Edit connection %s": [
     "Edita la connexió %s"
   ],
+  "Edit connection settings": [
+    "Edita la configuració de la connexió"
+  ],
   "Edit user": [
     "Edita l'usuari"
   ],
@@ -783,6 +813,9 @@ export default {
   "Go to network page": [
     "Ves a la pàgina de la xarxa"
   ],
+  "Go to storage page": [
+    "Ves a la pàgina de l'emmagatzematge"
+  ],
   "Good signal": [
     "Senyal bo"
   ],
@@ -926,7 +959,7 @@ export default {
     "Emissor"
   ],
   "It doesn't exist or can't be reached.": [
-    ""
+    "No existeix o no s'hi pot arribar."
   ],
   "It is chosen for booting": [
     "S'ha triat per a l'arrencada"
@@ -1145,7 +1178,7 @@ export default {
     "No s'ha trobat contingut."
   ],
   "No device is currently using this connection.": [
-    ""
+    "Cap dispositiu usa actualment aquesta connexió."
   ],
   "No device selected yet": [
     "Encara no s'ha seleccionat cap dispositiu."
@@ -1197,6 +1230,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "Cap de les zones horàries coincideix amb el filtre."
+  ],
+  "None set": [
+    "No s'ha establert"
   ],
   "Not available": [
     "No disponible"
@@ -1402,11 +1438,14 @@ export default {
   "Reload": [
     "Torna a carregar"
   ],
+  "Reload now": [
+    "Torna a carregar"
+  ],
   "Reloading data, please wait...": [
     "Tornant a carregar les dades; espereu, si us plau..."
   ],
   "Reloading is required to get the latest data and avoid issues or data loss.": [
-    ""
+    "Cal tornar-la a carregar per obtenir les dades més recents i evitar problemes o pèrdua de dades."
   ],
   "Remove": [
     "Suprimeix"
@@ -1431,6 +1470,9 @@ export default {
   ],
   "Reset to the default configuration": [
     "Restableix la configuració predeterminada"
+  ],
+  "Resource not found or lost": [
+    "Recurs no trobat o perdut"
   ],
   "Result": [
     "Resultat"
@@ -1683,10 +1725,13 @@ export default {
     "El grup d'LVM %1$s es mantindrà a %2$s"
   ],
   "The configuration has been updated externally.": [
-    ""
+    "La configuració s'ha actualitzat externament."
   ],
   "The configured LVM groups will remain at %s": [
     "Els grups d'LVM configurats es mantindran a %s"
+  ],
+  "The connection can be used by any available device.": [
+    "La connexió la pot usar qualsevol dispositiu disponible."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "La connexió només s'usarà durant la instal·lació i no estarà disponible al sistema instal·lat."
@@ -1935,7 +1980,7 @@ export default {
     "No es pot modificar la configuració"
   ],
   "Unbound": [
-    ""
+    "Desvincula"
   ],
   "Unselect": [
     "Desmarca"

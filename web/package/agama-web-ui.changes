@@ -1,9 +1,15 @@
 -------------------------------------------------------------------
-Mon Aug 18 13:07:07 UTC 2025 - David Diaz <dgonzalez@suse.com>
+Wed Aug 20 10:27:07 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Refactor DASD page to make it more usable and improve its
   performance (related to bsc#1247444, gh#agama-project/agama#2648).
   
+-------------------------------------------------------------------
+Wed Aug 20 10:20:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Enforce ESP partition id for /boot/efi partitions manually
+  defined (bsc#1248189).
+
 -------------------------------------------------------------------
 Wed Aug 13 13:20:17 UTC 2025 - Jan Papež <honyczek@centrum.cz>
 

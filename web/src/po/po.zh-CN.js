@@ -60,9 +60,6 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "至少 %1$s 的通用大小将用于新 %2$s"
   ],
-  "A generic size of %s will be used for the new %2$s": [
-    "新 %2$s 将使用 %s 的通用大小"
-  ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "介于 %1$s 至 %2$s 的通用大小将用于新 %3$s"
   ],
@@ -227,15 +224,6 @@ export default {
   ],
   "Back": [
     "返回"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
-    "将根据系统中的 RAM 容量规划一个 %1s$ (%2$s)，以用于 %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
-    "将根据系统中的 RAM 容量规划一个 %1s$（至少 %2$s），以用于 %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
-    "将根据系统中的 RAM 容量规划一个 %1s$（大小介于 %2$s 至 %3$s 之间），以用于 %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"

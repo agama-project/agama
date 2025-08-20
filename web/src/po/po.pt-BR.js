@@ -60,9 +60,6 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Um tamanho mínimo genérico de %1$s será usado para o novo %2$s"
   ],
-  "A generic size of %s will be used for the new %2$s": [
-    "Um tamanho genérico de %s será usado para o novo %2$s"
-  ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Uma faixa de tamanhos genéricos entre %1$s e %2$s será usada para o novo %3$s"
   ],
@@ -227,15 +224,6 @@ export default {
   ],
   "Back": [
     "Voltar"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
-    "Com base na quantidade de RAM no sistema, %1s$ de %2$s será planejado(a) para %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
-    "Com base na quantidade de RAM no sistema, %1s$ de pelo menos %2$s será planejado(a) para %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
-    "Com base na quantidade de RAM no sistema, %1s$ com tamanho entre %2$s e %3$s será planejado(a) para %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"
