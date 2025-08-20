@@ -60,9 +60,6 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Для нового розділу %2$s буде використано типовий мінімальний розмір %1$s"
   ],
-  "A generic size of %s will be used for the new %2$s": [
-    "Для нового розділу %2$s буде використано типовий розмір %s"
-  ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Для нового розділу %3$s буде використано типовий діапазон розмірів між %1$s і %2$s"
   ],
@@ -228,15 +225,6 @@ export default {
   "Back": [
     "Назад"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
-    "На основі обсягу оперативної пам'яті в системі для %3$s буде заплановано розділ %1$s розміром %2$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
-    "На основі обсягу оперативної пам'яті в системі, для %3$s буде заплановано розділ %1s$ розміром не менше %2$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
-    "Виходячи з обсягу оперативної пам'яті в системі, для %4$s буде заплановано розділ %1s$ розміром від %2$s до %3$s"
-  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -254,6 +242,12 @@ export default {
   ],
   "Bind to MAC address": [
     "Прив'язати до MAC-адреси"
+  ],
+  "Bind to device name": [
+    "Прив'язати до назви пристрою"
+  ],
+  "Binding": [
+    "Прив'язка"
   ],
   "Binding settings for '%s'": [
     "Налаштування прив'язки для «%s»"
@@ -336,6 +330,9 @@ export default {
   "Choose device to bind by name": [
     "Виберіть пристрій для прив'язки за назвою"
   ],
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
+    "Виберіть, як це підключення має бути пов'язане з мережевим пристроєм. Це допомагає контролювати, який пристрій використовується для підключення."
+  ],
   "Clear": [
     "Очистити"
   ],
@@ -347,6 +344,9 @@ export default {
   ],
   "Collapse the list of planned actions": [
     "Згорнути список запланованих дій"
+  ],
+  "Configuration out of sync": [
+    "Конфігурація не синхронізована"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Конфігурація, зчитана з таблиці iSCSI Boot Firmware Table (iBFT)."
@@ -405,6 +405,15 @@ export default {
   "Connected (%s)": [
     "З'єднано (%s)"
   ],
+  "Connected device": [
+    "Підключений пристрій"
+  ],
+  "Connected devices": [
+    "Підключені пристрої"
+  ],
+  "Connected devices tabs": [
+    "Вкладки підключених пристроїв"
+  ],
   "Connecting to %s": [
     "З'єднання з мережею %s"
   ],
@@ -412,7 +421,13 @@ export default {
     "Відомості про підключення"
   ],
   "Connection is available to all devices.": [
-    ""
+    "Підключення доступне для всіх пристроїв."
+  ],
+  "Connection is bound to MAC address %s.": [
+    "З'єднання прив'язане до MAC-адреси %s."
+  ],
+  "Connection is bound to device %s.": [
+    "З'єднання прив'язане до пристрою %s."
   ],
   "Connection not found or lost": [
     "З'єднання не знайдено або втрачено"
@@ -612,6 +627,9 @@ export default {
   "Edit connection %s": [
     "Редагувати з'єднання %s"
   ],
+  "Edit connection settings": [
+    "Змінити налаштування з'єднання"
+  ],
   "Edit user": [
     "Змінити користувача"
   ],
@@ -783,6 +801,9 @@ export default {
   "Go to network page": [
     "Перейти до розділу «Мережа»"
   ],
+  "Go to storage page": [
+    "Перейти до розділу «Сховище»"
+  ],
   "Good signal": [
     "Гарний сигнал"
   ],
@@ -927,7 +948,7 @@ export default {
     "Сертифікаційний центр"
   ],
   "It doesn't exist or can't be reached.": [
-    ""
+    "Він не існує або недоступний."
   ],
   "It is chosen for booting": [
     "Його обрано для завантаження"
@@ -1146,7 +1167,7 @@ export default {
     "Вміст не знайдено"
   ],
   "No device is currently using this connection.": [
-    ""
+    "Наразі жоден пристрій не використовує це з'єднання."
   ],
   "No device selected yet": [
     "Пристрій ще не обрано"
@@ -1198,6 +1219,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "Жоден з часових поясів не відповідає фільтру."
+  ],
+  "None set": [
+    "Не задано"
   ],
   "Not available": [
     "Недоступно"
@@ -1403,11 +1427,14 @@ export default {
   "Reload": [
     "Оновити"
   ],
+  "Reload now": [
+    "Оновити зараз"
+  ],
   "Reloading data, please wait...": [
     "Переміщення даних; будь ласка, зачекайте…"
   ],
   "Reloading is required to get the latest data and avoid issues or data loss.": [
-    ""
+    "Щоб отримати актуальну інформацію та уникнути проблем або втрати даних, потрібно оновити сторінку."
   ],
   "Remove": [
     "Видалити"
@@ -1432,6 +1459,9 @@ export default {
   ],
   "Reset to the default configuration": [
     "Скинути до типової конфігурації"
+  ],
+  "Resource not found or lost": [
+    "Ресурс не знайдено або втрачено"
   ],
   "Result": [
     "Результат"
@@ -1562,6 +1592,9 @@ export default {
   "Setting up connection": [
     "Встановлення з'єднання"
   ],
+  "Settings": [
+    "Налаштування"
+  ],
   "Several partitions will be deleted": [
     "Кілька розділів буде видалено"
   ],
@@ -1682,10 +1715,13 @@ export default {
     "Група LVM '%1$s' залишиться на %2$s"
   ],
   "The configuration has been updated externally.": [
-    ""
+    "Конфігурація була оновлена зовні."
   ],
   "The configured LVM groups will remain at %s": [
     "Налаштовані групи LVM залишаться у %s"
+  ],
+  "The connection can be used by any available device.": [
+    "Це підключення може використовуватися будь-яким доступним пристроєм."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Це з'єднання буде використовуватися тільки під час встановлення і не буде доступним у встановленій системі."
@@ -1934,7 +1970,7 @@ export default {
     "Не вдається змінити налаштування"
   ],
   "Unbound": [
-    ""
+    "Без прив'язки"
   ],
   "Unselect": [
     "Відмінити обране"

@@ -60,9 +60,6 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "En generisk minimistorlek av%1$s kommer att användas för den nya %2$s"
   ],
-  "A generic size of %s will be used for the new %2$s": [
-    "En generisk storlek av %s kommer att användas för den nya %2$s"
-  ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Ett generiskt storleksintervall mellan %1$s och %2$s kommer att användas för den nya %3$s"
   ],
@@ -228,15 +225,6 @@ export default {
   "Back": [
     "Bakåt"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
-    "Baserat på mängden RAM i systemet kommer en $1s$ av %2$s att planeras för %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
-    "Baserat på mängden RAM i systemet kommer en %1s$ på minst %2$s att planeras för %3$s"
-  ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
-    "Baserat på mängden RAM i systemet kommer en %1s$ med en storlek mellan %2$s och %3$s att planeras för %4$s"
-  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -254,6 +242,12 @@ export default {
   ],
   "Bind to MAC address": [
     "Bind till MAC-adress"
+  ],
+  "Bind to device name": [
+    "Bind till enhetsnamn"
+  ],
+  "Binding": [
+    "Bindning"
   ],
   "Binding settings for '%s'": [
     "Bindningsinställningar för '%s'"
@@ -336,6 +330,9 @@ export default {
   "Choose device to bind by name": [
     "Välj enhet att binda efter namn"
   ],
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
+    "Välj hur anslutningen ska kopplas till en nätverksenhet. Detta hjälper till att styra vilken enhet anslutningen använder."
+  ],
   "Clear": [
     "Rensa"
   ],
@@ -347,6 +344,9 @@ export default {
   ],
   "Collapse the list of planned actions": [
     "Dölj listan över planerade åtgärder"
+  ],
+  "Configuration out of sync": [
+    "Konfigurationen är inte synkroniserad"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Konfiguration läst från iSCSI Boot Firmware Table (iBFT)."
@@ -405,6 +405,15 @@ export default {
   "Connected (%s)": [
     "Ansluten (%s)"
   ],
+  "Connected device": [
+    "Ansluten enhet"
+  ],
+  "Connected devices": [
+    "Anslutna enheter"
+  ],
+  "Connected devices tabs": [
+    "Anslutna enheter flikar"
+  ],
   "Connecting to %s": [
     "Ansluter till %s"
   ],
@@ -412,7 +421,13 @@ export default {
     "Anslutningsdetaljer"
   ],
   "Connection is available to all devices.": [
-    ""
+    "Anslutning är tillgänglig för alla enheter."
+  ],
+  "Connection is bound to MAC address %s.": [
+    "Anslutningen är bunden till MAC-adress %s."
+  ],
+  "Connection is bound to device %s.": [
+    "Anslutningen är bunden till enhet %s."
   ],
   "Connection not found or lost": [
     "Anslutningen hittades inte eller förlorades"
@@ -612,6 +627,9 @@ export default {
   "Edit connection %s": [
     "Redigera anslutning %s"
   ],
+  "Edit connection settings": [
+    "Redigera anslutningsinställningar"
+  ],
   "Edit user": [
     "Redigera användare"
   ],
@@ -783,6 +801,9 @@ export default {
   "Go to network page": [
     "Gå till nätverkssidan"
   ],
+  "Go to storage page": [
+    "Gå till lagringssidan"
+  ],
   "Good signal": [
     "Bra signal"
   ],
@@ -926,7 +947,7 @@ export default {
     "Utfärdare"
   ],
   "It doesn't exist or can't be reached.": [
-    ""
+    "Det existerar inte eller kan inte nås."
   ],
   "It is chosen for booting": [
     "Den är vald för uppstart"
@@ -1145,7 +1166,7 @@ export default {
     "Inget innehåll hittades"
   ],
   "No device is currently using this connection.": [
-    ""
+    "Ingen enhet använder för närvarande den här anslutningen."
   ],
   "No device selected yet": [
     "Ingen enhet vald ännu"
@@ -1197,6 +1218,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "Inget av tidszonerna matchar filtret."
+  ],
+  "None set": [
+    "Ingen inställd"
   ],
   "Not available": [
     "Inte tillgänglig"
@@ -1402,11 +1426,14 @@ export default {
   "Reload": [
     "Ladda om"
   ],
+  "Reload now": [
+    "Ladda om nu"
+  ],
   "Reloading data, please wait...": [
     "Laddar om data, vänligen vänta..."
   ],
   "Reloading is required to get the latest data and avoid issues or data loss.": [
-    ""
+    "Omladdning krävs för att få de senaste data och undvika problem eller dataförlust."
   ],
   "Remove": [
     "Ta bort"
@@ -1431,6 +1458,9 @@ export default {
   ],
   "Reset to the default configuration": [
     "Återställ till standardkonfiguration"
+  ],
+  "Resource not found or lost": [
+    "Resursen hittades inte eller förlorades"
   ],
   "Result": [
     "Resultat"
@@ -1683,10 +1713,13 @@ export default {
     "LVM-gruppen '%1$s' kommer att vara kvar på %2$s"
   ],
   "The configuration has been updated externally.": [
-    ""
+    "Konfigurationen har uppdaterats externt."
   ],
   "The configured LVM groups will remain at %s": [
     "De konfigurerade LVM-grupperna kommer att finnas kvar på %s"
+  ],
+  "The connection can be used by any available device.": [
+    "Anslutningen kan användas av vilken tillgänglig enhet som helst."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Anslutningen kommer endast att användas under installationen och är inte tillgänglig i det installerade systemet."
@@ -1935,7 +1968,7 @@ export default {
     "Det går inte att ändra inställningarna"
   ],
   "Unbound": [
-    ""
+    "Obunden"
   ],
   "Unselect": [
     "Avmarkera"

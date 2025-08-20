@@ -60,8 +60,8 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "新しい %2$s に対しては少なくとも %1$s を使用します"
   ],
-  "A generic size of %s will be used for the new %2$s": [
-    "新しい %2$s に対しては一般的なサイズ %s を使用します"
+  "A generic size of %1$s will be used for the new %2$s": [
+    "新しい %2$s に対しては一般的なサイズ %1$s を使用します"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "新しい %3$s に対しては一般的なサイズ %1$s から %2$s の範囲を使用します"
@@ -228,13 +228,13 @@ export default {
   "Back": [
     "戻る"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be planned for %3$s": [
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
     "システムのメモリサイズに応じて、 %2$s の %1$s を %3$s 向けに計画します"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be planned for %3$s": [
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
     "システムのメモリサイズに応じて、少なくとも %2$s の %1$s を %3$s 向けに計画します"
   ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be planned for %4$s": [
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
     "システムのメモリサイズに応じて、 %2$s から %3$s までの範囲で %1$s を %4$s 向けに計画します"
   ],
   "Bcachefs": [
@@ -253,7 +253,13 @@ export default {
     "ベータ"
   ],
   "Bind to MAC address": [
-    "MAC アドレスにバインド"
+    "MAC アドレスに結びつける"
+  ],
+  "Bind to device name": [
+    "デバイス名に結びつける"
+  ],
+  "Binding": [
+    "結びつけ方式"
   ],
   "Binding settings for '%s'": [
     "'%s' に対するバインディング設定"
@@ -336,6 +342,9 @@ export default {
   "Choose device to bind by name": [
     "名前でデバイスを識別します"
   ],
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
+    "接続とネットワークデバイスとの関連づけ方式を指定してください。これにより、接続が使用するデバイスを制御することができます。"
+  ],
   "Clear": [
     "消去"
   ],
@@ -347,6 +356,9 @@ export default {
   ],
   "Collapse the list of planned actions": [
     "処理計画の一覧を巻き取る"
+  ],
+  "Configuration out of sync": [
+    "設定が同期できていません"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "iSCSI Boot Firmware Table (iBFT) から読み込んだ設定です。"
@@ -405,6 +417,15 @@ export default {
   "Connected (%s)": [
     "接続済み (%s)"
   ],
+  "Connected device": [
+    "接続済みのデバイス"
+  ],
+  "Connected devices": [
+    "接続済みのデバイス"
+  ],
+  "Connected devices tabs": [
+    "接続済みデバイスのタブ"
+  ],
   "Connecting to %s": [
     "%s に接続しています"
   ],
@@ -412,7 +433,13 @@ export default {
     "接続の詳細"
   ],
   "Connection is available to all devices.": [
-    ""
+    "接続時に任意のデバイスを使用するようにします。"
+  ],
+  "Connection is bound to MAC address %s.": [
+    "接続時に MAC アドレス %s を使用するようにします。"
+  ],
+  "Connection is bound to device %s.": [
+    "接続時にデバイス %s を使用するようにします。"
   ],
   "Connection not found or lost": [
     "接続が見つからないか、接続が失われています"
@@ -612,6 +639,9 @@ export default {
   "Edit connection %s": [
     "接続 %s の編集"
   ],
+  "Edit connection settings": [
+    "接続設定の編集"
+  ],
   "Edit user": [
     "ユーザの編集"
   ],
@@ -783,6 +813,9 @@ export default {
   "Go to network page": [
     "ネットワークページに移動"
   ],
+  "Go to storage page": [
+    "ストレージページに移動"
+  ],
   "Good signal": [
     "良好な信号強度"
   ],
@@ -925,7 +958,7 @@ export default {
     "発行者"
   ],
   "It doesn't exist or can't be reached.": [
-    ""
+    "対象が存在していないか、到達不可能です。"
   ],
   "It is chosen for booting": [
     "起動用に選択済み"
@@ -1144,7 +1177,7 @@ export default {
     "ストレージには何も記録されていないようです"
   ],
   "No device is currently using this connection.": [
-    ""
+    "この接続ではデバイスを使用していません。"
   ],
   "No device selected yet": [
     "まだ何もデバイスを選択していません"
@@ -1196,6 +1229,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "フィルタに該当するタイムゾーンがありません。"
+  ],
+  "None set": [
+    "未設定"
   ],
   "Not available": [
     "利用不可"
@@ -1401,11 +1437,14 @@ export default {
   "Reload": [
     "再読み込み"
   ],
+  "Reload now": [
+    "今すぐ読み込み"
+  ],
   "Reloading data, please wait...": [
     "データを再読み込みしています。しばらくお待ちください..."
   ],
   "Reloading is required to get the latest data and avoid issues or data loss.": [
-    ""
+    "最新のデータを取得してデータ損失などの問題を回避するには、再読み込みが必要です。"
   ],
   "Remove": [
     "削除"
@@ -1430,6 +1469,9 @@ export default {
   ],
   "Reset to the default configuration": [
     "既定の設定に戻す"
+  ],
+  "Resource not found or lost": [
+    "リソースが見つからないか失われています"
   ],
   "Result": [
     "結果"
@@ -1681,10 +1723,13 @@ export default {
     "LVM グループ '%1$s' が %2$s に残されます"
   ],
   "The configuration has been updated externally.": [
-    ""
+    "設定が外部から書き換えられています。"
   ],
   "The configured LVM groups will remain at %s": [
     "設定済みの LVM グループが %s に残されます"
+  ],
+  "The connection can be used by any available device.": [
+    "接続時に利用可能な任意のデバイスを使用するようにします。"
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "接続はインストール時にのみ使用され、インストールされたシステムでは利用できません。"
@@ -1933,7 +1978,7 @@ export default {
     "設定を変更できませんでした"
   ],
   "Unbound": [
-    ""
+    "特に指定しない"
   ],
   "Unselect": [
     "未選択"
