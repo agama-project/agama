@@ -31,6 +31,7 @@ const question: Question = {
   class: "autoyast.unsupported",
   text: "Some elements from the AutoYaST profile are not supported.",
   options: ["abort", "continue"],
+  optionLabels: ["Abort", "Continue"],
   defaultOption: "continue",
   data: {
     unsupported: "dns-server",

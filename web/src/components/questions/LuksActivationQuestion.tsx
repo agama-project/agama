@@ -88,6 +88,7 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
       <Popup.Actions>
         <QuestionActions
           actions={question.options}
+          actionLabels={question.optionLabels}
           defaultAction={defaultAction}
           actionCallback={actionCallback}
           conditions={conditions}

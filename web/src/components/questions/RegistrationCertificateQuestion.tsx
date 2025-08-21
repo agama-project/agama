@@ -95,6 +95,7 @@ export default function RegistrationCertificateQuestion({
       <Popup.Actions>
         <QuestionActions
           actions={question.options}
+          actionLabels={question.optionLabels}
           defaultAction={question.defaultOption}
           actionCallback={actionCallback}
         />

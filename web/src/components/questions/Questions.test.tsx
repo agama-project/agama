@@ -49,6 +49,7 @@ const genericQuestion: Question = {
   type: QuestionType.generic,
   text: "Do you write unit tests?",
   options: ["always", "sometimes", "never"],
+  optionLabels: ["Always", "Sometimes", "Never"],
   defaultOption: "sometimes",
 };
 const passwordQuestion: Question = { id: 1, type: QuestionType.withPassword };

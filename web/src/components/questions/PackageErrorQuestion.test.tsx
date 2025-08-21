@@ -32,6 +32,7 @@ const question: Question = {
   class: "software.package_error.provide_error",
   text: "Package download failed",
   options: ["Retry", "Skip"],
+  optionLabels: ["Retry", "Skip"],
   defaultOption: "Retry",
   data: { package: "foo", error_code: "INVALID" },
 };

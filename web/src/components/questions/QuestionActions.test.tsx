@@ -32,6 +32,7 @@ let question: Question = {
   id: 1,
   text: "Should we use a component for rendering actions?",
   options: ["no", "maybe", "sure"],
+  optionLabels: ["Nein", "Vielleicht", "Sicher"],
   defaultOption,
 };
 
@@ -41,6 +42,7 @@ const renderQuestionActions = () =>
   installerRender(
     <QuestionActions
       actions={question.options}
+      actionLabels={question.optionLabels}
       defaultAction={question.defaultOption}
       actionCallback={actionCallback}
       conditions={{ disable: { no: true } }}
@@ -52,17 +54,17 @@ describe("QuestionActions", () => {
     it("renders the default option as primary action", async () => {
       renderQuestionActions();
 
-      const button = await screen.findByRole("button", { name: "Sure" });
+      const button = await screen.findByRole("button", { name: "Sicher" });
       expect(button.classList.contains("pf-m-primary")).toBe(true);
     });
 
     it("renders non default options as secondary actions", async () => {
       renderQuestionActions();
 
-      let button = await screen.findByRole("button", { name: "Maybe" });
+      let button = await screen.findByRole("button", { name: "Vielleicht" });
       expect(button.classList.contains("pf-m-secondary")).toBe(true);
 
-      button = await screen.findByRole("button", { name: "No" });
+      button = await screen.findByRole("button", { name: "Nein" });
       expect(button.classList.contains("pf-m-secondary")).toBe(true);
     });
   });
@@ -77,17 +79,17 @@ describe("QuestionActions", () => {
     it("renders the first option  as primary action", async () => {
       renderQuestionActions();
 
-      const button = await screen.findByRole("button", { name: "No" });
+      const button = await screen.findByRole("button", { name: "Nein" });
       expect(button.classList.contains("pf-m-primary")).toBe(true);
     });
 
     it("renders the other options as secondary actions", async () => {
       renderQuestionActions();
 
-      let button = await screen.findByRole("button", { name: "Maybe" });
+      let button = await screen.findByRole("button", { name: "Vielleicht" });
       expect(button.classList.contains("pf-m-secondary")).toBe(true);
 
-      button = await screen.findByRole("button", { name: "Sure" });
+      button = await screen.findByRole("button", { name: "Sicher" });
       expect(button.classList.contains("pf-m-secondary")).toBe(true);
     });
   });
@@ -95,17 +97,17 @@ describe("QuestionActions", () => {
   it("renders actions enabled or disabled according to given conditions", async () => {
     renderQuestionActions();
 
-    let button = await screen.findByRole("button", { name: "No" });
+    let button = await screen.findByRole("button", { name: "Nein" });
     expect(button).toHaveAttribute("disabled");
 
-    button = await screen.findByRole("button", { name: "Maybe" });
+    button = await screen.findByRole("button", { name: "Vielleicht" });
     expect(button).not.toHaveAttribute("disabled");
   });
 
   it("calls the actionCallback when user clicks on action", async () => {
     const { user } = renderQuestionActions();
 
-    const button = await screen.findByRole("button", { name: "Sure" });
+    const button = await screen.findByRole("button", { name: "Sicher" });
     await user.click(button);
 
     expect(actionCallback).toHaveBeenCalled();
