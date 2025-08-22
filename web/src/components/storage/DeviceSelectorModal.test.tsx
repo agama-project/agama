@@ -104,6 +104,8 @@ describe("DeviceSelectorModal", () => {
 
   it.todo("renders type, name, content, and filesystems of each device");
   it.todo("renders corresponding control (radio or checkbox) as checked for given selected device");
+  it.todo("allows sorting by device name");
+  it.todo("allows sorting by device size");
 
   it("triggers onCancel callback when users selects `Cancel` action", async () => {
     const { user } = plainRender(

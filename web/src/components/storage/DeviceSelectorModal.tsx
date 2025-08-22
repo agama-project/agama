@@ -21,9 +21,10 @@
  */
 
 import React, { useState } from "react";
+import { ButtonProps, Flex, Label } from "@patternfly/react-core";
 import { SelectableDataTable, Popup } from "~/components/core/";
 import { StorageDevice } from "~/types/storage";
-import { SelectableDataTableProps } from "../core/SelectableDataTable";
+import { SortedBy, SelectableDataTableProps } from "~/components/core/SelectableDataTable";
 import {
   typeDescription,
   contentDescription,
@@ -32,7 +33,7 @@ import {
 import { deviceSize } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { PopupProps } from "../core/Popup";
-import { ButtonProps, Flex, Label } from "@patternfly/react-core";
+import { sort } from "fast-sort";
 
 type DeviceSelectorProps = {
   devices: StorageDevice[];
@@ -76,20 +77,36 @@ const DeviceSelector = ({
   onSelectionChange,
   selectionMode = "single",
 }: DeviceSelectorProps) => {
+  const [sortedBy, setSortedBy] = useState<SortedBy>({ index: 0, direction: "desc" });
+
+  const columns = [
+    { name: _("Device"), value: (device: StorageDevice) => device.name, sortingKey: "name" },
+    {
+      name: _("Size"),
+      value: size,
+      sortingKey: "size",
+      pfTdProps: { style: { width: "10ch" } },
+    },
+    { name: _("Description"), value: description },
+    { name: _("Current content"), value: details },
+  ];
+  // Sorting
+  // See https://github.com/snovakovic/fast-sort
+  const sortedDevices = sort(devices)[sortedBy.direction](
+    (d) => d[columns[sortedBy.index].sortingKey],
+  );
+
   return (
     <>
       <SelectableDataTable
-        columns={[
-          { name: _("Device"), value: (device: StorageDevice) => device.name },
-          { name: _("Size"), value: size, pfTdProps: { style: { width: "10ch" } } },
-          { name: _("Description"), value: description },
-          { name: _("Current content"), value: details },
-        ]}
-        items={devices}
+        columns={columns}
+        items={sortedDevices}
         itemIdKey="sid"
         itemsSelected={selectedDevices}
         onSelectionChange={onSelectionChange}
         selectionMode={selectionMode}
+        sortedBy={sortedBy}
+        updateSorting={setSortedBy}
       />
     </>
   );
