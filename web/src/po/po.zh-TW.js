@@ -180,6 +180,9 @@ export default {
   "Apply selected solution": [
     "套用所選的解決方案"
   ],
+  "Applying changes": [
+    ""
+  ],
   "As a new partition on %s": [
     "做為 %s 上的新分割區"
   ],
@@ -237,6 +240,9 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "在開始安裝前，您需要解決下列問題："
   ],
+  "Below %s devices are offline and cannot be formatted.": [
+    ""
+  ],
   "Beta": [
     "Beta 版"
   ],
@@ -267,9 +273,6 @@ export default {
   "Cannot connect to Agama server": [
     "無法連接至 Agama 伺服器"
   ],
-  "Cannot format all selected devices": [
-    "無法格式化全部所選裝置"
-  ],
   "Change": [
     "變更"
   ],
@@ -287,6 +290,9 @@ export default {
   ],
   "Change display language and keyboard layout": [
     "變更顯示語言和鍵盤配置"
+  ],
+  "Change filters and try again.": [
+    ""
   ],
   "Change keyboard": [
     "變更鍵盤"
@@ -326,6 +332,9 @@ export default {
   ],
   "Clear": [
     "清除"
+  ],
+  "Clear all filters": [
+    ""
   ],
   "Clear selected mount point": [
     "清除所選的掛接點"
@@ -374,6 +383,9 @@ export default {
   ],
   "Confirm Installation": [
     "確認安裝"
+  ],
+  "Confirm that you really want to continue.": [
+    ""
   ],
   "Congratulations!": [
     "恭喜！"
@@ -458,12 +470,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "DASD 裝置選擇表"
-  ],
-  "DASDs table section": [
-    "DASD 表區段"
   ],
   "DIAG": [
     "DIAG"
@@ -692,12 +698,6 @@ export default {
   ],
   "Filter by language, territory or locale code": [
     "依語言、地區或地區設定代碼過濾"
-  ],
-  "Filter by max channel": [
-    "依最大通道過濾"
-  ],
-  "Filter by min channel": [
-    "依最小通道過濾"
   ],
   "Filter by pattern title or description": [
     "依模式名稱或描述過濾"
@@ -939,6 +939,9 @@ export default {
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "無法採用目前組態安裝系統，請調整下面的設定。"
   ],
+  "It is offline and must be activated before formatting it.": [
+    ""
+  ],
   "It may take some time.": [
     "這可能需要一些時間。"
   ],
@@ -1116,6 +1119,9 @@ export default {
   "No": [
     "否"
   ],
+  "No DASD devices were found in this machine.": [
+    ""
+  ],
   "No Wi-Fi networks were found": [
     "未找到 WiFi 網路"
   ],
@@ -1209,9 +1215,6 @@ export default {
   "Not supported (%s)": [
     "不受支援 (%s)"
   ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "格式化前必須啟用離線裝置。請先取消選取或啟用下列裝置，然後再試"
-  ],
   "On boot": [
     "開機時"
   ],
@@ -1292,9 +1295,6 @@ export default {
   ],
   "Pending": [
     "待處理"
-  ],
-  "Perform an action": [
-    "執行動作"
   ],
   "PiB": [
     "PiB"
@@ -1398,12 +1398,6 @@ export default {
   "Remove": [
     "移除"
   ],
-  "Remove max channel filter": [
-    "移除最大通道過濾器"
-  ],
-  "Remove min channel filter": [
-    "移除最小通道過濾器"
-  ],
   "Remove the configuration for this disk": [
     "移除此磁碟的組態"
   ],
@@ -1436,6 +1430,9 @@ export default {
   ],
   "Routes": [
     "路由"
+  ],
+  "Row expansion": [
+    ""
   ],
   "SD Card": [
     "SD 卡"
@@ -1535,12 +1532,6 @@ export default {
   ],
   "Server options": [
     "伺服器選項"
-  ],
-  "Set DIAG Off": [
-    "關閉 DIAG"
-  ],
-  "Set DIAG On": [
-    "開啟 DIAG"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
     "設定不會因網路更新而變更的永久主機名稱。"
@@ -1860,9 +1851,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "以下是待安裝產品的相關設定。您可以透過頂部列存取 [設定面板]，並從中調整安裝程式語言。"
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "此動作無法刪除下列裝置上儲存的任何資料。請確認您確定要繼續。"
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "無法在該伺服器上使用此延伸。您可以讓伺服器管理員鏡像該延伸。"
   ],
@@ -1871,6 +1859,12 @@ export default {
   ],
   "This license is not available in %s.": [
     "此授權在 %s 中不可用。"
+  ],
+  "This may take a moment while updates complete.": [
+    ""
+  ],
+  "This message will close automatically when everything is done.": [
+    ""
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "此模式力求在清楚具體和快捷高效之間取得平衡：強制回應視窗提供簡單、便捷的選擇介面，而完整檢視則支援更深入的探索和更複雜的動作，專為擁有大量裝置的使用者而設計。"
@@ -1922,6 +1916,9 @@ export default {
   ],
   "Unselect": [
     "取消選取"
+  ],
+  "Unselect or activate them and try it again.": [
+    ""
   ],
   "Unsupported AutoYaST elements": [
     "不受支援的 AutoYaST 元素"
@@ -2175,8 +2172,17 @@ export default {
   "logical volume": [
     "邏輯磁碟區"
   ],
+  "no": [
+    ""
+  ],
+  "offline": [
+    ""
+  ],
   "partition": [
     "分割區"
+  ],
+  "read_only": [
+    ""
   ],
   "reset to defaults": [
     "重設為預設值"

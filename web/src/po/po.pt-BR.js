@@ -180,6 +180,9 @@ export default {
   "Apply selected solution": [
     "Aplicar a solução selecionada"
   ],
+  "Applying changes": [
+    ""
+  ],
   "As a new partition on %s": [
     "Como nova partição em %s"
   ],
@@ -237,6 +240,9 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "Antes de iniciar a instalação, você precisa resolver os seguintes problemas:"
   ],
+  "Below %s devices are offline and cannot be formatted.": [
+    ""
+  ],
   "Beta": [
     "Beta"
   ],
@@ -267,9 +273,6 @@ export default {
   "Cannot connect to Agama server": [
     "Não é possível conectar-se ao servidor Agama"
   ],
-  "Cannot format all selected devices": [
-    "Não é possível formatar todos os dispositivos selecionados"
-  ],
   "Change": [
     "Alterar"
   ],
@@ -287,6 +290,9 @@ export default {
   ],
   "Change display language and keyboard layout": [
     "Alterar idioma de exibição e layout de teclado"
+  ],
+  "Change filters and try again.": [
+    ""
   ],
   "Change keyboard": [
     "Alterar teclado"
@@ -326,6 +332,9 @@ export default {
   ],
   "Clear": [
     "Limpar"
+  ],
+  "Clear all filters": [
+    ""
   ],
   "Clear selected mount point": [
     "Limpar ponto de montagem selecionado"
@@ -374,6 +383,9 @@ export default {
   ],
   "Confirm Installation": [
     "Confirmar instalação"
+  ],
+  "Confirm that you really want to continue.": [
+    ""
   ],
   "Congratulations!": [
     "Parabéns!"
@@ -458,12 +470,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "Tabela de seleção de dispositivos DASD"
-  ],
-  "DASDs table section": [
-    "Sessão da tabela DASD"
   ],
   "DIAG": [
     "DIAG"
@@ -692,12 +698,6 @@ export default {
   ],
   "Filter by language, territory or locale code": [
     "Filtrar por idioma, território ou código de localidade"
-  ],
-  "Filter by max channel": [
-    "Filtrar por canal máximo"
-  ],
-  "Filter by min channel": [
-    "Filtrar por canal mínimo"
   ],
   "Filter by pattern title or description": [
     "Filtrar por título ou descrição do padrão"
@@ -940,6 +940,9 @@ export default {
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Não é possível instalar o sistema com a configuração atual. Ajuste as configurações abaixo."
   ],
+  "It is offline and must be activated before formatting it.": [
+    ""
+  ],
   "It may take some time.": [
     "Isso pode levar um tempo."
   ],
@@ -1117,6 +1120,9 @@ export default {
   "No": [
     "Não"
   ],
+  "No DASD devices were found in this machine.": [
+    ""
+  ],
   "No Wi-Fi networks were found": [
     "Nenhuma rede Wi-Fi encontrada"
   ],
@@ -1210,9 +1216,6 @@ export default {
   "Not supported (%s)": [
     "Não há suporte (%s)"
   ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Dispositivos offline devem ser ativados antes de formatá-los. Por favor, desmarque ou ative os dispositivos listados abaixo e tente novamente"
-  ],
   "On boot": [
     "Na inicialização"
   ],
@@ -1293,9 +1296,6 @@ export default {
   ],
   "Pending": [
     "Pendente"
-  ],
-  "Perform an action": [
-    "Executar uma ação"
   ],
   "PiB": [
     "PiB"
@@ -1399,12 +1399,6 @@ export default {
   "Remove": [
     "Remover"
   ],
-  "Remove max channel filter": [
-    "Remover filtro de canal máximo"
-  ],
-  "Remove min channel filter": [
-    "Remover filtro de canal mínimo"
-  ],
   "Remove the configuration for this disk": [
     "Remover a configuração deste disco"
   ],
@@ -1437,6 +1431,9 @@ export default {
   ],
   "Routes": [
     "Rotas"
+  ],
+  "Row expansion": [
+    ""
   ],
   "SD Card": [
     "Cartão SD"
@@ -1536,12 +1533,6 @@ export default {
   ],
   "Server options": [
     "Opções do servidor"
-  ],
-  "Set DIAG Off": [
-    "Definir DIAG desligado"
-  ],
-  "Set DIAG On": [
-    "Definir DIAG em"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
     "Defina um nome de host permanente que não mude com as atualizações de rede."
@@ -1862,9 +1853,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Estas são as configurações do produto que será instalado. É possível ajustar o idioma do instalador no [painel de configurações] acessível na barra superior."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Esta ação pode destruir quaisquer dados armazenados nos dispositivos listados abaixo. Por favor, confirme que você realmente deseja continuar."
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Esta extensão não está disponível no servidor. Peça que o administrador do sistema espelhe a extensão."
   ],
@@ -1873,6 +1861,12 @@ export default {
   ],
   "This license is not available in %s.": [
     "Esta licença não está disponível em %s."
+  ],
+  "This may take a moment while updates complete.": [
+    ""
+  ],
+  "This message will close automatically when everything is done.": [
+    ""
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Esse padrão estabelece um equilíbrio entre clareza e eficiência: o modal mantém tudo mais leve para seleções simples, enquanto a visualização completa permite maior exploração e ações mais complexas, principalmente para usuários com enormes quantidades de dispositivos."
@@ -1924,6 +1918,9 @@ export default {
   ],
   "Unselect": [
     "Desmarcar"
+  ],
+  "Unselect or activate them and try it again.": [
+    ""
   ],
   "Unsupported AutoYaST elements": [
     "Elementos do AutoYaST não suportados"
@@ -2177,8 +2174,17 @@ export default {
   "logical volume": [
     "volume lógico"
   ],
+  "no": [
+    ""
+  ],
+  "offline": [
+    ""
+  ],
   "partition": [
     "partição"
+  ],
+  "read_only": [
+    ""
   ],
   "reset to defaults": [
     "redefinir aos padrões"

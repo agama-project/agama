@@ -180,6 +180,9 @@ export default {
   "Apply selected solution": [
     "Pilih solusi untuk melanjutkan"
   ],
+  "Applying changes": [
+    ""
+  ],
   "As a new partition on %s": [
     "Sebagai partisi baru di %s"
   ],
@@ -237,6 +240,9 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "Sebelum memulai penginstalan, Anda perlu mengatasi masalah berikut ini:"
   ],
+  "Below %s devices are offline and cannot be formatted.": [
+    ""
+  ],
   "Beta": [
     "Beta"
   ],
@@ -267,9 +273,6 @@ export default {
   "Cannot connect to Agama server": [
     "Tidak dapat terhubung ke server Agama"
   ],
-  "Cannot format all selected devices": [
-    "Tidak dapat memformat semua perangkat yang dipilih"
-  ],
   "Change": [
     "Ubah"
   ],
@@ -287,6 +290,9 @@ export default {
   ],
   "Change display language and keyboard layout": [
     "Ubah bahasa tampilan dan tata letak keyboard"
+  ],
+  "Change filters and try again.": [
+    ""
   ],
   "Change keyboard": [
     "Ganti papan ketik"
@@ -326,6 +332,9 @@ export default {
   ],
   "Clear": [
     "Hapus"
+  ],
+  "Clear all filters": [
+    ""
   ],
   "Clear selected mount point": [
     "Hapus titik mount yang dipilih"
@@ -374,6 +383,9 @@ export default {
   ],
   "Confirm Installation": [
     "Konfirmasi Instalasi"
+  ],
+  "Confirm that you really want to continue.": [
+    ""
   ],
   "Congratulations!": [
     "Selamat!"
@@ -458,12 +470,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "Tabel pemilihan perangkat DASD"
-  ],
-  "DASDs table section": [
-    "Bagian tabel DASD"
   ],
   "DIAG": [
     "DIAG"
@@ -692,12 +698,6 @@ export default {
   ],
   "Filter by language, territory or locale code": [
     "Memfilter berdasarkan bahasa, wilayah, atau kode lokal"
-  ],
-  "Filter by max channel": [
-    "Memfilter menurut saluran maks"
-  ],
-  "Filter by min channel": [
-    "Memfilter menurut saluran min"
   ],
   "Filter by pattern title or description": [
     "Memfilter berdasarkan judul atau deskripsi pola"
@@ -939,6 +939,9 @@ export default {
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Tidak mungkin memasang sistem dengan konfigurasi saat ini. Sesuaikan pengaturan di bawah ini."
   ],
+  "It is offline and must be activated before formatting it.": [
+    ""
+  ],
   "It may take some time.": [
     "Mungkin membutuhkan waktu."
   ],
@@ -1116,6 +1119,9 @@ export default {
   "No": [
     "Tidak"
   ],
+  "No DASD devices were found in this machine.": [
+    ""
+  ],
   "No Wi-Fi networks were found": [
     "Tidak ditemukan jaringan Wi-Fi"
   ],
@@ -1209,9 +1215,6 @@ export default {
   "Not supported (%s)": [
     "Tidak didukung (%s)"
   ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Perangkat offline harus diaktifkan sebelum memformatnya. Batalkan pilihan atau aktifkan perangkat yang tercantum di bawah ini dan coba lagi"
-  ],
   "On boot": [
     "Saat boot"
   ],
@@ -1292,9 +1295,6 @@ export default {
   ],
   "Pending": [
     "Tertunda"
-  ],
-  "Perform an action": [
-    "Melakukan tindakan"
   ],
   "PiB": [
     "PiB"
@@ -1398,12 +1398,6 @@ export default {
   "Remove": [
     "Menghapus"
   ],
-  "Remove max channel filter": [
-    "Menghapus filter saluran maks"
-  ],
-  "Remove min channel filter": [
-    "Menghapus filter saluran min"
-  ],
   "Remove the configuration for this disk": [
     "Hapus konfigurasi untuk disk ini"
   ],
@@ -1436,6 +1430,9 @@ export default {
   ],
   "Routes": [
     "Route"
+  ],
+  "Row expansion": [
+    ""
   ],
   "SD Card": [
     "Kartu SD"
@@ -1535,12 +1532,6 @@ export default {
   ],
   "Server options": [
     "Opsi server"
-  ],
-  "Set DIAG Off": [
-    "Mengatur DIAG Tidak Aktif"
-  ],
-  "Set DIAG On": [
-    "Mengatur DIAG Aktif"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
     "Tetapkan nama host permanen yang tidak akan berubah saat pembaruan jaringan."
@@ -1857,9 +1848,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Pengaturan untuk menginstal produk. Bahasa penginstal dan tata letak keyboard dapat disesuaikan melalui [panel pengaturan] yang dapat diakses dari bilah atas."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Tindakan ini dapat menghapus data yang tersimpan pada perangkat yang tercantum di bawah ini. Harap konfirmasikan bahwa Anda benar-benar ingin melanjutkan."
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Ekstensi ini tidak tersedia di server. Mintalah administrator server untuk menyalin ekstensi tersebut."
   ],
@@ -1868,6 +1856,12 @@ export default {
   ],
   "This license is not available in %s.": [
     "Lisensi ini tidak tersedia di %s."
+  ],
+  "This may take a moment while updates complete.": [
+    ""
+  ],
+  "This message will close automatically when everything is done.": [
+    ""
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Polanya ini menyeimbangkan antara kejelasan dan efisiensi: mode ini menjaga kesederhanaan untuk pemilihan yang sederhana, sementara tampilan penuh mendukung eksplorasi yang lebih mendalam dan tindakan yang lebih kompleks, terutama untuk pengguna yang memiliki banyak perangkat."
@@ -1919,6 +1913,9 @@ export default {
   ],
   "Unselect": [
     "Batalkan pilihan"
+  ],
+  "Unselect or activate them and try it again.": [
+    ""
   ],
   "Unsupported AutoYaST elements": [
     "Elemen AutoYaST tidak didukung"
@@ -2172,8 +2169,17 @@ export default {
   "logical volume": [
     "volume logis"
   ],
+  "no": [
+    ""
+  ],
+  "offline": [
+    ""
+  ],
   "partition": [
     "partisi"
+  ],
+  "read_only": [
+    ""
   ],
   "reset to defaults": [
     "kembalikan ke default"

@@ -180,6 +180,9 @@ export default {
   "Apply selected solution": [
     "Seçilen çözümü uygula"
   ],
+  "Applying changes": [
+    ""
+  ],
   "As a new partition on %s": [
     "%s üzerinde yeni bir bölüm olarak"
   ],
@@ -237,6 +240,9 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "Kuruluma başlamadan önce aşağıdaki sorunları gidermeniz gerekmektedir:"
   ],
+  "Below %s devices are offline and cannot be formatted.": [
+    ""
+  ],
   "Beta": [
     "Beta"
   ],
@@ -267,9 +273,6 @@ export default {
   "Cannot connect to Agama server": [
     "Agama sunucusuna bağlanılamıyor"
   ],
-  "Cannot format all selected devices": [
-    "Seçilen tüm aygıtlar biçimlendirilemiyor"
-  ],
   "Change": [
     "Değiştir"
   ],
@@ -287,6 +290,9 @@ export default {
   ],
   "Change display language and keyboard layout": [
     "Görüntüleme dilini ve klavye düzenini değiştir"
+  ],
+  "Change filters and try again.": [
+    ""
   ],
   "Change keyboard": [
     "Klavyeyi değiştir"
@@ -326,6 +332,9 @@ export default {
   ],
   "Clear": [
     "Temizle"
+  ],
+  "Clear all filters": [
+    ""
   ],
   "Clear selected mount point": [
     "Seçilen bağlama noktasını temizle"
@@ -374,6 +383,9 @@ export default {
   ],
   "Confirm Installation": [
     "Kurulumu Onayla"
+  ],
+  "Confirm that you really want to continue.": [
+    ""
   ],
   "Congratulations!": [
     "Tebrikler!"
@@ -458,12 +470,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "DASD aygıtları seçim tablosu"
-  ],
-  "DASDs table section": [
-    "DASDs tablo bölümü"
   ],
   "DIAG": [
     "DIAG"
@@ -692,12 +698,6 @@ export default {
   ],
   "Filter by language, territory or locale code": [
     "Dile, bölgeye veya yerel ayar koduna göre filtreleyin"
-  ],
-  "Filter by max channel": [
-    "Maksimum kanala göre filtrele"
-  ],
-  "Filter by min channel": [
-    "Minimum kanala göre filtrele"
   ],
   "Filter by pattern title or description": [
     "Desen başlığına veya açıklamasına göre filtrele"
@@ -940,6 +940,9 @@ export default {
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Mevcut yapılandırma ile sistemi kurmak mümkün değildir. Aşağıdaki ayarları düzenleyin."
   ],
+  "It is offline and must be activated before formatting it.": [
+    ""
+  ],
   "It may take some time.": [
     "Biraz zaman alabilir."
   ],
@@ -1117,6 +1120,9 @@ export default {
   "No": [
     "Hayır"
   ],
+  "No DASD devices were found in this machine.": [
+    ""
+  ],
   "No Wi-Fi networks were found": [
     "Hiçbir Wi-Fi ağı bulunamadı"
   ],
@@ -1210,9 +1216,6 @@ export default {
   "Not supported (%s)": [
     "Desteklenmiyor (%s)"
   ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Çevrimdışı cihazlar biçimlendirilmeden önce etkinleştirilmelidir. Lütfen aşağıda listelenen cihazların seçimini kaldırın veya etkinleştirin ve tekrar deneyin"
-  ],
   "On boot": [
     "Önyüklemede"
   ],
@@ -1293,9 +1296,6 @@ export default {
   ],
   "Pending": [
     "Bekliyor"
-  ],
-  "Perform an action": [
-    "Bir eylem gerçekleştir"
   ],
   "PiB": [
     "PB"
@@ -1399,12 +1399,6 @@ export default {
   "Remove": [
     "Kaldır"
   ],
-  "Remove max channel filter": [
-    "Maksimum kanal filtresini kaldır"
-  ],
-  "Remove min channel filter": [
-    "Min kanal filtresini kaldır"
-  ],
   "Remove the configuration for this disk": [
     "Bu disk için yapılandırmayı kaldırın"
   ],
@@ -1437,6 +1431,9 @@ export default {
   ],
   "Routes": [
     "Rotalar"
+  ],
+  "Row expansion": [
+    ""
   ],
   "SD Card": [
     "SD Kart"
@@ -1536,12 +1533,6 @@ export default {
   ],
   "Server options": [
     "Sunucu seçenekleri"
-  ],
-  "Set DIAG Off": [
-    "DIAG'ı Kapalı Olarak Ayarla"
-  ],
-  "Set DIAG On": [
-    "DIAG'ı Açık olarak ayarlayın"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
     "Ağ güncellemeleriyle değişmeyecek kalıcı bir ana bilgisayar adı ayarlayın."
@@ -1862,9 +1853,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Bunlar, yüklenecek ürün için ayarlardır. Yükleyici dili, üst çubuktan erişilebilen [ayarlar paneli] aracılığıyla ayarlanabilir."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Bu eylem aşağıda listelenen cihazlarda depolanan tüm verileri yok edebilir. Lütfen devam etmek istediğinizi onaylayın."
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Bu uzantı sunucuda mevcut değil. Sunucu yöneticisinden uzantıyı yansıtmasını isteyin."
   ],
@@ -1873,6 +1861,12 @@ export default {
   ],
   "This license is not available in %s.": [
     "Bu lisans %s'de mevcut değil."
+  ],
+  "This may take a moment while updates complete.": [
+    ""
+  ],
+  "This message will close automatically when everything is done.": [
+    ""
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Bu desen, netlik ve verimlilik arasında bir denge kurar: modal, basit seçimler için her şeyi hafif tutarken, tam görünüm daha derin keşifleri ve özellikle çok sayıda cihaza sahip kullanıcılar için daha karmaşık eylemleri destekler."
@@ -1924,6 +1918,9 @@ export default {
   ],
   "Unselect": [
     "Seçimi kaldır"
+  ],
+  "Unselect or activate them and try it again.": [
+    ""
   ],
   "Unsupported AutoYaST elements": [
     "Desteklenmeyen AutoYaST öğeleri"
@@ -2177,8 +2174,17 @@ export default {
   "logical volume": [
     "mantıksal alan"
   ],
+  "no": [
+    ""
+  ],
+  "offline": [
+    ""
+  ],
   "partition": [
     "bölüm"
+  ],
+  "read_only": [
+    ""
   ],
   "reset to defaults": [
     "varsayılanlara sıfırla"
