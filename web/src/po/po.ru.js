@@ -183,6 +183,9 @@ export default {
   "Apply selected solution": [
     "Применить выбранное решение"
   ],
+  "Applying changes": [
+    "Применение изменений"
+  ],
   "As a new partition on %s": [
     "Как новый раздел на %s"
   ],
@@ -249,6 +252,9 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "Перед началом установки нужно устранить следующие проблемы:"
   ],
+  "Below %s devices are offline and cannot be formatted.": [
+    "%s устр. находятся в офлайн-режиме и не могут быть отформатированы."
+  ],
   "Beta": [
     "Бета-версия"
   ],
@@ -285,7 +291,10 @@ export default {
   "Cannot connect to Agama server": [
     "Не удалось подключиться к серверу Agama"
   ],
-  "Cannot format all selected devices": [
+  "Cannot format %s": [
+    "Невозможно отформатировать %s"
+  ],
+  "Cannot format all the selected devices": [
     "Невозможно отформатировать все выбранные устройства"
   ],
   "Change": [
@@ -305,6 +314,9 @@ export default {
   ],
   "Change display language and keyboard layout": [
     "Изменить язык и раскладку клавиатуры"
+  ],
+  "Change filters and try again.": [
+    "Измените фильтры и попробуйте снова."
   ],
   "Change keyboard": [
     "Изменить клавиатуру"
@@ -347,6 +359,12 @@ export default {
   ],
   "Clear": [
     "Очистить"
+  ],
+  "Clear all filters": [
+    "Очистить все фильтры"
+  ],
+  "Clear input": [
+    "Очистить ввод"
   ],
   "Clear selected mount point": [
     "Очистить выбранную точку монтирования"
@@ -398,6 +416,9 @@ export default {
   ],
   "Confirm Installation": [
     "Подтвердить установку"
+  ],
+  "Confirm that you really want to continue.": [
+    "Подтвердите, что вы действительно хотите продолжить."
   ],
   "Congratulations!": [
     "Поздравляем!"
@@ -497,12 +518,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "Таблица выбора устройств DASD"
-  ],
-  "DASDs table section": [
-    "Раздел таблицы DASD"
   ],
   "DIAG": [
     "Режим DIAG"
@@ -735,12 +750,6 @@ export default {
   "Filter by language, territory or locale code": [
     "Фильтр по языку, территории или коду локали"
   ],
-  "Filter by max channel": [
-    "Фильтр по максимальному каналу"
-  ],
-  "Filter by min channel": [
-    "Фильтр по минимальному каналу"
-  ],
   "Filter by pattern title or description": [
     "Фильтр по названию или описанию шаблона"
   ],
@@ -771,6 +780,9 @@ export default {
   "Format RAID %s": [
     "Отформатировать RAID-массив %s"
   ],
+  "Format device %s": [
+    "Отформатировать устройство %s"
+  ],
   "Format device as": [
     "Отформатировать устройство как"
   ],
@@ -779,6 +791,9 @@ export default {
   ],
   "Format logical volume as": [
     "Форматировать логический том как"
+  ],
+  "Format now": [
+    "Отформатировать"
   ],
   "Format partition as": [
     "Отформатировать раздел как"
@@ -986,6 +1001,9 @@ export default {
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Невозможно установить систему с текущей конфигурацией. Измените приведенные ниже настройки."
   ],
+  "It is offline and must be activated before formatting it.": [
+    "Устройство офлайн, перед форматированием его необходимо активировать."
+  ],
   "It may take some time.": [
     "Это может занять некоторое время."
   ],
@@ -1076,8 +1094,14 @@ export default {
   "Manual": [
     "Вручную"
   ],
+  "Max channel": [
+    "Макс. канал"
+  ],
   "MiB": [
     "МиБ"
+  ],
+  "Min channel": [
+    "Мин. канал"
   ],
   "Mode": [
     "Режим"
@@ -1163,6 +1187,9 @@ export default {
   "No": [
     "Нет"
   ],
+  "No DASD devices were found in this machine.": [
+    "На этой машине не обнаружено ни одного устройства DASD."
+  ],
   "No Wi-Fi networks were found": [
     "Сети WiFi не найдены"
   ],
@@ -1183,6 +1210,9 @@ export default {
   ],
   "No device selected yet": [
     "Устройство ещё не выбрано"
+  ],
+  "No devices available": [
+    "Нет доступных устройств"
   ],
   "No devices configured yet": [
     "Устройства ещё не настроены"
@@ -1258,9 +1288,6 @@ export default {
   ],
   "Not supported (%s)": [
     "Не поддерживается (%s)"
-  ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Перед форматированием автономных устройств их необходимо активировать. Пожалуйста, отмените выбор или активацию устройств, перечисленных ниже, и повторите попытку"
   ],
   "On boot": [
     "При загрузке"
@@ -1342,9 +1369,6 @@ export default {
   ],
   "Pending": [
     "Ожидается"
-  ],
-  "Perform an action": [
-    "Выполнить действие"
   ],
   "PiB": [
     "ПиБ"
@@ -1451,12 +1475,6 @@ export default {
   "Remove": [
     "Удалить"
   ],
-  "Remove max channel filter": [
-    "Удалить фильтр по максимальному каналу"
-  ],
-  "Remove min channel filter": [
-    "Удалить фильтр по минимальному каналу"
-  ],
   "Remove the configuration for this disk": [
     "Удалить конфигурацию для этого диска"
   ],
@@ -1492,6 +1510,15 @@ export default {
   ],
   "Routes": [
     "Маршруты"
+  ],
+  "Row actions": [
+    "Действия со строкой"
+  ],
+  "Row expansion": [
+    "Раскрытие строки"
+  ],
+  "Row selection": [
+    "Выбор строки"
   ],
   "SD Card": [
     "SD-карта"
@@ -1559,6 +1586,9 @@ export default {
   "Select at least one disk.": [
     "Выберите хотя бы один диск."
   ],
+  "Select devices to enable bulk actions.": [
+    "Выберите устройства для выполнения массовых действий."
+  ],
   "Select or enter a mount point": [
     "Выберите или введите точку монтирования"
   ],
@@ -1592,10 +1622,10 @@ export default {
   "Server options": [
     "Опции серверов"
   ],
-  "Set DIAG Off": [
+  "Set DIAG off": [
     "Отключить DIAG"
   ],
-  "Set DIAG On": [
+  "Set DIAG on": [
     "Включить DIAG"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
@@ -1924,8 +1954,11 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Это настройки для устанавливаемого продукта. Язык программы установки можно изменить через [панель настроек], доступную на верхней панели."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Это действие может уничтожить все данные, хранящиеся на перечисленных ниже устройствах. Пожалуйста, подтвердите, что Вы действительно хотите продолжить."
+  "This action could destroy any data stored on the device.": [
+    "Это действие может уничтожить все данные, хранящиеся на этом устройстве."
+  ],
+  "This action could destroy any data stored on the devices listed below.": [
+    "Это действие может уничтожить все данные, хранящиеся на перечисленных ниже устройствах."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Это расширение недоступно на сервере. Попросите администратора сервера \"отзеркалить\" расширение."
@@ -1935,6 +1968,12 @@ export default {
   ],
   "This license is not available in %s.": [
     "Лицензия недоступна на этом языке: %s."
+  ],
+  "This may take a moment while updates complete.": [
+    "Это может занять некоторое время, пока обновление будет завершено."
+  ],
+  "This message will close automatically when everything is done.": [
+    "Это сообщение закроется автоматически, когда все будет готово."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Этот подход обеспечивает баланс между ясностью и эффективностью: модальное окно сохраняет легкость для простого выбора, в то время как полноэкранный режим поддерживает более глубокое изучение и сложные действия, специально для пользователей с большим количеством устройств."
@@ -1986,6 +2025,9 @@ export default {
   ],
   "Unselect": [
     "Отменить выбор"
+  ],
+  "Unselect or activate them and try it again.": [
+    "Отмените выбор или активируйте их, а затем попробуйте снова."
   ],
   "Unsupported AutoYaST elements": [
     "Неподдерживаемые элементы AutoYaST"
@@ -2218,6 +2260,12 @@ export default {
   "[FIXME]": [
     "[FIXME]"
   ],
+  "active": [
+    "активно"
+  ],
+  "all": [
+    "все"
+  ],
   "approx. %s": [
     "прибл. %s"
   ],
@@ -2239,11 +2287,23 @@ export default {
   "logical volume": [
     "логический том"
   ],
+  "no": [
+    "нет"
+  ],
+  "offline": [
+    "офлайн"
+  ],
   "partition": [
     "раздел"
   ],
+  "read_only": [
+    "только_чтение"
+  ],
   "reset to defaults": [
     "сброс настроек по умолчанию"
+  ],
+  "yes": [
+    "да"
   ],
   "zFCP": [
     "zFCP"

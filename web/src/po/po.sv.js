@@ -60,6 +60,9 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "En generisk minimistorlek av%1$s kommer att användas för den nya %2$s"
   ],
+  "A generic size of %1$s will be used for the new %2$s": [
+    "En generisk storlek av %1$s kommer att användas för den nya %2$s"
+  ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Ett generiskt storleksintervall mellan %1$s och %2$s kommer att användas för den nya %3$s"
   ],
@@ -180,6 +183,9 @@ export default {
   "Apply selected solution": [
     "Använd den valda lösningen"
   ],
+  "Applying changes": [
+    "Tillämpar ändringar"
+  ],
   "As a new partition on %s": [
     "Som en ny partition på %s"
   ],
@@ -225,6 +231,15 @@ export default {
   "Back": [
     "Bakåt"
   ],
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
+    "Baserat på mängden RAM i systemet, kommer en %1$s av %2$s att planeras för %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
+    "Baserat på mängden RAM i systemet, kommer en %1$s på minst %2$s att planeras för %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "Baserat på mängden RAM i systemet, kommer en %1$s med en storlek mellan %2$s och %3$s att planeras för %4$s"
+  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -236,6 +251,9 @@ export default {
   ],
   "Before starting the installation, you need to address the following problems:": [
     "Innan du startar installationen måste du åtgärda följande problem:"
+  ],
+  "Below %s devices are offline and cannot be formatted.": [
+    "Nedanstående %s enheter är offline och kan inte formateras."
   ],
   "Beta": [
     "Beta"
@@ -273,7 +291,10 @@ export default {
   "Cannot connect to Agama server": [
     "Kan inte ansluta till Agama server"
   ],
-  "Cannot format all selected devices": [
+  "Cannot format %s": [
+    "Kan inte formatera %s"
+  ],
+  "Cannot format all the selected devices": [
     "Kan inte formatera alla valda enheter"
   ],
   "Change": [
@@ -293,6 +314,9 @@ export default {
   ],
   "Change display language and keyboard layout": [
     "Ändra visningsspråk och tangentbordslayout"
+  ],
+  "Change filters and try again.": [
+    "Ändra filter och försök igen."
   ],
   "Change keyboard": [
     "Ändra tangentbordslayout"
@@ -335,6 +359,12 @@ export default {
   ],
   "Clear": [
     "Rensa"
+  ],
+  "Clear all filters": [
+    "Rensa alla filter"
+  ],
+  "Clear input": [
+    "Rensa inmatning"
   ],
   "Clear selected mount point": [
     "Rensa vald monteringspunkt"
@@ -386,6 +416,9 @@ export default {
   ],
   "Confirm Installation": [
     "Bekräfta Installation"
+  ],
+  "Confirm that you really want to continue.": [
+    "Bekräfta att du verkligen vill fortsätta."
   ],
   "Congratulations!": [
     "Grattis!"
@@ -485,12 +518,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "DASD-enhetsvalstabell"
-  ],
-  "DASDs table section": [
-    "DASDs tabellsektion"
   ],
   "DIAG": [
     "DIAG"
@@ -723,12 +750,6 @@ export default {
   "Filter by language, territory or locale code": [
     "Filtrera efter språk, territorium eller lokalkod"
   ],
-  "Filter by max channel": [
-    "Filtrera efter maximal kanal"
-  ],
-  "Filter by min channel": [
-    "Filtrera efter minimum kanal"
-  ],
   "Filter by pattern title or description": [
     "Filtrera efter mönstertitel eller beskrivning"
   ],
@@ -759,6 +780,9 @@ export default {
   "Format RAID %s": [
     "Formatera RAID %s"
   ],
+  "Format device %s": [
+    "Formatera enhet %s"
+  ],
   "Format device as": [
     "Formatera enhet som"
   ],
@@ -767,6 +791,9 @@ export default {
   ],
   "Format logical volume as": [
     "Formatera logisk volym som"
+  ],
+  "Format now": [
+    "Formatera nu"
   ],
   "Format partition as": [
     "Formatera partition som"
@@ -973,6 +1000,9 @@ export default {
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Det är inte möjligt att installera systemet med den aktuella konfigurationen. Justera inställningarna nedan."
   ],
+  "It is offline and must be activated before formatting it.": [
+    "Den är offline och måste aktiveras innan den formateras."
+  ],
   "It may take some time.": [
     "Det kan ta lite tid."
   ],
@@ -1063,8 +1093,14 @@ export default {
   "Manual": [
     "Manuell"
   ],
+  "Max channel": [
+    "Maximal kanal"
+  ],
   "MiB": [
     "MiB"
+  ],
+  "Min channel": [
+    "Minimum kanal"
   ],
   "Mode": [
     "Läge"
@@ -1150,6 +1186,9 @@ export default {
   "No": [
     "Nej"
   ],
+  "No DASD devices were found in this machine.": [
+    "Inga DASD-enheter hittades i den här maskinen."
+  ],
   "No Wi-Fi networks were found": [
     "Inga Wi-Fi-nätverk hittades"
   ],
@@ -1170,6 +1209,9 @@ export default {
   ],
   "No device selected yet": [
     "Ingen enhet vald ännu"
+  ],
+  "No devices available": [
+    "Inga enheter tillgängliga"
   ],
   "No devices configured yet": [
     "Inga enheter har konfigurerats ännu"
@@ -1245,9 +1287,6 @@ export default {
   ],
   "Not supported (%s)": [
     "Stöds inte (%s)"
-  ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Offlineenheter måste aktiveras innan de formateras. Vänligen avmarkera eller aktivera enheterna listade nedan och försök igen"
   ],
   "On boot": [
     "Vid uppstart"
@@ -1329,9 +1368,6 @@ export default {
   ],
   "Pending": [
     "Väntar"
-  ],
-  "Perform an action": [
-    "Utför en åtgärd"
   ],
   "PiB": [
     "PiB"
@@ -1438,12 +1474,6 @@ export default {
   "Remove": [
     "Ta bort"
   ],
-  "Remove max channel filter": [
-    "Ta bort maximum kanal filter"
-  ],
-  "Remove min channel filter": [
-    "Ta bort minimum kanal filter"
-  ],
   "Remove the configuration for this disk": [
     "Ta bort konfigurationen för den här disken"
   ],
@@ -1479,6 +1509,15 @@ export default {
   ],
   "Routes": [
     "Rutter"
+  ],
+  "Row actions": [
+    "Rad åtgärder"
+  ],
+  "Row expansion": [
+    "Radexpansion"
+  ],
+  "Row selection": [
+    "Radval"
   ],
   "SD Card": [
     "SD-kort"
@@ -1546,6 +1585,9 @@ export default {
   "Select at least one disk.": [
     "Välj åtminstone en disk."
   ],
+  "Select devices to enable bulk actions.": [
+    "Välj enheter för att aktivera massåtgärder."
+  ],
   "Select or enter a mount point": [
     "Välj eller ange en monteringspunkt"
   ],
@@ -1579,11 +1621,11 @@ export default {
   "Server options": [
     "Server alternativ"
   ],
-  "Set DIAG Off": [
-    "Sätt DIAGNOS till av"
+  "Set DIAG off": [
+    "Sätt DIAGNOS av"
   ],
-  "Set DIAG On": [
-    "Sätt DIAGNOS till på"
+  "Set DIAG on": [
+    "Sätt DIAGNOS på"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
     "Ställ in ett permanent värdnamn som inte ändras med nätverksuppdateringar."
@@ -1910,8 +1952,11 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Det här är inställningarna för produkten som ska installeras. Installationsspråket kan justeras via [inställningspanelen] som är tillgänglig från det övre fältet."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Denna åtgärd kan förstöra all data som lagras på enheterna som anges nedan. Vänligen bekräfta att du verkligen vill fortsätta."
+  "This action could destroy any data stored on the device.": [
+    "Denna åtgärd kan förstöra all data som lagras på enheten."
+  ],
+  "This action could destroy any data stored on the devices listed below.": [
+    "Denna åtgärd kan förstöra all data som lagras på enheterna som listas nedan."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Det här tillägget är inte tillgängligt på servern. Be serveradministratören att spegla tillägget."
@@ -1921,6 +1966,12 @@ export default {
   ],
   "This license is not available in %s.": [
     "Den här licensen är inte tillgänglig i %s."
+  ],
+  "This may take a moment while updates complete.": [
+    "Detta kan ta en stund medan uppdateringarna slutförs."
+  ],
+  "This message will close automatically when everything is done.": [
+    "Detta meddelande kommer att stängas automatiskt när allt är klart."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Detta mönster skapar en balans mellan tydlighet och effektivitet: modalvyn gör det lätt för enkla val, medan helvyn stöder djupare utforskning och mer komplexa åtgärder, särskilt för användare med massor av enheter."
@@ -1972,6 +2023,9 @@ export default {
   ],
   "Unselect": [
     "Avmarkera"
+  ],
+  "Unselect or activate them and try it again.": [
+    "Avmarkera eller aktivera dem och försök igen."
   ],
   "Unsupported AutoYaST elements": [
     "Ostödda AutoYaST-element"
@@ -2204,6 +2258,12 @@ export default {
   "[FIXME]": [
     "[FIXA MIG]"
   ],
+  "active": [
+    "aktiv"
+  ],
+  "all": [
+    "alla"
+  ],
   "approx. %s": [
     "cirka. %s"
   ],
@@ -2225,11 +2285,23 @@ export default {
   "logical volume": [
     "logisk volym"
   ],
+  "no": [
+    "nej"
+  ],
+  "offline": [
+    "offline"
+  ],
   "partition": [
     "partition"
   ],
+  "read_only": [
+    "läs_endast"
+  ],
   "reset to defaults": [
     "återställ till standard"
+  ],
+  "yes": [
+    "ja"
   ],
   "zFCP": [
     "zFCP"
