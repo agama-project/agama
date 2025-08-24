@@ -37,23 +37,21 @@ import Icon from "~/components/layout/Icon";
 import Popup from "~/components/core/Popup";
 import FormatActionHandler from "~/components/storage/dasd/FormatActionHandler";
 import FormatFilter from "~/components/storage/dasd/FormatFilter";
-import SelectableDataTable from "~/components/core/SelectableDataTable";
+import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
 import StatusFilter from "~/components/storage/dasd/StatusFilter";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
 import { DASDDevice } from "~/types/dasd";
-import type { SortedBy } from "~/components/core/SelectableDataTable";
 import {
   DASDMutationFn,
   DASDMutationFnProps,
   useDASDDevices,
   useDASDMutation,
 } from "~/queries/storage/dasd";
-import { sort } from "fast-sort";
 import { isEmpty } from "radashi";
-import { hex } from "~/utils";
-import { _, n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { useInstallerClient } from "~/context/installer";
+import { hex, sortCollection } from "~/utils";
+import { _, n_ } from "~/i18n";
 
 /**
  * Filter options for narrowing down DASD devices shown in the table.
@@ -512,10 +510,8 @@ export default function DASDTable() {
   const filteredDevices = filterDevices(devices, state.filters);
 
   // Sorting
-  // See https://github.com/snovakovic/fast-sort
-  const sortedDevices = sort(filteredDevices)[state.sortedBy.direction](
-    (d) => d[columns[state.sortedBy.index].sortingKey],
-  );
+  const sortingKey = columns[state.sortedBy.index].sortingKey;
+  const sortedDevices = sortCollection(filteredDevices, state.sortedBy.direction, sortingKey);
 
   // Determine the appropriate empty state mode, if needed
   let emptyMode: DASDEmptyStateMode;

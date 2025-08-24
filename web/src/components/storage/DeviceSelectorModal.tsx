@@ -22,18 +22,20 @@
 
 import React, { useState } from "react";
 import { ButtonProps, Flex, Label } from "@patternfly/react-core";
-import { SelectableDataTable, Popup } from "~/components/core/";
+import Popup, { PopupProps } from "~/components/core/Popup";
+import SelectableDataTable, {
+  SortedBy,
+  SelectableDataTableProps,
+} from "~/components/core/SelectableDataTable";
 import { StorageDevice } from "~/types/storage";
-import { SortedBy, SelectableDataTableProps } from "~/components/core/SelectableDataTable";
 import {
   typeDescription,
   contentDescription,
   filesystemLabels,
 } from "~/components/storage/utils/device";
 import { deviceSize } from "~/components/storage/utils";
+import { sortCollection } from "~/utils";
 import { _ } from "~/i18n";
-import { PopupProps } from "../core/Popup";
-import { sort } from "fast-sort";
 
 type DeviceSelectorProps = {
   devices: StorageDevice[];
@@ -90,11 +92,10 @@ const DeviceSelector = ({
     { name: _("Description"), value: description },
     { name: _("Current content"), value: details },
   ];
+
   // Sorting
-  // See https://github.com/snovakovic/fast-sort
-  const sortedDevices = sort(devices)[sortedBy.direction](
-    (d) => d[columns[sortedBy.index].sortingKey],
-  );
+  const sortingKey = columns[sortedBy.index].sortingKey;
+  const sortedDevices = sortCollection(devices, sortedBy.direction, sortingKey);
 
   return (
     <>
