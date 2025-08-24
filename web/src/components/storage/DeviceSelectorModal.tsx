@@ -79,7 +79,7 @@ const DeviceSelector = ({
   onSelectionChange,
   selectionMode = "single",
 }: DeviceSelectorProps) => {
-  const [sortedBy, setSortedBy] = useState<SortedBy>({ index: 0, direction: "desc" });
+  const [sortedBy, setSortedBy] = useState<SortedBy>({ index: 0, direction: "asc" });
 
   const columns = [
     { name: _("Device"), value: (device: StorageDevice) => device.name, sortingKey: "name" },

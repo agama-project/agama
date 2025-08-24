@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { getColumnValues, plainRender } from "~/test-utils";
 import { StorageDevice } from "~/types/storage";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 
@@ -104,8 +104,50 @@ describe("DeviceSelectorModal", () => {
 
   it.todo("renders type, name, content, and filesystems of each device");
   it.todo("renders corresponding control (radio or checkbox) as checked for given selected device");
-  it.todo("allows sorting by device name");
-  it.todo("allows sorting by device size");
+
+  it("allows sorting by device name", async () => {
+    const { user } = plainRender(
+      <DeviceSelectorModal
+        devices={[sda, sdb]}
+        title="Select a device"
+        onCancel={onCancelMock}
+        onConfirm={onConfirmMock}
+      />,
+    );
+
+    const table = screen.getByRole("grid");
+    const sortByDeviceButton = within(table).getByRole("button", { name: "Device" });
+
+    expect(getColumnValues(table, "Device")).toEqual(["/dev/sda", "/dev/sdb"]);
+
+    await user.click(sortByDeviceButton);
+
+    expect(getColumnValues(table, "Device")).toEqual(["/dev/sdb", "/dev/sda"]);
+  });
+
+  it("allows sorting by device size", async () => {
+    const { user } = plainRender(
+      <DeviceSelectorModal
+        devices={[sda, sdb]}
+        title="Select a device"
+        onCancel={onCancelMock}
+        onConfirm={onConfirmMock}
+      />,
+    );
+
+    const table = screen.getByRole("grid");
+    const sortBySizeButton = within(table).getByRole("button", { name: "Size" });
+
+    // By default, table is sorted by device name. Switch sorting to size in asc direction
+    await user.click(sortBySizeButton);
+
+    expect(getColumnValues(table, "Size")).toEqual(["1 KiB", "2 KiB"]);
+
+    // Now keep sorting by size, but in desc direction
+    await user.click(sortBySizeButton);
+
+    expect(getColumnValues(table, "Size")).toEqual(["2 KiB", "1 KiB"]);
+  });
 
   it("triggers onCancel callback when users selects `Cancel` action", async () => {
     const { user } = plainRender(

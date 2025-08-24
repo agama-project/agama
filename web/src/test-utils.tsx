@@ -32,7 +32,7 @@ import React from "react";
 import { MemoryRouter, useParams } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
-import { render } from "@testing-library/react";
+import { render, within } from "@testing-library/react";
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 import { InstallerL10nProvider } from "~/context/installerL10n";
@@ -219,6 +219,29 @@ const resetLocalStorage = (initialState?: { [key: string]: string }) => {
   });
 };
 
+/**
+ * Extracts all cell values from a specific column in an HTML table,
+ * based on the column's `data-label` attribute.
+ *
+ * Skips the header row and returns trimmed text content for each matching cell.
+ *
+ * @param table - The `<table>` element to extract data from.
+ * @param columnName - The value of the `data-label` attribute identifying the column (e.g., "Device", "Size").
+ * @returns An array of strings containing the text content of each cell in the specified column.
+ *
+ * @example
+ * ```ts
+ * const table = screen.getByRole("table");
+ * const deviceNames = getColumnValues(table, "Device");
+ * expect(deviceNames).toEqual(["/dev/sda", "/dev/sdb", "/dev/sdc"]);
+ * ```
+ */
+const getColumnValues = (table: HTMLElement | HTMLTableElement, columnName: string) =>
+  within(table)
+    .getAllByRole("row")
+    .slice(1) // Skip header
+    .map((row) => row.querySelector(`[data-label="${columnName}"]`)?.textContent?.trim());
+
 export {
   plainRender,
   installerRender,
@@ -228,4 +251,5 @@ export {
   mockRoutes,
   mockUseRevalidator,
   resetLocalStorage,
+  getColumnValues,
 };
