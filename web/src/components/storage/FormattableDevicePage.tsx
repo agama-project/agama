@@ -475,7 +475,10 @@ export default function FormattableDevicePage() {
               </Flex>
               <FormHelperText>
                 <HelperText>
-                  <HelperTextItem variant={mountPointError ? "error" : "default"}>
+                  <HelperTextItem
+                    variant={mountPointError ? "error" : "default"}
+                    screenReaderText=""
+                  >
                     {!mountPointError && _("Select or enter a mount point")}
                     {mountPointError?.message}
                   </HelperTextItem>

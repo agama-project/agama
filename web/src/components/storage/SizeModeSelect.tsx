@@ -147,7 +147,9 @@ function CustomSize({ value, onChange }: CustomSizeProps) {
           {error && (
             <FormHelperText>
               <HelperText>
-                <HelperTextItem variant="error">{help}</HelperTextItem>
+                <HelperTextItem variant="error" screenReaderText="">
+                  {help}
+                </HelperTextItem>
               </HelperText>
             </FormHelperText>
           )}
