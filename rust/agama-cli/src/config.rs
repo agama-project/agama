@@ -160,7 +160,7 @@ pub async fn run(
 /// Runs commands without remote connection to the Agama server
 pub fn run_local(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result<()> {
     match subcommand {
-        ConfigCommands::Validate { url_or_path } => validate_json(url_or_path, opts.insecure),
+        ConfigCommands::Validate { url_or_path } => validate_local(url_or_path, opts.insecure),
         _ => {
             eprintln!("This subcommand doesn't support --local option");
             Ok(())
@@ -169,7 +169,7 @@ pub fn run_local(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
 }
 
 /// Validates a JSON profile with locally available tools only
-fn validate_json(url_or_path: CliInput, insecure: bool) -> anyhow::Result<()> {
+fn validate_local(url_or_path: CliInput, insecure: bool) -> anyhow::Result<()> {
     let profile_string = url_or_path.read_to_string(insecure)?;
     let validator = ProfileValidator::default_schema().context("Setting up profile validator")?;
     let result = validator.validate_str(&profile_string);
