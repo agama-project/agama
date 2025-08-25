@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Aug 25 19:47:35 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Improved initialization of iBFT (bsc#1247711).
+
+-------------------------------------------------------------------
 Wed Aug 20 10:16:04 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Removed the heuristic that used to consider some software RAID as
