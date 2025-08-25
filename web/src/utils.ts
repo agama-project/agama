@@ -22,6 +22,7 @@
 
 import { mapEntries } from "radashi";
 import { generatePath } from "react-router-dom";
+import { ISortBy, sort } from "fast-sort";
 
 /**
  * Generates a new array without null and undefined values.
@@ -178,6 +179,32 @@ const generateEncodedPath = (...args: Parameters<typeof generatePath>) => {
   );
 };
 
+/**
+ * A lightweight wrapper around `fast-sort`.
+ *
+ * Rather than using `fast-sort`'s method-chaining syntax, this function accepts
+ * the sort direction (`"asc"` or `"desc"`) as a direct argument, resulting in a
+ * cleaner and more declarative API for Agama components, where sorting is often
+ * built dynamically.
+ *
+ * @example
+ * ```ts
+ * sortCollection(devices, 'size', 'asc');
+ * sortCollection(devices, d => d.sid + d.size, 'desc');
+ * sortCollection(devices, [d => d.size, d => d.name], 'asc');
+ * ```
+ * @param collection - The array of items to be sorted.
+ * @param direction - The direction of the sort. Use "asc" for ascending or
+ *   "desc" for descending.
+ * @param key - The key (as a string) to sort by, or a custom function
+ *   compatible with `fast-sort`'s ISortBy.
+ *
+ * @returns A new array sorted based on the given key and direction.
+ *
+ */
+const sortCollection = <T>(collection: T[], direction: "asc" | "desc", key: string | ISortBy<T>) =>
+  sort(collection)[direction](key as ISortBy<T>);
+
 export {
   compact,
   hex,
@@ -187,4 +214,5 @@ export {
   timezoneTime,
   mask,
   generateEncodedPath,
+  sortCollection,
 };
