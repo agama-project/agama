@@ -32,11 +32,17 @@ import {
   updateRoot,
 } from "~/api/users";
 
+const usersKeys = {
+  all: () => ["users"] as const,
+  root: () => [...usersKeys.all(), "root"] as const,
+  firstUser: () => [...usersKeys.all(), "firstUser"] as const,
+};
+
 /**
  * Returns a query for retrieving the first user configuration
  */
 const firstUserQuery = () => ({
-  queryKey: ["users", "firstUser"],
+  queryKey: usersKeys.firstUser(),
   queryFn: fetchFirstUser,
 });
 
@@ -55,7 +61,7 @@ const useFirstUserMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: updateFirstUser,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users", "firstUser"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: usersKeys.firstUser() }),
   };
   return useMutation(query);
 };
@@ -65,7 +71,7 @@ const useRemoveFirstUserMutation = () => {
   const query = {
     mutationFn: removeFirstUser,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users", "firstUser"] });
+      queryClient.invalidateQueries({ queryKey: usersKeys.firstUser() });
     },
   };
   return useMutation(query);
@@ -84,7 +90,7 @@ const useFirstUserChanges = () => {
     return client.onEvent((event) => {
       if (event.type === "FirstUserChanged") {
         const { fullName, userName, password, hashedPassword, autologin, data } = event;
-        queryClient.setQueryData(["users", "firstUser"], {
+        queryClient.setQueryData(usersKeys.firstUser(), {
           fullName,
           userName,
           password,
@@ -101,7 +107,7 @@ const useFirstUserChanges = () => {
  * Returns a query for retrieving the root user configuration.
  */
 const rootUserQuery = () => ({
-  queryKey: ["users", "root"],
+  queryKey: usersKeys.root(),
   queryFn: fetchRoot,
 });
 
@@ -118,10 +124,10 @@ const useRootUserMutation = () => {
   const query = {
     mutationFn: updateRoot,
     onMutate: async (newRoot: RootUser) => {
-      await queryClient.cancelQueries({ queryKey: ["users", "root"] });
+      await queryClient.cancelQueries({ queryKey: usersKeys.root() });
 
-      const previousRoot: RootUser = queryClient.getQueryData(["users", "root"]);
-      queryClient.setQueryData(["users", "root"], {
+      const previousRoot: RootUser = queryClient.getQueryData(usersKeys.root());
+      queryClient.setQueryData(usersKeys.root(), {
         password: newRoot.password,
         hashedPassword: newRoot.hashedPassword,
         sshPublicKey: newRoot.sshPublicKey || previousRoot.sshPublicKey,
@@ -130,10 +136,10 @@ const useRootUserMutation = () => {
     },
     // eslint-disable-next-line n/handle-callback-err
     onError: (error, newRoot, context) => {
-      queryClient.setQueryData(["users", "root"], context.previousRoot);
+      queryClient.setQueryData(usersKeys.root(), context.previousRoot);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["users", "root"] });
+      queryClient.invalidateQueries({ queryKey: usersKeys.root() });
     },
   };
   return useMutation(query);
@@ -152,7 +158,7 @@ const useRootUserChanges = () => {
     return client.onEvent((event) => {
       if (event.type === "RootChanged") {
         const { password, sshPublicKey } = event;
-        queryClient.setQueryData(["users", "root"], (oldRoot: RootUser) => {
+        queryClient.setQueryData(usersKeys.root(), (oldRoot: RootUser) => {
           const newRoot = { ...oldRoot };
           if (password !== undefined) {
             newRoot.password = password;

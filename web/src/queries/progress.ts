@@ -33,6 +33,11 @@ const servicesMap = {
   "/org/opensuse/Agama/Storage1": "storage",
 };
 
+const progressKeys = {
+  all: () => ["progress"] as const,
+  byService: (service: string) => [...progressKeys.all(), service] as const,
+};
+
 /**
  * Returns a query for retrieving the progress information for a given service
  *
@@ -43,7 +48,7 @@ const servicesMap = {
  */
 const progressQuery = (service: string) => {
   return {
-    queryKey: ["progress", service],
+    queryKey: progressKeys.byService(service),
     queryFn: () => fetchProgress(service),
   };
 };
@@ -83,12 +88,12 @@ const useProgressChanges = () => {
           return;
         }
 
-        const data = queryClient.getQueryData(["progress", service]);
+        const data = queryClient.getQueryData(progressKeys.byService(service));
         if (data) {
           // NOTE: steps are not coming in the updates
           const steps = (data as Progress).steps;
           const fromEvent = Progress.fromApi(event);
-          queryClient.setQueryData(["progress", service], { ...fromEvent, steps });
+          queryClient.setQueryData(progressKeys.byService(service), { ...fromEvent, steps });
         }
       }
     });
@@ -106,7 +111,7 @@ const useResetProgress = () => {
 
   React.useEffect(() => {
     return () => {
-      queryClient.invalidateQueries({ queryKey: ["progress"] });
+      queryClient.invalidateQueries({ queryKey: progressKeys.all() });
     };
   }, [queryClient]);
 };
