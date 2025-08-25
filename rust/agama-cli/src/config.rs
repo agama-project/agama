@@ -22,8 +22,8 @@ use std::{io::Write, path::PathBuf, process::Command};
 
 use agama_lib::{
     context::InstallationContext, http::BaseHTTPClient, install_settings::InstallSettings,
-    monitor::MonitorClient, profile::ProfileValidator, profile::ValidationOutcome, utils::FileFormat,
-    Store as SettingsStore,
+    monitor::MonitorClient, profile::ProfileValidator, profile::ValidationOutcome,
+    utils::FileFormat, Store as SettingsStore,
 };
 use anyhow::{anyhow, Context};
 use clap::Subcommand;
@@ -121,9 +121,9 @@ pub async fn run(
             let contents = url_or_path.read_to_string(opts.insecure)?;
             let valid = validate(&http_client, CliInput::Full(contents.clone())).await?;
 
-            if matches!(valid, ValidationOutcome::Valid)
-            {
-                let result = InstallSettings::from_json(&contents, &InstallationContext::from_env()?)?;
+            if matches!(valid, ValidationOutcome::Valid) {
+                let result =
+                    InstallSettings::from_json(&contents, &InstallationContext::from_env()?)?;
                 tokio::spawn(async move {
                     show_progress(monitor, true).await;
                 });
@@ -158,14 +158,9 @@ pub async fn run(
 }
 
 /// Runs commands without remote connection to the Agama server
-pub fn run_local(
-    subcommand: ConfigCommands,
-    opts: GlobalOpts,
-) -> anyhow::Result<()> {
+pub fn run_local(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result<()> {
     match subcommand {
-        ConfigCommands::Validate { url_or_path } => {
-            validate_json(url_or_path, opts.insecure)
-        }
+        ConfigCommands::Validate { url_or_path } => validate_json(url_or_path, opts.insecure),
         _ => {
             eprintln!("This subcommand doesn't support --local option");
             Ok(())
@@ -174,14 +169,10 @@ pub fn run_local(
 }
 
 /// Validates a JSON profile with locally available tools only
-fn validate_json(
-    url_or_path: CliInput,
-    insecure: bool,
-) -> anyhow::Result<()> {
+fn validate_json(url_or_path: CliInput, insecure: bool) -> anyhow::Result<()> {
     let profile_string = url_or_path.read_to_string(insecure)?;
     let validator = ProfileValidator::default_schema().context("Setting up profile validator")?;
-    let result = validator
-        .validate_str(&profile_string);
+    let result = validator.validate_str(&profile_string);
 
     match result {
         Ok(validity) => validation_msg(&validity),
@@ -214,7 +205,10 @@ async fn validate_client(
     Ok(client.deserialize_or_error(response).await?)
 }
 
-async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<ValidationOutcome> {
+async fn validate(
+    client: &BaseHTTPClient,
+    url_or_path: CliInput,
+) -> anyhow::Result<ValidationOutcome> {
     let validity = validate_client(client, url_or_path).await?;
     let _ = validation_msg(&validity);
 
