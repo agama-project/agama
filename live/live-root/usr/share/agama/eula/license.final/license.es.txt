@@ -3,179 +3,136 @@ del software de SUSE
 
 
 Acuerdo de licencia de usuario final del software de SUSE
-LEA ESTE ACUERDO ATENTAMENTE. AL DESCARGAR, INSTALAR O ADQUIRIR DE 
-CUALQUIER OTRO MODO EL SOFTWARE (COMO SE DEFINE MÁS ABAJO E 
-INCLUIDOS SUS COMPONENTES), ESTARÁ ACEPTANDO LOS TÉRMINOS DE ESTE 
-ACUERDO. SI NO ESTÁ CONFORME CON ESTOS TÉRMINOS, NO TENDRÁ 
-AUTORIZACIÓN PARA DESCARGAR, INSTALAR NI UTILIZAR EL SOFTWARE. SI 
-UNA PERSONA ACTÚA EN NOMBRE DE UNA ENTIDAD, SE DETERMINA QUE ESA 
-PERSONA TIENE LA AUTORIDAD PARA ACEPTAR ESTE ACUERDO EN NOMBRE DE 
-DICHA ENTIDAD.
+AL DESCARGAR, INSTALAR, ADQUIRIR O USAR DE CUALQUIER OTRO MODO EL 
+SOFTWARE (COMO SE DEFINE A CONTINUACIÓN), EL USUARIO ESTARÁ 
+ACEPTANDO LOS TÉRMINOS DE ESTE ACUERDO. SI NO ESTÁ CONFORME CON 
+ESTOS TÉRMINOS, NO TENDRÁ AUTORIZACIÓN PARA DESCARGAR, INSTALAR NI 
+UTILIZAR EL SOFTWARE. SI UNA PERSONA ACTÚA EN NOMBRE DE UNA ENTIDAD, 
+SE DETERMINA QUE ESA PERSONA TIENE LA AUTORIDAD PARA ACEPTAR ESTE 
+ACUERDO EN NOMBRE DE DICHA ENTIDAD.  SI ACEPTA EL ACUERDO EN NOMBRE 
+DE UNA ENTIDAD, LOS TÉRMINOS "USTED", EL "USUARIO" Y LOS POSESIVOS 
+CORRESPONDIENTES HARÁN REFERENCIA EN ADELANTE A DICHA ENTIDAD.
 
-SUSE LLC (el "Licenciador" o "SUSE") pone a disposición del usuario 
-los productos de software, que son una recopilación: (i) programas 
-de software desarrollados por SUSE y sus afiliados; (ii) programas 
-de software desarrollados por terceros; (iii) marcas comerciales 
-propiedad de SUSE y/o sus filiales ("Marcas de SUSE"); y (iv) los 
-medios o reproducciones (físicos o virtuales) y la documentación 
-adjunta que acompañe a dichos programas de software (la recopilación 
-de programas, marcas comerciales y documentación se denomina 
-conjuntamente como el "Software").  
+SUSE LLC (el "Licenciador" o "SUSE") ofrece productos de software, 
+que pueden incluir: (i) programas de software desarrollados por SUSE 
+o sus filiales; (ii) programas de software desarrollados por 
+terceros; (iii) compilaciones de programas de software; y (iv) 
+marcas comerciales propiedad de SUSE y/o sus filiales ("Marcas de 
+SUSE"), así como la documentación que acompaña a dichos programas de 
+software (tales programas de software, compilaciones de programas de 
+software, marcas comerciales y documentación conforman el 
+"Software").
 
-El Software está protegido por las leyes y los tratados de derechos 
-de autor de Estados Unidos y por las leyes de derechos de autor de 
-otros países. Este Acuerdo de licencia de usuario final ("EULA") es 
-un acuerdo legal entre el Usuario (una entidad o una persona) y SUSE 
-que rige el uso del Software. Si las leyes de la ubicación principal 
-del negocio del Usuario requieren que los contratos estén en el 
-idioma local para ser ejecutables, dicha versión en el idioma local 
-se puede obtener del Licenciador previa solicitud por escrito y se 
-considerará que rige el uso que haga el Usuario del Software. 
-Cualquier complemento, extensión, actualización, aplicación móvil, 
-módulo, adaptador o versión de asistencia del Software que pueda 
-descargar o recibir el Usuario y no esté acompañado por un acuerdo 
-de licencia que reemplace expresamente al presente, se considerará 
-como Software y se regirá por este EULA. 
-
+Este Acuerdo de licencia de usuario final ("EULA") es un acuerdo 
+legal entre el Usuario (persona jurídica o persona física) y SUSE y 
+rige el uso que haga del Software. Cualquier complemento, extensión, 
+actualización, aplicación móvil, módulo, adaptador o versión de 
+asistencia del Software que pueda descargar o recibir el Usuario y 
+no esté acompañado por otro acuerdo de licencia se considerará como 
+Software regido por este EULA. Si la legislación del lugar de 
+trabajo principal del Usuario requiere que los contratos estén en el 
+idioma local para ser aplicables, puede obtener una versión en el 
+idioma local escribiendo al Licenciador, y la versión en el idioma 
+local regirá su uso del Software.      
+ 
 Términos de la licencia
 Código abierto
 El Software contiene muchos componentes individuales que son 
-software de código abierto, y la licencia de código abierto de cada 
-componente, que según el programa de software puede ser la Licencia 
-pública general de GNU versión 2 
-(https://www.gnu.org/licenses/oldlicenses/gpl-2.0.en.html) o Apache 
-2.0 (https://www.apache.org/licenses/LICENSE-2.0) u otra licencia de 
-código abierto (cada una de estas licencias se denomina "Licencia de 
-código abierto"). Estas Licencias de código abierto se encuentran en 
-la documentación y/o en el código fuente del componente. 
-
-Este EULA rige el uso del Software, incluidas las Marcas de SUSE, y 
-no limita, sustituye ni modifica los derechos del Usuario expresados 
-en la Licencia de código abierto aplicable al uso de cualquier 
-código de código abierto incluido en el Software sin las Marcas de 
-SUSE.
-
-El Software puede incluir o estar incluido en un paquete con otros 
-programas de software cuya licencia contenga términos distintos o 
-haya sido otorgada por otros fabricantes distintos al Licenciador.  
-El uso de cualquier programa de software acompañado de un acuerdo de 
-licencia independiente se regirá por dicho acuerdo de licencia.
+software de código abierto. La licencia de código abierto para cada 
+componente, que, según el programa de software, puede ser la 
+Licencia Pública General de GNU versión 2 
+(https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html), la 
+Licencia de Apache versión 2.0 
+(https://www.apache.org/licenses/LICENSE-2.0) u otra licencia de 
+código abierto (cada una de estas licencias se considera como 
+"Licencia de código abierto"), se encuentra en la documentación de 
+licencias o en el código fuente del componente.
+ 
+Este EULA rige el uso del Software, incluidas las Marcas de SUSE, 
+pero no limita, sustituye ni modifica los derechos del Usuario 
+expresados en la Licencia de código abierto aplicable al uso de 
+cualquier código de código abierto incluido en el Software sin las 
+Marcas de SUSE.
+ 
+El Software se puede proporcionar con programas de terceros que no 
+forman parte del Software. Estos programas de terceros no son 
+necesarios para ejecutar el Software, se proporcionan para comodidad 
+del Usuario y están sujetos a sus propios términos de licencia. Los 
+términos de licencia acompañan a los programas de terceros o se 
+pueden consultar en https://www.suse.com/licensing/eula/. Si el 
+Usuario no está de acuerdo con los términos de licencia aplicables 
+para los programas de otros fabricantes, no debe instalarlos. Si el 
+Usuario desea instalar los programas de otros fabricantes en más de 
+un sistema o transferir los programas de otros fabricantes a un 
+tercero, debe ponerse en contacto con el licenciador de los 
+programas de otros fabricantes correspondientes.
 
 Licencia para utilizar el Software
-Siempre que se cumplan los términos y condiciones de este EULA, el 
-Licenciador otorga al Usuario una licencia mundial perpetua, no 
-exclusiva, no transferible y revocable para reproducir y usar copias 
-del Software dentro de su Organización para uso interno en la 
-Organización del Usuario. "Organización" significa una entidad legal 
-y sus Afiliadas. "Afiliadas" hace referencia a las entidades que 
-controla el Usuario, las que tienen control sobre el Usuario y las 
-que están bajo control común del Usuario. La licencia anterior está 
-condicionada a que el Usuario sea responsable de cualquier 
-incumplimiento de las disposiciones de este EULA por parte de sus 
-Afiliadas.
-
-Este EULA no le permite distribuir el Software o sus componentes que 
-usen las marcas de SUSE aunque la copia haya sido modificada. El 
-Usuario puede realizar una redistribución fuera de su Organización: 
-(a) del Software, solo si se permite en virtud de un acuerdo por 
+Siempre que se cumplan los términos y condiciones de este EULA y de 
+la Licencia de código abierto aplicable, se otorga al Usuario una 
+licencia mundial perpetua, no exclusiva, intransferible y revocable 
+para reproducir y utilizar copias del Software para uso interno de 
+su entidad legal. 
+ 
+Este EULA no permite distribuir el Software o sus componentes 
+utilizando las Marcas de SUSE, excepto que el Usuario puede 
+redistribuir fuera de Su entidad legal lo siguiente: (a) copias del 
+Software, pero solo si se permite en virtud de un acuerdo por 
 escrito independiente con el Licenciador que autorice dicha 
-redistribución, o (b) de los componentes que constituyen el 
-Software, solo si el Usuario elimina y reemplaza todas las 
-apariciones de cualquier Marca de SUSE.
-
-Si el Usuario ha recibido de SUSE, ya sea directa o indirectamente, 
-hardware, software u otro dispositivo que utilice o integre el 
-Software, puede utilizar el Software únicamente con el fin de 
-ejecutar dicho hardware, software o dispositivo, y no de forma 
-independiente.
+redistribución, o (b) los componentes que constituyen el Software, 
+solo si se eliminan y reemplazan todas las apariciones de cualquier 
+Marca de SUSE.
 
 Propiedad
-No se le transfiere ningún título o propiedad del Software.  El 
-Licenciador y sus licenciadores terceros mantienen íntegramente el 
+El Software se proporciona bajo licencia, no se vende.  No se 
+transfiere al Usuario ningún título o propiedad del Software.  El 
+Licenciador o los licenciadores terceros mantienen íntegramente el 
 derecho, la titularidad y el interés sobre todos los derechos de 
-propiedad intelectual especificados en el Software, incluidas sus 
-copias o adaptaciones. El Software no se le vende al Usuario, el 
-Usuario adquiere únicamente una licencia condicional de uso del 
-Software.  La titularidad, los derechos de propiedad y los derechos 
-de propiedad intelectual del contenido al que se accede a través del 
-Software son propiedad de los propietarios del contenido aplicable y 
-deben estar protegidos por derechos de autor u otras leyes 
-aplicables.  Este EULA no da derecho alguno al Usuario sobre dicho 
-contenido.
+propiedad intelectual especificados en el Software.      
 
 Marcas de SUSE
-En virtud de este EULA no se otorga ningún derecho o licencia, ni 
-expreso ni implícito, para utilizar cualquier Marca de SUSE, nombre 
-comercial o marca de servicio del Licenciador o sus afiliados ni 
-licenciadores de otro modo que no sea necesario para utilizar el 
-Software según lo permitido por este EULA
+En el presente EULA no se otorga ningún derecho ni licencia, ya sea 
+expreso o implícito, para usar cualquier Marca de SUSE, nombre 
+comercial o marca de servicio del Licenciador ni de sus filiales u 
+otorgantes de licencia.
 
 Servicios de suscripciones y Asistencia técnica
-El Licenciador no tiene la obligación de proporcionar mantenimiento 
-o asistencia a menos que el Usuario adquiera una oferta de 
-suscripción, de conformidad con un contrato adicional con el 
-Licenciador o sus afiliados, que incluya expresamente dichos 
-servicios. 
+El Licenciador no está obligado a prestar mantenimiento o asistencia 
+a menos que se acuerde lo contrario mediante un acuerdo adicional 
+que incluya explícitamente dichos servicios.
 
 Garantía y responsabilidad
 Garantía limitada
-El Licenciador garantiza que el medio en el que se entrega el 
-software está libre de defectos en materiales y manufacturado bajo 
-un uso normal para un periodo de sesenta (60) días desde la fecha de 
-entrega. LA ANTERIOR GARANTÍA ES LA ÚNICA Y EXCLUSIVA COMPENSACIÓN 
-DEL USUARIO Y SUSTITUYE A CUALQUIER OTRA GARANTÍA, YA SEA EXPLÍCITA 
-O IMPLÍCITA.  SALVO POR LA PRESENTE GARANTÍA, EL SOFTWARE SE ENTREGA 
-"TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO.
-EL SOFTWARE NO ESTÁ DISEÑADO, FABRICADO NI PREVISTO PARA SU USO O 
-DISTRIBUCIÓN, Y NO SE DEBEN USAR, CON EQUIPOS DE CONTROL EN LÍNEA EN 
-ENTORNOS PELIGROSOS QUE REQUIERAN UN RENDIMIENTO A PRUEBA DE FALLOS, 
-COMO EL FUNCIONAMIENTO DE INSTALACIONES NUCLEARES, SISTEMAS DE 
-NAVEGACIÓN, COMUNICACIONES O CONTROL DE AVIONES, EQUIPOS DE SOPORTE 
-VITAL DIRECTO, SISTEMAS DE ARMAMENTO O CUALQUIER OTRO USO EN EL QUE 
-LOS FALLOS EN EL SOFTWARE PUEDAN PROVOCAR DIRECTAMENTE MUERTES, 
-DAÑOS PERSONALES O FÍSICOS O AL MEDIOAMBIENTE DE GRAVEDAD.
-Productos que no sean del Licenciador
-El Software puede incluir hardware u otros programas de software o 
-servicios, o bien formar parte de estos, que hayan sido vendidos o 
-cuya licencia haya sido otorgada por otra entidad distinta del 
-Licenciador. EL LICENCIADOR NO GARANTIZA LOS PRODUCTOS O SERVICIOS 
-NO PERTENECIENTES AL MISMO. ESTOS PRODUCTOS O SERVICIOS SE 
-DISTRIBUYEN "TAL CUAL". CUALQUIER SERVICIO DE GARANTÍA PARA LOS 
-PRODUCTOS NO PERTENECIENTES AL LICENCIADOR SERÁ PRESTADO POR EL 
-LICENCIADOR DEL PRODUCTO, DE CONFORMIDAD CON LO DISPUESTO EN LA 
-GARANTÍA DEL LICENCIADOR CORRESPONDIENTE.
+EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN NINGÚN TIPO DE GARANTÍA. 
 CON LA EXCEPCIÓN DE LAS RESTRICCIONES LEGALES, EL LICENCIADOR 
 RECHAZA Y EXCLUYE TODAS LAS GARANTÍAS IMPLÍCITAS, INCLUIDAS LAS 
 GARANTÍAS DE COMERCIALIZACIÓN, IDONEIDAD PARA UN PROPÓSITO 
-PARTICULAR, TÍTULO O NO INFRACCIÓN; ASIMISMO TAMPOCO EXISTEN 
-GARANTÍAS CREADAS EN EL TRASCURSO DE LA NEGOCIACIÓN, EL RENDIMIENTO 
-O EL USO COMERCIAL.  EL LICENCIADOR NO OFRECE NINGUNA GARANTÍA, 
-REPRESENTACIÓN NI PROMESA NO INCLUIDA DE FORMA EXPLÍCITA EN ESTA 
-GARANTÍA LIMITADA. EL LICENCIADOR NO GARANTIZA QUE EL SOFTWARE O LOS 
+PARTICULAR, TÍTULO O NO INFRACCIÓN. TAMPOCO EXISTEN GARANTÍAS 
+CREADAS EN EL TRASCURSO DE LA NEGOCIACIÓN, EL FUNCIONAMIENTO O EL 
+USO COMERCIAL.  EL LICENCIADOR NO GARANTIZA QUE EL SOFTWARE O LOS 
 SERVICIOS SATISFAGAN LAS NECESIDADES DEL USUARIO, SEAN COMPATIBLES 
-CON TODOS LOS SISTEMAS OPERATIVOS, O QUE EL FUNCIONAMIENTO DEL 
-SOFTWARE O LOS SERVICIOS SEA ININTERRUMPIDO O ESTÉ LIBRE DE ERRORES. 
-LAS EXCLUSIONES Y RENUNCIAS ANTERIORES SON UNA PARTE ESENCIAL DE 
-ESTE ACUERDO. Algunas jurisdicciones no permiten ciertas exclusiones 
-y limitaciones de garantías, por lo que algunas de las limitaciones 
-anteriores pueden no ser aplicables en el caso del Usuario. Esta 
-garantía limitada le otorga al Usuario derechos específicos. Además, 
-es posible que le asistan otros derechos, que pueden variar en 
-función del estado o la jurisdicción.
-Limitación de responsabilidad 
-NI EL LICENCIADOR, NI SUS LICENCIADORES TERCEROS, SUBSIDIARIOS O 
-EMPLEADOS SERÁN RESPONSABLES EN FORMA ALGUNA DE NINGÚN DAÑO 
-CONSECUENTE O INDIRECTO, YA SE BASE EN UN CONTRATO, NEGLIGENCIA, 
-AGRAVIO U OTRA TEORÍA DE RESPONSABILIDAD, NI DE NINGUNA PÉRDIDA DE 
-BENEFICIOS, NEGOCIO O PÉRDIDA DE DATOS, INCLUSO AUNQUE SE LES 
-ADVIERTA DE LA POSIBILIDAD DE DICHOS DAÑOS.
+CON TODOS LOS SISTEMAS OPERATIVOS O QUE EL FUNCIONAMIENTO DEL 
+SOFTWARE SEA ININTERRUMPIDO O ESTÉ LIBRE DE ERRORES. LAS EXCLUSIONES 
+Y RENUNCIAS ANTERIORES SON UNA PARTE ESENCIAL DE ESTE ACUERDO. 
+Algunas jurisdicciones no admiten determinadas cláusulas de renuncia 
+de responsabilidad o limitaciones de garantía, por lo que es posible 
+que algunas de las limitaciones antes mencionadas no se apliquen en 
+el caso del Usuario. Esta garantía limitada le otorga al Usuario 
+derechos específicos. Además, es posible que le asistan otros 
+derechos, que pueden variar en función del estado o la jurisdicción.
 
-EN CASO DE QUE SE PRODUZCA, EN NINGÚN CASO LA RESPONSABILIDAD 
-CONJUNTA DEL LICENCIADOR EN RELACIÓN CON ESTE EULA (YA SEA EN UNA 
-INSTANCIA O EN UNA SERIE DE INSTANCIAS) EXCEDERÁ LA CANTIDAD PAGADA 
-POR EL USUARIO POR EL SOFTWARE (O 50 DÓLARES DE ESTADOS UNIDOS SI EL 
-USUARIO NO PAGÓ EL SOFTWARE), DURANTE LOS 12 MESES ANTERIORES A LA 
-PRIMERA RECLAMACIÓN AMPARADA POR ESTE EULA.
+Limitación de responsabilidad.
+NI EL LICENCIADOR, NI SUS FILIALES, ACCIONISTAS, DIRECTORES O 
+EMPLEADOS SERÁN RESPONSABLES EN FORMA ALGUNA DE NINGÚN DAÑO 
+CONSECUENTE O INDIRECTO, YA SE BASEN EN UN CONTRATO, NEGLIGENCIA, 
+ELEMENTO EXTRACONTRACTUAL U OTRA TEORÍA DE RESPONSABILIDAD, NI DE 
+NINGUNA PÉRDIDA DE BENEFICIOS, NEGOCIO O PÉRDIDA DE DATOS, INCLUSO 
+AUNQUE SE LES ADVIERTA DE LA POSIBILIDAD DE DICHOS DAÑOS.
+
+EN NINGÚN CASO LA RESPONSABILIDAD TOTAL DEL LICENCIADOR BAJO O EN 
+RELACIÓN CON ESTE EULA (YA SEA EN UNA INSTANCIA O EN UNA SERIE DE 
+INSTANCIAS) EXCEDERÁ 50 DÓLARES ESTADOUNIDENSES.
+
 Las exclusiones y limitaciones anteriores no serán de aplicación a 
 las reclamaciones relacionadas con la muerte o daños personales 
 causados por la negligencia del Licenciador o de sus empleados, 
@@ -187,40 +144,31 @@ cualquier software obtenido de conformidad con el presente EULA o
 por mala interpretación fraudulenta, la responsabilidad del 
 Licenciador se limitará o excluirá hasta el máximo permitido en 
 dichas jurisdicciones.
-
+ 
 Condiciones generales
-Duración
-Este EULA entrará en vigor en la fecha en que el Usuario descargue 
-el Software y finalizará automáticamente si el Usuario incumple 
-alguno de sus términos.
-Transferencia
-Este EULA no se puede transferir ni ceder sin el consentimiento 
-previo por escrito del Licenciador. Cualquier intento de cesión será 
-nulo y sin efecto alguno. 
 Legislación
 Todas las cuestiones que surjan o estén relacionadas con el EULA se 
 regirán por las leyes de Estados Unidos y el estado de Nueva York, 
 excluyendo cualquier disposición de selección de fuero. Cualquier 
 pleito, acción o procedimiento que surja de este EULA o que esté 
-relacionado con él, solo podrá ser llevado ante un tribunal federal 
+relacionado con él solo podrá ser llevado ante un tribunal federal 
 de Estados Unidos o estatal de jurisdicción competente del estado de 
-Nueva York. Si una parte inicia procedimientos legales relacionados 
-con el EULA, la parte ganadora tendrá derecho a recuperar los 
-honorarios razonables de abogados. Sin embargo, si la ubicación 
-principal del negocio del Usuario se encuentra en un estado miembro 
-de la Unión Europea o de la Asociación Europea de Libre Comercio, 
-(1) los tribunales de Inglaterra y Gales tendrán jurisdicción 
-exclusiva sobre cualquier acción legal relacionada con este EULA y 
-(2) se aplicarán las leyes de Inglaterra excepto cuando sea 
-obligatorio que las leyes del país de dicha ubicación principal del 
-negocio se apliquen a cualquier acción legal, en cuyo caso se 
-aplicarán las leyes de ese país. Ni la Convención de las Naciones 
-Unidas sobre los Contratos para la Venta Internacional de 
-Mercaderías ni las reglas de conflicto de leyes de Nueva York o 
+Nueva York. Sin embargo, si la ubicación principal del negocio del 
+Usuario se encuentra en un Estado miembro de la Unión Europea o de 
+la Asociación Europea de Libre Comercio, (1) los tribunales de 
+Inglaterra y Gales tendrán jurisdicción exclusiva sobre cualquier 
+acción legal relacionada con este EULA y (2) se aplicarán las leyes 
+de Inglaterra excepto cuando sea obligatorio que las leyes del país 
+de dicha ubicación principal del negocio se apliquen a cualquier 
+acción legal, en cuyo caso se aplicarán las leyes de ese país. Ni la 
+Uniform Computer Information Transaction Act, ni la Convención de 
+las Naciones Unidas sobre los Contratos para la Venta Internacional 
+de Mercaderías, ni las reglas de conflicto de leyes de Nueva York o 
 Inglaterra y Gales se aplican a este EULA o su contenido.
+
 Acuerdo completo
 Este EULA, junto con cualquier otro documento de compra u otro 
-acuerdo entre el Usuario y el Licenciador o sus Afiliadas, 
+acuerdo escrito entre el Usuario y el Licenciador o sus filiales, 
 constituye la totalidad del entendimiento y acuerdo entre el Usuario 
 y el Licenciador y solo puede ser enmendado o modificado mediante un 
 acuerdo por escrito firmado por el Usuario y un representante 
@@ -229,67 +177,18 @@ DISTRIBUIDOR, PROVEEDOR, MINORISTA, REVENDEDOR, COMERCIAL NI
 EMPLEADO ESTÁ AUTORIZADO A MODIFICAR ESTE ACUERDO NI A REALIZAR 
 NINGUNA DECLARACIÓN NI PROMESA QUE CONTRADIGA O AMPLÍE LOS TÉRMINOS 
 DE ESTE ACUERDO.
-Renuncia
-Ninguna renuncia voluntaria a los derechos otorgados en virtud de 
-este EULA será efectiva, a menos que se realice por escrito y esté 
-firmada por un representante debidamente autorizado de la parte 
-vinculada. Ninguna renuncia voluntaria a derechos presentes o 
-pasados obtenidos como consecuencia de infracciones o 
-incumplimientos se considerará una renuncia voluntaria de ningún 
-derecho futuro que pueda emanar de este EULA.
+
 Omisión
 Si cualquier disposición de este EULA no es válida o no es 
 aplicable, se interpretará, limitará, modificará o, si es necesario, 
 recortará en la medida en que sea necesario para eliminar su falta 
 de validez o imposibilidad de aplicación. El resto de disposiciones 
-del EULA no se verán afectadas.
-Cumplimiento de normativas de exportación
-El Usuario reconoce que los productos y/o la tecnología del 
-Licenciador pueden estar sujetos a las Regulaciones de la 
-Administración de Exportación de Estados Unidos ("EAR") y a las 
-leyes comerciales de otros países. El Usuario se compromete a 
-cumplir con las EAR y con las leyes y normativas locales que puedan 
-ser aplicables y afectar al derecho del Usuario a importar, exportar 
-o utilizar los productos y/o la tecnología del Licenciador. El 
-Usuario no exportará ni reexportará productos del Licenciador, 
-directa o indirectamente, a: (1) entidades incluidas en las listas 
-de exclusión a las exportaciones de Estados Unidos o que estén 
-sometidas a embargos, ni a países que apoyen el terrorismo según se 
-especifica en las EAR, (2) cualquier usuario final que el Usuario 
-sepa o tenga razones para saber que utilizará los productos del 
-Licenciador en el diseño, desarrollo o producción de sistemas de 
-armas nucleares, químicas o biológicas, sistemas de cohetes, 
-lanzadores espaciales y cohetes de sondeo o vehículos aéreos no 
-tripulados, salvo autorización de la agencia pública relevante por 
-normativas o licencias específicas, o (3) cualquier usuario final al 
-que se haya prohibido participar en las operaciones de exportación 
-de los Estados Unidos por cualquier agencia federal del Gobierno de 
-Estados Unidos. El Usuario no utilizará los productos y/o la 
-tecnología del Licenciador para fines prohibidos aplicados a 
-armamento nuclear, misilístico o biológico, tal como se especifica 
-en las EAR. Al descargar o utilizar el Software, el Usuario está de 
-acuerdo con lo anterior, y afirma y garantiza que no se encuentra 
-en, bajo el control de un nacional o residente de dichos países o en 
-ninguna de dichas listas. Además, el Usuario es responsable de 
-cumplir con las leyes locales en su jurisdicción que puedan afectar 
-a su derecho a la importación, exportación o uso de productos del 
-Licenciador. Consulte la página Web de la Oficina de Industria y 
-Seguridad de Estados Unidos https://www.bis.doc.gov antes de 
-exportar productos sujetos al as EAR. Para obtener más información 
-sobre la exportación del Software, incluyendo el Número de 
-Clasificación de Control de la Exportación (ECCN) aplicable y la 
-excepción de licencia asociada (según corresponda), consulte: 
-https://www.suse.com/company/legal/. Previa solicitud, el 
-Departamento de Servicios de Comercio Internacional del Licenciador 
-puede proporcionar información con respecto a las restricciones de 
-exportación aplicables a los productos del Licenciador. El 
-Licenciador no asume ninguna responsabilidad en el caso de que no 
-pueda obtener las aprobaciones de exportación necesarias.
+del EULA no se verán afectadas. 
 
-:versión:2024-02-01:001
+:versión:2024-06-01:001
 SUSE.com
 
-Copyright (c) SUSE 2024
+Copyright (c) SUSE 2025
 
 SUSE Legal		
-Febrero de 2024
+Junio de 2024
