@@ -37,8 +37,14 @@ pub enum Commands {
     ///
     /// If you want to change any configuration value, you can load a profile (complete or partial)
     /// using the "load" subcommand.
-    #[command(subcommand)]
-    Config(ConfigCommands),
+    Config {
+        #[arg(long, default_value = "false")]
+        /// Run subcommands (if possible) in local mode - without trying to connect to remote agama server
+        local: bool,
+
+        #[command(subcommand)]
+        subcommand: ConfigCommands,
+    },
 
     /// Analyze the system.
     ///

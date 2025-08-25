@@ -45,6 +45,7 @@ use agama_lib::{error::ServiceError, utils::Transfer};
 use auth::run as run_auth_cmd;
 use commands::Commands;
 use config::run as run_config_cmd;
+use config::run_local as run_config_cmd_local;
 use events::run as run_events_cmd;
 use logs::run as run_logs_cmd;
 use progress::ProgressMonitor;
@@ -71,6 +72,11 @@ pub struct GlobalOpts {
     #[clap(long, default_value = "false")]
     /// Whether to accept invalid (self-signed, ...) certificates or not
     pub insecure: bool,
+
+    #[clap(long, default_value = "false")]
+    /// Some commands could be able to work even without connection to
+    /// the agama server
+    pub local: bool,
 }
 
 /// Agama's command-line interface
@@ -291,9 +297,13 @@ pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
     let api_url = api_url(cli.opts.clone().host)?;
 
     match cli.command {
-        Commands::Config(subcommand) => {
-            let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
-            run_config_cmd(client, monitor, subcommand, cli.opts).await?
+        Commands::Config { local, subcommand } => {
+            if !local {
+                let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
+                run_config_cmd(client, monitor, subcommand, cli.opts).await?
+            } else {
+                run_config_cmd_local(subcommand, cli.opts)?
+            }
         }
         Commands::Probe => {
             let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
