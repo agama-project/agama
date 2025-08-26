@@ -22,8 +22,8 @@ use std::{io::Write, path::PathBuf, process::Command};
 
 use agama_lib::{
     context::InstallationContext, http::BaseHTTPClient, install_settings::InstallSettings,
-    monitor::MonitorClient, profile::ProfileValidator, profile::ValidationOutcome,
-    utils::FileFormat, Store as SettingsStore,
+    profile::ProfileValidator, profile::ValidationOutcome, utils::FileFormat,
+    Store as SettingsStore,
 };
 use anyhow::{anyhow, Context};
 use clap::Subcommand;
@@ -31,7 +31,9 @@ use console::style;
 use fluent_uri::Uri;
 use tempfile::Builder;
 
-use crate::{cli_input::CliInput, cli_output::CliOutput, show_progress, GlobalOpts};
+use crate::{
+    api_url, build_clients, cli_input::CliInput, cli_output::CliOutput, show_progress, GlobalOpts,
+};
 
 const DEFAULT_EDITOR: &str = "/usr/bin/vi";
 
@@ -62,6 +64,10 @@ pub enum ConfigCommands {
     Validate {
         /// JSON file, URL or path or `-` for standard input
         url_or_path: CliInput,
+
+        #[arg(long, default_value = "false")]
+        /// Run subcommands (if possible) in local mode - without trying to connect to remote agama server
+        local: bool,
     },
 
     /// Generate and print a native Agama JSON configuration from any kind and location.
@@ -96,16 +102,13 @@ pub enum ConfigCommands {
     },
 }
 
-pub async fn run(
-    http_client: BaseHTTPClient,
-    monitor: MonitorClient,
-    subcommand: ConfigCommands,
-    opts: GlobalOpts,
-) -> anyhow::Result<()> {
-    let store = SettingsStore::new(http_client.clone()).await?;
+pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result<()> {
+    let api_url = api_url(opts.clone().host)?;
 
     match subcommand {
         ConfigCommands::Show { output } => {
+            let (http_client, _monitor) = build_clients(api_url, opts.insecure).await?;
+            let store = SettingsStore::new(http_client.clone()).await?;
             let model = store.load().await?;
             let json = serde_json::to_string_pretty(&model)?;
 
@@ -117,6 +120,8 @@ pub async fn run(
             Ok(())
         }
         ConfigCommands::Load { url_or_path } => {
+            let (http_client, monitor) = build_clients(api_url, opts.insecure).await?;
+            let store = SettingsStore::new(http_client.clone()).await?;
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
             let contents = url_or_path.read_to_string(opts.insecure)?;
             let valid = validate(&http_client, CliInput::Full(contents.clone())).await?;
@@ -132,17 +137,25 @@ pub async fn run(
 
             Ok(())
         }
-        ConfigCommands::Validate { url_or_path } => {
-            let _ = validate(&http_client, url_or_path).await;
+        ConfigCommands::Validate { url_or_path, local } => {
+            let _ = if !local {
+                let (http_client, _monitor) = build_clients(api_url, opts.insecure).await?;
+                validate(&http_client, url_or_path).await
+            } else {
+                validate_local(url_or_path, opts.insecure)
+            };
 
             Ok(())
         }
         ConfigCommands::Generate { url_or_path } => {
+            let (http_client, _monitor) = build_clients(api_url, opts.insecure).await?;
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
 
             generate(&http_client, url_or_path, opts.insecure).await
         }
         ConfigCommands::Edit { editor } => {
+            let (http_client, monitor) = build_clients(api_url, opts.insecure).await?;
+            let store = SettingsStore::new(http_client.clone()).await?;
             let model = store.load().await?;
             let editor = editor
                 .or_else(|| std::env::var("EDITOR").ok())
@@ -157,29 +170,24 @@ pub async fn run(
     }
 }
 
-/// Runs commands without remote connection to the Agama server
-pub fn run_local(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result<()> {
-    match subcommand {
-        ConfigCommands::Validate { url_or_path } => validate_local(url_or_path, opts.insecure),
-        _ => {
-            eprintln!("This subcommand doesn't support --local option");
-            Ok(())
-        }
-    }
-}
-
 /// Validates a JSON profile with locally available tools only
-fn validate_local(url_or_path: CliInput, insecure: bool) -> anyhow::Result<()> {
+fn validate_local(url_or_path: CliInput, insecure: bool) -> anyhow::Result<ValidationOutcome> {
     let profile_string = url_or_path.read_to_string(insecure)?;
     let validator = ProfileValidator::default_schema().context("Setting up profile validator")?;
     let result = validator.validate_str(&profile_string);
 
     match result {
-        Ok(validity) => validation_msg(&validity),
+        Ok(validity) => {
+            let _ = validation_msg(&validity);
+
+            Ok(validity)
+        }
         Err(err) => {
             eprintln!("{} {}", style("\u{2717}").bold().red(), err);
 
-            Ok(())
+            Ok(ValidationOutcome::NotValid(
+                [String::from("Invalid profile")].to_vec(),
+            ))
         }
     }
 }
