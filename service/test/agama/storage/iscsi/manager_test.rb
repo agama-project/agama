@@ -40,7 +40,7 @@ describe Agama::Storage::ISCSI::Manager do
   before do
     allow(Yast::IscsiClientLib).to receive(:initiatorname).and_return(initiator_name)
     allow(Yast::IscsiClientLib).to receive(:getiBFT).and_return(ibft)
-    allow(Yast::IscsiClientLib).to receive(:checkInitiatorName)
+    allow(Yast::IscsiClientLib).to receive(:checkInitiatorName).and_return true
     allow(Yast::IscsiClientLib).to receive(:getConfig)
     allow(Yast::IscsiClientLib).to receive(:autoLogOn)
     allow(Yast::IscsiClientLib).to receive(:readSessions)
@@ -51,7 +51,8 @@ describe Agama::Storage::ISCSI::Manager do
     allow(Yast::IscsiClientLib).to receive(:find_session)
     allow(Yast::IscsiClientLib).to receive(:getStartupStatus)
     allow(Yast::IscsiClientLib).to receive(:discover_from_portal)
-    allow(Yast::Service).to receive(:start)
+    allow(Yast::Service).to receive(:restart)
+    allow(Yast::Execute).to receive(:locally).with(/udevadm/, any_args)
     allow(subject).to receive(:adapter).and_return(adapter)
     allow(subject).to receive(:sleep)
   end
@@ -71,10 +72,16 @@ describe Agama::Storage::ISCSI::Manager do
       subject.activate
     end
 
-    it "enables the iSCSI services" do
-      expect(Yast::Service).to receive(:start).with("iscsi").ordered
-      expect(Yast::Service).to receive(:start).with("iscsid").ordered
-      expect(Yast::Service).to receive(:start).with("iscsiuio").ordered
+    it "restarts the iSCSI services" do
+      expect(Yast::Service).to receive(:restart).with("iscsi").ordered
+      expect(Yast::Service).to receive(:restart).with("iscsid").ordered
+      expect(Yast::Service).to receive(:restart).with("iscsiuio").ordered
+
+      subject.activate
+    end
+
+    it "waits for udev events queue to be empty" do
+      expect(Yast::Execute).to receive(:locally).with(/udevadm/, "settle", any_args)
 
       subject.activate
     end
