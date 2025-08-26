@@ -26,10 +26,7 @@ use super::{
 };
 use crate::{error::Error, web::EventsSender};
 use agama_lib::{
-    auth::ClientId,
-    error::ServiceError,
-    event,
-    localization::{model::LocaleConfig, LocaleProxy},
+    auth::ClientId, error::ServiceError, event, localization::model::LocaleConfig,
     proxies::LocaleMixinProxy as ManagerLocaleProxy,
 };
 use agama_locale_data::LocaleId;
@@ -37,7 +34,7 @@ use axum::{
     extract::State,
     http::StatusCode,
     response::IntoResponse,
-    routing::{get, patch},
+    routing::{get, patch, post},
     Extension, Json, Router,
 };
 use std::sync::Arc;
@@ -71,6 +68,7 @@ pub async fn l10n_service(
         .route("/locales", get(locales))
         .route("/timezones", get(timezones))
         .route("/config", patch(set_config).get(get_config))
+        .route("/finish", post(finish))
         .with_state(state);
     Ok(router)
 }
@@ -199,26 +197,17 @@ async fn get_config(State(state): State<LocaleState<'_>>) -> Json<LocaleConfig> 
     })
 }
 
-pub async fn update_dbus(
-    client: &LocaleProxy<'_>,
-    config: &LocaleConfig,
-) -> Result<(), ServiceError> {
-    if let Some(locales) = &config.locales {
-        let locales: Vec<_> = locales.iter().map(|l| l.as_ref()).collect();
-        client.set_locales(&locales).await?;
-    }
-
-    if let Some(keymap) = &config.keymap {
-        client.set_keymap(keymap.as_str()).await?;
-    }
-
-    if let Some(timezone) = &config.timezone {
-        client.set_timezone(timezone).await?;
-    }
-
-    if let Some(ui_locale) = &config.ui_locale {
-        client.set_uilocale(ui_locale).await?;
-    }
-
-    Ok(())
+#[utoipa::path(
+    get,
+    path = "/finish",
+    context_path = "/api/l10n",
+    operation_id = "l10n_finish",
+    responses(
+        (status = 200, description = "Finish the l10n configuration")
+    )
+)]
+async fn finish(State(state): State<LocaleState<'_>>) -> Result<impl IntoResponse, Error> {
+    let data = state.locale.read().await;
+    data.commit()?;
+    Ok(StatusCode::NO_CONTENT)
 }
