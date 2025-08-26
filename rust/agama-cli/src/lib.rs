@@ -71,6 +71,11 @@ pub struct GlobalOpts {
     #[clap(long, default_value = "false")]
     /// Whether to accept invalid (self-signed, ...) certificates or not
     pub insecure: bool,
+
+    #[clap(long, default_value = "false")]
+    /// Some commands could be able to work even without connection to
+    /// the agama server
+    pub local: bool,
 }
 
 /// Agama's command-line interface
@@ -242,7 +247,7 @@ async fn build_ws_client(api_url: Url, insecure: bool) -> anyhow::Result<WebSock
 ///
 /// * `host`: ip or host name. The protocol is optional, using https if omitted (e.g, "myserver",
 /// "http://myserver", "192.168.100.101").
-fn api_url(host: String) -> anyhow::Result<Url> {
+pub fn api_url(host: String) -> anyhow::Result<Url> {
     let sanitized_host = host.trim_end_matches('/').to_string();
 
     let url_str = if sanitized_host.starts_with("http://") || sanitized_host.starts_with("https://")
@@ -291,10 +296,7 @@ pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
     let api_url = api_url(cli.opts.clone().host)?;
 
     match cli.command {
-        Commands::Config(subcommand) => {
-            let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
-            run_config_cmd(client, monitor, subcommand, cli.opts).await?
-        }
+        Commands::Config(subcommand) => run_config_cmd(subcommand, cli.opts).await?,
         Commands::Probe => {
             let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
             let manager = ManagerHTTPClient::new(client.clone());
