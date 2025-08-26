@@ -21,7 +21,6 @@
 
 require_relative "../../../test_helper"
 require "agama/config"
-require "agama/dbus/clients/locale"
 require "agama/dbus/clients/network"
 require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/progress"
@@ -52,17 +51,12 @@ describe Agama::DBus::Software::Manager do
   let(:issues_interface) { Agama::DBus::Interfaces::Issues::ISSUES_INTERFACE }
 
   before do
-    allow(Agama::DBus::Clients::Locale).to receive(:instance).and_return(locale_client)
     allow(Agama::DBus::Clients::Network).to receive(:new).and_return(network_client)
     allow(backend).to receive(:probe)
     allow(backend).to receive(:propose)
     allow(backend).to receive(:install)
     allow(backend).to receive(:finish)
     allow(subject).to receive(:dbus_properties_changed)
-  end
-
-  let(:locale_client) do
-    instance_double(Agama::DBus::Clients::Locale, on_language_selected: nil)
   end
 
   let(:network_client) do

@@ -21,7 +21,6 @@
 
 require "dbus"
 require "agama/dbus/bus"
-require "agama/dbus/clients/locale"
 require "agama/dbus/service_status"
 require "agama/dbus/storage/iscsi"
 require "agama/dbus/storage/manager"
