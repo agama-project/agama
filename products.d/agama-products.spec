@@ -67,7 +67,7 @@ Definition of openSUSE products (Tumbleweed, Leap, MicroOS and Slowroll) for the
 %dir %{_datadir}/agama
 %dir %{_datadir}/agama/products.d
 # if building on SLES add all opensuse products
-%if !%{?is_opensuse} || 0%{?suse_version} > 1600
+%if !0%{?is_opensuse} || 0%{?suse_version} > 1600
 %{_datadir}/agama/products.d/microos.yaml
 %{_datadir}/agama/products.d/tumbleweed.yaml
 %{_datadir}/agama/products.d/slowroll.yaml
