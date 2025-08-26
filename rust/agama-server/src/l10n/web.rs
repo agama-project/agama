@@ -46,7 +46,6 @@ use tokio::sync::RwLock;
 #[derive(Clone)]
 struct LocaleState<'a> {
     locale: Arc<RwLock<L10n>>,
-    proxy: LocaleProxy<'a>,
     manager_proxy: ManagerLocaleProxy<'a>,
     events: EventsSender,
 }
@@ -60,11 +59,9 @@ pub async fn l10n_service(
 ) -> Result<Router, ServiceError> {
     let id = LocaleId::default();
     let locale = L10n::new_with_locale(&id).unwrap();
-    let proxy = LocaleProxy::new(&dbus).await?;
     let manager_proxy = ManagerLocaleProxy::new(&dbus).await?;
     let state = LocaleState {
         locale: Arc::new(RwLock::new(locale)),
-        proxy,
         manager_proxy,
         events,
     };
@@ -174,9 +171,6 @@ async fn set_config(
         data.set_ui_keymap(ui_keymap)?;
     }
 
-    if let Err(e) = update_dbus(&state.proxy, &changes).await {
-        tracing::warn!("Could not synchronize settings in the localization D-Bus service: {e}");
-    }
     _ = state
         .events
         .send(event!(L10nConfigChanged(changes), client_id.as_ref()));
