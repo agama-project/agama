@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 27 08:57:02 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Add the zFCP controller internal id to the device when some 
+  update is notified (bsc#1247445).
+
+-------------------------------------------------------------------
 Mon Aug 25 16:13:43 UTC 2025 - Michal Filka <mfilka@suse.com>
 
 - bsc#1247424
