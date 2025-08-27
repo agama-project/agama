@@ -128,6 +128,7 @@ module Agama
         @user_patterns = []
         @selected_patterns_change_callbacks = []
         on_progress_change { logger.info(progress.to_s) }
+        Yast::PackageCallbacks.InitPackageCallbacks(logger)
         initialize_target
       end
 
@@ -181,7 +182,6 @@ module Agama
           start_progress_with_descriptions(
             _("Initializing sources"), *common_steps
           )
-          Yast::PackageCallbacks.InitPackageCallbacks(logger)
           progress.step { add_base_repos }
         else
           start_progress_with_descriptions(*common_steps)
