@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar 24 10:39:36 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Invalidate zFCP controllers query after some controller change
+  is notified (bsc#1247445).
+
+-------------------------------------------------------------------
 Thu Feb 19 12:35:24 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Fixed a bug when defining the size of a new logical volume
@@ -20,7 +26,7 @@ Fri Oct 17 12:30:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Preserve installer options values after successful submission
   (bsc#1249636).
-  
+
 -------------------------------------------------------------------
 Tue Oct 14 14:01:15 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
