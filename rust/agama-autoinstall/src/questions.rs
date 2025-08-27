@@ -20,6 +20,8 @@
 
 //! This module offers a mechanism to ask questions to users.
 
+use std::collections::HashMap;
+
 use agama_lib::{
     http::BaseHTTPClient,
     questions::{
@@ -40,14 +42,15 @@ impl UserQuestions {
     }
 
     /// Asks the user whether to retry loading the profile.
-    pub async fn should_retry(&self, text: &str) -> anyhow::Result<bool> {
+    pub async fn should_retry(&self, text: &str, error: &str) -> anyhow::Result<bool> {
+        let data = HashMap::from([("error".to_string(), error.to_string())]);
         let generic = GenericQuestion {
             id: None,
             class: "load.retry".to_string(),
             text: text.to_string(),
             options: vec!["Yes".to_string(), "No".to_string()],
             default_option: "No".to_string(),
-            data: Default::default(),
+            data,
         };
         let question = Question {
             generic,
