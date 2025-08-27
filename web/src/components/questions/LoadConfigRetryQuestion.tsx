@@ -21,8 +21,8 @@
  */
 
 import React from "react";
-import { Content } from "@patternfly/react-core";
-import { Popup } from "~/components/core";
+import { Content, Stack } from "@patternfly/react-core";
+import { NestedContent, Popup } from "~/components/core";
 import { AnswerCallback, Question } from "~/types/questions";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
@@ -48,9 +48,15 @@ export default function RetryLoadConfigQuestion({
   const error = question.data?.error;
 
   return (
-    <Popup isOpen aria-label={_("Question")}>
-      <Content>{question.text}</Content>
-      {error && <Content component="pre">{error}</Content>}
+    <Popup isOpen title={_("Configuration unreachable or invalid")}>
+      <Stack hasGutter>
+        <Content isEditorial>{question.text}</Content>
+        {error && (
+          <NestedContent>
+            <Content component="pre">{error}</Content>
+          </NestedContent>
+        )}
+      </Stack>
       <Popup.Actions>
         <QuestionActions
           actions={question.options}
