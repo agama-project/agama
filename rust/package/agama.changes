@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug 28 05:26:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Include the output of the "agama config" commands when
+  agama-autoinstall fails (related to bsc#1248779).
+
+-------------------------------------------------------------------
 Tue Aug 19 12:38:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix software configuration cache (bsc#1247933).

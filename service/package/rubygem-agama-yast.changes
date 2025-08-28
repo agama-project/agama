@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug 28 05:26:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report the underlying problem for the "load.retry" question
+  (related to bsc#1248779).
+
+-------------------------------------------------------------------
 Wed Aug 27 10:23:31 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix calling GPG import callbacks for unattended installation for
