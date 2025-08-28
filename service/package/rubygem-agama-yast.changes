@@ -5,6 +5,17 @@ Thu Aug 28 05:26:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   (related to bsc#1248779).
 
 -------------------------------------------------------------------
+Wed Aug 27 10:23:31 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix calling GPG import callbacks for unattended installation for
+  addons (bsc#1248782)
+
+-------------------------------------------------------------------
+Mon Aug 25 19:47:35 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Improved initialization of iBFT (bsc#1247711).
+
+-------------------------------------------------------------------
 Wed Aug 20 10:16:04 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Removed the heuristic that used to consider some software RAID as
