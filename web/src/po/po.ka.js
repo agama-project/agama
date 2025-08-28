@@ -60,6 +60,9 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     ""
   ],
+  "A generic size of %1$s will be used for the new %2$s": [
+    "ზოგადი ზომა %1$s გამოყენებული იქნება ახალი %2$s-სთვის"
+  ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     ""
   ],
@@ -180,6 +183,9 @@ export default {
   "Apply selected solution": [
     "არჩეული გადაწყვეტის გადატარება"
   ],
+  "Applying changes": [
+    ""
+  ],
   "As a new partition on %s": [
     "როგორც ახალი დანაყოფი %s-ზე"
   ],
@@ -231,6 +237,9 @@ export default {
   "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
     ""
   ],
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "სისტემის RAM-ზე დამოკიდებულებით %1$s-ის ზომა %2$s-%3$s შუალედიდან იქნება %4$s-სთვის"
+  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -242,6 +251,9 @@ export default {
   ],
   "Before starting the installation, you need to address the following problems:": [
     "დაყენების დაწყებამდე საჭიროა შემდეგი პრობლემების გადაწყვეტა:"
+  ],
+  "Below %s devices are offline and cannot be formatted.": [
+    ""
   ],
   "Beta": [
     "ბეტა"
@@ -279,9 +291,6 @@ export default {
   "Cannot connect to Agama server": [
     "Agama-ის სერვერთან მიერთება შეუძლებელია"
   ],
-  "Cannot format all selected devices": [
-    "ყველა მონიშნული მოწყობილობის დაფორმატება შეუძლებელია"
-  ],
   "Change": [
     "შეცვლა"
   ],
@@ -299,6 +308,9 @@ export default {
   ],
   "Change display language and keyboard layout": [
     "საჩვენებელი ენისა და კლავიატურის განლაგების შეცვლა"
+  ],
+  "Change filters and try again.": [
+    ""
   ],
   "Change keyboard": [
     "კლავიატურის შეცვლა"
@@ -341,6 +353,9 @@ export default {
   ],
   "Clear": [
     "გაწმენდა"
+  ],
+  "Clear all filters": [
+    ""
   ],
   "Clear selected mount point": [
     "მონიშნული მიმაგრების წერტილის გასუფთავება"
@@ -392,6 +407,9 @@ export default {
   ],
   "Confirm Installation": [
     "დაყენების დადასტურება"
+  ],
+  "Confirm that you really want to continue.": [
+    ""
   ],
   "Congratulations!": [
     "გილოცავთ!"
@@ -491,12 +509,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "DASD მოწყობილობების ასარჩევი ცხრილი"
-  ],
-  "DASDs table section": [
-    "DASD-ის ცხრილის სექცია"
   ],
   "DIAG": [
     "დიაგ"
@@ -728,12 +740,6 @@ export default {
   ],
   "Filter by language, territory or locale code": [
     "ფილტრი ენით, ტერიტორიით, ან ლოკალის კოდით"
-  ],
-  "Filter by max channel": [
-    "გაფილვრა მაქს. არხით"
-  ],
-  "Filter by min channel": [
-    "მინ. არხით გაფილტვრა"
   ],
   "Filter by pattern title or description": [
     "გაფილტვრა ნიმუშის სახელით ან აღწერით"
@@ -977,6 +983,9 @@ export default {
     ""
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
+    ""
+  ],
+  "It is offline and must be activated before formatting it.": [
     ""
   ],
   "It may take some time.": [
@@ -1252,9 +1261,6 @@ export default {
   "Not supported (%s)": [
     "მხარდაჭერილი არაა (%s)"
   ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    ""
-  ],
   "On boot": [
     "ჩატვირთვისას"
   ],
@@ -1335,9 +1341,6 @@ export default {
   ],
   "Pending": [
     "დარჩენილია"
-  ],
-  "Perform an action": [
-    "ქმედების შესრულება"
   ],
   "PiB": [
     "პიბ"
@@ -1444,12 +1447,6 @@ export default {
   "Remove": [
     "წაშლა"
   ],
-  "Remove max channel filter": [
-    "მაქს. არხის ფილტრის მოცილება"
-  ],
-  "Remove min channel filter": [
-    "მინ. არხის ფილტრის მოცილება"
-  ],
   "Remove the configuration for this disk": [
     "ამ დისკის კონფიგურაციის წაშლა"
   ],
@@ -1485,6 +1482,9 @@ export default {
   ],
   "Routes": [
     "რაუტები"
+  ],
+  "Row expansion": [
+    ""
   ],
   "SD Card": [
     "SD ბარათი"
@@ -1584,12 +1584,6 @@ export default {
   ],
   "Server options": [
     "სერვერის პარამეტრები"
-  ],
-  "Set DIAG Off": [
-    "დიაგნოსტიკის გამორთვა"
-  ],
-  "Set DIAG On": [
-    "დიაგნოსტიკის ჩართვა"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
     "დააყენეთ მუდმივი ჰოსტის სახელი, რომელიც არ შეიცვლება ქსელის განახლებებთან ერთად."
@@ -1916,7 +1910,10 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "ეს დასაყენებელი პროდუქტის პარამეტრებია. დაყენების პროგრამის ენის მორგება [მორგების პანელიდან] ზედა ზოლიდანაა ხელმისაწვდომი."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
+  "This action could destroy any data stored on the device.": [
+    ""
+  ],
+  "This action could destroy any data stored on the devices listed below.": [
     ""
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
@@ -1927,6 +1924,12 @@ export default {
   ],
   "This license is not available in %s.": [
     "ეს ლიცენზია %s-ში ხელმისაწვდომი არაა."
+  ],
+  "This may take a moment while updates complete.": [
+    ""
+  ],
+  "This message will close automatically when everything is done.": [
+    ""
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     ""
@@ -1978,6 +1981,9 @@ export default {
   ],
   "Unselect": [
     "მონიშვნის მოხსნა"
+  ],
+  "Unselect or activate them and try it again.": [
+    ""
   ],
   "Unsupported AutoYaST elements": [
     "მხარდაუჭერელი AutoYaST-ის ელემენტები"
@@ -2231,8 +2237,17 @@ export default {
   "logical volume": [
     "ლოგიკური ტომი"
   ],
+  "no": [
+    ""
+  ],
+  "offline": [
+    ""
+  ],
   "partition": [
     "დანაყოფი"
+  ],
+  "read_only": [
+    ""
   ],
   "reset to defaults": [
     "ჩამოყრა ნაგულისხმევზე"

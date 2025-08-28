@@ -183,6 +183,9 @@ export default {
   "Apply selected solution": [
     "Aplica la solució seleccionada"
   ],
+  "Applying changes": [
+    "S'apliquen els canvis"
+  ],
   "As a new partition on %s": [
     "Com a partició nova a %s"
   ],
@@ -249,6 +252,9 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "Abans de començar la instal·lació, heu de resoldre els problemes següents:"
   ],
+  "Below %s devices are offline and cannot be formatted.": [
+    "Els dispositius següents, %s, són fora de línia i no es poden formatar."
+  ],
   "Beta": [
     "Beta"
   ],
@@ -285,7 +291,10 @@ export default {
   "Cannot connect to Agama server": [
     "No es pot connectar amb el servidor d'Agama."
   ],
-  "Cannot format all selected devices": [
+  "Cannot format %s": [
+    "No es pot formatar %s"
+  ],
+  "Cannot format all the selected devices": [
     "No es poden formatar tots els dispositius seleccionats."
   ],
   "Change": [
@@ -305,6 +314,9 @@ export default {
   ],
   "Change display language and keyboard layout": [
     "Canvia la llengua de visualització i la disposició del teclat"
+  ],
+  "Change filters and try again.": [
+    "Canvieu els filtres i torneu-ho a intentar."
   ],
   "Change keyboard": [
     "Canvia el teclat"
@@ -346,7 +358,13 @@ export default {
     "Trieu com s'ha d'associar la connexió amb un dispositiu de xarxa. Això ajuda a controlar quin dispositiu usa la connexió."
   ],
   "Clear": [
-    "Neteja"
+    "Esborra"
+  ],
+  "Clear all filters": [
+    "Esborra tots els filtres"
+  ],
+  "Clear input": [
+    "Esborra l'entrada"
   ],
   "Clear selected mount point": [
     "Suprimeix el punt de muntatge seleccionat"
@@ -398,6 +416,9 @@ export default {
   ],
   "Confirm Installation": [
     "Confirmeu la instal·lació"
+  ],
+  "Confirm that you really want to continue.": [
+    "Confirmeu que realment voleu continuar."
   ],
   "Congratulations!": [
     "Enhorabona!"
@@ -497,12 +518,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "Taula de selecció de dispositius DASD"
-  ],
-  "DASDs table section": [
-    "Secció de taula DASD"
   ],
   "DIAG": [
     "DIAG"
@@ -735,12 +750,6 @@ export default {
   "Filter by language, territory or locale code": [
     "Filtra per llengua, territori o codi local"
   ],
-  "Filter by max channel": [
-    "Filtra per canal màxim"
-  ],
-  "Filter by min channel": [
-    "Filtra per canal mínim"
-  ],
   "Filter by pattern title or description": [
     "Filtra per títol o descripció del patró"
   ],
@@ -771,6 +780,9 @@ export default {
   "Format RAID %s": [
     "Formata la RAID %s"
   ],
+  "Format device %s": [
+    "Formata el dispositiu %s"
+  ],
   "Format device as": [
     "Formata el dispositiu com a"
   ],
@@ -779,6 +791,9 @@ export default {
   ],
   "Format logical volume as": [
     "Formata el volum lògic com a"
+  ],
+  "Format now": [
+    "Formata-ho ara"
   ],
   "Format partition as": [
     "Formata la partició com a"
@@ -985,6 +1000,9 @@ export default {
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "No és possible instal·lar el sistema amb la configuració actual. Ajusteu els paràmetres que hi ha a continuació."
   ],
+  "It is offline and must be activated before formatting it.": [
+    "És fora de línia i s'ha d'activar abans de formatar-lo."
+  ],
   "It may take some time.": [
     "Pot trigar una mica."
   ],
@@ -1075,8 +1093,14 @@ export default {
   "Manual": [
     "Manual"
   ],
+  "Max channel": [
+    "Canal màxim"
+  ],
   "MiB": [
     "MiB"
+  ],
+  "Min channel": [
+    "Canal mínim"
   ],
   "Mode": [
     "Mode"
@@ -1162,6 +1186,9 @@ export default {
   "No": [
     "No"
   ],
+  "No DASD devices were found in this machine.": [
+    "No s'ha trobat cap dispositiu DASD en aquesta màquina."
+  ],
   "No Wi-Fi networks were found": [
     "No s'ha trobat cap xarxa sense fil"
   ],
@@ -1182,6 +1209,9 @@ export default {
   ],
   "No device selected yet": [
     "Encara no s'ha seleccionat cap dispositiu."
+  ],
+  "No devices available": [
+    "No hi ha cap dispositiu disponible."
   ],
   "No devices configured yet": [
     "Encara no s'ha configurat cap dispositiu"
@@ -1257,9 +1287,6 @@ export default {
   ],
   "Not supported (%s)": [
     "No compatible (%s)"
-  ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Els dispositius fora de línia s'han d'activar abans de formatar-los. Si us plau, desmarqueu o activeu els dispositius que s'indiquen a continuació i torneu-ho a provar."
   ],
   "On boot": [
     "A l'arrencada"
@@ -1341,9 +1368,6 @@ export default {
   ],
   "Pending": [
     "Pendent"
-  ],
-  "Perform an action": [
-    "Fes una acció"
   ],
   "PiB": [
     "PiB"
@@ -1450,12 +1474,6 @@ export default {
   "Remove": [
     "Suprimeix"
   ],
-  "Remove max channel filter": [
-    "Suprimeix el filtre de canal màxim"
-  ],
-  "Remove min channel filter": [
-    "Suprimeix el filtre del canal mínim"
-  ],
   "Remove the configuration for this disk": [
     "Suprimeix la configuració d'aquest disc"
   ],
@@ -1491,6 +1509,15 @@ export default {
   ],
   "Routes": [
     "Camins"
+  ],
+  "Row actions": [
+    "Accions de fila"
+  ],
+  "Row expansion": [
+    "Ampliació de fila"
+  ],
+  "Row selection": [
+    "Selecció de fila"
   ],
   "SD Card": [
     "Targeta SD"
@@ -1558,6 +1585,9 @@ export default {
   "Select at least one disk.": [
     "Seleccioneu almenys un disc."
   ],
+  "Select devices to enable bulk actions.": [
+    "Seleccioneu els dispositius per habilitar accions massives."
+  ],
   "Select or enter a mount point": [
     "Seleccioneu o introduïu un punt de muntatge"
   ],
@@ -1591,11 +1621,11 @@ export default {
   "Server options": [
     "Opcions del servidor"
   ],
-  "Set DIAG Off": [
-    "Desactiva la diagnosi"
+  "Set DIAG off": [
+    "Desactiva la DIAG"
   ],
-  "Set DIAG On": [
-    "Activa la diagnosi"
+  "Set DIAG on": [
+    "Activa la DIAG"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
     "Estableix un nom d'amfitrió permanent que no canviarà amb les actualitzacions per xarxa."
@@ -1922,8 +1952,11 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Aquests són els paràmetres per instal·lar el producte. La llengua de l'instal·lador es pot ajustar a [settings panel] accessible des de la barra superior."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Aquesta acció podria destruir qualsevol dada emmagatzemada als dispositius que s'indiquen a continuació. Si us plau, confirmeu que realment voleu continuar."
+  "This action could destroy any data stored on the device.": [
+    "Aquesta acció podria destruir qualsevol dada emmagatzemada al dispositiu."
+  ],
+  "This action could destroy any data stored on the devices listed below.": [
+    "Aquesta acció podria destruir qualsevol dada emmagatzemada als dispositius que s'enumeren a continuació."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Aquesta extensió no està disponible al servidor. Demaneu a l'administrador del servidor que repliqui l'extensió."
@@ -1933,6 +1966,12 @@ export default {
   ],
   "This license is not available in %s.": [
     "Aquesta llicència no està disponible en %s."
+  ],
+  "This may take a moment while updates complete.": [
+    "Això pot trigar una estona mentre es completen les actualitzacions."
+  ],
+  "This message will close automatically when everything is done.": [
+    "Aquest missatge es tancarà automàticament quan tot estigui fet."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Aquest patró aconsegueix un equilibri entre claredat i eficiència: el modal manté les coses lleugeres per a seleccions senzilles, mentre que la vista completa permet una exploració més profunda i accions més complexes, especialment per a usuaris amb molts dispositius."
@@ -1984,6 +2023,9 @@ export default {
   ],
   "Unselect": [
     "Desmarca"
+  ],
+  "Unselect or activate them and try it again.": [
+    "Desmarqueu-los o activeu-los i torneu-ho a provar."
   ],
   "Unsupported AutoYaST elements": [
     "Elements d'AutoYaST no compatibles"
@@ -2216,6 +2258,12 @@ export default {
   "[FIXME]": [
     "[FIXME]"
   ],
+  "active": [
+    "actiu"
+  ],
+  "all": [
+    "tots"
+  ],
   "approx. %s": [
     "aprox. %s"
   ],
@@ -2237,11 +2285,23 @@ export default {
   "logical volume": [
     "volum lògic"
   ],
+  "no": [
+    "no"
+  ],
+  "offline": [
+    "fora de línia"
+  ],
   "partition": [
     "partició"
   ],
+  "read_only": [
+    "només de lectura"
+  ],
   "reset to defaults": [
     "restableix els valors predeterminats"
+  ],
+  "yes": [
+    "sí"
   ],
   "zFCP": [
     "zFCP"

@@ -180,6 +180,9 @@ export default {
   "Apply selected solution": [
     "Застосувати обране рішення"
   ],
+  "Applying changes": [
+    ""
+  ],
   "As a new partition on %s": [
     "Як новий розділ на %s"
   ],
@@ -237,6 +240,9 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "До початку встановлення потрібно усунути такі проблеми:"
   ],
+  "Below %s devices are offline and cannot be formatted.": [
+    ""
+  ],
   "Beta": [
     "Бета"
   ],
@@ -273,9 +279,6 @@ export default {
   "Cannot connect to Agama server": [
     "Не вдається з'єднатися з сервером Agama"
   ],
-  "Cannot format all selected devices": [
-    "Не вдається відформатувати всі вибрані пристрої"
-  ],
   "Change": [
     "Змінити"
   ],
@@ -293,6 +296,9 @@ export default {
   ],
   "Change display language and keyboard layout": [
     "Змінити мову та розкладку клавіатури"
+  ],
+  "Change filters and try again.": [
+    ""
   ],
   "Change keyboard": [
     "Змінити клавіатуру"
@@ -335,6 +341,9 @@ export default {
   ],
   "Clear": [
     "Очистити"
+  ],
+  "Clear all filters": [
+    ""
   ],
   "Clear selected mount point": [
     "Видалити вибрану точку монтування"
@@ -386,6 +395,9 @@ export default {
   ],
   "Confirm Installation": [
     "Підтвердити встановлення"
+  ],
+  "Confirm that you really want to continue.": [
+    ""
   ],
   "Congratulations!": [
     "Вітаємо!"
@@ -485,12 +497,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "Таблиця вибору пристроїв DASD"
-  ],
-  "DASDs table section": [
-    "Розділ таблиці DASD"
   ],
   "DIAG": [
     "Режим DIAG"
@@ -722,12 +728,6 @@ export default {
   ],
   "Filter by language, territory or locale code": [
     "Фільтр за мовою, територією або кодом локалі"
-  ],
-  "Filter by max channel": [
-    "Фільтр за максимальним каналом"
-  ],
-  "Filter by min channel": [
-    "Фільтр за мінімальним каналом"
   ],
   "Filter by pattern title or description": [
     "Фільтр за назвою або описом шаблону"
@@ -973,6 +973,9 @@ export default {
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Неможливо встановити систему з поточною конфігурацією. Налаштуйте параметри нижче."
+  ],
+  "It is offline and must be activated before formatting it.": [
+    ""
   ],
   "It may take some time.": [
     "Це займе деякий час."
@@ -1247,9 +1250,6 @@ export default {
   "Not supported (%s)": [
     "Не підтримується (%s)"
   ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Перед форматуванням автономних пристроїв їх необхідно активувати. Будь ласка, скасуйте вибір або активацію пристроїв, перелічених нижче, і повторіть спробу"
-  ],
   "On boot": [
     "При завантаженні"
   ],
@@ -1330,9 +1330,6 @@ export default {
   ],
   "Pending": [
     "Очікуйте"
-  ],
-  "Perform an action": [
-    "Виконати дію"
   ],
   "PiB": [
     "ПіБ"
@@ -1439,12 +1436,6 @@ export default {
   "Remove": [
     "Видалити"
   ],
-  "Remove max channel filter": [
-    "Видалити фільтр за максимальним каналом"
-  ],
-  "Remove min channel filter": [
-    "Видалити фільтр за мінімальним каналом"
-  ],
   "Remove the configuration for this disk": [
     "Видалити конфігурацію для цього диска"
   ],
@@ -1480,6 +1471,9 @@ export default {
   ],
   "Routes": [
     "Маршрути"
+  ],
+  "Row expansion": [
+    ""
   ],
   "SD Card": [
     "SD-карта"
@@ -1579,12 +1573,6 @@ export default {
   ],
   "Server options": [
     "Параметри сервера"
-  ],
-  "Set DIAG Off": [
-    "Вимкнути DIAG"
-  ],
-  "Set DIAG On": [
-    "Увімкнути DIAG"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
     "Встановити постійну назву хоста, яка не змінюватиметься з оновленнями мережі."
@@ -1912,9 +1900,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Це налаштування для встановлюваного продукту. Мову програми встановлення можна змінити через [панель налаштувань], доступну на верхній панелі."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Ця дія може знищити будь-які дані, що зберігаються на перелічених нижче пристроях. Будь ласка, підтвердьте, що Ви дійсно хочете продовжити."
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Це розширення недоступне на сервері. Попросіть адміністратора сервера віддзеркалити розширення."
   ],
@@ -1923,6 +1908,12 @@ export default {
   ],
   "This license is not available in %s.": [
     "Ліцензія недоступна цією мовою: %s."
+  ],
+  "This may take a moment while updates complete.": [
+    ""
+  ],
+  "This message will close automatically when everything is done.": [
+    ""
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Цей підхід забезпечує баланс між ясністю та ефективністю: модальне вікно зберігає легкість для простого вибору, в той час як повноекранний режим підтримує глибше вивчення і складніші дії, спеціально для користувачів з великою кількістю пристроїв."
@@ -1974,6 +1965,9 @@ export default {
   ],
   "Unselect": [
     "Відмінити обране"
+  ],
+  "Unselect or activate them and try it again.": [
+    ""
   ],
   "Unsupported AutoYaST elements": [
     "Непідтримувані елементи AutoYaST"
@@ -2227,8 +2221,17 @@ export default {
   "logical volume": [
     "логічний том"
   ],
+  "no": [
+    ""
+  ],
+  "offline": [
+    ""
+  ],
   "partition": [
     "розділ"
+  ],
+  "read_only": [
+    ""
   ],
   "reset to defaults": [
     "скинути до типових налаштувань"

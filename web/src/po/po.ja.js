@@ -183,6 +183,9 @@ export default {
   "Apply selected solution": [
     "選択したソリューションを適用する"
   ],
+  "Applying changes": [
+    "変更を適用しています"
+  ],
   "As a new partition on %s": [
     "%s に新しいパーティションとして"
   ],
@@ -249,6 +252,9 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "インストールを開始する前に、下記の問題に対応する必要があります:"
   ],
+  "Below %s devices are offline and cannot be formatted.": [
+    "下記 %s 個のデバイスがオフラインになっているため、フォーマットできません。"
+  ],
   "Beta": [
     "ベータ"
   ],
@@ -285,7 +291,10 @@ export default {
   "Cannot connect to Agama server": [
     "Agama サーバに接続できません"
   ],
-  "Cannot format all selected devices": [
+  "Cannot format %s": [
+    "%s をフォーマットできません"
+  ],
+  "Cannot format all the selected devices": [
     "選択した全てのデバイスをフォーマットできません"
   ],
   "Change": [
@@ -305,6 +314,9 @@ export default {
   ],
   "Change display language and keyboard layout": [
     "表示言語とキーボードレイアウトの変更"
+  ],
+  "Change filters and try again.": [
+    "フィルタを変更してやり直してください。"
   ],
   "Change keyboard": [
     "キーボードの変更"
@@ -347,6 +359,12 @@ export default {
   ],
   "Clear": [
     "消去"
+  ],
+  "Clear all filters": [
+    "全てのフィルタを消去"
+  ],
+  "Clear input": [
+    "入力を消去"
   ],
   "Clear selected mount point": [
     "マウントポイントの選択を解除"
@@ -398,6 +416,9 @@ export default {
   ],
   "Confirm Installation": [
     "インストールの確認"
+  ],
+  "Confirm that you really want to continue.": [
+    "続行して問題がないかどうか、ご確認ください。"
   ],
   "Congratulations!": [
     "おめでとうございます！"
@@ -497,12 +518,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "DASD デバイス選択テーブル"
-  ],
-  "DASDs table section": [
-    "DASD 表選択"
   ],
   "DIAG": [
     "DIAG"
@@ -735,12 +750,6 @@ export default {
   "Filter by language, territory or locale code": [
     "言語／地域／ロケールコードでフィルタ"
   ],
-  "Filter by max channel": [
-    "最大チャネルでフィルタ"
-  ],
-  "Filter by min channel": [
-    "最小チャネルでフィルタ"
-  ],
   "Filter by pattern title or description": [
     "パターンタイトルまたは説明でフィルタ"
   ],
@@ -771,6 +780,9 @@ export default {
   "Format RAID %s": [
     "RAID %s のフォーマット"
   ],
+  "Format device %s": [
+    "デバイス %s のフォーマット"
+  ],
   "Format device as": [
     "下記の形式でフォーマット:"
   ],
@@ -779,6 +791,9 @@ export default {
   ],
   "Format logical volume as": [
     "下記の形式で論理ボリュームをフォーマット"
+  ],
+  "Format now": [
+    "今すぐフォーマットする"
   ],
   "Format partition as": [
     "下記の形式でフォーマット:"
@@ -984,6 +999,9 @@ export default {
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "現在の設定ではシステムをインストールすることができません。下記の設定を調整してください。"
   ],
+  "It is offline and must be activated before formatting it.": [
+    "オフライン状態になっています。フォーマットを実施するには、あらかじめ有効化しなければなりません。"
+  ],
   "It may take some time.": [
     "しばらくお待ちください。"
   ],
@@ -1074,8 +1092,14 @@ export default {
   "Manual": [
     "手動"
   ],
+  "Max channel": [
+    "最大チャネル"
+  ],
   "MiB": [
     "MiB"
+  ],
+  "Min channel": [
+    "最小チャネル"
   ],
   "Mode": [
     "モード"
@@ -1161,6 +1185,9 @@ export default {
   "No": [
     "いいえ"
   ],
+  "No DASD devices were found in this machine.": [
+    "このマシンには DASD デバイスが見つかりませんでした。"
+  ],
   "No Wi-Fi networks were found": [
     "検出された Wi-Fi ネットワークはありません"
   ],
@@ -1181,6 +1208,9 @@ export default {
   ],
   "No device selected yet": [
     "まだ何もデバイスを選択していません"
+  ],
+  "No devices available": [
+    "デバイスがありません"
   ],
   "No devices configured yet": [
     "まだ何もデバイスを選択していません"
@@ -1256,9 +1286,6 @@ export default {
   ],
   "Not supported (%s)": [
     "サポート対象外です (%s)"
-  ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "フォーマットを実施する前にオフラインのデバイスを有効化する必要があります。下記に示されたデバイスの選択を外すか、有効化してからやり直してください"
   ],
   "On boot": [
     "システム起動時"
@@ -1340,9 +1367,6 @@ export default {
   ],
   "Pending": [
     "保留中"
-  ],
-  "Perform an action": [
-    "処理を実行"
   ],
   "PiB": [
     "PiB"
@@ -1449,12 +1473,6 @@ export default {
   "Remove": [
     "削除"
   ],
-  "Remove max channel filter": [
-    "最大チャネルのフィルタを削除"
-  ],
-  "Remove min channel filter": [
-    "最小チャネルのフィルタを削除"
-  ],
   "Remove the configuration for this disk": [
     "このディスクに対する設定を削除"
   ],
@@ -1490,6 +1508,15 @@ export default {
   ],
   "Routes": [
     "ルート"
+  ],
+  "Row actions": [
+    "行の処理"
+  ],
+  "Row expansion": [
+    "行を展開"
+  ],
+  "Row selection": [
+    "行の選択"
   ],
   "SD Card": [
     "SD カード"
@@ -1557,6 +1584,9 @@ export default {
   "Select at least one disk.": [
     "少なくとも 1 つのディスクを選択してください。"
   ],
+  "Select devices to enable bulk actions.": [
+    "一括処理を有効にするデバイスを選択してください。"
+  ],
   "Select or enter a mount point": [
     "マウントポイントの選択または入力"
   ],
@@ -1590,11 +1620,11 @@ export default {
   "Server options": [
     "サーバオプション"
   ],
-  "Set DIAG Off": [
-    "診断を無効化"
+  "Set DIAG off": [
+    "DIAG を無効にする"
   ],
-  "Set DIAG On": [
-    "診断を有効化"
+  "Set DIAG on": [
+    "DIAG を有効にする"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
     "ネットワーク側から指定された場合でも変化しない、固定のホスト名を設定します。"
@@ -1920,8 +1950,11 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "こちらはインストールする製品に対する設定です。インストーラの言語の設定は、上部バーの [設定パネル] から変更できます。"
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "この処理により、下記に示したデバイス内のデータが全て消去されます。続行して問題ないかどうか、ご確認ください。"
+  "This action could destroy any data stored on the device.": [
+    "この処理によりデバイス内のデータが全て消去されます。"
+  ],
+  "This action could destroy any data stored on the devices listed below.": [
+    "この処理により、下記に示したデバイス内のデータが全て消去されます。"
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "この拡張はサーバ内にはありません。拡張の追加についてはサーバ管理者にお尋ねください。"
@@ -1931,6 +1964,12 @@ export default {
   ],
   "This license is not available in %s.": [
     "このライセンスは %s では提供されていません。"
+  ],
+  "This may take a moment while updates complete.": [
+    "更新が完了するまでしばらくお待ちください。"
+  ],
+  "This message will close automatically when everything is done.": [
+    "全ての処理が完了すると、このメッセージは自動的に閉じます。"
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "このパターンは、明瞭性と効率性のバランスを取った形と言えます。モーダル型の表示により簡単に選択できますし、より詳しい調査や複雑な処理を必要とする場合であっても、フルビューへの切り替えで対応できます。特に、多数のデバイスを扱う必要がある場合に有用です。"
@@ -1982,6 +2021,9 @@ export default {
   ],
   "Unselect": [
     "未選択"
+  ],
+  "Unselect or activate them and try it again.": [
+    "これらのデバイスを選択から外すか、もしくは有効化してからやり直してください。"
   ],
   "Unsupported AutoYaST elements": [
     "サポートされていない AutoYaST 要素"
@@ -2214,6 +2256,12 @@ export default {
   "[FIXME]": [
     "[FIXME]"
   ],
+  "active": [
+    "有効"
+  ],
+  "all": [
+    "全て"
+  ],
   "approx. %s": [
     "おおよそ %s"
   ],
@@ -2235,11 +2283,23 @@ export default {
   "logical volume": [
     "論理ボリューム"
   ],
+  "no": [
+    "いいえ"
+  ],
+  "offline": [
+    "オフライン"
+  ],
   "partition": [
     "パーティション"
   ],
+  "read_only": [
+    "読み込み専用"
+  ],
   "reset to defaults": [
     "既定値に戻す"
+  ],
+  "yes": [
+    "はい"
   ],
   "zFCP": [
     "zFCP"

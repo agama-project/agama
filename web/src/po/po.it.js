@@ -180,6 +180,9 @@ export default {
   "Apply selected solution": [
     "Applica la soluzione selezionata"
   ],
+  "Applying changes": [
+    ""
+  ],
   "As a new partition on %s": [
     "Come una nuova partizione su %s"
   ],
@@ -237,6 +240,9 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "Prima di procedere all'installazione, è necessario risolvere i seguenti problemi:"
   ],
+  "Below %s devices are offline and cannot be formatted.": [
+    ""
+  ],
   "Beta": [
     "Beta"
   ],
@@ -267,9 +273,6 @@ export default {
   "Cannot connect to Agama server": [
     "Impossibile connettersi al server Agama"
   ],
-  "Cannot format all selected devices": [
-    "Impossibile formattare tutti i dispositivi selezionati"
-  ],
   "Change": [
     "Cambia"
   ],
@@ -287,6 +290,9 @@ export default {
   ],
   "Change display language and keyboard layout": [
     "Cambia lingua visualizzata e mappatura della tastiera"
+  ],
+  "Change filters and try again.": [
+    ""
   ],
   "Change keyboard": [
     "Cambia tastiera"
@@ -326,6 +332,9 @@ export default {
   ],
   "Clear": [
     "Cancella"
+  ],
+  "Clear all filters": [
+    ""
   ],
   "Clear selected mount point": [
     "Cancella punto di montaggio selezionato"
@@ -374,6 +383,9 @@ export default {
   ],
   "Confirm Installation": [
     "Conferma Installazione"
+  ],
+  "Confirm that you really want to continue.": [
+    ""
   ],
   "Congratulations!": [
     "Congratulazioni!"
@@ -458,12 +470,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "Tabella di selezione dei dispositivi DASD"
-  ],
-  "DASDs table section": [
-    "Tabella di selezione dei DASD"
   ],
   "DIAG": [
     "DIAG"
@@ -692,12 +698,6 @@ export default {
   ],
   "Filter by language, territory or locale code": [
     "Filtra per lingua, territorio o locale di zona"
-  ],
-  "Filter by max channel": [
-    "Filtra per canale massimo"
-  ],
-  "Filter by min channel": [
-    "Filtra per canale minimo"
   ],
   "Filter by pattern title or description": [
     "Filtra per titolo o descrizione del pattern"
@@ -940,6 +940,9 @@ export default {
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Impossibile installare il sistema con l'attuale configurazione. Regolare le impostazioni sottostanti."
   ],
+  "It is offline and must be activated before formatting it.": [
+    ""
+  ],
   "It may take some time.": [
     "Potrebbe richiedere del tempo."
   ],
@@ -1117,6 +1120,9 @@ export default {
   "No": [
     "No"
   ],
+  "No DASD devices were found in this machine.": [
+    ""
+  ],
   "No Wi-Fi networks were found": [
     "Non è stata trovata nessuna rete Wi-Fi"
   ],
@@ -1210,9 +1216,6 @@ export default {
   "Not supported (%s)": [
     "Non supportato (%s)"
   ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "È necessario attivare i dispositivi offline prima di formattarli. Deselezionare o attivare i dispositivi elencati sotto e riprovare"
-  ],
   "On boot": [
     "All'avvio"
   ],
@@ -1293,9 +1296,6 @@ export default {
   ],
   "Pending": [
     "In attesa"
-  ],
-  "Perform an action": [
-    "Esegui un'azione"
   ],
   "PiB": [
     "PiB"
@@ -1399,12 +1399,6 @@ export default {
   "Remove": [
     "Rimuovi"
   ],
-  "Remove max channel filter": [
-    "Rimuovi filtro canale massimo"
-  ],
-  "Remove min channel filter": [
-    "Rimuovi filtro canale minimo"
-  ],
   "Remove the configuration for this disk": [
     "Rimuovi la configurazione per questo disco"
   ],
@@ -1437,6 +1431,9 @@ export default {
   ],
   "Routes": [
     "Rotte"
+  ],
+  "Row expansion": [
+    ""
   ],
   "SD Card": [
     "Scheda SD"
@@ -1536,12 +1533,6 @@ export default {
   ],
   "Server options": [
     "Opzioni server"
-  ],
-  "Set DIAG Off": [
-    "Disattiva DIAG"
-  ],
-  "Set DIAG On": [
-    "Attiva DIAG"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
     "Imposta un nome host permanente che non cambierà con gli aggiornamenti della rete."
@@ -1862,9 +1853,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Queste sono le impostazioni per il prodotto da installare. È possibile modificare l lingua del programma di installazione tramite il [pannello delle impostazioni], accessibile dalla barra superiore."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Questa azione potrebbe distruggere i dati memorizzati nei dispositivi elencati sotto. Confermare che si desidera continuare."
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Questa estensione non è disponibile sul server. Chiedere all'amministratore del server di eseguire il mirroring dell'estensione."
   ],
@@ -1873,6 +1861,12 @@ export default {
   ],
   "This license is not available in %s.": [
     "Questa licenza non è disponibile in %s."
+  ],
+  "This may take a moment while updates complete.": [
+    ""
+  ],
+  "This message will close automatically when everything is done.": [
+    ""
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Questo modello offre il giusto equilibrio tra chiarezza ed efficienza: il modale mantiene le cose leggere per selezioni semplici, mentre la visualizzazione completa supporta un'esplorazione più approfondita e azioni più complesse, specialmente per gli utenti che usano molti dispositivi."
@@ -1924,6 +1918,9 @@ export default {
   ],
   "Unselect": [
     "Deseleziona"
+  ],
+  "Unselect or activate them and try it again.": [
+    ""
   ],
   "Unsupported AutoYaST elements": [
     "Elementi AutoYaST non supportati"
@@ -2177,8 +2174,17 @@ export default {
   "logical volume": [
     "Volume LVM"
   ],
+  "no": [
+    ""
+  ],
+  "offline": [
+    ""
+  ],
   "partition": [
     "partizione"
+  ],
+  "read_only": [
+    ""
   ],
   "reset to defaults": [
     "ripristina le impostazioni predefinite"
