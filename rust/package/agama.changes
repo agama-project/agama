@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Aug 28 10:15:23 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update the software cache when the patterns selection changes (bsc#1248826).
+
+-------------------------------------------------------------------
 Thu Aug 28 05:26:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Include the output of the "agama config" commands when
