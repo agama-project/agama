@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug 28 05:26:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report the underlying problem for the "load.retry" question
+  (related to bsc#1248779).
+
+-------------------------------------------------------------------
 Wed Aug 20 10:27:07 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Refactor DASD page to make it more usable and improve its
