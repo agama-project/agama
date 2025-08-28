@@ -240,12 +240,24 @@ pub async fn receive_events(
                 }
             }
 
-            EventPayload::SoftwareProposalChanged { patterns: _ } => {
-                tracing::debug!(
-                    "Invalidating product configuration cache due to software proposal change"
-                );
+            EventPayload::SoftwareProposalChanged { patterns } => {
                 let mut cached_config = config.write().await;
-                *cached_config = None;
+                if let Some(config) = cached_config.as_mut() {
+                    tracing::debug!(
+                        "Updating the patterns list in the software configuration cache"
+                    );
+                    let user_patterns: HashMap<String, bool> = patterns
+                        .into_iter()
+                        .filter_map(|(p, s)| {
+                            if s == SelectedBy::User {
+                                Some((p, true))
+                            } else {
+                                None
+                            }
+                        })
+                        .collect();
+                    config.patterns = Some(user_patterns);
+                }
             }
 
             _ => {}
