@@ -23,7 +23,6 @@ require "dbus"
 require "suse/connect"
 require "agama/dbus/base_object"
 require "agama/dbus/interfaces/issues"
-require "agama/dbus/clients/locale"
 require "agama/errors"
 require "agama/registration"
 

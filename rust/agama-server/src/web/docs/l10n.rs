@@ -31,6 +31,7 @@ impl ApiDocBuilder for L10nApiDocBuilder {
 
     fn paths(&self) -> Paths {
         PathsBuilder::new()
+            .path_from::<crate::l10n::web::__path_finish>()
             .path_from::<crate::l10n::web::__path_get_config>()
             .path_from::<crate::l10n::web::__path_keymaps>()
             .path_from::<crate::l10n::web::__path_locales>()
