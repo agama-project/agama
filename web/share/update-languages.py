@@ -35,12 +35,15 @@ class Locale:
     language: str
     territory: Optional[str]
 
+    languages_map = { "zh-CN": "zh_Hans", "zh-TW": "zh_Hant" }
+
     def __init__(self, language: str, territory: Optional[str] = None):
-        self.language = language
+        self.file_language = language
         self.territory = territory
+        self.language = Locale.languages_map.get(self.code(), language)
 
     def code(self):
-        return f"{self.language}-{self.territory}"
+        return f"{self.file_language}-{self.territory}"
 
     def name(self, include_territory: bool = False):
         if include_territory:
