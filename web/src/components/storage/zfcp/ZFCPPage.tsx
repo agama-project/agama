@@ -24,8 +24,7 @@ import React from "react";
 import {
   Button,
   Content,
-  Grid,
-  GridItem,
+  Stack,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
@@ -33,7 +32,6 @@ import {
 import { EmptyState, Page } from "~/components/core";
 import { _ } from "~/i18n";
 import {
-  useZFCPConfig,
   useZFCPControllers,
   useZFCPControllersChanges,
   useZFCPDisks,
@@ -45,31 +43,6 @@ import { probeZFCP } from "~/api/storage/zfcp";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { inactiveLuns } from "~/utils/zfcp";
-
-const LUNScanInfo = () => {
-  const { allowLunScan } = useZFCPConfig();
-  // TRANSLATORS: the text in the square brackets [] will be displayed in bold
-  const lunScanEnabled = _(
-    "Automatic LUN scan is [enabled]. Activating a controller which is \
-      running in NPIV mode will automatically configures all its LUNs.",
-  );
-  // TRANSLATORS: the text in the square brackets [] will be displayed in bold
-  const lunScanDisabled = _(
-    "Automatic LUN scan is [disabled]. LUNs have to be manually \
-      configured after activating a controller.",
-  );
-
-  const msg = allowLunScan ? lunScanEnabled : lunScanDisabled;
-  const [msgStart, msgBold, msgEnd] = msg.split(/[[\]]/);
-
-  return (
-    <p>
-      {msgStart}
-      <b>{msgBold}</b>
-      {msgEnd}
-    </p>
-  );
-};
 
 const NoDisksFound = () => {
   const navigate = useNavigate();
@@ -138,10 +111,9 @@ const DisksSection = () => {
  * Section for zFCP controllers.
  */
 const ControllersSection = () => (
-  <Page.Section title={_("Controllers")}>
-    <LUNScanInfo />
+  <Stack hasGutter>
     <ZFCPControllersTable />
-  </Page.Section>
+  </Stack>
 );
 
 const PageContent = () => {
@@ -164,16 +136,9 @@ const PageContent = () => {
     );
   }
 
-  return (
-    <Grid hasGutter>
-      <GridItem sm={12} xl={6}>
-        <ControllersSection />
-      </GridItem>
-      <GridItem sm={12} xl={6}>
-        <DisksSection />
-      </GridItem>
-    </Grid>
-  );
+  console.log(DisksSection);
+
+  return <ControllersSection />;
 };
 
 /**

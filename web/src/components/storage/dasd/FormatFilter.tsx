@@ -75,7 +75,7 @@ export default function FormattedFilter({ value, onChange }: FormatFilterProps) 
     <Flex direction={{ default: "column" }} columnGap={{ default: "columnGapXs" }}>
       <label htmlFor={ID}>
         <Text isBold aria-hidden>
-          {_("Formatted")}
+          {_("Controller")}
         </Text>
       </label>
       <Select

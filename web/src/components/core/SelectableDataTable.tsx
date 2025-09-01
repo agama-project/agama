@@ -114,7 +114,7 @@ export type SelectableDataTableColumn = {
    * Refer to the PatternFly documentation for available properties:
    * https://www.patternfly.org/components/table#th
    */
-  pfTdProps?: TdProps;
+  pfTdProps?: (item: object) => TdProps | TdProps;
 };
 
 /**
@@ -513,6 +513,8 @@ export default function SelectableDataTable({
       variant: allowMultiple ? RowSelectVariant.checkbox : RowSelectVariant.radio,
     };
 
+    const actions = itemActions && itemActions(item);
+
     return (
       <Tr key={rowIndex} isExpanded={isExpanded} className={itemClassNames(item)}>
         <Td />
@@ -522,6 +524,29 @@ export default function SelectableDataTable({
             <ExpandableRowContent>{c.value(item)}</ExpandableRowContent>
           </Td>
         ))}
+        {itemActions && (
+          <Td isActionCell>
+            <ExpandableRowContent>
+              {actions.length > 0 && (
+                <ActionsColumn
+                  items={itemActions(item)}
+                  actionsToggle={({ toggleRef, onToggle }) => (
+                    <MenuToggle
+                      ref={toggleRef}
+                      onClick={onToggle}
+                      variant="plain"
+                      aria-label={
+                        isFunction(itemActionsLabel) ? itemActionsLabel(item) : itemActionsLabel
+                      }
+                    >
+                      <Icon name="more_horiz" />
+                    </MenuToggle>
+                  )}
+                />
+              )}
+            </ExpandableRowContent>
+          </Td>
+        )}
       </Tr>
     );
   };
@@ -550,6 +575,8 @@ export default function SelectableDataTable({
       variant: allowMultiple ? RowSelectVariant.checkbox : RowSelectVariant.radio,
     };
 
+    const actions = itemActions && itemActions(item);
+
     const renderChildren = () => {
       if (!validChildren) return;
 
@@ -562,28 +589,34 @@ export default function SelectableDataTable({
         <Tr className={itemClassNames(item)}>
           <Td expand={expandProps} />
           <Td select={itemSelectable(item) ? selectProps : undefined} />
-          {columns?.map((c, index) => (
-            <Td key={index} dataLabel={c.name} className={c.classNames} {...c.pfTdProps}>
-              {c.value(item)}
-            </Td>
-          ))}
+          {columns?.map((c, index) => {
+            const columnProps = isFunction(c.pfTdProps) ? c.pfTdProps(item) : c.pfTdProps;
+
+            return (
+              <Td key={index} dataLabel={c.name} className={c.classNames} {...columnProps}>
+                {c.value(item)}
+              </Td>
+            );
+          })}
           {itemActions && (
             <Td isActionCell>
-              <ActionsColumn
-                items={itemActions(item)}
-                actionsToggle={({ toggleRef, onToggle }) => (
-                  <MenuToggle
-                    ref={toggleRef}
-                    onClick={onToggle}
-                    variant="plain"
-                    aria-label={
-                      isFunction(itemActionsLabel) ? itemActionsLabel(item) : itemActionsLabel
-                    }
-                  >
-                    <Icon name="more_horiz" />
-                  </MenuToggle>
-                )}
-              />
+              {actions.length > 0 && (
+                <ActionsColumn
+                  items={itemActions(item)}
+                  actionsToggle={({ toggleRef, onToggle }) => (
+                    <MenuToggle
+                      ref={toggleRef}
+                      onClick={onToggle}
+                      variant="plain"
+                      aria-label={
+                        isFunction(itemActionsLabel) ? itemActionsLabel(item) : itemActionsLabel
+                      }
+                    >
+                      <Icon name="more_horiz" />
+                    </MenuToggle>
+                  )}
+                />
+              )}
             </Td>
           )}
         </Tr>
