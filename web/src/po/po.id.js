@@ -60,6 +60,9 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Ukuran minimum standar %1$s akan digunakan untuk %2$s yang baru"
   ],
+  "A generic size of %1$s will be used for the new %2$s": [
+    "Ukuran standar %1$s akan digunakan untuk %2$s yang baru"
+  ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Rentang ukuran umum antara %1$s dan %2$s akan digunakan untuk %3$s yang baru"
   ],
@@ -180,6 +183,9 @@ export default {
   "Apply selected solution": [
     "Pilih solusi untuk melanjutkan"
   ],
+  "Applying changes": [
+    "Menerapkan perubahan"
+  ],
   "As a new partition on %s": [
     "Sebagai partisi baru di %s"
   ],
@@ -225,6 +231,15 @@ export default {
   "Back": [
     "Kembali"
   ],
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
+    "Berdasarkan jumlah RAM yang tersedia di sistem, %1$s dari %2$s akan dialokasikan untuk %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
+    "Berdasarkan jumlah RAM yang tersedia di sistem, %1$s sebesar minimal %2$s akan dialokasikan untuk %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "Berdasarkan jumlah RAM yang tersedia di sistem, sebuah %1$s dengan ukuran antara %2$s dan %3$s akan direncanakan untuk %4$s"
+  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -237,11 +252,20 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "Sebelum memulai penginstalan, Anda perlu mengatasi masalah berikut ini:"
   ],
+  "Below %s devices are offline and cannot be formatted.": [
+    "Di bawah ini, %s perangkat dalam keadaan luring dan tidak dapat diformat."
+  ],
   "Beta": [
     "Beta"
   ],
   "Bind to MAC address": [
     "Mengikat ke alamat MAC"
+  ],
+  "Bind to device name": [
+    "Hubungkan ke nama perangkat"
+  ],
+  "Binding": [
+    "Pengikatan"
   ],
   "Binding settings for '%s'": [
     "Pengaturan pengikatan untuk '%s'"
@@ -267,7 +291,10 @@ export default {
   "Cannot connect to Agama server": [
     "Tidak dapat terhubung ke server Agama"
   ],
-  "Cannot format all selected devices": [
+  "Cannot format %s": [
+    "Tidak dapat memformat %s"
+  ],
+  "Cannot format all the selected devices": [
     "Tidak dapat memformat semua perangkat yang dipilih"
   ],
   "Change": [
@@ -287,6 +314,9 @@ export default {
   ],
   "Change display language and keyboard layout": [
     "Ubah bahasa tampilan dan tata letak keyboard"
+  ],
+  "Change filters and try again.": [
+    "Ganti filter dan coba lagi."
   ],
   "Change keyboard": [
     "Ganti papan ketik"
@@ -324,8 +354,17 @@ export default {
   "Choose device to bind by name": [
     "Pilih perangkat untuk diikat berdasarkan nama"
   ],
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
+    "Pilih cara koneksi harus dihubungkan dengan perangkat jaringan. Hal ini membantu mengontrol perangkat mana yang digunakan oleh koneksi tersebut."
+  ],
   "Clear": [
     "Hapus"
+  ],
+  "Clear all filters": [
+    "Hapus semua filter"
+  ],
+  "Clear input": [
+    "Bersihkan input"
   ],
   "Clear selected mount point": [
     "Hapus titik mount yang dipilih"
@@ -335,6 +374,9 @@ export default {
   ],
   "Collapse the list of planned actions": [
     "Lipat daftar tindakan yang direncanakan"
+  ],
+  "Configuration out of sync": [
+    "Konfigurasi tidak sinkron"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Konfigurasi dibaca dari Tabel Firmware Boot iSCSI (iBFT)."
@@ -375,6 +417,9 @@ export default {
   "Confirm Installation": [
     "Konfirmasi Instalasi"
   ],
+  "Confirm that you really want to continue.": [
+    "Pastikan Anda benar-benar ingin melanjutkan."
+  ],
   "Congratulations!": [
     "Selamat!"
   ],
@@ -393,6 +438,15 @@ export default {
   "Connected (%s)": [
     "Tersambung (%s)"
   ],
+  "Connected device": [
+    "Perangkat terhubung"
+  ],
+  "Connected devices": [
+    "Perangkat terhubung"
+  ],
+  "Connected devices tabs": [
+    "Tab Perangkat Terhubung"
+  ],
   "Connecting to %s": [
     "Menghubungkan ke %s"
   ],
@@ -400,7 +454,13 @@ export default {
     "Rincian koneksi"
   ],
   "Connection is available to all devices.": [
-    ""
+    "Koneksi tersedia untuk semua perangkat."
+  ],
+  "Connection is bound to MAC address %s.": [
+    "Koneksi terikat pada alamat MAC %s."
+  ],
+  "Connection is bound to device %s.": [
+    "Koneksi terhubung ke perangkat %s."
   ],
   "Connection not found or lost": [
     "Koneksi tidak ditemukan atau terputus"
@@ -458,12 +518,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "Tabel pemilihan perangkat DASD"
-  ],
-  "DASDs table section": [
-    "Bagian tabel DASD"
   ],
   "DIAG": [
     "DIAG"
@@ -600,6 +654,9 @@ export default {
   "Edit connection %s": [
     "Edit koneksi %s"
   ],
+  "Edit connection settings": [
+    "Edit pengaturan koneksi"
+  ],
   "Edit user": [
     "Edit pengguna"
   ],
@@ -693,12 +750,6 @@ export default {
   "Filter by language, territory or locale code": [
     "Memfilter berdasarkan bahasa, wilayah, atau kode lokal"
   ],
-  "Filter by max channel": [
-    "Memfilter menurut saluran maks"
-  ],
-  "Filter by min channel": [
-    "Memfilter menurut saluran min"
-  ],
   "Filter by pattern title or description": [
     "Memfilter berdasarkan judul atau deskripsi pola"
   ],
@@ -729,6 +780,9 @@ export default {
   "Format RAID %s": [
     "Format RAID %s"
   ],
+  "Format device %s": [
+    "Format perangkat %s"
+  ],
   "Format device as": [
     "Format perangkat sebagai"
   ],
@@ -737,6 +791,9 @@ export default {
   ],
   "Format logical volume as": [
     "Format volume logis sebagai"
+  ],
+  "Format now": [
+    "Format sekarang"
   ],
   "Format partition as": [
     "Format partisi sebagai"
@@ -770,6 +827,9 @@ export default {
   ],
   "Go to network page": [
     "Buka halaman jaringan"
+  ],
+  "Go to storage page": [
+    "Buka halaman penyimpanan"
   ],
   "Good signal": [
     "Sinyal baik"
@@ -913,7 +973,7 @@ export default {
     "Penerbit"
   ],
   "It doesn't exist or can't be reached.": [
-    ""
+    "Tidak ada atau tidak dapat diakses."
   ],
   "It is chosen for booting": [
     "Ini dipilih untuk booting"
@@ -938,6 +998,9 @@ export default {
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Tidak mungkin memasang sistem dengan konfigurasi saat ini. Sesuaikan pengaturan di bawah ini."
+  ],
+  "It is offline and must be activated before formatting it.": [
+    "Perangkat ini dalam keadaan luring dan harus diaktifkan terlebih dahulu sebelum diformat."
   ],
   "It may take some time.": [
     "Mungkin membutuhkan waktu."
@@ -1029,8 +1092,14 @@ export default {
   "Manual": [
     "Manual"
   ],
+  "Max channel": [
+    "Saluran maks"
+  ],
   "MiB": [
     "MiB"
+  ],
+  "Min channel": [
+    "Saluran min"
   ],
   "Mode": [
     "Mode"
@@ -1116,6 +1185,9 @@ export default {
   "No": [
     "Tidak"
   ],
+  "No DASD devices were found in this machine.": [
+    "Tidak ditemukan perangkat DASD pada mesin ini."
+  ],
   "No Wi-Fi networks were found": [
     "Tidak ditemukan jaringan Wi-Fi"
   ],
@@ -1132,10 +1204,13 @@ export default {
     "Tidak ada konten yang ditemukan"
   ],
   "No device is currently using this connection.": [
-    ""
+    "Tidak ada perangkat yang saat ini menggunakan koneksi ini."
   ],
   "No device selected yet": [
     "Belum ada perangkat yang dipilih"
+  ],
+  "No devices available": [
+    "Tidak ada perangkat yang tersedia"
   ],
   "No devices configured yet": [
     "Belum ada perangkat yang dikonfigurasi"
@@ -1185,6 +1260,9 @@ export default {
   "None of the time zones match the filter.": [
     "Tidak ada zona waktu yang cocok dengan filter."
   ],
+  "None set": [
+    "Tidak ditetapkan"
+  ],
   "Not available": [
     "Tidak tersedia"
   ],
@@ -1208,9 +1286,6 @@ export default {
   ],
   "Not supported (%s)": [
     "Tidak didukung (%s)"
-  ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Perangkat offline harus diaktifkan sebelum memformatnya. Batalkan pilihan atau aktifkan perangkat yang tercantum di bawah ini dan coba lagi"
   ],
   "On boot": [
     "Saat boot"
@@ -1292,9 +1367,6 @@ export default {
   ],
   "Pending": [
     "Tertunda"
-  ],
-  "Perform an action": [
-    "Melakukan tindakan"
   ],
   "PiB": [
     "PiB"
@@ -1389,20 +1461,17 @@ export default {
   "Reload": [
     "Muat ulang"
   ],
+  "Reload now": [
+    "Muat ulang sekarang"
+  ],
   "Reloading data, please wait...": [
     "Muat ulang data, harap tunggu..."
   ],
   "Reloading is required to get the latest data and avoid issues or data loss.": [
-    ""
+    "Pemuatan ulang diperlukan untuk mendapatkan data terbaru dan menghindari masalah atau kehilangan data."
   ],
   "Remove": [
     "Menghapus"
-  ],
-  "Remove max channel filter": [
-    "Menghapus filter saluran maks"
-  ],
-  "Remove min channel filter": [
-    "Menghapus filter saluran min"
   ],
   "Remove the configuration for this disk": [
     "Hapus konfigurasi untuk disk ini"
@@ -1418,6 +1487,9 @@ export default {
   ],
   "Reset to the default configuration": [
     "Kembalikan ke konfigurasi default"
+  ],
+  "Resource not found or lost": [
+    "Sumber daya tidak ditemukan atau hilang"
   ],
   "Result": [
     "Hasil"
@@ -1436,6 +1508,15 @@ export default {
   ],
   "Routes": [
     "Route"
+  ],
+  "Row actions": [
+    "Baris tindakan"
+  ],
+  "Row expansion": [
+    "Perluasan baris"
+  ],
+  "Row selection": [
+    "Baris pemilihan"
   ],
   "SD Card": [
     "Kartu SD"
@@ -1503,6 +1584,9 @@ export default {
   "Select at least one disk.": [
     "Pilih setidaknya satu disk."
   ],
+  "Select devices to enable bulk actions.": [
+    "Pilih perangkat untuk mengaktifkan tindakan massal."
+  ],
   "Select or enter a mount point": [
     "Pilih atau masukkan titik mount"
   ],
@@ -1536,17 +1620,20 @@ export default {
   "Server options": [
     "Opsi server"
   ],
-  "Set DIAG Off": [
-    "Mengatur DIAG Tidak Aktif"
+  "Set DIAG off": [
+    "Matikan DIAG"
   ],
-  "Set DIAG On": [
-    "Mengatur DIAG Aktif"
+  "Set DIAG on": [
+    "Aktifkan DIAG"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
     "Tetapkan nama host permanen yang tidak akan berubah saat pembaruan jaringan."
   ],
   "Setting up connection": [
     "Mengatur koneksi"
+  ],
+  "Settings": [
+    "Pengaturan"
   ],
   "Several partitions will be deleted": [
     "Beberapa partisi akan dihapus"
@@ -1666,10 +1753,13 @@ export default {
     "Grup LVM ‘%1$s’ akan tetap berada di %2$s"
   ],
   "The configuration has been updated externally.": [
-    ""
+    "Konfigurasi telah diperbarui secara eksternal."
   ],
   "The configured LVM groups will remain at %s": [
     "Grup LVM yang telah dikonfigurasi akan tetap berada di %s"
+  ],
+  "The connection can be used by any available device.": [
+    "Koneksi ini dapat digunakan oleh perangkat apa pun yang tersedia."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Koneksi hanya akan digunakan selama pemasangan dan tidak tersedia dalam sistem yang telah dipasang."
@@ -1727,6 +1817,9 @@ export default {
   ],
   "The extension has been registered with key %s.": [
     "Ekstensi telah terdaftar dengan kunci %s."
+  ],
+  "The extension was registered without any registration code.": [
+    "Ekstensi tersebut didaftarkan tanpa kode pendaftaran."
   ],
   "The final size can be bigger in order to fill the extra free space.": [
     "Ukuran akhir dapat dibuat lebih besar untuk mengisi ruang kosong yang tersisa."
@@ -1857,8 +1950,11 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Pengaturan untuk menginstal produk. Bahasa penginstal dan tata letak keyboard dapat disesuaikan melalui [panel pengaturan] yang dapat diakses dari bilah atas."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Tindakan ini dapat menghapus data yang tersimpan pada perangkat yang tercantum di bawah ini. Harap konfirmasikan bahwa Anda benar-benar ingin melanjutkan."
+  "This action could destroy any data stored on the device.": [
+    "Tindakan ini dapat menghapus semua data yang tersimpan di perangkat."
+  ],
+  "This action could destroy any data stored on the devices listed below.": [
+    "Tindakan ini dapat menghapus semua data yang disimpan pada perangkat-perangkat yang tercantum di bawah ini."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Ekstensi ini tidak tersedia di server. Mintalah administrator server untuk menyalin ekstensi tersebut."
@@ -1868,6 +1964,12 @@ export default {
   ],
   "This license is not available in %s.": [
     "Lisensi ini tidak tersedia di %s."
+  ],
+  "This may take a moment while updates complete.": [
+    "Mungkin diperlukan beberapa saat hingga pembaruan selesai."
+  ],
+  "This message will close automatically when everything is done.": [
+    "Pesan ini akan ditutup secara otomatis setelah semuanya selesai."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Polanya ini menyeimbangkan antara kejelasan dan efisiensi: mode ini menjaga kesederhanaan untuk pemilihan yang sederhana, sementara tampilan penuh mendukung eksplorasi yang lebih mendalam dan tindakan yang lebih kompleks, terutama untuk pengguna yang memiliki banyak perangkat."
@@ -1915,10 +2017,13 @@ export default {
     "Tidak dapat mengubah pengaturan"
   ],
   "Unbound": [
-    ""
+    "Tidak terikat"
   ],
   "Unselect": [
     "Batalkan pilihan"
+  ],
+  "Unselect or activate them and try it again.": [
+    "Batalkan pilihan atau aktifkan, lalu coba lagi."
   ],
   "Unsupported AutoYaST elements": [
     "Elemen AutoYaST tidak didukung"
@@ -2151,6 +2256,12 @@ export default {
   "[FIXME]": [
     "[FIXME]"
   ],
+  "active": [
+    "aktif"
+  ],
+  "all": [
+    "semua"
+  ],
   "approx. %s": [
     "sekitar %s"
   ],
@@ -2172,11 +2283,23 @@ export default {
   "logical volume": [
     "volume logis"
   ],
+  "no": [
+    "tidak"
+  ],
+  "offline": [
+    "luring"
+  ],
   "partition": [
     "partisi"
   ],
+  "read_only": [
+    "hanya_baca"
+  ],
   "reset to defaults": [
     "kembalikan ke default"
+  ],
+  "yes": [
+    "ya"
   ],
   "zFCP": [
     "zFCP"

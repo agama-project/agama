@@ -60,6 +60,9 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Eine generische Mindestgröße von %1$s wird für die neue %2$s verwendet"
   ],
+  "A generic size of %1$s will be used for the new %2$s": [
+    "Für die neue %2$s wird eine generische Größe von %1$s verwendet"
+  ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Ein generischer Größenbereich zwischen %1$s und %2$s wird für die neue %3$s verwendet"
   ],
@@ -180,6 +183,9 @@ export default {
   "Apply selected solution": [
     "Ausgewählte Lösung anwenden"
   ],
+  "Applying changes": [
+    "Änderungen werden angewendet"
+  ],
   "As a new partition on %s": [
     "Als eine neue Partition auf %s"
   ],
@@ -225,6 +231,15 @@ export default {
   "Back": [
     "Zurück"
   ],
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
+    "Basierend auf der Menge an RAM im System wird ein %1$s von %2$s für %3$s geplant"
+  ],
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
+    "Basierend auf der Menge an RAM im System wird ein %1$s mit mindestens %2$s für %3$s geplant"
+  ],
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "Basierend auf der Menge an RAM im System wird ein %1$s mit einer Größe zwischen %2$s und %3$s für %4$s geplant"
+  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -236,6 +251,9 @@ export default {
   ],
   "Before starting the installation, you need to address the following problems:": [
     "Bevor Sie mit der Installation beginnen, müssen Sie sich mit folgenden Problemen befassen:"
+  ],
+  "Below %s devices are offline and cannot be formatted.": [
+    "Die folgenden %s Geräte sind offline und können nicht formatiert werden."
   ],
   "Beta": [
     "Beta"
@@ -273,7 +291,10 @@ export default {
   "Cannot connect to Agama server": [
     "Verbindung zum Agama-Server nicht möglich"
   ],
-  "Cannot format all selected devices": [
+  "Cannot format %s": [
+    "%s kann nicht formatiert werden"
+  ],
+  "Cannot format all the selected devices": [
     "Es können nicht alle ausgewählten Geräte formatiert werden"
   ],
   "Change": [
@@ -293,6 +314,9 @@ export default {
   ],
   "Change display language and keyboard layout": [
     "Anzeigesprache und Tastaturbelegung ändern"
+  ],
+  "Change filters and try again.": [
+    "Ändern Sie die Filter und versuchen Sie es erneut."
   ],
   "Change keyboard": [
     "Tastatur ändern"
@@ -335,6 +359,12 @@ export default {
   ],
   "Clear": [
     "Leeren"
+  ],
+  "Clear all filters": [
+    "Alle Filter löschen"
+  ],
+  "Clear input": [
+    "Eingabe löschen"
   ],
   "Clear selected mount point": [
     "Ausgewählten Einhängepunkt löschen"
@@ -386,6 +416,9 @@ export default {
   ],
   "Confirm Installation": [
     "Installation bestätigen"
+  ],
+  "Confirm that you really want to continue.": [
+    "Bestätigen Sie, dass Sie wirklich fortfahren möchten."
   ],
   "Congratulations!": [
     "Gratulation!"
@@ -485,12 +518,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "DASD-Geräte-Auswahltabelle"
-  ],
-  "DASDs table section": [
-    "DASD-Tabellenabschnitt"
   ],
   "DIAG": [
     "DIAG"
@@ -723,12 +750,6 @@ export default {
   "Filter by language, territory or locale code": [
     "Nach Sprache, Gebiet oder Sprachumgebungscode filtern"
   ],
-  "Filter by max channel": [
-    "Nach maximalem Kanal filtern"
-  ],
-  "Filter by min channel": [
-    "Nach minimalem Kanal filtern"
-  ],
   "Filter by pattern title or description": [
     "Nach Mustertitel oder Beschreibung filtern"
   ],
@@ -759,6 +780,9 @@ export default {
   "Format RAID %s": [
     "RAID %s formatieren"
   ],
+  "Format device %s": [
+    "Gerät %s formatieren"
+  ],
   "Format device as": [
     "Gerät formatieren als"
   ],
@@ -767,6 +791,9 @@ export default {
   ],
   "Format logical volume as": [
     "Logisches Volume formatieren als"
+  ],
+  "Format now": [
+    "Jetzt formatieren"
   ],
   "Format partition as": [
     "Partition formatieren als"
@@ -973,6 +1000,9 @@ export default {
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Es ist nicht möglich, das System mit der aktuellen Konfiguration zu installieren. Passen Sie die Einstellungen unten an."
   ],
+  "It is offline and must be activated before formatting it.": [
+    "Es ist offline und muss vor dem Formatieren aktiviert werden."
+  ],
   "It may take some time.": [
     "Es könnte einige Zeit dauern."
   ],
@@ -1063,8 +1093,14 @@ export default {
   "Manual": [
     "Manuell"
   ],
+  "Max channel": [
+    "Maximaler Kanal"
+  ],
   "MiB": [
     "MiB"
+  ],
+  "Min channel": [
+    "Minimaler Kanal"
   ],
   "Mode": [
     "Modus"
@@ -1150,6 +1186,9 @@ export default {
   "No": [
     "Nein"
   ],
+  "No DASD devices were found in this machine.": [
+    "In dieser Maschine wurden keine DASD-Geräte gefunden."
+  ],
   "No Wi-Fi networks were found": [
     "Keine Wi-Fi-Netzwerke gefunden"
   ],
@@ -1170,6 +1209,9 @@ export default {
   ],
   "No device selected yet": [
     "Noch kein Gerät ausgewählt"
+  ],
+  "No devices available": [
+    "Keine Geräte verfügbar"
   ],
   "No devices configured yet": [
     "Noch keine Geräte konfiguriert"
@@ -1245,9 +1287,6 @@ export default {
   ],
   "Not supported (%s)": [
     "Nicht unterstützt (%s)"
-  ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Offline-Geräte müssen aktiviert werden, bevor sie formatiert werden können. Bitte deaktivieren oder aktivieren Sie die unten aufgeführten Geräte und versuchen Sie es erneut"
   ],
   "On boot": [
     "Beim Booten"
@@ -1329,9 +1368,6 @@ export default {
   ],
   "Pending": [
     "Ausstehend"
-  ],
-  "Perform an action": [
-    "Aktion durchführen"
   ],
   "PiB": [
     "PiB"
@@ -1438,12 +1474,6 @@ export default {
   "Remove": [
     "Entfernen"
   ],
-  "Remove max channel filter": [
-    "Filter für maximalen Kanal entfernen"
-  ],
-  "Remove min channel filter": [
-    "Filter für minimalen Kanal entfernen"
-  ],
   "Remove the configuration for this disk": [
     "Konfiguration für diese Festplatte entfernen"
   ],
@@ -1479,6 +1509,15 @@ export default {
   ],
   "Routes": [
     "Routen"
+  ],
+  "Row actions": [
+    "Zeilenaktionen"
+  ],
+  "Row expansion": [
+    "Zeilenausdehnung"
+  ],
+  "Row selection": [
+    "Zeilenauswahl"
   ],
   "SD Card": [
     "SD-Karte"
@@ -1546,6 +1585,9 @@ export default {
   "Select at least one disk.": [
     "Wählen Sie mindestens eine Festplatte aus."
   ],
+  "Select devices to enable bulk actions.": [
+    "Wählen Sie Geräte aus, um Massenaktionen zu aktivieren."
+  ],
   "Select or enter a mount point": [
     "Einhängepunkt auswählen oder eingeben"
   ],
@@ -1578,12 +1620,6 @@ export default {
   ],
   "Server options": [
     "Serveroptionen"
-  ],
-  "Set DIAG Off": [
-    "DIAG ausschalten"
-  ],
-  "Set DIAG On": [
-    "DIAG einschalten"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
     "Legen Sie einen permanenten Hostnamen fest, der sich bei Netzwerkaktualisierungen nicht ändert."
@@ -1910,8 +1946,11 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Dies sind die Einstellungen für das zu installierende Produkt. Die Sprache des Installationsprogramms kann über das [settings panel] in der oberen Leiste angepasst werden."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Diese Aktion könnte alle Daten zerstören, die auf den unten aufgeführten Geräten gespeichert sind. Bitte bestätigen Sie, dass Sie wirklich fortfahren möchten."
+  "This action could destroy any data stored on the device.": [
+    "Diese Aktion kann alle auf dem Gerät gespeicherten Daten zerstören."
+  ],
+  "This action could destroy any data stored on the devices listed below.": [
+    "Diese Aktion kann alle auf den unten aufgeführten Geräten gespeicherten Daten zerstören."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Diese Erweiterung ist auf dem Server nicht verfügbar. Bitten Sie den Serveradministrator, die Erweiterung zu spiegeln."
@@ -1921,6 +1960,12 @@ export default {
   ],
   "This license is not available in %s.": [
     "Diese Lizenz ist in %s nicht verfügbar."
+  ],
+  "This may take a moment while updates complete.": [
+    "Es kann einen Moment dauern, bis die Aktualisierungen abgeschlossen sind."
+  ],
+  "This message will close automatically when everything is done.": [
+    "Diese Meldung wird automatisch geschlossen, wenn alles erledigt ist."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Dieses Muster schafft ein Gleichgewicht zwischen Klarheit und Effizienz: Das Modal hält die Dinge leicht für einfache Auswahlen, während die Vollansicht eine tiefere Erkundung und komplexere Aktionen unterstützt, insbesondere für Nutzer mit vielen Geräten."
@@ -1972,6 +2017,9 @@ export default {
   ],
   "Unselect": [
     "Abwählen"
+  ],
+  "Unselect or activate them and try it again.": [
+    "Wählen Sie sie ab oder aktivieren Sie sie und versuchen Sie es erneut."
   ],
   "Unsupported AutoYaST elements": [
     "Nicht unterstützte AutoYaST-Elemente"
@@ -2204,6 +2252,12 @@ export default {
   "[FIXME]": [
     "[REPARIERMICH]"
   ],
+  "active": [
+    "aktiv"
+  ],
+  "all": [
+    "alle"
+  ],
   "approx. %s": [
     "ca. %s"
   ],
@@ -2225,11 +2279,23 @@ export default {
   "logical volume": [
     "logisches Volume"
   ],
+  "no": [
+    "nein"
+  ],
+  "offline": [
+    "offline"
+  ],
   "partition": [
     "Partition"
   ],
+  "read_only": [
+    "schreibgeschützt"
+  ],
   "reset to defaults": [
     "Auf Standardeinstellungen zurücksetzen"
+  ],
+  "yes": [
+    "ja"
   ],
   "zFCP": [
     "zFCP"

@@ -60,6 +60,9 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Un tamaño mínimo genérico de %1$s se utilizará para el %2$s nuevo"
   ],
+  "A generic size of %1$s will be used for the new %2$s": [
+    "Se utilizará un tamaño genérico de %1$s para el(la) nuevo(a) %2$s"
+  ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Un intervalo de tamaño genérico entre %1$s y %2$s se utilizará para el nuevo %3$s"
   ],
@@ -180,6 +183,9 @@ export default {
   "Apply selected solution": [
     "Aplicar solución seleccionada"
   ],
+  "Applying changes": [
+    ""
+  ],
   "As a new partition on %s": [
     "Como una partición nueva en %s"
   ],
@@ -225,6 +231,15 @@ export default {
   "Back": [
     "Retroceder"
   ],
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
+    "Según la cantidad de RAM en el sistema, se planificará un %1$s de %2$s para %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
+    "En función de la cantidad de RAM en el sistema, se planificará un %1$s de al menos %2$s para %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "En función de la cantidad de RAM en el sistema, se planificará un %1$s con un tamaño entre %2$s y %3$s para %4$s"
+  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -237,11 +252,20 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "Antes de comenzar la instalación, debe solucionar los siguientes problemas:"
   ],
+  "Below %s devices are offline and cannot be formatted.": [
+    ""
+  ],
   "Beta": [
     "Beta"
   ],
   "Bind to MAC address": [
     "Vincular a dirección MAC"
+  ],
+  "Bind to device name": [
+    "Asociar al nombre del dispositivo"
+  ],
+  "Binding": [
+    "Asociar"
   ],
   "Binding settings for '%s'": [
     "Configuración de conexión para '%s'"
@@ -267,9 +291,6 @@ export default {
   "Cannot connect to Agama server": [
     "No se pud conectar al servidor de Agama"
   ],
-  "Cannot format all selected devices": [
-    "No se pueden formatear todos los dispositivos seleccionados"
-  ],
   "Change": [
     "Cambiar"
   ],
@@ -287,6 +308,9 @@ export default {
   ],
   "Change display language and keyboard layout": [
     "Cambiar idioma de visualización y distribución del teclado"
+  ],
+  "Change filters and try again.": [
+    ""
   ],
   "Change keyboard": [
     "Cambiar teclado"
@@ -324,8 +348,14 @@ export default {
   "Choose device to bind by name": [
     "Escoger dispositivo para vincular por nombre"
   ],
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
+    "Elija cómo se debe asociar la conexión con un dispositivo de red. Esto ayuda a controlar qué dispositivo usa la conexión."
+  ],
   "Clear": [
     "Limpiar"
+  ],
+  "Clear all filters": [
+    ""
   ],
   "Clear selected mount point": [
     "Quitar punto de montaje seleccionado"
@@ -335,6 +365,9 @@ export default {
   ],
   "Collapse the list of planned actions": [
     "Contraer la lista de acciones planificadas"
+  ],
+  "Configuration out of sync": [
+    "Configuración desincronizada"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Configuración leída de la tabla de firmware de arranque de iSCSI (iBFT)."
@@ -375,6 +408,9 @@ export default {
   "Confirm Installation": [
     "Confirmar instalación"
   ],
+  "Confirm that you really want to continue.": [
+    ""
+  ],
   "Congratulations!": [
     "¡Enhorabuena!"
   ],
@@ -393,6 +429,15 @@ export default {
   "Connected (%s)": [
     "Conectado (%s)"
   ],
+  "Connected device": [
+    "Dispositivo conectado"
+  ],
+  "Connected devices": [
+    "Dispositivos conectados"
+  ],
+  "Connected devices tabs": [
+    "Pestañas de dispositivos conectados"
+  ],
   "Connecting to %s": [
     "Conectándose a %s"
   ],
@@ -400,7 +445,13 @@ export default {
     "Detalles de la conexión"
   ],
   "Connection is available to all devices.": [
-    ""
+    "La conexión está disponible para todos los dispositivos."
+  ],
+  "Connection is bound to MAC address %s.": [
+    "La conexión está asociada a la dirección MAC %s."
+  ],
+  "Connection is bound to device %s.": [
+    "La conexión está asociada al dispositivo %s."
   ],
   "Connection not found or lost": [
     "Conexión no encontrada o perdida"
@@ -458,12 +509,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "Tabla de selección de dispositivos DASD"
-  ],
-  "DASDs table section": [
-    "sección de tabla DASDs"
   ],
   "DIAG": [
     "DIAG"
@@ -600,6 +645,9 @@ export default {
   "Edit connection %s": [
     "Editar conexión %s"
   ],
+  "Edit connection settings": [
+    "Editar la configuración de conexión"
+  ],
   "Edit user": [
     "Editar usuario"
   ],
@@ -693,12 +741,6 @@ export default {
   "Filter by language, territory or locale code": [
     "Filtrar por idioma, territorio o código de configuración regional"
   ],
-  "Filter by max channel": [
-    "Filtrar por canal máximo"
-  ],
-  "Filter by min channel": [
-    "Filtrar por canal mínimo"
-  ],
   "Filter by pattern title or description": [
     "Filtrar por título o descripción del patrón"
   ],
@@ -770,6 +812,9 @@ export default {
   ],
   "Go to network page": [
     "Ir a la página de red"
+  ],
+  "Go to storage page": [
+    "Ir a la página de almacenamiento"
   ],
   "Good signal": [
     "Señal buena"
@@ -914,7 +959,7 @@ export default {
     "Emisor"
   ],
   "It doesn't exist or can't be reached.": [
-    ""
+    "No existe o no se puede alcanzar."
   ],
   "It is chosen for booting": [
     "Se ha elegido para arrancar"
@@ -939,6 +984,9 @@ export default {
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "No es posible instalar el sistema con la configuración actual. Ajuste las opciones a continuación."
+  ],
+  "It is offline and must be activated before formatting it.": [
+    ""
   ],
   "It may take some time.": [
     "Puede tardar un poco."
@@ -974,7 +1022,7 @@ export default {
     "Deje al instalador proponer un tamaño sensato"
   ],
   "Loading": [
-    "Cargando..."
+    "Cargando"
   ],
   "Loading data...": [
     "Cargando los datos..."
@@ -1133,7 +1181,7 @@ export default {
     "No se encontró contenido"
   ],
   "No device is currently using this connection.": [
-    ""
+    "Ningún dispositivo está utilizando actualmente esta conexión."
   ],
   "No device selected yet": [
     "Aún no se ha seleccionado ningún dispositivo"
@@ -1186,6 +1234,9 @@ export default {
   "None of the time zones match the filter.": [
     "Ninguna de las zonas horarias coincide con el filtro."
   ],
+  "None set": [
+    "Ninguna establecida"
+  ],
   "Not available": [
     "No disponible"
   ],
@@ -1209,9 +1260,6 @@ export default {
   ],
   "Not supported (%s)": [
     "No compatible (%s)"
-  ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Los dispositivos sin conexión deben activarse antes de ser formateados. Deseleccione o active los dispositivos listados a continuación y vuelva a intentarlo"
   ],
   "On boot": [
     "En arranque"
@@ -1293,9 +1341,6 @@ export default {
   ],
   "Pending": [
     "Pendiente"
-  ],
-  "Perform an action": [
-    "Realizar una acción"
   ],
   "PiB": [
     "PiB"
@@ -1390,20 +1435,17 @@ export default {
   "Reload": [
     "Recargar"
   ],
+  "Reload now": [
+    "Recargar ahora"
+  ],
   "Reloading data, please wait...": [
     "Cargando datos, por favor espere…"
   ],
   "Reloading is required to get the latest data and avoid issues or data loss.": [
-    ""
+    "Es necesario volver a cargar para obtener los datos más recientes y evitar problemas o pérdida de datos."
   ],
   "Remove": [
     "Retirar"
-  ],
-  "Remove max channel filter": [
-    "Eliminar filtro de canal máximo"
-  ],
-  "Remove min channel filter": [
-    "Eliminar filtro de canal mínimo"
   ],
   "Remove the configuration for this disk": [
     "Eliminar la configuración de este disco"
@@ -1419,6 +1461,9 @@ export default {
   ],
   "Reset to the default configuration": [
     "Restablecer la configuración predeterminada"
+  ],
+  "Resource not found or lost": [
+    "Recurso no encontrado o perdido"
   ],
   "Result": [
     "Resultado"
@@ -1437,6 +1482,9 @@ export default {
   ],
   "Routes": [
     "Rutas"
+  ],
+  "Row expansion": [
+    ""
   ],
   "SD Card": [
     "Tarjeta SD"
@@ -1537,17 +1585,14 @@ export default {
   "Server options": [
     "Opciones del servidor"
   ],
-  "Set DIAG Off": [
-    "Desactivar DIAG"
-  ],
-  "Set DIAG On": [
-    "Activar DIAG"
-  ],
   "Set a permanent hostname that won’t change with network updates.": [
     "Establece un nombre permanente del equipo que no cambie con las actualizaciones de la red."
   ],
   "Setting up connection": [
     "Configurando conexión"
+  ],
+  "Settings": [
+    "Ajustes"
   ],
   "Several partitions will be deleted": [
     "Se eliminarán varias particiones"
@@ -1668,10 +1713,13 @@ export default {
     "El grupo de LVM '%1$s' permanecerá en %2$s"
   ],
   "The configuration has been updated externally.": [
-    ""
+    "La configuración se ha actualizado externamente."
   ],
   "The configured LVM groups will remain at %s": [
     "Los grupos de LVM configurados permanecerán en %s"
+  ],
+  "The connection can be used by any available device.": [
+    "La conexión puede ser utilizada por cualquier dispositivo disponible."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "La conexión sólo se usará durante la instalación y no estará disponible en el sistema instalado."
@@ -1862,9 +1910,6 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Parámetros de instalación del producto. El idioma del instalador puede ser ajustado mediante el [panel de configuraciones], accesible en la barra superior."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Esta acción podría destruir todos los datos almacenado en los dispositivos que aparecen a continuación. Confirme que realmente desea continuar."
-  ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Esta extensión no está disponible en el servidor. Pida al administrador del servidor que replique la extensión."
   ],
@@ -1873,6 +1918,12 @@ export default {
   ],
   "This license is not available in %s.": [
     "Esta licencia no está disponible en %s."
+  ],
+  "This may take a moment while updates complete.": [
+    ""
+  ],
+  "This message will close automatically when everything is done.": [
+    ""
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Este patrón consigue un equilibrio entre claridad y eficiencia: el modal es ligero y sirve para selecciones sencillas, mientras que la vista completa admite una exploración más profunda y acciones más complejas, especialmente para usuarios con muchos dispositivos."
@@ -1920,10 +1971,13 @@ export default {
     "No es posible modificar los ajustes"
   ],
   "Unbound": [
-    ""
+    "No asociado"
   ],
   "Unselect": [
     "Deseleccionar"
+  ],
+  "Unselect or activate them and try it again.": [
+    ""
   ],
   "Unsupported AutoYaST elements": [
     "Elementos de AutoYaST no compatibles"
@@ -2177,8 +2231,17 @@ export default {
   "logical volume": [
     "volúmen lógico"
   ],
+  "no": [
+    ""
+  ],
+  "offline": [
+    ""
+  ],
   "partition": [
     "partición"
+  ],
+  "read_only": [
+    ""
   ],
   "reset to defaults": [
     "restablecer valores predeterminados"
