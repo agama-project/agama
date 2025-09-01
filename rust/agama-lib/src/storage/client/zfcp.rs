@@ -20,7 +20,10 @@
 
 //! Implements a client to access Agama's D-Bus API related to zFCP management.
 
-use std::collections::{HashMap, HashSet};
+use std::{
+    collections::{HashMap, HashSet},
+    ptr::null,
+};
 
 use futures_util::future::join_all;
 use zbus::{
@@ -127,6 +130,20 @@ impl ZFCPClient<'_> {
             }
         }
         Ok(devices)
+    }
+
+    pub async fn get_controller(
+        &self,
+        controller_id: &str,
+    ) -> Result<ZFCPController, ServiceError> {
+        let controller_proxy = self.get_controller_proxy(controller_id).await?;
+        Ok(ZFCPController {
+            id: controller_id.to_string(),
+            channel: controller_proxy.channel().await?,
+            lun_scan: controller_proxy.lunscan().await?,
+            active: controller_proxy.active().await?,
+            luns_map: self.get_luns_map(controller_id).await?,
+        })
     }
 
     async fn get_controller_proxy(

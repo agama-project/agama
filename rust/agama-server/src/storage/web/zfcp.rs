@@ -75,6 +75,7 @@ pub async fn zfcp_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Servi
     let router = Router::new()
         .route("/supported", get(supported))
         .route("/controllers", get(controllers))
+        .route("/controllers/:controller_id", get(get_controller))
         .route(
             "/controllers/:controller_id/activate",
             post(activate_controller),
@@ -211,6 +212,24 @@ async fn controllers(
         .map(|(_path, device)| device)
         .collect();
     Ok(Json(devices))
+}
+
+/// List given controller.
+#[utoipa::path(
+    post,
+    path="/controllers/:controller_id",
+    context_path="/api/storage/zfcp",
+    responses(
+        (status = OK, description = "List of WWPNs", body=ZFCPController)
+    )
+)]
+async fn get_controller(
+    State(state): State<ZFCPState<'_>>,
+    Path(controller_id): Path<String>,
+) -> Result<Json<ZFCPController>, Error> {
+    let result = state.client.get_controller(controller_id.as_str()).await?;
+
+    Ok(Json(result))
 }
 
 /// Activate given zFCP controller.
