@@ -45,9 +45,6 @@ class Locale:
     def code(self):
         return f"{self.file_language}-{self.territory}"
 
-    def normalized_language(self):
-        return Locale.languages_map.get(self.code(), self.language)
-
     def name(self, include_territory: bool = False):
         if include_territory:
             return language_name(languageId=self.language,
