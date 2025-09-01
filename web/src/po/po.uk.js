@@ -60,6 +60,9 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Для нового розділу %2$s буде використано типовий мінімальний розмір %1$s"
   ],
+  "A generic size of %1$s will be used for the new %2$s": [
+    "Для нового розділу %2$s буде використано %1$s"
+  ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Для нового розділу %3$s буде використано типовий діапазон розмірів між %1$s і %2$s"
   ],
@@ -180,6 +183,9 @@ export default {
   "Apply selected solution": [
     "Застосувати обране рішення"
   ],
+  "Applying changes": [
+    "Застосування змін"
+  ],
   "As a new partition on %s": [
     "Як новий розділ на %s"
   ],
@@ -225,6 +231,15 @@ export default {
   "Back": [
     "Назад"
   ],
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
+    "На основі обсягу оперативної пам'яті в системі, для %3$s буде заплановано розділ %1$s розміром %2$s"
+  ],
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
+    "На основі обсягу оперативної пам'яті в системі, для %3$s буде заплановано розділ %1$s розміром не менше %2$s"
+  ],
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "Виходячи з обсягу оперативної пам'яті в системі, для %4$s буде заплановано розділ %1$s розміром від %2$s до %3$s"
+  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -236,6 +251,9 @@ export default {
   ],
   "Before starting the installation, you need to address the following problems:": [
     "До початку встановлення потрібно усунути такі проблеми:"
+  ],
+  "Below %s devices are offline and cannot be formatted.": [
+    "Нижче показано %s пристроїв, що не підключені до мережі і не можуть бути відформатовані."
   ],
   "Beta": [
     "Бета"
@@ -273,7 +291,10 @@ export default {
   "Cannot connect to Agama server": [
     "Не вдається з'єднатися з сервером Agama"
   ],
-  "Cannot format all selected devices": [
+  "Cannot format %s": [
+    "Неможливо форматувати %s"
+  ],
+  "Cannot format all the selected devices": [
     "Не вдається відформатувати всі вибрані пристрої"
   ],
   "Change": [
@@ -293,6 +314,9 @@ export default {
   ],
   "Change display language and keyboard layout": [
     "Змінити мову та розкладку клавіатури"
+  ],
+  "Change filters and try again.": [
+    "Змініть фільтри та спробуйте ще раз."
   ],
   "Change keyboard": [
     "Змінити клавіатуру"
@@ -335,6 +359,12 @@ export default {
   ],
   "Clear": [
     "Очистити"
+  ],
+  "Clear all filters": [
+    "Очистити всі фільтри"
+  ],
+  "Clear input": [
+    "Очистити ввід"
   ],
   "Clear selected mount point": [
     "Видалити вибрану точку монтування"
@@ -386,6 +416,9 @@ export default {
   ],
   "Confirm Installation": [
     "Підтвердити встановлення"
+  ],
+  "Confirm that you really want to continue.": [
+    "Підтвердьте, що Ви дійсно хочете продовжити."
   ],
   "Congratulations!": [
     "Вітаємо!"
@@ -485,12 +518,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "Таблиця вибору пристроїв DASD"
-  ],
-  "DASDs table section": [
-    "Розділ таблиці DASD"
   ],
   "DIAG": [
     "Режим DIAG"
@@ -723,12 +750,6 @@ export default {
   "Filter by language, territory or locale code": [
     "Фільтр за мовою, територією або кодом локалі"
   ],
-  "Filter by max channel": [
-    "Фільтр за максимальним каналом"
-  ],
-  "Filter by min channel": [
-    "Фільтр за мінімальним каналом"
-  ],
   "Filter by pattern title or description": [
     "Фільтр за назвою або описом шаблону"
   ],
@@ -759,6 +780,9 @@ export default {
   "Format RAID %s": [
     "Форматувати RAID-масив %s"
   ],
+  "Format device %s": [
+    "Форматувати пристрій %s"
+  ],
   "Format device as": [
     "Форматувати пристрій як"
   ],
@@ -767,6 +791,9 @@ export default {
   ],
   "Format logical volume as": [
     "Форматувати логічний том як"
+  ],
+  "Format now": [
+    "Форматувати"
   ],
   "Format partition as": [
     "Форматувати розділ як"
@@ -974,6 +1001,9 @@ export default {
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Неможливо встановити систему з поточною конфігурацією. Налаштуйте параметри нижче."
   ],
+  "It is offline and must be activated before formatting it.": [
+    "Пристрій офлайн, перед форматуванням його необхідно активувати."
+  ],
   "It may take some time.": [
     "Це займе деякий час."
   ],
@@ -1064,8 +1094,14 @@ export default {
   "Manual": [
     "Вручну"
   ],
+  "Max channel": [
+    "Макс. канал"
+  ],
   "MiB": [
     "МіБ"
+  ],
+  "Min channel": [
+    "Мін. канал"
   ],
   "Mode": [
     "Режим"
@@ -1151,6 +1187,9 @@ export default {
   "No": [
     "Ні"
   ],
+  "No DASD devices were found in this machine.": [
+    "На цій машині не виявлено жодних пристроїв DASD."
+  ],
   "No Wi-Fi networks were found": [
     "Мережі Wi-Fi не знайдені"
   ],
@@ -1171,6 +1210,9 @@ export default {
   ],
   "No device selected yet": [
     "Пристрій ще не обрано"
+  ],
+  "No devices available": [
+    "Нема доступних пристроїв"
   ],
   "No devices configured yet": [
     "Пристрої ще не налаштовані"
@@ -1246,9 +1288,6 @@ export default {
   ],
   "Not supported (%s)": [
     "Не підтримується (%s)"
-  ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Перед форматуванням автономних пристроїв їх необхідно активувати. Будь ласка, скасуйте вибір або активацію пристроїв, перелічених нижче, і повторіть спробу"
   ],
   "On boot": [
     "При завантаженні"
@@ -1330,9 +1369,6 @@ export default {
   ],
   "Pending": [
     "Очікуйте"
-  ],
-  "Perform an action": [
-    "Виконати дію"
   ],
   "PiB": [
     "ПіБ"
@@ -1439,12 +1475,6 @@ export default {
   "Remove": [
     "Видалити"
   ],
-  "Remove max channel filter": [
-    "Видалити фільтр за максимальним каналом"
-  ],
-  "Remove min channel filter": [
-    "Видалити фільтр за мінімальним каналом"
-  ],
   "Remove the configuration for this disk": [
     "Видалити конфігурацію для цього диска"
   ],
@@ -1480,6 +1510,15 @@ export default {
   ],
   "Routes": [
     "Маршрути"
+  ],
+  "Row actions": [
+    "Дії з рядком"
+  ],
+  "Row expansion": [
+    "Розкриття рядка"
+  ],
+  "Row selection": [
+    "Вибір рядка"
   ],
   "SD Card": [
     "SD-карта"
@@ -1547,6 +1586,9 @@ export default {
   "Select at least one disk.": [
     "Оберіть хоча б один диск."
   ],
+  "Select devices to enable bulk actions.": [
+    "Виберіть пристрої для виконання масових дій."
+  ],
   "Select or enter a mount point": [
     "Виберіть або введіть точку монтування"
   ],
@@ -1580,10 +1622,10 @@ export default {
   "Server options": [
     "Параметри сервера"
   ],
-  "Set DIAG Off": [
+  "Set DIAG off": [
     "Вимкнути DIAG"
   ],
-  "Set DIAG On": [
+  "Set DIAG on": [
     "Увімкнути DIAG"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
@@ -1912,8 +1954,11 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Це налаштування для встановлюваного продукту. Мову програми встановлення можна змінити через [панель налаштувань], доступну на верхній панелі."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Ця дія може знищити будь-які дані, що зберігаються на перелічених нижче пристроях. Будь ласка, підтвердьте, що Ви дійсно хочете продовжити."
+  "This action could destroy any data stored on the device.": [
+    "Ця дія може знищити всі дані, що зберігаються на цьому пристрої."
+  ],
+  "This action could destroy any data stored on the devices listed below.": [
+    "Ця дія може призвести до знищення всіх даних, що зберігаються на перелічених нижче пристроях."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Це розширення недоступне на сервері. Попросіть адміністратора сервера віддзеркалити розширення."
@@ -1923,6 +1968,12 @@ export default {
   ],
   "This license is not available in %s.": [
     "Ліцензія недоступна цією мовою: %s."
+  ],
+  "This may take a moment while updates complete.": [
+    "Це може зайняти деякий час, поки оновлення завершиться."
+  ],
+  "This message will close automatically when everything is done.": [
+    "Це повідомлення закриється автоматично, коли все буде готово."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Цей підхід забезпечує баланс між ясністю та ефективністю: модальне вікно зберігає легкість для простого вибору, в той час як повноекранний режим підтримує глибше вивчення і складніші дії, спеціально для користувачів з великою кількістю пристроїв."
@@ -1974,6 +2025,9 @@ export default {
   ],
   "Unselect": [
     "Відмінити обране"
+  ],
+  "Unselect or activate them and try it again.": [
+    "Скасуйте вибір або активуйте їх, а потім спробуйте знову."
   ],
   "Unsupported AutoYaST elements": [
     "Непідтримувані елементи AutoYaST"
@@ -2206,6 +2260,12 @@ export default {
   "[FIXME]": [
     "[FIXME]"
   ],
+  "active": [
+    "активно"
+  ],
+  "all": [
+    "все"
+  ],
   "approx. %s": [
     "прибл. %s"
   ],
@@ -2227,11 +2287,23 @@ export default {
   "logical volume": [
     "логічний том"
   ],
+  "no": [
+    "ні"
+  ],
+  "offline": [
+    "офлайн"
+  ],
   "partition": [
     "розділ"
   ],
+  "read_only": [
+    "тільки_читання"
+  ],
   "reset to defaults": [
     "скинути до типових налаштувань"
+  ],
+  "yes": [
+    "так"
   ],
   "zFCP": [
     "zFCP"
