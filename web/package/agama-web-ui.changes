@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Sep  1 18:22:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- The Chinese languages do not include the territory (bsc#1248826).
+
+-------------------------------------------------------------------
 Thu Aug 28 05:26:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Report the underlying problem for the "load.retry" question
