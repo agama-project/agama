@@ -39,6 +39,7 @@ describe Agama::DBus::Software::Product do
 
   before do
     stub_const("Agama::Software::Manager::TARGET_DIR", target_dir)
+    allow(Yast::PackageCallbacks).to receive(:InitPackageCallbacks)
     allow(config).to receive(:products).and_return(products)
     allow(subject).to receive(:dbus_properties_changed)
     allow(Agama::ProductReader).to receive(:new).and_call_original

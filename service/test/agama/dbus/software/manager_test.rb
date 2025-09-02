@@ -35,6 +35,8 @@ describe Agama::DBus::Software::Manager do
 
   let(:backend) { Agama::Software::Manager.new(config, logger) }
 
+  let(:target_dir) { Dir.mktmpdir }
+
   let(:config) { Agama::Config.new(config_data) }
 
   let(:config_data) do
@@ -51,12 +53,18 @@ describe Agama::DBus::Software::Manager do
   let(:issues_interface) { Agama::DBus::Interfaces::Issues::ISSUES_INTERFACE }
 
   before do
+    stub_const("Agama::Software::Manager::TARGET_DIR", target_dir)
+    allow(Yast::PackageCallbacks).to receive(:InitPackageCallbacks)
     allow(Agama::DBus::Clients::Network).to receive(:new).and_return(network_client)
     allow(backend).to receive(:probe)
     allow(backend).to receive(:propose)
     allow(backend).to receive(:install)
     allow(backend).to receive(:finish)
     allow(subject).to receive(:dbus_properties_changed)
+  end
+
+  after do
+    FileUtils.rm_r(target_dir)
   end
 
   let(:network_client) do
