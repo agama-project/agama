@@ -3,6 +3,17 @@ Tue Sep 2 08:24:38 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Allow sorting devices by name or size in storage selector
   (gh#agama-project/agama#2672).
+  
+-------------------------------------------------------------------
+Mon Sep  1 18:22:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- The Chinese languages do not include the territory (bsc#1248826).
+
+-------------------------------------------------------------------
+Thu Aug 28 05:26:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report the underlying problem for the "load.retry" question
+  (related to bsc#1248779).
 
 -------------------------------------------------------------------
 Wed Aug 27 08:39:36 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
