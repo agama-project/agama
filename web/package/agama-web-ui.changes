@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep 2 08:24:38 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Allow sorting devices by name or size in storage selector
+  (gh#agama-project/agama#2672).
+  
+-------------------------------------------------------------------
 Mon Sep  1 18:22:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - The Chinese languages do not include the territory (bsc#1248826).
@@ -12,7 +18,7 @@ Thu Aug 28 05:26:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Wed Aug 27 08:39:36 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
-- Invalidate zFCP controllers query after some controller change 
+- Invalidate zFCP controllers query after some controller change
   is notified (bsc#1247445).
 
 -------------------------------------------------------------------
@@ -26,7 +32,7 @@ Wed Aug 20 10:27:07 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Refactor DASD page to make it more usable and improve its
   performance (related to bsc#1247444, gh#agama-project/agama#2648).
-  
+
 -------------------------------------------------------------------
 Wed Aug 20 10:20:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
@@ -56,7 +62,7 @@ Thu Jul 31 09:13:09 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Block UI if storage is configured by any other client
   (gh#agama-project/agama#2640).
-  
+
 -------------------------------------------------------------------
 Fri Jul 25 19:42:18 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
@@ -92,7 +98,7 @@ Thu Jul 17 19:26:17 UTC 2025 - David Diaz <dgonzalez@suse.com>
 - Replaced all usage of generatePath with generateEncodedPath to
   ensure proper URL encoding of route parameters and prevent issues
   with special characters (bsc#1246551).
-  
+
 -------------------------------------------------------------------
 Thu Jul 17 15:32:42 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 

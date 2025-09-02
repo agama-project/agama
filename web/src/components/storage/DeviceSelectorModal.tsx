@@ -21,18 +21,21 @@
  */
 
 import React, { useState } from "react";
-import { SelectableDataTable, Popup } from "~/components/core/";
+import { ButtonProps, Flex, Label } from "@patternfly/react-core";
+import Popup, { PopupProps } from "~/components/core/Popup";
+import SelectableDataTable, {
+  SortedBy,
+  SelectableDataTableProps,
+} from "~/components/core/SelectableDataTable";
 import { StorageDevice } from "~/types/storage";
-import { SelectableDataTableProps } from "../core/SelectableDataTable";
 import {
   typeDescription,
   contentDescription,
   filesystemLabels,
 } from "~/components/storage/utils/device";
 import { deviceSize } from "~/components/storage/utils";
+import { sortCollection } from "~/utils";
 import { _ } from "~/i18n";
-import { PopupProps } from "../core/Popup";
-import { ButtonProps, Flex, Label } from "@patternfly/react-core";
 
 type DeviceSelectorProps = {
   devices: StorageDevice[];
@@ -76,20 +79,35 @@ const DeviceSelector = ({
   onSelectionChange,
   selectionMode = "single",
 }: DeviceSelectorProps) => {
+  const [sortedBy, setSortedBy] = useState<SortedBy>({ index: 0, direction: "asc" });
+
+  const columns = [
+    { name: _("Device"), value: (device: StorageDevice) => device.name, sortingKey: "name" },
+    {
+      name: _("Size"),
+      value: size,
+      sortingKey: "size",
+      pfTdProps: { style: { width: "10ch" } },
+    },
+    { name: _("Description"), value: description },
+    { name: _("Current content"), value: details },
+  ];
+
+  // Sorting
+  const sortingKey = columns[sortedBy.index].sortingKey;
+  const sortedDevices = sortCollection(devices, sortedBy.direction, sortingKey);
+
   return (
     <>
       <SelectableDataTable
-        columns={[
-          { name: _("Device"), value: (device: StorageDevice) => device.name },
-          { name: _("Size"), value: size, pfTdProps: { style: { width: "10ch" } } },
-          { name: _("Description"), value: description },
-          { name: _("Current content"), value: details },
-        ]}
-        items={devices}
+        columns={columns}
+        items={sortedDevices}
         itemIdKey="sid"
         itemsSelected={selectedDevices}
         onSelectionChange={onSelectionChange}
         selectionMode={selectionMode}
+        sortedBy={sortedBy}
+        updateSorting={setSortedBy}
       />
     </>
   );
