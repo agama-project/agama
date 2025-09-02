@@ -226,16 +226,41 @@ fn reason_to_selected_by(
 pub async fn receive_events(
     mut events: EventsReceiver,
     products: Arc<RwLock<Vec<Product>>>,
+    config: Arc<RwLock<Option<SoftwareConfig>>>,
     client: ProductClient<'_>,
 ) {
     while let Ok(event) = events.recv().await {
-        if let EventPayload::LocaleChanged { locale: _ } = event.payload {
-            let mut cached_products = products.write().await;
-            if let Ok(products) = client.products().await {
-                *cached_products = products;
-            } else {
-                tracing::error!("Could not update the products cached");
+        match event.payload {
+            EventPayload::LocaleChanged { locale: _ } => {
+                let mut cached_products = products.write().await;
+                if let Ok(products) = client.products().await {
+                    *cached_products = products;
+                } else {
+                    tracing::error!("Could not update the products cached");
+                }
             }
+
+            EventPayload::SoftwareProposalChanged { patterns } => {
+                let mut cached_config = config.write().await;
+                if let Some(config) = cached_config.as_mut() {
+                    tracing::debug!(
+                        "Updating the patterns list in the software configuration cache"
+                    );
+                    let user_patterns: HashMap<String, bool> = patterns
+                        .into_iter()
+                        .filter_map(|(p, s)| {
+                            if s == SelectedBy::User {
+                                Some((p, true))
+                            } else {
+                                None
+                            }
+                        })
+                        .collect();
+                    config.patterns = Some(user_patterns);
+                }
+            }
+
+            _ => {}
         }
     }
 }
@@ -283,8 +308,11 @@ pub async fn software_service(
     };
 
     let cached_products = Arc::clone(&state.products);
+    let cached_config = Arc::clone(&state.config);
     let products_client = state.product.clone();
-    tokio::spawn(async move { receive_events(events, cached_products, products_client).await });
+    tokio::spawn(async move {
+        receive_events(events, cached_products, cached_config, products_client).await
+    });
 
     let router = Router::new()
         .route("/patterns", get(patterns))

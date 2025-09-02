@@ -33,8 +33,13 @@ const mockMutation = jest.fn();
 jest.mock("~/components/questions/LuksActivationQuestion", () => () => (
   <div>A LUKS activation question mock</div>
 ));
+
 jest.mock("~/components/questions/QuestionWithPassword", () => () => (
   <div>A question with password mock</div>
+));
+
+jest.mock("~/components/questions/LoadConfigRetryQuestion", () => () => (
+  <div>LoadConfigRetryQuestion mock</div>
 ));
 
 jest.mock("~/queries/questions", () => ({
@@ -53,6 +58,7 @@ const genericQuestion: Question = {
 };
 const passwordQuestion: Question = { id: 1, type: QuestionType.withPassword };
 const luksActivationQuestion: Question = { id: 2, class: "storage.luks_activation" };
+const loadConfigurationQuestion: Question = { id: 3, class: "load.retry" };
 
 describe("Questions", () => {
   afterEach(() => {
@@ -119,6 +125,17 @@ describe("Questions", () => {
     it("renders a LuksActivationQuestion component", () => {
       installerRender(<Questions />);
       screen.getByText("A LUKS activation question mock");
+    });
+  });
+
+  describe("when there is a config load question pending", () => {
+    beforeEach(() => {
+      mockQuestions = [loadConfigurationQuestion];
+    });
+
+    it("renders a LoadConfigRetryQuestion component", () => {
+      installerRender(<Questions />);
+      screen.getByText("LoadConfigRetryQuestion mock");
     });
   });
 });

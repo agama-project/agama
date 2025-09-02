@@ -47,6 +47,7 @@ describe Agama::DBus::Software::Product do
 
   before do
     stub_const("Agama::Software::Manager::TARGET_DIR", target_dir)
+    allow(Yast::PackageCallbacks).to receive(:InitPackageCallbacks)
     allow(Agama::DBus::Clients::Locale).to receive(:instance).and_return(locale_client)
     allow(config).to receive(:products).and_return(products)
     allow(subject).to receive(:dbus_properties_changed)

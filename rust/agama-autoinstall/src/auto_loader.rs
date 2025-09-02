@@ -78,7 +78,7 @@ impl ConfigAutoLoader {
             println!("Loading configuration from {url}");
             while let Err(error) = loader.load(url).await {
                 eprintln!("Could not load configuration from {url}: {error}");
-                if !self.should_retry(url).await? {
+                if !self.should_retry(url, &error.to_string()).await? {
                     return Err(error);
                 }
             }
@@ -101,13 +101,13 @@ impl ConfigAutoLoader {
         Err(anyhow!("No configuration was found"))
     }
 
-    async fn should_retry(&self, url: &str) -> anyhow::Result<bool> {
+    async fn should_retry(&self, url: &str, error: &str) -> anyhow::Result<bool> {
         let msg = format!(
             r#"
                 It was not possible to load the configuration from {url}.
                 It was unreachable or invalid. Do you want to try again?
                 "#
         );
-        self.questions.should_retry(&msg).await
+        self.questions.should_retry(&msg, error).await
     }
 }
