@@ -446,7 +446,11 @@ function LogicalVolumeName({
       {error && !isDisabled && (
         <FormHelperText>
           <HelperText>
-            {error && <HelperTextItem variant="error">{error.message}</HelperTextItem>}
+            {error && (
+              <HelperTextItem variant="error" screenReaderText="">
+                {error.message}
+              </HelperTextItem>
+            )}
           </HelperText>
         </FormHelperText>
       )}
@@ -704,7 +708,10 @@ export default function LogicalVolumePage() {
                     />
                     <FormHelperText>
                       <HelperText>
-                        <HelperTextItem variant={mountPointError ? "error" : "default"}>
+                        <HelperTextItem
+                          variant={mountPointError ? "error" : "default"}
+                          screenReaderText=""
+                        >
                           {!mountPointError && _("Select or enter a mount point")}
                           {mountPointError?.message}
                         </HelperTextItem>

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 25 08:59:20 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix failure of agama-products build after drop of is_opensuse
+  on SLE16 (bsc#1248484)
+
+-------------------------------------------------------------------
 Mon Aug 18 12:44:14 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
 
 - products: sles, sle-sap: remove Beta tag, switch to the final EULAs

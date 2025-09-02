@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Aug 25 10:48:37 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- live-root: update final EULAs with the June 2024 delivery 
+
+-------------------------------------------------------------------
 Tue Aug 19 14:14:22 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Make /etc/resolv.conf available at /sysroot when applying the DUDs
