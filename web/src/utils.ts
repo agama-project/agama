@@ -189,9 +189,9 @@ const generateEncodedPath = (...args: Parameters<typeof generatePath>) => {
  *
  * @example
  * ```ts
- * sortCollection(devices, 'size', 'asc');
- * sortCollection(devices, d => d.sid + d.size, 'desc');
- * sortCollection(devices, [d => d.size, d => d.name], 'asc');
+ * sortCollection(devices, 'asc', size');
+ * sortCollection(devices, 'desc', d => d.sid + d.size);
+ * sortCollection(devices, 'asc', [d => d.size, d => d.name]);
  * ```
  * @param collection - The array of items to be sorted.
  * @param direction - The direction of the sort. Use "asc" for ascending or
