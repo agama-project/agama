@@ -58,7 +58,10 @@ export default {
     "ფაილური სისტემა მთელი მოწყობილობისთვის იქნება გამოყენებული"
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
-    ""
+    "ახალი %2$s-სთვის გამოყენებული იქნება ზოგადი ზომა %1$s"
+  ],
+  "A generic size of %1$s will be used for the new %2$s": [
+    "ზოგადი ზომა %1$s გამოყენებული იქნება ახალი %2$s-სთვის"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     ""
@@ -180,6 +183,9 @@ export default {
   "Apply selected solution": [
     "არჩეული გადაწყვეტის გადატარება"
   ],
+  "Applying changes": [
+    "მიმდინარეობს ცვლილებების გადატარება"
+  ],
   "As a new partition on %s": [
     "როგორც ახალი დანაყოფი %s-ზე"
   ],
@@ -231,6 +237,9 @@ export default {
   "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
     ""
   ],
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "სისტემის RAM-ზე დამოკიდებულებით %1$s-ის ზომა %2$s-%3$s შუალედიდან იქნება %4$s-სთვის"
+  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -242,6 +251,9 @@ export default {
   ],
   "Before starting the installation, you need to address the following problems:": [
     "დაყენების დაწყებამდე საჭიროა შემდეგი პრობლემების გადაწყვეტა:"
+  ],
+  "Below %s devices are offline and cannot be formatted.": [
+    "ქვემო %s მოწყობილობა გათიშულია და ვერ დააფორმატებთ."
   ],
   "Beta": [
     "ბეტა"
@@ -279,7 +291,10 @@ export default {
   "Cannot connect to Agama server": [
     "Agama-ის სერვერთან მიერთება შეუძლებელია"
   ],
-  "Cannot format all selected devices": [
+  "Cannot format %s": [
+    "%s-ის დაფორმატება შეუძლებელია"
+  ],
+  "Cannot format all the selected devices": [
     "ყველა მონიშნული მოწყობილობის დაფორმატება შეუძლებელია"
   ],
   "Change": [
@@ -299,6 +314,9 @@ export default {
   ],
   "Change display language and keyboard layout": [
     "საჩვენებელი ენისა და კლავიატურის განლაგების შეცვლა"
+  ],
+  "Change filters and try again.": [
+    "შეცვალეთ ფილტრები და თავიდან სცადეთ."
   ],
   "Change keyboard": [
     "კლავიატურის შეცვლა"
@@ -341,6 +359,12 @@ export default {
   ],
   "Clear": [
     "გაწმენდა"
+  ],
+  "Clear all filters": [
+    "ყველა ფილტრის გასუფთავება"
+  ],
+  "Clear input": [
+    "შეყვანის გასწორება"
   ],
   "Clear selected mount point": [
     "მონიშნული მიმაგრების წერტილის გასუფთავება"
@@ -392,6 +416,9 @@ export default {
   ],
   "Confirm Installation": [
     "დაყენების დადასტურება"
+  ],
+  "Confirm that you really want to continue.": [
+    "დაადასტურეთ, რომ მართლა გნებავთ, გააგრძელოთ."
   ],
   "Congratulations!": [
     "გილოცავთ!"
@@ -457,7 +484,7 @@ export default {
     "%s-სთან მიერთების შეცდომა"
   ],
   "Could not log in. Please, make sure that the password is correct.": [
-    ""
+    "ვერ შევედი. დარწმუნდით, რომ პაროლი სწორია."
   ],
   "Create LVM volume group %s": [
     "შეიქმნება LVM-ის ტომების ჯგუფი %s"
@@ -492,12 +519,6 @@ export default {
   "DASD %s": [
     "DASD %s"
   ],
-  "DASD devices selection table": [
-    "DASD მოწყობილობების ასარჩევი ცხრილი"
-  ],
-  "DASDs table section": [
-    "DASD-ის ცხრილის სექცია"
-  ],
   "DIAG": [
     "დიაგ"
   ],
@@ -529,13 +550,13 @@ export default {
     "ახალი LVM-ის აღწერა დისკზე"
   ],
   "Define a new LVM on top of one or several disks": [
-    ""
+    "აღწერეთ ახალი LVM ერთი ან მეტი დისკით"
   ],
   "Define a user now": [
     "მომხარებლის აღწერა"
   ],
   "Define the first user with admin (sudo) privileges for system management.": [
-    ""
+    "აღწერეთ პირველი მომხმარებელი ადმინისტრატორის (sudo) პრივილეგიებით სისტემის მართვისთვის."
   ],
   "Defined (hidden)": [
     "აღწერილი (დამალული)"
@@ -729,12 +750,6 @@ export default {
   "Filter by language, territory or locale code": [
     "ფილტრი ენით, ტერიტორიით, ან ლოკალის კოდით"
   ],
-  "Filter by max channel": [
-    "გაფილვრა მაქს. არხით"
-  ],
-  "Filter by min channel": [
-    "მინ. არხით გაფილტვრა"
-  ],
   "Filter by pattern title or description": [
     "გაფილტვრა ნიმუშის სახელით ან აღწერით"
   ],
@@ -765,14 +780,20 @@ export default {
   "Format RAID %s": [
     "RAID %s-ის დაფორმატება"
   ],
+  "Format device %s": [
+    "%s-ის დაფორმატება"
+  ],
   "Format device as": [
     "მოწყობილობების დაფორმატება, როგორც"
   ],
   "Format disk %s": [
-    "%s-ის დაფორმატება"
+    "დისკის %s დაფორმატება"
   ],
   "Format logical volume as": [
     "ლოგიკური ტომის დაფორმატება, როგორც"
+  ],
+  "Format now": [
+    "დაფორმატება ახლა"
   ],
   "Format partition as": [
     "დანაყოფის დაფორმატება, როგორც"
@@ -932,7 +953,7 @@ export default {
     "დაყენებულ სისტემას შეიძლება, ქსელი არ ჰქონდეს"
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
-    ""
+    "გაფუჭებული პაკეტის დაყენებას გავლენა აქვს სისტემის სტაბილურობაზე და შეიცავს უსაფრთხოების დიდ რისკს!"
   ],
   "Installing the system, please wait...": [
     "მიმდინარეობს სისტემის დაყენება. მოითმინეთ..."
@@ -962,7 +983,7 @@ export default {
     "ის არჩეულია ჩასატვირთად და ზოგიერთი LVM ჯგუფებისთვის"
   ],
   "It is chosen for booting and for the LVM group '%s'": [
-    ""
+    "არჩეულია ჩასატვირთად და LVM-ის ჯგუფისთვის '%s'"
   ],
   "It is chosen for some LVM groups": [
     "ის არჩეულია ზოგიერთი LVM ჯგუფისთვის"
@@ -978,6 +999,9 @@ export default {
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     ""
+  ],
+  "It is offline and must be activated before formatting it.": [
+    "გათიშულია და უნდა გაააქტიუროთ, სანამ დააფორმატებთ."
   ],
   "It may take some time.": [
     "ამას რაღაც დრო შეიძლება, დასჭირდეს."
@@ -1069,8 +1093,14 @@ export default {
   "Manual": [
     "ხელით"
   ],
+  "Max channel": [
+    "მაქს. არხი"
+  ],
   "MiB": [
     "მიბ"
+  ],
+  "Min channel": [
+    "მინ. არხი"
   ],
   "Mode": [
     "რეჟიმი"
@@ -1091,7 +1121,7 @@ export default {
     ""
   ],
   "More languages might be available for the selected product at [Localization] page": [
-    ""
+    "მეტი ენა, შეიძლება, [Localization]-ის გვერდზე იყოს ხელმისაწვდომი"
   ],
   "Moreover, the following partitions will be created or mounted": [
     "კიდევ შეიქმნება, ან მიმაგრდება დამატებითი დანაყოფები"
@@ -1156,6 +1186,9 @@ export default {
   "No": [
     "არა"
   ],
+  "No DASD devices were found in this machine.": [
+    "ამ მანქანაში DASD მოწყობილობები აღმოჩენილი არაა."
+  ],
   "No Wi-Fi networks were found": [
     "WiFi ქსელები აღმოჩენილი არაა"
   ],
@@ -1177,6 +1210,9 @@ export default {
   "No device selected yet": [
     "ჯერ მოწყობილობები არჩეული არაა"
   ],
+  "No devices available": [
+    "მოწყობილობები ხელმისაწვდომი არაა"
+  ],
   "No devices configured yet": [
     "ჯერ მოწყობილობები მორგებული არაა"
   ],
@@ -1184,7 +1220,7 @@ export default {
     "მოწყობილობები აღმოჩენილი არაა"
   ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    ""
+    "iSCSI-ის ჩატვირთვის მიკროკოდის ცხრილი (iBFT) აღმოჩენილი არაა. ინიციატორი შეგიძლიათ, ხელით მოირგოთ."
   ],
   "No iSCSI targets found.": [
     "პრობლემა iSCSI სამიზნეების აღმოჩენისას."
@@ -1251,9 +1287,6 @@ export default {
   ],
   "Not supported (%s)": [
     "მხარდაჭერილი არაა (%s)"
-  ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    ""
   ],
   "On boot": [
     "ჩატვირთვისას"
@@ -1336,9 +1369,6 @@ export default {
   "Pending": [
     "დარჩენილია"
   ],
-  "Perform an action": [
-    "ქმედების შესრულება"
-  ],
   "PiB": [
     "პიბ"
   ],
@@ -1349,7 +1379,7 @@ export default {
     "შეამოწმეთ, გაშვებულია თუ არა ის."
   ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    ""
+    "განახორციელეთ iSCSI აღმოჩენა, რომ იპოვოთ ხელმისაწვდომი iSCSI სამიზნეები."
   ],
   "Please, provide its password to log in to the system.": [
     "შეიყვანეთ პაროლი სისტემაში შესასვლელად."
@@ -1444,12 +1474,6 @@ export default {
   "Remove": [
     "წაშლა"
   ],
-  "Remove max channel filter": [
-    "მაქს. არხის ფილტრის მოცილება"
-  ],
-  "Remove min channel filter": [
-    "მინ. არხის ფილტრის მოცილება"
-  ],
   "Remove the configuration for this disk": [
     "ამ დისკის კონფიგურაციის წაშლა"
   ],
@@ -1485,6 +1509,15 @@ export default {
   ],
   "Routes": [
     "რაუტები"
+  ],
+  "Row actions": [
+    "მწკრივის ქმედებები"
+  ],
+  "Row expansion": [
+    "მწკრივის გაფართოება"
+  ],
+  "Row selection": [
+    "მწკრივის არჩევანი"
   ],
   "SD Card": [
     "SD ბარათი"
@@ -1552,6 +1585,9 @@ export default {
   "Select at least one disk.": [
     "აირჩიეთ, სულ ცოტა, ერთი დისკი."
   ],
+  "Select devices to enable bulk actions.": [
+    "აირჩიეთ მოწყობილობები ერთზე მეტი ქმედებისთვის."
+  ],
   "Select or enter a mount point": [
     "აირჩიეთ, ან შეიყვანეთ მიმაგრების წერტილი"
   ],
@@ -1585,11 +1621,11 @@ export default {
   "Server options": [
     "სერვერის პარამეტრები"
   ],
-  "Set DIAG Off": [
-    "დიაგნოსტიკის გამორთვა"
+  "Set DIAG off": [
+    "DIAG-ის გამორთვა"
   ],
-  "Set DIAG On": [
-    "დიაგნოსტიკის ჩართვა"
+  "Set DIAG on": [
+    "DIAG-ის ჩართვა"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
     "დააყენეთ მუდმივი ჰოსტის სახელი, რომელიც არ შეიცვლება ქსელის განახლებებთან ერთად."
@@ -1629,7 +1665,7 @@ export default {
     "ზომა"
   ],
   "Size limits must be numbers followed by a unit like GiB or GB": [
-    ""
+    "ზომის ლიმიტი უნდა წარმოადგენდეს რიცხვს, რომელსაც ზომა მოჰყვება (მაგ: GiB ან GB)"
   ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     ""
@@ -1746,7 +1782,7 @@ export default {
     "მიმდინარე ფაილური სისტემა მიმაგრდება წერტილზე %s"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
-    ""
+    "მონაცემები შენარჩუნება, მაგრამ არსებული დანაყოფების ზომა შეიცვლება, თუ ეს საჭირო იქნება."
   ],
   "The data is kept. Only the space not assigned to any partition will be used.": [
     ""
@@ -1916,8 +1952,11 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "ეს დასაყენებელი პროდუქტის პარამეტრებია. დაყენების პროგრამის ენის მორგება [მორგების პანელიდან] ზედა ზოლიდანაა ხელმისაწვდომი."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    ""
+  "This action could destroy any data stored on the device.": [
+    "ეს ქმედება მოწყობილობაზე დამახსოვრებულ მონაცემებს გაანადგურებს."
+  ],
+  "This action could destroy any data stored on the devices listed below.": [
+    "ეს ქმედება გაანადგურებს მონაცემებს, რომლებიც დამახსოვრებულია ქვემოთ ჩამოთვლილ მოწყობილობებზე."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     ""
@@ -1928,6 +1967,12 @@ export default {
   "This license is not available in %s.": [
     "ეს ლიცენზია %s-ში ხელმისაწვდომი არაა."
   ],
+  "This may take a moment while updates complete.": [
+    "განახლებების დასრულებას ცოტა დრო შეიძლება, დასჭირდეს."
+  ],
+  "This message will close automatically when everything is done.": [
+    "ეს შეტყობინება ავტომატურად დაიხურება, როცა ყველაფერი დასრულდება."
+  ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     ""
   ],
@@ -1935,7 +1980,7 @@ export default {
     ""
   ],
   "This space includes the base system and the selected software patterns, if any.": [
-    ""
+    "ეს სივრცე შეიცავს საბაზისო სისტემას და არჩეულ პროგრამის ნიმუშებს, თუ არსებობს."
   ],
   "This uses existing partitions at the disk": [
     "ეს იყენებს დისკზე არსებულ დანაყოფებს"
@@ -1979,6 +2024,9 @@ export default {
   "Unselect": [
     "მონიშვნის მოხსნა"
   ],
+  "Unselect or activate them and try it again.": [
+    "მოხსენით მონიშვნა, ან გაააქტიურეთ ისინი და თავიდან სცადეთ."
+  ],
   "Unsupported AutoYaST elements": [
     "მხარდაუჭერელი AutoYaST-ის ელემენტები"
   ],
@@ -1992,7 +2040,7 @@ export default {
     "ხელმისაწვდომი დისკების განახლება და კრიპტოგრაფიული მოწყობილობების გააქტიურება"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
-    ""
+    "ჰოსტის სახელის შეცვლა ახლა, ან მოგვიანებით არ შეცვლის ამჟამად დარეგისტრირებულ ჰოსტის სახელს."
   ],
   "Updating the initiator name": [
     "ინიციატორის სახელის განახლება"
@@ -2106,7 +2154,7 @@ export default {
     "RAID-ის გამოყენება დანაყოფების გარეშე"
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
-    ""
+    "Trusted Platform Module-ის (TPM) გამოყენება ავტომატურად გაშიფვრისთვის თითოეული ჩატვირთვისას"
   ],
   "Use the disk without partitions": [
     "დისკის გამოყენება დანაყოფების გარეშე"
@@ -2210,6 +2258,12 @@ export default {
   "[FIXME]": [
     "[გამასწორე]"
   ],
+  "active": [
+    "აქტიური"
+  ],
+  "all": [
+    "ყველა"
+  ],
   "approx. %s": [
     "დაახლ. %s"
   ],
@@ -2231,11 +2285,23 @@ export default {
   "logical volume": [
     "ლოგიკური ტომი"
   ],
+  "no": [
+    "არა"
+  ],
+  "offline": [
+    "გათიშულია"
+  ],
   "partition": [
     "დანაყოფი"
   ],
+  "read_only": [
+    "მხოლოდ_წაკითხვადი"
+  ],
   "reset to defaults": [
     "ჩამოყრა ნაგულისხმევზე"
+  ],
+  "yes": [
+    "დიახ"
   ],
   "zFCP": [
     "zFCP"

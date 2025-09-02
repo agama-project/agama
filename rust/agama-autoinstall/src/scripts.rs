@@ -99,7 +99,7 @@ impl ScriptsRunner {
         let mut file = Self::create_file(&path, 0o700)?;
         while let Err(error) = Transfer::get(url, &mut file, self.insecure) {
             eprintln!("Could not load configuration from {url}: {error}");
-            if !self.should_retry(&url).await? {
+            if !self.should_retry(&url, &error.to_string()).await? {
                 return Err(anyhow!(error));
             }
         }
@@ -134,13 +134,13 @@ impl ScriptsRunner {
             .open(path)
     }
 
-    async fn should_retry(&self, url: &str) -> anyhow::Result<bool> {
+    async fn should_retry(&self, url: &str, error: &str) -> anyhow::Result<bool> {
         let msg = format!(
             r#"
                 It was not possible to load the script from {url}. Do you want to try again?
                 "#
         );
-        self.questions.should_retry(&msg).await
+        self.questions.should_retry(&msg, error).await
     }
 }
 
