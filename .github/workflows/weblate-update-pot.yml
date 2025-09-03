@@ -5,9 +5,15 @@ permissions:
   contents: write
 
 on:
-  schedule:
-    # run every working day (Monday-Friday) at 1:42AM UTC
-    - cron: "42 1 * * 0-4"
+  push:
+    branches:
+      - SLE-16
+    paths:
+      # run only when a file with possible translations has been changed
+      - web/**/*.ts
+      - web/**/*.tsx
+      - service/**/*.rb
+      - products.d/*.yaml
 
   # allow running manually
   workflow_dispatch:
@@ -20,12 +26,12 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: registry.opensuse.org/opensuse/tumbleweed:latest
+      image: registry.opensuse.org/opensuse/leap:16.0
 
     steps:
       - name: Configure and refresh repositories
         # disable unused repositories to have a faster refresh
-        run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
+        run: zypper modifyrepo -d openSUSE:repo-openh264 && zypper ref
 
       - name: Install Default Ruby
         run: zypper --non-interactive install --no-recommends ruby
@@ -33,12 +39,16 @@ jobs:
       - name: Install tools
         run: |
           RUBY_VERSION=$(ruby -e "puts RbConfig::CONFIG['ruby_version']")
-          zypper --non-interactive install --no-recommends diffutils git gettext-tools npm-default "rubygem(ruby:$RUBY_VERSION:yast-rake)" "rubygem(ruby:$RUBY_VERSION:gettext)" yast2-devtools which
+          zypper --non-interactive install --no-recommends diffutils git gettext-tools npm-default "rubygem(ruby:$RUBY_VERSION:yast-rake)" yast2-devtools which
+          # because of broken dependencies install Ruby gettext using the "gem" command
+          gem install --no-format-exec gettext
 
       - name: Checkout Agama sources
         uses: actions/checkout@v4
         with:
           path: agama
+          # checkout the SLE-16 branch
+          ref: SLE-16
 
       - name: Generate web POT file
         run: |
@@ -55,6 +65,8 @@ jobs:
           path: agama-weblate
           repository: ${{ github.repository_owner }}/agama-weblate
           token:  ${{ secrets.GH_TOKEN }}
+          # checkout the SLE-16 branch
+          ref: SLE-16
 
       - name: Configure Git
         run: |

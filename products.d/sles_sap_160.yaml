@@ -10,9 +10,9 @@ license: "license.final"
 # translations!!
 # ------------------------------------------------------------------------------
 description: "The leading OS for a secure and reliable SAP platform.
-Endorsed for SAP deployments, SUSE Linux Enterprise Server for SAP applications
-futureproofs the SAP project, offers uninterrupted business, and minimizes
-operational risks and costs."
+  Endorsed for SAP deployments, SUSE Linux Enterprise Server for SAP applications
+  futureproofs the SAP project, offers uninterrupted business, and minimizes
+  operational risks and costs."
 icon: SUSE.svg
 # Do not manually change any translations! See README.md for more details.
 translations:
