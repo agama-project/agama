@@ -157,7 +157,7 @@ describe Agama::DBus::Manager do
   describe "#installation_phases" do
     it "includes all possible values for the installation phase" do
       labels = subject.installation_phases.map { |i| i["label"] }
-      expect(labels).to contain_exactly("startup", "config", "install")
+      expect(labels).to contain_exactly("startup", "config", "install", "finish")
     end
 
     it "associates 'startup' with the id 0" do
@@ -173,6 +173,11 @@ describe Agama::DBus::Manager do
     it "associates 'install' with the id 2" do
       install = subject.installation_phases.find { |i| i["label"] == "install" }
       expect(install["id"]).to eq(described_class::INSTALL_PHASE)
+    end
+
+    it "associates 'finish' with the id 3" do
+      install = subject.installation_phases.find { |i| i["label"] == "finish" }
+      expect(install["id"]).to eq(described_class::FINISH_PHASE)
     end
   end
 
@@ -236,6 +241,34 @@ describe Agama::DBus::Manager do
 
       it "returns false" do
         expect(subject.can_install?).to eq(false)
+      end
+    end
+  end
+
+  describe "#finish_phase" do
+    let(:finished) { true }
+
+    before do
+      allow(backend).to receive(:finish_installation).and_return(finished)
+    end
+
+    it "finish the installation with the method given" do
+      method = "reboot"
+      expect(backend).to receive(:finish_installation).with(method)
+      subject.finish_phase("reboot")
+    end
+
+    context "when finished" do
+      it "returns true" do
+        expect(subject.finish_phase("poweroff")).to eq(true)
+      end
+    end
+
+    context "when not finished" do
+      let(:finished) { false }
+
+      it "returns false" do
+        expect(subject.finish_phase("halt")).to eq(false)
       end
     end
   end

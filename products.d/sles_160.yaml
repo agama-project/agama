@@ -1,7 +1,8 @@
 id: SLES
-name: SUSE Linux Enterprise Server 16.0 Alpha
-registration: "mandatory"
-version: "16-0"
+name: SUSE Linux Enterprise Server 16.0
+registration: true
+version: "16.0"
+license: "license.final"
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
 # at the at translations/description key below to avoid using obsolete
@@ -25,6 +26,11 @@ translations:
       přizpůsobivý operační systém pro dlouhodobě podporovanou infrastrukturu
       připravenou na inovace, na které běží kritické podnikové úlohy v lokálním
       prostředí, v cloudu i na okraji sítě.
+    de: Ein offener, zuverlässiger, kompatibler und zukunftssicherer Linux-Server,
+      der die Geschäftskontinuität des Unternehmens gewährleistet. Es ist das
+      sichere und anpassungsfähige Betriebssystem für eine langfristig
+      unterstützte, innovationsbereite Infrastruktur, auf der geschäftskritische
+      Arbeitslasten vor Ort, in der Cloud und am Netzwerkrand ausgeführt werden.
     es: Una opción de servidor Linux abierta, confiable, compatible y preparada para
       el futuro que garantiza la continuidad del negocio de la empresa. Es el
       sistema operativo seguro y adaptable para una infraestructura lista para
@@ -48,13 +54,49 @@ translations:
       bulutta ve uçta iş açısından kritik iş yüklerini çalıştırır.
 software:
   installation_repositories: []
+  installation_labels:
+    - label: SLES160-x86_64
+      archs: x86_64
+    - label: SLES160-arch64
+      archs: aarch64
+    - label: SLES160-s390x
+      archs: s390
+    - label: SLES160-ppc64
+      archs: ppc
 
   mandatory_patterns:
-    - base_traditional
+    - enhanced_base
+    - bootloader
   optional_patterns: null # no optional pattern shared
-  user_patterns: []
+  user_patterns:
+    - cockpit
+    - sles_sap_minimal_sap
+    - fips
+    - name: selinux
+      selected: true
+    - documentation
+    - sw_management
+    - container_runtime_docker
+    - container_runtime_podman
+    - dhcp_dns_server
+    - directory_server
+    - file_server
+    - gateway_server
+    - kvm_server
+    - kvm_tools
+    - lamp_server
+    - mail_server
+    - gnome
+    - gnome_internet
+    - devel_basis
+    - devel_kernel
+    - oracle_server
+    - print_server
   mandatory_packages:
     - NetworkManager
+    # bsc#1241224, bsc#1224868 avoid probe DHCP over all ethernet devices and ignore carrier
+    - NetworkManager-config-server
+    - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
   optional_packages: null
   base_product: SLES
 
@@ -64,7 +106,6 @@ security:
     selinux:
       patterns:
         - selinux
-      policy: enforcing
     none:
       patterns: null
 
@@ -117,7 +158,7 @@ storage:
         auto_size:
           base_min: 5 GiB
           base_max: 15 GiB
-          snapshots_increment: 250%
+          snapshots_increment: 150%
           max_fallback_for:
             - "/home"
         snapshots_configurable: true
@@ -134,7 +175,7 @@ storage:
       filesystem: xfs
       size:
         auto: false
-        min: 10 GiB
+        min: 5 GiB
         max: unlimited
       outline:
         required: false
@@ -147,7 +188,7 @@ storage:
     - filesystem: xfs
       size:
         auto: false
-        min: 1 GiB
+        min: 512 MiB
       outline:
         required: false
         filesystems:

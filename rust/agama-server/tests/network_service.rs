@@ -21,14 +21,13 @@
 pub mod common;
 
 use agama_lib::error::ServiceError;
-use agama_lib::network::settings::{BondSettings, NetworkConnection};
+use agama_lib::network::settings::{BondSettings, BridgeSettings, NetworkConnection};
 use agama_lib::network::types::{DeviceType, SSID};
-use agama_server::network::web::network_service;
-use agama_server::network::{
-    self,
-    model::{self, AccessPoint, GeneralState, StateConfig},
-    Adapter, NetworkAdapterError, NetworkState,
+use agama_lib::network::{
+    model::{self, AccessPoint, GeneralState, NetworkState, StateConfig},
+    Adapter, NetworkAdapterError,
 };
+use agama_server::network::web::network_service;
 
 use async_trait::async_trait;
 use axum::http::header;
@@ -62,15 +61,15 @@ async fn build_service(state: NetworkState) -> Result<Router, ServiceError> {
 }
 
 #[derive(Default)]
-pub struct NetworkTestAdapter(network::NetworkState);
+pub struct NetworkTestAdapter(NetworkState);
 
 #[async_trait]
 impl Adapter for NetworkTestAdapter {
-    async fn read(&self, _: StateConfig) -> Result<network::NetworkState, NetworkAdapterError> {
+    async fn read(&self, _: StateConfig) -> Result<NetworkState, NetworkAdapterError> {
         Ok(self.0.clone())
     }
 
-    async fn write(&self, _network: &network::NetworkState) -> Result<(), NetworkAdapterError> {
+    async fn write(&self, _network: &NetworkState) -> Result<(), NetworkAdapterError> {
         unimplemented!("Not used in tests");
     }
 }
@@ -89,7 +88,7 @@ async fn test_network_state() -> Result<(), Box<dyn Error>> {
     let response = network_service.oneshot(request).await?;
     assert_eq!(response.status(), StatusCode::OK);
     let body = body_to_string(response.into_body()).await;
-    assert!(body.contains(r#""wireless_enabled":false"#));
+    assert!(body.contains(r#""wirelessEnabled":false"#));
     Ok(())
 }
 
@@ -186,7 +185,7 @@ async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
     let state = build_state().await;
     let network_service = build_service(state.clone()).await?;
 
-    let eth0 = NetworkConnection {
+    let eth2 = NetworkConnection {
         id: "eth2".to_string(),
         ..Default::default()
     };
@@ -208,7 +207,7 @@ async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
         .uri("/connections")
         .header("Content-Type", "application/json")
         .method(Method::POST)
-        .body(serde_json::to_string(&eth0)?)
+        .body(serde_json::to_string(&eth2)?)
         .unwrap();
 
     let response = network_service.clone().oneshot(request).await?;
@@ -233,10 +232,54 @@ async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
     let response = network_service.clone().oneshot(request).await?;
     assert_eq!(response.status(), StatusCode::OK);
     let body = body_to_string(response.into_body()).await;
-    assert!(body.contains(r#""id":"eth0""#));
     assert!(body.contains(r#""id":"bond0""#));
     assert!(body.contains(r#""mode":"active-backup""#));
     assert!(body.contains(r#""primary=eth0""#));
+    assert!(body.contains(r#""ports":["eth0"]"#));
+
+    Ok(())
+}
+
+#[test]
+async fn test_add_bridge_connection() -> Result<(), Box<dyn Error>> {
+    let state = build_state().await;
+    let network_service = build_service(state.clone()).await?;
+
+    let br0 = NetworkConnection {
+        id: "br0".to_string(),
+        method4: Some("manual".to_string()),
+        method6: Some("disabled".to_string()),
+        interface: Some("br0".to_string()),
+        bridge: Some(BridgeSettings {
+            ports: vec!["eth0".to_string()],
+            stp: Some(false),
+            ..Default::default()
+        }),
+        ..Default::default()
+    };
+
+    let request = Request::builder()
+        .uri("/connections")
+        .header("Content-Type", "application/json")
+        .method(Method::POST)
+        .body(serde_json::to_string(&br0)?)
+        .unwrap();
+
+    let response = network_service.clone().oneshot(request).await?;
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let request = Request::builder()
+        .uri("/connections")
+        .method(Method::GET)
+        .body(Body::empty())
+        .unwrap();
+
+    let response = network_service.clone().oneshot(request).await?;
+    assert_eq!(response.status(), StatusCode::OK);
+    let body = body_to_string(response.into_body()).await;
+    assert!(body.contains(r#""id":"br0""#));
+    assert!(body.contains(r#""ports":["eth0"]"#));
+    assert!(body.contains(r#""stp":false"#));
 
     Ok(())
 }

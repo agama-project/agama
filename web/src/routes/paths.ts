@@ -30,7 +30,9 @@ const L10N = {
 const NETWORK = {
   root: "/network",
   editConnection: "/network/connections/:id/edit",
-  wifis: "/network/wifis",
+  editBindingSettings: "/network/connections/:id/binding/edit",
+  wifiNetwork: "/network/wifi_networks/:ssid",
+  wiredConnection: "/network/wired_connection/:id",
 };
 
 const PRODUCT = {
@@ -50,30 +52,45 @@ const ROOT = {
   installation: "/installation",
   installationProgress: "/installation/progress",
   installationFinished: "/installation/finished",
+  installationExit: "/installation/exit",
   logs: "/api/manager/logs/store",
 };
 
 const USER = {
   root: "/users",
-  rootUser: {
-    edit: "/users/root/edit",
-  },
   firstUser: {
     create: "/users/first",
     edit: "/users/first/edit",
+  },
+  rootUser: {
+    edit: "/users/root/edit",
   },
 };
 
 const SOFTWARE = {
   root: "/software",
   patternsSelection: "/software/patterns/select",
+  conflicts: "/software/conflicts",
 };
 
 const STORAGE = {
   root: "/storage",
-  targetDevice: "/storage/target-device",
-  bootingPartition: "/storage/booting-partition",
-  spacePolicy: "/storage/space-policy",
+  progress: "/storage/progress",
+  editBootDevice: "/storage/boot-device/edit",
+  editEncryption: "/storage/encryption/edit",
+  editSpacePolicy: "/storage/:list/:listIndex/space-policy/edit",
+  formatDevice: "/storage/:list/:listIndex/format",
+  addPartition: "/storage/:list/:listIndex/partitions/add",
+  editPartition: "/storage/:list/:listIndex/partitions/:partitionId/edit",
+  selectDevice: "/storage/devices/select",
+  volumeGroup: {
+    add: "/storage/volume-groups/add",
+    edit: "/storage/volume-groups/:id/edit",
+    logicalVolume: {
+      add: "/storage/volume-groups/:id/logical-volumes/add",
+      edit: "/storage/volume-groups/:id/logical-volumes/:logicalVolumeId/edit",
+    },
+  },
   iscsi: "/storage/iscsi",
   dasd: "/storage/dasd",
   zfcp: {
@@ -82,13 +99,39 @@ const STORAGE = {
   },
 };
 
-const SUPPORTIVE_PATHS = [
+const HOSTNAME = {
+  root: "/hostname",
+};
+
+/**
+ * A set of routes that do not directly allow fine-tuning the installation
+ * settings for the selected product, but rather serve special purposes, such
+ * as authentication (e.g., login), product selection change, or transitions
+ * between states (e.g., progress, error, success).
+ *
+ * These routes are defined separately to adjust the UI accordingly, ensuring
+ * that certain core elements, like the Install button, are not displayed when
+ * visiting them.
+ */
+const SIDE_PATHS = [
   ROOT.login,
   PRODUCT.changeProduct,
   PRODUCT.progress,
   ROOT.installationProgress,
   ROOT.installationFinished,
-  USER.rootUser.edit,
+  ROOT.installationExit,
+  STORAGE.progress,
 ];
 
-export { L10N, NETWORK, PRODUCT, REGISTRATION, ROOT, SOFTWARE, STORAGE, USER, SUPPORTIVE_PATHS };
+export {
+  HOSTNAME,
+  L10N,
+  NETWORK,
+  PRODUCT,
+  REGISTRATION,
+  ROOT,
+  SIDE_PATHS,
+  SOFTWARE,
+  STORAGE,
+  USER,
+};

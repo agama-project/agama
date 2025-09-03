@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,12 +21,11 @@
  */
 
 import React, { useState } from "react";
-import { Form, FormGroup, Radio, Text } from "@patternfly/react-core";
+import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { useConfigMutation, useL10n } from "~/queries/l10n";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 // TODO: Add documentation
 // TODO: Evaluate if worth it extracting the selector
@@ -55,12 +54,10 @@ export default function KeyboardSelection() {
         name="keymap"
         onChange={() => setSelected(id)}
         label={
-          <>
-            <span className={`${textStyles.fontSizeLg}`}>
-              <b>{name}</b>
-            </span>{" "}
-            <Text component="small">{id}</Text>
-          </>
+          <Flex columnGap={{ default: "columnGapSm" }}>
+            <Content isEditorial>{name}</Content>
+            <Content component="small">{id}</Content>
+          </Flex>
         }
         value={id}
         isChecked={id === selected}
@@ -75,21 +72,19 @@ export default function KeyboardSelection() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Keyboard selection")}</h2>
+        <Content component="h2">{_("Keyboard selection")}</Content>
         <ListSearch placeholder={searchHelp} elements={keymaps} onChange={setFilteredKeymaps} />
       </Page.Header>
 
       <Page.Content>
-        <Page.Section>
-          <Form id="keymapSelection" onSubmit={onSubmit}>
-            <FormGroup isStack>{keymapsList}</FormGroup>
-          </Form>
-        </Page.Section>
+        <Form id="keymapSelection" onSubmit={onSubmit}>
+          <FormGroup isStack>{keymapsList}</FormGroup>
+        </Form>
       </Page.Content>
 
       <Page.Actions>
-        <Page.Cancel />
         <Page.Submit form="keymapSelection">{_("Select")}</Page.Submit>
+        <Page.Cancel />
       </Page.Actions>
     </Page>
   );

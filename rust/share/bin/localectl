@@ -2,4 +2,8 @@
 
 SCRIPT=$(readlink -f "$0")
 DATADIR=$(dirname "$SCRIPT")/..
-cat $DATADIR/localectl-$1.txt
+if [ -z "$1" ]; then
+    cat "$DATADIR/localectl.txt"
+else
+    cat "$DATADIR/localectl-$1.txt"
+fi

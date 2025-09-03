@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -24,6 +24,7 @@ require "suse/connect"
 require "agama/dbus/base_object"
 require "agama/dbus/interfaces/issues"
 require "agama/dbus/clients/locale"
+require "agama/errors"
 require "agama/registration"
 
 module Agama
@@ -54,14 +55,16 @@ module Agama
 
         def available_products
           backend.products.map do |product|
+            data = {
+              "description"  => product.localized_description,
+              "icon"         => product.icon,
+              "registration" => product.registration
+            }
+            data["license"] = product.license if product.license
             [
               product.id,
               product.display_name,
-              {
-                "description"  => product.localized_description,
-                "icon"         => product.icon,
-                "registration" => product.registration
-              }
+              data
             ]
           end
         end
@@ -85,7 +88,7 @@ module Agama
         def select_product(id)
           if backend.product&.id == id
             [1, "Product is already selected"]
-          elsif backend.registration.reg_code
+          elsif backend.registration.registered
             [2, "Current product must be deregistered first"]
           else
             backend.select_product(id)
@@ -112,7 +115,6 @@ module Agama
 
             if code == 0
               dbus_properties_changed(PRODUCT_INTERFACE, { "SelectedProduct" => id }, [])
-              dbus_properties_changed(REGISTRATION_INTERFACE, { "Requirement" => requirement }, [])
               # FIXME: Product issues might change after selecting a product. Nevertheless,
               #   #on_issues_change callbacks should be used for emitting issues signals, ensuring
               #   they are emitted every time the backend changes its issues. Currently,
@@ -126,6 +128,10 @@ module Agama
           end
         end
 
+        def registered
+          !!backend.registration.registered
+        end
+
         def reg_code
           backend.registration.reg_code || ""
         end
@@ -134,20 +140,48 @@ module Agama
           backend.registration.email || ""
         end
 
-        # Registration requirement.
+        def url
+          backend.registration.registration_url || ""
+        end
+
+        def url=(url)
+          # dbus has problem with nils, so empty string is only for dbus nil
+          backend.registration.registration_url = url.empty? ? nil : url
+        end
+
+        # list of already registered addons
         #
-        # @return [Integer] Possible values:
-        #   0: not required
-        #   1: optional
-        #   2: mandatory
-        def requirement
-          case backend.registration.requirement
-          when Agama::Registration::Requirement::MANDATORY
-            2
-          when Agama::Registration::Requirement::OPTIONAL
-            1
-          else
-            0
+        # @return [Array<Array<String>>] each list contains three items: addon id, version and
+        # registration code
+        def registered_addons
+          backend.registration.registered_addons.map do |addon|
+            [
+              addon.name,
+              # return empty string if the version was not explicitly specified (was autodetected)
+              addon.required_version ? addon.version : "",
+              addon.reg_code
+            ]
+          end
+        end
+
+        # list of available addons
+        #
+        # @return [Array<Hash<String, Object>>] List of addons
+        def available_addons
+          addons = backend.registration.available_addons || []
+
+          addons.map do |a|
+            {
+              "id"          => a.identifier,
+              "version"     => a.version,
+              "label"       => a.friendly_name,
+              "available"   => a.available,    # boolean
+              "free"        => a.free,         # boolean
+              "recommended" => a.recommended,  # boolean
+              "description" => a.description,
+              "type"        => a.product_type, # "extension"
+              "release"     => a.release_stage # "beta"
+            }
           end
         end
 
@@ -173,16 +207,64 @@ module Agama
         #   8: incorrect credentials
         #   9: invalid certificate
         #   10: internal error (e.g., parsing json data)
+        #   13: Failed to add service from registration
         def register(reg_code, email: nil)
           if !backend.product
             [1, "Product not selected yet"]
-          elsif backend.registration.reg_code
+          # report success and do nothing when already registered with the same code
+          elsif backend.registration.registered && backend.registration.reg_code == reg_code
+            [0, ""]
+          elsif backend.registration.registered
             [2, "Product already registered"]
-          elsif backend.registration.requirement == Agama::Registration::Requirement::NO
+          elsif !backend.product.registration
             [3, "Product does not require registration"]
           else
             connect_result(first_error_code: 4) do
               backend.registration.register(reg_code, email: email)
+            end
+          end
+        end
+
+        # Tries to register the given addon. The base product must be already registered and if the
+        # addon requires some other addon it must be already registered as well. (The code does not
+        # check any dependencies.)
+        #
+        # @note Software is not automatically probed after registering the product. The reason is
+        #   to avoid dealing with possible probing issues in the registration D-Bus API. Clients
+        #   have to explicitly call to #Probe after registering a product.
+        #
+        # @param name [String] name (id) of the addon, e.g. "sle-ha"
+        # @param version [String] version of the addon, e.g. "16.0", if empty the version is found
+        #   automatically in the list of available addons
+        # @param reg_code [String] registration code, if the code is not required for the addon use
+        # an empty string ("")
+        #
+        # @return [Array(Integer, String)] Result code and a description.
+        #   Possible result codes:
+        #   0: success
+        #   1: a base product was not selected yet
+        #   2: the base product does not require registration
+        #   3: the base product was not registered yet
+        #   4: network error
+        #   5: timeout error
+        #   6: api error
+        #   7: missing credentials
+        #   8: incorrect credentials
+        #   9: invalid certificate
+        #   10: internal error (e.g., parsing json data)
+        #   11: addon not found
+        #   12: addon found in multiple versions
+        #   13: Failed to add service from registration
+        def register_addon(name, version, reg_code)
+          if !backend.product
+            [1, "Product not selected yet"]
+          elsif !backend.product.registration
+            [2, "Base product does not require registration"]
+          elsif !backend.registration.registered
+            [3, "Base product not registered yet"]
+          else
+            connect_result(first_error_code: 4) do
+              backend.registration.register_addon(name, version, reg_code)
             end
           end
         end
@@ -205,10 +287,11 @@ module Agama
         #   7: incorrect credentials
         #   8: invalid certificate
         #   9: internal error (e.g., parsing json data)
+        #   13: Failed to remove service from registration
         def deregister
           if !backend.product
             [1, "Product not selected yet"]
-          elsif !backend.registration.reg_code
+          elsif !backend.registration.registered
             [2, "Product not registered yet"]
           else
             connect_result(first_error_code: 3) do
@@ -221,14 +304,24 @@ module Agama
         private_constant :REGISTRATION_INTERFACE
 
         dbus_interface REGISTRATION_INTERFACE do
+          dbus_reader(:registered, "b")
+
           dbus_reader(:reg_code, "s")
 
           dbus_reader(:email, "s")
 
-          dbus_reader(:requirement, "u")
+          dbus_accessor(:url, "s")
+
+          dbus_reader(:registered_addons, "a(sss)")
+
+          dbus_reader(:available_addons, "aa{sv}")
 
           dbus_method(:Register, "in reg_code:s, in options:a{sv}, out result:(us)") do |*args|
             [register(args[0], email: args[1]["Email"])]
+          end
+
+          dbus_method(:RegisterAddon, "in name:s, in version:s, in reg_code:s, out result:(us)") do |*args|
+            [register_addon(*args)]
           end
 
           dbus_method(:Deregister, "out result:(us)") { [deregister] }
@@ -252,6 +345,7 @@ module Agama
           #   software related issues.
           backend.registration.on_change { issues_properties_changed }
           backend.registration.on_change { registration_properties_changed }
+          backend.on_issues_change { issues_properties_changed }
         end
 
         def registration_properties_changed
@@ -287,6 +381,14 @@ module Agama
           connect_result_from_error(e, first_error_code + 5, "invalid certificate")
         rescue JSON::ParserError => e
           connect_result_from_error(e, first_error_code + 6)
+        rescue Errors::Registration::ExtensionNotFound => e
+          connect_result_from_error(e, first_error_code + 7)
+        rescue Errors::Registration::MultipleExtensionsFound => e
+          connect_result_from_error(e, first_error_code + 8)
+        rescue Agama::Software::ServiceError => e
+          connect_result_from_error(e, first_error_code + 9)
+        rescue StandardError => e
+          connect_result_from_error(e, first_error_code + 10)
         end
 
         # Generates a result from a given error.

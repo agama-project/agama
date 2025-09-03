@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,9 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::{FirstUser, FirstUserSettings, RootUserSettings, UserSettings, UsersHTTPClient};
-use crate::base_http_client::BaseHTTPClient;
-use crate::error::ServiceError;
+use super::{
+    http_client::UsersHTTPClientError, FirstUserSettings, RootUserSettings, UserSettings,
+    UsersHTTPClient,
+};
+use crate::http::BaseHTTPClient;
+
+#[derive(Debug, thiserror::Error)]
+#[error("Error processing users options: {0}")]
+pub struct UsersStoreError(#[from] UsersHTTPClientError);
+
+type UsersStoreResult<T> = Result<T, UsersStoreError>;
 
 /// Loads and stores the users settings from/to the D-Bus service.
 pub struct UsersStore {
@@ -28,39 +36,35 @@ pub struct UsersStore {
 }
 
 impl UsersStore {
-    pub fn new(client: BaseHTTPClient) -> Result<Self, ServiceError> {
-        Ok(Self {
-            users_client: UsersHTTPClient::new(client)?,
-        })
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self {
+            users_client: UsersHTTPClient::new(client),
+        }
     }
 
-    pub fn new_with_client(client: UsersHTTPClient) -> Result<Self, ServiceError> {
+    pub fn new_with_client(client: UsersHTTPClient) -> UsersStoreResult<Self> {
         Ok(Self {
             users_client: client,
         })
     }
 
-    pub async fn load(&self) -> Result<UserSettings, ServiceError> {
+    pub async fn load(&self) -> UsersStoreResult<UserSettings> {
         let first_user = self.users_client.first_user().await?;
-        let first_user = FirstUserSettings {
-            user_name: Some(first_user.user_name),
-            autologin: Some(first_user.autologin),
-            full_name: Some(first_user.full_name),
-            password: Some(first_user.password),
-            encrypted_password: Some(first_user.encrypted_password),
+        let first_user: FirstUserSettings = first_user.into();
+        let first_user = if first_user.is_valid() {
+            Some(first_user)
+        } else {
+            None
         };
-        let mut root_user = RootUserSettings::default();
-        let ssh_public_key = self.users_client.root_ssh_key().await?;
-        if !ssh_public_key.is_empty() {
-            root_user.ssh_public_key = Some(ssh_public_key)
-        }
-        Ok(UserSettings {
-            first_user: Some(first_user),
-            root: Some(root_user),
-        })
+
+        let root = self.users_client.root_user().await?;
+        let root: RootUserSettings = root.into();
+        let root = if root.is_empty() { None } else { Some(root) };
+
+        Ok(UserSettings { first_user, root })
     }
 
-    pub async fn store(&self, settings: &UserSettings) -> Result<(), ServiceError> {
+    pub async fn store(&self, settings: &UserSettings) -> UsersStoreResult<()> {
         // fixme: improve
         if let Some(settings) = &settings.first_user {
             self.store_first_user(settings).await?;
@@ -72,23 +76,14 @@ impl UsersStore {
         Ok(())
     }
 
-    async fn store_first_user(&self, settings: &FirstUserSettings) -> Result<(), ServiceError> {
-        let first_user = FirstUser {
-            user_name: settings.user_name.clone().unwrap_or_default(),
-            full_name: settings.full_name.clone().unwrap_or_default(),
-            autologin: settings.autologin.unwrap_or_default(),
-            password: settings.password.clone().unwrap_or_default(),
-            encrypted_password: settings.encrypted_password.unwrap_or_default(),
-        };
-        Ok(self.users_client.set_first_user(&first_user).await?)
+    async fn store_first_user(&self, settings: &FirstUserSettings) -> UsersStoreResult<()> {
+        Ok(self.users_client.set_first_user(&settings.into()).await?)
     }
 
-    async fn store_root_user(&self, settings: &RootUserSettings) -> Result<(), ServiceError> {
-        let encrypted_password = settings.encrypted_password.unwrap_or_default();
-
-        if let Some(root_password) = &settings.password {
+    async fn store_root_user(&self, settings: &RootUserSettings) -> UsersStoreResult<()> {
+        if let Some(password) = &settings.password {
             self.users_client
-                .set_root_password(root_password, encrypted_password)
+                .set_root_password(&password.password, password.hashed_password)
                 .await?;
         }
 
@@ -103,16 +98,17 @@ impl UsersStore {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::base_http_client::BaseHTTPClient;
+    use crate::http::BaseHTTPClient;
+    use crate::users::settings::UserPassword;
     use httpmock::prelude::*;
     use httpmock::Method::PATCH;
     use std::error::Error;
     use tokio::test; // without this, "error: async functions cannot be used for tests"
 
-    fn users_store(mock_server_url: String) -> Result<UsersStore, ServiceError> {
-        let mut bhc = BaseHTTPClient::default();
-        bhc.base_url = mock_server_url;
-        let client = UsersHTTPClient::new(bhc)?;
+    fn users_store(mock_server_url: String) -> UsersStoreResult<UsersStore> {
+        let bhc =
+            BaseHTTPClient::new(mock_server_url).map_err(|e| UsersHTTPClientError::HTTP(e))?;
+        let client = UsersHTTPClient::new(bhc.clone());
         UsersStore::new_with_client(client)
     }
 
@@ -128,8 +124,7 @@ mod test {
                     "fullName": "Tux",
                     "userName": "tux",
                     "password": "fish",
-                    "encryptedPassword": false,
-                    "autologin": true
+                    "hashedPassword": false
                 }"#,
                 );
         });
@@ -139,8 +134,9 @@ mod test {
                 .header("content-type", "application/json")
                 .body(
                     r#"{
-                    "sshkey": "keykeykey",
-                    "password": true
+                    "sshPublicKey": "keykeykey",
+                    "password": "nots3cr3t",
+                    "hashedPassword": false
                 }"#,
                 );
         });
@@ -152,14 +148,17 @@ mod test {
         let first_user = FirstUserSettings {
             full_name: Some("Tux".to_owned()),
             user_name: Some("tux".to_owned()),
-            password: Some("fish".to_owned()),
-            encrypted_password: Some(false),
-            autologin: Some(true),
+            password: Some(UserPassword {
+                password: "fish".to_owned(),
+                hashed_password: false,
+            }),
         };
         let root_user = RootUserSettings {
             // FIXME this is weird: no matter what HTTP reports, we end up with None
-            password: None,
-            encrypted_password: None,
+            password: Some(UserPassword {
+                password: "nots3cr3t".to_owned(),
+                hashed_password: false,
+            }),
             ssh_public_key: Some("keykeykey".to_owned()),
         };
         let expected = UserSettings {
@@ -184,7 +183,7 @@ mod test {
             when.method(PUT)
                 .path("/api/users/first")
                 .header("content-type", "application/json")
-                .body(r#"{"fullName":"Tux","userName":"tux","password":"fish","encryptedPassword":false,"autologin":true}"#);
+                .body(r#"{"fullName":"Tux","userName":"tux","password":"fish","hashedPassword":false}"#);
             then.status(200);
         });
         // note that we use 2 requests for root
@@ -192,14 +191,14 @@ mod test {
             when.method(PATCH)
                 .path("/api/users/root")
                 .header("content-type", "application/json")
-                .body(r#"{"sshkey":null,"password":"1234","encryptedPassword":false}"#);
+                .body(r#"{"sshPublicKey":null,"password":"1234","hashedPassword":false}"#);
             then.status(200).body("0");
         });
         let root_mock2 = server.mock(|when, then| {
             when.method(PATCH)
                 .path("/api/users/root")
                 .header("content-type", "application/json")
-                .body(r#"{"sshkey":"keykeykey","password":null,"encryptedPassword":null}"#);
+                .body(r#"{"sshPublicKey":"keykeykey","password":null,"hashedPassword":null}"#);
             then.status(200).body("0");
         });
         let url = server.url("/api");
@@ -209,13 +208,16 @@ mod test {
         let first_user = FirstUserSettings {
             full_name: Some("Tux".to_owned()),
             user_name: Some("tux".to_owned()),
-            password: Some("fish".to_owned()),
-            encrypted_password: Some(false),
-            autologin: Some(true),
+            password: Some(UserPassword {
+                password: "fish".to_owned(),
+                hashed_password: false,
+            }),
         };
         let root_user = RootUserSettings {
-            password: Some("1234".to_owned()),
-            encrypted_password: Some(false),
+            password: Some(UserPassword {
+                password: "1234".to_owned(),
+                hashed_password: false,
+            }),
             ssh_public_key: Some("keykeykey".to_owned()),
         };
         let settings = UserSettings {

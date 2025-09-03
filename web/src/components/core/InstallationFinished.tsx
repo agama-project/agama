@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,36 +23,36 @@
 import React, { useState } from "react";
 import {
   Alert,
+  Bullseye,
   Button,
   Card,
   CardBody,
+  Content,
   EmptyState,
+  EmptyStateActions,
   EmptyStateBody,
-  EmptyStateHeader,
-  EmptyStateIcon,
+  EmptyStateFooter,
   ExpandableSection,
-  Flex,
   Grid,
   GridItem,
   Stack,
-  Text,
 } from "@patternfly/react-core";
-import { Center, Icon } from "~/components/layout";
-import { _ } from "~/i18n";
+import { Navigate, useNavigate } from "react-router-dom";
+import { Icon } from "~/components/layout";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 import { useInstallerStatus } from "~/queries/status";
 import { useConfig } from "~/queries/storage";
 import { finishInstallation } from "~/api/manager";
 import { InstallationPhase } from "~/types/status";
-import { Navigate } from "react-router-dom";
 import { ROOT as PATHS } from "~/routes/paths";
+import { _ } from "~/i18n";
 
 const TpmHint = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const title = _("TPM sealing requires the new system to be booted directly.");
 
   return (
-    <Alert isInline className={alignmentStyles.textAlignLeft} title={<strong>{title}</strong>}>
+    <Alert isInline className={alignmentStyles.textAlignStart} title={<strong>{title}</strong>}>
       <Stack hasGutter>
         {_("If a local media was used to run this installer, remove it before the next boot.")}
         <ExpandableSection
@@ -79,6 +79,10 @@ const SuccessIcon = () => <Icon name="check_circle" className="icon-xxxl color-s
 // TODO: define some utility method to get the device used as root (drive, partition, logical volume).
 // TODO: use type checking for config.
 function usingTpm(config): boolean {
+  if (!config) {
+    return null;
+  }
+
   const { guided, drives = [], volumeGroups = [] } = config;
 
   if (guided !== undefined) {
@@ -96,58 +100,55 @@ function usingTpm(config): boolean {
 }
 
 function InstallationFinished() {
-  const { phase, isBusy, useIguana } = useInstallerStatus({ suspense: true });
   const config = useConfig();
+  const { phase, useIguana } = useInstallerStatus({ suspense: true });
+  const navigate = useNavigate();
 
-  if (phase !== InstallationPhase.Install) {
+  const onReboot = () => {
+    finishInstallation();
+    navigate(PATHS.installationExit, { replace: true });
+  };
+
+  if (phase !== InstallationPhase.Finish) {
     return <Navigate to={PATHS.root} />;
   }
 
-  if (isBusy) {
-    return <Navigate to={PATHS.installationProgress} />;
-  }
-
   return (
-    <Center>
+    <Bullseye>
       <Grid hasGutter>
         <GridItem sm={8} smOffset={2}>
-          <Card isRounded>
+          <Card>
             <CardBody>
-              <Stack hasGutter>
-                <EmptyState variant="xl">
-                  <EmptyStateHeader
-                    titleText={_("Congratulations!")}
-                    headingLevel="h2"
-                    icon={<EmptyStateIcon icon={SuccessIcon} />}
-                  />
-                  <EmptyStateBody>
-                    <Flex
-                      rowGap={{ default: "rowGapMd" }}
-                      justifyContent={{ default: "justifyContentCenter" }}
-                    >
-                      <Text>{_("The installation on your machine is complete.")}</Text>
-                      <Text>
-                        {useIguana
-                          ? _("At this point you can power off the machine.")
-                          : _(
-                              "At this point you can reboot the machine to log in to the new system.",
-                            )}
-                      </Text>
-                      {usingTpm(config) && <TpmHint />}
-                    </Flex>
-                  </EmptyStateBody>
-                </EmptyState>
-                <Flex direction={{ default: "rowReverse" }}>
-                  <Button size="lg" variant="primary" onClick={finishInstallation}>
-                    {useIguana ? _("Finish") : _("Reboot")}
-                  </Button>
-                </Flex>
-              </Stack>
+              <EmptyState
+                variant="xl"
+                titleText={_("Congratulations!")}
+                headingLevel="h1"
+                icon={SuccessIcon}
+              >
+                <EmptyStateBody>
+                  <Content component="p">
+                    {_("The installation on your machine is complete.")}
+                  </Content>
+                  <Content component="p">
+                    {useIguana
+                      ? _("At this point you can power off the machine.")
+                      : _("At this point you can reboot the machine to log in to the new system.")}
+                  </Content>
+                  {usingTpm(config) && <TpmHint />}
+                </EmptyStateBody>
+                <EmptyStateFooter>
+                  <EmptyStateActions>
+                    <Button variant="primary" onClick={onReboot}>
+                      {useIguana ? _("Finish") : _("Reboot")}
+                    </Button>
+                  </EmptyStateActions>
+                </EmptyStateFooter>
+              </EmptyState>
             </CardBody>
           </Card>
         </GridItem>
       </Grid>
-    </Center>
+    </Bullseye>
   );
 }
 

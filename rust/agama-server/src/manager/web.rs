@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -26,30 +26,32 @@
 //! * `manager_stream` which offers an stream that emits the manager events coming from D-Bus.
 
 use agama_lib::{
+    auth::ClientId,
     error::ServiceError,
-    logs,
-    manager::{InstallationPhase, InstallerStatus, ManagerClient},
+    event, logs,
+    manager::{FinishMethod, InstallationPhase, InstallerStatus, ManagerClient},
     proxies::Manager1Proxy,
 };
+use anyhow::Context;
 use axum::{
     body::Body,
     extract::State,
     http::{header, status::StatusCode, HeaderMap, HeaderValue},
     response::IntoResponse,
     routing::{get, post},
-    Json, Router,
+    Extension, Json, Router,
 };
+use std::collections::HashMap;
 use std::pin::Pin;
+use std::sync::Arc;
 use tokio_stream::{Stream, StreamExt};
 use tokio_util::io::ReaderStream;
 
 use crate::{
     error::Error,
-    web::{
-        common::{progress_router, service_status_router},
-        Event,
-    },
+    web::common::{service_status_router, ProgressClient, ProgressRouterBuilder},
 };
+use agama_lib::http::Event;
 
 #[derive(Clone)]
 pub struct ManagerState<'a> {
@@ -72,9 +74,9 @@ pub async fn manager_stream(
         .then(|change| async move {
             if let Ok(phase) = change.get().await {
                 match InstallationPhase::try_from(phase) {
-                    Ok(phase) => Some(Event::InstallationPhaseChanged { phase }),
+                    Ok(phase) => Some(event!(InstallationPhaseChanged { phase })),
                     Err(error) => {
-                        log::warn!("Ignoring the installation phase change. Error: {}", error);
+                        tracing::warn!("Ignoring the installation phase change. Error: {}", error);
                         None
                     }
                 }
@@ -87,17 +89,25 @@ pub async fn manager_stream(
 }
 
 /// Sets up and returns the axum service for the manager module
-pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
+pub async fn manager_service(
+    dbus: zbus::Connection,
+    progress: ProgressClient,
+) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &str = "org.opensuse.Agama.Manager1";
     const DBUS_PATH: &str = "/org/opensuse/Agama/Manager1";
 
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
-    let progress_router = progress_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
+    // FIXME: use anyhow temporarily until we adapt all these methods to return
+    // the crate::error::Error instead of ServiceError.
+    let progress_router = ProgressRouterBuilder::new(DBUS_SERVICE, DBUS_PATH, progress)
+        .build()
+        .context("Could not build the progress router")?;
     let manager = ManagerClient::new(dbus.clone()).await?;
     let state = ManagerState { manager, dbus };
     Ok(Router::new()
         .route("/probe", post(probe_action))
         .route("/probe_sync", post(probe_sync_action))
+        .route("/reprobe_sync", post(reprobe_sync_action))
         .route("/install", post(install_action))
         .route("/finish", post(finish_action))
         .route("/installer", get(installer_status))
@@ -122,7 +132,10 @@ pub async fn manager_service(dbus: zbus::Connection) -> Result<Router, ServiceEr
        )
     )
 )]
-async fn probe_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
+async fn probe_action(
+    State(state): State<ManagerState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
+) -> Result<(), Error> {
     let dbus = state.dbus.clone();
     tokio::spawn(async move {
         let result = dbus
@@ -131,7 +144,7 @@ async fn probe_action(State(state): State<ManagerState<'_>>) -> Result<(), Error
                 "/org/opensuse/Agama/Manager1",
                 Some("org.opensuse.Agama.Manager1"),
                 "Probe",
-                &(),
+                &HashMap::from([("client_id", client_id.to_string())]),
             )
             .await;
         if let Err(error) = result {
@@ -151,8 +164,28 @@ async fn probe_action(State(state): State<ManagerState<'_>>) -> Result<(), Error
       (status = 200, description = "Probing done.")
     )
 )]
-async fn probe_sync_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
-    state.manager.probe().await?;
+async fn probe_sync_action(
+    State(state): State<ManagerState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
+) -> Result<(), Error> {
+    state.manager.probe(client_id.to_string()).await?;
+    Ok(())
+}
+
+/// Starts the reprobing process and waits until it is done.
+#[utoipa::path(
+    post,
+    path = "/reprobe_sync",
+    context_path = "/api/manager",
+    responses(
+      (status = 200, description = "Re-probing done.")
+    )
+)]
+async fn reprobe_sync_action(
+    State(state): State<ManagerState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
+) -> Result<(), Error> {
+    state.manager.reprobe(client_id.to_string()).await?;
     Ok(())
 }
 
@@ -173,15 +206,21 @@ async fn install_action(State(state): State<ManagerState<'_>>) -> Result<(), Err
 /// Executes the post installation tasks (e.g., rebooting the system).
 #[utoipa::path(
     post,
-    path = "/install",
+    path = "/finish",
     context_path = "/api/manager",
     responses(
-      (status = 200, description = "The installation tasks are executed.")
+      (status = 200, description = "The installation tasks are executed.", body = Option<FinishMethod>)
     )
 )]
-async fn finish_action(State(state): State<ManagerState<'_>>) -> Result<(), Error> {
-    state.manager.finish().await?;
-    Ok(())
+async fn finish_action(
+    State(state): State<ManagerState<'_>>,
+    method: Option<Json<FinishMethod>>,
+) -> Result<Json<bool>, Error> {
+    let method = match method {
+        Some(Json(method)) => method,
+        _ => FinishMethod::default(),
+    };
+    Ok(Json(state.manager.finish(method).await?))
 }
 
 /// Returns the manager status.
@@ -245,10 +284,15 @@ async fn download_logs() -> impl IntoResponse {
                     header::CONTENT_TYPE,
                     HeaderValue::from_static("application/x-compressed-tar"),
                 );
-                headers.insert(
-                    header::CONTENT_DISPOSITION,
-                    HeaderValue::from_static("attachment; filename=\"agama-logs\""),
-                );
+                if let Some(file_name) = path.file_name() {
+                    let disposition =
+                        format!("attachment; filename=\"{}\"", &file_name.to_string_lossy());
+                    headers.insert(
+                        header::CONTENT_DISPOSITION,
+                        HeaderValue::from_str(&disposition)
+                            .unwrap_or_else(|_| HeaderValue::from_static("attachment")),
+                    );
+                }
                 headers.insert(
                     header::CONTENT_ENCODING,
                     HeaderValue::from_static(logs::DEFAULT_COMPRESSION.1),

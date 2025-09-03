@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -33,6 +33,7 @@ describe Agama::Registration do
   subject { described_class.new(manager, logger) }
 
   let(:manager) { instance_double(Agama::Software::Manager) }
+  let(:product) { Agama::Software::Product.new("test").tap { |p| p.version = "5.0" } }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
@@ -42,15 +43,28 @@ describe Agama::Registration do
     allow(manager).to receive(:product).and_return(product)
     allow(manager).to receive(:add_service)
     allow(manager).to receive(:remove_service)
+    allow(manager).to receive(:addon_products)
 
     allow(SUSE::Connect::YaST).to receive(:announce_system).and_return(["test-user", "12345"])
     allow(SUSE::Connect::YaST).to receive(:deactivate_system)
     allow(SUSE::Connect::YaST).to receive(:create_credentials_file)
     allow(SUSE::Connect::YaST).to receive(:activate_product).and_return(service)
     allow(Y2Packager::NewRepositorySetup.instance).to receive(:add_service)
+    allow(Agama::CmdlineArgs).to receive(:read).and_return(cmdline_args)
   end
 
   let(:service) { OpenStruct.new(name: "test-service", url: nil) }
+  let(:cmdline_args) { Agama::CmdlineArgs.new({}) }
+
+  describe "#verify_callback" do
+    it "stores to SSL::Error ssl error details" do
+      error = double(error: 20, error_string: "Error", current_cert: nil)
+
+      subject.send(:verify_callback).call(false, error)
+      expect(Agama::SSL::Errors.instance.ssl_error_code).to eq 20
+      expect(Agama::SSL::Errors.instance.ssl_error_msg).to eq "Error"
+    end
+  end
 
   describe "#register" do
     context "if there is no product selected yet" do
@@ -81,11 +95,50 @@ describe Agama::Registration do
       context "and the product is not registered yet" do
         it "announces the system" do
           expect(SUSE::Connect::YaST).to receive(:announce_system).with(
-            { token: "11112222", email: "test@test.com" },
+            {
+              language:        anything,
+              url:             "https://scc.suse.com",
+              token:           "11112222",
+              email:           "test@test.com",
+              verify_callback: anything
+            },
             "test-5-x86_64"
           )
 
           subject.register("11112222", email: "test@test.com")
+        end
+
+        it "sets the current language in the request" do
+          expect(SUSE::Connect::YaST).to receive(:announce_system).with(
+            {
+              language:        "de-de",
+              url:             anything,
+              token:           "11112222",
+              email:           "test@test.com",
+              verify_callback: anything
+            },
+            "test-5-x86_64"
+          )
+
+          allow(Yast::WFM).to receive(:GetLanguage).and_return("de_DE")
+
+          subject.register("11112222", email: "test@test.com")
+        end
+
+        context "when a registration URL is set through the cmdline" do
+          let(:cmdline_args) do
+            Agama::CmdlineArgs.new("register_url" => "http://scc.example.net")
+          end
+
+          it "registers using the given URL" do
+            expect(SUSE::Connect::YaST).to receive(:announce_system).with(
+              { token: "11112222", email: "test@test.com", url: "http://scc.example.net",
+                verify_callback: anything, language: anything },
+              "test-5-x86_64"
+            )
+
+            subject.register("11112222", email: "test@test.com")
+          end
         end
 
         it "creates credentials file" do
@@ -183,26 +236,169 @@ describe Agama::Registration do
               .to raise_error(Timeout::Error)
           end
 
-          it "does not run the callbacks" do
-            expect(callback).to_not receive(:call)
+          it "sets the registration code" do
+            expect { subject.register("11112222", email: "test@test.com") }
+              .to raise_error(Timeout::Error)
+
+            expect(subject.reg_code).to eq("11112222")
+          end
+
+          it "sets the email" do
+            expect { subject.register("11112222", email: "test@test.com") }
+              .to raise_error(Timeout::Error)
+
+            expect(subject.email).to eq("test@test.com")
+          end
+
+          it "runs the callbacks" do
+            expect(callback).to receive(:call)
 
             expect { subject.register("11112222", email: "test@test.com") }
               .to raise_error(Timeout::Error)
           end
+        end
 
-          it "does not set the registration code" do
-            expect { subject.register("11112222", email: "test@test.com") }
-              .to raise_error(Timeout::Error)
+        context "if the registration server has self-signed certificate" do
+          let(:certificate) do
+            Agama::SSL::Certificate.load(File.read(File.join(FIXTURES_PATH, "test.pem")))
+          end
+          before do
+            Agama::SSL::Errors.instance.ssl_error_code = Agama::SSL::ErrorCodes::SELF_SIGNED_CERT
+            Agama::SSL::Errors.instance.ssl_error_msg = "test error"
+            Agama::SSL::Errors.instance.ssl_failed_cert = certificate
+            # mock reset to avoid deleting of previous setup
+            allow(Agama::SSL::Errors.instance).to receive(:reset)
 
-            expect(subject.reg_code).to be_nil
+            @called = 0
+            allow(SUSE::Connect::YaST).to receive(:activate_product) do
+              @called += 1
+              raise OpenSSL::SSL::SSLError, "test" if @called == 1
+
+              service
+            end
           end
 
-          it "does not set the email" do
-            expect { subject.register("11112222", email: "test@test.com") }
-              .to raise_error(Timeout::Error)
+          context "and certificate fingerprint is in storage" do
+            before do
+              Agama::SSL::Storage.instance.fingerprints
+                .replace([certificate.send(:sha256_fingerprint)])
+            end
 
-            expect(subject.email).to be_nil
+            it "tries to import certificate" do
+              expect(certificate).to receive(:import)
+
+              subject.register("11112222", email: "test@test.com")
+            end
+
+            after do
+              Agama::SSL::Storage.instance.fingerprints.clear
+            end
           end
+
+          it "opens question" do
+            expect(Agama::Question).to receive(:new)
+            q_client = double
+            expect(q_client).to receive(:ask).and_yield(q_client)
+            expect(q_client).to receive(:answer).and_return(:Abort)
+            expect(Agama::DBus::Clients::Questions).to receive(:new)
+              .and_return(q_client)
+
+            expect { subject.register("11112222", email: "test@test.com") }.to(
+              raise_error(OpenSSL::SSL::SSLError)
+            )
+          end
+        end
+      end
+    end
+  end
+
+  describe "#register_addon" do
+    context "if there is no product selected yet" do
+      let(:addon) do
+        OpenStruct.new(
+          arch:       Yast::Arch.rpm_arch,
+          identifier: "sle-ha",
+          version:    "16.0"
+        )
+      end
+
+      let(:code) { "867136984314" }
+
+      let(:ha_extension) do
+        OpenStruct.new(
+          id:                2937,
+          identifier:        "sle-ha",
+          version:           "16.0",
+          arch:              "x86_64",
+          isbase:            false,
+          friendly_name:     "SUSE Linux Enterprise High Availability Extension 16.0 x86_64 (BETA)",
+          ProductLine:       "",
+          available:         true,
+          free:              false,
+          recommended:       false,
+          description:       "SUSE Linux High Availability Extension provides...",
+          former_identifier: "sle-ha",
+          product_type:      "extension",
+          shortname:         "SLEHA16",
+          name:              "SUSE Linux Enterprise High Availability Extension",
+          release_stage:     "beta"
+        )
+      end
+
+      it "registers addon" do
+        expect(SUSE::Connect::YaST).to receive(:activate_product).with(
+          addon, { token: code }, anything
+        )
+
+        subject.register_addon(addon.identifier, addon.version, code)
+      end
+
+      it "registers addon only once" do
+        expect(SUSE::Connect::YaST).to receive(:activate_product).with(
+          addon, { token: code }, anything
+        ).once
+
+        subject.register_addon(addon.identifier, addon.version, code)
+        subject.register_addon(addon.identifier, addon.version, code)
+      end
+
+      context "the requested addon version is not specified" do
+        it "finds the version automatically" do
+          expect(SUSE::Connect::YaST).to receive(:activate_product).with(
+            addon, { token: code }, anything
+          )
+
+          expect(SUSE::Connect::YaST).to receive(:show_product).and_return(
+            OpenStruct.new(
+              extensions: [ha_extension]
+            )
+          )
+
+          subject.register_addon(addon.identifier, "", code)
+        end
+
+        it "raises exception when the requested addon is not found" do
+          expect(SUSE::Connect::YaST).to receive(:show_product).and_return(
+            OpenStruct.new(extensions: [])
+          )
+
+          expect do
+            subject.register_addon(addon.identifier, "", code)
+          end.to raise_error(Agama::Errors::Registration::ExtensionNotFound)
+        end
+
+        it "raises exception when multiple addon versions are found" do
+          ha1 = ha_extension
+          ha2 = ha1.dup
+          ha2.version = "42"
+
+          expect(SUSE::Connect::YaST).to receive(:show_product).and_return(
+            OpenStruct.new(extensions: [ha1, ha2])
+          )
+
+          expect do
+            subject.register_addon(addon.identifier, "", code)
+          end.to raise_error(Agama::Errors::Registration::MultipleExtensionsFound)
         end
       end
     end
@@ -251,7 +447,13 @@ describe Agama::Registration do
 
         it "deactivates the system" do
           expect(SUSE::Connect::YaST).to receive(:deactivate_system).with(
-            { token: "11112222", email: "test@test.com" }
+            {
+              url:             anything,
+              token:           "11112222",
+              email:           "test@test.com",
+              verify_callback: anything,
+              language:        anything
+            }
           )
 
           subject.deregister
@@ -344,33 +546,52 @@ describe Agama::Registration do
     end
   end
 
-  describe "#requirement" do
-    context "if there is not product selected yet" do
-      let(:product) { nil }
+  describe "#finish" do
+    context "system is not registered" do
+      before do
+        subject.instance_variable_set(:@registered, false)
+      end
 
-      it "returns not required" do
-        expect(subject.requirement).to eq(Agama::Registration::Requirement::NO)
+      it "do nothing" do
+        expect(::FileUtils).to_not receive(:cp)
+
+        subject.finish
       end
     end
 
-    context "if there is a selected product" do
-      let(:product) do
-        Agama::Software::Product.new("test").tap { |p| p.repositories = repositories }
+    context "system is registered" do
+      before do
+        subject.instance_variable_set(:@registered, true)
+        subject.instance_variable_set(:@reg_code, "test")
+        subject.instance_variable_set(:@credentials_files, ["test"])
+        Yast::Installation.destdir = "/mnt"
+        allow(::FileUtils).to receive(:cp)
       end
 
-      context "and the product has repositories" do
-        let(:repositories) { ["https://repo"] }
+      it "copies global credentials file" do
+        expect(::FileUtils).to receive(:cp).with("/etc/zypp/credentials.d/SCCcredentials",
+          "/mnt/etc/zypp/credentials.d/SCCcredentials")
 
-        it "returns not required" do
-          expect(subject.requirement).to eq(Agama::Registration::Requirement::NO)
+        subject.finish
+      end
+
+      it "copies product credentials file" do
+        expect(::FileUtils).to receive(:cp).with("/run/agama/zypp/etc/zypp/credentials.d/test",
+          "/mnt/etc/zypp/credentials.d/test")
+
+        subject.finish
+      end
+
+      context "and a registration URL was given" do
+        before do
+          allow(subject).to receive(:registration_url).and_return("http://reg-server.lan")
         end
-      end
 
-      context "and the product has no repositories" do
-        let(:repositories) { [] }
+        it "generates and copies the SUSEConnect configuration" do
+          expect(::FileUtils).to receive(:cp).with("/etc/SUSEConnect", "/mnt/etc/SUSEConnect")
+          expect(SUSE::Connect::YaST).to receive(:write_config).with("url" => "http://reg-server.lan")
 
-        it "returns mandatory" do
-          expect(subject.requirement).to eq(Agama::Registration::Requirement::MANDATORY)
+          subject.finish
         end
       end
     end

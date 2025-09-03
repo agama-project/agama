@@ -1,0 +1,51 @@
+name: "CI - Changes"
+
+# Manually run the OBS source validator service to mainly check the consistency
+# of the *.changes files.
+
+permissions:
+  contents: read
+
+on:
+  push:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used below for the pull request event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-changes.yml
+      # any .changes file
+      - "**/*.changes"
+
+  pull_request:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used above for the push event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-changes.yml
+      # any .changes file
+      - "**/*.changes"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    container:
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v4
+
+    - name: Configure and refresh repositories
+      # disable unused repositories to have faster refresh
+      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
+
+    - name: Install OBS service
+      run: zypper --non-interactive install --no-recommends --allow-downgrade obs-service-source_validator
+
+    - name: Check the sources
+      # %h prints the directory name of the file
+      run: find . -name "*.changes" -type f -printf "%h\n" | xargs -I @ bash -c "echo 'Checking sources in @...' && cd @ && /usr/lib/obs/service/source_validator"

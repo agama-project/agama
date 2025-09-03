@@ -2,7 +2,7 @@ import { Skeleton } from "@patternfly/react-core";
 import { Table, Thead, Tr, Th, Tbody, Td } from "@patternfly/react-table";
 import React, { useState } from "react";
 import { _ } from "~/i18n";
-import { useCancellablePromise } from "~/utils";
+import { useCancellablePromise } from "~/hooks/use-cancellable-promise";
 import { RowActions } from "../../core";
 import { ZFCPController } from "~/types/zfcp";
 import { activateZFCPController } from "~/api/storage/zfcp";

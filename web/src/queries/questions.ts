@@ -40,8 +40,10 @@ const questionsQuery = () => ({
  * TODO: improve/simplify it once the backend API is improved.
  */
 const useQuestionsConfig = () => {
+  const queryClient = useQueryClient();
   const query = {
     mutationFn: (question: Question) => updateAnswer(question),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["questions"] }),
   };
   return useMutation(query);
 };
@@ -60,6 +62,14 @@ const useQuestionsChanges = () => {
       if (event.type === "QuestionsChanged") {
         queryClient.invalidateQueries({ queryKey: ["questions"] });
       }
+    });
+  }, [client, queryClient]);
+
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.onConnect(() => {
+      queryClient.invalidateQueries({ queryKey: ["questions"] });
     });
   }, [client, queryClient]);
 };

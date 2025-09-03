@@ -1,0 +1,23 @@
+dracut agama-cmdline module
+-------------------------------
+
+This module writes any agama configuration given through the kernel cmdline
+to its own cmdline conf file copying it to the sysroot.
+
+It also tries to translate the linuxrc ifcfg kernel cmdline argument to the
+corresponding ip one but only basic scenarios are supported.
+
+## Supported examples
+
+  ifcfg=*=dhcp
+  ip=dhcp
+
+  ifcfg=eth0=dhcp
+  ip=eth0:dhcp
+
+  ifcfg=eth0.10=192.168.0.100/24,192.168.0.1
+  vlan=eth0.10:eth0 ip=192.168.0.100::192.168.0.1:24::eth0.10
+
+  ifcfg="eth0=192.168.0.33/24 10.0.0.100/24,192.168.0.1,192.168.0.1 10.0.0.1,suse.de"
+  ip=192.168.0.33::192.168.0.1:24::eth0 nameserver=192.168.0.1 nameserver=10.0.0.1 ip=10.0.0.100:::24::eth0
+

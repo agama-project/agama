@@ -23,13 +23,17 @@
 use std::{collections::HashMap, task::Poll};
 
 use agama_lib::{
-    dbus::get_optional_property,
     error::ServiceError,
-    property_from_dbus,
+    event,
+    http::Event,
     storage::{
         client::zfcp::ZFCPClient,
         model::zfcp::{ZFCPController, ZFCPDisk},
     },
+};
+use agama_utils::{
+    dbus::{extract_id_from_path, get_optional_property},
+    property_from_dbus,
 };
 use futures_util::{ready, Stream};
 use pin_project::pin_project;
@@ -38,10 +42,7 @@ use tokio::sync::mpsc::unbounded_channel;
 use tokio_stream::{wrappers::UnboundedReceiverStream, StreamExt};
 use zbus::zvariant::{ObjectPath, OwnedObjectPath, OwnedValue};
 
-use crate::{
-    dbus::{DBusObjectChange, DBusObjectChangesStream, ObjectsCache},
-    web::Event,
-};
+use crate::dbus::{DBusObjectChange, DBusObjectChangesStream, ObjectsCache};
 
 #[derive(Debug, Error)]
 enum ZFCPDiskStreamError {
@@ -130,19 +131,19 @@ impl ZFCPDiskStream {
         match change {
             DBusObjectChange::Added(path, values) => {
                 let device = Self::update_device(cache, path, values)?;
-                Ok(Event::ZFCPDiskAdded {
+                Ok(event!(ZFCPDiskAdded {
                     device: device.clone(),
-                })
+                }))
             }
             DBusObjectChange::Changed(path, updated) => {
                 let device = Self::update_device(cache, path, updated)?;
-                Ok(Event::ZFCPDiskChanged {
+                Ok(event!(ZFCPDiskChanged {
                     device: device.clone(),
-                })
+                }))
             }
             DBusObjectChange::Removed(path) => {
                 let device = Self::remove_device(cache, path)?;
-                Ok(Event::ZFCPDiskRemoved { device })
+                Ok(event!(ZFCPDiskRemoved { device }))
             }
         }
     }
@@ -164,7 +165,7 @@ impl Stream for ZFCPDiskStream {
                     if let Ok(event) = Self::handle_change(pinned.cache, &change) {
                         Some(event)
                     } else {
-                        log::warn!("Could not process change {:?}", &change);
+                        tracing::warn!("Could not process change {:?}", &change);
                         None
                     }
                 }
@@ -241,6 +242,7 @@ impl ZFCPControllerStream {
         values: &HashMap<String, OwnedValue>,
     ) -> Result<&'a ZFCPController, ServiceError> {
         let device = cache.find_or_create(path);
+        device.id = extract_id_from_path(path)?.to_string();
         property_from_dbus!(device, channel, "Channel", values, str);
         property_from_dbus!(device, lun_scan, "LUNScan", values, bool);
         property_from_dbus!(device, active, "Active", values, bool);
@@ -263,19 +265,19 @@ impl ZFCPControllerStream {
         match change {
             DBusObjectChange::Added(path, values) => {
                 let device = Self::update_device(cache, path, values)?;
-                Ok(Event::ZFCPControllerAdded {
+                Ok(event!(ZFCPControllerAdded {
                     device: device.clone(),
-                })
+                }))
             }
             DBusObjectChange::Changed(path, updated) => {
                 let device = Self::update_device(cache, path, updated)?;
-                Ok(Event::ZFCPControllerChanged {
+                Ok(event!(ZFCPControllerChanged {
                     device: device.clone(),
-                })
+                }))
             }
             DBusObjectChange::Removed(path) => {
                 let device = Self::remove_device(cache, path)?;
-                Ok(Event::ZFCPControllerRemoved { device })
+                Ok(event!(ZFCPControllerRemoved { device }))
             }
         }
     }
@@ -297,7 +299,7 @@ impl Stream for ZFCPControllerStream {
                     if let Ok(event) = Self::handle_change(pinned.cache, &change) {
                         Some(event)
                     } else {
-                        log::warn!("Could not process change {:?}", &change);
+                        tracing::warn!("Could not process change {:?}", &change);
                         None
                     }
                 }

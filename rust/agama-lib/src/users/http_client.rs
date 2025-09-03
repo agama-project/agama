@@ -18,42 +18,50 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::client::FirstUser;
-use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
-use crate::users::model::{RootConfig, RootPatchSettings};
+use super::client::{FirstUser, RootUser};
+use crate::http::{BaseHTTPClient, BaseHTTPClientError};
+use crate::users::model::RootPatchSettings;
+
+#[derive(Debug, thiserror::Error)]
+pub enum UsersHTTPClientError {
+    #[error(transparent)]
+    HTTP(#[from] BaseHTTPClientError),
+    #[error("Wrong user parameters: '{0:?}'")]
+    WrongUser(Vec<String>),
+    #[error("Could not parse user issues: {0}")]
+    InvalidUserIssues(#[from] serde_json::Error),
+}
 
 pub struct UsersHTTPClient {
     client: BaseHTTPClient,
 }
 
 impl UsersHTTPClient {
-    pub fn new(client: BaseHTTPClient) -> Result<Self, BaseHTTPClientError> {
-        Ok(Self { client })
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self { client }
     }
 
     /// Returns the settings for first non admin user
-    pub async fn first_user(&self) -> Result<FirstUser, BaseHTTPClientError> {
-        self.client.get("/users/first").await
+    pub async fn first_user(&self) -> Result<FirstUser, UsersHTTPClientError> {
+        Ok(self.client.get("/users/first").await?)
     }
 
     /// Set the configuration for the first user
-    pub async fn set_first_user(&self, first_user: &FirstUser) -> Result<(), BaseHTTPClientError> {
+    pub async fn set_first_user(&self, first_user: &FirstUser) -> Result<(), UsersHTTPClientError> {
         let result = self.client.put_void("/users/first", first_user).await;
+
         if let Err(BaseHTTPClientError::BackendError(422, ref issues_s)) = result {
-            let issues: Vec<String> = serde_json::from_str(issues_s)?;
-            return Err(BaseHTTPClientError::Validation(issues));
+            return match serde_json::from_str::<Vec<String>>(issues_s) {
+                Ok(issues) => Err(UsersHTTPClientError::WrongUser(issues)),
+                Err(e) => Err(UsersHTTPClientError::InvalidUserIssues(e)),
+            };
         }
-        result
+
+        Ok(result?)
     }
 
-    async fn root_config(&self) -> Result<RootConfig, BaseHTTPClientError> {
-        self.client.get("/users/root").await
-    }
-
-    /// Whether the root password is set or not
-    pub async fn is_root_password(&self) -> Result<bool, BaseHTTPClientError> {
-        let root_config = self.root_config().await?;
-        Ok(root_config.password)
+    pub async fn root_user(&self) -> Result<RootUser, UsersHTTPClientError> {
+        Ok(self.client.get("/users/root").await?)
     }
 
     /// SetRootPassword method.
@@ -61,30 +69,24 @@ impl UsersHTTPClient {
     pub async fn set_root_password(
         &self,
         value: &str,
-        encrypted: bool,
-    ) -> Result<u32, BaseHTTPClientError> {
+        hashed: bool,
+    ) -> Result<u32, UsersHTTPClientError> {
         let rps = RootPatchSettings {
-            sshkey: None,
+            ssh_public_key: None,
             password: Some(value.to_owned()),
-            encrypted_password: Some(encrypted),
+            hashed_password: Some(hashed),
         };
         let ret = self.client.patch("/users/root", &rps).await?;
         Ok(ret)
     }
 
-    /// Returns the SSH key for the root user
-    pub async fn root_ssh_key(&self) -> Result<String, BaseHTTPClientError> {
-        let root_config = self.root_config().await?;
-        Ok(root_config.sshkey)
-    }
-
     /// SetRootSSHKey method.
     /// Returns 0 if successful (always, for current backend)
-    pub async fn set_root_sshkey(&self, value: &str) -> Result<u32, BaseHTTPClientError> {
+    pub async fn set_root_sshkey(&self, value: &str) -> Result<u32, UsersHTTPClientError> {
         let rps = RootPatchSettings {
-            sshkey: Some(value.to_owned()),
+            ssh_public_key: Some(value.to_owned()),
             password: None,
-            encrypted_password: None,
+            hashed_password: None,
         };
         let ret = self.client.patch("/users/root", &rps).await?;
         Ok(ret)

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2024] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -50,8 +50,8 @@ module Agama
               "MountOptions"  => volume.mount_options,
               "Target"        => volume.location.target.to_s,
               "TargetDevice"  => volume.location.device.to_s,
-              "FsType"        => volume.fs_type&.to_human_string || "",
-              "MinSize"       => volume.min_size&.to_i,
+              "FsType"        => volume.fs_type&.to_s || "",
+              "MinSize"       => min_size_conversion,
               "AutoSize"      => volume.auto_size?,
               "Snapshots"     => volume.btrfs.snapshots?,
               "Transactional" => volume.btrfs.read_only?,
@@ -67,11 +67,20 @@ module Agama
           # @return [Agama::Storage::Volume]
           attr_reader :volume
 
+          # @return [Integer]
+          def min_size_conversion
+            min_size = volume.min_size
+            min_size = volume.outline.base_min_size if volume.auto_size?
+            min_size.to_i
+          end
+
           # @param target [Hash]
           def max_size_conversion(target)
-            return if volume.max_size.nil? || volume.max_size.unlimited?
+            max_size = volume.max_size
+            max_size = volume.outline.base_max_size if volume.auto_size?
+            return if max_size.unlimited?
 
-            target["MaxSize"] = volume.max_size.to_i
+            target["MaxSize"] = max_size.to_i
           end
 
           # Converts volume outline to D-Bus.
@@ -89,7 +98,7 @@ module Agama
 
             {
               "Required"              => outline.required?,
-              "FsTypes"               => outline.filesystems.map(&:to_human_string),
+              "FsTypes"               => outline.filesystems.map(&:to_s),
               "SupportAutoSize"       => outline.adaptive_sizes?,
               "AdjustByRam"           => outline.adjust_by_ram?,
               "SnapshotsConfigurable" => outline.snapshots_configurable?,

@@ -48,6 +48,7 @@
     </method>
     <property type="s" name="RegCode" access="read"/>
     <property type="s" name="Email" access="read"/>
+    <property type="s" name="Url" access="readwrite"/>
     <property type="u" name="Requirement" access="read"/>
   </interface>
 </node>

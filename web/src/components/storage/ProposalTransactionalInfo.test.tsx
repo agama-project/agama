@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,8 +24,9 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { ProposalTransactionalInfo } from "~/components/storage";
-import { ProposalSettings, ProposalTarget, Volume, VolumeTarget } from "~/types/storage";
+import { Volume } from "~/api/storage/types";
 
+let mockVolumes: Volume[] = [];
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
   useProduct: () => ({
@@ -34,24 +35,15 @@ jest.mock("~/queries/software", () => ({
   useProductChanges: () => jest.fn(),
 }));
 
-const settings: ProposalSettings = {
-  target: ProposalTarget.DISK,
-  targetDevice: "/dev/sda",
-  targetPVDevices: [],
-  configureBoot: false,
-  bootDevice: "",
-  defaultBootDevice: "",
-  encryptionPassword: "",
-  encryptionMethod: "",
-  spacePolicy: "delete",
-  spaceActions: [],
-  volumes: [],
-  installationDevices: [],
-};
+jest.mock("~/queries/storage", () => ({
+  ...jest.requireActual("~/queries/storage"),
+  useVolumes: () => mockVolumes,
+}));
 
 const rootVolume: Volume = {
   mountPath: "/",
-  target: VolumeTarget.DEFAULT,
+  mountOptions: [],
+  target: "default",
   fsType: "Btrfs",
   minSize: 1024,
   maxSize: 2048,
@@ -66,34 +58,27 @@ const rootVolume: Volume = {
     snapshotsAffectSizes: true,
     sizeRelevantVolumes: [],
     adjustByRam: false,
-    productDefined: true,
   },
 };
 
-const props = { settings };
-
-beforeEach(() => {
-  settings.volumes = [];
-});
-
 describe("if the system is not transactional", () => {
   beforeEach(() => {
-    settings.volumes = [rootVolume];
+    mockVolumes = [rootVolume];
   });
 
   it("renders nothing", () => {
-    const { container } = plainRender(<ProposalTransactionalInfo {...props} />);
+    const { container } = plainRender(<ProposalTransactionalInfo />);
     expect(container).toBeEmptyDOMElement();
   });
 });
 
 describe("if the system is transactional", () => {
   beforeEach(() => {
-    settings.volumes = [{ ...rootVolume, transactional: true }];
+    mockVolumes = [{ ...rootVolume, transactional: true }];
   });
 
   it("renders an explanation about the transactional system", () => {
-    plainRender(<ProposalTransactionalInfo {...props} />);
+    plainRender(<ProposalTransactionalInfo />);
 
     screen.getByText("Transactional root file system");
   });

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -47,6 +47,7 @@ describe Agama::DBus::Software::Product do
 
   before do
     stub_const("Agama::Software::Manager::TARGET_DIR", target_dir)
+    allow(Yast::PackageCallbacks).to receive(:InitPackageCallbacks)
     allow(Agama::DBus::Clients::Locale).to receive(:instance).and_return(locale_client)
     allow(config).to receive(:products).and_return(products)
     allow(subject).to receive(:dbus_properties_changed)
@@ -93,7 +94,7 @@ describe Agama::DBus::Software::Product do
     context "if the current product is registered" do
       before do
         subject.select_product("MicroOS")
-        allow(backend.registration).to receive(:reg_code).and_return("123XX432")
+        allow(backend.registration).to receive(:registered).and_return(true)
       end
 
       it "returns result code 2 and description" do
@@ -108,12 +109,56 @@ describe Agama::DBus::Software::Product do
     end
   end
 
+  describe "#registered" do
+    before do
+      allow(backend.registration).to receive(:registered).and_return(registered)
+    end
+
+    context "if there is no registered product yet" do
+      let(:registered) { false }
+
+      it "returns false" do
+        expect(subject.registered).to eq(false)
+      end
+    end
+
+    context "if there is a registered product" do
+      let(:registered) { true }
+
+      it "returns true" do
+        expect(subject.registered).to eq(true)
+      end
+    end
+  end
+
+  describe "#url" do
+    before do
+      allow(backend.registration).to receive(:registration_url).and_return(url)
+    end
+
+    context "if there is no registration url yet" do
+      let(:url) { nil }
+
+      it "returns an empty string" do
+        expect(subject.url).to eq("")
+      end
+    end
+
+    context "if there is a registration url" do
+      let(:url) { "https://example.com" }
+
+      it "returns the registration url" do
+        expect(subject.url).to eq("https://example.com")
+      end
+    end
+  end
+
   describe "#reg_code" do
     before do
       allow(backend.registration).to receive(:reg_code).and_return(reg_code)
     end
 
-    context "if there is no registered product yet" do
+    context "if there is no registration code yet" do
       let(:reg_code) { nil }
 
       it "returns an empty string" do
@@ -121,7 +166,7 @@ describe Agama::DBus::Software::Product do
       end
     end
 
-    context "if there is a registered product" do
+    context "if there is a registration code" do
       let(:reg_code) { "123XX432" }
 
       it "returns the registration code" do
@@ -135,7 +180,7 @@ describe Agama::DBus::Software::Product do
       allow(backend.registration).to receive(:email).and_return(email)
     end
 
-    context "if there is no registered email" do
+    context "if there is no registration email yet" do
       let(:email) { nil }
 
       it "returns an empty string" do
@@ -143,41 +188,11 @@ describe Agama::DBus::Software::Product do
       end
     end
 
-    context "if there is a registered email" do
+    context "if there is a registration email" do
       let(:email) { "test@suse.com" }
 
-      it "returns the registered email" do
+      it "returns the registration email" do
         expect(subject.email).to eq("test@suse.com")
-      end
-    end
-  end
-
-  describe "#requirement" do
-    before do
-      allow(backend.registration).to receive(:requirement).and_return(requirement)
-    end
-
-    context "if the registration is not required" do
-      let(:requirement) { Agama::Registration::Requirement::NO }
-
-      it "returns 0" do
-        expect(subject.requirement).to eq(0)
-      end
-    end
-
-    context "if the registration is optional" do
-      let(:requirement) { Agama::Registration::Requirement::OPTIONAL }
-
-      it "returns 1" do
-        expect(subject.requirement).to eq(1)
-      end
-    end
-
-    context "if the registration is mandatory" do
-      let(:requirement) { Agama::Registration::Requirement::MANDATORY }
-
-      it "returns 2" do
-        expect(subject.requirement).to eq(2)
       end
     end
   end
@@ -198,22 +213,30 @@ describe Agama::DBus::Software::Product do
         backend.select_product("Tumbleweed")
 
         allow(backend.product).to receive(:repositories).and_return(repositories)
+        allow(backend.product).to receive(:registration).and_return(true)
       end
 
       let(:repositories) { [] }
 
       context "if the product is already registered" do
-        before do
-          allow(backend.registration).to receive(:reg_code).and_return("123XX432")
+        it "returns result code 2 and description if the code is different" do
+          allow(backend.registration).to receive(:registered).and_return(true)
+          expect(subject.register("123XX432")).to contain_exactly(2, /product already registered/i)
         end
 
-        it "returns result code 2 and description" do
-          expect(subject.register("123XX432")).to contain_exactly(2, /product already registered/i)
+        it "returns result code 0 and empty error if the code is the same" do
+          allow(backend.registration).to receive(:reg_code).and_return("123XX432")
+          allow(backend.registration).to receive(:registered).and_return(true)
+          expect(subject.register("123XX432")).to contain_exactly(0, "")
         end
       end
 
       context "if the product does not require registration" do
         let(:repositories) { ["https://repo"] }
+
+        before do
+          allow(backend.product).to receive(:registration).and_return(false)
+        end
 
         it "returns result code 3 and description" do
           expect(subject.register("123XX432")).to contain_exactly(3, /not require registration/i)
@@ -250,7 +273,7 @@ describe Agama::DBus::Software::Product do
         end
       end
 
-      context "if there is a missing credials error" do
+      context "if there is a missing credentials error" do
         before do
           allow(backend.registration)
             .to receive(:register).and_raise(SUSE::Connect::MissingSccCredentialsFile)
@@ -261,7 +284,7 @@ describe Agama::DBus::Software::Product do
         end
       end
 
-      context "if there is an incorrect credials error" do
+      context "if there is an incorrect credentials error" do
         before do
           allow(backend.registration)
             .to receive(:register).and_raise(SUSE::Connect::MalformedSccCredentialsFile)
@@ -292,6 +315,16 @@ describe Agama::DBus::Software::Product do
         end
       end
 
+      context "if there is any other error" do
+        before do
+          allow(backend.registration).to receive(:register).and_raise(RuntimeError)
+        end
+
+        it "returns result code 14 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(14, /registration server failed/)
+        end
+      end
+
       context "if the registration is correctly done" do
         before do
           allow(backend.registration).to receive(:register)
@@ -306,7 +339,7 @@ describe Agama::DBus::Software::Product do
 
   describe "#deregister" do
     before do
-      allow(backend.registration).to receive(:reg_code).and_return("123XX432")
+      allow(backend.registration).to receive(:registered).and_return(true)
     end
 
     context "if there is no product selected yet" do
@@ -322,7 +355,7 @@ describe Agama::DBus::Software::Product do
 
       context "if the product is not registered yet" do
         before do
-          allow(backend.registration).to receive(:reg_code).and_return(nil)
+          allow(backend.registration).to receive(:registered).and_return(false)
         end
 
         it "returns result code 2 and description" do
@@ -360,7 +393,7 @@ describe Agama::DBus::Software::Product do
         end
       end
 
-      context "if there is a missing credials error" do
+      context "if there is a missing credentials error" do
         before do
           allow(backend.registration)
             .to receive(:deregister).and_raise(SUSE::Connect::MissingSccCredentialsFile)
@@ -371,7 +404,7 @@ describe Agama::DBus::Software::Product do
         end
       end
 
-      context "if there is an incorrect credials error" do
+      context "if there is an incorrect credentials error" do
         before do
           allow(backend.registration)
             .to receive(:deregister).and_raise(SUSE::Connect::MalformedSccCredentialsFile)

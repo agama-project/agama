@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -61,7 +61,8 @@ describe Agama::Software::Manager do
       set_resolvables:  nil,
       packages_count:   "500 MB",
       issues:           proposal_issues,
-      on_issues_change: nil
+      on_issues_change: nil,
+      only_required:    nil
     )
   end
 
@@ -88,8 +89,13 @@ describe Agama::Software::Manager do
     allow(Yast::Pkg).to receive(:TargetInitialize)
     allow(Yast::Pkg).to receive(:TargetFinish)
     allow(Yast::Pkg).to receive(:TargetLoad)
-    allow(Yast::Pkg).to receive(:SourceSaveAll)
+    allow(Yast::Pkg).to receive(:SourceSaveAll).and_return(true)
+    allow(Yast::Pkg).to receive(:SourceDelete)
     allow(Yast::Pkg).to receive(:ImportGPGKey)
+    allow(Yast::Pkg).to receive(:ServiceAdd).and_return(true)
+    allow(Yast::Pkg).to receive(:ServiceSet).and_return(true)
+    allow(Yast::Pkg).to receive(:ServiceSave).and_return(true)
+    allow(Yast::Pkg).to receive(:ServiceForceRefresh).and_return(true)
     # allow glob to work for other calls
     allow(Dir).to receive(:glob).and_call_original
     allow(Dir).to receive(:glob).with(/keys/).and_return(gpg_keys)
@@ -99,7 +105,7 @@ describe Agama::Software::Manager do
     allow(Yast::Pkg).to receive(:SourceCreate)
     allow(Yast::Installation).to receive(:destdir).and_return(destdir)
     allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
-    allow(Agama::Software::RepositoriesManager).to receive(:new).and_return(repositories)
+    allow(Agama::Software::RepositoriesManager).to receive(:instance).and_return(repositories)
     allow(Agama::Software::Proposal).to receive(:new).and_return(proposal)
     allow(Agama::ProductReader).to receive(:new).and_call_original
     allow(FileUtils).to receive(:mkdir_p)
@@ -257,6 +263,8 @@ describe Agama::Software::Manager do
 
   describe "#patterns" do
     it "returns only the specified patterns" do
+      allow(Yast::Pkg).to receive(:SourceGetCurrent).and_return([0])
+      allow(Yast::Pkg).to receive(:SourceGeneralData).and_return({ "service" => "" })
       expect(Y2Packager::Resolvable).to receive(:find).and_return(
         [
           double(
@@ -303,7 +311,8 @@ describe Agama::Software::Manager do
         ]
       )
 
-      allow(subject.product).to receive(:user_patterns).and_return(["kde"])
+      kde = Agama::Software::UserPattern.new("kde", false)
+      allow(subject.product).to receive(:user_patterns).and_return([kde])
       patterns = subject.patterns(true)
 
       expect(patterns).to contain_exactly(
@@ -332,7 +341,9 @@ describe Agama::Software::Manager do
       expect(proposal).to receive(:set_resolvables)
         .with("agama", :pattern, [], { optional: true })
       expect(proposal).to receive(:set_resolvables)
-        .with("agama", :package, ["NetworkManager", "openSUSE-repos-Tumbleweed"])
+        .with("agama", :package, [
+                "NetworkManager", "openSUSE-repos-Tumbleweed", "sudo-policy-wheel-auth-self"
+              ])
       expect(proposal).to receive(:set_resolvables)
         .with("agama", :package, [], { optional: true })
       subject.propose
@@ -383,6 +394,15 @@ describe Agama::Software::Manager do
     end
 
     it "copies the libzypp cache and credentials to the target system" do
+      allow(Agama::Software::Repository).to receive(:all).and_return(
+        [
+          Agama::Software::Repository.new(
+            repo_id: 42, repo_alias: "alias", name: "name",
+            url: "http://example.com", enabled: true, autorefresh: false
+          )
+        ]
+      )
+
       allow(Dir).to receive(:exist?).and_call_original
       allow(Dir).to receive(:entries).and_call_original
 
@@ -434,6 +454,33 @@ describe Agama::Software::Manager do
       )
 
       subject.finish
+    end
+
+    context "only a local repository is used" do
+      let(:repo_id) { 42 }
+      before do
+        allow(Agama::Software::Repository).to receive(:all).and_return(
+          [
+            Agama::Software::Repository.new(
+              repo_id: repo_id, repo_alias: "alias", name: "name",
+              url: "dvd:/install?devices=/dev/sr0", enabled: true, autorefresh: false
+            )
+          ]
+        )
+      end
+
+      it "disables the local repository" do
+        allow(subject).to receive(:copy_zypp_to_target)
+        expect(Yast::Pkg).to receive(:SourceSetEnabled).with(repo_id, false)
+
+        subject.finish
+      end
+
+      it "copies the libzypp cache" do
+        expect(subject).to receive(:copy_zypp_to_target)
+
+        subject.finish
+      end
     end
   end
 
@@ -494,6 +541,19 @@ describe Agama::Software::Manager do
     end
   end
 
+  describe "#add_service" do
+    it "does not raise exception if everything goes well" do
+      service = double(name: "test", url: "http://test.com")
+      expect { subject.add_service(service) }.to_not raise_error
+    end
+
+    it "raises ServiceError when failed to add service" do
+      expect(Yast::Pkg).to receive(:ServiceForceRefresh).and_return(false)
+      service = double(name: "test", url: "http://test.com")
+      expect { subject.add_service(service) }.to raise_error(Agama::Software::ServiceError)
+    end
+  end
+
   describe "#product_issues" do
     before do
       allow_any_instance_of(Agama::Software::ProductBuilder)
@@ -543,31 +603,58 @@ describe Agama::Software::Manager do
 
       context "and the product requires registration" do
         let(:product_id) { "test1" }
-
-        before do
-          allow(subject.registration).to receive(:reg_code).and_return(reg_code)
+        let(:product) do
+          Agama::Software::Product.new("test1").tap do |p|
+            p.registration = true
+            p.name = "test1"
+          end
         end
 
-        context "and the product is not registered" do
-          let(:reg_code) { nil }
+        before do
+          allow(subject).to receive(:product).and_return(product)
+          allow(Y2Packager::Resolvable).to receive(:find)
+            .with(kind: :product, name: product.name)
+            .and_return(resolvables)
+        end
+
+        context "and the base product is not available" do
+          let(:resolvables) { [] }
 
           it "contains a missing registration issue" do
             expect(subject.product_issues).to contain_exactly(
               an_object_having_attributes(
-                description: /product must be registered/i
+                kind: :missing_registration
               )
             )
           end
-        end
 
-        context "and the product is registered" do
-          let(:reg_code) { "1234XX5678" }
+          context "and the base product is available" do
+            let(:resolvables) { [instance_double("Product")] }
 
-          it "does not contain issues" do
-            expect(subject.product_issues).to be_empty
+            it "does not contain issues" do
+              expect(subject.product_issues).to be_empty
+            end
           end
         end
       end
+    end
+  end
+
+  describe "#update_selected_patterns" do
+    it "unselects user patterns unselected by conflict resolution" do
+      # user selected patterns
+      expect(Yast::PackagesProposal).to receive(:GetResolvables).with(anything,
+        :pattern).and_return(["pattern1", "pattern2"])
+      # patterns selected in libzypp
+      expect(Y2Packager::Resolvable).to receive(:find).with(kind: :pattern,
+        status: :selected).and_return([double(name: "pattern1")])
+      # list of patterns is changed
+      expect(subject).to receive(:selected_patterns_changed)
+      # the "pattern2" is unselected
+      expect(Yast::PackagesProposal).to receive(:RemoveResolvables).with(anything, :pattern,
+        ["pattern2"])
+
+      subject.update_selected_patterns
     end
   end
 

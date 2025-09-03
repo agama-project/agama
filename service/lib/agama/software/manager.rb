@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021-2024] SUSE LLC
+# Copyright (c) [2021-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,7 +21,10 @@
 
 require "fileutils"
 require "json"
+require "shellwords"
 require "yast"
+require "packager/cfa/zypp_conf"
+require "cfa/augeas_parser"
 require "y2packager/product"
 require "y2packager/resolvable"
 require "agama/config"
@@ -37,6 +40,7 @@ require "agama/with_locale"
 require "agama/with_progress"
 require "agama/with_issues"
 
+Yast.import "Installation"
 Yast.import "Language"
 Yast.import "Package"
 Yast.import "Packages"
@@ -45,6 +49,8 @@ Yast.import "Pkg"
 
 module Agama
   module Software
+    class ServiceError < StandardError; end
+
     # This class is responsible for software handling.
     #
     # FIXME: This class has too many responsibilities:
@@ -53,7 +59,7 @@ module Agama
     #   * Manages product selection.
     #   * Manages software and product related issues.
     #
-    #   It shoud be splitted in separate and smaller classes.
+    #   It should be splitted in separate and smaller classes.
     class Manager # rubocop:disable Metrics/ClassLength
       include Helpers
       include WithLocale
@@ -63,6 +69,23 @@ module Agama
 
       GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
       private_constant :GPG_KEYS_GLOB
+
+      # location of the custom DUD package repository,
+      # see the /usr/lib/dracut/modules.d/99agama-dud/agama-dud-apply.sh script
+      DUD_REPOSITORY_DIR = "/var/lib/agama/dud/repo"
+      private_constant :DUD_REPOSITORY_DIR
+
+      # name for the custom DUD package repository, use some special name to
+      # minimize possible conflicts with user defined repositories, ugly name
+      # does not matter, it is deleted in the end anyway
+      DUD_REPOSITORY_NAME = "AgamaDriverUpdate"
+      private_constant :DUD_REPOSITORY_NAME
+
+      # use a higher priority for the custom DUD package repository,
+      # the default priority is 99, the lower number the higher priority!
+      # the linuxrc default is 50, let's use the same value here as well
+      DUD_REPOSITORY_PRIORITY = 50
+      private_constant :DUD_REPOSITORY_PRIORITY
 
       # Selected product.
       #
@@ -99,13 +122,18 @@ module Agama
         @logger = logger
         @languages = DEFAULT_LANGUAGES
         @products = build_products
-        @product = @products.first if @products.size == 1
-        @repositories = RepositoriesManager.new
+        @product = find_initial_product
+        @repositories = RepositoriesManager.instance
         # patterns selected by user
         @user_patterns = []
         @selected_patterns_change_callbacks = []
         on_progress_change { logger.info(progress.to_s) }
+        Yast::PackageCallbacks.InitPackageCallbacks(logger)
         initialize_target
+      end
+
+      def self.dud_repository_url
+        "dir:#{DUD_REPOSITORY_DIR}"
       end
 
       # Selects a product with the given id.
@@ -121,6 +149,9 @@ module Agama
 
         raise ArgumentError unless new_product
 
+        proposal.set_resolvables(
+          PROPOSAL_ID, :pattern, new_product.preselected_patterns
+        )
         update_repositories(new_product)
 
         @product = new_product
@@ -129,22 +160,35 @@ module Agama
         true
       end
 
+      # select additional products to install
+      # @param addon_products [Array<String>] list of product names
+      def addon_products(addon_products)
+        # The PackagesProposal module can handle only packages and patterns,
+        # so products need to be handled differently.
+        proposal.addon_products = addon_products
+      end
+
       def probe
         # Should an error be raised?
         return unless product
 
         logger.info "Probing software"
 
+        common_steps = [
+          _("Refreshing repositories metadata"),
+          _("Calculating the software proposal")
+        ]
         if repositories.empty?
-          start_progress_with_size(3)
-          Yast::PackageCallbacks.InitPackageCallbacks(logger)
-          progress.step(_("Initializing sources")) { add_base_repos }
+          start_progress_with_descriptions(
+            _("Initializing sources"), *common_steps
+          )
+          progress.step { add_base_repos }
         else
-          start_progress_with_size(2)
+          start_progress_with_descriptions(*common_steps)
         end
 
-        progress.step(_("Refreshing repositories metadata")) { repositories.load }
-        progress.step(_("Calculating the software proposal")) { propose }
+        progress.step { repositories.load }
+        progress.step { propose }
 
         update_issues
       end
@@ -183,7 +227,7 @@ module Agama
 
         steps = proposal.packages_count
         start_progress_with_size(steps)
-        Callbacks::Progress.setup(steps, progress)
+        Callbacks::Progress.setup(steps, progress, logger)
 
         # TODO: error handling
         commit_result = Yast::Pkg.Commit({})
@@ -194,18 +238,26 @@ module Agama
         end
 
         logger.info "Commit result #{commit_result}"
-      rescue Agama::WithProgress::NotFinishedProgress => e
+      rescue Agama::NotFinishedProgress => e
         logger.error "There is an unfinished progress: #{e.inspect}"
         finish_progress
       end
 
       # Writes the repositories information to the installed system
       def finish
+        # disable local repositories (DVD, USB flash...)
+        disable_local_repos
+        remove_dud_repo
         Yast::Pkg.SourceSaveAll
         Yast::Pkg.TargetFinish
         # copy the libzypp caches to the target
-        copy_zypp_to_target
+        if Agama::Software::Repository.all.empty?
+          logger.info("No repository defined, not copying the libzypp caches")
+        else
+          copy_zypp_to_target
+        end
         registration.finish
+        modify_zypp_conf
       end
 
       # Determine whether the given tag is provided by the selected packages
@@ -222,20 +274,30 @@ module Agama
       # @param filtered [Boolean] If list of patterns should be filtered.
       #                           Filtering criteria can change.
       # @return [Array<Y2Packager::Resolvable>]
+      # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/PerceivedComplexity
       def patterns(filtered)
         # huge speed up, preload the used attributes to avoid querying libzypp again,
         # see "ListPatterns" method in service/lib/agama/dbus/software/manager.rb
-        preload = [:category, :description, :icon, :summary, :order, :user_visible]
+        preload = [:category, :description, :icon, :summary, :order, :source, :user_visible]
         patterns = Y2Packager::Resolvable.find({ kind: :pattern }, preload)
         patterns = patterns.select(&:user_visible) if filtered
 
-        # only display the configured patterns
+        # only display the configured patterns from the base product, from addons display everything
         if product.user_patterns && filtered
-          patterns.select! { |p| product.user_patterns.include?(p.name) }
+          base_repos = base_repositories
+
+          user_patterns_names = (product.user_patterns || []).map(&:name)
+          patterns.select! do |p|
+            # the pattern is not from a base repository or is included in the display list
+            !base_repos.include?(p.source) || user_patterns_names.include?(p.name)
+          end
         end
 
         patterns
       end
+      # rubocop:enable Metrics/CyclomaticComplexity
+      # rubocop:enable Metrics/PerceivedComplexity
 
       def add_pattern(id)
         return false unless pattern_exist?(id)
@@ -267,7 +329,7 @@ module Agama
 
         user_patterns = Yast::PackagesProposal.GetResolvables(PROPOSAL_ID, :pattern)
         user_patterns.each { |p| Yast::Pkg.ResolvableNeutral(p, :pattern, force = false) }
-        logger.info "Adding patterns: #{add.join(", ")}. Removing patterns: #{remove.join(",")}."
+        logger.info "Adding patterns: #{add.inspect}, removing patterns: #{remove.inspect}"
 
         Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :pattern, add)
         add.each do |id|
@@ -295,8 +357,22 @@ module Agama
 
         patterns = Y2Packager::Resolvable.find(kind: :pattern, status: :selected)
         patterns.map!(&:name)
+        logger.info "Currently selected patterns: #{patterns.inspect}"
 
         patterns.partition { |p| user_patterns.include?(p) }
+      end
+
+      def update_selected_patterns
+        user_patterns = Yast::PackagesProposal.GetResolvables(PROPOSAL_ID, :pattern)
+        patterns = Y2Packager::Resolvable.find(kind: :pattern, status: :selected).map!(&:name)
+
+        unselect_patterns = user_patterns - patterns
+        unselect_patterns.each do |id|
+          logger.info "Unselecting pattern #{id}"
+          Yast::PackagesProposal.RemoveResolvables(PROPOSAL_ID, :pattern, [id])
+        end
+
+        selected_patterns_changed if !unselect_patterns.empty?
       end
 
       def on_selected_patterns_change(&block)
@@ -348,24 +424,24 @@ module Agama
 
         @logger.info "Adding service #{service.name.inspect} (#{service.url})"
         if !Yast::Pkg.ServiceAdd(service.name, service.url.to_s)
-          raise format("Adding service '%s' failed.", service.name)
+          raise ServiceError, format(_("Adding service '%s' failed."), service.name)
         end
 
         if !Yast::Pkg.ServiceSet(service.name, "autorefresh" => true)
           # error message
-          raise format("Updating service '%s' failed.", service.name)
+          raise ServiceError, format(_("Updating service '%s' failed."), service.name)
         end
 
         # refresh works only for saved services
         if !Yast::Pkg.ServiceSave(service.name)
           # error message
-          raise format("Saving service '%s' failed.", service.name)
+          raise ServiceError, format(_("Saving service '%s' failed."), service.name)
         end
 
         # Force refreshing due timing issues (bnc#967828)
         if !Yast::Pkg.ServiceForceRefresh(service.name)
           # error message
-          raise format("Refreshing service '%s' failed.", service.name)
+          raise ServiceError, format(_("Refreshing service '%s' failed."), service.name)
         end
       ensure
         Yast::Pkg.SourceSaveAll
@@ -374,7 +450,7 @@ module Agama
 
       def remove_service(service)
         if Yast::Pkg.ServiceDelete(service.name) && !Yast::Pkg.SourceSaveAll
-          raise format("Removing service '%s' failed.", service_name)
+          raise ServiceError, format(_("Removing service '%s' failed."), service_name)
         end
 
         true
@@ -429,6 +505,12 @@ module Agama
         selected.each { |s| Yast::Pkg.ResolvableInstall(s.name, s.kind) }
       end
 
+      def proposal
+        @proposal ||= Proposal.new.tap do |proposal|
+          proposal.on_issues_change { update_issues }
+        end
+      end
+
     private
 
       # @return [Agama::Config]
@@ -444,10 +526,15 @@ module Agama
         ProductBuilder.new(config).build
       end
 
-      def proposal
-        @proposal ||= Proposal.new.tap do |proposal|
-          proposal.on_issues_change { update_issues }
-        end
+      # Determines the initially selected product.
+      #
+      # A product is automatically selected if it is the only product
+      # and it does not require acccepting a license.
+      def find_initial_product
+        product = @products.first
+        return product if @products.size == 1 && product.license.to_s.empty?
+
+        nil
       end
 
       def import_gpg_keys
@@ -459,6 +546,34 @@ module Agama
       end
 
       def add_base_repos
+        add_dud_repo
+        return if add_repos_by_label
+        return if add_repos_by_dir
+
+        # local repositories not found, use the online repositories
+        product.repositories.each { |url| repositories.add(url) }
+      end
+
+      def add_repos_by_dir
+        # path to the installation repository present on the Live medium (only on the Full medium)
+        dir_path = "/run/initramfs/live/install"
+        return false unless File.exist?(dir_path)
+
+        logger.info "/install found on Live medium"
+        url = full_repo_url(dir_path, "/install")
+        return false unless url
+
+        logger.info "Using Full media installation repository #{url}"
+        # disable autorefresh, the packages on DVD cannot be updated, for USB flash disks it can be
+        # manually enabled in the installed system if needed (updating the packages need some user
+        # interaction anyway)
+        repositories.add(url, repo_alias: product.name, name: product.display_name,
+          autorefresh: false)
+
+        true
+      end
+
+      def add_repos_by_label
         # NOTE: support multiple labels/installation media?
         label = product.labels.first
 
@@ -470,12 +585,22 @@ module Agama
           if device
             logger.info "Installation device: #{device}"
             repositories.add("hd:/?device=" + device)
-            return
+            return true
           end
         end
 
-        # disk label not found or not configured, use the online repositories
-        product.repositories.each { |url| repositories.add(url) }
+        false
+      end
+
+      # add a custom repository provided by DUD
+      def add_dud_repo
+        return unless File.directory?(DUD_REPOSITORY_DIR) && !Dir.empty?(DUD_REPOSITORY_DIR)
+
+        logger.info "Adding DUD repository at #{DUD_REPOSITORY_DIR}"
+        # if there is no repository metadata present in the dir:/ repository then libzypp
+        # automatically uses the "plaindir" repository type
+        repositories.add(self.class.dud_repository_url, repo_alias: DUD_REPOSITORY_NAME,
+          name: DUD_REPOSITORY_NAME, priority: DUD_REPOSITORY_PRIORITY)
       end
 
       # find all devices with the required disk label
@@ -516,6 +641,30 @@ module Agama
         else
           # none or just one disk
           disks.first
+        end
+      end
+
+      # build URL for the Full installation repository
+      # @param path [String] Local path where the Full repository is mounted
+      # @param url_path [String] Path part of the resulting URL
+      # @return [String,nil] URL or `nil` if the Full repository device was not found
+      def full_repo_url(path, url_path)
+        # find the device which is mounted at the repository location
+        live_device = `findmnt -n -o SOURCE --target #{Shellwords.escape(path)}`.chomp
+        logger.info "Installation device: #{live_device}"
+        return nil unless live_device
+
+        # distinguish between DVD and hard disks/USB flash
+        if live_device.match(/\A\/dev\/sr[0-9]+\z/)
+          "dvd:#{url_path}?devices=#{live_device}"
+        else
+          # try using a more stable by-id device name, important esp. for USB flash
+          by_id_devices = `find -L /dev/disk/by-id -samefile #{Shellwords.escape(live_device)}`
+            .chomp
+          # if there are more names just use the first one
+          by_id_device = by_id_devices.split("\n").first
+          device = (by_id_device && !by_id_device.empty?) ? by_id_device : live_device
+          "hd:#{url_path}?device=#{device}"
         end
       end
 
@@ -578,6 +727,7 @@ module Agama
       # @return [Agama::Issue]
       def missing_registration_issue
         Issue.new(_("Product must be registered"),
+          kind:     :missing_registration,
           source:   Issue::Source::SYSTEM,
           severity: Issue::Severity::ERROR)
       end
@@ -586,8 +736,17 @@ module Agama
       #
       # @return [Boolean]
       def missing_registration?
-        registration.reg_code.nil? &&
-          registration.requirement == Agama::Registration::Requirement::MANDATORY
+        return false unless product
+
+        product.registration && missing_base_product?
+      end
+
+      # Whether the base product is missing
+      #
+      # @return [Boolean]
+      def missing_base_product?
+        products = Y2Packager::Resolvable.find(kind: :product, name: product.name)
+        products.empty?
       end
 
       def pattern_exist?(pattern_name)
@@ -634,6 +793,48 @@ module Agama
         FileUtils.copy(glob_credentials, target_dir)
       end
 
+      # private class to ensure that cfa reads installed system
+      # YaST target file does not work reliably as Agama does not have
+      # always switched SCR
+      class TargetFile
+        # Reads file content with respect of changed root in installation.
+        def self.read(path)
+          ::File.read(final_path(path))
+        end
+
+        # Writes file content with respect of changed root in installation.
+        def self.write(path, content)
+          ::File.write(final_path(path), content)
+        end
+
+        def self.final_path(path)
+          ::File.join(Yast::Installation.destdir, path)
+        end
+        private_class_method :final_path
+      end
+
+      def modify_zypp_conf
+        # use defaults unless user explicitelly sets flag
+        return if proposal.only_required.nil?
+
+        # minimal system does not need to have libzypp, so in this case do not
+        # modify zypp.conf
+        if !File.exist?(File.join(Yast::Installation.destdir, "/etc/zypp/zypp.conf"))
+          logger.info "Target system does not have zypp.conf so skipping modification of it"
+          return
+        end
+
+        zypp_conf = Yast::Packager::CFA::ZyppConf.new(file_handler: TargetFile)
+        zypp_conf.load
+        tree = zypp_conf.generic_get("main")
+        if !tree
+          tree = ::CFA::AugeasTree.new
+          zypp_conf.generic_get("main", tree)
+        end
+        zypp_conf.generic_set("solver.onlyRequires", (!!proposal.only_required).to_s, tree)
+        zypp_conf.save
+      end
+
       # Is any local repository (CD/DVD, disk) currently used?
       # @return [Boolean] true if any local repository is used
       def local_repo?
@@ -659,6 +860,55 @@ module Agama
           # deleting happens only in memory, to really delete the caches we need
           # to write the repository setup to the disk
           Yast::Pkg.SourceSaveAll
+        end
+      end
+
+      # disable all local repositories, remove device name from the DVD Full repository
+      def disable_local_repos
+        local_repos = Agama::Software::Repository.all.select(&:local?)
+        local_repos.each(&:disable!)
+
+        # remove the installation device from the URL, libzypp will probe all present devices,
+        # this allows inserting the DVD medium into a different drive later
+        full_dvd_repo = local_repos.find { |r| r.url.to_s.start_with?("dvd:/install?devices=") }
+        return unless full_dvd_repo
+
+        new_url = "dvd:/install"
+        logger.info "Changing repository URL from #{full_dvd_repo.url} to #{new_url}"
+        full_dvd_repo.url = new_url
+      end
+
+      def remove_dud_repo
+        dud_repo = Agama::Software::Repository.all.find { |r| r.name == DUD_REPOSITORY_NAME }
+        return unless dud_repo
+
+        logger.info "Removing the temporary DUD repository"
+        dud_repo.delete!
+      end
+
+      # Return all enabled repositories belonging to the base product.
+      #
+      # @return [Array<Integer>] List of repository IDs, returns empty list if
+      # no repository is defined yet
+      def base_repositories
+        # process only the enabled repositories
+        only_enabled_repos = true
+        # the base product repo is the first added repository (the lowest number)
+        base_src_id = Yast::Pkg.SourceGetCurrent(only_enabled_repos).min
+        # a repository might not be defined yet
+        return [] unless base_src_id
+
+        # if the base repository comes from a service consider all repositories from that service
+        # (SCC uses Pool + Updates, use both of them just in case a pattern is updated)
+        service = Yast::Pkg.SourceGeneralData(base_src_id)["service"]
+
+        if service.empty?
+          [base_src_id]
+        else
+          logger.info "The base product is from a service"
+          Yast::Pkg.SourceGetCurrent(only_enabled_repos).select do |r|
+            Yast::Pkg.SourceGeneralData(r)["service"] == service
+          end
         end
       end
     end

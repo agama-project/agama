@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -31,41 +31,40 @@ import {
   CardHeader,
   CardHeaderProps,
   CardProps,
+  Divider,
   PageGroup,
   PageGroupProps,
   PageSection,
   PageSectionProps,
   Split,
-  Stack,
+  Title,
   TitleProps,
 } from "@patternfly/react-core";
-import { Flex } from "~/components/layout";
 import { ProductRegistrationAlert } from "~/components/product";
-import { _ } from "~/i18n";
+import Link, { LinkProps } from "~/components/core/Link";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
-import { To, useLocation, useNavigate } from "react-router-dom";
-import { isEmpty, isObject } from "~/utils";
-import { SUPPORTIVE_PATHS } from "~/routes/paths";
+import { useLocation, useNavigate } from "react-router-dom";
+import { isEmpty, isObject } from "radashi";
+import { SIDE_PATHS } from "~/routes/paths";
+import { _ } from "~/i18n";
 
 /**
  * Props accepted by Page.Section
  */
 type SectionProps = {
   /** The section title */
-  title?: string;
+  title?: React.ReactNode;
   /** The value used for accessible label */
   "aria-label"?: string;
-  /** Part of the header that complements the title as a representation of the
-   * section state. E.g. "Encryption enabled", where "Encryption" is the title
-   * and "enabled" the value */
-  value?: React.ReactNode;
   /** Elements to be rendered in the section footer */
   actions?: React.ReactNode;
   /** A React node with a brief description of what the section is for */
   description?: React.ReactNode;
   /** The heading level used for the section title */
-  headerLevel?: TitleProps["headingLevel"];
+  headingLevel?: TitleProps["headingLevel"];
+  /** Whether the section should have a divider between header and body */
+  hasHeaderDivider?: boolean;
   /** Props to influence PF/Card component wrapping the section */
   pfCardProps?: CardProps;
   /** Props to influence PF/CardHeader component wrapping the section title */
@@ -76,7 +75,7 @@ type SectionProps = {
 
 type ActionProps = {
   /** Path to navigate to */
-  navigateTo?: To;
+  navigateTo?: LinkProps["to"];
 } & ButtonProps;
 
 type SubmitActionProps = {
@@ -85,7 +84,6 @@ type SubmitActionProps = {
 } & ButtonProps;
 
 const defaultCardProps: CardProps = {
-  isRounded: true,
   isCompact: true,
   isFullHeight: true,
   component: "section",
@@ -95,10 +93,10 @@ const STICK_TO_TOP = Object.freeze({ default: "top" });
 const STICK_TO_BOTTOM = Object.freeze({ default: "bottom" });
 
 // TODO: check if it should have the banner role
-const Header = ({ hasGutter = true, children, ...props }) => {
+const Header = ({ children, ...props }) => {
   return (
-    <PageSection variant="light" component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
-      <Stack hasGutter={hasGutter}>{children}</Stack>
+    <PageSection component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
+      {children}
     </PageSection>
   );
 };
@@ -114,7 +112,6 @@ const Header = ({ hasGutter = true, children, ...props }) => {
  * @example <caption>Complex usage</caption>
  *   <Page.Section
  *     title="Encryption"
- *     value={isEnabled ? "Enabled" : "Disabled"}
  *     description="Whether device should be protected or not"
  *     pfCardBodyProps={{ isFilled: true }}
  *     actions={isEnabled ? <DisableAction /> : <EnableAction />}
@@ -126,10 +123,10 @@ const Header = ({ hasGutter = true, children, ...props }) => {
 const Section = ({
   title,
   "aria-label": ariaLabel,
-  value,
   description,
   actions,
-  headerLevel: Title = "h3",
+  headingLevel = "h3",
+  hasHeaderDivider = false,
   pfCardProps,
   pfCardHeaderProps,
   pfCardBodyProps,
@@ -137,9 +134,8 @@ const Section = ({
 }: React.PropsWithChildren<SectionProps>) => {
   const titleId = useId();
   const hasTitle = !isEmpty(title);
-  const hasValue = !isEmpty(value);
   const hasDescription = !isEmpty(description);
-  const hasHeader = hasTitle || hasValue || hasDescription;
+  const hasHeader = hasTitle || hasDescription;
   const hasAriaLabel =
     !isEmpty(ariaLabel) || (isObject(pfCardProps) && "aria-label" in pfCardProps);
   const props = { ...defaultCardProps, "aria-label": ariaLabel };
@@ -154,19 +150,15 @@ const Section = ({
     <Card {...props} {...pfCardProps}>
       {hasHeader && (
         <CardHeader {...pfCardHeaderProps}>
-          <Flex direction="column" rowGap="rowGapXs" alignItems="alignItemsFlexStart">
-            <Flex columnGap="columnGapSm" rowGap="rowGapXs" alignContent="alignContentFlexStart">
-              {hasTitle && <Title id={titleId}>{title}</Title>}
-              {hasValue && (
-                <Flex.Item grow="grow" className={textStyles.fontSizeXl}>
-                  {value}
-                </Flex.Item>
-              )}
-            </Flex>
-            {hasDescription && <div className={textStyles.color_200}>{description}</div>}
-          </Flex>
+          {hasTitle && (
+            <Title id={titleId} headingLevel={headingLevel}>
+              {title}
+            </Title>
+          )}
+          {hasDescription && <div className={textStyles.textColorPlaceholder}>{description}</div>}
         </CardHeader>
       )}
+      {hasHeaderDivider && <Divider />}
       <CardBody {...pfCardBodyProps}>{children}</CardBody>
       {actions && (
         <CardFooter>
@@ -190,7 +182,13 @@ const Section = ({
  *   </Page.Actions>
  *
  */
-const Actions = ({ children }: React.PropsWithChildren) => {
+const Actions = ({
+  children,
+  noDefaultWrapper = false,
+}: React.PropsWithChildren<{ noDefaultWrapper?: boolean }>) => {
+  const Wrapper = noDefaultWrapper ? React.Fragment : Split;
+  const wrapperProps = noDefaultWrapper ? {} : { hasGutter: true };
+
   return (
     <PageGroup
       role="contentinfo"
@@ -198,8 +196,8 @@ const Actions = ({ children }: React.PropsWithChildren) => {
       stickyOnBreakpoint={STICK_TO_BOTTOM}
       className={flexStyles.flexGrow_0}
     >
-      <PageSection variant="light" component="div">
-        <Flex justifyContent="justifyContentFlexEnd">{children}</Flex>
+      <PageSection component="div">
+        <Wrapper {...wrapperProps}>{children}</Wrapper>
       </PageSection>
     </PageGroup>
   );
@@ -220,11 +218,7 @@ const Action = ({ navigateTo, children, ...props }: ActionProps) => {
     if (navigateTo) navigate(navigateTo);
   };
 
-  return (
-    <Button size="lg" {...props}>
-      {children}
-    </Button>
-  );
+  return <Button {...props}>{children}</Button>;
 };
 
 /**
@@ -236,18 +230,17 @@ const Action = ({ navigateTo, children, ...props }: ActionProps) => {
  */
 const Cancel = ({ navigateTo = "..", children, ...props }: ActionProps) => {
   return (
-    <Action variant="link" navigateTo={navigateTo} {...props}>
+    <Link to={navigateTo} variant="link" {...props}>
       {children || _("Cancel")}
-    </Action>
+    </Link>
   );
 };
 
 /**
  * Handy component for rendering a "Back" action
  *
- * NOTE: It does not behave like Page.Cancel, since
- *   * does not support changing the path to navigate to, and
- *   * always goes one path back in the history (-1)
+ * NOTE: It does not behave like Page.Cancel, since does not support changing
+ * the path to navigate to, and always goes one path back in the history (-1)
  *
  * NOTE: Not using Page.Cancel for practical reasons about useNavigate
  * overloading, which kind of forces to write an ugly code for supporting both
@@ -258,7 +251,7 @@ const Back = ({ children, ...props }: Omit<ButtonProps, "onClick">) => {
   const navigate = useNavigate();
 
   return (
-    <Button size="lg" variant="link" {...props} onClick={() => navigate(-1)}>
+    <Button variant="link" {...props} onClick={() => navigate(-1)}>
       {children || _("Back")}
     </Button>
   );
@@ -282,12 +275,12 @@ const Submit = ({ children, ...props }: SubmitActionProps) => {
  */
 const Content = ({ children, ...pageSectionProps }: React.PropsWithChildren<PageSectionProps>) => {
   const location = useLocation();
-  const mountRegistrationAlert = !SUPPORTIVE_PATHS.includes(location.pathname);
+  const mountRegistrationAlert = !SIDE_PATHS.includes(location.pathname);
 
   return (
     <>
-      {mountRegistrationAlert && <ProductRegistrationAlert />}
-      <PageSection isFilled component="div" {...pageSectionProps}>
+      <PageSection hasBodyWrapper={false} isFilled component="div" {...pageSectionProps}>
+        {mountRegistrationAlert && <ProductRegistrationAlert />}
         {children}
       </PageSection>
     </>
@@ -327,7 +320,11 @@ const Page = ({
   children,
   ...pageGroupProps
 }: React.PropsWithChildren<PageGroupProps>): React.ReactNode => {
-  return <PageGroup {...pageGroupProps}>{children}</PageGroup>;
+  return (
+    <PageGroup {...pageGroupProps} tabIndex={-1} id="main-content">
+      {children}
+    </PageGroup>
+  );
 };
 
 Page.displayName = "agama/core/Page";

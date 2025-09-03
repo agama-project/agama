@@ -178,6 +178,7 @@ module Agama
           def register_dasd_callbacks
             dasd_backend.on_probe do |dasds|
               dasds_tree.populate(dasds)
+              deprecate_system
             end
 
             dasd_backend.on_refresh do |dasds|

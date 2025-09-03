@@ -1,7 +1,7 @@
 #
-# spec file for package cockpit-machines
+# spec file for package agama-web-ui
 #
-# Copyright (c) 2022 SUSE LLC
+# Copyright (c) 2022-2025 SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -21,7 +21,7 @@ Version:        0
 Release:        0
 Summary:        Web UI for Agama installer
 License:        GPL-2.0-or-later
-URL:            https://github.com/openSUSE/agama
+URL:            https://github.com/agama-project/agama
 # source_validator insists that if obscpio has no version then
 # tarball must neither
 Source0:        agama.tar
@@ -45,9 +45,9 @@ local-npm-registry %{_sourcedir} install --with=dev --legacy-peer-deps || ( find
 NODE_ENV="production" npm run build
 
 %install
-install -D -m 0644 --target-directory=%{buildroot}%{_datadir}/agama/web_ui %{_builddir}/agama/dist/*.{gz,html,js,map,svg}
-install -D -m 0644 --target-directory=%{buildroot}%{_datadir}/agama/web_ui/fonts %{_builddir}/agama/dist/fonts/*.woff?
-install -D -m 0644 --target-directory=%{buildroot}%{_datadir}/agama/web_ui/assets/logos %{_builddir}/agama/src/assets/products/*.svg
+install -D -m 0644 --target-directory=%{buildroot}%{_datadir}/agama/web_ui %{_builddir}/agama/dist/*.{css,gz,html,js,json,map,svg}
+install -D -m 0644 --target-directory=%{buildroot}%{_datadir}/agama/web_ui/fonts %{_builddir}/agama/dist/fonts/*.ttf
+install -D -m 0644 --target-directory=%{buildroot}%{_datadir}/agama/web_ui/assets/logos %{_builddir}/agama/dist/assets/logos/*.svg
 
 %files
 %doc README.md

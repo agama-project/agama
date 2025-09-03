@@ -39,7 +39,7 @@ describe Agama::Storage::Finisher do
 
   let(:destdir) { File.join(FIXTURES_PATH, "target_dir") }
   let(:config) { Agama::Config.from_file(config_path) }
-  let(:security) { instance_double(Agama::Security, probe: nil, write: nil) }
+  let(:security) { instance_double(Agama::Security, write: nil) }
   let(:copy_files) { Agama::Storage::Finisher::CopyFilesStep.new(logger) }
   let(:progress) { instance_double(Agama::Progress, step: nil) }
 
@@ -78,7 +78,7 @@ describe Agama::Storage::Finisher do
     subject { copy_files }
     before do
       allow(Yast::Installation).to receive(:destdir).and_return(destdir)
-      allow(subject).to receive(:root_dir).and_return(File.join(FIXTURES_PATH, "root_dir"))
+      allow(subject).to receive(:root_dir).and_return(File.join(FIXTURES_PATH, "root_dir/"))
     end
 
     around do |block|
@@ -94,11 +94,23 @@ describe Agama::Storage::Finisher do
           "41-qeth-0.0.0800.rules", "70-persistent-net.rules"
         ]
       end
+      let(:nvme_files) do
+        [
+          "hostnqn", "hostid"
+        ]
+      end
 
       it "copies some specific udev rules to the target system when exist" do
         subject.run
         rules.each do |rule|
           expect(File.exist?(File.join(destdir, "/etc/udev/rules.d/#{rule}"))).to eql(true)
+        end
+      end
+
+      it "copies some specific NVMe configuration files to the target system" do
+        subject.run
+        nvme_files.each do |file|
+          expect(File.exist?(File.join(destdir, "/etc/nvme/#{file}"))).to eql(true)
         end
       end
     end
@@ -140,4 +152,36 @@ describe Agama::Storage::Finisher do
   end
 
   include_examples "progress"
+end
+
+describe Agama::Storage::Finisher::CopyLogsStep do
+  let(:logger) { Logger.new($stdout, level: :warn) }
+  let(:scripts_dir) { File.join(tmp_dir, "run", "agama", "scripts") }
+  let(:tmp_dir) { Dir.mktmpdir }
+
+  subject { Agama::Storage::Finisher::CopyLogsStep.new(logger) }
+
+  before do
+    allow(Yast::Installation).to receive(:destdir).and_return(File.join(tmp_dir, "mnt"))
+    allow(Yast::Execute).to receive(:locally)
+    stub_const("Agama::Storage::Finisher::CopyLogsStep::SCRIPTS_DIR",
+      File.join(tmp_dir, "run", "agama", "scripts"))
+  end
+
+  after do
+    FileUtils.remove_entry(tmp_dir)
+  end
+
+  context "when scripts artifacts exist" do
+    before do
+      FileUtils.mkdir_p(scripts_dir)
+      FileUtils.touch(File.join(scripts_dir, "test.sh"))
+    end
+
+    it "copies the artifacts to the installed system" do
+      subject.run
+      expect(File).to exist(File.join(tmp_dir, "mnt", "var", "log", "agama-installation",
+        "scripts"))
+    end
+  end
 end

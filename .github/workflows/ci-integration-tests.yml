@@ -1,5 +1,8 @@
 name: "CI - Integration Tests"
 
+permissions:
+  contents: read
+
 on:
   schedule:
     # at 9:45 UTC every day from Monday to Friday
@@ -28,11 +31,27 @@ jobs:
         fetch-depth: 0
         fetch-tags: true
 
+    - name: Checkout integration tests
+      uses: actions/checkout@v4
+      with:
+        path: integration-tests
+        repository: ${{ github.repository_owner }}/integration-tests
+        fetch-depth: 1
+
+    - name: Build integration test
+      run: npm ci && ESLINT=0 npm run build
+      working-directory: ./integration-tests
+
     - name: Created shared YaST log directory
       run: mkdir -p /tmp/log/YaST2 /tmp/log/puppeteer
 
     - name: Start container
-      run: podman run --privileged --detach --name agama --ipc=host -e CI -e GITHUB_ACTIONS -v /dev:/dev -v .:/checkout -v /tmp/log/puppeteer:/var/log/puppeteer -v /tmp/log/YaST2:/var/log/YaST2 registry.opensuse.org/systemsmanagement/agama/devel/containers/opensuse/agama-testing:latest
+      # yaml syntax: > means fold newlines into a space, - means strip trailing newline
+      # see also https://yaml-multiline.info/
+      run: >-
+        podman run --privileged --detach --name agama --ipc=host -e CI -e GITHUB_ACTIONS
+        -v /dev:/dev -v .:/checkout -v /tmp/log/puppeteer:/var/log/puppeteer -v /tmp/log/YaST2:/var/log/YaST2
+        registry.opensuse.org/systemsmanagement/agama/devel/containers/opensuse/agama-testing:latest
 
     - name: Environment
       run:  podman exec agama bash -c "env | sort"
@@ -71,16 +90,13 @@ jobs:
     - name: Run the Agama smoke test
       run:  podman exec agama curl http://localhost
 
-    - name: Run the Puppeteer tests
-      # update the test file and the runner script from git
-      run:  podman exec agama bash -c
-            "cp /checkout/puppeteer/tests/test_root_password.js /usr/share/agama/integration-tests/tests &&
-            cp /checkout/puppeteer/agama-integration-tests /usr/bin/agama-integration-tests"
+    - name: Run the Service Integration Tests
+      run:  podman exec agama bash -c "cd /checkout; (cd service; bundle exec rspec --pattern 'test/integration/**_itest.rb')"
 
     - name: Run the Puppeteer tests
       # run the test
       run:  podman exec agama bash -c "cd /var/log/puppeteer &&
-            agama-integration-tests /usr/share/agama/integration-tests/tests/test_root_password.js"
+            node --enable-source-maps --test-reporter=spec /checkout/integration-tests/dist/test_root_password.js"
 
     - name: Again show the D-Bus services log
       # run even when any previous step fails

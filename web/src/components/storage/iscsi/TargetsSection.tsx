@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,7 +22,7 @@
 
 import React, { useState } from "react";
 import { Button, Toolbar, ToolbarItem, ToolbarContent, Stack } from "@patternfly/react-core";
-import { Section } from "~/components/core";
+import { Page } from "~/components/core";
 import { NodesPresenter, DiscoverForm } from "~/components/storage/iscsi";
 import { _ } from "~/i18n";
 import { useNodes, useNodesChanges } from "~/queries/storage/iscsi";
@@ -70,7 +70,7 @@ export default function TargetsSection() {
       <>
         <Toolbar>
           <ToolbarContent>
-            <ToolbarItem align={{ default: "alignRight" }}>
+            <ToolbarItem align={{ default: "alignEnd" }}>
               {/* TRANSLATORS: button label, starts iSCSI discovery */}
               <Button onClick={openDiscoverForm}>{_("Discover")}</Button>
             </ToolbarItem>
@@ -83,11 +83,11 @@ export default function TargetsSection() {
 
   return (
     // TRANSLATORS: iSCSI targets section title
-    <Section title={_("Targets")}>
+    <Page.Section title={_("Targets")}>
       <SectionContent />
       {isDiscoverFormOpen && (
         <DiscoverForm onSubmit={submitDiscoverForm} onCancel={closeDiscoverForm} />
       )}
-    </Section>
+    </Page.Section>
   );
 }

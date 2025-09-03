@@ -52,6 +52,8 @@ use zbus::proxy;
 /// * Order.
 pub type PatternsMap = std::collections::HashMap<String, (String, String, String, String, String)>;
 
+pub type Repository = (i32, String, String, String, String, bool, bool);
+
 #[proxy(
     default_service = "org.opensuse.Agama.Software1",
     default_path = "/org/opensuse/Agama/Software1",
@@ -77,6 +79,14 @@ pub trait Software1 {
     /// ListPatterns method
     fn list_patterns(&self, filtered: bool) -> zbus::Result<PatternsMap>;
 
+    /// ListRepositories method
+    fn list_repositories(&self) -> zbus::Result<Vec<Repository>>;
+
+    /// ListUserRepositories method
+    fn list_user_repositories(
+        &self,
+    ) -> zbus::Result<Vec<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>>;
+
     /// Probe method
     fn probe(&self) -> zbus::Result<()>;
 
@@ -92,12 +102,32 @@ pub trait Software1 {
     /// SetUserPatterns method
     fn set_user_patterns(&self, add: &[&str], remove: &[&str]) -> zbus::Result<Vec<String>>;
 
+    /// SetUserRepositories method
+    fn set_user_repositories(
+        &self,
+        repos: &[std::collections::HashMap<&str, zbus::zvariant::Value<'_>>],
+    ) -> zbus::Result<()>;
+
+    /// SolveConflicts method
+    fn solve_conflicts(&self, solutions: &[(u32, u32)]) -> zbus::Result<()>;
+
     /// UsedDiskSpace method
     fn used_disk_space(&self) -> zbus::Result<String>;
 
     /// ProbeFinished signal
     #[zbus(signal)]
     fn probe_finished(&self) -> zbus::Result<()>;
+
+    /// Conflicts property
+    #[zbus(property)]
+    #[allow(clippy::type_complexity)]
+    fn conflicts(&self) -> zbus::Result<Vec<(u32, String, String, Vec<(u32, String, String)>)>>;
+
+    /// OnlyRequired property
+    #[zbus(property)]
+    fn only_required(&self) -> zbus::Result<u32>;
+    #[zbus(property)]
+    fn set_only_required(&self, value: u32) -> zbus::Result<()>;
 
     /// SelectedPatterns property
     #[zbus(property)]

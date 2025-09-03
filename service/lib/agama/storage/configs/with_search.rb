@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,29 +19,58 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/copyable"
+
 module Agama
   module Storage
     module Configs
       # Mixin for configs with search.
       module WithSearch
+        # Needed when a search returns multiple devices and the configuration needs to be replicated
+        # for each one.
+        include Copyable
+
         # @return [Search, nil]
         attr_accessor :search
 
         # Assigned device according to the search.
         #
-        # @see Y2Storage::Proposal::AgamaSearcher
+        # @see ConfigSolvers::Search
         #
         # @return [Y2Storage::Device, nil]
         def found_device
           search&.device
         end
 
-        # Creates a deep copy of the config element
+        # Name of the device.
         #
-        # Needed when a search returns multiple devices and the configuration needs to be replicated
-        # for each one.
-        def copy
-          Marshal.load(Marshal.dump(self))
+        # If the config is not solved, then it returns the searched name (if any).
+        # If the config is solved, then it returns either the name of the found device or the
+        # searched name. But the searched name is returned only if the device is not going to be
+        # created.
+        #
+        # @return [String, nil]
+        def device_name
+          device = found_device
+          return device.name if device
+
+          search&.name unless search&.create_device?
+        end
+
+        # Whether the device is going to be created.
+        #
+        # @return [Boolean]
+        def create?
+          return true unless search
+
+          search.create_device?
+        end
+
+        # Whether the config is skipped.
+        #
+        # @return [Boolean]
+        def skipped?
+          search&.skip_device? || false
         end
       end
     end

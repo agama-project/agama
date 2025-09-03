@@ -1,0 +1,137 @@
+{
+  "encryption": {
+    "method": "luks1",
+    "password": "12345"
+  },
+  "boot": {
+    "configure": true,
+    "device": {
+      "default": false,
+      "name": "/dev/vda"
+    }
+  },
+  "drives": [
+    {
+      "name": "/dev/vda",
+      "mountPath": "/",
+      "filesystem": {
+        "default": true,
+        "type": "btrfs",
+        "snapshots": true
+      },
+      "spacePolicy": "delete"
+    },
+    {
+      "name": "/dev/vdb",
+      "spacePolicy": "custom",
+      "ptableType": "gpt",
+      "partitions": [
+        {
+          "name": "/dev/vda1",
+          "size": {
+            "default": false,
+            "min": 0,
+            "max": 1234567
+          },
+          "deleteIfNeeded": true,
+          "resizeIfNeeded": true
+        },
+        {
+          "name": "/dev/vda2",
+          "size": {
+            "default": false,
+            "min": 1234567,
+            "max": 1234567
+          },
+          "resize": true
+        },
+        {
+          "name": "/dev/vdb3",
+          "delete": true
+        },
+        {
+          "size": {
+            "default": true,
+            "min": 4444,
+            "max": 8888
+          },
+          "mountPath": "swap",
+          "filesystem": {
+            "default": true,
+            "type": "swap"
+          }
+        },
+        {
+          "size": {
+            "default": false,
+            "min": 100000,
+            "max": 100000
+          },
+          "mountPath": "/home",
+          "filesystem": {
+            "default": false,
+            "type": "xfs"
+          }
+        }
+      ]
+    },
+    {
+      "name": "/dev/vdc",
+      "spacePolicy": "delete"
+    }
+  ],
+  "mdRaids": [
+    {
+      "name": "/dev/md0",
+      "spacePolicy": "custom",
+      "ptableType": "gpt",
+      "partitions": [
+        {
+          "name": "/dev/md0part1",
+          "size": {
+            "default": false,
+            "min": 0,
+            "max": 1234567
+          },
+          "deleteIfNeeded": true,
+          "resizeIfNeeded": true
+        },
+        {
+          "size": {
+            "default": true,
+            "min": 4444,
+            "max": 8888
+          },
+          "mountPath": "/logs",
+          "filesystem": {
+            "default": false,
+            "type": "xfs"
+          }
+        }
+      ]
+    }
+  ],
+  "volumeGroups": [
+    {
+      "vgName": "vg0",
+      "extentSize": 1024,
+      "targetDevices": ["/dev/vdc"],
+      "logicalVolumes": [
+        {
+          "lvName": "lv0",
+          "mountPath": "/data",
+          "filesystem": {
+            "default": false,
+            "type": "ext4"
+          },
+          "size": {
+            "default": true,
+            "min": 1111
+          },
+          "stripes": 8,
+          "stripeSize": 1204
+        }
+      ]
+    }
+  ]
+}

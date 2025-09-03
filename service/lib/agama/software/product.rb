@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -23,6 +23,9 @@ require "agama/registration"
 
 module Agama
   module Software
+    # Represents a user selectable product.
+    UserPattern = Struct.new(:name, :selected)
+
     # Represents a product that Agama can install.
     class Product
       # Product id.
@@ -84,18 +87,19 @@ module Agama
 
       # Optional patterns.
       #
+      # These patterns are always installed if they are available.
+      #
       # @return [Array<String>]
       attr_accessor :optional_patterns
 
       # Optional user selectable patterns
       #
-      # @return [Array<String>]
+      # @return [Array<UserPattern>, nil]
       attr_accessor :user_patterns
 
-      # Determines if the product should be registered.
+      # Whether the registration is enabled for the product.
       #
-      # @see Agama::Registration::Requirement
-      # @return [String]
+      # @return [boolean]
       attr_accessor :registration
 
       # Product translations.
@@ -111,6 +115,9 @@ module Agama
       # @return [Hash<String, Hash<String, String>>]
       attr_accessor :translations
 
+      # License ID
+      attr_accessor :license
+
       # @param id [string] Product id.
       def initialize(id)
         @id = id
@@ -123,7 +130,8 @@ module Agama
         @optional_patterns = []
         # nil = display all visible patterns, [] = display no patterns
         @user_patterns = nil
-        @registration = Agama::Registration::Requirement::NO
+        @registration = false
+        @license = nil
         @translations = {}
       end
 
@@ -152,6 +160,18 @@ module Agama
 
         # Fallback to original untranslated description.
         description
+      end
+
+      # Preselected patterns.
+      #
+      # These patterns are pre-selected if they are available, but
+      # the user can unselect them.
+      #
+      # @return [Array<String>]
+      def preselected_patterns
+        return [] if user_patterns.nil?
+
+        user_patterns.filter_map { |p| p.name if p.selected }
       end
     end
   end

@@ -23,5 +23,5 @@ use zbus::proxy;
 pub trait Issues {
     /// All property
     #[zbus(property)]
-    fn all(&self) -> zbus::Result<Vec<(String, String, u32, u32)>>;
+    fn all(&self) -> zbus::Result<Vec<(String, String, String, u32, u32)>>;
 }

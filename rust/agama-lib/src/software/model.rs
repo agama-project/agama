@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,8 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+mod conflict;
+mod license;
+mod packages;
+mod registration;
+
+pub use conflict::*;
+pub use license::*;
+pub use packages::*;
+pub use registration::*;
 
 /// Software service configuration (product, patterns, etc.).
 #[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,10 +21,10 @@
  */
 
 import React, { useState } from "react";
-import { Grid, GridItem } from "@patternfly/react-core";
+import { Content, Grid, GridItem } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { _ } from "~/i18n";
-import { useCancellablePromise } from "~/utils";
+import { useCancellablePromise } from "~/hooks/use-cancellable-promise";
 import { LUNInfo } from "~/types/zfcp";
 import { activateZFCPDisk } from "~/api/storage/zfcp";
 import { PATHS } from "~/routes/storage";
@@ -41,9 +41,9 @@ export default function ZFCPDiskActivationPage() {
 
   const onSubmit = async (formData: LUNInfo & { id: string }) => {
     setIsAcceptDisabled(true);
-    const result = await cancellablePromise(
+    const result = (await cancellablePromise(
       activateZFCPDisk(formData.id, formData.wwpn, formData.lun),
-    );
+    )) as Awaited<ReturnType<typeof activateZFCPDisk>>;
     if (result.status === 200) navigate(PATHS.zfcp.root);
 
     setIsAcceptDisabled(false);
@@ -59,7 +59,7 @@ export default function ZFCPDiskActivationPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("zFCP Disk Activation")}</h2>
+        <Content component="h2">{_("zFCP Disk Activation")}</Content>
       </Page.Header>
 
       <Page.Content>
@@ -71,8 +71,8 @@ export default function ZFCPDiskActivationPage() {
       </Page.Content>
 
       <Page.Actions>
-        <Page.Cancel navigateTo={PATHS.zfcp.root} />
         <Page.Submit form={formId} disabled={isAcceptDisabled} />
+        <Page.Cancel navigateTo={PATHS.zfcp.root} />
       </Page.Actions>
     </Page>
   );

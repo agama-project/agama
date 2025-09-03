@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -24,6 +24,7 @@ require "agama/dbus/clients/with_service_status"
 require "agama/dbus/clients/with_locale"
 require "agama/dbus/clients/with_progress"
 require "agama/dbus/clients/with_issues"
+require "json"
 
 module Agama
   module DBus
@@ -47,9 +48,17 @@ module Agama
         # If a block is given, the method returns immediately and the probing is performed in an
         # asynchronous way.
         #
+        # @param data [Hash] Extra data provided to the D-Bus call.
         # @param done [Proc] Block to execute once the probing is done
-        def probe(&done)
-          dbus_object[STORAGE_IFACE].Probe(&done)
+        def probe(data = {}, &done)
+          dbus_object[STORAGE_IFACE].Probe(data, &done)
+        end
+
+        # Reprobes (keeps the current settings).
+        #
+        # @param data [Hash] Extra data provided to the D-Bus call.
+        def reprobe(data = {})
+          dbus_object.Reprobe(data)
         end
 
         # Performs the packages installation
@@ -60,6 +69,24 @@ module Agama
         # Cleans-up the storage stuff after installation
         def finish
           dbus_object.Finish
+        end
+
+        # Gets the current storage config.
+        #
+        # @return [Hash, nil] nil if there is no config yet.
+        def config
+          # Use storage iface to avoid collision with bootloader iface
+          serialized_config = dbus_object[STORAGE_IFACE].GetConfig
+          JSON.parse(serialized_config, symbolize_names: true)
+        end
+
+        # Sets the storage config.
+        #
+        # @param config [Hash]
+        def config=(config)
+          serialized_config = JSON.pretty_generate(config)
+          # Use storage iface to avoid collision with bootloader iface
+          dbus_object[STORAGE_IFACE].SetConfig(serialized_config)
         end
 
       private

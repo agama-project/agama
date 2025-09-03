@@ -32,6 +32,7 @@ import { _ } from "~/i18n";
 
 type PasswordAndConfirmationInputProps = {
   inputRef?: React.RefObject<HTMLInputElement>;
+  initialValue?: string;
   value?: string;
   showErrors?: boolean;
   isDisabled?: boolean;
@@ -42,6 +43,7 @@ type PasswordAndConfirmationInputProps = {
 const PasswordAndConfirmationInput = ({
   inputRef,
   showErrors = true,
+  initialValue,
   value,
   onChange,
   onValidation,
@@ -55,6 +57,11 @@ const PasswordAndConfirmationInput = ({
   useEffect(() => {
     if (isDisabled) setError("");
   }, [isDisabled]);
+
+  useEffect(() => {
+    setPassword(initialValue);
+    setConfirmation(initialValue);
+  }, [initialValue]);
 
   const validate = (password: string, passwordConfirmation: string) => {
     let newError = "";
@@ -106,6 +113,7 @@ const PasswordAndConfirmationInput = ({
           onChange={onConfirmationChange}
           onBlur={() => validate(password, confirmation)}
           validated={error === "" ? "default" : "error"}
+          reminders={[]}
         />
         <FormValidationError message={error} />
       </FormGroup>

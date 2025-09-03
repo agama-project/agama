@@ -24,6 +24,7 @@ require "yast"
 require "yast2/systemd/service"
 require "y2network/proposal_settings"
 require "agama/proxy_setup"
+require "agama/http"
 
 Yast.import "Installation"
 
@@ -32,6 +33,10 @@ module Agama
   class Network
     def initialize(logger)
       @logger = logger
+    end
+
+    def startup
+      persist_connections if do_proposal?
     end
 
     # Writes the network configuration to the installed system
@@ -46,11 +51,37 @@ module Agama
       ProxySetup.instance.install
     end
 
+    def link_resolv
+      return unless File.exist?(RESOLV)
+
+      link = File.join(Yast::Installation.destdir, RESOLV)
+      target = File.join(RUN_NM_DIR, File.basename(RESOLV))
+
+      return if File.exist?(link)
+
+      FileUtils.touch RESOLV_FLAG
+      FileUtils.ln_s target, link
+    end
+
+    def unlink_resolv
+      return unless File.exist?(RESOLV_FLAG)
+
+      link = File.join(Yast::Installation.destdir, RESOLV)
+      FileUtils.rm_f link
+      FileUtils.rm_f RESOLV_FLAG
+    end
+
   private
 
     # @return [Logger]
     attr_reader :logger
 
+    HOSTNAME = "/etc/hostname"
+    RESOLV = "/etc/resolv.conf"
+    NOT_COPY_NETWORK = "/run/agama/not_copy_network"
+    AGAMA_SYSTEMD_LINK = "/run/agama/systemd/network"
+    SYSTEMD_LINK = "/etc/systemd/network"
+    RESOLV_FLAG = "/run/agama/manage_resolv"
     ETC_NM_DIR = "/etc/NetworkManager"
     RUN_NM_DIR = "/run/NetworkManager"
     private_constant :ETC_NM_DIR
@@ -67,14 +98,15 @@ module Agama
 
     # Copies NetworkManager configuration files
     def copy_files
-      return unless Dir.exist?(ETC_NM_DIR)
+      copy(HOSTNAME)
 
-      # runtime configuration is copied first, so in case of later modification
-      # on same interface it gets overwriten (bsc#1210541).
       copy_directory(
-        File.join(RUN_NM_DIR, "system-connections"),
-        File.join(Yast::Installation.destdir, ETC_NM_DIR, "system-connections")
+        AGAMA_SYSTEMD_LINK,
+        File.join(Yast::Installation.destdir, SYSTEMD_LINK)
       )
+
+      return unless Dir.exist?(ETC_NM_DIR)
+      return if File.exist?(NOT_COPY_NETWORK)
 
       copy_directory(
         File.join(ETC_NM_DIR, "system-connections"),
@@ -94,6 +126,41 @@ module Agama
 
       FileUtils.mkdir_p(target)
       FileUtils.cp(Dir.glob(File.join(source, "*")), target)
+    end
+
+    # Copies a file
+    #
+    # This method checks whether the source file exists. It copies the file to the target system if
+    # it exists
+    #
+    # @param source [String] source file
+    # @param target [String,nil] target directory, only needed in case it is different to the
+    # original source path in the target system.
+    def copy(source, target = nil)
+      return unless File.exist?(source)
+
+      path = target || File.join(Yast::Installation.destdir, source)
+      FileUtils.mkdir_p(File.dirname(path))
+      FileUtils.copy_entry(source, path)
+    end
+
+    def http_client
+      @http_client ||= Agama::HTTP::Clients::Network.new(logger)
+    end
+
+    def persist_connections
+      http_client.persist_connections
+    end
+
+    def copy_connections?
+      http_client.state["copyNetwork"]
+    end
+
+    def do_proposal?
+      return false unless copy_connections?
+      return false if http_client.connections.any? { |c| c["persistent"] }
+
+      !http_client.connections.empty?
     end
   end
 end

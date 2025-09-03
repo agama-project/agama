@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -27,6 +27,7 @@ require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/locale"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
+require "agama/dbus/with_progress"
 require "agama/dbus/with_service_status"
 
 module Agama
@@ -34,6 +35,7 @@ module Agama
     module Software
       # D-Bus object to manage software installation
       class Manager < BaseObject
+        include WithProgress
         include WithServiceStatus
         include Interfaces::Progress
         include Interfaces::ServiceStatus
@@ -54,6 +56,7 @@ module Agama
           register_progress_callbacks
           register_service_status_callbacks
           @selected_patterns = {}
+          @conflicts = []
         end
 
         # List of software related issues, see {DBus::Interfaces::Issues}
@@ -63,10 +66,70 @@ module Agama
           backend.issues
         end
 
+        def only_required
+          case backend.proposal.only_required
+          when nil then 0
+          when false then 1
+          when true then 2
+          else
+            @logger.warn(
+              "Unexpected value in only_required #{backend.proposal.only_required.inspect}"
+            )
+            0
+          end
+        end
+
+        def only_required=(flag)
+          value = case flag
+          when 0 then nil
+          when 1 then false
+          when 2 then true
+          else
+            @logger.warn "Unexpected value in only_required #{flag.inspect}"
+          end
+          backend.proposal.only_required = value
+          # propose again after changing solver flag
+          propose
+        end
+
         SOFTWARE_INTERFACE = "org.opensuse.Agama.Software1"
         private_constant :SOFTWARE_INTERFACE
 
         dbus_interface SOFTWARE_INTERFACE do
+          # Flag for proposing required only dependencies
+          # Propose is called automatically whenever the value is assigned.
+          # value mapping 0 for not set, 1 for false and 2 for true
+          dbus_accessor :only_required, "u"
+
+          # array of repository properties: pkg-bindings ID, alias, name, URL, product dir, enabled
+          # and loaded flag
+          dbus_method :ListRepositories, "out Result:a(issssbb)" do
+            [
+              backend.repositories.repositories.map do |repo|
+                [
+                  repo.repo_id,
+                  repo.repo_alias,
+                  repo.name,
+                  repo.raw_url.uri.to_s,
+                  repo.product_dir,
+                  repo.enabled?,
+                  !!repo.loaded?
+                ]
+              end
+            ]
+          end
+
+          # set user specified repositories properties
+          dbus_method :SetUserRepositories, "in repos:aa{sv}" do |repos|
+            @logger.info "Setting user repositories #{repos.inspect}"
+            backend.repositories.user_repositories = repos
+          end
+
+          # set user specified repositories properties
+          dbus_method :ListUserRepositories, "out repos:aa{sv}" do
+            [backend.repositories.user_repositories]
+          end
+
           # value of result hash is category, description, icon, summary and order
           dbus_method :ListPatterns, "in Filtered:b, out Result:a{s(sssss)}" do |filtered|
             [
@@ -93,6 +156,16 @@ module Agama
           dbus_method(:RemovePattern, "in id:s, out result:b") { |p| backend.remove_pattern(p) }
           dbus_method(:SetUserPatterns, "in add:as, in remove:as, out wrong:as") do |add, remove|
             [backend.assign_patterns(add, remove)]
+          end
+
+          dbus_reader_attr_accessor :conflicts, "a(ussa(uss))"
+
+          dbus_method :SolveConflicts, "in solutions:a(uu)" do |solutions|
+            ret = backend.proposal.solve_conflicts(solutions)
+            # update the user selected patterns, patterns might be unselected as
+            # part of the conflict resolution
+            backend.update_selected_patterns
+            ret
           end
 
           dbus_method :ProvisionsSelected, "in Provisions:as, out Result:ab" do |provisions|
@@ -142,8 +215,28 @@ module Agama
           end
         end
 
+        def ssl_fingerprints
+          ssl_storage.fingerprints.map { |f| [f.sum, f.value] }
+        end
+
+        def ssl_fingerprints=(new_fps)
+          fps = new_fps.map { |f| SSL::Fingerprint.new(f[0], f[1]) }
+          ssl_storage.fingerprints.replace(fps)
+        end
+
+        SECURITY_INTERFACE = "org.opensuse.Agama.Security"
+        private_constant :SECURITY_INTERFACE
+
+        dbus_interface SECURITY_INTERFACE do
+          # List of SSL fingerprints serialized into type and its value
+          dbus_accessor :ssl_fingerprints, "a(ss)"
+        end
+
       private
 
+        def ssl_storage
+          SSL::Storage.instance
+        end
         # @return [Agama::Software]
         attr_reader :backend
 
@@ -161,6 +254,17 @@ module Agama
 
           backend.on_selected_patterns_change do
             self.selected_patterns = compute_patterns
+          end
+
+          backend.proposal.on_conflicts_change do |conflicts|
+            self.conflicts = conflicts.map do |conflict|
+              [
+                conflict["id"], conflict["description"], conflict["details"] || "",
+                conflict["solutions"].map do |solution|
+                  [solution["id"], solution["description"], solution["details"] || ""]
+                end
+              ]
+            end
           end
 
           backend.on_issues_change { issues_properties_changed }

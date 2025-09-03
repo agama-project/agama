@@ -23,9 +23,9 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-
+import { noop } from "radashi";
 import * as utils from "~/utils";
-import { ServerError } from "~/components/core";
+import ServerError from "./ServerError";
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
@@ -58,7 +58,7 @@ describe("ServerError", () => {
   });
 
   it("calls location.reload when user clicks on 'Reload'", async () => {
-    jest.spyOn(utils, "locationReload").mockImplementation(utils.noop);
+    jest.spyOn(utils, "locationReload").mockImplementation(noop);
     const { user } = installerRender(<ServerError />);
     const reloadButton = await screen.findByRole("button", { name: /Reload/i });
     await user.click(reloadButton);

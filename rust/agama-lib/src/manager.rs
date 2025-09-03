@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -23,6 +23,7 @@
 pub mod http_client;
 pub use http_client::ManagerHTTPClient;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 use crate::error::ServiceError;
 use crate::proxies::ServiceStatusProxy;
@@ -43,7 +44,7 @@ pub struct ManagerClient<'a> {
 }
 
 /// Holds information about the manager's status.
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct InstallerStatus {
     /// Current installation phase.
@@ -58,15 +59,20 @@ pub struct InstallerStatus {
 
 /// Represents the installation phase.
 /// NOTE: does this conversion have any value?
-#[derive(Clone, Copy, Debug, PartialEq, Serialize_repr, Deserialize_repr, utoipa::ToSchema)]
+#[derive(
+    Clone, Copy, Default, Debug, PartialEq, Serialize_repr, Deserialize_repr, utoipa::ToSchema,
+)]
 #[repr(u32)]
 pub enum InstallationPhase {
     /// Start up phase.
+    #[default]
     Startup,
     /// Configuration phase.
     Config,
     /// Installation phase.
     Install,
+    /// Finished installation phase.
+    Finish,
 }
 
 impl TryFrom<u32> for InstallationPhase {
@@ -77,8 +83,41 @@ impl TryFrom<u32> for InstallationPhase {
             0 => Ok(Self::Startup),
             1 => Ok(Self::Config),
             2 => Ok(Self::Install),
+            3 => Ok(Self::Finish),
             _ => Err(ServiceError::UnknownInstallationPhase(value)),
         }
+    }
+}
+
+/// Finish method
+#[derive(
+    Serialize,
+    Deserialize,
+    Debug,
+    PartialEq,
+    Eq,
+    Clone,
+    Copy,
+    strum::Display,
+    strum::EnumString,
+    utoipa::ToSchema,
+)]
+#[strum(serialize_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
+pub enum FinishMethod {
+    // Halt the system
+    Halt,
+    // Reboots the system
+    Reboot,
+    // Do nothing at the end of the installation
+    Stop,
+    // Poweroff the system
+    Poweroff,
+}
+
+impl Default for FinishMethod {
+    fn default() -> Self {
+        Self::Reboot
     }
 }
 
@@ -103,9 +142,21 @@ impl<'a> ManagerClient<'a> {
     }
 
     /// Starts the probing process.
-    pub async fn probe(&self) -> Result<(), ServiceError> {
+    pub async fn probe(&self, client_id: String) -> Result<(), ServiceError> {
         self.wait().await?;
-        Ok(self.manager_proxy.probe().await?)
+        Ok(self
+            .manager_proxy
+            .probe(HashMap::from([("client_id", &client_id.into())]))
+            .await?)
+    }
+
+    /// Starts the reprobing process.
+    pub async fn reprobe(&self, client_id: String) -> Result<(), ServiceError> {
+        self.wait().await?;
+        Ok(self
+            .manager_proxy
+            .reprobe(HashMap::from([("client_id", &client_id.into())]))
+            .await?)
     }
 
     /// Starts the installation.
@@ -113,9 +164,13 @@ impl<'a> ManagerClient<'a> {
         Ok(self.manager_proxy.commit().await?)
     }
 
-    /// Executes the after installation tasks.
-    pub async fn finish(&self) -> Result<(), ServiceError> {
-        Ok(self.manager_proxy.finish().await?)
+    /// Executes the after installation tasks finishing with the method given or rebooting the
+    /// system by default.
+    pub async fn finish(&self, method: FinishMethod) -> Result<bool, ServiceError> {
+        Ok(self
+            .manager_proxy
+            .finish(method.to_string().as_str())
+            .await?)
     }
 
     /// Determines whether it is possible to start the installation.

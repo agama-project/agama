@@ -5,11 +5,11 @@ full configuration file or to change some specific values.
 
 ## Loading a new configuration file
 
-It is possible to load a new configuration file specifying a URL through the `agama.config_url`
+It is possible to load a new configuration file specifying a URL through the `inst.config_url`
 option. Here are some examples:
 
-* `agama.config_url=http://192.168.122.1/my-agama.yaml`
-* `agama.config_url=usb:///agama.yaml`
+* `inst.config_url=http://192.168.122.1/my-agama.yaml`
+* `inst.config_url=usb:///agama.yaml`
 
 See [URL handling in the
 installer](https://github.com/yast/yast-installation/blob/master/doc/url.md) to find more details
@@ -17,10 +17,10 @@ about the supported URLs.
 
 ## Custom Installation URL Configuration
 
-You can override the default `installation_url` set in the product files [here](https://github.com/openSUSE/agama/tree/master/products.d) by passing the `agama.install_url` parameter as a boot option in the bootloader.
-This is particularly useful for any pre-production testing in openQA. 
+You can override the default `installation_url` set in the product files [here](https://github.com/openSUSE/agama/tree/master/products.d) by passing the `inst.install_url` parameter as a boot option in the bootloader.
+This is particularly useful for any pre-production testing in openQA.
 
-**Note:** Setting this variable will impact all products. 
+**Note:** Setting this variable will impact all products.
 
 ### Example Usage
 
@@ -28,7 +28,7 @@ To specify a custom installation URLs, pass following as a parameter to kernel i
 You can specify multiple URLs by separating them with commas.
 
 ```
-agama.install_url=https://myrepo,https://myrepo2
+inst.install_url=https://myrepo,https://myrepo2
 ```
 
 ## Changing configuration values
@@ -38,7 +38,7 @@ configuration values. You must specify the option name in dotted notation. A typ
 be to use your own SSL certificates:
 
 ```
-agama.web.ssl=true agama.web.ssl_cert=http://192.168.122.1/mycert.pem agama.web.ssl_key=http://192.168.122.1/mycert.key
+inst.web.ssl=true inst.web.ssl_cert=http://192.168.122.1/mycert.pem inst.web.ssl_key=http://192.168.122.1/mycert.key
 ```
 
 Changing complex options (e.g., collections) is not supported yet.

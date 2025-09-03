@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -42,7 +42,8 @@ describe Agama::Software::ProductBuilder do
         "name"         => "Product Test 1",
         "description"  => "This is a test product named Test 1",
         "version"      => "1.0",
-        "registration" => "mandatory",
+        "registration" => true,
+        "license"      => "suse",
         "translations" => {
           "description" => {
             "cs" => "Czech",
@@ -95,7 +96,7 @@ describe Agama::Software::ProductBuilder do
         "description"  => "This is a test product named Test 2",
         "archs"        => "x86_64,aarch64",
         "version"      => "2.0",
-        "registration" => "optional",
+        "registration" => true,
         "software"     => {
           "mandatory_patterns" => ["pattern2-1"],
           "base_product"       => "Test2"
@@ -145,7 +146,8 @@ describe Agama::Software::ProductBuilder do
             description:        "This is a test product named Test 1",
             name:               "Test1",
             version:            "1.0",
-            registration:       "mandatory",
+            registration:       true,
+            license:            "suse",
             repositories:       ["https://repos/test1/x86_64/product/"],
             mandatory_patterns: ["pattern1-1", "pattern1-2"],
             optional_patterns:  ["pattern1-3"],
@@ -203,7 +205,7 @@ describe Agama::Software::ProductBuilder do
             description:        "This is a test product named Test 2",
             name:               "Test2",
             version:            "2.0",
-            registration:       "optional",
+            registration:       true,
             repositories:       [],
             mandatory_patterns: ["pattern2-1"],
             optional_patterns:  [],

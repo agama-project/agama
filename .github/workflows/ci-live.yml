@@ -1,0 +1,64 @@
+name: CI - ISO definition
+
+permissions:
+  contents: read
+
+on:
+  push:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used below for the pull request event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-live.yml
+      # any change in the service subfolder
+      - live/**
+
+  pull_request:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used above for the push event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-live.yml
+      # any change in the service subfolder
+      - live/**
+
+  # allow running manually
+  workflow_dispatch:
+
+jobs:
+  live_tests:
+    runs-on: ubuntu-latest
+    env:
+      COVERAGE: 1
+
+    defaults:
+      run:
+        working-directory: ./live
+
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: [ "tumbleweed" ]
+
+    container:
+      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v4
+
+    - name: Configure and refresh repositories
+      # disable unused repositories to have faster refresh
+      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
+
+    - name: Install development files
+      run: zypper --non-interactive install ShellCheck make agama-cli
+
+    - name: Run shellcheck
+      run: make shellcheck
+
+    - name: Run the tests
+      run: make check

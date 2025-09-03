@@ -19,15 +19,19 @@
 // find current contact information at www.suse.com.
 
 use super::{
-    model::ResolvableType,
+    model::{Conflict, ConflictSolve, Repository, RepositoryParams, ResolvableType},
     proxies::{ProposalProxy, Software1Proxy},
 };
 use crate::error::ServiceError;
+use agama_utils::dbus::{get_optional_property, get_property};
 use serde::Serialize;
-use serde_repr::Serialize_repr;
+use serde_repr::{Deserialize_repr, Serialize_repr};
 use std::collections::HashMap;
 use zbus::Connection;
 
+const USER_RESOLVABLES_LIST: &str = "user";
+
+// TODO: move it to model?
 /// Represents a software product
 #[derive(Debug, Serialize, utoipa::ToSchema)]
 pub struct Pattern {
@@ -46,7 +50,7 @@ pub struct Pattern {
 }
 
 /// Represents the reason why a pattern is selected.
-#[derive(Clone, Copy, Debug, PartialEq, Serialize_repr, utoipa::ToSchema)]
+#[derive(Clone, Copy, Debug, PartialEq, Deserialize_repr, Serialize_repr, utoipa::ToSchema)]
 #[repr(u8)]
 pub enum SelectedBy {
     /// The pattern was selected by the user.
@@ -86,6 +90,86 @@ impl<'a> SoftwareClient<'a> {
             software_proxy: Software1Proxy::new(&connection).await?,
             proposal_proxy: ProposalProxy::new(&connection).await?,
         })
+    }
+
+    /// Returns list of defined repositories
+    pub async fn repositories(&self) -> Result<Vec<Repository>, ServiceError> {
+        let repositories: Vec<Repository> = self
+            .software_proxy
+            .list_repositories()
+            .await?
+            .into_iter()
+            .map(
+                |(id, alias, name, url, product_dir, enabled, loaded)| Repository {
+                    id,
+                    alias,
+                    name,
+                    url,
+                    product_dir,
+                    enabled,
+                    loaded,
+                },
+            )
+            .collect();
+        Ok(repositories)
+    }
+
+    /// Returns list of user defined repositories
+    pub async fn user_repositories(&self) -> Result<Vec<RepositoryParams>, ServiceError> {
+        self.software_proxy
+            .list_user_repositories()
+            .await?
+            .into_iter()
+            .map(|params|
+                // unwrapping below is OK as it is our own dbus API, so we know what is in variants
+                Ok(RepositoryParams {
+                    priority: get_optional_property(&params, "priority")?,
+                    alias: get_property(&params, "alias")?,
+                    name: get_optional_property(&params, "name")?,
+                    url: get_property(&params, "url")?,
+                    product_dir: get_optional_property(&params, "product_dir")?,
+                    enabled: get_optional_property(&params, "enabled")?,
+                    allow_unsigned: get_optional_property(&params, "allow_unsigned")?,
+                    gpg_fingerprints: get_optional_property(&params, "gpg_fingerprints")?,
+                }))
+            .collect()
+    }
+
+    pub async fn set_user_repositories(
+        &self,
+        repos: Vec<RepositoryParams>,
+    ) -> Result<(), ServiceError> {
+        let dbus_repos: Vec<HashMap<&str, zbus::zvariant::Value<'_>>> = repos
+            .into_iter()
+            .map(|params| {
+                let mut result: HashMap<&str, zbus::zvariant::Value<'_>> = HashMap::new();
+                result.insert("alias", params.alias.into());
+                result.insert("url", params.url.into());
+                if let Some(priority) = params.priority {
+                    result.insert("priority", priority.into());
+                }
+                if let Some(name) = params.name {
+                    result.insert("name", name.into());
+                }
+                if let Some(product_dir) = params.product_dir {
+                    result.insert("product_dir", product_dir.into());
+                }
+                if let Some(enabled) = params.enabled {
+                    result.insert("enabled", enabled.into());
+                }
+                if let Some(allow_unsigned) = params.allow_unsigned {
+                    result.insert("allow_unsigned", allow_unsigned.into());
+                }
+                if let Some(gpg_fingerprints) = params.gpg_fingerprints {
+                    result.insert("gpg_fingerprints", gpg_fingerprints.into());
+                }
+                result
+            })
+            .collect();
+        self.software_proxy
+            .set_user_repositories(&dbus_repos)
+            .await?;
+        Ok(())
     }
 
     /// Returns the available patterns
@@ -144,6 +228,24 @@ impl<'a> SoftwareClient<'a> {
         Ok(patterns)
     }
 
+    /// returns current list of conflicts
+    pub async fn get_conflicts(&self) -> Result<Vec<Conflict>, ServiceError> {
+        let conflicts = self.software_proxy.conflicts().await?;
+        let conflicts = conflicts
+            .into_iter()
+            .map(|c| Conflict::from_dbus(c))
+            .collect();
+
+        Ok(conflicts)
+    }
+
+    /// Sets solutions ( not necessary for all conflicts ) and recompute conflicts
+    pub async fn solve_conflicts(&self, solutions: Vec<ConflictSolve>) -> Result<(), ServiceError> {
+        let solutions: Vec<(u32, u32)> = solutions.into_iter().map(|s| s.into()).collect();
+
+        Ok(self.software_proxy.solve_conflicts(&solutions).await?)
+    }
+
     /// Selects patterns by user
     pub async fn select_patterns(
         &self,
@@ -164,6 +266,28 @@ impl<'a> SoftwareClient<'a> {
         } else {
             Ok(())
         }
+    }
+
+    /// Selects packages by user
+    ///
+    /// Adds the given packages to the proposal.
+    ///
+    /// * `names`: package names.
+    pub async fn select_packages(&self, names: Vec<String>) -> Result<(), ServiceError> {
+        let names: Vec<_> = names.iter().map(|n| n.as_ref()).collect();
+        self.set_resolvables(
+            USER_RESOLVABLES_LIST,
+            ResolvableType::Package,
+            names.as_slice(),
+            true,
+        )
+        .await?;
+        Ok(())
+    }
+
+    pub async fn user_selected_packages(&self) -> Result<Vec<String>, ServiceError> {
+        self.get_resolvables(USER_RESOLVABLES_LIST, ResolvableType::Package, true)
+            .await
     }
 
     /// Returns the required space for installing the selected patterns.
@@ -195,5 +319,44 @@ impl<'a> SoftwareClient<'a> {
             .set_resolvables(id, r#type as u8, resolvables, optional)
             .await?;
         Ok(())
+    }
+
+    /// Gets a resolvables list.
+    ///
+    /// * `id`: resolvable list ID.
+    /// * `r#type`: type of the resolvables.
+    /// * `optional`: whether the resolvables are optional.
+    pub async fn get_resolvables(
+        &self,
+        id: &str,
+        r#type: ResolvableType,
+        optional: bool,
+    ) -> Result<Vec<String>, ServiceError> {
+        let packages = self
+            .proposal_proxy
+            .get_resolvables(id, r#type as u8, optional)
+            .await?;
+        Ok(packages)
+    }
+
+    /// Sets onlyRequired flag for proposal.
+    ///
+    /// * `value`: if flag is enabled or not.
+    pub async fn set_only_required(&self, value: bool) -> Result<(), ServiceError> {
+        let dbus_value = if value { 2 } else { 1 };
+        self.software_proxy.set_only_required(dbus_value).await?;
+        Ok(())
+    }
+
+    /// Gets onlyRequired flag for proposal.
+    pub async fn get_only_required(&self) -> Result<Option<bool>, ServiceError> {
+        let dbus_value = self.software_proxy.only_required().await?;
+        let res = match dbus_value {
+            0 => None,
+            1 => Some(false),
+            2 => Some(true),
+            _ => None, // should not happen
+        };
+        Ok(res)
     }
 }

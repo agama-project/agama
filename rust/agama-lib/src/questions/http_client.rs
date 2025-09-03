@@ -23,52 +23,59 @@ use std::time::Duration;
 use reqwest::StatusCode;
 use tokio::time::sleep;
 
-use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
+use crate::http::{BaseHTTPClient, BaseHTTPClientError};
 
-use super::model::{self, Answer, Question};
+use super::{
+    config::QuestionsConfig,
+    model::{self, Answer, Question},
+};
+
+#[derive(Debug, thiserror::Error)]
+pub enum QuestionsHTTPClientError {
+    #[error(transparent)]
+    HTTP(#[from] BaseHTTPClientError),
+}
 
 pub struct HTTPClient {
     client: BaseHTTPClient,
 }
 
 impl HTTPClient {
-    pub fn new(client: BaseHTTPClient) -> Result<Self, BaseHTTPClientError> {
-        Ok(Self { client })
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self { client }
     }
 
-    pub async fn list_questions(&self) -> Result<Vec<model::Question>, BaseHTTPClientError> {
-        self.client.get("/questions").await
+    pub async fn list_questions(&self) -> Result<Vec<model::Question>, QuestionsHTTPClientError> {
+        Ok(self.client.get("/questions").await?)
     }
 
     /// Creates question and return newly created question including id
     pub async fn create_question(
         &self,
         question: &Question,
-    ) -> Result<Question, BaseHTTPClientError> {
-        self.client.post("/questions", question).await
+    ) -> Result<Question, QuestionsHTTPClientError> {
+        Ok(self.client.post("/questions", question).await?)
     }
 
     /// non blocking varient of checking if question has already answer
     pub async fn try_answer(
         &self,
         question_id: u32,
-    ) -> Result<Option<Answer>, BaseHTTPClientError> {
+    ) -> Result<Option<Answer>, QuestionsHTTPClientError> {
         let path = format!("/questions/{}/answer", question_id);
         let result: Result<Option<Answer>, _> = self.client.get(path.as_str()).await;
-        match result {
-            Err(BaseHTTPClientError::BackendError(code, ref _body_s)) => {
-                if code == StatusCode::NOT_FOUND {
-                    Ok(None) // no answer yet, fine
-                } else {
-                    result // pass error
-                }
+
+        if let Err(BaseHTTPClientError::BackendError(code, ref _body_s)) = result {
+            if code == StatusCode::NOT_FOUND {
+                return Ok(None);
             }
-            _ => result, // pass answer
         }
+
+        Ok(result?)
     }
 
     /// Blocking variant of getting answer for given question.
-    pub async fn get_answer(&self, question_id: u32) -> Result<Answer, BaseHTTPClientError> {
+    pub async fn get_answer(&self, question_id: u32) -> Result<Answer, QuestionsHTTPClientError> {
         loop {
             let answer = self.try_answer(question_id).await?;
             if let Some(result) = answer {
@@ -82,9 +89,20 @@ impl HTTPClient {
         }
     }
 
-    pub async fn delete_question(&self, question_id: u32) -> Result<(), BaseHTTPClientError> {
+    pub async fn delete_question(&self, question_id: u32) -> Result<(), QuestionsHTTPClientError> {
         let path = format!("/questions/{}", question_id);
-        self.client.delete_void(path.as_str()).await
+        Ok(self.client.delete_void(path.as_str()).await?)
+    }
+
+    pub async fn get_config(&self) -> Result<QuestionsConfig, QuestionsHTTPClientError> {
+        Ok(QuestionsConfig::default())
+    }
+
+    pub async fn set_config(
+        &self,
+        config: &QuestionsConfig,
+    ) -> Result<(), QuestionsHTTPClientError> {
+        Ok(self.client.put_void("/questions/config", config).await?)
     }
 }
 
@@ -92,15 +110,14 @@ impl HTTPClient {
 mod test {
     use super::model::{GenericAnswer, GenericQuestion};
     use super::*;
-    use crate::base_http_client::BaseHTTPClient;
+    use crate::http::BaseHTTPClient;
     use httpmock::prelude::*;
     use std::collections::HashMap;
     use std::error::Error;
     use tokio::test; // without this, "error: async functions cannot be used for tests"
 
     fn questions_client(mock_server_url: String) -> HTTPClient {
-        let mut bhc = BaseHTTPClient::default();
-        bhc.base_url = mock_server_url;
+        let bhc = BaseHTTPClient::new(mock_server_url).unwrap();
         HTTPClient { client: bhc }
     }
 

@@ -1,7 +1,6 @@
-#!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,9 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
-
-# :nodoc:
 module Agama
   module AutoYaST
     # Builds the Agama "product" section from an AutoYaST profile.
@@ -74,7 +70,31 @@ module Agama
         email = section["email"].to_s
         result["registrationEmail"] = email unless email.empty?
 
+        url = section["reg_server"].to_s
+        result["registrationUrl"] = url unless url.empty?
+
+        # addons from the registration server
+        converted_addons = convert_addons(section["addons"] || [])
+        result["addons"] = converted_addons unless converted_addons.empty?
+
         result
+      end
+
+      # convert addons according to the new schema
+      def convert_addons(addons)
+        addons.map do |a|
+          addon = { "id" => a["name"] }
+
+          version = a["version"].to_s
+          # omit the version if it was 11.x, 12.x or 15.x, the version is now optional
+          version = "" if version.match(/^1[125]\.\d$/)
+          addon["version"] = version unless version.empty?
+
+          code = a["reg_code"].to_s
+          addon["registrationCode"] = code unless code.empty?
+
+          addon
+        end
       end
     end
   end

@@ -1,4 +1,704 @@
 -------------------------------------------------------------------
+Tue Sep 2 08:24:38 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Allow sorting devices by name or size in storage selector
+  (gh#agama-project/agama#2672).
+  
+-------------------------------------------------------------------
+Mon Sep  1 18:22:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- The Chinese languages do not include the territory (bsc#1248826).
+
+-------------------------------------------------------------------
+Thu Aug 28 05:26:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report the underlying problem for the "load.retry" question
+  (related to bsc#1248779).
+
+-------------------------------------------------------------------
+Wed Aug 27 08:39:36 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Invalidate zFCP controllers query after some controller change
+  is notified (bsc#1247445).
+
+-------------------------------------------------------------------
+Tue Aug 26 07:23:00 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Updated Node.js dependencies to their latest available versions
+  as of 2025-08-25 (gh#agama-project/agama#2440).
+
+-------------------------------------------------------------------
+Wed Aug 20 10:27:07 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Refactor DASD page to make it more usable and improve its
+  performance (related to bsc#1247444, gh#agama-project/agama#2648).
+
+-------------------------------------------------------------------
+Wed Aug 20 10:20:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Enforce ESP partition id for /boot/efi partitions manually
+  defined (bsc#1248189).
+
+-------------------------------------------------------------------
+Wed Aug 13 13:20:17 UTC 2025 - Jan Papež <honyczek@centrum.cz>
+
+- Fix messages about automatic storage sizes
+  (gh#agama-project/agama#2657).
+
+-------------------------------------------------------------------
+Tue Aug 12 09:45:01 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Split progress details into two lines for better readability
+  (gh#agama-project/agama#2647).
+
+-------------------------------------------------------------------
+Tue Aug  5 23:28:43 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Improve layout and accuracy of wired connection details view
+  (bsc#1247430, gh#agama-project/agama#2639).
+
+-------------------------------------------------------------------
+Thu Jul 31 09:13:09 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Block UI if storage is configured by any other client
+  (gh#agama-project/agama#2640).
+
+-------------------------------------------------------------------
+Fri Jul 25 19:42:18 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Fix an issue preventing connections from being set as
+  "installation-only" in the web interface
+  (gh#agama-project/agama#2613).
+
+-------------------------------------------------------------------
+Wed Jul 23 14:54:43 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Display RAID level at the storage results table (bsc#1244697).
+
+-------------------------------------------------------------------
+Mon Jul 21 15:07:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 17
+
+-------------------------------------------------------------------
+Mon Jul 21 13:13:08 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Fix extensions layout to reduce excessive gaps on large
+  screens (gh#agama-project/agama#2590).
+
+-------------------------------------------------------------------
+Mon Jul 21 10:49:02 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed crash when registering an extension without registration
+  key (bsc#1246690)
+
+-------------------------------------------------------------------
+Thu Jul 17 19:26:17 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Replaced all usage of generatePath with generateEncodedPath to
+  ensure proper URL encoding of route parameters and prevent issues
+  with special characters (bsc#1246551).
+
+-------------------------------------------------------------------
+Thu Jul 17 15:32:42 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add button to allow re-probing storage devices.
+  (gh#agama-project/agama#2565)
+
+-------------------------------------------------------------------
+Wed Jul 16 15:39:14 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Display a message when the license is not available in the
+  selected language (bsc#1238364, gh#agama-project/agama#2571).
+
+-------------------------------------------------------------------
+Wed Jul 16 14:46:32 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Allow to use a whole disk or MD RAID without a partition table
+  (gh#agama-project/agama#2559).
+
+-------------------------------------------------------------------
+Mon Jul 14 16:02:55 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Allow specifying the registration server (jsc#AGM-156).
+
+-------------------------------------------------------------------
+Mon Jul 14 11:58:04 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Improve UX around non-persistent connections (bsc#1245187).
+
+-------------------------------------------------------------------
+Mon Jul 14 10:05:31 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Reorganize the storage screen and introduce a new modal device
+  selector (related to bsc#1242002 and bsc#1240062).
+
+-------------------------------------------------------------------
+Fri Jul  4 14:51:14 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Avoid scroll to top on software selection (bsc#1245732).
+
+-------------------------------------------------------------------
+Fri Jul  4 11:34:59 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Reprobe the system after registering the product
+  (gh#agama-project/agama#2532, bsc#1245400).
+
+-------------------------------------------------------------------
+Tue Jul  1 12:57:50 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add LeapMicro.svg
+
+-------------------------------------------------------------------
+Mon Jun 30 15:51:36 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 16
+
+-------------------------------------------------------------------
+Mon Jun 30 15:07:39 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Extra usability improvements defining the size of partitions and
+  logical volumes (related to gh#agama-project/agama#2496).
+
+-------------------------------------------------------------------
+Mon Jun 30 11:30:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Warn the user about using a weak encryption password
+  (gh#agama-project/agama#2524).
+
+-------------------------------------------------------------------
+Fri Jun 27 15:14:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Invalidate all software queries when the selected product changes
+  (gh#agama-project/agama#2517).
+
+-------------------------------------------------------------------
+Fri Jun 27 11:23:29 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Improve usability for defining the size of a partition or logical
+  volume (gh#agama-project/agama#2496).
+
+-------------------------------------------------------------------
+Fri Jun 27 06:30:11 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Warn the user when using a weak user password (bsc#1237480).
+
+-------------------------------------------------------------------
+Mon Jun 23 10:24:01 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to bind a connection to an specific interface based on its
+  mac address or its name (gh#agama-project/agama#2488,
+  bsc#1244259).
+
+-------------------------------------------------------------------
+Wed Jun 18 08:42:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Improve multilingual font support by fixing the font-face rule for
+  Chinese, adding Noto Sans Georgian, and setting Noto Sans as the
+  primary fallback (gh#agama-project/agama#2488, bsc#1236261).
+
+-------------------------------------------------------------------
+Tue Jun 17 12:22:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Make sure queries data is in sync with the WebSocket messages
+  (bsc#1243276, gh#agama-project/agama#2479).
+- Properly jump to the progress page when the product is selected
+  by a third party (e.g., "agama config load").
+- Log WebSocket messages in the console with "debug" log level.
+
+-------------------------------------------------------------------
+Fri Jun 13 08:24:59 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow registering against an RMT without a registration code.
+  (gh#agama-project/agama#2469)
+
+-------------------------------------------------------------------
+Thu Jun 12 16:27:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Replace SUSE font with Noto Sans for Cyrillic languages and
+  update CSS to use `:lang(xx)` for improved language support
+  (gh#agama-project/agama#2467, bsc#1236261).
+
+-------------------------------------------------------------------
+Thu Jun 12 12:51:38 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Allow selecting bootable MD RAIDS to create partitions and LVM
+  volume groups on them (gh#agama-project/agama#2455).
+
+-------------------------------------------------------------------
+Tue Jun 10 16:51:15 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Improve post-installation user experience by providing feedback
+  that confirms the system restart (bsc#1237410,
+  gh#agama-project/agama#2462).
+
+-------------------------------------------------------------------
+Mon Jun  9 06:24:08 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Allow selecting bootable MD RAIDs as boot device
+  (gh#agama-project/agama#2419).
+
+-------------------------------------------------------------------
+Fri Jun  6 13:44:14 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Replaced custom utility functions with a well-tested,
+  community-driven third-party dependency, refactored remaining
+  helpers, and removed unused code to improve maintainability
+  (gh#agama-project/agama#2412).
+
+-------------------------------------------------------------------
+Fri Jun  6 12:32:23 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to select which connections will be used only for
+  installation and warn the user in case that there is no one
+  expected to be copied to the target system (no network).
+  (gh#agama-project/agama#2402).
+
+-------------------------------------------------------------------
+Thu Jun  5 15:51:11 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Revert eslint removal and updates it to latest version
+  (gh#agama-project/agama#2445).
+
+-------------------------------------------------------------------
+Thu Jun  5 15:35:42 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Improve caching in the software area by using array-form
+  query keys (gh#agama-project/agama#2434).
+
+-------------------------------------------------------------------
+Thu Jun  5 11:26:05 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- The "InstallationPhaseChanged", "ProductChanged" and
+  "IssuesChanged" events were ignored in some situation
+  (possibly causing bug bsc#1241208)
+
+-------------------------------------------------------------------
+Thu Jun  5 10:35:40 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Updated Node.js dependencies to their latest available versions
+  as of 2025-06-03 (gh#agama-project/agama#2440).
+
+-------------------------------------------------------------------
+Mon Jun  2 22:29:03 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Fix out-of-sync translations by improving localization cache
+  and its invalidation (gh#agama-project/agama#2428).
+
+-------------------------------------------------------------------
+Thu May 29 09:31:28 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Requires a unit when entering sizes to avoid confusion and
+  accidental sizes in bytes (gh#agama-project/agama#2421).
+
+-------------------------------------------------------------------
+Mon May 26 19:51:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 15
+
+-------------------------------------------------------------------
+Thu May 22 17:16:40 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Handle reused MD RAIDs that are already included at the storage
+  configuration (gh#agama-project/agama#2346).
+
+-------------------------------------------------------------------
+Thu May 22 16:20:38 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to resolve in web UI software conflicts
+  (gh#agama-project/agama#2348)
+
+-------------------------------------------------------------------
+Thu May 22 09:07:28 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Do not crash when navigating to a Wi-Fi network (bsc#1243415)
+
+-------------------------------------------------------------------
+Mon May 19 13:38:16 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Keep margin between sidebar and main content in all breakpoints
+  (gh#agama-project/agama#2370).
+
+-------------------------------------------------------------------
+Fri May 16 07:46:22 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Rework the installer l10n settings (gh#agama-project/agama#2359):
+  - Improve discoverability of language and keyboard layout settings.
+  - Add contextual messages to help users differentiate between
+    installer and product localization settings.
+  - Add the ability to reuse installer settings for the product
+    to install.
+  - In local connections, keyboard layout change is now available
+    directly from modal dialogs holding password inputs.
+  - Password inputs now include a reminder of the active layout
+    (only in local connections) and a CAPS LOCK warning when active.
+
+-------------------------------------------------------------------
+Mon May 12 12:47:46 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed navigation to avoid quickly switching between two paths
+  in a loop causing "Too many calls to Location or  History APIs
+  within a short timeframe" error in Firefox and crashing the UI
+  (the proper fix for gh#agama-project/agama#2274)
+
+-------------------------------------------------------------------
+Thu May  8 13:43:53 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- MenuButton no longer opens unexpectedly when navigating
+  with the keyboard (gh#agama-project/agama#2345).
+
+-------------------------------------------------------------------
+Wed May  7 13:46:05 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Add "Skip to content" link for easing navigation for keyboard-only
+  users (gh#agama-project/agama#1521, gh#agama-project/agama#2337).
+
+-------------------------------------------------------------------
+Wed May  7 07:07:10 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Use the correct locale format in the Intl.ListFormat.format call,
+  if it fails use a fallback formatting function to avoid a crash
+  (bsc#1238584)
+
+-------------------------------------------------------------------
+Mon May  5 14:50:48 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Improve storage proposal warning to mention mount paths when
+  logical volume space allocation fails (gh#agama-project/agama#2323).
+
+-------------------------------------------------------------------
+Tue Apr 22 14:14:53 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 14
+
+-------------------------------------------------------------------
+Tue Apr 22 11:18:03 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Process the product changed event so the UI can better react on
+  registering the product shortly after that
+  (gh#agama-project/agama#2274)
+
+-------------------------------------------------------------------
+Mon Apr 21 12:37:20 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Rework the network page to (gh#agama-project/agama#2247):
+  - Fix several problems with Wi-Fi networks handling.
+  - Improve error reporting when the connection failed.
+  - Use a regular form to connect, instead of the old "drawer"
+    component.
+  - Drop the "disconnect" and "forget" actions by now.
+  - Reduce the amount of requests to the backend.
+
+-------------------------------------------------------------------
+Wed Apr 16 06:09:58 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Shorten storage device names.
+- Move LVM logical volumes to partitions, if possible.
+- Add MenuButton component (gh#agama-project/agama#2241).
+
+-------------------------------------------------------------------
+Tue Apr 15 08:51:27 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Improve the interface to display and edit the iSCSI initiator
+  (bsc#1239046, bsc#1231385, gh#agama-project/agama#2269).
+
+-------------------------------------------------------------------
+Wed Apr  9 12:38:21 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Fix flickering issue during loading and progress transitions
+  (gh#agama-project/agama#2240, gh#agama-project/agama#2255).
+
+-------------------------------------------------------------------
+Wed Apr  9 05:36:35 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Fix layout of iSCSI page (gh#agama-project/agama#2231).
+
+-------------------------------------------------------------------
+Tue Apr  1 08:53:43 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Fix reloading data after reprobing devices
+  (gh#agama-project/agama#2235).
+
+-------------------------------------------------------------------
+Thu Mar 27 12:40:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 13
+
+-------------------------------------------------------------------
+Thu Mar 27 11:42:51 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add basic support for creating LVM volume groups and logical
+  volumes (gh#agama-project/agama#2216).
+
+-------------------------------------------------------------------
+Wed Mar 26 08:25:34 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Change switches by checkboxes (gh#agama-project/agama#2168).
+- Restructure the encryption form (gh#agama-project/agama#2168).
+
+-------------------------------------------------------------------
+Mon Mar 24 10:17:30 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Properly handle empty lists of unsupported AutoYaST elements
+  (gh#agama-project/agama#2196).
+
+-------------------------------------------------------------------
+Sun Mar 23 02:13:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Stop parsing errors from SCC at frontend side and simply render
+  them as returned by the backend (gh#agama-project/agama#2193).
+
+-------------------------------------------------------------------
+Thu Mar 20 20:58:44 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Stop displaying the hostname alert once the system is registered
+  (gh#agama-project/agama#2183).
+
+-------------------------------------------------------------------
+Wed Mar 19 19:04:09 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Allow temporary removal of the root file system
+ (gh#agama-project/agama#2160).
+
+-------------------------------------------------------------------
+Tue Mar 18 10:59:20 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Fix registration form issue when email is not provided
+  (gh#agama-project/agama#2172)
+
+-------------------------------------------------------------------
+Fri Mar 14 11:05:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Allow updating hostname from web user interface
+  (gh#agama-project/agama#2147)
+
+-------------------------------------------------------------------
+Thu Mar  6 08:06:17 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Fix a language selector overflow issue in the product license dialog
+  (gh#agama-project/agama#2105)
+
+-------------------------------------------------------------------
+Thu Feb 27 16:10:51 UTC 2025 - Vaishnavi Nawghare <nawgharevaishnavi@gmail.com>
+
+- Add alpha-label-less leap16.svg
+ (gh#agama-project/agama#2091).
+
+-------------------------------------------------------------------
+Thu Feb 27 11:21:45 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Allow setting the file system label (related to jsc#AGM-122
+  and bsc#1237165).
+
+-------------------------------------------------------------------
+Thu Feb 27 10:21:45 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Do not fail to build the storage devices when the RAID members
+  are not exported (bsc#1237803).
+
+-------------------------------------------------------------------
+Wed Feb 26 06:51:37 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 12
+
+-------------------------------------------------------------------
+Tue Feb 25 18:44:07 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Add fonts for CJK characters and monospaced text
+  (gh#agama-project/agama#2076, bsc#1237457).
+
+-------------------------------------------------------------------
+Tue Feb 25 15:57:49 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Display the file system labels in most selectors for disks and
+  partitions (gh#agama-project/agama#2070).
+
+-------------------------------------------------------------------
+Tue Feb 25 13:08:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the backend's language as fallback, ignoring the browser's one
+  It reduces the chances to produce unwanted side-effects when connecting
+  to the web user interface (gh#agama-project/agama#2071).
+- Do not block when connecting during system installation.
+- Make some small fixes/improvements to the overview, localization
+  and software pages markup.
+
+-------------------------------------------------------------------
+Tue Feb 25 12:36:50 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Synchronous system probing when choosing or registering the
+  product (gh#agama-project/agama#2072).
+
+-------------------------------------------------------------------
+Mon Feb 24 15:57:12 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Display network edition errors instead of navigating back
+  (gh#agama-project/agama#2064).
+
+-------------------------------------------------------------------
+Mon Feb 24 14:17:34 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Ignore non-critical issues to avoid preventing the installation
+  in valid scenarios (gh#agama-project/agama#2061).
+
+-------------------------------------------------------------------
+Mon Feb 24 12:44:15 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Prevented table overflow to avoid hiding the actions column
+  (gh#agama-project/agama#2044).
+
+-------------------------------------------------------------------
+Mon Feb 24 08:50:54 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Some visual changes at the form to add and edit partitions
+  (gh#agama-project/agama#2054).
+
+-------------------------------------------------------------------
+Fri Feb 21 13:56:52 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Bring encryption section back to the proposal page
+  (gh#agama-project/agama#2031).
+
+-------------------------------------------------------------------
+Thu Feb 20 12:46:04 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Include the migration to PatternFly 6 made by dgonzalez@suse.com
+  (gh#openSUSE/agama#1900, gh#openSUSE/agama#1921,
+  gh#openSUSE/agama#1954 and gh#openSUSE/agama#1961)
+- New interface to configure the storage proposal.
+
+-------------------------------------------------------------------
+Tue Feb 18 12:10:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Remove step forcing root user password entry.
+- Revamp the Authentication page (formerly Users page) to simplify
+  the interface and improve user interactions
+  (gh#agama-project/agama#1999).
+
+-------------------------------------------------------------------
+Fri Feb 14 09:46:02 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Implement specific question dialogs for the libzypp callbacks
+  (gh#agama-project/agama#1985)
+
+-------------------------------------------------------------------
+Fri Feb  7 14:43:08 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report unsupported AutoYaST elements
+  (gh#agama-project/agama#1976).
+
+-------------------------------------------------------------------
+Fri Jan 31 09:03:37 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Always perform mutations (PATH/POST/PUT/DELETE) when connecting
+  to "localhost", no matter whether the network is connected or not
+  (gh#agama-project/agama#1963).
+
+-------------------------------------------------------------------
+Thu Jan 30 12:04:23 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- Make deletion of a proposed drive work:
+  "Do not use, Remove the configuration for this device"
+  (gh#agama-project/agama#1934)
+
+-------------------------------------------------------------------
+Fri Jan 24 09:34:24 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the "finish" to decide whether to navigate to the
+  congratulations screen (gh#agama-project/agama#1616).
+
+-------------------------------------------------------------------
+Fri Jan 24 06:43:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the "missing_registration" issue to determine whether to show
+  the registration alert (gh#agama-project/agama#1938).
+
+-------------------------------------------------------------------
+Thu Jan 23 15:09:09 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- Make the trash can icon (Delete) of a proposed partition work
+  (gh#agama-project/agama#1915)
+
+-------------------------------------------------------------------
+Tue Jan 21 09:44:08 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not crash at the end of the installation when using a legacy
+  AutoYaST mode (gh#agama-project/agama#1927).
+
+-------------------------------------------------------------------
+Mon Jan 20 16:45:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- The software page displays a link for reloading the repositories
+  again if some repository failed to load
+  (gh#agama-project/agama#1894)
+
+-------------------------------------------------------------------
+Mon Jan 20 10:36:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for displaying and accepting a product license
+  (jsc#PED-11987).
+
+-------------------------------------------------------------------
+Thu Jan 16 13:11:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Display error messages during package installation
+  (gh#agama-project/agama#1909).
+
+-------------------------------------------------------------------
+Mon Jan 13 11:11:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Do not allow changing selected product after registering one
+  (related to gh#agama-project/agama#1891).
+
+-------------------------------------------------------------------
+Fri Jan 10 21:22:02 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 11
+
+-------------------------------------------------------------------
+Fri Jan 10 15:56:35 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add storage reprobing and recalculate proposal when going back to
+  either the proposal page or the devices selector if the system
+  is deprecated (gh#agama-project/agama#1884).
+
+-------------------------------------------------------------------
+Fri Jan 10 13:46:42 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Drop the feature for deregistering a product
+  (gh#agama-project/agama#1882).
+
+-------------------------------------------------------------------
+Fri Jan 10 13:22:27 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not allow changing the storage setup when Agama is using the
+  new storage settings (gh#agama-project/agama#1881).
+
+-------------------------------------------------------------------
+Wed Jan  8 16:07:13 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for products registration (jsc#PED-11192,
+  gh#agama-project/agama#1809).
+
+-------------------------------------------------------------------
+Wed Jan  8 15:16:51 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Use product ID instead of slug to link labels and descriptions to
+  their corresponding radio inputs (gh#agama-project/agama#1873).
+
+-------------------------------------------------------------------
+Wed Jan  8 13:12:44 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Show the cancel action at product selection page only when
+  a product is already selected (gh#agama-project/agama#1871).
+
+-------------------------------------------------------------------
+Fri Dec 20 12:53:41 UTC 2024 - David Diaz <dgonzalez@suse.com>
+
+- Fix netmask handling to avoid a silent connection form error
+  (gh#agama-project/agama#1846).
+
+-------------------------------------------------------------------
 Tue Dec 10 14:43:08 UTC 2024 - David Diaz <dgonzalez@suse.com>
 
 - Restore the rendering of questions throughout the app
@@ -922,7 +1622,6 @@ Wed May 24 11:01:24 UTC 2023 - David Diaz <dgonzalez@suse.com>
   any nodes other than <body> direct children (gh#openSUSE/agama#588).
 
 -------------------------------------------------------------------
-
 Tue May 23 11:51:26 UTC 2023 - Martin Vidner <mvidner@suse.com>
 
 - Version 2.1

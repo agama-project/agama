@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -42,7 +42,25 @@ type Product = {
   /** Product icon (e.g., "default.svg") */
   icon?: string;
   /** If product is registrable or not */
-  registration: "no" | "optional" | "mandatory";
+  registration: boolean;
+  /** The product license id, if any */
+  license?: string;
+};
+
+type License = {
+  /** License ID (e.g., "license.sle") */
+  id: string;
+  /** Available locales */
+  languages: string[];
+};
+
+type LicenseContent = {
+  /** License ID (e.g., "license.sle") */
+  id: string;
+  /** License body */
+  body: string;
+  /** License language (e.g., "en-US") */
+  language: string;
 };
 
 type PatternsSelection = { [key: string]: SelectedBy };
@@ -59,6 +77,8 @@ type SoftwareConfig = {
   product?: string;
   /** An object where the keys are the pattern names and the values whether to install them or not */
   patterns?: { [key: string]: boolean };
+  /** A list of user selected packages */
+  packages?: string[];
 };
 
 type Pattern = {
@@ -78,17 +98,80 @@ type Pattern = {
   selectedBy?: SelectedBy;
 };
 
+type Repository = {
+  repo_id: number;
+  alias: string;
+  name: string;
+  raw_url: string;
+  product_dir: string;
+  enabled: boolean;
+  loaded: boolean;
+};
+
 type RegistrationInfo = {
+  registered: boolean;
+  key: string;
+  email: string;
+  url: string;
+};
+
+type RegistrationParams = {
   key: string;
   email?: string;
+  url: string;
+};
+
+type AddonInfo = {
+  id: string;
+  version: string;
+  label: string;
+  available: boolean;
+  free: boolean;
+  recommended: boolean;
+  description: string;
+  type: string;
+  release: string;
+};
+
+type RegisteredAddonInfo = {
+  id: string;
+  version: string | null;
+  registrationCode: string;
+};
+
+type ConflictSolutionOption = {
+  id: number;
+  description: string;
+  details: string | null;
+};
+
+type Conflict = {
+  id: number;
+  description: string;
+  details: string | null;
+  solutions: ConflictSolutionOption[];
+};
+
+type ConflictSolution = {
+  conflictId: Conflict["id"];
+  solutionId: ConflictSolutionOption["id"];
 };
 
 export { SelectedBy };
 export type {
+  AddonInfo,
+  Conflict,
+  ConflictSolution,
+  ConflictSolutionOption,
+  License,
+  LicenseContent,
   Pattern,
   PatternsSelection,
   Product,
-  SoftwareConfig,
+  RegisteredAddonInfo,
   RegistrationInfo,
+  RegistrationParams,
+  Repository,
+  SoftwareConfig,
   SoftwareProposal,
 };

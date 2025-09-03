@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,7 +20,9 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/from_json_conversions/base"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions"
 require "agama/storage/configs/search"
+require "agama/storage/configs/sort_criteria"
 
 module Agama
   module Storage
@@ -28,13 +30,13 @@ module Agama
       module FromJSONConversions
         # Search conversion from JSON hash according to schema.
         class Search < Base
-          # @see Base#convert
-          # @return [Configs::Search]
-          def convert
-            super(Configs::Search.new)
-          end
-
         private
+
+          # @see Base
+          # @return [Configs::Search]
+          def default_config
+            Configs::Search.new
+          end
 
           # Reserved search value meaning 'match all devices or ignore the section'.
           #
@@ -50,9 +52,12 @@ module Agama
             return convert_string if search_json.is_a?(String)
 
             {
-              name:         search_json.dig(:condition, :name),
-              max:          search_json[:max],
-              if_not_found: search_json[:ifNotFound]&.to_sym
+              name:             search_json.dig(:condition, :name),
+              size:             convert_size,
+              partition_number: search_json.dig(:condition, :number),
+              sort_criteria:    convert_sort,
+              max:              search_json[:max],
+              if_not_found:     search_json[:ifNotFound]&.to_sym
             }
           end
 
@@ -61,6 +66,44 @@ module Agama
             return { if_not_found: :skip } if search_json == SEARCH_ANYTHING_STRING
 
             { name: search_json }
+          end
+
+          # @return [Configs::SearchConditions::Size, nil]
+          def convert_size
+            size_json = search_json.dig(:condition, :size)
+            return unless size_json
+
+            FromJSONConversions::SearchConditions::Size.new(size_json).convert
+          end
+
+          def convert_sort
+            Array(search_json[:sort]).map do |entry|
+              case entry
+              when Array
+                sort_criterion(entry.first, entry.last)
+              when Hash
+                sort_criterion(entry.keys.first, entry.values.first)
+              else
+                sort_criterion(entry)
+              end
+            end
+          end
+
+          def sort_criterion(name, order = "asc")
+            crit = sort_criterion_class(name).new
+            crit.asc = (order.to_s != "desc")
+            crit
+          end
+
+          SORT_CRITERIA = {
+            name:   Configs::SortCriteria::Name,
+            size:   Configs::SortCriteria::Size,
+            number: Configs::SortCriteria::PartitionNumber
+          }.freeze
+          private_constant :SORT_CRITERIA
+
+          def sort_criterion_class(name)
+            SORT_CRITERIA[name.to_sym]
           end
         end
       end

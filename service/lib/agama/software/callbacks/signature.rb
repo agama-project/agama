@@ -21,6 +21,8 @@
 
 require "yast"
 require "agama/question"
+require "agama/software/callbacks/base"
+require "agama/software/repositories_manager"
 
 Yast.import "Pkg"
 
@@ -28,20 +30,7 @@ module Agama
   module Software
     module Callbacks
       # Callbacks related to signatures handling
-      class Signature
-        include Yast::I18n
-
-        # Constructor
-        #
-        # @param questions_client [Agama::DBus::Clients::Questions]
-        # @param logger [Logger]
-        def initialize(questions_client, logger)
-          textdomain "agama"
-
-          @questions_client = questions_client
-          @logger = logger
-        end
-
+      class Signature < Base
         # Register the callbacks
         def setup
           Yast::Pkg.CallbackAcceptUnsignedFile(
@@ -49,6 +38,16 @@ module Agama
           )
           Yast::Pkg.CallbackImportGpgKey(
             Yast::FunRef.new(method(:import_gpg_key), "boolean (map <string, any>, integer)")
+          )
+          Yast::Pkg.CallbackAcceptUnknownGpgKey(
+            Yast::FunRef.new(
+              method(:accept_unknown_gpg_key), "boolean (string, string, integer)"
+            )
+          )
+          Yast::Pkg.CallbackAcceptVerificationFailed(
+            Yast::FunRef.new(
+              method(:accept_verification_failed), "boolean (string, map <string, any>, integer)"
+            )
           )
         end
 
@@ -58,38 +57,45 @@ module Agama
         # @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
         def accept_unsigned_file(filename, repo_id)
           repo = Yast::Pkg.SourceGeneralData(repo_id)
-          source = if repo
-            format(
-              _("The file %{filename} from repository %{repo_name} (%{repo_url})"),
-              filename: filename, repo_name: repo["name"], repo_url: repo["url"]
-            )
-          else
-            format(_("The file %{filename}"), filename: filename)
+          if repo && Agama::Software::RepositoriesManager.instance.unsigned_allowed?(repo["alias"])
+            return true
           end
 
-          message = format(
-            _("%{source} is not digitally signed. The origin and integrity of the file cannot be " \
-              "verified. Use it anyway?"), source: source
-          )
+          message = if repo
+            format(
+              _("The file %{filename} from %{repo_url} is not digitally signed. The origin " \
+                "and integrity of the file cannot be verified. Use it anyway?"),
+              filename: filename, repo_url: repo["url"]
+            )
+          else
+            format(
+              _("The file %{filename} is not digitally signed. The origin " \
+                "and integrity of the file cannot be verified. Use it anyway?"),
+              filename: filename
+            )
+          end
 
           question = Agama::Question.new(
             qclass:         "software.unsigned_file",
             text:           message,
-            options:        [:Yes, :No],
-            default_option: :No,
+            options:        [yes_label.to_sym, no_label.to_sym],
+            default_option: no_label.to_sym,
             data:           { "filename" => filename }
           )
           questions_client.ask(question) do |question_client|
-            question_client.answer == :Yes
+            question_client.answer == yes_label.to_sym
           end
         end
 
         # Callback to handle signature verification failures
         #
         # @param key [Hash] GPG key data (id, name, fingerprint, etc.)
-        # @param _repo_id [Integer] Repository ID
-        def import_gpg_key(key, _repo_id)
+        # @param repo_id [Integer] Repository ID
+        def import_gpg_key(key, repo_id)
           fingerprint = key["fingerprint"].scan(/.{4}/).join(" ")
+          repo = Yast::Pkg.SourceGeneralData(repo_id)
+          return true if repo && repo_manager.trust_gpg?(repo["alias"], fingerprint)
+
           message = format(
             _("The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. " \
               "Do you want to trust this key?"),
@@ -99,8 +105,8 @@ module Agama
           question = Agama::Question.new(
             qclass:         "software.import_gpg",
             text:           message,
-            options:        [:Trust, :Skip],
-            default_option: :Skip,
+            options:        [trust_label.to_sym, skip_label.to_sym],
+            default_option: skip_label.to_sym,
             data:           {
               "id"          => key["id"],
               "name"        => key["name"],
@@ -109,17 +115,93 @@ module Agama
           )
 
           questions_client.ask(question) do |question_client|
-            question_client.answer == :Trust
+            question_client.answer == trust_label.to_sym
+          end
+        end
+
+        # Callback to handle unknown GPG keys
+        #
+        # @param filename [String] Name of the file.
+        # @param key_id [String] Key ID.
+        # @param repo_id [String] Repository ID.
+        def accept_unknown_gpg_key(filename, key_id, repo_id)
+          repo = Yast::Pkg.SourceGeneralData(repo_id)
+          message = if repo
+            format(
+              _("The file %{filename} from %{repo_url} is digitally signed with " \
+                "the following unknown GnuPG key: %{key_id}. Use it anyway?"),
+              filename: filename, repo_url: repo["url"], key_id: key_id
+            )
+          else
+            format(
+              _("The file %{filename} is digitally signed with " \
+                "the following unknown GnuPG key: %{key_id}. Use it anyway?"),
+              filename: filename, key_id: key_id
+            )
+          end
+
+          question = Agama::Question.new(
+            qclass:         "software.unknown_gpg",
+            text:           message,
+            options:        [yes_label.to_sym, no_label.to_sym],
+            default_option: no_label.to_sym,
+            data:           {
+              "id"       => key_id,
+              "filename" => filename
+            }
+          )
+
+          questions_client.ask(question) do |question_client|
+            question_client.answer == yes_label.to_sym
+          end
+        end
+
+        # Callback to handle file verification failures
+        #
+        # @param filename [String] File name
+        # @param key [Hash] GPG key data (id, name, fingerprint, etc.)
+        # @param repo_id [Integer] Repository ID
+        def accept_verification_failed(filename, key, repo_id)
+          repo = Yast::Pkg.SourceGeneralData(repo_id)
+          message = if repo
+            format(
+              _("The file %{filename} from %{repo_url} is digitally signed with the " \
+                "following GnuPG key, but the integrity check failed: %{key_id} (%{key_name}). " \
+                "Use it anyway?"),
+              filename: filename, repo_url: repo["url"], key_id: key["id"], key_name: key["name"]
+            )
+          else
+            format(
+              _("The file %{filename} is digitally signed with the " \
+                "following GnuPG key, but the integrity check failed: %{key_id} (%{key_name}). " \
+                "Use it anyway?"),
+              filename: filename, key_id: key["id"], key_name: key["name"]
+            )
+          end
+
+          question = Agama::Question.new(
+            qclass:         "software.unsigned_file",
+            text:           message,
+            options:        [yes_label.to_sym, no_label.to_sym],
+            default_option: no_label.to_sym,
+            data:           { "filename" => filename }
+          )
+          questions_client.ask(question) do |question_client|
+            question_client.answer == yes_label.to_sym
           end
         end
 
       private
 
-        # @return [Agama::DBus::Clients::Questions]
-        attr_reader :questions_client
+        # label for the "trust" action
+        def trust_label
+          # TRANSLATORS: button label, trust the GPG key or the signature
+          _("Trust")
+        end
 
-        # @return [Logger]
-        attr_reader :logger
+        def repo_manager
+          Agama::Software::RepositoriesManager.instance
+        end
       end
     end
   end

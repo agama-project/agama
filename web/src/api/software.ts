@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,13 +21,20 @@
  */
 
 import {
+  AddonInfo,
+  Conflict,
+  ConflictSolution,
+  License,
+  LicenseContent,
   Pattern,
   Product,
-  SoftwareConfig,
+  RegisteredAddonInfo,
   RegistrationInfo,
+  Repository,
+  SoftwareConfig,
   SoftwareProposal,
 } from "~/types/software";
-import { del, get, post, put } from "~/api/http";
+import { get, patch, post, put } from "~/api/http";
 
 /**
  * Returns the software configuration
@@ -45,14 +52,46 @@ const fetchProposal = (): Promise<SoftwareProposal> => get("/api/software/propos
 const fetchProducts = (): Promise<Product[]> => get("/api/software/products");
 
 /**
+ * Returns the list of available licenses
+ */
+const fetchLicenses = (): Promise<License[]> => get("/api/software/licenses");
+
+/**
+ * Returns the content for given license id
+ */
+const fetchLicense = (id: string, lang: string = "en"): Promise<LicenseContent> =>
+  get(`/api/software/licenses/${id}?lang=${lang}`);
+
+/**
  * Returns an object with the registration info
  */
 const fetchRegistration = (): Promise<RegistrationInfo> => get("/api/software/registration");
 
 /**
+ * Returns list of available addons
+ */
+const fetchAddons = (): Promise<AddonInfo[]> => get("/api/software/registration/addons/available");
+
+/**
+ * Returns list of already registered addons
+ */
+const fetchRegisteredAddons = (): Promise<RegisteredAddonInfo[]> =>
+  get("/api/software/registration/addons/registered");
+
+/**
  * Returns the list of patterns for the selected product
  */
 const fetchPatterns = (): Promise<Pattern[]> => get("/api/software/patterns");
+
+/**
+ * Returns the list of configured repositories
+ */
+const fetchRepositories = (): Promise<Repository[]> => get("/api/software/repositories");
+
+/**
+ * Returns the list of conflicts
+ */
+const fetchConflicts = (): Promise<Conflict[]> => get("/api/software/conflicts");
 
 /**
  * Updates the software configuration
@@ -62,23 +101,51 @@ const fetchPatterns = (): Promise<Pattern[]> => get("/api/software/patterns");
 const updateConfig = (config: SoftwareConfig) => put("/api/software/config", config);
 
 /**
+ * Updates the software configuration
+ */
+const probe = () => post("/api/software/probe");
+
+/**
  * Request registration of selected product with given key
  */
 const register = ({ key, email }: { key: string; email?: string }) =>
   post("/api/software/registration", { key, email });
 
 /**
- * Request deregistering selected product
+ * Updates the URL for the registration
  */
-const deregister = () => del("/api/software/registration");
+const updateRegistrationUrl = (url: string) =>
+  // Explicit content type is needed because the content is a string. The application/json type is
+  // automatically set only if the content is an object.
+  put("/api/software/registration/url", url, { headers: { "Content-Type": "application/json" } });
+
+/**
+ * Request registration of the selected addon
+ */
+const registerAddon = (addon: RegisteredAddonInfo) =>
+  post("/api/software/registration/addons/register", addon);
+
+/**
+ * Request for solving a conflict by applying given solution
+ */
+const solveConflict = (solution: ConflictSolution) => patch("/api/software/conflicts", [solution]);
 
 export {
+  fetchAddons,
   fetchConfig,
+  fetchConflicts,
+  fetchLicense,
+  fetchLicenses,
   fetchPatterns,
-  fetchProposal,
   fetchProducts,
+  fetchProposal,
+  fetchRegisteredAddons,
   fetchRegistration,
-  updateConfig,
+  fetchRepositories,
+  probe,
   register,
-  deregister,
+  updateRegistrationUrl,
+  registerAddon,
+  solveConflict,
+  updateConfig,
 };

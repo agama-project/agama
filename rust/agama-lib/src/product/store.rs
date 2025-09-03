@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -19,10 +19,28 @@
 // find current contact information at www.suse.com.
 
 //! Implements the store for the product settings.
-use super::{ProductHTTPClient, ProductSettings};
-use crate::base_http_client::BaseHTTPClient;
-use crate::error::ServiceError;
-use crate::manager::http_client::ManagerHTTPClient;
+use super::{http_client::ProductHTTPClientError, ProductHTTPClient, ProductSettings};
+use crate::{
+    http::BaseHTTPClient,
+    manager::http_client::{ManagerHTTPClient, ManagerHTTPClientError},
+};
+use std::time;
+use tokio::time::sleep;
+
+// registration retry attempts
+const RETRY_ATTEMPTS: u32 = 4;
+// initial delay for exponential backoff in seconds, it doubles after every retry (2,4,8,16)
+const INITIAL_RETRY_DELAY: u64 = 2;
+
+#[derive(Debug, thiserror::Error)]
+pub enum ProductStoreError {
+    #[error("Error processing product settings: {0}")]
+    Product(#[from] ProductHTTPClientError),
+    #[error("Error reading software repositories: {0}")]
+    Probe(#[from] ManagerHTTPClientError),
+}
+
+type ProductStoreResult<T> = Result<T, ProductStoreError>;
 
 /// Loads and stores the product settings from/to the D-Bus service.
 pub struct ProductStore {
@@ -31,11 +49,11 @@ pub struct ProductStore {
 }
 
 impl ProductStore {
-    pub fn new(client: BaseHTTPClient) -> Result<ProductStore, ServiceError> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> ProductStore {
+        Self {
             product_client: ProductHTTPClient::new(client.clone()),
-            manager_client: ManagerHTTPClient::new(client.clone()),
-        })
+            manager_client: ManagerHTTPClient::new(client),
+        }
     }
 
     fn non_empty_string(s: String) -> Option<String> {
@@ -46,19 +64,28 @@ impl ProductStore {
         }
     }
 
-    pub async fn load(&self) -> Result<ProductSettings, ServiceError> {
+    pub async fn load(&self) -> ProductStoreResult<ProductSettings> {
         let product = self.product_client.product().await?;
         let registration_info = self.product_client.get_registration().await?;
+        let registered_addons = self.product_client.get_registered_addons().await?;
 
+        let addons = if registered_addons.is_empty() {
+            None
+        } else {
+            Some(registered_addons)
+        };
         Ok(ProductSettings {
             id: Some(product),
             registration_code: Self::non_empty_string(registration_info.key),
             registration_email: Self::non_empty_string(registration_info.email),
+            registration_url: Self::non_empty_string(registration_info.url),
+            addons,
         })
     }
 
-    pub async fn store(&self, settings: &ProductSettings) -> Result<(), ServiceError> {
+    pub async fn store(&self, settings: &ProductSettings) -> ProductStoreResult<()> {
         let mut probe = false;
+        let mut reprobe = false;
         if let Some(product) = &settings.id {
             let existing_product = self.product_client.product().await?;
             if *product != existing_product {
@@ -67,40 +94,94 @@ impl ProductStore {
                 probe = true;
             }
         }
-        if let Some(reg_code) = &settings.registration_code {
-            let (result, message);
-            if let Some(email) = &settings.registration_email {
-                (result, message) = self.product_client.register(reg_code, email).await?;
-            } else {
-                (result, message) = self.product_client.register(reg_code, "").await?;
+        // register system if either URL or reg code is provided as RMT does not need reg code and SCC uses default url
+        // bsc#1246069
+        if settings.registration_code.is_some() || settings.registration_url.is_some() {
+            if let Some(url) = &settings.registration_url {
+                self.product_client.set_registration_url(url).await?;
             }
-            // FIXME: name the magic numbers. 3 is Registration not required
-            // FIXME: well don't register when not required (no regcode in profile)
-            if result != 0 && result != 3 {
-                return Err(ServiceError::FailedRegistration(message));
+            // lets use empty string if not defined
+            let reg_code = settings.registration_code.as_deref().unwrap_or("");
+            let email = settings.registration_email.as_deref().unwrap_or("");
+
+            self.retry_registration(|| self.product_client.register(reg_code, email))
+                .await?;
+            // TODO: avoid reprobing if the system has been already registered with the same code?
+            reprobe = true;
+        }
+
+        // register the addons in the order specified in the profile
+        if let Some(addons) = &settings.addons {
+            for addon in addons.iter() {
+                self.retry_registration(|| self.product_client.register_addon(addon))
+                    .await?;
             }
-            probe = true;
         }
 
         if probe {
             self.manager_client.probe().await?;
+        } else if reprobe {
+            self.manager_client.reprobe().await?;
         }
 
         Ok(())
+    }
+
+    // shared retry logic for base product and addon registration
+    async fn retry_registration<F>(&self, block: F) -> Result<(), ProductHTTPClientError>
+    where
+        F: AsyncFn() -> Result<(), ProductHTTPClientError>,
+    {
+        // retry counter
+        let mut attempt = 0;
+        loop {
+            // call the passed block
+            let result = block().await;
+
+            match result {
+                // success, leave the loop
+                Ok(()) => return result,
+                Err(ref error) => {
+                    match error {
+                        ProductHTTPClientError::FailedRegistration(_msg, code) => {
+                            match code {
+                                // see service/lib/agama/dbus/software/product.rb
+                                // 4 => network error, 5 => timeout error
+                                Some(4) | Some(5) => {
+                                    if attempt >= RETRY_ATTEMPTS {
+                                        // still failing, report the error
+                                        return result;
+                                    }
+
+                                    // wait a bit then retry (run the loop again)
+                                    let delay = INITIAL_RETRY_DELAY << attempt;
+                                    eprintln!("Retrying registration in {} seconds...", delay);
+                                    sleep(time::Duration::from_secs(delay)).await;
+                                    attempt += 1;
+                                }
+                                // fail for other or unknown problems, retry very likely won't help
+                                _ => return result,
+                            }
+                        }
+                        // an HTTP error, fail
+                        _ => return result,
+                    }
+                }
+            }
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::base_http_client::BaseHTTPClient;
+    use crate::http::BaseHTTPClient;
     use httpmock::prelude::*;
     use std::error::Error;
     use tokio::test; // without this, "error: async functions cannot be used for tests"
 
     fn product_store(mock_server_url: String) -> ProductStore {
-        let mut bhc = BaseHTTPClient::default();
-        bhc.base_url = mock_server_url;
+        let bhc = BaseHTTPClient::new(mock_server_url).unwrap();
         let p_client = ProductHTTPClient::new(bhc.clone());
         let m_client = ManagerHTTPClient::new(bhc);
         ProductStore {
@@ -129,11 +210,19 @@ mod test {
                 .header("content-type", "application/json")
                 .body(
                     r#"{
+                    "registered": false,
                     "key": "",
                     "email": "",
-                    "requirement": "NotRequired"
+                    "url": ""
                 }"#,
                 );
+        });
+        let addons_mock = server.mock(|when, then| {
+            when.method(GET)
+                .path("/api/software/registration/addons/registered");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body("[]");
         });
         let url = server.url("/api");
 
@@ -144,6 +233,8 @@ mod test {
             id: Some("Tumbleweed".to_owned()),
             registration_code: None,
             registration_email: None,
+            registration_url: None,
+            addons: None,
         };
         // main assertion
         assert_eq!(settings, expected);
@@ -151,6 +242,7 @@ mod test {
         // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
         software_mock.assert();
         registration_mock.assert();
+        addons_mock.assert();
         Ok(())
     }
 
@@ -165,6 +257,7 @@ mod test {
                 .body(
                     r#"{
                     "patterns": {},
+                    "packages": [],
                     "product": ""
                 }"#,
                 );
@@ -173,7 +266,7 @@ mod test {
             when.method(PUT)
                 .path("/api/software/config")
                 .header("content-type", "application/json")
-                .body(r#"{"patterns":null,"product":"Tumbleweed"}"#);
+                .body(r#"{"patterns":null,"packages":null,"product":"Tumbleweed","extraRepositories":null,"onlyRequired":null}"#);
             then.status(200);
         });
         let manager_mock = server.mock(|when, then| {
@@ -190,6 +283,8 @@ mod test {
             id: Some("Tumbleweed".to_owned()),
             registration_code: None,
             registration_email: None,
+            registration_url: None,
+            addons: None,
         };
 
         let result = store.store(&settings).await;

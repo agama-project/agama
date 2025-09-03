@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -32,27 +32,71 @@ RSpec.shared_examples "a script reader" do |ay_section, section|
 
   context "when the script definition includes the sources" do
     let(:script) do
-      { "file_name" => "script.sh",
-        "location"  => "https://example.com/script.sh" }
+      { "filename" => "script.sh",
+        "location" => "https://example.com/script.sh" }
     end
 
     it "sets the \"url\" to the \"location\"" do
       scripts = subject.read["scripts"][section]
       expect(scripts.first).to include("url" => "https://example.com/script.sh")
     end
+
+    context "when the script uses a relative URL" do
+      let(:script) do
+        { "location" => "relurl://script.sh" }
+      end
+
+      it "removes the \"relurl\" from the \"location\"" do
+        scripts = subject.read["scripts"][section]
+        expect(scripts.first).to include("url" => "script.sh")
+      end
+    end
+
+    context "and the script filename is not specified" do
+      let(:script) do
+        { "location" => "https://example.com/script.sh" }
+      end
+
+      it "uses the path as the filename" do
+        scripts = subject.read["scripts"][section]
+        expect(scripts.first).to include("name" => "script.sh")
+      end
+
+      context "but there is no path in the URL" do
+        let(:script) do
+          { "location" => "https://example.com/" }
+        end
+
+        it "uses the script type as the filename" do
+          scripts = subject.read["scripts"][section]
+          expect(scripts.first).to include("name" => "script-1")
+        end
+      end
+    end
   end
 
   context "when the script definition specifies a location" do
     let(:script) do
       {
-        "file_name" => "script.sh",
-        "source"    => "#!/bin/bash\necho 'Hello World!'"
+        "filename" => "script.sh",
+        "source"   => "#!/bin/bash\necho 'Hello World!'"
       }
     end
 
-    it "sets the \"body\" to the \"sources\"" do
+    it "uses the \"sources\" as \"content\"" do
       scripts = subject.read["scripts"][section]
-      expect(scripts.first).to include("body" => "#!/bin/bash\necho 'Hello World!'")
+      expect(scripts.first).to include("content" => "#!/bin/bash\necho 'Hello World!'")
+    end
+
+    context "and the script filename is not specified" do
+      let(:script) do
+        { "source" => "#!/bin/bash\necho 'Hello World!'" }
+      end
+
+      it "uses the script type as the filename" do
+        scripts = subject.read["scripts"][section]
+        expect(scripts.first).to include("name" => "script-1")
+      end
     end
   end
 end
@@ -77,9 +121,9 @@ describe Agama::AutoYaST::ScriptsReader do
       it_behaves_like "a script reader", "chroot-scripts", "post"
 
       let(:chroot_script) do
-        { "file_name" => "test.sh",
-          "chrooted"  => true,
-          "source"    => "#!/bin/bash\necho 'Hello World!'" }
+        { "filename" => "test.sh",
+          "chrooted" => true,
+          "source"   => "#!/bin/bash\necho 'Hello World!'" }
       end
 
       let(:profile) do
@@ -92,20 +136,26 @@ describe Agama::AutoYaST::ScriptsReader do
 
       context "when the \"chrooted\" option is not set" do
         let(:chroot_script) do
-          { "file_name" => "test.sh",
-            "source"    => "#!/bin/bash\necho 'Hello World!'" }
+          { "filename" => "test.sh",
+            "source"   => "#!/bin/bash\necho 'Hello World!'" }
         end
 
         it "sets the \"chroot\" option to false" do
           expect(subject.read["scripts"]).to include(
             "post" => [
               {
-                "name" => "test.sh", "chroot" => false, "body" => "#!/bin/bash\necho 'Hello World!'"
+                "name"    => "test.sh",
+                "chroot"  => false,
+                "content" => "#!/bin/bash\necho 'Hello World!'"
               }
             ]
           )
         end
       end
+    end
+
+    context "when a post-partitioning scripts is defined" do
+      it_behaves_like "a script reader", "postpartitioning-scripts", "postPartitioning"
     end
 
     context "when an init script is defined" do

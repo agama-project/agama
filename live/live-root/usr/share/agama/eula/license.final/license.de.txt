@@ -1,0 +1,214 @@
+Endbenutzer-Lizenzvereinbarung
+für SUSE-Software
+
+
+Endbenutzer-Lizenzvereinbarung für SUSE-Software
+MIT DEM KAUF, DER INSTALLATION, DEM HERUNTERLADEN ODER DER 
+ANDERWEITIGEN NUTZUNG DER SOFTWARE (WIE NACHSTEHEND DEFINIERT) 
+STIMMEN SIE DEN BEDINGUNGEN DIESER VEREINBARUNG ZU. WENN SIE DIESEN 
+BEDINGUNGEN NICHT ZUSTIMMEN, DÜRFEN SIE DIE SOFTWARE NICHT 
+HERUNTERLADEN, INSTALLIEREN ODER VERWENDEN. EINE EINZELPERSON, DIE 
+IM AUFTRAG EINER JURISTISCHEN PERSON HANDELT, BESTÄTIGT, DASS ER 
+BZW. SIE BERECHTIGT IST, DIESE VEREINBARUNG IM AUFTRAG DER 
+JURISTISCHEN PERSON EINZUGEHEN.  WENN SIE DIE VEREINBARUNG IM 
+AUFTRAG EINER JURISTISCHEN PERSON AKZEPTIEREN, BEZIEHEN SICH DIE 
+UNTEN VERWENDETEN BEGRIFFE "SIE" UND "IHR(E)" AUF DIESE JURISTISCHE 
+PERSON.
+
+SUSE LLC ("Lizenzgeber" oder "SUSE") stellt Softwareprodukte zur 
+Verfügung, die Folgendes umfassen können: (i) Softwareprogramme, die 
+von SUSE und/oder seinen angegliederten Unternehmen entwickelt 
+wurden; (ii) Softwareprogramme, die von Dritten entwickelt wurden; 
+(iii) Softwarepakete; und (iv) Marken, die Eigentum von SUSE 
+und/oder seinen angegliederten Unternehmen sind ("SUSE-Marken"), 
+sowie die entsprechende Dokumentation für diese Softwareprogramme 
+(solche Softwareprogramme, Softwarepakete, Marken und 
+Dokumentationen, werden als "Software" bezeichnet).
+
+Diese Endbenutzer-Lizenzvereinbarung ("EULA") ist eine rechtliche 
+Vereinbarung zwischen Ihnen (einer juristischen oder natürlichen 
+Person) und SUSE und regelt Ihre Nutzung der Software. Jedes Add-on, 
+jede Erweiterung, jede Aktualisierung, jede mobile Anwendung, jedes 
+Modul, jeder Adapter und jede Support-Version, die Sie herunterladen 
+oder erhalten und der keine andere Lizenzvereinbarung beigefügt ist, 
+gilt als Software und unterliegt dieser 
+Endbenutzer-Lizenzvereinbarung. Wenn die Gesetze im Land Ihres 
+Hauptgeschäftssitzes vorschreiben, dass Verträge in der jeweiligen 
+Landessprache abgefasst sein müssen, um durchsetzbar zu sein, können 
+Sie nach schriftlicher Anfrage an den Lizenzgeber eine Version in 
+der Landessprache erhalten. Dann wird die Nutzung der Software von 
+der Version in der Landessprache geregelt.      
+ 
+Lizenzbestimmungen
+Open Source
+Die Software enthält viele einzelne Komponenten, die 
+Open-Source-Software sind. Die Open-Source-Lizenz für jede 
+Komponente, die je nach Softwareprogramm die GNU General Public 
+License v.2 
+(https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html), die 
+Apache-License Version 2.0 
+(https://www.apache.org/licenses/LICENSE-2.0) oder eine andere 
+Open-Source-Lizenz sein kann (jede dieser Lizenzen wird als 
+"OSS-Lizenz" bezeichnet), befindet sich in der Lizenzdokumentation 
+und/oder im Quellcode der Komponente.
+ 
+Diese Endbenutzer-Lizenzvereinbarung regelt Ihre Nutzung der 
+Software, einschließlich der SUSE-Marken, schränkt jedoch Ihre 
+Rechte im Rahmen der OSS-Lizenz, die für Ihre Nutzung von 
+Open-Source-Code gilt, der in der Software ohne SUSE-Marken 
+enthalten ist, nicht ein und ersetzt oder ändert diese Rechte nicht.
+ 
+Die Software kann mit Programmen von Drittanbietern bereitgestellt 
+werden, die nicht Teil der Software sind. Diese Programme von 
+Drittanbietern sind nicht erforderlich, um die Software auszuführen, 
+werden Ihnen zur einfacheren Nutzung zur Verfügung gestellt und 
+unterliegen ihren eigenen Lizenzbedingungen. Die Lizenzbedingungen 
+werden entweder zusammen mit den Programmen von Drittanbietern 
+bereitgestellt oder können unter 
+https://www.suse.com/licensing/eula/ eingesehen werden. Wenn Sie der 
+Einhaltung von geltenden Lizenzbestimmungen für Programme von 
+Drittanbietern nicht zustimmen, sollten Sie diese nicht 
+installieren. Wenn Sie die Programme von Drittanbietern auf mehr als 
+einem System installieren oder die Programme von Drittanbietern auf 
+eine andere Partei übertragen möchten, müssen Sie sich an den 
+jeweiligen Lizenzgeber der entsprechenden Programme von 
+Drittanbietern wenden.
+
+Lizenz zur Nutzung der Software
+Vorbehaltlich der Einhaltung der Bedingungen dieser 
+Endbenutzer-Lizenzvereinbarung und der geltenden OSS-Lizenz wird 
+Ihnen eine unbefristete, nicht ausschließliche, nicht übertragbare, 
+widerrufliche, weltweite Lizenz zur Vervielfältigung und Nutzung von 
+Kopien der Software für den internen Gebrauch Ihrer juristischen 
+Person gewährt. 
+ 
+Diese Endbenutzer-Lizenzvereinbarung gestattet es Ihnen nicht, die 
+Software oder ihre Komponenten unter Verwendung der SUSE-Marken zu 
+vertreiben, mit der Ausnahme, Folgender Elemente, die Sie auch 
+außerhalb Ihrer juristischen Person weitergeben dürfen: (a) Kopien 
+der Software, jedoch nur, wenn dies im Rahmen einer separaten 
+schriftlichen Vereinbarung mit dem Lizenzgeber erlaubt wird, die 
+eine solche Weitergabe genehmigt, oder (b) die Bestandteile der 
+Software, jedoch nur, wenn Sie alle Instanzen einer SUSE-Marke 
+entfernen und ersetzen.
+
+Eigentumsrechte
+Die Software wird lizenziert, nicht verkauft.  Durch die Lizenz 
+werden Ihnen keine Besitzansprüche auf die Software übertragen. Der 
+Lizenzgeber und/oder die dritten Lizenzgeber behalten alle Rechte, 
+Ansprüche und Interessen in Bezug auf alle geistigen Eigentumsrechte 
+im Rahmen der Software.      
+
+SUSE-Marken
+Im Rahmen dieser Endbenutzer-Lizenzvereinbarung werden keine Rechte 
+oder Lizenzen, ob ausdrücklich oder stillschweigend, in Bezug auf 
+die Nutzung von SUSE-Marken, Markennamen oder Servicemarken des 
+Lizenzgebers oder dessen angegliederten Unternehmen oder 
+Lizenzgebern gewährt.
+
+Services und Support für Abonnements
+Der Lizenzgeber ist nicht verpflichtet, Wartung oder Support zu 
+leisten, außer dies wurde im Rahmen einer zusätzlichen Vereinbarung 
+anders vereinbart, die solche Services ausdrücklich umfasst.
+
+Gewährleistung und Haftung
+Begrenzte Garantie
+DIE SOFTWARE WIRD OHNE MÄNGELGEWÄHR UND OHNE JEGLICHE GARANTIEN 
+BEREITGESTELLT. SOFERN NICHT ANDERWEITIG VOM GESETZ BESCHRÄNKT, 
+SCHLIESST DER LIZENZGEBER SÄMTLICHE IMPLIZIERTEN GEWÄHRLEISTUNGEN 
+AUS, EINSCHLIESSLICH SÄMTLICHER GEWÄHRLEISTUNGEN IN BEZUG AUF 
+MARKTFÄHIGKEIT, EIGNUNG FÜR EINEN BESTIMMTEN ZWECK, GEWÄHRLEISTUNGEN 
+AUS EIGENTUMSRECHTEN ODER DER NICHTVERLETZUNG VON RECHTEN; FERNER 
+BESTEHEN KEINE GEWÄHRLEISTUNGEN, DIE SICH AUS DER VERHANDLUNG, 
+LEISTUNG ODER DEM HANDELSGEBRAUCH ERGEBEN. DER LIZENZGEBER 
+GARANTIERT NICHT, DASS DIE SOFTWARE BZW. DIE SERVICES IHREN 
+ANFORDERUNGEN ENTSPRECHEN, MIT IHREN BETRIEBSSYSTEMEN KOMPATIBEL 
+SIND BZW. DASS DER BETRIEB DER SOFTWARE FREI VON UNTERBRECHUNGEN 
+ODER FEHLERN SEIN WIRD. DIE VORSTEHENDEN AUSSCHLÜSSE UND 
+HAFTUNGSAUSSCHLÜSSE SIND EIN WESENTLICHER BESTANDTEIL DIESER 
+VEREINBARUNG. Einige Rechtsprechungen lassen bestimmte 
+Haftungsausschlüsse und Haftungsbeschränkungen nicht zu, sodass 
+einige dieser Bestimmungen möglicherweise nicht für Sie zutreffen. 
+Diese eingeschränkte Gewährleistung verleiht Ihnen bestimmte Rechte; 
+abhängig von Bundesstaat oder Rechtssystem ergeben sich 
+möglicherweise weitere Rechte.
+
+Haftungseinschränkung
+WEDER DER LIZENZGEBER NOCH SEINE ANGEGLIEDERTEN UNTERNEHMEN, 
+GESELLSCHAFTER, GESCHÄFTSFÜHRER ODER MITARBEITER HAFTEN FÜR JEGLICHE 
+FOLGESCHÄDEN ODER INDIREKTE SCHÄDEN, UNABHÄNGIG DAVON, OB DIESE AUF 
+VERTRAG, FAHRLÄSSIGKEIT, UNERLAUBTER HANDLUNG ODER EINER ANDEREN 
+HAFTUNGSTHEORIE BERUHEN, ODER FÜR GEWINNVERLUSTE, GESCHÄFTSVERLUSTE 
+ODER DATENVERLUSTE ODER -BESCHÄDIGUNGEN, AUCH WENN SIE AUF DIE 
+MÖGLICHKEIT SOLCHER SCHÄDEN HINGEWIESEN WURDEN.
+
+IN KEINEM FALL ÜBERSTEIGT DER GESAMTE HAFTUNGSUMFANG DES 
+LIZENZGEBERS IM RAHMEN ODER IN VERBINDUNG MIT DIESER 
+ENDBENUTZER-LIZENZVEREINBARUNG (OB IN EINEM FALL ODER IN EINER REIHE 
+VON FÄLLEN) 50 US-DOLLAR.
+
+Die oben genannten Ausschlüsse und Beschränkungen gelten nicht für 
+Ansprüche in Bezug auf Tod oder Körperverletzung, die durch die 
+Fahrlässigkeit des Lizenzgebers oder dessen Mitarbeiter, Vertreter 
+oder Auftragnehmer verursacht wurden. In den Rechtssystemen, die 
+keinen Ausschluss bzw. keine Einschränkung von 
+Schadenersatzansprüchen zulassen, einschließlich 
+Schadenersatzansprüchen bei Verletzung von implizierten Bedingungen 
+in Bezug auf Eigentumsrechte bzw. den stillen Besitz beliebiger 
+Software, die im Rahmen dieser Endbenutzer-Lizenzvereinbarung 
+erworben wurde, bzw. bei arglistiger Täuschung wird die Haftung des 
+Lizenzgebers im maximal zulässigen Umfang dieser Rechtssysteme 
+beschränkt bzw. ausgeschlossen.
+ 
+Allgemeine Bedingungen
+Gesetze
+Sämtliche Streitigkeiten, die sich aus oder im Zusammenhang mit 
+dieser Endbenutzer-Lizenzvereinbarung ergeben, unterliegen dem 
+materiellen Recht der Vereinigten Staaten und dem Bundesstaat New 
+York ohne Rücksicht auf dessen Auswahl von Gesetzesbestimmungen. 
+Jegliche Verfahren, Klagen oder Rechtssachen, die sich aus oder im 
+Zusammenhang mit dieser Endbenutzer-Lizenzvereinbarung ergeben, 
+werden ausschließlich von einem zuständigen Bundes- oder 
+Bundesstaatsgericht in New York entschieden. Sollte jedoch das Land 
+Ihres Hauptgeschäftssitzes ein Mitgliedsstaat der Europäischen Union 
+oder der Europäischen Freihandelsassoziation (EFTA) sein, (1) sind 
+ausschließlich die Gerichte in England und Wales für alle 
+Rechtsstreitigkeiten in Bezug auf diese 
+Endbenutzer-Lizenzvereinbarung zuständig; und (2) die Gesetze 
+Englands sind anzuwenden, außer es gelten die Gesetze des Landes mit 
+Ihrem Hauptgeschäftssitz für solche Rechtsstreitigkeiten, dann 
+finden die Gesetze dieses Landes Anwendung. Weder der Uniform 
+Computer Information Transaction Act (UCITA), das Übereinkommen der 
+Vereinten Nationen über Verträge über den internationalen Warenkauf 
+noch die Kollisionsnormen von New York oder England und Wales gelten 
+für diese Endbenutzer-Lizenzvereinbarung oder ihren Gegenstand.
+
+Ungeteilte Vereinbarung
+Diese Endbenutzer-Lizenzvereinbarung, zusammen mit sämtlichen 
+anderen Kaufbelegen bzw. anderen schriftlichen Vereinbarungen 
+zwischen Ihnen und dem Lizenzgeber oder seinen angegliederten 
+Unternehmen, enthält die gesamten Abreden und Vereinbarungen 
+zwischen Ihnen und dem Lizenzgeber und kann nur durch eine von Ihnen 
+und einem befugten Vertreter des Lizenzgebers vereinbarte 
+schriftliche Vereinbarung ergänzt bzw. modifiziert werden. KEIN 
+DRITTER LIZENZGEBER, DISTRIBUTOR, FACHHÄNDLER, EINZELHÄNDLER, 
+WIEDERVERKÄUFER, MITARBEITER UND KEIN DRITTES VERKAUFSPERSONAL IST 
+ZUM ÄNDERN DIESER VEREINBARUNG ODER ZU ANGABEN ODER ZUSAGEN 
+BERECHTIGT, DIE VON DEN BESTIMMUNGEN DIESER VEREINBARUNG ABWEICHEN 
+ODER DIESE ERGÄNZEN.
+
+Abtrennbarkeit
+Ist eine Bestimmung dieser Endbenutzer-Lizenzvereinbarung ungültig 
+oder nicht anwendbar, wird diese Bestimmung im notwendigen Umfang 
+ausgelegt, beschränkt, geändert oder notfalls aufgehoben, um die 
+Ungültigkeit oder Nichtdurchführbarkeit der Bestimmung zu 
+beseitigen; die übrigen Bestimmungen dieser 
+Endbenutzer-Lizenzvereinbarung bleiben unberührt. 
+
+:Version:2024-06-01:001
+SUSE.com
+
+Copyright (c) SUSE 2025
+
+SUSE - Rechtliches		
+Juni 2024

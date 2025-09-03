@@ -37,15 +37,22 @@ describe Agama::Users do
   describe "#assign_root_password" do
     let(:root_user) { instance_double(Y2Users::User) }
 
-    context "when the password is encrypted" do
-      it "sets the password as encrypted" do
-        subject.assign_root_password("encrypted", true)
-        root_user = users_config.users.root
-        expect(root_user.password).to eq(Y2Users::Password.create_encrypted("encrypted"))
+    describe "#root_user" do
+      it "returns the root user" do
+        root = subject.root_user
+        expect(root.name).to eq("root")
       end
     end
 
-    context "when the password is not encrypted" do
+    context "when the password is hashed" do
+      it "sets the password as hashed" do
+        subject.assign_root_password("hashed", true)
+        root_user = users_config.users.root
+        expect(root_user.password).to eq(Y2Users::Password.create_encrypted("hashed"))
+      end
+    end
+
+    context "when the password is not hashed" do
       it "sets the password in clear text" do
         subject.assign_root_password("12345", false)
         root_user = users_config.users.root
@@ -57,43 +64,30 @@ describe Agama::Users do
   describe "#remove_root_password" do
     it "removes the password" do
       subject.assign_root_password("12345", false)
-      expect { subject.remove_root_password }.to change { subject.root_password? }
-        .from(true).to(false)
-    end
-  end
-
-  describe "#root_password?" do
-    it "returns true if the root password is set" do
-      subject.assign_root_password("12345", false)
-      expect(subject.root_password?).to eq(true)
-    end
-
-    it "returns false if the root password is not set" do
-      expect(subject.root_password?).to eq(false)
-    end
-
-    it "returns true if the root password is set to nil" do
-      subject.assign_root_password("", false)
-      expect(subject.root_password?).to eq(false)
+      root = subject.root_user
+      expect(root.password).to be_kind_of(Y2Users::Password)
+      subject.remove_root_password
+      expect(root.password).to be_nil
     end
   end
 
   describe "#assign_first_user" do
     context "when the options given do not present any issue" do
       it "adds the user to the user's configuration" do
-        subject.assign_first_user("Jane Doe", "jane", "12345", false, false, {})
+        subject.assign_first_user("Jane Doe", "jane", "12345", false, {})
         user = users_config.users.by_name("jane")
         expect(user.full_name).to eq("Jane Doe")
         expect(user.password).to eq(Y2Users::Password.create_plain("12345"))
+        expect(user.groups.map(&:name)).to eq(["wheel"])
       end
 
       context "when a first user exists" do
         before do
-          subject.assign_first_user("Jane Doe", "jane", "12345", false, false, {})
+          subject.assign_first_user("Jane Doe", "jane", "12345", false, {})
         end
 
         it "replaces the user with the new one" do
-          subject.assign_first_user("John Doe", "john", "12345", false, false, {})
+          subject.assign_first_user("John Doe", "john", "12345", false, {})
 
           user = users_config.users.by_name("jane")
           expect(user).to be_nil
@@ -104,23 +98,23 @@ describe Agama::Users do
       end
 
       it "returns an empty array of issues" do
-        issues = subject.assign_first_user("Jane Doe", "jane", "12345", false, false, {})
+        issues = subject.assign_first_user("Jane Doe", "jane", "12345", false, {})
         expect(issues).to be_empty
       end
     end
 
     context "when the given arguments presents some critical error" do
       it "does not add the user to the config" do
-        subject.assign_first_user("Jonh Doe", "john", "", false, false, {})
+        subject.assign_first_user("Jonh Doe", "john", "", false, {})
         user = users_config.users.by_name("john")
         expect(user).to be_nil
-        subject.assign_first_user("Ldap user", "ldap", "12345", false, false, {})
+        subject.assign_first_user("Ldap user", "ldap", "12345", false, {})
         user = users_config.users.by_name("ldap")
         expect(user).to be_nil
       end
 
       it "returns an array with all the issues" do
-        issues = subject.assign_first_user("Root user", "root", "12345", false, false, {})
+        issues = subject.assign_first_user("Root user", "root", "12345", false, {})
         expect(issues.size).to eql(1)
       end
     end
@@ -128,7 +122,7 @@ describe Agama::Users do
 
   describe "#remove_first_user" do
     before do
-      subject.assign_first_user("Jane Doe", "jane", "12345", false, false, {})
+      subject.assign_first_user("Jane Doe", "jane", "12345", false, {})
     end
 
     it "removes the already defined first user" do
@@ -156,7 +150,7 @@ describe Agama::Users do
     end
 
     it "writes system and installer defined users" do
-      subject.assign_first_user("Jane Doe", "jane", "12345", false, false, {})
+      subject.assign_first_user("Jane Doe", "jane", "12345", false, {})
 
       expect(Y2Users::Linux::Writer).to receive(:new) do |target_config, _old_config|
         user_names = target_config.users.map(&:name)
@@ -166,6 +160,34 @@ describe Agama::Users do
 
       expect(writer).to receive(:write).and_return([])
       subject.write
+    end
+
+    context "when a SSH public key for the root user is given" do
+      let(:firewalld) do
+        Y2Firewall::Firewalld.instance
+      end
+
+      before do
+        subject.root_ssh_key = "ssh-rsa ..."
+        allow(firewalld).to receive(:installed?).and_return(true)
+      end
+
+      it "enables the sshd service" do
+        expect(Yast::Service).to receive(:Enable).with("sshd")
+        expect(firewalld.api).to receive(:add_service).with(firewalld.default_zone, "ssh")
+        subject.write
+      end
+    end
+
+    context "when no SSH public key is given" do
+      before do
+        subject.assign_root_password("", false)
+      end
+
+      it "disables the root password" do
+        expect(subject).to receive(:assign_root_password).with("!", true)
+        subject.write
+      end
     end
 
     context "if some issue occurs" do
@@ -196,7 +218,7 @@ describe Agama::Users do
 
       context "when a first user is defined" do
         before do
-          subject.assign_first_user("Jane Doe", "jdoe", "123456", false, false, {})
+          subject.assign_first_user("Jane Doe", "jdoe", "123456", false, {})
         end
 
         it "returns an empty list" do

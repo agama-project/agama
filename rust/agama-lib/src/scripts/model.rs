@@ -20,25 +20,48 @@
 
 use std::{
     fs,
-    io::Write,
-    os::unix::fs::OpenOptionsExt,
     path::{Path, PathBuf},
     process,
 };
 
 use serde::{Deserialize, Serialize};
-
-use crate::transfer::Transfer;
+use strum::{EnumIter, IntoEnumIterator};
 
 use super::ScriptError;
+use crate::file_source::{FileSource, WithFileSource};
+
+macro_rules! impl_with_file_source {
+    ($struct:ident) => {
+        impl WithFileSource for $struct {
+            /// File source.
+            fn file_source(&self) -> &FileSource {
+                &self.base.source
+            }
+
+            /// Mutable file source.
+            fn file_source_mut(&mut self) -> &mut FileSource {
+                &mut self.base.source
+            }
+        }
+    };
+}
 
 #[derive(
-    Debug, Clone, Copy, PartialEq, strum::Display, Serialize, Deserialize, utoipa::ToSchema,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    strum::Display,
+    EnumIter,
+    Serialize,
+    Deserialize,
+    utoipa::ToSchema,
 )]
 #[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
 pub enum ScriptsGroup {
     Pre,
+    PostPartitioning,
     Post,
     Init,
 }
@@ -47,46 +70,29 @@ pub enum ScriptsGroup {
 pub struct BaseScript {
     pub name: String,
     #[serde(flatten)]
-    pub source: ScriptSource,
+    pub source: FileSource,
 }
 
 impl BaseScript {
+    /// Writes the script to the given directory.
+    ///
+    /// * `workdir`: directory to write the script to.
     fn write<P: AsRef<Path>>(&self, workdir: P) -> Result<(), ScriptError> {
         let script_path = workdir.as_ref().join(&self.name);
         std::fs::create_dir_all(script_path.parent().unwrap())?;
-
-        let mut file = fs::OpenOptions::new()
-            .create(true)
-            .write(true)
-            .truncate(true)
-            .mode(0o500)
-            .open(&script_path)?;
-
-        match &self.source {
-            ScriptSource::Text { body } => write!(file, "{}", &body)?,
-            ScriptSource::Remote { url } => Transfer::get(url, file)?,
-        };
-
+        self.source.write(&script_path, 0o700)?;
         Ok(())
     }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(untagged)]
-pub enum ScriptSource {
-    /// Script's body.
-    Text { body: String },
-    /// URL to get the script from.
-    Remote { url: String },
 }
 
 /// Represents a script to run as part of the installation process.
 ///
 /// There are different types of scripts that can run at different stages of the installation.
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(tag = "type")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub enum Script {
     Pre(PreScript),
+    PostPartitioning(PostPartitioningScript),
     Post(PostScript),
     Init(InitScript),
 }
@@ -95,6 +101,7 @@ impl Script {
     fn base(&self) -> &BaseScript {
         match self {
             Script::Pre(inner) => &inner.base,
+            Script::PostPartitioning(inner) => &inner.base,
             Script::Post(inner) => &inner.base,
             Script::Init(inner) => &inner.base,
         }
@@ -119,6 +126,7 @@ impl Script {
     pub fn group(&self) -> ScriptsGroup {
         match self {
             Script::Pre(_) => ScriptsGroup::Pre,
+            Script::PostPartitioning(_) => ScriptsGroup::PostPartitioning,
             Script::Post(_) => ScriptsGroup::Post,
             Script::Init(_) => ScriptsGroup::Init,
         }
@@ -136,6 +144,7 @@ impl Script {
             .join(self.name());
         let runner = match self {
             Script::Pre(inner) => &inner.runner(),
+            Script::PostPartitioning(inner) => &inner.runner(),
             Script::Post(inner) => &inner.runner(),
             Script::Init(inner) => &inner.runner(),
         };
@@ -183,12 +192,43 @@ impl TryFrom<Script> for PreScript {
 
 impl WithRunner for PreScript {}
 
+impl_with_file_source!(PreScript);
+
+/// Represents a script that runs after partitioning.
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct PostPartitioningScript {
+    #[serde(flatten)]
+    pub base: BaseScript,
+}
+
+impl From<PostPartitioningScript> for Script {
+    fn from(value: PostPartitioningScript) -> Self {
+        Self::PostPartitioning(value)
+    }
+}
+
+impl TryFrom<Script> for PostPartitioningScript {
+    type Error = ScriptError;
+
+    fn try_from(value: Script) -> Result<Self, Self::Error> {
+        match value {
+            Script::PostPartitioning(inner) => Ok(inner),
+            _ => Err(ScriptError::WrongScriptType),
+        }
+    }
+}
+
+impl WithRunner for PostPartitioningScript {}
+
+impl_with_file_source!(PostPartitioningScript);
+
 /// Represents a script that runs after the installation finishes.
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct PostScript {
     #[serde(flatten)]
     pub base: BaseScript,
     /// Whether the script should be run in a chroot environment.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub chroot: Option<bool>,
 }
 
@@ -214,6 +254,8 @@ impl WithRunner for PostScript {
         Some(ScriptRunner::new().with_chroot(self.chroot.unwrap_or(true)))
     }
 }
+
+impl_with_file_source!(PostScript);
 
 /// Represents a script that runs during the first boot of the target system,
 /// once the installation is finished.
@@ -247,6 +289,8 @@ impl WithRunner for InitScript {
     }
 }
 
+impl_with_file_source!(InitScript);
+
 /// Manages a set of installation scripts.
 ///
 /// It offers an API to add and execute installation scripts.
@@ -277,10 +321,13 @@ impl ScriptsRepository {
 
     /// Removes all the scripts from the repository.
     pub fn clear(&mut self) -> Result<(), ScriptError> {
-        self.scripts.clear();
-        if self.workdir.exists() {
-            std::fs::remove_dir_all(&self.workdir)?;
+        for group in ScriptsGroup::iter() {
+            let path = self.workdir.join(group.to_string());
+            if path.exists() {
+                std::fs::remove_dir_all(path)?;
+            }
         }
+        self.scripts.clear();
         Ok(())
     }
 
@@ -294,7 +341,7 @@ impl ScriptsRepository {
             if let Err(error) = script.run(&self.workdir) {
                 log::error!(
                     "Failed to run user-defined script '{}': {:?}",
-                    &script.name(),
+                    &script.name(), // TODO: implement
                     error
                 );
             }
@@ -354,7 +401,10 @@ mod test {
     use tempfile::TempDir;
     use tokio::test;
 
-    use crate::scripts::{BaseScript, PreScript, Script, ScriptSource};
+    use crate::{
+        file_source::FileSource,
+        scripts::{BaseScript, PreScript, Script},
+    };
 
     use super::{ScriptsGroup, ScriptsRepository};
 
@@ -365,8 +415,8 @@ mod test {
 
         let base = BaseScript {
             name: "test".to_string(),
-            source: ScriptSource::Text {
-                body: "".to_string(),
+            source: FileSource::Text {
+                content: "".to_string(),
             },
         };
         let script = Script::Pre(PreScript { base });
@@ -383,11 +433,11 @@ mod test {
     async fn test_run_scripts() {
         let tmp_dir = TempDir::with_prefix("scripts-").expect("a temporary directory");
         let mut repo = ScriptsRepository::new(&tmp_dir);
-        let body = "#!/bin/bash\necho hello\necho error >&2".to_string();
+        let content = "#!/bin/bash\necho hello\necho error >&2".to_string();
 
         let base = BaseScript {
             name: "test".to_string(),
-            source: ScriptSource::Text { body },
+            source: FileSource::Text { content },
         };
         let script = Script::Pre(PreScript { base });
         repo.add(script).unwrap();
@@ -410,18 +460,24 @@ mod test {
     async fn test_clear_scripts() {
         let tmp_dir = TempDir::with_prefix("scripts-").expect("a temporary directory");
         let mut repo = ScriptsRepository::new(&tmp_dir);
-        let body = "#!/bin/bash\necho hello\necho error >&2".to_string();
+        let content = "#!/bin/bash\necho hello\necho error >&2".to_string();
 
         let base = BaseScript {
             name: "test".to_string(),
-            source: ScriptSource::Text { body },
+            source: FileSource::Text { content },
         };
         let script = Script::Pre(PreScript { base });
         repo.add(script).expect("add the script to the repository");
+
+        let autoyast_path = tmp_dir.path().join("autoyast");
+        std::fs::create_dir(&autoyast_path).unwrap();
 
         let script_path = tmp_dir.path().join("pre").join("test");
         assert!(script_path.exists());
         _ = repo.clear();
         assert!(!script_path.exists());
+
+        // the directory for AutoYaST scripts is not removed
+        assert!(autoyast_path.exists())
     }
 }

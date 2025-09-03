@@ -36,13 +36,13 @@ describe Agama::Storage::Proposal do
 
   before do
     mock_storage(devicegraph: scenario)
-    allow(Y2Storage::StorageManager.instance).to receive(:arch).and_return(arch)
+    allow(Y2Storage::Arch).to receive(:new).and_return(arch)
   end
 
   let(:scenario) { "windows-linux-pc.yml" }
 
   let(:arch) do
-    instance_double(Y2Storage::Arch, efiboot?: true, ram_size: 4.GiB.to_i)
+    instance_double(Y2Storage::Arch, x86?: true, efiboot?: true, ram_size: 4.GiB.to_i)
   end
 
   let(:config_path) do
@@ -141,19 +141,6 @@ describe Agama::Storage::Proposal do
           subject.calculate_autoyast(partitioning)
           expect(subject.issues).to be_empty
         end
-
-        it "runs all the callbacks" do
-          callback1 = proc {}
-          callback2 = proc {}
-
-          subject.on_calculate(&callback1)
-          subject.on_calculate(&callback2)
-
-          expect(callback1).to receive(:call)
-          expect(callback2).to receive(:call)
-
-          subject.calculate_autoyast(partitioning)
-        end
       end
 
       context "if no root is specified" do
@@ -183,19 +170,6 @@ describe Agama::Storage::Proposal do
               description: /No root/, severity: Agama::Issue::Severity::ERROR
             )
           )
-        end
-
-        it "runs all the callbacks" do
-          callback1 = proc {}
-          callback2 = proc {}
-
-          subject.on_calculate(&callback1)
-          subject.on_calculate(&callback2)
-
-          expect(callback1).to receive(:call)
-          expect(callback2).to receive(:call)
-
-          subject.calculate_autoyast(partitioning)
         end
       end
     end
@@ -247,7 +221,7 @@ describe Agama::Storage::Proposal do
           subject.calculate_autoyast(partitioning)
           expect(subject.issues).to include(
             an_object_having_attributes(
-              description: /Cannot accommodate/, severity: Agama::Issue::Severity::ERROR
+              description: /Cannot calculate/, severity: Agama::Issue::Severity::ERROR
             )
           )
         end
@@ -375,7 +349,7 @@ describe Agama::Storage::Proposal do
           subject.calculate_autoyast(partitioning)
           expect(subject.issues).to include(
             an_object_having_attributes(
-              description: /Cannot accommodate/, severity: Agama::Issue::Severity::ERROR
+              description: /Cannot calculate/, severity: Agama::Issue::Severity::ERROR
             )
           )
         end
@@ -552,19 +526,6 @@ describe Agama::Storage::Proposal do
           root = root_filesystem(sda)
           expect(root.snapshots?).to eq(false)
         end
-      end
-
-      it "runs all the callbacks" do
-        callback1 = proc {}
-        callback2 = proc {}
-
-        subject.on_calculate(&callback1)
-        subject.on_calculate(&callback2)
-
-        expect(callback1).to receive(:call)
-        expect(callback2).to receive(:call)
-
-        subject.calculate_autoyast(partitioning)
       end
     end
   end

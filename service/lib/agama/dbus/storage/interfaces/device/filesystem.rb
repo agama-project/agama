@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -58,7 +58,7 @@ module Agama
             #
             # @return [String] e.g., "ext4"
             def filesystem_type
-              storage_device.filesystem.type.to_human_string
+              storage_device.filesystem.type.to_s
             end
 
             # Mount path of the file system.

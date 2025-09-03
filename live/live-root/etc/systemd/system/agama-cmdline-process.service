@@ -1,0 +1,17 @@
+[Unit]
+Description=Agama kernel cmdline processing
+
+# have to be after network to be able to download info files
+After=network-online.target
+
+# before starting the Agama servers so they read configuration parsed
+Before=agama-web-server.service
+Before=agama.service
+
+[Service]
+Type=oneshot
+ExecStart=agama-kernel-cmdline.sh
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target

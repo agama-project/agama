@@ -1,11 +1,10 @@
 name: Submit agama-installer
 
+permissions:
+  contents: read
+
 on:
-  # runs on pushes targeting the default branch
   push:
-    branches:
-      - master
-      - release
     paths:
       # run only when a live ISO source is changed
       - live/**
@@ -14,9 +13,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  update_staging_package:
-    # do not run in forks which do not set the OBS_PROJECT variable
-    if: vars.OBS_PROJECT != ''
+  update_obs_package:
+    # do not run in forks which do not set the OBS_PROJECTS variable,
+    # or the mapping for the current branch is missing
+    if: vars.OBS_PROJECTS && fromJson(vars.OBS_PROJECTS)[github.ref_name] && vars.OBS_USER
 
     runs-on: ubuntu-latest
 
@@ -41,11 +41,11 @@ jobs:
       - name: Configure osc
         run: .github/workflows/configure_osc.sh
         env:
-          OBS_USER:     ${{ secrets.OBS_USER }}
+          OBS_USER:     ${{ vars.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Checkout ${{ vars.OBS_PROJECT }} agama-installer
-        run: osc co -o dist ${{ vars.OBS_PROJECT }} agama-installer
+      - name: Checkout ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }} agama-installer
+        run: osc co -o dist ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }} agama-installer
         working-directory: ./live
 
       - name: Build sources
@@ -60,6 +60,6 @@ jobs:
         run: osc diff && osc status
         working-directory: ./live/dist
 
-      - name: Commit agama-installer to ${{ vars.OBS_PROJECT }}
+      - name: Commit agama-installer to ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}
         run: osc commit -m "Updated to Agama $GITHUB_SHA"
         working-directory: ./live/dist

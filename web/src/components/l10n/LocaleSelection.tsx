@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import { Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
+import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
 import { _ } from "~/i18n";
@@ -54,13 +54,9 @@ export default function LocaleSelection() {
         onChange={() => setSelected(id)}
         label={
           <Flex gap={{ default: "gapSm" }}>
-            <span className={textStyles.fontSizeLg}>
-              <b>{name}</b>
-            </span>
-            <span className={[textStyles.fontSizeMd, textStyles.color_100].join(" ")}>
-              {territory}
-            </span>
-            <span className={[textStyles.fontSizeXs, textStyles.color_400].join(" ")}>{id}</span>
+            <Content isEditorial>{name}</Content>
+            <Content className={`${textStyles.textColorPlaceholder}`}>{territory}</Content>
+            <Content className={`${textStyles.textColorSubtle}`}>{id}</Content>
           </Flex>
         }
         value={id}
@@ -76,21 +72,19 @@ export default function LocaleSelection() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("Locale selection")}</h2>
+        <Content component="h2">{_("Locale selection")}</Content>
         <ListSearch placeholder={searchHelp} elements={locales} onChange={setFilteredLocales} />
       </Page.Header>
 
       <Page.Content>
-        <Page.Section>
-          <Form id="localeSelection" onSubmit={onSubmit}>
-            <FormGroup isStack>{localesList}</FormGroup>
-          </Form>
-        </Page.Section>
+        <Form id="localeSelection" onSubmit={onSubmit}>
+          <FormGroup isStack>{localesList}</FormGroup>
+        </Form>
       </Page.Content>
 
       <Page.Actions>
-        <Page.Cancel />
         <Page.Submit form="localeSelection">{_("Select")}</Page.Submit>
+        <Page.Cancel />
       </Page.Actions>
     </Page>
   );

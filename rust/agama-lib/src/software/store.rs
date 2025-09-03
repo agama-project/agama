@@ -22,34 +22,97 @@
 
 use std::collections::HashMap;
 
-use super::{SoftwareHTTPClient, SoftwareSettings};
-use crate::base_http_client::BaseHTTPClient;
-use crate::error::ServiceError;
+use super::{
+    http_client::SoftwareHTTPClientError, model::SoftwareConfig, settings::PatternsSettings,
+    SoftwareHTTPClient, SoftwareSettings,
+};
+use crate::http::BaseHTTPClient;
 
-/// Loads and stores the software settings from/to the D-Bus service.
+#[derive(Debug, thiserror::Error)]
+#[error("Error processing software settings: {0}")]
+pub struct SoftwareStoreError(#[from] SoftwareHTTPClientError);
+
+type SoftwareStoreResult<T> = Result<T, SoftwareStoreError>;
+
+/// Loads and stores the software settings from/to the HTTP API.
 pub struct SoftwareStore {
     software_client: SoftwareHTTPClient,
 }
 
 impl SoftwareStore {
-    pub fn new(client: BaseHTTPClient) -> Result<SoftwareStore, ServiceError> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> SoftwareStore {
+        Self {
             software_client: SoftwareHTTPClient::new(client),
+        }
+    }
+
+    pub async fn load(&self) -> SoftwareStoreResult<SoftwareSettings> {
+        let patterns = self.software_client.user_selected_patterns().await?;
+        // FIXME: user_selected_patterns is calling get_config too.
+        let config = self.software_client.get_config().await?;
+        Ok(SoftwareSettings {
+            patterns: if patterns.is_empty() {
+                None
+            } else {
+                Some(PatternsSettings::from(patterns))
+            },
+            packages: config.packages,
+            extra_repositories: config.extra_repositories,
+            only_required: config.only_required,
         })
     }
 
-    pub async fn load(&self) -> Result<SoftwareSettings, ServiceError> {
-        let patterns = self.software_client.user_selected_patterns().await?;
-        Ok(SoftwareSettings { patterns })
-    }
+    pub async fn store(&self, settings: &SoftwareSettings) -> SoftwareStoreResult<()> {
+        let patterns: Option<HashMap<String, bool>> =
+            if let Some(patterns) = settings.patterns.clone() {
+                let mut current_patterns: Vec<String>;
 
-    pub async fn store(&self, settings: &SoftwareSettings) -> Result<(), ServiceError> {
-        let patterns: HashMap<String, bool> = settings
-            .patterns
-            .iter()
-            .map(|name| (name.to_owned(), true))
-            .collect();
-        self.software_client.select_patterns(patterns).await?;
+                match patterns {
+                    PatternsSettings::PatternsList(list) => current_patterns = list,
+                    PatternsSettings::PatternsMap(map) => {
+                        current_patterns = self.software_client.user_selected_patterns().await?;
+
+                        if let Some(patterns_add) = map.add {
+                            for pattern in patterns_add {
+                                if !current_patterns.contains(&pattern) {
+                                    current_patterns.push(pattern);
+                                }
+                            }
+                        }
+
+                        if let Some(patterns_remove) = map.remove {
+                            let mut new_patterns: Vec<String> = vec![];
+
+                            for pattern in current_patterns {
+                                if !patterns_remove.contains(&pattern) {
+                                    new_patterns.push(pattern)
+                                }
+                            }
+
+                            current_patterns = new_patterns;
+                        }
+                    }
+                }
+
+                Some(
+                    current_patterns
+                        .iter()
+                        .map(|n| (n.to_owned(), true))
+                        .collect(),
+                )
+            } else {
+                None
+            };
+
+        let config = SoftwareConfig {
+            // do not change the product
+            product: None,
+            patterns,
+            packages: settings.packages.clone(),
+            extra_repositories: settings.extra_repositories.clone(),
+            only_required: settings.only_required,
+        };
+        self.software_client.set_config(&config).await?;
 
         Ok(())
     }
@@ -58,14 +121,13 @@ impl SoftwareStore {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::base_http_client::BaseHTTPClient;
+    use crate::http::BaseHTTPClient;
     use httpmock::prelude::*;
     use std::error::Error;
     use tokio::test; // without this, "error: async functions cannot be used for tests"
 
     fn software_store(mock_server_url: String) -> SoftwareStore {
-        let mut bhc = BaseHTTPClient::default();
-        bhc.base_url = mock_server_url;
+        let bhc = BaseHTTPClient::new(mock_server_url).unwrap();
         let client = SoftwareHTTPClient::new(bhc);
         SoftwareStore {
             software_client: client,
@@ -82,6 +144,7 @@ mod test {
                 .body(
                     r#"{
                     "patterns": {"xfce":true},
+                    "packages": ["vim"],
                     "product": "Tumbleweed"
                 }"#,
                 );
@@ -90,15 +153,20 @@ mod test {
 
         let store = software_store(url);
         let settings = store.load().await?;
+        let patterns_settings = PatternsSettings::from(vec!["xfce".to_owned()]);
 
         let expected = SoftwareSettings {
-            patterns: vec!["xfce".to_owned()],
+            patterns: Some(patterns_settings),
+            packages: Some(vec!["vim".to_owned()]),
+            extra_repositories: None,
+            only_required: None,
         };
         // main assertion
         assert_eq!(settings, expected);
 
+        // FIXME: at this point it is calling the method twice
         // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
-        software_mock.assert();
+        software_mock.assert_hits(2);
         Ok(())
     }
 
@@ -109,14 +177,19 @@ mod test {
             when.method(PUT)
                 .path("/api/software/config")
                 .header("content-type", "application/json")
-                .body(r#"{"patterns":{"xfce":true},"product":null}"#);
+                .body(r#"{"patterns":{"xfce":true},"packages":["vim"],"product":null,"extraRepositories":null,"onlyRequired":null}"#);
             then.status(200);
         });
         let url = server.url("/api");
 
         let store = software_store(url);
+        let patterns_settings = PatternsSettings::from(vec!["xfce".to_owned()]);
+
         let settings = SoftwareSettings {
-            patterns: vec!["xfce".to_owned()],
+            patterns: Some(patterns_settings),
+            packages: Some(vec!["vim".to_owned()]),
+            extra_repositories: None,
+            only_required: None,
         };
 
         let result = store.store(&settings).await;
@@ -136,15 +209,19 @@ mod test {
             when.method(PUT)
                 .path("/api/software/config")
                 .header("content-type", "application/json")
-                .body(r#"{"patterns":{"no_such_pattern":true},"product":null}"#);
+                .body(r#"{"patterns":{"no_such_pattern":true},"packages":["vim"],"product":null,"extraRepositories":null,"onlyRequired":null}"#);
             then.status(400)
                 .body(r#"'{"error":"Agama service error: Failed to find these patterns: [\"no_such_pattern\"]"}"#);
         });
         let url = server.url("/api");
 
         let store = software_store(url);
+        let patterns_settings = PatternsSettings::from(vec!["no_such_pattern".to_owned()]);
         let settings = SoftwareSettings {
-            patterns: vec!["no_such_pattern".to_owned()],
+            patterns: Some(patterns_settings),
+            packages: Some(vec!["vim".to_owned()]),
+            extra_repositories: None,
+            only_required: None,
         };
 
         let result = store.store(&settings).await;

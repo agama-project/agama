@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -20,9 +20,17 @@
 
 //! Implements the store for the storage settings.
 
-use super::StorageSettings;
-use crate::base_http_client::{BaseHTTPClient, BaseHTTPClientError};
-use crate::storage::http_client::StorageHTTPClient;
+pub mod dasd;
+pub mod zfcp;
+
+use super::{http_client::StorageHTTPClientError, StorageSettings};
+use crate::{http::BaseHTTPClient, storage::http_client::StorageHTTPClient};
+
+#[derive(Debug, thiserror::Error)]
+#[error("Error processing storage settings: {0}")]
+pub struct StorageStoreError(#[from] StorageHTTPClientError);
+
+type StorageStoreResult<T> = Result<T, StorageStoreError>;
 
 /// Loads and stores the storage settings from/to the HTTP service.
 pub struct StorageStore {
@@ -30,17 +38,17 @@ pub struct StorageStore {
 }
 
 impl StorageStore {
-    pub fn new(client: BaseHTTPClient) -> Result<StorageStore, BaseHTTPClientError> {
-        Ok(Self {
+    pub fn new(client: BaseHTTPClient) -> StorageStore {
+        Self {
             storage_client: StorageHTTPClient::new(client),
-        })
+        }
     }
 
-    pub async fn load(&self) -> Result<StorageSettings, BaseHTTPClientError> {
-        self.storage_client.get_config().await
+    pub async fn load(&self) -> StorageStoreResult<Option<StorageSettings>> {
+        Ok(self.storage_client.get_config().await?)
     }
 
-    pub async fn store(&self, settings: &StorageSettings) -> Result<(), BaseHTTPClientError> {
+    pub async fn store(&self, settings: &StorageSettings) -> StorageStoreResult<()> {
         self.storage_client.set_config(settings).await?;
         Ok(())
     }
@@ -49,14 +57,13 @@ impl StorageStore {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::base_http_client::BaseHTTPClient;
+    use crate::http::BaseHTTPClient;
     use httpmock::prelude::*;
     use std::error::Error;
     use tokio::test; // without this, "error: async functions cannot be used for tests"
 
     fn storage_store(mock_server_url: String) -> StorageStore {
-        let mut bhc = BaseHTTPClient::default();
-        bhc.base_url = mock_server_url;
+        let bhc = BaseHTTPClient::new(mock_server_url).unwrap();
         let client = StorageHTTPClient::new(bhc);
         StorageStore {
             storage_client: client,
@@ -79,11 +86,35 @@ mod test {
         let url = server.url("/api");
 
         let store = storage_store(url);
-        let settings = store.load().await?;
+        let opt_settings = store.load().await?;
+        assert!(opt_settings.is_some());
+        let settings = opt_settings.unwrap();
 
         // main assertion
         assert_eq!(settings.storage.unwrap().get(), r#"{ "some": "stuff" }"#);
         assert!(settings.storage_autoyast.is_none());
+
+        // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
+        storage_mock.assert();
+        Ok(())
+    }
+
+    #[test]
+    async fn test_getting_storage_null() -> Result<(), Box<dyn Error>> {
+        let server = MockServer::start();
+        let storage_mock = server.mock(|when, then| {
+            when.method(GET).path("/api/storage/config");
+            then.status(200)
+                .header("content-type", "application/json")
+                .body("null");
+        });
+        let url = server.url("/api");
+
+        let store = storage_store(url);
+        let opt_settings = store.load().await?;
+
+        // main assertion
+        assert!(opt_settings.is_none());
 
         // Ensure the specified mock was called exactly one time (or fail with a detailed error description).
         storage_mock.assert();

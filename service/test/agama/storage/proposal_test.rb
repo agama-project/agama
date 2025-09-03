@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -27,6 +27,9 @@ require "agama/storage/device_settings"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "y2storage"
+require "y2storage/refinements"
+
+using Y2Storage::Refinements::SizeCasts
 
 def root_partition(size)
   fs_type_config = Agama::Storage::Configs::FilesystemType.new.tap do |t|
@@ -113,11 +116,53 @@ describe Agama::Storage::Proposal do
     end
   end
 
-  describe "#config_json" do
+  describe "#default_storage_json" do
+    context "if no device is given" do
+      it "returns the default JSON config without device" do
+        expect(subject.default_storage_json).to eq(
+          {
+            storage: {
+              drives: [
+                {
+                  search:     nil,
+                  partitions: [
+                    { generate: "default" }
+                  ]
+                }
+              ]
+            }
+          }
+        )
+      end
+    end
+
+    context "if a device is given" do
+      let(:device) { Y2Storage::StorageManager.instance.probed.disks.first }
+
+      it "returns the default JSON config for the given device" do
+        expect(subject.default_storage_json(device)).to eq(
+          {
+            storage: {
+              drives: [
+                {
+                  search:     device.name,
+                  partitions: [
+                    { generate: "default" }
+                  ]
+                }
+              ]
+            }
+          }
+        )
+      end
+    end
+  end
+
+  describe "#storage_json" do
     context "if no proposal has been calculated yet" do
-      it "returns an empty hash" do
+      it "returns nil" do
         expect(subject.calculated?).to eq(false)
-        expect(proposal.config_json).to eq({})
+        expect(proposal.storage_json).to be_nil
       end
     end
 
@@ -126,7 +171,7 @@ describe Agama::Storage::Proposal do
         subject.calculate_guided(Agama::Storage::ProposalSettings.new)
       end
 
-      it "returns the guided JSON config" do
+      it "returns the solved guided JSON config" do
         expected_json = {
           storage: {
             guided: {
@@ -144,7 +189,7 @@ describe Agama::Storage::Proposal do
           }
         }
 
-        expect(subject.config_json).to eq(expected_json)
+        expect(subject.storage_json).to eq(expected_json)
       end
     end
 
@@ -153,8 +198,66 @@ describe Agama::Storage::Proposal do
         subject.calculate_agama(achivable_config)
       end
 
-      it "returns the storage JSON config" do
-        skip "Missing conversion from Agama::Storage::Config to JSON"
+      it "returns the unsolved JSON config" do
+        expect(subject.storage_json).to eq(
+          {
+            storage: {
+              boot:         { configure: true },
+              drives:       [
+                {
+                  search:     {
+                    ifNotFound: "error",
+                    max:        1
+                  },
+                  partitions: [
+                    {
+                      filesystem: {
+                        reuseIfPossible: false,
+                        path:            "/",
+                        type:            "btrfs",
+                        mkfsOptions:     [],
+                        mountOptions:    []
+                      },
+                      size:       {
+                        min: 10.GiB.to_i,
+                        max: 10.GiB.to_i
+                      }
+                    }
+                  ]
+                }
+              ],
+              mdRaids:      [],
+              volumeGroups: []
+            }
+          }
+        )
+      end
+    end
+
+    context "if a proposal was calculated with the autoyast strategy" do
+      before do
+        subject.calculate_autoyast(partitioning)
+      end
+
+      let(:partitioning) do
+        [
+          {
+            partitions: [
+              {
+                mount: "/",
+                size:  "10 GiB"
+              }
+            ]
+          }
+        ]
+      end
+
+      it "returns the unsolved JSON config" do
+        expect(subject.storage_json).to eq(
+          {
+            legacyAutoyastStorage: partitioning
+          }
+        )
       end
     end
 
@@ -175,7 +278,7 @@ describe Agama::Storage::Proposal do
         }
       end
 
-      it "returns the full guided JSON config" do
+      it "returns the solved guided JSON config" do
         expected_json = {
           storage: {
             guided: {
@@ -193,7 +296,7 @@ describe Agama::Storage::Proposal do
           }
         }
 
-        expect(subject.config_json).to eq(expected_json)
+        expect(subject.storage_json).to eq(expected_json)
       end
     end
 
@@ -217,8 +320,8 @@ describe Agama::Storage::Proposal do
         }
       end
 
-      it "returns the given storage JSON config" do
-        expect(subject.config_json).to eq(config_json)
+      it "returns the given JSON config" do
+        expect(subject.storage_json).to eq(config_json)
       end
     end
 
@@ -243,23 +346,249 @@ describe Agama::Storage::Proposal do
       end
 
       it "returns the given autoyast JSON config" do
-        expect(subject.config_json).to eq(config_json)
+        expect(subject.storage_json).to eq(config_json)
       end
     end
   end
 
-  shared_examples "check proposal callbacks" do |action, settings|
-    it "runs all the callbacks" do
-      callback1 = proc {}
-      callback2 = proc {}
+  describe "#model_json" do
+    context "if no proposal has been calculated yet" do
+      it "returns nil" do
+        expect(subject.model_json).to be_nil
+      end
+    end
 
-      subject.on_calculate(&callback1)
-      subject.on_calculate(&callback2)
+    context "if a guided proposal has been calculated" do
+      before do
+        subject.calculate_from_json(settings_json)
+      end
 
-      expect(callback1).to receive(:call)
-      expect(callback2).to receive(:call)
+      let(:settings_json) do
+        {
+          storage: {
+            guided: {
+              target: { disk: "/dev/vda" }
+            }
+          }
+        }
+      end
 
-      subject.public_send(action, send(settings))
+      it "returns nil" do
+        expect(subject.model_json).to be_nil
+      end
+    end
+
+    context "if an AutoYaST proposal has been calculated" do
+      before do
+        subject.calculate_from_json(autoyast_json)
+      end
+
+      let(:autoyast_json) do
+        {
+          legacyAutoyastStorage: [
+            { device: "/dev/vda" }
+          ]
+        }
+      end
+
+      it "returns nil" do
+        expect(subject.model_json).to be_nil
+      end
+    end
+
+    context "if an agama proposal has been calculated" do
+      before do
+        subject.calculate_from_json(config_json)
+      end
+
+      context "and the model does not support the config" do
+        let(:config_json) do
+          {
+            storage: {
+              drives: [
+                {
+                  partitions: [
+                    {
+                      encryption: { luks1: { password: "12345" } }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        end
+
+        it "returns nil" do
+          expect(subject.model_json).to be_nil
+        end
+      end
+
+      context "and the config has errors" do
+        let(:config_json) do
+          {
+            storage: {
+              drives: [
+                { search: "unknown" }
+              ]
+            }
+          }
+        end
+
+        it "returns the config model" do
+          expect(subject.model_json).to eq(
+            {
+              boot:         {
+                configure: true,
+                device:    {
+                  default: true
+                }
+              },
+              drives:       [
+                {
+                  name:        "unknown",
+                  spacePolicy: "keep",
+                  partitions:  []
+                }
+              ],
+              mdRaids:      [],
+              volumeGroups: []
+            }
+          )
+        end
+      end
+
+      context "and the config has not errors" do
+        let(:config_json) do
+          {
+            storage: {
+              drives: [
+                {
+                  alias:      "root",
+                  partitions: [
+                    {
+                      filesystem: { path: "/" },
+                      encryption: {
+                        luks1: { password: "12345" }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        end
+
+        it "returns the config model" do
+          expect(subject.model_json).to eq(
+            {
+              boot:         {
+                configure: true,
+                device:    {
+                  default: true,
+                  name:    "/dev/sda"
+                }
+              },
+              encryption:   {
+                method:   "luks1",
+                password: "12345"
+              },
+              drives:       [
+                {
+                  name:        "/dev/sda",
+                  spacePolicy: "keep",
+                  partitions:  [
+                    {
+                      mountPath:      "/",
+                      filesystem:     {
+                        reuse:   false,
+                        default: true,
+                        type:    "ext4"
+                      },
+                      size:           {
+                        default: true,
+                        min:     0
+                      },
+                      delete:         false,
+                      deleteIfNeeded: false,
+                      resize:         false,
+                      resizeIfNeeded: false
+                    }
+                  ]
+                }
+              ],
+              mdRaids:      [],
+              volumeGroups: []
+            }
+          )
+        end
+      end
+    end
+  end
+
+  describe "#solve_model" do
+    let(:model) do
+      {
+        drives: [
+          {
+            name:       "/dev/sda",
+            alias:      "sda",
+            partitions: [
+              { mountPath: "/" }
+            ]
+          }
+        ]
+      }
+    end
+
+    it "returns the solved model" do
+      result = subject.solve_model(model)
+
+      expect(result).to eq({
+        boot:         {
+          configure: true,
+          device:    {
+            default: true,
+            name:    "/dev/sda"
+          }
+        },
+        drives:       [
+          {
+            name:        "/dev/sda",
+            spacePolicy: "keep",
+            partitions:  [
+              {
+                mountPath:      "/",
+                filesystem:     {
+                  reuse:   false,
+                  default: true,
+                  type:    "ext4"
+                },
+                size:           {
+                  default: true,
+                  min:     0
+                },
+                delete:         false,
+                deleteIfNeeded: false,
+                resize:         false,
+                resizeIfNeeded: false
+              }
+            ]
+          }
+        ],
+        mdRaids:      [],
+        volumeGroups: []
+      })
+    end
+
+    context "if the system has not been probed yet" do
+      before do
+        allow(Y2Storage::StorageManager.instance).to receive(:probed?).and_return(false)
+      end
+
+      it "returns nil" do
+        result = subject.solve_model(model)
+        expect(result).to be_nil
+      end
     end
   end
 
@@ -282,19 +611,6 @@ describe Agama::Storage::Proposal do
       it "does not calculate a proposal" do
         subject.public_send(action, send(settings))
         expect(Y2Storage::StorageManager.instance.proposal).to be_nil
-      end
-
-      it "does not run the callbacks" do
-        callback1 = proc {}
-        callback2 = proc {}
-
-        subject.on_calculate(&callback1)
-        subject.on_calculate(&callback2)
-
-        expect(callback1).to_not receive(:call)
-        expect(callback2).to_not receive(:call)
-
-        subject.public_send(action, send(settings))
       end
 
       it "returns false" do
@@ -339,8 +655,6 @@ describe Agama::Storage::Proposal do
         an_object_having_attributes(mount_point: "/", device: "/dev/sdb")
       )
     end
-
-    include_examples "check proposal callbacks", :calculate_guided, :achivable_settings
 
     include_examples "check proposal return",
       :calculate_guided, :achivable_settings, :impossible_settings
@@ -397,8 +711,6 @@ describe Agama::Storage::Proposal do
       expect(Y2Storage::StorageManager.instance.proposal).to be_a(Y2Storage::AgamaProposal)
     end
 
-    include_examples "check proposal callbacks", :calculate_agama, :achivable_config
-
     include_examples "check proposal return",
       :calculate_agama, :achivable_config, :impossible_config
 
@@ -439,8 +751,6 @@ describe Agama::Storage::Proposal do
       subject.calculate_autoyast(achivable_settings)
       expect(Y2Storage::StorageManager.instance.proposal).to be_a(Y2Storage::AutoinstProposal)
     end
-
-    include_examples "check proposal callbacks", :calculate_autoyast, :achivable_settings
 
     include_examples "check proposal return",
       :calculate_autoyast, :achivable_settings, :impossible_settings
@@ -529,7 +839,7 @@ describe Agama::Storage::Proposal do
       let(:config_json) { {} }
 
       it "raises an error" do
-        expect { subject.calculate_from_json(config_json) }.to raise_error(/Invalid storage/)
+        expect { subject.calculate_from_json(config_json) }.to raise_error(/Invalid JSON/)
       end
     end
   end
@@ -580,7 +890,7 @@ describe Agama::Storage::Proposal do
         subject.calculate_agama(config)
 
         expect(subject.issues).to include(
-          an_object_having_attributes(description: /Cannot accommodate/)
+          an_object_having_attributes(description: /Cannot calculate/)
         )
       end
     end

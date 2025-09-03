@@ -20,8 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React from "react";
 import {
   Button,
@@ -36,17 +34,34 @@ import {
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
-import { deviceChildren, deviceSize } from "~/components/storage/utils";
+import { deviceSize, formattedPath } from "~/components/storage/utils";
 import {
   DeviceName,
   DeviceDetails,
   DeviceSize,
   toStorageDevice,
 } from "~/components/storage/device-utils";
-import { TreeTable } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { PartitionSlot, SpaceAction, StorageDevice } from "~/types/storage";
+import { PartitionSlot, SpacePolicyAction, StorageDevice } from "~/types/storage";
+import { apiModel } from "~/api/storage/types";
 import { TreeTableColumn } from "~/components/core/TreeTable";
+import { Table, Td, Th, Tr, Thead, Tbody } from "@patternfly/react-table";
+import { useConfigModel } from "~/queries/storage/config-model";
+
+const isUsedPartition = (partition: apiModel.Partition): boolean => {
+  return partition.filesystem !== undefined;
+};
+
+// FIXME: there is too much logic here. This is one of those cases that should be considered
+// when restructuring the hooks and queries.
+const useReusedPartition = (name: string): apiModel.Partition | undefined => {
+  const model = useConfigModel();
+
+  if (!model || !name) return;
+
+  const allPartitions = model.drives.flatMap((d) => d.partitions);
+  return allPartitions.find((p) => p.name === name && isUsedPartition(p));
+};
 
 /**
  * Info about the device.
@@ -54,6 +69,14 @@ import { TreeTableColumn } from "~/components/core/TreeTable";
  */
 const DeviceInfoContent = ({ device }: { device: StorageDevice }) => {
   const minSize = device.shrinking?.supported;
+
+  const reused = useReusedPartition(device.name);
+  if (reused) {
+    if (!reused.mountPath) return _("The device will be used by the new system.");
+
+    // TRANSLATORS: %s is a mount path like "/home".
+    return sprintf(_("The device will be mounted at %s."), formattedPath(reused.mountPath));
+  }
 
   if (minSize) {
     const recoverable = device.size - minSize;
@@ -90,7 +113,7 @@ const DeviceInfo = ({ device }: { device: StorageDevice }) => {
       <Button
         aria-label={sprintf(_("Show information about %s"), device.name)}
         variant="plain"
-        icon={<Icon name="info" size="xs" />}
+        icon={<Icon name="info" />}
       />
     </Popover>
   );
@@ -112,12 +135,15 @@ const DeviceActionSelector = ({
 }: {
   device: StorageDevice;
   action: string;
-  onChange?: (action: SpaceAction) => void;
+  onChange?: (action: SpacePolicyAction) => void;
 }) => {
-  const changeAction = (action) => onChange({ device: device.name, action });
+  const changeAction = (value) => onChange({ deviceName: device.name, value });
 
-  const isResizeDisabled = device.shrinking?.supported === undefined;
-  const hasInfo = device.shrinking !== undefined;
+  const forceKeep = !!useReusedPartition(device.name);
+  const isResizeDisabled = forceKeep || device.shrinking?.supported === undefined;
+  const isDeleteDisabled = forceKeep;
+  const hasInfo = forceKeep || device.shrinking !== undefined;
+  const adjustedAction = forceKeep ? "keep" : action;
 
   return (
     <Flex>
@@ -126,21 +152,22 @@ const DeviceActionSelector = ({
           <ToggleGroupItem
             text="Do not modify"
             buttonId="not-modify"
-            isSelected={action === "keep"}
+            isSelected={adjustedAction === "keep"}
             onChange={() => changeAction("keep")}
           />
           <ToggleGroupItem
             text="Allow shrink"
             buttonId="resize"
             isDisabled={isResizeDisabled}
-            isSelected={action === "resize"}
-            onChange={() => changeAction("resize")}
+            isSelected={adjustedAction === "resizeIfNeeded"}
+            onChange={() => changeAction("resizeIfNeeded")}
           />
           <ToggleGroupItem
             text="Delete"
             buttonId="delete"
-            isSelected={action === "force_delete"}
-            onChange={() => changeAction("force_delete")}
+            isDisabled={isDeleteDisabled}
+            isSelected={adjustedAction === "delete"}
+            onChange={() => changeAction("delete")}
           />
         </ToggleGroup>
       </FlexItem>
@@ -169,7 +196,7 @@ const DeviceAction = ({
 }: {
   item: PartitionSlot | StorageDevice;
   action: string;
-  onChange?: (action: SpaceAction) => void;
+  onChange?: (action: SpacePolicyAction) => void;
 }) => {
   const device = toStorageDevice(item);
   if (!device) return null;
@@ -187,10 +214,9 @@ const DeviceAction = ({
 };
 
 export type SpaceActionsTableProps = {
-  devices: StorageDevice[];
-  expandedDevices?: StorageDevice[];
+  devices: (PartitionSlot | StorageDevice)[];
   deviceAction: (item: PartitionSlot | StorageDevice) => string;
-  onActionChange: (action: SpaceAction) => void;
+  onActionChange: (action: SpacePolicyAction) => void;
 };
 
 /**
@@ -198,34 +224,50 @@ export type SpaceActionsTableProps = {
  * @component
  */
 export default function SpaceActionsTable({
-  devices,
-  expandedDevices = [],
+  devices = [],
   deviceAction,
   onActionChange,
 }: SpaceActionsTableProps) {
   const columns: TreeTableColumn[] = [
-    { name: _("Device"), value: (item) => <DeviceName item={item} /> },
-    { name: _("Details"), value: (item) => <DeviceDetails item={item} /> },
-    { name: _("Size"), value: (item) => <DeviceSize item={item} /> },
+    {
+      name: _("Device"),
+      value: (item: PartitionSlot | StorageDevice) => <DeviceName item={item} />,
+    },
+    {
+      name: _("Details"),
+      value: (item: PartitionSlot | StorageDevice) => <DeviceDetails item={item} />,
+    },
+    { name: _("Size"), value: (item: PartitionSlot | StorageDevice) => <DeviceSize item={item} /> },
     {
       name: _("Action"),
-      value: (item) => (
+      value: (item: PartitionSlot | StorageDevice) => (
         <DeviceAction item={item} action={deviceAction(item)} onChange={onActionChange} />
       ),
     },
   ];
 
   return (
-    <TreeTable
-      columns={columns}
-      items={devices}
-      aria-label={_("Actions to find space")}
-      expandedItems={expandedDevices}
-      itemChildren={deviceChildren}
-      rowClassNames={(item) => {
-        if (!item.sid) return "dimmed-row";
-      }}
-      className="devices-table"
-    />
+    <Table variant="compact" className="devices-table">
+      <Thead noWrap>
+        <Tr>
+          {columns.map((c, i) => (
+            <Th key={i} className={c.classNames}>
+              {c.name}
+            </Th>
+          ))}
+        </Tr>
+      </Thead>
+      <Tbody>
+        {devices.map((d, idx) => (
+          <Tr key={idx}>
+            {columns.map((c, i) => (
+              <Td key={i} className={c.classNames}>
+                {c.value(d)}
+              </Td>
+            ))}
+          </Tr>
+        ))}
+      </Tbody>
+    </Table>
   );
 }

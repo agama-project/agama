@@ -23,9 +23,12 @@ require "yast"
 require "y2users"
 require "y2users/linux" # FIXME: linux is not in y2users file
 require "yast2/execute"
+require "y2firewall/firewalld"
 require "agama/helpers"
 require "agama/issue"
 require "agama/with_issues"
+
+Yast.import "Service"
 
 module Agama
   # Backend class using YaST code.
@@ -42,26 +45,13 @@ module Agama
       update_issues
     end
 
-    def root_ssh_key
-      root_user.authorized_keys.first || ""
-    end
-
     def root_ssh_key=(value)
       root_user.authorized_keys = [value] # just one supported for now
       update_issues
     end
 
-    # NOTE: the root user is created if it does not exist
-    def root_password?
-      !!root_user.password_content
-    end
-
-    def root_ssh_key?
-      !root_ssh_key.empty?
-    end
-
-    def assign_root_password(value, encrypted)
-      pwd = if encrypted
+    def assign_root_password(value, hashed)
+      pwd = if hashed
         Y2Users::Password.create_encrypted(value)
       else
         Y2Users::Password.create_plain(value)
@@ -72,12 +62,18 @@ module Agama
       update_issues
     end
 
-    # Whether the given user is configured for autologin
+    # Root user
     #
-    # @param [Y2Users::User] user
-    # @return [Boolean]
-    def autologin?(user)
-      config.login.autologin_user == user
+    # @return [Y2Users::User]
+    def root_user
+      return @root_user if @root_user
+
+      @root_user = config.users.root
+      return @root_user if @root_user
+
+      @root_user = Y2Users::User.create_root
+      config.attach(@root_user)
+      @root_user
     end
 
     # First created user
@@ -99,16 +95,15 @@ module Agama
     # @param full_name [String]
     # @param user_name [String]
     # @param password [String]
-    # @param encrypted_password [Boolean] true = encrypted password, false = plain text password
-    # @param auto_login [Boolean]
+    # @param hashed_password [Boolean] true = hashed password, false = plain text password
     # @param _data [Hash]
     # @return [Array] the list of fatal issues found
-    def assign_first_user(full_name, user_name, password, encrypted_password, auto_login, _data)
+    def assign_first_user(full_name, user_name, password, hashed_password, _data)
       remove_first_user
 
       user = Y2Users::User.new(user_name)
       user.gecos = [full_name]
-      user.password = if encrypted_password
+      user.password = if hashed_password
         Y2Users::Password.create_encrypted(password)
       else
         Y2Users::Password.create_plain(password)
@@ -118,8 +113,7 @@ module Agama
       return fatal_issues.map(&:message) unless fatal_issues.empty?
 
       config.attach(user)
-      config.login ||= Y2Users::LoginConfig.new
-      config.login.autologin_user = auto_login ? user : nil
+      add_user_to_group(user_name, "wheel")
       update_issues
       []
     end
@@ -134,6 +128,12 @@ module Agama
     def write
       without_run_mount do
         on_target do
+          # if root ssh key is specified ensure that sshd running and firewall has port opened
+          enable_ssh if root_ssh_key?
+
+          # disable root password if not set
+          assign_root_password("!", true) unless root_password?
+
           system_config = Y2Users::ConfigManager.instance.system(force_read: true)
           target_config = system_config.copy
           Y2Users::ConfigMerger.new(target_config, config).merge
@@ -190,15 +190,32 @@ module Agama
       @config
     end
 
-    def root_user
-      return @root_user if @root_user
+    # NOTE: the root user is created if it does not exist
+    def root_password?
+      !!root_user.password_content
+    end
 
-      @root_user = config.users.root
-      return @root_user if @root_user
+    def root_ssh_key
+      root_user.authorized_keys.first || ""
+    end
 
-      @root_user = Y2Users::User.create_root
-      config.attach(@root_user)
-      @root_user
+    def root_ssh_key?
+      !root_ssh_key.empty?
+    end
+
+    def enable_ssh
+      logger.info "root SSH public key is set, enabling sshd and opening the firewall"
+      Yast::Service.Enable("sshd")
+      firewalld = Y2Firewall::Firewalld.instance
+      # open port only if firewalld is installed, otherwise it will crash
+      firewalld.api.add_service(firewalld.default_zone, "ssh") if firewalld.installed?
+    end
+
+    def add_user_to_group(user_name, group_name)
+      group = config.groups.by_name(group_name)
+      group ||= Y2Users::Group.new(group_name)
+      group.users_name << user_name
+      config.attach(group) unless group.attached?
     end
   end
 end

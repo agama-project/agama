@@ -20,20 +20,14 @@
 
 use std::collections::HashMap;
 
-use agama_lib::questions::{self, GenericQuestion, WithPassword};
-use log;
+use agama_lib::questions::{
+    self,
+    answers::{AnswerStrategy, Answers, DefaultAnswers},
+    GenericQuestion, WithPassword,
+};
 use zbus::{fdo::ObjectManager, interface, zvariant::ObjectPath, Connection};
 
-mod answers;
 pub mod web;
-
-#[derive(thiserror::Error, Debug)]
-pub enum QuestionsError {
-    #[error("Could not read the answers file: {0}")]
-    IO(std::io::Error),
-    #[error("Could not deserialize the answers file: {0}")]
-    Deserialize(serde_json::Error),
-}
 
 #[derive(Clone, Debug)]
 struct GenericQuestionObject(questions::GenericQuestion);
@@ -106,53 +100,6 @@ enum QuestionType {
     BaseWithPassword,
 }
 
-/// Trait for objects that can provide answers to all kind of Question.
-///
-/// If no strategy is selected or the answer is unknown, then ask to the user.
-trait AnswerStrategy {
-    /// Id for quick runtime inspection of strategy type
-    fn id(&self) -> u8;
-    /// Provides answer for generic question
-    ///
-    /// I gets as argument the question to answer. Returned value is `answer`
-    /// property or None. If `None` is used, it means that this object does not
-    /// answer to given question.
-    fn answer(&self, question: &GenericQuestion) -> Option<String>;
-    /// Provides answer and password for base question with password
-    ///
-    /// I gets as argument the question to answer. Returned value is pair
-    /// of `answer` and `password` properties. If `None` is used in any
-    /// position it means that this object does not respond to given property.
-    ///
-    /// It is object responsibility to provide correct pair. For example if
-    /// possible answer can be "Ok" and "Cancel". Then for `Ok` password value
-    /// should be provided and for `Cancel` it can be `None`.
-    fn answer_with_password(&self, question: &WithPassword) -> (Option<String>, Option<String>);
-}
-
-/// AnswerStrategy that provides as answer the default option.
-struct DefaultAnswers;
-
-impl DefaultAnswers {
-    pub fn id() -> u8 {
-        1
-    }
-}
-
-impl AnswerStrategy for DefaultAnswers {
-    fn id(&self) -> u8 {
-        DefaultAnswers::id()
-    }
-
-    fn answer(&self, question: &GenericQuestion) -> Option<String> {
-        Some(question.default_option.clone())
-    }
-
-    fn answer_with_password(&self, question: &WithPassword) -> (Option<String>, Option<String>) {
-        (Some(question.base.default_option.clone()), None)
-    }
-}
-
 pub struct Questions {
     questions: HashMap<u32, QuestionType>,
     connection: Connection,
@@ -172,7 +119,7 @@ impl Questions {
         default_option: &str,
         data: HashMap<String, String>,
     ) -> zbus::fdo::Result<ObjectPath> {
-        log::info!("Creating new question with text: {}.", text);
+        tracing::info!("Creating new question with text: {}.", text);
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
         let options = options.iter().map(|o| o.to_string()).collect();
@@ -205,7 +152,7 @@ impl Questions {
         default_option: &str,
         data: HashMap<String, String>,
     ) -> zbus::fdo::Result<ObjectPath> {
-        log::info!("Creating new question with password with text: {}.", text);
+        tracing::info!("Creating new question with password with text: {}.", text);
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
                            // TODO: share code better
@@ -221,8 +168,8 @@ impl Questions {
         let mut question = questions::WithPassword::new(base);
         let object_path = ObjectPath::try_from(question.base.object_path()).unwrap();
 
-        let base_question = question.base.clone();
         self.fill_answer_with_password(&mut question);
+        let base_question = question.base.clone();
         let base_object = GenericQuestionObject(base_question);
 
         self.connection
@@ -272,34 +219,38 @@ impl Questions {
     /// default answer
     #[zbus(property)]
     fn interactive(&self) -> bool {
-        let last = self.answer_strategies.last();
-        if let Some(real_strategy) = last {
-            real_strategy.id() != DefaultAnswers::id()
-        } else {
-            true
-        }
+        self.answer_strategies
+            .iter()
+            .all(|s| s.id() != DefaultAnswers::id())
     }
 
     #[zbus(property)]
     fn set_interactive(&mut self, value: bool) {
-        if value != self.interactive() {
-            log::info!("interactive value unchanged - {}", value);
+        if value == self.interactive() {
+            tracing::info!("interactive value unchanged - {}", value);
             return;
         }
 
-        log::info!("set interactive to {}", value);
+        tracing::info!("set interactive to {}", value);
         if value {
-            self.answer_strategies.pop();
+            self.answer_strategies
+                .retain(|s| s.id() == DefaultAnswers::id());
         } else {
             self.answer_strategies.push(Box::new(DefaultAnswers {}));
         }
     }
 
     fn add_answer_file(&mut self, path: String) -> zbus::fdo::Result<()> {
-        log::info!("Adding answer file {}", path);
-        let answers = answers::Answers::new_from_file(path.as_str())
+        tracing::info!("Adding answer file {}", path);
+        let answers = Answers::new_from_file(path.as_str())
             .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
-        self.answer_strategies.push(Box::new(answers));
+        self.answer_strategies.insert(0, Box::new(answers));
+        Ok(())
+    }
+
+    fn remove_answers(&mut self) -> zbus::fdo::Result<()> {
+        self.answer_strategies
+            .retain(|s| s.id() == DefaultAnswers::id());
         Ok(())
     }
 }

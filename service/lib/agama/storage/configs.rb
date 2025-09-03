@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -28,12 +28,14 @@ module Agama
 end
 
 require "agama/storage/configs/boot"
+require "agama/storage/configs/boot_device"
 require "agama/storage/configs/btrfs"
 require "agama/storage/configs/drive"
 require "agama/storage/configs/encryption"
 require "agama/storage/configs/filesystem"
 require "agama/storage/configs/filesystem_type"
 require "agama/storage/configs/logical_volume"
+require "agama/storage/configs/md_raid"
 require "agama/storage/configs/partition"
 require "agama/storage/configs/search"
 require "agama/storage/configs/size"

@@ -7,21 +7,25 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.5.19", features = ["derive", "wrap_help"] }
-curl = { version = "0.4.47", features = ["protocol-ftp"] }
-agama-lib = { path="../agama-lib" }
+agama-lib = { path = "../agama-lib" }
 serde_json = "1.0.128"
-indicatif= "0.17.8"
-thiserror = "1.0.64"
+indicatif = "0.17.8"
+thiserror = "2.0.12"
 console = "0.15.8"
 anyhow = "1.0.89"
 tempfile = "3.13.0"
-nix = { version = "0.27.1", features = ["user"] }
 tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread"] }
 async-trait = "0.1.83"
-reqwest = { version = "0.11", features = ["json"] }
+reqwest = { version = "0.12.8", features = ["json"] }
 url = "2.5.2"
-inquire = { version = "0.7.5", default-features = false, features = ["crossterm", "one-liners"] }
+inquire = { version = "0.7.5", default-features = false, features = [
+    "crossterm",
+    "one-liners",
+] }
 chrono = "0.4.38"
+regex = "1.11.1"
+home = "0.5.11"
+fluent-uri = "0.3.2"
 
 [[bin]]
 name = "agama"

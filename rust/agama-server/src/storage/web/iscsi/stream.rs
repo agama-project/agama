@@ -21,10 +21,14 @@
 use std::{collections::HashMap, task::Poll};
 
 use agama_lib::{
-    dbus::{extract_id_from_path, get_optional_property},
     error::ServiceError,
-    property_from_dbus,
+    event,
+    http::Event,
     storage::{ISCSIClient, ISCSINode},
+};
+use agama_utils::{
+    dbus::{extract_id_from_path, get_optional_property},
+    property_from_dbus,
 };
 use futures_util::{ready, Stream};
 use pin_project::pin_project;
@@ -33,10 +37,7 @@ use tokio::sync::mpsc::unbounded_channel;
 use tokio_stream::{wrappers::UnboundedReceiverStream, StreamExt};
 use zbus::zvariant::{ObjectPath, OwnedObjectPath, OwnedValue};
 
-use crate::{
-    dbus::{DBusObjectChange, DBusObjectChangesStream, ObjectsCache},
-    web::Event,
-};
+use crate::dbus::{DBusObjectChange, DBusObjectChangesStream, ObjectsCache};
 
 /// This stream listens for changes in the collection ISCSI nodes and emits
 /// the updated objects.
@@ -131,15 +132,15 @@ impl ISCSINodeStream {
         match change {
             DBusObjectChange::Added(path, values) => {
                 let node = Self::update_node(cache, path, values)?;
-                Ok(Event::ISCSINodeAdded { node: node.clone() })
+                Ok(event!(ISCSINodeAdded { node: node.clone() }))
             }
             DBusObjectChange::Changed(path, updated) => {
                 let node = Self::update_node(cache, path, updated)?;
-                Ok(Event::ISCSINodeChanged { node: node.clone() })
+                Ok(event!(ISCSINodeChanged { node: node.clone() }))
             }
             DBusObjectChange::Removed(path) => {
                 let node = Self::remove_node(cache, path)?;
-                Ok(Event::ISCSINodeRemoved { node })
+                Ok(event!(ISCSINodeRemoved { node }))
             }
         }
     }
@@ -161,7 +162,7 @@ impl Stream for ISCSINodeStream {
                     if let Ok(event) = Self::handle_change(pinned.cache, &change) {
                         Some(event)
                     } else {
-                        log::warn!("Could not process change {:?}", &change);
+                        tracing::warn!("Could not process change {:?}", &change);
                         None
                     }
                 }

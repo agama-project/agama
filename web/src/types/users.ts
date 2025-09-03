@@ -24,20 +24,18 @@ type FirstUser = {
   fullName: string;
   userName: string;
   password: string;
-  encryptedPassword: boolean;
-  autologin: boolean;
+  hashedPassword: boolean;
 };
 
 type RootUser = {
-  password: boolean;
-  encryptedPassword: boolean;
-  sshkey: string;
-};
-
-type RootUserChanges = {
   password: string;
-  encryptedPassword: boolean;
-  sshkey: string;
+  hashedPassword: boolean;
+  sshPublicKey: string;
 };
 
-export type { FirstUser, RootUserChanges, RootUser };
+type PasswordCheckResult = {
+  success?: number;
+  failure?: string;
+};
+
+export type { FirstUser, RootUser, PasswordCheckResult };

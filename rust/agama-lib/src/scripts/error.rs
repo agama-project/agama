@@ -21,7 +21,7 @@
 use std::io;
 use thiserror::Error;
 
-use crate::transfer::TransferError;
+use crate::{file_source::FileSourceError, utils::TransferError};
 
 #[derive(Error, Debug)]
 pub enum ScriptError {
@@ -31,4 +31,6 @@ pub enum ScriptError {
     InputOutputError(#[from] io::Error),
     #[error("Wrong script type")]
     WrongScriptType,
+    #[error(transparent)]
+    FileSourceError(#[from] FileSourceError),
 }

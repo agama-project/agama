@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -23,6 +23,7 @@ require "agama/storage/config_conversions/from_json_conversions/base"
 require "agama/storage/config_conversions/from_json_conversions/encryption"
 require "agama/storage/config_conversions/from_json_conversions/logical_volume"
 require "agama/storage/configs/volume_group"
+require "y2storage/disk_size"
 
 module Agama
   module Storage
@@ -30,15 +31,15 @@ module Agama
       module FromJSONConversions
         # Volume group conversion from JSON hash according to schema.
         class VolumeGroup < Base
-          # @see Base#convert
-          # @return [Configs::VolumeGroup]
-          def convert
-            super(Configs::VolumeGroup.new)
-          end
-
         private
 
           alias_method :volume_group_json, :config_json
+
+          # @see Base
+          # @return [Configs::VolumeGroup]
+          def default_config
+            Configs::VolumeGroup.new
+          end
 
           # @see Base#conversions
           # @return [Hash]

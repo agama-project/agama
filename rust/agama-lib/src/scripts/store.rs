@@ -19,12 +19,28 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    base_http_client::BaseHTTPClient,
-    error::ServiceError,
-    software::{model::ResolvableType, SoftwareHTTPClient},
+    file_source::FileSourceError,
+    http::BaseHTTPClient,
+    software::{model::ResolvableType, SoftwareHTTPClient, SoftwareHTTPClientError},
 };
 
-use super::{client::ScriptsClient, settings::ScriptsConfig, Script, ScriptError};
+use super::{
+    client::{ScriptsClient, ScriptsClientError},
+    settings::ScriptsConfig,
+    Script, ScriptError,
+};
+
+#[derive(Debug, thiserror::Error)]
+pub enum ScriptsStoreError {
+    #[error("Error processing script settings: {0}")]
+    Script(#[from] ScriptsClientError),
+    #[error("Error selecting software: {0}")]
+    Software(#[from] SoftwareHTTPClientError),
+    #[error(transparent)]
+    FileSourceError(#[from] FileSourceError),
+}
+
+type ScriptStoreResult<T> = Result<T, ScriptsStoreError>;
 
 pub struct ScriptsStore {
     scripts: ScriptsClient,
@@ -39,22 +55,29 @@ impl ScriptsStore {
         }
     }
 
-    pub async fn load(&self) -> Result<ScriptsConfig, ServiceError> {
+    pub async fn load(&self) -> ScriptStoreResult<ScriptsConfig> {
         let scripts = self.scripts.scripts().await?;
 
         Ok(ScriptsConfig {
             pre: Self::scripts_by_type(&scripts),
+            post_partitioning: Self::scripts_by_type(&scripts),
             post: Self::scripts_by_type(&scripts),
             init: Self::scripts_by_type(&scripts),
         })
     }
 
-    pub async fn store(&self, settings: &ScriptsConfig) -> Result<(), ServiceError> {
+    pub async fn store(&self, settings: &ScriptsConfig) -> ScriptStoreResult<()> {
         self.scripts.delete_scripts().await?;
 
         if let Some(scripts) = &settings.pre {
             for pre in scripts {
                 self.scripts.add_script(pre.clone().into()).await?;
+            }
+        }
+
+        if let Some(scripts) = &settings.post_partitioning {
+            for post in scripts {
+                self.scripts.add_script(post.clone().into()).await?;
             }
         }
 

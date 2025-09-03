@@ -20,29 +20,30 @@
 
 //! This module implements the web API for the network module.
 
-use crate::{
-    error::Error,
-    web::{Event, EventsSender},
-};
+use crate::{error::Error, web::EventsSender};
 use anyhow::Context;
 use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::{IntoResponse, Response},
-    routing::{delete, get, patch, post},
+    routing::{delete, get, post},
     Json, Router,
 };
+use uuid::Uuid;
 
-use super::{
-    error::NetworkStateError,
-    model::{AccessPoint, GeneralState},
-    system::{NetworkSystemClient, NetworkSystemError},
-    Adapter,
+use agama_lib::{
+    error::ServiceError,
+    event,
+    network::{
+        error::NetworkStateError,
+        model::{AccessPoint, Connection, Device, GeneralState},
+        settings::NetworkConnection,
+        types::NetworkConnectionWithState,
+        Adapter, NetworkSystem, NetworkSystemClient, NetworkSystemError,
+    },
 };
 
-use crate::network::{model::Connection, model::Device, NetworkSystem};
-use agama_lib::{error::ServiceError, network::settings::NetworkConnection};
-
+use serde::Deserialize;
 use serde_json::json;
 use thiserror::Error;
 
@@ -99,7 +100,8 @@ pub async fn network_service<T: Adapter + Send + Sync + 'static>(
         loop {
             match changes.recv().await {
                 Ok(message) => {
-                    if let Err(e) = events.send(Event::NetworkChange { change: message }) {
+                    let change = event!(NetworkChange { change: message });
+                    if let Err(e) = events.send(change) {
                         eprintln!("Could not send the event: {}", e);
                     }
                 }
@@ -121,8 +123,9 @@ pub async fn network_service<T: Adapter + Send + Sync + 'static>(
                 .put(update_connection)
                 .get(connection),
         )
-        .route("/connections/:id/connect", patch(connect))
-        .route("/connections/:id/disconnect", patch(disconnect))
+        .route("/connections/:id/connect", post(connect))
+        .route("/connections/:id/disconnect", post(disconnect))
+        .route("/connections/persist", post(persist))
         .route("/devices", get(devices))
         .route("/system/apply", post(apply))
         .route("/wifi", get(wifi_networks))
@@ -209,14 +212,43 @@ async fn devices(
 )]
 async fn connections(
     State(state): State<NetworkServiceState>,
-) -> Result<Json<Vec<NetworkConnection>>, NetworkError> {
+) -> Result<Json<Vec<NetworkConnectionWithState>>, NetworkError> {
     let connections = state.network.get_connections().await?;
-    let connections = connections
+
+    let network_connections = connections
         .iter()
-        .map(|c| NetworkConnection::try_from(c.clone()).unwrap())
+        .filter(|c| c.controller.is_none())
+        .map(|c| {
+            let state = c.state;
+            let mut conn = NetworkConnection::try_from(c.clone()).unwrap();
+            if let Some(ref mut bond) = conn.bond {
+                bond.ports = ports_for(connections.to_owned(), c.uuid);
+            }
+            if let Some(ref mut bridge) = conn.bridge {
+                bridge.ports = ports_for(connections.to_owned(), c.uuid);
+            };
+            NetworkConnectionWithState {
+                connection: conn,
+                state,
+            }
+        })
         .collect();
 
-    Ok(Json(connections))
+    Ok(Json(network_connections))
+}
+
+fn ports_for(connections: Vec<Connection>, uuid: Uuid) -> Vec<String> {
+    return connections
+        .iter()
+        .filter(|c| c.controller == Some(uuid))
+        .map(|c| {
+            if let Some(interface) = c.interface.to_owned() {
+                interface
+            } else {
+                c.clone().id
+            }
+        })
+        .collect();
 }
 
 #[utoipa::path(
@@ -229,15 +261,26 @@ async fn connections(
 )]
 async fn add_connection(
     State(state): State<NetworkServiceState>,
-    Json(conn): Json<NetworkConnection>,
+    Json(net_conn): Json<NetworkConnection>,
 ) -> Result<Json<Connection>, NetworkError> {
-    let conn = Connection::try_from(conn)?;
+    let bond = net_conn.bond.clone();
+    let bridge = net_conn.bridge.clone();
+    let conn = Connection::try_from(net_conn)?;
     let id = conn.id.clone();
 
-    state.network.add_connection(conn).await?;
+    state.network.add_connection(conn.clone()).await?;
+
     match state.network.get_connection(&id).await? {
         None => Err(NetworkError::CannotAddConnection(id.clone())),
-        Some(conn) => Ok(Json(conn)),
+        Some(conn) => {
+            if let Some(bond) = bond {
+                state.network.set_ports(conn.uuid, bond.ports).await?;
+            }
+            if let Some(bridge) = bridge {
+                state.network.set_ports(conn.uuid, bridge.ports).await?;
+            }
+            Ok(Json(conn))
+        }
     }
 }
 
@@ -301,20 +344,26 @@ async fn update_connection(
         .get_connection(&id)
         .await?
         .ok_or_else(|| NetworkError::UnknownConnection(id.clone()))?;
+    let bond = conn.bond.clone();
+    let bridge = conn.bridge.clone();
+
     let mut conn = Connection::try_from(conn)?;
-    if orig_conn.id != id {
-        // FIXME: why?
-        return Err(NetworkError::UnknownConnection(id));
-    } else {
-        conn.uuid = orig_conn.uuid;
+    conn.uuid = orig_conn.uuid;
+
+    state.network.update_connection(conn.clone()).await?;
+
+    if let Some(bond) = bond {
+        state.network.set_ports(conn.uuid, bond.ports).await?;
+    }
+    if let Some(bridge) = bridge {
+        state.network.set_ports(conn.uuid, bridge.ports).await?;
     }
 
-    state.network.update_connection(conn).await?;
     Ok(StatusCode::NO_CONTENT)
 }
 
 #[utoipa::path(
-    patch,
+    post,
     path = "/connections/:id/connect",
     context_path = "/api/network",
     responses(
@@ -346,7 +395,7 @@ async fn connect(
 }
 
 #[utoipa::path(
-    patch,
+    post,
     path = "/connections/:id/disconnect",
     context_path = "/api/network",
     responses(
@@ -367,6 +416,49 @@ async fn disconnect(
         .update_connection(conn)
         .await
         .map_err(|_| NetworkError::CannotApplyConfig)?;
+
+    state
+        .network
+        .apply()
+        .await
+        .map_err(|_| NetworkError::CannotApplyConfig)?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
+#[derive(Deserialize, utoipa::ToSchema)]
+pub struct PersistParams {
+    pub only: Option<Vec<String>>,
+    pub value: bool,
+}
+
+#[utoipa::path(
+    post,
+    path = "/connections/persist",
+    context_path = "/api/network",
+    responses(
+      (status = 204, description = "Persist the given connection to disk", body = PersistParams)
+    )
+)]
+async fn persist(
+    State(state): State<NetworkServiceState>,
+    Json(persist): Json<PersistParams>,
+) -> Result<impl IntoResponse, NetworkError> {
+    let mut connections = state.network.get_connections().await?;
+    let ids = persist.only.unwrap_or(vec![]);
+
+    for conn in connections.iter_mut() {
+        if ids.is_empty() || ids.contains(&conn.id) {
+            conn.persistent = persist.value;
+            conn.keep_status();
+
+            state
+                .network
+                .update_connection(conn.to_owned())
+                .await
+                .map_err(|_| NetworkError::CannotApplyConfig)?;
+        }
+    }
 
     state
         .network

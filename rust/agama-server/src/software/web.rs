@@ -28,35 +28,52 @@
 use crate::{
     error::Error,
     web::{
-        common::{issues_router, progress_router, service_status_router, EventStreams},
-        Event,
+        common::{
+            service_status_router, EventStreams, IssuesClient, IssuesRouterBuilder, ProgressClient,
+            ProgressRouterBuilder,
+        },
+        EventsReceiver,
     },
 };
 
 use agama_lib::{
     error::ServiceError,
+    event,
+    http::{Event, EventPayload},
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
-        model::{RegistrationInfo, RegistrationParams, ResolvableParams, SoftwareConfig},
+        model::{
+            AddonParams, AddonProperties, Conflict, ConflictSolve, License, LicenseContent,
+            LicensesRepo, RegistrationError, RegistrationInfo, RegistrationParams, Repository,
+            ResolvableParams, SoftwareConfig,
+        },
         proxies::{Software1Proxy, SoftwareProductProxy},
         Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy,
     },
 };
+use anyhow::Context;
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::StatusCode,
-    response::IntoResponse,
+    response::{IntoResponse, Response},
     routing::{get, post, put},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 use tokio_stream::{Stream, StreamExt};
 
 #[derive(Clone)]
 struct SoftwareState<'a> {
     product: ProductClient<'a>,
     software: SoftwareClient<'a>,
+    licenses: LicensesRepo,
+    // cache the software values, during installation the software service is
+    // not responsive (blocked in a libzypp call)
+    products: Arc<RwLock<Vec<Product>>>,
+    config: Arc<RwLock<Option<SoftwareConfig>>>,
 }
 
 /// Returns an stream that emits software related events coming from D-Bus.
@@ -69,6 +86,10 @@ pub async fn software_streams(dbus: zbus::Connection) -> Result<EventStreams, Er
         (
             "patterns_changed",
             Box::pin(patterns_changed_stream(dbus.clone()).await?),
+        ),
+        (
+            "conflicts_changed",
+            Box::pin(conflicts_changed_stream(dbus.clone()).await?),
         ),
         (
             "product_changed",
@@ -96,7 +117,7 @@ async fn product_changed_stream(
         .await
         .then(|change| async move {
             if let Ok(id) = change.get().await {
-                return Some(Event::ProductChanged { id });
+                return Some(event!(ProductChanged { id }));
             }
             None
         })
@@ -116,14 +137,36 @@ async fn patterns_changed_stream(
                 return match reason_to_selected_by(patterns) {
                     Ok(patterns) => Some(patterns),
                     Err(error) => {
-                        log::warn!("Ignoring the list of changed patterns. Error: {}", error);
+                        tracing::warn!("Ignoring the list of changed patterns. Error: {}", error);
                         None
                     }
                 };
             }
             None
         })
-        .filter_map(|e| e.map(|patterns| Event::SoftwareProposalChanged { patterns }));
+        .filter_map(|e| e.map(|patterns| event!(SoftwareProposalChanged { patterns })));
+    Ok(stream)
+}
+
+async fn conflicts_changed_stream(
+    dbus: zbus::Connection,
+) -> Result<impl Stream<Item = Event>, Error> {
+    let proxy = Software1Proxy::new(&dbus).await?;
+    let stream = proxy
+        .receive_conflicts_changed()
+        .await
+        .then(|change| async move {
+            if let Ok(conflicts) = change.get().await {
+                return Some(
+                    conflicts
+                        .into_iter()
+                        .map(|c| Conflict::from_dbus(c))
+                        .collect(),
+                );
+            }
+            None
+        })
+        .filter_map(|e| e.map(|conflicts| event!(ConflictsChanged { conflicts })));
     Ok(stream)
 }
 
@@ -137,7 +180,7 @@ async fn registration_email_changed_stream(
         .then(|change| async move {
             if let Ok(_id) = change.get().await {
                 // TODO: add to stream also proxy and return whole cached registration info
-                return Some(Event::RegistrationChanged);
+                return Some(event!(RegistrationChanged));
             }
             None
         })
@@ -154,7 +197,7 @@ async fn registration_code_changed_stream(
         .await
         .then(|change| async move {
             if let Ok(_id) = change.get().await {
-                return Some(Event::RegistrationChanged);
+                return Some(event!(RegistrationChanged));
             }
             None
         })
@@ -176,27 +219,119 @@ fn reason_to_selected_by(
     Ok(selected)
 }
 
+/// Process incoming events.
+///
+/// * `events`: channel to listen for events.
+/// * `products`: list of products (shared behind a mutex).
+pub async fn receive_events(
+    mut events: EventsReceiver,
+    products: Arc<RwLock<Vec<Product>>>,
+    config: Arc<RwLock<Option<SoftwareConfig>>>,
+    client: ProductClient<'_>,
+) {
+    while let Ok(event) = events.recv().await {
+        match event.payload {
+            EventPayload::LocaleChanged { locale: _ } => {
+                let mut cached_products = products.write().await;
+                if let Ok(products) = client.products().await {
+                    *cached_products = products;
+                } else {
+                    tracing::error!("Could not update the products cached");
+                }
+            }
+
+            EventPayload::SoftwareProposalChanged { patterns } => {
+                let mut cached_config = config.write().await;
+                if let Some(config) = cached_config.as_mut() {
+                    tracing::debug!(
+                        "Updating the patterns list in the software configuration cache"
+                    );
+                    let user_patterns: HashMap<String, bool> = patterns
+                        .into_iter()
+                        .filter_map(|(p, s)| {
+                            if s == SelectedBy::User {
+                                Some((p, true))
+                            } else {
+                                None
+                            }
+                        })
+                        .collect();
+                    config.patterns = Some(user_patterns);
+                }
+            }
+
+            _ => {}
+        }
+    }
+}
+
 /// Sets up and returns the axum service for the software module.
-pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceError> {
+pub async fn software_service(
+    dbus: zbus::Connection,
+    events: EventsReceiver,
+    issues: IssuesClient,
+    progress: ProgressClient,
+) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &str = "org.opensuse.Agama.Software1";
     const DBUS_PATH: &str = "/org/opensuse/Agama/Software1";
     const DBUS_PRODUCT_PATH: &str = "/org/opensuse/Agama/Software1/Product";
 
     let status_router = service_status_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
-    let progress_router = progress_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
-    let software_issues = issues_router(&dbus, DBUS_SERVICE, DBUS_PATH).await?;
-    let product_issues = issues_router(&dbus, DBUS_SERVICE, DBUS_PRODUCT_PATH).await?;
+
+    // FIXME: use anyhow temporarily until we adapt all these methods to return
+    // the crate::error::Error instead of ServiceError.
+    let software_issues = IssuesRouterBuilder::new(DBUS_SERVICE, DBUS_PATH, issues.clone())
+        .build()
+        .context("Could not build an issues router")?;
+    let product_issues = IssuesRouterBuilder::new(DBUS_SERVICE, DBUS_PRODUCT_PATH, issues)
+        .build()
+        .context("Could not build an issues router")?;
+    let progress_router = ProgressRouterBuilder::new(DBUS_SERVICE, DBUS_PATH, progress)
+        .build()
+        .context("Could not build the progress router")?;
+
+    let mut licenses_repo = LicensesRepo::default();
+    if let Err(error) = licenses_repo.read() {
+        tracing::error!("Could not read the licenses repository: {:?}", error);
+    }
 
     let product = ProductClient::new(dbus.clone()).await?;
     let software = SoftwareClient::new(dbus).await?;
-    let state = SoftwareState { product, software };
+    let all_products = product.products().await?;
+
+    let state = SoftwareState {
+        product,
+        software,
+        licenses: licenses_repo,
+        products: Arc::new(RwLock::new(all_products)),
+        config: Arc::new(RwLock::new(None)),
+    };
+
+    let cached_products = Arc::clone(&state.products);
+    let cached_config = Arc::clone(&state.config);
+    let products_client = state.product.clone();
+    tokio::spawn(async move {
+        receive_events(events, cached_products, cached_config, products_client).await
+    });
+
     let router = Router::new()
         .route("/patterns", get(patterns))
+        .route("/conflicts", get(get_conflicts).patch(solve_conflicts))
+        .route("/repositories", get(repositories))
         .route("/products", get(products))
+        .route("/licenses", get(licenses))
+        .route("/licenses/:id", get(license))
         .route(
             "/registration",
             get(get_registration).post(register).delete(deregister),
         )
+        .route("/registration/url", put(set_reg_url))
+        .route("/registration/addons/register", post(register_addon))
+        .route(
+            "/registration/addons/registered",
+            get(get_registered_addons),
+        )
+        .route("/registration/addons/available", get(get_available_addons))
         .route("/proposal", get(proposal))
         .route("/config", put(set_config).get(get_config))
         .route("/probe", post(probe))
@@ -222,8 +357,74 @@ pub async fn software_service(dbus: zbus::Connection) -> Result<Router, ServiceE
     )
 )]
 async fn products(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<Product>>, Error> {
-    let products = state.product.products().await?;
+    let products = state.products.read().await.clone();
     Ok(Json(products))
+}
+
+/// Returns the list of defined repositories.
+///
+/// * `state`: service state.
+#[utoipa::path(
+    get,
+    path = "/repositories",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "List of known repositories", body = Vec<Repository>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn repositories(
+    State(state): State<SoftwareState<'_>>,
+) -> Result<Json<Vec<Repository>>, Error> {
+    let repositories = state.software.repositories().await?;
+    Ok(Json(repositories))
+}
+
+/// Returns the list of conflicts that proposal found.
+///
+/// * `state`: service state.
+#[utoipa::path(
+    get,
+    path = "/conflicts",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "List of software conflicts", body = Vec<Conflict>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn get_conflicts(
+    State(state): State<SoftwareState<'_>>,
+) -> Result<Json<Vec<Conflict>>, Error> {
+    let conflicts = state.software.get_conflicts().await?;
+    Ok(Json(conflicts))
+}
+
+/// Solve conflicts. Not all conflicts needs to be solved at once.
+///
+/// * `state`: service state.
+#[utoipa::path(
+    patch,
+    path = "/conflicts",
+    context_path = "/api/software",
+    request_body = Vec<ConflictSolve>,
+    responses(
+        (status = 200, description = "Operation success"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn solve_conflicts(
+    State(state): State<SoftwareState<'_>>,
+    Json(solutions): Json<Vec<ConflictSolve>>,
+) -> Result<(), Error> {
+    let ret = state.software.solve_conflicts(solutions).await?;
+
+    // refresh the config cache
+    let config = read_config(&state).await?;
+    tracing::info!("Caching product configuration: {:?}", &config);
+    let mut cached_config_write = state.config.write().await;
+    *cached_config_write = Some(config);
+
+    Ok(ret)
 }
 
 /// returns registration info
@@ -242,18 +443,32 @@ async fn get_registration(
     State(state): State<SoftwareState<'_>>,
 ) -> Result<Json<RegistrationInfo>, Error> {
     let result = RegistrationInfo {
+        registered: state.product.registered().await?,
         key: state.product.registration_code().await?,
         email: state.product.email().await?,
+        url: state.product.registration_url().await?,
     };
     Ok(Json(result))
 }
 
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
-pub struct FailureDetails {
-    /// ID of error. See dbus API for possible values
-    id: u32,
-    /// human readable error string intended to be displayed to user
-    message: String,
+/// sets registration server url
+///
+/// * `state`: service state.
+#[utoipa::path(
+    put,
+    path = "/registration/url",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "registration server set"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn set_reg_url(
+    State(state): State<SoftwareState<'_>>,
+    Json(config): Json<String>,
+) -> Result<(), Error> {
+    state.product.set_registration_url(&config).await?;
+    Ok(())
 }
 
 /// Register product
@@ -264,8 +479,8 @@ pub struct FailureDetails {
     path = "/registration",
     context_path = "/api/software",
     responses(
-        (status = 204, description = "registration successfull"),
-        (status = 422, description = "Registration failed. Details are in body", body = FailureDetails),
+        (status = 204, description = "registration successful"),
+        (status = 422, description = "Registration failed. Details are in body", body = RegistrationError),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
@@ -274,10 +489,79 @@ async fn register(
     Json(config): Json<RegistrationParams>,
 ) -> Result<impl IntoResponse, Error> {
     let (id, message) = state.product.register(&config.key, &config.email).await?;
-    let details = FailureDetails { id, message };
     if id == 0 {
         Ok((StatusCode::NO_CONTENT, ().into_response()))
     } else {
+        let details = RegistrationError { id, message };
+        Ok((
+            StatusCode::UNPROCESSABLE_ENTITY,
+            Json(details).into_response(),
+        ))
+    }
+}
+
+/// returns list of registered addons
+///
+/// * `state`: service state.
+#[utoipa::path(
+    get,
+    path = "/registration/addons/registered",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "List of registered addons", body = Vec<AddonParams>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn get_registered_addons(
+    State(state): State<SoftwareState<'_>>,
+) -> Result<Json<Vec<AddonParams>>, Error> {
+    let result = state.product.registered_addons().await?;
+
+    Ok(Json(result))
+}
+
+/// returns list of available addons
+///
+/// * `state`: service state.
+#[utoipa::path(
+    get,
+    path = "/registration/addons/available",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "List of available addons", body = Vec<AddonProperties>),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn get_available_addons(
+    State(state): State<SoftwareState<'_>>,
+) -> Result<Json<Vec<AddonProperties>>, Error> {
+    let result = state.product.available_addons().await?;
+
+    Ok(Json(result))
+}
+
+/// Register an addon
+///
+/// * `state`: service state.
+#[utoipa::path(
+    post,
+    path = "/registration/addons/register",
+    context_path = "/api/software",
+    responses(
+        (status = 204, description = "registration successful"),
+        (status = 422, description = "Registration failed. Details are in the body", body = RegistrationError),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn register_addon(
+    State(state): State<SoftwareState<'_>>,
+    Json(addon): Json<AddonParams>,
+) -> Result<impl IntoResponse, Error> {
+    let (id, message) = state.product.register_addon(&addon).await?;
+    if id == 0 {
+        Ok((StatusCode::NO_CONTENT, ().into_response()))
+    } else {
+        let details = RegistrationError { id, message };
         Ok((
             StatusCode::UNPROCESSABLE_ENTITY,
             Json(details).into_response(),
@@ -293,14 +577,14 @@ async fn register(
     path = "/registration",
     context_path = "/api/software",
     responses(
-        (status = 200, description = "deregistration successfull"),
-        (status = 422, description = "De-registration failed. Details are in body", body = FailureDetails),
+        (status = 200, description = "deregistration successful"),
+        (status = 422, description = "De-registration failed. Details are in body", body = RegistrationError),
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
 async fn deregister(State(state): State<SoftwareState<'_>>) -> Result<impl IntoResponse, Error> {
     let (id, message) = state.product.deregister().await?;
-    let details = FailureDetails { id, message };
+    let details = RegistrationError { id, message };
     if id == 0 {
         Ok((StatusCode::NO_CONTENT, ().into_response()))
     } else {
@@ -346,6 +630,19 @@ async fn set_config(
     State(state): State<SoftwareState<'_>>,
     Json(config): Json<SoftwareConfig>,
 ) -> Result<(), Error> {
+    {
+        // first invalidate cache, so if it fails later, we know we need to re-read recent data
+        // use minimal context so it is released soon.
+        tracing::debug!("Invalidating product configuration cache");
+        let mut cached_config_invalidate = state.config.write().await;
+        *cached_config_invalidate = None;
+    }
+
+    // first set only require flag to ensure that it is used for later computing of solver
+    if let Some(only_required) = config.only_required {
+        state.software.set_only_required(only_required).await?;
+    }
+
     if let Some(product) = config.product {
         state.product.select_product(&product).await?;
     }
@@ -353,6 +650,20 @@ async fn set_config(
     if let Some(patterns) = config.patterns {
         state.software.select_patterns(patterns).await?;
     }
+
+    if let Some(packages) = config.packages {
+        state.software.select_packages(packages).await?;
+    }
+
+    if let Some(repositories) = config.extra_repositories {
+        state.software.set_user_repositories(repositories).await?;
+    }
+
+    // load the config cache
+    let config = read_config(&state).await?;
+    tracing::debug!("Caching software configuration (set_config): {:?}", &config);
+    let mut cached_config_write = state.config.write().await;
+    *cached_config_write = Some(config);
 
     Ok(())
 }
@@ -370,7 +681,26 @@ async fn set_config(
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
+
 async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<SoftwareConfig>, Error> {
+    let cached_config = state.config.read().await.clone();
+
+    if let Some(config) = cached_config {
+        tracing::debug!("Returning cached software config: {:?}", &config);
+        return Ok(Json(config));
+    }
+
+    let config = read_config(&state).await?;
+    tracing::debug!("Caching software configuration (get_config): {:?}", &config);
+    let mut cached_config_write = state.config.write().await;
+    *cached_config_write = Some(config.clone());
+
+    Ok(Json(config))
+}
+
+/// Helper function
+/// * `state` : software service state
+async fn read_config(state: &SoftwareState<'_>) -> Result<SoftwareConfig, Error> {
     let product = state.product.product().await?;
     let product = if product.is_empty() {
         None
@@ -384,11 +714,16 @@ async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<Softw
         .into_iter()
         .map(|p| (p, true))
         .collect();
-    let config = SoftwareConfig {
+    let packages = state.software.user_selected_packages().await?;
+    let repos = state.software.user_repositories().await?;
+
+    Ok(SoftwareConfig {
         patterns: Some(patterns),
+        packages: Some(packages),
         product,
-    };
-    Ok(Json(config))
+        extra_repositories: if repos.is_empty() { None } else { Some(repos) },
+        only_required: state.software.get_only_required().await?,
+    })
 }
 
 #[derive(Serialize, utoipa::ToSchema)]
@@ -397,7 +732,7 @@ pub struct SoftwareProposal {
     /// Space required for installation. It is returned as a formatted string which includes
     /// a number and a unit (e.g., "GiB").
     size: String,
-    /// Patterns selection. It is respresented as a hash map where the key is the pattern's name
+    /// Patterns selection. It is represented as a hash map where the key is the pattern's name
     /// and the value why the pattern is selected.
     patterns: HashMap<String, SelectedBy>,
 }
@@ -461,4 +796,57 @@ async fn set_resolvables(
         .set_resolvables(&id, params.r#type, &names, params.optional)
         .await?;
     Ok(Json(()))
+}
+
+/// Returns the list of known licenses.
+///
+/// It includes the license ID and the languages in which it is available.
+#[utoipa::path(
+    get,
+    path = "/licenses",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "List of known licenses", body = Vec<License>)
+    )
+)]
+async fn licenses(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<License>>, Error> {
+    Ok(Json(state.licenses.licenses.clone()))
+}
+
+#[derive(Deserialize, utoipa::IntoParams)]
+struct LicenseQuery {
+    lang: Option<String>,
+}
+
+/// Returns the license content.
+///
+/// Optionally it can receive a language tag (RFC 5646). Otherwise, it returns
+/// the license in English.
+#[utoipa::path(
+    get,
+    path = "/licenses/:id",
+    context_path = "/api/software",
+    params(LicenseQuery),
+    responses(
+        (status = 200, description = "License with the given ID", body = LicenseContent),
+        (status = 400, description = "The specified language tag is not valid"),
+        (status = 404, description = "There is not license with the given ID")
+    )
+)]
+async fn license(
+    State(state): State<SoftwareState<'_>>,
+    Path(id): Path<String>,
+    Query(query): Query<LicenseQuery>,
+) -> Result<Response, Error> {
+    let lang = query.lang.unwrap_or("en".to_string());
+
+    let Ok(lang) = lang.as_str().try_into() else {
+        return Ok(StatusCode::BAD_REQUEST.into_response());
+    };
+
+    if let Some(license) = state.licenses.find(&id, &lang) {
+        Ok(Json(license).into_response())
+    } else {
+        Ok(StatusCode::NOT_FOUND.into_response())
+    }
 }

@@ -22,11 +22,12 @@ use core::fmt;
 use std::collections::HashMap;
 
 use crate::{
-    dbus::{extract_id_from_path, get_property},
     error::ServiceError,
-    storage::proxies::iscsi::{InitiatorProxy, NodeProxy},
+    storage::proxies::iscsi::{ISCSIProxy, InitiatorProxy, NodeProxy},
 };
+use agama_utils::dbus::{extract_id_from_path, get_property};
 use serde::{Deserialize, Serialize};
+use serde_json::value::RawValue;
 use thiserror::Error;
 use zbus::{
     fdo::ObjectManagerProxy,
@@ -40,7 +41,7 @@ pub struct ISCSIInitiator {
     ibft: bool,
 }
 
-#[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, utoipa::ToSchema)]
 /// ISCSI node
 pub struct ISCSINode {
     /// Artificial ID to match it against the D-Bus backend.
@@ -128,6 +129,7 @@ pub struct ISCSIClient<'a> {
     connection: zbus::Connection,
     initiator_proxy: InitiatorProxy<'a>,
     object_manager_proxy: ObjectManagerProxy<'a>,
+    iscsi_proxy: ISCSIProxy<'a>,
 }
 
 impl<'a> ISCSIClient<'a> {
@@ -144,10 +146,13 @@ impl<'a> ISCSIClient<'a> {
             .build()
             .await?;
 
+        let iscsi_proxy = ISCSIProxy::builder(&connection).build().await?;
+
         Ok(Self {
             connection,
             initiator_proxy,
             object_manager_proxy,
+            iscsi_proxy,
         })
     }
 
@@ -276,6 +281,20 @@ impl<'a> ISCSIClient<'a> {
             .build()
             .await?;
         Ok(proxy)
+    }
+
+    pub async fn set_config(&self, value: &RawValue) -> Result<(), ServiceError> {
+        let result = self
+            .iscsi_proxy
+            .set_config(&serde_json::to_string(value)?)
+            .await?;
+        if result == 0 {
+            Ok(())
+        } else {
+            Err(ServiceError::UnsuccessfulAction(
+                "Failed to set iscsi config".to_string(),
+            )) // TODO: can we get better error?
+        }
     }
 }
 

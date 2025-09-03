@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,12 +22,24 @@
 
 import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
-import { ActionGroup, Button, Card, Form, FormGroup, Grid, GridItem } from "@patternfly/react-core";
-import { EmptyState, FormValidationError, Page, PasswordInput } from "~/components/core";
-import { Center } from "~/components/layout";
+import {
+  ActionGroup,
+  Alert,
+  Bullseye,
+  Button,
+  Flex,
+  Form,
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+} from "@patternfly/react-core";
+import { Page, PasswordInput } from "~/components/core";
 import { AuthErrors, useAuth } from "~/context/auth";
-import { _ } from "~/i18n";
+import { Icon } from "../layout";
+import shadowUtils from "@patternfly/react-styles/css/utilities/BoxShadow/box-shadow";
 import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 
 /**
  * Renders the UI that lets the user log into the system.
@@ -69,40 +81,58 @@ user privileges.",
 
   return (
     <Page.Content>
-      <Center>
-        <Grid>
-          <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
-            <Card component="section" isRounded>
-              {/** @ts-ignore */}
-              <EmptyState title={sectionTitle} icon="lock" color="color-info-200" variant="xl">
-                <p>
-                  {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}
-                </p>
-                <p>{_("Please, provide its password to log in to the system.")}</p>
-                <Form id="login" onSubmit={login} aria-label={_("Login form")}>
-                  <FormGroup fieldId="password">
-                    <PasswordInput
-                      id="password"
-                      name="password"
-                      value={password}
-                      aria-label={_("Password input")}
-                      onChange={(_, v) => setPassword(v)}
-                    />
-                  </FormGroup>
+      <Bullseye>
+        <Page.Section
+          hasHeaderDivider
+          headingLevel="h1"
+          title={
+            <Flex
+              alignItems={{ default: "alignItemsCenter" }}
+              direction={{ default: "column" }}
+              gap={{ default: "gapSm" }}
+            >
+              <Icon name="lock" width="3rem" height="3rem" />
+              {sectionTitle}
+            </Flex>
+          }
+          pfCardProps={{
+            isCompact: false,
+            isFullHeight: false,
+            className: shadowUtils.boxShadowMd,
+          }}
+        >
+          <Form id="login" onSubmit={login} aria-label={_("Login form")}>
+            {error && <Alert variant="danger" title={errorMessage(loginError)} />}
 
-                  {error && <FormValidationError message={errorMessage(loginError)} />}
+            <FormGroup fieldId="password" label={_("Password")}>
+              <PasswordInput
+                id="password"
+                name="password"
+                value={password}
+                aria-label={_("Password input")}
+                onChange={(_, v) => setPassword(v)}
+                reminders={["capslock"]}
+              />
+              <FormHelperText>
+                <HelperText>
+                  <HelperTextItem>
+                    {rootExplanationStart} <b>{rootUser}</b> {rootExplanationEnd}
+                  </HelperTextItem>
+                  <HelperTextItem>
+                    {_("Please, provide its password to log in to the system.")}
+                  </HelperTextItem>
+                </HelperText>
+              </FormHelperText>
+            </FormGroup>
 
-                  <ActionGroup>
-                    <Button type="submit" variant="primary">
-                      {_("Log in")}
-                    </Button>
-                  </ActionGroup>
-                </Form>
-              </EmptyState>
-            </Card>
-          </GridItem>
-        </Grid>
-      </Center>
+            <ActionGroup>
+              <Button type="submit" variant="primary">
+                {_("Log in")}
+              </Button>
+            </ActionGroup>
+          </Form>
+        </Page.Section>
+      </Bullseye>
     </Page.Content>
   );
 }

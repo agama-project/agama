@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/to_json_conversions/base"
-require "agama/storage/configs/search"
+require "agama/storage/configs/sort_criteria"
 
 module Agama
   module Storage
@@ -28,9 +28,10 @@ module Agama
       module ToJSONConversions
         # Search conversion to JSON hash according to schema.
         class Search < Base
-          # @see Base
-          def self.config_type
-            Configs::Search
+          # @param config [Configs::Search]
+          def initialize(config)
+            super()
+            @config = config
           end
 
         private
@@ -39,6 +40,7 @@ module Agama
           def conversions
             {
               condition:  convert_condition,
+              sort:       convert_sort,
               ifNotFound: config.if_not_found.to_s,
               max:        config.max
             }
@@ -46,10 +48,62 @@ module Agama
 
           # @return [Hash, nil]
           def convert_condition
+            convert_condition_name ||
+              convert_condition_number ||
+              convert_condition_size
+          end
+
+          # @return [Hash, nil]
+          def convert_condition_name
             name = config.name || config.device&.name
             return unless name
 
             { name: name }
+          end
+
+          # @return [Hash, nil]
+          def convert_condition_number
+            number = config.partition_number
+            return unless number
+
+            { number: number }
+          end
+
+          # @return [Hash, nil]
+          def convert_condition_size
+            size = config.size
+            return unless size&.value
+
+            {
+              size: { size.operator => size.value.to_i }
+            }
+          end
+
+          # @return [Hash, nil]
+          def convert_sort
+            criteria = config.sort_criteria
+            return if criteria.nil? || criteria.empty?
+
+            criteria.map do |criterion|
+              { criterion_name(criterion) => criterion_order(criterion) }
+            end
+          end
+
+          SORT_CRITERIA = {
+            Configs::SortCriteria::Name            => :name,
+            Configs::SortCriteria::Size            => :size,
+            Configs::SortCriteria::PartitionNumber => :number
+          }.freeze
+          private_constant :SORT_CRITERIA
+
+          # @see #convert_sort
+          def criterion_name(criterion)
+            SORT_CRITERIA[criterion.class]
+          end
+
+          # @see #convert_sort
+          def criterion_order(criterion)
+            criterion.asc? ? "asc" : "desc"
           end
         end
       end

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE profile>
+<profile xmlns="http://www.suse.com/1.0/yast2ns"
+  xmlns:config="http://www.suse.com/1.0/configns">
+
+  <software>
+    <products config:type="list">
+      <product>__PRODUCT__</product>
+    </products>
+  </software>
+
+  <users config:type="list">
+    <user>
+      <encrypted config:type="boolean">false</encrypted>
+      <user_password>linux</user_password>
+      <username>root</username>
+    </user>
+  </users>
+
+  <services-manager>
+    <default_target>multi-user</default_target>
+      <services>
+        <disable config:type="list">
+          <service>libvirtd</service>
+        </disable>
+        <enable config:type="list">
+          <service>sshd</service>
+        </enable>
+        <on_demand config:type="list">
+          <service>cups</service>
+        </on_demand>
+      </services>
+  </services-manager>
+
+  <scripts>
+    <chroot-scripts config:type="list">
+      <script>
+        <filename>hello.sh</filename>
+        <interpreter>shell</interpreter>
+        <source><![CDATA[#!/bin/sh
+echo "Hello world"
+]]>
+        </source>
+      </script>
+    </chroot-scripts>
+  </scripts>
+</profile>

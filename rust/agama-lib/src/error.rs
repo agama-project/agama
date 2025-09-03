@@ -23,12 +23,10 @@ use std::io;
 use thiserror::Error;
 use zbus::{self, zvariant};
 
-use crate::{base_http_client::BaseHTTPClientError, transfer::TransferError};
+use crate::utils::TransferError;
 
 #[derive(Error, Debug)]
 pub enum ServiceError {
-    #[error("Cannot generate Agama logs: {0}")]
-    CannotGenerateLogs(String),
     #[error("D-Bus service error: {0}")]
     DBus(#[from] zbus::Error),
     #[error("Could not connect to Agama bus at '{0}': {1}")]
@@ -37,21 +35,15 @@ pub enum ServiceError {
     DBusProtocol(#[from] zbus::fdo::Error),
     #[error("Unexpected type on D-Bus '{0}'")]
     ZVariant(#[from] zvariant::Error),
-    #[error("Failed to communicate with the HTTP backend '{0}'")]
+    #[error(transparent)]
     HTTPError(#[from] reqwest::Error),
     #[error("HTTP client error: {0}")]
     HTTPClientError(#[from] BaseHTTPClientError),
     // it's fine to say only "Error" because the original
     // specific error will be printed too
-    #[error("Error: {0}")]
+    // `#` is std::fmt "Alternate form", anyhow::Error interprets as "include causes"
+    #[error("Error: {0:#}")]
     Anyhow(#[from] anyhow::Error),
-    // FIXME: It is too generic and starting to looks like an Anyhow error
-    #[error("Network client error: '{0}'")]
-    NetworkClientError(String),
-    #[error("Wrong user parameters: '{0:?}'")]
-    WrongUser(Vec<String>),
-    #[error("Registration failed: '{0}'")]
-    FailedRegistration(String),
     #[error("Failed to find these patterns: {0:?}")]
     UnknownPatterns(Vec<String>),
     #[error("Passed json data is not correct: {0}")]
@@ -62,11 +54,19 @@ pub enum ServiceError {
     UnknownInstallationPhase(u32),
     #[error("Question with id {0} does not exist")]
     QuestionNotExist(u32),
-    // Specific error when something does not work as expected, but it is not user fault
-    #[error("Internal error. Please report a bug and attach logs. Details: {0}")]
-    InternalError(String),
-    #[error("Could not read the file: '{0}'")]
-    CouldNotTransferFile(#[from] TransferError),
+    #[error("Backend call failed with status {0} and text '{1}'")]
+    BackendError(u16, String),
+    #[error("You are not logged in. Please use: agama auth login")]
+    NotAuthenticated,
+    // FIXME reroute the error to a better place
+    #[error("Profile error: {0}")]
+    Profile(#[from] ProfileError),
+    #[error("Unsupported SSL Fingerprint algorithm '#{0}'.")]
+    UnsupportedSSLFingerprintAlgorithm(String),
+    #[error("DASD with channel '#{0}' not found.")]
+    DASDChannelNotFound(String),
+    #[error("zFCP controller with channel '#{0}' not found.")]
+    ZFCPControllerNotFound(String),
 }
 
 #[derive(Error, Debug)]
@@ -77,8 +77,9 @@ pub enum ProfileError {
     EvaluationError(String),
     #[error("I/O error")]
     InputOutputError(#[from] io::Error),
-    #[error("The profile is not a valid JSON file")]
+    #[error("The profile is not a well-formed JSON file")]
     FormatError(#[from] serde_json::Error),
-    #[error("Error: {0}")]
+    // `#` is std::fmt "Alternate form", anyhow::Error interprets as "include causes"
+    #[error("Error: {0:#}")]
     Anyhow(#[from] anyhow::Error),
 }

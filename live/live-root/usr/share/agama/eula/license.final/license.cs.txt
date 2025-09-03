@@ -1,0 +1,186 @@
+Licenční smlouva s koncovým uživatelem
+pro software SUSE
+
+
+Licenční smlouva s koncovým uživatelem pro software SUSE
+ZAKOUPENÍM, INSTALACÍ, STAŽENÍM NEBO JINÝM POUŽÍVÁNÍM SOFTWARU (JAK 
+JE DEFINOVÁNO NÍŽE) VYJADŘUJETE SOUHLAS S PODMÍNKAMI TÉTO SMLOUVY. 
+POKUD S PODMÍNKAMI TÉTO SMLOUVY NESOUHLASÍTE, NEMÁTE DOVOLENO TENTO 
+SOFTWARE STAHOVAT, INSTALOVAT ANI HO POUŽÍVAT. OSOBA JEDNAJÍCÍ 
+JMÉNEM JINÉHO SUBJEKTU POTVRZUJE, ŽE MÁ ZMOCNĚNÍ TUTO SMLOUVU JMÉNEM 
+TOHOTO SUBJEKTU UZAVŘÍT.  POKUD TUTO SMLOUVU PŘIJÍMÁTE JMÉNEM 
+NĚJAKÉHO SUBJEKTU, PAK SE POJMY "VY" A "VÁŠ" VZTAHUJÍ NA TENTO 
+SUBJEKT, KDYKOLI JSOU POUŽITY NÍŽE.
+
+Společnost SUSE LLC (dále jen "poskytovatel licence" nebo "SUSE") 
+zpřístupňuje softwarové produkty, které mohou zahrnovat: (i) 
+softwarové programy vyvinuté společností SUSE a/nebo jejími 
+přidruženými subjekty; (ii) softwarové programy vyvinuté třetími 
+stranami; (iii) kompilace softwarových programů; a (iv) ochranné 
+známky vlastněné společností SUSE a/nebo jejími přidruženými 
+subjekty ("značky SUSE"), jakož i dokumentaci k těmto softwarovým 
+programům (tyto softwarové programy, kompilace softwarových 
+programů, ochranné známky a dokumentace jsou dále označovány jako 
+"Software").
+
+Tato licenční smlouva s koncovým uživatelem (dále jen "EULA") je 
+právní smlouva mezi Vámi (právnickou nebo fyzickou osobou) a 
+společností SUSE a řídí se jí Vaše používání Softwaru. Všechny 
+doplňky, rozšíření, aktualizace, mobilní aplikace, moduly, adaptéry 
+či podpůrné verze Softwaru, které můžete stáhnout či získat a které 
+nejsou doprovázeny licenční smlouvou, jsou považovány za Software a 
+řídí se touto smlouvou EULA. Pokud zákony vašeho hlavního místa 
+podnikání vyžadují, aby smlouvy byly z důvodu vymahatelnosti 
+uzavřeny v místním jazyce, můžete získat místní jazykovou verzi tak, 
+že se písemně obrátíte na poskytovatele licence a vaše používání 
+softwaru se pak bude řídit místní jazykovou verzí.      
+ 
+Podmínky licence
+Open Source
+Software obsahuje mnoho součástí s otevřeným zdrojovým kódem (open 
+source software). Licence open source pro každou součást, kterou 
+může být v závislosti na softwarovém programu licence GNU General 
+Public License v.2 
+(https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html), licence 
+Apache License verze 2.0 
+(https://www.apache.org/licenses/LICENSE-2.0) nebo jiná licence open 
+source (každá taková licence je označována jako "licence OSS"), je 
+uvedena v licenční dokumentaci a/nebo ve zdrojovém kódu součásti.
+ 
+Tato smlouva EULA upravuje vaše používání Softwaru včetně značek 
+SUSE, ale neomezuje, nenahrazuje ani nemění vaše práva podle licence 
+OSS, která se vztahuje na vaše používání jakéhokoli otevřeného 
+zdrojového kódu obsaženého v Softwaru bez označení SUSE.
+ 
+Software může být dodáván s programy třetích stran, které nejsou 
+součástí Softwaru. Tyto programy třetích stran nejsou nutné pro 
+spuštění Softwaru, jsou Vám poskytovány jako doplněk a podléhají 
+svým vlastním licenčním podmínkám. Licenční podmínky jsou buď 
+součástí programů třetích stran, nebo je naleznete na adrese 
+https://www.suse.com/licensing/eula/. Pokud nesouhlasíte s 
+dodržováním příslušných licenčních podmínek pro programy třetích 
+stran, neměli byste je instalovat. Pokud chcete nainstalovat 
+programy třetích stran na více než jeden systém nebo přenést 
+programy třetích stran na jiný subjekt, musíte se obrátit na 
+poskytovatele licence příslušných programů třetích stran.
+
+Licence na používání Softwaru
+Při dodržení podmínek této smlouvy EULA a příslušné licence OSS je 
+vám udělena trvalá, nevýhradní, nepřenosná, odvolatelná, celosvětová 
+licence k reprodukci a používání kopií Softwaru pro interní použití 
+vaší právnickou osobou. 
+ 
+Tato smlouva EULA vám nedovoluje distribuovat Software nebo jeho 
+součásti používající značky SUSE s výjimkou toho, že mimo váš právní 
+subjekt můžete distribuovat: (a) kopie Softwaru, ale pouze pokud je 
+to povoleno na základě samostatné písemné smlouvy s poskytovatelem 
+licence, která takovou distribuci povoluje, nebo (b) součásti 
+Softwaru, ale pouze pokud odstraníte a nahradíte všechny výskyty 
+značek SUSE.
+
+Vlastnictví
+Software Vám nebyl prodán, pouze Vám byla udělena licence k jeho 
+užívání.  Nepřechází na vás nárok na software ani na jeho 
+vlastnictví. Poskytovatel licence a/nebo poskytovatelé licencí 
+třetích stran si ponechávají veškerá práva, vlastnické právo a podíl 
+na všech právech duševního vlastnictví k Softwaru.      
+
+Značky SUSE
+Tato Smlouva EULA výslovně ani nevýslovně nezakládá udělení žádných 
+práv ani licence na používání jakékoli značky SUSE, obchodního názvu 
+ani ochranné známky služeb Poskytovatele licence ani jeho 
+Přidružených subjektů či poskytovatelů licence.
+
+Předplacené služby a podpora
+Poskytovatel licence není povinen poskytovat údržbu nebo podporu, 
+pokud není dohodnuto jinak na základě dodatečné smlouvy, která 
+takové služby výslovně zahrnuje.
+
+Záruka a odpovědnost
+Omezená záruka
+SOFTWARE JE POSKYTOVÁN "TAK JAK JE", BEZ ZÁRUK JAKÉHOKOLI DRUHU. 
+POKUD NENÍ ZÁKONEM STANOVENO JINAK, POSKYTOVATEL LICENCE ODMÍTÁ 
+ODPOVĚDNOST A VYLUČUJE JAKÉKOLI A VŠECHNY PŘEDPOKLÁDANÉ ZÁRUKY 
+VČETNĚ VŠECH ZÁRUK TÝKAJÍCÍCH SE OBCHODOVATELNOSTI, VHODNOSTI PRO 
+KONKRÉTNÍ ÚČEL, VLASTNICTVÍ NEBO NEPORUŠENÍ PRÁVA A STEJNĚ TAK 
+JAKÉKOLI ZÁRUKY VYPLÝVAJÍCÍ Z PRŮBĚHU UZAVÍRÁNÍ OBCHODŮ, PRŮBĚHU 
+VÝKONU NEBO OBCHODOVÁNÍ.  POSKYTOVATEL LICENCE NEZARUČUJE, ŽE 
+SOFTWARE A SLUŽBY SPLNÍ VŠECHNY VAŠE POŽADAVKY, BUDOU KOMPATIBILNÍ S 
+VAŠIMI OPERAČNÍMI SYSTÉMY ANI ŽE PROVOZ SOFTWARU BUDE NEPŘERUŠOVANÝ 
+A BEZCHYBNÝ. VÝŠE UVEDENÉ VÝJIMKY A PROHLÁŠENÍ O VYLOUČENÍ 
+ODPOVĚDNOSTI JSOU NEDÍLNOU SOUČÁSTÍ TÉTO SMLOUVY. Některé místně 
+příslušné soudy neumožňují odmítnutí určitých záruk nebo některá 
+omezení, proto je možné, že některá z výše uvedených omezení se na 
+vás nevztahují. Omezená záruka vám dává určitá práva a kromě nich 
+můžete mít i další práva, která se liší v závislosti na státu nebo 
+jurisdikci.
+
+Omezení odpovědnosti
+POSKYTOVATEL LICENCE ANI ŽÁDNÝ Z JEHO PŘIDRUŽENÝCH SUBJEKTŮ, 
+AKCIONÁŘŮ, VEDOUCÍCH PRACOVNÍKŮ NEBO ZAMĚSTNANCŮ V ŽÁDNÉM PŘÍPADĚ 
+NEODPOVÍDÁ ZA JAKÉKOLI NÁSLEDNÉ NEBO NEPŘÍMÉ ŠKODY, AŤ UŽ NA ZÁKLADĚ 
+SMLOUVY, NEDBALOSTI, DELIKTU NEBO JINÉ TEORIE ODPOVĚDNOSTI, NEBO ZA 
+JAKOUKOLI ZTRÁTU ZISKU, OBCHODNÍ ZTRÁTU NEBO ZTRÁTU ČI POŠKOZENÍ 
+DAT, A TO V KAŽDÉM PŘÍPADĚ, I KDYŽ BYL NA MOŽNOST TĚCHTO ŠKOD 
+UPOZORNĚN.
+
+CELKOVÁ ODPOVĚDNOST POSKYTOVATELE LICENCE PODLE TÉTO SMLOUVY EULA 
+NEBO V SOUVISLOSTI S NÍ ( V JEDNOTLIVÉM PŘÍPADĚ NEBO V NĚKOLIKA 
+PŘÍPADECH) V ŽÁDNÉM PŘÍPADĚ NEPŘEKROČÍ 50 USD (USA).
+
+Výše uvedená vyloučení a omezení se nevztahují na nároky související 
+s úmrtím nebo zraněním osob způsobených nedbalostí Poskytovatele 
+licence nebo jeho zaměstnanců, zástupců nebo smluvních partnerů. V 
+jurisdikcích, které nepovolují vyloučení nebo omezení náhrad škod, 
+zejména pak náhrad škod za porušení jakýchkoli předpokládaných 
+podmínek týkajících se vlastnictví nebo nerušeného užívání 
+jakéhokoli Softwaru získaného na základě této smlouvy EULA nebo 
+náhrad škod za úmyslné zkreslení údajů, bude odpovědnost 
+Poskytovatele licence omezena nebo vyloučena v maximálním rozsahu 
+povoleném v těchto jurisdikcích.
+ 
+Všeobecné podmínky
+Rozhodné právo
+Všechny záležitosti vyplývající z této smlouvy EULA nebo s ní 
+související se budou řídit hmotným právem Spojených států amerických 
+a státu New York bez ohledu na ustanovení o výběru práva. Veškeré 
+soudní spory, řízení nebo jednání, které vyplynou z této smlouvy 
+EULA nebo vzniknou v souvislosti s ní, lze vést pouze před 
+federálním nebo státním soudem příslušné jurisdikce ve státě New 
+York. Pokud je však místo hlavního sídla firmy v členském státě 
+Evropské unie nebo Evropského sdružení volného obchodu, 1) mají 
+výhradní příslušnost k veškerým soudním sporům v souvislosti s touto 
+smlouvou EULA soudy v Anglii a Walesu; a 2) použijí se zákony Anglie 
+s výjimkou případů, kdy se veškerá taková soudní řízení musí vést 
+podle zákonů platných v místě hlavního sídla firmy. V takovém 
+případě se použijí zákony dané země. Na tuto smlouvu EULA ani na 
+její předmět se nevztahuje zákon Uniform Computer Information 
+Transaction Act, úmluva OSN o smlouvách týkajících se mezinárodní 
+koupi zboží ani kolizní normy New Yorku nebo Anglie a Walesu.
+
+Úplnost smlouvy
+Tato smlouva EULA spolu s veškerými dalšími doklady o nákupu, 
+případně jinou písemnou smlouvou uzavřenou mezi vámi a 
+Poskytovatelem licence nebo jeho přidruženými subjekty, tvoří úplné 
+ujednání a smlouvu mezi vámi a Poskytovatelem licence a je možné ji 
+doplnit nebo upravit pouze písemnou smlouvou uzavřenou mezi vámi a 
+oprávněným zástupcem Poskytovatele licence. ŽÁDNÝ POSKYTOVATEL 
+LICENCE TŘETÍ STRANY, DISTRIBUTOR, PRODEJCE, MALOOBCHODNÍ PRODEJCE, 
+OBCHODNÍ ZÁSTUPCE ANI ZAMĚSTNANEC NENÍ OPRÁVNĚN TUTO SMLOUVU 
+UPRAVOVAT NEBO POSKYTOVAT JAKÁKOLI PROHLÁŠENÍ ČI ZÁVAZKY NEOBSAŽENÉ 
+V PODMÍNKÁCH TÉTO SMLOUVY NEBO LIŠÍCÍ SE OD NÍ.
+
+Klauzule o oddělitelnosti
+Pokud je kterékoliv z ustanovení této smlouvy EULA neplatné nebo 
+právně neúčinné, bude toto ustanovení vykládáno, omezeno, pozměněno 
+nebo, je-li to nutné, odděleno v potřebném rozsahu tak, aby byla 
+odstraněna jeho neplatnost nebo právní neúčinnost. Další ustanovení 
+smlouvy EULA zůstávají tímto nedotčené. 
+
+:verze:2024-06-01:001
+SUSE.com
+
+Copyright (c) SUSE 2025
+
+SUSE Legal		
+Červen 2024

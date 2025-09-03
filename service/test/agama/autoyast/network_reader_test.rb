@@ -29,7 +29,11 @@ describe Agama::AutoYaST::NetworkReader do
   let(:profile) do
     {
       "networking" => {
-        "interfaces" => [{ "name" => "eth0" }]
+        "interfaces" => [{ "name" => "eth0" }],
+        "dns"        => {
+          "nameservers" => ["1.1.1.1"],
+          "searchlist"  => ["example.lan"]
+        }
       }
     }
   end
@@ -51,6 +55,11 @@ describe Agama::AutoYaST::NetworkReader do
       it "returns a section with the 'connections' list" do
         network = subject.read
         expect(network["network"].keys).to include("connections")
+        network["network"]["connections"].each do |conn|
+          expect(conn).to include(
+            "nameservers" => ["1.1.1.1"], "dns_searchlist" => ["example.lan"]
+          )
+        end
       end
     end
   end

@@ -30,9 +30,6 @@ if (!agamaServer.startsWith("http")) {
   agamaServer = "http://" + agamaServer;
 }
 
-// Obtain package name from package.json
-const packageJson = JSON.parse(fs.readFileSync("package.json"));
-
 // Non-JS files which are copied verbatim to dist/
 const copy_files = [
   "./src/index.html",
@@ -64,7 +61,8 @@ if (eslint) {
     new ESLintPlugin({
       configType: "flat",
       extensions: ["js", "jsx", "ts", "tsx"],
-      failOnWarning: true,
+      failOnError: production,
+      failOnWarning: production,
     }),
   );
 }
@@ -101,7 +99,7 @@ module.exports = {
     ignored: /node_modules/,
   },
   entry: {
-    index: ["./src/index.js"],
+    index: ["./src/index.tsx"],
   },
   devServer: {
     hot: true,
@@ -165,7 +163,7 @@ module.exports = {
             loader: require.resolve("ts-loader"),
             options: {
               getCustomTransformers: () => ({
-                before: [development && ReactRefreshTypeScript()].filter(Boolean),
+                before: [development && ReactRefreshTypeScript.default()].filter(Boolean),
               }),
               transpileOnly: development,
             },

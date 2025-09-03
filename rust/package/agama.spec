@@ -1,7 +1,7 @@
 #
 # spec file for package agama
 #
-# Copyright (c) 2023-2024 SUSE LLC
+# Copyright (c) 2023-2025 SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -12,7 +12,7 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-# Please submit bugfixes or comments via http://bugs.opensuse.org/
+# Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
 
 Name:           agama
@@ -23,10 +23,12 @@ Summary:        Agama Installer
 #               If you know the license, put it's SPDX string here.
 #               Alternately, you can use cargo lock2rpmprovides to help generate this.
 License:        GPL-2.0-or-later
-Url:            https://github.com/opensuse/agama
+Url:            https://github.com/agama-project/agama
 Source0:        agama.tar
 Source1:        vendor.tar.zst
 
+# defines the "limit_build" macro used in the "build" section below
+BuildRequires:  memory-constraints
 BuildRequires:  cargo-packaging
 BuildRequires:  pkgconfig(openssl)
 # used in tests for dbus service
@@ -37,8 +39,12 @@ BuildRequires:  dbus-1-daemon
 BuildRequires:  clang-devel
 BuildRequires:  pkgconfig(pam)
 # required by autoinstallation
+BuildRequires:  jsonnet
 Requires:       jsonnet
 Requires:       lshw
+# required by the password checking
+BuildRequires:  libpwquality-tools
+Requires:       libpwquality-tools
 # required by "agama logs store"
 Requires:       gzip
 # required to compress the manual pages
@@ -63,13 +69,24 @@ Agama is a service-based Linux installer. It is composed of an HTTP-based API,
 a web user interface, a command-line interface and a D-Bus service which exposes
 part of the YaST libraries.
 
+%package -n agama-autoinstall
+Version:        0
+Release:        0
+Summary:        Agama auto-installation service
+License:        GPL-2.0-or-later
+Url:            https://github.com/agama-project/agama
+
+%description -n agama-autoinstall
+Agama is a service-based Linux installer. This package contains the
+auto-installation service.
+
 %package -n agama-cli
 #               This will be set by osc services, that will run after this.
 Version:        0
 Release:        0
 Summary:        Agama command-line interface
 License:        GPL-2.0-only
-Url:            https://github.com/opensuse/agama
+Url:            https://github.com/agama-project/agama
 
 %description -n agama-cli
 Command line program to interact with the Agama installer.
@@ -128,6 +145,10 @@ package contains a systemd service to run scripts when booting the installed sys
 # find vendor -type f -name \*.rs -exec chmod -x '{}' \;
 
 %build
+# Require at least 1.3GB RAM per each parallel job (the size is in MB),
+# this can limit the number of parallel jobs on systems with relatively small memory.
+%{limit_build -m 1300}
+
 %{cargo_build}
 cargo run --package xtask -- manpages
 gzip out/man/*
@@ -135,33 +156,17 @@ cargo run --package xtask -- completions
 cargo run --package xtask -- openapi
 
 %install
-install -D -d -m 0755 %{buildroot}%{_bindir}
-install -m 0755 %{_builddir}/agama/target/release/agama %{buildroot}%{_bindir}/agama
-install -m 0755 %{_builddir}/agama/target/release/agama-dbus-server %{buildroot}%{_bindir}/agama-dbus-server
-install -m 0755 %{_builddir}/agama/target/release/agama-web-server %{buildroot}%{_bindir}/agama-web-server
-install -D -p -m 644 %{_builddir}/agama/share/agama.pam $RPM_BUILD_ROOT%{_pam_vendordir}/agama
-install -D -d -m 0755 %{buildroot}%{_datadir}/agama-cli
-install -m 0644 %{_builddir}/agama/agama-lib/share/profile.schema.json %{buildroot}%{_datadir}/agama-cli
-install -m 0644 %{_builddir}/agama/share/agama.libsonnet %{buildroot}%{_datadir}/agama-cli
-install --directory %{buildroot}%{_datadir}/dbus-1/agama-services
-install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services %{_builddir}/agama/share/org.opensuse.Agama1.service
-install -D -m 0644 %{_builddir}/agama/share/agama-web-server.service %{buildroot}%{_unitdir}/agama-web-server.service
-install -D -d -m 0755 %{buildroot}%{_libexecdir}
-install -D -m 0755 %{_builddir}/agama/share/agama-scripts.sh %{buildroot}%{_libexecdir}/agama-scripts.sh
-install -D -m 0644 %{_builddir}/agama/share/agama-scripts.service %{buildroot}%{_unitdir}/agama-scripts.service
-
-# install manpages
-mkdir -p %{buildroot}%{_mandir}/man1
-install -m 0644 %{_builddir}/agama/out/man/* %{buildroot}%{_mandir}/man1/
-
-# install shell completion scripts
-install -Dm644 %{_builddir}/agama/out/shell/%{name}.bash %{buildroot}%{_datadir}/bash-completion/completions/%{name}
-install -Dm644 %{_builddir}/agama/out/shell/_%{name} %{buildroot}%{_datadir}/zsh/site-functions/_%{name}
-install -Dm644 %{_builddir}/agama/out/shell/%{name}.fish %{buildroot}%{_datadir}/fish/vendor_completions.d/%{name}.fish
-
-# install OpenAPI specification
-mkdir -p %{buildroot}%{_datadir}/agama/openapi
-install -m 0644 %{_builddir}/agama/out/openapi/* %{buildroot}%{_datadir}/agama/openapi
+env \
+  SRCDIR=%{_builddir}/agama \
+  DESTDIR=%{buildroot} \
+  NAME=%{name} \
+  bindir=%{_bindir} \
+  datadir=%{_datadir} \
+  pamvendordir=%{_pam_vendordir} \
+  unitdir=%{_unitdir} \
+  libexecdir=%{_libexecdir} \
+  mandir=%{_mandir} \
+  %{_builddir}/agama/install.sh
 
 %check
 PATH=$PWD/share/bin:$PATH
@@ -175,11 +180,17 @@ echo $PATH
 %pre
 %service_add_pre agama-web-server.service
 
+%pre -n agama-autoinstall
+%service_add_pre agama-autoinstall.service
+
 %pre -n agama-scripts
 %service_add_pre agama-scripts.service
 
 %post
 %service_add_post agama-web-server.service
+
+%post -n agama-autoinstall
+%service_add_post agama-autoinstall.service
 
 %post -n agama-scripts
 %service_add_post agama-scripts.service
@@ -187,11 +198,17 @@ echo $PATH
 %preun
 %service_del_preun agama-web-server.service
 
+%preun -n agama-autoinstall
+%service_del_preun agama-autoinstall.service
+
 %preun -n agama-scripts
 %service_del_preun agama-scripts.service
 
 %postun
 %service_del_postun_with_restart agama-web-server.service
+
+%postun -n agama-autoinstall
+%service_del_postun_with_restart agama-autoinstall.service
 
 %postun -n agama-scripts
 %service_del_postun_with_restart agama-scripts.service
@@ -205,11 +222,18 @@ echo $PATH
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
 
+%files -n agama-autoinstall
+%{_bindir}/agama-autoinstall
+%{_unitdir}/agama-autoinstall.service
+
 %files -n agama-cli
 %{_bindir}/agama
 %dir %{_datadir}/agama-cli
 %{_datadir}/agama-cli/agama.libsonnet
+%{_datadir}/agama-cli/iscsi.schema.json
 %{_datadir}/agama-cli/profile.schema.json
+%{_datadir}/agama-cli/storage.schema.json
+%{_datadir}/agama-cli/storage.model.schema.json
 %{_mandir}/man1/agama*1%{?ext_man}
 
 %files -n agama-cli-bash-completion

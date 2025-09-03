@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -30,13 +30,14 @@ module Agama
       class Autoyast < Base
         include Yast::I18n
 
-        # @param config [Config] Agama config
-        # @param logger [Logger]
+        # @param product_config [Config] Product config
+        # @param storage_system [Storage::System]
         # @param partitioning [Array<Hash>]
-        def initialize(config, logger, partitioning)
+        # @param logger [Logger]
+        def initialize(product_config, storage_system, partitioning, logger)
           textdomain "agama"
 
-          super(config, logger)
+          super(product_config, storage_system, logger)
           @partitioning = partitioning
         end
 
@@ -52,8 +53,8 @@ module Agama
           proposal = Y2Storage::AutoinstProposal.new(
             partitioning:      partitioning,
             proposal_settings: proposal_settings,
-            devicegraph:       probed_devicegraph,
-            disk_analyzer:     disk_analyzer,
+            devicegraph:       storage_system.devicegraph,
+            disk_analyzer:     storage_system.analyzer,
             issues_list:       ay_issues
           )
           proposal.propose
@@ -76,8 +77,8 @@ module Agama
         #
         # @return [Y2Storage::ProposalSettings]
         def proposal_settings
-          agama_default = ProposalSettingsReader.new(config).read
-          agama_default.to_y2storage(config: config)
+          agama_default = ProposalSettingsReader.new(product_config).read
+          agama_default.to_y2storage(config: product_config)
         end
 
         # Agama issue equivalent to the given AutoYaST issue

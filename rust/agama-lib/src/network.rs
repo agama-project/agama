@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -21,11 +21,12 @@
 //! Implements support for handling the network settings
 
 mod client;
-mod proxies;
-pub mod settings;
 mod store;
-pub mod types;
 
-pub use client::NetworkClient;
+pub use agama_network::{
+    error, model, settings, types, Action, Adapter, NetworkAdapterError, NetworkManagerAdapter,
+    NetworkSystem, NetworkSystemClient, NetworkSystemError,
+};
+pub use client::{NetworkClient, NetworkClientError};
 pub use settings::NetworkSettings;
-pub use store::NetworkStore;
+pub use store::{NetworkStore, NetworkStoreError};

@@ -1,0 +1,173 @@
+{
+  "title": "Config",
+  "description": "Config model",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "boot": { "$ref": "#/$defs/boot" },
+    "encryption": { "$ref": "#/$defs/encryption" },
+    "drives": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/drive" }
+    },
+    "mdRaids": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/mdRaid" }
+    },
+    "volumeGroups": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/volumeGroup" }
+    }
+  },
+  "$defs": {
+    "boot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["configure"],
+      "properties": {
+        "configure": { "type": "boolean" },
+        "device": { "$ref": "#/$defs/bootDevice" }
+      }
+    },
+    "bootDevice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default"],
+      "properties": {
+        "default": { "type": "boolean" },
+        "name": { "type": "string" }
+      }
+    },
+    "encryption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method"],
+      "properties": {
+        "method": { "$ref": "#/$defs/encryptionMethod" },
+        "password": { "type": "string" }
+      }
+    },
+    "encryptionMethod": {
+      "enum": [
+        "luks1",
+        "luks2",
+        "tpmFde"
+      ]
+    },
+    "drive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "mountPath": { "type": "string" },
+        "filesystem": { "$ref": "#/$defs/filesystem" },
+        "spacePolicy": { "$ref": "#/$defs/spacePolicy" },
+        "ptableType": { "$ref": "#/$defs/ptableType" },
+        "partitions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/partition" }
+        }
+      }
+    },
+    "mdRaid": {
+      "$comment": "So far, drive and RAID are still identical. Let's reuse the definition.",
+      "$ref": "#/$defs/drive"
+    },
+    "partition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "id": { "$ref": "#/$defs/partitionId" },
+        "mountPath": { "type": "string" },
+        "filesystem": { "$ref": "#/$defs/filesystem" },
+        "size": { "$ref": "#/$defs/size" },
+        "delete": { "type": "boolean" },
+        "deleteIfNeeded": { "type": "boolean" },
+        "resize": { "type": "boolean" },
+        "resizeIfNeeded": { "type": "boolean" }
+      }
+    },
+    "volumeGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["vgName"],
+      "properties": {
+        "vgName": { "type": "string" },
+        "extentSize": { "type": "integer" },
+        "targetDevices": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "logicalVolumes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/logicalVolume" }
+        }
+      }
+    },
+    "logicalVolume": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lvName": { "type": "string" },
+        "mountPath": { "type": "string" },
+        "filesystem": { "$ref": "#/$defs/filesystem" },
+        "size": { "$ref": "#/$defs/size" },
+        "stripes": { "type": "integer" },
+        "stripeSize": { "type": "integer" }
+      }
+    },
+    "spacePolicy": {
+      "enum": ["delete", "resize", "keep", "custom"]
+    },
+    "ptableType": {
+      "enum": ["gpt", "msdos", "dasd"]
+    },
+    "partitionId": {
+      "enum": ["linux", "swap", "lvm", "raid", "esp", "prep", "bios_boot"]
+    },
+    "filesystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default"],
+      "properties": {
+        "reuse": { "type": "boolean" },
+        "default": { "type": "boolean" },
+        "type": { "$ref": "#/$defs/filesystemType" },
+        "snapshots": { "type": "boolean" },
+        "label": { "type": "string" }
+      }
+    },
+    "filesystemType": {
+      "enum": [
+        "bcachefs",
+        "btrfs",
+        "exfat",
+        "ext2",
+        "ext3",
+        "ext4",
+        "f2fs",
+        "jfs",
+        "nfs",
+        "nilfs2",
+        "ntfs",
+        "reiserfs",
+        "swap",
+        "tmpfs",
+        "vfat",
+        "xfs"
+      ]
+    },
+    "size": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default", "min"],
+      "properties": {
+        "default": { "type": "boolean" },
+        "min": { "type": "integer", "minimum": 0 },
+        "max": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

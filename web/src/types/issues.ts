@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -57,8 +57,10 @@ enum IssueSeverity {
 type Issue = {
   /** Issue description */
   description: string;
-  /** Issue details. It is not mandatory. */
-  details: string | undefined;
+  /** Issue kind **/
+  kind: string;
+  /** Issue details */
+  details?: string;
   /** Where the issue comes from */
   source: IssueSource;
   /** How severe is the issue */
@@ -82,6 +84,18 @@ class IssuesList {
       users,
     };
     this.isEmpty = !Object.values(this.issues).some((v) => v.length > 0);
+  }
+
+  /**
+   * Creates a new list only with the issues that match the given function
+   */
+  filter(fn) {
+    return new IssuesList(
+      this.issues["product"].filter(fn),
+      this.issues["software"].filter(fn),
+      this.issues["storage"].filter(fn),
+      this.issues["users"].filter(fn),
+    );
   }
 }
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -34,6 +34,8 @@ require "agama/dbus/clients/locale"
 require "agama/dbus/clients/software"
 require "agama/dbus/clients/storage"
 require "agama/helpers"
+require "agama/http"
+require "agama/ipmi"
 
 Yast.import "Stage"
 
@@ -61,6 +63,7 @@ module Agama
 
     # Constructor
     #
+    # @param config [Agama::Config]
     # @param logger [Logger]
     def initialize(config, logger)
       textdomain "agama"
@@ -70,6 +73,8 @@ module Agama
       @installation_phase = InstallationPhase.new
       @service_status_recorder = ServiceStatusRecorder.new
       @service_status = DBus::ServiceStatus.new.busy
+      @ipmi = Ipmi.new(logger)
+
       on_progress_change { logger.info progress.to_s }
     end
 
@@ -77,36 +82,22 @@ module Agama
     def startup_phase
       service_status.busy
       installation_phase.startup
+      # FIXME: hot-fix for decision taken at bsc#1224868 (RC1)
+      network.startup
       config_phase if software.selected_product
 
       logger.info("Startup phase done")
       service_status.idle
     end
 
-    def locale=(locale)
-      service_status.busy
-      change_process_locale(locale)
-      users.update_issues
-      start_progress_with_descriptions(
-        _("Load software translations"),
-        _("Load storage translations")
-      )
-      progress.step { software.locale = locale }
-      progress.step { storage.locale = locale }
-    ensure
-      service_status.idle
-      finish_progress
-    end
-
     # Runs the config phase
-    def config_phase
-      service_status.busy
+    #
+    # @param reprobe [Boolean] Whether a reprobe should be done instead of a probe.
+    # @param data [Hash] Extra data provided to the D-Bus calls.
+    def config_phase(reprobe: false, data: {})
       installation_phase.config
-
-      start_progress_with_descriptions(
-        _("Analyze disks"), _("Configure software")
-      )
-      progress.step { storage.probe }
+      start_progress_with_descriptions(_("Analyze disks"), _("Configure software"))
+      progress.step { reprobe ? storage.reprobe(data) : storage.probe(data) }
       progress.step { software.probe }
 
       logger.info("Config phase done")
@@ -114,14 +105,14 @@ module Agama
       logger.error "Startup error: #{e.inspect}. Backtrace: #{e.backtrace}"
       # TODO: report errors
     ensure
-      service_status.idle
       finish_progress
     end
 
     # Runs the install phase
-    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     def install_phase
-      service_status.busy
+      @ipmi.started
+
       installation_phase.install
       start_progress_with_descriptions(
         _("Prepare disks"),
@@ -133,6 +124,7 @@ module Agama
 
       progress.step do
         storage.install
+        run_post_partitioning_scripts
         proxy.propose
         # propose software after /mnt is already separated, so it uses proper
         # target
@@ -150,14 +142,30 @@ module Agama
         end
       end
 
+      @ipmi.finished
+
       logger.info("Install phase done")
     rescue StandardError => e
+      @ipmi.failed
       logger.error "Installation error: #{e.inspect}. Backtrace: #{e.backtrace}"
     ensure
-      service_status.idle
+      installation_phase.finish
       finish_progress
     end
-    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+
+    def locale=(locale)
+      change_process_locale(locale)
+      users.update_issues
+      start_progress_with_descriptions(
+        _("Load software translations"),
+        _("Load storage translations")
+      )
+      progress.step { software.locale = locale }
+      progress.step { storage.locale = locale }
+    ensure
+      finish_progress
+    end
 
     # Software client
     #
@@ -244,20 +252,27 @@ module Agama
     end
 
     # Whatever has to be done at the end of installation
-    def finish_installation
-      logs = collect_logs(path: "/tmp/var/logs/")
-
-      logger.info("Installation logs stored in #{logs}")
-
-      cmd = if iguana?
-        "/usr/bin/agamactl -k"
-      else
-        "/usr/sbin/shutdown -r now"
+    #
+    # If a finish method is given it will call the related shutdown
+    # command.
+    #
+    # @param method [HALT, POWEROFF, STOP, REBOOT]
+    # @return [Boolean]
+    def finish_installation(method)
+      unless installation_phase.finish?
+        logger.error "The installer has not finished correctly. Please check logs"
+        return false
       end
 
-      logger.info("Finishing installation with #{cmd}")
+      if method == STOP
+        logger.info("Finished the installation (stop).")
+        return true
+      end
 
-      system(cmd)
+      cmd = finish_cmd(method)
+      logger.info("Finishing installation with '#{cmd}' (#{method})")
+
+      !!system(cmd)
     end
 
     # Says whether running on iguana or not
@@ -269,9 +284,39 @@ module Agama
 
   private
 
+    # Possible finish methods
+    STOP = "stop"
+    REBOOT = "reboot"
+    HALT = "halt"
+    POWEROFF = "poweroff"
+
+    # Default finish method to be called if not given or not find
+    DEFAULT_METHOD = "reboot"
+    # Finish shutdown option for each finish method
+    SHUTDOWN_OPT = { REBOOT => "-r", HALT => "-H", POWEROFF => "-P" }.freeze
+
+    # @param method [String, nil]
+    # @return [String] the cmd to be run for finishing the installation
+    def finish_cmd(method)
+      return "/usr/bin/agamactl -k" if iguana?
+
+      opt = SHUTDOWN_OPT[method]
+      unless opt
+        log.info "Not recognized method, using the default one (reboot)."
+        opt = SHUTDOWN_OPT[DEFAULT_METHOD]
+      end
+      "/usr/sbin/shutdown #{opt} now"
+    end
+
     attr_reader :config
 
     # @return [ServiceStatusRecorder]
     attr_reader :service_status_recorder
+
+    # Runs post partitioning scripts
+    def run_post_partitioning_scripts
+      client = Agama::HTTP::Clients::Scripts.new(logger)
+      client.run("postPartitioning")
+    end
   end
 end

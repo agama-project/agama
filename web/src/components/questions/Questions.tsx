@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,6 +24,10 @@ import React from "react";
 import GenericQuestion from "~/components/questions/GenericQuestion";
 import QuestionWithPassword from "~/components/questions/QuestionWithPassword";
 import LuksActivationQuestion from "~/components/questions/LuksActivationQuestion";
+import PackageErrorQuestion from "~/components/questions/PackageErrorQuestion";
+import UnsupportedAutoYaST from "~/components/questions/UnsupportedAutoYaST";
+import RegistrationCertificateQuestion from "~/components/questions/RegistrationCertificateQuestion";
+import LoadConfigRetryQuestion from "~/components/questions/LoadConfigRetryQuestion";
 import { useQuestions, useQuestionsConfig, useQuestionsChanges } from "~/queries/questions";
 import { AnswerCallback, QuestionType } from "~/types/questions";
 
@@ -51,6 +55,25 @@ export default function Questions(): React.ReactNode {
   // more can follow as it will be needed
   if (currentQuestion.class === "storage.luks_activation") {
     QuestionComponent = LuksActivationQuestion;
+  }
+
+  if (currentQuestion.class === "autoyast.unsupported") {
+    QuestionComponent = UnsupportedAutoYaST;
+  }
+
+  // special popup for package errors (libzypp callbacks)
+  if (currentQuestion.class?.startsWith("software.package_error.")) {
+    QuestionComponent = PackageErrorQuestion;
+  }
+
+  // special popup for self signed registration certificate
+  if (currentQuestion.class === "registration.certificate") {
+    QuestionComponent = RegistrationCertificateQuestion;
+  }
+
+  // special popup for self signed registration certificate
+  if (currentQuestion.class === "load.retry") {
+    QuestionComponent = LoadConfigRetryQuestion;
   }
 
   return <QuestionComponent question={currentQuestion} answerCallback={answerQuestion} />;

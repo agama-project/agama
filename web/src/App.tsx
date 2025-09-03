@@ -20,79 +20,91 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { ServerError } from "~/components/core";
 import { Loading } from "~/components/layout";
-import { useInstallerL10n } from "~/context/installerL10n";
-import { useInstallerClientStatus } from "~/context/installer";
 import { useProduct, useProductChanges } from "~/queries/software";
 import { useL10nConfigChanges } from "~/queries/l10n";
 import { useIssuesChanges } from "~/queries/issues";
 import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status";
 import { useDeprecatedChanges } from "~/queries/storage";
-import { useRootUser } from "~/queries/users";
-import { ROOT, PRODUCT, USER } from "~/routes/paths";
+import { ROOT, PRODUCT } from "~/routes/paths";
 import { InstallationPhase } from "~/types/status";
-import { isEmpty } from "~/utils";
+import { useQueryClient } from "@tanstack/react-query";
+import AlertOutOfSync from "~/components/core/AlertOutOfSync";
 
 /**
  * Main application component.
  */
 function App() {
-  const location = useLocation();
-  const { isBusy, phase } = useInstallerStatus({ suspense: true });
-  const { connected, error } = useInstallerClientStatus();
-  const { selectedProduct, products } = useProduct();
-  const { language } = useInstallerL10n();
-  const { password: isRootPasswordDefined, sshkey: rootSSHKey } = useRootUser();
   useL10nConfigChanges();
   useProductChanges();
   useIssuesChanges();
   useInstallerStatusChanges();
   useDeprecatedChanges();
 
-  const Content = () => {
-    if (error) return <ServerError />;
+  const location = useLocation();
+  const { isBusy, phase } = useInstallerStatus({ suspense: true });
+  const { selectedProduct, products } = useProduct({
+    suspense: phase !== InstallationPhase.Install,
+  });
+  const queryClient = useQueryClient();
 
-    if (phase === InstallationPhase.Install && isBusy) {
+  useEffect(() => {
+    // Invalidate the queries when unmounting this component.
+    return () => {
+      queryClient.invalidateQueries();
+    };
+  }, [queryClient]);
+
+  console.log("App component", {
+    phase,
+    isBusy,
+    products,
+    selectedProduct,
+    location: location.pathname,
+  });
+
+  const Content = () => {
+    if (phase === InstallationPhase.Install) {
+      console.log("Navigating to the installation progress page");
       return <Navigate to={ROOT.installationProgress} />;
     }
 
-    if (phase === InstallationPhase.Install && !isBusy) {
+    if (phase === InstallationPhase.Finish) {
+      console.log("Navigating to the finished page");
       return <Navigate to={ROOT.installationFinished} />;
     }
 
-    if (!products || !connected) return <Loading useLayout />;
-
-    if (phase === InstallationPhase.Startup && isBusy) {
-      return <Loading useLayout />;
+    if (!products) {
+      return <Loading listenQuestions />;
     }
 
-    if (selectedProduct === undefined && location.pathname !== PRODUCT.root) {
+    if (phase === InstallationPhase.Startup && isBusy) {
+      console.log("Loading screen: Installer start phase");
+      return <Loading listenQuestions />;
+    }
+
+    if (selectedProduct === undefined && !isBusy && location.pathname !== PRODUCT.root) {
+      console.log("Navigating to the product selection page");
       return <Navigate to={PRODUCT.root} />;
     }
 
     if (phase === InstallationPhase.Config && isBusy && location.pathname !== PRODUCT.progress) {
+      console.log("Navigating to the probing progress page");
       return <Navigate to={PRODUCT.progress} />;
-    }
-
-    if (
-      phase === InstallationPhase.Config &&
-      !isBusy &&
-      !isRootPasswordDefined &&
-      isEmpty(rootSSHKey) &&
-      location.pathname !== USER.rootUser.edit
-    ) {
-      return <Navigate to={USER.rootUser.edit} state={{ from: location.pathname }} />;
     }
 
     return <Outlet />;
   };
 
-  if (!language) return null;
-
-  return <Content />;
+  return (
+    <>
+      {/* So far, only the storage backend is able to detect external changes.*/}
+      <AlertOutOfSync scope={"Storage"} />
+      <Content />
+    </>
+  );
 }
 
 export default App;

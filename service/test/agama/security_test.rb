@@ -35,47 +35,86 @@ describe Agama::Security do
     Agama::Config.new(YAML.safe_load(File.read(config_path)))
   end
 
+  let(:selected) { nil }
+
   let(:lsm_config) do
-    instance_double(Y2Security::LSM::Config, select: nil)
+    instance_double(Y2Security::LSM::Config, select: nil, selected: selected)
+  end
+
+  let(:apparmor) do
+    instance_double(Y2Security::LSM::AppArmor, id: :apparmor)
+  end
+
+  let(:selinux) do
+    instance_double(Y2Security::LSM::Selinux, id: :selinux)
+  end
+
+  let(:proposal) do
+    {
+      "size"     => "0 B",
+      "patterns" => {
+        "documentation" => 1,
+        "enhanced_base" => 1,
+        "sw_management" => 1,
+        "yast2_basis"   => 1,
+        "apparmor"      => 0,
+        "minimal_base"  => 1,
+        "base"          => 1,
+        "x86_64_v3"     => 1
+      }
+    }
+  end
+
+  let(:software_client) do
+    instance_double(Agama::HTTP::Clients::Software, proposal: proposal, add_patterns: nil)
   end
 
   before do
     allow(Y2Security::LSM::Config).to receive(:instance).and_return(lsm_config)
-  end
-
-  describe "#probe" do
-    it "selects the default LSM" do
-      expect(lsm_config).to receive(:select).with("apparmor")
-      security.probe
-    end
-
-    it "add LSM patterns for installation" do
-      expect(Yast::PackagesProposal).to receive(:SetResolvables)
-        .with("LSM", :pattern, ["apparmor"])
-      security.probe
-    end
-
-    context "when no LSM is selected" do
-      before do
-        allow(config).to receive(:data).and_return({ "security" => {} })
-      end
-
-      it "unselects the LSM" do
-        expect(lsm_config).to receive(:select).with(nil)
-        security.probe
-      end
-
-      it "removes the list of patterns to install" do
-        Yast::PackagesProposal.SetResolvables("LSM", :pattern, [])
-        security.probe
-      end
-    end
+    allow(security).to receive(:software_client).and_return(software_client)
+    allow(Yast::Bootloader).to receive(:modify_kernel_params)
+    allow(lsm_config.selected).to receive(:reset_kernel_params)
+    allow(lsm_config.selected).to receive(:kernel_params)
   end
 
   describe "#write" do
-    it "saves the LSM configuration" do
-      expect(lsm_config).to receive(:save)
-      security.write
+    let(:selected) { apparmor }
+
+    context "when the software proposal patterns includes the LSM patterns" do
+      it "saves kernel parameters for the LSM configuration" do
+        expect(Yast::Bootloader).to receive(:modify_kernel_params)
+        security.write
+      end
+    end
+
+    context "when the software proposal patterns does not include the LSM patterns" do
+      let(:selected) { apparmor }
+
+      let(:proposal) do
+        {
+          "size"     => "0 B",
+          "patterns" => {
+            "documentation" => 1,
+            "enhanced_base" => 1,
+            "sw_management" => 1,
+            "yast2_basis"   => 1,
+            "minimal_base"  => 1,
+            "base"          => 1,
+            "x86_64_v3"     => 1
+          }
+        }
+      end
+
+      it "fallback to the first LSM which patterns are included by the software proposal" do
+        expect(lsm_config).to receive(:select).with("none")
+        expect(Yast::Bootloader).to receive(:modify_kernel_params)
+        security.write
+      end
+
+      it "resets bootloader params for previous selection" do
+        expect(lsm_config.selected).to receive(:reset_kernel_params)
+        security.write
+      end
     end
   end
 end

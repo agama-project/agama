@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,24 +19,27 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
-require "bootloader/proposal_client"
-require "y2storage/storage_manager"
-require "y2storage/clients/inst_prepdisk"
-require "agama/storage/actions_generator"
-require "agama/storage/proposal"
-require "agama/storage/proposal_settings"
-require "agama/storage/callbacks"
-require "agama/storage/iscsi/manager"
-require "agama/storage/finisher"
-require "agama/storage/proposal_settings_reader"
-require "agama/issue"
-require "agama/with_locale"
-require "agama/with_issues"
-require "agama/with_progress"
-require "agama/security"
 require "agama/dbus/clients/questions"
 require "agama/dbus/clients/software"
+require "agama/issue"
+require "agama/security"
+require "agama/storage/actions_generator"
+require "agama/storage/bootloader"
+require "agama/storage/callbacks"
+require "agama/storage/configurator"
+require "agama/storage/finisher"
+require "agama/storage/iscsi/manager"
+require "agama/storage/proposal"
+require "agama/storage/proposal_settings"
+require "agama/with_issues"
+require "agama/with_locale"
+require "agama/with_progress"
+require "yast"
+require "bootloader/proposal_client"
+require "y2storage/clients/inst_prepdisk"
+require "y2storage/luks"
+require "y2storage/storage_env"
+require "y2storage/storage_manager"
 
 Yast.import "PackagesProposal"
 
@@ -49,20 +52,24 @@ module Agama
       include WithProgress
       include Yast::I18n
 
-      # @return [Config]
-      attr_reader :config
+      # @return [Agama::Config]
+      attr_reader :product_config
+
+      # @return [Bootloader]
+      attr_reader :bootloader
 
       # Constructor
       #
-      # @param config [Config]
-      # @param logger [Logger]
-      def initialize(config, logger)
+      # @param product_config [Agama::Config]
+      # @param logger [Logger, nil]
+      def initialize(product_config, logger: nil)
         textdomain "agama"
 
-        @config = config
-        @logger = logger
-        register_proposal_callbacks
-        on_progress_change { logger.info progress.to_s }
+        @product_config = product_config
+        @logger = logger || Logger.new($stdout)
+        @bootloader = Bootloader.new(logger)
+
+        register_progress_callbacks
       end
 
       # Whether the system is in a deprecated status
@@ -107,15 +114,43 @@ module Agama
         @on_probe_callbacks << block
       end
 
+      # Registers a callback to be called when storage is configured.
+      #
+      # @param block [Proc]
+      def on_configure(&block)
+        @on_configure_callbacks ||= []
+        @on_configure_callbacks << block
+      end
+
       # Probes storage devices and performs an initial proposal
-      def probe
-        start_progress_with_size(4)
-        config.pick_product(software.selected_product)
+      #
+      # @param keep_config [Boolean] Whether to use the current storage config for calculating the
+      #   proposal.
+      # @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided LUKS
+      #   passwords).
+      def probe(keep_config: false, keep_activation: true)
+        start_progress_with_descriptions(
+          _("Activating storage devices"),
+          _("Probing storage devices"),
+          _("Calculating the storage proposal")
+        )
+
+        product_config.pick_product(software.selected_product)
+        # Underlying yast-storage-ng has own mechanism for proposing boot strategies.
+        # However, we don't always want to use BLS when it proposes so. Currently
+        # we want to use BLS only for Tumbleweed / Slowroll
+        prohibit_bls_boot if !product_config.boot_strategy&.casecmp("BLS")
         check_multipath
-        progress.step(_("Activating storage devices")) { activate_devices }
-        progress.step(_("Probing storage devices")) { probe_devices }
-        progress.step(_("Calculating the storage proposal")) { calculate_proposal }
-        progress.step(_("Selecting Linux Security Modules")) { security.probe }
+
+        progress.step { activate_devices(keep_activation: keep_activation) }
+        progress.step { probe_devices }
+        progress.step do
+          config_json = proposal.storage_json if keep_config
+          configure(config_json)
+        end
+
+        # The system is not deprecated anymore
+        self.deprecated_system = false
         update_issues
         @on_probe_callbacks&.each(&:call)
       end
@@ -126,6 +161,8 @@ module Agama
         progress.step(_("Preparing bootloader proposal")) do
           # first make bootloader proposal to be sure that required packages are installed
           proposal = ::Bootloader::ProposalClient.new.make_proposal({})
+          # then also apply changes to that proposal
+          bootloader.write_config
           logger.debug "Bootloader proposal #{proposal.inspect}"
         end
         progress.step(_("Adding storage-related packages")) { add_packages }
@@ -139,21 +176,35 @@ module Agama
 
       # Performs the final steps on the target file system(s)
       def finish
-        Finisher.new(logger, config, security).run
+        Finisher.new(logger, product_config, security).run
+      end
+
+      # Configures storage.
+      #
+      # @param config_json [Hash, nil] Storage config according to the JSON schema. If nil, then
+      #   the default config is applied.
+      # @return [Boolean] Whether storage was successfully configured.
+      def configure(config_json = nil)
+        result = Configurator.new(proposal).configure(config_json)
+        update_issues
+        @on_configure_callbacks&.each(&:call)
+        result
       end
 
       # Storage proposal manager
       #
       # @return [Storage::Proposal]
       def proposal
-        @proposal ||= Proposal.new(config, logger: logger)
+        @proposal ||= Proposal.new(product_config, logger: logger)
       end
 
       # iSCSI manager
       #
       # @return [Storage::ISCSI::Manager]
       def iscsi
-        @iscsi ||= ISCSI::Manager.new(logger: logger)
+        # Uses the same progress as manager. Note that the callbacks of the progess are configured
+        # by the D-Bus object in order to properly update the Progress D-Bus interface.
+        @iscsi ||= ISCSI::Manager.new(progress_manager: progress_manager, logger: logger)
       end
 
       # Returns the client to ask the software service
@@ -182,6 +233,13 @@ module Agama
         update_issues
       end
 
+      # Security manager
+      #
+      # @return [Security]
+      def security
+        @security ||= Security.new(logger, product_config)
+      end
+
     private
 
       PROPOSAL_ID = "storage_proposal"
@@ -190,15 +248,24 @@ module Agama
       # @return [Logger]
       attr_reader :logger
 
-      # Issues are updated when the proposal is calculated
-      def register_proposal_callbacks
-        proposal.on_calculate { update_issues }
+      def prohibit_bls_boot
+        ENV["YAST_NO_BLS_BOOT"] = "1"
+        # avoiding problems with cached values
+        Y2Storage::StorageEnv.instance.reset_cache
+      end
+
+      def register_progress_callbacks
+        on_progress_change { logger.info(progress.to_s) }
       end
 
       # Activates the devices, calling activation callbacks if needed
-      def activate_devices
-        callbacks = Callbacks::Activate.new(questions_client, logger)
+      #
+      # @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided LUKS
+      #   passwords).
+      def activate_devices(keep_activation: true)
+        Y2Storage::Luks.reset_activation_infos unless keep_activation
 
+        callbacks = Callbacks::Activate.new(questions_client, logger)
         iscsi.activate
         Y2Storage::StorageManager.instance.activate(callbacks)
       end
@@ -209,25 +276,30 @@ module Agama
 
         iscsi.probe
         Y2Storage::StorageManager.instance.probe(callbacks)
-
-        # The system is not deprecated anymore
-        self.deprecated_system = false
-      end
-
-      # Calculates the proposal using the settings from the config file.
-      def calculate_proposal
-        settings = ProposalSettingsReader.new(config).read
-        proposal.calculate_guided(settings)
       end
 
       # Adds the required packages to the list of resolvables to install
       def add_packages
-        devicegraph = Y2Storage::StorageManager.instance.staging
         packages = devicegraph.used_features.pkg_list
+        packages += ISCSI::Manager::PACKAGES if need_iscsi?
         return if packages.empty?
 
         logger.info "Selecting these packages for installation: #{packages}"
         Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :package, packages)
+      end
+
+      # Whether iSCSI is needed in the target system.
+      #
+      # @return [Boolean]
+      def need_iscsi?
+        iscsi.configured? || devicegraph.used_features.any? { |f| f.id == :UF_ISCSI }
+      end
+
+      # Staging devicegraph
+      #
+      # @return [Y2Storage::Devicegraph]
+      def devicegraph
+        Y2Storage::StorageManager.instance.staging
       end
 
       # Prepares the storage devices for installation
@@ -251,7 +323,7 @@ module Agama
       def system_issues
         issues = probing_issues + [
           deprecated_system_issue,
-          available_devices_issue
+          candidate_devices_issue
         ]
 
         issues.compact
@@ -283,22 +355,15 @@ module Agama
           severity: Issue::Severity::ERROR)
       end
 
-      # Returns an issue if there is no available device for installation
+      # Returns an issue if there is no candidate device for installation
       #
       # @return [Issue, nil]
-      def available_devices_issue
-        return if proposal.available_devices.any?
+      def candidate_devices_issue
+        return if proposal.storage_system.candidate_devices.any?
 
         Issue.new("There is no suitable device for installation",
           source:   Issue::Source::SYSTEM,
           severity: Issue::Severity::ERROR)
-      end
-
-      # Security manager
-      #
-      # @return [Security]
-      def security
-        @security ||= Security.new(logger, config)
       end
 
       # Returns the client to ask questions

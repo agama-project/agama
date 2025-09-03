@@ -23,7 +23,7 @@
 import React from "react";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
-import { RootUser, RootUserChanges } from "~/types/users";
+import { RootUser } from "~/types/users";
 import {
   fetchFirstUser,
   fetchRoot,
@@ -83,12 +83,12 @@ const useFirstUserChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "FirstUserChanged") {
-        const { fullName, userName, password, encryptedPassword, autologin, data } = event;
+        const { fullName, userName, password, hashedPassword, autologin, data } = event;
         queryClient.setQueryData(["users", "firstUser"], {
           fullName,
           userName,
           password,
-          encryptedPassword,
+          hashedPassword,
           autologin,
           data,
         });
@@ -117,13 +117,14 @@ const useRootUserMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: updateRoot,
-    onMutate: async (newRoot: RootUserChanges) => {
+    onMutate: async (newRoot: RootUser) => {
       await queryClient.cancelQueries({ queryKey: ["users", "root"] });
 
       const previousRoot: RootUser = queryClient.getQueryData(["users", "root"]);
       queryClient.setQueryData(["users", "root"], {
-        password: !!newRoot.password,
-        sshkey: newRoot.sshkey || previousRoot.sshkey,
+        password: newRoot.password,
+        hashedPassword: newRoot.hashedPassword,
+        sshPublicKey: newRoot.sshPublicKey || previousRoot.sshPublicKey,
       });
       return { previousRoot };
     },
@@ -150,16 +151,16 @@ const useRootUserChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "RootChanged") {
-        const { password, sshkey } = event;
+        const { password, sshPublicKey } = event;
         queryClient.setQueryData(["users", "root"], (oldRoot: RootUser) => {
           const newRoot = { ...oldRoot };
           if (password !== undefined) {
             newRoot.password = password;
-            newRoot.encryptedPassword = false;
+            newRoot.hashedPassword = false;
           }
 
-          if (sshkey) {
-            newRoot.sshkey = sshkey;
+          if (sshPublicKey) {
+            newRoot.sshPublicKey = sshPublicKey;
           }
 
           return newRoot;

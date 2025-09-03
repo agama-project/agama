@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -57,37 +57,70 @@ describe("IssuesDrawer", () => {
     itRendersNothing();
   });
 
+  describe("when there are non-critical issues", () => {
+    beforeEach(() => {
+      mockIssuesList = new IssuesList(
+        [
+          {
+            description: "Registration Fake Warning",
+            kind: "generic",
+            source: 0,
+            severity: 0,
+            details: "Registration Fake Issue details",
+          },
+        ],
+        [],
+        [],
+        [],
+      );
+    });
+
+    itRendersNothing();
+  });
+
   describe("when there are installation issues", () => {
     beforeEach(() => {
       mockIssuesList = new IssuesList(
-        [],
+        [
+          {
+            description: "Registration Fake Issue",
+            kind: "generic",
+            source: 0,
+            severity: 1,
+            details: "Registration Fake Issue details",
+          },
+        ],
         [
           {
             description: "Software Fake Issue",
+            kind: "generic",
             source: 0,
-            severity: 0,
+            severity: 1,
             details: "Software Fake Issue details",
           },
         ],
         [
           {
             description: "Storage Fake Issue 1",
+            kind: "generic",
             source: 0,
-            severity: 0,
+            severity: 1,
             details: "Storage Fake Issue 1 details",
           },
           {
             description: "Storage Fake Issue 2",
+            kind: "generic",
             source: 0,
-            severity: 0,
+            severity: 1,
             details: "Storage Fake Issue 2 details",
           },
         ],
         [
           {
             description: "Users Fake Issue",
+            kind: "generic",
             source: 0,
-            severity: 0,
+            severity: 1,
             details: "Users Fake Issue details",
           },
         ],
@@ -97,9 +130,10 @@ describe("IssuesDrawer", () => {
     it("renders the drawer with categorized issues linking to their scope", async () => {
       const { user } = installerRender(<IssuesDrawer onClose={onCloseFn} />);
 
+      const registrationIssues = screen.getByRole("region", { name: "Registration" });
       const softwareIssues = screen.getByRole("region", { name: "Software" });
       const storageIssues = screen.getByRole("region", { name: "Storage" });
-      const usersIssues = screen.getByRole("region", { name: "Users" });
+      const usersIssues = screen.getByRole("region", { name: "Authentication" });
 
       const softwareLink = within(softwareIssues).getByRole("link", { name: "Software" });
       expect(softwareLink).toHaveAttribute("href", "/software");
@@ -110,9 +144,17 @@ describe("IssuesDrawer", () => {
       within(storageIssues).getByText("Storage Fake Issue 1");
       within(storageIssues).getByText("Storage Fake Issue 2");
 
-      const usersLink = within(usersIssues).getByRole("link", { name: "Users" });
+      const usersLink = within(usersIssues).getByRole("link", { name: "Authentication" });
       expect(usersLink).toHaveAttribute("href", "/users");
       within(usersIssues).getByText("Users Fake Issue");
+
+      // Regression test: right now, registration issues comes under product
+      // scope. Check that it links to registration section anyway.
+      const registrationLink = within(registrationIssues).getByRole("link", {
+        name: "Registration",
+      });
+      expect(registrationLink).toHaveAttribute("href", "/registration");
+      within(registrationIssues).getByText("Registration Fake Issue");
 
       // onClose should be called when user clicks on a section too for ensuring
       // drawer gets closed even when navigation is not needed.

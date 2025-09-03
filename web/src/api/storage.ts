@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,22 +20,60 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, post } from "~/api/http";
+import { get, post, put } from "~/api/http";
 import { Job } from "~/types/job";
-import { calculate, fetchSettings } from "~/api/storage/proposal";
-import { config } from "~/api/storage/types";
+import { Action, config, apiModel, ProductParams, Volume } from "~/api/storage/types";
 
 /**
  * Starts the storage probing process.
  */
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const probe = (): Promise<any> => post("/api/storage/probe");
 
-export { probe };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const reprobe = (): Promise<any> => post("/api/storage/reprobe");
 
-const fetchConfig = (): Promise<config.Config | undefined> =>
-  get("/api/storage/config").then((config) => config.storage);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const reactivate = (): Promise<any> => post("/api/storage/reactivate");
+
+const fetchConfig = (): Promise<config.Config | null> =>
+  get("/api/storage/config").then((config) => config.storage ?? null);
+
+const fetchConfigModel = (): Promise<apiModel.Config | undefined> =>
+  get("/api/storage/config_model");
+
+const setConfig = (config: config.Config) => put("/api/storage/config", { storage: config });
+
+const resetConfig = () => put("/api/storage/config/reset", {});
+
+const setConfigModel = (model: apiModel.Config) => put("/api/storage/config_model", model);
+
+const solveConfigModel = (model: apiModel.Config): Promise<apiModel.Config> => {
+  const serializedModel = encodeURIComponent(JSON.stringify(model));
+  return get(`/api/storage/config_model/solve?model=${serializedModel}`);
+};
+
+const fetchAvailableDrives = (): Promise<number[]> => get(`/api/storage/devices/available_drives`);
+
+const fetchCandidateDrives = (): Promise<number[]> => get(`/api/storage/devices/candidate_drives`);
+
+const fetchAvailableMdRaids = (): Promise<number[]> =>
+  get(`/api/storage/devices/available_md_raids`);
+
+const fetchCandidateMdRaids = (): Promise<number[]> =>
+  get(`/api/storage/devices/candidate_md_raids`);
+
+const fetchProductParams = (): Promise<ProductParams> => get("/api/storage/product/params");
+
+const fetchVolume = (mountPath: string): Promise<Volume> => {
+  const path = encodeURIComponent(mountPath);
+  return get(`/api/storage/product/volume_for?mount_path=${path}`);
+};
+
+const fetchVolumes = (mountPaths: string[]): Promise<Volume[]> =>
+  Promise.all(mountPaths.map(fetchVolume));
+
+const fetchActions = (): Promise<Action[]> => get("/api/storage/devices/actions");
 
 /**
  * Returns the list of jobs
@@ -48,17 +86,24 @@ const fetchStorageJobs = (): Promise<Job[]> => get("/api/storage/jobs");
 const findStorageJob = (id: string): Promise<Job | undefined> =>
   fetchStorageJobs().then((jobs: Job[]) => jobs.find((value) => value.id === id));
 
-/**
- * Refreshes the storage layer.
- *
- * It does the probing again and recalculates the proposal with the same
- * settings. Internally, it is composed of three different API calls
- * (retrieve the settings, probe the system, and calculate the proposal).
- */
-const refresh = async (): Promise<void> => {
-  const settings = await fetchSettings();
-  await probe();
-  await calculate(settings);
+export {
+  probe,
+  reprobe,
+  reactivate,
+  fetchConfig,
+  fetchConfigModel,
+  setConfig,
+  resetConfig,
+  setConfigModel,
+  solveConfigModel,
+  fetchAvailableDrives,
+  fetchCandidateDrives,
+  fetchAvailableMdRaids,
+  fetchCandidateMdRaids,
+  fetchProductParams,
+  fetchVolume,
+  fetchVolumes,
+  fetchActions,
+  fetchStorageJobs,
+  findStorageJob,
 };
-
-export { fetchConfig, fetchStorageJobs, findStorageJob, refresh };

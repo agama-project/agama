@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -23,7 +23,7 @@ require "agama/dbus/service_status"
 
 module Agama
   module DBus
-    # Mixin to be included by D-Bus objects that needs to register a service status
+    # Mixin to be included by D-Bus objects that needs to register a service status.
     module WithServiceStatus
       # Service status
       #
@@ -37,10 +37,15 @@ module Agama
       # @param block [Proc]
       # @return [Object] the result of the given block
       def busy_while(&block)
-        service_status.busy
-        block.call
-      ensure
-        service_status.idle
+        service_status.busy_while(&block)
+      end
+
+      # Executes a block setting the service as busy, see {BaseObject#request}.
+      #
+      # @param data [Hash] see {BaseObject#request_data}.
+      # @param block [Proc]
+      def busy_request(data, &block)
+        busy_while { request(data, &block) }
       end
     end
   end

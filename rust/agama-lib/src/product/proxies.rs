@@ -56,6 +56,14 @@ pub trait Registration {
         options: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
     ) -> zbus::Result<(u32, String)>;
 
+    /// Register addon method
+    fn register_addon(
+        &self,
+        name: &str,
+        version: &str,
+        reg_code: &str,
+    ) -> zbus::Result<(u32, String)>;
+
     /// Email property
     #[zbus(property)]
     fn email(&self) -> zbus::Result<String>;
@@ -64,7 +72,23 @@ pub trait Registration {
     #[zbus(property)]
     fn reg_code(&self) -> zbus::Result<String>;
 
-    /// Requirement property
+    /// Registered property
     #[zbus(property)]
-    fn requirement(&self) -> zbus::Result<u32>;
+    fn registered(&self) -> zbus::Result<bool>;
+
+    /// Url property
+    #[zbus(property)]
+    fn url(&self) -> zbus::Result<String>;
+    #[zbus(property)]
+    fn set_url(&self, value: &str) -> zbus::Result<()>;
+
+    /// registered addons property, list of tuples (name, version, reg_code))
+    #[zbus(property)]
+    fn registered_addons(&self) -> zbus::Result<Vec<(String, String, String)>>;
+
+    /// available addons property, a hash with string key
+    #[zbus(property)]
+    fn available_addons(
+        &self,
+    ) -> zbus::Result<Vec<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>>;
 }

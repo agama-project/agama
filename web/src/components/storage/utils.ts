@@ -20,9 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-// cspell:ignore xbytes
-
 /**
  * @fixme This file implements utils for the storage components and it also offers several functions
  * to get information from a Volume (e.g., #hasSnapshots, #isTransactionalRoot, etc). It would be
@@ -31,8 +28,10 @@
  */
 
 import xbytes from "xbytes";
-import { N_ } from "~/i18n";
-import { PartitionSlot, StorageDevice, Volume } from "~/types/storage";
+import { _, N_ } from "~/i18n";
+import { PartitionSlot, StorageDevice, model } from "~/types/storage";
+import { apiModel, Volume } from "~/api/storage/types";
+import { sprintf } from "sprintf-js";
 
 /**
  * @note undefined for either property means unknown
@@ -45,8 +44,6 @@ export type SizeObject = {
 export type SpacePolicy = {
   id: string;
   label: string;
-  description: string;
-  summaryLabels: string[];
 };
 
 export type SizeMethod = "auto" | "fixed" | "range";
@@ -65,50 +62,100 @@ const SIZE_UNITS = Object.freeze({
   P: N_("PiB"),
 });
 
+const FILESYSTEM_NAMES = Object.freeze({
+  bcachefs: N_("Bcachefs"),
+  bitlocke: N_("BitLocker"),
+  btrfs: N_("Btrfs"),
+  exfat: N_("ExFAT"),
+  ext2: N_("Ext2"),
+  ext3: N_("Ext3"),
+  ext4: N_("Ext4"),
+  f2fs: N_("F2FS"),
+  jfs: N_("JFS"),
+  nfs: N_("NFS"),
+  nilfs2: N_("NILFS2"),
+  ntfs: N_("NTFS"),
+  reiserfs: N_("ReiserFS"),
+  swap: N_("Swap"),
+  tmpfs: N_("Tmpfs"),
+  vfat: N_("FAT"),
+  xfs: N_("XFS"),
+});
+
 const DEFAULT_SIZE_UNIT = "GiB";
 
 const SPACE_POLICIES: SpacePolicy[] = [
   {
     id: "delete",
     label: N_("Delete current content"),
-    description: N_("All partitions will be removed and any data in the disks will be lost."),
-    summaryLabels: [
-      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space deleting current content". Keep it short
-      N_("deleting current content"),
-    ],
   },
   {
     id: "resize",
     label: N_("Shrink existing partitions"),
-    description: N_("The data is kept, but the current partitions will be resized as needed."),
-    summaryLabels: [
-      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space shrinking partitions". Keep it short.
-      N_("shrinking partitions"),
-    ],
   },
   {
     id: "keep",
     label: N_("Use available space"),
-    description: N_("The data is kept. Only the space not assigned to any partition will be used."),
-    summaryLabels: [
-      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space without modifying any partition". Keep it short.
-      N_("without modifying any partition"),
-    ],
   },
   {
     id: "custom",
     label: N_("Custom"),
-    description: N_("Select what to do with each partition."),
-    summaryLabels: [
-      // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
-      // would read as "Find space with custom actions". Keep it short.
-      N_("with custom actions"),
-    ],
   },
 ];
+
+/**
+ * Returns the equivalent in bytes resulting from parsing given input
+ *
+ * @example
+ * parseToBytes(1024)
+ * // returns 1024
+ *
+ * parseToBytes("1 KiB")
+ * // returns 1024
+ *
+ * parseToBytes("")
+ * // returns 0
+ */
+const parseToBytes = (size: string | number): number => {
+  if (!size || size === undefined || size === "") return 0;
+
+  const value =
+    xbytes.parseSize(size.toString().toUpperCase(), { iec: true }) || parseInt(size.toString());
+
+  // Avoid decimals resulting from the conversion. D-Bus iface only accepts integer
+  return Math.trunc(value);
+};
+
+type ExactSizeOptions = Pick<xbytes.MainOpts, "iec" | "prefixIndex">;
+
+/**
+ * Converts bytes to an exact size representation.
+ *
+ * An exact representation means that the same number of bytes is obtained when transforming the
+ * size string back to bytes. The feasible bigger size unit is used.
+ */
+function exactSize(bytes: number, options?: ExactSizeOptions): string {
+  options = { iec: true, ...options };
+
+  const size = xbytes(bytes, options);
+  const bytesFromSize = parseToBytes(size);
+
+  // The size represents the given amount of bytes.
+  if (bytes === bytesFromSize) return size;
+
+  if (options.iec) {
+    // Try without IEC unit
+    options = { ...options, iec: false };
+  } else {
+    // Try with smaller unit
+    const prefixIndex = xbytes.parseString(size).prefixIndex - 1;
+    options = { iec: true, prefixIndex };
+  }
+
+  return exactSize(bytes, options);
+}
+
+type SizeOptions = { exact: boolean };
 
 /**
  * Convenience method for generating a size object based on given input
@@ -118,12 +165,12 @@ const SPACE_POLICIES: SpacePolicy[] = [
  * since it means nothing for Agama UI although it represents the "unlimited"
  * size in the backend.
  */
-const splitSize = (size: number | string | undefined): SizeObject => {
+const splitSize = (size: number | string | undefined, options?: SizeOptions): SizeObject => {
+  const strSize = (size) => (options?.exact ? exactSize(size) : xbytes(size, { iec: true }));
   // From D-Bus, maxSize comes as undefined when set as "unlimited", but for Agama UI
   // it means "leave it empty"
   const sanitizedSize = size === undefined ? "" : size;
-  const parsedSize =
-    typeof sanitizedSize === "string" ? sanitizedSize : xbytes(sanitizedSize, { iec: true });
+  const parsedSize = typeof sanitizedSize === "string" ? sanitizedSize : strSize(size);
   const [qty, unit] = parsedSize.split(" ");
   // `Number` will remove trailing zeroes;
   // parseFloat ensures Number does not transform "" into 0.
@@ -142,51 +189,56 @@ const splitSize = (size: number | string | undefined): SizeObject => {
  * deviceSize(1024)
  * // returns "1 KiB"
  */
-const deviceSize = (size: number): string => {
+const deviceSize = (size: number, options?: SizeOptions): string => {
   // Sadly, we cannot returns directly the xbytes(size, { iec: true }) because
   // it does not have an option for dropping/ignoring trailing zeroes and we do
   // not want to render them.
-  const result = splitSize(size);
+  const result = splitSize(size, options);
   return `${Number(result.size)} ${result.unit}`;
 };
 
+const TRUNCATE_MAX_LENGTH = 17;
+
 /**
- * Returns the equivalent in bytes resulting from parsing given input
+ * Base name for a full path
  *
- * @example
- * parseToBytes(1024)
- * // returns 1024
- *
- * parseToBytes("1 KiB")
- * // returns 1024
- *
- * parseToBytes("")
- * // returns 0
+ * FIXME: The truncate param allows to generate a shorter representation that fits into
+ * the interface, but that's a temporary solution. The right way to make the strings fit
+ * into the responsive interface would be Patternfly's Truncate component.
  */
-const parseToBytes = (size: string | number): number => {
-  if (!size || size === undefined || size === "") return 0;
+const baseName = (name: string, truncate?: boolean): string => {
+  const base = name.split("/").pop();
 
-  const value = xbytes.parseSize(size.toString(), { iec: true }) || parseInt(size.toString());
+  if (!truncate || base.length <= TRUNCATE_MAX_LENGTH) return base;
 
-  // Avoid decimals resulting from the conversion. D-Bus iface only accepts integer
-  return Math.trunc(value);
+  // Simplistic approach as a first implementation. Anyways, we plan to replace this with
+  // the usage of Patternfly's Truncate in the mid-term.
+  const limit1 = Math.ceil((TRUNCATE_MAX_LENGTH - 1) / 2.0);
+  const limit2 = base.length - Math.floor((TRUNCATE_MAX_LENGTH - 1) / 2.0);
+  return base.slice(0, limit1) + "…" + base.slice(limit2);
 };
+
+type DeviceWithName = StorageDevice | model.Drive | model.MdRaid;
 
 /**
  * Base name of a device.
+ *
+ * FIXME: See note at baseName about the usage of truncate.
  */
-const deviceBaseName = (device: StorageDevice): string => {
-  return device.name.split("/").pop();
+const deviceBaseName = (device: DeviceWithName, truncate?: boolean): string => {
+  return baseName(device.name, truncate);
 };
 
 /**
  * Generates the label for the given device
+ *
+ * FIXME: See note at baseName about the usage of truncate.
  */
-const deviceLabel = (device: StorageDevice): string => {
-  const name = device.name;
+const deviceLabel = (device: StorageDevice, truncate?: boolean): string => {
+  const name = deviceBaseName(device, truncate);
   const size = device.size;
 
-  return size ? `${name}, ${deviceSize(size)}` : name;
+  return size ? `${name} (${deviceSize(size)})` : name;
 };
 
 /**
@@ -264,22 +316,80 @@ const volumeLabel = (volume: Volume): string =>
   volume.mountPath === "/" ? "root" : volume.mountPath;
 
 /**
+ * @see filesystemType
+ */
+const filesystemLabel = (fstype: string): string => {
+  const name = FILESYSTEM_NAMES[fstype];
+
+  // eslint-disable-next-line agama-i18n/string-literals
+  if (name) return _(name);
+
+  // Fallback for unknown filesystem types
+  return fstype.charAt(0).toUpperCase() + fstype.slice(1);
+};
+
+/**
+ * String to represent the filesystem type
+ *
+ * @returns undefined if there is not enough information
+ */
+const filesystemType = (filesystem: apiModel.Filesystem): string | undefined => {
+  if (filesystem.type) {
+    if (filesystem.snapshots) return _("Btrfs with snapshots");
+
+    return filesystemLabel(filesystem.type);
+  }
+
+  return undefined;
+};
+
+/**
  * GiB to Bytes.
  */
 const gib: (value: number) => number = (value): number => value * 1024 ** 3;
+
+/**
+ * Formats a mount path within a sentence in a i18n-friendly way.
+ */
+const formattedPath = (path: string): string => {
+  // TRANSLATORS: sub-string used to represent a path like "/" or "/var". %s is replaced by the path
+  // itself, the rest of the string (quotation marks in the English case) is used to encapsulate the
+  // path in a bigger sentence like 'Create partitions for "/" and "/var"'.
+  return sprintf(_('"%s"'), path);
+};
+
+/**
+ * Representation of the given size limits.
+ */
+const sizeDescription = (size: apiModel.Size): string => {
+  const minSize = deviceSize(size.min);
+  const maxSize = size.max ? deviceSize(size.max) : undefined;
+
+  // TRANSLATORS: Size range, %1$s is the min size and %2$s is the max
+  if (maxSize && minSize !== maxSize) return sprintf(_("%1$s - %2$s"), minSize, maxSize);
+  // TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
+  if (maxSize === undefined) return sprintf(_("at least %s"), minSize);
+
+  return `${minSize}`;
+};
 
 export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
   SIZE_UNITS,
   SPACE_POLICIES,
+  baseName,
   deviceBaseName,
   deviceLabel,
   deviceChildren,
   deviceSize,
+  filesystemLabel,
+  filesystemType,
+  formattedPath,
   gib,
   parseToBytes,
   splitSize,
+  sizeDescription,
   hasFS,
   hasSnapshots,
   isTransactionalRoot,

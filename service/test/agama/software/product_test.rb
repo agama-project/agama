@@ -23,7 +23,14 @@ require_relative "../../test_helper"
 require "agama/software/product"
 
 describe Agama::Software::Product do
-  subject { described_class.new("Test") }
+  subject do
+    described_class.new("Test").tap do |product|
+      product.user_patterns = [
+        Agama::Software::UserPattern.new("kde", false),
+        Agama::Software::UserPattern.new("selinux", true)
+      ]
+    end
+  end
 
   describe "#localized_description" do
     before do
@@ -59,6 +66,12 @@ describe Agama::Software::Product do
       subject.translations = {}
 
       expect(subject.localized_description).to eq("Original description")
+    end
+  end
+
+  describe "#preselected_patterns" do
+    it "returns the user preselected patterns" do
+      expect(subject.preselected_patterns).to eq(["selinux"])
     end
   end
 end

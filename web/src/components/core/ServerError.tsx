@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,38 +22,44 @@
 
 import React from "react";
 import {
+  Bullseye,
+  Button,
   EmptyState,
-  EmptyStateIcon,
   EmptyStateBody,
-  EmptyStateHeader,
+  EmptyStateFooter,
 } from "@patternfly/react-core";
-import { Center, Icon, PlainLayout } from "~/components/layout";
+import { Icon, PlainLayout } from "~/components/layout";
 import { Page } from "~/components/core";
-import { _ } from "~/i18n";
 import { locationReload } from "~/utils";
+import shadowUtils from "@patternfly/react-styles/css/utilities/BoxShadow/box-shadow";
+import { _ } from "~/i18n";
 
-const ErrorIcon = () => <Icon name="error" className="icon-xxxl" />;
+const ErrorIcon = () => <Icon name="error" />;
 
 function ServerError() {
   return (
     <PlainLayout mountHeader={false} mountSidebar={false}>
       <Page>
         <Page.Content>
-          <Center>
-            <EmptyState variant="xl">
-              <EmptyStateHeader
+          <Bullseye>
+            <Page.Section pfCardProps={{ isFullHeight: false, className: shadowUtils.boxShadowMd }}>
+              <EmptyState
+                variant="xl"
                 titleText={_("Cannot connect to Agama server")}
-                headingLevel="h2"
-                icon={<EmptyStateIcon icon={ErrorIcon} />}
-              />
-              <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
-            </EmptyState>
-          </Center>
+                headingLevel="h1"
+                icon={ErrorIcon}
+                status="warning"
+              >
+                <EmptyStateBody>{_("Please, check whether it is running.")}</EmptyStateBody>
+                <EmptyStateFooter>
+                  <Button variant="primary" size="lg" onClick={locationReload}>
+                    {_("Reload")}
+                  </Button>
+                </EmptyStateFooter>
+              </EmptyState>
+            </Page.Section>
+          </Bullseye>
         </Page.Content>
-
-        <Page.Actions>
-          <Page.Action onClick={locationReload}>{_("Reload")}</Page.Action>
-        </Page.Actions>
       </Page>
     </PlainLayout>
   );

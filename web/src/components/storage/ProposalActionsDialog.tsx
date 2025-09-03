@@ -24,7 +24,7 @@ import React, { useState } from "react";
 import { List, ListItem, ExpandableSection } from "@patternfly/react-core";
 import { n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import { partition } from "~/utils";
+import { fork } from "radashi";
 import { Action } from "~/types/storage";
 
 const ActionsList = ({ actions }: { actions: Action[] }) => {
@@ -66,7 +66,7 @@ export default function ProposalActionsDialog({
 
   if (actions.length === 0) return null;
 
-  const [generalActions, subvolActions] = partition(actions, (a: Action) => !a.subvol);
+  const [generalActions, subvolActions] = fork(actions, (a: Action) => !a.subvol);
   const toggleText = isExpanded
     ? // TRANSLATORS: show/hide toggle action, this is a clickable link
       sprintf(
@@ -79,7 +79,6 @@ export default function ProposalActionsDialog({
         subvolActions.length,
       );
 
-  console.log(actions);
   return (
     <>
       <ActionsList actions={generalActions} />

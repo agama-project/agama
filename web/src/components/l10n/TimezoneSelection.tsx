@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,13 +21,13 @@
  */
 
 import React, { useState } from "react";
-import { Divider, Flex, Form, FormGroup, Radio, Text } from "@patternfly/react-core";
+import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
 import { timezoneTime } from "~/utils";
 import { useConfigMutation, useL10n } from "~/queries/l10n";
 import { Timezone } from "~/types/l10n";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { _ } from "~/i18n";
 
 type TimezoneWithDetails = Timezone & { details: string };
@@ -89,18 +89,17 @@ export default function TimezoneSelection() {
           name="timezone"
           onChange={() => setSelected(id)}
           label={
-            <>
-              <span className={`${textStyles.fontSizeLg}`}>
-                <b>{parts.join("-")}</b>
-              </span>{" "}
-              <Text component="small">{country}</Text>
-            </>
+            <Flex columnGap={{ default: "columnGapSm" }}>
+              <Content isEditorial className={`${spacingStyles.m_0}`}>
+                {parts.join("-")}
+              </Content>
+              <Content component="small">{country}</Content>
+            </Flex>
           }
           description={
-            <Flex columnGap={{ default: "columnGapXs" }}>
-              <Text component="small">{timezoneTime(id, { date }) || ""}</Text>
-              <Divider orientation={{ default: "vertical" }} />
-              <div>{details}</div>
+            <Flex columnGap={{ default: "columnGapSm" }}>
+              <Content component="small">{timezoneTime(id, date) || ""}</Content>
+              <Content>{details}</Content>
             </Flex>
           }
           value={id}
@@ -117,7 +116,7 @@ export default function TimezoneSelection() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_(" Timezone selection")}</h2>
+        <Content component="h2">{_(" Timezone selection")}</Content>
         <ListSearch
           placeholder={searchHelp}
           elements={displayTimezones}
@@ -126,16 +125,14 @@ export default function TimezoneSelection() {
       </Page.Header>
 
       <Page.Content>
-        <Page.Section>
-          <Form id="timezoneSelection" onSubmit={onSubmit}>
-            <FormGroup isStack>{timezonesList}</FormGroup>
-          </Form>
-        </Page.Section>
+        <Form id="timezoneSelection" onSubmit={onSubmit}>
+          <FormGroup isStack>{timezonesList}</FormGroup>
+        </Form>
       </Page.Content>
 
       <Page.Actions>
-        <Page.Cancel />
         <Page.Submit form="timezoneSelection">{_("Select")}</Page.Submit>
+        <Page.Cancel />
       </Page.Actions>
     </Page>
   );

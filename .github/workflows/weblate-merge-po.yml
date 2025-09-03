@@ -1,5 +1,10 @@
 name: Weblate Merge PO
 
+permissions:
+  # it merges the updated translations and creates a pull request with the changes
+  contents: write
+  pull-requests: write
+
 on:
   schedule:
     # run every Monday at 2:42AM UTC

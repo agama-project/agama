@@ -21,11 +21,12 @@
 use std::{collections::HashMap, pin::Pin, task::Poll};
 
 use agama_lib::{
-    dbus::get_optional_property,
     error::ServiceError,
+    event,
+    http::Event,
     jobs::{client::JobsClient, Job},
-    property_from_dbus,
 };
+use agama_utils::{dbus::get_optional_property, property_from_dbus};
 use axum::{extract::State, routing::get, Json, Router};
 use futures_util::{ready, Stream};
 use pin_project::pin_project;
@@ -36,7 +37,6 @@ use zbus::zvariant::{ObjectPath, OwnedObjectPath, OwnedValue};
 use crate::{
     dbus::{DBusObjectChange, DBusObjectChangesStream, ObjectsCache},
     error::Error,
-    web::Event,
 };
 
 /// Builds a router for the jobs objects.
@@ -163,15 +163,15 @@ impl JobsStream {
         match change {
             DBusObjectChange::Added(path, values) => {
                 let job = Self::update_job(cache, path, values)?;
-                Ok(Event::JobAdded { job: job.clone() })
+                Ok(event!(JobAdded { job: job.clone() }))
             }
             DBusObjectChange::Changed(path, updated) => {
                 let job = Self::update_job(cache, path, updated)?;
-                Ok(Event::JobChanged { job: job.clone() })
+                Ok(event!(JobChanged { job: job.clone() }))
             }
             DBusObjectChange::Removed(path) => {
                 let job = Self::remove_job(cache, path)?;
-                Ok(Event::JobRemoved { job })
+                Ok(event!(JobRemoved { job }))
             }
         }
     }
@@ -193,7 +193,7 @@ impl Stream for JobsStream {
                     if let Ok(event) = Self::handle_change(pinned.cache, &change) {
                         Some(event)
                     } else {
-                        log::warn!("Could not process change {:?}", &change);
+                        tracing::warn!("Could not process change {:?}", &change);
                         None
                     }
                 }

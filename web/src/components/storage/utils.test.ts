@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,7 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { StorageDevice, Volume, VolumeTarget } from "~/types/storage";
+import { StorageDevice } from "~/types/storage";
+import { Volume } from "~/api/storage/types";
 import {
   deviceSize,
   deviceBaseName,
@@ -40,7 +41,8 @@ import {
 const volume = (properties: object = {}): Volume => {
   const testVolume: Volume = {
     mountPath: "/test",
-    target: VolumeTarget.DEFAULT,
+    mountOptions: [],
+    target: "default",
     fsType: "Btrfs",
     minSize: 1024,
     maxSize: 2048,
@@ -55,7 +57,6 @@ const volume = (properties: object = {}): Volume => {
       snapshotsAffectSizes: false,
       sizeRelevantVolumes: [],
       adjustByRam: false,
-      productDefined: false,
     },
   };
 
@@ -154,9 +155,20 @@ const lvmLv1: StorageDevice = {
 lvmVg.logicalVolumes = [lvmLv1];
 
 describe("deviceSize", () => {
-  it("returns the size with units", () => {
-    const result = deviceSize(1024);
-    expect(result).toEqual("1 KiB");
+  it("returns the approx size with units", () => {
+    expect(deviceSize(1028)).toEqual("1 KiB");
+    expect(deviceSize(5 * 1024 ** 2 - 1024)).toEqual("5 MiB");
+    expect(deviceSize(5 * 1024 ** 2 - 1000)).toEqual("5 MiB");
+    expect(deviceSize(5 * 1024 ** 2 - 7)).toEqual("5 MiB");
+  });
+
+  describe("with exact option", () => {
+    it("returns the exact size with units", () => {
+      expect(deviceSize(1028, { exact: true })).toEqual("1028 B");
+      expect(deviceSize(5 * 1024 ** 2 - 1024, { exact: true })).toEqual("5119 KiB");
+      expect(deviceSize(5 * 1024 ** 2 - 1000, { exact: true })).toEqual("5241.88 KB");
+      expect(deviceSize(5 * 1024 ** 2 - 7, { exact: true })).toEqual("5242873 B");
+    });
   });
 });
 
@@ -171,15 +183,15 @@ describe("deviceBaseName", () => {
 });
 
 describe("deviceLabel", () => {
-  it("returns the device name and size", () => {
+  it("returns the device basename and size", () => {
     const result = deviceLabel(sda);
-    expect(result).toEqual("/dev/sda, 1 KiB");
+    expect(result).toEqual("sda (1 KiB)");
   });
 
-  it("returns only the device name if the device has no size", () => {
+  it("returns only the device basename if the device has no size", () => {
     const device = { ...sda, size: 0 };
     const result = deviceLabel(device);
-    expect(result).toEqual("/dev/sda");
+    expect(result).toEqual("sda");
   });
 });
 
@@ -240,6 +252,15 @@ describe("parseToBytes", () => {
 
   it("does not include decimal part of resulting conversion", () => {
     expect(parseToBytes("1024.32 KiB")).toEqual(1048903); // Not 1048903.68
+  });
+
+  it("always considers a downcase 'b' as bytes (like Y2Storage)", () => {
+    expect(parseToBytes("1 KiB")).toEqual(1024);
+    expect(parseToBytes("1 Kib")).toEqual(1024);
+    expect(parseToBytes("1 kib")).toEqual(1024);
+    expect(parseToBytes("1 kIb")).toEqual(1024);
+    expect(parseToBytes("1 KIb")).toEqual(1024);
+    expect(parseToBytes("1 KIB")).toEqual(1024);
   });
 });
 

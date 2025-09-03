@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,10 +22,12 @@
 require_relative "../../../test_helper"
 require "agama/dbus/base_object"
 require "agama/dbus/interfaces/progress"
+require "agama/dbus/with_progress"
 require "agama/with_progress"
 require "agama/progress"
 
 class DBusObjectWithProgressInterface < Agama::DBus::BaseObject
+  include Agama::DBus::WithProgress
   include Agama::DBus::Interfaces::Progress
 
   def initialize
@@ -174,6 +176,8 @@ describe DBusObjectWithProgressInterface do
 
       expect(subject).to receive(:dbus_properties_changed)
         .with(progress_interface, anything, anything)
+      expect(subject).to receive(:ProgressChanged)
+        .with(2, [1, "step 1"], false, [])
 
       progress.step("step 1")
     end
@@ -184,6 +188,8 @@ describe DBusObjectWithProgressInterface do
 
       expect(subject).to receive(:dbus_properties_changed)
         .with(progress_interface, anything, anything)
+      expect(subject).to receive(:ProgressChanged)
+        .with(2, [0, ""], true, [])
 
       progress.finish
     end

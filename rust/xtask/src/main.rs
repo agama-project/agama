@@ -5,9 +5,9 @@ mod tasks {
 
     use agama_cli::Cli;
     use agama_server::web::docs::{
-        ApiDocBuilder, L10nApiDocBuilder, ManagerApiDocBuilder, MiscApiDocBuilder,
-        NetworkApiDocBuilder, QuestionsApiDocBuilder, ScriptsApiDocBuilder, SoftwareApiDocBuilder,
-        StorageApiDocBuilder, UsersApiDocBuilder,
+        ApiDocBuilder, HostnameApiDocBuilder, L10nApiDocBuilder, ManagerApiDocBuilder,
+        MiscApiDocBuilder, NetworkApiDocBuilder, ProfileApiDocBuilder, QuestionsApiDocBuilder,
+        ScriptsApiDocBuilder, SoftwareApiDocBuilder, StorageApiDocBuilder, UsersApiDocBuilder,
     };
     use clap::CommandFactory;
     use clap_complete::aot;
@@ -28,6 +28,9 @@ mod tasks {
         Ok(())
     }
 
+    const GENERATED: &'static str =
+        "---\nNOTE: This documentation is generated. Run `cargo xtask markdown` to update it.\n";
+
     /// Generate Agama's CLI documentation in markdown format.
     pub fn generate_markdown() -> std::io::Result<()> {
         let out_dir = create_output_dir("markdown")?;
@@ -40,6 +43,7 @@ mod tasks {
         let filename = out_dir.join("agama.md");
         let mut file = File::create(&filename)?;
         file.write_all(markdown.as_bytes())?;
+        file.write_all(GENERATED.as_bytes())?;
 
         println!("Generate Markdown documentation at {}.", filename.display());
         Ok(())
@@ -60,10 +64,12 @@ mod tasks {
     pub fn generate_openapi() -> std::io::Result<()> {
         let out_dir = create_output_dir("openapi")?;
 
+        write_openapi(HostnameApiDocBuilder {}, out_dir.join("hostname.json"))?;
         write_openapi(L10nApiDocBuilder {}, out_dir.join("l10n.json"))?;
         write_openapi(ManagerApiDocBuilder {}, out_dir.join("manager.json"))?;
         write_openapi(MiscApiDocBuilder {}, out_dir.join("misc.json"))?;
         write_openapi(NetworkApiDocBuilder {}, out_dir.join("network.json"))?;
+        write_openapi(ProfileApiDocBuilder {}, out_dir.join("profile.json"))?;
         write_openapi(QuestionsApiDocBuilder {}, out_dir.join("questions.json"))?;
         write_openapi(ScriptsApiDocBuilder {}, out_dir.join("scripts.json"))?;
         write_openapi(SoftwareApiDocBuilder {}, out_dir.join("software.json"))?;

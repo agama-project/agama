@@ -23,14 +23,15 @@
 use std::{collections::HashMap, task::Poll};
 
 use agama_lib::{
-    dbus::get_optional_property,
     error::ServiceError,
-    property_from_dbus,
+    event,
+    http::Event,
     storage::{
         client::dasd::DASDClient,
         model::dasd::{DASDDevice, DASDFormatSummary},
     },
 };
+use agama_utils::{dbus::get_optional_property, property_from_dbus};
 use futures_util::{ready, Stream};
 use pin_project::pin_project;
 use thiserror::Error;
@@ -43,10 +44,7 @@ use zbus::{
     MatchRule, Message, MessageStream,
 };
 
-use crate::{
-    dbus::{DBusObjectChange, DBusObjectChangesStream, ObjectsCache},
-    web::Event,
-};
+use crate::dbus::{DBusObjectChange, DBusObjectChangesStream, ObjectsCache};
 
 #[derive(Debug, Error)]
 enum DASDDeviceStreamError {
@@ -140,19 +138,19 @@ impl DASDDeviceStream {
         match change {
             DBusObjectChange::Added(path, values) => {
                 let device = Self::update_device(cache, path, values)?;
-                Ok(Event::DASDDeviceAdded {
+                Ok(event!(DASDDeviceAdded {
                     device: device.clone(),
-                })
+                }))
             }
             DBusObjectChange::Changed(path, updated) => {
                 let device = Self::update_device(cache, path, updated)?;
-                Ok(Event::DASDDeviceChanged {
+                Ok(event!(DASDDeviceChanged {
                     device: device.clone(),
-                })
+                }))
             }
             DBusObjectChange::Removed(path) => {
                 let device = Self::remove_device(cache, path)?;
-                Ok(Event::DASDDeviceRemoved { device })
+                Ok(event!(DASDDeviceRemoved { device }))
             }
         }
     }
@@ -174,7 +172,7 @@ impl Stream for DASDDeviceStream {
                     if let Ok(event) = Self::handle_change(pinned.cache, &change) {
                         Some(event)
                     } else {
-                        log::warn!("Could not process change {:?}", &change);
+                        tracing::warn!("Could not process change {:?}", &change);
                         None
                     }
                 }
@@ -221,7 +219,7 @@ impl DASDFormatJobStream {
         let id = inner.header().path()?.to_string();
         let event = Self::to_event(id, &args);
         if event.is_none() {
-            log::warn!("Could not decode the DASDFormatJobChanged event");
+            tracing::warn!("Could not decode the DASDFormatJobChanged event");
         }
         event
     }
@@ -254,10 +252,10 @@ impl DASDFormatJobStream {
             );
         }
 
-        Some(Event::DASDFormatJobChanged {
+        Some(event!(DASDFormatJobChanged {
             job_id: path.to_string(),
             summary: format_summary,
-        })
+        }))
     }
 }
 

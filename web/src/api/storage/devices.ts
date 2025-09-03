@@ -37,6 +37,9 @@ import {
 import { StorageDevice } from "~/types/storage";
 
 /**
+ * @fixme Use a transformation instead of building the devices as part of the fetch function, see
+ * https://tkdodo.eu/blog/react-query-data-transformations.
+ *
  * Returns the list of devices in the given scope
  *
  * @param scope - "system": devices in the current state of the system; "result":
@@ -61,12 +64,12 @@ const fetchDevices = async (scope: "result" | "system") => {
     const buildCollection = (sids: number[], jsonDevices: Device[]): StorageDevice[] => {
       if (sids === null || sids === undefined) return [];
 
-      return sids.map((sid) =>
-        buildDevice(
-          jsonDevices.find((dev) => dev.deviceInfo?.sid === sid),
-          jsonDevices,
-        ),
-      );
+      // Some devices might not be found because they are not exported, for example, the members of
+      // a BIOS RAID, see bsc#1237803.
+      return sids
+        .map((sid) => jsonDevices.find((dev) => dev.deviceInfo?.sid === sid))
+        .filter((jsonDevice) => jsonDevice)
+        .map((jsonDevice) => buildDevice(jsonDevice, jsonDevices));
     };
 
     const addDriveInfo = (device: StorageDevice, info: Drive) => {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,23 +22,18 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Card,
-  CardBody,
+  Content,
   Flex,
-  Grid,
-  GridItem,
   ProgressStep,
   ProgressStepper,
   ProgressStepProps,
   Spinner,
-  Stack,
   Truncate,
 } from "@patternfly/react-core";
-
-import { _ } from "~/i18n";
-import { Center } from "~/components/layout";
 import { useProgress, useProgressChanges, useResetProgress } from "~/queries/progress";
 import { Progress as ProgressType } from "~/types/progress";
+import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
+import { _ } from "~/i18n";
 
 type StepProps = {
   id: string;
@@ -66,16 +61,13 @@ const Progress = ({ steps, step, firstStep, detail }) => {
       if (detail && detail.message !== "") {
         const { message, current, total } = detail;
         properties.description = (
-          <Stack hasGutter>
+          <Flex direction={{ default: "column" }} rowGap={{ default: "rowGapXs" }}>
             <div>{_("In progress")}</div>
             <div>
-              <Truncate
-                content={`${message} (${current}/${total})`}
-                trailingNumChars={12}
-                position="middle"
-              />
+              <Truncate content={message} trailingNumChars={12} position="middle" />
             </div>
-          </Stack>
+            <div>{`(${current}/${total})`}</div>
+          </Flex>
         );
       }
     }
@@ -89,7 +81,10 @@ const Progress = ({ steps, step, firstStep, detail }) => {
   };
 
   return (
-    <ProgressStepper isCenterAligned className="progress-report">
+    <ProgressStepper
+      isCenterAligned
+      className={[sizingStyles.w_100, sizingStyles.h_33OnMd].join(" ")}
+    >
       {firstStep && (
         <ProgressStep key="initial" variant="success">
           {firstStep}
@@ -130,32 +125,18 @@ function ProgressReport({ title, firstStep }: { title: string; firstStep?: React
   }, [progress, steps]);
   const detail = findDetail([softwareProgress, storageProgress]);
 
-  const Content = () => (
-    <Progress steps={steps} step={progress} detail={detail} firstStep={firstStep} />
-  );
-
   return (
-    <Center>
-      <Grid hasGutter>
-        <GridItem sm={10} smOffset={1}>
-          <Card isPlain>
-            <CardBody>
-              <Flex
-                direction={{ default: "column" }}
-                rowGap={{ default: "rowGap2xl" }}
-                alignItems={{ default: "alignItemsCenter" }}
-              >
-                <Spinner size="xl" />
-                <h1 id="progress-title" style={{ textAlign: "center" }}>
-                  {title}
-                </h1>
-                <Content />
-              </Flex>
-            </CardBody>
-          </Card>
-        </GridItem>
-      </Grid>
-    </Center>
+    <Flex
+      direction={{ default: "column" }}
+      rowGap={{ default: "rowGapMd" }}
+      alignItems={{ default: "alignItemsCenter" }}
+      justifyContent={{ default: "justifyContentCenter" }}
+      className={sizingStyles.h_100OnMd}
+    >
+      <Spinner size="xl" />
+      <Content component="h1">{title}</Content>
+      <Progress steps={steps} step={progress} detail={detail} firstStep={firstStep} />
+    </Flex>
   );
 }
 

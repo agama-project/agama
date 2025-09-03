@@ -1,5 +1,7 @@
 # D-Bus API Reference
 
+DEPRECATED. DBus API is now internal only. For public API refer HTTP API.
+
 ## General Principles
 
 ### Objects versus dict/struct/etc

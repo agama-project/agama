@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023-2024] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -36,31 +36,24 @@ require "agama/dbus/clients/software"
 require "y2storage"
 require "dbus"
 
+def serialize(value)
+  JSON.pretty_generate(value)
+end
+
 describe Agama::DBus::Storage::Manager do
   include Agama::RSpec::StorageHelpers
 
-  subject(:manager) { described_class.new(backend, logger) }
+  subject(:manager) { described_class.new(backend, logger: logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:backend) do
-    instance_double(Agama::Storage::Manager,
-      actions:                     [],
-      proposal:                    proposal,
-      iscsi:                       iscsi,
-      software:                    software,
-      config:                      config,
-      on_probe:                    nil,
-      on_progress_change:          nil,
-      on_progress_finish:          nil,
-      on_issues_change:            nil,
-      on_deprecated_system_change: nil)
-  end
+  let(:backend) { Agama::Storage::Manager.new(product_config) }
 
-  let(:config) { Agama::Config.new(config_data) }
+  let(:product_config) { Agama::Config.new(config_data) }
+
   let(:config_data) { {} }
 
-  let(:proposal) { Agama::Storage::Proposal.new(config) }
+  let(:proposal) { Agama::Storage::Proposal.new(product_config) }
 
   let(:iscsi) do
     instance_double(Agama::Storage::ISCSI::Manager,
@@ -77,7 +70,12 @@ describe Agama::DBus::Storage::Manager do
     # Speed up tests by avoding real check of TPM presence.
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
     allow(Yast::Arch).to receive(:s390).and_return false
-    allow(proposal).to receive(:on_calculate)
+    allow(backend).to receive(:on_configure)
+    allow(backend).to receive(:on_issues_change)
+    allow(backend).to receive(:actions).and_return([])
+    allow(backend).to receive(:iscsi).and_return(iscsi)
+    allow(backend).to receive(:software).and_return(software)
+    allow(backend).to receive(:proposal).and_return(proposal)
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
   end
 
@@ -195,31 +193,125 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#available_devices" do
+  describe "#available_drives" do
     before do
-      allow(proposal).to receive(:available_devices).and_return(devices)
+      allow(proposal.storage_system).to receive(:available_drives).and_return(drives)
     end
 
-    context "if there is no available devices" do
-      let(:devices) { [] }
+    context "if there is no available drives" do
+      let(:drives) { [] }
 
       it "returns an empty list" do
-        expect(subject.available_devices).to eq([])
+        expect(subject.available_drives).to eq([])
       end
     end
 
-    context "if there are available devices" do
-      let(:devices) { [device1, device2] }
+    context "if there are available drives" do
+      let(:drives) { [drive1, drive2, drive3] }
 
-      let(:device1) { instance_double(Y2Storage::Disk, name: "/dev/vda", sid: 95) }
-      let(:device2) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 96) }
+      let(:drive1) { instance_double(Y2Storage::Disk, name: "/dev/vda", sid: 95) }
+      let(:drive2) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 96) }
+      let(:drive3) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 97) }
 
-      it "retuns the path of each device" do
-        result = subject.available_devices
+      it "retuns the path of each drive" do
+        result = subject.available_drives
+
+        expect(result).to contain_exactly(
+          /system\/95/,
+          /system\/96/,
+          /system\/97/
+        )
+      end
+    end
+  end
+
+  describe "#candidate_drives" do
+    before do
+      allow(proposal.storage_system).to receive(:candidate_drives).and_return(drives)
+    end
+
+    context "if there is no candidate drives" do
+      let(:drives) { [] }
+
+      it "returns an empty list" do
+        expect(subject.candidate_drives).to eq([])
+      end
+    end
+
+    context "if there are candidate drives" do
+      let(:drives) { [drive1, drive2] }
+
+      let(:drive1) { instance_double(Y2Storage::Disk, name: "/dev/vda", sid: 95) }
+      let(:drive2) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 96) }
+
+      it "retuns the path of each drive" do
+        result = subject.candidate_drives
 
         expect(result).to contain_exactly(
           /system\/95/,
           /system\/96/
+        )
+      end
+    end
+  end
+
+  describe "#available_md_raids" do
+    before do
+      allow(proposal.storage_system).to receive(:available_md_raids).and_return(md_raids)
+    end
+
+    context "if there is no available MD RAIDs" do
+      let(:md_raids) { [] }
+
+      it "returns an empty list" do
+        expect(subject.available_md_raids).to eq([])
+      end
+    end
+
+    context "if there are available MD RAIDs" do
+      let(:md_raids) { [md_raid1, md_raid2, md_raid3] }
+
+      let(:md_raid1) { instance_double(Y2Storage::Md, name: "/dev/md0", sid: 100) }
+      let(:md_raid2) { instance_double(Y2Storage::Md, name: "/dev/md1", sid: 101) }
+      let(:md_raid3) { instance_double(Y2Storage::Md, name: "/dev/md2", sid: 102) }
+
+      it "retuns the path of each MD RAID" do
+        result = subject.available_md_raids
+
+        expect(result).to contain_exactly(
+          /system\/100/,
+          /system\/101/,
+          /system\/102/
+        )
+      end
+    end
+  end
+
+  describe "#candidate_md_raids" do
+    before do
+      allow(proposal.storage_system).to receive(:candidate_md_raids).and_return(md_raids)
+    end
+
+    context "if there is no candidate MD RAIDs" do
+      let(:md_raids) { [] }
+
+      it "returns an empty list" do
+        expect(subject.candidate_md_raids).to eq([])
+      end
+    end
+
+    context "if there are candidate MD RAIDs" do
+      let(:md_raids) { [md_raid1, md_raid2] }
+
+      let(:md_raid1) { instance_double(Y2Storage::Md, name: "/dev/md0", sid: 100) }
+      let(:md_raid2) { instance_double(Y2Storage::Md, name: "/dev/md1", sid: 101) }
+
+      it "retuns the path of each MD RAID" do
+        result = subject.candidate_md_raids
+
+        expect(result).to contain_exactly(
+          /system\/100/,
+          /system\/101/
         )
       end
     end
@@ -264,7 +356,7 @@ describe Agama::DBus::Storage::Manager do
 
       it "returns the same generic default volume for any path" do
         generic = {
-          "FsType" => "Ext4", "MountOptions" => [],
+          "FsType" => "ext4", "MountOptions" => [],
           "MinSize" => 0, "AutoSize" => false
         }
         generic_outline = { "Required" => false, "FsTypes" => [], "SupportAutoSize" => false }
@@ -311,23 +403,23 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "returns the appropriate volume if there is a corresponding template" do
-        expect(subject.default_volume("/")).to include("FsType" => "Btrfs", "AutoSize" => true)
+        expect(subject.default_volume("/")).to include("FsType" => "btrfs", "AutoSize" => true)
         expect(subject.default_volume("/")["Outline"]).to include(
-          "Required" => true, "FsTypes" => ["Btrfs"],
+          "Required" => true, "FsTypes" => ["btrfs"],
           "SupportAutoSize" => true, "SizeRelevantVolumes" => ["/home"]
         )
 
         expect(subject.default_volume("swap")).to include(
-          "FsType" => "Swap", "AutoSize" => false, "MinSize" => 1024**3, "MaxSize" => 2 * (1024**3)
+          "FsType" => "swap", "AutoSize" => false, "MinSize" => 1024**3, "MaxSize" => 2 * (1024**3)
         )
         expect(subject.default_volume("swap")["Outline"]).to include(
-          "Required" => false, "FsTypes" => ["Swap"], "SupportAutoSize" => false
+          "Required" => false, "FsTypes" => ["swap"], "SupportAutoSize" => false
         )
       end
 
       it "returns the default volume for any path without a template" do
-        default = { "FsType" => "Ext4", "AutoSize" => false, "MinSize" => 10 * (1024**3) }
-        default_outline = { "FsTypes" => ["Ext3", "Ext4", "XFS"], "SupportAutoSize" => false }
+        default = { "FsType" => "ext4", "AutoSize" => false, "MinSize" => 10 * (1024**3) }
+        default_outline = { "FsTypes" => ["ext3", "ext4", "xfs"], "SupportAutoSize" => false }
 
         expect(subject.default_volume("/foo")).to include(default)
         expect(subject.default_volume("/foo")["Outline"]).to include(default_outline)
@@ -557,87 +649,82 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#recover_config" do
-    def serialize(value)
-      JSON.pretty_generate(value)
+  describe "#apply_config_model" do
+    let(:serialized_model) { model_json.to_json }
+
+    let(:model_json) do
+      {
+        drives: [
+          name:       "/dev/vda",
+          partitions: [
+            { mountPath: "/" }
+          ]
+        ]
+      }
     end
 
+    it "calculates an agama proposal with the given config" do
+      expect(proposal).to receive(:calculate_agama) do |config|
+        expect(config).to be_a(Agama::Storage::Config)
+        expect(config.drives.size).to eq(1)
+
+        drive = config.drives.first
+        expect(drive.search.name).to eq("/dev/vda")
+        expect(drive.partitions.size).to eq(1)
+
+        partition = drive.partitions.first
+        expect(partition.filesystem.path).to eq("/")
+      end
+
+      subject.apply_config_model(serialized_model)
+    end
+  end
+
+  describe "#recover_config" do
     context "if a proposal has not been calculated" do
-      it "returns serialized empty storage config" do
-        expect(subject.recover_config).to eq(serialize({}))
+      it "returns 'null'" do
+        expect(subject.recover_config).to eq("null")
       end
     end
 
     context "if a guided proposal has been calculated" do
       before do
-        proposal.calculate_guided(settings)
+        proposal.calculate_from_json(settings_json)
       end
 
-      let(:settings) do
-        Agama::Storage::ProposalSettings.new.tap do |settings|
-          settings.device = Agama::Storage::DeviceSettings::Disk.new("/dev/vda")
-        end
-      end
-
-      it "returns serialized guided storage config" do
-        expected_config = {
+      let(:settings_json) do
+        {
           storage: {
-            guided: settings.to_json_settings
+            guided: {
+              target: { disk: "/dev/vda" }
+            }
           }
         }
+      end
 
-        expect(subject.recover_config).to eq(serialize(expected_config))
+      it "returns serialized solved guided storage config" do
+        expect(subject.recover_config).to eq(
+          serialize({
+            storage: {
+              guided: {
+                target:  {
+                  disk: "/dev/vda"
+                },
+                boot:    {
+                  configure: true
+                },
+                space:   {
+                  policy: "keep"
+                },
+                volumes: []
+              }
+            }
+          })
+        )
       end
     end
 
     context "if an agama proposal has been calculated" do
-      before do
-        proposal.calculate_agama(storage_config)
-      end
-
-      let(:storage_config) do
-        fs_type = Agama::Storage::Configs::FilesystemType.new.tap do |t|
-          t.fs_type = Y2Storage::Filesystems::Type::BTRFS
-        end
-
-        filesystem = Agama::Storage::Configs::Filesystem.new.tap do |f|
-          f.type = fs_type
-        end
-
-        drive = Agama::Storage::Configs::Drive.new.tap do |d|
-          d.filesystem = filesystem
-        end
-
-        boot = Agama::Storage::Configs::Boot.new.tap do |b|
-          b.configure = false
-        end
-
-        Agama::Storage::Config.new.tap do |config|
-          config.drives = [drive]
-          config.boot = boot
-        end
-      end
-
-      it "returns serialized storage config" do
-        skip "Missing conversion from Agama::Storage::Config to JSON"
-
-        expected_config = {
-          storage: {
-            drives: [
-              {
-                filesystem: {
-                  type: "btrfs"
-                }
-              }
-            ]
-          }
-        }
-
-        expect(subject.recover_config).to eq(serialize(expected_config))
-      end
-    end
-
-    context "if a proposal was calculated from storage json" do
       before do
         proposal.calculate_from_json(config_json)
       end
@@ -646,26 +733,24 @@ describe Agama::DBus::Storage::Manager do
         {
           storage: {
             drives: [
-              ptableType: "gpt",
-              partitions: [
-                {
-                  filesystem: {
-                    type: "btrfs",
-                    path: "/"
+              {
+                partitions: [
+                  {
+                    filesystem: { path: "/" }
                   }
-                }
-              ]
+                ]
+              }
             ]
           }
         }
       end
 
-      it "returns the serialized storage config" do
+      it "returns serialized storage config" do
         expect(subject.recover_config).to eq(serialize(config_json))
       end
     end
 
-    context "if a proposal was calculated from AutoYaST json" do
+    context "if an AutoYaST proposal has been calculated" do
       before do
         proposal.calculate_from_json(autoyast_json)
       end
@@ -684,59 +769,236 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#iscsi_discover" do
-    it "performs an iSCSI discovery" do
-      expect(iscsi).to receive(:discover_send_targets) do |address, port, auth|
-        expect(address).to eq("192.168.100.90")
-        expect(port).to eq(3260)
-        expect(auth).to be_a(Y2IscsiClient::Authentication)
+  describe "#recover_model" do
+    context "if a proposal has not been calculated" do
+      it "returns 'null'" do
+        expect(subject.recover_model).to eq("null")
+      end
+    end
+
+    context "if a guided proposal has been calculated" do
+      before do
+        proposal.calculate_from_json(settings_json)
       end
 
-      subject.iscsi_discover("192.168.100.90", 3260, {})
+      let(:settings_json) do
+        {
+          storage: {
+            guided: {
+              target: { disk: "/dev/vda" }
+            }
+          }
+        }
+      end
+
+      it "returns 'null'" do
+        expect(subject.recover_model).to eq("null")
+      end
+    end
+
+    context "if an agama proposal has been calculated" do
+      before do
+        proposal.calculate_from_json(config_json)
+      end
+
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              {
+                alias:      "root",
+                partitions: [
+                  {
+                    filesystem: { path: "/" }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      end
+
+      it "returns the serialized config model" do
+        expect(subject.recover_model).to eq(
+          serialize({
+            boot:         {
+              configure: true,
+              device:    {
+                default: true,
+                name:    "/dev/sda"
+              }
+            },
+            drives:       [
+              {
+                name:        "/dev/sda",
+                spacePolicy: "keep",
+                partitions:  [
+                  {
+                    mountPath:      "/",
+                    filesystem:     {
+                      reuse:   false,
+                      default: true,
+                      type:    "ext4"
+                    },
+                    size:           {
+                      default: true,
+                      min:     0
+                    },
+                    delete:         false,
+                    deleteIfNeeded: false,
+                    resize:         false,
+                    resizeIfNeeded: false
+                  }
+                ]
+              }
+            ],
+            mdRaids:      [],
+            volumeGroups: []
+          })
+        )
+      end
+    end
+
+    context "if an AutoYaST proposal has been calculated" do
+      before do
+        proposal.calculate_from_json(autoyast_json)
+      end
+
+      let(:autoyast_json) do
+        {
+          legacyAutoyastStorage: [
+            { device: "/dev/vda" }
+          ]
+        }
+      end
+
+      it "returns 'null'" do
+        expect(subject.recover_model).to eq("null")
+      end
+    end
+  end
+
+  describe "#solve_model" do
+    let(:model) do
+      {
+        drives: [
+          {
+            name:       "/dev/sda",
+            partitions: [
+              { mountPath: "/" }
+            ]
+          }
+        ]
+      }
+    end
+
+    it "returns the serialized solved model" do
+      result = subject.solve_model(model.to_json)
+
+      expect(result).to eq(
+        serialize({
+          boot:         {
+            configure: true,
+            device:    {
+              default: true,
+              name:    "/dev/sda"
+            }
+          },
+          drives:       [
+            {
+              name:        "/dev/sda",
+              spacePolicy: "keep",
+              partitions:  [
+                {
+                  mountPath:      "/",
+                  filesystem:     {
+                    reuse:   false,
+                    default: true,
+                    type:    "ext4"
+                  },
+                  size:           {
+                    default: true,
+                    min:     0
+                  },
+                  delete:         false,
+                  deleteIfNeeded: false,
+                  resize:         false,
+                  resizeIfNeeded: false
+                }
+              ]
+            }
+          ],
+          mdRaids:      [],
+          volumeGroups: []
+        })
+      )
+    end
+
+    context "if the system has not been probed yet" do
+      before do
+        allow(Y2Storage::StorageManager.instance).to receive(:probed?).and_return(false)
+      end
+
+      it "returns 'null'" do
+        result = subject.solve_model(model.to_json)
+        expect(result).to eq("null")
+      end
+    end
+  end
+
+  describe "#iscsi_discover" do
+    it "performs an iSCSI discovery" do
+      expect(iscsi).to receive(:discover).with("192.168.100.90", 3260, anything)
+
+      subject.iscsi_discover("192.168.100.90", 3260)
     end
 
     context "when no authentication options are given" do
-      let(:auth_options) { {} }
-
-      it "uses an empty authentication" do
-        expect(iscsi).to receive(:discover_send_targets) do |_, _, auth|
-          expect(auth.by_target?).to eq(false)
-          expect(auth.by_initiator?).to eq(false)
+      it "uses empty credentials" do
+        expect(iscsi).to receive(:discover) do |_, _, discover_options|
+          expect(discover_options[:credentials]).to eq({
+            username:           nil,
+            password:           nil,
+            initiator_username: nil,
+            initiator_password: nil
+          })
         end
 
-        subject.iscsi_discover("192.168.100.90", 3260, auth_options)
+        subject.iscsi_discover("192.168.100.90", 3260)
       end
     end
 
     context "when authentication options are given" do
-      let(:auth_options) do
+      let(:options) do
         {
-          "Username"        => "testi",
-          "Password"        => "testi",
-          "ReverseUsername" => "testt",
-          "ReversePassword" => "testt"
+          "Username"        => "target",
+          "Password"        => "12345",
+          "ReverseUsername" => "initiator",
+          "ReversePassword" => "54321"
         }
       end
 
-      it "uses the expected authentication" do
-        expect(iscsi).to receive(:discover_send_targets) do |_, _, auth|
-          expect(auth.username).to eq("testi")
-          expect(auth.password).to eq("testi")
-          expect(auth.username_in).to eq("testt")
-          expect(auth.password_in).to eq("testt")
+      it "uses the expected crendentials" do
+        expect(iscsi).to receive(:discover) do |_, _, discover_options|
+          expect(discover_options[:credentials]).to eq({
+            username:           "target",
+            password:           "12345",
+            initiator_username: "initiator",
+            initiator_password: "54321"
+          })
         end
 
-        subject.iscsi_discover("192.168.100.90", 3260, auth_options)
+        subject.iscsi_discover("192.168.100.90", 3260, options)
       end
     end
 
     context "when the action successes" do
       before do
-        allow(iscsi).to receive(:discover_send_targets).and_return(true)
+        allow(iscsi).to receive(:discover).and_return(true)
       end
 
       it "returns 0" do
-        result = subject.iscsi_discover("192.168.100.90", 3260, {})
+        result = subject.iscsi_discover("192.168.100.90", 3260)
 
         expect(result).to eq(0)
       end
@@ -744,11 +1006,11 @@ describe Agama::DBus::Storage::Manager do
 
     context "when the action fails" do
       before do
-        allow(iscsi).to receive(:discover_send_targets).and_return(false)
+        allow(iscsi).to receive(:discover).and_return(false)
       end
 
       it "returns 1" do
-        result = subject.iscsi_discover("192.168.100.90", 3260, {})
+        result = subject.iscsi_discover("192.168.100.90", 3260)
 
         expect(result).to eq(1)
       end

@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 mod progress;
-pub use progress::ProgressProxy;
+pub use progress::{ProgressChanged, ProgressChangedArgs, ProgressChangedStream, ProgressProxy};
 
 mod service_status;
 pub use service_status::ServiceStatusProxy;
@@ -36,3 +36,6 @@ mod locale;
 pub use locale::LocaleMixinProxy;
 
 pub mod jobs;
+
+mod hostname1;
+pub use hostname1::Hostname1Proxy;

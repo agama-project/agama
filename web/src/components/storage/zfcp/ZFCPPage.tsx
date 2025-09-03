@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,11 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-// cspell:ignore npiv
-
 import React from "react";
 import {
   Button,
+  Content,
   Grid,
   GridItem,
   Toolbar,
@@ -108,7 +107,7 @@ const Disks = () => {
     <>
       <Toolbar>
         <ToolbarContent>
-          <ToolbarItem align={{ default: "alignRight" }}>
+          <ToolbarItem align={{ default: "alignEnd" }}>
             {/* TRANSLATORS: button label */}
             <Button onClick={() => navigate(PATHS.zfcp.activateDisk)} isDisabled={isDisabled}>
               {_("Activate new disk")}
@@ -145,7 +144,7 @@ const ControllersSection = () => (
   </Page.Section>
 );
 
-const Content = () => {
+const PageContent = () => {
   const controllers = useZFCPControllers();
 
   if (controllers.length === 0) {
@@ -187,16 +186,16 @@ export default function ZFCPPage() {
   return (
     <Page>
       <Page.Header>
-        <h2>{_("zFCP")}</h2>
+        <Content component="h2">{_("zFCP")}</Content>
       </Page.Header>
 
       <Page.Content>
-        <Content />
+        <PageContent />
       </Page.Content>
 
       <Page.Actions>
-        <Page.Action variant="secondary" navigateTo={PATHS.targetDevice}>
-          {_("Back to device selection")}
+        <Page.Action variant="secondary" navigateTo={PATHS.root}>
+          {_("Back")}
         </Page.Action>
       </Page.Actions>
     </Page>

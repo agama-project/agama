@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
-require_relative "./with_progress_examples"
+require_relative "with_progress_examples"
 require "agama/manager"
 require "agama/config"
 require "agama/issue"
@@ -53,11 +53,16 @@ describe Agama::Manager do
     )
   end
   let(:locale) { instance_double(Agama::DBus::Clients::Locale, finish: nil) }
-  let(:network) { instance_double(Agama::Network, install: nil) }
+  let(:network) { instance_double(Agama::Network, install: nil, startup: nil) }
   let(:storage) do
     instance_double(
-      Agama::DBus::Clients::Storage, probe: nil, install: nil, finish: nil,
+      Agama::DBus::Clients::Storage, probe: nil, reprobe: nil, install: nil, finish: nil,
       on_service_status_change: nil, errors?: false
+    )
+  end
+  let(:scripts) do
+    instance_double(
+      Agama::HTTP::Clients::Scripts, run: nil
     )
   end
 
@@ -70,6 +75,8 @@ describe Agama::Manager do
     allow(Agama::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(Agama::DBus::Clients::Storage).to receive(:new).and_return(storage)
     allow(Agama::Users).to receive(:new).and_return(users)
+    allow(Agama::HTTP::Clients::Scripts).to receive(:new)
+      .and_return(scripts)
   end
 
   describe "#startup_phase" do
@@ -80,6 +87,11 @@ describe Agama::Manager do
     it "sets the installation phase to startup" do
       subject.startup_phase
       expect(subject.installation_phase.startup?).to eq(true)
+    end
+
+    it "does the network startup configuration" do
+      expect(network).to receive(:startup)
+      subject.startup_phase
     end
 
     context "when there is no selected product" do
@@ -112,12 +124,25 @@ describe Agama::Manager do
       expect(software).to receive(:probe)
       subject.config_phase
     end
+
+    context "if reprobe is requested" do
+      it "calls #reprobe method of the storage module" do
+        expect(storage).to receive(:reprobe)
+        subject.config_phase(reprobe: true)
+      end
+
+      it "calls #probe method of the software module" do
+        expect(software).to receive(:probe)
+        subject.config_phase(reprobe: true)
+      end
+    end
   end
 
   describe "#install_phase" do
-    it "sets the installation phase to install" do
+    it "sets the installation phase to install and later to finish" do
+      expect(subject.installation_phase).to receive(:install)
       subject.install_phase
-      expect(subject.installation_phase.install?).to eq(true)
+      expect(subject.installation_phase.finish?).to eq(true)
     end
 
     it "calls #propose on proxy and software modules" do
@@ -132,6 +157,7 @@ describe Agama::Manager do
       expect(software).to receive(:finish)
       expect(locale).to receive(:finish)
       expect(storage).to receive(:install)
+      expect(scripts).to receive(:run).with("postPartitioning")
       expect(storage).to receive(:finish)
       expect(users).to receive(:write)
       subject.install_phase
@@ -209,6 +235,45 @@ describe Agama::Manager do
 
       it "returns false" do
         expect(subject.valid?).to eq(false)
+      end
+    end
+  end
+
+  describe "#finish_installation" do
+    let(:finished) { false }
+    let(:iguana) { true }
+    let(:method) { "reboot" }
+
+    before do
+      allow(subject).to receive(:iguana?).and_return(iguana)
+      allow(subject.installation_phase).to receive(:finish?).and_return(finished)
+      allow(logger).to receive(:error)
+    end
+
+    context "when it is not in finish the phase" do
+      it "logs the error and returns false" do
+        expect(logger).to receive(:error).with(/not finished/)
+        expect(subject.finish_installation(method)).to eq(false)
+      end
+    end
+
+    context "when it is in the finish phase" do
+      let(:finished) { true }
+
+      context "and it is executed using iguana" do
+        it "runs agamactl -k" do
+          expect(subject).to receive(:system).with(/agamactl -k/).and_return(true)
+          expect(subject.finish_installation(method)).to eq(true)
+        end
+      end
+
+      context "and it is not executed using iguana" do
+        let(:iguana) { false }
+
+        it "executes the command to the finish method given" do
+          expect(subject).to receive(:system).with(/shutdown -r now/).and_return(true)
+          expect(subject.finish_installation(method)).to eq(true)
+        end
       end
     end
   end

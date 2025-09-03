@@ -18,9 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use fluent_uri::Uri;
 use serde::{Deserialize, Serialize};
 
-use super::{InitScript, PostScript, PreScript};
+use crate::file_source::{FileSourceError, WithFileSource};
+
+use super::{InitScript, PostPartitioningScript, PostScript, PreScript};
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -28,10 +31,50 @@ pub struct ScriptsConfig {
     /// User-defined pre-installation scripts
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pre: Option<Vec<PreScript>>,
+    /// User-defined post-partitioning scripts
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub post_partitioning: Option<Vec<PostPartitioningScript>>,
     /// User-defined post-installation scripts
     #[serde(skip_serializing_if = "Option::is_none")]
     pub post: Option<Vec<PostScript>>,
     /// User-defined init scripts
     #[serde(skip_serializing_if = "Option::is_none")]
     pub init: Option<Vec<InitScript>>,
+}
+
+impl ScriptsConfig {
+    pub fn to_option(self) -> Option<Self> {
+        if self.pre.is_none()
+            && self.post_partitioning.is_none()
+            && self.post.is_none()
+            && self.init.is_none()
+        {
+            None
+        } else {
+            Some(self)
+        }
+    }
+
+    /// Resolve relative URLs in the scripts.
+    ///
+    /// * `base_uri`: The base URI to resolve relative URLs against.
+    pub fn resolve_urls(&mut self, base_uri: &Uri<String>) -> Result<(), FileSourceError> {
+        Self::resolve_urls_for(&mut self.pre, base_uri)?;
+        Self::resolve_urls_for(&mut self.post_partitioning, base_uri)?;
+        Self::resolve_urls_for(&mut self.post, base_uri)?;
+        Self::resolve_urls_for(&mut self.init, base_uri)?;
+        Ok(())
+    }
+
+    fn resolve_urls_for<T: WithFileSource>(
+        scripts: &mut Option<Vec<T>>,
+        base_uri: &Uri<String>,
+    ) -> Result<(), FileSourceError> {
+        if let Some(ref mut scripts) = scripts {
+            for script in scripts {
+                script.resolve_url(&base_uri)?;
+            }
+        }
+        Ok(())
+    }
 }

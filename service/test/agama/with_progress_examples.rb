@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -48,7 +48,7 @@ shared_examples "progress" do
 
       it "raises an error" do
         expect { subject.start_progress_with_size(1) }
-          .to raise_error(Agama::WithProgress::NotFinishedProgress)
+          .to raise_error(Agama::NotFinishedProgress)
       end
     end
 

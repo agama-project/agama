@@ -1,5 +1,5 @@
 id: Leap_16.0
-name: Leap 16.0 Alpha
+name: Leap 16.0
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
 # at the at translations/description key below to avoid using obsolete
@@ -15,8 +15,8 @@ translations:
       Enterprise Server.
     cs: Nejnovější verze komunitní distribuce založené na nejnovějším SUSE Linux
       Enterprise Serveru.
-    de: Leap 16.0 ist die neueste Version einer Community-Distribution, die auf dem
-      aktuellen SUSE Linux Enterprise Server basiert.
+    de: Die neueste Version einer Community-Distribution, die auf dem aktuellen SUSE
+      Linux Enterprise Server basiert.
     es: La última versión de una distribución comunitaria basada en el último SUSE
       Linux Enterprise Server.
     ja: 最新のSUSE Linux Enterprise Server をベースにした、コミュニティディストリビューションの最新版です。
@@ -33,7 +33,7 @@ translations:
     zh_Hans: Leap 16.0 是基于 SUSE Linux Enterprise Server 构建的社区发行版的最新版本。
 software:
   installation_repositories:
-    - url: https://download.opensuse.org/distribution/leap/16.0/repo/oss
+    - url: https://download.opensuse.org/distribution/leap/16.0/repo/oss/$basearch
   installation_labels:
     - label: Leap-DVD-x86_64
       archs: x86_64
@@ -47,22 +47,36 @@ software:
     - enhanced_base # only pattern that is shared among all roles on Leap
   optional_patterns: null # no optional pattern shared
   user_patterns:
-    - basic_desktop
     - gnome
     - kde
-    - yast2_basis
-    - yast2_desktop
-    - yast2_server
+    - xfce_wayland
     - multimedia
     - office
+    - cockpit
+    - fips
+    - name: selinux
+      selected: true
+    - documentation
+    - sw_management
+    - container_runtime_podman
+    - dhcp_dns_server
+    - directory_server
+    - file_server
+    - gateway_server
+    - kvm_server
+    - kvm_tools
+    - lamp_server
+    - mail_server
+    - printing
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-Leap
+    - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
   optional_packages: null
-  base_product: openSUSE
+  base_product: Leap
 
 security:
-  lsm: apparmor
+  lsm: selinux
   available_lsms:
     apparmor:
       patterns:
@@ -70,7 +84,6 @@ security:
     selinux:
       patterns:
         - selinux
-      policy: enforcing
     none:
       patterns: null
 
@@ -123,7 +136,7 @@ storage:
         auto_size:
           base_min: 5 GiB
           base_max: 15 GiB
-          snapshots_increment: 250%
+          snapshots_increment: 150%
           max_fallback_for:
             - "/home"
         snapshots_configurable: true
@@ -140,7 +153,7 @@ storage:
       filesystem: xfs
       size:
         auto: false
-        min: 10 GiB
+        min: 5 GiB
         max: unlimited
       outline:
         required: false
@@ -153,7 +166,7 @@ storage:
     - filesystem: xfs
       size:
         auto: false
-        min: 1 GiB
+        min: 512 MiB
       outline:
         required: false
         filesystems:

@@ -18,9 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::proxies::questions::QuestionsProxy;
-use agama_lib::questions::http_client::HTTPClient;
-use agama_lib::{base_http_client::BaseHTTPClient, connection, error::ServiceError};
+use agama_lib::{
+    connection, http::BaseHTTPClient, proxies::questions::QuestionsProxy,
+    questions::http_client::HTTPClient,
+};
+use anyhow::anyhow;
 use clap::{Args, Subcommand, ValueEnum};
 
 // TODO: use for answers also JSON to be consistent
@@ -60,54 +62,47 @@ pub enum Modes {
     NonInteractive,
 }
 
-async fn set_mode(proxy: QuestionsProxy<'_>, value: Modes) -> Result<(), ServiceError> {
+async fn set_mode(proxy: QuestionsProxy<'_>, value: Modes) -> anyhow::Result<()> {
     proxy
         .set_interactive(value == Modes::Interactive)
         .await
         .map_err(|e| e.into())
 }
 
-async fn set_answers(proxy: QuestionsProxy<'_>, path: String) -> Result<(), ServiceError> {
+async fn set_answers(proxy: QuestionsProxy<'_>, path: String) -> anyhow::Result<()> {
     proxy
         .add_answer_file(path.as_str())
         .await
         .map_err(|e| e.into())
 }
 
-async fn list_questions(client: BaseHTTPClient) -> Result<(), ServiceError> {
-    let client = HTTPClient::new(client)?;
+async fn list_questions(client: BaseHTTPClient) -> anyhow::Result<()> {
+    let client = HTTPClient::new(client);
     let questions = client.list_questions().await?;
     // FIXME: if performance is bad, we can skip converting json from http to struct and then
     // serialize it, but it won't be pretty string
-    let questions_json = serde_json::to_string_pretty(&questions)
-        .map_err(|e| ServiceError::InternalError(e.to_string()))?;
+    let questions_json = serde_json::to_string_pretty(&questions)?;
     println!("{}", questions_json);
     Ok(())
 }
 
-async fn ask_question(client: BaseHTTPClient) -> Result<(), ServiceError> {
-    let client = HTTPClient::new(client)?;
+async fn ask_question(client: BaseHTTPClient) -> anyhow::Result<()> {
+    let client = HTTPClient::new(client);
     let question = serde_json::from_reader(std::io::stdin())?;
 
     let created_question = client.create_question(&question).await?;
     let Some(id) = created_question.generic.id else {
-        return Err(ServiceError::InternalError(
-            "Created question does not get id".to_string(),
-        ));
+        return Err(anyhow!("The created question does not have an ID"));
     };
     let answer = client.get_answer(id).await?;
-    let answer_json = serde_json::to_string_pretty(&answer)
-        .map_err(|e| ServiceError::InternalError(e.to_string()))?;
+    let answer_json = serde_json::to_string_pretty(&answer).map_err(|e| anyhow!(e.to_string()))?;
     println!("{}", answer_json);
 
     client.delete_question(id).await?;
     Ok(())
 }
 
-pub async fn run(
-    client: BaseHTTPClient,
-    subcommand: QuestionsCommands,
-) -> Result<(), ServiceError> {
+pub async fn run(client: BaseHTTPClient, subcommand: QuestionsCommands) -> anyhow::Result<()> {
     let connection = connection().await?;
     let proxy = QuestionsProxy::new(&connection).await?;
 

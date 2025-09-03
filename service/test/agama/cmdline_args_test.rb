@@ -28,29 +28,44 @@ describe Agama::CmdlineArgs do
 
   describe ".read_from" do
     it "reads the kernel command line options and return a CmdlineArgs object" do
-      args = described_class.read_from(File.join(workdir, "/proc/cmdline"))
+      args = described_class.read_from(File.join(workdir, "/run/agama/cmdline.d/agama.conf"))
       expect(args.data["auto"]).to eq("http://mydomain.org/tumbleweed.jsonnet")
     end
 
     it "sets #config_url if specified on cmdline" do
-      args = described_class.read_from(File.join(workdir, "/proc/cmdline"))
+      args = described_class.read_from(File.join(workdir, "/run/agama/cmdline.d/agama.conf"))
       expect(args.config_url).to eql("http://example.org/agama.yaml")
     end
 
     it "converts 'true' and  'false' values into booleans" do
-      args = described_class.read_from(File.join(workdir, "/proc/cmdline"))
+      args = described_class.read_from(File.join(workdir, "/run/agama/cmdline.d/agama.conf"))
       expect(args.data["web"]).to eql({ "ssl" => true })
     end
 
     it "converts keys with dots after 'agama.' to hash" do
-      args = described_class.read_from(File.join(workdir, "/proc/cmdline"))
+      args = described_class.read_from(File.join(workdir, "/run/agama/cmdline.d/agama.conf"))
       # here fixture has agama.web.ssl=true and result is this hash
       expect(args.data["web"]).to eq({ "ssl" => true })
     end
 
     it "properly parse values that contain '='" do
-      args = described_class.read_from(File.join(workdir, "/proc/cmdline"))
+      args = described_class.read_from(File.join(workdir, "/run/agama/cmdline.d/agama.conf"))
       expect(args.data["install_url"]).to eq("cd:/?devices=/dev/sr1")
+    end
+
+    it "properly parse values starting with inst" do
+      args = described_class.read_from(File.join(workdir, "/run/agama/cmdline.d/agama.conf"))
+      expect(args.data["install_url"]).to eq("cd:/?devices=/dev/sr1")
+    end
+
+    it "does not crash when parsing both plain option and nested option" do
+      broken_config = File.join(workdir, "/run/agama/cmdline.d/broken-agama.conf")
+      expect { described_class.read_from(broken_config) }.to_not raise_error
+    end
+
+    it "does not crash when parsing both nested option and plain option" do
+      broken_config = File.join(workdir, "/run/agama/cmdline.d/broken-agama2.conf")
+      expect { described_class.read_from(broken_config) }.to_not raise_error
     end
   end
 end

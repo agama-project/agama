@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -27,26 +27,15 @@ import App from "./App";
 import { InstallationPhase } from "./types/status";
 import { createClient } from "~/client";
 import { Product } from "./types/software";
-import { RootUser } from "./types/users";
 
 jest.mock("~/client");
 
-jest.mock("~/api/l10n", () => ({
-  ...jest.requireActual("~/api/l10n"),
-  fetchConfig: jest.fn().mockResolvedValue({
-    uiKeymap: "en",
-    uiLocale: "en_US",
-  }),
-  updateConfig: jest.fn(),
-}));
-
-const tumbleweed: Product = { id: "openSUSE", name: "openSUSE Tumbleweed", registration: "no" };
-const microos: Product = { id: "Leap Micro", name: "openSUSE Micro", registration: "no" };
+const tumbleweed: Product = { id: "openSUSE", name: "openSUSE Tumbleweed", registration: false };
+const microos: Product = { id: "Leap Micro", name: "openSUSE Micro", registration: false };
 
 // list of available products
 let mockProducts: Product[];
 let mockSelectedProduct: Product;
-let mockRootUser: RootUser;
 
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
@@ -75,11 +64,6 @@ jest.mock("~/queries/storage", () => ({
   useDeprecatedChanges: () => jest.fn(),
 }));
 
-jest.mock("~/queries/users", () => ({
-  ...jest.requireActual("~/queries/storage"),
-  useRootUser: () => mockRootUser,
-}));
-
 const mockClientStatus = {
   phase: InstallationPhase.Startup,
   isBusy: true,
@@ -106,11 +90,13 @@ describe("App", () => {
     // setting the language through a cookie
     document.cookie = "agamaLang=en-US; path=/;";
     (createClient as jest.Mock).mockImplementation(() => {
-      return {};
+      return {
+        onEvent: jest.fn(),
+        isConnected: () => true,
+      };
     });
 
     mockProducts = [tumbleweed, microos];
-    mockRootUser = { password: true, encryptedPassword: false, sshkey: "FAKE-SSH-KEY" };
   });
 
   afterEach(() => {
@@ -124,7 +110,7 @@ describe("App", () => {
     });
 
     it("renders the Loading screen", async () => {
-      installerRender(<App />, { withL10n: true });
+      installerRender(<App />);
       await screen.findByText("Loading Mock");
     });
   });
@@ -136,7 +122,7 @@ describe("App", () => {
     });
 
     it("renders the Loading screen", async () => {
-      installerRender(<App />, { withL10n: true });
+      installerRender(<App />);
       await screen.findByText("Loading Mock");
     });
   });
@@ -153,7 +139,7 @@ describe("App", () => {
       });
 
       it("redirects to product selection progress", async () => {
-        installerRender(<App />, { withL10n: true });
+        installerRender(<App />);
         await screen.findByText("Navigating to /products/progress");
       });
     });
@@ -163,68 +149,33 @@ describe("App", () => {
         mockClientStatus.isBusy = false;
       });
 
-      describe("when there are no authentication method for root user", () => {
-        beforeEach(() => {
-          mockRootUser = { password: false, encryptedPassword: false, sshkey: "" };
-        });
-
-        it("redirects to root user edition", async () => {
-          installerRender(<App />, { withL10n: true });
-          await screen.findByText("Navigating to /users/root/edit");
-        });
-      });
-
-      describe("when only root password is set", () => {
-        beforeEach(() => {
-          mockRootUser = { password: true, encryptedPassword: false, sshkey: "" };
-        });
-        it("renders the application content", async () => {
-          installerRender(<App />, { withL10n: true });
-          await screen.findByText(/Outlet Content/);
-        });
-      });
-
-      describe("when only root SSH public key is set", () => {
-        beforeEach(() => {
-          mockRootUser = { password: false, encryptedPassword: false, sshkey: "FAKE-SSH-KEY" };
-        });
-        it("renders the application content", async () => {
-          installerRender(<App />, { withL10n: true });
-          await screen.findByText(/Outlet Content/);
-        });
-      });
-
-      describe("when root password and SSH public key are set", () => {
-        it("renders the application content", async () => {
-          installerRender(<App />, { withL10n: true });
-          await screen.findByText(/Outlet Content/);
-        });
+      it("renders the application content", async () => {
+        installerRender(<App />);
+        await screen.findByText(/Outlet Content/);
       });
     });
   });
 
-  describe("on the busy installation phase", () => {
+  describe("on the installation phase", () => {
     beforeEach(() => {
       mockClientStatus.phase = InstallationPhase.Install;
-      mockClientStatus.isBusy = true;
       mockSelectedProduct = tumbleweed;
     });
 
     it("navigates to installation progress", async () => {
-      installerRender(<App />, { withL10n: true });
+      installerRender(<App />);
       await screen.findByText("Navigating to /installation/progress");
     });
   });
 
-  describe("on the idle installation phase", () => {
+  describe("on the finish phase", () => {
     beforeEach(() => {
-      mockClientStatus.phase = InstallationPhase.Install;
-      mockClientStatus.isBusy = false;
+      mockClientStatus.phase = InstallationPhase.Finish;
       mockSelectedProduct = tumbleweed;
     });
 
     it("navigates to installation finished", async () => {
-      installerRender(<App />, { withL10n: true });
+      installerRender(<App />);
       await screen.findByText("Navigating to /installation/finished");
     });
   });

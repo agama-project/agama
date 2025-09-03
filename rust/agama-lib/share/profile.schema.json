@@ -1,5 +1,4 @@
 {
-  "$comment": "based on doc/auto_storage.md",
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "$id": "https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/profile.schema.json",
   "title": "Profile",
@@ -7,6 +6,14 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "files": {
+      "title": "User-defined files to deploy",
+      "description": "User-defined files to deploy after installation just before post install scripts",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/file"
+      }
+    },
     "scripts": {
       "title": "User-defined installation scripts",
       "description": "User-defined scripts to run at different points of the installation",
@@ -19,6 +26,14 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/preScript"
+          }
+        },
+        "postPartitioning": {
+          "title": "Post-partitioning scripts",
+          "description": "User-defined scripts to run after the partitioning finishes",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/postPartitioning"
           }
         },
         "post": {
@@ -39,16 +54,229 @@
         }
       }
     },
+    "bootloader": {
+      "title": "Bootloader settings",
+      "type": "object",
+      "properties": {
+        "stopOnBootMenu": {
+          "title": "Specify if bootloader should stop on menu during boot.",
+          "type": "boolean"
+        },
+        "timeout": {
+          "title": "Specify how long bootloader should wait on menu before going with default entry.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "extraKernelParams": {
+          "title": "Specify additional kernel parameters that are added beside ones added by the installer.",
+          "type": "string"
+        }
+      },
+      "oneOf": [
+        { "required": ["stopOnBootMenu"] },
+        { "required": ["timeout"] },
+        {
+          "not": {
+            "anyOf": [
+              { "required": ["stopOnBootMenu"] },
+              { "required": ["timeout"] }
+            ]
+          }
+        }
+      ]
+    },
+    "dasd": {
+      "title": "DASD device activation (s390x only)",
+      "type": "object",
+      "properties": {
+        "devices": {
+          "title": "List of DASD devices",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "channel": {
+                "title": "DASD device channel",
+                "type": "string"
+              },
+              "state": {
+                "title": "Specify target state of device. Either activate it or deactivate it.",
+                "type": "string",
+                "enum": ["active", "offline"],
+                "default": "active"
+              },
+              "format": {
+                "title": "If device should be formatted. If not specified then it format device only if not already formatted.",
+                "type": "boolean"
+              },
+              "diag": {
+                "title": "If device have set diag flag. If not specified then it keep what device has before.",
+                "type": "boolean"
+              }
+            },
+            "required": ["channel"]
+          }
+        }
+      }
+    },
+    "zfcp": {
+      "title": "zFCP device activation (s390x only)",
+      "type": "object",
+      "properties": {
+        "devices": {
+          "title": "List of zFCP devices",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "channel": {
+                "title": "zFCP controller channel id (e.g., 0.0.fa00)",
+                "type": "string"
+              },
+              "wwpn": {
+                "title": "WWPN of the target port (e.g., 0x500507630300c562)",
+                "type": "string"
+              },
+              "lun": {
+                "title": "LUN of the SCSI device (e.g. 0x4010403300000000)",
+                "type": "string"
+              }
+            },
+            "required": ["channel", "wwpn", "lun"]
+          }
+        }
+      }
+    },
+    "hostname": {
+      "title": "Hostname settings",
+      "type": "object",
+      "properties": {
+        "static": {
+          "title": "System static hostname.",
+          "type": "string"
+        },
+        "transient": {
+          "title": "System transient hostname.",
+          "type": "string"
+        }
+      }
+    },
+    "security": {
+      "title": "Security settings",
+      "type": "object",
+      "properties": {
+        "sslCertificates": {
+          "title": "List of SSL certificates to add to system",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "fingerprint": {
+                "title": "fingerprint of ssl certificate",
+                "type": "string",
+                "examples": [
+                  "A8:DE:08:B1:57:52:FE:70:DF:D5:31:EA:E3:53:BB:39:EE:01:FF:B9"
+                ]
+              },
+              "algorithm": {
+                "title": "Fingerprint algorithm used to compute it",
+                "type": "string",
+                "enum": ["SHA1", "SHA256"],
+                "examples": ["SHA1"]
+              }
+            },
+            "required": ["fingerprint", "algorithm"]
+          }
+        }
+      }
+    },
     "software": {
       "title": "Software settings",
       "type": "object",
       "properties": {
         "patterns": {
-          "title": "List of patterns to install",
+          "anyOf": [
+            { "$ref": "#/$defs/patternsArray" },
+            { "$ref": "#/$defs/patternsObject" }
+          ]
+        },
+        "packages": {
+          "title": "List of packages to install",
           "type": "array",
           "items": {
             "type": "string",
-            "examples": ["minimal_base"]
+            "examples": ["vim"]
+          }
+        },
+        "onlyRequired": {
+          "title": "Flag if only minimal hard dependencies should be used in solver",
+          "type": "boolean"
+        },
+        "extraRepositories": {
+          "title": "List of user specified repositories that will be used on top of default ones",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["alias", "url"],
+            "properties": {
+              "alias": {
+                "title": "alias used for repository. Acting as identifier",
+                "type": "string"
+              },
+              "url": {
+                "title": "URL pointing to repository",
+                "type": "string"
+              },
+              "priority": {
+                "title": "Repository priority",
+                "type": "integer"
+              },
+              "name": {
+                "title": "User visible name. Defaults to alias",
+                "type": "string"
+              },
+              "productDir": {
+                "title": "product directory on multi repo DVD. Usually not needed",
+                "type": "string"
+              },
+              "enabled": {
+                "title": "If repository should be enabled. Defaults to true. Useful when adding additional repo that should not be immediately use.",
+                "type": "boolean"
+              },
+              "allowUnsigned": {
+                "title": "If unsigned repositories are allowed. Mainly useful for repositories that is hand crafted without GPG signature.",
+                "type": "boolean"
+              },
+              "gpgFingerprints": {
+                "title": "List of GPG fingerprints that is accepted for this repository. Useful for own repositories with proper GPG signature.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[0-9a-fA-F ]+"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "questions": {
+      "title": "How to handle Agama questions",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "policy": {
+          "title": "Policy to answer questions",
+          "description": "Ask questions to the user or select the default value",
+          "type": "string",
+          "enum": ["auto", "user"],
+          "default": "user"
+        },
+        "answers": {
+          "title": "Pre-defined answer for a matching question",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/answer"
           }
         }
       }
@@ -62,7 +290,6 @@
         "id": {
           "title": "Product identifier",
           "description": "The id field from a products.d/foo.yaml file",
-          "icon": "Product Icon path specified in products.d/foo.yaml file",
           "type": "string"
         },
         "registrationCode": {
@@ -72,6 +299,35 @@
         "registrationEmail": {
           "title": "Product registration email",
           "type": "string"
+        },
+        "registrationUrl": {
+          "title": "URL of the registration server",
+          "type": "string"
+        },
+        "addons": {
+          "title": "List of add-ons to activate",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id"],
+            "properties": {
+              "id": {
+                "title": "Add-on identifier",
+                "type": "string",
+                "examples": ["sle-ha"]
+              },
+              "version": {
+                "title": "Version of the add-on",
+                "description": "It is mandatory if there are multiple available versions",
+                "type": "string"
+              },
+              "registrationCode": {
+                "title": "Add-on registration code",
+                "type": "string"
+              }
+            }
+          }
         }
       }
     },
@@ -96,9 +352,13 @@
                 "title": "The name of the network interface bound to this connection",
                 "type": "string"
               },
-              "mac-address": {
-                "title": "Custom mac-address",
+              "customMacAddress": {
+                "title": "Custom MAC address to use",
                 "description": "Can also be 'preserve', 'permanent', 'random' or 'stable'.",
+                "type": "string"
+              },
+              "macAddress": {
+                "title": "The MAC address of the interface bound to this connection",
                 "type": "string"
               },
               "mtu": {
@@ -141,16 +401,31 @@
                   "type": "string"
                 }
               },
-              "dns_searchlist": {
+              "dnsSearchlist": {
                 "type": "array",
                 "items": {
                   "description": "DNS search domains",
-                  "type": "string",
-                  "additionalProperties": false
+                  "type": "string"
                 }
               },
-              "ignore_auto_dns": {
+              "ignoreAutoDns": {
                 "description": "Whether DNS options provided via DHCP are used or not",
+                "type": "boolean"
+              },
+              "status": {
+                "title": "Connection status",
+                "description": "The status of the connection",
+                "type": "string",
+                "enum": ["up", "down", "keep", "removed"]
+              },
+              "autoconnect": {
+                "title": "Auto-connected",
+                "description": "Whether the connection should be automatically connected",
+                "type": "boolean"
+              },
+              "persistent": {
+                "title": "Persistent",
+                "description": "Whether the connection should be written to disk permanently",
                 "type": "boolean"
               },
               "wireless": {
@@ -261,6 +536,44 @@
                   }
                 }
               },
+              "bridge": {
+                "type": "object",
+                "title": "Bridge configuration",
+                "additionalProperties": false,
+                "properties": {
+                  "stp": {
+                    "title": "whether the Spanning Tree Protocol is enabled or not",
+                    "type": "boolean"
+                  },
+                  "forwardDelay": {
+                    "title": "Spanning Tree Protocol forward delay, in seconds",
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "priority": {
+                    "title": "Spanning Tree Protocol priority (lower values are 'better')",
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "maxAge": {
+                    "title": "Spanning Tree Protocol maximum message age, in seconds",
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "helloTime": {
+                    "title": "Spanning Tree Protocol hello time, in seconds",
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "ports": {
+                    "type": "array",
+                    "items": {
+                      "title": "A list of the interface(s) or connection(s) to be part of the bridge",
+                      "type": "string"
+                    }
+                  }
+                }
+              },
               "match": {
                 "type": "object",
                 "title": "Match settings",
@@ -306,13 +619,30 @@
                     "items": {
                       "title": "List of EAP methods used",
                       "type": "string",
-                      "enum": ["leap", "md5", "tls", "peap", "ttls", "pwd", "fast"]
+                      "enum": [
+                        "leap",
+                        "md5",
+                        "tls",
+                        "peap",
+                        "ttls",
+                        "pwd",
+                        "fast"
+                      ]
                     }
                   },
                   "phase2Auth": {
                     "title": "Phase 2 inner auth method",
                     "type": "string",
-                    "enum": ["pap", "chap", "mschap", "mschapv2", "gtc", "otp", "md5", "tls"]
+                    "enum": [
+                      "pap",
+                      "chap",
+                      "mschap",
+                      "mschapv2",
+                      "gtc",
+                      "otp",
+                      "md5",
+                      "tls"
+                    ]
                   },
                   "identity": {
                     "title": "Identity string, often for example the user's login name",
@@ -360,6 +690,30 @@
                     "type": "boolean"
                   }
                 }
+              },
+              "vlan": {
+                "type": "object",
+                "title": "VLAN configuration",
+                "additionalProperties": false,
+                "required": ["id", "parent"],
+                "properties": {
+                  "id": {
+                    "title": "VLAN Identifier",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4095
+                  },
+                  "parent": {
+                    "title": "Parent interface",
+                    "type": "string"
+                  },
+                  "protocol": {
+                    "title": "VLAN protocol for encapsulation",
+                    "type": "string",
+                    "default": "802.1Q",
+                    "enum": ["802.1Q", "802.1ad"]
+                  }
+                }
               }
             }
           }
@@ -382,12 +736,12 @@
           "examples": ["jane.doe"]
         },
         "password": {
-          "title": "User password (plain text or encrypted depending on the \"encryptedPassword\" field)",
+          "title": "User password (plain text or hashed depending on the \"hashedPassword\" field)",
           "type": "string",
           "examples": ["nots3cr3t"]
         },
-        "encryptedPassword": {
-          "title": "Flag for encrypted password (true) or plain text password (false or not defined)",
+        "hashedPassword": {
+          "title": "Flag for hashed password (true) or plain text password (false or not defined)",
           "type": "boolean"
         }
       },
@@ -399,11 +753,11 @@
       "additionalProperties": false,
       "properties": {
         "password": {
-          "title": "Root password (plain text or encrypted depending on the \"encryptedPassword\" field)",
+          "title": "Root password (plain text or hashed depending on the \"hashedPassword\" field)",
           "type": "string"
         },
-        "encryptedPassword": {
-          "title": "Flag for encrypted password (true) or plain text password (false or not defined)",
+        "hashedPassword": {
+          "title": "Flag for hashed password (true) or plain text password (false or not defined)",
           "type": "boolean"
         },
         "sshPublicKey": {
@@ -433,517 +787,7 @@
       }
     },
     "storage": {
-      "title": "Storage settings",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "boot": {
-          "$ref": "#/$defs/boot"
-        },
-        "drives": {
-          "title": "Drive devices",
-          "description": "Section describing drives (disks, BIOS RAIDs and multipath devices).",
-          "type": "array",
-          "items": {
-            "anyOf": [
-              {
-                "title": "Unpartitioned drive",
-                "description": "Drive without a partition table (e.g., directly formatted).",
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "search": {
-                    "description": "The search is limited to drives scope.",
-                    "$ref": "#/$defs/search"
-                  },
-                  "alias": {
-                    "$ref": "#/$defs/alias"
-                  },
-                  "encryption": {
-                    "$ref": "#/$defs/encryption"
-                  },
-                  "filesystem": {
-                    "description": "The partition table (if any) is deleted.",
-                    "$ref": "#/$defs/filesystem"
-                  }
-                }
-              },
-              {
-                "title": "Partitioned drive",
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "search": {
-                    "description": "The search is limited to drives scope.",
-                    "$ref": "#/$defs/search"
-                  },
-                  "alias": {
-                    "$ref": "#/$defs/alias"
-                  },
-                  "ptableType": {
-                    "title": "Partition table type",
-                    "description": "The partition table is created only if all the current partitions are deleted.",
-                    "enum": ["gpt", "msdos", "dasd"]
-                  },
-                  "partitions": {
-                    "$ref": "#/$defs/partitions"
-                  }
-                }
-              }
-            ]
-          }
-        },
-        "volumeGroups": {
-          "title": "LVM volume groups",
-          "description": "Section describing the LVM volume groups.",
-          "type": "array",
-          "items": {
-            "title": "LVM volume group",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "name": {
-                "title": "Volume group name",
-                "type": "string",
-                "examples": ["vg0"]
-              },
-              "extentSize": {
-                "title": "Extent size",
-                "$ref": "#/$defs/sizeValue"
-              },
-              "physicalVolumes": {
-                "title": "Physical volumes",
-                "description": "Devices to use as physical volumes.",
-                "$comment": "In the future it would be possible to indicate both aliases and 'generate' items together.",
-                "anyOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "title": "Device alias",
-                      "type": "string"
-                    }
-                  },
-                  {
-                    "type": "array",
-                    "items": {
-                      "title": "Generate physical volumes",
-                      "description": "Automatically creates the needed physical volumes in the indicated devices.",
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": ["generate"],
-                      "properties": {
-                        "generate": {
-                          "anyOf": [
-                            {
-                              "type": "array",
-                              "items": {
-                                "title": "Device alias",
-                                "type": "string"
-                              }
-                            },
-                            {
-                              "type": "object",
-                              "additionalProperties": false,
-                              "required": ["targetDevices"],
-                              "properties": {
-                                "targetDevices": {
-                                  "type": "array",
-                                  "items": {
-                                    "title": "Device alias",
-                                    "type": "string"
-                                  }
-                                },
-                                "encryption": {
-                                  "$ref": "#/$defs/encryption"
-                                }
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    }
-                  }
-                ]
-              },
-              "logicalVolumes": {
-                "title": "Logical volumes",
-                "type": "array",
-                "items": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/$defs/generateVolumes"
-                    },
-                    {
-                      "title": "Generate logical volumes",
-                      "description": "Creates the default or mandatory logical volumes configured by the selected product, allowing to customize some properties.",
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": ["generate"],
-                      "properties": {
-                        "generate": {
-                          "type": "object",
-                          "additionalProperties": false,
-                          "required": ["logicalVolumes"],
-                          "properties": {
-                            "logicalVolumes": {
-                              "enum": ["default", "mandatory"]
-                            },
-                            "encryption": {
-                              "$ref": "#/$defs/encryption"
-                            },
-                            "stripes": {
-                              "$ref": "#/$defs/lvStripes"
-                            },
-                            "stripeSize": {
-                              "$ref": "#/$defs/lvStripeSize"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "title": "Logical volume",
-                      "type": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "name": {
-                          "title": "Logical volume name",
-                          "type": "string",
-                          "examples": ["lv0"]
-                        },
-                        "size": {
-                          "title": "Logical volume size",
-                          "$ref": "#/$defs/size"
-                        },
-                        "stripes": {
-                          "$ref": "#/$defs/lvStripes"
-                        },
-                        "stripeSize": {
-                          "$ref": "#/$defs/lvStripeSize"
-                        },
-                        "encryption": {
-                          "$ref": "#/$defs/encryption"
-                        },
-                        "filesystem": {
-                          "$ref": "#/$defs/filesystem"
-                        }
-                      }
-                    },
-                    {
-                      "title": "Thin pool logical volume",
-                      "type": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "pool": {
-                          "title": "LVM thin pool",
-                          "const": true
-                        },
-                        "alias": {
-                          "$ref": "#/$defs/alias"
-                        },
-                        "name": {
-                          "title": "Logical volume name",
-                          "type": "string",
-                          "examples": ["lv0"]
-                        },
-                        "size": {
-                          "title": "Logical volume size",
-                          "$ref": "#/$defs/size"
-                        },
-                        "stripes": {
-                          "$ref": "#/$defs/lvStripes"
-                        },
-                        "stripeSize": {
-                          "$ref": "#/$defs/lvStripeSize"
-                        },
-                        "encryption": {
-                          "$ref": "#/$defs/encryption"
-                        }
-                      }
-                    },
-                    {
-                      "title": "Thin logical volume",
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": ["usedPool"],
-                      "properties": {
-                        "name": {
-                          "title": "Thin logical volume name",
-                          "type": "string",
-                          "examples": ["lv0"]
-                        },
-                        "size": {
-                          "title": "Thin logical volume size",
-                          "$ref": "#/$defs/size"
-                        },
-                        "usedPool": {
-                          "title": "Used LVM thin pool",
-                          "description": "Alias of a LVM thin pool.",
-                          "type": "string"
-                        },
-                        "encryption": {
-                          "$ref": "#/$defs/encryption"
-                        },
-                        "filesystem": {
-                          "$ref": "#/$defs/filesystem"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "guided": {
-          "title": "Guided proposal settings",
-          "$comment": "This guided section will be extracted to a separate schema. Only storage and legacyAutoyastStorage will be offered as valid schemas for the storage config.",
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "target": {
-              "anyOf": [
-                {
-                  "title": "Target for installing",
-                  "description": "Indicates whether to install in a disk or a new LVM.",
-                  "enum": ["disk", "newLvmVg"]
-                },
-                {
-                  "title": "Target disk",
-                  "description": "Indicates to install in a specific disk device.",
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": ["disk"],
-                  "properties": {
-                    "disk": {
-                      "title": "Device name",
-                      "type": "string",
-                      "examples": ["/dev/vda"]
-                    }
-                  }
-                },
-                {
-                  "title": "New LVM",
-                  "description": "Indicates to install in a new LVM created over some specific devices.",
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": ["newLvmVg"],
-                  "properties": {
-                    "newLvmVg": {
-                      "description": "List of devices in which to create the physical volumes.",
-                      "type": "array",
-                      "items": {
-                        "title": "Device name",
-                        "type": "string",
-                        "examples": ["/dev/vda"]
-                      }
-                    }
-                  }
-                }
-              ]
-            },
-            "boot": {
-              "$ref": "#/$defs/boot"
-            },
-            "encryption": {
-              "title": "Encryption",
-              "description": "Indicates the options for encrypting the new partitions.",
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["password"],
-              "properties": {
-                "password": {
-                  "$ref": "#/$defs/encryptionPassword"
-                },
-                "method": {
-                  "title": "Encryption method",
-                  "description": "Method used to encrypt the devices.",
-                  "enum": ["luks2", "tpm_fde"]
-                },
-                "pbkdFunction": {
-                  "$ref": "#/$defs/encryptionPbkdFunction"
-                }
-              }
-            },
-            "space": {
-              "title": "Space policy",
-              "description": "Indicates how to find space for the new partitions.",
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "policy": {
-                  "enum": ["delete", "resize", "keep", "custom"]
-                },
-                "actions": {
-                  "type": "array"
-                }
-              },
-              "if": {
-                "properties": {
-                  "policy": { "const": "custom" }
-                }
-              },
-              "then": {
-                "required": ["policy", "actions"],
-                "properties": {
-                  "actions": {
-                    "title": "Custom actions",
-                    "description": "Indicates what to do with specific devices.",
-                    "type": "array",
-                    "items": {
-                      "anyOf": [
-                        {
-                          "title": "Force delete",
-                          "description": "Indicates to delete a specific device.",
-                          "type": "object",
-                          "required": ["forceDelete"],
-                          "additionalProperties": false,
-                          "properties": {
-                            "forceDelete": {
-                              "description": "Name of the device to delete.",
-                              "type": "string",
-                              "examples": ["/dev/vda"]
-                            }
-                          }
-                        },
-                        {
-                          "title": "Allow shinking",
-                          "description": "Indicates whether a specific device can be shrunk if needed.",
-                          "type": "object",
-                          "required": ["resize"],
-                          "additionalProperties": false,
-                          "properties": {
-                            "resize": {
-                              "description": "Name of the shrinkable device.",
-                              "type": "string",
-                              "examples": ["/dev/vda"]
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              },
-              "else": {
-                "required": ["policy"],
-                "properties": {
-                  "actions": {
-                    "type": "array",
-                    "maxItems": 0
-                  }
-                }
-              }
-            },
-            "volumes": {
-              "title": "System volumes",
-              "description": "List of volumes (file systems) to create.",
-              "type": "array",
-              "items": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": ["mount"],
-                "properties": {
-                  "mount": {
-                    "title": "Mount properties",
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": ["path"],
-                    "properties": {
-                      "path": {
-                        "title": "Mount path",
-                        "type": "string",
-                        "examples": ["/dev/vda"]
-                      },
-                      "options": {
-                        "title": "Mount options",
-                        "description": "Options to add to the fourth field of fstab.",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  },
-                  "filesystem": {
-                    "$ref": "#/$defs/filesystemType"
-                  },
-                  "size": {
-                    "$ref": "#/$defs/size"
-                  },
-                  "target": {
-                    "title": "Volume target",
-                    "description": "Options to indicate the location of a volume.",
-                    "anyOf": [
-                      {
-                        "title": "Default target",
-                        "description": "The volume is created in the target device for installing.",
-                        "const": "default"
-                      },
-                      {
-                        "title": "New partition",
-                        "description": "The volume is created over a new partition in a specific disk.",
-                        "type": "object",
-                        "required": ["newPartition"],
-                        "additionalProperties": false,
-                        "properties": {
-                          "newPartition": {
-                            "description": "Name of a disk device.",
-                            "type": "string",
-                            "examples": ["/dev/vda"]
-                          }
-                        }
-                      },
-                      {
-                        "title": "Dedicated LVM volume group",
-                        "description": "The volume is created over a new dedicated LVM.",
-                        "type": "object",
-                        "additionalProperties": false,
-                        "required": ["newVg"],
-                        "properties": {
-                          "newVg": {
-                            "description": "Name of a disk device.",
-                            "type": "string",
-                            "examples": ["/dev/vda"]
-                          }
-                        }
-                      },
-                      {
-                        "title": "Re-used existing device",
-                        "description": "The volume is created over an existing device.",
-                        "type": "object",
-                        "additionalProperties": false,
-                        "required": ["device"],
-                        "properties": {
-                          "device": {
-                            "description": "Name of a device.",
-                            "type": "string",
-                            "examples": ["/dev/vda1"]
-                          }
-                        }
-                      },
-                      {
-                        "title": "Re-used existing file system",
-                        "description": "An existing file system is reused (without formatting).",
-                        "type": "object",
-                        "additionalProperties": false,
-                        "required": ["filesystem"],
-                        "properties": {
-                          "filesystem": {
-                            "description": "Name of a device containing the file system.",
-                            "type": "string",
-                            "examples": ["/dev/vda1"]
-                          }
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+      "$ref": "storage.schema.json"
     },
     "legacyAutoyastStorage": {
       "title": "Legacy AutoYaST storage settings",
@@ -952,472 +796,12 @@
       "items": {
         "type": "object"
       }
+    },
+    "iscsi": {
+      "$ref": "iscsi.schema.json"
     }
   },
   "$defs": {
-    "sizeString": {
-      "title": "Human readable size",
-      "type": "string",
-      "pattern": "^[0-9]+(\\.[0-9]+)?(\\s*([KkMmGgTtPpEeZzYy][iI]?)?[Bb])?$",
-      "examples": ["2 GiB", "1.5 TB", "1TIB", "1073741824 b", "1073741824"]
-    },
-    "sizeInteger": {
-      "title": "Size in bytes",
-      "type": "integer",
-      "minimum": 0,
-      "examples": [1024, 2048]
-    },
-    "sizeValue": {
-      "anyOf": [{ "$ref": "#/$defs/sizeString" }, { "$ref": "#/$defs/sizeInteger" }]
-    },
-    "sizeValueWithCurrent": {
-      "anyOf": [
-        { "$ref": "#/$defs/sizeValue" },
-        {
-          "title": "Current size",
-          "description": "The current size of the device.",
-          "const": "current"
-        }
-      ]
-    },
-    "size": {
-      "title": "Size options",
-      "anyOf": [
-        {
-          "$ref": "#/$defs/sizeValue"
-        },
-        {
-          "title": "Size range (tuple syntax)",
-          "description": "Lower size limit and optionally upper size limit.",
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/sizeValueWithCurrent"
-          },
-          "minItems": 1,
-          "maxItems": 2,
-          "examples": [[1024, "current"], ["1 GiB", "5 GiB"], [1024, "2 GiB"], ["2 GiB"]]
-        },
-        {
-          "title": "Size range",
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["min"],
-          "properties": {
-            "min": {
-              "title": "Mandatory lower size limit",
-              "$ref": "#/$defs/sizeValueWithCurrent"
-            },
-            "max": {
-              "title": "Optional upper size limit",
-              "$ref": "#/$defs/sizeValueWithCurrent"
-            }
-          }
-        }
-      ]
-    },
-    "searchName": {
-      "title": "Device name",
-      "type": "string",
-      "examples": ["/dev/vda", "/dev/disk/by-id/ata-WDC_WD3200AAKS-75L9"]
-    },
-    "searchAll": {
-      "title": "Search all devices",
-      "description": "Shortcut to match all devices if there is any (equivalent to specify no conditions and to skip the entry if no device is found).",
-      "const": "*"
-    },
-    "searchByName": {
-      "title": "Search by name condition",
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["name"],
-      "properties": {
-        "name": {
-          "$ref": "#/$defs/searchName"
-        }
-      }
-    },
-    "search": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/searchAll"
-        },
-        {
-          "$ref": "#/$defs/searchName"
-        },
-        {
-          "title": "Search options",
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "condition": {
-              "$ref": "#/$defs/searchByName"
-            },
-            "ifNotFound": {
-              "title": "Not found action",
-              "description": "How to handle the section if the device is not found.",
-              "enum": ["skip", "error"],
-              "default": "error"
-            }
-          }
-        }
-      ]
-    },
-    "alias": {
-      "title": "Alias",
-      "description": "Name used to reference a device.",
-      "type": "string"
-    },
-    "boot": {
-      "title": "Boot options",
-      "description": "Allows configuring boot partitions automatically.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["configure"],
-      "properties": {
-        "configure": {
-          "title": "Configure boot",
-          "description": "Whether to configure partitions for booting.",
-          "type": "boolean"
-        },
-        "device": {
-          "title": "Boot device",
-          "description": "The target installation device is used by default.",
-          "type": "string",
-          "examples": ["/dev/vda"]
-        }
-      }
-    },
-    "encryptionPassword": {
-      "title": "Encryption password",
-      "description": "Password to use when creating a new encryption device.",
-      "type": "string"
-    },
-    "encryptionCipher": {
-      "title": "LUKS cipher",
-      "description": "The value must be compatible with the --cipher argument of the command cryptsetup.",
-      "type": "string"
-    },
-    "encryptionKeySize": {
-      "title": "LUKS key size",
-      "description": "The value (in bits) has to be a multiple of 8. The possible key sizes are limited by the used cipher.",
-      "type": "integer"
-    },
-    "encryptionPbkdFunction": {
-      "title": "LUKS2 password-based key derivation",
-      "enum": ["pbkdf2", "argon2i", "argon2id"]
-    },
-    "encryptionLUKS1": {
-      "title": "LUKS1 encryption",
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["luks1"],
-      "properties": {
-        "luks1": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["password"],
-          "properties": {
-            "password": {
-              "$ref": "#/$defs/encryptionPassword"
-            },
-            "cipher": {
-              "$ref": "#/$defs/encryptionCipher"
-            },
-            "keySize": {
-              "$ref": "#/$defs/encryptionKeySize"
-            }
-          }
-        }
-      }
-    },
-    "encryptionLUKS2": {
-      "title": "LUKS2 encryption",
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["luks2"],
-      "properties": {
-        "luks2": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["password"],
-          "properties": {
-            "password": {
-              "$ref": "#/$defs/encryptionPassword"
-            },
-            "cipher": {
-              "$ref": "#/$defs/encryptionCipher"
-            },
-            "keySize": {
-              "$ref": "#/$defs/encryptionKeySize"
-            },
-            "pbkdFunction": {
-              "$ref": "#/$defs/encryptionPbkdFunction"
-            },
-            "label": {
-              "title": "LUKS2 label",
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
-    "encryptionPervasiveLUKS2": {
-      "title": "LUKS2 pervasive encryption",
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["pervasiveLuks2"],
-      "properties": {
-        "pervasiveLuks2": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["password"],
-          "properties": {
-            "password": {
-              "$ref": "#/$defs/encryptionPassword"
-            }
-          }
-        }
-      }
-    },
-    "encryptionTPM": {
-      "title": "TPM-Based Full Disk Encrytion",
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["tpmFde"],
-      "properties": {
-        "tpmFde": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["password"],
-          "properties": {
-            "password": {
-              "$ref": "#/$defs/encryptionPassword"
-            }
-          }
-        }
-      }
-    },
-    "encryptionSwap": {
-      "title": "Swap encryptions",
-      "enum": ["protected_swap", "secure_swap", "random_swap"]
-    },
-    "encryption": {
-      "anyOf": [
-        { "$ref": "#/$defs/encryptionLUKS1" },
-        { "$ref": "#/$defs/encryptionLUKS2" },
-        { "$ref": "#/$defs/encryptionPervasiveLUKS2" },
-        { "$ref": "#/$defs/encryptionTPM" },
-        { "$ref": "#/$defs/encryptionSwap" }
-      ]
-    },
-    "filesystemType": {
-      "anyOf": [
-        {
-          "title": "File system type",
-          "enum": [
-            "bcachefs",
-            "btrfs",
-            "exfat",
-            "ext2",
-            "ext3",
-            "ext4",
-            "f2fs",
-            "jfs",
-            "nfs",
-            "nilfs2",
-            "ntfs",
-            "reiserfs",
-            "swap",
-            "tmpfs",
-            "vfat",
-            "xfs"
-          ]
-        },
-        {
-          "title": "Btrfs file system",
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["btrfs"],
-          "properties": {
-            "btrfs": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "snapshots": {
-                  "title": "Btrfs snapshots",
-                  "description": "Whether to configrue Btrfs snapshots.",
-                  "type": "boolean"
-                }
-              }
-            }
-          }
-        }
-      ]
-    },
-    "filesystem": {
-      "title": "File system options",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "reuseIfPossible": {
-          "title": "Reuse file system",
-          "description": "Try to reuse the existing file system. In some cases the file system could not be reused, for example, if the device is re-encrypted.",
-          "type": "boolean",
-          "default": false
-        },
-        "type": {
-          "$ref": "#/$defs/filesystemType"
-        },
-        "label": {
-          "title": "File system label",
-          "type": "string"
-        },
-        "path": {
-          "title": "Mount path",
-          "type": "string",
-          "examples": ["/var/log"]
-        },
-        "mountBy": {
-          "title": "How to mount the device",
-          "enum": ["device", "id", "label", "path", "uuid"]
-        },
-        "mkfsOptions": {
-          "title": "mkfs options",
-          "description": "Options for creating the file system.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "mountOptions": {
-          "title": "Mount options",
-          "description": "Options to add to the fourth field of fstab.",
-          "type": "array",
-          "items": { "type": "string" }
-        }
-      }
-    },
-    "generateVolumes": {
-      "title": "Generate volumes automatically",
-      "description": "Creates the default or mandatory volumes configured by the selected product.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["generate"],
-      "properties": {
-        "generate": {
-          "enum": ["default", "mandatory"]
-        }
-      }
-    },
-    "partitions": {
-      "title": "Partitions",
-      "type": "array",
-      "items": {
-        "anyOf": [
-          {
-            "$ref": "#/$defs/generateVolumes"
-          },
-          {
-            "title": "Generate partitions",
-            "description": "Creates the default or mandatory partitions configured by the selected product, allowing to customize some properties.",
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["generate"],
-            "properties": {
-              "generate": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": ["partitions"],
-                "properties": {
-                  "partitions": {
-                    "enum": ["default", "mandatory"]
-                  },
-                  "encryption": {
-                    "$ref": "#/$defs/encryption"
-                  }
-                }
-              }
-            }
-          },
-          {
-            "title": "Partition to create or reuse",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "search": {
-                "description": "The search is limited to the partitions of the selected device scope.",
-                "$ref": "#/$defs/search"
-              },
-              "alias": {
-                "$ref": "#/$defs/alias"
-              },
-              "id": {
-                "title": "Partition ID",
-                "enum": ["linux", "swap", "lvm", "raid", "esp", "prep", "bios_boot"]
-              },
-              "size": {
-                "title": "Partition size",
-                "$ref": "#/$defs/size"
-              },
-              "encryption": {
-                "$ref": "#/$defs/encryption"
-              },
-              "filesystem": {
-                "$ref": "#/$defs/filesystem"
-              }
-            }
-          },
-          {
-            "title": "Partition to delete if needed",
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["deleteIfNeeded", "search"],
-            "properties": {
-              "deleteIfNeeded": {
-                "title": "Delete if needed",
-                "description": "Delete the partition if needed to make space.",
-                "const": true
-              },
-              "search": {
-                "description": "The search is limited to the partitions of the selected device scope.",
-                "$ref": "#/$defs/search"
-              },
-              "size": {
-                "title": "Partition size",
-                "$ref": "#/$defs/size"
-              }
-            }
-          },
-          {
-            "title": "Partition to delete",
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["delete", "search"],
-            "properties": {
-              "delete": {
-                "title": "Delete",
-                "description": "Delete the partition.",
-                "const": true
-              },
-              "search": {
-                "description": "The search is limited to the partitions of the selected device scope.",
-                "$ref": "#/$defs/search"
-              }
-            }
-          }
-        ]
-      }
-    },
-    "lvStripes": {
-      "title": "Number of stripes",
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 128
-    },
-    "lvStripeSize": {
-      "title": "Stripe size",
-      "$ref": "#/$defs/sizeValue"
-    },
     "preScript": {
       "title": "User-defined installation script that runs before the installation starts",
       "type": "object",
@@ -1429,16 +813,58 @@
         },
         "body": {
           "title": "Script content",
-          "description": "Script content, starting with the shebang",
+          "description": "Script content, starting with the shebang. DEPRECATED: replaced by 'content'",
+          "type": "string",
+          "deprecated": true
+        },
+        "content": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang.",
           "type": "string"
         },
         "url": {
-          "title": "Script URL",
-          "description": "URL to fetch the script from"
+          "title": "Script URL reference",
+          "description": "Absolute or relative URL to fetch the script from"
         }
       },
       "required": ["name"],
-      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
+      "oneOf": [
+        { "required": ["body"] },
+        { "required": ["url"] },
+        { "required": ["content"] }
+      ]
+    },
+    "postPartitioning": {
+      "title": "User-defined installation script that runs after the partitioning finishes",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Script name, to be used as file name",
+          "type": "string"
+        },
+        "body": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang. DEPRECATED: replaced by 'content'",
+          "type": "string",
+          "deprecated": true
+        },
+        "content": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang.",
+          "type": "string"
+        },
+        "url": {
+          "title": "Script URL reference",
+          "description": "Absolute or relative URL to fetch the script from."
+        }
+      },
+      "required": ["name"],
+      "oneOf": [
+        { "required": ["body"] },
+        { "required": ["url"] },
+        { "required": ["content"] }
+      ]
     },
     "postScript": {
       "title": "User-defined installation script that runs after the installation finishes",
@@ -1451,12 +877,18 @@
         },
         "body": {
           "title": "Script content",
-          "description": "Script content, starting with the shebang",
+          "description": "Script content, starting with the shebang. DEPRECATED: replaced by 'content'",
+          "type": "string",
+          "deprecated": true
+        },
+        "content": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang.",
           "type": "string"
         },
         "url": {
-          "title": "Script URL",
-          "description": "URL to fetch the script from"
+          "title": "Script URL reference",
+          "description": "Absolute or relative URL to fetch the script from."
         },
         "chroot": {
           "title": "Whether it should run in the installed system using a chroot environment",
@@ -1465,7 +897,11 @@
         }
       },
       "required": ["name"],
-      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
+      "oneOf": [
+        { "required": ["body"] },
+        { "required": ["url"] },
+        { "required": ["content"] }
+      ]
     },
     "initScript": {
       "title": "User-defined installation script that runs during the first boot of the target system, once the installation is finished",
@@ -1478,16 +914,121 @@
         },
         "body": {
           "title": "Script content",
-          "description": "Script content, starting with the shebang",
+          "description": "Script content, starting with the shebang. DEPRECATED: replaced by 'content'",
+          "type": "string",
+          "deprecated": true
+        },
+        "content": {
+          "title": "Script content",
+          "description": "Script content, starting with the shebang.",
           "type": "string"
         },
         "url": {
-          "title": "Script URL",
-          "description": "URL to fetch the script from"
+          "title": "Script URL reference",
+          "description": "Absolute or relative URL to fetch the script from."
         }
       },
       "required": ["name"],
-      "oneOf": [{ "required": ["body"] }, { "required": ["url"] }]
+      "oneOf": [
+        { "required": ["body"] },
+        { "required": ["url"] },
+        { "required": ["content"] }
+      ]
+    },
+    "file": {
+      "title": "User-defined file to deploy",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "destination": {
+          "description": "path where file should be deployed",
+          "type": "string"
+        },
+        "content": {
+          "title": "File content",
+          "description": "File content",
+          "type": "string"
+        },
+        "url": {
+          "title": "File URL reference",
+          "description": "Absolute or relative URL to fetch the file from."
+        },
+        "permissions": {
+          "title": "File permissions",
+          "description": "file permissions on installed system",
+          "type": "string"
+        },
+        "user": {
+          "title": "File owner user",
+          "description": "User owning the file on installed system. User has to already exist",
+          "type": "string"
+        },
+        "group": {
+          "title": "File owner group",
+          "description": "Group owning the file on installed system. User has to already exist",
+          "type": "string"
+        }
+      },
+      "required": ["destination"],
+      "oneOf": [{ "required": ["url"] }, { "required": ["content"] }]
+    },
+    "answer": {
+      "title": "Automatic answer to questions",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "class": {
+          "title": "Question class",
+          "description": "Each question has a \"class\" which works as an identifier.",
+          "type": "string",
+          "examples": ["storage.activate_multipath"]
+        },
+        "text": {
+          "title": "Question text",
+          "description": "Question full text",
+          "type": "string"
+        },
+        "answer": {
+          "title": "Question answer",
+          "description": "Answer to use for the question.",
+          "type": "string"
+        },
+        "password": {
+          "title": "Password provided as response to a password-based question",
+          "type": "string"
+        },
+        "data": {
+          "title": "Additional data for matching questions",
+          "description": "Additional data for matching questions and answers",
+          "type": "object",
+          "examples": [{ "device": "/dev/sda" }]
+        }
+      }
+    },
+    "patternsArray": {
+      "title": "List of user-selected patterns to install",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "examples": ["minimal_base"]
+      }
+    },
+    "patternsObject": {
+      "title": "Modifications for the list of user-selected patterns to install",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "add": {
+          "title": "List of user-selected patterns to add to the list",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "remove": {
+          "title": "List of user-selected patterns to remove from the list",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
     }
   }
 }

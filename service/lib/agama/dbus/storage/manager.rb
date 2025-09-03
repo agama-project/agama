@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2024] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -33,8 +33,9 @@ require "agama/dbus/storage/iscsi_nodes_tree"
 require "agama/dbus/storage/proposal"
 require "agama/dbus/storage/proposal_settings_conversion"
 require "agama/dbus/storage/volume_conversion"
-require "agama/dbus/storage/with_iscsi_auth"
+require "agama/dbus/with_progress"
 require "agama/dbus/with_service_status"
+require "agama/storage/config_conversions"
 require "agama/storage/encryption_settings"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume_templates_builder"
@@ -45,8 +46,8 @@ module Agama
   module DBus
     module Storage
       # D-Bus object to manage storage installation
-      class Manager < BaseObject
-        include WithISCSIAuth
+      class Manager < BaseObject # rubocop:disable Metrics/ClassLength
+        include WithProgress
         include WithServiceStatus
         include ::DBus::ObjectManager
         include DBus::Interfaces::Issues
@@ -60,21 +61,26 @@ module Agama
         # Constructor
         #
         # @param backend [Agama::Storage::Manager]
-        # @param logger [Logger]
-        def initialize(backend, logger)
+        # @param service_status [Agama::DBus::ServiceStatus, nil]
+        # @param logger [Logger, nil]
+        def initialize(backend, service_status: nil, logger: nil)
           super(PATH, logger: logger)
           @backend = backend
+          @service_status = service_status
           @encryption_methods = read_encryption_methods
           @actions = read_actions
 
           register_storage_callbacks
-          register_proposal_callbacks
           register_progress_callbacks
           register_service_status_callbacks
           register_iscsi_callbacks
           register_software_callbacks
 
           add_s390_interfaces if Yast::Arch.s390
+        end
+
+        def locale=(locale)
+          backend.locale = locale
         end
 
         # List of issues, see {DBus::Interfaces::Issues}
@@ -87,17 +93,26 @@ module Agama
         STORAGE_INTERFACE = "org.opensuse.Agama.Storage1"
         private_constant :STORAGE_INTERFACE
 
-        def probe
-          busy_while { backend.probe }
+        # @param keep_config [Boolean] Whether to use the current storage config for calculating
+        #   the proposal.
+        # @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided
+        #   LUKS passwords).
+        def probe(keep_config: false, keep_activation: true)
+          busy_while do
+            # Clean trees in advance to avoid having old objects exported in D-Bus.
+            system_devices_tree.clean
+            staging_devices_tree.clean
+
+            backend.probe(keep_config: keep_config, keep_activation: keep_activation)
+          end
         end
 
+        # @todo Drop support for the guided settings.
+        #
         # Applies the given serialized config according to the JSON schema.
         #
         # The JSON schema supports two different variants:
         # { "storage": ... } or { "legacyAutoyastStorage": ... }.
-        #
-        # @note The guided settings ({ "storage": { "guided": ... } }) are supported too, but it
-        #   will be removed from the JSON schema.
         #
         # @raise If the config is not valid.
         #
@@ -105,17 +120,62 @@ module Agama
         # @return [Integer] 0 success; 1 error
         def apply_config(serialized_config)
           logger.info("Setting storage config from D-Bus: #{serialized_config}")
-
           config_json = JSON.parse(serialized_config, symbolize_names: true)
-          proposal.calculate_from_json(config_json)
-          proposal.success? ? 0 : 1
+          configure(config_json)
         end
 
-        # Gets and serializes the storage config used to calculate the current proposal.
+        # Applies the given serialized config model according to the JSON schema.
         #
-        # @return [String] Serialized config according to the JSON schema.
+        # @param serialized_model [String] Serialized storage config model.
+        # @return [Integer] 0 success; 1 error
+        def apply_config_model(serialized_model)
+          logger.info("Setting storage config model from D-Bus: #{serialized_model}")
+
+          model_json = JSON.parse(serialized_model, symbolize_names: true)
+          config = Agama::Storage::ConfigConversions::FromModel.new(
+            model_json,
+            product_config: product_config,
+            storage_system: proposal.storage_system
+          ).convert
+          config_json = { storage: Agama::Storage::ConfigConversions::ToJSON.new(config).convert }
+
+          configure(config_json)
+        end
+
+        # Resets to the default config.
+        #
+        # @return [Integer] 0 success; 1 error
+        def reset_config
+          logger.info("Reset storage config from D-Bus")
+          configure
+        end
+
+        # Gets and serializes the storage config used for calculating the current proposal.
+        #
+        # @return [String]
         def recover_config
-          JSON.pretty_generate(proposal.config_json)
+          json = proposal.storage_json
+          JSON.pretty_generate(json)
+        end
+
+        # Gets and serializes the storage config model.
+        #
+        # @return [String]
+        def recover_model
+          json = proposal.model_json
+          JSON.pretty_generate(json)
+        end
+
+        # Solves the given serialized config model.
+        #
+        # @param serialized_model [String] Serialized storage config model.
+        # @return [String] Serialized solved model.
+        def solve_model(serialized_model)
+          logger.info("Solving storage config model from D-Bus: #{serialized_model}")
+
+          model_json = JSON.parse(serialized_model, symbolize_names: true)
+          solved_model_json = proposal.solve_model(model_json)
+          JSON.pretty_generate(solved_model_json)
         end
 
         def install
@@ -133,15 +193,78 @@ module Agama
           backend.deprecated_system?
         end
 
+        # FIXME: Revisit return values.
+        #   * Methods like #SetConfig or #ResetConfig return whether the proposal successes, but
+        #     they should return whether the config was actually applied.
+        #   * Methods like #Probe or #Install return nothing.
         dbus_interface STORAGE_INTERFACE do
-          dbus_method(:Probe) { probe }
-          dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
-            busy_while { apply_config(serialized_config) }
+          dbus_signal :Configured, "client_id:s"
+          dbus_method(:Probe, "in data:a{sv}") do |data|
+            busy_request(data) { probe }
+          end
+          dbus_method(:Reprobe, "in data:a{sv}") do |data|
+            busy_request(data) { probe(keep_config: true) }
+          end
+          dbus_method(:Reactivate, "in data:a{sv}") do |data|
+            busy_request(data) { probe(keep_config: true, keep_activation: false) }
+          end
+          dbus_method(
+            :SetConfig,
+            "in serialized_config:s, in data:a{sv}, out result:u"
+          ) do |serialized_config, data|
+            busy_request(data) { apply_config(serialized_config) }
+          end
+          dbus_method(:ResetConfig, "in data:a{sv}, out result:u") do |data|
+            busy_request(data) { reset_config }
+          end
+          dbus_method(
+            :SetConfigModel,
+            "in serialized_model:s, in data:a{sv}, out result:u"
+          ) do |serialized_model, data|
+            busy_request(data) { apply_config_model(serialized_model) }
           end
           dbus_method(:GetConfig, "out serialized_config:s") { recover_config }
+          dbus_method(:GetConfigModel, "out serialized_model:s") { recover_model }
+          dbus_method(:SolveConfigModel, "in sparse_model:s, out solved_model:s") do |sparse_model|
+            solve_model(sparse_model)
+          end
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
           dbus_reader(:deprecated_system, "b")
+        end
+
+        BOOTLOADER_INTERFACE = "org.opensuse.Agama.Storage1.Bootloader"
+        private_constant :BOOTLOADER_INTERFACE
+
+        # Applies the given serialized config according to the JSON schema.
+        #
+        #
+        # @raise If the config is not valid.
+        #
+        # @param serialized_config [String] Serialized storage config.
+        # @return [Integer] 0 success; 1 error
+        def load_bootloader_config_from_json(serialized_config)
+          logger.info("Setting bootloader config from D-Bus: #{serialized_config}")
+
+          backend.bootloader.config.load_json(serialized_config)
+
+          0
+        end
+
+        # Gets and serializes the storage config used to calculate the current proposal.
+        #
+        # @return [String] Serialized config according to the JSON schema.
+        def bootloader_config_as_json
+          backend.bootloader.config.to_json
+        end
+
+        dbus_interface BOOTLOADER_INTERFACE do
+          dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
+            load_bootloader_config_from_json(serialized_config)
+          end
+          dbus_method(:GetConfig, "out serialized_config:s") do
+            bootloader_config_as_json
+          end
         end
 
         # @todo Move device related properties here, for example, the list of system and staging
@@ -174,10 +297,44 @@ module Agama
           self.actions = read_actions
         end
 
+        # @see Storage::System#available_drives
+        # @return [Array<::DBus::ObjectPath>]
+        def available_drives
+          proposal.storage_system.available_drives.map { |d| system_device_path(d)  }
+        end
+
+        # @see Storage::System#available_drives
+        # @return [Array<::DBus::ObjectPath>]
+        def candidate_drives
+          proposal.storage_system.candidate_drives.map { |d| system_device_path(d)  }
+        end
+
+        # @see Storage::System#available_drives
+        # @return [Array<::DBus::ObjectPath>]
+        def available_md_raids
+          proposal.storage_system.available_md_raids.map { |d| system_device_path(d)  }
+        end
+
+        # @see Storage::System#available_drives
+        # @return [Array<::DBus::ObjectPath>]
+        def candidate_md_raids
+          proposal.storage_system.candidate_md_raids.map { |d| system_device_path(d)  }
+        end
+
+        # @param device [Y2Storage::Device]
+        # @return [::DBus::ObjectPath]
+        def system_device_path(device)
+          system_devices_tree.path_for(device)
+        end
+
         dbus_interface STORAGE_DEVICES_INTERFACE do
-          # PropertiesChanged signal if a proposal is calculated, see
-          # {#register_proposal_callbacks}.
+          # PropertiesChanged signal if storage is configured, see {#register_callbacks}.
           dbus_reader_attr_accessor :actions, "aa{sv}"
+
+          dbus_reader :available_drives, "ao"
+          dbus_reader :candidate_drives, "ao"
+          dbus_reader :available_md_raids, "ao"
+          dbus_reader :candidate_md_raids, "ao"
         end
 
         PROPOSAL_CALCULATOR_INTERFACE = "org.opensuse.Agama.Storage1.Proposal.Calculator"
@@ -191,20 +348,10 @@ module Agama
           logger.info("Calculating guided storage proposal from D-Bus: #{settings_dbus}")
 
           settings = ProposalSettingsConversion.from_dbus(settings_dbus,
-            config: config, logger: logger)
+            config: product_config, logger: logger)
 
           proposal.calculate_guided(settings)
           proposal.success? ? 0 : 1
-        end
-
-        # List of disks available for installation
-        #
-        # Each device is represented by an array containing the name of the device and the label to
-        # represent that device in the UI when further information is needed.
-        #
-        # @return [Array<::DBus::ObjectPath>]
-        def available_devices
-          proposal.available_devices.map { |d| system_devices_tree.path_for(d) }
         end
 
         # Meaningful mount points for the current product.
@@ -235,8 +382,6 @@ module Agama
         end
 
         dbus_interface PROPOSAL_CALCULATOR_INTERFACE do
-          dbus_reader :available_devices, "ao"
-
           dbus_reader :product_mount_points, "as"
 
           # PropertiesChanged signal if software is probed, see {#register_software_callbacks}.
@@ -246,7 +391,7 @@ module Agama
             [default_volume(mount_path)]
           end
 
-          # @todo Receive guided json settings.
+          # @deprecated Use #Storage1.SetConfig
           #
           # result: 0 success; 1 error
           dbus_method(:Calculate, "in settings_dbus:a{sv}, out result:u") do |settings_dbus|
@@ -268,7 +413,7 @@ module Agama
         #
         # @param value [String]
         def initiator_name=(value)
-          backend.iscsi.initiator.name = value
+          backend.iscsi.update_initiator(name: value)
         end
 
         # Whether the initiator name was set via iBFT
@@ -286,11 +431,18 @@ module Agama
         #   @option Username [String] Username for authentication by target
         #   @option Password [String] Password for authentication by target
         #   @option ReverseUsername [String] Username for authentication by initiator
-        #   @option ReversePassword [String] Username for authentication by inititator
+        #   @option ReversePassword [String] Password for authentication by inititator
         #
         # @return [Integer] 0 on success, 1 on failure
         def iscsi_discover(address, port, options = {})
-          success = backend.iscsi.discover_send_targets(address, port, iscsi_auth(options))
+          credentials = {
+            username:           options["Username"],
+            password:           options["Password"],
+            initiator_username: options["ReverseUsername"],
+            initiator_password: options["ReversePassword"]
+          }
+
+          success = backend.iscsi.discover(address, port, credentials: credentials)
           success ? 0 : 1
         end
 
@@ -326,10 +478,6 @@ module Agama
           dbus_method(:Delete, "in node:o, out result:u") { |n| iscsi_delete(n) }
         end
 
-        def locale=(locale)
-          backend.locale = locale
-        end
-
       private
 
         # @return [Agama::Storage::Manager]
@@ -337,6 +485,20 @@ module Agama
 
         # @return [DBus::Storage::Proposal, nil]
         attr_reader :dbus_proposal
+
+        # Configures storage.
+        #
+        # @param config_json [Hash, nil] Storage config according to the JSON schema. If nil, then
+        #   the default config is applied.
+        # @return [Integer] 0 success; 1 error
+        def configure(config_json = nil)
+          success = backend.configure(config_json)
+          success ? 0 : 1
+        end
+
+        def send_configured_signal
+          self.Configured(request_data["client_id"].to_s)
+        end
 
         def add_s390_interfaces
           require "agama/dbus/storage/interfaces/dasd_manager"
@@ -358,28 +520,28 @@ module Agama
           backend.on_issues_change { issues_properties_changed }
           backend.on_deprecated_system_change { storage_properties_changed }
           backend.on_probe { refresh_system_devices }
-        end
-
-        def register_proposal_callbacks
-          proposal.on_calculate do
+          backend.on_configure do
             export_proposal
             proposal_properties_changed
             refresh_staging_devices
             update_actions
+            send_configured_signal
           end
         end
 
         def register_iscsi_callbacks
-          backend.iscsi.on_activate do
-            properties = interfaces_and_properties[ISCSI_INITIATOR_INTERFACE]
-            dbus_properties_changed(ISCSI_INITIATOR_INTERFACE, properties, [])
-          end
-
           backend.iscsi.on_probe do
+            iscsi_initiator_properties_changed
             refresh_iscsi_nodes
           end
 
           backend.iscsi.on_sessions_change do
+            # Currently, the system is set as deprecated instead of reprobing automatically. This
+            # is done so to avoid a reprobing after each single session change performed by the UI.
+            # Clients are expected to request a reprobing if they detect a deprecated system.
+            #
+            # If the UI is adapted to use the new iSCSI API (i.e., #SetConfig), then this behaviour
+            # should be reevaluated. Ideally, the system would be reprobed if the sessions change.
             deprecate_system
           end
         end
@@ -399,6 +561,11 @@ module Agama
         def proposal_properties_changed
           properties = interfaces_and_properties[PROPOSAL_CALCULATOR_INTERFACE]
           dbus_properties_changed(PROPOSAL_CALCULATOR_INTERFACE, properties, [])
+        end
+
+        def iscsi_initiator_properties_changed
+          properties = interfaces_and_properties[ISCSI_INITIATOR_INTERFACE]
+          dbus_properties_changed(ISCSI_INITIATOR_INTERFACE, properties, [])
         end
 
         def deprecate_system
@@ -454,13 +621,13 @@ module Agama
         end
 
         # @return [Agama::Config]
-        def config
-          backend.config
+        def product_config
+          backend.product_config
         end
 
         # @return [Agama::VolumeTemplatesBuilder]
         def volume_templates_builder
-          Agama::Storage::VolumeTemplatesBuilder.new_from_config(config)
+          Agama::Storage::VolumeTemplatesBuilder.new_from_config(product_config)
         end
       end
     end

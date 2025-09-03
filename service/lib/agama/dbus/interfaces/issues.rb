@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -36,7 +36,7 @@ module Agama
         #
         # @return [Array<Array(String, String, Integer, Integer)>] The description, details, source
         #   and severity of each issue.
-        #   Source: 1 for system, 2 for config and 3 for unknown.
+        #   Source: 1 for system, 2 for config and 0 for unknown.
         #   Severity: 0 for warn and 1 for error.
         def dbus_issues
           issues.map do |issue|
@@ -48,9 +48,9 @@ module Agama
             else
               0
             end
-            severity = issue.severity == Agama::Issue::Severity::WARN ? 0 : 1
+            severity = (issue.severity == Agama::Issue::Severity::WARN) ? 0 : 1
 
-            [issue.description, issue.details.to_s, source, severity]
+            [issue.description, issue.kind.to_s, issue.details.to_s, source, severity]
           end
         end
 
@@ -64,7 +64,7 @@ module Agama
           base.class_eval do
             dbus_interface ISSUES_INTERFACE do
               # @see {#dbus_issues}
-              dbus_reader :dbus_issues, "a(ssuu)", dbus_name: "All"
+              dbus_reader :dbus_issues, "a(sssuu)", dbus_name: "All"
             end
           end
         end

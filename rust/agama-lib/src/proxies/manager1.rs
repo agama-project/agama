@@ -36,10 +36,19 @@ pub trait Manager1 {
     fn commit(&self) -> zbus::Result<()>;
 
     /// Finish method
-    fn finish(&self) -> zbus::Result<()>;
+    fn finish(&self, method: &str) -> zbus::Result<bool>;
 
     /// Probe method
-    fn probe(&self) -> zbus::Result<()>;
+    fn probe(
+        &self,
+        data: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+    ) -> zbus::Result<()>;
+
+    /// Reprobe method
+    fn reprobe(
+        &self,
+        data: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+    ) -> zbus::Result<()>;
 
     /// BusyServices property
     #[zbus(property)]

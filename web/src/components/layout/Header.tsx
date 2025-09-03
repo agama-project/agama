@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,96 +22,77 @@
 
 import React, { useState } from "react";
 import {
+  Content,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
   Masthead,
-  MastheadProps,
   MastheadContent,
-  MastheadToggle,
+  MastheadLogo,
   MastheadMain,
-  MastheadBrand,
+  MastheadToggle,
+  MenuToggle,
+  MenuToggleElement,
   PageToggleButton,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  Dropdown,
-  MenuToggleElement,
-  MenuToggle,
-  DropdownList,
-  DropdownItem,
-  Divider,
 } from "@patternfly/react-core";
+import { useMatches } from "react-router-dom";
 import { Icon } from "~/components/layout";
 import { useProduct } from "~/queries/software";
-import { _ } from "~/i18n";
-import { InstallationPhase } from "~/types/status";
-import { useInstallerStatus } from "~/queries/status";
 import { Route } from "~/types/routes";
-import { InstallButton, InstallerOptions } from "~/components/core";
-import { useLocation, useMatches } from "react-router-dom";
+import { ChangeProductOption, InstallButton, InstallerOptions, SkipTo } from "~/components/core";
 import { ROOT } from "~/routes/paths";
+import { _ } from "~/i18n";
 
 export type HeaderProps = {
   /** Whether the application sidebar should be mounted or not */
   showSidebarToggle?: boolean;
   /** Whether the selected product name should be shown */
   showProductName?: boolean;
+  /** Whether the "Skip to content" link should be mounted */
+  showSkipToContent?: boolean;
   /** Whether the installer options link should be mounted */
   showInstallerOptions?: boolean;
-  /** The background color for the top bar */
-  background?: MastheadProps["backgroundColor"];
   /** Callback to be triggered for toggling the IssuesDrawer visibility */
   toggleIssuesDrawer?: () => void;
+  isSidebarOpen?: boolean;
+  toggleSidebar?: () => void;
 };
 
-const OptionsDropdown = ({ showInstallerOptions }) => {
+const OptionsDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isInstallerOptionsOpen, setIsInstallerOptionsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
-  const toggleInstallerOptions = () => setIsInstallerOptionsOpen(!isInstallerOptionsOpen);
 
   return (
-    <>
-      <Dropdown
-        popperProps={{ position: "right", appendTo: () => document.body }}
-        isOpen={isOpen}
-        onOpenChange={toggle}
-        onSelect={toggle}
-        onActionClick={toggle}
-        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-          <MenuToggle
-            ref={toggleRef}
-            onClick={toggle}
-            aria-label={_("Options toggle")}
-            isExpanded={isOpen}
-            isFullHeight
-            variant="plain"
-          >
-            <Icon name="expand_circle_down" />
-          </MenuToggle>
-        )}
-      >
-        <DropdownList>
-          <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
-            {_("Download logs")}
-          </DropdownItem>
-          {showInstallerOptions && (
-            <>
-              <Divider />
-              <DropdownItem key="installer-l10n" onClick={toggleInstallerOptions}>
-                {_("Installer Options")}
-              </DropdownItem>
-            </>
-          )}
-        </DropdownList>
-      </Dropdown>
-
-      {showInstallerOptions && (
-        <InstallerOptions
-          isOpen={isInstallerOptionsOpen}
-          onClose={() => setIsInstallerOptionsOpen(false)}
-        />
+    <Dropdown
+      popperProps={{ position: "right", appendTo: () => document.body }}
+      isOpen={isOpen}
+      onOpenChange={toggle}
+      onSelect={toggle}
+      onActionClick={toggle}
+      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+        <MenuToggle
+          ref={toggleRef}
+          onClick={toggle}
+          aria-label={_("Options toggle")}
+          isExpanded={isOpen}
+          isFullHeight
+          variant="plain"
+        >
+          <Icon name="expand_circle_down" />
+        </MenuToggle>
       )}
-    </>
+    >
+      <DropdownList>
+        <ChangeProductOption />
+        <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
+          {_("Download logs")}
+        </DropdownItem>
+      </DropdownList>
+    </Dropdown>
   );
 };
 
@@ -124,46 +105,56 @@ const OptionsDropdown = ({ showInstallerOptions }) => {
 export default function Header({
   showSidebarToggle = true,
   showProductName = true,
-  background = "dark",
+  showSkipToContent = true,
+  showInstallerOptions = true,
   toggleIssuesDrawer,
+  isSidebarOpen,
+  toggleSidebar,
 }: HeaderProps): React.ReactNode {
-  const location = useLocation();
   const { selectedProduct } = useProduct();
-  const { phase } = useInstallerStatus({ suspense: true });
   const routeMatches = useMatches() as Route[];
   const currentRoute = routeMatches.at(-1);
   // TODO: translate title
   const title = (showProductName && selectedProduct?.name) || currentRoute?.handle?.title;
 
-  const showInstallerOptions =
-    phase !== InstallationPhase.Install &&
-    // FIXME: Installer options should be available in the login too.
-    !["/login", "/products/progress"].includes(location.pathname);
-
   return (
-    <Masthead backgroundColor={background}>
-      {showSidebarToggle && (
-        <MastheadToggle>
-          <PageToggleButton
-            id="uncontrolled-nav-toggle"
-            variant="plain"
-            aria-label={_("Main navigation")}
-          >
-            <Icon name="menu" color="color-light-100" />
-          </PageToggleButton>
-        </MastheadToggle>
-      )}
-      <MastheadMain>{title && <MastheadBrand component="h1">{title}</MastheadBrand>}</MastheadMain>
+    <Masthead>
+      <MastheadMain>
+        {showSkipToContent && <SkipTo />}
+        {showSidebarToggle && (
+          <MastheadToggle>
+            <PageToggleButton
+              isSidebarOpen={isSidebarOpen}
+              onSidebarToggle={toggleSidebar}
+              id="uncontrolled-nav-toggle"
+              variant="plain"
+              aria-label={_("Main navigation")}
+            >
+              <Icon name="menu" color="color-light-100" />
+            </PageToggleButton>
+          </MastheadToggle>
+        )}
+        {title && (
+          <MastheadLogo>
+            <Content component="h1">{title}</Content>
+          </MastheadLogo>
+        )}
+      </MastheadMain>
       <MastheadContent>
         <Toolbar isFullHeight>
           <ToolbarContent>
-            <ToolbarGroup align={{ default: "alignRight" }}>
-              <ToolbarItem spacer={{ default: "spacerSm" }}>
-                <InstallButton onClickWithIssues={toggleIssuesDrawer} />
+            <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
+              <ToolbarItem>
+                <InstallerOptions />
               </ToolbarItem>
               <ToolbarItem>
-                <OptionsDropdown showInstallerOptions={showInstallerOptions} />
+                <InstallButton onClickWithIssues={toggleIssuesDrawer} />
               </ToolbarItem>
+              {showInstallerOptions && (
+                <ToolbarItem>
+                  <OptionsDropdown />
+                </ToolbarItem>
+              )}
             </ToolbarGroup>
           </ToolbarContent>
         </Toolbar>

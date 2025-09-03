@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,7 +25,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { InstallButton } from "~/components/core";
 import { IssuesList } from "~/types/issues";
-import { PRODUCT, ROOT, USER } from "~/routes/paths";
+import { PRODUCT, ROOT } from "~/routes/paths";
 
 const mockStartInstallationFn = jest.fn();
 let mockIssuesList: IssuesList;
@@ -56,8 +56,9 @@ describe("InstallButton", () => {
         [
           {
             description: "Fake Issue",
+            kind: "generic",
             source: 0,
-            severity: 0,
+            severity: 1,
             details: "Fake Issue details",
           },
         ],
@@ -67,14 +68,14 @@ describe("InstallButton", () => {
       );
     });
 
-    it("renders additional information to warn users about found problems", () => {
-      const { container } = installerRender(<InstallButton />);
+    it("renders additional information to warn users about found problems", async () => {
+      const { user, container } = installerRender(<InstallButton />);
       const button = screen.getByRole("button", { name: /Install/ });
       // An exlamation icon as visual mark
       const icon = container.querySelector("svg");
-      expect(icon).toHaveAttribute("data-icon-name", "exclamation");
-      // An aria-label for users using an screen reader
-      within(button).getByLabelText(/Not possible with the current setup/);
+      expect(icon).toHaveAttribute("data-icon-name", "error_fill");
+      await user.hover(button);
+      screen.getByRole("tooltip", { name: /Not possible with the current setup/ });
     });
 
     it("triggers the onClickWithIssues callback without rendering the confirmation dialog", async () => {
@@ -92,13 +93,16 @@ describe("InstallButton", () => {
       mockIssuesList = new IssuesList([], [], [], []);
     });
 
-    it("renders the button without any additional information", () => {
-      const { container } = installerRender(<InstallButton />);
+    it("renders the button without any additional information", async () => {
+      const { user, container } = installerRender(<InstallButton />);
       const button = screen.getByRole("button", { name: "Install" });
       // Renders nothing else
       const icon = container.querySelector("svg");
       expect(icon).toBeNull();
-      expect(within(button).queryByLabelText(/Not possible with the current setup/)).toBeNull();
+      await user.hover(button);
+      expect(
+        screen.queryByRole("tooltip", { name: /Not possible with the current setup/ }),
+      ).toBeNull();
     });
 
     it("renders a confirmation dialog when clicked without triggering the onClickWithIssues callback", async () => {
@@ -116,7 +120,6 @@ describe("InstallButton", () => {
       ["product selection progress", PRODUCT.progress],
       ["installation progress", ROOT.installationProgress],
       ["installation finished", ROOT.installationFinished],
-      ["root authentication", USER.rootUser.edit],
     ])(`but the installer is rendering the %s screen`, (_, path) => {
       beforeEach(() => {
         mockRoutes(path);
@@ -126,6 +129,37 @@ describe("InstallButton", () => {
         const { container } = installerRender(<InstallButton />);
         expect(container).toBeEmptyDOMElement();
       });
+    });
+  });
+
+  describe("when there are only non-critical issues", () => {
+    beforeEach(() => {
+      mockIssuesList = new IssuesList(
+        [
+          {
+            description: "Fake warning",
+            kind: "generic",
+            source: 0,
+            severity: 0,
+            details: "Fake Issue details",
+          },
+        ],
+        [],
+        [],
+        [],
+      );
+    });
+
+    it("renders the button without any additional information", async () => {
+      const { user, container } = installerRender(<InstallButton />);
+      const button = screen.getByRole("button", { name: "Install" });
+      // Renders nothing else
+      const icon = container.querySelector("svg");
+      expect(icon).toBeNull();
+      await user.hover(button);
+      expect(
+        screen.queryByRole("tooltip", { name: /Not possible with the current setup/ }),
+      ).toBeNull();
     });
   });
 });

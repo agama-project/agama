@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,38 +24,52 @@ import React from "react";
 import {
   useMutation,
   useQueries,
+  useQuery,
   useQueryClient,
   useSuspenseQueries,
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import {
+  AddonInfo,
+  Conflict,
+  License,
   Pattern,
   PatternsSelection,
   Product,
+  RegisteredAddonInfo,
   RegistrationInfo,
+  Repository,
   SelectedBy,
   SoftwareConfig,
   SoftwareProposal,
 } from "~/types/software";
 import {
-  deregister,
+  fetchAddons,
   fetchConfig,
+  fetchConflicts,
+  fetchLicenses,
   fetchPatterns,
   fetchProducts,
   fetchProposal,
+  fetchRegisteredAddons,
   fetchRegistration,
+  fetchRepositories,
+  probe,
   register,
+  registerAddon,
+  updateRegistrationUrl,
+  solveConflict,
   updateConfig,
 } from "~/api/software";
 import { QueryHookOptions } from "~/types/queries";
-import { startProbing } from "~/api/manager";
+import { probe as systemProbe, reprobe as systemReprobe } from "~/api/manager";
 
 /**
  * Query to retrieve software configuration
  */
 const configQuery = () => ({
-  queryKey: ["software/config"],
+  queryKey: ["software", "config"],
   queryFn: fetchConfig,
 });
 
@@ -63,41 +77,83 @@ const configQuery = () => ({
  * Query to retrieve current software proposal
  */
 const proposalQuery = () => ({
-  queryKey: ["software/proposal"],
+  queryKey: ["software", "proposal"],
   queryFn: fetchProposal,
-});
-
-/**
- * Query to retrieve available products
- */
-const productsQuery = () => ({
-  queryKey: ["software/products"],
-  queryFn: fetchProducts,
-  staleTime: Infinity,
 });
 
 /**
  * Query to retrieve selected product
  */
 const selectedProductQuery = () => ({
-  queryKey: ["software/product"],
+  queryKey: ["software", "selectedProduct"],
   queryFn: () => fetchConfig().then(({ product }) => product),
+  staleTime: Infinity,
+});
+
+/**
+ * Query to retrieve available products
+ */
+const productsQuery = () => ({
+  queryKey: ["software", "products"],
+  queryFn: fetchProducts,
+  staleTime: Infinity,
+});
+
+/**
+ * Query to retrieve available licenses
+ */
+const licensesQuery = () => ({
+  queryKey: ["software", "licenses"],
+  queryFn: fetchLicenses,
+  staleTime: Infinity,
 });
 
 /**
  * Query to retrieve registration info
  */
 const registrationQuery = () => ({
-  queryKey: ["software/registration"],
+  queryKey: ["software", "registration"],
   queryFn: fetchRegistration,
+});
+
+/**
+ * Query to retrieve available addons info
+ */
+const addonsQuery = () => ({
+  queryKey: ["software", "registration", "addons"],
+  queryFn: fetchAddons,
+});
+
+/**
+ * Query to retrieve registered addons info
+ */
+const registeredAddonsQuery = () => ({
+  queryKey: ["software", "registration", "addons", "registered"],
+  queryFn: fetchRegisteredAddons,
 });
 
 /**
  * Query to retrieve available patterns
  */
 const patternsQuery = () => ({
-  queryKey: ["software/patterns"],
+  queryKey: ["software", "patterns"],
   queryFn: fetchPatterns,
+});
+
+/**
+ * Query to retrieve configured repositories
+ */
+const repositoriesQuery = () => ({
+  queryKey: ["software", "repositories"],
+  queryFn: fetchRepositories,
+});
+
+/**
+ * Query to retrieve conflicts
+ */
+const conflictsQuery = () => ({
+  queryKey: ["software", "conflicts"],
+  queryFn: fetchConflicts,
 });
 
 /**
@@ -111,12 +167,13 @@ const useConfigMutation = () => {
 
   const query = {
     mutationFn: updateConfig,
-    onSuccess: (_, config: SoftwareConfig) => {
-      queryClient.invalidateQueries({ queryKey: ["software/config"] });
-      queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
+    onSuccess: async (_, config: SoftwareConfig) => {
+      queryClient.invalidateQueries({ queryKey: ["software", "config"] });
+      queryClient.invalidateQueries({ queryKey: ["software", "proposal"] });
       if (config.product) {
-        queryClient.invalidateQueries({ queryKey: ["software/product"] });
-        startProbing();
+        queryClient.invalidateQueries({ queryKey: ["software", "selectedProduct"] });
+        await systemProbe();
+        queryClient.invalidateQueries({ queryKey: ["storage"] });
       }
     },
   };
@@ -133,29 +190,47 @@ const useRegisterMutation = () => {
   const queryClient = useQueryClient();
 
   const query = {
-    mutationFn: register,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["software/registration"] });
-      startProbing();
+    mutationFn: async ({ url, key, email }: { url: string; key: string; email?: string }) => {
+      await updateRegistrationUrl(url).then(() => register({ key, email }));
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["software", "registration"] });
+    },
+    onSuccess: async () => {
+      await systemReprobe();
+      queryClient.invalidateQueries({ queryKey: ["storage"] });
     },
   };
   return useMutation(query);
 };
 
 /**
- * Hook that builds a mutation for deregistering a product
+ * Hook that builds a mutation for registering an addon
  *
- * @note it would trigger a general probing as a side-effect when mutation
- * includes a product.
  */
-const useDeregisterMutation = () => {
+const useRegisterAddonMutation = () => {
   const queryClient = useQueryClient();
 
   const query = {
-    mutationFn: deregister,
+    mutationFn: registerAddon,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["software/registration"] });
-      startProbing();
+      queryClient.invalidateQueries({ queryKey: registeredAddonsQuery().queryKey });
+    },
+  };
+  return useMutation(query);
+};
+
+/**
+ * Hook that builds a mutation for reloading repositories
+ */
+const useRepositoryMutation = (callback: () => void) => {
+  const queryClient = useQueryClient();
+
+  const query = {
+    mutationFn: probe,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["software", "repositories"] });
+      callback();
     },
   };
   return useMutation(query);
@@ -169,21 +244,32 @@ const useProduct = (
 ): { products?: Product[]; selectedProduct?: Product } => {
   const func = options?.suspense ? useSuspenseQueries : useQueries;
   const [
-    { data: selected, isPending: isSelectedPending },
+    { data: product, isPending: isSelectedProductPending },
     { data: products, isPending: isProductsPending },
   ] = func({
     queries: [selectedProductQuery(), productsQuery()],
-  }) as [{ data: string; isPending: boolean }, { data: Product[]; isPending: boolean }];
+  }) as [{ data: SoftwareConfig; isPending: boolean }, { data: Product[]; isPending: boolean }];
 
-  if (isSelectedPending || isProductsPending) {
-    return {};
+  if (isSelectedProductPending || isProductsPending) {
+    return {
+      products: [],
+      selectedProduct: undefined,
+    };
   }
 
-  const selectedProduct = products.find((p: Product) => p.id === selected);
+  const selectedProduct = products.find((p: Product) => p.id === product);
   return {
     products,
     selectedProduct,
   };
+};
+
+/**
+ * Returns available products and selected one, if any
+ */
+const useLicenses = (): { licenses: License[]; isPending: boolean } => {
+  const { data: licenses, isPending } = useQuery(licensesQuery());
+  return { licenses, isPending };
 };
 
 /**
@@ -231,6 +317,53 @@ const useRegistration = (): RegistrationInfo => {
 };
 
 /**
+ * Returns details about the available addons
+ */
+const useAddons = (): AddonInfo[] => {
+  const { data: addons } = useSuspenseQuery(addonsQuery());
+  return addons;
+};
+
+/**
+ * Returns list of registered addons
+ */
+const useRegisteredAddons = (): RegisteredAddonInfo[] => {
+  const { data: addons } = useSuspenseQuery(registeredAddonsQuery());
+  return addons;
+};
+
+/**
+ * Returns repository info
+ */
+const useRepositories = (): Repository[] => {
+  const { data: repositories } = useSuspenseQuery(repositoriesQuery());
+  return repositories;
+};
+
+/**
+ * Returns conclifts info
+ */
+const useConflicts = (): Conflict[] => {
+  const { data: conflicts } = useSuspenseQuery(conflictsQuery());
+  return conflicts;
+};
+
+/**
+ * Hook that builds a mutation for solving a conflict
+ */
+const useConflictsMutation = () => {
+  const queryClient = useQueryClient();
+
+  const query = {
+    mutationFn: solveConflict,
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: conflictsQuery().queryKey });
+    },
+  };
+  return useMutation(query);
+};
+
+/**
  * Hook that returns a useEffect to listen for  software proposal events
  *
  * When the configuration changes, it invalidates the config query.
@@ -244,11 +377,11 @@ const useProductChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "ProductChanged") {
-        queryClient.invalidateQueries({ queryKey: ["software/config"] });
+        queryClient.invalidateQueries({ queryKey: ["software"] });
       }
 
       if (event.type === "LocaleChanged") {
-        queryClient.invalidateQueries({ queryKey: ["software/products"] });
+        queryClient.invalidateQueries({ queryKey: ["software", "products"] });
       }
     });
   }, [client, queryClient]);
@@ -268,23 +401,49 @@ const useProposalChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "SoftwareProposalChanged") {
-        queryClient.invalidateQueries({ queryKey: ["software/proposal"] });
+        queryClient.invalidateQueries({ queryKey: ["software", "proposal"] });
       }
     });
   }, [client, queryClient]);
 };
 
+/**
+ * Hook that registers a useEffect to listen for conflicts changes
+ *
+ */
+const useConflictsChanges = () => {
+  const client = useInstallerClient();
+  const queryClient = useQueryClient();
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.onEvent((event) => {
+      if (event.type === "ConflictsChanged") {
+        const { conflicts } = event;
+        queryClient.setQueryData([conflictsQuery().queryKey], conflicts);
+      }
+    });
+  });
+};
+
 export {
   configQuery,
   productsQuery,
-  selectedProductQuery,
+  useAddons,
   useConfigMutation,
+  useConflicts,
+  useConflictsMutation,
+  useConflictsChanges,
+  useLicenses,
   usePatterns,
   useProduct,
   useProductChanges,
   useProposal,
   useProposalChanges,
-  useRegistration,
+  useRegisterAddonMutation,
   useRegisterMutation,
-  useDeregisterMutation,
+  useRegisteredAddons,
+  useRegistration,
+  useRepositories,
+  useRepositoryMutation,
 };

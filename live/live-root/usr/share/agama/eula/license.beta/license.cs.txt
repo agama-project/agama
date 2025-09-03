@@ -1,0 +1,322 @@
+﻿Licenční smlouva společnosti SUSE® s koncovým uživatelem k betaverzi 
+softwaru
+
+PŘEČTĚTE SI POZORNĚ TUTO LICENČNÍ SMLOUVU.  INSTALACÍ, STAŽENÍM NEBO 
+JINÝM POUŽITÍM TOHOTO SOFTWARU SOUHLASÍTE S PODMÍNKAMI TÉTO SMLOUVY 
+K BETAVERZI SOFTWARU A S PODMÍNKAMI VŠECH DODATEČNÝCH LICENČNÍCH 
+SMLUV SPOLEČNOSTI SUSE, KTERÉ JSOU SOUČÁSTÍ TOHOTO SOFTWARU.  POKUD 
+S PODMÍNKAMI TÉTO SMLOUVY NESOUHLASÍTE, SOFTWARE NESTAHUJTE, 
+NEINSTALUJTE ANI NEPOUŽÍVEJTE.  SOFTWARE NESMÍ BÝT PRODÁN, POSTOUPEN 
+ANI DÁLE ŠÍŘEN BEZ PŘEDCHOZÍHO PÍSEMNÉHO SVOLENÍ SPOLEČNOSTI SUSE.
+
+Tato licenční smlouva s koncovým uživatelem k·betaverzi softwaru 
+společnosti SUSE (dále jen „licenční smlouva“) spolu s jakoukoli 
+doplňkovou licenční smlouvou společnosti SUSE dodanou s tímto 
+softwarem je právní smlouva mezi vámi (subjektem nebo osobou) 
+a společností SUSE LLC (dále jen „SUSE“). Softwarové produkty 
+uvedené v názvu této licenční smlouvy, inovace softwaru, média 
+(existují-li) a doprovodná online nebo tištěná dokumentace 
+(souhrnným označením „software") jsou chráněny autorskými právy 
+a úmluvami Spojených států amerických a dalších zemí a vztahují se 
+na ně podmínky této licenční smlouvy.  Pokud s podmínkami této 
+licenční smlouvy nesouhlasíte, software nestahujte, neinstalujte a 
+ani jinak nepoužívejte. Je-li to možné, vraťte v takovém případě 
+nepoužité balení společnosti SUSE.  Software vám nebyl prodán, pouze 
+vám byla udělena licence k jeho užívání.
+
+Software může být dodáván jako součást jiných softwarových programů 
+nebo v kombinaci s nimi. Na tyto jiné softwarové programy se mohou 
+vztahovat jiné licenční podmínky anebo mohou být licencovány jiným 
+poskytovatelem licence než společností SUSE.  Před následujícími 
+podmínkami mají přednost podmínky licenční smlouvy s koncovým 
+uživatelem dodané s konkrétním softwarovým souborem při instalaci 
+nebo stažení softwaru.   Softwarové programy jiných výrobců jsou 
+poskytnuty k použití podle vašeho vlastního uvážení.  Společnost 
+SUSE neodpovídá za jakýkoli software jiných výrobců a nenese žádnou 
+odpovědnost za jeho používání.
+
+Software může obsahovat nezávisle vyvinuté součásti open source, 
+které se řídí samostatnými licenčními podmínkami.  Licenční práva 
+k jednotlivým součástem řídícím se samostatnými licenčními 
+podmínkami jsou definována příslušnými podmínkami. Žádné ustanovení 
+této smlouvy neomezuje ani jinak neovlivňuje práva, povinnosti a 
+podmínky, jež se na vás vztahují a které musíte splnit, vyplývající 
+z takových licencí.  Licenční podmínky k některé součásti vás sice 
+mohou opravňovat k distribuci součásti, při takové distribuci však 
+nesmíte používat známky společnosti SUSE (například SUSE a SUSE 
+LINUX), a to bez ohledu na to, zda součást známky společnosti SUSE 
+obsahuje.  
+
+Licence.  Na základě podmínek této licenční smlouvy vám společnost 
+SUSE uděluje nevýhradní, nepřevoditelné právo na reprodukování 
+a interní používání softwaru po níže uvedenou dobu v množství 
+nezbytném pro vaše vyhodnocení anebo testování softwaru.  
+
+Pokud je v softwaru zahrnut nebo společně se softwarem dodán i 
+nějaký samostatný produkt SUSE jiný než produkt poskytnutý k beta 
+testování, tak bez ohledu na licenční práva v licenční smlouvě 
+doprovázející tuto kopii samostatného produktu SUSE souhlasíte 
+s tím, že tento samostatný produkt SUSE budete používat výhradně ve 
+spojení s tímto softwarem a jen pro účely vyhodnocení tohoto 
+softwaru. Vaše právo používat samostatný produktový software SUSE 
+končí s ukončením platnosti licenční smlouvy k betaverzi softwaru 
+(viz níže).
+
+Doba trvání.  Tato licenční smlouva vstupuje v platnost dnem získání 
+softwaru a zůstává v platnosti do doby, kdy bude ukončena.  Tato 
+smlouva bude ukončena, jakmile nastane první z následujících 
+událostí:  (i) uplyne 90 dní od instalace softwaru, (ii) bude vydána 
+další předběžná verze softwaru, (iii) společnost SUSE zahájí 
+komerční dodávky softwaru, (iv) některá ze smluvních stran písemně 
+oznámí ukončení smlouvy, nebo (v) porušíte některou podmínku této 
+smlouvy k betaverzi softwaru.  Při ukončení platnosti této licenční 
+smlouvy musíte přestat používat software, vrátit do původního stavu 
+všechny softwarem provedené akce a zničit originál a všechny kopie 
+softwaru, případně je vrátit společnosti SUSE. Software musíte také 
+odstranit ze všech svých systémů.
+
+Kvalita předběžné verze.  Protože se jedná o předběžný software, 
+nedoporučuje se jeho použití v komerčním nebo produkčním systému.  
+Software dosud nebyl plně testován a může obsahovat chyby 
+a opomenutí.  Software lze používat pouze v testovacím prostředí.  
+Společnost SUSE nezaručuje, že komerční verze softwaru bude 
+zpřístupněna veřejnosti, že budou dodrženy předpokládané termíny 
+nebo že budou vydány přidružené produkty.  Veškerá rizika spojená 
+s používáním softwaru nesete výhradně vy.  Software může obsahovat 
+automatický blokovací mechanizmus, který brání jeho použití po 
+uplynutí určité lhůty, takže doporučujeme zálohovat váš systém a 
+přijmout další opatření k ochraně před ztrátou souborů nebo dat.  
+Software používáte zcela na vlastní nebezpečí.
+
+Důvěrnost.  (Tato část se vás týká v případě, že společnost SUSE 
+neuvolnila software pro veřejnost jako nechráněný software beta bez 
+závazku důvěrnosti.)  Software a veškeré související koncepty, 
+doprovodná dokumentace a materiály, informace o produktu, výsledky 
+testování a hodnocení, výsledky výkonnostních testů, předpokládané 
+termíny, čísla a hesla PIN a veškeré ostatní související informace 
+jsou důvěrným vlastnictvím společnosti SUSE a jejích dodavatelů a 
+jako takové jsou považovány za „důvěrné informace“.  Zavazujete se 
+nevyzradit ani neposkytnout důvěrné informace žádné další osobě či 
+subjektu. Dále se zavazujete, že nebudete důvěrné informace používat 
+k jiným účelům, než je testování nebo hodnocení softwaru a oznámení 
+výsledků společnosti SUSE.  Pokud je vám poskytnuto číslo PIN nebo 
+heslo pro webové servery s omezeným přístupem, zavazujete se, že 
+toto číslo PIN nebo heslo nesdělíte jiné osobě nebo subjektu.  Váš 
+závazek důvěrnosti zůstává platný i po ukončení této licenční 
+smlouvy k betaverzi softwaru, dokud společnost SUSE nezpřístupní 
+tyto informace veřejnosti.
+
+Zpětná vazba.  Jste srozuměni a souhlasíte s tím, že společnost SUSE 
+může použít vámi poskytnutou zpětnou vazbu nebo informace, a tímto 
+udělujete společnosti SUSE trvalé a neodvolatelné povolení používat 
+tyto informace pro jakékoli účely bez náhrady za podmínky, že 
+společnost SUSE nebude v této souvislosti veřejně uvádět vaše jméno. 
+Prohlašujete a zaručujete, že tato zpětná vazba a informace nebudou 
+obsahovat žádné vlastnické a důvěrné informace týkající se vás nebo 
+jiné osoby a že jste oprávněni toto povolení poskytnout.  
+
+Licenční omezení.  Společnost SUSE si vyhrazuje všechna práva, která 
+vám nebyla výslovně udělena.  Nejste oprávněni:  (1)  jakkoli 
+zvyšovat počet připojení podporovaných softwarem, ke kterým máte 
+licenci, případně podporovat více připojení nebo uživatelů 
+prostřednictvím jednoho připojení, (2)  zpětně překládat, 
+dekompilovat nebo analyzovat software mimo rozsah výslovně povolený 
+příslušnými zákony, (3)  upravovat, měnit, pronajímat, sdílet nebo 
+půjčovat software, případně dále postupovat práva plynoucí z této 
+licenční smlouvy, (4)  převádět software nebo vaše licenční práva 
+plynoucí z této smlouvy, ať již vcelku nebo částečně.
+
+AUTORIZOVANÁ PRACOVIŠTĚ PRO TESTOVÁNÍ BETAVERZÍ  
+
+Pokud jste byli ustanoveni jako autorizované pracoviště pro 
+testování betaverzí, pak pro vás platí následující podmínky.  Pokud 
+se chcete kvalifikovat jako autorizované pracoviště pro testování 
+betaverzí, kontaktujte prosím programového manažera SUSE pro 
+testování betaverzí na e-mailu beta-programs@lists.suse.com.  
+Společnost SUSE může kdykoli změnit rozsah výhod, které jsou vám za 
+testování nabízeny. V takovém případě oznámí tyto změny na 
+příslušném webovém serveru společnosti SUSE.
+
+Podpora.  Společnost SUSE poskytne přímou podporu pro software 
+v souladu s aktuální nabídkou podpory společnosti SUSE autorizovaným 
+pracovištím pro testování betaverzí pro daný software zveřejněnou na 
+příslušném webovém serveru společnosti SUSE a oznámenou programovým 
+manažerem společnosti SUSE pro betaverzi daného softwaru.  Tato 
+podpora může být usnadněna použitím webových nástrojů, elektronické 
+pošty anebo telefonu.  Společnost SUSE poskytne nezbytné webové 
+adresy, elektronické adresy a telefonní čísla podpory.
+
+Testování.  Souhlasíte, že na vlastní náklady provedete a dokončíte 
+všechny testovací programy poskytnuté společností SUSE během 
+testování betaverze a plně otestujete software provedením dalších 
+testů, které považujete za užitečné nebo nezbytné.  Souhlasíte 
+s tím, že zajistíte hardware, software a pracovníky nezbytné pro 
+provedení odpovídajícího testování a splnění zde uvedených 
+požadavků.  Souhlasíte s tím, že během testování betaverze 
+uskutečníte testy v minimálním rozsahu čtyř pracovních hodin týdně. 
+Během testování je třeba věnovat zvýšenou pozornost funkčnosti, 
+přesnosti, konzistenci a snadnému používání testovaného softwaru při 
+jednotlivých testech a rovněž věnovat pozornost související 
+dokumentaci.  Výsledky všech testovacích programů a dalšího 
+testování včetně veškerých návrhů, nesrovnalostí a problémů musí být 
+podrobně zdokumentovány (včetně konfigurace systému atd.) a jednou 
+týdně předávány společnosti SUSE prostřednictvím vykazovacích metod 
+anebo nástrojů poskytnutých nebo specifikovaných společností SUSE.  
+Mezi tyto metody a nástroje mohou patřit webové nástroje, 
+elektronická pošta, fax, pošta a telefon.  Aby bylo možno případné 
+chyby rychle opravit, souhlasíte s tím, že budete problémy zjištěné 
+v softwaru hlásit do dvou (2) dnů od jejich zjištění, i když si 
+nebudete jisti, zda problém nastal z důvodu náhodné chyby nebo chyby 
+v softwaru.  Souhlasíte s tím, že na konci testování betaverze 
+vypracujete na vyžádání písemnou zprávu shrnující vykonané testy, 
+celkové dojmy ze softwaru a případné plánované použití softwaru ve 
+vašem prostředí.  Souhlasíte s tím, že vyplníte případné dotazníky 
+týkající se výkonnosti testovacích programů a dalších aspektů 
+softwaru a v požadovaném termínu a na určeném médiu je vrátíte.
+
+VLASTNICKÁ PRÁVA
+
+Nepřechází na vás nárok na software ani na jeho vlastnictví.  
+Společnost SUSE, případně její poskytovatelé licencí, vlastní 
+a ponechávají si veškeré nároky a práva k duševnímu vlastnictví 
+obsaženému v softwaru včetně jakýchkoli jeho úprav a kopií.  Touto 
+smlouvou získáváte pouze licenci na používání softwaru.
+
+ODMÍTNUTÍ ZÁRUK
+
+SOFTWARE A DALŠÍ DŮVĚRNÉ INFORMACE JSOU POSKYTOVÁNY „TAK, JAK JSOU“, 
+BEZ ZÁRUKY JAKÉHOKOLI DRUHU.  VEŠKERÁ RIZIKA SPOJENÁ S POUŽÍVÁNÍM 
+A VÝSLEDKY POUŽÍVÁNÍ DŮVĚRNÝCH INFORMACÍ NESETE VÝHRADNĚ VY.  
+SPOLEČNOST SUSE ODMÍTÁ VŠECHNY VÝSLOVNÉ NEBO ODVOZENÉ ZÁRUKY VČETNĚ, 
+MIMO JINÉ, ODVOZENÝCH ZÁRUK TÝKAJÍCÍCH SE OBCHODOVATELNOSTI, 
+VHODNOSTI PRO KONKRÉTNÍ ÚČEL, VLASTNICTVÍ NEBO NEPORUŠENÍ PRÁVA.  
+SPOLEČNOST SUSE NEZARUČUJE, ŽE SOFTWARE SPLNÍ VAŠE POŽADAVKY ANI ŽE 
+JEHO PROVOZ BUDE NEPŘERUŠOVANÝ.  Některé místně příslušné soudy 
+neumožňují odmítnutí určitých záruk nebo některá omezení, proto 
+je možné, že některá z výše uvedených omezení se na vás nevztahují. 
+Tato omezená záruka vám poskytuje určitá práva a určitá práva vám 
+zajišťuje zákon, který se v jednotlivých státech liší.
+
+Produkty, které nejsou produkty společnosti SUSE.  Software může být 
+dodáván spolu s hardwarem nebo jinými softwarovými programy 
+licencovanými nebo prodávanými jinými poskytovateli licencí než 
+společností SUSE.  SPOLEČNOST SUSE NEPOSKYTUJE ZÁRUKU NA PRODUKTY 
+JINÝCH VÝROBCŮ.  VŠECHNY TAKOVÉ PRODUKTY JSOU POSKYTOVÁNY „TAK JAK 
+JSOU“.  VŠECHNY ZÁRUČNÍ OPRAVY PRODUKTŮ JINÝCH VÝROBCŮ ZAJIŠŤUJÍ 
+POSKYTOVATELÉ LICENCÍ TĚCHTO PRODUKTŮ V SOULADU S PLATNOU ZÁRUKOU 
+POSKYTOVATELE LICENCE.
+
+OMEZENÍ ODPOVĚDNOSTI
+
+Následné ztráty.  SPOLEČNOST SUSE ANI ŽÁDNÝ Z JEJÍCH POSKYTOVATELŮ 
+LICENCÍ, PŘIDRUŽENÝCH SPOLEČNOSTÍ NEBO ZAMĚSTNANCŮ NENESE 
+ODPOVĚDNOST ZA JAKÉKOLI ZVLÁŠTNÍ, NÁHODNÉ, NÁSLEDNÉ, NEPŘÍMÉ, 
+ÚMYSLNÉ, EKONOMICKÉ NEBO TRESTNÍ ŠKODY ZPŮSOBENÉ POUŽITÍM SOFTWARU 
+NEBO NEMOŽNOSTÍ JEJ POUŽÍT, MIMO JINÉ VČETNĚ ZTRÁTY ZISKU, ŠKOD PŘI 
+PODNIKÁNÍ NEBO ZTRÁTY DAT, A TO I V PŘÍPADĚ, ŽE BYLA NA MOŽNOST 
+VZNIKU TAKOVÝCH ŠKOD UPOZORNĚNA.
+Přímé škody.  CELKOVÁ ODPOVĚDNOST SPOLEČNOSTI SUSE ZA PŘÍMÉ ŠKODY 
+NA MAJETKU NEBO OSOBNÍ ÚJMY (AŤ JIŽ SE JEDNÁ O JEDEN PŘÍPAD NEBO 
+O ŘADU PŘÍPADŮ) V ŽÁDNÉM PŘÍPADĚ NEPŘESÁHNE 1,25NÁSOBEK ČÁSTKY, 
+KTEROU JSTE ZAPLATILI ZA SOFTWARE, KTERÝ VZNIK NÁROKU ZPŮSOBIL (NEBO 
+50 USD, POKUD JSTE SOFTWARE ZÍSKALI ZDARMA).  Výše uvedené vyloučení 
+a omezení neplatí v případě nároků souvisejících se smrtí nebo 
+zraněním.  V jurisdikcích, kde není vyloučení nebo omezení 
+odpovědnosti za náhradu škody povoleno, bude odpovědnost společnosti 
+SUSE omezena nebo vyloučena v maximálním rozsahu, který v dané 
+jurisdikci povolen je.
+
+VŠEOBECNÉ PODMÍNKY
+
+Podpora.  Společnost SUSE nemá žádné závazky týkající se zajištění 
+podpory pro software kromě těch, které jsou zde výslovně uvedeny.  
+Testování typovou úlohou.  Toto omezení testování produktu se vás 
+týká, jen pokud jste vývojář softwaru nebo poskytovatel licence nebo 
+pokud provádíte testování softwaru podle pokynů nebo jménem vývojáře 
+nebo poskytovatele licence.  Bez předchozího písemného svolení 
+společnosti SUSE, které nebude bezdůvodně odmítáno, nesmíte 
+zveřejnit ani sdělit žádné třetí straně výsledky referenčního 
+testování softwaru.  Pokud jste poskytovatelem licence produktů, 
+které jsou funkčně podobné nebo konkurují softwaru („podobné 
+produkty“) nebo jednáte jménem takového poskytovatele licence 
+a zveřejníte nebo sdělíte informace o referenčním testování softwaru 
+v rozporu s tímto omezením, má společnost SUSE právo provést 
+referenční testování na podobných produktech a sdělit a zveřejnit 
+informace o tomto testování a vy tímto prohlašujete, že máte 
+oprávnění toto právo společnosti SUSE poskytnout. To platí bez 
+ohledu na jakékoli opačné ustanovení v licenční smlouvě koncového 
+uživatele podobného produktu a bez ohledu na další opravné 
+prostředky, které může společnost SUSE případně využít.
+Open Source.  Žádné ustanovení této smlouvy neomezuje ani jinak 
+neovlivňuje práva, povinnosti a podmínky, které se na vás vztahují 
+nebo které musíte splnit, vyplývající z případných licencí pro 
+programový kód open source obsažený v tomto softwaru.
+Ustanovení o závazku ke koupi.  Tuto smlouvu o betaverzi softwaru 
+nelze vykládat jako závazek ke koupi licence pro komerčně dostupné 
+verze softwaru.  Každý takový nákup bude doložen vystavením formální 
+objednávky.
+Převod.  Tuto smlouvu k testování betaverze nelze převést ani 
+poskytnout bez předchozího písemného souhlasu společnosti SUSE.
+Vymezení jurisdikce.  Tato licenční smlouva se řídí zákony státu 
+Utah v USA. Veškerá právní řízení vztahující se k této smlouvě mohou 
+řešit pouze místně příslušné soudy státu Utah.  Pokud je však země, 
+kde se nachází vaše hlavní sídlo, členským státem Evropské unie nebo 
+Evropské dohody o volném obchodu, řídí se tato smlouva zákony této 
+země a veškerá právní řízení vztahující se k této smlouvě mohou 
+řešit pouze místně příslušné soudy této země.
+Úplnost smlouvy.  Tato smlouva zakládá úplné ujednání a dohodu mezi 
+vámi a společností SUSE. Může být doplněna nebo změněna pouze 
+písemnou dohodou, s níž souhlasíte vy i oprávněný zástupce 
+společnosti SUSE.  ŽÁDNÝ POSKYTOVATEL LICENCE, DISTRIBUTOR, 
+PRODEJCE, MALOOBCHODNÍK, OBCHODNÍ ZÁSTUPCE ANI ZAMĚSTNANEC NENÍ 
+OPRÁVNĚN TUTO SMLOUVU UPRAVOVAT NEBO POSKYTOVAT JAKÁKOLI PROHLÁŠENÍ 
+ČI ZÁVAZKY NEOBSAŽENÉ V PODMÍNKÁCH TÉTO SMLOUVY NEBO LIŠÍCÍ 
+SE OD NÍ.  
+Vzdání se práva.  Jakékoli zřeknutí se práv v rámci této licenční 
+smlouvy je platné pouze v písemné formě s podpisem oprávněného 
+zástupce zavázané smluvní strany.  Zřeknutí se jakéhokoli dřívějšího 
+nebo současného práva vyplývajícího z porušení nebo nedodržení této 
+smlouvy nebude považováno za zřeknutí se jakéhokoli budoucího práva 
+plynoucího z této smlouvy.
+Klauzule o oddělitelnosti.  Stane-li se jakékoli ustanovení této 
+licenční smlouvy neplatným nebo neúčinným, bude toto ustanovení 
+interpretováno, omezeno, upraveno nebo v případě potřeby zrušeno 
+v nezbytném rozsahu tak, aby se zamezilo neplatnosti nebo 
+neúčinnosti této smlouvy. Ostatní ustanovení této smlouvy zůstávají 
+nedotčena.
+Splnění exportních požadavků.  Výrobky nebo technické údaje 
+poskytnuté podle této smlouvy mohou být předmětem exportních omezení 
+USA a obchodních zákonů jiných zemí.  Smluvní strany se zavazují 
+dodržovat veškerá exportní omezení a získat jakékoli licence nebo 
+exportní klasifikace potřebné k exportu, reexportu nebo importu 
+zboží.  Smluvní strany se zavazují neexportovat ani nereexportovat 
+subjektům uvedeným v platném seznamu subjektů vyloučených z exportu, 
+do zemí, na které je uvaleno embargo, ani do teroristických zemí 
+podle exportních zákonů USA.  Smluvní strany nepoužijí zboží 
+pro zakázané jaderné, raketové nebo chemické a biologické zbraně.  
+Než začnete z USA vyvážet produkty společnosti SUSE, informujte se 
+na webových stránkách www.bis.doc.gov amerického Úřadu pro průmysl a 
+bezpečnost (Bureau of Industry and Security). Další informace 
+o vývozu softwaru společnosti SUSE najdete na adrese 
+https://www.suse.com/company/legal/. Společnost SUSE vám na požádání 
+poskytne konkrétní informace o příslušných omezeních.  SUSE však 
+nepřijímá žádnou zodpovědnost v případě, že si neopatříte potřebné 
+povolení k vývozu.  Instalací, stažením nebo jiným používáním 
+softwaru vyjadřujete svůj souhlas s následujícím prohlášením:  
+Potvrzujeme, že tato betaverze softwaru bude používána pouze pro 
+účely testování betaverze a nebude pronajata, prodána, postoupena, 
+přidělena ani jinak převedena. Dále potvrzujeme, že nepřevedeme ani 
+nevyexportujeme žádný výrobek, proces ani službu, které jsou přímým 
+produktem betaverze softwaru určené k testování.
+Omezená práva pro vládu USA.  Použití, duplikace nebo zpřístupnění 
+vládou USA je předmětem omezení určených FAR 52.227-14 (červen 1987) 
+Alternate III (červen 1987), FAR 52.227-19 (červen 1987) nebo DFARS 
+252.227-7013 (b)(3) (listopad 1995) nebo příslušných následných 
+ustanovení.  Dodavatelem/výrobcem je společnost SUSE LLC, 404 Wyman 
+Street, Waltham, MA 02415, USA.
+Jiné.  Uplatnění Konvence OSN o smlouvách v mezinárodním obchodě se 
+zbožím je tímto výslovně vyloučeno.
+
+©2013 SUSE LLC nebo její přidružené společnosti.  Všechna práva 
+vyhrazena.
+(020314)

@@ -24,12 +24,12 @@ use super::{
     error::LocaleError,
     model::{keyboard::Keymap, locale::LocaleEntry, timezone::TimezoneEntry, L10n},
 };
-use crate::{
-    error::Error,
-    web::{Event, EventsSender},
-};
+use crate::{error::Error, web::EventsSender};
 use agama_lib::{
-    error::ServiceError, localization::model::LocaleConfig, localization::LocaleProxy,
+    auth::ClientId,
+    error::ServiceError,
+    event,
+    localization::{model::LocaleConfig, LocaleProxy},
     proxies::LocaleMixinProxy as ManagerLocaleProxy,
 };
 use agama_locale_data::LocaleId;
@@ -38,7 +38,7 @@ use axum::{
     http::StatusCode,
     response::IntoResponse,
     routing::{get, patch},
-    Json, Router,
+    Extension, Json, Router,
 };
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -133,6 +133,7 @@ async fn keymaps(State(state): State<LocaleState<'_>>) -> Json<Vec<Keymap>> {
 )]
 async fn set_config(
     State(state): State<LocaleState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
     Json(value): Json<LocaleConfig>,
 ) -> Result<impl IntoResponse, Error> {
     let mut data = state.locale.write().await;
@@ -155,18 +156,17 @@ async fn set_config(
     }
 
     if let Some(ui_locale) = &value.ui_locale {
-        let locale: LocaleId = ui_locale
+        let locale = ui_locale
             .as_str()
             .try_into()
-            .map_err(|_e| LocaleError::UnknownLocale(ui_locale.to_string()))?;
+            .map_err(LocaleError::InvalidLocale)?;
         data.translate(&locale)?;
         let locale_string = locale.to_string();
         state.manager_proxy.set_locale(&locale_string).await?;
         changes.ui_locale = Some(locale_string);
-
-        _ = state.events.send(Event::LocaleChanged {
+        _ = state.events.send(event!(LocaleChanged {
             locale: locale.to_string(),
-        });
+        }));
     }
 
     if let Some(ui_keymap) = &value.ui_keymap {
@@ -175,9 +175,11 @@ async fn set_config(
     }
 
     if let Err(e) = update_dbus(&state.proxy, &changes).await {
-        log::warn!("Could not synchronize settings in the localization D-Bus service: {e}");
+        tracing::warn!("Could not synchronize settings in the localization D-Bus service: {e}");
     }
-    _ = state.events.send(Event::L10nConfigChanged(changes));
+    _ = state
+        .events
+        .send(event!(L10nConfigChanged(changes), client_id.as_ref()));
 
     Ok(StatusCode::NO_CONTENT)
 }
@@ -193,8 +195,9 @@ async fn set_config(
 )]
 async fn get_config(State(state): State<LocaleState<'_>>) -> Json<LocaleConfig> {
     let data = state.locale.read().await;
+    let locales = data.locales.iter().map(ToString::to_string).collect();
     Json(LocaleConfig {
-        locales: Some(data.locales.clone()),
+        locales: Some(locales),
         keymap: Some(data.keymap.to_string()),
         timezone: Some(data.timezone.to_string()),
         ui_locale: Some(data.ui_locale.to_string()),

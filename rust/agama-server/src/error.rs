@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::error::ServiceError;
+use agama_lib::{error::ServiceError, questions::QuestionsError};
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
@@ -26,7 +26,11 @@ use axum::{
 };
 use serde_json::json;
 
-use crate::{l10n::LocaleError, questions::QuestionsError, software_ng::SoftwareServiceError};
+use crate::{
+    l10n::LocaleError,
+    users::password::PasswordCheckerError,
+    web::common::{IssuesServiceError, ProgressServiceError},
+};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -42,6 +46,12 @@ pub enum Error {
     Locale(#[from] LocaleError),
     #[error("Software service error: {0}")]
     SoftwareServiceError(#[from] SoftwareServiceError),
+    #[error("Issues service error: {0}")]
+    Issues(#[from] IssuesServiceError),
+    #[error("Progress service error: {0}")]
+    Progress(#[from] ProgressServiceError),
+    #[error("Could not check the password")]
+    PasswordCheck(#[from] PasswordCheckerError),
 }
 
 // This would be nice, but using it for a return type
@@ -51,7 +61,7 @@ pub enum Error {
 
 impl From<anyhow::Error> for Error {
     fn from(e: anyhow::Error) -> Self {
-        // {:#} includes causes
+        // `#` is std::fmt "Alternate form", anyhow::Error interprets as "include causes"
         Self::Anyhow(format!("{:#}", e))
     }
 }
@@ -64,6 +74,7 @@ impl From<Error> for zbus::fdo::Error {
 
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
+        tracing::warn!("Server return error {}", self);
         let body = json!({
             "error": self.to_string()
         });

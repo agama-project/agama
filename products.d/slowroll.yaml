@@ -21,8 +21,20 @@ translations:
       tak, aby se aktualizovalo méně často než Tumbleweed. Zároveň se však
       aktualizuje častěji než Leap, aby se uživatelé nemuseli rozhodovat mezi
       "stabilními" a novějšími balíčky.
+    de: Ein experimentelles und etwas langsameres Rolling Release von openSUSE, das
+      darauf ausgelegt ist, weniger häufig als Tumbleweed, aber häufiger als
+      Leap zu aktualisieren, ohne die Benutzer zu zwingen, zwischen „stabilen“
+      und neueren Paketen zu wählen.
+    es: Una versión experimental y de actualización contínua ligeramente más lenta
+      de openSUSE, diseñada para actualizarse con menos frecuencia que
+      Tumbleweed pero más a menudo que Leap, sin obligar a los usuarios a elegir
+      entre paquetes "estables" y más nuevos.
     ja: 実験的なディストリビューションではありますが、 Tumbleweed よりは比較的ゆっくりした、かつ Leap よりは速いペースで公開される
       openSUSE ローリングリリース型ディストリビューションです。 "安定性" と最新パッケージの中間を目指しています。
+    pt_BR: Uma versão experimental e um pouco mais lenta do openSUSE, projetada para
+      atualizar com menos frequência que o Tumbleweed, mas com mais frequência
+      que o Leap, sem forçar os usuários a escolher entre pacotes "estáveis" e
+      mais novos.
     sv: En experimentell och något långsammare rullande utgåva av openSUSE utformad
       för att få nya paketuppdateringar mer sällan än Tumbleweed men oftare än
       Leap utan att tvinga användarna att välja mellan "stabila" eller nyare
@@ -49,6 +61,7 @@ software:
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-Slowroll
+    - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
   optional_packages: null
   base_product: openSUSE
 
@@ -61,11 +74,11 @@ security:
     selinux:
       patterns:
         - selinux
-      policy: enforcing
     none:
       patterns: null
 
 storage:
+  boot_strategy: BLS
   space_policy: delete
   volumes:
     - "/"
@@ -131,7 +144,7 @@ storage:
       filesystem: xfs
       size:
         auto: false
-        min: 10 GiB
+        min: 5 GiB
         max: unlimited
       outline:
         required: false
@@ -144,7 +157,7 @@ storage:
     - filesystem: xfs
       size:
         auto: false
-        min: 1 GiB
+        min: 512 MiB
       outline:
         required: false
         filesystems:

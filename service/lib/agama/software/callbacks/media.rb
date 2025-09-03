@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021-2023] SUSE LLC
+# Copyright (c) [2021-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,23 +19,24 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "logger"
 require "yast"
 require "agama/question"
+require "agama/software/callbacks/base"
+require "agama/software/repository"
 
 Yast.import "Pkg"
+Yast.import "URL"
 
 module Agama
   module Software
     module Callbacks
       # Callbacks related to media handling
-      class Media
-        # Constructor
-        #
-        # @param questions_client [Agama::DBus::Clients::Questions]
-        # @param logger [Logger]
+      class Media < Base
         def initialize(questions_client, logger)
-          @questions_client = questions_client
-          @logger = logger
+          super
+          # retry counter
+          self.attempt = 0
         end
 
         # Register the callbacks
@@ -47,35 +48,76 @@ module Agama
               "boolean, list <string>, integer)"
             )
           )
+          Yast::Pkg.CallbackStartProvide(
+            Yast::FunRef.new(method(:start_provide), "void (string, integer, boolean)")
+          )
+        end
+
+        # @param name [String] name of the package to download
+        # @param size [Integer] download size
+        # @param _remote [Boolean] true if the package is downloaded from a remote repository,
+        #   false for local packages
+        def start_provide(name, size, _remote)
+          self.attempt = 1
+          logger.debug("Downloading #{name}, size: #{size}")
         end
 
         # Media change callback
         #
         # @return [String]
         # @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
-        # rubocop:disable Metrics/ParameterLists
-        def media_change(_error_code, error, url, _product, _current, _current_label, _wanted,
-          _wanted_label, _double_sided, _devices, _current_device)
+        # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
+        def media_change(error_code, error, url, product, current, current_label, wanted,
+          wanted_label, double_sided, devices, current_device)
+          logger.debug(
+            format("MediaChange callback: error_code: %s, error: %s, url: %s, product: %s, " \
+                   "current: %s, current_label: %s, wanted: %s, wanted_label: %s, " \
+                   "double_sided: %s, devices: %s, current_device: %s",
+              error_code,
+              error,
+              Yast::URL.HidePassword(url),
+              product,
+              current,
+              current_label,
+              wanted,
+              wanted_label,
+              double_sided,
+              devices,
+              current_device)
+          )
+
+          # "IO" = IO error (scratched DVD or HW failure)
+          # "IO_SOFT" = network timeout
+          # in other cases automatic retry usually does not make much sense
+          if ["IO", "IO_SOFT"].include?(error_code) && attempt <= Repository::RETRY_COUNT
+            self.attempt += 1
+            logger.debug("Retry in #{Repository::RETRY_DELAY} seconds, attempt #{attempt}...")
+            sleep(Repository::RETRY_DELAY)
+
+            # retry
+            return ""
+          end
+
           question = Agama::Question.new(
-            qclass:         "software.medium_error",
-            text:           error,
-            options:        [:Retry, :Skip],
-            default_option: :Skip,
-            data:           { "url" => url }
+            qclass:  "software.package_error.medium_error",
+            text:    error,
+            options: [retry_label.to_sym, continue_label.to_sym],
+            data:    { "url" => url }
           )
           questions_client.ask(question) do |question_client|
-            (question_client.answer == :Retry) ? "" : "S"
+            if question_client.answer == retry_label.to_sym
+              self.attempt += 1
+              ""
+            else
+              "S"
+            end
           end
         end
-      # rubocop:enable Metrics/ParameterLists
+      # rubocop:enable Metrics/ParameterLists, Metrics/MethodLength
 
       private
 
-        # @return [Agama::DBus::Clients::Questions]
-        attr_reader :questions_client
-
-        # @return [Logger]
-        attr_reader :logger
+        attr_accessor :attempt
       end
     end
   end

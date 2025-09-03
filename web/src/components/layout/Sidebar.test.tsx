@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -27,18 +27,16 @@ import Sidebar from "./Sidebar";
 import { Product } from "~/types/software";
 import { useProduct } from "~/queries/software";
 
-jest.mock("~/components/core/ChangeProductLink", () => () => <div>ChangeProductLink Mock</div>);
-
 const tw: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
-  registration: "no",
+  registration: false,
 };
 
 const sle: Product = {
   id: "sle",
   name: "SLE",
-  registration: "mandatory",
+  registration: true,
 };
 
 let selectedProduct: Product;
@@ -55,7 +53,8 @@ jest.mock("~/queries/software", () => ({
 
 jest.mock("~/router", () => ({
   rootRoutes: () => [
-    { path: "/", handle: { name: "Main" } },
+    { path: "/" },
+    { path: "/main", handle: { name: "Main", alsoActiveOn: ["/"] } },
     { path: "/l10n", handle: { name: "L10n" } },
     { path: "/hidden" },
     {
@@ -92,13 +91,9 @@ describe("Sidebar", () => {
       const mainNavigation = screen.getByRole("navigation");
       const mainNavigationLinks = within(mainNavigation).getAllByRole("link");
       expect(mainNavigationLinks.length).toBe(2);
-      screen.getByRole("link", { name: "Main" });
+      const mainRoute = screen.getByRole("link", { name: "Main" });
+      expect(mainRoute).toHaveClass("pf-m-current");
       screen.getByRole("link", { name: "L10n" });
     });
-  });
-
-  it("mounts core/ChangeProductLink component", () => {
-    installerRender(<Sidebar />);
-    screen.getByText("ChangeProductLink Mock");
   });
 });

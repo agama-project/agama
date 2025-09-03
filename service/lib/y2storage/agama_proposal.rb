@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -54,26 +54,25 @@ module Y2Storage
     # @return [Array<Agama::Issue>] List of found issues
     attr_reader :issues_list
 
-    # @note The storage config (first param) is modified in several ways:
-    #   * The search configs are solved.
-    #   * The sizes are solved (setting the size of the selected device, assigning fallbacks, etc).
+    # @note The storage config (first param) is modified while solving it, see
+    #   {#calculate_proposal}.
     #
     # @param config [Agama::Storage::Config]
-    # @param product_config [Agama::Config]
-    # @param devicegraph [Devicegraph] Starting point. If nil, then probed devicegraph will be used.
-    # @param disk_analyzer [DiskAnalyzer] By default, the method will create a new one based on the
-    #   initial devicegraph or will use the one from the StorageManager if starting from probed
-    #   (i.e. 'devicegraph' argument is also missing).
-    # @param issues_list [Array<Agama::Issue] Array to register issues found during the process.
-    def initialize(config,
-      product_config: nil, devicegraph: nil, disk_analyzer: nil, issues_list: nil)
-      super(devicegraph: devicegraph, disk_analyzer: disk_analyzer)
+    # @param storage_system [Agama::Storage::System]
+    # @param product_config [Agama::Config, nil]
+    # @param issues_list [Array<Agama::Issue>, nil] Stores issues found during the process.
+    def initialize(config, storage_system, product_config: nil, issues_list: nil)
+      super(devicegraph: storage_system.devicegraph, disk_analyzer: storage_system.analyzer)
       @config = config
+      @storage_system = storage_system
       @product_config = product_config || Agama::Config.new
       @issues_list = issues_list || []
     end
 
   private
+
+    # @return [Agama::Storage::System]
+    attr_reader :storage_system
 
     # @return [Agama::Config]
     attr_reader :product_config
@@ -93,7 +92,7 @@ module Y2Storage
     # @raise [NoDiskSpaceError] if there is no enough space to perform the installation
     def calculate_proposal
       Agama::Storage::ConfigSolver
-        .new(initial_devicegraph, product_config, disk_analyzer: disk_analyzer)
+        .new(product_config, storage_system)
         .solve(config)
 
       issues = Agama::Storage::ConfigChecker
@@ -103,7 +102,6 @@ module Y2Storage
       issues_list.concat(issues)
 
       if fatal_error?
-        # This means some IfNotFound is set to "error" and we failed to find a match
         @devices = nil
         return @devices
       end
@@ -145,7 +143,7 @@ module Y2Storage
     def clean_graph(devicegraph)
       remove_empty_partition_tables(devicegraph)
       # {Proposal::SpaceMaker#prepare_devicegraph} returns a copy of the given devicegraph.
-      space_maker.prepare_devicegraph(devicegraph, disks_for_clean)
+      space_maker.prepare_devicegraph(devicegraph, devs_for_clean)
     end
 
     # Configures the disk devices on the given devicegraph to prefer the appropriate partition table
@@ -179,7 +177,7 @@ module Y2Storage
       checker = BootRequirementsChecker.new(
         devicegraph,
         planned_devices: planned_devices.mountable_devices,
-        boot_disk_name:  config.boot_device
+        boot_disk_name:  boot_device_name
       )
       # NOTE: Should we try with :desired first?
       checker.needed_partitions(:min)
@@ -209,8 +207,8 @@ module Y2Storage
     # Devices for which the mandatory actions must be executed
     #
     # @return [Array<String>] names of partitionable devices
-    def disks_for_clean
-      (drives_names + [config.boot_device]).compact.uniq
+    def devs_for_clean
+      (drives_names + raids_names + [boot_device_name]).compact.uniq
     end
 
     # Creates the planned devices on a given devicegraph
@@ -218,7 +216,14 @@ module Y2Storage
     # @param devicegraph [Devicegraph] the graph gets modified
     def create_devices(devicegraph)
       devices_creator = Proposal::AgamaDevicesCreator.new(devicegraph, issues_list)
-      result = devices_creator.populated_devicegraph(planned_devices, drives_names, space_maker)
+      result = devices_creator.populated_devicegraph(planned_devices, space_maker)
+    end
+
+    # Name of the boot device.
+    #
+    # @return [String, nil]
+    def boot_device_name
+      config.boot_device&.found_device&.name
     end
 
     # Names of all the devices that correspond to a drive from the config
@@ -226,6 +231,13 @@ module Y2Storage
     # @return [Array<String>]
     def drives_names
       @drives_names ||= config.drives.map(&:found_device).compact.map(&:name)
+    end
+
+    # Names of all the devices that correspond to an MD RAID from the config
+    #
+    # @return [Array<String>]
+    def raids_names
+      @raids_names ||= config.md_raids.map(&:found_device).compact.map(&:name)
     end
 
     # Equivalent device at the given devicegraph for the given configuration setting (eg. drive)

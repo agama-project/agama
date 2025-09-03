@@ -70,12 +70,13 @@ const useZFCPDisks = (): ZFCPDisk[] => {
 };
 
 /**
- * Hook that returns zFCP config.
+ * Hook that returns whether zFCP is supported.
  */
 const useZFCPSupported = (): boolean => {
   const { data: supported } = useSuspenseQuery(zfcpSupportedQuery);
   return supported;
 };
+
 /**
  * Hook that returns zFCP config.
  */
@@ -118,6 +119,8 @@ const useZFCPControllersChanges = () => {
           }
         },
       );
+
+      queryClient.invalidateQueries({ queryKey: ["zfcp", "controllers"] });
     });
   }, [client, queryClient]);
 };

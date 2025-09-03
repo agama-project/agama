@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021] SUSE LLC
+# Copyright (c) [2021-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,18 +20,20 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
-require "agama/manager"
-require "agama/dbus/base_object"
-require "agama/dbus/with_service_status"
-require "agama/dbus/interfaces/progress"
-require "agama/dbus/interfaces/locale"
-require "agama/dbus/interfaces/service_status"
 require "agama/autoyast/converter"
+require "agama/dbus/base_object"
+require "agama/dbus/interfaces/locale"
+require "agama/dbus/interfaces/progress"
+require "agama/dbus/interfaces/service_status"
+require "agama/dbus/with_progress"
+require "agama/dbus/with_service_status"
+require "agama/manager"
 
 module Agama
   module DBus
     # D-Bus object to manage the installation process
     class Manager < BaseObject
+      include WithProgress
       include WithServiceStatus
       include Interfaces::Progress
       include Interfaces::ServiceStatus
@@ -58,13 +60,15 @@ module Agama
       STARTUP_PHASE = 0
       CONFIG_PHASE = 1
       INSTALL_PHASE = 2
+      FINISH_PHASE = 3
 
       dbus_interface MANAGER_INTERFACE do
-        dbus_method(:Probe, "") { config_phase }
+        dbus_method(:Probe, "in data:a{sv}") { |data| config_phase(data: data) }
+        dbus_method(:Reprobe, "in data:a{sv}") { |data| config_phase(reprobe: true, data: data) }
         dbus_method(:Commit, "") { install_phase }
         dbus_method(:CanInstall, "out result:b") { can_install? }
         dbus_method(:CollectLogs, "out tarball_filesystem_path:s") { collect_logs }
-        dbus_method(:Finish, "") { finish_phase }
+        dbus_method(:Finish, "in method:s, out result:b") { |m| finish_phase(m) }
         dbus_reader :installation_phases, "aa{sv}"
         dbus_reader :current_installation_phase, "u"
         dbus_reader :iguana_backend, "b"
@@ -72,9 +76,12 @@ module Agama
       end
 
       # Runs the config phase
-      def config_phase
+      #
+      # @param reprobe [Boolean] Whether a reprobe should be done instead of a probe.
+      # @param data [Hash] Extra data provided to the D-Bus calls.
+      def config_phase(reprobe: false, data: {})
         safe_run do
-          busy_while { backend.config_phase }
+          busy_while { backend.config_phase(reprobe: reprobe, data: data) }
         end
       end
 
@@ -100,8 +107,11 @@ module Agama
       end
 
       # Last action for the installer
-      def finish_phase
-        backend.finish_installation
+      #
+      # @param method [String]
+      # @return [Boolean]
+      def finish_phase(method)
+        backend.finish_installation(method)
       end
 
       # Description of all possible installation phase values
@@ -111,7 +121,8 @@ module Agama
         [
           { "id" => STARTUP_PHASE, "label" => "startup" },
           { "id" => CONFIG_PHASE,  "label" => "config" },
-          { "id" => INSTALL_PHASE, "label" => "install" }
+          { "id" => INSTALL_PHASE, "label" => "install" },
+          { "id" => FINISH_PHASE, "label"  => "finish" }
         ]
       end
 
@@ -122,6 +133,7 @@ module Agama
         return STARTUP_PHASE if backend.installation_phase.startup?
         return CONFIG_PHASE if backend.installation_phase.config?
         return INSTALL_PHASE if backend.installation_phase.install?
+        return FINISH_PHASE if backend.installation_phase.finish?
       end
 
       # States whether installation runs on iguana

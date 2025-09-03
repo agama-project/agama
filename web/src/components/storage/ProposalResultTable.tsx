@@ -35,6 +35,8 @@ import { sprintf } from "sprintf-js";
 import { deviceChildren, deviceSize } from "~/components/storage/utils";
 import { PartitionSlot, StorageDevice } from "~/types/storage";
 import { TreeTableColumn } from "~/components/core/TreeTable";
+import { DeviceInfo } from "~/api/storage/types";
+import { useConfigModel } from "~/queries/storage/config-model";
 
 type TableItem = StorageDevice | PartitionSlot;
 
@@ -143,7 +145,8 @@ type ProposalResultTableProps = {
  * @component
  */
 export default function ProposalResultTable({ devicesManager }: ProposalResultTableProps) {
-  const devices = devicesManager.usedDevices();
+  const model = useConfigModel({ suspense: true });
+  const devices = devicesManager.usedDevices(model?.drives.map((d) => d.name) || []);
 
   return (
     <TreeTable
@@ -151,7 +154,7 @@ export default function ProposalResultTable({ devicesManager }: ProposalResultTa
       items={devices}
       expandedItems={devices}
       itemChildren={deviceChildren}
-      rowClassNames={(item) => {
+      rowClassNames={(item: DeviceInfo) => {
         if (!item.sid) return "dimmed-row";
       }}
       className="proposal-result"

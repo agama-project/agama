@@ -1,4 +1,778 @@
 -------------------------------------------------------------------
+Wed Aug 27 10:23:31 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix calling GPG import callbacks for unattended installation for
+  addons (bsc#1248782)
+
+-------------------------------------------------------------------
+Mon Aug 25 19:47:35 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Improved initialization of iBFT (bsc#1247711).
+
+-------------------------------------------------------------------
+Wed Aug 20 10:16:04 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Removed the heuristic that used to consider some software RAID as
+  bootable devices under some circumstances (bsc#1248195).
+- Ensure that /boot/efi and /boot/zipl partitions created using the
+  web UI are never encrypted (bsc#1248189, bsc#1247447).
+
+-------------------------------------------------------------------
+Thu Aug  7 10:57:30 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Do not use 'retry' as default answer for questions (bsc#1247436).
+
+-------------------------------------------------------------------
+Wed Aug  6 12:47:13 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Emit D-Bus signal when storage is configured, including the
+  client id (gh#agama-project/agama#2640).
+
+-------------------------------------------------------------------
+Tue Aug  5 14:01:23 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Fix MD RAID config checker to avoid generating a list of issues
+  including a false value (bsc#1247557, bsc#1247585).
+
+-------------------------------------------------------------------
+Thu Jul 31 07:34:52 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Do not set selinux policy during installation and lets keep
+  defaults provided by packages
+  (bsc#1247046)
+
+-------------------------------------------------------------------
+Thu Jul 24 21:09:25 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Make encryption work with whole formatted devices (bsc#1246939).
+- Do not export partitions to json if there is no partition
+  (bsc#1246940).
+
+-------------------------------------------------------------------
+Mon Jul 21 15:07:39 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 17
+
+-------------------------------------------------------------------
+Thu Jul 17 14:45:23 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Report all steps of the storage progress
+  (gh#agama-project/agama#2565).
+
+-------------------------------------------------------------------
+Thu Jul 17 10:34:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adjust the information included in the logs (gh#agama-project/agama#2575).
+
+-------------------------------------------------------------------
+Wed Jul 16 07:29:03 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add AutoYaST conversion for DASD and zFCP sections
+  (gh#agama-project/agama#2551)
+
+-------------------------------------------------------------------
+Tue Jul 15 10:53:18 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not overwrite the list of chosen patterns when selecting an LSM
+  (gh#agama-project/agama#2560).
+- Extend products definition with the possibility to define whether a
+  user pattern should be pre-selected or not.
+
+-------------------------------------------------------------------
+Mon Jul 14 15:57:59 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Save registration code and email, even if registration fails
+  (related to jsc#AGM-156).
+
+-------------------------------------------------------------------
+Mon Jul 14 11:32:19 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Install the packages from DUD to the target system
+  (gh#agama-project/agama#2543)
+- Allow ignoring GPG signature problems for the DUD packages using
+  the "inst.dud_packages.gpg=0" boot parameter
+  (problems for packages from other repositories are still reported)
+- Fixed parsing the boot command line options,
+  using both nested and parent option would crash the installer
+  (like "inst.foo" with "inst.foo.bar")
+
+-------------------------------------------------------------------
+Thu Jul 10 12:13:14 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Inhibit storage subsystems (bsc#1245159, bsc#1246133).
+
+-------------------------------------------------------------------
+Wed Jul  9 14:04:23 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- Fix error at /api/manager/installer: initialize the backend value
+  for org.opensuse.Agama1.Manager.CurrentInstallationPhase (bsc#1245760)
+
+-------------------------------------------------------------------
+Wed Jul  9 12:21:55 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add AutoYaST conversion for RMT registration (gh#agama-project/agama#2545).
+
+-------------------------------------------------------------------
+Wed Jul  9 08:32:37 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Handle the LSM defined in the product definition as it was
+  selected by the user allowing to deselect it (bsc#1244431).
+
+-------------------------------------------------------------------
+Fri Jul  4 11:31:21 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Extend D-Bus API to allow reprobing the system
+  (gh#agama-project/agama#2532, bsc#1245400).
+
+-------------------------------------------------------------------
+Wed Jul  2 10:50:56 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add missing iSCSI discovery when importing the iSCSI config
+  (bsc#1245171).
+
+-------------------------------------------------------------------
+Mon Jun 30 15:51:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 16
+
+-------------------------------------------------------------------
+Mon Jun 30 11:23:03 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- ipmitool invocation: do not write spurious % percent sign
+  (jsc#PED-12285)
+
+-------------------------------------------------------------------
+Fri Jun 27 14:02:57 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- jsc#PED-11193
+  - do not create the "after install" snapshot
+
+-------------------------------------------------------------------
+Fri Jun 27 12:07:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the conversion of the "language" section from AutoYaST profiles
+  (gh#agama-project/agama#2516).
+
+-------------------------------------------------------------------
+Wed Jun 25 20:29:58 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- do not crash if onlyRequired flag is set and libzypp is not
+  installed on target system (jsc#AGM-154)
+
+-------------------------------------------------------------------
+Wed Jun 25 07:55:53 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- allow to set onlyRequired flag for software service
+  (jsc#AGM-154)
+
+-------------------------------------------------------------------
+Mon Jun 23 07:22:22 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- jsc#PED-12285
+  - initial implementation for installer state status report via
+    IPMI
+
+-------------------------------------------------------------------
+Thu Jun 19 10:21:13 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add missing steps for iSCSI installation
+  (gh#agama-project/agama#2473).
+
+-------------------------------------------------------------------
+Wed Jun 18 12:28:14 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Disable local installation repositories instead of removing them
+  (bsc#1243064)
+
+-------------------------------------------------------------------
+Wed Jun 18 07:17:23 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Preserve AutoYaST pre-scripts artifacts (bsc#1243776, gh#agama-project/agama#2344).
+
+-------------------------------------------------------------------
+Mon Jun 16 14:26:06 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Initial support for sorting storage devices when searching them
+  at the configuration (gh#agama-project/agama#2474).
+
+-------------------------------------------------------------------
+Fri Jun 13 20:51:10 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix copy of self-signed certificates for RMT
+  (gh#agama-project/agama#2480)
+
+-------------------------------------------------------------------
+Fri Jun 13 15:11:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Send the current language to the registration server (SCC/RMT)
+  to display localized error messages (gh#agama-project/agama#2477)
+
+-------------------------------------------------------------------
+Fri Jun 13 08:23:46 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Split registration key and registered status to support RMT with
+  empty registration key (gh#agama-project/agama#2469)
+
+-------------------------------------------------------------------
+Thu Jun 12 05:20:10 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- AutoYaST support: add support for iscsi-client section
+  (gh#agama-project/agama#2463).
+
+-------------------------------------------------------------------
+Tue Jun 10 12:08:44 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- AutoYaST support: add support for add-on elements
+  (gh#agama-project/agama#2458)
+
+-------------------------------------------------------------------
+Mon Jun  9 06:12:23 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Extend the D-Bus API to get available/candidate drives and MD
+  RAIDs (gh#agama-project/agama#2419).
+- Improve the config conversion from model to add missing MD RAIDs
+  if needed (e.g., the MD RAID was selected as boot device or as
+  target for LVM).
+
+-------------------------------------------------------------------
+Fri Jun  6 10:22:36 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Propose to move existing connections to disk if there is no one
+  to be persisted (custom config provided)
+  (gh#agama-project/agama#2402).
+
+-------------------------------------------------------------------
+Thu Jun  5 15:44:06 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- agama-dbus-monitor: Increase timeout when restarting to prevent
+  crash due to socket not available
+
+-------------------------------------------------------------------
+Thu Jun  5 15:41:31 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support to specify for extra repositories if it can be
+  unsigned or list of GPG fingerprints that are trusted
+  (jsc#AGM-125)
+
+-------------------------------------------------------------------
+Tue Jun  3 12:22:41 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for adding extra repositories as installation sources
+  (jsc#AGM-125)
+
+-------------------------------------------------------------------
+Wed May 28 14:19:28 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Try several attempts for the first storage proposal
+  (gh#agama-project/agama#2393).
+
+-------------------------------------------------------------------
+Wed May 28 07:51:36 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Unselect user patterns which are unselected by a conflict
+  resolution (followup for gh#agama-project/agama#2348)
+
+-------------------------------------------------------------------
+Mon May 26 21:33:40 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Copy Agama generated systemd network link files to the target
+  system (bsc#1237327, bsc#1241969).
+
+-------------------------------------------------------------------
+Mon May 26 19:51:50 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 15
+
+-------------------------------------------------------------------
+Mon May 26 09:44:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Set stopOnBootMenu to "true" when a negative timeout is
+  set in the bootloader section of an AutoYaST profile
+  (bsc#1243623).
+
+-------------------------------------------------------------------
+Fri May 23 12:37:31 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add checks to the storage config to avoid using wrong devices as
+  target for boot partitions (gh#agama-project/agama#2390).
+
+-------------------------------------------------------------------
+Fri May 23 11:59:20 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Introduce a new ProgressChanged signal which should be used
+  instead of PropertiesChanged (gh#agama-project/agama#2389).
+
+-------------------------------------------------------------------
+Fri May 23 10:39:21 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Properly report if registration failed when adding new libzypp
+  service obtained from registration server (bsc#1238851)
+
+-------------------------------------------------------------------
+Fri May 23 09:27:04 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Allow to specify a software RAID (mdRaids) as explicit boot
+  device (gh#agama-project/agama#2386).
+
+-------------------------------------------------------------------
+Thu May 22 17:21:24 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Include RAIDs at the model for the storage UI
+  (gh#agama-project/agama#2346).
+
+-------------------------------------------------------------------
+Thu May 22 16:18:06 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Provide software conflicts D-Bus API (gh#agama-project/agama#2348)
+
+-------------------------------------------------------------------
+Fri May 16 08:45:58 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Fix list of candidate drives and candidate MD RAIDs for
+  installation (gh#agama-project/agama#2362).
+
+-------------------------------------------------------------------
+Wed May 14 15:15:47 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add search conditions to storage (gh#agama-project/agama#2338).
+
+-------------------------------------------------------------------
+Wed May 14 10:22:24 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix the target path for copying the udev rules and nvme files
+  introduced by (bsc#123808, gh#agama-project/agama#2257).
+  (bsc#1241868, gh#agama-project/agama#2328).
+
+-------------------------------------------------------------------
+Fri May  9 15:37:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Convert the bootloader section to JSON (gh#agama-project/agama#2349).
+- Fix the conversion of the hostname and the networking sections to JSON
+  (gh#agama-project/agama#2349).
+
+-------------------------------------------------------------------
+Wed May  7 10:24:14 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Convert AutoYaST DNS section to JSON (gh#agama-project/agama#2335).
+
+-------------------------------------------------------------------
+Wed May  7 06:33:28 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add support for creating and reusing MD RAID devices
+  (gh#agama-project/agama#2286, bsc#1241958).
+
+-------------------------------------------------------------------
+Tue May  6 11:33:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Convert YaST-specific keymap identifiers (gh#agama-project/agama#1902).
+
+-------------------------------------------------------------------
+Wed Apr 30 08:18:27 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Convert relurl:// URLs in AutoYaST files and scripts definitions
+  (gh#agama-project/agama#2305).
+
+-------------------------------------------------------------------
+Fri Apr 25 13:36:13 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- AutoYaST profile compatibility: <reg_server_cert_fingerprint />
+  and <reg_server_cert_fingerprint_type /> (related to
+  gh#agama-project/agama#2270).
+
+-------------------------------------------------------------------
+Thu Apr 24 17:18:04 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Copy only the NetworkManager connnections from /etc and just
+  in case the copy has not been disabled
+  (gh#agama-project/agama#2291).
+
+-------------------------------------------------------------------
+Thu Apr 24 14:10:46 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify SSL certificate fingerprint to handle self-signed
+  certificates used for non default registration server
+- Allow to specify registration server URL via API
+  gh#agama-project/agama#2270
+
+-------------------------------------------------------------------
+Tue Apr 22 14:14:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 14
+
+-------------------------------------------------------------------
+Tue Apr 15 08:50:10 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed detection of iBFT (bsc#1239046).
+- Removed offload_card from iSCSI (bsc#1231385).
+
+-------------------------------------------------------------------
+Fri Apr 11 09:07:22 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- bsc#1238038
+  - copy NVMe configuration files from inst-sys to target
+    (gh#agama-project/agama#2257).
+
+-------------------------------------------------------------------
+Thu Apr 10 20:26:29 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify extra kernel parameters for bootloader
+  (jsc#PED-10810)
+
+-------------------------------------------------------------------
+Wed Apr  9 06:52:58 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add auto-installation support for iSCSI
+ (gh#agama-project/agama#2231).
+
+-------------------------------------------------------------------
+Wed Apr  9 06:42:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Write the registration URL to the installed system (bsc#1239316).
+
+-------------------------------------------------------------------
+Tue Apr  1 12:44:57 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Make the extension version attribute optional, search the version
+  automatically if it is missing (related to jsc#AGM-100)
+
+-------------------------------------------------------------------
+Fri Mar 28 21:45:56 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify bootloader timeout in profile (jsc#PED-10810)
+
+-------------------------------------------------------------------
+Fri Mar 28 19:22:51 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Copy the hostname to the installed system if it exists
+  (gh#agama-project/agama#2226).
+
+-------------------------------------------------------------------
+Fri Mar 28 11:13:48 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Properly map AutoYaST scripts "source" to "content"
+  (gh#agama-project/agama#2224).
+
+-------------------------------------------------------------------
+Thu Mar 28 09:30:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Always display the patterns from extensions (related to
+  jsc#AGM-100)
+
+-------------------------------------------------------------------
+Thu Mar 27 12:40:02 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 13
+
+-------------------------------------------------------------------
+Thu Mar 27 11:40:23 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Extend storage model for basic LVM support
+  (gh#agama-project/agama#2216).
+
+-------------------------------------------------------------------
+Tue Mar 25 15:47:13 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Install registred addon product (its *-release package)
+  (related to jsc#AGM-100)
+
+-------------------------------------------------------------------
+Tue Mar 25 12:11:35 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Support for autoyast manual files deployment with exception
+  of deploying directories and files_script
+  (gh#agama-project/agama#2121)
+
+-------------------------------------------------------------------
+Fri Mar 21 16:36:03 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Add extensions from the registration server (automatic
+  installation only) (jsc#AGM-100)
+
+-------------------------------------------------------------------
+Thu Mar 20 08:41:23 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Symlink the /mnt/etc/resolv.conf to the NetworkManager running
+  one in order to have DNS resolution in the chroot post scripts
+  (bsc#1235617, gh#agama-project/agama#2179).
+
+-------------------------------------------------------------------
+Fri Mar 14 12:34:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Import the packages list from an AutoYaST profile
+  (gh#agama-project/agama#2153).
+
+-------------------------------------------------------------------
+Wed Mar 12 00:44:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Copy Agama logs to the installed system (gh#agama/agama-project#2148).
+- Set /var/log/agama-installation permissions to 0700
+  (gh#agama-project/agama#2140).
+
+-------------------------------------------------------------------
+Wed Mar  5 14:50:04 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Automatically retry package download or repository refresh
+  before reporting an error (gh#agama-project/agama#2117)
+
+-------------------------------------------------------------------
+Wed Mar  5 11:33:39 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the correcty script type allows postPartitioning scripts to run
+  (gh#agama-project/agama#2114).
+
+-------------------------------------------------------------------
+Wed Mar  5 09:21:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Enable again the signature checking for dir:/// repositories
+  (gh#agama-project/agama#2092).
+
+-------------------------------------------------------------------
+Wed Mar  5 08:09:28 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- introduced boot_strategy into storage section of product
+  definition yaml file. It allows to control what boot strategy
+  will be proposed by storage. Currently works only for BLS.
+
+-------------------------------------------------------------------
+Fri Feb 28 13:03:11 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Temporarily disable signature checking for dir:// repositories
+  (gh#agama-project/agama#2092).
+
+-------------------------------------------------------------------
+Wed Feb 26 06:52:45 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add file system label to the config model (needed for jsc#AGM-122
+  and bsc#1237165).
+
+-------------------------------------------------------------------
+Wed Feb 26 06:51:36 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 12
+
+-------------------------------------------------------------------
+Tue Feb 25 23:48:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Enable agama-scripts service if installed (gh#agama-project/agama#2077).
+
+-------------------------------------------------------------------
+Mon Feb 24 12:03:58 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Temporarily hide the abort installation option in the package
+  installation failure question until the failed state is properly
+  handled. (related to gh#agama-project/agama#2049)
+
+-------------------------------------------------------------------
+Mon Feb 24 07:41:17 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Adjust default encryption settings to better support TPM-based
+  unlocking (gh#agama-project/agama#2053).
+
+-------------------------------------------------------------------
+Fri Feb 21 13:59:30 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Initial support for global encryption in the storage model
+  (gh#agama-project/agama#2031).
+
+-------------------------------------------------------------------
+Thu Feb 20 17:22:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add libzypp callbacks to handle more checksum and signatures
+  problems (gh#agama-project/agama#2030).
+
+-------------------------------------------------------------------
+Thu Feb 20 14:23:49 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed a bug in the storage model conversion that was causing some
+  partition sizes to be reset (gh#openSUSE/agama#2036).
+
+-------------------------------------------------------------------
+Thu Feb 20 12:56:13 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Introduce the storage model to support the new storage user
+  interface (gh#openSUSE/agama#2033)
+
+-------------------------------------------------------------------
+Wed Feb 19 17:54:19 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- Instead of "agama." use more generic "inst." prefix for kernel
+  boot options controling the agama installer
+
+-------------------------------------------------------------------
+Wed Feb 19 14:21:40 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- if root ssh key is used, ensure that sshd is enabled and firewall
+  has port open (jsc#PM-2128)
+- root password is explicitelly locked if not specified
+- first user will be in wheel group (jsc#PM-2128)
+
+-------------------------------------------------------------------
+Wed Feb 19 13:35:07 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- UX: Improve the libzypp callbacks (gh#agama-project/agama#1985)
+
+-------------------------------------------------------------------
+Tue Feb 18 17:19:08 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- (gh#agama-project/agama#1970).
+  - In an unattended installation, the system will reboot
+    automatically.
+  - The D-Bus method to finish the installation will not reboot the
+    system if it is not in the "finish" installation phase.
+
+-------------------------------------------------------------------
+Tue Feb 18 12:03:02 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Expose root and first user passwords (gh#agama-project/agama#2005).
+- Use a single D-Bus property for the root user data.
+- Remove support for auto-login.
+
+-------------------------------------------------------------------
+Tue Feb 18 11:27:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Implement basic support for RMT/SCC proxies (gh#agama-project/agama#2007).
+
+-------------------------------------------------------------------
+Mon Feb 17 09:17:47 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for post-partitioning scripts (jsc#AGM-108).
+
+-------------------------------------------------------------------
+Thu Feb 13 21:37:32 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix several AutoYaST conversion problems (gh#agama-project/agama#1995):
+  - Fix handling of scripts file names and location
+    (gh#agama-project/agama#1903).
+  - Fix the name of the localization section (gh#agama-project/agama#1960).
+  - Use a more readable JSON format (gh#agama-project/agama#1907).
+
+-------------------------------------------------------------------
+Wed Feb 12 08:16:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report unsupported AutoYaST elements
+  (gh#agama-project/agama#1976).
+
+-------------------------------------------------------------------
+Tue Feb 11 15:11:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed possible double timeout when refreshing the installation
+  repository (bsc#1236820)
+
+-------------------------------------------------------------------
+Fri Feb  7 16:29:28 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report problems when trying to download a package, install it
+  or run a script (gh#agama/agama-project#1932).
+
+-------------------------------------------------------------------
+Fri Feb  7 16:16:14 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Adapt tests to use the BLS size requirements
+  (gh#agama-project/agama#1979).
+
+-------------------------------------------------------------------
+Wed Feb  5 14:32:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Disable the local media in the installed system, esp. the
+  offline repository with URL dir:///run/initramfs/live/install
+  (bsc#1236813)
+
+-------------------------------------------------------------------
+Wed Jan 29 16:28:32 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow reading repository in /install directory on iso
+  (jsc#PED-10405)
+
+-------------------------------------------------------------------
+Fri Jan 24 09:33:27 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Introduce a new installation phase "finish"
+  (gh#agama-project/agama#1616).
+
+-------------------------------------------------------------------
+Fri Jan 24 06:42:00 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the availability of the base product to determine whether a
+  product requires to be registered (gh#agama-project/agama#1938).
+
+-------------------------------------------------------------------
+Tue Jan 21 19:11:04 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the ListRepositories D-Bus method to return the proper value
+  instead of crashing the service (gh#agama-project/agama#1930).
+
+-------------------------------------------------------------------
+Mon Jan 20 16:44:45 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- The software service provides DBus API for reading the currently
+  configured repositories, related to (gh#agama-project/agama#1894)
+
+-------------------------------------------------------------------
+Mon Jan 20 10:35:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for specifying a license for each product
+  (jsc#PED-11987).
+
+-------------------------------------------------------------------
+Fri Jan 17 20:42:58 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Relax gems version in the gemspec file
+  (gh#agama-project/agama#1917)
+
+-------------------------------------------------------------------
+Thu Jan 16 17:30:03 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Correctly select the base product to install (bsc#1235931)
+
+-------------------------------------------------------------------
+Wed Jan 15 14:26:11 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+ - Add missing gems to the gemspec file
+  (gh#agama-project/agama#1899).
+
+-------------------------------------------------------------------
+Fri Jan 10 21:22:00 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 11
+
+-------------------------------------------------------------------
+Fri Jan 10 15:44:30 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Objects from the D-Bus trees representing the storage devices are
+  removed before performing the probing. It prevents a segmentation
+  fault by accessing to old objects (gh#agama-project/agama#1884).
+
+-------------------------------------------------------------------
+Thu Jan  9 12:21:40 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Activate multipath in case it is forced by the user
+  (gh#agama-project/agama#1875).
+
+-------------------------------------------------------------------
+Wed Jan  8 14:05:53 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for products registration (jsc#PED-11192,
+  gh#agama-project/agama#1809).
+
+-------------------------------------------------------------------
+Mon Dec 23 18:40:01 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix collision between hotfix and new bootlaoder dbus interface
+  (gh#agama-project/agama#1852)
+
+-------------------------------------------------------------------
+Fri Dec 20 15:05:11 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Hotfix to avoid losing the storage config with auto installation
+  (bsc#1234711).
+
+-------------------------------------------------------------------
+Fri Dec 20 12:18:56 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Add bootloader dbus interface to allow to set if bootloader
+  should stop on boot menu (gh#agama-project/agama#1840)
+
+-------------------------------------------------------------------
 Mon Dec  9 14:43:11 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Work around to a problem triggered after formatting DASD devices
@@ -66,10 +840,22 @@ Wed Oct 30 11:33:54 UTC 2024 - José Iván López González <jlopez@suse.com>
   (gh#agama-project/agama#1706).
 
 -------------------------------------------------------------------
+Mon Oct 28 15:30:25 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Storage: use AgamaProposal for the initial storage setup during
+  system probing (gh#agama-project/agama#1699).
+
+-------------------------------------------------------------------
 Thu Oct 24 14:44:35 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Storage: do not report issues when intentionally skipping entries
   at the storage config (gh#agama-project/agama#1696).
+
+-------------------------------------------------------------------
+Thu Oct 24 14:18:28 UTC 2024 - José Iván López González <jlopez@suse.com>
+
+- Storage: extend the D-Bus API to allow getting the solved storage
+  config (gh#agama-project/agama#1692).
 
 -------------------------------------------------------------------
 Thu Oct 24 13:07:50 UTC 2024 - Ancor Gonzalez Sosa <ancor@suse.com>
@@ -915,7 +1701,7 @@ Wed Jan 18 08:03:40 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
   (gh#openSUSE/agama#379)
 
 -------------------------------------------------------------------
-Tue Jan 17 10:06:23 UT0 2023 - Josef Reidinger <jreidinger@suse.com>
+Tue Jan 17 10:06:23 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Implement validation of software proposal
   (gh#openSUSE/agama#381)

@@ -21,6 +21,8 @@
 use super::http::{login, login_from_query, logout, session};
 use super::{config::ServiceConfig, state::ServiceState, EventsSender};
 use agama_lib::auth::TokenClaims;
+use axum::http::HeaderValue;
+use axum::middleware::Next;
 use axum::{
     body::Body,
     extract::Request,
@@ -29,13 +31,17 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use hyper::header::CACHE_CONTROL;
+use std::sync::Arc;
 use std::time::Duration;
 use std::{
     convert::Infallible,
     path::{Path, PathBuf},
 };
 use tower::Service;
+use tower_http::set_header::SetResponseHeaderLayer;
 use tower_http::{compression::CompressionLayer, services::ServeDir, trace::TraceLayer};
+use tracing::span::Id;
 use tracing::Span;
 
 /// Builder for Agama main service.
@@ -103,8 +109,9 @@ impl MainServiceBuilder {
 
         let api_router = self
             .api_router
-            .route_layer(middleware::from_extractor_with_state::<TokenClaims, _>(
+            .route_layer(middleware::from_fn_with_state(
                 state.clone(),
+                auth_middleware,
             ))
             .route("/ping", get(super::http::ping))
             .route("/auth", post(login).get(session).delete(logout));
@@ -118,16 +125,40 @@ impl MainServiceBuilder {
             .nest("/api", api_router)
             .layer(
                 TraceLayer::new_for_http()
-                    .on_request(|request: &Request<Body>, _span: &Span| {
-                        tracing::info!("request: {} {}", request.method(), request.uri().path())
+                    .on_request(|request: &Request<Body>, span: &Span| {
+                        tracing::info!(
+                            "request {}: {} {}",
+                            span.id().unwrap_or(Id::from_u64(1)).into_u64(),
+                            request.method(),
+                            request.uri().path()
+                        )
                     })
                     .on_response(
-                        |response: &Response<Body>, latency: Duration, _span: &Span| {
-                            tracing::info!("response: {} {:?}", response.status(), latency)
+                        |response: &Response<Body>, latency: Duration, span: &Span| {
+                            tracing::info!(
+                                "response for {}: {} {:?}",
+                                span.id().unwrap_or(Id::from_u64(1)).into_u64(),
+                                response.status(),
+                                latency
+                            )
                         },
                     ),
             )
             .layer(CompressionLayer::new().br(true))
+            .layer(SetResponseHeaderLayer::if_not_present(
+                CACHE_CONTROL,
+                HeaderValue::from_static("no-store"),
+            ))
             .with_state(state)
     }
+}
+
+// Authentication middleware.
+//
+// 1. Extracts the claims of the authentication token.
+// 2. Adds the client ID as a extension to the request.
+async fn auth_middleware(claims: TokenClaims, mut request: Request, next: Next) -> Response {
+    request.extensions_mut().insert(Arc::new(claims.client_id));
+    let response = next.run(request).await;
+    response
 }

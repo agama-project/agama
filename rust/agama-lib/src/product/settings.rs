@@ -22,12 +22,33 @@
 
 use serde::{Deserialize, Serialize};
 
+/// Addon settings for registration
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct AddonSettings {
+    pub id: String,
+    /// Optional version of the addon, if not specified the version is found
+    /// from the available addons
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub version: Option<String>,
+    /// Free extensions do not require a registration code
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub registration_code: Option<String>,
+}
+
 /// Software settings for installation
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct ProductSettings {
     /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.)
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub registration_code: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub registration_email: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub registration_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub addons: Option<Vec<AddonSettings>>,
 }

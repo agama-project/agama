@@ -21,124 +21,66 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import NetworkPage from "~/components/network/NetworkPage";
-import { Connection, ConnectionMethod, ConnectionStatus, ConnectionType } from "~/types/network";
 
-jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
-  <div>ProductRegistrationAlert Mock</div>
+jest.mock(
+  "~/components/product/ProductRegistrationAlert",
+  () => () => -(<div>ProductRegistrationAlert Mock</div>),
+);
+
+jest.mock("~/components/network/WifiNetworksList", () => () => <div>WifiNetworksList Mock</div>);
+
+jest.mock("~/components/network/WiredConnectionsList", () => () => (
+  <div>WiredConnectionsList Mock</div>
 ));
 
-const wiredConnection = new Connection("eth0", {
-  iface: "eth0",
-  method4: ConnectionMethod.MANUAL,
-  method6: ConnectionMethod.MANUAL,
-  addresses: [{ address: "192.168.122.20", prefix: 24 }],
-  nameservers: ["192.168.122.1"],
-  gateway4: "192.168.122.1",
-});
+jest.mock("~/components/network/NoPersistentConnectionsAlert", () => () => (
+  <div>NoPersistentConnectionsAlert Mock</div>
+));
 
-const wifiConnection = new Connection("AgamaNetwork", {
-  iface: "wlan0",
-  method4: ConnectionMethod.AUTO,
-  method6: ConnectionMethod.AUTO,
-  wireless: {
-    ssid: "Agama",
-    security: "wpa-psk",
-    mode: "infrastructure",
-    password: "agama.test",
-  },
-  addresses: [{ address: "192.168.69.200", prefix: 24 }],
-  nameservers: [],
-});
-
-const ethernetDevice = {
-  name: "eth0",
-  connection: "eth0",
-  type: ConnectionType.ETHERNET,
-  addresses: [{ address: "192.168.122.20", prefix: 24 }],
-  macAddress: "00:11:22:33:44::55",
-  status: ConnectionStatus.UP,
+const mockNetworkState = {
+  wirelessEnabled: true,
 };
-
-const wifiDevice = {
-  name: "wlan0",
-  connection: "AgamaNetwork",
-  type: ConnectionType.WIFI,
-  state: "activated",
-  addresses: [{ address: "192.168.69.200", prefix: 24 }],
-  macAddress: "AA:11:22:33:44::FF",
-  status: ConnectionStatus.UP,
-};
-
-const mockDevices = [ethernetDevice, wifiDevice];
-let mockActiveConnections = [wiredConnection, wifiConnection];
-let mockNetworkSettings = {
-  wireless_enabled: true,
-};
-
-const mockAccessPoints = [];
 
 jest.mock("~/queries/network", () => ({
-  useNetworkConfigChanges: jest.fn(),
-  useNetwork: () => ({
-    connections: mockActiveConnections,
-    devices: mockDevices,
-    settings: mockNetworkSettings,
-    accessPoints: mockAccessPoints,
-  }),
+  useNetworkChanges: jest.fn(),
+  useNetworkState: () => mockNetworkState,
 }));
 
 describe("NetworkPage", () => {
+  it("mounts alert for all connections status", () => {
+    installerRender(<NetworkPage />);
+    expect(screen.queryByText("NoPersistentConnectionsAlert Mock")).toBeInTheDocument();
+  });
+
   it("renders a section for wired connections", () => {
     installerRender(<NetworkPage />);
-    const section = screen.getByRole("region", { name: "Wired" });
-    within(section).getByText("eth0");
-    within(section).getByText("192.168.122.20/24");
+    expect(screen.queryByText("WiredConnectionsList Mock")).toBeInTheDocument();
   });
 
-  it("renders a section for WiFi connections", () => {
-    installerRender(<NetworkPage />);
-    const section = screen.getByRole("region", { name: "Wi-Fi" });
-    within(section).getByText("Connected to AgamaNetwork");
-    within(section).getByText("192.168.69.200/24");
-  });
-
-  describe("when wired connection were not found", () => {
+  describe("when Wi-Fi support is enabled", () => {
     beforeEach(() => {
-      mockActiveConnections = [wifiConnection];
+      mockNetworkState.wirelessEnabled = true;
     });
 
-    it("renders information about it", () => {
+    it("renders the list of Wi-Fi networks", () => {
       installerRender(<NetworkPage />);
-      screen.getByText("No wired connections found");
+      expect(screen.queryByText("WifiNetworksList Mock")).toBeInTheDocument();
     });
   });
 
-  describe("when WiFi scan is supported but no connection found", () => {
+  describe("when Wi-Fi support is disabled", () => {
     beforeEach(() => {
-      mockActiveConnections = [wiredConnection];
+      mockNetworkState.wirelessEnabled = false;
     });
 
-    it("renders information about it and a link going to the connection page", () => {
+    it("does not render the list of Wi-Fi networks", () => {
       installerRender(<NetworkPage />);
-      const section = screen.getByRole("region", { name: "Wi-Fi" });
-      within(section).getByText("No connected yet");
-      within(section).getByRole("link", { name: "Connect" });
-    });
-  });
-
-  describe("when WiFi scan is not supported", () => {
-    beforeEach(() => {
-      mockNetworkSettings = { wireless_enabled: false };
-    });
-
-    it("renders information about it, without links for connecting", async () => {
-      installerRender(<NetworkPage />);
-      screen.getByText("No Wi-Fi supported");
-      const connectionButton = screen.queryByRole("link", { name: "Connect" });
-      expect(connectionButton).toBeNull();
+      expect(
+        screen.queryByText(/The system does not support Wi-Fi connections/),
+      ).toBeInTheDocument();
     });
   });
 });

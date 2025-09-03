@@ -22,11 +22,13 @@
 require "yast"
 require "y2security/lsm"
 require "yast2/execute"
-
 require "agama/config"
+require "agama/http"
+
+Yast.import "Bootloader"
 
 # FIXME: monkey patching of security config to not read control.xml and
-# instead use DIinstaller::Config
+# instead use Agama::Config
 # TODO: add ability to set product features in LSM::Base
 module Y2Security
   module LSM
@@ -63,34 +65,76 @@ module Agama
     # @return [Logger]
     attr_reader :logger
 
+    # Constructor
+    #
+    # @param logger [Logger]
+    # @param config [Agama::Config]
     def initialize(logger, config)
       @config = config
       @logger = logger
     end
 
     def write
-      lsm_config.save
-    end
+      # at first clear previous kernel params
+      selected = lsm_selected
+      selected&.reset_kernel_params
 
-    def probe
-      selected_lsm = config.data.dig("security", "lsm")
-      lsm_config.select(selected_lsm)
+      candidate = select_software_lsm
+      return unless candidate
 
-      patterns = if selected_lsm.nil?
-        []
-      else
-        lsm_data = config.data["security"]["available_lsms"][selected_lsm]
-        lsm_data["patterns"]
-      end
-      Yast::PackagesProposal.SetResolvables("LSM", :pattern, patterns)
+      lsm_config.select(candidate)
+      kernel_params = lsm_selected.kernel_params
+      # write manually here to bootloader as lsm_config.save do more than agama wants (bsc#1247046)
+      @logger.info("Modifying Bootlooader kernel params using #{kernel_params}")
+      Yast::Bootloader.modify_kernel_params(kernel_params)
     end
 
   private
 
     attr_reader :config
 
+    def select_software_lsm
+      candidates = [lsm_selected&.id&.to_s].compact | available_lsms.keys
+
+      candidates.find { |c| proposal_patterns_include?(c) }
+    end
+
+    def available_lsms
+      config.data.dig("security", "available_lsms") || {}
+    end
+
+    def proposal_patterns_include?(lsm_id)
+      patterns = available_lsms.dig(lsm_id.to_s, "patterns") || []
+
+      (patterns - proposal_patterns).empty?
+    end
+
     def lsm_config
       Y2Security::LSM::Config.instance
+    end
+
+    def lsm_selected
+      lsm_config.selected
+    end
+
+    def lsm_patterns(lsm_id)
+      config.data.dig("security", "available_lsms", lsm_id.to_s, "patterns") || []
+    end
+
+    def proposal_patterns
+      return @proposal_patterns if @proposal_patterns
+
+      proposal = software_client.proposal || {}
+
+      @proposal_patterns =
+        (proposal["patterns"] || {}).select { |_p, v| [0, 1].include? v }.keys
+    end
+
+    # Returns the client to ask the software service
+    #
+    # @return [Agama::HTTP::Clients::Software]
+    def software_client
+      @software_client ||= Agama::HTTP::Clients::Software.new(logger)
     end
   end
 end

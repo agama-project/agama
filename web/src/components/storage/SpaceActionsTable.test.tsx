@@ -24,10 +24,11 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { gib } from "~/components/storage/utils";
+import { deviceChildren, gib } from "~/components/storage/utils";
 import { plainRender } from "~/test-utils";
 import SpaceActionsTable, { SpaceActionsTableProps } from "~/components/storage/SpaceActionsTable";
 import { StorageDevice } from "~/types/storage";
+import { apiModel } from "~/api/storage/types";
 
 const sda: StorageDevice = {
   sid: 59,
@@ -80,26 +81,21 @@ sda.partitionTable = {
   unusedSlots: [{ start: 3, size: gib(2) }],
 };
 
-/** @type {StorageDevice} */
-const sdb: StorageDevice = {
-  sid: 62,
-  name: "/dev/sdb",
-  isDrive: true,
-  type: "disk",
-  description: "Ext3 disk",
-  size: gib(5),
-  filesystem: { sid: 100, type: "ext3" },
+const mockDrive: apiModel.Drive = {
+  name: "/dev/sda",
+  partitions: [
+    {
+      name: "/dev/sda2",
+      mountPath: "swap",
+      filesystem: { reuse: false, default: true },
+    },
+  ],
 };
 
-/** @type {StorageDevice} */
-const sdc: StorageDevice = {
-  sid: 63,
-  name: "/dev/sdc",
-  isDrive: true,
-  type: "disk",
-  description: "",
-  size: gib(20),
-};
+const mockUseConfigModelFn = jest.fn();
+jest.mock("~/queries/storage/config-model", () => ({
+  useConfigModel: () => mockUseConfigModelFn(),
+}));
 
 /**
  * Function to ask for the action of a device.
@@ -110,7 +106,7 @@ const sdc: StorageDevice = {
 const deviceAction = (device) => {
   if (device === sda1) return "keep";
 
-  return "force_delete";
+  return "delete";
 };
 
 let props: SpaceActionsTableProps;
@@ -118,11 +114,12 @@ let props: SpaceActionsTableProps;
 describe("SpaceActionsTable", () => {
   beforeEach(() => {
     props = {
-      devices: [sda, sdb, sdc],
-      expandedDevices: [sda],
+      devices: deviceChildren(sda),
       deviceAction,
       onActionChange: jest.fn(),
     };
+
+    mockUseConfigModelFn.mockReturnValue({ drives: [] });
   });
 
   it("shows the devices to configure the space actions", () => {
@@ -135,8 +132,6 @@ describe("SpaceActionsTable", () => {
       name: "sda2 EXT4 partition 6 GiB Do not modify Allow shrink Delete",
     });
     screen.getByRole("row", { name: "Unused space 2 GiB" });
-    screen.getByRole("row", { name: "/dev/sdb Ext3 disk 5 GiB The content may be deleted" });
-    screen.getByRole("row", { name: "/dev/sdc 20 GiB No content found" });
   });
 
   it("selects the action for each device", () => {
@@ -165,6 +160,22 @@ describe("SpaceActionsTable", () => {
     expect(sda2ShrinkButton).not.toBeDisabled();
   });
 
+  describe("if a partition is going to be used", () => {
+    beforeEach(() => {
+      mockUseConfigModelFn.mockReturnValue({ drives: [mockDrive] });
+    });
+
+    it("disables shrink and delete actions for the partition", () => {
+      plainRender(<SpaceActionsTable {...props} />);
+
+      const sda2Row = screen.getByRole("row", { name: /sda2/ });
+      const sda2ShrinkButton = within(sda2Row).getByRole("button", { name: "Allow shrink" });
+      const sda2DeleteButton = within(sda2Row).getByRole("button", { name: "Delete" });
+      expect(sda2ShrinkButton).toBeDisabled();
+      expect(sda2DeleteButton).toBeDisabled();
+    });
+  });
+
   it("allows to change the action", async () => {
     const { user } = plainRender(<SpaceActionsTable {...props} />);
 
@@ -173,8 +184,8 @@ describe("SpaceActionsTable", () => {
     await user.click(sda1DeleteButton);
 
     expect(props.onActionChange).toHaveBeenCalledWith({
-      device: "/dev/sda1",
-      action: "force_delete",
+      deviceName: "/dev/sda1",
+      value: "delete",
     });
   });
 

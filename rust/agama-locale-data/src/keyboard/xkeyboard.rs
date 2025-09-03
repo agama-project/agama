@@ -29,7 +29,6 @@ pub struct XKeyboard {
     pub id: String,
     ///  like "Ukrainian (phonetic)"
     pub description: String,
-    pub ascii: bool,
     pub comment: Option<String>,
     pub languages: RankedLanguages,
     pub territories: RankedTerritories,

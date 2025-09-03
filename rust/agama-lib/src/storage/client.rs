@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -25,10 +25,11 @@ use super::model::{
     Md, Multipath, Partition, PartitionTable, ProposalSettings, ProposalSettingsPatch, Raid,
     Volume,
 };
-use super::proxies::{ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
+use super::proxies::{DevicesProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
 use super::StorageSettings;
-use crate::dbus::get_property;
 use crate::error::ServiceError;
+use agama_utils::dbus::get_property;
+use serde_json::value::RawValue;
 use std::collections::HashMap;
 use zbus::fdo::ObjectManagerProxy;
 use zbus::names::{InterfaceName, OwnedInterfaceName};
@@ -50,6 +51,7 @@ pub struct StorageClient<'a> {
     calculator_proxy: ProposalCalculatorProxy<'a>,
     storage_proxy: Storage1Proxy<'a>,
     object_manager_proxy: ObjectManagerProxy<'a>,
+    devices_proxy: DevicesProxy<'a>,
     proposal_proxy: ProposalProxy<'a>,
 }
 
@@ -69,6 +71,11 @@ impl<'a> StorageClient<'a> {
                 .cache_properties(zbus::proxy::CacheProperties::No)
                 .build()
                 .await?,
+            // Same than above, actions are reexported with every call to recalculate
+            devices_proxy: DevicesProxy::builder(&connection)
+                .cache_properties(zbus::proxy::CacheProperties::No)
+                .build()
+                .await?,
             connection,
         })
     }
@@ -80,7 +87,7 @@ impl<'a> StorageClient<'a> {
 
     /// Actions to perform in the storage devices.
     pub async fn actions(&self) -> Result<Vec<Action>, ServiceError> {
-        let actions = self.proposal_proxy.actions().await?;
+        let actions = self.devices_proxy.actions().await?;
         let mut result: Vec<Action> = Vec::with_capacity(actions.len());
 
         for i in actions {
@@ -90,15 +97,30 @@ impl<'a> StorageClient<'a> {
         Ok(result)
     }
 
-    /// SIDs of the devices available for the installation.
-    pub async fn available_devices(&self) -> Result<Vec<DeviceSid>, ServiceError> {
-        let paths: Vec<zbus::zvariant::ObjectPath> = self
-            .calculator_proxy
-            .available_devices()
-            .await?
-            .into_iter()
-            .map(|p| p.into_inner())
-            .collect();
+    /// SIDs of the available drives for the installation.
+    pub async fn available_drives(&self) -> Result<Vec<DeviceSid>, ServiceError> {
+        self.sids(self.devices_proxy.available_drives().await?)
+    }
+
+    /// SIDs of the candidate drives for the installation.
+    pub async fn candidate_drives(&self) -> Result<Vec<DeviceSid>, ServiceError> {
+        self.sids(self.devices_proxy.candidate_drives().await?)
+    }
+
+    /// SIDs of the available MD RAIDs for the installation.
+    pub async fn available_md_raids(&self) -> Result<Vec<DeviceSid>, ServiceError> {
+        self.sids(self.devices_proxy.available_md_raids().await?)
+    }
+
+    /// SIDs of the candidate MD RAIDs for the installation.
+    pub async fn candidate_md_raids(&self) -> Result<Vec<DeviceSid>, ServiceError> {
+        self.sids(self.devices_proxy.candidate_md_raids().await?)
+    }
+
+    /// SIDs from the given list of object paths.
+    fn sids(&self, object_paths: Vec<OwnedObjectPath>) -> Result<Vec<DeviceSid>, ServiceError> {
+        let paths: Vec<zbus::zvariant::ObjectPath> =
+            object_paths.into_iter().map(|p| p.into_inner()).collect();
 
         let result: Result<Vec<DeviceSid>, _> = paths.into_iter().map(|v| v.try_into()).collect();
 
@@ -128,23 +150,86 @@ impl<'a> StorageClient<'a> {
     }
 
     /// Runs the probing process
-    pub async fn probe(&self) -> Result<(), ServiceError> {
-        Ok(self.storage_proxy.probe().await?)
+    pub async fn probe(&self, client_id: String) -> Result<(), ServiceError> {
+        Ok(self
+            .storage_proxy
+            .probe(HashMap::from([("client_id", &client_id.into())]))
+            .await?)
+    }
+
+    /// Runs the reprobing process
+    pub async fn reprobe(&self, client_id: String) -> Result<(), ServiceError> {
+        Ok(self
+            .storage_proxy
+            .reprobe(HashMap::from([("client_id", &client_id.into())]))
+            .await?)
+    }
+
+    /// Runs the reactivation process
+    pub async fn reactivate(&self, client_id: String) -> Result<(), ServiceError> {
+        Ok(self
+            .storage_proxy
+            .reactivate(HashMap::from([("client_id", &client_id.into())]))
+            .await?)
     }
 
     /// Set the storage config according to the JSON schema
-    pub async fn set_config(&self, settings: StorageSettings) -> Result<u32, ServiceError> {
+    pub async fn set_config(
+        &self,
+        settings: StorageSettings,
+        client_id: String,
+    ) -> Result<u32, ServiceError> {
         Ok(self
             .storage_proxy
-            .set_config(serde_json::to_string(&settings).unwrap().as_str())
+            .set_config(
+                serde_json::to_string(&settings)?.as_str(),
+                HashMap::from([("client_id", &client_id.into())]),
+            )
+            .await?)
+    }
+
+    /// Reset the storage config to the default value
+    pub async fn reset_config(&self, client_id: String) -> Result<u32, ServiceError> {
+        Ok(self
+            .storage_proxy
+            .reset_config(HashMap::from([("client_id", &client_id.into())]))
             .await?)
     }
 
     /// Get the storage config according to the JSON schema
-    pub async fn get_config(&self) -> Result<StorageSettings, ServiceError> {
+    pub async fn get_config(&self) -> Result<Option<StorageSettings>, ServiceError> {
         let serialized_settings = self.storage_proxy.get_config().await?;
-        let settings = serde_json::from_str(serialized_settings.as_str()).unwrap();
+        let settings = serde_json::from_str(serialized_settings.as_str())?;
         Ok(settings)
+    }
+
+    /// Set the storage config model according to the JSON schema
+    pub async fn set_config_model(
+        &self,
+        model: Box<RawValue>,
+        client_id: String,
+    ) -> Result<u32, ServiceError> {
+        Ok(self
+            .storage_proxy
+            .set_config_model(
+                serde_json::to_string(&model).unwrap().as_str(),
+                HashMap::from([("client_id", &client_id.into())]),
+            )
+            .await?)
+    }
+
+    /// Get the storage config model according to the JSON schema
+    pub async fn get_config_model(&self) -> Result<Box<RawValue>, ServiceError> {
+        let serialized_config_model = self.storage_proxy.get_config_model().await?;
+        let config_model = serde_json::from_str(serialized_config_model.as_str()).unwrap();
+        Ok(config_model)
+    }
+
+    /// Solves the storage config model
+    pub async fn solve_config_model(&self, model: &str) -> Result<Box<RawValue>, ServiceError> {
+        let serialized_solved_model = self.storage_proxy.solve_config_model(model).await?;
+        let solved_model = serde_json::from_str(serialized_solved_model.as_str()).unwrap();
+        Ok(solved_model)
     }
 
     pub async fn calculate(&self, settings: ProposalSettingsPatch) -> Result<u32, ServiceError> {
@@ -191,7 +276,7 @@ impl<'a> StorageClient<'a> {
         &'b self,
         object: &'b DBusObject,
         name: &str,
-    ) -> Option<&HashMap<String, OwnedValue>> {
+    ) -> Option<&'b HashMap<String, OwnedValue>> {
         let interface: OwnedInterfaceName = InterfaceName::from_str_unchecked(name).into();
         let interfaces = &object.1;
         interfaces.get(&interface)

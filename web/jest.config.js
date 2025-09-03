@@ -23,7 +23,7 @@ module.exports = {
   collectCoverage: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  collectCoverageFrom: ["src/**/*.{js,jsx}", "!src/lib/*.js"],
+  collectCoverageFrom: ["src/**/*.{js,jsx,ts,tsx}"],
 
   // The directory where Jest should output its coverage files
   coverageDirectory: "coverage",
@@ -135,7 +135,7 @@ module.exports = {
 
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
   // setupFilesAfterEnv: [],
-  setupFilesAfterEnv: ["<rootDir>/src/setupTests.js"],
+  setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
 
   // The number of seconds after which a test is considered as slow and reported as such in the results.
   // slowTestThreshold: 5,

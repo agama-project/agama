@@ -27,16 +27,19 @@
 
 use crate::{
     error::Error,
-    web::{common::EventStreams, Event},
+    web::common::{EventStreams, IssuesClient, IssuesRouterBuilder},
 };
 use agama_lib::{
-    dbus::{get_optional_property, to_owned_hash},
     error::ServiceError,
+    event,
+    http::Event,
     storage::{
         client::iscsi::{ISCSIAuth, ISCSIInitiator, ISCSINode, LoginResult},
         ISCSIClient,
     },
 };
+use agama_utils::dbus::{get_optional_property, to_owned_hash};
+use anyhow::Context;
 use axum::{
     extract::{Path, State},
     http::StatusCode,
@@ -47,6 +50,7 @@ use axum::{
 use serde::Deserialize;
 
 mod stream;
+use serde_json::value::RawValue;
 use stream::ISCSINodeStream;
 use tokio_stream::{Stream, StreamExt};
 use zbus::{
@@ -84,7 +88,7 @@ async fn initiator_stream(
         .filter_map(|change| match handle_initiator_change(change) {
             Ok(event) => event,
             Err(error) => {
-                log::warn!("Could not read the initiator change: {}", error);
+                tracing::warn!("Could not read the initiator change: {}", error);
                 None
             }
         });
@@ -101,7 +105,7 @@ fn handle_initiator_change(change: PropertiesChanged) -> Result<Option<Event>, S
     let changes = to_owned_hash(args.changed_properties())?;
     let name = get_optional_property(&changes, "InitiatorName")?;
     let ibft = get_optional_property(&changes, "IBFT")?;
-    Ok(Some(Event::ISCSIInitiatorChanged { ibft, name }))
+    Ok(Some(event!(ISCSIInitiatorChanged { ibft, name })))
 }
 
 #[derive(Clone)]
@@ -113,10 +117,16 @@ struct ISCSIState<'a> {
 ///
 /// It acts as a proxy to Agama D-Bus service.
 ///
+/// note: storage_iscsi_service is used by the interactive installation (i.e., the web UI). And
+/// iscsi_server is used for the new iSCSI API, which allows to load the iscsi section of the
+/// configuration (at this moment, used by CLI or unattended installation). The preliminary plan is
+/// moving all user interfaces to use only iscsi_service.
+///
 /// * `dbus`: D-Bus connection to use.
-pub async fn iscsi_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, ServiceError> {
+pub async fn storage_iscsi_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, ServiceError> {
     let client = ISCSIClient::new(dbus.clone()).await?;
     let state = ISCSIState { client };
+
     let router = Router::new()
         .route("/initiator", get(initiator).patch(update_initiator))
         .route("/nodes", get(nodes))
@@ -126,6 +136,52 @@ pub async fn iscsi_service<T>(dbus: &zbus::Connection) -> Result<Router<T>, Serv
         .route("/discover", post(discover))
         .with_state(state);
     Ok(router)
+}
+
+/// Sets up and returns the Axum service for the iSCSI module.
+///
+/// It acts as a proxy to Agama D-Bus service.
+///
+/// * `dbus`: D-Bus connection to use.
+pub async fn iscsi_service<T>(
+    dbus: zbus::Connection,
+    issues: IssuesClient,
+) -> Result<Router<T>, ServiceError> {
+    const DBUS_SERVICE: &str = "org.opensuse.Agama.Storage1";
+    const DBUS_PATH: &str = "/org/opensuse/Agama/Storage1/ISCSI";
+
+    let client = ISCSIClient::new(dbus.clone()).await?;
+    let state = ISCSIState { client };
+    // FIXME: use anyhow temporarily until we adapt all these methods to return
+    // the crate::error::Error instead of ServiceError.
+    let issues_router = IssuesRouterBuilder::new(DBUS_SERVICE, DBUS_PATH, issues.clone())
+        .build()
+        .context("Could not build an issues router")?;
+    let router = Router::new()
+        .route("/config", post(set_config))
+        .nest("/issues", issues_router)
+        .with_state(state);
+    Ok(router)
+}
+
+/// Sets iSCSI configuration
+///
+/// the json is identical to what iscsi node in profile use.
+#[utoipa::path(
+    post,
+    path="/config",
+    context_path="/api/iscsi",
+    request_body=String, // FIXME: workaround to avoid defining schema here. Identical happens for storage set_config
+    responses(
+        (status = OK, description = "Set config succeed."),
+        (status = BAD_REQUEST, description = "It could not set the config."),
+    )
+)]
+async fn set_config(
+    State(state): State<ISCSIState<'_>>,
+    Json(config): Json<Box<RawValue>>,
+) -> Result<(), Error> {
+    Ok(state.client.set_config(&config).await?)
 }
 
 /// Returns the iSCSI initiator properties.

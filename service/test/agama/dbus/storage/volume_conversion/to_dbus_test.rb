@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2023] SUSE LLC
+# Copyright (c) [2023-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -26,9 +26,19 @@ require "y2storage/filesystems/type"
 require "y2storage/disk_size"
 
 describe Agama::DBus::Storage::VolumeConversion::ToDBus do
-  let(:default_volume) { Agama::Storage::Volume.new("/test") }
+  let(:volume1) { Agama::Storage::Volume.new("/test1") }
 
-  let(:custom_volume) do
+  let(:volume2) do
+    Agama::Storage::Volume.new("/test2").tap do |volume|
+      volume.min_size = nil
+      volume.max_size = nil
+      volume.auto_size = true
+      volume.outline.base_min_size = Y2Storage::DiskSize.new(1024)
+      volume.outline.base_max_size = Y2Storage::DiskSize.new(4096)
+    end
+  end
+
+  let(:volume3) do
     volume_outline = Agama::Storage::VolumeOutline.new.tap do |outline|
       outline.required = true
       outline.filesystems = [Y2Storage::Filesystems::Type::EXT3, Y2Storage::Filesystems::Type::EXT4]
@@ -39,9 +49,11 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
       outline.snapshots_size = Y2Storage::DiskSize.new(1000)
       outline.snapshots_percentage = 10
       outline.adjust_by_ram = true
+      outline.base_min_size = Y2Storage::DiskSize.new(2048)
+      outline.base_max_size = Y2Storage::DiskSize.new(4096)
     end
 
-    Agama::Storage::Volume.new("/test").tap do |volume|
+    Agama::Storage::Volume.new("/test3").tap do |volume|
       volume.outline = volume_outline
       volume.fs_type = Y2Storage::Filesystems::Type::EXT4
       volume.btrfs.snapshots = true
@@ -57,8 +69,8 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
 
   describe "#convert" do
     it "converts the volume to a D-Bus hash" do
-      expect(described_class.new(default_volume).convert).to eq(
-        "MountPath"     => "/test",
+      expect(described_class.new(volume1).convert).to eq(
+        "MountPath"     => "/test1",
         "MountOptions"  => [],
         "TargetDevice"  => "",
         "Target"        => "default",
@@ -78,20 +90,42 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
         }
       )
 
-      expect(described_class.new(custom_volume).convert).to eq(
-        "MountPath"     => "/test",
+      expect(described_class.new(volume2).convert).to eq(
+        "MountPath"     => "/test2",
+        "MountOptions"  => [],
+        "TargetDevice"  => "",
+        "Target"        => "default",
+        "FsType"        => "",
+        "MinSize"       => 1024,
+        "MaxSize"       => 4096,
+        "AutoSize"      => true,
+        "Snapshots"     => false,
+        "Transactional" => false,
+        "Outline"       => {
+          "Required"              => false,
+          "FsTypes"               => [],
+          "SupportAutoSize"       => false,
+          "AdjustByRam"           => false,
+          "SnapshotsConfigurable" => false,
+          "SnapshotsAffectSizes"  => false,
+          "SizeRelevantVolumes"   => []
+        }
+      )
+
+      expect(described_class.new(volume3).convert).to eq(
+        "MountPath"     => "/test3",
         "MountOptions"  => ["rw", "default"],
         "TargetDevice"  => "/dev/sda",
         "Target"        => "new_partition",
-        "FsType"        => "Ext4",
-        "MinSize"       => 1024,
-        "MaxSize"       => 2048,
+        "FsType"        => "ext4",
+        "MinSize"       => 2048,
+        "MaxSize"       => 4096,
         "AutoSize"      => true,
         "Snapshots"     => true,
         "Transactional" => true,
         "Outline"       => {
           "Required"              => true,
-          "FsTypes"               => ["Ext3", "Ext4"],
+          "FsTypes"               => ["ext3", "ext4"],
           "AdjustByRam"           => true,
           "SupportAutoSize"       => true,
           "SnapshotsConfigurable" => true,

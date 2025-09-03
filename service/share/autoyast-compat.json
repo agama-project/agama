@@ -1,0 +1,678 @@
+[
+  {
+    "key": "add-on",
+    "children": [
+      {
+        "key": "add_on_products",
+        "children": [
+          { "key": "media_url", "support": "yes", "agama": "url" },
+          { "key": "product_dir", "support": "yes", "agama": "productDir" },
+          { "key": "product", "support": "no" },
+          { "key": "alias", "support": "yes" },
+          { "key": "priority", "support": "yes" },
+          { "key": "ask_on_error", "support": "no" },
+          { "key": "confirm_license", "support": "no" },
+          { "key": "name", "support": "yes" }
+        ]
+      },
+      {
+        "key": "add_on_others",
+        "children": [
+          { "key": "media_url", "support": "yes", "agama": "url" },
+          { "key": "product_dir", "support": "yes", "agama": "productDir" },
+          { "key": "product", "support": "no" },
+          { "key": "alias", "support": "yes" },
+          { "key": "priority", "support": "yes" },
+          { "key": "ask_on_error", "support": "no" },
+          { "key": "confirm_license", "support": "no" },
+          { "key": "name", "support": "yes" }
+        ]
+      }
+    ]
+  },
+  { "key": "audit-laf", "support": "no" },
+  { "key": "auth-client", "support": "no" },
+  {
+    "key": "bootloader",
+    "children": [
+      { "key": "device_map", "support": "no" },
+      {
+        "key": "global",
+        "children": [
+          { "key": "activate", "support": "no" },
+          {
+            "key": "append",
+            "support": "yes",
+            "agama": "bootloader.extraKernelParams"
+          },
+          { "key": "boot_boot", "support": "no" },
+          { "key": "boot_custom", "support": "no" },
+          { "key": "boot_extended", "support": "no" },
+          { "key": "boot_mbr", "support": "no" },
+          { "key": "boot_root", "support": "no" },
+          { "key": "cpu_mitigations", "support": "no" },
+          { "key": "generic_mbr", "support": "no" },
+          { "key": "gfxmode", "support": "no" },
+          { "key": "os_prober", "support": "no" },
+          { "key": "password", "support": "no" },
+          { "key": "suse_btrfs", "support": "no" },
+          { "key": "serial", "support": "no" },
+          { "key": "secure_boot", "support": "no" },
+          { "key": "terminal", "support": "no" },
+          { "key": "timeout", "support": "yes", "agama": "bootloader.timeout" },
+          { "key": "trusted_boot", "support": "no" },
+          { "key": "update_nvram", "support": "no" },
+          { "key": "vgamode", "support": "no" },
+          { "key": "xen_append", "support": "no" },
+          { "key": "xen_kernel_append", "support": "no" }
+        ]
+      },
+      { "key": "loader_type", "support": "no" }
+    ]
+  },
+  { "key": "configuration_management", "support": "no" },
+  { "key": "dasd",
+    "children": [
+     { "key": "device", "support": "no" },
+     { "key": "dev_name", "support": "no" },
+     { "key": "channel", "support": "yes" },
+     { "key": "diag", "support": "yes" }
+    ]
+  },
+  { "key": "deploy_image", "support": "no" },
+  { "key": "dhcp-server", "support": "no" },
+  { "key": "dns-server", "support": "no" },
+  { "key": "fcoe-client", "support": "no" },
+  {
+    "key": "files",
+    "children": [
+      {
+        "key": "file_path",
+        "support": "yes",
+        "agama": "files.destination",
+        "notes": "Creating directories by using trailing slash is not yet supported."
+      },
+      { "key": "file_contents", "support": "yes", "agama": "files.content" },
+      { "key": "file_location", "support": "yes", "agama": "files.url" },
+      {
+        "key": "file_owner",
+        "support": "yes",
+        "notes": "In agama it is split to files.user and files.group"
+      },
+      { "key": "file_permissions", "support": "yes" },
+      { "key": "file_script", "support": "planned" }
+    ]
+  },
+  { "key": "firstboot", "support": "no" },
+  { "key": "ftp-server", "support": "no" },
+  { "key": "general", "support": "no" },
+  { "key": "groups", "support": "no" },
+  { "key": "host", "support": "no" },
+  { "key": "http-server", "support": "no" },
+  { "key": "kdump", "support": "planned" },
+  {
+    "key": "keyboard",
+    "children": [
+      { "key": "keymap", "support": "yes", "agama": "localization.keyboard" },
+      { "key": "capslock", "support": "no" },
+      { "key": "delay", "support": "no" },
+      { "key": "discaps", "support": "no" },
+      { "key": "numlock", "support": "no" },
+      { "key": "rate", "support": "no" },
+      { "key": "scrlock", "support": "no" },
+      { "key": "tty", "support": "no" }
+    ]
+  },
+  {
+    "key": "language",
+    "children": [
+      { "key": "language", "support": "yes", "agama": "localization.language" },
+      { "key": "languages", "support": "no" }
+    ]
+  },
+  {
+    "key": "networking",
+    "children": [
+      {
+        "key": "backend",
+        "support": "no",
+        "notes": "Only NetworkManager is supported."
+      },
+      { "key": "dhcp_options", "support": "no" },
+      {
+        "key": "dns",
+        "children": [
+          {
+            "key": "dhcp_hostname",
+            "support": "no"
+          },
+          {
+            "key": "hostname",
+            "support": "yes",
+            "agama": "hostname.static"
+          },
+          {
+            "key": "nameservers",
+            "support": "yes",
+            "agama": "network.connections[].nameservers",
+            "notes": "Copied to each connection."
+          },
+          {
+            "key": "resolv_conf_policy",
+            "support": "no"
+          },
+          {
+            "key": "searchlist",
+            "support": "yes",
+            "agama": "network.connections[].dns_searchlist",
+            "notes": "Copied to each connection."
+          }
+        ]
+      },
+      {
+        "key": "ipv6",
+        "support": "yes",
+        "notes": "It affects `method4` and `method6`."
+      },
+      { "key": "keep_install_network", "support": "no" },
+      { "key": "managed", "support": "no" },
+      { "key": "modules", "support": "no" },
+      { "key": "net-udev", "support": "no" },
+      { "key": "routing", "support": "no" },
+      { "key": "s390-devices", "support": "no" },
+      { "key": "setup_before_proposal", "support": "no" },
+      { "key": "strict_IP_check_timeout", "support": "no" },
+      { "key": "virt_bridge_proposal", "support": "no" },
+      {
+        "key": "interfaces[]",
+        "agama": "connections",
+        "notes": "It corresponds to Agama `connections`, but the format is not exactly the same.",
+        "children": [
+          { "key": "device", "agama": "interface", "support": "yes" },
+          { "key": "name", "agama": "id", "support": "yes" },
+          { "key": "description", "support": "no" },
+          {
+            "key": "bootproto",
+            "support": "no",
+            "agama": "method6",
+            "notes": "Different set of values."
+          },
+          {
+            "key": "startmode",
+            "support": "no",
+            "notes": "Do not set up network connections you won't use."
+          },
+          {
+            "key": "lladdr",
+            "support": "yes",
+            "agama": "macAddress"
+          },
+          {
+            "key": "ifplugd_priority",
+            "support": "no",
+            "notes": "Not relevant (no ifplugd support)."
+          },
+          { "key": "usercontrol", "support": "no" },
+          { "key": "dhclient_set_hostname", "support": "no" },
+          {
+            "key": "ipaddr",
+            "support": "yes",
+            "agama": "network.connections[].address[]"
+          },
+          {
+            "key": "prefixlen",
+            "support": "yes",
+            "agama": "network.connections[].address[]"
+          },
+          {
+            "key": "netmask",
+            "support": "yes",
+            "agama": "network.connections[].address[]"
+          },
+          {
+            "key": "aliases",
+            "support": "yes",
+            "agama": "network.connections[].address[]"
+          },
+          {
+            "key": "broadcast",
+            "support": "yes",
+            "agama": "network.connections[].address[]"
+          },
+          {
+            "key": "network",
+            "support": "yes",
+            "agama": "network.connections[].address[]"
+          },
+          {
+            "key": "mtu",
+            "support": "no"
+          },
+          {
+            "key": "ethtool_options",
+            "support": "no"
+          },
+          {
+            "key": "wireless",
+            "support": "yes",
+            "agama": "wireless",
+            "notes": "It uses a different format."
+          },
+          { "key": "dhclient_set_down_link", "support": "no" },
+          { "key": "dhclient_set_default_route", "support": "no" },
+          { "key": "zone", "support": "no" },
+          { "key": "firewall", "support": "no" },
+          { "key": "bonding_master", "support": "planned" },
+          {
+            "key": "bonding_module_opts",
+            "support": "yes",
+            "agama": "network.connections[].bond.options"
+          },
+          {
+            "key": "bonding_slave0",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave1",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave2",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave3",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave4",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave5",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave6",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave7",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave8",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          {
+            "key": "bonding_slave9",
+            "support": "yes",
+            "agama": "network.connections[].bond.ports"
+          },
+          { "key": "bridge", "support": "planned" },
+          { "key": "bridge_forwarddelay", "support": "planned" },
+          { "key": "bridge_ports", "support": "planned" },
+          { "key": "bridge_stp", "support": "planned" },
+          { "key": "vlan_id", "support": "planned" },
+          { "key": "wireless_auth_mode", "support": "yes" },
+          { "key": "wireless_ap", "support": "no" },
+          { "key": "wireless_bitrate", "support": "no" },
+          { "key": "wireless_ca_cert", "support": "no" },
+          { "key": "wireless_channel", "support": "no" },
+          { "key": "wireless_client_cert", "support": "no" },
+          { "key": "wireless_client_key", "support": "no" },
+          { "key": "wireless_client_key_password", "support": "no" },
+          { "key": "wireless_default_key", "support": "no" },
+          { "key": "wireless_eap_auth", "support": "no" },
+          { "key": "wireless_eap_mode", "support": "no" },
+          { "key": "wireless_essid", "support": "yes", "agama": "ssid" },
+          { "key": "wireless_frequency", "support": "no" },
+          { "key": "wireless_key", "support": "no" },
+          { "key": "wireless_key_0", "support": "no" },
+          { "key": "wireless_key_1", "support": "no" },
+          { "key": "wireless_key_2", "support": "no" },
+          { "key": "wireless_key_3", "support": "no" },
+          { "key": "wireless_key_length", "support": "no" },
+          { "key": "wireless_mode", "support": "yes", "agama": "mode" },
+          { "key": "wireless_nick", "support": "no" },
+          { "key": "wireless_nwid", "support": "no" },
+          { "key": "wireless_peap_version", "support": "no" },
+          { "key": "wireless_power", "support": "no" },
+          { "key": "wireless_wpa_anonid", "support": "no" },
+          { "key": "wireless_wpa_identity", "support": "no" },
+          {
+            "key": "wireless_wpa_password",
+            "support": "yes",
+            "agama": "password"
+          },
+          { "key": "wireless_wpa_psk", "support": "yes", "agama": "password" }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "services-manager",
+    "notes": "Automatically converted into post-installation script",
+    "children": [
+      {
+        "key": "default_target",
+        "support": "yes"
+      },
+      {
+        "key": "enable",
+        "children": [
+          {
+            "key": "service",
+            "support": "yes"
+          }
+        ]
+      },
+      {
+        "key": "disable",
+        "children": [
+          {
+            "key": "service",
+            "support": "yes"
+          }
+        ]
+      },
+      {
+        "key": "on_demand",
+        "children": [
+          {
+            "key": "service",
+            "support": "yes"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "scripts",
+    "children": [
+      {
+        "key": "pre-scripts[]",
+        "children": [
+          {
+            "key": "filename",
+            "support": "yes",
+            "agama": "scripts.pre[].name"
+          },
+          { "key": "location", "support": "yes", "agama": "scripts.pre[].url" },
+          {
+            "key": "source",
+            "support": "yes",
+            "agama": "scripts.pre[].content"
+          },
+          {
+            "key": "interpreter",
+            "support": "no",
+            "notes": "Use the shebang line in your scripts."
+          },
+          { "key": "feedback", "support": "no" },
+          { "key": "feedback_type", "support": "no" },
+          { "key": "debug", "support": "no" },
+          { "key": "notification", "support": "no" },
+          { "key": "param-list", "support": "no" },
+          { "key": "rerun", "support": "no" }
+        ]
+      },
+      {
+        "key": "postpartitioning-scripts[]",
+        "children": [
+          {
+            "key": "filename",
+            "support": "yes",
+            "agama": "scripts.postPartitioning[].name"
+          },
+          {
+            "key": "location",
+            "support": "yes",
+            "agama": "scripts.postPartitioning[].url"
+          },
+          {
+            "key": "source",
+            "support": "yes",
+            "agama": "scripts.postPartitioning[].content"
+          },
+          {
+            "key": "interpreter",
+            "support": "no",
+            "notes": "Use the shebang line in your scripts."
+          },
+          { "key": "feedback", "support": "no" },
+          { "key": "feedback_type", "support": "no" },
+          { "key": "debug", "support": "no" },
+          { "key": "notification", "support": "no" },
+          { "key": "param-list", "support": "no" },
+          { "key": "rerun", "support": "no" }
+        ]
+      },
+      {
+        "key": "chroot-scripts[]",
+        "agama": "scripts.post[]",
+        "children": [
+          {
+            "key": "filename",
+            "support": "yes",
+            "agama": "scripts.chroot[].name"
+          },
+          {
+            "key": "location",
+            "support": "yes",
+            "agama": "scripts.chroot[].url"
+          },
+          {
+            "key": "source",
+            "support": "yes",
+            "agama": "scripts.chroot[].content"
+          },
+          {
+            "key": "interpreter",
+            "support": "no",
+            "notes": "Use the shebang line in your scripts."
+          },
+          { "key": "feedback", "support": "no" },
+          { "key": "feedback_type", "support": "no" },
+          { "key": "debug", "support": "no" },
+          { "key": "notification", "support": "no" },
+          { "key": "param-list", "support": "no" },
+          { "key": "rerun", "support": "no" }
+        ]
+      },
+      {
+        "key": "post-scripts[]",
+        "agama": "scripts.init[]",
+        "children": [
+          {
+            "key": "filename",
+            "support": "yes",
+            "agama": "scripts.init[].name"
+          },
+          {
+            "key": "location",
+            "support": "yes",
+            "agama": "scripts.init[].url"
+          },
+          {
+            "key": "source",
+            "support": "yes",
+            "agama": "scripts.init[].content"
+          },
+          {
+            "key": "interpreter",
+            "support": "no",
+            "notes": "Use the shebang line in your scripts."
+          },
+          { "key": "feedback", "support": "no" },
+          { "key": "feedback_type", "support": "no" },
+          { "key": "debug", "support": "no" },
+          { "key": "notification", "support": "no" },
+          { "key": "param-list", "support": "no" },
+          { "key": "rerun", "support": "no" }
+        ]
+      },
+      {
+        "key": "init-scripts[]",
+        "agama": "scripts.init[]",
+        "children": [
+          {
+            "key": "filename",
+            "support": "yes",
+            "agama": "scripts.init[].name"
+          },
+          {
+            "key": "location",
+            "support": "yes",
+            "agama": "scripts.init[].url"
+          },
+          {
+            "key": "source",
+            "support": "yes",
+            "agama": "scripts.init[].content"
+          },
+          { "key": "rerun", "support": "no" }
+        ]
+      }
+    ]
+  },
+  { "key": "mail", "support": "no" },
+  { "key": "nfs", "support": "no" },
+  { "key": "nfs_server", "support": "no" },
+  { "key": "nis", "support": "no" },
+  { "key": "nis_server", "support": "no" },
+  { "key": "ntp-client", "support": "no" },
+  { "key": "printer", "support": "no" },
+  {
+    "key": "proxy",
+    "support": "planned",
+    "notes": "Meanwhile set the proxy using the kernels' command line."
+  },
+  { "key": "report", "support": "no" },
+  { "key": "samba-client", "support": "no" },
+  {
+    "key": "software",
+    "children": [
+      { "key": "do_online_update", "support": "no", "notes": "No 2nd stage" },
+      { "key": "install_recommended", "support": "no" },
+      { "key": "instsource", "support": "no" },
+      { "key": "kernel", "support": "no" },
+      { "key": "packages[]", "support": "yes", "agama": "software.packages[]" },
+      { "key": "post-packages[]", "support": "no" },
+      { "key": "patterns[]", "support": "yes", "agama": "software.patterns[]" },
+      { "key": "products[]", "support": "yes", "agama": "software.id" },
+      { "key": "remove-packages[]", "support": "no" },
+      { "key": "remove-patterns[]", "support": "no" },
+      { "key": "remove-products[]", "support": "no" }
+    ]
+  },
+  { "key": "sound", "support": "no" },
+  { "key": "squid", "support": "no" },
+  { "key": "ssh_import", "support": "no" },
+  {
+    "key": "suse_register",
+    "children": [
+      {
+        "key": "do_registration",
+        "support": "yes",
+        "notes": "The whole suse_register section is ignored if \"false\"."
+      },
+      {
+        "key": "email",
+        "support": "yes",
+        "agama": "product.registrationEmail"
+      },
+      { "key": "install_updates", "support": "no" },
+      {
+        "key": "reg_code",
+        "support": "yes",
+        "agama": "product.registrationCode"
+      },
+      { "key": "reg_server",
+        "support": "yes",
+        "agama": "product.registrationUrl"
+      },
+      { "key": "reg_server_cert", "support": "no" },
+      {
+        "key": "reg_server_cert_fingerprint",
+        "support": "yes",
+        "agama": "security.sslCertificates[].fingerprint"
+      },
+      {
+        "key": "reg_server_cert_fingerprint_type",
+        "support": "yes",
+        "agama": "security.sslCertificates[].algorithm"
+      },
+      {
+        "key": "addons[]",
+        "support": "yes",
+        "agama": "product.addons[]",
+        "notes": "Does not check the dependencies, it registers addons in the given order."
+      },
+      { "key": "slp_discovery", "support": "planned" }
+    ]
+  },
+  { "key": "sysconfig", "support": "no" },
+  { "key": "tftp-server", "support": "no" },
+  {
+    "key": "timezone",
+    "children": [
+      { "key": "timezone", "support": "yes", "agama": "localization.timezone" },
+      { "key": "hwclock", "support": "no" }
+    ]
+  },
+  { "key": "upgrade", "support": "no" },
+  {
+    "key": "iscsi-client",
+    "children": [
+      { "key": "initiatorname", "support": "yes", "agama": "iscsi.initiator" },
+      { "key": "version", "support": "no" },
+      {
+        "key": "targets[]",
+        "children": [
+          { "key": "authmethod", "support": "no" },
+          {
+            "key": "portal",
+            "support": "yes",
+            "agama": "iscsi.targets[].address",
+            "notes": "Splitted into two values, address and port."
+          },
+          { "key": "startup", "support": "yes" },
+          { "key": "target", "support": "yes", "agama": "iscsi.targets[].name" },
+          { "key": "iface", "support": "yes", "agama": "iscsi.targets[].interface" }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "users[]",
+    "notes": "Only the root and the first user are considered.",
+    "children": [
+      { "key": "username", "support": "yes", "agama": "user.userName" },
+      { "key": "fullName", "support": "yes", "agama": "user.fullName" },
+      { "key": "password", "support": "yes", "agama": "user.password" },
+      {
+        "key": "encrypted",
+        "support": "yes",
+        "agama": "user.hashedPassword",
+        "notes": "If set to true, it uses \"hashedPassword\" instead of \"password\""
+      },
+      {
+        "key": "authorized_keys",
+        "support": "yes",
+        "agama": "root.sshPublicKey",
+        "notes": "It only considers a single key."
+      }
+    ]
+  },
+  { "key": "zfcp", "support": "yes" }
+]

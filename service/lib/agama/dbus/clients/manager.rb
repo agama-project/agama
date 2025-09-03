@@ -63,6 +63,8 @@ module Agama
             InstallationPhase::CONFIG
           when DBus::Manager::INSTALL_PHASE
             InstallationPhase::INSTALL
+          when DBus::Manager::FINISH_PHASE
+            InstallationPhase::FINISH
           end
         end
 

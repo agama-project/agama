@@ -5,9 +5,10 @@ After=network-online.target
 [Service]
 Type=forking
 ExecStart=/usr/bin/agamactl --daemon
+EnvironmentFile=-/run/agama/environment.conf
 PIDFile=/run/agama/bus.pid
 User=root
 TimeoutStopSec=5
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target

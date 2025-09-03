@@ -27,6 +27,10 @@ module Agama
   end
 end
 
+require "agama/software/callbacks/digest"
 require "agama/software/callbacks/media"
+require "agama/software/callbacks/pkg_gpg_check"
 require "agama/software/callbacks/progress"
+require "agama/software/callbacks/provide"
+require "agama/software/callbacks/script"
 require "agama/software/callbacks/signature"

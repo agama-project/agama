@@ -1,4 +1,598 @@
 -------------------------------------------------------------------
+Mon Aug 25 10:48:37 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- live-root: update final EULAs with the June 2024 delivery 
+
+-------------------------------------------------------------------
+Tue Aug 19 14:14:22 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Make /etc/resolv.conf available at /sysroot when applying the DUDs
+  (bsc#1248276).
+
+-------------------------------------------------------------------
+Mon Aug 18 15:48:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a "Boot from Hard Disk" option for ppc64le and drop the
+  "Other options..." submenu (bsc#1248161).
+
+-------------------------------------------------------------------
+Mon Aug 18 10:20:51 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Load modules even if the module.order file is not given (bsc#1248138).
+
+-------------------------------------------------------------------
+Wed Aug 13 10:27:39 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Copy kernel modules from DUDs to the updates/ directory (bsc#1246061).
+
+-------------------------------------------------------------------
+Mon Aug 11 09:42:22 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix handling of Driver Update Disks when they are placed in local
+  file systems (bsc#1247682, bsc#1247776).
+
+-------------------------------------------------------------------
+Thu Aug  7 15:39:03 UTC 2025 - Steffen Winterfeldt <snwint@suse.com>
+
+- fix DUD application in 99-agama-dud-apply.sh (jsc#PED-13262)
+
+-------------------------------------------------------------------
+Thu Jul 31 16:58:42 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Boot by default from disk to avoid endless loop in unattended
+  installation (bsc#1247438)
+
+-------------------------------------------------------------------
+Sun Jul 27 09:44:04 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- Do not fail if there are no rpm scriptlets to clean
+  (gh#agama-project/agama#2617).
+
+-------------------------------------------------------------------
+Wed Jul 23 14:18:38 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Ensure iSCSI initiator name is unique (bsc#1246280).
+
+-------------------------------------------------------------------
+Wed Jul 23 08:08:23 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- In Firefox disable downloading the binary H.264 codec from
+  ciscobinary.openh264.org (gh#agama-project/agama#2601)
+
+-------------------------------------------------------------------
+Tue Jul 22 10:05:30 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Include the "libopenssl-3-fips-provider" package in the installer
+  image to work properly with the "fips=1" boot parameter
+  (bsc#1246857)
+
+-------------------------------------------------------------------
+Mon Jul 21 15:07:42 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 17
+
+-------------------------------------------------------------------
+Mon Jul 21 14:12:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Disabled udev rules that interfere with the activation process of
+  libstorage-ng (bsc#1246133 and bsc#1245159).
+
+-------------------------------------------------------------------
+Thu Jul 17 21:51:19 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Masked some systemd services that interfere with the activation
+  process of libstorage-ng (bsc#1246133).
+
+-------------------------------------------------------------------
+Thu Jul 17 08:08:40 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Added "inst.dud_insecure" boot option for ignoring SSL
+  certificate problems when downloading DUD from an HTTPS server
+  (related to bsc#1245393)
+- Skip updating kernel module dependencies if the DUD image does
+  not provide any kernel module
+
+-------------------------------------------------------------------
+Tue Jul 15 16:19:21 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed downloading DUD files from HTTPS URL
+  (link the SSL certificates and config from the root image)
+  (bsc#1245393)
+
+-------------------------------------------------------------------
+Mon Jul 14 11:25:22 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Use "plaindir" repository type for the DUD package repository,
+  we do not need to create any repository index
+  (gh#agama-project/agama#2543)
+- Automatically configure network when a remote DUD is used,
+  the "rd.neednet=1" boot option is not required anymore
+  (by default uses the DHCP configuration, can be changed via the
+  "ip=" boot option)
+
+-------------------------------------------------------------------
+Thu Jul 10 13:09:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support to update kernel modules from a Driver Update Disk
+  (jsc#AGM-158, jsc#PED-3670, gh#agama-project/agama#2548).
+
+-------------------------------------------------------------------
+Wed Jul  9 12:07:21 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the tpm2.0-tools package (jsc#PED-13114).
+
+-------------------------------------------------------------------
+Wed Jul  2 13:28:46 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- live: fix_bootconfig.s390x: strip CDLABEL from the kiwi-generated
+  grub config (bsc#1245453)
+
+-------------------------------------------------------------------
+Tue Jul  1 15:29:36 UTC 2025 - Bernhard Wiedemann <bwiedemann@suse.com>
+
+- Make agama-installer build more reproducible (boo#1245501)
+
+-------------------------------------------------------------------
+Mon Jun 30 15:51:37 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 16
+
+-------------------------------------------------------------------
+Fri Jun 20 14:57:08 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Install "gdm-systemd" and enable "gdm.service" to start the
+  graphical desktop, this is a new way for starting display managers
+
+-------------------------------------------------------------------
+Thu Jun 19 09:06:50 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Add hyper-v on x86_64 and aarch64 only (related to bsc#1236961).
+
+-------------------------------------------------------------------
+Wed Jun 18 11:29:08 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Make web bundled fonts available for the system via config
+  file (gh#agama-project/agama#2488, bsc#1236261).
+
+-------------------------------------------------------------------
+Tue Jun 17 08:47:46 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Add hyper-v package (bsc#1236961).
+
+-------------------------------------------------------------------
+Fri Jun 13 10:41:15 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add initial support to apply updates from RPM packages and DUD archives
+  (gh#agama-project/agama#2466).
+
+-------------------------------------------------------------------
+Tue Jun 10 14:40:21 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add iscsiuio kernel driver (gh#agama-project/agama#2460).
+
+-------------------------------------------------------------------
+Thu Jun  5 08:28:10 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Disable Firefox extensions autoupdate
+  (gh#agama-project/agama#2441)
+
+-------------------------------------------------------------------
+Tue Jun  3 07:35:56 UTC 2025 - Michal Filka <mfilka@suse.cz>
+
+- Switched live ISO to use Wayland (gh#agama-project/agama#1781)
+- Do not require microos-tools as we don't need it anymore. bsc#1237366
+
+-------------------------------------------------------------------
+Thu May 29 07:16:11 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Keep the nvmem kernel drivers (bsc#1243350)
+
+-------------------------------------------------------------------
+Mon May 26 21:35:04 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Generate systemd network link files below Agama run folder to
+  be copied at the end of the installation (bsc#1237327,
+  bsc#1241969, gh#agama-project/agama#2404).
+
+-------------------------------------------------------------------
+Mon May 26 19:51:55 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 15
+
+-------------------------------------------------------------------
+Mon May 26 14:22:03 UTC 2025 - Lukas Ocilka <locilka@suse.com>
+
+- Added a simple Rescue System by reusing the Installation Live
+  Image and disabling the Agama services
+
+-------------------------------------------------------------------
+Wed May 21 12:42:34 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Do not set root= dracut configuration in PXE images
+  (gh#agama-project/agama#2377).
+
+-------------------------------------------------------------------
+Tue May 20 08:42:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Disable sending Firefox usage data to Mozilla for increased
+  privacy, disable installing studies
+
+-------------------------------------------------------------------
+Tue May 13 16:56:56 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not set the root in /boot/grub2/grub.cfg file, it was wrong
+  and the root is already set in the /boot/grub2/earlyboot.cfg
+  file (bsc#1236873)
+- Replace underscores in the boot menu label by spaces
+
+-------------------------------------------------------------------
+Wed May  7 07:07:33 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed locale cleanup to not delete all locales
+  (related to bsc#1238584)
+- Keep only the UTF-8 locales, non-UTF-8 are not supported
+
+-------------------------------------------------------------------
+Tue May  6 14:14:50 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add perl-XML-Simple for backward compatibility (jsc#PED-10122,
+  gh#agama-project/agama#2331).
+
+-------------------------------------------------------------------
+Tue Apr 29 11:30:59 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Predefine some useful commands in the default bash history for
+  easier use. It can serve also as a hint how to save logs, etc...
+
+-------------------------------------------------------------------
+Thu Apr 28 16:40:41 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Ensure the persistent NetworkManager connections are copied if
+  not explicitlly disabled (related to gh#agama-project/agama#2291)
+
+-------------------------------------------------------------------
+Mon Apr 28 12:14:51 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed missing drivers in ppc64le initrd, fixes broken
+  installation via PXE (bsc#1241887)
+- Removed the workaround for adding the xhci-pci-renesas driver,
+  now it is included in the default dracut drivers
+
+-------------------------------------------------------------------
+Fri Apr 25 14:10:04 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Display Firefox devtool in fullscreen window, display the
+  console by default after pressing F12, display timestamps
+  in console
+
+-------------------------------------------------------------------
+Thu Apr 24 16:40:41 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- bsc#1239777, bsc#1236885 gh#agama-project/agama#2291.
+  - Persist the NetworkManager runtime config created by
+    nm-initrd-generator when given explicitlly with the 'ip='
+    kernel cmdline argument.
+  - Allow to disable the copy of the persistent configuration with
+    the inst.copy_network kernel cmdline argument.
+  - Do not copy the NetworkManager runtime configuration to the
+    target system anymore.
+
+-------------------------------------------------------------------
+Thu Apr 24 15:11:35 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Filter out the special PXE boot parameters, do not pass them
+  to the installed system. Remove also most of the network
+  settings (gh#agama-project/agama#2280)
+
+-------------------------------------------------------------------
+Wed Apr 23 08:39:34 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Rename "root" source directory to "live-root" to avoid confusion
+  with root/root directory
+- Removed duplicate files which are located in root/root
+  (live-root/root now)
+
+-------------------------------------------------------------------
+Wed Apr 23 05:47:23 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Include the kernel-default-optional package in the Live ISO
+  to support more hardware (bsc#1241099)
+
+-------------------------------------------------------------------
+Tue Apr 22 14:14:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 14
+
+-------------------------------------------------------------------
+Thu Apr 10 05:20:55 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a new SUSE_SLE_16_PXE_MINI that only includes the software
+  to use Agama remotely (jsc#PED-12152).
+
+-------------------------------------------------------------------
+Tue Apr  8 15:52:18 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix boot from Hard Disk for EFI x86_64 (bsc#1240646)
+
+-------------------------------------------------------------------
+Thu Apr  3 08:28:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Workaround for a not working file picker in local installation
+  (gh#agama-project/agama#2243)
+
+-------------------------------------------------------------------
+Wed Apr  2 05:47:01 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use "agama download" to fetch the info file (gh#agama-project/agama#2176).
+
+-------------------------------------------------------------------
+Mon Mar 31 13:06:53 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Print also the IPv6 installer URLs in the console (bsc#1240197)
+
+-------------------------------------------------------------------
+Thu Mar 27 15:56:11 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Version 14pre
+
+-------------------------------------------------------------------
+Thu Mar 27 12:40:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 13
+
+-------------------------------------------------------------------
+Tue Mar 25 13:28:15 UTC 2025 - Giacomo Leidi <giacomo.leidi@suse.com>
+
+- live/src/agama-installer.kiwi: Adapt to latest patterns (SR#364982)
+
+-------------------------------------------------------------------
+Mon Mar 24 10:57:22 UTC 2025 - Lukas Ocilka <locilka@suse.com>
+
+- Fixed DUD issues (gh#agama-project/agama#2199):
+  - Enabling the agama-dud service in the live media
+  - Making the agama-dud script executable
+  - Disabling dmesg on the console while DUD runs
+
+-------------------------------------------------------------------
+Fri Mar 21 09:58:52 AM UTC 2025 - Lukas Ocilka <locilka@suse.com>
+
+- Added the initial functionality for inst.dud
+  (jsc#3670 and jsc#AGM-65)
+
+-------------------------------------------------------------------
+Fri Mar 21 07:31:34 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add aaa_base-extras which includes setup-systemd-proxy-env.path
+  (gh#agama-project/agama#2184).
+
+-------------------------------------------------------------------
+Thu Mar 20 15:52:36 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Fixed broken "inst.self_update" boot option
+  (gh#agama-project/agama#2175)
+
+-------------------------------------------------------------------
+Tue Mar 18 16:32:07 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Remove /etc/nvme/host* files from the image (bsc#1238038)
+
+-------------------------------------------------------------------
+Mon Mar 17 12:12:02 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed broken media check service (bsc#1239155)
+
+-------------------------------------------------------------------
+Wed Mar 12 17:17:08 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- (gh#agama-project/agama#2142)
+  - Allow to set the static hostname using the hostname kernel
+    cmdline argument.
+  - Allow to disable the set of the hostname via DHCP using the
+    SetHostname kernel cmdline argument.
+
+-------------------------------------------------------------------
+Tue Mar 11 16:29:40 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Bump the version to 13pre
+
+-------------------------------------------------------------------
+Wed Mar  5 14:54:48 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Decrease the libzypp timeout from the default 60 seconds to
+  20 seconds (Agama now does automatic retry)
+  (gh#agama-project/agama#2117)
+- Display proper Agama version in the console
+
+-------------------------------------------------------------------
+Wed Feb 26 11:50:17 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Add IPMI drivers to the initrd (bsc#1237354)
+
+-------------------------------------------------------------------
+Wed Feb 26 08:08:25 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Install additional kernel drivers from the kernel-default-extra
+  package (gh#agama-project/agama#2059)
+
+-------------------------------------------------------------------
+Wed Feb 26 06:51:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 12
+
+-------------------------------------------------------------------
+Mon Feb 24 17:07:07 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed build in SLE16, some packages to remove are not
+  preinstalled in SLE16, do not fail in that case
+
+-------------------------------------------------------------------
+Mon Feb 24 16:19:03 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Reduce the PPC initrd size (gh#agama-project/agama#2026),
+  use the same solution from installation-images
+  (gh#openSUSE/installation-images#754)
+
+-------------------------------------------------------------------
+Mon Feb 24 13:35:04 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Use a TrueType font in xterm
+
+-------------------------------------------------------------------
+Fri Feb 21 16:34:08 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- ISO size reduction, delete not needed packages (python, Mesa,
+  libyui-qt, Qt libs,...)
+- Use XZ compression for initrd to have a smaller image
+  (esp. important for PPC) (part of gh#agama-project/agama#2026)
+
+-------------------------------------------------------------------
+Fri Feb 21 16:03:42 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed broken "live.password_dialog" boot option
+  (gh#agama-project/agama#2043)
+
+-------------------------------------------------------------------
+Wed Feb 19 10:38:45 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the QEMU guest agent (gh#agama-project/agama#1816,
+  gh#agama-project/agama#2025).
+
+-------------------------------------------------------------------
+Wed Feb 19 08:49:24 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Added support for giving a file URL with extra kernel cmdline
+  arguments (agama.info) which was known as the info file in
+  linuxrc.
+- Added basic support for translating the ifcfg kernel cmdline arg
+  to its ip equivalent (gh#agama-project/agama#1896).
+- Moved the kernel cmdline conf under /run/agama/cmdline.d
+
+-------------------------------------------------------------------
+Wed Feb 19 07:37:51 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed reboot delay caused by the root shell service
+  (gh#agama-project/agama#2018)
+- Run the shell at tty8 (there was a collision with the login
+  prompt at tty2)
+
+-------------------------------------------------------------------
+Tue Feb 18 13:14:30 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Rename kiwi profiles to avoid using dashes, using underscores
+  instead (gh#agama-project/agama#2014).
+- Enable PXE support for SLE 16 distributions.
+- Add Agama CLI Bash completion support.
+
+-------------------------------------------------------------------
+Tue Feb 18 11:10:22 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Add the xhci-pci-renesas driver to the initrd if available
+  (workaround for bsc#1237235)
+
+-------------------------------------------------------------------
+Wed Feb 12 12:02:39 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not print details about removed kernel drivers and firmware
+  files during build, this speeds up the build significantly
+  (~1 minute faster build) and avoids huge build log.
+- Uncompress the kernel drivers, no need to compress them twice
+  (they are compressed by the squashfs as well). Compressing
+  all drivers together in the image is more effective than
+  compressing several thousands individual files.
+  This makes the image about 33MB smaller (on x86_64). (boo#1192457)
+- Hardlink the duplicate licenses, makes the ISO ~1MB smaller
+
+-------------------------------------------------------------------
+Wed Feb 12 10:17:47 UTC 2025 - Giacomo Leidi <giacomo.leidi@suse.com>
+
+- Add ISO publisher (gh#agama-project/agama#1967)
+
+-------------------------------------------------------------------
+Wed Feb 12 08:04:11 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Start root shell in a free terminal (usually tty2)
+- Fixed restarting the x11-autologin service
+- Do not ask to restore the browser session after restarting it
+- Print only kernel errors or more severe messages on the console,
+  avoid spamming the terminal with useless texts (bsc#1237056)
+
+-------------------------------------------------------------------
+Fri Feb  7 16:31:50 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- live: fix_bootconfig.s390x: restore initrd.off naming for the initrd offset
+  This essentially reverts the previous change (bsc#1236781, gh#agama-project/agama#1969,
+  gh#agama-project/agama#1974)
+
+-------------------------------------------------------------------
+Fri Feb  7 09:15:02 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- In local installation prefer the language configured in the
+  UEFI firmware
+
+-------------------------------------------------------------------
+Fri Feb  7 08:21:29 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Implemented media check functionality (bsc#1236103)
+
+-------------------------------------------------------------------
+Fri Feb  7 08:10:46 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Use better ISO Volume ID labels (bsc#1236401)
+- Improve also the boot menu labels
+- Use the graphical boot menu also in SLE
+- Added UEFI firmware settings boot menu option
+
+-------------------------------------------------------------------
+Tue Feb  4 13:25:35 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- configure xterm to use the default fixed font also in the
+  configuration popup menu (Ctrl + click) to avoid crash
+- bsc#1235478
+  - tuned IceWM setup to disable some desktop functionality like
+    opening main menu using the Win key (by mfilka@suse.com)
+
+-------------------------------------------------------------------
+Mon Feb  3 23:08:34 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- live: fix_bootconfig.s390x: use initrd.ofs for the initrd
+  offset filename (gh#agama-project/agama#1969)
+
+-------------------------------------------------------------------
+Mon Feb  3 23:01:37 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- fix_bootimage: exit on failures (gh#agama-project/agama#1969)
+
+-------------------------------------------------------------------
+Mon Jan 20 10:37:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add SUSE licenses (jsc#PED-11987).
+
+-------------------------------------------------------------------
+Wed Jan 15 16:53:28 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- Drop patterns-yast-yast2_basis requirement
+  yast packages should be installed per package and not as
+  a whole pattern.
+  (gh#agama-project/agama#1893).
+
+-------------------------------------------------------------------
+Fri Jan 10 21:22:03 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 11
+
+-------------------------------------------------------------------
+Fri Jan 10 09:03:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Depend on Ruby's default version (gh#agama-project/agama#1872).
+
+-------------------------------------------------------------------
+Wed Jan  8 12:10:39 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Make agama kernel cmdline options available in the sysroot at
+  /etc/agama.d/cmdline.conf and set it as a EnvironmentFile
+  in Agama related services (gh#agama-project/agama#1866).
+
+-------------------------------------------------------------------
 Tue Dec 10 12:46:06 UTC 2024 - Michal Filka <mfilka@suse.com>
 
 - Updated config.sh to enable agama-dbus-monitor service

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,15 +20,37 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/configs/size"
-require "agama/storage/configs/with_search"
 require "agama/storage/configs/with_alias"
+require "agama/storage/configs/with_filesystem"
+require "agama/storage/configs/with_search"
 
 module Agama
   module Storage
     module Configs
       # Section of the configuration representing a partition
       class Partition
+        # Partition config meaning "delete all partitions".
+        #
+        # @return [Configs::Partition]
+        def self.new_for_delete_all
+          new.tap do |config|
+            config.search = Configs::Search.new_for_search_all
+            config.delete = true
+          end
+        end
+
+        # Partition config meaning "shrink any partitions if needed".
+        #
+        # @return [Configs::Partition]
+        def self.new_for_shrink_any_if_needed
+          new.tap do |config|
+            config.search = Configs::Search.new_for_search_all
+            config.size = Configs::Size.new_for_shrink_if_needed
+          end
+        end
+
         include WithAlias
+        include WithFilesystem
         include WithSearch
 
         # @return [Boolean]
@@ -47,9 +69,6 @@ module Agama
 
         # @return [Encryption, nil]
         attr_accessor :encryption
-
-        # @return [Filesystem, nil]
-        attr_accessor :filesystem
 
         def initialize
           @size = Size.new

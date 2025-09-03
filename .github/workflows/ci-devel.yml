@@ -1,0 +1,47 @@
+name: CI - Devel scripts
+
+permissions:
+  contents: read
+
+on:
+  push:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used below for the pull request event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-devel.yml
+      # any change in the devel subfolder
+      - devel/**
+      # except the Markdown documentation
+      - "!devel/**.md"
+  pull_request:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used above for the push event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-devel.yml
+      # any change in the devel subfolder
+      - devel/**
+      # except the Markdown documentation
+      - "!devel/**.md"
+
+  # allow running manually
+  workflow_dispatch:
+
+jobs:
+  ci_devel:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v4
+      with:
+        # checkout only the "devel" subdirectory
+        sparse-checkout: |
+          devel
+
+    - name: Run the tests
+      run: 	find devel -type f -exec grep -l -E "^#! *(/usr/|)/bin/(ba|)sh" \{\} \; | xargs -I% bash -c "echo 'Checking %...' && shellcheck %"

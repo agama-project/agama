@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,11 +19,9 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
 require "y2network/wireless_auth_mode"
 require "y2network/wireless_mode"
 
-# :nodoc:
 module Agama
   module AutoYaST
     # Builds an Agama "wireless" section from an AutoYaST InterfaceSection.
@@ -39,12 +37,15 @@ module Agama
       #
       # @return [Hash]
       def read
-        wireless = {}
+        wireless = {
+          "ssid" => section.wireless_essid.to_s
+        }
+        return {} if wireless["ssid"].empty?
+
         security = security_from(section.wireless_auth_mode)
         wireless["security"] = security if security
         mode = mode_from(section.wireless_mode)
         wireless["mode"] = mode if mode
-        wireless["ssid"] = section.wireless_essid.to_s
 
         case security
         when "wpa-psk"

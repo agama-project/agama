@@ -22,6 +22,16 @@
 use zbus::proxy;
 #[proxy(interface = "org.opensuse.Agama1.Progress", assume_defaults = true)]
 pub trait Progress {
+    /// ProgressChanged signal
+    #[zbus(signal)]
+    fn progress_changed(
+        &self,
+        total_steps: u32,
+        current_step: (u32, &str),
+        finished: bool,
+        steps: Vec<&str>,
+    ) -> zbus::Result<()>;
+
     /// CurrentStep property
     #[zbus(property)]
     fn current_step(&self) -> zbus::Result<(u32, String)>;

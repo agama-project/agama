@@ -12,7 +12,7 @@ Environment=TERM=linux
 ExecStartPre=-/usr/bin/plymouth --hide-splash
 ExecStart=/usr/libexec/agama-scripts.sh
 RemainAfterExit=yes
-TimeoutSec=0
+TimeoutStartSec=infinity
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target

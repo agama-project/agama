@@ -6,6 +6,8 @@ After=network-online.target agama.service agama-hostname.service
 BindsTo=agama.service
 
 [Service]
+EnvironmentFile=-/run/agama/environment.conf
+Environment="AGAMA_LOG=debug,zbus=info"
 Type=notify
 ExecStart=/usr/bin/agama-web-server serve --address :::80 --address2 :::443
 PIDFile=/run/agama/web.pid
@@ -13,4 +15,4 @@ User=root
 TimeoutStopSec=5
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target

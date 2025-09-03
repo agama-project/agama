@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,40 +21,25 @@
  */
 
 import React from "react";
-import { screen, waitFor } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
-import WifiConnectionForm from "~/components/network/WifiConnectionForm";
-import {
-  Connection,
-  SecurityProtocols,
-  WifiNetwork,
-  WifiNetworkStatus,
-  Wireless,
-} from "~/types/network";
+import { screen } from "@testing-library/react";
+import { installerRender } from "~/test-utils";
+import WifiConnectionForm from "./WifiConnectionForm";
+import { Connection, SecurityProtocols, WifiNetworkStatus, Wireless } from "~/types/network";
 
 const mockAddConnection = jest.fn();
 const mockUpdateConnection = jest.fn();
-const mockUpdateSelectedWifi = jest.fn();
-const mockOnCancelFn = jest.fn();
 
 jest.mock("~/queries/network", () => ({
   ...jest.requireActual("~/queries/network"),
-  useNetworkConfigChanges: jest.fn(),
+  useNetworkChanges: jest.fn(),
   useAddConnectionMutation: () => ({
-    mutate: mockAddConnection,
+    mutateAsync: mockAddConnection,
   }),
   useConnectionMutation: () => ({
-    mutate: mockUpdateConnection,
+    mutateAsync: mockUpdateConnection,
   }),
-  useSelectedWifiChange: () => ({
-    mutate: mockUpdateSelectedWifi,
-  }),
+  useConnections: () => [],
 }));
-
-const hiddenNetworkMock = {
-  hidden: true,
-  status: WifiNetworkStatus.NOT_CONFIGURED,
-} as WifiNetwork;
 
 const networkMock = {
   ssid: "Visible Network",
@@ -68,81 +53,49 @@ const networkMock = {
   }),
 };
 
-const renderForm = (network: WifiNetwork, errors = {}) =>
-  plainRender(<WifiConnectionForm network={network} errors={errors} onCancel={mockOnCancelFn} />);
+const publicNetworkMock = { ...networkMock, security: [] };
 
 describe("WifiConnectionForm", () => {
-  it("renders a generic warning when mounted with no needsAuth erorr", () => {
-    renderForm(networkMock, { errorsId: true });
-    screen.getByText("Connect");
-    screen.getByText("Warning alert:");
+  beforeEach(() => {
+    mockAddConnection.mockResolvedValue(undefined);
+    mockUpdateConnection.mockResolvedValue(undefined);
   });
 
-  it("renders an authentication failed warning when mounted with needsAuth erorr", () => {
-    renderForm(networkMock, { needsAuth: true });
-    screen.getByText("Connect");
-    screen.getByText("Warning alert:");
-    screen.getByText(/Authentication failed/);
-  });
+  describe("when rendered for a public network", () => {
+    it("warns the user about connecting to an unprotected network", () => {
+      installerRender(<WifiConnectionForm network={publicNetworkMock} />, { withL10n: true });
+      screen.getByText("Warning alert:");
+      screen.getByText("Not protected network");
+    });
 
-  describe("when mounted for connecting to a hidden network", () => {
-    it("renders the SSID input", async () => {
-      renderForm(hiddenNetworkMock);
-      screen.getByRole("textbox", { name: "SSID" });
+    it("renders only the Connect and Cancel actions", () => {
+      installerRender(<WifiConnectionForm network={publicNetworkMock} />, { withL10n: true });
+      expect(screen.queryByRole("combobox", { name: "Security" })).toBeNull();
+      screen.getByRole("button", { name: "Connect" });
+      screen.getByRole("button", { name: "Cancel" });
     });
   });
 
-  describe("when mounted for connecting to a visible network", () => {
-    it("does not render the SSID input", () => {
-      renderForm(networkMock);
-      expect(screen.queryByRole("textbox", { name: "SSID" })).not.toBeInTheDocument();
-    });
-  });
-
-  describe("when form is send", () => {
-    // Note, not using rerender for next two test examples because it doesn not work always
-    // because previous first render somehow leaks in the next one.
-    it("updates information about selected network (visible network version)", async () => {
-      const { user } = renderForm(networkMock);
+  describe("when form is submitted", () => {
+    it("replaces form by an informative alert ", async () => {
+      const { user } = installerRender(<WifiConnectionForm network={networkMock} />, {
+        withL10n: true,
+      });
+      screen.getByRole("form", { name: "Wi-Fi connection form" });
       const connectButton = screen.getByRole("button", { name: "Connect" });
       await user.click(connectButton);
-      expect(mockUpdateSelectedWifi).toHaveBeenCalledWith({
-        ssid: "Visible Network",
-        needsAuth: null,
-      });
+      expect(screen.queryByRole("form", { name: "Wi-Fi connection form" })).toBeNull();
+      screen.getByText("Setting up connection");
     });
 
-    it("updates information about selected network (hidden network version)", async () => {
-      const { user } = renderForm(hiddenNetworkMock);
-      const ssidInput = screen.getByRole("textbox", { name: "SSID" });
-      const connectButton = screen.getByRole("button", { name: "Connect" });
-      await user.type(ssidInput, "Secret Network");
-      await user.click(connectButton);
-      expect(mockUpdateSelectedWifi).toHaveBeenCalledWith({
-        ssid: "Secret Network",
-        needsAuth: null,
-      });
-    });
-
-    it("disables cancel and submission actions", async () => {
-      const { user } = renderForm(networkMock);
-      const connectButton = screen.getByText("Connect");
-      const cancelLink = screen.getByText("Cancel");
-
-      expect(connectButton).not.toBeDisabled();
-      expect(cancelLink).not.toBeDisabled();
-
-      await waitFor(() => {
-        user.click(connectButton);
-        expect(connectButton).toBeDisabled();
-        expect(cancelLink).toBeDisabled();
-      });
-    });
+    it.todo("re-render the form with an error if connection fails");
 
     describe("for a not configured network", () => {
       it("triggers a mutation for adding and connecting to the network", async () => {
         const { settings: _, ...notConfiguredNetwork } = networkMock;
-        const { user } = renderForm(notConfiguredNetwork);
+        const { user } = installerRender(<WifiConnectionForm network={notConfiguredNetwork} />, {
+          withL10n: true,
+        });
         const securitySelector = screen.getByRole("combobox", { name: "Security" });
         const connectButton = screen.getByText("Connect");
         await user.selectOptions(securitySelector, "wpa-psk");
@@ -161,15 +114,20 @@ describe("WifiConnectionForm", () => {
 
     describe("for an already configured network", () => {
       it("triggers a mutation for updating and connecting to the network", async () => {
-        const { user } = renderForm({
-          ...networkMock,
-          settings: new Connection(networkMock.ssid, {
-            wireless: new Wireless({
-              security: "wpa-psk",
-              password: "wrong-wifi-password",
-            }),
-          }),
-        });
+        const { user } = installerRender(
+          <WifiConnectionForm
+            network={{
+              ...networkMock,
+              settings: new Connection(networkMock.ssid, {
+                wireless: new Wireless({
+                  security: "wpa-psk",
+                  password: "wrong-wifi-password",
+                }),
+              }),
+            }}
+          />,
+          { withL10n: true },
+        );
         const connectButton = screen.getByText("Connect");
         const passwordInput = screen.getByLabelText("WPA Password");
         await user.clear(passwordInput);
@@ -188,28 +146,5 @@ describe("WifiConnectionForm", () => {
         );
       });
     });
-  });
-
-  it("allows connecting to hidden network", async () => {
-    const { user } = renderForm(hiddenNetworkMock);
-    const ssidInput = screen.getByRole("textbox", { name: "SSID" });
-    const securitySelector = screen.getByRole("combobox", { name: "Security" });
-    const wpaOption = screen.getByRole("option", { name: /WPA/ });
-    const connectButton = screen.getByRole("button", { name: "Connect" });
-    await user.type(ssidInput, "AHiddenNetwork");
-    await user.selectOptions(securitySelector, wpaOption);
-    const passwordInput = screen.getByLabelText("WPA Password");
-    await user.type(passwordInput, "ASecretPassword");
-    await user.click(connectButton);
-    expect(mockAddConnection).toHaveBeenCalledWith(
-      expect.objectContaining({
-        id: "AHiddenNetwork",
-        wireless: expect.objectContaining({
-          hidden: true,
-          ssid: "AHiddenNetwork",
-          password: "ASecretPassword",
-        }),
-      }),
-    );
   });
 });

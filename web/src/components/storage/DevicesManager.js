@@ -22,7 +22,8 @@
 
 // @ts-check
 
-import { compact, uniq } from "~/utils";
+import { unique } from "radashi";
+import { compact } from "~/utils";
 
 /**
  * @typedef {import ("~/types/storage").Action} Action
@@ -138,11 +139,15 @@ export default class DevicesManager {
    * Disk devices and LVM volume groups used for the installation.
    * @method
    *
-   * @note The used devices are extracted from the actions.
+   * @note The used devices are extracted from the actions, but the optional argument
+   * can be used to expand the list if some devices must be included despite not
+   * being affected by the actions.
    *
+   * @param {string[]} knownNames - names of devices already known to be used, even if
+   *    there are no actions on them
    * @returns {StorageDevice[]}
    */
-  usedDevices() {
+  usedDevices(knownNames = []) {
     const isTarget = (device) => device.isDrive || ["md", "lvmVg"].includes(device.type);
 
     // Check in system devices to detect removals.
@@ -151,10 +156,10 @@ export default class DevicesManager {
 
     const sids = targetSystem
       .concat(targetStaging)
-      .filter((d) => this.#isUsed(d))
+      .filter((d) => this.#isUsed(d) || knownNames.includes(d.name))
       .map((d) => d.sid);
 
-    return compact(uniq(sids).map((sid) => this.stagingDevice(sid)));
+    return compact(unique(sids).map((sid) => this.stagingDevice(sid)));
   }
 
   /**
@@ -232,7 +237,7 @@ export default class DevicesManager {
    * @returns {boolean}
    */
   #isUsed(device) {
-    const sids = uniq(compact(this.actions.map((a) => a.device)));
+    const sids = unique(compact(this.actions.map((a) => a.device)));
 
     const partitions = device.partitionTable?.partitions || [];
     const lvmLvs = device.logicalVolumes || [];

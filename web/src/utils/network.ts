@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,21 +26,12 @@ import {
   ApFlags,
   ApSecurityFlags,
   Connection,
-  ConnectionState,
+  ConnectionBindingMode,
   Device,
   IPAddress,
   Route,
   SecurityProtocols,
 } from "~/types/network";
-
-/**
- * Returns a human readable connection state
- */
-const connectionHumanState = (state: number): string => {
-  const stateIndex = Object.values(ConnectionState).indexOf(state);
-  const stateKey = Object.keys(ConnectionState)[stateIndex];
-  return stateKey.toLowerCase();
-};
 
 /**
  * Check if an IP is valid
@@ -78,7 +69,9 @@ const isValidIpPrefix = (value: IPAddress["prefix"]) => {
  * @param value - An netmask or a network prefix
  * @return prefix for the given netmask or prefix
  */
-const ipPrefixFor = (value: string): number => {
+const ipPrefixFor = (value: string | number): number => {
+  if (typeof value === "number") return value;
+
   if (value.match(/^\d+$/)) {
     return parseInt(value);
   } else {
@@ -132,7 +125,7 @@ const formatIp = (addr: IPAddress): string => {
   if (addr.prefix === undefined) {
     return `${addr.address}`;
   } else {
-    return `${addr.address}/${addr.prefix}`;
+    return `${addr.address}/${ipPrefixFor(addr.prefix)}`;
   }
 };
 
@@ -196,12 +189,25 @@ const connectionAddresses = (connection: Connection, devices: Device[]): string 
   return addresses?.map(formatIp).join(", ");
 };
 
+/**
+ * Returns the binding mode for the given connection.
+ */
+const connectionBindingMode = (connection: Connection): ConnectionBindingMode => {
+  if (connection.macAddress) {
+    return "mac";
+  } else if (connection.iface) {
+    return "iface";
+  } else {
+    return "none";
+  }
+};
+
 export {
   buildAddress,
   buildAddresses,
   buildRoutes,
   connectionAddresses,
-  connectionHumanState,
+  connectionBindingMode,
   formatIp,
   intToIPString,
   ipPrefixFor,

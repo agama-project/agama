@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -44,32 +44,37 @@
 //! As said, those modules might implement additional stuff, like specific types, clients, etc.
 
 pub mod auth;
-pub mod base_http_client;
+pub mod bootloader;
+pub mod context;
 pub mod error;
+pub mod file_source;
+pub mod files;
+pub mod hostname;
+pub mod http;
 pub mod install_settings;
+pub mod issue;
 pub mod jobs;
 pub mod localization;
 pub mod logs;
 pub mod manager;
+pub mod monitor;
 pub mod network;
 pub mod product;
 pub mod profile;
-pub mod software;
-pub mod storage;
-pub mod users;
-// TODO: maybe expose only clients when we have it?
-pub mod dbus;
 pub mod progress;
 pub mod proxies;
-mod store;
-pub use store::Store;
-pub mod openapi;
 pub mod questions;
 pub mod scripts;
-pub mod transfer;
+pub mod security;
+pub mod software;
+pub mod storage;
+mod store;
+pub mod users;
+pub use store::Store;
+pub mod utils;
+pub use agama_utils::{dbus, openapi};
 
 use crate::error::ServiceError;
-use reqwest::{header, Client};
 use zbus::conn::Builder;
 
 const ADDRESS: &str = "unix:path=/run/agama/bus";
@@ -84,19 +89,4 @@ pub async fn connection_to(address: &str) -> Result<zbus::Connection, ServiceErr
         .await
         .map_err(|e| ServiceError::DBusConnectionError(address.to_string(), e))?;
     Ok(connection)
-}
-
-pub fn http_client(token: &str) -> Result<reqwest::Client, ServiceError> {
-    let mut headers = header::HeaderMap::new();
-    let value = header::HeaderValue::from_str(format!("Bearer {}", token).as_str())
-        .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
-
-    headers.insert(header::AUTHORIZATION, value);
-
-    let client = Client::builder()
-        .default_headers(headers)
-        .build()
-        .map_err(|e| ServiceError::NetworkClientError(e.to_string()))?;
-
-    Ok(client)
 }

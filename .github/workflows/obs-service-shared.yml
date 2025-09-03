@@ -2,23 +2,29 @@
 
 name: Update OBS Service Package
 
+permissions:
+  contents: read
+
 on:
   workflow_call:
     secrets:
-      OBS_USER:
-        required: true
       OBS_PASSWORD:
         required: true
 
 jobs:
   update_service:
-    # do not run in forks which do not set the OBS_PROJECT variable
-    if: vars.OBS_PROJECT != ''
+    # do not run in forks which do not set the OBS_PROJECTS and OBS_USER variables,
+    # or the mapping for the current branch is missing
+    if: vars.OBS_PROJECTS && fromJson(vars.OBS_PROJECTS)[github.ref_name] && vars.OBS_USER
 
     runs-on: ubuntu-latest
 
     container:
       image: registry.opensuse.org/opensuse/tumbleweed:latest
+
+    env:
+      # to avoid Ruby UTF-8 errors (the default is "POSIX")
+      LC_ALL: en_US.UTF-8
 
     steps:
       - name: Configure and refresh repositories
@@ -43,33 +49,27 @@ jobs:
           # fetch all history, we need to find the latest tag and offset for the version number
           fetch-depth: 0
 
-      - name: Git Checkout (release tag only)
-        if: ${{ github.ref_type == 'tag' }}
-        uses: actions/checkout@v4
-
       - name: Configure git
         run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Git Checkout
+        uses: actions/checkout@v4
+        with:
+          # fetch all history with tags, we need to find the latest version tag
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Configure osc
         run: .github/workflows/configure_osc.sh
         env:
-          OBS_USER:     ${{ secrets.OBS_USER }}
+          OBS_USER:     ${{ vars.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Commit the rubygem-agama-yast package to ${{ vars.OBS_PROJECT }}
+      - name: Commit the rubygem-agama-yast package to ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}
         run: rake osc:commit
         working-directory: ./service
         env:
           # do not build the package with "osc", it takes long time
           # and does not provide much value
           SKIP_OSC_BUILD: 1
-          OBS_PROJECT: ${{ vars.OBS_PROJECT }}
-
-      - name: Submit the rubygem-agama-yast package
-        # only when a tag has been pushed
-        if: ${{ github.ref_type == 'tag' }}
-        # the package has been comitted in the previous step, just submit it
-        run: rake osc:sr:force
-        working-directory: ./service
-        env:
-          OBS_PROJECT: ${{ vars.OBS_PROJECT }}
+          OBS_PROJECT: ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}

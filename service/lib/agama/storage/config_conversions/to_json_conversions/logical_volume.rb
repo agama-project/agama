@@ -23,7 +23,6 @@ require "agama/storage/config_conversions/to_json_conversions/base"
 require "agama/storage/config_conversions/to_json_conversions/with_encryption"
 require "agama/storage/config_conversions/to_json_conversions/with_filesystem"
 require "agama/storage/config_conversions/to_json_conversions/with_size"
-require "agama/storage/configs/logical_volume"
 
 module Agama
   module Storage
@@ -35,9 +34,10 @@ module Agama
           include WithFilesystem
           include WithSize
 
-          # @see Base
-          def self.config_type
-            Configs::LogicalVolume
+          # @param config [Configs::LogicalVolume]
+          def initialize(config)
+            super()
+            @config = config
           end
 
         private
@@ -52,7 +52,7 @@ module Agama
               name:       config.name,
               stripes:    config.stripes,
               stripeSize: config.stripe_size&.to_i,
-              pool:       config.pool?,
+              pool:       config.pool? ? true : nil,
               usedPool:   config.used_pool
             }
           end

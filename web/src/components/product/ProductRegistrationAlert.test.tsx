@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,36 +24,48 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import ProductRegistrationAlert from "./ProductRegistrationAlert";
-import { Product, RegistrationInfo } from "~/types/software";
-import { useProduct, useRegistration } from "~/queries/software";
-import { PRODUCT, REGISTRATION, ROOT, USER } from "~/routes/paths";
-
-jest.mock("~/components/core/ChangeProductLink", () => () => <div>ChangeProductLink Mock</div>);
+import { Product } from "~/types/software";
+import { useProduct } from "~/queries/software";
+import { useIssues } from "~/queries/issues";
+import { PRODUCT, REGISTRATION, ROOT } from "~/routes/paths";
+import { Issue } from "~/types/issues";
 
 const tw: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
-  registration: "no",
+  registration: false,
 };
 
 const sle: Product = {
   id: "sle",
   name: "SLE",
-  registration: "mandatory",
+  registration: true,
 };
 
 let selectedProduct: Product;
-let registrationInfoMock: RegistrationInfo;
 
 jest.mock("~/queries/software", () => ({
   ...jest.requireActual("~/queries/software"),
-  useRegistration: (): ReturnType<typeof useRegistration> => registrationInfoMock,
   useProduct: (): ReturnType<typeof useProduct> => {
     return {
       products: [tw, sle],
       selectedProduct,
     };
   },
+}));
+
+let issues: Issue[] = [];
+const registrationIssue: Issue = {
+  description: "Product must be registered",
+  details: "",
+  kind: "missing_registration",
+  source: 0,
+  severity: 0,
+};
+
+jest.mock("~/queries/issues", () => ({
+  ...jest.requireActual("~/queries/issues"),
+  useIssues: (): ReturnType<typeof useIssues> => issues,
 }));
 
 const rendersNothingInSomePaths = () => {
@@ -63,7 +75,6 @@ const rendersNothingInSomePaths = () => {
     ["product selection progress", PRODUCT.progress],
     ["installation progress", ROOT.installationProgress],
     ["installation finished", ROOT.installationFinished],
-    ["root authentication", USER.rootUser.edit],
   ])(`but at %s path`, (_, path) => {
     beforeEach(() => {
       mockRoutes(path);
@@ -77,10 +88,10 @@ const rendersNothingInSomePaths = () => {
 };
 
 describe("ProductRegistrationAlert", () => {
-  describe("when product is registrable and registration code is not set", () => {
+  describe("when the registration is missing", () => {
     beforeEach(() => {
+      issues = [registrationIssue];
       selectedProduct = sle;
-      registrationInfoMock = { key: "", email: "" };
     });
 
     rendersNothingInSomePaths();
@@ -90,7 +101,7 @@ describe("ProductRegistrationAlert", () => {
       screen.getByRole("heading", {
         name: /Warning alert:.*must be registered/,
       });
-      const link = screen.getByRole("link", { name: "Register it now" });
+      const link = screen.getByRole("link");
       expect(link).toHaveAttribute("href", REGISTRATION.root);
     });
 
@@ -109,21 +120,10 @@ describe("ProductRegistrationAlert", () => {
     });
   });
 
-  describe("when product is registrable and registration code is already set", () => {
+  describe("when the registration is not needed", () => {
     beforeEach(() => {
+      issues = [];
       selectedProduct = sle;
-      registrationInfoMock = { key: "INTERNAL-USE-ONLY-1234-5678", email: "" };
-    });
-
-    it("renders nothing", () => {
-      const { container } = installerRender(<ProductRegistrationAlert />);
-      expect(container).toBeEmptyDOMElement();
-    });
-  });
-
-  describe("when product is not registrable", () => {
-    beforeEach(() => {
-      selectedProduct = tw;
     });
 
     it("renders nothing", () => {

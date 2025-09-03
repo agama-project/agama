@@ -28,6 +28,7 @@ import {
   enableDiag,
   fetchDASDDevices,
   formatDASD,
+  supportedDASD,
 } from "~/api/storage/dasd";
 import { useInstallerClient } from "~/context/installer";
 import React from "react";
@@ -49,6 +50,19 @@ const dasdDevicesQuery = () => ({
 const useDASDDevices = () => {
   const { data: devices } = useSuspenseQuery(dasdDevicesQuery());
   return devices.map((d) => ({ ...d, hexId: hex(d.id) }));
+};
+
+const dasdSupportedQuery = {
+  queryKey: ["dasd", "supported"],
+  queryFn: supportedDASD,
+};
+
+/**
+ * Hook that returns whether DASD is supported.
+ */
+const useDASDSupported = (): boolean => {
+  const { data: supported } = useSuspenseQuery(dasdSupportedQuery);
+  return supported;
 };
 
 /**
@@ -170,10 +184,17 @@ const useDASDDevicesChanges = () => {
   return devices;
 };
 
+export type DASDMutationFnProps = {
+  action: "enable" | "disable" | "diagOn" | "diagOff";
+  devices: DASDDevice["id"][];
+};
+
+export type DASDMutationFn = (props: DASDMutationFnProps) => void;
+
 const useDASDMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: ({ action, devices }: { action: string; devices: string[] }) => {
+    mutationFn: ({ action, devices }: DASDMutationFnProps) => {
       switch (action) {
         case "enable": {
           return enableDASD(devices);
@@ -239,6 +260,7 @@ const useFormatDASDMutation = () => {
 
 export {
   useDASDDevices,
+  useDASDSupported,
   useDASDDevicesChanges,
   useDASDFormatJobChanges,
   useDASDRunningFormatJobs,

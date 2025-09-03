@@ -27,7 +27,8 @@ use std::{
     task::{Context, Poll},
 };
 
-use agama_lib::{dbus::to_owned_hash, error::ServiceError};
+use agama_lib::error::ServiceError;
+use agama_utils::dbus::to_owned_hash;
 use futures_util::{ready, Stream};
 use pin_project::pin_project;
 use tokio_stream::StreamMap;

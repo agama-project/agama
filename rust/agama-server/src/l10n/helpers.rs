@@ -43,6 +43,6 @@ pub fn init_locale() -> Result<LocaleId, Box<dyn std::error::Error>> {
 ///
 pub fn set_service_locale(locale: &LocaleId) {
     if setlocale(LocaleCategory::LcAll, locale.to_string()).is_none() {
-        log::warn!("Could not set the locale");
+        tracing::warn!("Could not set the locale");
     }
 }

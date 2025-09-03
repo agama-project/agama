@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,20 +18,19 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::collections::HashMap;
-use std::str::FromStr;
-
-use crate::dbus::get_property;
 use crate::error::ServiceError;
-use crate::software::model::RegistrationRequirement;
+use crate::software::model::{AddonParams, AddonProperties};
 use crate::software::proxies::SoftwareProductProxy;
+use agama_utils::dbus::{get_optional_property, get_property};
 use serde::Serialize;
+use std::collections::HashMap;
 use zbus::Connection;
 
 use super::proxies::RegistrationProxy;
 
 /// Represents a software product
-#[derive(Default, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct Product {
     /// Product ID (eg., "ALP", "Tumbleweed", etc.)
     pub id: String,
@@ -42,7 +41,9 @@ pub struct Product {
     /// Product icon (e.g., "default.svg")
     pub icon: String,
     /// Registration requirement
-    pub registration: RegistrationRequirement,
+    pub registration: bool,
+    /// License ID
+    pub license: Option<String>,
 }
 
 /// D-Bus client for the software service
@@ -54,8 +55,12 @@ pub struct ProductClient<'a> {
 
 impl<'a> ProductClient<'a> {
     pub async fn new(connection: Connection) -> Result<ProductClient<'a>, ServiceError> {
+        let product_proxy = SoftwareProductProxy::builder(&connection)
+            .cache_properties(zbus::proxy::CacheProperties::No)
+            .build()
+            .await?;
         Ok(Self {
-            product_proxy: SoftwareProductProxy::new(&connection).await?,
+            product_proxy,
             registration_proxy: RegistrationProxy::new(&connection).await?,
         })
     }
@@ -77,9 +82,9 @@ impl<'a> ProductClient<'a> {
                     None => "default.svg",
                 };
 
-                let registration = get_property::<String>(&data, "registration")
-                    .map(|r| RegistrationRequirement::from_str(&r).unwrap_or_default())
-                    .unwrap_or_default();
+                let registration = get_property::<bool>(&data, "registration").unwrap_or(false);
+
+                let license = get_optional_property::<String>(&data, "license").unwrap_or_default();
 
                 Product {
                     id,
@@ -87,6 +92,7 @@ impl<'a> ProductClient<'a> {
                     description: description.to_string(),
                     icon: icon.to_string(),
                     registration,
+                    license,
                 }
             })
             .collect();
@@ -114,6 +120,11 @@ impl<'a> ProductClient<'a> {
         }
     }
 
+    /// flag if base product is registered
+    pub async fn registered(&self) -> Result<bool, ServiceError> {
+        Ok(self.registration_proxy.registered().await?)
+    }
+
     /// registration code used to register product
     pub async fn registration_code(&self) -> Result<String, ServiceError> {
         Ok(self.registration_proxy.reg_code().await?)
@@ -124,6 +135,58 @@ impl<'a> ProductClient<'a> {
         Ok(self.registration_proxy.email().await?)
     }
 
+    /// URL of the registration server
+    pub async fn registration_url(&self) -> Result<String, ServiceError> {
+        Ok(self.registration_proxy.url().await?)
+    }
+
+    /// set registration url
+    pub async fn set_registration_url(&self, url: &str) -> Result<(), ServiceError> {
+        Ok(self.registration_proxy.set_url(url).await?)
+    }
+
+    /// list of already registered addons
+    pub async fn registered_addons(&self) -> Result<Vec<AddonParams>, ServiceError> {
+        let addons: Vec<AddonParams> = self
+            .registration_proxy
+            .registered_addons()
+            .await?
+            .into_iter()
+            .map(|(id, version, code)| AddonParams {
+                id,
+                version: if version.is_empty() {
+                    None
+                } else {
+                    Some(version)
+                },
+                registration_code: if code.is_empty() { None } else { Some(code) },
+            })
+            .collect();
+        Ok(addons)
+    }
+
+    // details of available addons
+    pub async fn available_addons(&self) -> Result<Vec<AddonProperties>, ServiceError> {
+        self.registration_proxy
+            .available_addons()
+            .await?
+            .into_iter()
+            .map(|hash| {
+                Ok(AddonProperties {
+                    id: get_property(&hash, "id")?,
+                    version: get_property(&hash, "version")?,
+                    label: get_property(&hash, "label")?,
+                    available: get_property(&hash, "available")?,
+                    free: get_property(&hash, "free")?,
+                    recommended: get_property(&hash, "recommended")?,
+                    description: get_property(&hash, "description")?,
+                    release: get_property(&hash, "release")?,
+                    r#type: get_property(&hash, "type")?,
+                })
+            })
+            .collect()
+    }
+
     /// register product
     pub async fn register(&self, code: &str, email: &str) -> Result<(u32, String), ServiceError> {
         let mut options: HashMap<&str, &zbus::zvariant::Value> = HashMap::new();
@@ -132,6 +195,18 @@ impl<'a> ProductClient<'a> {
             options.insert("Email", &value);
         }
         Ok(self.registration_proxy.register(code, options).await?)
+    }
+
+    /// register addon
+    pub async fn register_addon(&self, addon: &AddonParams) -> Result<(u32, String), ServiceError> {
+        Ok(self
+            .registration_proxy
+            .register_addon(
+                &addon.id,
+                &addon.version.clone().unwrap_or_default(),
+                &addon.registration_code.clone().unwrap_or_default(),
+            )
+            .await?)
     }
 
     /// de-register product

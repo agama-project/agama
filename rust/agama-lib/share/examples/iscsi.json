@@ -1,0 +1,46 @@
+{
+  "storage": {
+    "drives": [
+      {
+        "partitions": [{ "generate": "default" }]
+      }
+    ]
+  },
+  "iscsi": {
+    "initiator": "iqn.2013-02.de.suse:01:e229358d2dea",
+    "targets": [
+      {
+        "address": "192.168.1.1",
+        "port": 3260,
+        "name": "iqn.2001-05.com.doe:test1",
+        "interface": "default",
+        "startup": "onboot",
+        "authByTarget": {
+          "username": "test",
+          "password": "12345"
+        }
+      },
+      {
+        "address": "192.168.1.1",
+        "port": 3260,
+        "name": "iqn.2001-05.com.doe:test2",
+        "interface": "default",
+        "startup": "manual",
+        "authByTarget": {
+          "username": "test",
+          "password": "12345"
+        },
+        "authByInitiator": {
+          "username": "test",
+          "password": "12345"
+        }
+      },
+      {
+        "address": "192.168.1.1",
+        "port": 3261,
+        "name": "iqn.2001-05.com.doe:test3",
+        "interface": "default"
+      }
+    ]
+  }
+}

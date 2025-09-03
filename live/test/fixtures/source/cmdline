@@ -1,0 +1,1 @@
+BOOT_IMAGE=/boot/vmlinuz initrd=/boot/initrd rd.kiwi.install.pxe rd.kiwi.install.image=http://example.com/agama-installer.x86_64-42.0.0.xz ip=eth0:10.42.0.42 splash=silent agama.auto=ftp://example.suse.cz/profile.json LIBSTORAGE_MULTIPATH=1 mitigations=auto Y2DEBUG=1 quiet nosimplefb=1

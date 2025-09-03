@@ -1,7 +1,7 @@
 #
 # spec file for package agama-yast
 #
-# Copyright (c) 2024 SUSE LLC
+# Copyright (c) 2024-2025 SUSE LLC
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -30,7 +30,7 @@ Requires:       rubygem(agama-yast)
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  ruby-macros >= 5
 
-URL:            https://github.com/openSUSE/agama
+URL:            https://github.com/agama-project/agama
 Source:         %{mod_full_name}.gem
 Source1:        po.tar.bz2
 Source2:        install_translations.sh
@@ -47,14 +47,13 @@ D-Bus service exposing some YaST features that are useful for Agama.
 %build
 
 %install
-install -D -m 0644 %{mod_full_name}/share/dbus.conf %{buildroot}%{_datadir}/dbus-1/agama.conf
-install --directory %{buildroot}%{_datadir}/dbus-1/agama-services
-install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services %{mod_full_name}/share/org.opensuse.Agama*.service
-install -D -m 0644 %{mod_full_name}/share/agama.service %{buildroot}%{_unitdir}/agama.service
-install -D -m 0644 %{mod_full_name}/share/agama-dbus-monitor.service %{buildroot}%{_unitdir}/agama-dbus-monitor.service
-install -D -m 0644 %{mod_full_name}/share/agama-proxy-setup.service %{buildroot}%{_unitdir}/agama-proxy-setup.service
-install --directory %{buildroot}/usr/share/agama/conf.d
-install -D -m 0644 %{mod_full_name}/conf.d/*.yaml %{buildroot}/usr/share/agama/conf.d/
+echo MODFULLNAME is %{mod_full_name}
+env \
+  SRCDIR=%{mod_full_name} \
+  DESTDIR=%{buildroot} \
+  datadir=%{_datadir} \
+  unitdir=%{_unitdir} \
+  %{mod_full_name}/install.sh
 
 # run a script for installing the translations
 sh "%{SOURCE2}" "%{SOURCE1}"

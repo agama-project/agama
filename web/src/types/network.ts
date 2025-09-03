@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { isObject } from "~/utils";
+import { isBoolean, isEmpty, isObject } from "radashi";
 import {
   buildAddress,
   buildAddresses,
@@ -60,6 +60,14 @@ enum ApSecurityFlags {
   KEY_MGMT_8021_X = 0x00000200,
 }
 
+/**
+ * The  binding mode for the connection
+ *  - "none":  No specific interface binding.
+ *  - "iface": Bind to a specific interface name.
+ *  - "mac":   Bind to a specific MAC address.
+ */
+type ConnectionBindingMode = "none" | "iface" | "mac";
+
 enum ConnectionType {
   ETHERNET = "ethernet",
   WIFI = "wireless",
@@ -70,37 +78,28 @@ enum ConnectionType {
   UNKNOWN = "unknown",
 }
 
-/**
- * Enum for the active connection state values
- *
- * @readonly
- * @enum { number }
- * https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMActiveConnectionState
- */
-enum ConnectionState {
-  UNKNOWN = 0,
-  ACTIVATING = 1,
-  ACTIVATED = 2,
-  DEACTIVATING = 3,
-  DEACTIVATED = 4,
-}
-
 enum DeviceState {
   UNKNOWN = "unknown",
   UNMANAGED = "unmanaged",
   UNAVAILABLE = "unavailable",
+  CONNECTING = "connecting",
+  CONNECTED = "connected",
+  DISCONNECTING = "disconnecting",
   DISCONNECTED = "disconnected",
-  CONFIG = "config",
-  IPCHECK = "ipCheck",
-  NEEDAUTH = "needAuth",
-  ACTIVATED = "activated",
-  DEACTIVATING = "deactivating",
   FAILED = "failed",
 }
 
 enum ConnectionStatus {
   UP = "up",
   DOWN = "down",
+}
+
+// Current state of the connection.
+enum ConnectionState {
+  activating = "activating",
+  activated = "activated",
+  deactivating = "deactivating",
+  deactivated = "deactivated",
 }
 
 enum ConnectionMethod {
@@ -232,6 +231,7 @@ type APIRoute = {
 type APIConnection = {
   id: string;
   interface?: string;
+  macAddress?: string;
   addresses?: string[];
   nameservers?: string[];
   gateway4?: string;
@@ -240,6 +240,8 @@ type APIConnection = {
   method6: string;
   wireless?: Wireless;
   status: ConnectionStatus;
+  state: ConnectionState;
+  persistent: boolean;
 };
 
 type WirelessOptions = {
@@ -268,6 +270,7 @@ class Wireless {
 
 type ConnectionOptions = {
   iface?: string;
+  macAddress?: string;
   addresses?: IPAddress[];
   nameservers?: string[];
   gateway4?: string;
@@ -275,12 +278,16 @@ type ConnectionOptions = {
   method4?: ConnectionMethod;
   method6?: ConnectionMethod;
   wireless?: Wireless;
+  state?: ConnectionState;
+  persistent?: boolean;
 };
 
 class Connection {
   id: string;
   status: ConnectionStatus = ConnectionStatus.UP;
+  state: ConnectionState;
   iface: string;
+  macAddress?: string;
   addresses: IPAddress[] = [];
   nameservers: string[] = [];
   gateway4?: string = "";
@@ -288,6 +295,7 @@ class Connection {
   method4: ConnectionMethod = ConnectionMethod.AUTO;
   method6: ConnectionMethod = ConnectionMethod.AUTO;
   wireless?: Wireless;
+  persistent: boolean;
 
   constructor(id: string, options?: ConnectionOptions) {
     this.id = id;
@@ -295,7 +303,7 @@ class Connection {
     if (!isObject(options)) return;
 
     for (const [key, value] of Object.entries(options)) {
-      if (value) this[key] = value;
+      if (isBoolean(value) || !isEmpty(value)) this[key] = value;
     }
   }
 
@@ -348,8 +356,8 @@ type WifiNetwork = AccessPoint & {
 type NetworkGeneralState = {
   connectivity: boolean;
   hostname: string;
-  networking_enabled: boolean;
-  wireless_enabled: boolean;
+  networkingEnabled: boolean;
+  wirelessEnabled: boolean;
 };
 
 export {
@@ -373,6 +381,7 @@ export {
 export type {
   APIAccessPoint,
   APIConnection,
+  ConnectionBindingMode,
   ConnectionOptions,
   APIDevice,
   IPAddress,

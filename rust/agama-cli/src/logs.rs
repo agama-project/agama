@@ -18,8 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::base_http_client::BaseHTTPClient;
-use agama_lib::manager::http_client::ManagerHTTPClient as HTTPClient;
+use agama_lib::http::BaseHTTPClient;
+use agama_lib::manager::http_client::ManagerHTTPClient;
 use clap::Subcommand;
 use std::io;
 use std::path::PathBuf;
@@ -40,7 +40,7 @@ pub enum LogsCommands {
 
 /// Main entry point called from agama CLI main loop
 pub async fn run(client: BaseHTTPClient, subcommand: LogsCommands) -> anyhow::Result<()> {
-    let client = HTTPClient::new(client);
+    let client = ManagerHTTPClient::new(client);
 
     match subcommand {
         LogsCommands::Store { destination } => {

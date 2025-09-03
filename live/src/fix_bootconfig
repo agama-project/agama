@@ -15,7 +15,6 @@
 #
 set -ex
 
-
 dst=${1#iso:}
 
 # KIWI config
@@ -26,11 +25,6 @@ if [ -f .profile ]; then
 fi
 
 arch=`uname -m`
-
-# removing live root setting from command line - it's in /etc/cmdline.d instead
-if [ -f $dst/boot/grub2/grub.cfg ] ; then
-  sed -i -E -e 's/\s+root=\S+//' -e 's/\s+rd.live\.image//' $dst/boot/grub2/grub.cfg
-fi
 
 bootfix=$dst/fix_bootconfig.$arch
 if [ -f $bootfix ] ; then
@@ -55,22 +49,25 @@ for i in "\$@" ; do
     export iso="\$i"
     continue
   fi
-  if [ -n "\$volid_opt" ] ; then
-    volid_opt=
-    export volid="\$i"
-    continue
-  fi
   if [ "\$i" = "-outdev" ] ; then
     iso_opt=1
     continue
   fi
-  if [ "\$i" = "-volid" ] ; then
-    volid_opt=1
-    continue
-  fi
 done
 
-volid=${kiwi_install_volid:-$kiwi_iname}
+profile=$(echo "$kiwi_profiles" | tr "_" "-")
+# keep in sync with ISO Volume ID set in the config.sh script
+volid="Install-\$profile-$arch"
+
+# the simple rescue system reuses the installation live media
+# but boots to the text-mode only and disables the Agama server
+export RESCUE_SYSTEM_BOOT_SETTINGS="systemd.unit=multi-user.target \
+systemd.mask=agama.service systemd.mask=agama-dbus-monitor.service \
+systemd.mask=agama-ssh-issue.service systemd.mask=agama-avahi-issue.service \
+systemd.mask=agama-welcome-issue.service systemd.mask=agama-url-issue.service \
+systemd.mask=agama-certificate-issue.service \
+systemd.mask=agama-certificate-issue.path \
+systemd.mask=agama-certificate-wait.service"
 
 [ -x $bootfix ] && $bootfix $dst
 rm -f $dst/fix_bootconfig.* $dst/.profile
@@ -87,6 +84,7 @@ case $arch in
     ;;
   *)
     /usr/bin/xorriso "\$@" -volid "\$volid"
+    err=\$?
 esac
 
 exit \$err

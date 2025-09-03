@@ -1,0 +1,206 @@
+Contratto di licenza con l'Utente finale
+per il software SUSE
+
+
+Contratto di licenza con l'Utente finale per i software SUSE
+ACQUISTANDO, INSTALLANDO, SCARICANDO O ALTRIMENTI UTILIZZANDO QUESTO 
+PRODOTTO SOFTWARE (DI SEGUITO DEFINITO), L'UTENTE ACCETTA I TERMINI 
+DEL PRESENTE CONTRATTO. SE NON SI ACCETTANO QUESTE CONDIZIONI, NON È 
+CONSENTITO SCARICARE, INSTALLARE O UTILIZZARE IL SOFTWARE. UN 
+INDIVIDUO CHE AGISCA PER CONTO DI UN'ENTITÀ DISPONE DELL'AUTORITÀ 
+PER ACCEDERE AL PRESENTE CONTRATTO PER CONTO DI TALE ENTITÀ.  SE 
+L'UTENTE ACCETTA IL PRESENTE CONTRATTO PER CONTO DI UN'ENTITÀ TERZA, 
+I TERMINI "UTENTE" E "VOSTRO" QUALORA UTILIZZATI DI SEGUITO SI 
+RIFERISCONO A TALE ENTITÀ.
+
+SUSE LLC ("Licenziante" o "SUSE") fornisce prodotti software, che 
+possono includere: (i) programmi software sviluppati da SUSE e/o dai 
+propri affiliati; (ii) programmi software sviluppati da terzi; (iii) 
+compilazioni di programmi software; e (iv) marchi commerciali di 
+proprietà di SUSE e/o dei propri affiliati ("Marchi SUSE"), nonché 
+la documentazione che accompagna tali programmi software (programmi 
+software, compilazioni di programmi software, marchi commerciali e 
+documentazione costituiscono il "Software").
+
+Il presente Contratto di licenza con l'Utente finale ("EULA") è un 
+accordo legale tra l'Utente (una persona o un'entità giuridica) e 
+SUSE e regola l'utilizzo del Software. Qualsiasi versione di 
+componente aggiuntivo, estensione, aggiornamento, applicazione 
+mobile, modulo, adattatore o supporto del presente Software 
+scaricata o ricevuta dall'Utente non accompagnata da un altro 
+contratto di licenza è considerata Software e soggetta alle 
+condizioni del presente Contratto di licenza con l'Utente finale. Se 
+le leggi vigenti presso la sede operativa principale dell'Utente 
+richiedono che i contratti siano redatti nella lingua locale per 
+essere validi, è possibile ottenere una versione in lingua locale 
+scrivendo al Licenziante e in tal caso sarà la versione in lingua 
+locale a disciplinare l'utilizzo del Software.      
+ 
+Termini della licenza
+Open source
+Il Software contiene svariati componenti singoli che sono software 
+open source. La licenza open source per ciascun componente, che a 
+seconda del programma software può essere la Licenza Pubblica 
+Generica GNU v.2 
+(https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html), la 
+licenza Apache versione 2.0 
+(https://www.https://www.apache.org/licenses/LICENSE-2.0) o un'altra 
+licenza open source (ciascuna di tali licenze rappresenta la 
+"Licenza OSS"), è inclusa nella documentazione della licenza e/o nel 
+codice sorgente del componente.
+ 
+Il presente Contratto di licenza con l'Utente finale regola 
+l'utilizzo del Software, compresi i Marchi SUSE, ma non limita, 
+sostituisce o modifica i diritti dell'utente ai sensi della Licenza 
+OSS applicabile all'uso dei codici open source contenuti nel 
+Software senza i Marchi SUSE.
+ 
+Il Software può essere fornito con programmi di terze parti che non 
+fanno parte del Software. Tali programmi terzi non sono necessari 
+per eseguire il Software, ma vengono forniti per comodità 
+dell'utente e sono soggetti ai rispettivi termini della licenza. I 
+termini della licenza accompagnano i programmi di terze parti o 
+possono essere visualizzati all'indirizzo 
+https://www.suse.com/licensing/eula/. Se l'Utente non accetta di 
+rispettare i termini della licenza applicabili per i programmi di 
+terze parti, deve astenersi dall'installarli. Se si desidera 
+installare i programmi di terze parti su più di un sistema o 
+trasferire i programmi di terze parti ad altro sistema, contattare 
+il licenziante dei rispettivi programmi terzi.
+
+Licenza di utilizzo del software
+Fatto salvo il rispetto dei termini e delle condizioni del presente 
+Contratto di licenza con l'Utente finale e della Licenza OSS 
+applicabile, all'utente viene concessa una licenza mondiale 
+perpetua, non esclusiva, non trasferibile e revocabile per 
+riprodurre e utilizzare copie del Software per uso interno da parte 
+della propria entità giuridica. 
+ 
+Il presente Contratto di licenza con l'Utente finale non consente 
+all'utente di distribuire il Software o i suoi componenti 
+utilizzando i Marchi SUSE, salvo il caso in cui l'utente possa 
+ridistribuire all'esterno della propria entità giuridica: (a) copie 
+del Software, ma solo se consentito da un accordo scritto separato 
+con il Licenziante che autorizza tale ridistribuzione, o (b) i 
+componenti costitutivi del Software, ma solo dopo aver rimosso e 
+sostituito tutte le occorrenze di qualsiasi Marchio SUSE.
+
+Proprietà
+Il Software viene concesso in licenza, non venduto.  All'Utente non 
+viene trasferito alcun titolo o diritto di proprietà sul Software. 
+Il Licenziante e/o i licenzianti terzi mantengono ogni diritto, 
+titolarità e interesse su tutti i diritti di proprietà intellettuale 
+del Software.      
+
+Marchi SUSE
+Il presente Contratto di licenza con l'Utente finale non offre alcun 
+diritto o licenza, implicita o esplicita, di utilizzo nomi 
+commerciali, marchi di servizio o Marchi SUSE del Licenziante o dei 
+relativi affiliati o licenzianti.
+
+Supporto e servizi in abbonamento
+Il Licenziante non ha alcun obbligo di fornire manutenzione o 
+supporto se non diversamente concordato ai sensi di un accordo 
+aggiuntivo che includa espressamente tali servizi.
+
+Garanzia e responsabilità
+Garanzia limitata
+IL SOFTWARE VIENE FORNITO "COS COM" SENZA NESSUNA GARANZIA DI ALCUN 
+TIPO. SALVO NEI CASI DIVERSAMENTE PREVISTI DALLA LEGGE, IL 
+LICENZIATARIO NON RICONOSCE ALCUNA GARANZIA IMPLICITA, INCLUSE LE 
+GARANZIE DI COMMERCIABILITÀ, IDONEITÀ PER UNO SCOPO PARTICOLARE, 
+PROPRIETÀ O NON VIOLAZIONE DEI DIRITTI ALTRUI, NÉ RILASCIA ALCUNA 
+GARANZIA DERIVANTE DAGLI USI DEL COMMERCIO E DALLA PRASSI 
+COMMERCIALE.  IL LICENZIANTE NON GARANTISCE CHE IL SOFTWARE O I 
+SERVIZI CORRISPONDANO AI REQUISITI DELL'UTENTE, SIANO COMPATIBILI 
+CON I SUOI SISTEMI OPERATIVI O CHE IL FUNZIONAMENTO DEL SOFTWARE NON 
+SUBIRÀ INTERRUZIONI O SIA PRIVO DI ERRORI. LE PRECEDENTI ESCLUSIONI 
+ED ESONERI DI RESPONSABILITÀ SONO PARTE ESSENZIALE DEL PRESENTE 
+CONTRATTO. Alcune giurisdizioni non riconoscono l'esclusione o la 
+limitazione di responsabilità, pertanto è possibile che alcune delle 
+limitazioni sopra descritte non si applichino all'Utente. In 
+aggiunta ai diritti specifici che la presente garanzia limitata 
+riconosce all'Utente, questo potrebbe godere di ulteriori diritti, 
+che variano in base alla giurisdizione.
+
+Limitazione di responsabilità
+NÉ IL LICENZIANTE NÉ ALCUN AFFILIATO, AZIONISTA, DIRIGENTE O 
+DIPENDENTE SARÀ IN ALCUN CASO RESPONSABILE PER DANNI DI QUALSIASI 
+TIPO, CONSEQUENZIALI O INDIRETTI, AI SENSI DEL CONTRATTO, PER 
+NEGLIGENZA, PER ILLECITO O ALTRE IPOTESI DI RESPONSABILITÀ, O PER 
+QUALSIVOGLIA PERDITA DI PROFITTO O AFFARI, O ALTRESÌ PERDITA O 
+CORRUZIONE DI DATI, IN OGNI CIRCOSTANZA, ANCHE QUALORA SIANO STATI 
+INFORMATI DELLA POSSIBILITÀ DI TALI DANNI.
+
+IN NESSUN CASO LA RESPONSABILITÀ COMPLESSIVA DEL LICENZIANTE AI 
+SENSI DEL O IN RELAZIONE CON IL PRESENTE CONTRATTO DI LICENZA CON 
+L'UTENTE FINALE (IN UN'ISTANZA O IN UNA SERIE DI ISTANZE) SUPERERÀ 
+LA SOMMA DI $ 50 (DOLLARI USA).
+
+Le suddette esclusioni e limitazioni non sono applicabili ai reclami 
+relativi a casi di decesso o di grave danno alle persone causati 
+dalla negligenza del Licenziatario o dei suoi dipendenti, agenti o 
+contraenti. Negli Stati in cui non sono ammesse esclusioni o 
+limitazioni della responsabilità per danni, compresi, a titolo 
+esemplificativo, danni derivanti dalla violazione di termini 
+impliciti relativi alla titolarità o al quieto godimento di 
+qualsiasi Software ottenuto in virtù del presente Contratto di 
+licenza con l'utente finale o per falsa dichiarazione fraudolenta, 
+la responsabilità del Licenziante sarà limitata o esclusa nei limiti 
+massimi concessi all'interno di essi.
+ 
+Termini generali
+Legislazione
+Tutte le questioni derivanti o correlate al presente Contratto di 
+licenza con l'Utente finale saranno disciplinate dalle leggi vigenti 
+negli Stati Uniti e nello Stato di New York senza tenere in conto le 
+clausole normative e regolamentative stabilite nel presente 
+contratto. Ogni azione legale o procedimento derivanti o relativi al 
+presente Contratto di licenza con l'Utente finale potrà essere 
+discusso esclusivamente davanti ai tribunali della giurisdizione 
+competente dello Stato di New York. Se, tuttavia, la sede operativa 
+principale dell'Utente risiede in un paese membro dell'Unione 
+europea o dell'Associazione europea di libero scambio, (1) i 
+tribunali di Inghilterra e Galles avranno competenza esclusiva per 
+quanto riguarda azioni legali relative al presente Contratto di 
+licenza con l'Utente finale; (2) si applicheranno le leggi 
+dell'Inghilterra, salvo nei casi in cui per qualsiasi azione legale 
+debbano essere applicate le leggi del paese della sede operativa 
+principale, nel qual caso si applicheranno le leggi di tale paese. 
+Al presente Contratto di licenza con l'Utente finale o al suo 
+oggetto non si applicano né lo Uniform Computer Information 
+Transaction Act (Codice uniforme delle transazioni telematiche), la 
+Convenzione delle Nazioni Unite sui contratti di vendita 
+internazionale di merci, né le norme di diritto internazionale di 
+New York o Inghilterra e Galles.
+
+Intero Contratto
+Il presente Contratto di licenza con l'utente finale, insieme ad 
+altri documenti relativi all'acquisto o ad altri accordi scritti tra 
+l'Utente e il Licenziatario o i propri Affiliati, definisce tutti i 
+termini dell'accordo tra l'Utente e il Licenziatario e può essere 
+rettificato o modificato solo per iscritto mediante un accordo 
+accettato dall'Utente e da un rappresentante autorizzato del 
+Licenziatario. NESSUN LICENZIANTE DI TERZE PARTI, DISTRIBUTORE, 
+RIVENDITORE, CONCESSIONARIO, RAPPRESENTANTE O DIPENDENTE POTRÀ 
+MODIFICARE IL PRESENTE CONTRATTO O FORNIRE DICHIARAZIONI O PROMESSE 
+DIVERSE O AGGIUNTIVE RISPETTO AI TERMINI E ALLE CONDIZIONI INDICATI 
+NEL PRESENTE CONTRATTO.
+
+Separabilità di clausole
+Qualora una delle disposizioni del presente Contratto di licenza con 
+l'utente finale risulti non valida o inapplicabile, tale 
+disposizione verrà riformulata, limitata, modificata o, se 
+necessario, resa più severa fino ai massimi limiti possibili e 
+necessari per rendere la disposizione valida e applicabile. 
+Tuttavia, la modifica di una disposizione non avrà alcun effetto 
+sugli altri termini e condizioni del Contratto di licenza con 
+l'utente finale. 
+
+:versione:2024-06-01:001
+SUSE.com
+
+Copyright (c) SUSE 2025
+
+SUSE Legal		
+Giugno 2024

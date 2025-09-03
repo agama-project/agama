@@ -8,7 +8,8 @@
             "cipher": "aes-xts-plain64",
             "keySize": 512
           }
-        }
+        },
+        "filesystem": { "path": "/data" }
       },
       {
         "partitions": [

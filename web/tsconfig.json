@@ -15,7 +15,8 @@
     "paths": {
       "~/*": ["src/*"],
       "~/client": ["src/client/index.js"],
-      "@icons/*": ["node_modules/@material-symbols/svg-400/outlined/*"]
+      "@icons/*": ["node_modules/@material-symbols/svg-400/outlined/*"],
+      "@bolderIcons/*": ["node_modules/@material-symbols/svg-700/outlined/*"]
     }
   },
   "include": ["src", "custom.d.ts"]
