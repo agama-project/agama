@@ -54,7 +54,7 @@ pub enum InstallSettingsError {
 ///
 /// This struct represents installation settings. It serves as an entry point and it is composed of
 /// other structs which hold the settings for each area ("users", "software", etc.).
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InstallSettings {
     #[serde(skip_serializing_if = "Option::is_none")]

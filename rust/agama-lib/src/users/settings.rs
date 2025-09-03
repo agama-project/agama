@@ -25,7 +25,7 @@ use super::{FirstUser, RootUser};
 /// User settings
 ///
 /// Holds the user settings for the installation.
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct UserSettings {
     #[serde(rename = "user")]
@@ -105,7 +105,7 @@ pub struct UserPassword {
 /// Root user settings
 ///
 /// Holds the settings for the root user.
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct RootUserSettings {
     /// Root user password

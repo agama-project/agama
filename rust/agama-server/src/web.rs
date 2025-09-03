@@ -36,6 +36,7 @@ use crate::{
     questions::web::{questions_service, questions_stream},
     scripts::web::scripts_service,
     security::security_service,
+    server::server_service,
     software::web::{software_service, software_streams},
     storage::web::{iscsi::iscsi_service, storage_service, storage_streams},
     users::web::{users_service, users_streams},
@@ -90,6 +91,7 @@ where
             "/manager",
             manager_service(dbus.clone(), progress.clone()).await?,
         )
+        .add_service("/server", server_service().await?)
         .add_service("/security", security_service(dbus.clone()).await?)
         .add_service(
             "/software",
