@@ -18,34 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module implements the web API for the manager service.
-//!
-//! The module offers two public functions:
-//!
-//! * `manager_service` which returns the Axum service.
-//! * `manager_stream` which offers an stream that emits the manager events coming from D-Bus.
+//! This module implements Agama's HTTP API.
 
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
 use axum::{extract::State, routing::patch, Json, Router};
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-use crate::error::Error;
-
-#[derive(Default)]
-pub struct Supervisor {
-    config: Option<InstallSettings>,
-}
-
-impl Supervisor {
-    pub async fn get_config(&self) -> InstallSettings {
-        self.config.clone().unwrap_or_default()
-    }
-
-    pub async fn set_config(&mut self, config: InstallSettings) {
-        self.config = Some(config);
-    }
-}
+use crate::{error::Error, supervisor::Supervisor};
 
 #[derive(Clone)]
 pub struct ServerState {
