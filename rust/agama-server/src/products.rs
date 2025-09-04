@@ -24,7 +24,6 @@
 //! It reads the list of products from the `products.d` directory (usually,
 //! `/usr/share/agama/products.d`).
 
-use agama_lib::product::RegistrationRequirement;
 use serde::Deserialize;
 use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
 use std::path::{Path, PathBuf};
@@ -110,8 +109,7 @@ pub struct ProductSpec {
     pub name: String,
     pub description: String,
     pub icon: String,
-    #[serde(default = "RegistrationRequirement::default")]
-    pub registration: RegistrationRequirement,
+    pub registration: bool,
     pub version: Option<String>,
     pub software: SoftwareSpec,
 }
@@ -181,7 +179,7 @@ mod test {
         assert_eq!(product.id, "Tumbleweed");
         assert_eq!(product.name, "openSUSE Tumbleweed");
         assert_eq!(product.icon, "Tumbleweed.svg");
-        assert_eq!(product.registration, RegistrationRequirement::No);
+        assert_eq!(product.registration, false);
         assert_eq!(product.version, None);
         let software = &product.software;
         assert_eq!(software.installation_repositories.len(), 11);

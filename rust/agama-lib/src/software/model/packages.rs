@@ -38,7 +38,7 @@ pub struct SoftwareConfig {
 }
 
 /// Software resolvable type (package or pattern).
-#[derive(Deserialize, Serialize, strum::Display, utoipa::ToSchema, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, strum::Display, utoipa::ToSchema, PartialEq)]
 #[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
 pub enum ResolvableType {
