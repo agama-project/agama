@@ -21,7 +21,6 @@
 use agama_lib::{
     error::ServiceError,
     product::Product,
-    progress::ProgressSummary,
     software::{
         model::{ResolvableParams, SoftwareConfig},
         Pattern,
@@ -52,7 +51,6 @@ pub async fn software_router(client: SoftwareServiceClient) -> Result<Router, Se
         .route("/probe", post(probe))
         .route("/proposal", get(get_proposal))
         .route("/resolvables/:id", put(set_resolvables))
-        .route("/progress", get(get_progress))
         .with_state(state);
     Ok(router)
 }
@@ -148,22 +146,6 @@ async fn probe(State(state): State<SoftwareState>) -> Result<Json<()>, Error> {
 )]
 async fn get_proposal(State(state): State<SoftwareState>) -> Result<Json<SoftwareProposal>, Error> {
     unimplemented!("get the software proposal");
-}
-
-#[utoipa::path(
-    get,
-    path = "/progress",
-    context_path = "/api/software",
-    responses(
-        (status = 200, description = "Progress summary", body = ProgressSummary),
-    )
-)]
-async fn get_progress(State(state): State<SoftwareState>) -> Result<Json<ProgressSummary>, Error> {
-    let summary = match state.client.get_progress().await? {
-        Some(summary) => summary,
-        None => ProgressSummary::finished(),
-    };
-    Ok(Json(summary))
 }
 
 /// Updates the resolvables list with the given `id`.

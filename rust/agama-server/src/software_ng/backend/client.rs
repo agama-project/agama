@@ -20,12 +20,9 @@
 
 use agama_lib::{
     product::Product,
-    progress::ProgressSummary,
     software::{model::ResolvableType, Pattern},
 };
 use tokio::sync::oneshot;
-
-use crate::common::backend::service_status::ServiceStatusClient;
 
 use super::{server::SoftwareAction, SoftwareActionSender, SoftwareServiceError};
 
@@ -36,13 +33,12 @@ use super::{server::SoftwareAction, SoftwareActionSender, SoftwareServiceError};
 #[derive(Clone)]
 pub struct SoftwareServiceClient {
     actions: SoftwareActionSender,
-    status: ServiceStatusClient,
 }
 
 impl SoftwareServiceClient {
     /// Creates a new client.
-    pub fn new(actions: SoftwareActionSender, status: ServiceStatusClient) -> Self {
-        Self { actions, status }
+    pub fn new(actions: SoftwareActionSender) -> Self {
+        Self { actions }
     }
 
     /// Returns the list of known products.
@@ -85,9 +81,5 @@ impl SoftwareServiceClient {
             optional,
         })?;
         Ok(())
-    }
-
-    pub async fn get_progress(&self) -> Result<Option<ProgressSummary>, SoftwareServiceError> {
-        Ok(self.status.get_progress().await?)
     }
 }

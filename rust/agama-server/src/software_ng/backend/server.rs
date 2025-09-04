@@ -30,7 +30,6 @@ use agama_lib::{
 use tokio::sync::{mpsc, oneshot, Mutex};
 
 use crate::{
-    common::backend::service_status::{ServiceStatusClient, ServiceStatusManager},
     products::{ProductSpec, ProductsRegistry},
     web::EventsSender,
 };
@@ -59,7 +58,6 @@ pub struct SoftwareServiceServer {
     receiver: mpsc::UnboundedReceiver<SoftwareAction>,
     events: EventsSender,
     products: Arc<Mutex<ProductsRegistry>>,
-    status: ServiceStatusClient,
     // FIXME: what about having a SoftwareServiceState to keep business logic state?
     selected_product: Option<String>,
     software_selection: SoftwareSelection,
@@ -77,13 +75,10 @@ impl SoftwareServiceServer {
     ) -> Result<SoftwareServiceClient, SoftwareServiceError> {
         let (sender, receiver) = mpsc::unbounded_channel();
 
-        let status = ServiceStatusManager::start(SERVICE_NAME, events.clone());
-
         let server = Self {
             receiver,
             events,
             products,
-            status: status.clone(),
             selected_product: None,
             software_selection: SoftwareSelection::default(),
         };
@@ -93,7 +88,7 @@ impl SoftwareServiceServer {
                 tracing::error!("Software service could not start: {:?}", error);
             }
         });
-        Ok(SoftwareServiceClient::new(sender, status))
+        Ok(SoftwareServiceClient::new(sender))
     }
 
     /// Runs the server dispatching the actions received through the input channel.
@@ -133,7 +128,6 @@ impl SoftwareServiceServer {
 
             SoftwareAction::Probe => {
                 self.probe().await?;
-                _ = self.status.finish_task();
             }
 
             SoftwareAction::SetResolvables {
@@ -163,15 +157,6 @@ impl SoftwareServiceServer {
     }
 
     async fn probe(&self) -> Result<(), SoftwareServiceError> {
-        _ = self
-            .status
-            .start_task(vec![
-                "Add base repositories".to_string(),
-                "Refreshing repositories metadata".to_string(),
-                // "Calculate software proposal".to_string(),
-            ])
-            .await;
-
         let product = self.find_selected_product().await?;
         let repositories = product.software.repositories();
         for (idx, repo) in repositories.iter().enumerate() {
@@ -183,8 +168,6 @@ impl SoftwareServiceServer {
             })
             .map_err(SoftwareServiceError::AddRepositoryFailed)?;
         }
-
-        _ = self.status.next_step();
 
         zypp_agama::load_source(|percent, alias| {
             tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
@@ -211,6 +194,7 @@ impl SoftwareServiceServer {
                 description: p.description.clone(),
                 icon: p.icon.clone(),
                 registration: p.registration,
+                license: None,
             })
             .collect();
         tx.send(products)

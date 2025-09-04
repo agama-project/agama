@@ -38,10 +38,7 @@ pub use client::SoftwareServiceClient;
 use tokio::sync::{mpsc, oneshot, Mutex};
 use zypp_agama::ZyppError;
 
-use crate::{
-    common::backend::service_status::ServiceStatusError, products::ProductsRegistry,
-    web::EventsSender,
-};
+use crate::{products::ProductsRegistry, web::EventsSender};
 
 mod client;
 mod server;
@@ -50,7 +47,6 @@ type SoftwareActionSender = tokio::sync::mpsc::UnboundedSender<server::SoftwareA
 
 #[derive(thiserror::Error, Debug)]
 pub enum SoftwareServiceError {
-
     #[error("Response channel closed")]
     ResponseChannelClosed,
 
@@ -59,9 +55,6 @@ pub enum SoftwareServiceError {
 
     #[error("Sender error: {0}")]
     SendError(#[from] mpsc::error::SendError<server::SoftwareAction>),
-
-    #[error("Service status error: {0}")]
-    ServiceStatus(#[from] ServiceStatusError),
 
     #[error("Unknown product: {0}")]
     UnknownProduct(String),
