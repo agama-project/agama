@@ -21,7 +21,6 @@
 
 require "dbus"
 require "agama/dbus/bus"
-require "agama/dbus/clients/locale"
 require "agama/dbus/software"
 require "agama/software"
 

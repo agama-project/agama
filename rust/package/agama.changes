@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep  2 12:24:00 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the D-Bus interface to localization configuration
+  (gh#agama-project/agama#2684).
+
+-------------------------------------------------------------------
 Thu Aug 28 10:15:23 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update the software cache when the patterns selection changes (bsc#1248826).
@@ -12,7 +18,7 @@ Thu Aug 28 05:26:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Wed Aug 27 08:57:02 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
-- Add the zFCP controller internal id to the device when some 
+- Add the zFCP controller internal id to the device when some
   update is notified (bsc#1247445).
 
 -------------------------------------------------------------------
