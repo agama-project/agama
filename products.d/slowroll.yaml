@@ -45,6 +45,8 @@ software:
       archs: x86_64
     - url: https://download.opensuse.org/slowroll/repo/non-oss/
       archs: x86_64
+    - url: https://download.opensuse.org/update/slowroll/repo/oss/
+      archs: x86_64
 
   mandatory_patterns:
     - enhanced_base
