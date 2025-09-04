@@ -58,6 +58,8 @@ jobs:
 
     - name: Git Checkout
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
     - name: Rust toolchain
       run: |
@@ -80,6 +82,8 @@ jobs:
 
     - name: Git Checkout
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
     - name: Rust toolchain
       run: |
@@ -120,6 +124,8 @@ jobs:
 
     - name: Git Checkout
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
     - name: Rust toolchain
       run: |
