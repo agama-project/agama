@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,12 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::{
-    install_settings::InstallSettings,
-    localization::{model::LocaleConfig, LocalizationSettings},
-};
+use agama_lib::{install_settings::InstallSettings, localization::LocalizationSettings};
 
-use crate::l10n::L10n;
+use crate::{l10n::L10n, server::proposal::LocalizationProposal};
 
 use super::LocaleError;
 
@@ -36,22 +33,23 @@ impl L10nAgent {
         Self { l10n }
     }
 
-    pub fn set_config(&mut self, config: &InstallSettings) {
+    pub fn set_config(&mut self, config: &InstallSettings) -> Result<(), LocaleError> {
         let localization = config.localization.clone().unwrap_or_default();
 
-        let mut new_config = LocaleConfig::default();
+        // FIXME: Build a proposal
+        let mut proposal = LocalizationProposal::default();
 
         if let Some(language) = localization.language {
-            new_config.locales = Some(vec![language]);
+            proposal.locale = language.as_str().try_into()?;
         }
-        if let Some(keyboard) = localization.keyboard {
-            new_config.keymap = Some(keyboard);
+        if let Some(keymap) = localization.keyboard {
+            proposal.keymap = keymap.parse().map_err(LocaleError::InvalidKeymap)?;
         }
         if let Some(timezone) = localization.timezone {
-            new_config.timezone = Some(timezone);
+            proposal.timezone = timezone;
         }
 
-        self.update_model(new_config).unwrap();
+        self.update_proposal(proposal)
     }
 
     pub fn get_config(&self) -> InstallSettings {
@@ -67,19 +65,19 @@ impl L10nAgent {
         }
     }
 
-    pub fn update_model(&mut self, value: LocaleConfig) -> Result<(), LocaleError> {
-        if let Some(locales) = &value.locales {
-            self.l10n.set_locales(locales)?;
+    pub fn get_proposal(&self) -> LocalizationProposal {
+        let locale = self.l10n.locales.first().cloned().unwrap_or_default();
+        LocalizationProposal {
+            keymap: self.l10n.keymap.clone(),
+            locale,
+            timezone: self.l10n.timezone.clone(),
         }
+    }
 
-        if let Some(timezone) = &value.timezone {
-            self.l10n.set_timezone(timezone)?;
-        }
-
-        if let Some(keymap_id) = &value.keymap {
-            let keymap_id = keymap_id.parse().map_err(LocaleError::InvalidKeymap)?;
-            self.l10n.set_keymap(keymap_id)?;
-        }
+    pub fn update_proposal(&mut self, value: LocalizationProposal) -> Result<(), LocaleError> {
+        self.l10n.set_locales(&vec![value.locale.to_string()])?;
+        self.l10n.set_timezone(&value.timezone)?;
+        self.l10n.set_keymap(value.keymap)?;
 
         Ok(())
     }

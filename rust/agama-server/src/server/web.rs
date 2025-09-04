@@ -22,7 +22,11 @@
 
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
 use agama_locale_data::LocaleId;
-use axum::{extract::State, routing::patch, Json, Router};
+use axum::{
+    extract::State,
+    routing::{get, patch},
+    Json, Router,
+};
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -31,6 +35,8 @@ use crate::{
     l10n::{L10n, L10nAgent},
     supervisor::Supervisor,
 };
+
+use super::Proposal;
 
 #[derive(Clone)]
 pub struct ServerState {
@@ -48,6 +54,7 @@ pub async fn server_service() -> Result<Router, ServiceError> {
 
     Ok(Router::new()
         .route("/config", patch(set_config).get(get_config))
+        .route("/proposal", get(get_proposal))
         .with_state(state))
 }
 
@@ -63,4 +70,9 @@ async fn set_config(
     let mut state = state.supervisor.lock().await;
     state.set_config(config).await;
     Ok(())
+}
+
+async fn get_proposal(State(state): State<ServerState>) -> Result<Json<Proposal>, Error> {
+    let state = state.supervisor.lock().await;
+    Ok(Json(state.get_proposal().await))
 }

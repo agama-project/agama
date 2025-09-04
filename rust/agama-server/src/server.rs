@@ -20,3 +20,5 @@
 
 pub mod web;
 pub use web::server_service;
+pub mod proposal;
+pub use proposal::Proposal;

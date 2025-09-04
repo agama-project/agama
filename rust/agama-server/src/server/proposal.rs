@@ -18,41 +18,32 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::install_settings::InstallSettings;
+use agama_locale_data::{KeymapId, LocaleId};
+use serde::Serialize;
+use serde_with::{serde_as, DisplayFromStr};
 
-use crate::{l10n::L10nAgent, server::Proposal};
-
-pub struct Supervisor {
-    l10n: L10nAgent,
-    config: InstallSettings,
+// FIXME: replace LocaleConfig?
+#[serde_as]
+#[derive(Serialize)]
+pub struct LocalizationProposal {
+    #[serde_as(as = "DisplayFromStr")]
+    pub keymap: KeymapId,
+    #[serde_as(as = "DisplayFromStr")]
+    pub locale: LocaleId,
+    pub timezone: String,
 }
 
-impl Supervisor {
-    pub fn new(l10n: L10nAgent) -> Self {
+impl Default for LocalizationProposal {
+    fn default() -> Self {
         Self {
-            l10n,
-            config: InstallSettings::default(),
+            timezone: "Europe/Berlin".to_string(),
+            keymap: KeymapId::default(),
+            locale: LocaleId::default(),
         }
     }
+}
 
-    pub async fn get_config(&self) -> &InstallSettings {
-        &self.config
-    }
-
-    pub async fn get_proposal(&self) -> Proposal {
-        Proposal {
-            localization: self.l10n.get_proposal(),
-        }
-    }
-
-    pub async fn patch_config(&self, config: InstallSettings) {
-        unimplemented!();
-        // let mut current = self.get_config();
-        // self.set_config(current,.merge(config))
-    }
-
-    pub async fn set_config(&mut self, config: InstallSettings) {
-        self.l10n.set_config(&config);
-        self.config = config
-    }
+#[derive(Serialize)]
+pub struct Proposal {
+    pub localization: LocalizationProposal,
 }

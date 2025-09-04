@@ -23,6 +23,7 @@ use std::io::Write;
 use std::process::Command;
 
 use crate::error::Error;
+use crate::server::proposal::LocalizationProposal;
 use agama_locale_data::InvalidLocaleCode;
 use agama_locale_data::{KeymapId, LocaleId};
 use regex::Regex;
