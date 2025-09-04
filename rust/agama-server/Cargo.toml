@@ -58,6 +58,7 @@ zypp-agama = { path = "../zypp-c-api/rust/zypp-agama" }
 glob = "0.3.1"
 tempfile = "3.13.0"
 url = "2.5.2"
+serde_yaml = "0.9.34"
 
 [[bin]]
 name = "agama-dbus-server"
