@@ -18,11 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+mod agent;
 pub mod error;
 pub mod helpers;
 mod model;
 pub mod web;
 
 pub use agama_lib::localization::model::LocaleConfig;
+pub use agent::L10nAgent;
 pub use error::LocaleError;
 pub use model::{Keymap, L10n, LocaleEntry, TimezoneEntry};

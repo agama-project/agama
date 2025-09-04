@@ -20,17 +20,38 @@
 
 use agama_lib::install_settings::InstallSettings;
 
-#[derive(Default)]
+use crate::l10n::L10nAgent;
+
 pub struct Supervisor {
+    l10n: L10nAgent,
     config: InstallSettings,
 }
 
 impl Supervisor {
-    pub async fn get_config(&self) -> InstallSettings {
-        self.config.clone()
+    pub fn new(l10n: L10nAgent) -> Self {
+        Self {
+            l10n,
+            config: InstallSettings::default(),
+        }
+    }
+
+    pub async fn get_config(&self) -> &InstallSettings {
+        &self.config
+    }
+
+    pub async fn get_proposal(&self) -> InstallSettings {
+        // self.l10n.get_config()
+        unimplemented!()
+    }
+
+    pub async fn patch_config(&self, config: InstallSettings) {
+        unimplemented!();
+        // let mut current = self.get_config();
+        // self.set_config(current,.merge(config))
     }
 
     pub async fn set_config(&mut self, config: InstallSettings) {
+        self.l10n.set_config(&config);
         self.config = config
     }
 }

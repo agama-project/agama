@@ -135,8 +135,8 @@ async fn set_config(
     let mut changes = LocaleConfig::default();
 
     if let Some(locales) = &value.locales {
-        data.set_locales(locales)?;
         changes.locales.clone_from(&value.locales);
+        data.set_locales(locales)?;
     }
 
     if let Some(timezone) = &value.timezone {

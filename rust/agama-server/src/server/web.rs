@@ -21,11 +21,16 @@
 //! This module implements Agama's HTTP API.
 
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
+use agama_locale_data::LocaleId;
 use axum::{extract::State, routing::patch, Json, Router};
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-use crate::{error::Error, supervisor::Supervisor};
+use crate::{
+    error::Error,
+    l10n::{L10n, L10nAgent},
+    supervisor::Supervisor,
+};
 
 #[derive(Clone)]
 pub struct ServerState {
@@ -34,8 +39,13 @@ pub struct ServerState {
 
 /// Sets up and returns the axum service for the manager module
 pub async fn server_service() -> Result<Router, ServiceError> {
-    let supervisor = Arc::new(Mutex::new(Supervisor::default()));
-    let state = ServerState { supervisor };
+    let l10n = L10n::new_with_locale(&LocaleId::default()).unwrap();
+    let l10n = L10nAgent::new(l10n);
+    let supervisor = Supervisor::new(l10n);
+    let state = ServerState {
+        supervisor: Arc::new(Mutex::new(supervisor)),
+    };
+
     Ok(Router::new()
         .route("/config", patch(set_config).get(get_config))
         .with_state(state))
@@ -43,7 +53,7 @@ pub async fn server_service() -> Result<Router, ServiceError> {
 
 async fn get_config(State(state): State<ServerState>) -> Result<Json<InstallSettings>, Error> {
     let state = state.supervisor.lock().await;
-    Ok(Json(state.get_config().await))
+    Ok(Json(state.get_config().await.clone()))
 }
 
 async fn set_config(
