@@ -37,8 +37,6 @@ pub enum ServiceError {
     ZVariant(#[from] zvariant::Error),
     #[error(transparent)]
     HTTPError(#[from] reqwest::Error),
-    #[error("HTTP client error: {0}")]
-    HTTPClientError(#[from] BaseHTTPClientError),
     // it's fine to say only "Error" because the original
     // specific error will be printed too
     // `#` is std::fmt "Alternate form", anyhow::Error interprets as "include causes"

@@ -34,7 +34,6 @@
 
 use std::sync::Arc;
 
-use agama_lib::base_http_client::BaseHTTPClientError;
 pub use client::SoftwareServiceClient;
 use tokio::sync::{mpsc, oneshot, Mutex};
 use zypp_agama::ZyppError;
@@ -51,8 +50,6 @@ type SoftwareActionSender = tokio::sync::mpsc::UnboundedSender<server::SoftwareA
 
 #[derive(thiserror::Error, Debug)]
 pub enum SoftwareServiceError {
-    #[error("HTTP client error: {0}")]
-    HTTPClient(#[from] BaseHTTPClientError),
 
     #[error("Response channel closed")]
     ResponseChannelClosed,
