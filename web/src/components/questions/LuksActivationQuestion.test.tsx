@@ -34,6 +34,7 @@ const questionMock: Question = {
   class: "storage.luks_activation",
   text: "A Luks device found. Do you want to open it?",
   options: ["decrypt", "skip"],
+  optionLabels: ["Decrypt", "Skip"],
   defaultOption: "decrypt",
   data: { attempt: "1" },
 };
