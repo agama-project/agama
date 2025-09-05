@@ -1,0 +1,3 @@
+[submodule "rust/zypp-c-api"]
+	path = rust/zypp-c-api
+	url = ../zypp-c-api.git
