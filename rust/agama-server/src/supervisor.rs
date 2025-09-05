@@ -53,7 +53,7 @@ impl Supervisor {
 
     pub async fn patch_config(&mut self, user_config: InstallSettings) {
         let config = merge(&self.user_config, &user_config).unwrap();
-        self.set_config(config);
+        self.set_config(config).await;
     }
 
     pub async fn set_config(&mut self, user_config: InstallSettings) {
