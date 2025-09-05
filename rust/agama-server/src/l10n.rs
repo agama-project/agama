@@ -21,10 +21,12 @@
 mod agent;
 pub mod error;
 pub mod helpers;
+pub mod info;
 mod model;
 pub mod web;
 
 pub use agama_lib::localization::model::LocaleConfig;
 pub use agent::L10nAgent;
 pub use error::LocaleError;
+pub use info::LocaleInfo;
 pub use model::{Keymap, L10n, LocaleEntry, TimezoneEntry};

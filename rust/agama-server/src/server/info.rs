@@ -18,9 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod web;
-pub use web::server_service;
-pub mod proposal;
-pub use proposal::Proposal;
-pub mod info;
-pub use info::SystemInfo;
+use crate::l10n::LocaleInfo;
+use serde::Serialize;
+
+#[derive(Serialize)]
+pub struct SystemInfo {
+    pub locale: LocaleInfo,
+}

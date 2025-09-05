@@ -21,7 +21,10 @@
 use agama_lib::install_settings::InstallSettings;
 use merge_struct::merge;
 
-use crate::{l10n::L10nAgent, server::Proposal};
+use crate::{
+    l10n::L10nAgent,
+    server::{Proposal, SystemInfo},
+};
 
 pub struct Supervisor {
     l10n: L10nAgent,
@@ -64,5 +67,11 @@ impl Supervisor {
         self.proposal = Some(Proposal {
             localization: l10n_proposal,
         })
+    }
+
+    pub async fn get_system(&self) -> SystemInfo {
+        SystemInfo {
+            locale: self.l10n.get_system(),
+        }
     }
 }

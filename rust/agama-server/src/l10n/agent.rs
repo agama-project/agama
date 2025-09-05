@@ -24,7 +24,7 @@ use merge_struct::merge;
 
 use crate::{l10n::L10n, server::proposal::LocalizationProposal};
 
-use super::LocaleError;
+use super::{LocaleError, LocaleInfo};
 
 pub struct L10nAgent {
     l10n: L10n,
@@ -59,6 +59,14 @@ impl L10nAgent {
         InstallSettings {
             localization: Some(localization),
             ..Default::default()
+        }
+    }
+
+    pub fn get_system(&self) -> LocaleInfo {
+        LocaleInfo {
+            locales: self.l10n.locales_db.entries().clone(),
+            keymaps: self.l10n.keymaps_db.entries().clone(),
+            timezones: self.l10n.timezones_db.entries().clone(),
         }
     }
 

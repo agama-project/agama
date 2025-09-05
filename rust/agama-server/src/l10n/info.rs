@@ -18,9 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod web;
-pub use web::server_service;
-pub mod proposal;
-pub use proposal::Proposal;
-pub mod info;
-pub use info::SystemInfo;
+use serde::Serialize;
+
+use super::{Keymap, LocaleEntry, TimezoneEntry};
+
+#[derive(Serialize)]
+pub struct LocaleInfo {
+    pub locales: Vec<LocaleEntry>,
+    pub timezones: Vec<TimezoneEntry>,
+    pub keymaps: Vec<Keymap>,
+}

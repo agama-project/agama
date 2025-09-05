@@ -38,6 +38,8 @@ use crate::{
     supervisor::Supervisor,
 };
 
+use super::SystemInfo;
+
 #[derive(Clone)]
 pub struct ServerState {
     supervisor: Arc<Mutex<Supervisor>>,
@@ -54,6 +56,7 @@ pub async fn server_service() -> Result<Router, ServiceError> {
 
     Ok(Router::new()
         .route("/config", patch(set_config).get(get_config))
+        .route("/system", get(get_system))
         .route("/proposal", get(get_proposal))
         .with_state(state))
 }
@@ -72,7 +75,6 @@ async fn set_config(
     Ok(())
 }
 
-// async fn get_proposal(State(state): State<ServerState>) -> Result<Json<Proposal>, Error> {
 async fn get_proposal(State(state): State<ServerState>) -> Result<Response, Error> {
     let state = state.supervisor.lock().await;
     let response = if let Some(proposal) = state.get_proposal().await {
@@ -81,4 +83,9 @@ async fn get_proposal(State(state): State<ServerState>) -> Result<Response, Erro
         StatusCode::NOT_FOUND.into_response()
     };
     Ok(response)
+}
+
+async fn get_system(State(state): State<ServerState>) -> Result<Json<SystemInfo>, Error> {
+    let state = state.supervisor.lock().await;
+    Ok(Json(state.get_system().await))
 }
