@@ -31,6 +31,7 @@ const SERVICE_NAME: &str = "org.opensuse.Agama1";
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let locale = l10n_helpers::init_locale()?;
+    tracing::info!("Using locale {}", locale);
     init_logging().context("Could not initialize the logger")?;
 
     let connection = connection_to(ADDRESS)
