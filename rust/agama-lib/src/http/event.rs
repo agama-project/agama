@@ -21,7 +21,6 @@
 use crate::{
     auth::ClientId,
     jobs::Job,
-    localization::model::LocaleConfig,
     manager::InstallationPhase,
     network::model::NetworkChange,
     progress::Progress,
@@ -81,7 +80,6 @@ impl Event {
 #[serde(tag = "type")]
 pub enum EventPayload {
     ClientConnected,
-    L10nConfigChanged(LocaleConfig),
     LocaleChanged {
         locale: String,
     },

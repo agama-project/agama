@@ -53,6 +53,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "agama-l10n"
+version = "0.1.0"
+
+[[package]]
 name = "agama-lib"
 version = "1.0.0"
 dependencies = [

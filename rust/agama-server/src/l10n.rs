@@ -23,7 +23,6 @@ pub mod error;
 pub mod helpers;
 pub mod info;
 mod model;
-pub mod web;
 
 pub use agama_lib::localization::model::LocaleConfig;
 pub use agent::L10nAgent;

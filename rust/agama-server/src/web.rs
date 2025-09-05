@@ -29,7 +29,6 @@ use crate::{
     error::Error,
     files::web::files_service,
     hostname::web::hostname_service,
-    l10n::web::l10n_service,
     manager::web::{manager_service, manager_stream},
     network::{web::network_service, NetworkManagerAdapter},
     profile::web::profile_service,
@@ -86,7 +85,6 @@ where
     let progress = ProgressService::start(dbus.clone(), events.clone()).await;
 
     let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
-        .add_service("/l10n", l10n_service(dbus.clone(), events.clone()).await?)
         .add_service(
             "/manager",
             manager_service(dbus.clone(), progress.clone()).await?,
