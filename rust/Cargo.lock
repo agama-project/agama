@@ -151,6 +151,7 @@ dependencies = [
  "hyper 1.6.0",
  "hyper-util",
  "libsystemd",
+ "merge-struct",
  "openssl",
  "pam",
  "pin-project",
@@ -2594,6 +2595,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "488016bfae457b036d996092f6cb448677611ce4449e970ceaf42695203f218a"
 dependencies = [
  "autocfg",
+]
+
+[[package]]
+name = "merge-struct"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1d82012d21e24135b839b6b9bebd622b7ff0cb40071498bc2d066d3a6d04dd4a"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

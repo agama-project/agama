@@ -43,7 +43,7 @@ impl Default for LocalizationProposal {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Default, Serialize)]
 pub struct Proposal {
     pub localization: LocalizationProposal,
 }

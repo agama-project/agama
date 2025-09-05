@@ -19,12 +19,15 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::install_settings::InstallSettings;
+use merge_struct::merge;
 
 use crate::{l10n::L10nAgent, server::Proposal};
 
 pub struct Supervisor {
     l10n: L10nAgent,
+    user_config: InstallSettings,
     config: InstallSettings,
+    proposal: Option<Proposal>,
 }
 
 impl Supervisor {
@@ -32,6 +35,8 @@ impl Supervisor {
         Self {
             l10n,
             config: InstallSettings::default(),
+            user_config: InstallSettings::default(),
+            proposal: None,
         }
     }
 
@@ -39,20 +44,25 @@ impl Supervisor {
         &self.config
     }
 
-    pub async fn get_proposal(&self) -> Proposal {
-        Proposal {
-            localization: self.l10n.get_proposal(),
-        }
+    pub async fn get_proposal(&self) -> &Option<Proposal> {
+        &self.proposal
     }
 
-    pub async fn patch_config(&self, config: InstallSettings) {
-        unimplemented!();
-        // let mut current = self.get_config();
-        // self.set_config(current,.merge(config))
+    pub async fn patch_config(&mut self, user_config: InstallSettings) {
+        let config = merge(&self.user_config, &user_config).unwrap();
+        self.set_config(config);
     }
 
-    pub async fn set_config(&mut self, config: InstallSettings) {
-        self.l10n.set_config(&config);
-        self.config = config
+    pub async fn set_config(&mut self, user_config: InstallSettings) {
+        let mut config = InstallSettings::default();
+
+        let (l10n_config, l10n_proposal) = self.l10n.propose(&config).unwrap();
+        config.localization = Some(l10n_config);
+
+        self.config = config;
+        self.user_config = user_config;
+        self.proposal = Some(Proposal {
+            localization: l10n_proposal,
+        })
     }
 }

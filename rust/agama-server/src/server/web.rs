@@ -24,9 +24,11 @@ use agama_lib::{error::ServiceError, install_settings::InstallSettings};
 use agama_locale_data::LocaleId;
 use axum::{
     extract::State,
+    response::{IntoResponse, Response},
     routing::{get, patch},
     Json, Router,
 };
+use hyper::StatusCode;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -35,8 +37,6 @@ use crate::{
     l10n::{L10n, L10nAgent},
     supervisor::Supervisor,
 };
-
-use super::Proposal;
 
 #[derive(Clone)]
 pub struct ServerState {
@@ -72,7 +72,13 @@ async fn set_config(
     Ok(())
 }
 
-async fn get_proposal(State(state): State<ServerState>) -> Result<Json<Proposal>, Error> {
+// async fn get_proposal(State(state): State<ServerState>) -> Result<Json<Proposal>, Error> {
+async fn get_proposal(State(state): State<ServerState>) -> Result<Response, Error> {
     let state = state.supervisor.lock().await;
-    Ok(Json(state.get_proposal().await))
+    let response = if let Some(proposal) = state.get_proposal().await {
+        Json(proposal).into_response()
+    } else {
+        StatusCode::NOT_FOUND.into_response()
+    };
+    Ok(response)
 }
