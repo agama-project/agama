@@ -20,6 +20,7 @@
 
 //! This module implements Agama's HTTP API.
 
+use agama_l10n::L10n;
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
 use agama_locale_data::LocaleId;
 use axum::{
@@ -32,11 +33,7 @@ use hyper::StatusCode;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-use crate::{
-    error::Error,
-    l10n::{L10n, L10nAgent},
-    supervisor::Supervisor,
-};
+use crate::{error::Error, l10n::L10nAgent, supervisor::Supervisor};
 
 use super::SystemInfo;
 

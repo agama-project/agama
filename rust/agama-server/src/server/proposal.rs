@@ -18,30 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_locale_data::{KeymapId, LocaleId};
+use agama_l10n::LocalizationProposal;
 use serde::Serialize;
-use serde_with::{serde_as, DisplayFromStr};
-
-// FIXME: replace LocaleConfig?
-#[serde_as]
-#[derive(Serialize)]
-pub struct LocalizationProposal {
-    #[serde_as(as = "DisplayFromStr")]
-    pub keymap: KeymapId,
-    #[serde_as(as = "DisplayFromStr")]
-    pub locale: LocaleId,
-    pub timezone: String,
-}
-
-impl Default for LocalizationProposal {
-    fn default() -> Self {
-        Self {
-            timezone: "Europe/Berlin".to_string(),
-            keymap: KeymapId::default(),
-            locale: LocaleId::default(),
-        }
-    }
-}
 
 #[derive(Default, Serialize)]
 pub struct Proposal {

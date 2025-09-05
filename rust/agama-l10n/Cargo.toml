@@ -5,3 +5,13 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
+anyhow = "1.0.99"
+merge-struct = "0.1.0"
+serde = { version = "1.0.219", features = ["derive"] }
+thiserror = "2.0.16"
+agama-locale-data = { path = "../agama-locale-data" }
+regex = "1.11.2"
+tracing = "0.1.41"
+serde_with = "3.14.0"
+utoipa = "5.4.0"
+gettext-rs = { version = "0.7.2", features = ["gettext-system"] }

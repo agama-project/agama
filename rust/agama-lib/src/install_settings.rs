@@ -22,6 +22,7 @@
 //!
 //! This module implements the mechanisms to load and store the installation settings.
 use crate::bootloader::model::BootloaderSettings;
+use crate::config::LocalizationConfig;
 use crate::context::InstallationContext;
 use crate::file_source::{FileSourceError, WithFileSource};
 use crate::files::model::UserFile;
@@ -30,9 +31,8 @@ use crate::questions::config::QuestionsConfig;
 use crate::security::settings::SecuritySettings;
 use crate::storage::settings::zfcp::ZFCPConfig;
 use crate::{
-    localization::LocalizationSettings, network::NetworkSettings, product::ProductSettings,
-    scripts::ScriptsConfig, software::SoftwareSettings, storage::settings::dasd::DASDConfig,
-    users::UserSettings,
+    network::NetworkSettings, product::ProductSettings, scripts::ScriptsConfig,
+    software::SoftwareSettings, storage::settings::dasd::DASDConfig, users::UserSettings,
 };
 use fluent_uri::Uri;
 use serde::{Deserialize, Serialize};
@@ -83,7 +83,7 @@ pub struct InstallSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub network: Option<NetworkSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub localization: Option<LocalizationSettings>,
+    pub localization: Option<LocalizationConfig>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub scripts: Option<ScriptsConfig>,
     #[serde(skip_serializing_if = "Option::is_none")]

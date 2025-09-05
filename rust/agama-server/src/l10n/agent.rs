@@ -18,13 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::{install_settings::InstallSettings, localization::LocalizationSettings};
+use agama_l10n::{L10n, LocaleError, LocaleInfo, LocalizationProposal};
+use agama_lib::{config::LocalizationConfig, install_settings::InstallSettings};
 use agama_locale_data::{KeymapId, LocaleId};
 use merge_struct::merge;
-
-use crate::{l10n::L10n, server::proposal::LocalizationProposal};
-
-use super::{LocaleError, LocaleInfo};
 
 pub struct L10nAgent {
     l10n: L10n,
@@ -38,11 +35,11 @@ impl L10nAgent {
     pub fn propose(
         &mut self,
         user_config: &InstallSettings,
-    ) -> Result<(LocalizationSettings, LocalizationProposal), LocaleError> {
+    ) -> Result<(LocalizationConfig, LocalizationProposal), LocaleError> {
         let localization = user_config.localization.clone().unwrap_or_default();
 
         // FIXME: Build a config from the system
-        let default_config = LocalizationSettings::default();
+        let default_config = LocalizationConfig::default();
         let config = merge(&default_config, &localization).unwrap();
         let proposal = self.build_proposal(&config)?;
         self.sync_model(&proposal)?;
@@ -51,7 +48,7 @@ impl L10nAgent {
 
     pub fn get_config(&self) -> InstallSettings {
         let language = self.l10n.locales.first().map(ToString::to_string);
-        let localization = LocalizationSettings {
+        let localization = LocalizationConfig {
             timezone: Some(self.l10n.timezone.to_string()),
             keyboard: Some(self.l10n.keymap.to_string()),
             language,
@@ -72,7 +69,7 @@ impl L10nAgent {
 
     fn build_proposal(
         &self,
-        config: &LocalizationSettings,
+        config: &LocalizationConfig,
     ) -> Result<LocalizationProposal, LocaleError> {
         let locale: LocaleId = if let Some(language) = &config.language {
             language.as_str().try_into()?

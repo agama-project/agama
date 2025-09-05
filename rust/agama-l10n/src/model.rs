@@ -22,10 +22,7 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::process::Command;
 
-use crate::error::Error;
-use crate::server::proposal::LocalizationProposal;
-use agama_locale_data::InvalidLocaleCode;
-use agama_locale_data::{KeymapId, LocaleId};
+use agama_locale_data::{InvalidLocaleCode, KeymapId, LocaleId};
 use regex::Regex;
 
 pub mod keyboard;
@@ -53,7 +50,8 @@ pub struct L10n {
 }
 
 impl L10n {
-    pub fn new_with_locale(ui_locale: &LocaleId) -> Result<Self, Error> {
+    //    pub fn new_with_locale(ui_locale: &LocaleId) -> Result<Self, LocaleError> {
+    pub fn new_with_locale(ui_locale: &LocaleId) -> anyhow::Result<Self> {
         const DEFAULT_TIMEZONE: &str = "Europe/Berlin";
 
         let locale = ui_locale.to_string();
@@ -128,7 +126,7 @@ impl L10n {
     }
 
     // TODO: use LocaleError
-    pub fn translate(&mut self, locale: &LocaleId) -> Result<(), Error> {
+    pub fn translate(&mut self, locale: &LocaleId) -> anyhow::Result<()> {
         helpers::set_service_locale(locale);
         self.timezones_db.read(&locale.language)?;
         self.locales_db.read(&locale.language)?;

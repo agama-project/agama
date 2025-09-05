@@ -20,7 +20,6 @@
 
 //! This module provides support for reading the locales database.
 
-use crate::error::Error;
 use agama_locale_data::LocaleId;
 use anyhow::Context;
 use serde::Serialize;
@@ -63,7 +62,7 @@ impl LocalesDatabase {
     /// It it does not exists, calls `localectl list-locales`.
     ///
     /// * `ui_language`: language to translate the descriptions (e.g., "en").
-    pub fn read(&mut self, ui_language: &str) -> Result<(), Error> {
+    pub fn read(&mut self, ui_language: &str) -> anyhow::Result<()> {
         self.known_locales = Self::get_locales_list()?;
         self.locales = self.get_locales(ui_language)?;
         Ok(())
@@ -89,7 +88,7 @@ impl LocalesDatabase {
     /// Gets the supported locales information.
     ///
     /// * `ui_language`: language to use in the translations.
-    fn get_locales(&self, ui_language: &str) -> Result<Vec<LocaleEntry>, Error> {
+    fn get_locales(&self, ui_language: &str) -> anyhow::Result<Vec<LocaleEntry>> {
         const DEFAULT_LANG: &str = "en";
         let mut result = Vec::with_capacity(self.known_locales.len());
         let languages = agama_locale_data::get_languages()?;
@@ -135,7 +134,7 @@ impl LocalesDatabase {
         Ok(result)
     }
 
-    fn get_locales_list() -> Result<Vec<LocaleId>, Error> {
+    fn get_locales_list() -> anyhow::Result<Vec<LocaleId>> {
         const LOCALES_LIST_PATH: &str = "/etc/agama.d/locales";
 
         let locales = fs::read_to_string(LOCALES_LIST_PATH).map(Self::get_locales_from_string);
