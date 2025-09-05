@@ -5486,6 +5486,7 @@ dependencies = [
 name = "zypp-agama"
 version = "0.1.0"
 dependencies = [
+ "tokio",
  "zypp-agama-sys",
 ]
 

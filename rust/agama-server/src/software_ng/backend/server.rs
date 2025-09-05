@@ -28,6 +28,7 @@ use agama_lib::{
     },
 };
 use tokio::sync::{mpsc, oneshot, Mutex};
+use zypp_agama::callbacks::empty_progress;
 
 use crate::{
     products::{ProductSpec, ProductsRegistry},
@@ -54,18 +55,20 @@ pub enum SoftwareAction {
 }
 
 /// Software service server.
-pub struct SoftwareServiceServer {
+pub struct SoftwareServiceServer<'a> {
     receiver: mpsc::UnboundedReceiver<SoftwareAction>,
     events: EventsSender,
     products: Arc<Mutex<ProductsRegistry>>,
     // FIXME: what about having a SoftwareServiceState to keep business logic state?
     selected_product: Option<String>,
     software_selection: SoftwareSelection,
+    // need to hold zypp lock to be able to call it
+    zypp_lock: zypp_agama::Zypp<'a>,
 }
 
 const SERVICE_NAME: &str = "org.opensuse.Agama.Software1";
 
-impl SoftwareServiceServer {
+impl<'a> SoftwareServiceServer<'_> {
     /// Starts the software service loop and returns a client.
     ///
     /// The service runs on a separate Tokio task and gets the client requests using a channel.
@@ -75,15 +78,15 @@ impl SoftwareServiceServer {
     ) -> Result<SoftwareServiceClient, SoftwareServiceError> {
         let (sender, receiver) = mpsc::unbounded_channel();
 
-        let server = Self {
-            receiver,
-            events,
-            products,
-            selected_product: None,
-            software_selection: SoftwareSelection::default(),
-        };
-
         tokio::spawn(async move {
+            let server = Self {
+                receiver,
+                events,
+                products,
+                selected_product: None,
+                software_selection: SoftwareSelection::default(),
+                zypp_lock: zypp_agama::init_target("/run/agama/zypp", |_,_,_| () ).unwrap(),
+            };
             if let Err(error) = server.run().await {
                 tracing::error!("Software service could not start: {:?}", error);
             }
