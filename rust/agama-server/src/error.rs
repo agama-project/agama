@@ -27,7 +27,10 @@ use axum::{
 use serde_json::json;
 
 use crate::{
-    l10n::LocaleError, software_ng::SoftwareServiceError, users::password::PasswordCheckerError, web::common::{IssuesServiceError, ProgressServiceError}
+    l10n::LocaleError,
+    software_ng::SoftwareServiceError,
+    users::password::PasswordCheckerError,
+    web::common::{IssuesServiceError, ProgressServiceError},
 };
 
 #[derive(thiserror::Error, Debug)]

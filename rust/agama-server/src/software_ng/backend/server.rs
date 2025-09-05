@@ -61,6 +61,8 @@ pub struct SoftwareServiceServer {
     // FIXME: what about having a SoftwareServiceState to keep business logic state?
     selected_product: Option<String>,
     software_selection: SoftwareSelection,
+    // need to hold zypp lock to be able to call it
+    zypp_lock: zypp_agama::Zypp,
 }
 
 const SERVICE_NAME: &str = "org.opensuse.Agama.Software1";
@@ -75,15 +77,21 @@ impl SoftwareServiceServer {
     ) -> Result<SoftwareServiceClient, SoftwareServiceError> {
         let (sender, receiver) = mpsc::unbounded_channel();
 
-        let server = Self {
-            receiver,
-            events,
-            products,
-            selected_product: None,
-            software_selection: SoftwareSelection::default(),
-        };
-
         tokio::spawn(async move {
+            let target_dir = Path::new(TARGET_DIR);
+            if target_dir.exists() {
+                _ = std::fs::remove_dir_all(target_dir);
+            }
+
+            std::fs::create_dir_all(target_dir).unwrap();
+            let server = Self {
+                receiver,
+                events,
+                products,
+                selected_product: None,
+                software_selection: SoftwareSelection::default(),
+                zypp_lock: zypp_agama::Zypp::init_target(TARGET_DIR, |_, _, _| ()).unwrap(),
+            };
             if let Err(error) = server.run().await {
                 tracing::error!("Software service could not start: {:?}", error);
             }
@@ -162,18 +170,20 @@ impl SoftwareServiceServer {
         for (idx, repo) in repositories.iter().enumerate() {
             // TODO: we should add a repository ID in the configuration file.
             let name = format!("agama-{}", idx);
-            zypp_agama::add_repository(&name, &repo.url, |percent, alias| {
-                tracing::info!("Adding repository {} ({}%)", alias, percent);
-                true
-            })
-            .map_err(SoftwareServiceError::AddRepositoryFailed)?;
+            self.zypp_lock
+                .add_repository(&name, &repo.url, |percent, alias| {
+                    tracing::info!("Adding repository {} ({}%)", alias, percent);
+                    true
+                })
+                .map_err(SoftwareServiceError::AddRepositoryFailed)?;
         }
 
-        zypp_agama::load_source(|percent, alias| {
-            tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
-            true
-        })
-        .map_err(SoftwareServiceError::LoadSourcesFailed)?;
+        self.zypp_lock
+            .load_source(|percent, alias| {
+                tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
+                true
+            })
+            .map_err(SoftwareServiceError::LoadSourcesFailed)?;
 
         Ok(())
     }
@@ -217,7 +227,9 @@ impl SoftwareServiceServer {
             .map(String::as_str)
             .collect();
 
-        let patterns = zypp_agama::patterns_info(pattern_names)
+        let patterns = self
+            .zypp_lock
+            .patterns_info(pattern_names)
             .map_err(SoftwareServiceError::ListPatternsFailed)?;
 
         let patterns = patterns
@@ -238,18 +250,6 @@ impl SoftwareServiceServer {
     }
 
     fn initialize_target_dir(&self) -> Result<(), SoftwareServiceError> {
-        let target_dir = Path::new(TARGET_DIR);
-        if target_dir.exists() {
-            _ = std::fs::remove_dir_all(target_dir);
-        }
-
-        std::fs::create_dir_all(target_dir).map_err(SoftwareServiceError::TargetCreationFailed)?;
-
-        zypp_agama::init_target(TARGET_DIR, |text, step, total| {
-            tracing::info!("Initializing target: {} ({}/{})", text, step, total);
-        })
-        .map_err(SoftwareServiceError::TargetInitFailed)?;
-
         self.import_gpg_keys();
         Ok(())
     }
@@ -258,7 +258,7 @@ impl SoftwareServiceServer {
         for file in glob::glob(GPG_KEYS).unwrap() {
             match file {
                 Ok(file) => {
-                    if let Err(e) = zypp_agama::import_gpg_key(&file.to_string_lossy()) {
+                    if let Err(e) = self.zypp_lock.import_gpg_key(&file.to_string_lossy()) {
                         tracing::error!("Failed to import GPG key: {}", e);
                     }
                 }
