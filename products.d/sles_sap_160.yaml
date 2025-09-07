@@ -9,14 +9,33 @@ license: "license.final"
 # at the at translations/description key below to avoid using obsolete
 # translations!!
 # ------------------------------------------------------------------------------
-description: "The leading OS for a secure and reliable SAP platform.
-  Endorsed for SAP deployments, SUSE Linux Enterprise Server for SAP applications
+description: "The leading OS for a secure and reliable SAP platform. Endorsed
+  for SAP deployments, SUSE Linux Enterprise Server for SAP applications
   futureproofs the SAP project, offers uninterrupted business, and minimizes
   operational risks and costs."
 icon: SUSE.svg
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:
+    ca: El sistema operatiu líder per a una plataforma SAP segura i fiable. Avalat
+      per a implementacions SAP, SUSE Linux Enterprise Server per a aplicacions
+      SAP prepara el projecte SAP per al futur, ofereix negocis sense
+      interrupcions i minimitza els riscos i costos operatius.
+    de: Das führende Betriebssystem für eine sichere und zuverlässige SAP-Plattform.
+      SUSE Linux Enterprise Server für SAP-Anwendungen ist für
+      SAP-Implementierungen zertifiziert, macht SAP-Projekte zukunftssicher,
+      gewährleistet einen unterbrechungsfreien Geschäftsbetrieb und minimiert
+      Betriebsrisiken und -kosten.
+    id: Sistem operasi terdepan untuk platform SAP yang aman dan andal. Didukung
+      secara resmi untuk penerapan SAP, SUSE Linux Enterprise Server for SAP
+      Applications memberikan jaminan masa depan bagi proyek SAP, memastikan
+      kelancaran bisnis tanpa gangguan, serta meminimalkan risiko operasional
+      dan biaya.
+    ja: 安全で信頼性のある SAP プラットフォームを構築するためのリーディング OS です。 SAP 承認も取得済みの SUSE Linux
+      Enterprise Server for SAP applications では、 SAP
+      プロジェクトに将来性をもたらすほか、途切れることのないビジネス環境を提供し、運用で発生しうるリスクやコストを最小限に抑えます。
+    ru: "Ведущая ОС для безопасной и надёжной работы SAP: сертифицирована для SAP,
+      обеспечивает стабильность, снижает риски и издержки."
 software:
   installation_repositories: []
   installation_labels:
