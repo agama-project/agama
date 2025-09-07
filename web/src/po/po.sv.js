@@ -15,6 +15,10 @@ export default {
   "%1$s at %2$s": [
     "%1$s på %2$s"
   ],
+  "%1$s will be created as a partition at %2$s": [
+    "%1$s kommer att skapas som en partition på %2$s",
+    "%1$s kommer att skapa partitioner på %2$s"
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s kommer fortfarande att innehålla LVM-gruppen '%2$s' och eventuell partition som behövs för att starta systemet"
   ],
@@ -38,6 +42,10 @@ export default {
   ],
   "%s logo": [
     "%s logotyp"
+  ],
+  "%s will be created as a logical volume": [
+    "%s kommer att skapas som en logisk volym",
+    "%s kommer att skapas som flera logiska volymer"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s kommer fortfarande att innehålla de konfigurerade LVM-grupperna och alla partitioner som behövs för att starta systemet"
@@ -65,6 +73,14 @@ export default {
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Ett generiskt storleksintervall mellan %1$s och %2$s kommer att användas för den nya %3$s"
+  ],
+  "A new partition will be created for %s": [
+    "En ny partition kommer att skapas för %s",
+    "Flera nya partitioner kommer att skapas för %s"
+  ],
+  "A new volume will be created for %s": [
+    "En ny volym kommer att skapas för %s",
+    "Nya volymer kommer att skapas för %s"
   ],
   "A partition may be deleted": [
     "En partition kan tas bort"
@@ -174,6 +190,10 @@ export default {
   "Already using all available disks": [
     "Använder redan alla tillgängliga diskar"
   ],
+  "An existing partition will be used for %s": [
+    "En befintlig partition kommer att användas för %s",
+    "Flera befintliga partitioner kommer att användas för %s"
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Alla befintliga partitioner kommer att tas bort och all data på disken kommer att gå förlorad."
   ],
@@ -182,6 +202,10 @@ export default {
   ],
   "Apply selected solution": [
     "Använd den valda lösningen"
+  ],
+  "Apply to the selected device": [
+    "Tillämpa på den valda enheten",
+    "Tillämpa på det %s valda enheterna"
   ],
   "Applying changes": [
     "Tillämpar ändringar"
@@ -380,6 +404,9 @@ export default {
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Konfiguration läst från iSCSI Boot Firmware Table (iBFT)."
+  ],
+  "Configuration unreachable or invalid": [
+    "Konfigurationen är oåtkomlig eller ogiltig"
   ],
   "Configure DASD": [
     "Konfigurera DASD"
@@ -722,6 +749,14 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extend the installation beyond the currently selected device": [
+    "Utöka installationen bortom den valda enheten",
+    "Utöka installationen bortom det nuvarande valda %d enheterna"
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "Utöka installationen bortom den valda disken",
+    "Utöka installationen bortom det nuvarande valda %d diskarna"
   ],
   "Extensions": [
     "Tillägg"
@@ -1122,6 +1157,14 @@ export default {
   ],
   "More languages might be available for the selected product at [Localization] page": [
     "Fler språk kan vara tillgängliga för den valda produkten på [Lokalisering] sidan"
+  ],
+  "Moreover, the following partition will be created.": [
+    "Dessutom kommer följande partition att skapas.",
+    "Dessutom kommer följande partitioner att skapas."
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "Dessutom kommer följande partition att monteras.",
+    "Dessutom kommer följande partitioner att monteras."
   ],
   "Moreover, the following partitions will be created or mounted": [
     "Dessutom kommer följande partitioner att skapas eller monteras"
@@ -1757,6 +1800,10 @@ export default {
   "The configuration has been updated externally.": [
     "Konfigurationen har uppdaterats externt."
   ],
+  "The configuration must be adapted to address the following issue:": [
+    "Konfigurationen måste anpassas för att åtgärda följande problem:",
+    "Konfigurationen måste anpassas för att åtgärda dessa följande problem:"
+  ],
   "The configured LVM groups will remain at %s": [
     "De konfigurerade LVM-grupperna kommer att finnas kvar på %s"
   ],
@@ -1780,6 +1827,10 @@ export default {
   ],
   "The current file system will be mounted at %s": [
     "Det nuvarande filsystemet kommer att monteras på %s"
+  ],
+  "The current storage configuration has the following issue:": [
+    "Den nuvarande lagringskonfigurationen har följande problem:",
+    "Det nuvarande lagringskonfigurationerna har följande problem:"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Data bevaras, men storleken på de aktuella partitionerna kommer att ändras efter behov."
@@ -1829,6 +1880,18 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Det sista steget för att konfigurera Trusted Platform Module (TPM) för att automatiskt öppna krypterade enheter kommer att ske under den första uppstarten av det nya systemet. För att det ska fungera måste maskinen startas direkt till den nya uppstartshanteraren."
   ],
+  "The following logical volume will be created": [
+    "Följande logiska volym kommer att skapas",
+    "Följande logiska volymer kommer också att skapas"
+  ],
+  "The following partition will be created.": [
+    "Följande partition kommer att skapas.",
+    "Följande partitioner kommer att skapas."
+  ],
+  "The following partition will be mounted.": [
+    "Följande partition kommer att monteras.",
+    "Följande partitioner kommer att monteras."
+  ],
   "The following partitions will be created or mounted": [
     "Följande partitioner kommer att skapas eller monteras"
   ],
@@ -1852,6 +1915,10 @@ export default {
   ],
   "The installer requires [root] user privileges.": [
     "Installationsprogrammet kräver [root] användarrättigheter."
+  ],
+  "The logical volume will also be deleted": [
+    "Den logiska volymen kommer också att raderas",
+    "Det logiska volymerna kommer också att raderas"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Det maximala antalet måste vara ett tal följt av en enhet som GiB eller GB"
@@ -1942,6 +2009,14 @@ export default {
   ],
   "There are not usable partitions": [
     "Det finns inte några användbara partitioner"
+  ],
+  "There is %d destructive action planned": [
+    "Det finns en %d destruktiv åtgärd planerad",
+    "Det finns flera %d destruktiva åtgärder planerade"
+  ],
+  "There is %d destructive action planned affecting %s": [
+    "Det finns %d planerade destruktiva åtgärder som påverkar %s",
+    "Det finns flera %d planerade destruktiva åtgärder som påverkar %s"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Dessa är de mest relevanta installationsinställningarna. Bläddra gärna igenom avsnitten i menyn för ytterligare detaljer."
