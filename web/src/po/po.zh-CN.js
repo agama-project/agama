@@ -39,6 +39,9 @@ export default {
   "%s logo": [
     "%s 徽标"
   ],
+  "%s will be created as a logical volume": [
+    ""
+  ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s 仍将包含配置的 LVM 组和引导所需的任何分区"
   ],
@@ -671,6 +674,12 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extend the installation beyond the currently selected device": [
+    ""
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    ""
   ],
   "Extensions": [
     "扩展"
@@ -1680,6 +1689,9 @@ export default {
   "The current file system will be mounted at %s": [
     "当前文件系统将挂载到 %s 上"
   ],
+  "The current storage configuration has the following issue:": [
+    ""
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "数据将被保留，但当前分区的大小将会按需调整。"
   ],
@@ -1841,6 +1853,9 @@ export default {
   ],
   "There are not usable partitions": [
     "没有可使用的分区"
+  ],
+  "There is %d destructive action planned": [
+    "已计划执行 %d 个具有破坏性的操作"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "这些是最主要的安装设置。如需获取更详细的信息，请随意浏览菜单中的各节。"
