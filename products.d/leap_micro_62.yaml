@@ -109,3 +109,36 @@ storage:
         required: false
         filesystems:
           - btrfs
+translations:
+  description:
+    ca: El Leap Micro és un sistema operatiu ultrafiable i lleuger creat per a
+      càrregues de treball en contenidors i virtualitzades.
+    cs: Leap Micro je velmi spolehlivý odlehčený operační systém postavený pro
+      kontejnerizované a virtualizované úlohy.
+    de: Leap Micro ist ein ultra-zuverlässiges und leichtgewichtiges Betriebssystem
+      für containerisierte und visuelle Arbeitsabläufe.
+    es: Leap Micro es un sistema operativo ultrafiable y ligero hecho para cargas de
+      trabajo virtualizadas y en contenedores.
+    fr: Leap Micro est un système d'exploitation ultrafiable et léger conçu pour les
+      charges de travail conteneurisées et virtualisées.
+    he: Leap Micro הינה מערכת הפעלה אמינה במיוחד וקלת משקל, המיועדת לסביבות עבודה
+      מבוססות קונטיינרים ווירטואליזציה.
+    id: Leap Micro adalah sistem operasi yang sangat andal dan ringan, dirancang
+      khusus untuk beban kerja yang dikontainerisasi dan virtualisasi.
+    it: Leap Micro è un sistema operativo ultra-affidabile e leggero, costruito per
+      carichi di lavoro containerizzati e virtualizzati.
+    ja: Leap Micro はコンテナや仮想化の環境に適した、非常に安定性の高い軽量型オペレーティングシステムです。
+    nl: Leap Micro is een ultra betrouwbare, lichtgewicht besturingssysteem gebouwd
+      voor gecontaineriseerde en gevirtualiseerde werklasten.
+    pt_BR: O Leap Micro é um sistema operacional ultraleve e altamente confiável,
+      desenvolvido para cargas de trabalho em contêineres e virtualizadas.
+    ru: Leap Micro - это сверхнадёжная и лёгкая ОС, созданная для контейнерных и
+      виртуализированных рабочих нагрузок.
+    sv: Leap Micro är ett extremt tillförlitligt och lättviktigt operativsystem
+      byggt för behållare och virtualiserade arbetsbelastningar.
+    tr: Leap Micro, konteynerleştirilmiş ve sanallaştırılmış iş yükleri için
+      geliştirilmiş, son derece güvenilir ve hafif bir işletim sistemidir.
+    uk: Leap Micro - це наднадійна і легка ОС, створена для контейнерних і
+      віртуалізованих робочих навантажень.
+    zh_CN: Leap Micro 是一款超可靠的轻量级操作系统，专为容器化和虚拟化工作负载而构建。
+    zh_TW: Leap Micro 是一款超可靠的輕量型作業系統，專為容器化和虛擬化工作負載而構建。

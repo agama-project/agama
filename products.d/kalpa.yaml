@@ -12,6 +12,57 @@ icon: Kalpa.svg
 # Do not manually change any translations! See README.md for more details.
 translations:
   description:
+    ca: Un producte d'escriptori immutable amb llançament continu, que usa
+      l'escriptori Plasma, aprofita Flatpak per al lliurament d'aplicacions, una
+      base de només lectura i actualitzacions automàtiques i atòmiques del
+      sistema
+    cs: Produkt s průběžným vydáváním a neměnným prostředím pracovní plochy Plasma.
+      Pro doručování aplikací používá Flatpak, dále má základ systému pouze pro
+      čtení s atomickými aktualizacemi, které probíhají automaticky
+    de: Ein rollierend veröffentlichtes unveränderliches Desktop-Produkt, welches
+      den Plasma Desktop und Flatpak für die Anwendungsbereitstellung nutzt,
+      eine Basis mit ausschließlich Lesezugriff besitzt und atomare
+      Aktualisierungen durchführt.
+    es: Un producto inmutable de escritorio de actualización continua, utilizando el
+      Escritorio de Plasma, aprovechándose de Flatpak para la entrega de
+      aplicaciones, una base de sólo lectura y actualizaciones automáticas y
+      atómicas para tu sistema
+    fr: Produit de bureau immuable à publication continue, utilisant le bureau
+      Plasma, exploitant Flatpak pour la distribution d'applications, avec une
+      base en lecture seule et des mises à jour automatiques et atomiques de
+      votre système
+    he: מוצר למחשב אישי שהוא בלתי ניתן לכתיבה מחדש (immutable) עם מודל שחרור מתגלגל,
+      שמשתמש בסביבת העבודה פלזמה (Plasma). הוא מסתמך על חבילות פלאטפק (Flatpak)
+      כדי לספק אפליקציות, עם מערכת בסיס שמותרת לקריאה בלבד ועדכונים אוטומטיים
+      ואטומיים (בדידים) למערכת שלך
+    id: Produk desktop yang immutable dengan pembaruan berkelanjutan, menggunakan
+      Plasma Desktop, memanfaatkan Flatpak untuk distribusi aplikasi, basis
+      sistem yang hanya dapat dibaca, dan pembaruan otomatis dan atomik untuk
+      sistem Anda
+    it: Un prodotto desktop immutable con versione a rilascio continuo, che utilizza
+      Plasma Desktop, sfrutta Flatpak per la distribuzione delle applicazioni,
+      una base del sistema in sola lettura e aggiornamenti automatici e atomici
+    ja: ローリングリリース型でかつ不変のデスクトップ製品です。デスクトップ環境には Plasma Desktop を使用し、 Flatpak
+      を利用してアプリケーションを配信します。システムの基礎部分は読み込み専用で、自動かつ不可分なシステム更新機能を提供します
+    nl: Een rollend, onveranderlijk desktop product. Maakt gebruik van de Plasma
+      Desktop en door middel van Flatpak voor applicatie levering. Een alleen
+      lezen basis en automatische en atomische updates van uw systeem
+    pt_BR: Um produto de desktop imutável com lançamento contínuo, usando o Plasma
+      Desktop, aproveitando o Flatpak para Entrega de Aplicativos, uma base
+      Somente Leitura e atualizações automáticas e atômicas do seu sistema
+    ru: Неизменяемая и непрерывно обновляемая настольная система с окружением
+      Plasma, Flatpak-приложениями и автоматическими атомарными обновлениями
+    sv: En rullande utgåva med en oföränderlig skrivbordsprodukt, som använder
+      Plasma skrivbordet, utnyttjar Flatpak för programleverans, en skrivskyddad
+      bas och automatiska och atomära uppdateringar av ditt system
+    tr: Plasma Masaüstünü kullanan, Uygulama Dağıtımı için Flatpak'ı, Salt Okunur
+      bir tabanı ve sisteminizin otomatik ve atomik güncellemelerini kullanan,
+      sürekli yayınlanan değişmez bir masaüstü ürünü
+    uk: Незмінна і безперервно оновлювана настільна система з оточенням Plasma,
+      Flatpak-додатками й автоматичними атомарними оновленнями
+    zh_CN: 一款采用滚动发布模式的不可变桌面产品，搭载 Plasma 桌面环境，借助 Flatpak
+      进行应用程序交付，拥有只读基础系统，并支持系统的自动原子化更新
+    zh_TW: 一款採用捲動發行模式的不可變桌面產品，使用 Plasma 桌面環境，憑藉 Flatpak 進行應用程式交付，擁有唯讀基礎系統，並支援系統的自動原子更新
 software:
   installation_repositories:
     - url: https://download.opensuse.org/tumbleweed/repo/oss/
