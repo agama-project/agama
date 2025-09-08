@@ -91,7 +91,7 @@ impl SoftwareServiceServer {
         std::thread::spawn(move || {
             let local = tokio::task::LocalSet::new();
 
-            local.spawn_local(async move { server.run().await });
+            local.spawn_local(server.run());
 
             // This will return once all senders are dropped and all
             // spawned tasks have returned.
