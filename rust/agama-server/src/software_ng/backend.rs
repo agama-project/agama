@@ -96,10 +96,10 @@ pub struct SoftwareService {}
 
 impl SoftwareService {
     /// Starts the software service.
-    pub async fn start(
+    pub fn start(
         events: EventsSender,
         products: Arc<Mutex<ProductsRegistry>>,
     ) -> Result<SoftwareServiceClient, SoftwareServiceError> {
-        server::SoftwareServiceServer::start(events, products).await
+        server::SoftwareServiceServer::start(events, products)
     }
 }

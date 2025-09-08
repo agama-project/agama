@@ -68,8 +68,8 @@ const SERVICE_NAME: &str = "org.opensuse.Agama.Software1";
 impl SoftwareServiceServer {
     /// Starts the software service loop and returns a client.
     ///
-    /// The service runs on a separate Tokio task and gets the client requests using a channel.
-    pub async fn start(
+    /// The service runs on a separate thread and gets the client requests using a channel.
+    pub fn start(
         events: EventsSender,
         products: Arc<Mutex<ProductsRegistry>>,
     ) -> Result<SoftwareServiceClient, SoftwareServiceError> {
@@ -83,17 +83,26 @@ impl SoftwareServiceServer {
             software_selection: SoftwareSelection::default(),
         };
 
-        tokio::spawn(async move {
-            if let Err(error) = server.run().await {
-                tracing::error!("Software service could not start: {:?}", error);
-            }
+        // see https://docs.rs/tokio/latest/tokio/task/struct.LocalSet.html#use-inside-tokiospawn for explain how to ensure that zypp
+        // runs locally on single thread
+
+        let rt = tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap();
+
+        std::thread::spawn(move || {
+            let local = tokio::task::LocalSet::new();
+
+            local.spawn_local(async move { server.run().await });
+
+            // This will return once all senders are dropped and all
+            // spawned tasks have returned.
+            rt.block_on(local);
         });
         Ok(SoftwareServiceClient::new(sender))
     }
 
     /// Runs the server dispatching the actions received through the input channel.
     async fn run(mut self) -> Result<(), SoftwareServiceError> {
-        self.initialize_target_dir()?;
+        let zypp = self.initialize_target_dir()?;
 
         loop {
             let action = self.receiver.recv().await;
@@ -103,7 +112,7 @@ impl SoftwareServiceServer {
                 break;
             };
 
-            if let Err(error) = self.dispatch(action).await {
+            if let Err(error) = self.dispatch(action, &zypp).await {
                 tracing::error!("Software dispatch error: {:?}", error);
             }
         }
@@ -112,14 +121,18 @@ impl SoftwareServiceServer {
     }
 
     /// Forwards the action to the appropriate handler.
-    async fn dispatch(&mut self, action: SoftwareAction) -> Result<(), SoftwareServiceError> {
+    async fn dispatch(
+        &mut self,
+        action: SoftwareAction,
+        zypp: &zypp_agama::Zypp,
+    ) -> Result<(), SoftwareServiceError> {
         match action {
             SoftwareAction::GetProducts(tx) => {
                 self.get_products(tx).await?;
             }
 
             SoftwareAction::GetPatterns(tx) => {
-                self.get_patterns(tx).await?;
+                self.get_patterns(tx, zypp).await?;
             }
 
             SoftwareAction::SelectProduct(product_id) => {
@@ -127,7 +140,7 @@ impl SoftwareServiceServer {
             }
 
             SoftwareAction::Probe => {
-                self.probe().await?;
+                self.probe(zypp).await?;
             }
 
             SoftwareAction::SetResolvables {
@@ -156,20 +169,20 @@ impl SoftwareServiceServer {
         Ok(())
     }
 
-    async fn probe(&self) -> Result<(), SoftwareServiceError> {
+    async fn probe(&self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
         let product = self.find_selected_product().await?;
         let repositories = product.software.repositories();
         for (idx, repo) in repositories.iter().enumerate() {
             // TODO: we should add a repository ID in the configuration file.
             let name = format!("agama-{}", idx);
-            zypp_agama::add_repository(&name, &repo.url, |percent, alias| {
+            zypp.add_repository(&name, &repo.url, |percent, alias| {
                 tracing::info!("Adding repository {} ({}%)", alias, percent);
                 true
             })
             .map_err(SoftwareServiceError::AddRepositoryFailed)?;
         }
 
-        zypp_agama::load_source(|percent, alias| {
+        zypp.load_source(|percent, alias| {
             tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
             true
         })
@@ -205,6 +218,7 @@ impl SoftwareServiceServer {
     async fn get_patterns(
         &self,
         tx: oneshot::Sender<Vec<Pattern>>,
+        zypp: &zypp_agama::Zypp,
     ) -> Result<(), SoftwareServiceError> {
         let product = self.find_selected_product().await?;
 
@@ -217,7 +231,8 @@ impl SoftwareServiceServer {
             .map(String::as_str)
             .collect();
 
-        let patterns = zypp_agama::patterns_info(pattern_names)
+        let patterns = zypp
+            .patterns_info(pattern_names)
             .map_err(SoftwareServiceError::ListPatternsFailed)?;
 
         let patterns = patterns
@@ -237,7 +252,7 @@ impl SoftwareServiceServer {
         Ok(())
     }
 
-    fn initialize_target_dir(&self) -> Result<(), SoftwareServiceError> {
+    fn initialize_target_dir(&self) -> Result<zypp_agama::Zypp, SoftwareServiceError> {
         let target_dir = Path::new(TARGET_DIR);
         if target_dir.exists() {
             _ = std::fs::remove_dir_all(target_dir);
@@ -245,20 +260,20 @@ impl SoftwareServiceServer {
 
         std::fs::create_dir_all(target_dir).map_err(SoftwareServiceError::TargetCreationFailed)?;
 
-        zypp_agama::init_target(TARGET_DIR, |text, step, total| {
+        let zypp = zypp_agama::Zypp::init_target(TARGET_DIR, |text, step, total| {
             tracing::info!("Initializing target: {} ({}/{})", text, step, total);
         })
         .map_err(SoftwareServiceError::TargetInitFailed)?;
 
-        self.import_gpg_keys();
-        Ok(())
+        self.import_gpg_keys(&zypp);
+        Ok(zypp)
     }
 
-    fn import_gpg_keys(&self) {
+    fn import_gpg_keys(&self, zypp: &zypp_agama::Zypp) {
         for file in glob::glob(GPG_KEYS).unwrap() {
             match file {
                 Ok(file) => {
-                    if let Err(e) = zypp_agama::import_gpg_key(&file.to_string_lossy()) {
+                    if let Err(e) = zypp.import_gpg_key(&file.to_string_lossy()) {
                         tracing::error!("Failed to import GPG key: {}", e);
                     }
                 }
