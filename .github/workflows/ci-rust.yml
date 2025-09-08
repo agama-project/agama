@@ -163,7 +163,7 @@ jobs:
       # flags, to avoid reusing the previous builds it always starts from scratch.
       # The --skip-clean skips the cleanup and allows using the cached results.
       # See https://github.com/xd009642/tarpaulin/discussions/772
-      run: cargo tarpaulin --workspace --all-targets --doc --out xml --target-dir target-coverage --skip-clean -- --nocapture
+      run: cargo tarpaulin --workspace --all-targets --doc --engine llvm --out xml --target-dir target-coverage --skip-clean -- --nocapture
       env:
         # use the "stable" tool chain (installed by default) instead of the "nightly" default in tarpaulin
         RUSTC_BOOTSTRAP: 1
