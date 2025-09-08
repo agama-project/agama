@@ -27,6 +27,11 @@ Url:            https://github.com/agama-project/agama
 Source0:        agama.tar
 Source1:        vendor.tar.zst
 
+# zypp-c-api dependencies
+BuildRequires: gcc
+BuildRequires: gcc-c++
+BuildRequires: make
+BuildRequires: libzypp-devel
 # defines the "limit_build" macro used in the "build" section below
 BuildRequires:  memory-constraints
 BuildRequires:  cargo-packaging
