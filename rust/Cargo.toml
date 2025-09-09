@@ -7,6 +7,8 @@ members = [
     "agama-locale-data",
     "agama-network",
     "agama-utils",
+    "zypp-c-api/rust/zypp-agama",
+    "zypp-c-api/rust/zypp-agama-sys",
     "xtask",
 ]
 resolver = "2"
