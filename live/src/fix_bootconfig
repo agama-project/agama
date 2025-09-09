@@ -42,7 +42,7 @@ cat <<XXX >/usr/local/bin/xorriso
 
 set -x
 
-# get ISO file name and ISO volume id from xorriso parameters
+# get the output ISO file name and the input directory from the xorriso parameters
 for i in "\$@" ; do
   if [ -n "\$iso_opt" ] ; then
     iso_opt=
@@ -53,7 +53,49 @@ for i in "\$@" ; do
     iso_opt=1
     continue
   fi
+  if [ -n "\$map_opt" ] ; then
+    map_opt=
+    target_dir="\$i"
+    continue
+  fi
+  if [ "\$i" = "-map" ] ; then
+    map_opt=1
+    continue
+  fi
 done
+
+# dump or copy some data from the Live system root image directly to the ISO image to avoid
+# complicated processing (the ISO image contains a squashfs image which contains ext4 image which
+# finally contains the needed files)
+if [ -n "\$target_dir" ]; then
+  mount_dir1=\$(mktemp -d)
+  mount_dir2=\$(mktemp -d)
+
+  mount -o loop "\$target_dir"/LiveOS/squashfs.img "\$mount_dir1"
+  mount -o loop "\$mount_dir1"/LiveOS/rootfs.img "\$mount_dir2"
+
+  # dump the list of the installed packages
+  rpm --root "\$mount_dir2" -qa | sort | gzip > "\$target_dir/LiveOS/.packages.gz"
+
+  # dump the same list also in JSON format for easier processing,
+  # use jq for sorting the array (case insensitive), for merging to a single
+  # array and also for formatting the final JSON output
+  rpm --root "\$mount_dir2" -qa --queryformat \\
+    '\\{"name":"%{NAME}","version":"%{VERSION}","release":"%{RELEASE}","arch":"%{ARCH}"\\}' \\
+    | jq -s 'sort_by(.name|ascii_downcase)' | gzip > "\$target_dir/LiveOS/.packages.json.gz"
+
+  # copy the build info file if present
+  if [ -f "\$mount_dir2"/var/log/build/info ]; then
+    cp -a "\$mount_dir2"/var/log/build/info "\$target_dir/LiveOS/.info"
+  fi
+
+  # unmount in reverse(!) order
+  umount "\$mount_dir2"
+  umount "\$mount_dir1"
+
+  rmdir "\$mount_dir1"
+  rmdir "\$mount_dir2"
+fi
 
 profile=$(echo "$kiwi_profiles" | tr "_" "-")
 # keep in sync with ISO Volume ID set in the config.sh script
