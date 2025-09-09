@@ -74,3 +74,7 @@ tokio-test = "0.4.4"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ci)'] }
+
+# here we force runtime for bindgen otherwise pam-sys fails
+[build-dependencies]
+bindgen = { version = "0.69", features = ["runtime"] }
