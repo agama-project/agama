@@ -27,6 +27,11 @@ Url:            https://github.com/agama-project/agama
 Source0:        agama.tar
 Source1:        vendor.tar.zst
 
+# zypp-c-api dependencies
+BuildRequires: gcc
+BuildRequires: gcc-c++
+BuildRequires: make
+BuildRequires: libzypp-devel
 # defines the "limit_build" macro used in the "build" section below
 BuildRequires:  memory-constraints
 BuildRequires:  cargo-packaging
@@ -148,6 +153,8 @@ package contains a systemd service to run scripts when booting the installed sys
 # Require at least 1.3GB RAM per each parallel job (the size is in MB),
 # this can limit the number of parallel jobs on systems with relatively small memory.
 %{limit_build -m 1300}
+# remove project cargo files from submodules to avoid confusion of tools
+rm zypp-c-api/rust/Cargo.*
 
 %{cargo_build}
 cargo run --package xtask -- manpages
