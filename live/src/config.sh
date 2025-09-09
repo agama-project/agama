@@ -112,14 +112,11 @@ arch=$(uname -m)
 profile=$(echo "$kiwi_profiles" | tr "_" "-")
 label="Install-$profile-$arch"
 
-# Set the default live root except for PXE images
-if [[ "$kiwi_profiles" != *PXE* ]]; then
-  echo "Setting default live root: live:LABEL=$label"
-  mkdir /etc/cmdline.d
-  echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
-  echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
-  echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
-fi
+echo "Setting default live root: live:LABEL=$label"
+mkdir /etc/cmdline.d
+echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
+echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
+echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
 echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 
 # decrease the kernel logging on the console, use a dracut module to do it early in the boot process

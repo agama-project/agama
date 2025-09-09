@@ -31,7 +31,10 @@ use agama_lib::{
         model::zfcp::{ZFCPController, ZFCPDisk},
     },
 };
-use agama_utils::{dbus::get_optional_property, property_from_dbus};
+use agama_utils::{
+    dbus::{extract_id_from_path, get_optional_property},
+    property_from_dbus,
+};
 use futures_util::{ready, Stream};
 use pin_project::pin_project;
 use thiserror::Error;
@@ -239,6 +242,7 @@ impl ZFCPControllerStream {
         values: &HashMap<String, OwnedValue>,
     ) -> Result<&'a ZFCPController, ServiceError> {
         let device = cache.find_or_create(path);
+        device.id = extract_id_from_path(path)?.to_string();
         property_from_dbus!(device, channel, "Channel", values, str);
         property_from_dbus!(device, lun_scan, "LUNScan", values, bool);
         property_from_dbus!(device, active, "Active", values, bool);

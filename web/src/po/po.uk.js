@@ -39,6 +39,11 @@ export default {
   "%s logo": [
     "Логотип %s"
   ],
+  "%s will be created as a logical volume": [
+    "",
+    "",
+    ""
+  ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s все ще буде містити налаштовані групи LVM і будь-який розділ, необхідний для завантаження"
   ],
@@ -722,6 +727,16 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extend the installation beyond the currently selected device": [
+    "",
+    "",
+    ""
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "",
+    "",
+    ""
   ],
   "Extensions": [
     "Розширення"
@@ -1783,6 +1798,11 @@ export default {
   "The current file system will be mounted at %s": [
     "Поточна файлова система буде змонтована за шляхом %s"
   ],
+  "The current storage configuration has the following issue:": [
+    "",
+    "",
+    ""
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Дані зберігаються, але розмір поточних розділів буде змінено в міру необхідності."
   ],
@@ -1944,6 +1964,11 @@ export default {
   ],
   "There are not usable partitions": [
     "Існують не придатні для використання розділи"
+  ],
+  "There is %d destructive action planned affecting %s": [
+    "",
+    "",
+    ""
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Це найактуальніші налаштування установки. Детальніші відомості наведено в розділах меню."

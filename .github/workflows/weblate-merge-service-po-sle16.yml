@@ -1,4 +1,4 @@
-name: Weblate Merge Service PO
+name: Weblate Merge Service PO (SLE-16)
 
 permissions:
   # it merges the updated translations and creates a pull request with the changes
@@ -7,8 +7,8 @@ permissions:
 
 on:
   schedule:
-    # run every Monday at 2:45AM UTC
-    - cron: "45 2 * * 0"
+    # run every Monday at 2:35AM UTC
+    - cron: "35 2 * * 0"
 
   # allow running manually
   workflow_dispatch:
@@ -26,17 +26,17 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: registry.opensuse.org/opensuse/tumbleweed:latest
+      image: registry.opensuse.org/opensuse/leap:16.0
       volumes:
         # bind mount the GitHub CLI tool from the Ubuntu host,
-        # it is a statically linked binary so it should work also in TumbleWeed
+        # it is a statically linked binary so it should work also in Leap
         - /usr/bin/gh:/usr/bin/gh
 
     steps:
       - name: Configure and refresh repositories
         run: |
           # disable unused repositories to have a faster refresh
-          zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && \
+          zypper modifyrepo -d openSUSE:repo-openh264 && \
             zypper --non-interactive ref
 
       - name: Install tools
@@ -51,12 +51,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: agama
+          # checkout the SLE-16 branch
+          ref: SLE-16
 
       - name: Checkout Agama-weblate sources
         uses: actions/checkout@v4
         with:
           path: agama-weblate
           repository: ${{ github.repository_owner }}/agama-weblate
+          # checkout the SLE-16 branch
+          ref: SLE-16
   
       - name: Validate the service PO files
         working-directory: ./agama-weblate
@@ -100,18 +104,18 @@ jobs:
         working-directory: ./agama
         run: |
           # use a unique branch to avoid possible conflicts with already existing branches
-          git checkout -b "po_service_merge_${GITHUB_RUN_ID}"
+          git checkout -b "po_service_merge_sle16_${GITHUB_RUN_ID}"
           git commit -a -m "Update service PO files"$'\n\n'"Agama-weblate commit: `git -C ../agama-weblate rev-parse HEAD`"
-          git push origin "po_service_merge_${GITHUB_RUN_ID}"
+          git push origin "po_service_merge_sle16_${GITHUB_RUN_ID}"
 
       - name: Create pull request
         # run only when a PO file has been updated
         if: steps.check_changes.outputs.po_updated == 'true'
         working-directory: ./agama
         run: |
-          gh pr create -B master -H "po_service_merge_${GITHUB_RUN_ID}" \
+          gh pr create -B SLE-16 -H "po_service_merge_sle16_${GITHUB_RUN_ID}" \
             --label translations --label bot \
-            --title "Update service PO files" \
+            --title "Update service PO files (SLE-16)" \
             --body "Updating the service translation files from the agama-weblate repository"
         env:
           GH_TOKEN: ${{ github.token }}

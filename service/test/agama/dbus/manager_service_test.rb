@@ -36,17 +36,11 @@ describe Agama::DBus::ManagerService do
   let(:manager_obj) { instance_double(Agama::DBus::Manager, path: "/org/opensuse/Agama/Users1") }
   let(:users_obj) { instance_double(Agama::DBus::Users, path: "/org/opensuse/Agama/Users1") }
 
-  let(:locale_client) do
-    instance_double(Agama::DBus::Clients::Locale, ui_locale: "en_US.UTF-8",
-      on_ui_locale_change: nil)
-  end
-
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
     allow(bus).to receive(:request_service).with("org.opensuse.Agama.Manager1")
       .and_return(object_server)
     allow(Agama::Manager).to receive(:new).with(config, logger).and_return(manager)
-    allow(Agama::DBus::Clients::Locale).to receive(:instance).and_return(locale_client)
     allow(Agama::DBus::Manager).to receive(:new).with(manager, logger).and_return(manager_obj)
     allow(Agama::DBus::Users).to receive(:new).and_return(users_obj)
   end
