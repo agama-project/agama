@@ -15,6 +15,9 @@ export default {
   "%1$s at %2$s": [
     "%1$s di %2$s"
   ],
+  "%1$s will be created as a partition at %2$s": [
+    "%1$s akan dibuat sebagai partisi di %2$s"
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s masih akan berisi grup LVM ‘%2$s’ dan partisi apa pun yang diperlukan untuk booting"
   ],
@@ -38,6 +41,9 @@ export default {
   ],
   "%s logo": [
     "logo %s"
+  ],
+  "%s will be created as a logical volume": [
+    "%s akan dibuat sebagai volume logis"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s masih akan berisi grup LVM yang dikonfigurasi dan partisi apa pun yang diperlukan untuk booting"
@@ -65,6 +71,12 @@ export default {
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Rentang ukuran umum antara %1$s dan %2$s akan digunakan untuk %3$s yang baru"
+  ],
+  "A new partition will be created for %s": [
+    "Partisi baru akan dibuat untuk %s"
+  ],
+  "A new volume will be created for %s": [
+    "Volume baru akan dibuat untuk %s"
   ],
   "A partition may be deleted": [
     "Sebuah partisi dapat dihapus"
@@ -174,6 +186,9 @@ export default {
   "Already using all available disks": [
     "Sudah menggunakan semua disk yang tersedia"
   ],
+  "An existing partition will be used for %s": [
+    "Partisi yang sudah ada akan digunakan untuk %s"
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Semua partisi yang ada akan dihapus dan semua data di disk akan hilang."
   ],
@@ -182,6 +197,9 @@ export default {
   ],
   "Apply selected solution": [
     "Pilih solusi untuk melanjutkan"
+  ],
+  "Apply to the selected device": [
+    "Terapkan ke perangkat %s yang dipilih"
   ],
   "Applying changes": [
     "Menerapkan perubahan"
@@ -380,6 +398,9 @@ export default {
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Konfigurasi dibaca dari Tabel Firmware Boot iSCSI (iBFT)."
+  ],
+  "Configuration unreachable or invalid": [
+    "Konfigurasi tidak dapat diakses atau tidak valid"
   ],
   "Configure DASD": [
     "Konfigurasikan DASD"
@@ -722,6 +743,12 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extend the installation beyond the currently selected device": [
+    "Perluas instalasi melampaui perangkat %d yang saat ini dipilih"
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "Perluas instalasi melampaui disk %d yang saat ini dipilih."
   ],
   "Extensions": [
     "Ekstensi"
@@ -1121,6 +1148,12 @@ export default {
   ],
   "More languages might be available for the selected product at [Localization] page": [
     "Bahasa lain mungkin tersedia untuk produk yang dipilih di halaman [Localization]"
+  ],
+  "Moreover, the following partition will be created.": [
+    "Selain itu, partisi berikut akan dibuat."
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "Selain itu, partisi berikut akan di-mount."
   ],
   "Moreover, the following partitions will be created or mounted": [
     "Selain itu, partisi-partisi berikut akan dibuat atau di-mount"
@@ -1755,6 +1788,9 @@ export default {
   "The configuration has been updated externally.": [
     "Konfigurasi telah diperbarui secara eksternal."
   ],
+  "The configuration must be adapted to address the following issue:": [
+    "Konfigurasi harus disesuaikan untuk mengatasi masalah berikut:"
+  ],
   "The configured LVM groups will remain at %s": [
     "Grup LVM yang telah dikonfigurasi akan tetap berada di %s"
   ],
@@ -1778,6 +1814,9 @@ export default {
   ],
   "The current file system will be mounted at %s": [
     "Sistem berkas saat ini akan di-mount di %s"
+  ],
+  "The current storage configuration has the following issue:": [
+    "Konfigurasi penyimpanan saat ini memiliki masalah sebagai berikut:"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Data tetap dipertahankan, tetapi partisi saat ini akan diubah ukurannya sesuai kebutuhan."
@@ -1827,6 +1866,15 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Langkah terakhir untuk mengonfigurasi Trusted Platform Module (TPM) agar dapat membuka perangkat yang dienkripsi secara otomatis selama booting pertama dari sistem yang baru. Agar dapat berfungsi, mesin harus melakukan booting secara langsung ke boot loader yang baru."
   ],
+  "The following logical volume will be created": [
+    "Volume logis berikut akan dibuat"
+  ],
+  "The following partition will be created.": [
+    "Partisi berikut akan dibuat."
+  ],
+  "The following partition will be mounted.": [
+    "Partisi berikut akan di-mount."
+  ],
   "The following partitions will be created or mounted": [
     "Partisi-partisi berikut akan dibuat atau di-mount"
   ],
@@ -1850,6 +1898,9 @@ export default {
   ],
   "The installer requires [root] user privileges.": [
     "Penginstal memerlukan hak akses pengguna [root]."
+  ],
+  "The logical volume will also be deleted": [
+    "Volume logis juga akan dihapus"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Nilai maksimum harus berupa angka, yang diikuti oleh satuan seperti GiB atau GB"
@@ -1940,6 +1991,12 @@ export default {
   ],
   "There are not usable partitions": [
     "Tidak ada partisi yang dapat digunakan"
+  ],
+  "There is %d destructive action planned": [
+    "Ada %d tindakan destruktif yang direncanakan"
+  ],
+  "There is %d destructive action planned affecting %s": [
+    "Ada %d tindakan destruktif yang direncanakan yang akan mempengaruhi %s"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Berikut ini adalah pengaturan instalasi yang paling relevan. Silakan telusuri bagian dalam menu untuk rincian lebih lanjut."
