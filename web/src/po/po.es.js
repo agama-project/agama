@@ -39,6 +39,10 @@ export default {
   "%s logo": [
     "logo de %s"
   ],
+  "%s will be created as a logical volume": [
+    "",
+    ""
+  ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s aún contendrá los grupos de LVM configurados y cualquier partición necesaria para arrancar"
   ],
@@ -713,6 +717,14 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extend the installation beyond the currently selected device": [
+    "",
+    ""
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "",
+    ""
   ],
   "Extensions": [
     "Extensiones"
@@ -1739,6 +1751,10 @@ export default {
   "The current file system will be mounted at %s": [
     "El sistema de archivos actual se montará en %s"
   ],
+  "The current storage configuration has the following issue:": [
+    "",
+    ""
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Los datos se conservan, pero las particiones actuales se redimensionarán según sea necesario."
   ],
@@ -1900,6 +1916,10 @@ export default {
   ],
   "There are not usable partitions": [
     "No hay particiones utilizables"
+  ],
+  "There is %d destructive action planned": [
+    "Hay %d acción destructiva planeada",
+    "Hay %d acciones destructivas planeadas"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Ajustes de instalación más relevantes. Consulte las diferentes secciones del menú para información adicional."

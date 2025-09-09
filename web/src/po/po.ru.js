@@ -15,6 +15,11 @@ export default {
   "%1$s at %2$s": [
     "%1$s на %2$s"
   ],
+  "%1$s will be created as a partition at %2$s": [
+    "%1$s будет создан как раздел на %2$s",
+    "%1$s будут созданы как разделы на %2$s",
+    "%1$s будут созданы как разделы на %2$s"
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "Диск %1$s по-прежнему будет содержать группу LVM „%2$s“ и все разделы, необходимые для загрузки"
   ],
@@ -38,6 +43,11 @@ export default {
   ],
   "%s logo": [
     "Логотип %s"
+  ],
+  "%s will be created as a logical volume": [
+    "%s будет создан как логический том",
+    "%s будут созданы как логические тома",
+    "%s будут созданы как логические тома"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "Диск %s по-прежнему будет содержать настроенные группы LVM и все разделы, необходимые для загрузки"
@@ -65,6 +75,16 @@ export default {
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Для нового раздела %3$s будет использовано пространство в диапазоне между %1$s и %2$s"
+  ],
+  "A new partition will be created for %s": [
+    "Для %s будет создан новый раздел",
+    "Для %s будут созданы новые разделы",
+    "Для %s будут созданы новые разделы"
+  ],
+  "A new volume will be created for %s": [
+    "Для %s будет создан новый том",
+    "Для %s будут созданы новые тома",
+    "Для %s будут созданы новые тома"
   ],
   "A partition may be deleted": [
     "Раздел может быть удален"
@@ -174,6 +194,11 @@ export default {
   "Already using all available disks": [
     "Уже используются все доступные диски"
   ],
+  "An existing partition will be used for %s": [
+    "Для %s будет использован существующий раздел",
+    "Для %s будут использованы существующие разделы",
+    "Для %s будут использованы существующие разделы"
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Все существующие разделы будут удалены, а все данные на диске будут потеряны."
   ],
@@ -182,6 +207,11 @@ export default {
   ],
   "Apply selected solution": [
     "Применить выбранное решение"
+  ],
+  "Apply to the selected device": [
+    "Применить к %s выбранному устройству",
+    "Применить к %s выбранным устройствам",
+    "Применить к %s выбранным устройствам"
   ],
   "Applying changes": [
     "Применение изменений"
@@ -380,6 +410,9 @@ export default {
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Конфигурация, считанная из таблицы iSCSI Boot Firmware Table (iBFT)."
+  ],
+  "Configuration unreachable or invalid": [
+    "Конфигурация недоступна или недействительна"
   ],
   "Configure DASD": [
     "Настройка DASD"
@@ -722,6 +755,16 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extend the installation beyond the currently selected device": [
+    "Расширение установки за пределы текущего %d устройства",
+    "Расширение установки за пределы текущих %d устройств",
+    "Расширение установки за пределы текущих %d устройств"
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "Расширение установки за пределы текущего %d диска",
+    "Расширение установки за пределы текущих %d дисков",
+    "Расширение установки за пределы текущих %d дисков"
   ],
   "Extensions": [
     "Расширения"
@@ -1123,6 +1166,16 @@ export default {
   ],
   "More languages might be available for the selected product at [Localization] page": [
     "Для выбранного продукта могут быть доступны другие языки в разделе [Локализации]"
+  ],
+  "Moreover, the following partition will be created.": [
+    "Кроме того, будет создан следующий раздел.",
+    "Кроме того, будут созданы следующие разделы.",
+    "Кроме того, будут созданы следующие разделы."
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "Кроме того, будет смонтирован следующий раздел.",
+    "Кроме того, будут смонтированы следующие разделы.",
+    "Кроме того, будут смонтированы следующие разделы."
   ],
   "Moreover, the following partitions will be created or mounted": [
     "Кроме того, будут созданы или смонтированы следующие разделы"
@@ -1759,6 +1812,11 @@ export default {
   "The configuration has been updated externally.": [
     "Конфигурация была изменена извне."
   ],
+  "The configuration must be adapted to address the following issue:": [
+    "Конфигурация должна быть адаптирована для решения следующей проблемы:",
+    "Конфигурация должна быть адаптирована для решения следующих проблем:",
+    "Конфигурация должна быть адаптирована для решения следующих проблем:"
+  ],
   "The configured LVM groups will remain at %s": [
     "Настроенные группы LVM останутся на диске %s"
   ],
@@ -1782,6 +1840,11 @@ export default {
   ],
   "The current file system will be mounted at %s": [
     "Текущая файловая система будет смонтирована по пути %s"
+  ],
+  "The current storage configuration has the following issue:": [
+    "Текущая конфигурация хранилища имеет следующую проблему:",
+    "Текущая конфигурация хранилища имеет следующие проблемы:",
+    "Текущая конфигурация хранилища имеет следующие проблемы:"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Данные сохраняются, но размер текущих разделов будет изменен по мере необходимости."
@@ -1831,6 +1894,21 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Последний шаг по настройке Доверенного платформенного модуля (TPM) на автоматическое открытие зашифрованных устройств будет выполнен во время первой загрузки новой системы. Чтобы это сработало, машина должна загрузиться непосредственно в новый загрузчик."
   ],
+  "The following logical volume will be created": [
+    "Будет создан следующий логический том",
+    "Будут созданы следующие логические тома",
+    "Будут созданы следующие логические тома"
+  ],
+  "The following partition will be created.": [
+    "Будет создан следующий раздел.",
+    "Будут созданы следующие разделы.",
+    "Будут созданы следующие разделы."
+  ],
+  "The following partition will be mounted.": [
+    "Будет смонтирован следующий раздел.",
+    "Будут смонтированы следующие разделы.",
+    "Будут смонтированы следующие разделы."
+  ],
   "The following partitions will be created or mounted": [
     "Будут созданы или смонтированы следующие разделы"
   ],
@@ -1854,6 +1932,11 @@ export default {
   ],
   "The installer requires [root] user privileges.": [
     "Программа установки требует привилегий пользователя [root]."
+  ],
+  "The logical volume will also be deleted": [
+    "Логический том также будет удален",
+    "Логические тома также будут удалены",
+    "Логические тома также будут удалены"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Максимальное значение должно быть числом, за которым следует единица измерения, например GiB или GB"
@@ -1944,6 +2027,16 @@ export default {
   ],
   "There are not usable partitions": [
     "Нет пригодных для использования разделов"
+  ],
+  "There is %d destructive action planned": [
+    "Планируется %d разрушительное действие",
+    "Планируется %d разрушительных действия",
+    "Планируется %d разрушительных действий"
+  ],
+  "There is %d destructive action planned affecting %s": [
+    "Планируется %d разрушительное действие, затрагивающие %s",
+    "Планируется %d разрушительных действия, затрагивающих %s",
+    "Планируется %d разрушительных действий, затрагивающих %s"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Это наиболее актуальные настройки установки. Более подробные сведения приведены в разделах меню."

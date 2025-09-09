@@ -15,6 +15,10 @@ export default {
   "%1$s at %2$s": [
     "%1$s bei %2$s"
   ],
+  "%1$s will be created as a partition at %2$s": [
+    "%1$s wird als Partition unter %2$s erstellt",
+    "%1$s werden als Partitionen unter %2$s erstellt"
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s wird weiterhin die LVM-Gruppe ‚%2$s‘ und alle zum Booten benötigten Partitionen enthalten"
   ],
@@ -38,6 +42,10 @@ export default {
   ],
   "%s logo": [
     "%s-Logo"
+  ],
+  "%s will be created as a logical volume": [
+    "%s wird als logisches Volume erstellt",
+    "%s wird als logische Volumes erstellt"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s wird weiterhin die konfigurierten LVM-Gruppen und alle zum Booten benötigten Partitionen enthalten"
@@ -65,6 +73,14 @@ export default {
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Ein generischer Größenbereich zwischen %1$s und %2$s wird für die neue %3$s verwendet"
+  ],
+  "A new partition will be created for %s": [
+    "Für %s wird eine neue Partition erstellt",
+    "Für %s werden neue Partitionen erstellt"
+  ],
+  "A new volume will be created for %s": [
+    "Für %s wird ein neues Volume erstellt",
+    "Für %s werden neue Volumes erstellt"
   ],
   "A partition may be deleted": [
     "Eine Partition kann gelöscht werden"
@@ -174,6 +190,10 @@ export default {
   "Already using all available disks": [
     "Alle verfügbaren Festplatten werden bereits verwendet"
   ],
+  "An existing partition will be used for %s": [
+    "Eine vorhandene Partition wird für %s verwendet",
+    "Vorhandene Partitionen werden für %s verwendet"
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Alle vorhandenen Partitionen werden entfernt und alle Daten auf der Festplatte gehen verloren."
   ],
@@ -182,6 +202,10 @@ export default {
   ],
   "Apply selected solution": [
     "Ausgewählte Lösung anwenden"
+  ],
+  "Apply to the selected device": [
+    "Auf das ausgewählte Gerät anwenden",
+    "Auf die ausgewählten %s-Geräte anwenden"
   ],
   "Applying changes": [
     "Änderungen werden angewendet"
@@ -380,6 +404,9 @@ export default {
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Konfiguration aus der iSCSI Boot-Firmware-Tabelle (iBFT) gelesen."
+  ],
+  "Configuration unreachable or invalid": [
+    "Konfiguration nicht erreichbar oder ungültig"
   ],
   "Configure DASD": [
     "DASD konfigurieren"
@@ -723,6 +750,14 @@ export default {
   "Ext4": [
     "Ext4"
   ],
+  "Extend the installation beyond the currently selected device": [
+    "Die Installation über das aktuell ausgewählte Gerät hinaus erweitern",
+    "Die Installation über die aktuellen %d Geräte hinaus erweitern"
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "Die Installation über die aktuell ausgewählte Festplatte hinaus erweitern",
+    "Die Installation über die aktuellen %d Festplatten hinaus erweitern"
+  ],
   "Extensions": [
     "Erweiterungen"
   ],
@@ -854,7 +889,7 @@ export default {
     "Hostname erfolgreich aktualisiert"
   ],
   "I have read and accept the [license] for %s": [
-    "Ich habe die [Lizenz] für %s gelesen und akzeptiere sie."
+    "Ich habe die [Lizenz] für %s gelesen und akzeptiere sie"
   ],
   "IP Address": [
     "IP-Adresse"
@@ -1122,6 +1157,14 @@ export default {
   ],
   "More languages might be available for the selected product at [Localization] page": [
     "Weitere Sprachen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar"
+  ],
+  "Moreover, the following partition will be created.": [
+    "Zudem wird die folgende Partition erstellt.",
+    "Zudem werden die folgenden Partitionen erstellt."
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "Zudem wird die folgende Partition eingehängt.",
+    "Zudem werden die folgenden Partitionen eingehängt."
   ],
   "Moreover, the following partitions will be created or mounted": [
     "Zudem werden die folgenden Partitionen erstellt oder eingehängt"
@@ -1621,6 +1664,12 @@ export default {
   "Server options": [
     "Serveroptionen"
   ],
+  "Set DIAG off": [
+    "DIAG ausschalten"
+  ],
+  "Set DIAG on": [
+    "DIAG einschalten"
+  ],
   "Set a permanent hostname that won’t change with network updates.": [
     "Legen Sie einen permanenten Hostnamen fest, der sich bei Netzwerkaktualisierungen nicht ändert."
   ],
@@ -1751,6 +1800,10 @@ export default {
   "The configuration has been updated externally.": [
     "Die Konfiguration wurde extern aktualisiert."
   ],
+  "The configuration must be adapted to address the following issue:": [
+    "Die Konfiguration muss angepasst werden, um das folgende Problem zu beheben:",
+    "Die Konfiguration muss angepasst werden, um die folgenden Probleme zu beheben:"
+  ],
   "The configured LVM groups will remain at %s": [
     "Die konfigurierten LVM-Gruppen bleiben bei %s"
   ],
@@ -1774,6 +1827,10 @@ export default {
   ],
   "The current file system will be mounted at %s": [
     "Das aktuelle Dateisystem wird unter %s eingehängt"
+  ],
+  "The current storage configuration has the following issue:": [
+    "Die aktuelle Speicherungskonfiguration weist folgendes Problem auf:",
+    "Die aktuelle Speicherungskonfiguration weist folgende Probleme auf:"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Die Daten bleiben erhalten, aber die Größe der aktuellen Partitionen wird nach Bedarf geändert."
@@ -1823,6 +1880,18 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Der letzte Schritt zur Konfiguration des Trusted Platform Module (TPM) zum automatischen Öffnen verschlüsselter Geräte erfolgt beim ersten Booten des neuen Systems. Damit dies funktioniert, muss der Rechner direkt mit dem neuen Bootloader booten."
   ],
+  "The following logical volume will be created": [
+    "Das folgende logische Volume wird erstellt",
+    "Die folgenden logischen Volumes werden erstellt"
+  ],
+  "The following partition will be created.": [
+    "Die folgende Partition wird erstellt.",
+    "Die folgenden Partitionen werden erstellt."
+  ],
+  "The following partition will be mounted.": [
+    "Die folgende Partition wird eingehängt.",
+    "Die folgenden Partitionen werden eingehängt."
+  ],
   "The following partitions will be created or mounted": [
     "Die folgenden Partitionen werden erstellt oder eingehängt"
   ],
@@ -1846,6 +1915,10 @@ export default {
   ],
   "The installer requires [root] user privileges.": [
     "Das Installationsprogramm erfordert [root]-Benutzerrechte."
+  ],
+  "The logical volume will also be deleted": [
+    "Das logische Volume wird ebenfalls gelöscht",
+    "Die logischen Volumes werden ebenfalls gelöscht"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Das Maximum muss eine Zahl sein, gefolgt von einer Einheit wie GiB oder GB"
@@ -1936,6 +2009,14 @@ export default {
   ],
   "There are not usable partitions": [
     "Es sind keine nutzbaren Partitionen vorhanden"
+  ],
+  "There is %d destructive action planned": [
+    "Es ist %d zerstörerische Aktion geplant",
+    "Es sind %d zerstörerische Aktionen geplant"
+  ],
+  "There is %d destructive action planned affecting %s": [
+    "Es ist %d zerstörerische Aktion geplant, die %s betrifft",
+    "Es sind %d zerstörerische Aktionen geplant, die %s betreffen"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Dies sind die wichtigsten Installationseinstellungen. Weitere Einzelheiten finden Sie in den Abschnitten des Menüs."
