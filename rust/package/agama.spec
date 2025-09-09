@@ -153,6 +153,8 @@ package contains a systemd service to run scripts when booting the installed sys
 # Require at least 1.3GB RAM per each parallel job (the size is in MB),
 # this can limit the number of parallel jobs on systems with relatively small memory.
 %{limit_build -m 1300}
+# remove project cargo files from submodules to avoid confusion of tools
+rm zypp-c-api/rust/Cargo.*
 
 %{cargo_build}
 cargo run --package xtask -- manpages
