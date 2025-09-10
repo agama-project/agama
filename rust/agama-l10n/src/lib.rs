@@ -25,6 +25,6 @@ mod model;
 mod proposal;
 
 pub use error::LocaleError;
-pub use info::LocaleInfo;
+pub use info::L10nInfo;
 pub use model::{Keymap, L10n, LocaleEntry, TimezoneEntry};
 pub use proposal::LocalizationProposal;

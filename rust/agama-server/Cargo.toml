@@ -21,7 +21,7 @@ tokio-stream = "0.1.16"
 gettext-rs = { version = "0.7.1", features = ["gettext-system"] }
 regex = "1.11.0"
 async-trait = "0.1.83"
-axum = { version = "0.7.7", features = ["ws"] }
+axum = { version = "0.7.7", features = ["ws", "macros"] }
 serde_json = "1.0.128"
 tower-http = { version = "0.6.2", features = [
     "compression-br",
@@ -58,6 +58,7 @@ tokio-util = "0.7.12"
 tempfile = "3.13.0"
 url = "2.5.2"
 merge-struct = "0.1.0"
+strum = { version = "0.27.2", features = ["derive"] }
 
 [[bin]]
 name = "agama-dbus-server"

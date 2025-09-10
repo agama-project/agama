@@ -34,4 +34,6 @@ pub enum LocaleError {
     InvalidKeymap(#[from] InvalidKeymap),
     #[error("Could not apply the l10n settings: {0}")]
     Commit(#[from] std::io::Error),
+    #[error("Could not merge the current and the new configuration")]
+    Merge(#[from] serde_json::error::Error),
 }

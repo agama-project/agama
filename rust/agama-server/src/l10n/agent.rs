@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_l10n::{L10n, LocaleError, LocaleInfo, LocalizationProposal};
+use agama_l10n::{L10n, L10nInfo, LocaleError, LocalizationProposal};
 use agama_lib::{config::LocalizationConfig, install_settings::InstallSettings};
 use agama_locale_data::{KeymapId, LocaleId};
 use merge_struct::merge;
@@ -32,20 +32,24 @@ impl L10nAgent {
         Self { l10n }
     }
 
+    /// Creates a new proposal using the given user configuration.
+    ///
+    /// It returns the used configuration and the proposal. The returned
+    /// configuration may contain default values for the settings that were
+    /// missing in the user configuration.
     pub fn propose(
         &mut self,
-        user_config: &InstallSettings,
+        user_config: &LocalizationConfig,
     ) -> Result<(LocalizationConfig, LocalizationProposal), LocaleError> {
-        let localization = user_config.localization.clone().unwrap_or_default();
-
         // FIXME: Build a config from the system
         let default_config = LocalizationConfig::default();
-        let config = merge(&default_config, &localization).unwrap();
+        let config = merge(&default_config, &user_config)?;
         let proposal = self.build_proposal(&config)?;
         self.sync_model(&proposal)?;
         Ok((config, proposal))
     }
 
+    /// Returns the current configuration.
     pub fn get_config(&self) -> InstallSettings {
         let language = self.l10n.locales.first().map(ToString::to_string);
         let localization = LocalizationConfig {
@@ -59,8 +63,11 @@ impl L10nAgent {
         }
     }
 
-    pub fn get_system(&self) -> LocaleInfo {
-        LocaleInfo {
+    /// Returns the system information.
+    ///
+    /// It inncludes the list of available locales, keymaps and timezones.
+    pub fn get_system(&self) -> L10nInfo {
+        L10nInfo {
             locales: self.l10n.locales_db.entries().clone(),
             keymaps: self.l10n.keymaps_db.entries().clone(),
             timezones: self.l10n.timezones_db.entries().clone(),

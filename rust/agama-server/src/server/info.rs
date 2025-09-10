@@ -18,10 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_l10n::LocaleInfo;
+use agama_l10n::L10nInfo;
 use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct SystemInfo {
-    pub locale: LocaleInfo,
+    pub localization: L10nInfo,
 }

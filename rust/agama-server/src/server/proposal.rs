@@ -21,7 +21,7 @@
 use agama_l10n::LocalizationProposal;
 use serde::Serialize;
 
-#[derive(Default, Serialize)]
+#[derive(Clone, Default, Serialize)]
 pub struct Proposal {
     pub localization: LocalizationProposal,
 }

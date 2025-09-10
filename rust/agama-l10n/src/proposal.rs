@@ -24,7 +24,7 @@ use serde_with::{serde_as, DisplayFromStr};
 
 // FIXME: replace LocaleConfig?
 #[serde_as]
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 pub struct LocalizationProposal {
     #[serde_as(as = "DisplayFromStr")]
     pub keymap: KeymapId,

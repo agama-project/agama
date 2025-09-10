@@ -18,13 +18,26 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod web;
-pub use web::server_service;
-pub mod proposal;
-pub use proposal::Proposal;
-pub mod info;
-pub use info::SystemInfo;
-pub mod scope;
-pub use scope::{Scope, ScopeConfig};
-pub mod error;
-pub use error::ServerError;
+use agama_lib::config::LocalizationConfig;
+use serde::{Deserialize, Serialize};
+
+#[derive(Copy, Clone, Debug, strum::EnumString, strum::Display, Deserialize, PartialEq)]
+#[strum(serialize_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
+pub enum Scope {
+    L10n,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ScopeConfig {
+    L10n(LocalizationConfig),
+}
+
+impl ScopeConfig {
+    pub fn to_scope(&self) -> Scope {
+        match &self {
+            Self::L10n(_) => Scope::L10n,
+        }
+    }
+}

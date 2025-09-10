@@ -18,13 +18,30 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod web;
-pub use web::server_service;
-pub mod proposal;
-pub use proposal::Proposal;
-pub mod info;
-pub use info::SystemInfo;
-pub mod scope;
-pub use scope::{Scope, ScopeConfig};
-pub mod error;
-pub use error::ServerError;
+use agama_l10n::LocaleError;
+use axum::{
+    http::StatusCode,
+    response::{IntoResponse, Response},
+    Json,
+};
+use serde_json::json;
+
+use super::Scope;
+
+#[derive(Debug, thiserror::Error)]
+pub enum ServerError {
+    #[error("The given configuration does not belong to the '{0}' scope.")]
+    NoMatchingScope(Scope),
+    #[error(transparent)]
+    L10n(#[from] LocaleError),
+}
+
+impl IntoResponse for ServerError {
+    fn into_response(self) -> Response {
+        tracing::warn!("Server return error {}", self);
+        let body = json!({
+            "error": self.to_string()
+        });
+        (StatusCode::BAD_REQUEST, Json(body)).into_response()
+    }
+}

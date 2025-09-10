@@ -24,18 +24,19 @@ use agama_l10n::L10n;
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
 use agama_locale_data::LocaleId;
 use axum::{
-    extract::State,
+    extract::{Path, State},
     response::{IntoResponse, Response},
-    routing::{get, patch},
+    routing::get,
     Json, Router,
 };
 use hyper::StatusCode;
+use serde::Serialize;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-use crate::{error::Error, l10n::L10nAgent, supervisor::Supervisor};
+use crate::{l10n::L10nAgent, supervisor::Supervisor};
 
-use super::SystemInfo;
+use super::{Scope, ScopeConfig, ServerError, SystemInfo};
 
 #[derive(Clone)]
 pub struct ServerState {
@@ -52,37 +53,107 @@ pub async fn server_service() -> Result<Router, ServiceError> {
     };
 
     Ok(Router::new()
-        .route("/config", patch(set_config).get(get_config))
+        .route(
+            "/config/user/:scope",
+            get(get_scope_user_config)
+                .put(set_scope_config)
+                .patch(set_scope_config),
+        )
+        .route(
+            "/config/user",
+            get(get_user_config).patch(set_config).put(set_config),
+        )
+        .route("/config/:scope", get(get_scope_full_config))
+        .route("/config", get(get_full_config))
         .route("/system", get(get_system))
         .route("/proposal", get(get_proposal))
         .with_state(state))
 }
 
-async fn get_config(State(state): State<ServerState>) -> Result<Json<InstallSettings>, Error> {
+async fn get_full_config(State(state): State<ServerState>) -> Json<InstallSettings> {
     let state = state.supervisor.lock().await;
-    Ok(Json(state.get_config().await.clone()))
+    Json(state.get_config().await.clone())
+}
+
+async fn get_scope_full_config(
+    State(state): State<ServerState>,
+    Path(scope): Path<Scope>,
+) -> Result<Response, ServerError> {
+    let state = state.supervisor.lock().await;
+    let config = state.get_scope_config(scope).await;
+    Ok(to_option_response(config))
+}
+
+async fn get_user_config(State(state): State<ServerState>) -> Json<InstallSettings> {
+    let state = state.supervisor.lock().await;
+    Json(state.get_user_config().await.clone())
+}
+
+async fn get_scope_user_config(
+    State(state): State<ServerState>,
+    Path(scope): Path<Scope>,
+) -> Response {
+    let state = state.supervisor.lock().await;
+    let user_config = state.get_user_config().await;
+
+    let result = match scope {
+        Scope::L10n => &user_config.localization,
+    };
+
+    to_option_response(result.clone())
 }
 
 async fn set_config(
     State(state): State<ServerState>,
+    method: axum::http::Method,
     Json(config): Json<InstallSettings>,
-) -> Result<(), Error> {
+) -> Result<(), ServerError> {
     let mut state = state.supervisor.lock().await;
-    state.set_config(config).await;
+    if method.as_str() == "PATCH" {
+        state.patch_config(config).await;
+    } else {
+        state.update_config(config).await;
+    }
+
     Ok(())
 }
 
-async fn get_proposal(State(state): State<ServerState>) -> Result<Response, Error> {
+async fn set_scope_config(
+    State(state): State<ServerState>,
+    method: axum::http::Method,
+    Path(scope): Path<Scope>,
+    Json(user_config): Json<ScopeConfig>,
+) -> Result<(), ServerError> {
+    if user_config.to_scope() != scope {
+        return Err(ServerError::NoMatchingScope(scope));
+    }
+
+    let mut state = state.supervisor.lock().await;
+    if method.as_str() == "PATCH" {
+        state.patch_scope_config(user_config).await;
+    } else {
+        state.update_scope_config(user_config).await;
+    }
+    Ok(())
+}
+
+async fn get_proposal(State(state): State<ServerState>) -> Response {
     let state = state.supervisor.lock().await;
-    let response = if let Some(proposal) = state.get_proposal().await {
+    if let Some(proposal) = state.get_proposal().await {
         Json(proposal).into_response()
     } else {
         StatusCode::NOT_FOUND.into_response()
-    };
-    Ok(response)
+    }
 }
 
-async fn get_system(State(state): State<ServerState>) -> Result<Json<SystemInfo>, Error> {
+async fn get_system(State(state): State<ServerState>) -> Json<SystemInfo> {
     let state = state.supervisor.lock().await;
-    Ok(Json(state.get_system().await))
+    Json(state.get_system().await)
+}
+
+fn to_option_response<T: Serialize>(value: Option<T>) -> Response {
+    match value {
+        Some(inner) => Json(inner).into_response(),
+        None => StatusCode::NOT_FOUND.into_response(),
+    }
 }
