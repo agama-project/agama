@@ -180,7 +180,7 @@ mod test {
         assert_eq!(product.name, "openSUSE Tumbleweed");
         assert_eq!(product.icon, "Tumbleweed.svg");
         assert_eq!(product.registration, false);
-        assert_eq!(product.version, None);
+        assert_eq!(product.version, Some("16.0".to_string()));
         let software = &product.software;
         assert_eq!(software.installation_repositories.len(), 11);
         assert_eq!(software.installation_labels.len(), 4);
