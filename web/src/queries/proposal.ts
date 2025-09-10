@@ -20,21 +20,22 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, patch } from "~/api/http";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { fetchProposal } from "~/api/api";
 
 /**
- * Returns the system config
+ * Returns a query for retrieving the proposal
  */
-const fetchSystem = (): Promise<object> => get("/api/server/system");
+const proposalQuery = () => {
+  return {
+    queryKey: ["proposal"],
+    queryFn: fetchProposal,
+  };
+};
 
-/**
- * Returns the proposal
- */
-const fetchProposal = (): Promise<object> => get("/api/server/proposal");
+const useProposal = () => {
+  const { data: config } = useSuspenseQuery(proposalQuery());
+  return config;
+};
 
-/**
- * Updates configuration
- */
-const updateConfig = (config) => patch("/api/server/config/user", config);
-
-export { fetchSystem, fetchProposal, updateConfig };
+export { useProposal };

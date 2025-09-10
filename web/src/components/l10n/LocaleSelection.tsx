@@ -24,7 +24,9 @@ import React, { useState } from "react";
 import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
+import { updateConfig } from "~/api/api";
 import { useSystem } from "~/queries/system";
+import { useProposal } from "~/queries/proposal";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { _ } from "~/i18n";
 
@@ -33,18 +35,19 @@ import { _ } from "~/i18n";
 export default function LocaleSelection() {
   const navigate = useNavigate();
   const {
-    locale: { locales },
+    localization: { locales },
   } = useSystem();
-  // FIXME: get current locale from either, proposal or config
-  const currentLocale = { id: "fakeLocale" };
-  const [selected, setSelected] = useState(currentLocale.id);
+  const {
+    localization: { locale: currentLocale },
+  } = useProposal();
+  const [selected, setSelected] = useState(currentLocale);
   const [filteredLocales, setFilteredLocales] = useState(locales);
 
   const searchHelp = _("Filter by language, territory or locale code");
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    console.log("locale:", selected);
+    updateConfig({ localization: { language: selected } });
     navigate(-1);
   };
 

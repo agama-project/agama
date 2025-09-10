@@ -47,7 +47,7 @@ import {
 } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { LocaleConfig } from "~/types/l10n";
+import { Keymap, Locale } from "~/types/l10n";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { useInstallerStatus } from "~/queries/status";
@@ -57,6 +57,7 @@ import supportedLanguages from "~/languages.json";
 import { PRODUCT, ROOT, L10N } from "~/routes/paths";
 import { useProduct } from "~/queries/software";
 import { useSystem } from "~/queries/system";
+import { updateConfig } from "~/api/api";
 
 /**
  * Props for select inputs
@@ -88,7 +89,7 @@ const LangaugeFormInput = ({ value, onChange }: SelectProps) => (
  */
 const KeyboardFormInput = ({ value, onChange }: SelectProps) => {
   const {
-    locale: { keymaps },
+    localization: { keymaps },
   } = useSystem();
 
   if (!localConnection()) {
@@ -551,7 +552,9 @@ export default function InstallerOptions({
   onClose,
 }: InstallerOptionsProps) {
   const location = useLocation();
-  const { locales } = useSystem();
+  const {
+    localization: { locales },
+  } = useSystem();
   const { language, keymap, changeLanguage, changeKeymap } = useInstallerL10n();
   const { phase } = useInstallerStatus({ suspense: true });
   const { selectedProduct } = useProduct({ suspense: true });
@@ -585,13 +588,12 @@ export default function InstallerOptions({
   const reuseSettings = () => {
     // FIXME: export and use languageToLocale from context/installerL10n
     const systemLocale = locales.find((l) => l.id.startsWith(formState.language.replace("-", "_")));
-    const systemL10n: Partial<LocaleConfig> = {};
+    const systemL10n: { language?: Locale["id"]; keyboard?: Keymap["id"] } = {};
     // FIXME: use a fallback if no system locale was found ?
-    if (variant !== "keyboard") systemL10n.locales = [systemLocale?.id];
-    if (variant !== "language" && localConnection()) systemL10n.keymap = formState.keymap;
+    if (variant !== "keyboard") systemL10n.language = systemLocale?.id;
+    if (variant !== "language" && localConnection()) systemL10n.keyboard = formState.keymap;
 
-    // FIXME: NEW-API: update systemL10n once new API is ready
-    console.log("systemL10n", systemL10n);
+    updateConfig({ localization: systemL10n });
   };
 
   const close = () => {

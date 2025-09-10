@@ -24,7 +24,9 @@ import React, { useState } from "react";
 import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
+import { updateConfig } from "~/api/api";
 import { useSystem } from "~/queries/system";
+import { useProposal } from "~/queries/proposal";
 import { _ } from "~/i18n";
 
 // TODO: Add documentation
@@ -32,11 +34,13 @@ import { _ } from "~/i18n";
 export default function KeyboardSelection() {
   const navigate = useNavigate();
   const {
-    locale: { keymaps },
+    localization: { keymaps },
   } = useSystem();
+  const {
+    localization: { keymap: currentKeymap },
+  } = useProposal();
   // FIXME: get current keymap from either, proposal or config
-  const currentKeymap = { id: "fakeKeymap" };
-  const [selected, setSelected] = useState(currentKeymap.id);
+  const [selected, setSelected] = useState(currentKeymap);
   const [filteredKeymaps, setFilteredKeymaps] = useState(
     keymaps.sort((k1, k2) => (k1.name > k2.name ? 1 : -1)),
   );
@@ -44,9 +48,10 @@ export default function KeyboardSelection() {
   const searchHelp = _("Filter by description or keymap code");
 
   const onSubmit = async (e: React.SyntheticEvent) => {
+    console.log("selected", selected);
     e.preventDefault();
     // FIXME: udpate when new API is ready
-    console.log("keymap:", selected);
+    updateConfig({ localization: { keyboard: selected } });
     navigate(-1);
   };
 
