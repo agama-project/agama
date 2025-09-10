@@ -20,19 +20,11 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, put } from "~/api/http";
-import { Hostname } from "~/types/system";
+import { get } from "~/api/http";
 
 /**
- * Returns the hostname configuration
+ * Returns the system config
  */
-const fetchHostname = (): Promise<Hostname> => get("/api/hostname/config");
+const fetchSystem = (): Promise<object> => get("/api/server/system");
 
-/**
- * Updates the hostname configuration
- *
- * @param hostname - Object containing hostname updates
- */
-const updateHostname = (user: Partial<Hostname>) => put("/api/hostname/config", user);
-
-export { fetchHostname, updateHostname };
+export { fetchSystem };

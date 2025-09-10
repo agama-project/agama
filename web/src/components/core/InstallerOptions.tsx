@@ -33,7 +33,6 @@
 
 import React, { useReducer } from "react";
 import { useHref, useLocation } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import {
   Button,
   ButtonProps,
@@ -51,13 +50,13 @@ import { Icon } from "~/components/layout";
 import { LocaleConfig } from "~/types/l10n";
 import { InstallationPhase } from "~/types/status";
 import { useInstallerL10n } from "~/context/installerL10n";
-import { keymapsQuery, useConfigMutation, useL10n } from "~/queries/l10n";
 import { useInstallerStatus } from "~/queries/status";
 import { localConnection } from "~/utils";
 import { _ } from "~/i18n";
 import supportedLanguages from "~/languages.json";
 import { PRODUCT, ROOT, L10N } from "~/routes/paths";
 import { useProduct } from "~/queries/software";
+import { useSystem } from "~/queries/system";
 
 /**
  * Props for select inputs
@@ -88,8 +87,9 @@ const LangaugeFormInput = ({ value, onChange }: SelectProps) => (
  * Not available in remote installations.
  */
 const KeyboardFormInput = ({ value, onChange }: SelectProps) => {
-  const { isPending, data: keymaps } = useQuery(keymapsQuery());
-  if (isPending) return;
+  const {
+    locale: { keymaps },
+  } = useSystem();
 
   if (!localConnection()) {
     return (
@@ -551,8 +551,7 @@ export default function InstallerOptions({
   onClose,
 }: InstallerOptionsProps) {
   const location = useLocation();
-  const { locales } = useL10n();
-  const { mutate: updateSystemL10n } = useConfigMutation();
+  const { locales } = useSystem();
   const { language, keymap, changeLanguage, changeKeymap } = useInstallerL10n();
   const { phase } = useInstallerStatus({ suspense: true });
   const { selectedProduct } = useProduct({ suspense: true });
@@ -591,7 +590,8 @@ export default function InstallerOptions({
     if (variant !== "keyboard") systemL10n.locales = [systemLocale?.id];
     if (variant !== "language" && localConnection()) systemL10n.keymap = formState.keymap;
 
-    updateSystemL10n(systemL10n);
+    // FIXME: NEW-API: update systemL10n once new API is ready
+    console.log("systemL10n", systemL10n);
   };
 
   const close = () => {

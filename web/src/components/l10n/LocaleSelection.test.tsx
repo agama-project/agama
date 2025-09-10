@@ -25,8 +25,9 @@ import LocaleSelection from "./LocaleSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
+import { Locale } from "~/types/l10n";
 
-const locales = [
+const locales: Locale[] = [
   { id: "en_US.UTF-8", name: "English", territory: "United States" },
   { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
 ];
@@ -39,10 +40,9 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
-jest.mock("~/queries/l10n", () => ({
-  ...jest.requireActual("~/queries/l10n"),
-  useL10n: () => ({ locales, selectedLocale: locales[0] }),
-  useConfigMutation: () => mockConfigMutation,
+jest.mock("~/queries/system", () => ({
+  ...jest.requireActual("~/queries/system"),
+  useSystem: () => ({ locale: { locales } }),
 }));
 
 jest.mock("react-router-dom", () => ({

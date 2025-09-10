@@ -24,9 +24,9 @@ import React, { useState } from "react";
 import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
-import { timezoneTime } from "~/utils";
-import { useConfigMutation, useL10n } from "~/queries/l10n";
 import { Timezone } from "~/types/l10n";
+import { useSystem } from "~/queries/system";
+import { timezoneTime } from "~/utils";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import { _ } from "~/i18n";
 
@@ -66,8 +66,12 @@ const sortedTimezones = (timezones: Timezone[]) => {
 export default function TimezoneSelection() {
   date = new Date();
   const navigate = useNavigate();
-  const setConfig = useConfigMutation();
-  const { timezones, selectedTimezone: currentTimezone } = useL10n();
+  const {
+    locale: { timezones },
+  } = useSystem();
+
+  // FIXME: get current timezone from either, proposal or config
+  const currentTimezone = { id: "fakeLocale" };
   const displayTimezones = timezones.map(timezoneWithDetails);
   const [selected, setSelected] = useState(currentTimezone.id);
   const [filteredTimezones, setFilteredTimezones] = useState(sortedTimezones(displayTimezones));
@@ -76,7 +80,7 @@ export default function TimezoneSelection() {
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    setConfig.mutate({ timezone: selected });
+    console.log("timezone:", selected);
     navigate(-1);
   };
 

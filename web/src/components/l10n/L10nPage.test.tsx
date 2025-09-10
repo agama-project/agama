@@ -24,22 +24,23 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import L10nPage from "~/components/l10n/L10nPage";
+import { Keymap, Locale, Timezone } from "~/types/l10n";
 
 let mockLoadedData;
 
-const locales = [
+const locales: Locale[] = [
   { id: "en_US.UTF-8", name: "English", territory: "United States" },
   { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
 ];
 
-const keymaps = [
+const keymaps: Keymap[] = [
   { id: "us", name: "English" },
   { id: "es", name: "Spanish" },
 ];
 
-const timezones = [
-  { id: "Europe/Berlin", parts: ["Europe", "Berlin"] },
-  { id: "Europe/Madrid", parts: ["Europe", "Madrid"] },
+const timezones: Timezone[] = [
+  { id: "Europe/Berlin", parts: ["Europe", "Berlin"], country: "Germany", utcOffset: 120 },
+  { id: "Europe/Madrid", parts: ["Europe", "Madrid"], country: "Spain", utcOffset: 120 },
 ];
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
@@ -48,19 +49,17 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
 
 jest.mock("~/components/core/InstallerOptions", () => () => <div>InstallerOptions Mock</div>);
 
-jest.mock("~/queries/l10n", () => ({
-  ...jest.requireActual("~/queries/l10n"),
-  useL10n: () => mockLoadedData,
+jest.mock("~/queries/system", () => ({
+  useSystem: () => mockLoadedData,
 }));
 
 beforeEach(() => {
   mockLoadedData = {
-    locales,
-    keymaps,
-    timezones,
-    selectedLocale: locales[0],
-    selectedKeymap: keymaps[0],
-    selectedTimezone: timezones[0],
+    locale: {
+      locales,
+      keymaps,
+      timezones,
+    },
   };
 });
 
@@ -79,10 +78,6 @@ it("renders a section for configuring the language", () => {
 });
 
 describe("if there is no selected language", () => {
-  beforeEach(() => {
-    mockLoadedData.selectedLocale = undefined;
-  });
-
   it("renders a button for selecting a language", () => {
     installerRender(<L10nPage />);
     const region = screen.getByRole("region", { name: "Language" });
@@ -99,10 +94,6 @@ it("renders a section for configuring the keyboard", () => {
 });
 
 describe("if there is no selected keyboard", () => {
-  beforeEach(() => {
-    mockLoadedData.selectedKeymap = undefined;
-  });
-
   it("renders a button for selecting a keyboard", () => {
     installerRender(<L10nPage />);
     const region = screen.getByRole("region", { name: "Keyboard" });
@@ -119,10 +110,6 @@ it("renders a section for configuring the time zone", () => {
 });
 
 describe("if there is no selected time zone", () => {
-  beforeEach(() => {
-    mockLoadedData.selectedTimezone = undefined;
-  });
-
   it("renders a button for selecting a time zone", () => {
     installerRender(<L10nPage />);
     const region = screen.getByRole("region", { name: "Time zone" });

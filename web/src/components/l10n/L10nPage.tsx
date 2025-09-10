@@ -24,7 +24,6 @@ import React from "react";
 import { Button, Content, Grid, GridItem } from "@patternfly/react-core";
 import { InstallerOptions, Link, Page } from "~/components/core";
 import { L10N as PATHS } from "~/routes/paths";
-import { useL10n } from "~/queries/l10n";
 import { _ } from "~/i18n";
 import { localConnection } from "~/utils";
 
@@ -66,7 +65,8 @@ const InstallerL10nSettingsInfo = () => {
  * Page for configuring localization.
  */
 export default function L10nPage() {
-  const { selectedLocale: locale, selectedTimezone: timezone, selectedKeymap: keymap } = useL10n();
+  // FIXME: retrieve selection from config when ready
+  const { selectedLocale: locale, selectedTimezone: timezone, selectedKeymap: keymap } = {};
 
   return (
     <Page>

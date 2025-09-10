@@ -24,16 +24,19 @@ import React, { useState } from "react";
 import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
-import { _ } from "~/i18n";
-import { useConfigMutation, useL10n } from "~/queries/l10n";
+import { useSystem } from "~/queries/system";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { _ } from "~/i18n";
 
 // TODO: Add documentation
 // TODO: Evaluate if worth it extracting the selector
 export default function LocaleSelection() {
   const navigate = useNavigate();
-  const setConfig = useConfigMutation();
-  const { locales, selectedLocale: currentLocale } = useL10n();
+  const {
+    locale: { locales },
+  } = useSystem();
+  // FIXME: get current locale from either, proposal or config
+  const currentLocale = { id: "fakeLocale" };
   const [selected, setSelected] = useState(currentLocale.id);
   const [filteredLocales, setFilteredLocales] = useState(locales);
 
@@ -41,7 +44,7 @@ export default function LocaleSelection() {
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    setConfig.mutate({ locales: [selected] });
+    console.log("locale:", selected);
     navigate(-1);
   };
 

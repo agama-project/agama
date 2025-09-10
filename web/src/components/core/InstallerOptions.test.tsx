@@ -28,16 +28,17 @@ import * as utils from "~/utils";
 import { PRODUCT, ROOT } from "~/routes/paths";
 import InstallerOptions, { InstallerOptionsProps } from "./InstallerOptions";
 import { Product } from "~/types/software";
+import { Keymap, Locale } from "~/types/l10n";
 
 let phase: InstallationPhase;
 let isBusy: boolean;
 
-const locales = [
+const locales: Locale[] = [
   { id: "en_US.UTF-8", name: "English", territory: "United States" },
   { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
 ];
 
-const keymaps = [
+const keymaps: Keymap[] = [
   { id: "us", name: "English (US)" },
   { id: "gb", name: "English (UK)" },
 ];
@@ -59,14 +60,9 @@ const mockL10nConfigMutation = {
 const mockChangeUIKeymap = jest.fn();
 const mockChangeUILanguage = jest.fn();
 
-jest.mock("~/queries/l10n", () => ({
-  ...jest.requireActual("~/queries/l10n"),
-  useL10n: () => ({ locales, selectedLocale: locales[0] }),
-  useConfigMutation: () => mockL10nConfigMutation,
-  keymapsQuery: () => ({
-    queryKey: ["keymaps"],
-    queryFn: () => keymaps,
-  }),
+jest.mock("~/queries/system", () => ({
+  ...jest.requireActual("~/queries/system"),
+  useSystem: () => ({ locale: { locales, keymaps } }),
 }));
 
 jest.mock("~/queries/status", () => ({

@@ -24,7 +24,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { locationReload, setLocationSearch } from "~/utils";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
-import { fetchConfig as defaultFetchConfig, updateConfig } from "~/api/l10n";
 import { LocaleConfig } from "~/types/l10n";
 
 const L10nContext = React.createContext(null);
@@ -99,48 +98,51 @@ function languageFromQuery(): string | undefined {
   return country ? `${language.toLowerCase()}-${country.toUpperCase()}` : language;
 }
 
-/**
- * Generates a RFC 5646 (or BCP 78) language tag from a locale.
- *
- * @param locale
- * @return RFC 5646 language tag (e.g., "en-US")
- *
- * @private
- * @see https://datatracker.ietf.org/doc/html/rfc5646
- * @see https://www.rfc-editor.org/info/bcp78
- */
-function languageFromLocale(locale: string): string {
-  const [language] = locale.split(".");
-  return language.replace("_", "-");
-}
+// FIXME: NEW-API: uncommnet when new api is ready
+// /**
+//  * Generates a RFC 5646 (or BCP 78) language tag from a locale.
+//  *
+//  * @param locale
+//  * @return RFC 5646 language tag (e.g., "en-US")
+//  *
+//  * @private
+//  * @see https://datatracker.ietf.org/doc/html/rfc5646
+//  * @see https://www.rfc-editor.org/info/bcp78
+//  */
+// function languageFromLocale(locale: string): string {
+//   const [language] = locale.split(".");
+//   return language.replace("_", "-");
+// }
 
-/**
- * Converts a RFC 5646 language tag to a locale.
- *
- * It forces the encoding to "UTF-8".
- *
- * @param language as a RFC 5646 language tag (e.g., "en-US")
- * @return locale (e.g., "en_US.UTF-8")
- *
- * @private
- * @see https://datatracker.ietf.org/doc/html/rfc5646
- * @see https://www.rfc-editor.org/info/bcp78
- */
-function languageToLocale(language: string): string {
-  const [lang, country] = language.split("-");
-  const locale = country ? `${lang}_${country.toUpperCase()}` : lang;
-  return `${locale}.UTF-8`;
-}
+// FIXME: NEW-API: uncomment when in use again
+// /**
+//  * Converts a RFC 5646 language tag to a locale.
+//  *
+//  * It forces the encoding to "UTF-8".
+//  *
+//  * @param language as a RFC 5646 language tag (e.g., "en-US")
+//  * @return locale (e.g., "en_US.UTF-8")
+//  *
+//  * @private
+//  * @see https://datatracker.ietf.org/doc/html/rfc5646
+//  * @see https://www.rfc-editor.org/info/bcp78
+//  */
+// function languageToLocale(language: string): string {
+//   const [lang, country] = language.split("-");
+//   const locale = country ? `${lang}_${country.toUpperCase()}` : lang;
+//   return `${locale}.UTF-8`;
+// }
 
-/**
- * Returns the language tag from the backend.
- *
- * @return Language tag from the backend locale.
- */
-async function languageFromBackend(fetchConfig: () => Promise<LocaleConfig>): Promise<string> {
-  const config = await fetchConfig();
-  return languageFromLocale(config.uiLocale);
-}
+// FIXME: NEW-API: uncommnet when new api is ready
+// /**
+//  * Returns the language tag from the backend.
+//  *
+//  * @return Language tag from the backend locale.
+//  */
+// async function languageFromBackend(): Promise<string> {
+//   // FIXME: NEW-API: return something meaningful once new API is ready
+//   return languageFromLocale("en");
+// }
 
 /**
  * Returns the first supported language from the given list.
@@ -216,6 +218,10 @@ async function loadTranslations(locale: string) {
     });
 }
 
+const defaultFetchConfig = () => {
+  console.log("FIXME: NEW-API: make defaultFetchConfig work again");
+};
+
 /**
  * This provider sets the installer locale. By default, it uses the URL "lang" query parameter or
  * the preferred locale from the browser and synchronizes the UI and the backend locales. To
@@ -242,16 +248,18 @@ function InstallerL10nProvider({
   children?: React.ReactNode;
 }) {
   const fetchConfig = fetchConfigFn || defaultFetchConfig;
+  console.log("FIXME: NEW-API: reintroduce fetchConfig", fetchConfig());
   const [language, setLanguage] = useState(initialLanguage);
   const [keymap, setKeymap] = useState(undefined);
 
-  const syncBackendLanguage = useCallback(async () => {
-    const backendLanguage = await languageFromBackend(fetchConfig);
-    if (backendLanguage === language) return;
-
-    // FIXME: fallback to en-US if the language is not supported.
-    await updateConfig({ uiLocale: languageToLocale(language) });
-  }, [fetchConfig, language]);
+  // FIXME: NEW-API: sync and updateConfig with new API once it's ready.
+  // const syncBackendLanguage = useCallback(async () => {
+  //   const backendLanguage = await languageFromBackend(fetchConfig);
+  //   if (backendLanguage === language) return;
+  //
+  //   // FIXME: fallback to en-US if the language is not supported.
+  //   await updateConfig({ uiLocale: languageToLocale(language) });
+  // }, [fetchConfig, language]);
 
   const changeLanguage = useCallback(
     async (lang?: string) => {
@@ -268,7 +276,7 @@ function InstallerL10nProvider({
         wanted,
         wanted?.split("-")[0], // fallback to the language (e.g., "es" for "es-AR")
         agamaLanguage(),
-        await languageFromBackend(fetchConfig),
+        // await languageFromBackend(fetchConfig),
       ].filter((l) => l);
       const newLanguage = findSupportedLanguage(candidateLanguages) || "en-US";
       const mustReload = storeAgamaLanguage(newLanguage);
@@ -283,13 +291,15 @@ function InstallerL10nProvider({
         await loadTranslations(newLanguage);
       }
     },
-    [fetchConfig, setLanguage],
+    // [fetchConfig, setLanguage],
+    [setLanguage],
   );
 
   const changeKeymap = useCallback(
     async (id: string) => {
       setKeymap(id);
-      await updateConfig({ uiKeymap: id });
+      // FIXME: NEW-API: uncomment when new API is ready
+      // await updateConfig({ uiKeymap: id });
     },
     [setKeymap],
   );
@@ -298,15 +308,17 @@ function InstallerL10nProvider({
     if (!language) changeLanguage();
   }, [changeLanguage, language]);
 
-  useEffect(() => {
-    if (!language) return;
+  // FIXME: NEW-API: uncomment when in use again
+  // useEffect(() => {
+  //   if (!language) return;
+  //
+  //   syncBackendLanguage();
+  // }, [language, syncBackendLanguage]);
 
-    syncBackendLanguage();
-  }, [language, syncBackendLanguage]);
-
-  useEffect(() => {
-    fetchConfig().then((c) => setKeymap(c.uiKeymap));
-  }, [setKeymap, fetchConfig]);
+  // FIXME: NEW-API: uncomment when system reports keymap for insterface
+  // useEffect(() => {
+  //   fetchConfig().then((c) => setKeymap(c.uiKeymap));
+  // }, [setKeymap, fetchConfig]);
 
   const value = { language, changeLanguage, keymap, changeKeymap };
 

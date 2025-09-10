@@ -27,6 +27,7 @@ import { Question } from "~/types/questions";
 import { Product } from "~/types/software";
 import { InstallationPhase } from "~/types/status";
 import QuestionWithPassword from "~/components/questions/QuestionWithPassword";
+import { Locale } from "~/types/l10n";
 
 const answerFn = jest.fn();
 const question: Question = {
@@ -45,7 +46,7 @@ const tumbleweed: Product = {
   registration: false,
 };
 
-const locales = [
+const locales: Locale[] = [
   { id: "en_US.UTF-8", name: "English", territory: "United States" },
   { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
 ];
@@ -57,9 +58,9 @@ jest.mock("~/queries/status", () => ({
   }),
 }));
 
-jest.mock("~/queries/l10n", () => ({
+jest.mock("~/queries/system", () => ({
   ...jest.requireActual("~/queries/l10n"),
-  useL10n: () => ({ locales, selectedLocale: locales[0] }),
+  useSystem: () => ({ locale: { locales } }),
 }));
 
 jest.mock("~/queries/software", () => ({
@@ -78,7 +79,6 @@ jest.mock("~/context/installerL10n", () => ({
     keymap: "us",
     language: "de-DE",
   }),
-  useL10n: jest.fn(),
 }));
 
 const renderQuestion = () =>

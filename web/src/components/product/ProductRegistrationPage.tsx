@@ -54,7 +54,7 @@ import RegistrationCodeInput from "./RegistrationCodeInput";
 import { RegistrationParams } from "~/types/software";
 import { HOSTNAME } from "~/routes/paths";
 import { useProduct, useRegistration, useRegisterMutation, useAddons } from "~/queries/software";
-import { useHostname } from "~/queries/system";
+import { useHostname } from "~/queries/hostname";
 import { isEmpty } from "radashi";
 import { mask } from "~/utils";
 import { sprintf } from "sprintf-js";
