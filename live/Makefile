@@ -27,7 +27,7 @@ COPY_FILES = $(patsubst $(SRCDIR)/%,$(DESTDIR)/%, $(filter-out ./src/%_sles,$(wi
 COPY_FILES_SLES = $(patsubst $(SRCDIR)/%,$(DESTDIR)/%, $(filter ./src/%_sles,$(wildcard $(SRCDIR)/*)))
 
 # the default target, build the sources for openSUSE image
-all: $(DESTDIR) $(COPY_FILES) $(DESTDIR)/config-cdroot.tar.xz $(DESTDIR)/live-root.tar.xz $(DESTDIR)/live-root-PXE.tar.xz
+all: $(DESTDIR) $(COPY_FILES) $(DESTDIR)/config-cdroot.tar.xz $(DESTDIR)/live-root.tar.xz
 
 # build the sources for SLES image, builds the openSUSE sources and then modifies them for SLES
 # (use the SLES specific _multibuild file, add "SLES" into the changes and the Kiwi file name)

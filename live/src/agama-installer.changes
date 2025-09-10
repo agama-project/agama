@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep  8 10:13:30 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Remove PXE images as it was agreed to use the Live iso (squashfs
+  images) for PXE installations too (related to bsc#1238848).
+
+-------------------------------------------------------------------
 Mon Aug 25 10:48:37 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
 
 - live-root: update final EULAs with the June 2024 delivery 
