@@ -24,6 +24,9 @@ import { tzOffset } from "@date-fns/tz/tzOffset";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { fetchSystem } from "~/api/api";
 
+const transformLocales = (locales) =>
+  locales.map(({ id, language: name, territory }) => ({ id, name, territory }));
+
 const tranformKeymaps = (keymaps) => keymaps.map(({ id, description: name }) => ({ id, name }));
 
 const transformTimezones = (timezones) =>
@@ -54,11 +57,10 @@ const systemQuery = () => {
 
     select: (data) => ({
       ...data,
-      // FIXME: NEW-API: ask for l10n key instead.
-      locale: {
-        ...data.locale,
-        keymaps: tranformKeymaps(data.locale.keymaps),
-        timezones: transformTimezones(data.locale.timezones),
+      localization: {
+        locales: transformLocales(data.localization.locales),
+        keymaps: tranformKeymaps(data.localization.keymaps),
+        timezones: transformTimezones(data.localization.timezones),
       },
     }),
   };
