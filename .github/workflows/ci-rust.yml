@@ -164,6 +164,9 @@ jobs:
       if: steps.cache-tests.outputs.cache-hit != 'true'
       run: cargo install cargo-tarpaulin
 
+    - name: Test build
+      run: cargo build -vv
+
     - name: Run the tests
       # Compile into the ./target-coverage directory because tarpaulin uses special compilation
       # flags, to avoid reusing the previous builds it always starts from scratch.
