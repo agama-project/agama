@@ -34,8 +34,8 @@ pub async fn software_ng_service(
     events: EventsSender,
     products: Arc<Mutex<ProductsRegistry>>,
 ) -> Router {
-    let client = SoftwareService::start(events, products)
-        .expect("Could not start the software service.");
+    let client =
+        SoftwareService::start(events, products).expect("Could not start the software service.");
     web::software_router(client)
         .await
         .expect("Could not build the software router.")

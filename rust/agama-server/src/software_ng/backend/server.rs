@@ -86,7 +86,10 @@ impl SoftwareServiceServer {
         // see https://docs.rs/tokio/latest/tokio/task/struct.LocalSet.html#use-inside-tokiospawn for explain how to ensure that zypp
         // runs locally on single thread
 
-        let rt = tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap();
+        let rt = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
 
         std::thread::spawn(move || {
             let local = tokio::task::LocalSet::new();
