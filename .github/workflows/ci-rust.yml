@@ -135,7 +135,7 @@ jobs:
     - name: Install packages
       run: |
         sudo apt-get update
-        sudo apt-get -y install libclang-18-dev libpam0g-dev python3-langtable jsonnet
+        sudo apt-get -y install libclang-18-dev libpam0g-dev python3-langtable jsonnet libzypp-dev
 
     - name: Prepare for tests
       run: |
