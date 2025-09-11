@@ -26,7 +26,7 @@ use agama_locale_data::LocaleId;
 use axum::{
     extract::{Path, State},
     response::{IntoResponse, Response},
-    routing::get,
+    routing::{get, post},
     Json, Router,
 };
 use hyper::StatusCode;
@@ -34,7 +34,7 @@ use serde::Serialize;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-use crate::{l10n::L10nAgent, supervisor::Supervisor};
+use crate::{l10n::L10nAgent, supervisor::Supervisor, supervisor::Action};
 
 use super::{Scope, ScopeConfig, ServerError, SystemInfo};
 
@@ -67,6 +67,7 @@ pub async fn server_service() -> Result<Router, ServiceError> {
         .route("/config", get(get_full_config))
         .route("/system", get(get_system))
         .route("/proposal", get(get_proposal))
+        .route("/actions", post(run_action))
         .with_state(state))
 }
 
@@ -134,6 +135,15 @@ async fn set_scope_config(
     } else {
         state.update_scope_config(user_config).await;
     }
+    Ok(())
+}
+
+async fn run_action(
+    State(state): State<ServerState>,
+    Json(action): Json<Action>,
+) -> Result<(), ServerError> {
+    let mut state = state.supervisor.lock().await;
+    state.run_action(action).await;
     Ok(())
 }
 

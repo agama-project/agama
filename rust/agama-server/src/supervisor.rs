@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use serde::{Serialize, Deserialize};
 use agama_lib::install_settings::InstallSettings;
 use merge_struct::merge;
 
@@ -25,6 +26,13 @@ use crate::{
     l10n::L10nAgent,
     server::{Proposal, Scope, ScopeConfig, SystemInfo},
 };
+use agama_l10n::actions::L10nAction;
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Action {
+    L10n(L10nAction)
+}
 
 pub struct Supervisor {
     l10n: L10nAgent,
@@ -136,6 +144,12 @@ impl Supervisor {
         self.config = config;
         self.proposal = Some(proposal);
         self.user_config = base_user_config;
+    }
+
+    pub async fn run_action(&mut self, action: Action) {
+        match action {
+            Action::L10n(l10n_action) => self.l10n.run_action(l10n_action),
+        }
     }
 
     /// It returns the current proposal, if any.

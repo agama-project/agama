@@ -20,6 +20,7 @@
 
 mod agent;
 mod config;
+pub mod actions;
 mod error;
 pub mod helpers;
 mod system_info;
