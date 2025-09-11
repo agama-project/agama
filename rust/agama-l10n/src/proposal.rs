@@ -22,10 +22,9 @@ use agama_locale_data::{KeymapId, LocaleId};
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
 
-// FIXME: replace LocaleConfig?
 #[serde_as]
 #[derive(Clone, Serialize)]
-pub struct LocalizationProposal {
+pub struct L10nProposal {
     #[serde_as(as = "DisplayFromStr")]
     pub keymap: KeymapId,
     #[serde_as(as = "DisplayFromStr")]
@@ -33,7 +32,7 @@ pub struct LocalizationProposal {
     pub timezone: String,
 }
 
-impl Default for LocalizationProposal {
+impl Default for L10nProposal {
     fn default() -> Self {
         Self {
             timezone: "Europe/Berlin".to_string(),

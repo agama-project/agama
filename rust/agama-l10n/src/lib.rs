@@ -18,13 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+mod agent;
+mod config;
 mod error;
 pub mod helpers;
-pub mod info;
+mod system_info;
 mod model;
 mod proposal;
 
+pub use agent::L10nAgent;
+pub use config::L10nConfig;
 pub use error::LocaleError;
-pub use info::L10nInfo;
+pub use system_info::L10nSystemInfo;
 pub use model::{Keymap, L10n, LocaleEntry, TimezoneEntry};
-pub use proposal::LocalizationProposal;
+pub use proposal::L10nProposal;

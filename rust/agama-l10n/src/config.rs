@@ -26,7 +26,7 @@ use serde::{Deserialize, Serialize};
 /// FIXME: this one is close to CLI. A possible duplicate close to HTTP is LocaleConfig
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub struct LocalizationConfig {
+pub struct L10nConfig {
     /// like "en_US.UTF-8"
     #[serde(skip_serializing_if = "Option::is_none")]
     pub language: Option<String>,

@@ -18,5 +18,4 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod agent;
-pub use agent::L10nAgent;
+pub use agama_l10n::L10nAgent;

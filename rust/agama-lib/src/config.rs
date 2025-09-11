@@ -18,5 +18,4 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod l10n;
-pub use l10n::LocalizationConfig;
+pub use agama_l10n::L10nConfig;

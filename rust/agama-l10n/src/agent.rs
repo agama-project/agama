@@ -18,8 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_l10n::{L10n, L10nInfo, LocaleError, LocalizationProposal};
-use agama_lib::{config::LocalizationConfig, install_settings::InstallSettings};
+use crate::{L10n, L10nConfig, L10nInfo, LocaleError, LocalizationProposal, actions::L10nAction, actions::configure_system};
 use agama_locale_data::{KeymapId, LocaleId};
 use merge_struct::merge;
 
@@ -39,35 +38,21 @@ impl L10nAgent {
     /// missing in the user configuration.
     pub fn propose(
         &mut self,
-        user_config: &LocalizationConfig,
-    ) -> Result<(LocalizationConfig, LocalizationProposal), LocaleError> {
+        user_config: &L10nConfig,
+    ) -> Result<(L10nConfig, L10nProposal), LocaleError> {
         // FIXME: Build a config from the system
-        let default_config = LocalizationConfig::default();
+        let default_config = L10nConfig::default();
         let config = merge(&default_config, &user_config)?;
         let proposal = self.build_proposal(&config)?;
         self.sync_model(&proposal)?;
         Ok((config, proposal))
     }
 
-    /// Returns the current configuration.
-    pub fn get_config(&self) -> InstallSettings {
-        let language = self.l10n.locales.first().map(ToString::to_string);
-        let localization = LocalizationConfig {
-            timezone: Some(self.l10n.timezone.to_string()),
-            keyboard: Some(self.l10n.keymap.to_string()),
-            language,
-        };
-        InstallSettings {
-            localization: Some(localization),
-            ..Default::default()
-        }
-    }
-
     /// Returns the system information.
     ///
     /// It inncludes the list of available locales, keymaps and timezones.
-    pub fn get_system(&self) -> L10nInfo {
-        L10nInfo {
+    pub fn get_system(&self) -> L10nSystemInfo {
+        L10nSystemInfo {
             locales: self.l10n.locales_db.entries().clone(),
             keymaps: self.l10n.keymaps_db.entries().clone(),
             timezones: self.l10n.timezones_db.entries().clone(),
@@ -76,8 +61,8 @@ impl L10nAgent {
 
     fn build_proposal(
         &self,
-        config: &LocalizationConfig,
-    ) -> Result<LocalizationProposal, LocaleError> {
+        config: &L10nConfig,
+    ) -> Result<L10nProposal, LocaleError> {
         let locale: LocaleId = if let Some(language) = &config.language {
             language.as_str().try_into()?
         } else {
@@ -95,14 +80,14 @@ impl L10nAgent {
             .clone()
             .unwrap_or("Europe/Berlin".to_string());
 
-        Ok(LocalizationProposal {
+        Ok(L10nProposal {
             locale,
             timezone,
             keymap,
         })
     }
 
-    fn sync_model(&mut self, value: &LocalizationProposal) -> Result<(), LocaleError> {
+    fn sync_model(&mut self, value: &L10nProposal) -> Result<(), LocaleError> {
         self.l10n.set_locales(&vec![value.locale.to_string()])?;
         self.l10n.set_timezone(&value.timezone)?;
         self.l10n.set_keymap(value.keymap.clone())?;
