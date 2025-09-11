@@ -29,6 +29,10 @@ translations:
       de openSUSE, diseñada para actualizarse con menos frecuencia que
       Tumbleweed pero más a menudo que Leap, sin obligar a los usuarios a elegir
       entre paquetes "estables" y más nuevos.
+    fi: Kokeellinen ja hieman hitaammin mutta jatkuvasti päivittyvä
+      openSUSE-julkaisu, joka on suunniteltu päivittymään vähemmän usein kuin
+      Tumbleweed, mutta useammin kuin Leap, jotta käyttäjät eivät joudu
+      valitsemaan "vakaiden" ja uusien pakettien väliltä.
     fr: Version d'openSUSE expérimentale et de publication légèrement plus lente
       conçue pour disposer de mises à jour moins souvent qu'avec Tumbleweed mais
       plus souvent qu'avec Leap, sans forcer les utilisateurs à choisir entre

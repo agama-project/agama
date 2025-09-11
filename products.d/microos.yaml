@@ -34,6 +34,11 @@ translations:
       proporciona actualizaciones transaccionales (atómicas) en un sistema de
       archivos raíz btrfs de solo lectura. Como distribución de actualización
       continua, el software siempre está actualizado.
+    fi: Nopea, pieni jakelu joka on suunniteltu konttityökuormien suorittamiseen
+      lisättynä automaattisella ylläpidolla ja päivityksillä. openSUSE MicroOS
+      tarjoaa transaktionaaliset (atomiset) päivitykset kirjoitussuojatussa
+      btrfs-juuritiedostojärjestelmässä. Jatkuvasti päivittyvänä jakeluna
+      ohjelmistot ovat aina ajan tasalla.
     fr: Une petite distribution rapide conçue pour héberger des charges de travail
       de conteneurs avec une administration et des correctifs automatisés.
       openSUSE MicroOS fournit des mises à jour transactionnelles (atomiques)

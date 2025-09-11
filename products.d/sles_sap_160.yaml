@@ -21,10 +21,24 @@ translations:
       per a implementacions SAP, SUSE Linux Enterprise Server per a aplicacions
       SAP prepara el projecte SAP per al futur, ofereix negocis sense
       interrupcions i minimitza els riscos i costos operatius.
+    cs: Přední distribuce pro bezpečnou a spolehlivou platformu SAP. Určený pro
+      nasazení SAP, SUSE Linux Enterprise Server for SAP applications zajišťuje
+      dlouhodobou udržitelnost projektu SAP, nabízí nepřerušený chod podniku a
+      minimalizuje provozní rizika a náklady.
     de: Das führende Betriebssytem für eine sichere und zuverlässige SAP-Platform.
       Abgestimmt auf SAP-Bereitstellungen, ist SUSE Linux Enterprise Server for
       SAP applications zukunftssicher, bietet unterbrechungsfreien
       Geschäftsbetrieb und minimiert betriebliche Risiken und Kosten.
+    es: El sistema operativo líder para una plataforma SAP segura y fiable. SUSE
+      Linux Enterprise Server for SAP applications está recomendado para
+      implantaciones SAP, ya que prepara el proyecto SAP para el futuro, ofrece
+      un funcionamiento ininterrumpido y minimiza los riesgos y costes
+      operativos.
+    fi: Johtava tietoturvallisen ja luotettavan SAP-alustan käyttöjärjestelmä. SUSE
+      Linux Enterprise Server for SAP applications on hyväksytty
+      SAP-käyttöönottoihin, joka varmistaa SAP-projektin tulevaisuuden tarjoten
+      keskeytymätöntä liiketoimintaa ja minimoi operatiiviset riskit sekä
+      kustannukset.
     fr: Le système d’exploitation leader pour une plateforme SAP sécurisée et
       fiable. Approuvé pour les déploiements SAP, SUSE Linux Enterprise Server
       for SAP assure la pérennité du projet SAP, offre une continuité des
@@ -34,6 +48,10 @@ translations:
       Applications memberikan jaminan masa depan bagi proyek SAP, memastikan
       kelancaran bisnis tanpa gangguan, serta meminimalkan risiko operasional
       dan biaya.
+    it: Il sistema operativo leader per una piattaforma SAP sicura e affidabile.
+      Approvato per le implementazioni SAP, SUSE Linux Enterprise Server per
+      applicazioni SAP rende il progetto SAP a prova di futuro, garantisce la
+      continuità operativa e riduce al minimo i rischi e i costi operativi.
     ja: 安全で信頼性のある SAP プラットフォームを構築するためのリーディング OS です。 SAP 承認も取得済みの SUSE Linux
       Enterprise Server for SAP applications では、 SAP
       プロジェクトに将来性をもたらすほか、途切れることのないビジネス環境を提供し、運用で発生しうるリスクやコストを最小限に抑えます。
@@ -49,6 +67,10 @@ translations:
       och minimerar operativa risker och kostnader.
     uk: "Провідна ОС для безпечної та надійної роботи SAP: сертифікована для SAP,
       забезпечує стабільність, знижує ризики та витрати."
+    zh_CN: 作为SAP平台安全可靠的优选操作系统， SUSE Linux Enterprise Server for SAP
+      Applications经SAP部署认可，能够为SAP项目提供未来保障，确保业务持续运行，同时最大限度降低运营风险和成本。
+    zh_TW: 為安全可靠的 SAP 平台所打造的領先作業系統。SUSE Linux Enterprise Server for SAP Applications
+      獲 SAP 推薦部署，能為您的 SAP 專案奠定成功基石，確保業務營運不中斷，並將營運風險與成本降至最低。
 software:
   installation_repositories: []
   installation_labels:
