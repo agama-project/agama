@@ -80,18 +80,6 @@ pub enum SoftwareServiceError {
 
 /// Builds and starts the software service.
 ///
-/// ```no_run
-/// # use tokio_test;
-/// use agama_server::{
-///   software::backend::SoftwareService
-/// };
-///
-/// # tokio_test::block_on(async {
-/// let client = SoftwareService::start(products, http, events_tx).await;
-///
-/// let products = client.get_products().await
-///   .expect("Failed to get the products");
-/// # });
 pub struct SoftwareService {}
 
 impl SoftwareService {
