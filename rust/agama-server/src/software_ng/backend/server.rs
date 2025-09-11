@@ -91,6 +91,8 @@ impl SoftwareServiceServer {
             .build()
             .unwrap();
 
+        // drop the returned JoinHandle: the thread will be detached
+        // but that's OK for it to run until the process dies
         std::thread::spawn(move || {
             let local = tokio::task::LocalSet::new();
 
