@@ -75,6 +75,7 @@ export default function QuestionWithPassword({
       <Popup.Actions>
         <QuestionActions
           actions={question.options}
+          actionLabels={question.optionLabels}
           defaultAction={defaultAction}
           actionCallback={actionCallback}
         />

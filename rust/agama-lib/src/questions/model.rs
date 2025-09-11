@@ -44,6 +44,7 @@ pub struct GenericQuestion {
     pub class: String,
     pub text: String,
     pub options: Vec<String>,
+    pub option_labels: Vec<String>,
     pub default_option: String,
     pub data: HashMap<String, String>,
 }

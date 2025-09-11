@@ -30,6 +30,7 @@ const question: Question = {
   id: 1,
   text: "Trust certificate?",
   options: ["yes", "no"],
+  optionLabels: ["Yes", "No"],
   defaultOption: "yes",
   data: {
     url: "https://test.com",
