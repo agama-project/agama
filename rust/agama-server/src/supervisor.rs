@@ -20,16 +20,16 @@
 
 use agama_lib::install_settings::InstallSettings;
 use merge_struct::merge;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use crate::{
     server::{Proposal, Scope, ScopeConfig, SystemInfo},
 };
 use agama_l10n::{L10n, L10nAction};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Deserialize)]
 #[serde(untagged)]
-pub enum Action {
-    L10n(L10nAction),
+pub enum Action<'a> {
+    L10n(L10nAction<'a>),
 }
 
 pub struct Supervisor {
@@ -97,16 +97,18 @@ impl Supervisor {
         // let mut config = self.config.clone();
         // let mut proposal = self.proposal.clone().unwrap_or_default();
 
-        // if let Some(l10n_user_config) = &user_config.localization {
-        //     let (l10n_config, l10n_proposal) = self.l10n.propose(&l10n_user_config).unwrap();
-        //     config.localization = Some(l10n_config);
-        //     proposal.localization = l10n_proposal;
-        // }
+        if let Some(l10n_user_config) = &user_config.localization {
+            let action = L10n::new_configure_action(l10n_user_config);
+            // TODO: manage error.
+            self.l10n.dispatch(action).unwrap();
+            // let (l10n_config, l10n_proposal) = self.l10n.propose(&l10n_user_config).unwrap();
+            // config.localization = Some(l10n_config);
+            // proposal.localization = l10n_proposal;
+        }
 
         // self.config = config;
-        // self.user_config = user_config;
+        self.user_config = user_config;
         // self.proposal = Some(proposal);
-        unimplemented!("TODO")
     }
 
     /// Patches the user configuration within the given scope.
@@ -148,7 +150,7 @@ impl Supervisor {
     }
 
     // TODO: report error if the action fails.
-    pub async fn run_action(&mut self, action: Action) {
+    pub async fn run_action<'a>(&mut self, action: Action<'a>) {
         match action {
             Action::L10n(l10n_action) => self.l10n.dispatch(l10n_action).unwrap(),
         }

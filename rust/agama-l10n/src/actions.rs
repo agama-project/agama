@@ -18,10 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{L10n, LocaleError};
-use serde::{Deserialize, Serialize};
+use crate::{L10n, L10nConfig, LocaleError};
+use serde::{Deserialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct ConfigureSystemAction {
     pub language: Option<String>,
     pub keyboard: Option<String>,
@@ -42,6 +42,19 @@ impl ConfigureSystemAction {
 
         // TODO: update state (system).
 
+        Ok(())
+    }
+}
+
+#[derive(Debug)]
+pub struct ConfigureAction<'a> {
+    pub config: &'a L10nConfig,
+}
+
+impl<'a> ConfigureAction<'a> {
+    // FIXME: return an action error instead of using anyhow.
+    pub fn run(self, l10n: &mut L10n) -> anyhow::Result<()> {
+        println!("configure action: {:?}", self.config);
         Ok(())
     }
 }

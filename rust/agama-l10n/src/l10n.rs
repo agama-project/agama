@@ -18,17 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{actions::ConfigureSystemAction, L10nConfig, L10nModel, L10nProposal, L10nSystemInfo, LocaleError};
+use crate::{actions, L10nConfig, L10nModel, L10nProposal, L10nSystemInfo, LocaleError};
 use agama_locale_data::{KeymapId, LocaleId};
 use merge_struct::merge;
-use serde::{Deserialize, Serialize};
-use crate::actions;
+use serde::Deserialize;
 
-#[derive(Debug, Serialize, Deserialize)]
-pub enum L10nAction {
+#[derive(Debug, Deserialize)]
+pub enum L10nAction<'a> {
     #[serde(rename = "configureL10n")]
-    ConfigureSystem(ConfigureSystemAction),
-    ApplyConfig,
+    ConfigureSystem(actions::ConfigureSystemAction),
+    #[serde(skip_deserializing)]
+    Configure(actions::ConfigureAction<'a>),
 }
 
 #[derive(Default)]
@@ -44,6 +44,10 @@ pub struct L10n {
 }
 
 impl L10n {
+    pub fn new_configure_action<'a>(config: &'a L10nConfig) -> L10nAction<'a> {
+        L10nAction::Configure(actions::ConfigureAction { config } )
+    }
+
     pub fn new() -> Self {
         let model = L10nModel::new_with_locale(&LocaleId::default()).unwrap();
 
@@ -53,11 +57,10 @@ impl L10n {
         }
     }
 
-    // FIXME: report error if action is unknown.
     pub fn dispatch(&mut self, action: L10nAction) -> anyhow::Result<()> {
         match action {
             L10nAction::ConfigureSystem(action) => action.run(self),
-            _unknown => Ok(()),
+            L10nAction::Configure(action) => action.run(self),
         }
     }
 }
