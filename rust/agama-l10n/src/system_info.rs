@@ -22,7 +22,7 @@ use serde::Serialize;
 
 use super::{Keymap, LocaleEntry, TimezoneEntry};
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 pub struct L10nSystemInfo {
     pub locales: Vec<LocaleEntry>,
     pub timezones: Vec<TimezoneEntry>,

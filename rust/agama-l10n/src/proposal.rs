@@ -23,7 +23,7 @@ use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
 
 #[serde_as]
-#[derive(Clone, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct L10nProposal {
     #[serde_as(as = "DisplayFromStr")]
     pub keymap: KeymapId,

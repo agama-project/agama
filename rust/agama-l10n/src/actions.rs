@@ -18,15 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{model::L10n, LocaleError};
+use crate::{L10n, LocaleError};
 use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Serialize, Deserialize)]
-pub enum L10nAction {
-    #[serde(rename = "configureL10n")]
-    ConfigureSystem(ConfigureSystemAction),
-    ApplyConfig,
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ConfigureSystemAction {
@@ -36,16 +29,18 @@ pub struct ConfigureSystemAction {
 
 impl ConfigureSystemAction {
     // FIXME: return an action error instead of using anyhow.
-    pub fn run(self, model: &mut L10n) -> anyhow::Result<()> {
+    pub fn run(self, l10n: &mut L10n) -> anyhow::Result<()> {
         if let Some(language) = self.language {
             let locale = &language.as_str().try_into()?;
-            model.translate(locale)?;
+            l10n.model.translate(locale)?;
         }
 
         if let Some(keyboard) = self.keyboard {
             let keymap = (&keyboard).parse().map_err(LocaleError::InvalidKeymap)?;
-            model.set_ui_keymap(keymap)?;
+            l10n.model.set_ui_keymap(keymap)?;
         };
+
+        // TODO: update state (system).
 
         Ok(())
     }

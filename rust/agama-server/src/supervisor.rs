@@ -21,12 +21,10 @@
 use agama_lib::install_settings::InstallSettings;
 use merge_struct::merge;
 use serde::{Deserialize, Serialize};
-
 use crate::{
-    l10n::L10nAgent,
     server::{Proposal, Scope, ScopeConfig, SystemInfo},
 };
-use agama_l10n::actions::L10nAction;
+use agama_l10n::{L10n, L10nAction};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -35,16 +33,16 @@ pub enum Action {
 }
 
 pub struct Supervisor {
-    l10n: L10nAgent,
+    l10n: L10n,
     user_config: InstallSettings,
     config: InstallSettings,
     proposal: Option<Proposal>,
 }
 
 impl Supervisor {
-    pub fn new(l10n: L10nAgent) -> Self {
+    pub fn new() -> Self {
         Self {
-            l10n,
+            l10n: L10n::new(),
             config: InstallSettings::default(),
             user_config: InstallSettings::default(),
             proposal: None,
@@ -96,31 +94,33 @@ impl Supervisor {
     /// FIXME: We should replace not given sections with the default ones.
     /// After all, now we have config/user/:scope URLs.
     pub async fn update_config(&mut self, user_config: InstallSettings) {
-        let mut config = self.config.clone();
-        let mut proposal = self.proposal.clone().unwrap_or_default();
+        // let mut config = self.config.clone();
+        // let mut proposal = self.proposal.clone().unwrap_or_default();
 
-        if let Some(l10n_user_config) = &user_config.localization {
-            let (l10n_config, l10n_proposal) = self.l10n.propose(&l10n_user_config).unwrap();
-            config.localization = Some(l10n_config);
-            proposal.localization = l10n_proposal;
-        }
+        // if let Some(l10n_user_config) = &user_config.localization {
+        //     let (l10n_config, l10n_proposal) = self.l10n.propose(&l10n_user_config).unwrap();
+        //     config.localization = Some(l10n_config);
+        //     proposal.localization = l10n_proposal;
+        // }
 
-        self.config = config;
-        self.user_config = user_config;
-        self.proposal = Some(proposal);
+        // self.config = config;
+        // self.user_config = user_config;
+        // self.proposal = Some(proposal);
+        unimplemented!("TODO")
     }
 
     /// Patches the user configuration within the given scope.
     ///
     /// It merges the current configuration with the given one.
     pub async fn patch_scope_config(&mut self, user_config: ScopeConfig) {
-        let config = match user_config {
-            ScopeConfig::L10n(new_config) => {
-                let base_config = self.config.localization.clone().unwrap_or_default();
-                ScopeConfig::L10n(merge(&base_config, &new_config).unwrap())
-            }
-        };
-        self.update_scope_config(config).await;
+        // let config = match user_config {
+        //     ScopeConfig::L10n(new_config) => {
+        //         let base_config = self.config.localization.clone().unwrap_or_default();
+        //         ScopeConfig::L10n(merge(&base_config, &new_config).unwrap())
+        //     }
+        // };
+        // self.update_scope_config(config).await;
+        unimplemented!("TODO")
     }
 
     /// Sets the user configuration within the given scope.
@@ -128,27 +128,29 @@ impl Supervisor {
     /// It replaces the current configuration with the given one and calculates a
     /// new proposal. Only the configuration in the given scope is affected.
     pub async fn update_scope_config(&mut self, user_config: ScopeConfig) {
-        let mut config = self.config.clone();
-        let mut proposal = self.proposal.clone().unwrap_or_default();
-        let mut base_user_config = self.user_config.clone();
+        // let mut config = self.config.clone();
+        // let mut proposal = self.proposal.clone().unwrap_or_default();
+        // let mut base_user_config = self.user_config.clone();
 
-        match user_config {
-            ScopeConfig::L10n(user_config) => {
-                let (l10n_config, l10n_proposal) = self.l10n.propose(&user_config).unwrap();
-                config.localization = Some(l10n_config);
-                proposal.localization = l10n_proposal;
-                base_user_config.localization = Some(user_config);
-            }
-        }
+        // match user_config {
+        //     ScopeConfig::L10n(user_config) => {
+        //         let (l10n_config, l10n_proposal) = self.l10n.propose(&user_config).unwrap();
+        //         config.localization = Some(l10n_config);
+        //         proposal.localization = l10n_proposal;
+        //         base_user_config.localization = Some(user_config);
+        //     }
+        // }
 
-        self.config = config;
-        self.proposal = Some(proposal);
-        self.user_config = base_user_config;
+        // self.config = config;
+        // self.proposal = Some(proposal);
+        // self.user_config = base_user_config;
+        unimplemented!("TODO")
     }
 
+    // TODO: report error if the action fails.
     pub async fn run_action(&mut self, action: Action) {
         match action {
-            Action::L10n(l10n_action) => self.l10n.run_action(l10n_action),
+            Action::L10n(l10n_action) => self.l10n.dispatch(l10n_action).unwrap(),
         }
     }
 
@@ -159,8 +161,9 @@ impl Supervisor {
 
     /// It returns the information of the underlying system.
     pub async fn get_system(&self) -> SystemInfo {
-        SystemInfo {
-            localization: self.l10n.get_system(),
-        }
+        // SystemInfo {
+        //     localization: self.l10n.get_system(),
+        // }
+        unimplemented!("TODO")
     }
 }

@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 pub mod actions;
-mod agent;
+mod l10n;
 mod config;
 mod error;
 pub mod helpers;
@@ -27,9 +27,9 @@ mod model;
 mod proposal;
 mod system_info;
 
-pub use agent::L10nAgent;
+pub use l10n::{L10n, L10nAction};
 pub use config::L10nConfig;
 pub use error::LocaleError;
-pub use model::{Keymap, L10n, LocaleEntry, TimezoneEntry};
+pub use model::{Keymap, L10nModel, LocaleEntry, TimezoneEntry};
 pub use proposal::L10nProposal;
 pub use system_info::L10nSystemInfo;

@@ -20,9 +20,9 @@
 
 //! This module implements Agama's HTTP API.
 
-use agama_l10n::L10n;
+// use agama_l10n::L10nModel;
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
-use agama_locale_data::LocaleId;
+// use agama_locale_data::LocaleId;
 use axum::{
     extract::{Path, State},
     response::{IntoResponse, Response},
@@ -34,7 +34,7 @@ use serde::Serialize;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-use crate::{l10n::L10nAgent, supervisor::Action, supervisor::Supervisor};
+use crate::{supervisor::Action, supervisor::Supervisor};
 
 use super::{Scope, ScopeConfig, ServerError, SystemInfo};
 
@@ -45,9 +45,9 @@ pub struct ServerState {
 
 /// Sets up and returns the axum service for the manager module
 pub async fn server_service() -> Result<Router, ServiceError> {
-    let l10n = L10n::new_with_locale(&LocaleId::default()).unwrap();
-    let l10n = L10nAgent::new(l10n);
-    let supervisor = Supervisor::new(l10n);
+    // let l10n = L10nModel::new_with_locale(&LocaleId::default()).unwrap();
+    // let l10n = L10nAgent::new(l10n);
+    let supervisor = Supervisor::new();
     let state = ServerState {
         supervisor: Arc::new(Mutex::new(supervisor)),
     };
