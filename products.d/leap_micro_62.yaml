@@ -1,5 +1,5 @@
 id: LeapMicro_6.2
-name: openSUSE Leap Micro 6.2 Beta
+name: openSUSE Leap Micro 6.2
 archs: x86_64,aarch64
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
@@ -46,6 +46,13 @@ software:
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-LeapMicro
+    - bolt
+    - bolt-tools
+    - kernel-default-extra
+    - kernel-default-optional
+    - usbutils
+    - pciutils
+
   optional_packages: null
   base_product: Leap-Micro
 
