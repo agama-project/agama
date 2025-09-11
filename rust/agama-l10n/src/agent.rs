@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{L10n, L10nConfig, L10nSystemInfo, LocaleError, L10nProposal, actions::L10nAction};
+use crate::{actions::L10nAction, L10n, L10nConfig, L10nProposal, L10nSystemInfo, LocaleError};
 use agama_locale_data::{KeymapId, LocaleId};
 use merge_struct::merge;
 
@@ -65,15 +65,12 @@ impl L10nAgent {
             L10nAction::ConfigureSystem(action) => {
                 let _ = action.run(&mut self.l10n);
                 ()
-            },
+            }
             unknown => println!("unknown action: {:?}", unknown),
         }
     }
 
-    fn build_proposal(
-        &self,
-        config: &L10nConfig,
-    ) -> Result<L10nProposal, LocaleError> {
+    fn build_proposal(&self, config: &L10nConfig) -> Result<L10nProposal, LocaleError> {
         let locale: LocaleId = if let Some(language) = &config.language {
             language.as_str().try_into()?
         } else {

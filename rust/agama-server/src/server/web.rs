@@ -34,7 +34,7 @@ use serde::Serialize;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-use crate::{l10n::L10nAgent, supervisor::Supervisor, supervisor::Action};
+use crate::{l10n::L10nAgent, supervisor::Action, supervisor::Supervisor};
 
 use super::{Scope, ScopeConfig, ServerError, SystemInfo};
 

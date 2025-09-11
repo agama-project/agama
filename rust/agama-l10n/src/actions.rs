@@ -19,11 +19,11 @@
 // find current contact information at www.suse.com.
 
 use crate::{model::L10n, LocaleError};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum L10nAction {
-     #[serde(rename = "configureL10n")]
+    #[serde(rename = "configureL10n")]
     ConfigureSystem(ConfigureSystemAction),
     ApplyConfig,
 }

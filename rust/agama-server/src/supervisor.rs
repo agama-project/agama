@@ -18,9 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use serde::{Serialize, Deserialize};
 use agama_lib::install_settings::InstallSettings;
 use merge_struct::merge;
+use serde::{Deserialize, Serialize};
 
 use crate::{
     l10n::L10nAgent,
@@ -31,7 +31,7 @@ use agama_l10n::actions::L10nAction;
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Action {
-    L10n(L10nAction)
+    L10n(L10nAction),
 }
 
 pub struct Supervisor {
