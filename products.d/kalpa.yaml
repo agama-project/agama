@@ -27,6 +27,10 @@ translations:
       Escritorio de Plasma, aprovechándose de Flatpak para la entrega de
       aplicaciones, una base de sólo lectura y actualizaciones automáticas y
       atómicas para tu sistema
+    fi: Jatkuvasti päivittyvä, muuttumaton Plasma-työpöytää käyttävä
+      työpöytäjulkaisu, joka käyttää Flatpakia sovellustarjontaan,
+      kirjoitussuojattua perustaa sekä automaattisia ja atomisia
+      järjestelmäpäivityksiä
     fr: Produit de bureau immuable à publication continue, utilisant le bureau
       Plasma, exploitant Flatpak pour la distribution d'applications, avec une
       base en lecture seule et des mises à jour automatiques et atomiques de

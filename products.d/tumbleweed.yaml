@@ -28,6 +28,10 @@ translations:
       últimas versiones "estables" de todo el software en lugar de depender de
       rígidos ciclos de publicaciones periódicas. El proyecto hace esto para
       usuarios que desean el software estable más novedoso.
+    fi: Puhdas jatkuvasti (”rolling”) päivittyvä versio openSUSEsta, joka sisältää
+      uusimmat vakaat versiot kaikista ohjelmistoista, jäykkien julkaisusyklien
+      sijaan. Projekti tuottaa tätä julkaisua käyttäjille, jotka haluavat
+      käyttöönsä uusimmat ohjelmistot.
     fr: Pure publication continue d'openSUSE contenant les dernières versions
       "stables" de tous les logiciels au lieu de se baser sur des cycles de
       publication périodiques et fixes. Le projet fait cela pour les
