@@ -1,5 +1,5 @@
-id: LeapMicro_6.2
-name: openSUSE Leap Micro 6.2 Beta
+id: openSUSE_Leap_Micro
+name: openSUSE Leap Micro 6.2
 archs: x86_64,aarch64
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
