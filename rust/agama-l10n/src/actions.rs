@@ -18,24 +18,32 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Representation of the zFCP settings used in set/get config
+use crate::{L10n};
+use serde::{Deserialize};
 
-use serde::{Deserialize, Serialize};
-
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct ZFCPConfig {
-    pub devices: Vec<ZFCPDeviceConfig>,
+#[derive(Debug, Deserialize)]
+pub struct ConfigureSystemAction {
+    pub language: Option<String>,
+    pub keyboard: Option<String>,
 }
 
-/// Representation of single zFCP device in settings used in set/get config
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct ZFCPDeviceConfig {
-    /// zFCP controller channel id (e.g., 0.0.fa00)
-    pub channel: String,
-    /// WWPN of the targer port (e.g., 0x500507630300c562)
-    pub wwpn: String,
-    /// LUN of the SCSI device (e.g. 0x4010403300000000)
-    pub lun: String,
+impl ConfigureSystemAction {
+    // FIXME: return an action error instead of using anyhow.
+    pub fn run(self, l10n: &mut L10n) -> anyhow::Result<()> {
+        // TODO: redesign actions
+
+        // if let Some(language) = self.language {
+        //     let locale = &language.as_str().try_into()?;
+        //     l10n.model.translate(locale)?;
+        // }
+
+        // if let Some(keyboard) = self.keyboard {
+        //     let keymap = (&keyboard).parse().map_err(LocaleError::InvalidKeymap)?;
+        //     l10n.model.set_ui_keymap(keymap)?;
+        // };
+
+        // TODO: update state (system).
+
+        Ok(())
+    }
 }

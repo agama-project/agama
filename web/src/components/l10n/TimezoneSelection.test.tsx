@@ -25,12 +25,13 @@ import TimezoneSelection from "./TimezoneSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
+import { Timezone } from "~/types/l10n";
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
-const timezones = [
+const timezones: Timezone[] = [
   { id: "Europe/Berlin", parts: ["Europe", "Berlin"], country: "Germany", utcOffset: 120 },
   { id: "Europe/Madrid", parts: ["Europe", "Madrid"], country: "Spain", utcOffset: 120 },
   {
@@ -51,10 +52,9 @@ const mockConfigMutation = {
   mutate: jest.fn(),
 };
 
-jest.mock("~/queries/l10n", () => ({
-  ...jest.requireActual("~/queries/l10n"),
-  useConfigMutation: () => mockConfigMutation,
-  useL10n: () => ({ timezones, selectedTimezone: timezones[0] }),
+jest.mock("~/queries/system", () => ({
+  ...jest.requireActual("~/queries/system"),
+  useSystem: () => ({ locale: { timezones } }),
 }));
 
 jest.mock("react-router-dom", () => ({

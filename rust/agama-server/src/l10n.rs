@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,11 +18,4 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod error;
-pub mod helpers;
-mod model;
-pub mod web;
-
-pub use agama_lib::localization::model::LocaleConfig;
-pub use error::LocaleError;
-pub use model::{Keymap, L10n, LocaleEntry, TimezoneEntry};
+pub use agama_l10n::L10n;

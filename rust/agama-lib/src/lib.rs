@@ -45,6 +45,7 @@
 
 pub mod auth;
 pub mod bootloader;
+pub mod config;
 pub mod context;
 pub mod error;
 pub mod file_source;
@@ -54,7 +55,6 @@ pub mod http;
 pub mod install_settings;
 pub mod issue;
 pub mod jobs;
-pub mod localization;
 pub mod logs;
 pub mod manager;
 pub mod monitor;

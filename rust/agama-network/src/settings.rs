@@ -28,7 +28,7 @@ use std::default::Default;
 use std::net::IpAddr;
 
 /// Network settings for installation
-#[derive(Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct NetworkSettings {
     /// Connections to use in the installation

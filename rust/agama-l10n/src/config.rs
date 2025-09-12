@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2024] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,24 +18,22 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Representation of the zFCP settings used in set/get config
+//! Representation of the localization settings
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+/// Localization settings for the system being installed (not the UI)
+/// FIXME: this one is close to CLI. A possible duplicate close to HTTP is LocaleConfig
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub struct ZFCPConfig {
-    pub devices: Vec<ZFCPDeviceConfig>,
-}
-
-/// Representation of single zFCP device in settings used in set/get config
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct ZFCPDeviceConfig {
-    /// zFCP controller channel id (e.g., 0.0.fa00)
-    pub channel: String,
-    /// WWPN of the targer port (e.g., 0x500507630300c562)
-    pub wwpn: String,
-    /// LUN of the SCSI device (e.g. 0x4010403300000000)
-    pub lun: String,
+pub struct L10nConfig {
+    /// like "en_US.UTF-8"
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub language: Option<String>,
+    /// like "cz(qwerty)"
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub keyboard: Option<String>,
+    /// like "Europe/Berlin"
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timezone: Option<String>,
 }

@@ -26,6 +26,34 @@ use std::sync::OnceLock;
 use std::{fmt::Display, str::FromStr};
 use thiserror::Error;
 
+#[derive(Debug, Clone, Serialize, PartialEq)]
+pub struct TimezoneId(String);
+
+impl Default for TimezoneId {
+    fn default() -> Self {
+        Self("Europe/Berlin".to_string())
+    }
+}
+
+impl Display for TimezoneId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+#[derive(Error, Debug)]
+#[error("Not a valid timezone: {0}")]
+pub struct InvalidTimezoneId(String);
+
+impl FromStr for TimezoneId {
+    type Err = InvalidTimezoneId;
+
+    // TODO: implement real parsing of the string.
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self(s.to_string()))
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, utoipa::ToSchema)]
 pub struct LocaleId {
     // ISO-639
@@ -57,18 +85,18 @@ impl Default for LocaleId {
 
 #[derive(Error, Debug)]
 #[error("Not a valid locale string: {0}")]
-pub struct InvalidLocaleCode(String);
+pub struct InvalidLocaleId(String);
 
-impl TryFrom<&str> for LocaleId {
-    type Error = InvalidLocaleCode;
+impl FromStr for LocaleId {
+    type Err = InvalidLocaleId;
 
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         let locale_regexp: Regex =
             Regex::new(r"^([[:alpha:]]+)_([[:alpha:]]+)(?:\.(.+))?").unwrap();
 
         let captures = locale_regexp
-            .captures(value)
-            .ok_or_else(|| InvalidLocaleCode(value.to_string()))?;
+            .captures(s)
+            .ok_or_else(|| InvalidLocaleId(s.to_string()))?;
 
         let encoding = captures
             .get(3)
@@ -119,7 +147,7 @@ impl Default for KeymapId {
 
 #[derive(Error, Debug, PartialEq)]
 #[error("Invalid keymap ID: {0}")]
-pub struct InvalidKeymap(String);
+pub struct InvalidKeymapId(String);
 
 impl KeymapId {
     pub fn dashed(&self) -> String {
@@ -142,7 +170,7 @@ impl Display for KeymapId {
 }
 
 impl FromStr for KeymapId {
-    type Err = InvalidKeymap;
+    type Err = InvalidKeymapId;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let re = KEYMAP_ID_REGEX
@@ -176,7 +204,7 @@ impl FromStr for KeymapId {
                 variant,
             })
         } else {
-            Err(InvalidKeymap(s.to_string()))
+            Err(InvalidKeymapId(s.to_string()))
         }
     }
 }

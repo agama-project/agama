@@ -18,24 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Representation of the zFCP settings used in set/get config
+use agama_l10n::L10nProposal;
+use serde::Serialize;
 
-use serde::{Deserialize, Serialize};
-
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct ZFCPConfig {
-    pub devices: Vec<ZFCPDeviceConfig>,
-}
-
-/// Representation of single zFCP device in settings used in set/get config
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct ZFCPDeviceConfig {
-    /// zFCP controller channel id (e.g., 0.0.fa00)
-    pub channel: String,
-    /// WWPN of the targer port (e.g., 0x500507630300c562)
-    pub wwpn: String,
-    /// LUN of the SCSI device (e.g. 0x4010403300000000)
-    pub lun: String,
+#[derive(Clone, Serialize)]
+pub struct Proposal {
+    pub localization: L10nProposal,
 }

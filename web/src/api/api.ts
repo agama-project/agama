@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,24 +20,21 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
-import { L10nSection } from "~/components/overview";
-import { Locale } from "~/types/l10n";
+import { get, patch } from "~/api/http";
 
-const locales: Locale[] = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "de_DE.UTF-8", name: "German", territory: "Germany" },
-];
+/**
+ * Returns the system config
+ */
+const fetchSystem = (): Promise<object> => get("/api/server/system");
 
-jest.mock("~/queries/system", () => ({
-  ...jest.requireActual("~/queries/system"),
-  useSystem: () => ({ locale: { locales } }),
-}));
+/**
+ * Returns the proposal
+ */
+const fetchProposal = (): Promise<object> => get("/api/server/proposal");
 
-it("displays the selected locale", async () => {
-  plainRender(<L10nSection />, { withL10n: true });
+/**
+ * Updates configuration
+ */
+const updateConfig = (config) => patch("/api/server/config/user", config);
 
-  await screen.findByText("English (United States)");
-});
+export { fetchSystem, fetchProposal, updateConfig };

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,24 +20,19 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
-import { L10nSection } from "~/components/overview";
-import { Locale } from "~/types/l10n";
+import { get, put } from "~/api/http";
+import { Hostname } from "~/types/hostname";
 
-const locales: Locale[] = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "de_DE.UTF-8", name: "German", territory: "Germany" },
-];
+/**
+ * Returns the hostname configuration
+ */
+const fetchHostname = (): Promise<Hostname> => get("/api/hostname/config");
 
-jest.mock("~/queries/system", () => ({
-  ...jest.requireActual("~/queries/system"),
-  useSystem: () => ({ locale: { locales } }),
-}));
+/**
+ * Updates the hostname configuration
+ *
+ * @param hostname - Object containing hostname updates
+ */
+const updateHostname = (user: Partial<Hostname>) => put("/api/hostname/config", user);
 
-it("displays the selected locale", async () => {
-  plainRender(<L10nSection />, { withL10n: true });
-
-  await screen.findByText("English (United States)");
-});
+export { fetchHostname, updateHostname };

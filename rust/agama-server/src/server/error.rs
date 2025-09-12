@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,20 +18,32 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_locale_data::{InvalidKeymap, InvalidLocaleCode, KeymapId, LocaleId};
+use agama_l10n::LocaleError;
+use axum::{
+    http::StatusCode,
+    response::{IntoResponse, Response},
+    Json,
+};
+use serde_json::json;
 
-#[derive(thiserror::Error, Debug)]
-pub enum LocaleError {
-    #[error("Unknown locale code: {0}")]
-    UnknownLocale(LocaleId),
-    #[error("Invalid locale: {0}")]
-    InvalidLocale(#[from] InvalidLocaleCode),
-    #[error("Unknown timezone: {0}")]
-    UnknownTimezone(String),
-    #[error("Unknown keymap: {0}")]
-    UnknownKeymap(KeymapId),
-    #[error("Invalid keymap: {0}")]
-    InvalidKeymap(#[from] InvalidKeymap),
-    #[error("Could not apply the l10n settings: {0}")]
-    Commit(#[from] std::io::Error),
+use super::Scope;
+
+pub type ServerResult<T> = Result<T, ServerError>;
+
+#[derive(Debug, thiserror::Error)]
+pub enum ServerError {
+    #[error("The given configuration does not belong to the '{0}' scope.")]
+    NoMatchingScope(Scope),
+    #[error(transparent)]
+    L10n(#[from] LocaleError),
+}
+
+impl IntoResponse for ServerError {
+    fn into_response(self) -> Response {
+        tracing::warn!("Server return error {}", self);
+        let body = json!({
+            "error": self.to_string()
+        });
+        (StatusCode::BAD_REQUEST, Json(body)).into_response()
+    }
 }

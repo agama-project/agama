@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,13 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements support for handling the localization settings
+use agama_l10n::L10nSystemInfo;
+use serde::Serialize;
 
-mod http_client;
-pub mod model;
-mod settings;
-mod store;
-
-pub use http_client::LocalizationHTTPClient;
-pub use settings::LocalizationSettings;
-pub use store::{LocalizationStore, LocalizationStoreError};
+#[derive(Serialize)]
+pub struct SystemInfo {
+    pub localization: L10nSystemInfo,
+}

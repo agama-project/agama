@@ -2,10 +2,11 @@
 members = [
     "agama-autoinstall",
     "agama-cli",
-    "agama-server",
+    "agama-l10n",
     "agama-lib",
     "agama-locale-data",
     "agama-network",
+    "agama-server",
     "agama-utils",
     "xtask",
 ]

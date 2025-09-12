@@ -30,8 +30,6 @@ mod bootloader;
 pub use bootloader::BootloaderApiDocBuilder;
 mod software;
 pub use software::SoftwareApiDocBuilder;
-mod l10n;
-pub use l10n::L10nApiDocBuilder;
 mod questions;
 pub use questions::QuestionsApiDocBuilder;
 mod profile;

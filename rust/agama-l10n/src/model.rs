@@ -22,9 +22,7 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::process::Command;
 
-use crate::error::Error;
-use agama_locale_data::InvalidLocaleCode;
-use agama_locale_data::{KeymapId, LocaleId};
+use agama_locale_data::{InvalidLocaleId, KeymapId, LocaleId};
 use regex::Regex;
 
 pub mod keyboard;
@@ -40,7 +38,7 @@ use keyboard::KeymapsDatabase;
 use locale::LocalesDatabase;
 use timezone::TimezonesDatabase;
 
-pub struct L10n {
+pub struct L10nModel {
     pub timezone: String,
     pub timezones_db: TimezonesDatabase,
     pub locales: Vec<LocaleId>,
@@ -51,8 +49,9 @@ pub struct L10n {
     pub ui_keymap: KeymapId,
 }
 
-impl L10n {
-    pub fn new_with_locale(ui_locale: &LocaleId) -> Result<Self, Error> {
+impl L10nModel {
+    //    pub fn new_with_locale(ui_locale: &LocaleId) -> Result<Self, LocaleError> {
+    pub fn new_with_locale(ui_locale: &LocaleId) -> anyhow::Result<Self> {
         const DEFAULT_TIMEZONE: &str = "Europe/Berlin";
 
         let locale = ui_locale.to_string();
@@ -91,10 +90,10 @@ impl L10n {
     }
 
     pub fn set_locales(&mut self, locales: &Vec<String>) -> Result<(), LocaleError> {
-        let locale_ids: Result<Vec<LocaleId>, InvalidLocaleCode> = locales
+        let locale_ids: Result<Vec<LocaleId>, InvalidLocaleId> = locales
             .iter()
             .cloned()
-            .map(|l| l.as_str().try_into())
+            .map(|l| l.parse::<LocaleId>())
             .collect();
         let locale_ids = locale_ids?;
 
@@ -127,7 +126,7 @@ impl L10n {
     }
 
     // TODO: use LocaleError
-    pub fn translate(&mut self, locale: &LocaleId) -> Result<(), Error> {
+    pub fn translate(&mut self, locale: &LocaleId) -> anyhow::Result<()> {
         helpers::set_service_locale(locale);
         self.timezones_db.read(&locale.language)?;
         self.locales_db.read(&locale.language)?;

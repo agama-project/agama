@@ -18,29 +18,24 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Representation of the software settings
+use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
 
-use serde::{Deserialize, Serialize};
-
-use super::model::SSLFingerprint;
-
-/// Security settings for installation
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SecuritySettings {
-    /// List of user selected patterns to install.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    // when we add support for remote URL here it should be vector of SSL
-    // certificates which will include flatten fingerprint
-    pub ssl_certificates: Option<Vec<SSLFingerprint>>,
-}
-
-impl SecuritySettings {
-    pub fn to_option(self) -> Option<Self> {
-        if self.ssl_certificates.is_none() {
-            None
-        } else {
-            Some(self)
-        }
-    }
+#[derive(thiserror::Error, Debug)]
+pub enum LocaleError {
+    #[error("Unknown locale code: {0}")]
+    UnknownLocale(LocaleId),
+    #[error("Invalid locale: {0}")]
+    InvalidLocale(#[from] InvalidLocaleId),
+    #[error("Unknown timezone: {0}")]
+    UnknownTimezone(String),
+    #[error("Invalid timezone")]
+    InvalidTimezone(#[from] InvalidTimezoneId),
+    #[error("Unknown keymap: {0}")]
+    UnknownKeymap(KeymapId),
+    #[error("Invalid keymap: {0}")]
+    InvalidKeymap(#[from] InvalidKeymapId),
+    #[error("Could not apply the l10n settings: {0}")]
+    Commit(#[from] std::io::Error),
+    #[error("Could not merge the current and the new configuration")]
+    Merge(#[from] serde_json::error::Error),
 }
