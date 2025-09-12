@@ -15,6 +15,10 @@ export default {
   "%1$s at %2$s": [
     "%1$s su %2$s"
   ],
+  "%1$s will be created as a partition at %2$s": [
+    "%1$s sarà creato come partizione in %2$s",
+    "%1$s saranno creati come partizioni in %2$s"
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s conterrà ancora il gruppo LVM '%2$s' e qualsiasi partizione necessaria per l'avvio"
   ],
@@ -40,8 +44,8 @@ export default {
     "Immagine del logo di %s"
   ],
   "%s will be created as a logical volume": [
-    "",
-    ""
+    "%s sarà creato come volume logico",
+    "%s saranno creati come volumi logici"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s conterrà ancora i gruppi LVM configurati e qualsiasi partizione necessaria per l'avvio"
@@ -64,8 +68,19 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Una dimensione minima generica di %1$s sarà utilizzata per la nuova %2$s"
   ],
+  "A generic size of %1$s will be used for the new %2$s": [
+    "Una dimensione generica di %1$s sará utilizzata per la nuova %2$s"
+  ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Una dimensione generica tra %1$s e %2$s sará utilizzata per la nuova %3$s"
+  ],
+  "A new partition will be created for %s": [
+    "Una nuova partizione verrà creata per %s",
+    "Le partizioni verranno utilizze e create per %s"
+  ],
+  "A new volume will be created for %s": [
+    "Un nuovo volume verrà creato per %s",
+    "Nuovi volumi verranno creati per %s"
   ],
   "A partition may be deleted": [
     "Una partizione potrebbe essere eliminata"
@@ -175,6 +190,10 @@ export default {
   "Already using all available disks": [
     "I dischi disponibili sono già interamente utilizzati"
   ],
+  "An existing partition will be used for %s": [
+    "Verrà utilizzata una partizione esistente per %s",
+    "Verranno utilizzate partizioni esistenti per %s"
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Tutte le partizioni esistenti saranno rimosse e tutti i dati nel disco andranno persi."
   ],
@@ -184,8 +203,12 @@ export default {
   "Apply selected solution": [
     "Applica la soluzione selezionata"
   ],
+  "Apply to the selected device": [
+    "Applica al dispositivo selezionato",
+    "Applica a %s dispositivi selezionati"
+  ],
   "Applying changes": [
-    ""
+    "Applicazione delle modifiche"
   ],
   "As a new partition on %s": [
     "Come una nuova partizione su %s"
@@ -232,6 +255,15 @@ export default {
   "Back": [
     "Indietro"
   ],
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
+    "In base alla quantità di RAM nel sistema, %1$s di %2$s saranno pianificati per %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
+    "In base alla quantità di RAM nel sistema, un %1$s di almeno %2$s sarà pianificato per %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "In base alla quantità di RAM nel sistema, un %1$s con dimensione compresa tra %2$s e %3$s sarà pianificato per %4$s"
+  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -245,13 +277,19 @@ export default {
     "Prima di procedere all'installazione, è necessario risolvere i seguenti problemi:"
   ],
   "Below %s devices are offline and cannot be formatted.": [
-    ""
+    "I seguenti %s dispositivi sono offline e non possono essere formattati."
   ],
   "Beta": [
     "Beta"
   ],
   "Bind to MAC address": [
     "Associa a indirizzo MAC"
+  ],
+  "Bind to device name": [
+    "Associa a nome dispositivo"
+  ],
+  "Binding": [
+    "Associazione"
   ],
   "Binding settings for '%s'": [
     "Impostazioni di bindig per '%s'"
@@ -277,6 +315,12 @@ export default {
   "Cannot connect to Agama server": [
     "Impossibile connettersi al server Agama"
   ],
+  "Cannot format %s": [
+    "Impossibile formattare %s"
+  ],
+  "Cannot format all the selected devices": [
+    "Impossibile formattare tutti i dispositivi selezionati"
+  ],
   "Change": [
     "Cambia"
   ],
@@ -296,7 +340,7 @@ export default {
     "Cambia lingua visualizzata e mappatura della tastiera"
   ],
   "Change filters and try again.": [
-    ""
+    "Modificare i filtri e riprovare."
   ],
   "Change keyboard": [
     "Cambia tastiera"
@@ -334,11 +378,17 @@ export default {
   "Choose device to bind by name": [
     "Scegli il dispositivo da associare in base al nome"
   ],
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
+    "Scegliere come associare la connessione con un dispositivo di rete. Ciò aiuta a controllare il dispositivo utilizzato dalla connessione."
+  ],
   "Clear": [
     "Cancella"
   ],
   "Clear all filters": [
-    ""
+    "Cancella tutti i filtri"
+  ],
+  "Clear input": [
+    "Cancella inserimento"
   ],
   "Clear selected mount point": [
     "Cancella punto di montaggio selezionato"
@@ -349,8 +399,14 @@ export default {
   "Collapse the list of planned actions": [
     "Riduci l'elenco delle azioni pianificate"
   ],
+  "Configuration out of sync": [
+    "Configurazione fuori sincronizzazione"
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Configurazione letta da iBFT (iSCSI Boot Firmware Table)."
+  ],
+  "Configuration unreachable or invalid": [
+    "Configurazione non raggiungibile o non valida"
   ],
   "Configure DASD": [
     "Configura DASD"
@@ -389,7 +445,7 @@ export default {
     "Conferma Installazione"
   ],
   "Confirm that you really want to continue.": [
-    ""
+    "Confermare che si desidera continuare."
   ],
   "Congratulations!": [
     "Congratulazioni!"
@@ -409,6 +465,15 @@ export default {
   "Connected (%s)": [
     "Connesso (%s)"
   ],
+  "Connected device": [
+    "Dispositivo connesso"
+  ],
+  "Connected devices": [
+    "Dispositivi connessi"
+  ],
+  "Connected devices tabs": [
+    "Schede dispositivi connessi"
+  ],
   "Connecting to %s": [
     "Connessione a %s"
   ],
@@ -416,7 +481,13 @@ export default {
     "Dettagli connessione"
   ],
   "Connection is available to all devices.": [
-    ""
+    "Connessione disponibile per tutti i dispositivi."
+  ],
+  "Connection is bound to MAC address %s.": [
+    "Connessione associata all'indirizzo MAC %s."
+  ],
+  "Connection is bound to device %s.": [
+    "Connessione associata al dispositivo %s."
   ],
   "Connection not found or lost": [
     "Connessione non trovata o persa"
@@ -610,6 +681,9 @@ export default {
   "Edit connection %s": [
     "Modifica connessione %s"
   ],
+  "Edit connection settings": [
+    "Modifica impostazioni di connessione"
+  ],
   "Edit user": [
     "Modifica utente"
   ],
@@ -677,12 +751,12 @@ export default {
     "Ext4"
   ],
   "Extend the installation beyond the currently selected device": [
-    "",
-    ""
+    "Estendi l'installazione oltre il dispositivo attualmente selezionato",
+    "Estendi l'installazione oltre i %d dispositivi correnti"
   ],
   "Extend the installation beyond the currently selected disk": [
-    "",
-    ""
+    "Estendi l'installazione oltre il disco attualmente selezionato",
+    "Estendi l'installazione oltre i %d dischi correnti"
   ],
   "Extensions": [
     "Estensioni"
@@ -741,6 +815,9 @@ export default {
   "Format RAID %s": [
     "Formatta RAID %s"
   ],
+  "Format device %s": [
+    "Formatta dispositivo %s"
+  ],
   "Format device as": [
     "Formatta il dispositivo come"
   ],
@@ -749,6 +826,9 @@ export default {
   ],
   "Format logical volume as": [
     "Formatta il volume logico come"
+  ],
+  "Format now": [
+    "Formatta ora"
   ],
   "Format partition as": [
     "Formatta la partizione come"
@@ -782,6 +862,9 @@ export default {
   ],
   "Go to network page": [
     "Vai alla pagina della rete"
+  ],
+  "Go to storage page": [
+    "Vai alla pagina dell'archiviazione"
   ],
   "Good signal": [
     "Segnale buono"
@@ -926,7 +1009,7 @@ export default {
     "Emittente"
   ],
   "It doesn't exist or can't be reached.": [
-    ""
+    "Non esiste o non è raggiungibile."
   ],
   "It is chosen for booting": [
     "Viene scelto per l'avvio"
@@ -953,7 +1036,7 @@ export default {
     "Impossibile installare il sistema con l'attuale configurazione. Regolare le impostazioni sottostanti."
   ],
   "It is offline and must be activated before formatting it.": [
-    ""
+    "È offline e deve essere attivato prima di poter essere formattato."
   ],
   "It may take some time.": [
     "Potrebbe richiedere del tempo."
@@ -1045,8 +1128,14 @@ export default {
   "Manual": [
     "Manuale"
   ],
+  "Max channel": [
+    "Canale massimo"
+  ],
   "MiB": [
     "MiB"
+  ],
+  "Min channel": [
+    "Canale minimo"
   ],
   "Mode": [
     "Modalità"
@@ -1068,6 +1157,14 @@ export default {
   ],
   "More languages might be available for the selected product at [Localization] page": [
     "Nella pagina [Localizzazione] potrebbero essere disponibili altre lingue per il prodotto selezionato"
+  ],
+  "Moreover, the following partition will be created.": [
+    "Inoltre, la partizione seguente sarà creata.",
+    "Inoltre, le partizioni seguenti saranno create."
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "Inoltre, la partizione seguente sarà montata.",
+    "Inoltre, le partizioni seguenti saranno montate."
   ],
   "Moreover, the following partitions will be created or mounted": [
     "Inoltre, le partizioni seguenti saranno create o montate"
@@ -1133,7 +1230,7 @@ export default {
     "No"
   ],
   "No DASD devices were found in this machine.": [
-    ""
+    "Nessun dispositivo DASD trovato in questa macchina."
   ],
   "No Wi-Fi networks were found": [
     "Non è stata trovata nessuna rete Wi-Fi"
@@ -1151,10 +1248,13 @@ export default {
     "Nessun contenuto trovato"
   ],
   "No device is currently using this connection.": [
-    ""
+    "Nessun dispositivo sta attualmente utilizzando questa connessione."
   ],
   "No device selected yet": [
     "Non è stato selezionato alcun dispositivo al momento"
+  ],
+  "No devices available": [
+    "Nessun dispositivo disponibile"
   ],
   "No devices configured yet": [
     "Non è stato ancora configurato alcun dispositivo"
@@ -1203,6 +1303,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "Nessuno dei fusi orari corrisponde al filtro."
+  ],
+  "None set": [
+    "Nessuno impostato"
   ],
   "Not available": [
     "Non disponibile"
@@ -1402,11 +1505,14 @@ export default {
   "Reload": [
     "Ricarica"
   ],
+  "Reload now": [
+    "Ricarica ora"
+  ],
   "Reloading data, please wait...": [
     "Ricaricamento dei dati in corso, attendere..."
   ],
   "Reloading is required to get the latest data and avoid issues or data loss.": [
-    ""
+    "È necessario ricaricare la pagina per ottenere i dati più recenti ed evitare problemi o perdite di dati."
   ],
   "Remove": [
     "Rimuovi"
@@ -1426,6 +1532,9 @@ export default {
   "Reset to the default configuration": [
     "Ripristina la configurazione predefinita"
   ],
+  "Resource not found or lost": [
+    "Risorsa non trovata o persa"
+  ],
   "Result": [
     "Risultato"
   ],
@@ -1444,8 +1553,14 @@ export default {
   "Routes": [
     "Rotte"
   ],
+  "Row actions": [
+    "Azioni riga"
+  ],
   "Row expansion": [
-    ""
+    "Espansione riga"
+  ],
+  "Row selection": [
+    "Selezione riga"
   ],
   "SD Card": [
     "Scheda SD"
@@ -1513,6 +1628,9 @@ export default {
   "Select at least one disk.": [
     "Selezionare almeno un disco."
   ],
+  "Select devices to enable bulk actions.": [
+    "Selezionare dispositivi per abilitare le azioni in lotto."
+  ],
   "Select or enter a mount point": [
     "Selezionare o immettere un punto di montaggio"
   ],
@@ -1546,11 +1664,20 @@ export default {
   "Server options": [
     "Opzioni server"
   ],
+  "Set DIAG off": [
+    "Disattiva DIAG"
+  ],
+  "Set DIAG on": [
+    "Attiva DIAG"
+  ],
   "Set a permanent hostname that won’t change with network updates.": [
     "Imposta un nome host permanente che non cambierà con gli aggiornamenti della rete."
   ],
   "Setting up connection": [
     "Configurazione della connessione"
+  ],
+  "Settings": [
+    "Impostazioni"
   ],
   "Several partitions will be deleted": [
     "Diverse partizioni verranno eliminate"
@@ -1671,10 +1798,17 @@ export default {
     "Il gruppo LVM '%1$s' rimarrá su %2$s"
   ],
   "The configuration has been updated externally.": [
-    ""
+    "La configurazione è stata aggiornata esternamente."
+  ],
+  "The configuration must be adapted to address the following issue:": [
+    "La configurazione deve essere adattata per risolvere il seguente problema:",
+    "La configurazione deve essere adattata per risolvere i seguenti problemi:"
   ],
   "The configured LVM groups will remain at %s": [
     "I gruppi LVM configurati rimarranno su %s"
+  ],
+  "The connection can be used by any available device.": [
+    "La connessione può essere utilizzata da qualsiasi dispositivo disponibile."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "La connessione verrà utilizzata solo durante l'installazoine e non sarà disponibile nel sistema installato."
@@ -1695,8 +1829,8 @@ export default {
     "L'attuale file system sarà montato in %s"
   ],
   "The current storage configuration has the following issue:": [
-    "",
-    ""
+    "La configurazione di storage attuale ha il seguente problema:",
+    "La configurazione di storage attuale ha i seguenti problemi:"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "I dati vengono mantenuti, ma le partizioni attuali saranno ridimensionate secondo necessità."
@@ -1746,6 +1880,18 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Per configurare il Trusted Platform Module (TPM) in modo che apra automaticamente i dispositivi cifrati, l'ultimo passaggio avrà luogo al primo avvio del nuovo sistema. La macchina deve avviarsi direttamente nel nuovo boot loader per completare l'operazione."
   ],
+  "The following logical volume will be created": [
+    "Sarà creato il seguente volume logico",
+    "Saranno creati i seguenti volumi logici"
+  ],
+  "The following partition will be created.": [
+    "La partizione seguente sarà creata.",
+    "Le partizioni seguenti saranno create."
+  ],
+  "The following partition will be mounted.": [
+    "La partizione seguente sarà montata.",
+    "Le partizioni seguenti saranno montate."
+  ],
   "The following partitions will be created or mounted": [
     "Le partizioni seguenti saranno create o montate"
   ],
@@ -1769,6 +1915,10 @@ export default {
   ],
   "The installer requires [root] user privileges.": [
     "L'installer richiede permessi da utente privilegiato [root]."
+  ],
+  "The logical volume will also be deleted": [
+    "Anche il volume logico sarà eliminato",
+    "Anche i volumi logici saranno eliminati"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Il massimo deve essere un numero seguito da un'unità, come GiB o GB"
@@ -1861,12 +2011,12 @@ export default {
     "Non ci sono partizioni utilizzabili"
   ],
   "There is %d destructive action planned": [
-    "",
-    ""
+    "Esiste %d azione distruttiva pianificata",
+    "Esistono %d azioni distruttive pianificate"
   ],
   "There is %d destructive action planned affecting %s": [
-    "",
-    ""
+    "Esiste %d azione distruttiva pianificata che interessa %s",
+    "Esistono %d azioni distruttive pianificate che interessano %s"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Queste sono le impostazioni di installazione principali. Sfoglia le sezioni nel menu per maggiori informazioni."
@@ -1876,6 +2026,12 @@ export default {
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Queste sono le impostazioni per il prodotto da installare. È possibile modificare l lingua del programma di installazione tramite il [pannello delle impostazioni], accessibile dalla barra superiore."
+  ],
+  "This action could destroy any data stored on the device.": [
+    "Questa azione potrebbe distruggere i dati memorizzati sul dispositivo."
+  ],
+  "This action could destroy any data stored on the devices listed below.": [
+    "Questa azione potrebbe distruggere i dati memorizzati nei dispositivi elencati sotto."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Questa estensione non è disponibile sul server. Chiedere all'amministratore del server di eseguire il mirroring dell'estensione."
@@ -1887,10 +2043,10 @@ export default {
     "Questa licenza non è disponibile in %s."
   ],
   "This may take a moment while updates complete.": [
-    ""
+    "Potrebbe volerci qualche istante quando gli aggiornamenti vengono completati."
   ],
   "This message will close automatically when everything is done.": [
-    ""
+    "Questo messaggio si chiuderà automaticamente quando tutto sarà completato."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Questo modello offre il giusto equilibrio tra chiarezza ed efficienza: il modale mantiene le cose leggere per selezioni semplici, mentre la visualizzazione completa supporta un'esplorazione più approfondita e azioni più complesse, specialmente per gli utenti che usano molti dispositivi."
@@ -1938,13 +2094,13 @@ export default {
     "Impossibile modificare le impostazioni"
   ],
   "Unbound": [
-    ""
+    "Scollegato"
   ],
   "Unselect": [
     "Deseleziona"
   ],
   "Unselect or activate them and try it again.": [
-    ""
+    "Deseleziona o attivali per riprovare."
   ],
   "Unsupported AutoYaST elements": [
     "Elementi AutoYaST non supportati"
@@ -2177,6 +2333,12 @@ export default {
   "[FIXME]": [
     "[FIXME]"
   ],
+  "active": [
+    "attiva"
+  ],
+  "all": [
+    "tutti"
+  ],
   "approx. %s": [
     "circa %s"
   ],
@@ -2199,19 +2361,22 @@ export default {
     "Volume LVM"
   ],
   "no": [
-    ""
+    "no"
   ],
   "offline": [
-    ""
+    "offline"
   ],
   "partition": [
     "partizione"
   ],
   "read_only": [
-    ""
+    "solo_lettura"
   ],
   "reset to defaults": [
     "ripristina le impostazioni predefinite"
+  ],
+  "yes": [
+    "sì"
   ],
   "zFCP": [
     "zFCP"
