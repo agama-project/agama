@@ -91,7 +91,7 @@ impl Config {
 
     fn merge(&mut self, config: &L10nConfig) -> Result<(), LocaleError> {
         if let Some(language) = &config.language {
-            self.locale = language.as_str().try_into()?;
+            self.locale = language.parse().map_err(LocaleError::InvalidLocale)?
         }
 
         if let Some(keyboard) = &config.keyboard {

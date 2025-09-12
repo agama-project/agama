@@ -158,10 +158,7 @@ impl LocalesDatabase {
     }
 
     fn get_locales_from_string(locales: String) -> Vec<LocaleId> {
-        locales
-            .lines()
-            .filter_map(|line| TryInto::<LocaleId>::try_into(line).ok())
-            .collect()
+        locales.lines().filter_map(|l| l.parse().ok()).collect()
     }
 }
 
@@ -177,7 +174,7 @@ mod tests {
         let mut db = LocalesDatabase::new();
         db.read("de").unwrap();
         let found_locales = db.entries();
-        let spanish: LocaleId = "es_ES".try_into().unwrap();
+        let spanish = "es_ES".parse::<LocaleId>().unwrap();
         let found = found_locales
             .iter()
             .find(|l| l.id == spanish)
@@ -188,14 +185,14 @@ mod tests {
 
     #[test]
     fn test_try_into_locale() {
-        let locale = LocaleId::try_from("es_ES.UTF-16").unwrap();
+        let locale = "es_ES.UTF-16".parse::<LocaleId>().unwrap();
         assert_eq!(&locale.language, "es");
         assert_eq!(&locale.territory, "ES");
         assert_eq!(&locale.encoding, "UTF-16");
 
         assert_eq!(locale.to_string(), String::from("es_ES.UTF-16"));
 
-        let invalid = LocaleId::try_from(".");
+        let invalid = ".".parse::<LocaleId>();
         assert!(invalid.is_err());
     }
 
@@ -205,8 +202,8 @@ mod tests {
     fn test_locale_exists() {
         let mut db = LocalesDatabase::new();
         db.read("en").unwrap();
-        let en_us = LocaleId::try_from("en_US").unwrap();
-        let unknown = LocaleId::try_from("unknown_UNKNOWN").unwrap();
+        let en_us = "en_US".parse::<LocaleId>().unwrap();
+        let unknown = "unknown_UNKNOWN".parse::<LocaleId>().unwrap();
         assert!(db.exists(&en_us));
         assert!(!db.exists(&unknown));
     }

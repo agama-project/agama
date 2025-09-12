@@ -93,7 +93,7 @@ impl L10nModel {
         let locale_ids: Result<Vec<LocaleId>, InvalidLocaleCode> = locales
             .iter()
             .cloned()
-            .map(|l| l.as_str().try_into())
+            .map(|l| l.parse::<LocaleId>())
             .collect();
         let locale_ids = locale_ids?;
 

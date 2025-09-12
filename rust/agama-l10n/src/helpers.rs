@@ -31,7 +31,7 @@ use std::env;
 /// It returns the used locale. Defaults to `en_US.UTF-8`.
 pub fn init_locale() -> Result<LocaleId, Box<dyn std::error::Error>> {
     let lang = env::var("LANG").unwrap_or("en_US.UTF-8".to_string());
-    let locale: LocaleId = lang.as_str().try_into().unwrap_or_default();
+    let locale = lang.parse().unwrap_or_default();
 
     set_service_locale(&locale);
     textdomain("xkeyboard-config")?;

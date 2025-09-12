@@ -78,16 +78,16 @@ impl Default for LocaleId {
 #[error("Not a valid locale string: {0}")]
 pub struct InvalidLocaleCode(String);
 
-impl TryFrom<&str> for LocaleId {
-    type Error = InvalidLocaleCode;
+impl FromStr for LocaleId {
+    type Err = InvalidLocaleCode;
 
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         let locale_regexp: Regex =
             Regex::new(r"^([[:alpha:]]+)_([[:alpha:]]+)(?:\.(.+))?").unwrap();
 
         let captures = locale_regexp
-            .captures(value)
-            .ok_or_else(|| InvalidLocaleCode(value.to_string()))?;
+            .captures(s)
+            .ok_or_else(|| InvalidLocaleCode(s.to_string()))?;
 
         let encoding = captures
             .get(3)
