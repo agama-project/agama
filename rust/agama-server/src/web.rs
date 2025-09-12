@@ -98,16 +98,6 @@ where
         )
         .add_service("/security", security_service(dbus.clone()).await?)
         .add_service(
-            "/software",
-            software_service(
-                dbus.clone(),
-                events.subscribe(),
-                issues.clone(),
-                progress.clone(),
-            )
-            .await?,
-        )
-        .add_service(
             "/storage",
             storage_service(dbus.clone(), issues.clone(), progress).await?,
         )
@@ -121,7 +111,7 @@ where
         .add_service("/users", users_service(dbus.clone(), issues).await?)
         .add_service("/scripts", scripts_service().await?)
         .add_service(
-            "/software_ng",
+            "/software",
             software_ng_service(events.clone(), Arc::clone(&products)).await,
         )
         .add_service("/files", files_service().await?)

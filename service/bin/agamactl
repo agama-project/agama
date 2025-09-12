@@ -64,7 +64,7 @@ def start_service(name)
   service_runner.run
 end
 
-ORDERED_SERVICES = [:software, :storage, :users, :manager].freeze
+ORDERED_SERVICES = [:storage, :users, :manager].freeze
 
 dbus_server_manager = Agama::DBus::ServerManager.new
 
