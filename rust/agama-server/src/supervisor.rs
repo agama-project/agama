@@ -26,8 +26,8 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
-pub enum Action<'a> {
-    L10n(L10nAction<'a>),
+pub enum Action {
+    L10n(L10nAction),
 }
 
 pub struct Supervisor {
@@ -135,7 +135,7 @@ impl Supervisor {
     }
 
     // TODO: report error if the action fails.
-    pub async fn run_action<'a>(&mut self, action: Action<'a>) {
+    pub async fn dispatch_action(&mut self, action: Action) {
         match action {
             Action::L10n(l10n_action) => self.l10n.dispatch(l10n_action).unwrap(),
         }

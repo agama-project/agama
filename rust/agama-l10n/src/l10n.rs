@@ -24,11 +24,9 @@ use merge_struct::merge;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
-pub enum L10nAction<'a> {
+pub enum L10nAction {
     #[serde(rename = "configureL10n")]
     ConfigureSystem(actions::ConfigureSystemAction),
-    #[serde(skip_deserializing)]
-    Configure(actions::ConfigureAction<'a>),
 }
 
 #[derive(Default)]
@@ -44,10 +42,6 @@ pub struct L10n {
 }
 
 impl L10n {
-    pub fn new_configure_action<'a>(config: &'a L10nConfig) -> L10nAction<'a> {
-        L10nAction::Configure(actions::ConfigureAction { config })
-    }
-
     pub fn new() -> Self {
         let model = L10nModel::new_with_locale(&LocaleId::default()).unwrap();
 
@@ -74,13 +68,6 @@ impl L10n {
         Ok(())
     }
 
-    pub fn dispatch(&mut self, action: L10nAction) -> anyhow::Result<()> {
-        match action {
-            L10nAction::ConfigureSystem(action) => action.run(self),
-            L10nAction::Configure(action) => action.run(self),
-        }
-    }
-
     fn build_proposal(&self, config: &L10nConfig) -> Result<L10nProposal, LocaleError> {
         let locale: LocaleId = if let Some(language) = &config.language {
             language.as_str().try_into()?
@@ -105,54 +92,10 @@ impl L10n {
             keymap,
         })
     }
+
+    pub fn dispatch(&mut self, action: L10nAction) -> anyhow::Result<()> {
+        match action {
+            L10nAction::ConfigureSystem(action) => action.run(self),
+        }
+    }
 }
-
-// pub struct L10nAgent {
-//     l10n: L10nModule,
-// }
-
-// impl L10nAgent {
-//     pub fn new(l10n: L10nModule) -> Self {
-//         Self { l10n }
-//     }
-
-//     /// Creates a new proposal using the given user configuration.
-//     ///
-//     /// It returns the used configuration and the proposal. The returned
-//     /// configuration may contain default values for the settings that were
-//     /// missing in the user configuration.
-//     pub fn propose(
-//         &mut self,
-//         user_config: &L10nConfig,
-//     ) -> Result<(L10nConfig, L10nProposal), LocaleError> {
-//         // FIXME: Build a config from the system
-//         let default_config = L10nConfig::default();
-//         let config = merge(&default_config, &user_config)?;
-//         let proposal = self.build_proposal(&config)?;
-//         self.sync_model(&proposal)?;
-//         Ok((config, proposal))
-//     }
-
-//     /// Returns the system information.
-//     ///
-//     /// It inncludes the list of available locales, keymaps and timezones.
-//     pub fn get_system(&self) -> L10nSystemInfo {
-//         L10nSystemInfo {
-//             locales: self.l10n.locales_db.entries().clone(),
-//             keymaps: self.l10n.keymaps_db.entries().clone(),
-//             timezones: self.l10n.timezones_db.entries().clone(),
-//         }
-//     }
-
-//     // TODO: return a result
-//     pub fn run_action(&mut self, action: L10nAction) {
-//         match action {
-//             L10nAction::ConfigureSystem(action) => {
-//                 let _ = action.run(&mut self.l10n);
-//                 ()
-//             }
-//             unknown => println!("unknown action: {:?}", unknown),
-//         }
-//     }
-
-// }

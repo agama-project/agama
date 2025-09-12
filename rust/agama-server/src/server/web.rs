@@ -138,12 +138,12 @@ async fn set_scope_config(
     Ok(())
 }
 
-async fn run_action<'a>(
+async fn run_action(
     State(state): State<ServerState>,
-    Json(action): Json<Action<'a>>,
+    Json(action): Json<Action>,
 ) -> Result<(), ServerError> {
     let mut state = state.supervisor.lock().await;
-    state.run_action(action).await;
+    state.dispatch_action(action).await;
     Ok(())
 }
 
