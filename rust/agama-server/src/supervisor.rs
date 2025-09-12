@@ -18,13 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::server::{error::ServerResult, Proposal, Scope, ScopeConfig, SystemInfo};
+use agama_l10n::{L10n, L10nAction};
 use agama_lib::install_settings::InstallSettings;
 use merge_struct::merge;
 use serde::Deserialize;
-use crate::{
-    server::{Proposal, Scope, ScopeConfig, SystemInfo},
-};
-use agama_l10n::{L10n, L10nAction};
 
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
@@ -52,8 +50,11 @@ impl Supervisor {
     /// Gets the current configuration.
     ///
     /// It includes user and default values.
-    pub async fn get_config(&self) -> &InstallSettings {
-        &self.config
+    pub async fn get_config(&self) -> InstallSettings {
+        InstallSettings {
+            localization: Some(self.l10n.get_config().clone()),
+            ..Default::default()
+        }
     }
 
     /// Gets the current configuration set by the user.
@@ -81,9 +82,9 @@ impl Supervisor {
     /// Patches the user configuration with the given values.
     ///
     /// It merges the current configuration with the given one.
-    pub async fn patch_config(&mut self, user_config: InstallSettings) {
+    pub async fn patch_config(&mut self, user_config: InstallSettings) -> ServerResult<()> {
         let config = merge(&self.user_config, &user_config).unwrap();
-        self.update_config(config).await;
+        self.update_config(config).await
     }
 
     /// Sets the user configuration with the given values.
@@ -93,60 +94,44 @@ impl Supervisor {
     ///
     /// FIXME: We should replace not given sections with the default ones.
     /// After all, now we have config/user/:scope URLs.
-    pub async fn update_config(&mut self, user_config: InstallSettings) {
-        // let mut config = self.config.clone();
-        // let mut proposal = self.proposal.clone().unwrap_or_default();
-
+    pub async fn update_config(&mut self, user_config: InstallSettings) -> ServerResult<()> {
         if let Some(l10n_user_config) = &user_config.localization {
-            let action = L10n::new_configure_action(l10n_user_config);
-            // TODO: manage error.
-            self.l10n.dispatch(action).unwrap();
-            // let (l10n_config, l10n_proposal) = self.l10n.propose(&l10n_user_config).unwrap();
-            // config.localization = Some(l10n_config);
-            // proposal.localization = l10n_proposal;
+            self.l10n.set_config(l10n_user_config)?;
         }
-
-        // self.config = config;
         self.user_config = user_config;
-        // self.proposal = Some(proposal);
+        Ok(())
     }
 
     /// Patches the user configuration within the given scope.
     ///
     /// It merges the current configuration with the given one.
-    pub async fn patch_scope_config(&mut self, user_config: ScopeConfig) {
-        // let config = match user_config {
-        //     ScopeConfig::L10n(new_config) => {
-        //         let base_config = self.config.localization.clone().unwrap_or_default();
-        //         ScopeConfig::L10n(merge(&base_config, &new_config).unwrap())
-        //     }
-        // };
-        // self.update_scope_config(config).await;
-        unimplemented!("TODO")
+    pub async fn patch_scope_config(&mut self, user_config: ScopeConfig) -> ServerResult<()> {
+        match user_config {
+            ScopeConfig::L10n(new_config) => {
+                let base_config = self.user_config.localization.clone().unwrap_or_default();
+                let config = merge(&base_config, &new_config).unwrap();
+                // FIXME: we are doing pattern matching twice. Is it ok?
+                // Implementing a "merge" for ScopeConfig would allow to simplify this function.
+                self.update_scope_config(ScopeConfig::L10n(config)).await?;
+            }
+        }
+
+        Ok(())
     }
 
     /// Sets the user configuration within the given scope.
     ///
     /// It replaces the current configuration with the given one and calculates a
     /// new proposal. Only the configuration in the given scope is affected.
-    pub async fn update_scope_config(&mut self, user_config: ScopeConfig) {
-        // let mut config = self.config.clone();
-        // let mut proposal = self.proposal.clone().unwrap_or_default();
-        // let mut base_user_config = self.user_config.clone();
+    pub async fn update_scope_config(&mut self, user_config: ScopeConfig) -> ServerResult<()> {
+        match user_config {
+            ScopeConfig::L10n(new_config) => {
+                self.l10n.set_config(&new_config)?;
+                self.user_config.localization = Some(new_config);
+            }
+        }
 
-        // match user_config {
-        //     ScopeConfig::L10n(user_config) => {
-        //         let (l10n_config, l10n_proposal) = self.l10n.propose(&user_config).unwrap();
-        //         config.localization = Some(l10n_config);
-        //         proposal.localization = l10n_proposal;
-        //         base_user_config.localization = Some(user_config);
-        //     }
-        // }
-
-        // self.config = config;
-        // self.proposal = Some(proposal);
-        // self.user_config = base_user_config;
-        unimplemented!("TODO")
+        Ok(())
     }
 
     // TODO: report error if the action fails.

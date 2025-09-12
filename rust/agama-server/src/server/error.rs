@@ -28,6 +28,8 @@ use serde_json::json;
 
 use super::Scope;
 
+pub type ServerResult<T> = Result<T, ServerError>;
+
 #[derive(Debug, thiserror::Error)]
 pub enum ServerError {
     #[error("The given configuration does not belong to the '{0}' scope.")]

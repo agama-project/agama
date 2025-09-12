@@ -111,9 +111,9 @@ async fn set_config(
 ) -> Result<(), ServerError> {
     let mut state = state.supervisor.lock().await;
     if method.as_str() == "PATCH" {
-        state.patch_config(config).await;
+        state.patch_config(config).await?;
     } else {
-        state.update_config(config).await;
+        state.update_config(config).await?;
     }
 
     Ok(())
@@ -131,9 +131,9 @@ async fn set_scope_config(
 
     let mut state = state.supervisor.lock().await;
     if method.as_str() == "PATCH" {
-        state.patch_scope_config(user_config).await;
+        state.patch_scope_config(user_config).await?;
     } else {
-        state.update_scope_config(user_config).await;
+        state.update_scope_config(user_config).await?;
     }
     Ok(())
 }

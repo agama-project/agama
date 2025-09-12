@@ -34,7 +34,7 @@ pub enum L10nAction<'a> {
 #[derive(Default)]
 pub struct L10nState {
     system: Option<L10nSystemInfo>,
-    config: Option<L10nConfig>,
+    config: L10nConfig,
     proposal: Option<L10nProposal>,
 }
 
@@ -45,7 +45,7 @@ pub struct L10n {
 
 impl L10n {
     pub fn new_configure_action<'a>(config: &'a L10nConfig) -> L10nAction<'a> {
-        L10nAction::Configure(actions::ConfigureAction { config } )
+        L10nAction::Configure(actions::ConfigureAction { config })
     }
 
     pub fn new() -> Self {
@@ -57,11 +57,53 @@ impl L10n {
         }
     }
 
+    pub fn get_config(&self) -> &L10nConfig {
+        &self.state.config
+    }
+
+    /// Creates a new proposal using the given user configuration.
+    ///
+    /// It returns the used configuration and the proposal. The returned
+    /// configuration may contain default values for the settings that were
+    /// missing in the user configuration.
+    pub fn set_config(&mut self, user_config: &L10nConfig) -> Result<(), LocaleError> {
+        let default_config = L10nConfig::default();
+        let config = merge(&default_config, &user_config)?;
+        self.state.proposal = Some(self.build_proposal(&config)?);
+        self.state.config = config;
+        Ok(())
+    }
+
     pub fn dispatch(&mut self, action: L10nAction) -> anyhow::Result<()> {
         match action {
             L10nAction::ConfigureSystem(action) => action.run(self),
             L10nAction::Configure(action) => action.run(self),
         }
+    }
+
+    fn build_proposal(&self, config: &L10nConfig) -> Result<L10nProposal, LocaleError> {
+        let locale: LocaleId = if let Some(language) = &config.language {
+            language.as_str().try_into()?
+        } else {
+            LocaleId::default()
+        };
+
+        let keymap: KeymapId = if let Some(keyboard) = &config.keyboard {
+            keyboard.parse().map_err(LocaleError::InvalidKeymap)?
+        } else {
+            KeymapId::default()
+        };
+
+        let timezone = config
+            .timezone
+            .clone()
+            .unwrap_or("Europe/Berlin".to_string());
+
+        Ok(L10nProposal {
+            locale,
+            timezone,
+            keymap,
+        })
     }
 }
 
@@ -113,35 +155,4 @@ impl L10n {
 //         }
 //     }
 
-//     fn build_proposal(&self, config: &L10nConfig) -> Result<L10nProposal, LocaleError> {
-//         let locale: LocaleId = if let Some(language) = &config.language {
-//             language.as_str().try_into()?
-//         } else {
-//             LocaleId::default()
-//         };
-
-//         let keymap: KeymapId = if let Some(keyboard) = &config.keyboard {
-//             keyboard.parse().map_err(LocaleError::InvalidKeymap)?
-//         } else {
-//             KeymapId::default()
-//         };
-
-//         let timezone = config
-//             .timezone
-//             .clone()
-//             .unwrap_or("Europe/Berlin".to_string());
-
-//         Ok(L10nProposal {
-//             locale,
-//             timezone,
-//             keymap,
-//         })
-//     }
-
-//     fn sync_model(&mut self, value: &L10nProposal) -> Result<(), LocaleError> {
-//         self.l10n.set_locales(&vec![value.locale.to_string()])?;
-//         self.l10n.set_timezone(&value.timezone)?;
-//         self.l10n.set_keymap(value.keymap.clone())?;
-//         Ok(())
-//     }
 // }
