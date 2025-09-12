@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{L10n, L10nConfig, LocaleError};
+use crate::{L10n};
 use serde::{Deserialize};
 
 #[derive(Debug, Deserialize)]
@@ -30,31 +30,20 @@ pub struct ConfigureSystemAction {
 impl ConfigureSystemAction {
     // FIXME: return an action error instead of using anyhow.
     pub fn run(self, l10n: &mut L10n) -> anyhow::Result<()> {
-        if let Some(language) = self.language {
-            let locale = &language.as_str().try_into()?;
-            l10n.model.translate(locale)?;
-        }
+        // TODO: redesign actions
 
-        if let Some(keyboard) = self.keyboard {
-            let keymap = (&keyboard).parse().map_err(LocaleError::InvalidKeymap)?;
-            l10n.model.set_ui_keymap(keymap)?;
-        };
+        // if let Some(language) = self.language {
+        //     let locale = &language.as_str().try_into()?;
+        //     l10n.model.translate(locale)?;
+        // }
+
+        // if let Some(keyboard) = self.keyboard {
+        //     let keymap = (&keyboard).parse().map_err(LocaleError::InvalidKeymap)?;
+        //     l10n.model.set_ui_keymap(keymap)?;
+        // };
 
         // TODO: update state (system).
 
-        Ok(())
-    }
-}
-
-#[derive(Debug)]
-pub struct ConfigureAction<'a> {
-    pub config: &'a L10nConfig,
-}
-
-impl<'a> ConfigureAction<'a> {
-    // FIXME: return an action error instead of using anyhow.
-    pub fn run(self, l10n: &mut L10n) -> anyhow::Result<()> {
-        println!("configure action: {:?}", self.config);
         Ok(())
     }
 }

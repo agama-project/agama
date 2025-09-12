@@ -18,8 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use serde::Serialize;
-
+use crate::L10nModel;
 use super::{Keymap, LocaleEntry, TimezoneEntry};
 
 #[derive(Debug, Serialize)]
@@ -27,4 +28,24 @@ pub struct L10nSystemInfo {
     pub locales: Vec<LocaleEntry>,
     pub timezones: Vec<TimezoneEntry>,
     pub keymaps: Vec<Keymap>,
+    pub locale: LocaleId,
+    pub keymap: KeymapId,
+    pub timezone: TimezoneId,
+}
+
+impl L10nSystemInfo {
+    pub fn read_from(model: &L10nModel) -> Self {
+        let locales = model.locales_db.entries().clone();
+        let keymaps = model.keymaps_db.entries().clone();
+        let timezones = model.timezones_db.entries().clone();
+
+        Self {
+            locales,
+            keymaps,
+            timezones,
+            locale: model.ui_locale.clone(),
+            keymap: model.ui_keymap.clone(),
+            timezone: Default::default(),
+       }
+    }
 }

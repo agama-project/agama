@@ -19,8 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::{actions, L10nConfig, L10nModel, L10nProposal, L10nSystemInfo, LocaleError};
-use agama_locale_data::{KeymapId, LocaleId};
-use merge_struct::merge;
+use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -29,73 +28,100 @@ pub enum L10nAction {
     ConfigureSystem(actions::ConfigureSystemAction),
 }
 
-#[derive(Default)]
-pub struct L10nState {
-    system: Option<L10nSystemInfo>,
-    config: L10nConfig,
-    proposal: Option<L10nProposal>,
+pub struct L10n {
+    state: State,
+    model: L10nModel,
 }
 
-pub struct L10n {
-    pub(crate) state: L10nState,
-    pub(crate) model: L10nModel,
+struct State {
+    system: L10nSystemInfo,
+    config: Config,
 }
 
 impl L10n {
     pub fn new() -> Self {
         let model = L10nModel::new_with_locale(&LocaleId::default()).unwrap();
+        let system = L10nSystemInfo::read_from(&model);
+        let config = Config::new_from(&system);
+
+        let state = State {
+            system,
+            config,
+        };
 
         Self {
-            state: L10nState::default(),
+            state,
             model,
         }
     }
 
-    pub fn get_config(&self) -> &L10nConfig {
-        &self.state.config
+    pub fn get_config(&self) -> L10nConfig {
+        (&self.state.config).into()
     }
 
-    /// Creates a new proposal using the given user configuration.
-    ///
-    /// It returns the used configuration and the proposal. The returned
-    /// configuration may contain default values for the settings that were
-    /// missing in the user configuration.
     pub fn set_config(&mut self, user_config: &L10nConfig) -> Result<(), LocaleError> {
-        let default_config = L10nConfig::default();
-        let config = merge(&default_config, &user_config)?;
-        self.state.proposal = Some(self.build_proposal(&config)?);
-        self.state.config = config;
-        Ok(())
+        self.state.config.merge(user_config)
     }
 
-    fn build_proposal(&self, config: &L10nConfig) -> Result<L10nProposal, LocaleError> {
-        let locale: LocaleId = if let Some(language) = &config.language {
-            language.as_str().try_into()?
-        } else {
-            LocaleId::default()
-        };
-
-        let keymap: KeymapId = if let Some(keyboard) = &config.keyboard {
-            keyboard.parse().map_err(LocaleError::InvalidKeymap)?
-        } else {
-            KeymapId::default()
-        };
-
-        let timezone = config
-            .timezone
-            .clone()
-            .unwrap_or("Europe/Berlin".to_string());
-
-        Ok(L10nProposal {
-            locale,
-            timezone,
-            keymap,
-        })
+    pub fn get_proposal(&self) -> L10nProposal {
+        (&self.state.config).into()
     }
 
     pub fn dispatch(&mut self, action: L10nAction) -> anyhow::Result<()> {
         match action {
             L10nAction::ConfigureSystem(action) => action.run(self),
+        }
+    }
+}
+
+struct Config {
+    locale: LocaleId,
+    keymap: KeymapId,
+    timezone: TimezoneId,
+}
+
+impl Config {
+    fn new_from(system: &L10nSystemInfo) -> Self {
+        Self {
+            locale: system.locale.clone(),
+            keymap: system.keymap.clone(),
+            timezone: system.timezone.clone(),
+        }
+    }
+
+    fn merge(&mut self, config: &L10nConfig) -> Result<(), LocaleError> {
+        if let Some(language) = &config.language {
+            self.locale = language.as_str().try_into()?;
+        }
+
+        if let Some(keyboard) = &config.keyboard {
+            self.keymap = keyboard.parse().map_err(LocaleError::InvalidKeymap)?
+        }
+
+        if let Some(timezone) = &config.timezone {
+            self.timezone = TimezoneId(timezone.clone());
+        }
+
+        Ok(())
+    }
+}
+
+impl From<&Config> for L10nConfig {
+    fn from(config: &Config) -> Self {
+        L10nConfig {
+            language: Some(config.locale.to_string()),
+            keyboard: Some(config.keymap.to_string()),
+            timezone: Some(config.timezone.to_string()),
+        }
+    }
+}
+
+impl From<&Config> for L10nProposal {
+    fn from(config: &Config) -> Self {
+        L10nProposal {
+            keymap: config.keymap.clone(),
+            locale: config.locale.clone(),
+            timezone: config.timezone.clone(),
         }
     }
 }

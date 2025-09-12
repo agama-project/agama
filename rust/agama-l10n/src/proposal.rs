@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_locale_data::{KeymapId, LocaleId};
+use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
 
@@ -29,15 +29,6 @@ pub struct L10nProposal {
     pub keymap: KeymapId,
     #[serde_as(as = "DisplayFromStr")]
     pub locale: LocaleId,
-    pub timezone: String,
-}
-
-impl Default for L10nProposal {
-    fn default() -> Self {
-        Self {
-            timezone: "Europe/Berlin".to_string(),
-            keymap: KeymapId::default(),
-            locale: LocaleId::default(),
-        }
-    }
+    #[serde_as(as = "DisplayFromStr")]
+    pub timezone: TimezoneId,
 }

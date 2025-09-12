@@ -26,6 +26,25 @@ use std::sync::OnceLock;
 use std::{fmt::Display, str::FromStr};
 use thiserror::Error;
 
+#[derive(Debug, Clone, Serialize, PartialEq)]
+pub struct TimezoneId(pub String);
+
+impl Default for TimezoneId {
+    fn default() -> Self {
+        Self("Europe/Berlin".to_string())
+    }
+}
+
+impl Display for TimezoneId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            self.0
+        )
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, utoipa::ToSchema)]
 pub struct LocaleId {
     // ISO-639
