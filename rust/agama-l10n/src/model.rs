@@ -22,7 +22,7 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::process::Command;
 
-use agama_locale_data::{InvalidLocaleCode, KeymapId, LocaleId};
+use agama_locale_data::{InvalidLocaleId, KeymapId, LocaleId};
 use regex::Regex;
 
 pub mod keyboard;
@@ -90,7 +90,7 @@ impl L10nModel {
     }
 
     pub fn set_locales(&mut self, locales: &Vec<String>) -> Result<(), LocaleError> {
-        let locale_ids: Result<Vec<LocaleId>, InvalidLocaleCode> = locales
+        let locale_ids: Result<Vec<LocaleId>, InvalidLocaleId> = locales
             .iter()
             .cloned()
             .map(|l| l.parse::<LocaleId>())

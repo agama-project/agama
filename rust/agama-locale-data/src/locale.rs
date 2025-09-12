@@ -85,10 +85,10 @@ impl Default for LocaleId {
 
 #[derive(Error, Debug)]
 #[error("Not a valid locale string: {0}")]
-pub struct InvalidLocaleCode(String);
+pub struct InvalidLocaleId(String);
 
 impl FromStr for LocaleId {
-    type Err = InvalidLocaleCode;
+    type Err = InvalidLocaleId;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let locale_regexp: Regex =
@@ -96,7 +96,7 @@ impl FromStr for LocaleId {
 
         let captures = locale_regexp
             .captures(s)
-            .ok_or_else(|| InvalidLocaleCode(s.to_string()))?;
+            .ok_or_else(|| InvalidLocaleId(s.to_string()))?;
 
         let encoding = captures
             .get(3)
@@ -147,7 +147,7 @@ impl Default for KeymapId {
 
 #[derive(Error, Debug, PartialEq)]
 #[error("Invalid keymap ID: {0}")]
-pub struct InvalidKeymap(String);
+pub struct InvalidKeymapId(String);
 
 impl KeymapId {
     pub fn dashed(&self) -> String {
@@ -170,7 +170,7 @@ impl Display for KeymapId {
 }
 
 impl FromStr for KeymapId {
-    type Err = InvalidKeymap;
+    type Err = InvalidKeymapId;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let re = KEYMAP_ID_REGEX
@@ -204,7 +204,7 @@ impl FromStr for KeymapId {
                 variant,
             })
         } else {
-            Err(InvalidKeymap(s.to_string()))
+            Err(InvalidKeymapId(s.to_string()))
         }
     }
 }
