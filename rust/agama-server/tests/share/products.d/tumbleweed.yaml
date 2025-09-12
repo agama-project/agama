@@ -1,7 +1,5 @@
 id: Tumbleweed
 name: openSUSE Tumbleweed
-registration: false
-version: "16.0"
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
 # at the at translations/description key below to avoid using obsolete
@@ -21,15 +19,14 @@ translations:
     cs: Čistě klouzavá verze openSUSE obsahující nejnovější "stabilní" verze
       veškerého softwaru, která se nespoléhá na pevné periodické cykly vydávání.
       Projekt to dělá pro uživatele, kteří chtějí nejnovější stabilní software.
-    de: Die Tumbleweed-Distribution ist eine Version mit reinen rollierenden
-      Veröffentlichungen von openSUSE, die die neuesten „stabilen“ Versionen der
-      gesamten Software enthält, anstatt sich auf starre periodische
-      Veröffentlichungszyklen zu verlassen. Das Projekt tut dies für Benutzer,
-      die die neueste, stabile Software wünschen.
-    es: Una versión puramente continua de openSUSE que contiene las últimas
-      versiones "estables" de todo el software en lugar de depender de rígidos
-      ciclos de lanzamiento periódicos. El proyecto hace esto para usuarios que
-      desean el software estable más novedoso.
+    de: Eine reine Rolling-Release-Version von openSUSE, die die neuesten „stabilen“
+      Versionen der gesamten Software enthält, anstatt sich auf starre
+      periodische Veröffentlichungszyklen zu verlassen. Das Projekt tut dies für
+      Benutzer, die die neueste, stabile Software wünschen.
+    es: Una versión de actualización continua pura de openSUSE que contiene las
+      últimas versiones "estables" de todo el software en lugar de depender de
+      rígidos ciclos de publicaciones periódicas. El proyecto hace esto para
+      usuarios que desean el software estable más novedoso.
     fr: La distribution Tumbleweed est une pure "rolling release" (publication
       continue) d'openSUSE contenant les dernières versions "stables" de tous
       les logiciels au lieu de se baser sur des cycles de publication
@@ -40,8 +37,7 @@ translations:
       bergantung pada siklus rilis berkala yang kaku. Proyek ini dibuat untuk
       memenuhi kebutuhan pengguna yang menginginkan perangkat lunak stabil
       terbaru.
-    ja:
-      openSUSE の純粋なローリングリリース版で、特定のリリースサイクルによることなく全てのソフトウエアを最新の "安定"
+    ja: openSUSE の純粋なローリングリリース版で、特定のリリースサイクルによることなく全てのソフトウエアを最新の "安定"
       バージョンに維持し続ける取り組みです。このプロジェクトは特に、最新の安定バージョンを使いたいユーザにお勧めです。
     nb_NO: Tumbleweed distribusjonen er en ren rullerende utgivelsesversjon av
       openSUSE som inneholder de siste "stabile" versjonene av all programvare i
@@ -77,7 +73,8 @@ software:
       archs: ppc
     - url: https://download.opensuse.org/tumbleweed/repo/non-oss/
       archs: x86_64
-    # aarch64 does not have non-oss ports. Keep eye if it change
+    - url: https://download.opensuse.org/ports/aarch64/tumbleweed/repo/non-oss/
+      archs: aarch64
     - url: https://download.opensuse.org/ports/zsystems/tumbleweed/repo/non-oss/
       archs: s390
     - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/non-oss/
@@ -113,14 +110,18 @@ software:
     - yast2_server
     - multimedia
     - office
+    - name: selinux
+      selected: true
+    - apparmor
   mandatory_packages:
     - NetworkManager
     - openSUSE-repos-Tumbleweed
+    - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
   optional_packages: null
   base_product: openSUSE
 
 security:
-  lsm: apparmor
+  lsm: selinux
   available_lsms:
     apparmor:
       patterns:
@@ -128,11 +129,11 @@ security:
     selinux:
       patterns:
         - selinux
-      policy: permissive
     none:
       patterns: null
 
 storage:
+  boot_strategy: BLS
   space_policy: delete
   volumes:
     - "/"
@@ -188,12 +189,9 @@ storage:
     - mount_path: "swap"
       filesystem: swap
       size:
-        auto: true
+        min: 1 GiB
+        max: 2 GiB
       outline:
-        auto_size:
-          base_min: 1 GiB
-          base_max: 2 GiB
-          adjust_by_ram: true
         required: false
         filesystems:
           - swap
@@ -201,7 +199,7 @@ storage:
       filesystem: xfs
       size:
         auto: false
-        min: 10 GiB
+        min: 5 GiB
         max: unlimited
       outline:
         required: false
@@ -214,7 +212,7 @@ storage:
     - filesystem: xfs
       size:
         auto: false
-        min: 1 GiB
+        min: 512 MiB
       outline:
         required: false
         filesystems:
