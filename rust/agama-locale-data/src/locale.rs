@@ -27,7 +27,7 @@ use std::{fmt::Display, str::FromStr};
 use thiserror::Error;
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
-pub struct TimezoneId(pub String);
+pub struct TimezoneId(String);
 
 impl Default for TimezoneId {
     fn default() -> Self {
@@ -37,11 +37,20 @@ impl Default for TimezoneId {
 
 impl Display for TimezoneId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{}",
-            self.0
-        )
+        write!(f, "{}", self.0)
+    }
+}
+
+#[derive(Error, Debug)]
+#[error("Not a valid timezone: {0}")]
+pub struct InvalidTimezoneId(String);
+
+impl FromStr for TimezoneId {
+    type Err = InvalidTimezoneId;
+
+    // TODO: implement real parsing of the string.
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self(s.to_string()))
     }
 }
 

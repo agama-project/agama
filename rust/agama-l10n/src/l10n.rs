@@ -99,7 +99,7 @@ impl Config {
         }
 
         if let Some(timezone) = &config.timezone {
-            self.timezone = TimezoneId(timezone.clone());
+            self.timezone = timezone.parse().map_err(LocaleError::InvalidTimezone)?;
         }
 
         Ok(())

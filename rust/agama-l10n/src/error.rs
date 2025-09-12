@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_locale_data::{InvalidKeymap, InvalidLocaleCode, KeymapId, LocaleId};
+use agama_locale_data::{InvalidKeymap, InvalidLocaleCode, InvalidTimezoneId, KeymapId, LocaleId};
 
 #[derive(thiserror::Error, Debug)]
 pub enum LocaleError {
@@ -28,6 +28,8 @@ pub enum LocaleError {
     InvalidLocale(#[from] InvalidLocaleCode),
     #[error("Unknown timezone: {0}")]
     UnknownTimezone(String),
+    #[error("Invalid timezone")]
+    InvalidTimezone(#[from] InvalidTimezoneId),
     #[error("Unknown keymap: {0}")]
     UnknownKeymap(KeymapId),
     #[error("Invalid keymap: {0}")]
