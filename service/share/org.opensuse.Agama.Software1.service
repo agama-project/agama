@@ -1,4 +1,0 @@
-[D-BUS Service]
-Name=org.opensuse.Agama.Software1
-Exec=/usr/bin/agamactl software
-User=root
