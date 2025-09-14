@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-10 15:44+0000\n"
+"POT-Creation-Date: 2025-09-11 02:48+0000\n"
 "PO-Revision-Date: 2025-09-11 08:59+0000\n"
 "Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
 "Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/"
@@ -31,25 +31,25 @@ msgstr "AutoYaST-profiilissa löydettiin tukemattomia kohita: %{keys}."
 #.
 #. @param reprobe [Boolean] Whether a reprobe should be done instead of a probe.
 #. @param data [Hash] Extra data provided to the D-Bus calls.
-#: service/lib/agama/manager.rb:99
+#: service/lib/agama/manager.rb:98
 msgid "Analyze disks"
 msgstr "Levyjen analysointi"
 
-#: service/lib/agama/manager.rb:99
+#: service/lib/agama/manager.rb:98
 msgid "Configure software"
 msgstr "Ohjelmistojen asetukset"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-#: service/lib/agama/manager.rb:118
+#: service/lib/agama/manager.rb:117
 msgid "Prepare disks"
 msgstr "Levyjen valmistelu"
 
-#: service/lib/agama/manager.rb:119
+#: service/lib/agama/manager.rb:118
 msgid "Install software"
 msgstr "Ohjelmistojen asennus"
 
-#: service/lib/agama/manager.rb:120
+#: service/lib/agama/manager.rb:119
 msgid "Configure the system"
 msgstr "Järjestelmän asetukset"
 
