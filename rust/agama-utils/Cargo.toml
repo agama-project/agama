@@ -6,6 +6,8 @@ edition.workspace = true
 
 [dependencies]
 serde_json = "1.0.140"
+thiserror = "2.0.16"
+tokio = { version = "1.47.1", features = ["sync"] }
 utoipa = "5.3.1"
 zbus = "5.7.1"
 zvariant = "5.5.2"

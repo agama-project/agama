@@ -23,3 +23,4 @@
 
 pub mod dbus;
 pub mod openapi;
+pub mod service;
