@@ -57,6 +57,7 @@ name = "agama-l10n"
 version = "0.1.0"
 dependencies = [
  "agama-locale-data",
+ "agama-utils",
  "anyhow",
  "gettext-rs",
  "merge-struct",
@@ -207,6 +208,7 @@ version = "0.1.0"
 dependencies = [
  "serde_json",
  "thiserror 2.0.16",
+ "tokio",
  "utoipa",
  "zbus",
  "zvariant",

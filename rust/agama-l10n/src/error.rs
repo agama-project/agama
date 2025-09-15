@@ -18,7 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::service::L10nCommand;
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
+use agama_utils::service::ServiceError;
 
 #[derive(thiserror::Error, Debug)]
 pub enum LocaleError {
@@ -38,4 +40,6 @@ pub enum LocaleError {
     Commit(#[from] std::io::Error),
     #[error("Could not merge the current and the new configuration")]
     Merge(#[from] serde_json::error::Error),
+    #[error(transparent)]
+    ServiceError(#[from] ServiceError<L10nCommand>),
 }

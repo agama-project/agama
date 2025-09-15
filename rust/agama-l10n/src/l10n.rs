@@ -22,6 +22,7 @@ use crate::{
     actions, service::L10nCommand, L10nConfig, L10nModel, L10nProposal, L10nSystemInfo, LocaleError,
 };
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
+use agama_utils::service::{Service, ServiceError};
 use serde::Deserialize;
 use tokio::sync::{
     mpsc::{self, UnboundedReceiver},
@@ -77,24 +78,17 @@ impl L10n {
             L10nAction::ConfigureSystem(action) => action.run(self),
         }
     }
+}
 
-    pub async fn run(&mut self) -> Result<(), LocaleError> {
-        loop {
-            let cmd = self.receiver.recv().await;
-            let Some(cmd) = cmd else {
-                println!("Channel closed");
-                break;
-            };
+impl Service for L10n {
+    type Err = LocaleError;
+    type Command = L10nCommand;
 
-            if let Err(error) = &mut self.dispatch_command(cmd).await {
-                eprintln!("Error dispatching command: {error:?}");
-            }
-        }
-
-        Ok(())
+    fn commands(&mut self) -> &mut mpsc::UnboundedReceiver<Self::Command> {
+        &mut self.receiver
     }
 
-    pub async fn dispatch_command(&mut self, command: L10nCommand) -> Result<(), LocaleError> {
+    async fn dispatch(&mut self, command: Self::Command) -> Result<(), Self::Err> {
         match command {
             L10nCommand::GetConfig { respond_to } => {
                 respond_to.send(self.get_config()).unwrap();

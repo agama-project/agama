@@ -16,7 +16,7 @@ zbus = { version = "5", default-features = false, features = ["tokio"] }
 uuid = { version = "1.10.0", features = ["v4"] }
 thiserror = "2.0.12"
 serde = { version = "1.0.210", features = ["derive"] }
-tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread", "sync"] }
 tokio-stream = "0.1.16"
 gettext-rs = { version = "0.7.1", features = ["gettext-system"] }
 regex = "1.11.0"

@@ -18,10 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_utils::service::Service;
 use tokio::sync::{mpsc, oneshot};
 
 use crate::{L10n, L10nAction, L10nConfig, L10nProposal, LocaleError};
 
+#[derive(Debug)]
 pub enum L10nCommand {
     GetConfig {
         respond_to: oneshot::Sender<L10nConfig>,
@@ -47,7 +49,7 @@ impl L10nService {
         let (sender, receiver) = mpsc::unbounded_channel();
         let mut server = L10n::new(receiver);
         tokio::spawn(async move {
-            server.run().await.unwrap();
+            server.run().await;
         });
 
         Ok(Self { sender })
