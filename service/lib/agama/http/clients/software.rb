@@ -35,27 +35,27 @@ module Agama
         end
 
         def probe
-          post("software/probe")
+          post("software/probe", nil)
         end
 
         def propose
           # TODO: implement it
-          post("software/propose")
+          post("software/propose", nil)
         end
 
         def install
           # TODO: implement it
-          post("software/install")
+          post("software/install", nil)
         end
 
         def finish
           # TODO: implement it
-          post("software/finish")
+          post("software/finish", nil)
         end
 
         def locale=(value)
           # TODO: implement it
-          post("software/locale")
+          post("software/locale", value)
         end
 
         def config
@@ -66,24 +66,24 @@ module Agama
           JSON.parse(get("software/issues"))
         end
 
-        def get_resolvables(unique_id, type, optional)
+        def get_resolvables(_unique_id, _type, _optional)
           # TODO: implement on backend
           JSON.parse(get("software/config"))
         end
 
-        def provisions_selected?(provisions)
+        def provisions_selected?(_provisions)
           # TODO: implement it, not sure how it should look like
           false
         end
 
-        def set_resolvables(unique_id, type, resolvables, optional)
+        def set_resolvables(_unique_id, type, resolvables, optional)
           # TODO: implement at backend proposal id
           data = {
-            "names" => resolvables,
-            "type" => type,
+            "names"    => resolvables,
+            "type"     => type,
             "optional" => optional
           }
-          JSON.parse(put("software/config"))
+          JSON.parse(put("software/config"), data)
         end
 
         def add_patterns(patterns)
