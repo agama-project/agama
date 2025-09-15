@@ -62,7 +62,7 @@ module Yast
       @pkg_initialized = false
 
       # Software service client
-      @dbus_client = nil
+      @software_client = nil
     end
 
     def available
@@ -176,7 +176,7 @@ module Yast
     #
     # @return Boolean
     def supported?
-      supported = dbus_client.provisions_selected?(DISPLAY_MANAGERS).any?
+      supported = software_client.provisions_selected?(DISPLAY_MANAGERS).any?
 
       if supported
         log.info("Autologin is supported")
@@ -205,7 +205,7 @@ module Yast
     #
     # @return [Agama::DBus::Clients::Software] Software service client
     def software_client
-      @sotware_client ||= Agama::HTTP::Clients::Software.new
+      @software_client ||= Agama::HTTP::Clients::Software.new(::Logger.new($stdout))
     end
   end
 

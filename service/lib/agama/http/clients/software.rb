@@ -62,7 +62,8 @@ module Agama
           JSON.parse(get("software/config"))
         end
 
-        def errors
+        def errors?
+          # TODO: implement it together with checking type error
           JSON.parse(get("software/issues"))
         end
 
@@ -73,7 +74,7 @@ module Agama
 
         def provisions_selected?(_provisions)
           # TODO: implement it, not sure how it should look like
-          false
+          []
         end
 
         def set_resolvables(_unique_id, type, resolvables, optional)

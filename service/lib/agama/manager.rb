@@ -171,7 +171,7 @@ module Agama
     #
     # @return [DBus::Clients::Software]
     def software
-      @software ||= HTTP::Clients::Software.new
+      @software ||= HTTP::Clients::Software.new(logger)
       # TODO: watch for http websocket events regarding software status
       # @software.tap do |client|
       #  client.on_service_status_change do |status|
