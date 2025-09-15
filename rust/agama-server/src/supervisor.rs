@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::server::{error::ServerResult, Proposal, Scope, ScopeConfig, SystemInfo};
-use agama_l10n::{L10n, L10nAction};
+use agama_l10n::{L10n, L10nAction, L10nService};
 use agama_lib::install_settings::InstallSettings;
 use merge_struct::merge;
 use serde::Deserialize;
@@ -31,7 +31,7 @@ pub enum Action {
 }
 
 pub struct Supervisor {
-    l10n: L10n,
+    l10n: L10nService,
     user_config: InstallSettings,
     config: InstallSettings,
     proposal: Option<Proposal>,
@@ -40,7 +40,7 @@ pub struct Supervisor {
 impl Supervisor {
     pub fn new() -> Self {
         Self {
-            l10n: L10n::new(),
+            l10n: L10nService::start().unwrap(),
             config: InstallSettings::default(),
             user_config: InstallSettings::default(),
             proposal: None,
@@ -52,7 +52,7 @@ impl Supervisor {
     /// It includes user and default values.
     pub async fn get_config(&self) -> InstallSettings {
         InstallSettings {
-            localization: Some(self.l10n.get_config().clone()),
+            localization: Some(self.l10n.get_config().await.unwrap()),
             ..Default::default()
         }
     }
@@ -96,7 +96,7 @@ impl Supervisor {
     /// After all, now we have config/user/:scope URLs.
     pub async fn update_config(&mut self, user_config: InstallSettings) -> ServerResult<()> {
         if let Some(l10n_user_config) = &user_config.localization {
-            self.l10n.set_config(l10n_user_config)?;
+            self.l10n.set_config(l10n_user_config).await?;
         }
         self.user_config = user_config;
         Ok(())
@@ -126,7 +126,7 @@ impl Supervisor {
     pub async fn update_scope_config(&mut self, user_config: ScopeConfig) -> ServerResult<()> {
         match user_config {
             ScopeConfig::L10n(new_config) => {
-                self.l10n.set_config(&new_config)?;
+                self.l10n.set_config(&new_config).await?;
                 self.user_config.localization = Some(new_config);
             }
         }
@@ -137,7 +137,7 @@ impl Supervisor {
     // TODO: report error if the action fails.
     pub async fn dispatch_action(&mut self, action: Action) {
         match action {
-            Action::L10n(l10n_action) => self.l10n.dispatch(l10n_action).unwrap(),
+            Action::L10n(l10n_action) => self.l10n.dispatch_action(l10n_action).await.unwrap(),
         }
     }
 

@@ -18,9 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{actions, L10nConfig, L10nModel, L10nProposal, L10nSystemInfo, LocaleError};
+use crate::{
+    actions, service::L10nCommand, L10nConfig, L10nModel, L10nProposal, L10nSystemInfo, LocaleError,
+};
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use serde::Deserialize;
+use tokio::sync::{
+    mpsc::{self, UnboundedReceiver},
+    oneshot,
+};
 
 #[derive(Debug, Deserialize)]
 pub enum L10nAction {
@@ -31,6 +37,7 @@ pub enum L10nAction {
 pub struct L10n {
     state: State,
     model: L10nModel,
+    receiver: UnboundedReceiver<L10nCommand>,
 }
 
 struct State {
@@ -39,19 +46,17 @@ struct State {
 }
 
 impl L10n {
-    pub fn new() -> Self {
+    pub fn new(receiver: UnboundedReceiver<L10nCommand>) -> Self {
         let model = L10nModel::new_with_locale(&LocaleId::default()).unwrap();
         let system = L10nSystemInfo::read_from(&model);
         let config = Config::new_from(&system);
 
-        let state = State {
-            system,
-            config,
-        };
+        let state = State { system, config };
 
         Self {
             state,
             model,
+            receiver,
         }
     }
 
@@ -71,6 +76,41 @@ impl L10n {
         match action {
             L10nAction::ConfigureSystem(action) => action.run(self),
         }
+    }
+
+    pub async fn run(&mut self) -> Result<(), LocaleError> {
+        loop {
+            let cmd = self.receiver.recv().await;
+            let Some(cmd) = cmd else {
+                println!("Channel closed");
+                break;
+            };
+
+            if let Err(error) = &mut self.dispatch_command(cmd).await {
+                eprintln!("Error dispatching command: {error:?}");
+            }
+        }
+
+        Ok(())
+    }
+
+    pub async fn dispatch_command(&mut self, command: L10nCommand) -> Result<(), LocaleError> {
+        match command {
+            L10nCommand::GetConfig { respond_to } => {
+                respond_to.send(self.get_config()).unwrap();
+            }
+            L10nCommand::SetConfig { config } => {
+                self.set_config(&config).unwrap();
+            }
+            L10nCommand::GetProposal { respond_to } => {
+                respond_to.send(self.get_proposal()).unwrap();
+            }
+            L10nCommand::DispatchAction { action } => {
+                self.dispatch(action).unwrap();
+            }
+        };
+
+        Ok(())
     }
 }
 
