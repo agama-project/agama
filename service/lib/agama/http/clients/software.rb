@@ -71,6 +71,11 @@ module Agama
           JSON.parse(get("software/config"))
         end
 
+        def provisions_selected?(provisions)
+          # TODO: implement it, not sure how it should look like
+          false
+        end
+
         def set_resolvables(unique_id, type, resolvables, optional)
           # TODO: implement at backend proposal id
           data = {

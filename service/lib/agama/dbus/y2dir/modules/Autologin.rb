@@ -25,7 +25,7 @@
 #
 # $Id$
 require "yast"
-require "agama/dbus/clients/software"
+require "agama/http/clients/software"
 
 module Yast
   class AutologinClass < Module
@@ -204,8 +204,8 @@ module Yast
     # Software service client
     #
     # @return [Agama::DBus::Clients::Software] Software service client
-    def dbus_client
-      @dbus_client ||= Agama::DBus::Clients::Software.new
+    def software_client
+      @sotware_client ||= Agama::HTTP::Clients::Software.new
     end
   end
 
