@@ -38,6 +38,15 @@ module Agama
           JSON.parse(get("software/config"))
         end
 
+        def get_resolvables(unique_id, type, optional)
+          # TODO: implement on backend
+          JSON.parse(get("software/config"))
+        end
+
+        def set_resolvables(unique_id, type, resolvables, optional)
+          JSON.parse(put("software/config"))
+        end
+
         def add_patterns(patterns)
           config_patterns = config["patterns"] || {}
           selected = config_patterns.select { |_k, v| v }.keys
