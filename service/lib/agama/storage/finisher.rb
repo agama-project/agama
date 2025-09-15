@@ -273,7 +273,6 @@ module Agama
           Yast::Execute.locally(
             "agama", "logs", "store", "--destination", path
           )
-          FileUtils.chmod(0o640, Dir.glob("#{path}*"))
         end
 
         def logs_dir
