@@ -40,6 +40,8 @@ pub trait Service: Send {
     type Command: Send;
 
     /// Returns the service name used for logging and debugging purposes.
+    ///
+    /// An example might be "agama_l10n::l10n::L10n".
     fn name() -> &'static str {
         any::type_name::<Self>()
     }
@@ -101,4 +103,19 @@ pub trait Client: Send + Sync {
             .map_err(|_| ServiceError::SendResponse)?;
         Ok(())
     }
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum MonitorError {
+    #[error("Could not send the event")]
+    Send,
+}
+
+pub trait Monitor: Send {
+    type Err: Error;
+    type Command: Send;
+
+    fn run(&mut self) -> impl Future<Output = ()>;
+
+    fn commands(&mut self) -> &mpsc::UnboundedSender<Self::Command>;
 }
