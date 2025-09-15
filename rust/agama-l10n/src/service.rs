@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::service::Service;
+use agama_utils::service::{Client, Service};
 use tokio::sync::{mpsc, oneshot};
 
 use crate::{L10n, L10nAction, L10nConfig, L10nProposal, LocaleError};
@@ -44,6 +44,15 @@ pub struct L10nService {
     sender: mpsc::UnboundedSender<L10nCommand>,
 }
 
+impl Client for L10nService {
+    type Err = LocaleError;
+    type Command = L10nCommand;
+
+    fn commands(&self) -> &mpsc::UnboundedSender<Self::Command> {
+        &self.sender
+    }
+}
+
 impl L10nService {
     pub fn start() -> Result<Self, LocaleError> {
         let (sender, receiver) = mpsc::unbounded_channel();
@@ -56,34 +65,28 @@ impl L10nService {
     }
 
     pub async fn get_config(&self) -> Result<L10nConfig, LocaleError> {
-        let (tx, rx) = oneshot::channel();
-        self.sender
-            .send(L10nCommand::GetConfig { respond_to: tx })
-            .unwrap();
-        Ok(rx.await.unwrap())
+        let result = self
+            .send_and_wait(|tx| L10nCommand::GetConfig { respond_to: tx })
+            .await?;
+        Ok(result)
     }
 
     pub async fn set_config(&self, config: &L10nConfig) -> Result<(), LocaleError> {
-        self.sender
-            .send(L10nCommand::SetConfig {
-                config: config.clone(),
-            })
-            .unwrap();
+        self.send(L10nCommand::SetConfig {
+            config: config.clone(),
+        })?;
         Ok(())
     }
 
     pub async fn get_proposal(&self) -> Result<L10nProposal, LocaleError> {
-        let (tx, rx) = oneshot::channel();
-        self.sender
-            .send(L10nCommand::GetProposal { respond_to: tx })
-            .unwrap();
-        Ok(rx.await.unwrap())
+        let result = self
+            .send_and_wait(|tx| L10nCommand::GetProposal { respond_to: tx })
+            .await?;
+        Ok(result)
     }
 
     pub async fn dispatch_action(&self, action: L10nAction) -> Result<(), LocaleError> {
-        self.sender
-            .send(L10nCommand::DispatchAction { action })
-            .unwrap();
+        self.send(L10nCommand::DispatchAction { action })?;
         Ok(())
     }
 }
