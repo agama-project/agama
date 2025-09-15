@@ -34,8 +34,36 @@ module Agama
           JSON.parse(get("software/proposal"))
         end
 
+        def probe
+          post("software/probe")
+        end
+
+        def propose
+          # TODO: implement it
+          post("software/propose")
+        end
+
+        def install
+          # TODO: implement it
+          post("software/install")
+        end
+
+        def finish
+          # TODO: implement it
+          post("software/finish")
+        end
+
+        def locale=(value)
+          # TODO: implement it
+          post("software/locale")
+        end
+
         def config
           JSON.parse(get("software/config"))
+        end
+
+        def errors
+          JSON.parse(get("software/issues"))
         end
 
         def get_resolvables(unique_id, type, optional)
@@ -44,6 +72,12 @@ module Agama
         end
 
         def set_resolvables(unique_id, type, resolvables, optional)
+          # TODO: implement at backend proposal id
+          data = {
+            "names" => resolvables,
+            "type" => type,
+            "optional" => optional
+          }
           JSON.parse(put("software/config"))
         end
 
