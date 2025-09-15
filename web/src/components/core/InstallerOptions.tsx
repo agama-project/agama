@@ -58,6 +58,7 @@ import { PRODUCT, ROOT, L10N } from "~/routes/paths";
 import { useProduct } from "~/queries/software";
 import { useSystem } from "~/queries/system";
 import { updateConfig } from "~/api/api";
+import { useTranslation } from "react-i18next";
 
 /**
  * Props for select inputs
@@ -70,17 +71,28 @@ type SelectProps = {
 /**
  * Renders a dropdown for language selection.
  */
-const LangaugeFormInput = ({ value, onChange }: SelectProps) => (
-  <FormGroup fieldId="language" label={_("Language")}>
-    <FormSelect id="language" name="language" value={value} onChange={onChange}>
-      {Object.keys(supportedLanguages)
-        .sort()
-        .map((id, index) => (
-          <FormSelectOption key={index} value={id} label={supportedLanguages[id]} />
-        ))}
-    </FormSelect>
-  </FormGroup>
-);
+const LangaugeFormInput = ({ value, onChange }: SelectProps) => {
+  const { t, i18n } = useTranslation();
+  return (
+    <FormGroup fieldId="language" label={t("Language")}>
+      <FormSelect
+        id="language"
+        name="language"
+        value={value}
+        onChange={(e, value) => {
+          i18n.changeLanguage(value);
+          onChange(e, value);
+        }}
+      >
+        {Object.keys(supportedLanguages)
+          .sort()
+          .map((id, index) => (
+            <FormSelectOption key={index} value={id} label={supportedLanguages[id]} />
+          ))}
+      </FormSelect>
+    </FormGroup>
+  );
+};
 
 /**
  * Renders a dropdown for keyboard layout selection.
@@ -88,24 +100,26 @@ const LangaugeFormInput = ({ value, onChange }: SelectProps) => (
  * Not available in remote installations.
  */
 const KeyboardFormInput = ({ value, onChange }: SelectProps) => {
+  const { t } = useTranslation();
+
   const {
     localization: { keymaps },
   } = useSystem();
 
   if (!localConnection()) {
     return (
-      <FormGroup label={_("Keyboard layout")}>
-        {_("Cannot be changed in remote installation")}
+      <FormGroup label={t("Keyboard layout")}>
+        {t("Cannot be changed in remote installation")}
       </FormGroup>
     );
   }
 
   return (
-    <FormGroup fieldId="keymap" label={_("Keyboard layout")}>
+    <FormGroup fieldId="keymap" label={t("Keyboard layout")}>
       <FormSelect
         id="keymap"
         name="keymap"
-        label={_("Keyboard layout")}
+        label={t("Keyboard layout")}
         value={value}
         onChange={onChange}
       >
@@ -305,7 +319,9 @@ const TextWithLinkToL10n = ({ text, onClick }: TextWithLinkToL10nProps) => {
 };
 
 const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
-  const checkboxDescription = _(
+  const { t } = useTranslation();
+
+  const checkboxDescription = t(
     // TRANSLATORS: Explains where users can find more language and keymap
     // options for the product to install. Keep the text in square brackets []
     // as it will be replaced with a clickable link.
@@ -313,7 +329,7 @@ const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
   );
 
   return (
-    <Popup isOpen={state.isOpen} variant="small" title={_("Language and keyboard")}>
+    <Popup isOpen={state.isOpen} variant="small" title={t("Language and keyboard")}>
       <Form id="installer-l10n" onSubmit={actions.handleSubmitForm}>
         <LangaugeFormInput value={formState.language} onChange={actions.handleLanguageChange} />
         <KeyboardFormInput value={formState.keymap} onChange={actions.handleKeymapChange} />
@@ -321,7 +337,7 @@ const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
           <FormGroup fieldId="reuse-settings">
             <Checkbox
               id="reuse-settings"
-              label={_("Use these same settings for the selected product")}
+              label={t("Use these same settings for the selected product")}
               description={
                 <TextWithLinkToL10n
                   text={checkboxDescription}
@@ -343,7 +359,7 @@ const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
           isDisabled={state.isBusy}
           isLoading={state.isBusy}
         >
-          {_("Accept")}
+          {t("Accept")}
         </Popup.Confirm>
         <Popup.Cancel onClick={actions.handleCloseDialog} isDisabled={state.isBusy} />
       </Popup.Actions>
@@ -551,6 +567,7 @@ export default function InstallerOptions({
   toggle,
   onClose,
 }: InstallerOptionsProps) {
+  const { i18n } = useTranslation();
   const location = useLocation();
   const {
     localization: { locales },
@@ -607,15 +624,17 @@ export default function InstallerOptions({
     dispatchDialogAction({ type: "SET_BUSY" });
 
     try {
-      if (variant !== "language" && localConnection()) {
-        await changeKeymap(formState.keymap);
-      }
-
-      if (variant !== "keyboard") {
-        await changeLanguage(formState.language);
-      }
-
-      formState.allowReusingSettings && formState.reuseSettings && reuseSettings();
+      i18n.changeLanguage(formState.language);
+      console.log(changeKeymap, changeLanguage, reuseSettings);
+      // if (variant !== "language" && localConnection()) {
+      //   await changeKeymap(formState.keymap);
+      // }
+      //
+      // if (variant !== "keyboard") {
+      //   await changeLanguage(formState.language);
+      // }
+      //
+      // formState.allowReusingSettings && formState.reuseSettings && reuseSettings();
     } catch (e) {
       console.error(e);
       dispatchDialogAction({ type: "SET_IDLE" });

@@ -45,6 +45,11 @@ import "@patternfly/patternfly/patternfly-addons.scss";
  */
 import "~/assets/styles/index.scss";
 
+/**
+ * Initialize i18next
+ */
+import "~/i18next";
+
 const container = document.getElementById("root");
 const root = createRoot(container);
 

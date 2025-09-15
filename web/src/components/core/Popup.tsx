@@ -34,6 +34,7 @@ import {
 import { Loading } from "~/components/layout";
 import { fork } from "radashi";
 import { _ } from "~/i18n";
+import { useTranslation } from "react-i18next";
 
 type ButtonWithoutVariantProps = Omit<ButtonProps, "variant">;
 type PredefinedAction = React.PropsWithChildren<ButtonWithoutVariantProps>;
@@ -137,11 +138,15 @@ const SecondaryAction = ({ children, ...actionProps }: PredefinedAction) => (
  * @example <caption>Using it with a custom text</caption>
  *   <Cancel onClick={dismiss}>Dismiss</Confirm>
  */
-const Cancel = ({ children = _("Cancel"), ...actionProps }: PredefinedAction) => (
-  <SecondaryAction key="cancel" {...actionProps}>
-    {children}
-  </SecondaryAction>
-);
+const Cancel = ({ children, ...actionProps }: PredefinedAction) => {
+  const { t } = useTranslation();
+
+  return (
+    <SecondaryAction key="cancel" {...actionProps}>
+      {children || t("Cancel")}
+    </SecondaryAction>
+  );
+};
 
 /**
  * A Popup additional action, rendered as a link
