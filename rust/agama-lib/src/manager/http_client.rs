@@ -24,8 +24,14 @@ use crate::{
     manager::InstallerStatus,
 };
 use reqwest::header::CONTENT_ENCODING;
-use std::io::Cursor;
-use std::path::{Path, PathBuf};
+use std::{
+    fs::{self, Permissions},
+    io::Cursor,
+};
+use std::{
+    os::unix::fs::PermissionsExt,
+    path::{Path, PathBuf},
+};
 
 use super::FinishMethod;
 
@@ -35,6 +41,8 @@ pub enum ManagerHTTPClientError {
     HTTP(#[from] BaseHTTPClientError),
     #[error("Cannot generate Agama logs: {0}")]
     CannotGenerateLogs(String),
+    #[error("I/O error")]
+    IO(#[from] std::io::Error),
 }
 
 pub struct ManagerHTTPClient {
@@ -106,6 +114,8 @@ impl ManagerHTTPClient {
             ))
         })?;
 
+        let permissions = Permissions::from_mode(0o600);
+        fs::set_permissions(&destination, permissions)?;
         Ok(destination)
     }
 
