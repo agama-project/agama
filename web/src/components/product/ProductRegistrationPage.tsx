@@ -61,6 +61,10 @@ import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 
 const FORM_ID = "productRegistration";
+const SERVER_LABEL = _("Registration server");
+const EMAIL_LABEL = _("Email");
+const SCC_SERVER_LABEL = _("SUSE Customer Center (SCC)");
+const CUSTOM_SERVER_LABEL = _("Custom");
 
 const RegisteredProductSection = () => {
   const { selectedProduct: product } = useProduct();
@@ -77,7 +81,7 @@ const RegisteredProductSection = () => {
         <DescriptionListGroup>
           {!isEmpty(registration.url) && (
             <>
-              <DescriptionListTerm>{_("Registration server")}</DescriptionListTerm>
+              <DescriptionListTerm>{SERVER_LABEL}</DescriptionListTerm>
               <DescriptionListDescription>{registration.url}</DescriptionListDescription>
             </>
           )}
@@ -96,7 +100,7 @@ const RegisteredProductSection = () => {
           )}
           {!isEmpty(registration.email) && (
             <>
-              <DescriptionListTerm>{_("Email")}</DescriptionListTerm>
+              <DescriptionListTerm>{EMAIL_LABEL}</DescriptionListTerm>
               <DescriptionListDescription>{registration.email}</DescriptionListDescription>
             </>
           )}
@@ -120,22 +124,22 @@ function RegistrationServer({
   onChange,
 }: RegistrationServerProps): React.ReactNode {
   return (
-    <FormGroup fieldId={id} label={_("Registration server")}>
+    <FormGroup fieldId={id} label={SERVER_LABEL}>
       <Select
         id={"server"}
         value={value}
-        label={value === "default" ? _("SUSE Customer Center (SCC)") : _("Custom")}
+        label={value === "default" ? SCC_SERVER_LABEL : CUSTOM_SERVER_LABEL}
         onChange={(v: ServerOption) => onChange(v)}
       >
         <SelectList aria-label={_("Server options")}>
           <SelectOption value="default" description={_("Register using SUSE server")}>
-            {_("SUSE Customer Center (SCC)")}
+            {SCC_SERVER_LABEL}
           </SelectOption>
           <SelectOption
             value="custom"
             description={_("Register using a custom registration server")}
           >
-            {_("Custom")}
+            {CUSTOM_SERVER_LABEL}
           </SelectOption>
         </SelectList>
       </Select>
@@ -246,7 +250,7 @@ function RegistrationEmail({
 
       {isProvided && (
         <NestedContent margin="mxMd" aria-live="polite">
-          <FormGroup fieldId={id} label={_("Email")}>
+          <FormGroup fieldId={id} label={EMAIL_LABEL}>
             <TextInput id={id} value={value} onChange={(_, v) => onChange(v)} />
           </FormGroup>
         </NestedContent>
