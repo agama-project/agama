@@ -58,13 +58,13 @@ import { useHostname } from "~/queries/system";
 import { isEmpty } from "radashi";
 import { mask } from "~/utils";
 import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
+import { _, N_ } from "~/i18n";
 
 const FORM_ID = "productRegistration";
-const SERVER_LABEL = _("Registration server");
-const EMAIL_LABEL = _("Email");
-const SCC_SERVER_LABEL = _("SUSE Customer Center (SCC)");
-const CUSTOM_SERVER_LABEL = _("Custom");
+const SERVER_LABEL = N_("Registration server");
+const EMAIL_LABEL = N_("Email");
+const SCC_SERVER_LABEL = N_("SUSE Customer Center (SCC)");
+const CUSTOM_SERVER_LABEL = N_("Custom");
 
 const RegisteredProductSection = () => {
   const { selectedProduct: product } = useProduct();
@@ -81,7 +81,8 @@ const RegisteredProductSection = () => {
         <DescriptionListGroup>
           {!isEmpty(registration.url) && (
             <>
-              <DescriptionListTerm>{SERVER_LABEL}</DescriptionListTerm>
+              {/* eslint-disable agama-i18n/string-literals */}
+              <DescriptionListTerm>{_(SERVER_LABEL)}</DescriptionListTerm>
               <DescriptionListDescription>{registration.url}</DescriptionListDescription>
             </>
           )}
@@ -100,7 +101,8 @@ const RegisteredProductSection = () => {
           )}
           {!isEmpty(registration.email) && (
             <>
-              <DescriptionListTerm>{EMAIL_LABEL}</DescriptionListTerm>
+              {/* eslint-disable agama-i18n/string-literals */}
+              <DescriptionListTerm>{_(EMAIL_LABEL)}</DescriptionListTerm>
               <DescriptionListDescription>{registration.email}</DescriptionListDescription>
             </>
           )}
@@ -124,22 +126,29 @@ function RegistrationServer({
   onChange,
 }: RegistrationServerProps): React.ReactNode {
   return (
-    <FormGroup fieldId={id} label={SERVER_LABEL}>
+    <FormGroup
+      fieldId={id}
+      /* eslint-disable agama-i18n/string-literals */
+      label={_(SERVER_LABEL)}
+    >
       <Select
         id={"server"}
         value={value}
-        label={value === "default" ? SCC_SERVER_LABEL : CUSTOM_SERVER_LABEL}
+        /* eslint-disable agama-i18n/string-literals */
+        label={value === "default" ? _(SCC_SERVER_LABEL) : _(CUSTOM_SERVER_LABEL)}
         onChange={(v: ServerOption) => onChange(v)}
       >
         <SelectList aria-label={_("Server options")}>
           <SelectOption value="default" description={_("Register using SUSE server")}>
-            {SCC_SERVER_LABEL}
+            {/* eslint-disable agama-i18n/string-literals */}
+            {_(SCC_SERVER_LABEL)}
           </SelectOption>
           <SelectOption
             value="custom"
             description={_("Register using a custom registration server")}
           >
-            {CUSTOM_SERVER_LABEL}
+            {/* eslint-disable agama-i18n/string-literals */}
+            {_(CUSTOM_SERVER_LABEL)}
           </SelectOption>
         </SelectList>
       </Select>
