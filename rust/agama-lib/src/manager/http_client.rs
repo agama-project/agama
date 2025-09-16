@@ -35,8 +35,6 @@ pub enum ManagerHTTPClientError {
     HTTP(#[from] BaseHTTPClientError),
     #[error("Cannot generate Agama logs: {0}")]
     CannotGenerateLogs(String),
-    #[error("I/O error")]
-    IO(#[from] std::io::Error),
 }
 
 pub struct ManagerHTTPClient {
