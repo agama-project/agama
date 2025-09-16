@@ -35,7 +35,7 @@
 //!
 //! At this point, it only handles the progress that are exposed through D-Bus.
 
-use crate::web::{event::log_event, EventsSender};
+use crate::web::EventsSender;
 use agama_lib::{
     event,
     http::Event,
@@ -175,7 +175,6 @@ impl ProgressService {
             path: path.to_string(),
             progress,
         });
-        log_event(&event);
         self.events.send(event)?;
         Ok(())
     }

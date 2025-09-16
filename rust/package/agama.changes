@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep 15 21:09:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not log the events to prevent leaking passwords (bsc#1249622).
+- Set logs permissions to 0o600.
+
+-------------------------------------------------------------------
 Thu Aug 28 10:15:23 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update the software cache when the patterns selection changes (bsc#1248826).
