@@ -39,6 +39,10 @@ export default {
   "%s logo": [
     "%s logosu"
   ],
+  "%s will be created as a logical volume": [
+    "",
+    ""
+  ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s hala yapılandırılmış LVM gruplarını ve önyükleme için gereken tüm bölümleri içerecektir"
   ],
@@ -59,6 +63,9 @@ export default {
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Yeni %2$s için genel bir asgari %1$s boyutu kullanılacak"
+  ],
+  "A generic size of %1$s will be used for the new %2$s": [
+    "Yeni %2$s için %1$s genel boyutu kullanılacak"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Yeni %3$s için %1$s ile %2$s arasında genel bir boyut aralığı kullanılacak"
@@ -181,7 +188,7 @@ export default {
     "Seçilen çözümü uygula"
   ],
   "Applying changes": [
-    ""
+    "Değişiklikleri uygula"
   ],
   "As a new partition on %s": [
     "%s üzerinde yeni bir bölüm olarak"
@@ -228,6 +235,15 @@ export default {
   "Back": [
     "Geri"
   ],
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
+    "Sistemdeki RAM miktarına bağlı olarak, %3$s için %1$s veya %2$s planlanacaktır"
+  ],
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
+    "Sistemdeki RAM miktarına bağlı olarak, %3$s için en az %2$s'lik bir %1$s planlanacaktır"
+  ],
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "Sistemdeki RAM miktarına bağlı olarak, %4$s için %2$s ile %3$s arasında bir boyuta sahip %1$s planlanacaktır."
+  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -241,13 +257,19 @@ export default {
     "Kuruluma başlamadan önce aşağıdaki sorunları gidermeniz gerekmektedir:"
   ],
   "Below %s devices are offline and cannot be formatted.": [
-    ""
+    "%s'in altındaki cihazlar çevrimdışıdır ve biçimlendirilemez."
   ],
   "Beta": [
     "Beta"
   ],
   "Bind to MAC address": [
     "MAC adresine bağlan"
+  ],
+  "Bind to device name": [
+    "Aygıt adına bağlan"
+  ],
+  "Binding": [
+    "Bağlayıcı"
   ],
   "Binding settings for '%s'": [
     "'%s' için bağlama ayarları"
@@ -273,6 +295,12 @@ export default {
   "Cannot connect to Agama server": [
     "Agama sunucusuna bağlanılamıyor"
   ],
+  "Cannot format %s": [
+    "%s biçimlendirilemiyor"
+  ],
+  "Cannot format all the selected devices": [
+    "Seçilen tüm cihazlar biçimlendirilemiyor"
+  ],
   "Change": [
     "Değiştir"
   ],
@@ -292,7 +320,7 @@ export default {
     "Görüntüleme dilini ve klavye düzenini değiştir"
   ],
   "Change filters and try again.": [
-    ""
+    "Filtreleri değiştirip tekrar deneyin."
   ],
   "Change keyboard": [
     "Klavyeyi değiştir"
@@ -330,11 +358,17 @@ export default {
   "Choose device to bind by name": [
     "Adına göre bağlanacak cihazı seçin"
   ],
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
+    "Bağlantının bir ağ cihazıyla nasıl ilişkilendirileceğini seçin. Bu, bağlantının hangi cihazı kullanacağını kontrol etmenize yardımcı olur."
+  ],
   "Clear": [
     "Temizle"
   ],
   "Clear all filters": [
-    ""
+    "Tüm filtreleri temizle"
+  ],
+  "Clear input": [
+    "Girişi temizle"
   ],
   "Clear selected mount point": [
     "Seçilen bağlama noktasını temizle"
@@ -344,6 +378,9 @@ export default {
   ],
   "Collapse the list of planned actions": [
     "Planlanan eylemlerin listesini daraltın"
+  ],
+  "Configuration out of sync": [
+    "Yapılandırma senkronize değil"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Yapılandırma iSCSI Önyükleme Ürün Yazılımı Tablosu'ndan (iBFT) okundu."
@@ -385,7 +422,7 @@ export default {
     "Kurulumu Onayla"
   ],
   "Confirm that you really want to continue.": [
-    ""
+    "Gerçekten devam etmek istediğinizi onaylayın."
   ],
   "Congratulations!": [
     "Tebrikler!"
@@ -405,6 +442,15 @@ export default {
   "Connected (%s)": [
     "Bağlandı (%s)"
   ],
+  "Connected device": [
+    "Bağlı cihaz"
+  ],
+  "Connected devices": [
+    "Bağlı cihazlar"
+  ],
+  "Connected devices tabs": [
+    "Bağlı cihazlar sekmeleri"
+  ],
   "Connecting to %s": [
     "%s'ye bağlanılıyor"
   ],
@@ -412,7 +458,13 @@ export default {
     "Bağlantı detayları"
   ],
   "Connection is available to all devices.": [
-    ""
+    "Tüm cihazlara bağlantı mevcuttur."
+  ],
+  "Connection is bound to MAC address %s.": [
+    "Bağlantı %s MAC adresine bağlı."
+  ],
+  "Connection is bound to device %s.": [
+    "Bağlantı %s aygıtına bağlı."
   ],
   "Connection not found or lost": [
     "Bağlantı bulunamadı veya kayboldu"
@@ -606,6 +658,9 @@ export default {
   "Edit connection %s": [
     "Bağlantıyı düzenle %s"
   ],
+  "Edit connection settings": [
+    "Bağlantı ayarlarını düzenle"
+  ],
   "Edit user": [
     "Kullanıcıyı düzenle"
   ],
@@ -672,6 +727,14 @@ export default {
   "Ext4": [
     "Ext4"
   ],
+  "Extend the installation beyond the currently selected device": [
+    "",
+    ""
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "",
+    ""
+  ],
   "Extensions": [
     "Uzantılar"
   ],
@@ -729,6 +792,9 @@ export default {
   "Format RAID %s": [
     "RAID %s'yi biçimlendir"
   ],
+  "Format device %s": [
+    "Aygıtı biçimlendir %s"
+  ],
   "Format device as": [
     "Aygıt şu şekilde biçimlendirilecek"
   ],
@@ -737,6 +803,9 @@ export default {
   ],
   "Format logical volume as": [
     "Mantıksal birimi şu şekilde biçimlendir"
+  ],
+  "Format now": [
+    "Şimdi biçimlendir"
   ],
   "Format partition as": [
     "Bölümü şu şekilde biçimlendir"
@@ -770,6 +839,9 @@ export default {
   ],
   "Go to network page": [
     "Ağ sayfasına git"
+  ],
+  "Go to storage page": [
+    "Depolama sayfasına git"
   ],
   "Good signal": [
     "İyi sinyal"
@@ -914,7 +986,7 @@ export default {
     "Yayıncı"
   ],
   "It doesn't exist or can't be reached.": [
-    ""
+    "Yok veya ulaşılamaz."
   ],
   "It is chosen for booting": [
     "Önyükleme için seçildi"
@@ -941,7 +1013,7 @@ export default {
     "Mevcut yapılandırma ile sistemi kurmak mümkün değildir. Aşağıdaki ayarları düzenleyin."
   ],
   "It is offline and must be activated before formatting it.": [
-    ""
+    "Çevrimdışıdır ve biçimlendirmeden önce etkinleştirilmesi gerekir."
   ],
   "It may take some time.": [
     "Biraz zaman alabilir."
@@ -1033,8 +1105,14 @@ export default {
   "Manual": [
     "Manuel"
   ],
+  "Max channel": [
+    "Maksimum kanal"
+  ],
   "MiB": [
     "MB"
+  ],
+  "Min channel": [
+    "Minimum kanal"
   ],
   "Mode": [
     "Mod"
@@ -1121,7 +1199,7 @@ export default {
     "Hayır"
   ],
   "No DASD devices were found in this machine.": [
-    ""
+    "Bu makinede DASD aygıtı bulunamadı."
   ],
   "No Wi-Fi networks were found": [
     "Hiçbir Wi-Fi ağı bulunamadı"
@@ -1139,10 +1217,13 @@ export default {
     "İçerik bulunamadı"
   ],
   "No device is currently using this connection.": [
-    ""
+    "Şu anda bu bağlantıyı kullanan bir cihaz yok."
   ],
   "No device selected yet": [
     "Henüz hiçbir cihaz seçilmedi"
+  ],
+  "No devices available": [
+    "Hiçbir cihaz mevcut değil"
   ],
   "No devices configured yet": [
     "Henüz hiçbir cihaz yapılandırılmadı"
@@ -1191,6 +1272,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "Hiçbir zaman dilimi filtreye uymuyor."
+  ],
+  "None set": [
+    "Hiçbiri ayarlanmadı"
   ],
   "Not available": [
     "Müsait değil"
@@ -1390,11 +1474,14 @@ export default {
   "Reload": [
     "Yenile"
   ],
+  "Reload now": [
+    "Şimdi yeniden yükle"
+  ],
   "Reloading data, please wait...": [
     "Veriler yeniden yükleniyor, lütfen bekleyin..."
   ],
   "Reloading is required to get the latest data and avoid issues or data loss.": [
-    ""
+    "En güncel verilere ulaşmak ve sorun veya veri kaybını önlemek için yeniden yükleme yapılması gerekir."
   ],
   "Remove": [
     "Kaldır"
@@ -1414,6 +1501,9 @@ export default {
   "Reset to the default configuration": [
     "Varsayılan yapılandırmaya sıfırla"
   ],
+  "Resource not found or lost": [
+    "Kaynak bulunamadı veya kayboldu"
+  ],
   "Result": [
     "Sonuç"
   ],
@@ -1432,8 +1522,14 @@ export default {
   "Routes": [
     "Rotalar"
   ],
+  "Row actions": [
+    "Satır eylemleri"
+  ],
   "Row expansion": [
-    ""
+    "Satır genişletme"
+  ],
+  "Row selection": [
+    "Satır seçimi"
   ],
   "SD Card": [
     "SD Kart"
@@ -1501,6 +1597,9 @@ export default {
   "Select at least one disk.": [
     "En az bir disk seçin."
   ],
+  "Select devices to enable bulk actions.": [
+    "Toplu işlemleri etkinleştirmek için cihazları seçin."
+  ],
   "Select or enter a mount point": [
     "Bir bağlama noktası seçin veya girin"
   ],
@@ -1534,11 +1633,20 @@ export default {
   "Server options": [
     "Sunucu seçenekleri"
   ],
+  "Set DIAG off": [
+    "DIAG'ı kapatın"
+  ],
+  "Set DIAG on": [
+    "DIAG'ı açın"
+  ],
   "Set a permanent hostname that won’t change with network updates.": [
     "Ağ güncellemeleriyle değişmeyecek kalıcı bir ana bilgisayar adı ayarlayın."
   ],
   "Setting up connection": [
     "Bağlantı kuruluyor"
+  ],
+  "Settings": [
+    "Ayarlar"
   ],
   "Several partitions will be deleted": [
     "Birkaç bölüm silinecek"
@@ -1659,10 +1767,13 @@ export default {
     "LVM grubu '%1$s' %2$s konumunda kalacak"
   ],
   "The configuration has been updated externally.": [
-    ""
+    "Yapılandırma harici olarak güncellendi."
   ],
   "The configured LVM groups will remain at %s": [
     "Yapılandırılan LVM grupları %s konumunda kalacaktır"
+  ],
+  "The connection can be used by any available device.": [
+    "Bağlantıyı herhangi bir mevcut cihazdan kullanabilirsiniz."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Bağlantı sadece kurulum sırasında kullanılacak olup, kurulu sistemde mevcut olmayacaktır."
@@ -1681,6 +1792,10 @@ export default {
   ],
   "The current file system will be mounted at %s": [
     "Mevcut dosya sistemi %s konumuna bağlanacak"
+  ],
+  "The current storage configuration has the following issue:": [
+    "",
+    ""
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Veriler tutulacak, ancak mevcut bölümler ihtiyaç halinde yeniden boyutlandırılacak."
@@ -1844,6 +1959,10 @@ export default {
   "There are not usable partitions": [
     "Kullanılabilir bölüm yok"
   ],
+  "There is %d destructive action planned affecting %s": [
+    "",
+    ""
+  ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Bunlar en alakalı kurulum ayarlarıdır. Daha fazla ayrıntı için menüdeki bölümlere göz atmaktan çekinmeyin."
   ],
@@ -1852,6 +1971,12 @@ export default {
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Bunlar, yüklenecek ürün için ayarlardır. Yükleyici dili, üst çubuktan erişilebilen [ayarlar paneli] aracılığıyla ayarlanabilir."
+  ],
+  "This action could destroy any data stored on the device.": [
+    "Bu eylem cihazda saklanan tüm verileri yok edebilir."
+  ],
+  "This action could destroy any data stored on the devices listed below.": [
+    "Bu işlem aşağıda listelenen cihazlarda saklanan tüm verileri yok edebilir."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Bu uzantı sunucuda mevcut değil. Sunucu yöneticisinden uzantıyı yansıtmasını isteyin."
@@ -1863,10 +1988,10 @@ export default {
     "Bu lisans %s'de mevcut değil."
   ],
   "This may take a moment while updates complete.": [
-    ""
+    "Güncellemeler tamamlanana kadar bu işlem biraz zaman alabilir."
   ],
   "This message will close automatically when everything is done.": [
-    ""
+    "Her şey tamamlandığında bu mesaj otomatik olarak kapanacaktır."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Bu desen, netlik ve verimlilik arasında bir denge kurar: modal, basit seçimler için her şeyi hafif tutarken, tam görünüm daha derin keşifleri ve özellikle çok sayıda cihaza sahip kullanıcılar için daha karmaşık eylemleri destekler."
@@ -1914,13 +2039,13 @@ export default {
     "Ayarlar değiştirilemiyor"
   ],
   "Unbound": [
-    ""
+    "Bağlanmamış"
   ],
   "Unselect": [
     "Seçimi kaldır"
   ],
   "Unselect or activate them and try it again.": [
-    ""
+    "Seçimi kaldırın veya etkinleştirin ve tekrar deneyin."
   ],
   "Unsupported AutoYaST elements": [
     "Desteklenmeyen AutoYaST öğeleri"
@@ -2153,6 +2278,12 @@ export default {
   "[FIXME]": [
     "[FIXME]"
   ],
+  "active": [
+    "aktif et"
+  ],
+  "all": [
+    "tümü"
+  ],
   "approx. %s": [
     "yaklaşık %s"
   ],
@@ -2175,19 +2306,22 @@ export default {
     "mantıksal alan"
   ],
   "no": [
-    ""
+    "hayır"
   ],
   "offline": [
-    ""
+    "çevrimdışı"
   ],
   "partition": [
     "bölüm"
   ],
   "read_only": [
-    ""
+    "salt_okunur"
   ],
   "reset to defaults": [
     "varsayılanlara sıfırla"
+  ],
+  "yes": [
+    "evet"
   ],
   "zFCP": [
     "zFCP"

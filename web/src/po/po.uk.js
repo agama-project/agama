@@ -15,6 +15,11 @@ export default {
   "%1$s at %2$s": [
     "%1$s на %2$s"
   ],
+  "%1$s will be created as a partition at %2$s": [
+    "%1$s буде створений як розділ на %2$s",
+    "%1$s будуть створені як розділи на %2$s",
+    "%1$s будуть створені як розділи на %2$s"
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s, як і раніше, міститиме групу LVM '%2$s' і будь-який розділ, необхідний для завантаження"
   ],
@@ -38,6 +43,11 @@ export default {
   ],
   "%s logo": [
     "Логотип %s"
+  ],
+  "%s will be created as a logical volume": [
+    "%s буде створено як логічний том",
+    "%s будуть створені як логічні томи",
+    "%s будуть створені як логічні томи"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s все ще буде містити налаштовані групи LVM і будь-який розділ, необхідний для завантаження"
@@ -182,6 +192,11 @@ export default {
   ],
   "Apply selected solution": [
     "Застосувати обране рішення"
+  ],
+  "Apply to the selected device": [
+    "Застосувати до %s обраного пристрою",
+    "Застосувати до %s обраних пристроїв",
+    "Застосувати до %s обраних пристроїв"
   ],
   "Applying changes": [
     "Застосування змін"
@@ -380,6 +395,9 @@ export default {
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Конфігурація, зчитана з таблиці iSCSI Boot Firmware Table (iBFT)."
+  ],
+  "Configuration unreachable or invalid": [
+    "Конфігурація недоступна або не синхронізована"
   ],
   "Configure DASD": [
     "Налаштувати DASD"
@@ -722,6 +740,16 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extend the installation beyond the currently selected device": [
+    "Розширення встановлення за межі поточного %d пристрою",
+    "Розширення встановлення за межі поточних %d пристроїв",
+    "Розширення встановлення за межі поточних %d пристроїв"
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "Розширення встановлення за межі поточного %d диска",
+    "Розширення встановлення за межі поточних %d дисків",
+    "Розширення встановлення за межі поточних %d дисків"
   ],
   "Extensions": [
     "Розширення"
@@ -1123,6 +1151,16 @@ export default {
   ],
   "More languages might be available for the selected product at [Localization] page": [
     "Більше мов може бути доступно на сторінці [Локалізації]"
+  ],
+  "Moreover, the following partition will be created.": [
+    "Крім того, буде створено такий розділ.",
+    "Крім того, буде створено такі розділи.",
+    "Крім того, буде створено такі розділи."
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "Крім того, буде змонтовано такий розділ.",
+    "Крім того, буде змонтовано такі розділи.",
+    "Крім того, буде змонтовано такі розділи."
   ],
   "Moreover, the following partitions will be created or mounted": [
     "Крім того, буде створено або змонтовано такі розділи"
@@ -1759,6 +1797,11 @@ export default {
   "The configuration has been updated externally.": [
     "Конфігурація була оновлена зовні."
   ],
+  "The configuration must be adapted to address the following issue:": [
+    "Конфігурація повинна бути адаптована для вирішення такої проблеми:",
+    "Конфігурація повинна бути адаптована для вирішення наступних проблем:",
+    "Конфігурація повинна бути адаптована для вирішення наступних проблем:"
+  ],
   "The configured LVM groups will remain at %s": [
     "Налаштовані групи LVM залишаться у %s"
   ],
@@ -1782,6 +1825,11 @@ export default {
   ],
   "The current file system will be mounted at %s": [
     "Поточна файлова система буде змонтована за шляхом %s"
+  ],
+  "The current storage configuration has the following issue:": [
+    "Поточна конфігурація сховища має таку проблему:",
+    "Поточна конфігурація сховища має такі проблеми:",
+    "Поточна конфігурація сховища має такі проблеми:"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Дані зберігаються, але розмір поточних розділів буде змінено в міру необхідності."
@@ -1831,6 +1879,21 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Останній крок з налаштування модуля довіреної платформи (TPM) для автоматичного відкриття зашифрованих пристроїв відбудеться під час першого завантаження нової системи. Щоб це спрацювало, комп'ютер повинен завантажитися безпосередньо з новим завантажувачем."
   ],
+  "The following logical volume will be created": [
+    "Буде створено такий логічний том",
+    "Будуть створені такі логічні томи",
+    "Будуть створені такі логічні томи"
+  ],
+  "The following partition will be created.": [
+    "Буде створено такий розділ.",
+    "Будуть створені такі розділи.",
+    "Будуть створені такі розділи."
+  ],
+  "The following partition will be mounted.": [
+    "Буде змонтовано такий розділ.",
+    "Будуть змонтовані такі розділи.",
+    "Будуть змонтовані такі розділи."
+  ],
   "The following partitions will be created or mounted": [
     "Будуть створені або змонтовані такі розділи"
   ],
@@ -1854,6 +1917,11 @@ export default {
   ],
   "The installer requires [root] user privileges.": [
     "Програма встановлення вимагає привілеїв користувача [root]."
+  ],
+  "The logical volume will also be deleted": [
+    "Логічний том також буде видалений",
+    "Логічні томи також будуть видалені",
+    "Логічні томи також будуть видалені"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Максимальне значення повинно бути числом, за яким слідує одиниця виміру, наприклад, GiB або GB"
@@ -1944,6 +2012,16 @@ export default {
   ],
   "There are not usable partitions": [
     "Існують не придатні для використання розділи"
+  ],
+  "There is %d destructive action planned": [
+    "Запланована %d руйнівна дія",
+    "Заплановано %d руйнівні дії",
+    "Заплановано %d руйнівних дій"
+  ],
+  "There is %d destructive action planned affecting %s": [
+    "Планується %d руйнівна дія, що вплине на %s",
+    "Планується %d руйнівні дії, що вплине на %s",
+    "Планується %d руйнівних дій, що вплине на %s"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Це найактуальніші налаштування установки. Детальніші відомості наведено в розділах меню."

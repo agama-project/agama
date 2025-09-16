@@ -15,6 +15,9 @@ export default {
   "%1$s at %2$s": [
     "%1$s (%2$s 上)"
   ],
+  "%1$s will be created as a partition at %2$s": [
+    "%1$s 將建立為 %2$s 上的分割區"
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s 仍將包含 LVM 群組 '%2$s' 和開機所需的任何分割區"
   ],
@@ -39,6 +42,9 @@ export default {
   "%s logo": [
     "%s 標誌"
   ],
+  "%s will be created as a logical volume": [
+    "%s 將建立為邏輯磁碟區"
+  ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s 仍將包含設定的 LVM 群組和開機所需的任何分割區"
   ],
@@ -60,8 +66,17 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "至少 %1$s 的通用大小將用於新 %2$s"
   ],
+  "A generic size of %1$s will be used for the new %2$s": [
+    "%1$s 的通用大小將用於新 %2$s"
+  ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "介於 %1$s 至 %2$s 的通用大小將用於新 %3$s"
+  ],
+  "A new partition will be created for %s": [
+    "將會為 %s 建立新分割區"
+  ],
+  "A new volume will be created for %s": [
+    "將會為 %s 建立新磁碟區"
   ],
   "A partition may be deleted": [
     "可能會刪除某個分割區"
@@ -171,6 +186,9 @@ export default {
   "Already using all available disks": [
     "已使用所有可用磁碟"
   ],
+  "An existing partition will be used for %s": [
+    "將會為 %s 使用現有分割區"
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "將移除所有現有分割區，並且磁碟上的所有資料都將遺失。"
   ],
@@ -180,8 +198,11 @@ export default {
   "Apply selected solution": [
     "套用所選的解決方案"
   ],
+  "Apply to the selected device": [
+    "套用於 %s 個所選裝置"
+  ],
   "Applying changes": [
-    ""
+    "正在套用變更"
   ],
   "As a new partition on %s": [
     "做為 %s 上的新分割區"
@@ -228,6 +249,15 @@ export default {
   "Back": [
     "後退"
   ],
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
+    "將根據系統中的 RAM 容量規劃一個 %1$s (%2$s)，以用於 %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
+    "將根據系統中的 RAM 容量規劃一個 %1$s (至少 %2$s)，以用於 %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "將根據系統中的 RAM 容量規劃一個 %1$s (大小介於 %2$s 至 %3$s 之間)，以用於 %4$s"
+  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -241,13 +271,19 @@ export default {
     "在開始安裝前，您需要解決下列問題："
   ],
   "Below %s devices are offline and cannot be formatted.": [
-    ""
+    "以下 %s 個裝置已離線，無法格式化。"
   ],
   "Beta": [
     "Beta 版"
   ],
   "Bind to MAC address": [
     "結合至 MAC 位址"
+  ],
+  "Bind to device name": [
+    "結合至裝置名稱"
+  ],
+  "Binding": [
+    "正在結合"
   ],
   "Binding settings for '%s'": [
     "'%s' 的結合設定"
@@ -273,6 +309,12 @@ export default {
   "Cannot connect to Agama server": [
     "無法連接至 Agama 伺服器"
   ],
+  "Cannot format %s": [
+    "無法格式化 %s"
+  ],
+  "Cannot format all the selected devices": [
+    "無法格式化全部所選裝置"
+  ],
   "Change": [
     "變更"
   ],
@@ -292,7 +334,7 @@ export default {
     "變更顯示語言和鍵盤配置"
   ],
   "Change filters and try again.": [
-    ""
+    "請變更過濾器，然後重試。"
   ],
   "Change keyboard": [
     "變更鍵盤"
@@ -330,11 +372,17 @@ export default {
   "Choose device to bind by name": [
     "依名稱選擇要結合的裝置"
   ],
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
+    "選擇連接與網路裝置關聯的方式。這有助於控制連接使用的裝置。"
+  ],
   "Clear": [
     "清除"
   ],
   "Clear all filters": [
-    ""
+    "清除所有過濾器"
+  ],
+  "Clear input": [
+    "清除輸入"
   ],
   "Clear selected mount point": [
     "清除所選的掛接點"
@@ -345,8 +393,14 @@ export default {
   "Collapse the list of planned actions": [
     "收起計劃的動作清單"
   ],
+  "Configuration out of sync": [
+    "組態未同步"
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "已從 iSCSI 開機韌體表 (iBFT) 讀取組態。"
+  ],
+  "Configuration unreachable or invalid": [
+    "組態無法存取或無效"
   ],
   "Configure DASD": [
     "設定 DASD"
@@ -385,7 +439,7 @@ export default {
     "確認安裝"
   ],
   "Confirm that you really want to continue.": [
-    ""
+    "請確認您確實要繼續。"
   ],
   "Congratulations!": [
     "恭喜！"
@@ -405,6 +459,15 @@ export default {
   "Connected (%s)": [
     "已連接 (%s)"
   ],
+  "Connected device": [
+    "已連接裝置"
+  ],
+  "Connected devices": [
+    "已連接裝置"
+  ],
+  "Connected devices tabs": [
+    "已連接裝置索引標籤"
+  ],
   "Connecting to %s": [
     "正在連接至 %s"
   ],
@@ -412,7 +475,13 @@ export default {
     "連接詳細資料"
   ],
   "Connection is available to all devices.": [
-    ""
+    "連接可用於所有裝置。"
+  ],
+  "Connection is bound to MAC address %s.": [
+    "連接已結合至 MAC 位址 %s。"
+  ],
+  "Connection is bound to device %s.": [
+    "連接已結合至裝置 %s。"
   ],
   "Connection not found or lost": [
     "未找到連接，或者連接中斷"
@@ -606,6 +675,9 @@ export default {
   "Edit connection %s": [
     "編輯連接 %s"
   ],
+  "Edit connection settings": [
+    "編輯連接設定"
+  ],
   "Edit user": [
     "編輯使用者"
   ],
@@ -672,6 +744,12 @@ export default {
   "Ext4": [
     "Ext4"
   ],
+  "Extend the installation beyond the currently selected device": [
+    "將安裝擴充至超過目前 %d 個裝置的容量"
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "將安裝擴充至超過目前 %d 個磁碟的容量"
+  ],
   "Extensions": [
     "延伸"
   ],
@@ -729,6 +807,9 @@ export default {
   "Format RAID %s": [
     "格式化 RAID %s"
   ],
+  "Format device %s": [
+    "格式化裝置 %s"
+  ],
   "Format device as": [
     "將裝置格式化為"
   ],
@@ -737,6 +818,9 @@ export default {
   ],
   "Format logical volume as": [
     "將邏輯磁碟區格式化為"
+  ],
+  "Format now": [
+    "立即格式化"
   ],
   "Format partition as": [
     "將分割區格式化為"
@@ -770,6 +854,9 @@ export default {
   ],
   "Go to network page": [
     "前往網路頁面"
+  ],
+  "Go to storage page": [
+    "前往儲存頁面"
   ],
   "Good signal": [
     "訊號良好"
@@ -913,7 +1000,7 @@ export default {
     "核發者"
   ],
   "It doesn't exist or can't be reached.": [
-    ""
+    "該資源不存在或無法存取。"
   ],
   "It is chosen for booting": [
     "該裝置選定用於開機"
@@ -940,7 +1027,7 @@ export default {
     "無法採用目前組態安裝系統，請調整下面的設定。"
   ],
   "It is offline and must be activated before formatting it.": [
-    ""
+    "該裝置已離線，必須將其啟用才能進行格式化。"
   ],
   "It may take some time.": [
     "這可能需要一些時間。"
@@ -1032,8 +1119,14 @@ export default {
   "Manual": [
     "手動"
   ],
+  "Max channel": [
+    "最大通道"
+  ],
   "MiB": [
     "MiB"
+  ],
+  "Min channel": [
+    "最小通道"
   ],
   "Mode": [
     "模式"
@@ -1055,6 +1148,12 @@ export default {
   ],
   "More languages might be available for the selected product at [Localization] page": [
     "[本土化] 頁面可能會提供更多適用於所選產品的語言"
+  ],
+  "Moreover, the following partition will be created.": [
+    "此外還將建立以下分割區。"
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "此外還將掛接以下分割區。"
   ],
   "Moreover, the following partitions will be created or mounted": [
     "此外，將會建立或掛接以下分割區"
@@ -1120,7 +1219,7 @@ export default {
     "否"
   ],
   "No DASD devices were found in this machine.": [
-    ""
+    "未在此機器上找到任何 DASD 裝置。"
   ],
   "No Wi-Fi networks were found": [
     "未找到 WiFi 網路"
@@ -1138,10 +1237,13 @@ export default {
     "未找到內容"
   ],
   "No device is currently using this connection.": [
-    ""
+    "目前沒有裝置在使用此連接。"
   ],
   "No device selected yet": [
     "尚未選取裝置"
+  ],
+  "No devices available": [
+    "沒有可用的裝置"
   ],
   "No devices configured yet": [
     "尚未設定裝置"
@@ -1190,6 +1292,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "沒有與過濾條件相符的時區。"
+  ],
+  "None set": [
+    "未進行任何設定"
   ],
   "Not available": [
     "不可用"
@@ -1389,11 +1494,14 @@ export default {
   "Reload": [
     "重新載入"
   ],
+  "Reload now": [
+    "立即重新載入"
+  ],
   "Reloading data, please wait...": [
     "正在重新載入資料，請稍候..."
   ],
   "Reloading is required to get the latest data and avoid issues or data loss.": [
-    ""
+    "為獲取最新資料並避免出現問題或資料遺失，必須重新載入。"
   ],
   "Remove": [
     "移除"
@@ -1413,6 +1521,9 @@ export default {
   "Reset to the default configuration": [
     "重設為預設組態"
   ],
+  "Resource not found or lost": [
+    "未找到資源，或者資源已遺失"
+  ],
   "Result": [
     "結果"
   ],
@@ -1431,8 +1542,14 @@ export default {
   "Routes": [
     "路由"
   ],
+  "Row actions": [
+    "列動作"
+  ],
   "Row expansion": [
-    ""
+    "列展開"
+  ],
+  "Row selection": [
+    "列選擇"
   ],
   "SD Card": [
     "SD 卡"
@@ -1500,6 +1617,9 @@ export default {
   "Select at least one disk.": [
     "請至少選取一個磁碟。"
   ],
+  "Select devices to enable bulk actions.": [
+    "選取裝置以啟用大量動作。"
+  ],
   "Select or enter a mount point": [
     "選取或輸入掛接點"
   ],
@@ -1533,11 +1653,20 @@ export default {
   "Server options": [
     "伺服器選項"
   ],
+  "Set DIAG off": [
+    "關閉 DIAG"
+  ],
+  "Set DIAG on": [
+    "開啟 DIAG"
+  ],
   "Set a permanent hostname that won’t change with network updates.": [
     "設定不會因網路更新而變更的永久主機名稱。"
   ],
   "Setting up connection": [
     "正在設定連接"
+  ],
+  "Settings": [
+    "設定"
   ],
   "Several partitions will be deleted": [
     "將刪除多個分割區"
@@ -1657,10 +1786,16 @@ export default {
     "LVM 群組 '%1$s' 將保留在 %2$s 中"
   ],
   "The configuration has been updated externally.": [
-    ""
+    "組態已在外部更新。"
+  ],
+  "The configuration must be adapted to address the following issue:": [
+    "必須調整組態，以解決下列問題："
   ],
   "The configured LVM groups will remain at %s": [
     "設定的 LVM 群組將保留在 %s 中"
+  ],
+  "The connection can be used by any available device.": [
+    "任何可用裝置都可以使用此連接。"
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "此連接僅在安裝過程中使用，在安裝好的系統中不可用。"
@@ -1679,6 +1814,9 @@ export default {
   ],
   "The current file system will be mounted at %s": [
     "目前的檔案系統將掛接到 %s 上"
+  ],
+  "The current storage configuration has the following issue:": [
+    "目前的儲存組態存在以下問題："
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "將會保留資料，但會視需要調整目前分割區的大小。"
@@ -1728,6 +1866,15 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "設定可信平台模組 (TPM) 以自動開啟加密裝置的最後步驟，將會在新系統首次開機時進行。為了讓此程序順利執行，機器必須直接從新的開機載入程式開機。"
   ],
+  "The following logical volume will be created": [
+    "將建立以下邏輯磁碟區"
+  ],
+  "The following partition will be created.": [
+    "將建立以下分割區。"
+  ],
+  "The following partition will be mounted.": [
+    "將掛接以下分割區。"
+  ],
   "The following partitions will be created or mounted": [
     "將建立或掛接以下分割區"
   ],
@@ -1751,6 +1898,9 @@ export default {
   ],
   "The installer requires [root] user privileges.": [
     "安裝程式要求您具有 [root] 使用者權限。"
+  ],
+  "The logical volume will also be deleted": [
+    "同時將刪除邏輯磁碟區"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "上限必須為數字且後跟單位 (如 GiB 或 GB)"
@@ -1842,6 +1992,12 @@ export default {
   "There are not usable partitions": [
     "沒有可使用的分割區"
   ],
+  "There is %d destructive action planned": [
+    "已規劃執行 %d 個破壞性動作"
+  ],
+  "There is %d destructive action planned affecting %s": [
+    "已規劃執行 %d 個會影響 %s 的破壞性動作"
+  ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "這些是最相關的安裝設定。如需獲取更詳細的資料，請隨意瀏覽功能表中的區段。"
   ],
@@ -1850,6 +2006,12 @@ export default {
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "以下是待安裝產品的相關設定。您可以透過頂部列存取 [設定面板]，並從中調整安裝程式語言。"
+  ],
+  "This action could destroy any data stored on the device.": [
+    "此動作無法刪除該裝置上儲存的任何資料。"
+  ],
+  "This action could destroy any data stored on the devices listed below.": [
+    "此動作無法刪除下列裝置上儲存的任何資料。"
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "無法在該伺服器上使用此延伸。您可以讓伺服器管理員鏡像該延伸。"
@@ -1861,10 +2023,10 @@ export default {
     "此授權在 %s 中不可用。"
   ],
   "This may take a moment while updates complete.": [
-    ""
+    "更新可能需要一段時間才能完成。"
   ],
   "This message will close automatically when everything is done.": [
-    ""
+    "當所有操作均完成後，此訊息會自動關閉。"
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "此模式力求在清楚具體和快捷高效之間取得平衡：強制回應視窗提供簡單、便捷的選擇介面，而完整檢視則支援更深入的探索和更複雜的動作，專為擁有大量裝置的使用者而設計。"
@@ -1912,13 +2074,13 @@ export default {
     "無法修改設定"
   ],
   "Unbound": [
-    ""
+    "已取消結合"
   ],
   "Unselect": [
     "取消選取"
   ],
   "Unselect or activate them and try it again.": [
-    ""
+    "請將其取消選取或啟用，然後重試。"
   ],
   "Unsupported AutoYaST elements": [
     "不受支援的 AutoYaST 元素"
@@ -2151,6 +2313,12 @@ export default {
   "[FIXME]": [
     "[請修復]"
   ],
+  "active": [
+    "已啟用"
+  ],
+  "all": [
+    "全部"
+  ],
   "approx. %s": [
     "大約為 %s"
   ],
@@ -2173,19 +2341,22 @@ export default {
     "邏輯磁碟區"
   ],
   "no": [
-    ""
+    "否"
   ],
   "offline": [
-    ""
+    "離線"
   ],
   "partition": [
     "分割區"
   ],
   "read_only": [
-    ""
+    "唯讀"
   ],
   "reset to defaults": [
     "重設為預設值"
+  ],
+  "yes": [
+    "是"
   ],
   "zFCP": [
     "zFCP"

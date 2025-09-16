@@ -15,6 +15,10 @@ export default {
   "%1$s at %2$s": [
     "%1$s a %2$s"
   ],
+  "%1$s will be created as a partition at %2$s": [
+    "%1$s es crearà com a partició a %2$s",
+    "%1$s es crearan com a particions a %2$s"
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s encara contindrà el grup d'LVM %2$s i qualsevol partició necessària per a arrencar"
   ],
@@ -38,6 +42,10 @@ export default {
   ],
   "%s logo": [
     "Logotip per a %s"
+  ],
+  "%s will be created as a logical volume": [
+    "%s es crearà com a volum lògic",
+    "%s es crearan com a volums lògics"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s encara contindrà els grups d'LVM configurats i qualsevol partició necessària per a arrencar"
@@ -65,6 +73,14 @@ export default {
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "S'usarà un interval de mida genèric entre %1$s i %2$s per a la %3$s nova"
+  ],
+  "A new partition will be created for %s": [
+    "Es crearà una partició nova per a %s",
+    "Es crearan particions noves per a %s"
+  ],
+  "A new volume will be created for %s": [
+    "Es crearà un volum nou per a %s",
+    "Es crearan volums nous per a %s"
   ],
   "A partition may be deleted": [
     "Es pot suprimir una partició"
@@ -174,6 +190,10 @@ export default {
   "Already using all available disks": [
     "Ja s'usen tots els discs disponibles"
   ],
+  "An existing partition will be used for %s": [
+    "S'usarà una partició existent per a %s",
+    "S'usaran les particions existents per a %s"
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Se suprimirà qualsevol partició existent i es perdran totes les dades del disc."
   ],
@@ -182,6 +202,10 @@ export default {
   ],
   "Apply selected solution": [
     "Aplica la solució seleccionada"
+  ],
+  "Apply to the selected device": [
+    "Aplica-ho al dispositiu seleccionat",
+    "Aplica-ho als %s dispositius seleccionats"
   ],
   "Applying changes": [
     "S'apliquen els canvis"
@@ -380,6 +404,9 @@ export default {
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Configuració llegida a la taula del microprogramari d'arrencada iSCSI (iBFT)."
+  ],
+  "Configuration unreachable or invalid": [
+    "Configuració inaccessible o no vàlida"
   ],
   "Configure DASD": [
     "Configuració de DASD"
@@ -722,6 +749,14 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extend the installation beyond the currently selected device": [
+    "Amplia la instal·lació més enllà del dispositiu seleccionat actualment",
+    "Amplia la instal·lació més enllà dels %d dispositius actuals"
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "Ampliar la instal·lació més enllà del disc seleccionat actualment",
+    "Amplia la instal·lació més enllà dels %d discs actuals"
   ],
   "Extensions": [
     "Extensions"
@@ -1123,6 +1158,14 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "És possible que hi hagi més llengües disponibles per al producte seleccionat a la pàgina [Localitzation]"
   ],
+  "Moreover, the following partition will be created.": [
+    "A més a més, es crearà la partició següent:",
+    "A més a més, es crearan les particions següents:"
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "A més a més, es muntarà la partició següent:",
+    "A més a més, es muntaran les particions següents:"
+  ],
   "Moreover, the following partitions will be created or mounted": [
     "A més a més, es crearan o muntaran les particions següents:"
   ],
@@ -1313,7 +1356,7 @@ export default {
     "Resum"
   ],
   "Package installation failed": [
-    "Ha fallat instal·lació del paquet."
+    "Ha fallat la instal·lació del paquet."
   ],
   "Partition Info": [
     "Informació de la partició"
@@ -1757,6 +1800,10 @@ export default {
   "The configuration has been updated externally.": [
     "La configuració s'ha actualitzat externament."
   ],
+  "The configuration must be adapted to address the following issue:": [
+    "La configuració s'ha d'adaptar per solucionar el problema següent:",
+    "La configuració s'ha d'adaptar per solucionar els problemes següents:"
+  ],
   "The configured LVM groups will remain at %s": [
     "Els grups d'LVM configurats es mantindran a %s"
   ],
@@ -1780,6 +1827,10 @@ export default {
   ],
   "The current file system will be mounted at %s": [
     "El sistema de fitxers actual es muntarà a %s"
+  ],
+  "The current storage configuration has the following issue:": [
+    "La configuració d'emmagatzematge actual té el problema següent:",
+    "La configuració d'emmagatzematge actual té els problemes següents:"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Les dades es conserven, però les particions actuals es canviaran de mida segons calgui."
@@ -1829,6 +1880,18 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "El pas final per configurar el Mòdul de plataforma de confiança (TPM) per obrir automàticament dispositius encriptats es farà durant la primera arrencada del nou sistema. Perquè això funcioni, la màquina ha d'arrencar directament amb el carregador d'arrencada nou."
   ],
+  "The following logical volume will be created": [
+    "Es crearà el volum lògic següent:",
+    "Es crearan els volums lògics següents:"
+  ],
+  "The following partition will be created.": [
+    "Es crearà la partició següent:",
+    "Es crearan les particions següents:"
+  ],
+  "The following partition will be mounted.": [
+    "Es muntarà la partició següent:",
+    "Es muntaran les particions següents:"
+  ],
   "The following partitions will be created or mounted": [
     "Es crearan o muntaran les particions següents:"
   ],
@@ -1852,6 +1915,10 @@ export default {
   ],
   "The installer requires [root] user privileges.": [
     "L'instal·lador requereix privilegis de l'usuari [root]."
+  ],
+  "The logical volume will also be deleted": [
+    "El volum lògic també se suprimirà.",
+    "Els volums lògics també se suprimiran."
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "El màxim ha de ser un número seguit d'una unitat com ara GiB o GB."
@@ -1942,6 +2009,14 @@ export default {
   ],
   "There are not usable partitions": [
     "No hi ha particions usables"
+  ],
+  "There is %d destructive action planned": [
+    "Hi ha %d acció destructiva planificada.",
+    "Hi ha %d accions destructives planificades."
+  ],
+  "There is %d destructive action planned affecting %s": [
+    "Hi ha %d acció destructiva planificada que afecta %s",
+    "Hi ha %d accions destructives planificades que afecten %s"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Aquests són els paràmetres d'instal·lació més rellevants. No dubteu a navegar per les seccions del menú per a més detalls."

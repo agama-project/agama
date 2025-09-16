@@ -15,6 +15,9 @@ export default {
   "%1$s at %2$s": [
     "%1$s（%2$s 上）"
   ],
+  "%1$s will be created as a partition at %2$s": [
+    "%1$s 将会创建为 %2$s 上的分区"
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s 仍将包含 LVM 组 '%2$s' 和引导所需的任何分区"
   ],
@@ -39,6 +42,9 @@ export default {
   "%s logo": [
     "%s 徽标"
   ],
+  "%s will be created as a logical volume": [
+    "%s 将创建为逻辑卷"
+  ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s 仍将包含配置的 LVM 组和引导所需的任何分区"
   ],
@@ -60,8 +66,17 @@ export default {
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "至少 %1$s 的通用大小将用于新 %2$s"
   ],
+  "A generic size of %1$s will be used for the new %2$s": [
+    "%1$s 的通用大小将用于新 %2$s"
+  ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "介于 %1$s 至 %2$s 的通用大小将用于新 %3$s"
+  ],
+  "A new partition will be created for %s": [
+    "将会为 %s 创建新分区"
+  ],
+  "A new volume will be created for %s": [
+    "将会为 %s 创建新卷"
   ],
   "A partition may be deleted": [
     "可能会删除某个分区"
@@ -171,6 +186,9 @@ export default {
   "Already using all available disks": [
     "已使用所有可用磁盘"
   ],
+  "An existing partition will be used for %s": [
+    "将会为 %s 使用现有分区"
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "所有现有分区都将被去除，磁盘上的所有数据都将丢失。"
   ],
@@ -180,8 +198,11 @@ export default {
   "Apply selected solution": [
     "应用所选的解决方案"
   ],
+  "Apply to the selected device": [
+    "应用于 %s 个所选设备"
+  ],
   "Applying changes": [
-    ""
+    "正在应用更改"
   ],
   "As a new partition on %s": [
     "作为 %s 上的新分区"
@@ -228,6 +249,15 @@ export default {
   "Back": [
     "返回"
   ],
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
+    "将根据系统中的 RAM 容量规划一个 %1$s (%2$s)，以用于 %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
+    "将根据系统中的 RAM 容量规划一个 %1$s（至少 %2$s），以用于 %3$s"
+  ],
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "将根据系统中的 RAM 容量规划一个 %1$s（大小介于 %2$s 至 %3$s 之间），以用于 %4$s"
+  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -241,13 +271,19 @@ export default {
     "在开始安装前，您需要解决下列问题："
   ],
   "Below %s devices are offline and cannot be formatted.": [
-    ""
+    "以下 %s 个设备已脱机，无法格式化。"
   ],
   "Beta": [
     "Beta 版"
   ],
   "Bind to MAC address": [
     "绑定到 MAC 地址"
+  ],
+  "Bind to device name": [
+    "绑定到设备名称"
+  ],
+  "Binding": [
+    "正在绑定"
   ],
   "Binding settings for '%s'": [
     "'%s' 的绑定设置"
@@ -273,6 +309,12 @@ export default {
   "Cannot connect to Agama server": [
     "无法连接到 Agama 服务器"
   ],
+  "Cannot format %s": [
+    "无法格式化 %s"
+  ],
+  "Cannot format all the selected devices": [
+    "无法格式化全部所选设备"
+  ],
   "Change": [
     "更改"
   ],
@@ -292,7 +334,7 @@ export default {
     "更改显示语言和键盘布局"
   ],
   "Change filters and try again.": [
-    ""
+    "请更改过滤条件，然后重试。"
   ],
   "Change keyboard": [
     "更改键盘"
@@ -330,11 +372,17 @@ export default {
   "Choose device to bind by name": [
     "按名称选择要绑定的设备"
   ],
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
+    "选择连接与网络设备关联的方式。这有助于控制连接使用的设备。"
+  ],
   "Clear": [
     "清除"
   ],
   "Clear all filters": [
-    ""
+    "清除所有过滤条件"
+  ],
+  "Clear input": [
+    "清除输入"
   ],
   "Clear selected mount point": [
     "清除所选的挂载点"
@@ -345,8 +393,14 @@ export default {
   "Collapse the list of planned actions": [
     "收起已计划操作列表"
   ],
+  "Configuration out of sync": [
+    "配置未同步"
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "已从 iSCSI 引导固件表 (iBFT) 读取配置。"
+  ],
+  "Configuration unreachable or invalid": [
+    "配置无效或无法访问"
   ],
   "Configure DASD": [
     "配置 DASD"
@@ -385,7 +439,7 @@ export default {
     "确认安装"
   ],
   "Confirm that you really want to continue.": [
-    ""
+    "请确认您确实要继续。"
   ],
   "Congratulations!": [
     "恭喜！"
@@ -405,6 +459,15 @@ export default {
   "Connected (%s)": [
     "已连接（%s）"
   ],
+  "Connected device": [
+    "已连接设备"
+  ],
+  "Connected devices": [
+    "已连接设备"
+  ],
+  "Connected devices tabs": [
+    "已连接设备选项卡"
+  ],
   "Connecting to %s": [
     "正在连接到 %s"
   ],
@@ -412,7 +475,13 @@ export default {
     "连接详细信息"
   ],
   "Connection is available to all devices.": [
-    ""
+    "连接可用于所有设备。"
+  ],
+  "Connection is bound to MAC address %s.": [
+    "连接已绑定到 MAC 地址 %s。"
+  ],
+  "Connection is bound to device %s.": [
+    "连接已绑定到设备 %s。"
   ],
   "Connection not found or lost": [
     "未找到连接，或者连接中断"
@@ -606,6 +675,9 @@ export default {
   "Edit connection %s": [
     "编辑连接 %s"
   ],
+  "Edit connection settings": [
+    "编辑连接设置"
+  ],
   "Edit user": [
     "编辑用户"
   ],
@@ -672,6 +744,12 @@ export default {
   "Ext4": [
     "Ext4"
   ],
+  "Extend the installation beyond the currently selected device": [
+    "将安装扩展至超过目前 %d 个设备的容量"
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "将安装扩展至超过目前 %d 磁盘的容量"
+  ],
   "Extensions": [
     "扩展"
   ],
@@ -729,6 +807,9 @@ export default {
   "Format RAID %s": [
     "格式化 RAID %s"
   ],
+  "Format device %s": [
+    "格式化设备 %s"
+  ],
   "Format device as": [
     "将设备格式化为"
   ],
@@ -737,6 +818,9 @@ export default {
   ],
   "Format logical volume as": [
     "将逻辑卷格式化为"
+  ],
+  "Format now": [
+    "立即格式化"
   ],
   "Format partition as": [
     "将分区格式化为"
@@ -770,6 +854,9 @@ export default {
   ],
   "Go to network page": [
     "前往网络页面"
+  ],
+  "Go to storage page": [
+    "前往存储页面"
   ],
   "Good signal": [
     "信号良好"
@@ -913,7 +1000,7 @@ export default {
     "颁发者"
   ],
   "It doesn't exist or can't be reached.": [
-    ""
+    "该资源不存在或无法访问。"
   ],
   "It is chosen for booting": [
     "该设备选定用于引导"
@@ -940,7 +1027,7 @@ export default {
     "无法采用当前配置安装系统，请调整下面的设置。"
   ],
   "It is offline and must be activated before formatting it.": [
-    ""
+    "该设备已脱机，必须将其激活才能格式化。"
   ],
   "It may take some time.": [
     "这可能需要一些时间。"
@@ -1032,8 +1119,14 @@ export default {
   "Manual": [
     "手动"
   ],
+  "Max channel": [
+    "最大通道"
+  ],
   "MiB": [
     "MiB"
+  ],
+  "Min channel": [
+    "最小通道"
   ],
   "Mode": [
     "模式"
@@ -1055,6 +1148,12 @@ export default {
   ],
   "More languages might be available for the selected product at [Localization] page": [
     "[本地化] 页面可能会提供更多适用于所选产品的语言"
+  ],
+  "Moreover, the following partition will be created.": [
+    "此外还将创建以下分区。"
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "此外还将挂载以下分区。"
   ],
   "Moreover, the following partitions will be created or mounted": [
     "此外，将会创建或挂载以下分区"
@@ -1120,7 +1219,7 @@ export default {
     "否"
   ],
   "No DASD devices were found in this machine.": [
-    ""
+    "在此计算机上未找到任何 DASD 设备。"
   ],
   "No Wi-Fi networks were found": [
     "未找到 WiFi 网络"
@@ -1138,10 +1237,13 @@ export default {
     "未找到内容"
   ],
   "No device is currently using this connection.": [
-    ""
+    "目前没有设备在使用此连接。"
   ],
   "No device selected yet": [
     "尚未选择设备"
+  ],
+  "No devices available": [
+    "没有可用设备"
   ],
   "No devices configured yet": [
     "尚未配置设备"
@@ -1190,6 +1292,9 @@ export default {
   ],
   "None of the time zones match the filter.": [
     "没有符合过滤器的时区。"
+  ],
+  "None set": [
+    "未进行任何设置"
   ],
   "Not available": [
     "不可用"
@@ -1389,11 +1494,14 @@ export default {
   "Reload": [
     "重载"
   ],
+  "Reload now": [
+    "立即重新加载"
+  ],
   "Reloading data, please wait...": [
     "正在重新加载数据，请稍候..."
   ],
   "Reloading is required to get the latest data and avoid issues or data loss.": [
-    ""
+    "为获取最新数据并避免出现问题或数据丢失，需要重新加载。"
   ],
   "Remove": [
     "移除"
@@ -1413,6 +1521,9 @@ export default {
   "Reset to the default configuration": [
     "重置为默认配置"
   ],
+  "Resource not found or lost": [
+    "未找到资源，或者资源丢失"
+  ],
   "Result": [
     "结果"
   ],
@@ -1431,8 +1542,14 @@ export default {
   "Routes": [
     "路由"
   ],
+  "Row actions": [
+    "行操作"
+  ],
   "Row expansion": [
-    ""
+    "行展开"
+  ],
+  "Row selection": [
+    "行选择"
   ],
   "SD Card": [
     "SD 卡"
@@ -1500,6 +1617,9 @@ export default {
   "Select at least one disk.": [
     "请至少选择一个磁盘。"
   ],
+  "Select devices to enable bulk actions.": [
+    "选择设备以启用批量操作。"
+  ],
   "Select or enter a mount point": [
     "选择或输入挂载点"
   ],
@@ -1533,11 +1653,20 @@ export default {
   "Server options": [
     "服务器选项"
   ],
+  "Set DIAG off": [
+    "关闭 DIAG"
+  ],
+  "Set DIAG on": [
+    "开启 DIAG"
+  ],
   "Set a permanent hostname that won’t change with network updates.": [
     "设置不会因网络更新而更改的永久主机名。"
   ],
   "Setting up connection": [
     "正在设置连接"
+  ],
+  "Settings": [
+    "设置"
   ],
   "Several partitions will be deleted": [
     "将删除多个分区"
@@ -1657,10 +1786,16 @@ export default {
     "LVM 组 '%1$s' 将保留在 %2$s 中"
   ],
   "The configuration has been updated externally.": [
-    ""
+    "配置已在外部更新。"
+  ],
+  "The configuration must be adapted to address the following issue:": [
+    "必须调整配置，以解决以下问题："
   ],
   "The configured LVM groups will remain at %s": [
     "配置的 LVM 组将保留在 %s 中"
+  ],
+  "The connection can be used by any available device.": [
+    "任何可用设备都可以使用此连接。"
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "此连接仅在安装过程中使用，安装好的系统中不可用。"
@@ -1679,6 +1814,9 @@ export default {
   ],
   "The current file system will be mounted at %s": [
     "当前文件系统将挂载到 %s 上"
+  ],
+  "The current storage configuration has the following issue:": [
+    "当前的存储配置存在以下问题："
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "数据将被保留，但当前分区的大小将会按需调整。"
@@ -1728,6 +1866,15 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "配置可信平台模块 (TPM) 以自动开启加密设备的最后一步将在新系统首次启动时进行。为此，本机需要直接启动到新的引导加载程序。"
   ],
+  "The following logical volume will be created": [
+    "将会创建以下逻辑卷"
+  ],
+  "The following partition will be created.": [
+    "将会创建以下分区。"
+  ],
+  "The following partition will be mounted.": [
+    "将会挂载以下分区。"
+  ],
   "The following partitions will be created or mounted": [
     "将会创建或挂载以下分区"
   ],
@@ -1751,6 +1898,9 @@ export default {
   ],
   "The installer requires [root] user privileges.": [
     "安装程序要求 [root] 用户权限。"
+  ],
+  "The logical volume will also be deleted": [
+    "同时也会删除逻辑卷"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "上限必须为带单位（如 GiB 或 GB）的数字"
@@ -1842,6 +1992,12 @@ export default {
   "There are not usable partitions": [
     "没有可使用的分区"
   ],
+  "There is %d destructive action planned": [
+    "已计划执行 %d 个具有破坏性的操作"
+  ],
+  "There is %d destructive action planned affecting %s": [
+    "已计划执行 %d 个会影响 %s 的破坏性操作"
+  ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "这些是最主要的安装设置。如需获取更详细的信息，请随意浏览菜单中的各节。"
   ],
@@ -1850,6 +2006,12 @@ export default {
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "以下是待安装产品的相关设置。安装程序语言可通过顶部栏的[设置面板]进行调整。"
+  ],
+  "This action could destroy any data stored on the device.": [
+    "此操作无法销毁该设备上存储的任何数据。"
+  ],
+  "This action could destroy any data stored on the devices listed below.": [
+    "此操作无法销毁下列设备上存储的任何数据。"
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "无法在该服务器上使用此扩展。您可以请求服务器管理员镜像该扩展。"
@@ -1861,10 +2023,10 @@ export default {
     "此许可证在 %s 中不可用。"
   ],
   "This may take a moment while updates complete.": [
-    ""
+    "更新可能需要一段时间才能完成。"
   ],
   "This message will close automatically when everything is done.": [
-    ""
+    "当所有操作完成后，此消息将会自动关闭。"
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "此模式力求在清楚具体和快捷高效之间取得平衡：模态窗口提供简单、便捷的选择界面，而完整视图则支持更深入的探索和更复杂的操作，专为拥有大量设备的用户而设计。"
@@ -1912,13 +2074,13 @@ export default {
     "无法修改设置"
   ],
   "Unbound": [
-    ""
+    "已取消绑定"
   ],
   "Unselect": [
     "取消选择"
   ],
   "Unselect or activate them and try it again.": [
-    ""
+    "请将其取消选择或激活，然后重试。"
   ],
   "Unsupported AutoYaST elements": [
     "不受支持的 AutoYaST 元素"
@@ -2151,6 +2313,12 @@ export default {
   "[FIXME]": [
     "[请修复]"
   ],
+  "active": [
+    "已激活"
+  ],
+  "all": [
+    "全部"
+  ],
   "approx. %s": [
     "大约为 %s"
   ],
@@ -2173,19 +2341,22 @@ export default {
     "逻辑卷"
   ],
   "no": [
-    ""
+    "否"
   ],
   "offline": [
-    ""
+    "脱机"
   ],
   "partition": [
     "分区"
   ],
   "read_only": [
-    ""
+    "只读"
   ],
   "reset to defaults": [
     "重置为默认值"
+  ],
+  "yes": [
+    "是"
   ],
   "zFCP": [
     "zFCP"
