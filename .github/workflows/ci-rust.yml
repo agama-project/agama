@@ -229,40 +229,43 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ./rust
+    container:
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
 
     steps:
+
+    - name: Configure and refresh repositories
+      # disable unused repositories to have faster refresh
+      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
+
+    - name: Install required packages
+      run: zypper --non-interactive install
+        clang-devel
+        gcc-c++
+        git
+        libopenssl-3-devel
+        libzypp-devel
+        make
+        openssl-3
+        pam-devel
+        python3-openapi_spec_validator
+        rustup
 
     - name: Git Checkout
       uses: actions/checkout@v4
       with:
         submodules: recursive
 
+    - name: Install Rust toolchains
+      run: rustup toolchain install stable
+
     - name: Rust toolchain
       run: |
         rustup show
         cargo --version
 
-    - name: Configure system
-      # disable updating initramfs (the system is not booted again)
-      # disable updating man db (to save some time)
-      run: |
-        sudo sed -i "s/yes/no/g" /etc/initramfs-tools/update-initramfs.conf
-        sudo rm -f /var/lib/man-db/auto-update
-
-    - name: Install packages
-      run: |
-        sudo apt-get update
-        sudo apt-get -y install libclang-18-dev libpam0g-dev
-        # uninstall the python3-jsonschema package, openapi-spec-validator wants
-        # to install a newer version which would conflict with that
-        sudo apt-get purge python3-jsonschema
-        sudo pip install openapi-spec-validator
-
     - name: Installed packages
-      run: apt list --installed
+      run: rpm -qa
 
     - name: Rust cache
       uses: actions/cache@v4
@@ -274,6 +277,8 @@ jobs:
 
     - name: Generate the OpenAPI specification
       run: cargo xtask openapi
+      working-directory: ./rust
 
     - name: Validate the OpenAPI specification
       run: openapi-spec-validator out/openapi/*
+      working-directory: ./rust
