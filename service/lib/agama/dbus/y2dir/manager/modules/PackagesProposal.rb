@@ -26,7 +26,7 @@ module Yast
   class PackagesProposalClass < Module
     def main
       puts "Loading mocked module #{__FILE__}"
-      @client = Agama::HTTP::Clients::Software.new
+      @client = Agama::HTTP::Clients::Software.new(::Logger.new($stdout))
     end
 
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/general/src/modules/PackagesProposal.rb#L118
