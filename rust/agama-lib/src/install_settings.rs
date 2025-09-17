@@ -22,11 +22,11 @@
 //!
 //! This module implements the mechanisms to load and store the installation settings.
 use crate::bootloader::model::BootloaderSettings;
-use crate::config::L10nConfig;
 use crate::context::InstallationContext;
 use crate::file_source::{FileSourceError, WithFileSource};
 use crate::files::model::UserFile;
 use crate::hostname::model::HostnameSettings;
+use crate::l10n;
 use crate::questions::config::QuestionsConfig;
 use crate::security::settings::SecuritySettings;
 use crate::storage::settings::zfcp::ZFCPConfig;
@@ -83,7 +83,7 @@ pub struct InstallSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub network: Option<NetworkSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub localization: Option<L10nConfig>,
+    pub localization: Option<l10n::UserConfig>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub scripts: Option<ScriptsConfig>,
     #[serde(skip_serializing_if = "Option::is_none")]

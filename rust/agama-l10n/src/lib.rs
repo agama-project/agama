@@ -28,8 +28,8 @@ pub(crate) use service::{Message, Service};
 mod system_info;
 pub use system_info::SystemInfo;
 
-mod config;
-pub use config::L10nConfig;
+mod user_config;
+pub use user_config::UserConfig;
 
 mod proposal;
 pub use proposal::Proposal;

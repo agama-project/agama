@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{Error, L10nAction, L10nConfig, Message, Proposal, Service};
+use crate::{Error, L10nAction, Message, Proposal, Service, UserConfig};
 use agama_utils::{Handler as AgamaHandler, Service as AgamaService};
 use tokio::sync::mpsc;
 
@@ -38,14 +38,14 @@ impl Handler {
         Ok(Self { sender })
     }
 
-    pub async fn get_config(&self) -> Result<L10nConfig, Error> {
+    pub async fn get_config(&self) -> Result<UserConfig, Error> {
         let result = self
             .send_and_wait(|tx| Message::GetConfig { respond_to: tx })
             .await?;
         Ok(result)
     }
 
-    pub async fn set_config(&self, config: &L10nConfig) -> Result<(), Error> {
+    pub async fn set_config(&self, config: &UserConfig) -> Result<(), Error> {
         self.send(Message::SetConfig {
             config: config.clone(),
         })?;

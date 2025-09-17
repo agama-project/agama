@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_l10n::L10nConfig;
+use agama_l10n::UserConfig;
 use serde::{Deserialize, Serialize};
 
 #[derive(Copy, Clone, Debug, strum::EnumString, strum::Display, Deserialize, PartialEq)]
@@ -31,7 +31,7 @@ pub enum Scope {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ScopeConfig {
-    L10n(L10nConfig),
+    L10n(UserConfig),
 }
 
 impl ScopeConfig {

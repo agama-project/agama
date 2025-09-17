@@ -72,6 +72,7 @@ mod store;
 pub mod users;
 pub use store::Store;
 pub mod utils;
+pub(crate) use agama_l10n as l10n;
 pub use agama_utils::{dbus, openapi};
 
 use crate::error::ServiceError;

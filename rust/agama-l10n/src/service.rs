@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{actions, Error, L10nConfig, Model, Proposal, SystemInfo};
+use crate::{actions, Error, Model, Proposal, SystemInfo, UserConfig};
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use agama_utils::Service as AgamaService;
 use serde::Deserialize;
@@ -36,10 +36,10 @@ pub enum L10nAction {
 #[derive(Debug)]
 pub enum Message {
     GetConfig {
-        respond_to: oneshot::Sender<L10nConfig>,
+        respond_to: oneshot::Sender<UserConfig>,
     },
     SetConfig {
-        config: L10nConfig,
+        config: UserConfig,
     },
     GetProposal {
         respond_to: oneshot::Sender<Proposal>,
@@ -75,11 +75,11 @@ impl Service {
         }
     }
 
-    fn get_config(&self) -> L10nConfig {
+    fn get_config(&self) -> UserConfig {
         (&self.state.config).into()
     }
 
-    fn set_config(&mut self, user_config: &L10nConfig) -> Result<(), Error> {
+    fn set_config(&mut self, user_config: &UserConfig) -> Result<(), Error> {
         self.state.config.merge(user_config)
     }
 
@@ -137,7 +137,7 @@ impl Config {
         }
     }
 
-    fn merge(&mut self, config: &L10nConfig) -> Result<(), Error> {
+    fn merge(&mut self, config: &UserConfig) -> Result<(), Error> {
         if let Some(language) = &config.language {
             self.locale = language.parse().map_err(Error::InvalidLocale)?
         }
@@ -154,9 +154,9 @@ impl Config {
     }
 }
 
-impl From<&Config> for L10nConfig {
+impl From<&Config> for UserConfig {
     fn from(config: &Config) -> Self {
-        L10nConfig {
+        UserConfig {
             language: Some(config.locale.to_string()),
             keyboard: Some(config.keymap.to_string()),
             timezone: Some(config.timezone.to_string()),
