@@ -20,7 +20,7 @@
 
 use crate::service::L10nCommand;
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
-use agama_utils::service::ServiceError;
+use agama_utils::ServiceError;
 
 #[derive(thiserror::Error, Debug)]
 pub enum LocaleError {

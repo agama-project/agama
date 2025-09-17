@@ -18,20 +18,23 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod actions;
-mod config;
-mod error;
-pub mod helpers;
-mod model;
-mod proposal;
-mod system_info;
-pub(crate) mod handler;
-pub(crate) mod service;
+//! Implements utilities to build Agama services.
 
-pub use config::L10nConfig;
-pub use error::LocaleError;
-pub use model::{Keymap, L10nModel, LocaleEntry, TimezoneEntry};
-pub use proposal::L10nProposal;
-pub use system_info::L10nSystemInfo;
-pub use service::{L10n, L10nAction};
-pub use handler::Handler;
+use core::future::Future;
+use std::error::Error;
+use tokio::sync::mpsc;
+
+#[derive(thiserror::Error, Debug)]
+pub enum MonitorError {
+    #[error("Could not send the event")]
+    Send,
+}
+
+pub trait Monitor: Send {
+    type Err: Error;
+    type Command: Send;
+
+    fn run(&mut self) -> impl Future<Output = ()>;
+
+    fn commands(&mut self) -> &mpsc::UnboundedSender<Self::Command>;
+}

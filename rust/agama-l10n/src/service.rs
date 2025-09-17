@@ -18,10 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::service::{Client, Service};
-use tokio::sync::{mpsc, oneshot};
+use agama_utils::Service as AgamaService;
+use crate::{actions, L10nConfig, L10nModel, L10nProposal, L10nSystemInfo, LocaleError};
+use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
+use serde::Deserialize;
+use tokio::sync::{mpsc::{self, UnboundedReceiver}, oneshot};
 
-use crate::{L10n, L10nAction, L10nConfig, L10nProposal, LocaleError};
+#[derive(Debug, Deserialize)]
+pub enum L10nAction {
+    #[serde(rename = "configureL10n")]
+    ConfigureSystem(actions::ConfigureSystemAction),
+}
 
 #[derive(Debug)]
 pub enum L10nCommand {
@@ -39,54 +46,127 @@ pub enum L10nCommand {
     },
 }
 
-#[derive(Clone)]
-pub struct L10nService {
-    sender: mpsc::UnboundedSender<L10nCommand>,
+pub struct L10n {
+    state: State,
+    model: L10nModel,
+    receiver: UnboundedReceiver<L10nCommand>,
 }
 
-impl Client for L10nService {
+struct State {
+    system: L10nSystemInfo,
+    config: Config,
+}
+
+impl L10n {
+    pub fn new(receiver: UnboundedReceiver<L10nCommand>) -> Self {
+        let model = L10nModel::new_with_locale(&LocaleId::default()).unwrap();
+        let system = L10nSystemInfo::read_from(&model);
+        let config = Config::new_from(&system);
+
+        let state = State { system, config };
+
+        Self {
+            state,
+            model,
+            receiver,
+        }
+    }
+
+    pub fn get_config(&self) -> L10nConfig {
+        (&self.state.config).into()
+    }
+
+    pub fn set_config(&mut self, user_config: &L10nConfig) -> Result<(), LocaleError> {
+        self.state.config.merge(user_config)
+    }
+
+    pub fn get_proposal(&self) -> L10nProposal {
+        (&self.state.config).into()
+    }
+
+    pub fn dispatch(&mut self, action: L10nAction) -> anyhow::Result<()> {
+        match action {
+            L10nAction::ConfigureSystem(action) => action.run(self),
+        }
+    }
+}
+
+impl AgamaService for L10n {
     type Err = LocaleError;
     type Command = L10nCommand;
 
-    fn commands(&self) -> &mpsc::UnboundedSender<Self::Command> {
-        &self.sender
+    fn commands(&mut self) -> &mut mpsc::UnboundedReceiver<Self::Command> {
+        &mut self.receiver
+    }
+
+    async fn dispatch(&mut self, command: Self::Command) -> Result<(), Self::Err> {
+        match command {
+            L10nCommand::GetConfig { respond_to } => {
+                respond_to.send(self.get_config()).unwrap();
+            }
+            L10nCommand::SetConfig { config } => {
+                self.set_config(&config).unwrap();
+            }
+            L10nCommand::GetProposal { respond_to } => {
+                respond_to.send(self.get_proposal()).unwrap();
+            }
+            L10nCommand::DispatchAction { action } => {
+                self.dispatch(action).unwrap();
+            }
+        };
+
+        Ok(())
     }
 }
 
-impl L10nService {
-    pub fn start() -> Result<Self, LocaleError> {
-        let (sender, receiver) = mpsc::unbounded_channel();
-        let mut server = L10n::new(receiver);
-        tokio::spawn(async move {
-            server.run().await;
-        });
+struct Config {
+    locale: LocaleId,
+    keymap: KeymapId,
+    timezone: TimezoneId,
+}
 
-        Ok(Self { sender })
+impl Config {
+    fn new_from(system: &L10nSystemInfo) -> Self {
+        Self {
+            locale: system.locale.clone(),
+            keymap: system.keymap.clone(),
+            timezone: system.timezone.clone(),
+        }
     }
 
-    pub async fn get_config(&self) -> Result<L10nConfig, LocaleError> {
-        let result = self
-            .send_and_wait(|tx| L10nCommand::GetConfig { respond_to: tx })
-            .await?;
-        Ok(result)
-    }
+    fn merge(&mut self, config: &L10nConfig) -> Result<(), LocaleError> {
+        if let Some(language) = &config.language {
+            self.locale = language.parse().map_err(LocaleError::InvalidLocale)?
+        }
 
-    pub async fn set_config(&self, config: &L10nConfig) -> Result<(), LocaleError> {
-        self.send(L10nCommand::SetConfig {
-            config: config.clone(),
-        })?;
+        if let Some(keyboard) = &config.keyboard {
+            self.keymap = keyboard.parse().map_err(LocaleError::InvalidKeymap)?
+        }
+
+        if let Some(timezone) = &config.timezone {
+            self.timezone = timezone.parse().map_err(LocaleError::InvalidTimezone)?;
+        }
+
         Ok(())
     }
+}
 
-    pub async fn get_proposal(&self) -> Result<L10nProposal, LocaleError> {
-        let result = self
-            .send_and_wait(|tx| L10nCommand::GetProposal { respond_to: tx })
-            .await?;
-        Ok(result)
+impl From<&Config> for L10nConfig {
+    fn from(config: &Config) -> Self {
+        L10nConfig {
+            language: Some(config.locale.to_string()),
+            keyboard: Some(config.keymap.to_string()),
+            timezone: Some(config.timezone.to_string()),
+        }
     }
+}
 
-    pub async fn dispatch_action(&self, action: L10nAction) -> Result<(), LocaleError> {
-        self.send(L10nCommand::DispatchAction { action })?;
-        Ok(())
+impl From<&Config> for L10nProposal {
+    fn from(config: &Config) -> Self {
+        L10nProposal {
+            keymap: config.keymap.clone(),
+            locale: config.locale.clone(),
+            timezone: config.timezone.clone(),
+        }
     }
 }

@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::server::{error::ServerResult, Proposal, Scope, ScopeConfig, SystemInfo};
-use agama_l10n::{L10n, L10nAction, L10nService};
+use agama_l10n::{L10nAction, Handler as L10nHandler};
 use agama_lib::install_settings::InstallSettings;
 use merge_struct::merge;
 use serde::Deserialize;
@@ -31,7 +31,7 @@ pub enum Action {
 }
 
 pub struct Supervisor {
-    l10n: L10nService,
+    l10n: L10nHandler,
     user_config: InstallSettings,
     config: InstallSettings,
     proposal: Option<Proposal>,
@@ -40,7 +40,7 @@ pub struct Supervisor {
 impl Supervisor {
     pub fn new() -> Self {
         Self {
-            l10n: L10nService::start().unwrap(),
+            l10n: L10nHandler::start().unwrap(),
             config: InstallSettings::default(),
             user_config: InstallSettings::default(),
             proposal: None,

@@ -23,4 +23,9 @@
 
 pub mod dbus;
 pub mod openapi;
-pub mod service;
+mod handler;
+mod service;
+mod monitor;
+
+pub use handler::Handler;
+pub use service::{Service, ServiceError};
