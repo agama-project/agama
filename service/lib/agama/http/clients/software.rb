@@ -77,6 +77,16 @@ module Agama
           []
         end
 
+        def package_available?(_name)
+          # TODO: implement it, not sure how it should look like
+          true
+        end
+
+        def package_installed?(_name)
+          # TODO: implement it, not sure how it should look like
+          true
+        end
+
         def set_resolvables(_unique_id, type, resolvables, optional)
           # TODO: implement at backend proposal id
           data = {
