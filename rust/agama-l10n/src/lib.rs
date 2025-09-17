@@ -18,23 +18,27 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod config;
-mod error;
-mod model;
-mod proposal;
-mod system_info;
 mod handler;
+pub use handler::Handler;
+
 mod service;
+pub use service::L10nAction;
+pub(crate) use service::{Message, Service};
+
+mod system_info;
+pub use system_info::SystemInfo;
+
+mod config;
+pub use config::L10nConfig;
+
+mod proposal;
+pub use proposal::Proposal;
+
+mod error;
+pub use error::Error;
+
+mod model;
+pub(crate) use model::{Keymap, LocaleEntry, Model, TimezoneEntry};
 
 pub mod actions;
 pub mod helpers;
-
-pub(crate) use service::{Service, Message};
-pub(crate) use model::{Keymap, LocaleEntry, TimezoneEntry, Model};
-
-pub use system_info::SystemInfo;
-pub use proposal::Proposal;
-pub use config::L10nConfig;
-pub use error::Error;
-pub use service::L10nAction;
-pub use handler::Handler;

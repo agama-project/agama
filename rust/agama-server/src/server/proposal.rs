@@ -18,10 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_l10n::Proposal as L10nProposal;
+use crate::l10n;
 use serde::Serialize;
 
 #[derive(Clone, Serialize)]
 pub struct Proposal {
-    pub localization: L10nProposal,
+    pub localization: l10n::Proposal,
 }

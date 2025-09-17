@@ -20,10 +20,10 @@
 
 //! Implements utilities to build Agama services.
 
+use crate::ServiceError;
 use core::future::Future;
 use std::error::Error;
 use tokio::sync::{mpsc, oneshot};
-use crate::ServiceError;
 
 /// Setting all the &self references as &mut self makes not needed to mark with Sync.
 pub trait Handler: Send + Sync {

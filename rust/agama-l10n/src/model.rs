@@ -190,9 +190,7 @@ impl Model {
     }
 
     fn ui_keymap() -> Result<KeymapId, Error> {
-        let output = Command::new("localectl")
-            .output()
-            .map_err(Error::Commit)?;
+        let output = Command::new("localectl").output().map_err(Error::Commit)?;
         let output = String::from_utf8_lossy(&output.stdout);
 
         let keymap_regexp = Regex::new(r"(?m)VC Keymap: (.+)$").unwrap();

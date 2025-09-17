@@ -22,10 +22,10 @@
 //! other Agama's crates.
 
 pub mod dbus;
-pub mod openapi;
 mod handler;
-mod service;
 mod monitor;
+pub mod openapi;
+mod service;
 
 pub use handler::Handler;
 pub use service::{Service, ServiceError};

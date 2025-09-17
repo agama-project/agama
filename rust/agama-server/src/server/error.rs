@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_l10n::Error as L10nError;
+use crate::l10n;
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
@@ -35,7 +35,7 @@ pub enum ServerError {
     #[error("The given configuration does not belong to the '{0}' scope.")]
     NoMatchingScope(Scope),
     #[error(transparent)]
-    L10n(#[from] L10nError),
+    L10n(#[from] l10n::Error),
 }
 
 impl IntoResponse for ServerError {

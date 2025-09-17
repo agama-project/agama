@@ -38,3 +38,4 @@ pub mod web;
 pub use web::service;
 pub mod server;
 pub mod supervisor;
+pub(crate) use agama_l10n as l10n;

@@ -18,8 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::l10n;
 use crate::server::{error::ServerResult, Proposal, Scope, ScopeConfig, SystemInfo};
-use agama_l10n::{L10nAction, Handler as L10nHandler};
 use agama_lib::install_settings::InstallSettings;
 use merge_struct::merge;
 use serde::Deserialize;
@@ -27,11 +27,11 @@ use serde::Deserialize;
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
 pub enum Action {
-    L10n(L10nAction),
+    L10n(l10n::L10nAction),
 }
 
 pub struct Supervisor {
-    l10n: L10nHandler,
+    l10n: l10n::Handler,
     user_config: InstallSettings,
     config: InstallSettings,
     proposal: Option<Proposal>,
@@ -40,7 +40,7 @@ pub struct Supervisor {
 impl Supervisor {
     pub fn new() -> Self {
         Self {
-            l10n: L10nHandler::start().unwrap(),
+            l10n: l10n::Handler::start().unwrap(),
             config: InstallSettings::default(),
             user_config: InstallSettings::default(),
             proposal: None,

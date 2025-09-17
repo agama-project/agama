@@ -18,9 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::{Error, L10nAction, L10nConfig, Message, Proposal, Service};
 use agama_utils::{Handler as AgamaHandler, Service as AgamaService};
 use tokio::sync::mpsc;
-use crate::{Service, L10nAction, L10nConfig, Proposal, Error, Message};
 
 #[derive(Clone)]
 pub struct Handler {
