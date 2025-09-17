@@ -19,12 +19,10 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::{
-    error::ServiceError,
-    product::Product,
-    software::{
-        model::{ResolvableParams, SoftwareConfig},
+    error::ServiceError, issue::Issue, product::Product, software::{
+        model::{RegistrationInfo, ResolvableParams, SoftwareConfig},
         Pattern,
-    },
+    }
 };
 use axum::{
     extract::{Path, State},
@@ -51,6 +49,9 @@ pub async fn software_router(client: SoftwareServiceClient) -> Result<Router, Se
         .route("/probe", post(probe))
         .route("/proposal", get(get_proposal))
         .route("/resolvables/:id", put(set_resolvables))
+        .route("/issues/product", get(product_issues))
+        .route("/issues/software", get(software_issues))
+        .route("/registration", get(get_registration))
         .with_state(state);
     Ok(router)
 }
@@ -167,6 +168,63 @@ async fn probe(State(state): State<SoftwareState>) -> Result<Json<()>, Error> {
 )]
 async fn get_proposal(State(state): State<SoftwareState>) -> Result<Json<SoftwareProposal>, Error> {
     unimplemented!("get the software proposal");
+}
+
+/// Returns the product issues
+///
+/// At this point, only the required space is reported.
+#[utoipa::path(
+    get,
+    path = "/issues/product",
+    context_path = "/api/software_ng",
+    responses(
+        (status = 200, description = "Product issues", body = Vec<Issue>)
+    )
+)]
+async fn product_issues(State(state): State<SoftwareState>) -> Result<Json<Vec<Issue>>, Error> {
+    // TODO: implement it
+    Ok(Json(vec![]))
+}
+
+/// Returns the software issues
+///
+/// At this point, only the required space is reported.
+#[utoipa::path(
+    get,
+    path = "/issues/software",
+    context_path = "/api/software_ng",
+    responses(
+        (status = 200, description = "Product issues", body = Vec<Issue>)
+    )
+)]
+async fn software_issues(State(state): State<SoftwareState>) -> Result<Json<Vec<Issue>>, Error> {
+    // TODO: implement it
+    Ok(Json(vec![]))
+}
+
+/// returns registration info
+///
+/// * `state`: service state.
+#[utoipa::path(
+    get,
+    path = "/registration",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "registration configuration", body = RegistrationInfo),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn get_registration(
+    State(state): State<SoftwareState>,
+) -> Result<Json<RegistrationInfo>, Error> {
+    // TODO: implement it
+    let result = RegistrationInfo {
+        registered: false,
+        key: "".to_string(),
+        email: "".to_string(),
+        url: "".to_string(),
+    };
+    Ok(Json(result))
 }
 
 /// Updates the resolvables list with the given `id`.
