@@ -20,18 +20,18 @@
 
 use agama_utils::{Handler as AgamaHandler, Service as AgamaService};
 use tokio::sync::mpsc;
-use crate::{Service, L10nAction, L10nConfig, L10nProposal, LocaleError, service::L10nCommand};
+use crate::{Service, L10nAction, L10nConfig, L10nProposal, LocaleError, Message};
 
 #[derive(Clone)]
 pub struct Handler {
-    sender: mpsc::UnboundedSender<L10nCommand>,
+    sender: mpsc::UnboundedSender<Message>,
 }
 
 impl AgamaHandler for Handler {
     type Err = LocaleError;
-    type Command = L10nCommand;
+    type Message = Message;
 
-    fn commands(&self) -> &mpsc::UnboundedSender<Self::Command> {
+    fn channel(&self) -> &mpsc::UnboundedSender<Self::Message> {
         &self.sender
     }
 }
@@ -49,13 +49,13 @@ impl Handler {
 
     pub async fn get_config(&self) -> Result<L10nConfig, LocaleError> {
         let result = self
-            .send_and_wait(|tx| L10nCommand::GetConfig { respond_to: tx })
+            .send_and_wait(|tx| Message::GetConfig { respond_to: tx })
             .await?;
         Ok(result)
     }
 
     pub async fn set_config(&self, config: &L10nConfig) -> Result<(), LocaleError> {
-        self.send(L10nCommand::SetConfig {
+        self.send(Message::SetConfig {
             config: config.clone(),
         })?;
         Ok(())
@@ -63,13 +63,13 @@ impl Handler {
 
     pub async fn get_proposal(&self) -> Result<L10nProposal, LocaleError> {
         let result = self
-            .send_and_wait(|tx| L10nCommand::GetProposal { respond_to: tx })
+            .send_and_wait(|tx| Message::GetProposal { respond_to: tx })
             .await?;
         Ok(result)
     }
 
     pub async fn dispatch_action(&self, action: L10nAction) -> Result<(), LocaleError> {
-        self.send(L10nCommand::DispatchAction { action })?;
+        self.send(Message::DispatchAction { action })?;
         Ok(())
     }
 }

@@ -36,8 +36,8 @@ pub enum ServiceError<T> {
 
 // Implements the basic behavior for an Agama service.
 pub trait Service: Send {
-    type Err: From<ServiceError<Self::Command>> + Error;
-    type Command: Send;
+    type Err: From<ServiceError<Self::Message>> + Error;
+    type Message: Send;
 
     /// Returns the service name used for logging and debugging purposes.
     ///
@@ -48,29 +48,29 @@ pub trait Service: Send {
 
     /// Main loop of the service.
     ///
-    /// It dispatches one command at a time.
+    /// It dispatches one message at a time.
     fn run(&mut self) -> impl Future<Output = ()> + Send {
         async {
             loop {
-                let command = self.commands().recv().await;
-                let Some(command) = command else {
+                let message = self.channel().recv().await;
+                let Some(message) = message else {
                     eprintln!("channel closed for {}", Self::name());
                     break;
                 };
 
-                if let Err(error) = &mut self.dispatch(command).await {
+                if let Err(error) = &mut self.dispatch(message).await {
                     eprintln!("error dispatching command: {error}");
                 }
             }
         }
     }
 
-    /// Returns the channel to read the commands from.
-    fn commands(&mut self) -> &mut mpsc::UnboundedReceiver<Self::Command>;
+    /// Returns the channel to read the messages from.
+    fn channel(&mut self) -> &mut mpsc::UnboundedReceiver<Self::Message>;
 
-    /// Dispatches a command.
+    /// Dispatches a message.
     fn dispatch(
         &mut self,
-        command: Self::Command,
+        command: Self::Message,
     ) -> impl Future<Output = Result<(), Self::Err>> + Send;
 }

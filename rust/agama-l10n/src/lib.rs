@@ -28,7 +28,7 @@ mod system_info;
 mod handler;
 mod service;
 
-pub(crate) use service::Service;
+pub(crate) use service::{Service, Message};
 
 pub use config::L10nConfig;
 pub use error::LocaleError;

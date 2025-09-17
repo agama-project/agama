@@ -31,7 +31,7 @@ pub enum L10nAction {
 }
 
 #[derive(Debug)]
-pub enum L10nCommand {
+pub enum Message {
     GetConfig {
         respond_to: oneshot::Sender<L10nConfig>,
     },
@@ -49,7 +49,7 @@ pub enum L10nCommand {
 pub struct Service {
     state: State,
     model: L10nModel,
-    receiver: UnboundedReceiver<L10nCommand>,
+    receiver: UnboundedReceiver<Message>,
 }
 
 struct State {
@@ -58,7 +58,7 @@ struct State {
 }
 
 impl Service {
-    pub fn new(receiver: UnboundedReceiver<L10nCommand>) -> Self {
+    pub fn new(receiver: UnboundedReceiver<Message>) -> Self {
         let model = L10nModel::new_with_locale(&LocaleId::default()).unwrap();
         let system = L10nSystemInfo::read_from(&model);
         let config = Config::new_from(&system);
@@ -93,24 +93,24 @@ impl Service {
 
 impl AgamaService for Service {
     type Err = LocaleError;
-    type Command = L10nCommand;
+    type Message = Message;
 
-    fn commands(&mut self) -> &mut mpsc::UnboundedReceiver<Self::Command> {
+    fn channel(&mut self) -> &mut mpsc::UnboundedReceiver<Self::Message> {
         &mut self.receiver
     }
 
-    async fn dispatch(&mut self, command: Self::Command) -> Result<(), Self::Err> {
-        match command {
-            L10nCommand::GetConfig { respond_to } => {
+    async fn dispatch(&mut self, message: Self::Message) -> Result<(), Self::Err> {
+        match message {
+            Message::GetConfig { respond_to } => {
                 respond_to.send(self.get_config()).unwrap();
             }
-            L10nCommand::SetConfig { config } => {
+            Message::SetConfig { config } => {
                 self.set_config(&config).unwrap();
             }
-            L10nCommand::GetProposal { respond_to } => {
+            Message::GetProposal { respond_to } => {
                 respond_to.send(self.get_proposal()).unwrap();
             }
-            L10nCommand::DispatchAction { action } => {
+            Message::DispatchAction { action } => {
                 self.dispatch(action).unwrap();
             }
         };
