@@ -406,7 +406,7 @@ module Agama
 
       question = certificate_question(cert)
       questions_client = Agama::DBus::Clients::Questions.new(logger: @logger)
-      questions_client.ask(question) { |c| c.answer == :trust }
+      questions_client.ask(question) { |c| c.answer == trust_id.to_sym }
     end
 
     # @param certificate [Agama::SSL::Certificate]
@@ -429,10 +429,20 @@ module Agama
       Agama::Question.new(
         qclass:         "registration.certificate",
         text:           question_text,
-        options:        [:trust, :reject],
-        default_option: :reject,
+        options:        [trust_id.to_sym, reject_id.to_sym],
+        default_option: reject_id.to_sym,
         data:           question_data
       )
+    end
+
+    def trust_id
+      # TRANSLATORS: button label. Context: trying to import a self-signed certificate
+      N_("Trust")
+    end
+
+    def reject_id
+      # TRANSLATORS: button label. Context: trying to import a self-signed certificate
+      N_("Reject")
     end
 
     # Returns the URL of the registration server

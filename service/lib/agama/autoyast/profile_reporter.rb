@@ -62,7 +62,7 @@ module Agama
         )
 
         questions_client.ask(question) do |question_client|
-          question_client.answer == :Continue
+          question_client.answer == continue_id.to_sym
         end
       end
 
@@ -71,12 +71,12 @@ module Agama
       attr_reader :questions_client, :logger
 
       def continue_id
-        # TRANSLATORS:
+        # TRANSLATORS: button label
         N_("Continue")
       end
 
       def abort_id
-        # TRANSLATORS:
+        # TRANSLATORS: button label
         N_("Abort")
       end
     end
