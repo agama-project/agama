@@ -116,7 +116,6 @@ dependencies = [
 name = "agama-locale-data"
 version = "0.1.0"
 dependencies = [
- "anyhow",
  "chrono-tz",
  "flate2",
  "quick-xml",

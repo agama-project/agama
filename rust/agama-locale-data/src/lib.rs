@@ -18,8 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use anyhow::Context;
 use flate2::bufread::GzDecoder;
+use keyboard::xkeyboard;
 use quick_xml::de::Deserializer;
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -29,6 +29,7 @@ use std::io::BufReader;
 use std::process::Command;
 
 pub mod deprecated_timezones;
+mod error;
 pub mod keyboard;
 pub mod language;
 mod locale;
@@ -37,26 +38,27 @@ pub mod ranked;
 pub mod territory;
 pub mod timezone_part;
 
-use keyboard::xkeyboard;
+pub use error::LocaleDataError;
+
+pub type LocaleDataResult<T> = Result<T, LocaleDataError>;
 
 pub use locale::{
     InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId, TimezoneId,
 };
 
-fn file_reader(file_path: &str) -> anyhow::Result<impl BufRead> {
-    let file = File::open(file_path)
-        .with_context(|| format!("Failed to read langtable-data ({})", file_path))?;
+fn file_reader(file_path: &str) -> LocaleDataResult<impl BufRead> {
+    let file = File::open(file_path).map_err(|e| LocaleDataError::IO(file_path.to_string(), e))?;
     let reader = BufReader::new(GzDecoder::new(BufReader::new(file)));
     Ok(reader)
 }
 
 /// Gets list of X11 keyboards structs
-pub fn get_xkeyboards() -> anyhow::Result<xkeyboard::XKeyboards> {
+pub fn get_xkeyboards() -> LocaleDataResult<xkeyboard::XKeyboards> {
     const FILE_PATH: &str = "/usr/share/langtable/data/keyboards.xml.gz";
     let reader = file_reader(FILE_PATH)?;
     let mut deserializer = Deserializer::from_reader(reader);
     let ret = xkeyboard::XKeyboards::deserialize(&mut deserializer)
-        .context("Failed to deserialize keyboard entry")?;
+        .map_err(|e| LocaleDataError::Deserialize(FILE_PATH.to_string(), e))?;
     Ok(ret)
 }
 
@@ -72,55 +74,55 @@ pub fn get_xkeyboards() -> anyhow::Result<xkeyboard::XKeyboards> {
 /// let us: KeymapId = "us".parse().unwrap();
 /// assert!(key_maps.contains(&us));
 /// ```
-pub fn get_localectl_keymaps() -> anyhow::Result<Vec<KeymapId>> {
+pub fn get_localectl_keymaps() -> LocaleDataResult<Vec<KeymapId>> {
     let output = Command::new("localectl")
         .arg("list-keymaps")
         .output()
-        .context("failed to execute localectl list-maps")?
+        .map_err(|e| LocaleDataError::CouldNotReadKeymaps(e))?
         .stdout;
-    let output = String::from_utf8(output).context("Strange localectl output formatting")?;
+    let output = String::from_utf8_lossy(&output);
     let ret: Vec<_> = output.lines().flat_map(|l| l.parse().ok()).collect();
 
     Ok(ret)
 }
 
 /// Returns struct which contain list of known languages
-pub fn get_languages() -> anyhow::Result<language::Languages> {
+pub fn get_languages() -> LocaleDataResult<language::Languages> {
     const FILE_PATH: &str = "/usr/share/langtable/data/languages.xml.gz";
     let reader = file_reader(FILE_PATH)?;
     let mut deserializer = Deserializer::from_reader(reader);
     let ret = language::Languages::deserialize(&mut deserializer)
-        .context("Failed to deserialize language entry")?;
+        .map_err(|e| LocaleDataError::Deserialize(FILE_PATH.to_string(), e))?;
     Ok(ret)
 }
 
 /// Returns struct which contain list of known territories
-pub fn get_territories() -> anyhow::Result<territory::Territories> {
+pub fn get_territories() -> LocaleDataResult<territory::Territories> {
     const FILE_PATH: &str = "/usr/share/langtable/data/territories.xml.gz";
     let reader = file_reader(FILE_PATH)?;
     let mut deserializer = Deserializer::from_reader(reader);
     let ret = territory::Territories::deserialize(&mut deserializer)
-        .context("Failed to deserialize territory entry")?;
+        .map_err(|e| LocaleDataError::Deserialize(FILE_PATH.to_string(), e))?;
     Ok(ret)
 }
 
 /// Returns struct which contain list of known parts of timezones. Useful for translation
-pub fn get_timezone_parts() -> anyhow::Result<timezone_part::TimezoneIdParts> {
+pub fn get_timezone_parts() -> LocaleDataResult<timezone_part::TimezoneIdParts> {
     const FILE_PATH: &str = "/usr/share/langtable/data/timezoneidparts.xml.gz";
     let reader = file_reader(FILE_PATH)?;
     let mut deserializer = Deserializer::from_reader(reader);
     let ret = timezone_part::TimezoneIdParts::deserialize(&mut deserializer)
-        .context("Failed to deserialize timezone part entry")?;
+        .map_err(|e| LocaleDataError::Deserialize(FILE_PATH.to_string(), e))?;
     Ok(ret)
 }
 
 /// Returns a hash mapping timezones to its main country (typically, the country of
 /// the city that is used to name the timezone). The information is read from the
 /// file /usr/share/zoneinfo/zone.tab.
-pub fn get_timezone_countries() -> anyhow::Result<HashMap<String, String>> {
+pub fn get_timezone_countries() -> LocaleDataResult<HashMap<String, String>> {
     const FILE_PATH: &str = "/usr/share/zoneinfo/zone.tab";
     let content = std::fs::read_to_string(FILE_PATH)
-        .with_context(|| format!("Failed to read {}", FILE_PATH))?;
+        .map_err(|e| LocaleDataError::IO(FILE_PATH.to_string(), e))?;
 
     let countries = content
         .lines()
