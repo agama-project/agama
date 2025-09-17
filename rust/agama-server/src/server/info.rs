@@ -22,7 +22,7 @@
 use crate::l10n;
 use serde::Serialize;
 
-#[derive(Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct SystemInfo {
     pub localization: l10n::SystemInfo,
 }

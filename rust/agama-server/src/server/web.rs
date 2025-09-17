@@ -31,26 +31,24 @@ use axum::{
 };
 use hyper::StatusCode;
 use serde::Serialize;
-use std::sync::Arc;
-use tokio::sync::Mutex;
 
-use crate::{supervisor::Action, supervisor::Supervisor};
+use crate::supervisor::{self, Action};
 
 use super::{Scope, ScopeConfig, ServerError, SystemInfo};
 
 #[derive(Clone)]
 pub struct ServerState {
-    supervisor: Arc<Mutex<Supervisor>>,
+    supervisor: supervisor::Handler,
 }
+
+type ServerResult<T> = Result<T, ServerError>;
 
 /// Sets up and returns the axum service for the manager module
 pub async fn server_service() -> Result<Router, ServiceError> {
     // let l10n = L10nModel::new_with_locale(&LocaleId::default()).unwrap();
     // let l10n = L10nAgent::new(l10n);
-    let supervisor = Supervisor::new();
-    let state = ServerState {
-        supervisor: Arc::new(Mutex::new(supervisor)),
-    };
+    let supervisor = supervisor::Handler::start().await.unwrap();
+    let state = ServerState { supervisor };
 
     Ok(Router::new()
         .route(
@@ -71,49 +69,45 @@ pub async fn server_service() -> Result<Router, ServiceError> {
         .with_state(state))
 }
 
-async fn get_full_config(State(state): State<ServerState>) -> Json<InstallSettings> {
-    let state = state.supervisor.lock().await;
-    Json(state.get_config().await.clone())
+#[axum::debug_handler]
+async fn get_full_config(State(state): State<ServerState>) -> ServerResult<Json<InstallSettings>> {
+    Ok(Json(state.supervisor.get_config().await?))
 }
 
 async fn get_scope_full_config(
     State(state): State<ServerState>,
     Path(scope): Path<Scope>,
-) -> Result<Response, ServerError> {
-    let state = state.supervisor.lock().await;
-    let config = state.get_scope_config(scope).await;
+) -> ServerResult<Response> {
+    let config = state.supervisor.get_scope_config(scope).await?;
     Ok(to_option_response(config))
 }
 
-async fn get_user_config(State(state): State<ServerState>) -> Json<InstallSettings> {
-    let state = state.supervisor.lock().await;
-    Json(state.get_user_config().await.clone())
+async fn get_user_config(State(state): State<ServerState>) -> ServerResult<Json<InstallSettings>> {
+    Ok(Json(state.supervisor.get_user_config().await?))
 }
 
 async fn get_scope_user_config(
     State(state): State<ServerState>,
     Path(scope): Path<Scope>,
-) -> Response {
-    let state = state.supervisor.lock().await;
-    let user_config = state.get_user_config().await;
+) -> ServerResult<Response> {
+    let user_config = state.supervisor.get_user_config().await?;
 
     let result = match scope {
         Scope::L10n => &user_config.localization,
     };
 
-    to_option_response(result.clone())
+    Ok(to_option_response(result.clone()))
 }
 
 async fn set_config(
     State(state): State<ServerState>,
     method: axum::http::Method,
     Json(config): Json<InstallSettings>,
-) -> Result<(), ServerError> {
-    let mut state = state.supervisor.lock().await;
+) -> ServerResult<()> {
     if method.as_str() == "PATCH" {
-        state.patch_config(config).await?;
+        state.supervisor.patch_config(&config)?;
     } else {
-        state.update_config(config).await?;
+        state.supervisor.update_config(&config)?;
     }
 
     Ok(())
@@ -129,11 +123,10 @@ async fn set_scope_config(
         return Err(ServerError::NoMatchingScope(scope));
     }
 
-    let mut state = state.supervisor.lock().await;
     if method.as_str() == "PATCH" {
-        state.patch_scope_config(user_config).await?;
+        state.supervisor.patch_scope_config(user_config)?;
     } else {
-        state.update_scope_config(user_config).await?;
+        state.supervisor.update_scope_config(user_config)?;
     }
     Ok(())
 }
@@ -142,23 +135,20 @@ async fn run_action(
     State(state): State<ServerState>,
     Json(action): Json<Action>,
 ) -> Result<(), ServerError> {
-    let mut state = state.supervisor.lock().await;
-    state.dispatch_action(action).await;
+    // state.dispatch_action(action).await;
     Ok(())
 }
 
-async fn get_proposal(State(state): State<ServerState>) -> Response {
-    let state = state.supervisor.lock().await;
-    if let Some(proposal) = state.get_proposal().await {
-        Json(proposal).into_response()
+async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response> {
+    if let Some(proposal) = state.supervisor.get_proposal().await? {
+        Ok(Json(proposal).into_response())
     } else {
-        StatusCode::NOT_FOUND.into_response()
+        Ok(StatusCode::NOT_FOUND.into_response())
     }
 }
 
-async fn get_system(State(state): State<ServerState>) -> Json<SystemInfo> {
-    let state = state.supervisor.lock().await;
-    Json(state.get_system().await)
+async fn get_system(State(state): State<ServerState>) -> ServerResult<Json<SystemInfo>> {
+    Ok(Json(state.supervisor.get_system().await?))
 }
 
 fn to_option_response<T: Serialize>(value: Option<T>) -> Response {

@@ -28,7 +28,7 @@ pub enum Scope {
     L10n,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ScopeConfig {
     L10n(UserConfig),

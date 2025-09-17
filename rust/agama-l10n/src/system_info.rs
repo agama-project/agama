@@ -22,7 +22,7 @@ use crate::{Keymap, LocaleEntry, Model, TimezoneEntry};
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use serde::Serialize;
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct SystemInfo {
     pub locales: Vec<LocaleEntry>,
     pub timezones: Vec<TimezoneEntry>,

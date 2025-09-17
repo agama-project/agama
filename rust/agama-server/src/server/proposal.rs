@@ -21,7 +21,7 @@
 use crate::l10n;
 use serde::Serialize;
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Proposal {
     pub localization: l10n::Proposal,
 }

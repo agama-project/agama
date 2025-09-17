@@ -18,15 +18,16 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::l10n;
+use super::Scope;
+use crate::{l10n, supervisor};
+
+use agama_utils::ServiceError;
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
     Json,
 };
 use serde_json::json;
-
-use super::Scope;
 
 pub type ServerResult<T> = Result<T, ServerError>;
 
@@ -36,6 +37,8 @@ pub enum ServerError {
     NoMatchingScope(Scope),
     #[error(transparent)]
     L10n(#[from] l10n::Error),
+    #[error(transparent)]
+    ServiceError(#[from] ServiceError<supervisor::Message>),
 }
 
 impl IntoResponse for ServerError {

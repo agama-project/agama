@@ -22,10 +22,7 @@ use crate::{actions, Error, Model, Proposal, SystemInfo, UserConfig};
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use agama_utils::Service as AgamaService;
 use serde::Deserialize;
-use tokio::sync::{
-    mpsc::{self, UnboundedReceiver},
-    oneshot,
-};
+use tokio::sync::{mpsc, oneshot};
 
 #[derive(Debug, Deserialize)]
 pub enum L10nAction {
@@ -52,7 +49,7 @@ pub enum Message {
 pub struct Service {
     state: State,
     model: Model,
-    receiver: UnboundedReceiver<Message>,
+    receiver: mpsc::UnboundedReceiver<Message>,
 }
 
 struct State {
@@ -61,7 +58,7 @@ struct State {
 }
 
 impl Service {
-    pub fn new(receiver: UnboundedReceiver<Message>) -> Self {
+    pub fn new(receiver: mpsc::UnboundedReceiver<Message>) -> Self {
         let model = Model::new_with_locale(&LocaleId::default()).unwrap();
         let system = SystemInfo::read_from(&model);
         let config = Config::new_from(&system);
