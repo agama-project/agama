@@ -37,6 +37,9 @@ pub use proposal::Proposal;
 mod error;
 pub use error::Error;
 
+mod config;
+pub(crate) use config::Config;
+
 mod model;
 pub(crate) use model::{Keymap, LocaleEntry, Model, TimezoneEntry};
 

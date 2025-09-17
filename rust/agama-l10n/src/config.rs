@@ -18,28 +18,37 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::Config;
+use crate::{Error, SystemInfo, UserConfig};
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
-use serde::Serialize;
-use serde_with::{serde_as, DisplayFromStr};
 
-#[serde_as]
-#[derive(Clone, Debug, Serialize)]
-pub struct Proposal {
-    #[serde_as(as = "DisplayFromStr")]
-    pub keymap: KeymapId,
-    #[serde_as(as = "DisplayFromStr")]
+pub struct Config {
     pub locale: LocaleId,
-    #[serde_as(as = "DisplayFromStr")]
+    pub keymap: KeymapId,
     pub timezone: TimezoneId,
 }
 
-impl From<&Config> for Proposal {
-    fn from(config: &Config) -> Self {
-        Proposal {
-            keymap: config.keymap.clone(),
-            locale: config.locale.clone(),
-            timezone: config.timezone.clone(),
+impl Config {
+    pub fn new_from(system: &SystemInfo) -> Self {
+        Self {
+            locale: system.locale.clone(),
+            keymap: system.keymap.clone(),
+            timezone: system.timezone.clone(),
         }
+    }
+
+    pub fn merge(&mut self, config: &UserConfig) -> Result<(), Error> {
+        if let Some(language) = &config.language {
+            self.locale = language.parse().map_err(Error::InvalidLocale)?
+        }
+
+        if let Some(keyboard) = &config.keyboard {
+            self.keymap = keyboard.parse().map_err(Error::InvalidKeymap)?
+        }
+
+        if let Some(timezone) = &config.timezone {
+            self.timezone = timezone.parse().map_err(Error::InvalidTimezone)?;
+        }
+
+        Ok(())
     }
 }

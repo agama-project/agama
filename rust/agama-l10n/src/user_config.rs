@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2024] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,28 +18,32 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::Config;
-use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
-use serde::Serialize;
-use serde_with::{serde_as, DisplayFromStr};
+//! Representation of the localization settings
 
-#[serde_as]
-#[derive(Clone, Debug, Serialize)]
-pub struct Proposal {
-    #[serde_as(as = "DisplayFromStr")]
-    pub keymap: KeymapId,
-    #[serde_as(as = "DisplayFromStr")]
-    pub locale: LocaleId,
-    #[serde_as(as = "DisplayFromStr")]
-    pub timezone: TimezoneId,
+use crate::Config;
+use serde::{Deserialize, Serialize};
+
+/// Configuration provided for localization.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct UserConfig {
+    /// like "en_US.UTF-8"
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub language: Option<String>,
+    /// like "cz(qwerty)"
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub keyboard: Option<String>,
+    /// like "Europe/Berlin"
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timezone: Option<String>,
 }
 
-impl From<&Config> for Proposal {
+impl From<&Config> for UserConfig {
     fn from(config: &Config) -> Self {
-        Proposal {
-            keymap: config.keymap.clone(),
-            locale: config.locale.clone(),
-            timezone: config.timezone.clone(),
+        UserConfig {
+            language: Some(config.locale.to_string()),
+            keyboard: Some(config.keymap.to_string()),
+            timezone: Some(config.timezone.to_string()),
         }
     }
 }
