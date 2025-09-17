@@ -25,13 +25,15 @@ pub mod helpers;
 mod model;
 mod proposal;
 mod system_info;
-pub(crate) mod handler;
-pub(crate) mod service;
+mod handler;
+mod service;
+
+pub(crate) use service::Service;
 
 pub use config::L10nConfig;
 pub use error::LocaleError;
 pub use model::{Keymap, L10nModel, LocaleEntry, TimezoneEntry};
 pub use proposal::L10nProposal;
 pub use system_info::L10nSystemInfo;
-pub use service::{L10n, L10nAction};
+pub use service::L10nAction;
 pub use handler::Handler;

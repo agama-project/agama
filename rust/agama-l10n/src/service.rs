@@ -46,7 +46,7 @@ pub enum L10nCommand {
     },
 }
 
-pub struct L10n {
+pub struct Service {
     state: State,
     model: L10nModel,
     receiver: UnboundedReceiver<L10nCommand>,
@@ -57,7 +57,7 @@ struct State {
     config: Config,
 }
 
-impl L10n {
+impl Service {
     pub fn new(receiver: UnboundedReceiver<L10nCommand>) -> Self {
         let model = L10nModel::new_with_locale(&LocaleId::default()).unwrap();
         let system = L10nSystemInfo::read_from(&model);
@@ -91,7 +91,7 @@ impl L10n {
     }
 }
 
-impl AgamaService for L10n {
+impl AgamaService for Service {
     type Err = LocaleError;
     type Command = L10nCommand;
 

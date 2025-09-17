@@ -20,7 +20,7 @@
 
 use agama_utils::{Handler as AgamaHandler, Service as AgamaService};
 use tokio::sync::mpsc;
-use crate::{L10n, L10nAction, L10nConfig, L10nProposal, LocaleError, service::L10nCommand};
+use crate::{Service, L10nAction, L10nConfig, L10nProposal, LocaleError, service::L10nCommand};
 
 #[derive(Clone)]
 pub struct Handler {
@@ -39,7 +39,7 @@ impl AgamaHandler for Handler {
 impl Handler {
     pub fn start() -> Result<Self, LocaleError> {
         let (sender, receiver) = mpsc::unbounded_channel();
-        let mut server = L10n::new(receiver);
+        let mut server = Service::new(receiver);
         tokio::spawn(async move {
             server.run().await;
         });

@@ -24,7 +24,6 @@ pub mod dbus;
 pub mod error;
 pub mod files;
 pub mod hostname;
-pub mod l10n;
 pub mod logs;
 pub mod manager;
 pub mod network;
