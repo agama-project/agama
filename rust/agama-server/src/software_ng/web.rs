@@ -47,7 +47,7 @@ pub async fn software_router(client: SoftwareServiceClient) -> Result<Router, Se
         .route("/patterns", get(get_patterns))
         .route("/products", get(get_products))
         // FIXME: it should be PATCH (using PUT just for backward compatibility).
-        .route("/config", put(set_config))
+        .route("/config", put(set_config).get(get_config))
         .route("/probe", post(probe))
         .route("/proposal", get(get_proposal))
         .route("/resolvables/:id", put(set_resolvables))
@@ -112,6 +112,27 @@ async fn set_config(
     }
 
     Ok(())
+}
+
+/// Gets the software configuration.
+///
+/// * `state`: service state.
+#[utoipa::path(
+    get,
+    path = "/config",
+    context_path = "/api/software_ng",
+    operation_id = "get_software_config",
+    responses(
+        (status = 200, description = "Get the software configuration"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn get_config(
+    State(state): State<SoftwareState>
+) -> Result<Json<SoftwareConfig>, Error> {
+    let result = state.client.get_config().await?;
+
+    Ok(Json(result))
 }
 
 /// Refreshes the repositories.
