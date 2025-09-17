@@ -27,15 +27,6 @@ pub struct Handler {
     sender: mpsc::UnboundedSender<Message>,
 }
 
-impl AgamaHandler for Handler {
-    type Err = LocaleError;
-    type Message = Message;
-
-    fn channel(&self) -> &mpsc::UnboundedSender<Self::Message> {
-        &self.sender
-    }
-}
-
 impl Handler {
     pub fn start() -> Result<Self, LocaleError> {
         let (sender, receiver) = mpsc::unbounded_channel();
@@ -71,5 +62,14 @@ impl Handler {
     pub async fn dispatch_action(&self, action: L10nAction) -> Result<(), LocaleError> {
         self.send(Message::DispatchAction { action })?;
         Ok(())
+    }
+}
+
+impl AgamaHandler for Handler {
+    type Err = LocaleError;
+    type Message = Message;
+
+    fn channel(&self) -> &mpsc::UnboundedSender<Self::Message> {
+        &self.sender
     }
 }

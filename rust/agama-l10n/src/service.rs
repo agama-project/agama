@@ -72,19 +72,19 @@ impl Service {
         }
     }
 
-    pub fn get_config(&self) -> L10nConfig {
+    fn get_config(&self) -> L10nConfig {
         (&self.state.config).into()
     }
 
-    pub fn set_config(&mut self, user_config: &L10nConfig) -> Result<(), LocaleError> {
+    fn set_config(&mut self, user_config: &L10nConfig) -> Result<(), LocaleError> {
         self.state.config.merge(user_config)
     }
 
-    pub fn get_proposal(&self) -> L10nProposal {
+    fn get_proposal(&self) -> L10nProposal {
         (&self.state.config).into()
     }
 
-    pub fn dispatch(&mut self, action: L10nAction) -> anyhow::Result<()> {
+    fn dispatch(&mut self, action: L10nAction) -> anyhow::Result<()> {
         match action {
             L10nAction::ConfigureSystem(action) => action.run(self),
         }
