@@ -18,12 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::service::Message;
+use crate::Message;
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
 use agama_utils::ServiceError;
 
 #[derive(thiserror::Error, Debug)]
-pub enum LocaleError {
+pub enum Error {
     #[error("Unknown locale code: {0}")]
     UnknownLocale(LocaleId),
     #[error("Invalid locale: {0}")]

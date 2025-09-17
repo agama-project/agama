@@ -33,7 +33,7 @@ pub use keyboard::Keymap;
 pub use locale::LocaleEntry;
 pub use timezone::TimezoneEntry;
 
-use super::{helpers, LocaleError};
+use super::{helpers, Error};
 use keyboard::KeymapsDatabase;
 use locale::LocalesDatabase;
 use timezone::TimezonesDatabase;
@@ -89,7 +89,7 @@ impl Model {
         Ok(locale)
     }
 
-    pub fn set_locales(&mut self, locales: &Vec<String>) -> Result<(), LocaleError> {
+    pub fn set_locales(&mut self, locales: &Vec<String>) -> Result<(), Error> {
         let locale_ids: Result<Vec<LocaleId>, InvalidLocaleId> = locales
             .iter()
             .cloned()
@@ -99,7 +99,7 @@ impl Model {
 
         for loc in &locale_ids {
             if !self.locales_db.exists(loc) {
-                return Err(LocaleError::UnknownLocale(loc.clone()));
+                return Err(Error::UnknownLocale(loc.clone()));
             }
         }
 
@@ -107,18 +107,18 @@ impl Model {
         Ok(())
     }
 
-    pub fn set_timezone(&mut self, timezone: &str) -> Result<(), LocaleError> {
+    pub fn set_timezone(&mut self, timezone: &str) -> Result<(), Error> {
         // TODO: modify exists() to receive an `&str`
         if !self.timezones_db.exists(&timezone.to_string()) {
-            return Err(LocaleError::UnknownTimezone(timezone.to_string()))?;
+            return Err(Error::UnknownTimezone(timezone.to_string()))?;
         }
         timezone.clone_into(&mut self.timezone);
         Ok(())
     }
 
-    pub fn set_keymap(&mut self, keymap_id: KeymapId) -> Result<(), LocaleError> {
+    pub fn set_keymap(&mut self, keymap_id: KeymapId) -> Result<(), Error> {
         if !self.keymaps_db.exists(&keymap_id) {
-            return Err(LocaleError::UnknownKeymap(keymap_id));
+            return Err(Error::UnknownKeymap(keymap_id));
         }
 
         self.keymap = keymap_id;
@@ -135,9 +135,9 @@ impl Model {
     }
 
     // TODO: use LocaleError
-    pub fn set_ui_keymap(&mut self, keymap_id: KeymapId) -> Result<(), LocaleError> {
+    pub fn set_ui_keymap(&mut self, keymap_id: KeymapId) -> Result<(), Error> {
         if !self.keymaps_db.exists(&keymap_id) {
-            return Err(LocaleError::UnknownKeymap(keymap_id));
+            return Err(Error::UnknownKeymap(keymap_id));
         }
 
         self.ui_keymap = keymap_id;
@@ -145,12 +145,12 @@ impl Model {
         Command::new("localectl")
             .args(["set-keymap", &self.ui_keymap.dashed()])
             .output()
-            .map_err(LocaleError::Commit)?;
+            .map_err(Error::Commit)?;
         Ok(())
     }
 
     // TODO: what should be returned value for commit?
-    pub fn commit(&self) -> Result<(), LocaleError> {
+    pub fn commit(&self) -> Result<(), Error> {
         const ROOT: &str = "/mnt";
         const VCONSOLE_CONF: &str = "/etc/vconsole.conf";
 
@@ -189,10 +189,10 @@ impl Model {
         Ok(())
     }
 
-    fn ui_keymap() -> Result<KeymapId, LocaleError> {
+    fn ui_keymap() -> Result<KeymapId, Error> {
         let output = Command::new("localectl")
             .output()
-            .map_err(LocaleError::Commit)?;
+            .map_err(Error::Commit)?;
         let output = String::from_utf8_lossy(&output.stdout);
 
         let keymap_regexp = Regex::new(r"(?m)VC Keymap: (.+)$").unwrap();

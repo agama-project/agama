@@ -22,7 +22,7 @@ use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use agama_utils::Service as AgamaService;
 use serde::Deserialize;
 use tokio::sync::{mpsc::{self, UnboundedReceiver}, oneshot};
-use crate::{actions, L10nConfig, LocaleError, Model, Proposal, SystemInfo};
+use crate::{actions, L10nConfig, Error, Model, Proposal, SystemInfo};
 
 #[derive(Debug, Deserialize)]
 pub enum L10nAction {
@@ -76,7 +76,7 @@ impl Service {
         (&self.state.config).into()
     }
 
-    fn set_config(&mut self, user_config: &L10nConfig) -> Result<(), LocaleError> {
+    fn set_config(&mut self, user_config: &L10nConfig) -> Result<(), Error> {
         self.state.config.merge(user_config)
     }
 
@@ -92,7 +92,7 @@ impl Service {
 }
 
 impl AgamaService for Service {
-    type Err = LocaleError;
+    type Err = Error;
     type Message = Message;
 
     fn channel(&mut self) -> &mut mpsc::UnboundedReceiver<Self::Message> {
@@ -134,17 +134,17 @@ impl Config {
         }
     }
 
-    fn merge(&mut self, config: &L10nConfig) -> Result<(), LocaleError> {
+    fn merge(&mut self, config: &L10nConfig) -> Result<(), Error> {
         if let Some(language) = &config.language {
-            self.locale = language.parse().map_err(LocaleError::InvalidLocale)?
+            self.locale = language.parse().map_err(Error::InvalidLocale)?
         }
 
         if let Some(keyboard) = &config.keyboard {
-            self.keymap = keyboard.parse().map_err(LocaleError::InvalidKeymap)?
+            self.keymap = keyboard.parse().map_err(Error::InvalidKeymap)?
         }
 
         if let Some(timezone) = &config.timezone {
-            self.timezone = timezone.parse().map_err(LocaleError::InvalidTimezone)?;
+            self.timezone = timezone.parse().map_err(Error::InvalidTimezone)?;
         }
 
         Ok(())

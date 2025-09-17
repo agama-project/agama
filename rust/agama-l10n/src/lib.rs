@@ -35,6 +35,6 @@ pub(crate) use model::{Keymap, LocaleEntry, TimezoneEntry, Model};
 pub use system_info::SystemInfo;
 pub use proposal::Proposal;
 pub use config::L10nConfig;
-pub use error::LocaleError;
+pub use error::Error;
 pub use service::L10nAction;
 pub use handler::Handler;
