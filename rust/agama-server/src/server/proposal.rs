@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_l10n::L10nProposal;
+use agama_l10n::Proposal as L10nProposal;
 use serde::Serialize;
 
 #[derive(Clone, Serialize)]

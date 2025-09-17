@@ -38,7 +38,7 @@ use keyboard::KeymapsDatabase;
 use locale::LocalesDatabase;
 use timezone::TimezonesDatabase;
 
-pub struct L10nModel {
+pub struct Model {
     pub timezone: String,
     pub timezones_db: TimezonesDatabase,
     pub locales: Vec<LocaleId>,
@@ -49,7 +49,7 @@ pub struct L10nModel {
     pub ui_keymap: KeymapId,
 }
 
-impl L10nModel {
+impl Model {
     //    pub fn new_with_locale(ui_locale: &LocaleId) -> Result<Self, LocaleError> {
     pub fn new_with_locale(ui_locale: &LocaleId) -> anyhow::Result<Self> {
         const DEFAULT_TIMEZONE: &str = "Europe/Berlin";

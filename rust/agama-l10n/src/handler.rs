@@ -20,7 +20,7 @@
 
 use agama_utils::{Handler as AgamaHandler, Service as AgamaService};
 use tokio::sync::mpsc;
-use crate::{Service, L10nAction, L10nConfig, L10nProposal, LocaleError, Message};
+use crate::{Service, L10nAction, L10nConfig, Proposal, LocaleError, Message};
 
 #[derive(Clone)]
 pub struct Handler {
@@ -52,7 +52,7 @@ impl Handler {
         Ok(())
     }
 
-    pub async fn get_proposal(&self) -> Result<L10nProposal, LocaleError> {
+    pub async fn get_proposal(&self) -> Result<Proposal, LocaleError> {
         let result = self
             .send_and_wait(|tx| Message::GetProposal { respond_to: tx })
             .await?;

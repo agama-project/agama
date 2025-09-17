@@ -18,11 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::Service as AgamaService;
-use crate::{actions, L10nConfig, L10nModel, L10nProposal, L10nSystemInfo, LocaleError};
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
+use agama_utils::Service as AgamaService;
 use serde::Deserialize;
 use tokio::sync::{mpsc::{self, UnboundedReceiver}, oneshot};
+use crate::{actions, L10nConfig, LocaleError, Model, Proposal, SystemInfo};
 
 #[derive(Debug, Deserialize)]
 pub enum L10nAction {
@@ -39,7 +39,7 @@ pub enum Message {
         config: L10nConfig,
     },
     GetProposal {
-        respond_to: oneshot::Sender<L10nProposal>,
+        respond_to: oneshot::Sender<Proposal>,
     },
     DispatchAction {
         action: L10nAction,
@@ -48,19 +48,19 @@ pub enum Message {
 
 pub struct Service {
     state: State,
-    model: L10nModel,
+    model: Model,
     receiver: UnboundedReceiver<Message>,
 }
 
 struct State {
-    system: L10nSystemInfo,
+    system: SystemInfo,
     config: Config,
 }
 
 impl Service {
     pub fn new(receiver: UnboundedReceiver<Message>) -> Self {
-        let model = L10nModel::new_with_locale(&LocaleId::default()).unwrap();
-        let system = L10nSystemInfo::read_from(&model);
+        let model = Model::new_with_locale(&LocaleId::default()).unwrap();
+        let system = SystemInfo::read_from(&model);
         let config = Config::new_from(&system);
 
         let state = State { system, config };
@@ -80,7 +80,7 @@ impl Service {
         self.state.config.merge(user_config)
     }
 
-    fn get_proposal(&self) -> L10nProposal {
+    fn get_proposal(&self) -> Proposal {
         (&self.state.config).into()
     }
 
@@ -126,7 +126,7 @@ struct Config {
 }
 
 impl Config {
-    fn new_from(system: &L10nSystemInfo) -> Self {
+    fn new_from(system: &SystemInfo) -> Self {
         Self {
             locale: system.locale.clone(),
             keymap: system.keymap.clone(),
@@ -161,9 +161,9 @@ impl From<&Config> for L10nConfig {
     }
 }
 
-impl From<&Config> for L10nProposal {
+impl From<&Config> for Proposal {
     fn from(config: &Config) -> Self {
-        L10nProposal {
+        Proposal {
             keymap: config.keymap.clone(),
             locale: config.locale.clone(),
             timezone: config.timezone.clone(),

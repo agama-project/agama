@@ -24,7 +24,7 @@ use serde_with::{serde_as, DisplayFromStr};
 
 #[serde_as]
 #[derive(Clone, Debug, Serialize)]
-pub struct L10nProposal {
+pub struct Proposal {
     #[serde_as(as = "DisplayFromStr")]
     pub keymap: KeymapId,
     #[serde_as(as = "DisplayFromStr")]

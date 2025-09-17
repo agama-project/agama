@@ -20,11 +20,10 @@
 
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use serde::Serialize;
-use crate::L10nModel;
-use super::{Keymap, LocaleEntry, TimezoneEntry};
+use crate::{Keymap, LocaleEntry, TimezoneEntry, Model};
 
 #[derive(Debug, Serialize)]
-pub struct L10nSystemInfo {
+pub struct SystemInfo {
     pub locales: Vec<LocaleEntry>,
     pub timezones: Vec<TimezoneEntry>,
     pub keymaps: Vec<Keymap>,
@@ -33,8 +32,8 @@ pub struct L10nSystemInfo {
     pub timezone: TimezoneId,
 }
 
-impl L10nSystemInfo {
-    pub fn read_from(model: &L10nModel) -> Self {
+impl SystemInfo {
+    pub fn read_from(model: &Model) -> Self {
         let locales = model.locales_db.entries().clone();
         let keymaps = model.keymaps_db.entries().clone();
         let timezones = model.timezones_db.entries().clone();
