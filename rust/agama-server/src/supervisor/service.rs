@@ -18,9 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::{error::ServerResult, Scope, ScopeConfig, SupervisorError};
+use crate::l10n;
 use crate::server::{Proposal, SystemInfo};
-use agama_l10n::{Handler as L10nHandler, L10nAction};
+use crate::supervisor::{error::ServerResult, Error, Scope, ScopeConfig};
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::{Service as AgamaService, ServiceError};
 use merge_struct::merge;
@@ -30,7 +30,7 @@ use tokio::sync::{mpsc, oneshot};
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
 pub enum Action {
-    L10n(L10nAction),
+    L10n(l10n::L10nAction),
 }
 
 #[derive(Debug)]
@@ -69,7 +69,7 @@ pub enum Message {
 }
 
 pub struct Service {
-    l10n: L10nHandler,
+    l10n: l10n::Handler,
     user_config: InstallSettings,
     config: InstallSettings,
     proposal: Option<Proposal>,
@@ -77,11 +77,9 @@ pub struct Service {
 }
 
 impl Service {
-    pub async fn start(
-        messages: mpsc::UnboundedReceiver<Message>,
-    ) -> Result<Self, SupervisorError> {
+    pub async fn start(messages: mpsc::UnboundedReceiver<Message>) -> Result<Self, Error> {
         Ok(Self {
-            l10n: L10nHandler::start().await?,
+            l10n: l10n::Handler::start().await?,
             config: InstallSettings::default(),
             user_config: InstallSettings::default(),
             proposal: None,
@@ -189,7 +187,7 @@ impl Service {
     }
 
     /// It returns the information of the underlying system.
-    pub async fn get_system(&self) -> Result<SystemInfo, SupervisorError> {
+    pub async fn get_system(&self) -> Result<SystemInfo, Error> {
         Ok(SystemInfo {
             localization: self.l10n.get_system().await?,
         })
@@ -197,7 +195,7 @@ impl Service {
 }
 
 impl AgamaService for Service {
-    type Err = SupervisorError;
+    type Err = Error;
     type Message = Message;
 
     fn channel(&mut self) -> &mut tokio::sync::mpsc::UnboundedReceiver<Self::Message> {

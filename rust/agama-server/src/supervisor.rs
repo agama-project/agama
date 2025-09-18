@@ -18,16 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod error;
 mod handler;
-mod scope;
-mod service;
-
-pub use error::Error;
 pub use handler::Handler;
+
+mod service;
+pub use service::{Action, Message, Service};
+
+mod scope;
 pub use scope::{Scope, ScopeConfig};
-pub use service::Service;
-pub use {
-    error::Error as SupervisorError, service::Action, service::Message,
-    service::Service as Supervisor,
-};
+
+mod error;
+pub use error::Error;

@@ -20,13 +20,11 @@
 
 use crate::{
     server::{Proposal, SystemInfo},
-    supervisor,
+    supervisor::{Error, Message, Scope, ScopeConfig, Service},
 };
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::{Handler as AgamaHandler, Service as _};
 use tokio::sync::mpsc;
-
-use crate::supervisor::{Message, Scope, ScopeConfig, Service, SupervisorError};
 
 #[derive(Clone)]
 pub struct Handler {
@@ -34,7 +32,7 @@ pub struct Handler {
 }
 
 impl Handler {
-    pub async fn start() -> Result<Self, SupervisorError> {
+    pub async fn start() -> Result<Self, Error> {
         let (sender, receiver) = mpsc::unbounded_channel();
         let mut service = Service::start(receiver).await?;
         tokio::spawn(async move {
@@ -44,31 +42,28 @@ impl Handler {
         Ok(Self { sender })
     }
 
-    pub async fn get_config(&self) -> Result<InstallSettings, SupervisorError> {
+    pub async fn get_config(&self) -> Result<InstallSettings, Error> {
         let result = self
             .send_and_wait(|tx| Message::GetConfig { respond_to: tx })
             .await?;
         Ok(result)
     }
 
-    pub fn update_config(&self, config: &InstallSettings) -> Result<(), SupervisorError> {
+    pub fn update_config(&self, config: &InstallSettings) -> Result<(), Error> {
         self.send(Message::UpdateConfig {
             config: config.clone(),
         })?;
         Ok(())
     }
 
-    pub fn patch_config(&self, config: &InstallSettings) -> Result<(), SupervisorError> {
+    pub fn patch_config(&self, config: &InstallSettings) -> Result<(), Error> {
         self.send(Message::PatchConfig {
             config: config.clone(),
         })?;
         Ok(())
     }
 
-    pub async fn get_scope_config(
-        &self,
-        scope: Scope,
-    ) -> Result<Option<ScopeConfig>, SupervisorError> {
+    pub async fn get_scope_config(&self, scope: Scope) -> Result<Option<ScopeConfig>, Error> {
         let result = self
             .send_and_wait(|tx| Message::GetScopeConfig {
                 scope,
@@ -78,35 +73,35 @@ impl Handler {
         Ok(result)
     }
 
-    pub fn update_scope_config(&self, config: ScopeConfig) -> Result<(), SupervisorError> {
+    pub fn update_scope_config(&self, config: ScopeConfig) -> Result<(), Error> {
         self.send(Message::UpdateScopeConfig {
             config: config.clone(),
         })?;
         Ok(())
     }
 
-    pub fn patch_scope_config(&self, config: ScopeConfig) -> Result<(), SupervisorError> {
+    pub fn patch_scope_config(&self, config: ScopeConfig) -> Result<(), Error> {
         self.send(Message::PatchScopeConfig {
             config: config.clone(),
         })?;
         Ok(())
     }
 
-    pub async fn get_user_config(&self) -> Result<InstallSettings, SupervisorError> {
+    pub async fn get_user_config(&self) -> Result<InstallSettings, Error> {
         let result = self
             .send_and_wait(|tx| Message::GetUserConfig { respond_to: tx })
             .await?;
         Ok(result)
     }
 
-    pub async fn get_proposal(&self) -> Result<Option<Proposal>, SupervisorError> {
+    pub async fn get_proposal(&self) -> Result<Option<Proposal>, Error> {
         let result = self
             .send_and_wait(|tx| Message::GetProposal { respond_to: tx })
             .await?;
         Ok(result)
     }
 
-    pub async fn get_system(&self) -> Result<SystemInfo, SupervisorError> {
+    pub async fn get_system(&self) -> Result<SystemInfo, Error> {
         let result = self
             .send_and_wait(|tx| Message::GetSystem { respond_to: tx })
             .await?;
@@ -115,8 +110,8 @@ impl Handler {
 }
 
 impl AgamaHandler for Handler {
-    type Err = SupervisorError;
-    type Message = supervisor::Message;
+    type Err = Error;
+    type Message = Message;
 
     fn channel(&self) -> &mpsc::UnboundedSender<Self::Message> {
         &self.sender
