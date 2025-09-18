@@ -20,9 +20,7 @@
 
 //! This module implements Agama's HTTP API.
 
-// use agama_l10n::L10nModel;
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
-// use agama_locale_data::LocaleId;
 use axum::{
     extract::{Path, State},
     response::{IntoResponse, Response},
@@ -32,16 +30,16 @@ use axum::{
 use hyper::StatusCode;
 use serde::Serialize;
 
-use crate::supervisor::{self, Action};
+use crate::supervisor::{self, Action, Scope, ScopeConfig, SupervisorError};
 
-use super::{Scope, ScopeConfig, ServerError, SystemInfo};
+use super::SystemInfo;
 
 #[derive(Clone)]
 pub struct ServerState {
     supervisor: supervisor::Handler,
 }
 
-type ServerResult<T> = Result<T, ServerError>;
+type ServerResult<T> = Result<T, SupervisorError>;
 
 /// Sets up and returns the axum service for the manager module
 pub async fn server_service() -> Result<Router, ServiceError> {
@@ -118,9 +116,9 @@ async fn set_scope_config(
     method: axum::http::Method,
     Path(scope): Path<Scope>,
     Json(user_config): Json<ScopeConfig>,
-) -> Result<(), ServerError> {
+) -> Result<(), SupervisorError> {
     if user_config.to_scope() != scope {
-        return Err(ServerError::NoMatchingScope(scope));
+        return Err(SupervisorError::NoMatchingScope(scope));
     }
 
     if method.as_str() == "PATCH" {
@@ -134,7 +132,7 @@ async fn set_scope_config(
 async fn run_action(
     State(state): State<ServerState>,
     Json(action): Json<Action>,
-) -> Result<(), ServerError> {
+) -> Result<(), SupervisorError> {
     // state.dispatch_action(action).await;
     Ok(())
 }

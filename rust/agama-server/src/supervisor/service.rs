@@ -18,7 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::server::{error::ServerResult, Proposal, Scope, ScopeConfig, ServerError, SystemInfo};
+use super::{error::ServerResult, Scope, ScopeConfig, SupervisorError};
+use crate::server::{Proposal, SystemInfo};
 use agama_l10n::{Handler as L10nHandler, L10nAction};
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::{Service as AgamaService, ServiceError};
@@ -76,7 +77,9 @@ pub struct Service {
 }
 
 impl Service {
-    pub async fn start(messages: mpsc::UnboundedReceiver<Message>) -> Result<Self, ServerError> {
+    pub async fn start(
+        messages: mpsc::UnboundedReceiver<Message>,
+    ) -> Result<Self, SupervisorError> {
         Ok(Self {
             l10n: L10nHandler::start().await?,
             config: InstallSettings::default(),
@@ -186,7 +189,7 @@ impl Service {
     }
 
     /// It returns the information of the underlying system.
-    pub async fn get_system(&self) -> Result<SystemInfo, ServerError> {
+    pub async fn get_system(&self) -> Result<SystemInfo, SupervisorError> {
         Ok(SystemInfo {
             localization: self.l10n.get_system().await?,
         })
@@ -194,7 +197,7 @@ impl Service {
 }
 
 impl AgamaService for Service {
-    type Err = ServerError;
+    type Err = SupervisorError;
     type Message = Message;
 
     fn channel(&mut self) -> &mut tokio::sync::mpsc::UnboundedReceiver<Self::Message> {

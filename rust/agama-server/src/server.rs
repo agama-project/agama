@@ -24,7 +24,3 @@ pub mod proposal;
 pub use proposal::Proposal;
 pub mod info;
 pub use info::SystemInfo;
-pub mod scope;
-pub use scope::{Scope, ScopeConfig};
-pub mod error;
-pub use error::ServerError;

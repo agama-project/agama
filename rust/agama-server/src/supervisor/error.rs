@@ -29,10 +29,10 @@ use axum::{
 };
 use serde_json::json;
 
-pub type ServerResult<T> = Result<T, ServerError>;
+pub type ServerResult<T> = Result<T, Error>;
 
 #[derive(Debug, thiserror::Error)]
-pub enum ServerError {
+pub enum Error {
     #[error("The given configuration does not belong to the '{0}' scope.")]
     NoMatchingScope(Scope),
     #[error(transparent)]
@@ -41,7 +41,7 @@ pub enum ServerError {
     ServiceError(#[from] ServiceError<supervisor::Message>),
 }
 
-impl IntoResponse for ServerError {
+impl IntoResponse for Error {
     fn into_response(self) -> Response {
         tracing::warn!("Server return error {}", self);
         let body = json!({
