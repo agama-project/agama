@@ -18,37 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod handler;
-pub use handler::Handler;
+use agama_locale_data::{KeymapId, LocaleId};
+use serde::{Deserialize, Serialize};
+use serde_with::{serde_as, DisplayFromStr};
+use tokio::sync::mpsc;
 
-mod service;
-pub use service::L10nAction;
-pub(crate) use service::{Message, Service};
+#[serde_as]
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub enum Event {
+    KeymapChanged(#[serde_as(as = "DisplayFromStr")] KeymapId),
+    LocaleChanged(#[serde_as(as = "DisplayFromStr")] LocaleId),
+}
 
-mod system_info;
-pub use system_info::SystemInfo;
-
-mod user_config;
-pub use user_config::UserConfig;
-
-mod proposal;
-pub use proposal::Proposal;
-
-mod error;
-pub use error::Error;
-
-mod event;
-pub use event::{Event, EventsReceiver, EventsSender};
-
-mod config;
-pub(crate) use config::Config;
-
-mod model;
-pub(crate) use model::{Keymap, LocaleEntry, Model, TimezoneEntry};
-
-mod monitor;
-pub(crate) use monitor::Monitor;
-
-pub mod actions;
-pub(crate) mod dbus;
-pub mod helpers;
+pub type EventsSender = mpsc::UnboundedSender<Event>;
+pub type EventsReceiver = mpsc::UnboundedReceiver<Event>;

@@ -18,14 +18,18 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::supervisor::{
-    error::ServerResult, l10n, Error, Proposal, Scope, ScopeConfig, SystemInfo,
+use crate::{
+    supervisor::{error::ServerResult, l10n, Error, Proposal, Scope, ScopeConfig, SystemInfo},
+    web::EventsSender,
 };
+use agama_l10n::{Handler as L10nHandler, L10nAction};
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::{Service as AgamaService, ServiceError};
 use merge_struct::merge;
 use serde::Deserialize;
 use tokio::sync::{mpsc, oneshot};
+
+use super::event::EventsListener;
 
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
@@ -77,9 +81,21 @@ pub struct Service {
 }
 
 impl Service {
-    pub async fn start(messages: mpsc::UnboundedReceiver<Message>) -> Result<Self, Error> {
+    pub async fn start(
+        messages: mpsc::UnboundedReceiver<Message>,
+        events: EventsSender,
+    ) -> Result<Self, Error> {
+        let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
+        let mut listener = EventsListener::new(events);
+        listener.add_channel("l10n", events_receiver);
+
+        tokio::spawn(async move {
+            listener.run().await;
+        });
+
         Ok(Self {
-            l10n: l10n::Handler::start().await?,
+            // FIXME: perhaps we should build the handler in Handler::start.
+            l10n: l10n::Handler::start(events_sender).await?,
             config: InstallSettings::default(),
             user_config: InstallSettings::default(),
             proposal: None,

@@ -21,14 +21,19 @@
 use crate::{Keymap, LocaleEntry, Model, TimezoneEntry};
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use serde::Serialize;
+use serde_with::{serde_as, DisplayFromStr};
 
+#[serde_as]
 #[derive(Clone, Debug, Serialize)]
 pub struct SystemInfo {
     pub locales: Vec<LocaleEntry>,
     pub timezones: Vec<TimezoneEntry>,
     pub keymaps: Vec<Keymap>,
+    #[serde_as(as = "DisplayFromStr")]
     pub locale: LocaleId,
+    #[serde_as(as = "DisplayFromStr")]
     pub keymap: KeymapId,
+    #[serde_as(as = "DisplayFromStr")]
     pub timezone: TimezoneId,
 }
 

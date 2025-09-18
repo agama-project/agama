@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{actions, Error, Model, Proposal, SystemInfo, UserConfig};
+use crate::{actions, Error, Event, Model, Proposal, SystemInfo, UserConfig};
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use agama_utils::Service as AgamaService;
 use serde::Deserialize;
@@ -58,7 +58,8 @@ pub enum Message {
 pub struct Service {
     state: State,
     model: Model,
-    receiver: mpsc::UnboundedReceiver<Message>,
+    messages: mpsc::UnboundedReceiver<Message>,
+    events: mpsc::UnboundedSender<Event>,
 }
 
 struct State {
@@ -67,7 +68,10 @@ struct State {
 }
 
 impl Service {
-    pub fn new(receiver: mpsc::UnboundedReceiver<Message>) -> Self {
+    pub fn new(
+        messages: mpsc::UnboundedReceiver<Message>,
+        events: mpsc::UnboundedSender<Event>,
+    ) -> Self {
         let model = Model::new_with_locale(&LocaleId::default()).unwrap();
         let system = SystemInfo::read_from(&model);
         let config = Config::new_from(&system);
@@ -77,7 +81,8 @@ impl Service {
         Self {
             state,
             model,
-            receiver,
+            messages,
+            events,
         }
     }
 
@@ -109,7 +114,7 @@ impl AgamaService for Service {
     type Message = Message;
 
     fn channel(&mut self) -> &mut mpsc::UnboundedReceiver<Self::Message> {
-        &mut self.receiver
+        &mut self.messages
     }
 
     async fn dispatch(&mut self, message: Self::Message) -> Result<(), Self::Err> {
@@ -130,10 +135,12 @@ impl AgamaService for Service {
                 self.dispatch(action).unwrap();
             }
             Message::UpdateLocale { locale } => {
-                self.state.system.locale = locale;
+                self.state.system.locale = locale.clone();
+                _ = self.events.send(Event::LocaleChanged(locale));
             }
             Message::UpdateKeymap { keymap } => {
-                self.state.system.keymap = keymap;
+                self.state.system.keymap = keymap.clone();
+                _ = self.events.send(Event::KeymapChanged(keymap));
             }
         };
 

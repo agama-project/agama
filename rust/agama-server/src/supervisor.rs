@@ -18,6 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+mod event;
+pub use event::EventsListener;
+
 mod handler;
 pub use handler::Handler;
 

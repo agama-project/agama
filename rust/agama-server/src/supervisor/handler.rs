@@ -18,7 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::supervisor::{Error, Message, Proposal, Scope, ScopeConfig, Service, SystemInfo};
+use crate::{
+    supervisor::{Error, Message, Proposal, Scope, ScopeConfig, Service, SystemInfo},
+    web::EventsSender,
+};
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::{Handler as AgamaHandler, Service as _};
 use tokio::sync::mpsc;
@@ -29,9 +32,9 @@ pub struct Handler {
 }
 
 impl Handler {
-    pub async fn start() -> Result<Self, Error> {
+    pub async fn start(events: EventsSender) -> Result<Self, Error> {
         let (sender, receiver) = mpsc::unbounded_channel();
-        let mut service = Service::start(receiver).await?;
+        let mut service = Service::start(receiver, events).await?;
         tokio::spawn(async move {
             service.run().await;
         });
