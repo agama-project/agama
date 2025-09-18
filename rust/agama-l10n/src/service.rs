@@ -47,6 +47,12 @@ pub enum Message {
     DispatchAction {
         action: L10nAction,
     },
+    UpdateKeymap {
+        keymap: KeymapId,
+    },
+    UpdateLocale {
+        locale: LocaleId,
+    },
 }
 
 pub struct Service {
@@ -122,6 +128,12 @@ impl AgamaService for Service {
             }
             Message::DispatchAction { action } => {
                 self.dispatch(action).unwrap();
+            }
+            Message::UpdateLocale { locale } => {
+                self.state.system.locale = locale;
+            }
+            Message::UpdateKeymap { keymap } => {
+                self.state.system.keymap = keymap;
             }
         };
 

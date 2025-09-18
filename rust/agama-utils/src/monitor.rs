@@ -34,7 +34,7 @@ pub trait Monitor: Send {
     type Err: Error;
     type Command: Send;
 
-    fn run(&mut self) -> impl Future<Output = ()>;
+    fn run(&mut self) -> impl Future<Output = Result<(), Self::Err>>;
 
-    fn commands(&mut self) -> &mpsc::UnboundedSender<Self::Command>;
+    fn channel(&mut self) -> &mpsc::UnboundedSender<Self::Command>;
 }

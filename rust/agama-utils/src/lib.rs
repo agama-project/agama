@@ -28,4 +28,5 @@ pub mod openapi;
 mod service;
 
 pub use handler::Handler;
+pub use monitor::{Monitor, MonitorError};
 pub use service::{Service, ServiceError};

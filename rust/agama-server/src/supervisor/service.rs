@@ -76,14 +76,14 @@ pub struct Service {
 }
 
 impl Service {
-    pub fn new(messages: mpsc::UnboundedReceiver<Message>) -> Self {
-        Self {
-            l10n: L10nHandler::start().unwrap(),
+    pub async fn start(messages: mpsc::UnboundedReceiver<Message>) -> Result<Self, ServerError> {
+        Ok(Self {
+            l10n: L10nHandler::start().await?,
             config: InstallSettings::default(),
             user_config: InstallSettings::default(),
             proposal: None,
             messages,
-        }
+        })
     }
 
     /// Gets the current configuration.

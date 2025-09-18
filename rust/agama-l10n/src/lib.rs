@@ -43,5 +43,9 @@ pub(crate) use config::Config;
 mod model;
 pub(crate) use model::{Keymap, LocaleEntry, Model, TimezoneEntry};
 
+mod monitor;
+pub(crate) use monitor::Monitor;
+
 pub mod actions;
+pub(crate) mod dbus;
 pub mod helpers;

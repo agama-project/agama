@@ -42,4 +42,6 @@ pub enum Error {
     Merge(#[from] serde_json::error::Error),
     #[error(transparent)]
     ServiceError(#[from] ServiceError<Message>),
+    #[error(transparent)]
+    DBus(#[from] zbus::Error),
 }

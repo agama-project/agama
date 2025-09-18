@@ -18,8 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{Error, L10nAction, Message, Proposal, Service, SystemInfo, UserConfig};
-use agama_utils::{Handler as AgamaHandler, Service as AgamaService};
+use crate::{Error, L10nAction, Message, Monitor, Proposal, Service, SystemInfo, UserConfig};
+use agama_utils::{Handler as AgamaHandler, Monitor as _, Service as AgamaService};
 use tokio::sync::mpsc;
 
 #[derive(Clone)]
@@ -28,11 +28,16 @@ pub struct Handler {
 }
 
 impl Handler {
-    pub fn start() -> Result<Self, Error> {
+    pub async fn start() -> Result<Self, Error> {
         let (sender, receiver) = mpsc::unbounded_channel();
-        let mut server = Service::new(receiver);
+        let mut service = Service::new(receiver);
         tokio::spawn(async move {
-            server.run().await;
+            service.run().await;
+        });
+
+        let mut monitor = Monitor::new(sender.clone()).await?;
+        tokio::spawn(async move {
+            monitor.run().await.unwrap();
         });
 
         Ok(Self { sender })
