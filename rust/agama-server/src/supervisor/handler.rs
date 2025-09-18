@@ -18,10 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    server::{Proposal, SystemInfo},
-    supervisor::{Error, Message, Scope, ScopeConfig, Service},
-};
+use crate::supervisor::{Error, Message, Proposal, Scope, ScopeConfig, Service, SystemInfo};
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::{Handler as AgamaHandler, Service as _};
 use tokio::sync::mpsc;

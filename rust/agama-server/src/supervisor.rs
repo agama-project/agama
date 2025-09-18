@@ -24,8 +24,16 @@ pub use handler::Handler;
 mod service;
 pub use service::{Action, Message, Service};
 
+mod system_info;
+pub use system_info::SystemInfo;
+
+mod proposal;
+pub use proposal::Proposal;
+
 mod scope;
 pub use scope::{Scope, ScopeConfig};
 
 mod error;
 pub use error::Error;
+
+use agama_l10n as l10n;

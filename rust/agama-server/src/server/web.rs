@@ -20,8 +20,7 @@
 
 //! This module implements Agama's HTTP API.
 
-use super::SystemInfo;
-use crate::supervisor::{Action, Error, Handler, Scope, ScopeConfig};
+use crate::supervisor::{Action, Error, Handler, Scope, ScopeConfig, SystemInfo};
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
 use axum::{
     extract::{Path, State},

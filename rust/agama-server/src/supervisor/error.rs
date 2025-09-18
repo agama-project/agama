@@ -18,9 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::Scope;
-use crate::{l10n, supervisor};
-
+use crate::supervisor::{l10n, Message, Scope};
 use agama_utils::ServiceError;
 use axum::{
     http::StatusCode,
@@ -38,7 +36,7 @@ pub enum Error {
     #[error(transparent)]
     L10n(#[from] l10n::Error),
     #[error(transparent)]
-    ServiceError(#[from] ServiceError<supervisor::Message>),
+    ServiceError(#[from] ServiceError<Message>),
 }
 
 impl IntoResponse for Error {
