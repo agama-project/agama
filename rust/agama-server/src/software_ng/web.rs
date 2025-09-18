@@ -19,10 +19,13 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::{
-    error::ServiceError, issue::Issue, product::Product, software::{
+    error::ServiceError,
+    issue::Issue,
+    product::Product,
+    software::{
         model::{RegistrationInfo, ResolvableParams, SoftwareConfig},
         Pattern,
-    }
+    },
 };
 use axum::{
     extract::{Path, State},
@@ -128,9 +131,7 @@ async fn set_config(
         (status = 400, description = "The D-Bus service could not perform the action")
     )
 )]
-async fn get_config(
-    State(state): State<SoftwareState>
-) -> Result<Json<SoftwareConfig>, Error> {
+async fn get_config(State(state): State<SoftwareState>) -> Result<Json<SoftwareConfig>, Error> {
     let result = state.client.get_config().await?;
 
     Ok(Json(result))
