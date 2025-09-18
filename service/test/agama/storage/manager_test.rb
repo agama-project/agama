@@ -58,7 +58,7 @@ describe Agama::Storage::Manager do
     mock_storage(devicegraph: scenario)
     allow(Agama::Storage::Proposal).to receive(:new).and_return(proposal)
     allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
-    allow(Agama::DBus::Clients::Software).to receive(:instance).and_return(software)
+    allow(Agama::HTTP::Clients::Software).to receive(:new).and_return(software)
     allow(Bootloader::FinishClient).to receive(:new).and_return(bootloader_finish)
     allow(Agama::Security).to receive(:new).and_return(security)
     # mock writting config as proposal call can do storage probing, which fails in CI
@@ -79,7 +79,7 @@ describe Agama::Storage::Manager do
   let(:proposal) { Agama::Storage::Proposal.new(config, logger: logger) }
   let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
   let(:software) do
-    instance_double(Agama::DBus::Clients::Software, selected_product: "ALP")
+    instance_double(Agama::HTTP::Clients::Software, config: { "product" => "ALP" })
   end
   let(:network) { instance_double(Agama::Network, link_resolv: nil, unlink_resolv: nil) }
   let(:bootloader_finish) { instance_double(Bootloader::FinishClient, write: nil) }
