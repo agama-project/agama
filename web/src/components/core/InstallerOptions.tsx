@@ -209,7 +209,7 @@ type Actions = {
   handleLanguageChange: (_, v: string) => void;
   handleKeymapChange: (_, v: string) => void;
   handleCopyToSystemToggle: (_, v: boolean) => void;
-  handleSubmitForm: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleSubmission: (e: React.FormEvent<HTMLFormElement>) => void;
   handleCancellation: () => void;
 };
 
@@ -313,7 +313,7 @@ const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
 
   return (
     <Popup isOpen={state.isOpen} variant="small" title={_("Language and keyboard")}>
-      <Form id="installer-l10n" onSubmit={actions.handleSubmitForm}>
+      <Form id="installer-l10n" onSubmit={actions.handleSubmission}>
         <LangaugeFormInput value={formState.language} onChange={actions.handleLanguageChange} />
         <KeyboardFormInput value={formState.keymap} onChange={actions.handleKeymapChange} />
         <ReusableSettings isReuseAllowed={formState.allowReusingSettings}>
@@ -360,7 +360,7 @@ const LanguageOnlyDialog = ({ state, formState, actions }: DialogProps) => {
 
   return (
     <Popup isOpen={state.isOpen} variant="small" title={_("Change Language")}>
-      <Form id="installer-l10n" onSubmit={actions.handleSubmitForm}>
+      <Form id="installer-l10n" onSubmit={actions.handleSubmission}>
         <LangaugeFormInput value={formState.language} onChange={actions.handleLanguageChange} />
         <ReusableSettings isReuseAllowed={formState.allowReusingSettings}>
           <FormGroup fieldId="reuse-settings">
@@ -417,7 +417,7 @@ const KeyboardOnlyDialog = ({ state, formState, actions }: DialogProps) => {
 
   return (
     <Popup isOpen={state.isOpen} variant="small" title={_("Change keyboard")}>
-      <Form id="installer-l10n" onSubmit={actions.handleSubmitForm}>
+      <Form id="installer-l10n" onSubmit={actions.handleSubmission}>
         <KeyboardFormInput value={formState.keymap} onChange={actions.handleKeymapChange} />
         <ReusableSettings isReuseAllowed={formState.allowReusingSettings}>
           <FormGroup fieldId="reuse-settings">
@@ -625,7 +625,7 @@ export default function InstallerOptions({
     handleLanguageChange: (_, v) => dispatch({ type: "SET_SELECTED_LANGUAGE", language: v }),
     handleKeymapChange: (_, v) => dispatch({ type: "SET_SELECTED_KEYMAP", keymap: v }),
     handleCopyToSystemToggle: () => dispatch({ type: "TOGGLE_REUSE_SETTINGS" }),
-    handleSubmitForm: onSubmit,
+    handleSubmission: onSubmit,
     handleCancellation: () => {
       dispatch({ type: "RESET", state: initialFormState });
       close();
