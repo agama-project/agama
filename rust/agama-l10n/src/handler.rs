@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{Error, L10nAction, Message, Proposal, Service, UserConfig};
+use crate::{Error, L10nAction, Message, Proposal, Service, SystemInfo, UserConfig};
 use agama_utils::{Handler as AgamaHandler, Service as AgamaService};
 use tokio::sync::mpsc;
 
@@ -55,6 +55,13 @@ impl Handler {
     pub async fn get_proposal(&self) -> Result<Proposal, Error> {
         let result = self
             .send_and_wait(|tx| Message::GetProposal { respond_to: tx })
+            .await?;
+        Ok(result)
+    }
+
+    pub async fn get_system(&self) -> Result<SystemInfo, Error> {
+        let result = self
+            .send_and_wait(|tx| Message::GetSystem { respond_to: tx })
             .await?;
         Ok(result)
     }

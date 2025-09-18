@@ -186,11 +186,10 @@ impl Service {
     }
 
     /// It returns the information of the underlying system.
-    pub async fn get_system(&self) -> SystemInfo {
-        // SystemInfo {
-        //     localization: self.l10n.get_system(),
-        // }
-        unimplemented!("TODO")
+    pub async fn get_system(&self) -> Result<SystemInfo, ServerError> {
+        Ok(SystemInfo {
+            localization: self.l10n.get_system().await?,
+        })
     }
 }
 
@@ -241,7 +240,7 @@ impl AgamaService for Service {
             }
             Self::Message::GetSystem { respond_to } => {
                 respond_to
-                    .send(self.get_system().await.clone())
+                    .send(self.get_system().await?.clone())
                     .map_err(|_| ServiceError::SendResponse)?;
             }
             Self::Message::GetUserConfig { respond_to } => {

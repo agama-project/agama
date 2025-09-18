@@ -41,6 +41,9 @@ pub enum Message {
     GetProposal {
         respond_to: oneshot::Sender<Proposal>,
     },
+    GetSystem {
+        respond_to: oneshot::Sender<SystemInfo>,
+    },
     DispatchAction {
         action: L10nAction,
     },
@@ -84,6 +87,10 @@ impl Service {
         (&self.state.config).into()
     }
 
+    fn get_system(&self) -> &SystemInfo {
+        &self.state.system
+    }
+
     fn dispatch(&mut self, action: L10nAction) -> anyhow::Result<()> {
         match action {
             L10nAction::ConfigureSystem(action) => action.run(self),
@@ -109,6 +116,9 @@ impl AgamaService for Service {
             }
             Message::GetProposal { respond_to } => {
                 respond_to.send(self.get_proposal()).unwrap();
+            }
+            Message::GetSystem { respond_to } => {
+                respond_to.send(self.get_system().clone()).unwrap();
             }
             Message::DispatchAction { action } => {
                 self.dispatch(action).unwrap();
