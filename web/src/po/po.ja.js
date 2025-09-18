@@ -15,6 +15,9 @@ export default {
   "%1$s at %2$s": [
     "%2$s にある %1$s"
   ],
+  "%1$s will be created as a partition at %2$s": [
+    "%1$s を %2$s 内のパーティションとして作成します"
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s には起動に必要な設定済み LVM グループ '%2$s' とパーティションが含まれています"
   ],
@@ -38,6 +41,9 @@ export default {
   ],
   "%s logo": [
     "%s ロゴ"
+  ],
+  "%s will be created as a logical volume": [
+    "%s を論理ボリューム内に作成します"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s には起動に必要な LVM グループとパーティションが含まれています"
@@ -65,6 +71,12 @@ export default {
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "新しい %3$s に対しては一般的なサイズ %1$s から %2$s の範囲を使用します"
+  ],
+  "A new partition will be created for %s": [
+    "%s に対しては新しいパーティションを作成します"
+  ],
+  "A new volume will be created for %s": [
+    "%s に対しては新しいボリュームを作成します"
   ],
   "A partition may be deleted": [
     "パーティションを削除するかもしれません"
@@ -174,6 +186,9 @@ export default {
   "Already using all available disks": [
     "既に利用可能な全てのディスクを使用しています"
   ],
+  "An existing partition will be used for %s": [
+    "%s に対しては既存のパーティションを使用します"
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "全てのパーティションを削除し、ディスク内に存在するデータを全て消去します。"
   ],
@@ -182,6 +197,9 @@ export default {
   ],
   "Apply selected solution": [
     "選択したソリューションを適用する"
+  ],
+  "Apply to the selected device": [
+    "選択した %s 個のデバイスに適用"
   ],
   "Applying changes": [
     "変更を適用しています"
@@ -380,6 +398,9 @@ export default {
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "iSCSI Boot Firmware Table (iBFT) から読み込んだ設定です。"
+  ],
+  "Configuration unreachable or invalid": [
+    "設定に到達できないか、正しくありません"
   ],
   "Configure DASD": [
     "DASD の設定"
@@ -722,6 +743,12 @@ export default {
   ],
   "Ext4": [
     "ext4"
+  ],
+  "Extend the installation beyond the currently selected device": [
+    "現在選択されている %d 個のデバイスからさらにインストールを拡張する"
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "現在選択されている %d 個のディスクからさらにインストールを拡張する"
   ],
   "Extensions": [
     "拡張"
@@ -1121,6 +1148,12 @@ export default {
   ],
   "More languages might be available for the selected product at [Localization] page": [
     "選択した製品に対する言語の詳細な設定は、 [ローカライゼーション] のページにあります"
+  ],
+  "Moreover, the following partition will be created.": [
+    "このほか、下記のパーティションを作成します。"
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "このほか、下記のパーティションをマウントします。"
   ],
   "Moreover, the following partitions will be created or mounted": [
     "このほか、下記のパーティションを作成またはマウントします"
@@ -1755,6 +1788,9 @@ export default {
   "The configuration has been updated externally.": [
     "設定が外部から書き換えられています。"
   ],
+  "The configuration must be adapted to address the following issue:": [
+    "下記の問題に対応するため、何らかの設定調整を行わなければなりません:"
+  ],
   "The configured LVM groups will remain at %s": [
     "設定済みの LVM グループが %s に残されます"
   ],
@@ -1778,6 +1814,9 @@ export default {
   ],
   "The current file system will be mounted at %s": [
     "現在のファイルシステムを %s にマウントします"
+  ],
+  "The current storage configuration has the following issue:": [
+    "現在のストレージ設定には下記の問題があります:"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "既存のデータは保持しますが、必要に応じて既存のパーティションのサイズ変更を行います。"
@@ -1827,6 +1866,15 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Trusted Platform Module (TPM) の設定の最後では、新しいシステムの初回起動時に暗号化されたデバイスを自動で解除するよう設定します。これを動作させるためには、マシンが新しいブートローダを直接起動するように設定しておく必要があります。"
   ],
+  "The following logical volume will be created": [
+    "下記の論理ボリュームを作成します"
+  ],
+  "The following partition will be created.": [
+    "下記のパーティションを作成します。"
+  ],
+  "The following partition will be mounted.": [
+    "下記のパーティションをマウントします。"
+  ],
   "The following partitions will be created or mounted": [
     "下記のパーティションを作成またはマウントします"
   ],
@@ -1850,6 +1898,9 @@ export default {
   ],
   "The installer requires [root] user privileges.": [
     "インストーラを使用するには [root] 権限が必要です。"
+  ],
+  "The logical volume will also be deleted": [
+    "論理ボリュームについても削除します"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "最大値は GiB や GB のような単位を付けた数値でなければなりません"
@@ -1940,6 +1991,12 @@ export default {
   ],
   "There are not usable partitions": [
     "利用可能なパーティションがありません"
+  ],
+  "There is %d destructive action planned": [
+    "%d 個の破壊的な処理が提案されています"
+  ],
+  "There is %d destructive action planned affecting %s": [
+    "%d 個の破壊的な処理 (%s に影響) が予定されています"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "インストールにあたっての主要な項目のみを表示しています。さらに詳しい設定を確認したい場合は、それぞれのセクションを開いてください。"

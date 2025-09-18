@@ -1,4 +1,23 @@
 -------------------------------------------------------------------
+Tue Sep  9 12:47:15 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Dump some Live ISO root image data directly to the ISO image,
+  added files:
+  /LiveOS/.info - a copy of the /var/log/build/info file from
+    the root image
+  /LiveOS/.packages.gz - list of installed package (plain text,
+    basically a `rpm -qa` dump)
+  /LiveOS/.packages.json.gz - list of installed packages (JSON
+    format, better suitable for processing by scripts or tools)
+  (gh#agama-project/agama#2717)
+
+-------------------------------------------------------------------
+Mon Sep  8 10:13:30 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Remove PXE images as it was agreed to use the Live iso (squashfs
+  images) for PXE installations too (related to bsc#1238848).
+
+-------------------------------------------------------------------
 Mon Aug 25 10:48:37 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
 
 - live-root: update final EULAs with the June 2024 delivery 

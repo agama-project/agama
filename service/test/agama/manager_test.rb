@@ -23,6 +23,7 @@ require_relative "../test_helper"
 require_relative "with_progress_examples"
 require "agama/manager"
 require "agama/config"
+require "agama/http"
 require "agama/issue"
 require "agama/question"
 require "agama/dbus/service_status"
@@ -52,7 +53,7 @@ describe Agama::Manager do
       Agama::Users, write: nil, issues: []
     )
   end
-  let(:locale) { instance_double(Agama::DBus::Clients::Locale, finish: nil) }
+  let(:locale) { instance_double(Agama::HTTP::Clients::Localization, finish: nil) }
   let(:network) { instance_double(Agama::Network, install: nil, startup: nil) }
   let(:storage) do
     instance_double(
@@ -71,7 +72,7 @@ describe Agama::Manager do
   before do
     allow(Agama::Network).to receive(:new).and_return(network)
     allow(Agama::ProxySetup).to receive(:instance).and_return(proxy)
-    allow(Agama::DBus::Clients::Locale).to receive(:instance).and_return(locale)
+    allow(Agama::HTTP::Clients::Localization).to receive(:new).and_return(locale)
     allow(Agama::HTTP::Clients::Software).to receive(:new).and_return(software)
     allow(Agama::DBus::Clients::Storage).to receive(:new).and_return(storage)
     allow(Agama::Users).to receive(:new).and_return(users)

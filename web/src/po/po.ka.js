@@ -15,6 +15,10 @@ export default {
   "%1$s at %2$s": [
     "%1$s %2$s-ზე"
   ],
+  "%1$s will be created as a partition at %2$s": [
+    "%1$s შეიქმნება დანაყოფის სახით %2$s-ზე",
+    "%1$s შეიქმნება დანაყოფების სახით %2$s-ზე"
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     ""
   ],
@@ -38,6 +42,10 @@ export default {
   ],
   "%s logo": [
     "%s-ის ლოგო"
+  ],
+  "%s will be created as a logical volume": [
+    "",
+    ""
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     ""
@@ -65,6 +73,14 @@ export default {
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     ""
+  ],
+  "A new partition will be created for %s": [
+    "%s-სთვის შეიქმნება ახალი დანაყოფი",
+    "%s-სთვის შეიქმნება ახალი დანაყოფები"
+  ],
+  "A new volume will be created for %s": [
+    "%s-სთვის შეიქმნება ახალი ტომი",
+    "%s-სთვის შეიქმნება ახალი ტომები"
   ],
   "A partition may be deleted": [
     "დანაყოფი შეიძლება წაიშალოს"
@@ -174,6 +190,10 @@ export default {
   "Already using all available disks": [
     "უკვე ვიყენებ ყველა ხელმისაწვდომ დისკს"
   ],
+  "An existing partition will be used for %s": [
+    "არსებული დანაყოფი იქნება გამოყენებული %s-სთვის",
+    "არსებული დანაყოფები იქნება გამოყენებული %s-სთვის"
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     ""
   ],
@@ -182,6 +202,10 @@ export default {
   ],
   "Apply selected solution": [
     "არჩეული გადაწყვეტის გადატარება"
+  ],
+  "Apply to the selected device": [
+    "გადატარება მონიშნულ მოწყობილობაზე",
+    "გადატარება %s მონიშნულ მოწყობილობაზე"
   ],
   "Applying changes": [
     "მიმდინარეობს ცვლილებების გადატარება"
@@ -380,6 +404,9 @@ export default {
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "iSCSI-დან ჩამტვირთავი მიკროკოდიდან (iBFT) წაკითხული კონფიგურაცია."
+  ],
+  "Configuration unreachable or invalid": [
+    "კონფიგურაცია ხელმიუწვდომელია, ან არასწორია"
   ],
   "Configure DASD": [
     "DASD-ის მორგება"
@@ -722,6 +749,14 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extend the installation beyond the currently selected device": [
+    "",
+    ""
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "",
+    ""
   ],
   "Extensions": [
     "გაფართოებები"
@@ -1122,6 +1157,14 @@ export default {
   ],
   "More languages might be available for the selected product at [Localization] page": [
     "მეტი ენა, შეიძლება, [Localization]-ის გვერდზე იყოს ხელმისაწვდომი"
+  ],
+  "Moreover, the following partition will be created.": [
+    "კიდევ შეიქმნება შემდეგი დანაყოფი.",
+    "კიდევ შეიქმნება შემდეგი დანაყოფები."
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "კიდევ მიმაგრდება დამატებითი დანაყოფი.",
+    "კიდევ მიმაგრდება დამატებითი დანაყოფები."
   ],
   "Moreover, the following partitions will be created or mounted": [
     "კიდევ შეიქმნება, ან მიმაგრდება დამატებითი დანაყოფები"
@@ -1757,6 +1800,10 @@ export default {
   "The configuration has been updated externally.": [
     "კონფიგურაცია გარედან განახლდა."
   ],
+  "The configuration must be adapted to address the following issue:": [
+    "კონფიგურაცია უნდა შეცვალოთ ისე, რომ გადაწყვიტოთ შემდეგი პრობლემა:",
+    "კონფიგურაცია უნდა შეცვალოთ ისე, რომ გადაწყვიტოთ შემდეგი პრობლემები:"
+  ],
   "The configured LVM groups will remain at %s": [
     "მორგებული LVM ჯგუფები დარჩება დისკზე %s"
   ],
@@ -1780,6 +1827,10 @@ export default {
   ],
   "The current file system will be mounted at %s": [
     "მიმდინარე ფაილური სისტემა მიმაგრდება წერტილზე %s"
+  ],
+  "The current storage configuration has the following issue:": [
+    "",
+    ""
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "მონაცემები შენარჩუნება, მაგრამ არსებული დანაყოფების ზომა შეიცვლება, თუ ეს საჭირო იქნება."
@@ -1829,6 +1880,18 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     ""
   ],
+  "The following logical volume will be created": [
+    "შეიქმნება შემდეგი ლოგიკური ტომი",
+    "შეიქმნება შემდეგი ლოგიკური ტომები"
+  ],
+  "The following partition will be created.": [
+    "შეიქმნება შემდეგი დანაყოფი.",
+    "შეიქმნება შემდეგი დანაყოფები."
+  ],
+  "The following partition will be mounted.": [
+    "მიმაგრდება შემდეგი დანაყოფი.",
+    "მიმაგრდება შემდეგი დანაყოფები."
+  ],
   "The following partitions will be created or mounted": [
     "შემდეგი დანაყოფები შეიქმნება, ან მიმაგრდება"
   ],
@@ -1852,6 +1915,10 @@ export default {
   ],
   "The installer requires [root] user privileges.": [
     "დაყენების პროგრამას [root] მომხმარებლის პრივილეგიები სჭირდება."
+  ],
+  "The logical volume will also be deleted": [
+    "ასევე წაიშლება ლოგიკური ტომი",
+    "ასევე წაიშლება ლოგიკური ტომები"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     ""
@@ -1942,6 +2009,14 @@ export default {
   ],
   "There are not usable partitions": [
     "გამოყენებადი დანაყოფები აღმოჩენილი არაა"
+  ],
+  "There is %d destructive action planned": [
+    "დაგეგმილია %d გამანადგურებელი ქმედება",
+    "დაგეგმილია %d გამანადგურებელი ქმედება"
+  ],
+  "There is %d destructive action planned affecting %s": [
+    "",
+    ""
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "ეს ყველაზე ხშირად არჩეული დაყენების პარამეტრებია. ნუ შეშინდებით, დაათვალიეროთ მენიუს სექციები დამატებითი დეტალებისთვის."

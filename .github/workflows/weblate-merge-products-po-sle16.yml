@@ -109,7 +109,7 @@ jobs:
         if: steps.check_changes.outputs.products_updated == 'true'
         working-directory: ./agama
         run: |
-          gh pr create -B master -H "products_po_merge_sle16_${GITHUB_RUN_ID}" \
+          gh pr create -B SLE-16 -H "products_po_merge_sle16_${GITHUB_RUN_ID}" \
             --label translations --label bot \
             --title "Update translations in the product files (SLE-16)" \
             --body "Updating the product translations from the agama-weblate repository"
