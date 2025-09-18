@@ -23,11 +23,3 @@ use tokio::sync::broadcast::{Receiver, Sender};
 
 pub type EventsSender = Sender<Event>;
 pub type EventsReceiver = Receiver<Event>;
-
-pub fn log_event(event: &Event) {
-    tracing::info!("event(debug): {:?}", &event);
-    match serde_json::to_string(&event) {
-        Ok(json) => tracing::info!("event: {json}"),
-        Err(_) => tracing::info!("event (not serialized): {:?}", &event),
-    }
-}
