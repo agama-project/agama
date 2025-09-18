@@ -210,7 +210,7 @@ type Actions = {
   handleKeymapChange: (_, v: string) => void;
   handleCopyToSystemToggle: (_, v: boolean) => void;
   handleSubmitForm: (e: React.FormEvent<HTMLFormElement>) => void;
-  handleCloseDialog: () => void;
+  handleCancellation: () => void;
 };
 
 /**
@@ -324,7 +324,7 @@ const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
               description={
                 <TextWithLinkToL10n
                   text={checkboxDescription}
-                  onClick={actions.handleCloseDialog}
+                  onClick={actions.handleCancellation}
                 />
               }
               isChecked={formState.reuseSettings}
@@ -344,7 +344,7 @@ const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
         >
           {_("Accept")}
         </Popup.Confirm>
-        <Popup.Cancel onClick={actions.handleCloseDialog} isDisabled={state.isBusy} />
+        <Popup.Cancel onClick={actions.handleCancellation} isDisabled={state.isBusy} />
       </Popup.Actions>
     </Popup>
   );
@@ -370,7 +370,7 @@ const LanguageOnlyDialog = ({ state, formState, actions }: DialogProps) => {
               description={
                 <TextWithLinkToL10n
                   text={checkboxDescription}
-                  onClick={actions.handleCloseDialog}
+                  onClick={actions.handleCancellation}
                 />
               }
               isChecked={formState.reuseSettings}
@@ -390,7 +390,7 @@ const LanguageOnlyDialog = ({ state, formState, actions }: DialogProps) => {
         >
           {_("Accept")}
         </Popup.Confirm>
-        <Popup.Cancel onClick={actions.handleCloseDialog} isDisabled={state.isBusy} />
+        <Popup.Cancel onClick={actions.handleCancellation} isDisabled={state.isBusy} />
       </Popup.Actions>
     </Popup>
   );
@@ -402,7 +402,7 @@ const KeyboardOnlyDialog = ({ state, formState, actions }: DialogProps) => {
       <Popup isOpen={state.isOpen} variant="small" title={_("Change keyboard")}>
         {_("Cannot be changed in remote installation")}
         <Popup.Actions>
-          <Popup.Confirm onClick={actions.handleCloseDialog}>{_("Accept")}</Popup.Confirm>
+          <Popup.Confirm onClick={actions.handleCancellation}>{_("Accept")}</Popup.Confirm>
         </Popup.Actions>
       </Popup>
     );
@@ -427,7 +427,7 @@ const KeyboardOnlyDialog = ({ state, formState, actions }: DialogProps) => {
               description={
                 <TextWithLinkToL10n
                   text={checkboxDescription}
-                  onClick={actions.handleCloseDialog}
+                  onClick={actions.handleCancellation}
                 />
               }
               isChecked={formState.reuseSettings}
@@ -447,7 +447,7 @@ const KeyboardOnlyDialog = ({ state, formState, actions }: DialogProps) => {
         >
           {_("Accept")}
         </Popup.Confirm>
-        <Popup.Cancel onClick={actions.handleCloseDialog} isDisabled={state.isBusy} />
+        <Popup.Cancel onClick={actions.handleCancellation} isDisabled={state.isBusy} />
       </Popup.Actions>
     </Popup>
   );
@@ -595,7 +595,6 @@ export default function InstallerOptions({
   };
 
   const close = () => {
-    dispatch({ type: "RESET", state: initialFormState });
     dispatchDialogAction({ type: "CLOSE" });
     typeof onClose === "function" && onClose();
   };
@@ -627,7 +626,10 @@ export default function InstallerOptions({
     handleKeymapChange: (_, v) => dispatch({ type: "SET_SELECTED_KEYMAP", keymap: v }),
     handleCopyToSystemToggle: () => dispatch({ type: "TOGGLE_REUSE_SETTINGS" }),
     handleSubmitForm: onSubmit,
-    handleCloseDialog: close,
+    handleCancellation: () => {
+      dispatch({ type: "RESET", state: initialFormState });
+      close();
+    },
   };
 
   const Toggle = toggle ?? toggles[variant];
