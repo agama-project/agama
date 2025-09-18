@@ -172,7 +172,7 @@ module Agama
     def software
       @software ||= HTTP::Clients::Software.new(logger)
       # TODO: watch for http websocket events regarding software status
-      # @software.tap do |client|
+      # software.tap do |client|
       #  client.on_service_status_change do |status|
       #    service_status_recorder.save(client.service.name, status)
       #  end

@@ -114,7 +114,8 @@ module Agama
         end
 
         def on_probe_finished(&block)
-          # TODO: it was agreed to change this storage observation to have the code in rust part and call via dbus ruby part
+          # TODO: it was agreed to change this storage observation to have the code
+          # in rust part and call via dbus ruby part
         end
       end
     end
