@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep 18 08:57:11 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Preserve installer options values after successful submission
+  (bsc#1249636).
+
+-------------------------------------------------------------------
 Fri Sep 12 08:14:28 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Update translations (bsc#1249378)
