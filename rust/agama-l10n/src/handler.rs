@@ -88,3 +88,35 @@ impl AgamaHandler for Handler {
         &self.sender
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::UserConfig;
+
+    use super::Handler;
+
+    #[tokio::test]
+    async fn test_handle_config() -> Result<(), Box<dyn std::error::Error>> {
+        let (events_sender, mut events_receiver) = tokio::sync::mpsc::unbounded_channel();
+        let handler = Handler::start(events_sender).await?;
+
+        let config = handler.get_config().await?;
+        assert_eq!(config.language, Some("en_US.UTF-8".to_string()));
+
+        let user_config = UserConfig {
+            language: Some("es_ES.UTF-8".to_string()),
+            keyboard: Some("es".to_string()),
+            timezone: Some("Atlantic/Canary".to_string()),
+        };
+        handler.set_config(&user_config).await?;
+
+        let updated = handler.get_config().await?;
+        assert_eq!(&updated, &user_config);
+
+        // let event = events_receiver
+        //     .recv()
+        //     .await
+        //     .expect("Did not receive the event");
+        Ok(())
+    }
+}
