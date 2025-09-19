@@ -52,7 +52,7 @@ describe("ProposalResultSection", () => {
 
     it("does not render a warning when there are not delete actions", () => {
       plainRender(<ProposalResultSection />);
-      expect(screen.queryByText(/Warning alert:/)).toBeNull();
+      expect(screen.queryByText(/destructive/)).not.toBeInTheDocument();
     });
   });
 
@@ -73,12 +73,14 @@ describe("ProposalResultSection", () => {
 
   it("renders a reminder about the delete actions", () => {
     plainRender(<ProposalResultSection />);
-    expect(screen.queryByText(/Warning alert:/)).toBeInTheDocument();
     expect(screen.queryByText(/4 destructive/)).toBeInTheDocument();
   });
 
-  it("renders a treegrid including all relevant information about final result", () => {
-    plainRender(<ProposalResultSection />);
+  it("renders a treegrid including all relevant information about final result", async () => {
+    const { user } = plainRender(<ProposalResultSection />);
+    const tab = screen.getByRole("tab", { name: /Final layout/ });
+
+    await user.click(tab);
     const treegrid = screen.getByRole("treegrid");
     /**
      * Expected rows for full-result-example
@@ -112,14 +114,5 @@ describe("ProposalResultSection", () => {
     within(treegrid).getByRole("row", { name: "Unused space 1 GiB" });
     within(treegrid).getByRole("row", { name: "vdc4 Linux 1.5 GiB" });
     within(treegrid).getByRole("row", { name: "vdc5 / Btrfs Partition 17.5 GiB" });
-  });
-
-  it("allows toggling the planned actions", async () => {
-    const { user } = plainRender(<ProposalResultSection />);
-    const button = screen.getByRole("button", { name: /planned actions/ });
-
-    await user.click(button);
-
-    screen.getByRole("button", { name: "Collapse the list of planned actions" });
   });
 });

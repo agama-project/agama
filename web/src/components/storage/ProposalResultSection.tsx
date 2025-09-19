@@ -21,8 +21,9 @@
  */
 
 import React, { useState } from "react";
-import { Alert, ExpandableSection, Skeleton, Stack } from "@patternfly/react-core";
-import { Page } from "~/components/core";
+import { Alert, Skeleton, Stack, Tab, Tabs, TabTitleText } from "@patternfly/react-core";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { Page, NestedContent } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import { ProposalActionsDialog } from "~/components/storage";
@@ -89,22 +90,11 @@ export type ActionsListProps = {
 
 function ActionsList({ manager }: ActionsListProps) {
   const actions = manager.actions;
-  const [isExpanded, setIsExpanded] = useState(false);
-  const toggleText = isExpanded
-    ? _("Collapse the list of planned actions")
-    : sprintf(_("Check the %d planned actions"), actions.length);
 
   return (
     <Stack>
       <DeletionsInfo manager={manager} />
-      <ExpandableSection
-        isIndented
-        isExpanded={isExpanded}
-        onToggle={() => setIsExpanded(!isExpanded)}
-        toggleText={toggleText}
-      >
-        <ProposalActionsDialog actions={actions} />
-      </ExpandableSection>
+      <ProposalActionsDialog actions={actions} />
     </Stack>
   );
 }
@@ -118,6 +108,13 @@ export default function ProposalResultSection({ isLoading = false }: ProposalRes
   const staging = useDevices("result", { suspense: true });
   const actions = useActions();
   const devicesManager = new DevicesManager(system, staging, actions);
+  const [active, setActive] = useState(0);
+  const handleTabClick = (
+    event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
+    tabIndex: number,
+  ) => {
+    setActive(tabIndex);
+  };
 
   if (isLoading) return <ResultSkeleton />;
 
@@ -125,13 +122,31 @@ export default function ProposalResultSection({ isLoading = false }: ProposalRes
     <Page.Section
       title={_("Result")}
       description={_(
-        "During installation, several actions will be performed to setup the layout shown at the table below.",
+        "Result of applying the configuration described at the 'Settings' section above.",
       )}
     >
-      <Stack>
-        <ActionsList manager={devicesManager} />
-        <ProposalResultTable devicesManager={devicesManager} />
-      </Stack>
+      <Tabs activeKey={active} onSelect={handleTabClick} role="region">
+        <Tab key="action" eventKey={0} title={<TabTitleText>{_("Actions")}</TabTitleText>}>
+          <NestedContent margin="mtSm">
+            <Stack hasGutter>
+              <div className={textStyles.textColorPlaceholder}>
+                {_("The following actions will be performed in the system during installation.")}
+              </div>
+              <ActionsList manager={devicesManager} />
+            </Stack>
+          </NestedContent>
+        </Tab>
+        <Tab key="staging" eventKey={1} title={<TabTitleText>{_("Final layout")}</TabTitleText>}>
+          <NestedContent margin="mtSm">
+            <Stack hasGutter>
+              <div className={textStyles.textColorPlaceholder}>
+                {_("Final structure of the system after installation.")}
+              </div>
+              <ProposalResultTable devicesManager={devicesManager} />
+            </Stack>
+          </NestedContent>
+        </Tab>
+      </Tabs>
     </Page.Section>
   );
 }

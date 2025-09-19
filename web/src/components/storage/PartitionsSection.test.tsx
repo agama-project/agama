@@ -21,9 +21,9 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
-import { plainRender, mockNavigateFn } from "~/test-utils";
-import PartitionsMenu from "~/components/storage/PartitionsMenu";
+import { screen } from "@testing-library/react";
+import { installerRender, mockNavigateFn } from "~/test-utils";
+import PartitionsSection from "~/components/storage/PartitionsSection";
 import { apiModel } from "~/api/storage/types";
 import { model } from "~/types/storage";
 
@@ -89,43 +89,38 @@ jest.mock("~/hooks/storage/partition", () => ({
   useDeletePartition: () => mockDeletePartition,
 }));
 
+async function openMenu(path) {
+  const { user } = installerRender(<PartitionsSection device={drive1} />);
+
+  const detailsButton = screen.getByRole("button", { name: /New partitions/ });
+  await user.click(detailsButton);
+  const partitionMenu = screen.getByRole("button", { name: `Options for partition ${path}` });
+  await user.click(partitionMenu);
+
+  return { user };
+}
+
 describe("PartitionMenuItem", () => {
   it("allows users to delete a not required partition", async () => {
-    const { user } = plainRender(<PartitionsMenu device={drive1} />);
-
-    const detailsButton = screen.getByRole("button", { name: /Details for .*sda/ });
-    await user.click(detailsButton);
-    const partitionsMenu = screen.getByRole("menu");
-    const deleteSwapButton = within(partitionsMenu).getByRole("menuitem", {
-      name: "Delete swap",
-    });
+    const { user } = await openMenu("swap");
+    const deleteSwapButton = screen.getByRole("menuitem", { name: "Delete swap" });
     await user.click(deleteSwapButton);
     expect(mockDeletePartition).toHaveBeenCalled();
   });
 
   it("allows users to delete a required partition", async () => {
-    const { user } = plainRender(<PartitionsMenu device={drive1} />);
-
-    const detailsButton = screen.getByRole("button", { name: /Details for .*sda/ });
-    await user.click(detailsButton);
-    const partitionsMenu = screen.getByRole("menu");
-    const deleteRootButton = within(partitionsMenu).getByRole("menuitem", {
-      name: "Delete /",
-    });
+    const { user } = await openMenu("/");
+    const deleteRootButton = screen.getByRole("menuitem", { name: "Delete /" });
     await user.click(deleteRootButton);
     expect(mockDeletePartition).toHaveBeenCalled();
   });
 
   it("allows users to edit a partition", async () => {
-    const { user } = plainRender(<PartitionsMenu device={drive1} />);
-
-    const detailsButton = screen.getByRole("button", { name: /Details for .*sda/ });
-    await user.click(detailsButton);
-    const partitionsMenu = screen.getByRole("menu");
-    const editSwapButton = within(partitionsMenu).getByRole("menuitem", {
-      name: "Edit swap",
-    });
+    const { user } = await openMenu("swap");
+    const editSwapButton = screen.getByRole("menuitem", { name: "Edit swap" });
     await user.click(editSwapButton);
-    expect(mockNavigateFn).toHaveBeenCalledWith("/storage/drives/0/partitions/swap/edit");
+    expect(mockNavigateFn).toHaveBeenCalledWith(
+      expect.objectContaining({ pathname: "/storage/drives/0/partitions/swap/edit" }),
+    );
   });
 });
