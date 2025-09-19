@@ -271,3 +271,87 @@ impl AgamaService for Service {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::supervisor::Service;
+    use agama_lib::install_settings::InstallSettings;
+
+    async fn start_service() -> Service {
+        use crate::supervisor::Service;
+        use tokio::sync::mpsc::unbounded_channel;
+        let (_tx, rx) = unbounded_channel();
+
+        Service::start(rx).await.unwrap()
+    }
+
+    #[tokio::test]
+    #[cfg(not(ci))]
+    async fn test_start() {
+        let user_config = InstallSettings::default();
+        let service = start_service().await;
+
+        assert_eq!(service.user_config.localization, user_config.localization);
+        assert!(service.user_config.localization.is_none());
+    }
+
+    #[tokio::test]
+    #[cfg(not(ci))]
+    async fn test_update_config() {
+        use agama_l10n::UserConfig;
+        let mut service = start_service().await;
+
+        let localization = UserConfig {
+            language: Some("es_ES.UTF-8".to_string()),
+            keyboard: Some("es".to_string()),
+            ..Default::default()
+        };
+
+        let settings = InstallSettings {
+            localization: Some(localization.to_owned()),
+            ..Default::default()
+        };
+
+        assert!(service.update_config(settings).await.is_ok());
+        assert_eq!(service.user_config.localization, Some(localization));
+    }
+
+    #[tokio::test]
+    #[cfg(not(ci))]
+    async fn test_patch_config() {
+        use agama_l10n::UserConfig;
+
+        let mut service = start_service().await;
+
+        let localization = UserConfig {
+            language: Some("es_ES.UTF-8".to_string()),
+            keyboard: Some("es".to_string()),
+            ..Default::default()
+        };
+
+        let settings = InstallSettings {
+            localization: Some(localization.to_owned()),
+            ..Default::default()
+        };
+
+        assert!(service.update_config(settings).await.is_ok());
+        assert_eq!(service.user_config.localization, Some(localization));
+
+        let mut settings = service.get_config().await;
+        let patch_localization = UserConfig {
+            keyboard: Some("en".to_string()),
+            ..Default::default()
+        };
+
+        settings.localization = Some(patch_localization);
+
+        let merged_localization = UserConfig {
+            language: Some("es_ES.UTF-8".to_string()),
+            keyboard: Some("en".to_string()),
+            ..Default::default()
+        };
+
+        assert!(service.patch_config(settings).await.is_ok());
+        assert_eq!(service.user_config.localization, Some(merged_localization));
+    }
+}
