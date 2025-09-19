@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/dbus/clients/questions"
-require "agama/dbus/clients/software"
+require "agama/http/clients/software"
 require "agama/issue"
 require "agama/security"
 require "agama/storage/actions_generator"
@@ -135,7 +135,7 @@ module Agama
           _("Calculating the storage proposal")
         )
 
-        product_config.pick_product(software.selected_product)
+        product_config.pick_product(software.config["product"])
         # Underlying yast-storage-ng has own mechanism for proposing boot strategies.
         # However, we don't always want to use BLS when it proposes so. Currently
         # we want to use BLS only for Tumbleweed / Slowroll
@@ -211,7 +211,7 @@ module Agama
       #
       # @return [Agama::DBus::Clients::Software]
       def software
-        @software ||= DBus::Clients::Software.instance
+        @software ||= HTTP::Clients::Software.new(logger)
       end
 
       # Storage actions.

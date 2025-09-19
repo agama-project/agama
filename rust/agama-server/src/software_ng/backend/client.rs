@@ -20,7 +20,10 @@
 
 use agama_lib::{
     product::Product,
-    software::{model::ResolvableType, Pattern},
+    software::{
+        model::{ResolvableType, SoftwareConfig},
+        Pattern,
+    },
 };
 use tokio::sync::oneshot;
 
@@ -59,6 +62,12 @@ impl SoftwareServiceClient {
         self.actions
             .send(SoftwareAction::SelectProduct(product_id.to_string()))?;
         Ok(())
+    }
+
+    pub async fn get_config(&self) -> Result<SoftwareConfig, SoftwareServiceError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(SoftwareAction::GetConfig(tx))?;
+        Ok(rx.await?)
     }
 
     pub async fn probe(&self) -> Result<(), SoftwareServiceError> {
