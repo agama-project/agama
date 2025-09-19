@@ -20,5 +20,5 @@ libagama-zypp.a: $(OBJ)
 	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
 format:
-	git ls-files | grep '\.[ch]' | \
+	git ls-files | grep -E '\.(c|h|cxx|hxx)$' | \
 	  xargs --verbose clang-format --style=llvm -i
