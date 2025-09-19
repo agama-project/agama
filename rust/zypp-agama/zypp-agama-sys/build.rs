@@ -15,8 +15,7 @@ fn update_file(file_path: &str, contents: &str) {
     };
 
     if should_write {
-        fs::write(file_path, contents)
-            .unwrap_or_else(|_| panic!("Couldn't write {}", file_path));
+        fs::write(file_path, contents).unwrap_or_else(|_| panic!("Couldn't write {}", file_path));
     }
 }
 

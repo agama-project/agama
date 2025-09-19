@@ -532,7 +532,6 @@ mod tests {
             let zypp = Zypp::init_target(root, progress_cb)?;
             let repos = zypp.list_repositories()?;
             assert!(repos.len() == 1);
-            
         }
         Ok(())
     }
