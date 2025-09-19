@@ -136,11 +136,11 @@ impl AgamaService for Service {
             }
             Message::UpdateLocale { locale } => {
                 self.state.system.locale = locale.clone();
-                _ = self.events.send(Event::LocaleChanged(locale));
+                _ = self.events.send(Event::LocaleChanged { locale });
             }
             Message::UpdateKeymap { keymap } => {
                 self.state.system.keymap = keymap.clone();
-                _ = self.events.send(Event::KeymapChanged(keymap));
+                _ = self.events.send(Event::KeymapChanged { keymap });
             }
         };
 

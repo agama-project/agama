@@ -25,9 +25,16 @@ use tokio::sync::mpsc;
 
 #[serde_as]
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(tag = "name")]
 pub enum Event {
-    KeymapChanged(#[serde_as(as = "DisplayFromStr")] KeymapId),
-    LocaleChanged(#[serde_as(as = "DisplayFromStr")] LocaleId),
+    KeymapChanged {
+        #[serde_as(as = "DisplayFromStr")]
+        keymap: KeymapId,
+    },
+    LocaleChanged {
+        #[serde_as(as = "DisplayFromStr")]
+        locale: LocaleId,
+    },
 }
 
 pub type EventsSender = mpsc::UnboundedSender<Event>;
