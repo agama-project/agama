@@ -284,14 +284,15 @@ impl AgamaService for Service {
 #[cfg(test)]
 mod test {
     use crate::supervisor::Service;
-    use agama_lib::install_settings::InstallSettings;
+    use agama_lib::{http::Event, install_settings::InstallSettings};
 
     async fn start_service() -> Service {
         use crate::supervisor::Service;
-        use tokio::sync::mpsc::unbounded_channel;
-        let (_tx, rx) = unbounded_channel();
+        use tokio::sync::{broadcast, mpsc};
+        let (_tx, rx) = mpsc::unbounded_channel();
+        let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
 
-        Service::start(rx).await.unwrap()
+        Service::start(rx, events_tx).await.unwrap()
     }
 
     #[tokio::test]
