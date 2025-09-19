@@ -156,18 +156,22 @@ impl L10n {
         const VCONSOLE_CONF: &str = "/etc/vconsole.conf";
 
         let locale = self.locales.first().cloned().unwrap_or_default();
-        let mut cmd = Command::new("/usr/bin/systemd-firstboot");
-        cmd.args([
-            "--root",
-            ROOT,
-            "--force",
-            "--locale",
-            &locale.to_string(),
-            "--keymap",
-            &self.keymap.dashed(),
-            "--timezone",
-            &self.timezone,
-        ]);
+
+        let mut cmd = Command::new("chroot");
+        cmd.args(["/mnt", "set-keymap", &self.keymap.dashed()]);
+
+        // let mut cmd = Command::new("/usr/bin/localectl");
+        // cmd.args([
+        //     "--root",
+        //     ROOT,
+        //     "--force",
+        //     "--locale",
+        //     &locale.to_string(),
+        //     "--keymap",
+        //     &self.keymap.dashed(),
+        //     "--timezone",
+        //     &self.timezone,
+        // ]);
         tracing::info!("{:?}", &cmd);
 
         let output = cmd.output()?;
