@@ -43,7 +43,7 @@ pub struct Handler {
 impl Handler {
     pub async fn start(events: EventsSender) -> Result<Self, Error> {
         let (sender, receiver) = mpsc::unbounded_channel();
-        let mut service = Service::new(receiver, events);
+        let mut service = Service::from_system(receiver, events)?;
         tokio::spawn(async move {
             service.run().await;
         });

@@ -88,11 +88,19 @@ struct State {
 }
 
 impl Service {
+    pub fn from_system(
+        messages: mpsc::UnboundedReceiver<Message>,
+        events: mpsc::UnboundedSender<Event>,
+    ) -> Result<Self, Error> {
+        let model = Model::from_system()?;
+        Ok(Self::new(model, messages, events))
+    }
+
     pub fn new(
+        model: Model,
         messages: mpsc::UnboundedReceiver<Message>,
         events: mpsc::UnboundedSender<Event>,
     ) -> Self {
-        let model = Model::new_with_locale(&LocaleId::default()).unwrap();
         let system = SystemInfo::read_from(&model);
         let config = Config::new_from(&system);
 

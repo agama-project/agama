@@ -18,9 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::fs::OpenOptions;
 use std::io::Write;
 use std::process::Command;
+use std::{env, fs::OpenOptions};
 
 use agama_locale_data::{InvalidLocaleId, KeymapId, LocaleId};
 use regex::Regex;
@@ -50,6 +50,10 @@ pub struct Model {
 }
 
 impl Model {
+    pub fn from_system() -> anyhow::Result<Self> {
+        Self::new_with_locale(&Self::system_locale())
+    }
+
     //    pub fn new_with_locale(ui_locale: &LocaleId) -> Result<Self, LocaleError> {
     pub fn new_with_locale(ui_locale: &LocaleId) -> anyhow::Result<Self> {
         const DEFAULT_TIMEZONE: &str = "Europe/Berlin";
@@ -204,5 +208,14 @@ impl Model {
 
         let keymap_id: KeymapId = keymap.parse().unwrap_or(KeymapId::default());
         Ok(keymap_id)
+    }
+
+    // FIXME: we could use D-Bus to read the locale and the keymap (see ui_keymap).
+    fn system_locale() -> LocaleId {
+        let lang = env::var("LANG")
+            .ok()
+            .map(|v| v.parse::<LocaleId>().ok())
+            .flatten();
+        lang.unwrap_or(LocaleId::default())
     }
 }

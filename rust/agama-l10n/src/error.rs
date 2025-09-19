@@ -42,4 +42,6 @@ pub enum Error {
     Service(#[from] service::Error<Message>),
     #[error(transparent)]
     Monitor(#[from] monitor::Error),
+    #[error(transparent)]
+    Model(#[from] anyhow::Error),
 }
