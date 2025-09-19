@@ -21,20 +21,20 @@ else
   SUDO=""
 fi
 
-# Services setup
-if ! $MYDIR/setup-services.sh; then
-  echo "Services setup failed."
-  echo "Agama services are NOT running."
-
-  exit 2
-fi;
-
 # Web setup
 if ! $MYDIR/setup-web.sh; then
   echo "Web client setup failed."
   echo "Agama web client is NOT running."
 
   exit 3
+fi;
+
+# Services setup
+if ! $MYDIR/setup-services.sh; then
+  echo "Services setup failed."
+  echo "Agama services are NOT running."
+
+  exit 2
 fi;
 
 # Start the installer.
