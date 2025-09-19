@@ -19,42 +19,37 @@
 // find current contact information at www.suse.com.
 
 use agama_locale_data::{KeymapId, LocaleId};
-use agama_utils::{
-    dbus::{get_property, to_owned_hash},
-    Monitor as AgamaMonitor,
-};
+use agama_utils::dbus::{get_property, to_owned_hash};
 use tokio::sync::mpsc;
 use tokio_stream::StreamExt;
 use zbus::fdo::PropertiesProxy;
+use crate::{Message};
 
-use crate::{Error, Message};
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error("Monitor could not send the message to the service")]
+    Send(#[from] mpsc::error::SendError<Message>),
+    #[error(transparent)]
+    DBus(#[from] zbus::Error),
+}
 
 pub struct Monitor<'a> {
-    messages: mpsc::UnboundedSender<Message>,
+    channel: mpsc::UnboundedSender<Message>,
     proxy: PropertiesProxy<'a>,
 }
 
 impl<'a> Monitor<'a> {
-    pub async fn new(messages: mpsc::UnboundedSender<Message>) -> Result<Self, Error> {
+    pub async fn new(channel: mpsc::UnboundedSender<Message>) -> Result<Self, Error> {
         let dbus = zbus::Connection::system().await?;
         let proxy = PropertiesProxy::builder(&dbus)
             .path("/org/freedesktop/locale1")?
             .destination("org.freedesktop.locale1")?
             .build()
             .await?;
-        Ok(Self { messages, proxy })
-    }
-}
-
-impl<'a> AgamaMonitor for Monitor<'a> {
-    type Err = Error;
-    type Command = Message;
-
-    fn channel(&mut self) -> &mpsc::UnboundedSender<Self::Command> {
-        &mut self.messages
+        Ok(Self { channel, proxy })
     }
 
-    async fn run(&mut self) -> Result<(), Self::Err> {
+    pub async fn run(&mut self) -> Result<(), Error> {
         let mut stream = self
             .proxy
             .receive_properties_changed()
@@ -81,14 +76,12 @@ impl<'a> AgamaMonitor for Monitor<'a> {
                     .and_then(|l| l.parse::<LocaleId>().ok());
 
                 if let Some(locale_id) = locale_id {
-                    _ = self
-                        .channel()
-                        .send(Message::UpdateLocale { locale: locale_id });
+                    _ = self.channel.send(Message::UpdateLocale { locale: locale_id });
                 }
             }
             if let Ok(keymap) = get_property::<String>(&changes, "VConsoleKeymap") {
                 if let Ok(keymap) = keymap.parse::<KeymapId>() {
-                    _ = self.channel().send(Message::UpdateKeymap { keymap });
+                    _ = self.channel.send(Message::UpdateKeymap { keymap })?;
                 }
             }
         }

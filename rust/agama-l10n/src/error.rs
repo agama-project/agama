@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::Message;
+use crate::{Message, monitor};
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
 use agama_utils::ServiceError;
 
@@ -43,5 +43,5 @@ pub enum Error {
     #[error(transparent)]
     ServiceError(#[from] ServiceError<Message>),
     #[error(transparent)]
-    DBus(#[from] zbus::Error),
+    Monitor(#[from] monitor::Error),
 }

@@ -27,7 +27,7 @@ use tokio::sync::{mpsc, oneshot};
 #[derive(thiserror::Error, Debug)]
 pub enum ServiceError<T> {
     #[error("Could not send the message to the service")]
-    SendCommand(#[from] mpsc::error::SendError<T>),
+    SendError(#[from] mpsc::error::SendError<T>),
     #[error("Could not receive the response")]
     RecvError(#[from] oneshot::error::RecvError),
     #[error("Could not send the response")]

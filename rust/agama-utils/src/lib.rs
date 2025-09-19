@@ -21,12 +21,11 @@
 //! This crate offers a set of utility struct and functions to be used accross
 //! other Agama's crates.
 
-pub mod dbus;
 mod handler;
-mod monitor;
-pub mod openapi;
-mod service;
-
 pub use handler::Handler;
-pub use monitor::{Monitor, MonitorError};
+
+mod service;
 pub use service::{Service, ServiceError};
+
+pub mod dbus;
+pub mod openapi;

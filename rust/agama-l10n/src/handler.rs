@@ -22,7 +22,7 @@ use crate::{
     event::EventsSender, Error, L10nAction, Message, Monitor, Proposal, Service, SystemInfo,
     UserConfig,
 };
-use agama_utils::{Handler as AgamaHandler, Monitor as _, Service as AgamaService};
+use agama_utils::{Handler as AgamaHandler, Service as _};
 use tokio::sync::mpsc;
 
 #[derive(Clone)]
