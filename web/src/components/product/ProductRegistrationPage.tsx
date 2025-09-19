@@ -65,6 +65,7 @@ const SERVER_LABEL = N_("Registration server");
 const EMAIL_LABEL = N_("Email");
 const SCC_SERVER_LABEL = N_("SUSE Customer Center (SCC)");
 const CUSTOM_SERVER_LABEL = N_("Custom");
+const EXAMPLE_URL = "https://example.com";
 
 const RegisteredProductSection = () => {
   const { selectedProduct: product } = useProduct();
@@ -166,7 +167,8 @@ function RegistrationUrl({ id = "url", value, onChange }: RegistrationUrlProps):
   return (
     <FormGroup fieldId={id} label={_("Server URL")}>
       <TextInput id={id} value={value} onChange={(_, v) => onChange(v)} />
-      <SubtleContent>{_("Example: https://myserver.com")}</SubtleContent>
+      {/* TRANSLATORS: %s is replaced by an example URL like https://example.com */}
+      <SubtleContent>{sprintf(_("Example: %s"), EXAMPLE_URL)}</SubtleContent>
     </FormGroup>
   );
 }
