@@ -1,0 +1,8 @@
+[repo-oss]
+name=Main repository
+enabled=1
+autorefresh=1
+baseurl=http://download.opensuse.org/distribution/leap/15.6/repo/oss/
+path=/
+type=rpm-md
+keeppackages=0
