@@ -32,6 +32,8 @@ import {
   CardHeaderProps,
   CardProps,
   Divider,
+  Flex,
+  FlexItem,
   PageGroup,
   PageGroupProps,
   PageSection,
@@ -122,6 +124,7 @@ const Header = ({ children, ...props }) => {
  */
 const Section = ({
   title,
+  titleActions,
   "aria-label": ariaLabel,
   description,
   actions,
@@ -151,9 +154,17 @@ const Section = ({
       {hasHeader && (
         <CardHeader {...pfCardHeaderProps}>
           {hasTitle && (
-            <Title id={titleId} headingLevel={headingLevel}>
-              {title}
-            </Title>
+            <Flex>
+              <Title id={titleId} headingLevel={headingLevel}>
+                {title}
+              </Title>
+              {titleActions && (
+                <>
+                  <FlexItem grow={{ default: "grow" }} />
+                  {titleActions}
+                </>
+              )}
+            </Flex>
           )}
           {hasDescription && <div className={textStyles.textColorPlaceholder}>{description}</div>}
         </CardHeader>

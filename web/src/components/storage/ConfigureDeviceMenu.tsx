@@ -33,6 +33,7 @@ import { sprintf } from "sprintf-js";
 import { _, n_ } from "~/i18n";
 import { StorageDevice } from "~/types/storage";
 import DeviceSelectorModal from "./DeviceSelectorModal";
+import { Icon } from "../layout";
 
 type AddDeviceMenuItemProps = {
   /** Whether some of the available devices is an MD RAID */
@@ -148,7 +149,11 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
       <MenuButton
         menuProps={{
           "aria-label": _("Configure device menu"),
+          popperProps: {
+            position: "right",
+          },
         }}
+        toggleProps={{ variant: "plain" }}
         items={[
           <AddDeviceMenuItem
             key="select-disk-option"
@@ -167,7 +172,7 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
           </MenuButtonItem>,
         ]}
       >
-        {_("More devices")}
+        {_("Use more devices")} <Icon name="arrow_drop_down" className="agm-centered-icon" />
       </MenuButton>
       {deviceSelectorOpen && (
         <DeviceSelectorModal

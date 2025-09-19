@@ -33,11 +33,14 @@ import {
   EmptyStateFooter,
   List,
   ListItem,
+  Title,
+  Stack,
+  Flex,
+  FlexItem,
 } from "@patternfly/react-core";
 import { Page, Link } from "~/components/core/";
 import { Icon, Loading } from "~/components/layout";
 import ConfigEditor from "./ConfigEditor";
-import ConfigEditorMenu from "./ConfigEditorMenu";
 import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
 import EncryptionSection from "./EncryptionSection";
 import FixableConfigInfo from "./FixableConfigInfo";
@@ -60,6 +63,7 @@ import { STORAGE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
 import { useProgress, useProgressChanges } from "~/queries/progress";
 import { useNavigate } from "react-router-dom";
+import MenuButton from "../core/MenuButton";
 
 function InvalidConfigEmptyState(): React.ReactNode {
   const errors = useConfigErrors("storage");
@@ -191,22 +195,42 @@ function ProposalSections(): React.ReactNode {
       <UnsupportedModelInfo />
       {model && (
         <>
-          <GridItem sm={8}>
+          <GridItem sm={12}>
             <Page.Section
+              pfCardProps={{
+                "data-tutorial-locator": "devices-definitions",
+              }}
               title={_("Installation Devices")}
+              titleActions={
+                <Flex>
+                  <FlexItem grow={{ default: "grow" }} />
+                  <ConfigureDeviceMenu />
+                  <MenuButton
+                    menuProps={{
+                      popperProps: {
+                        position: "end",
+                      },
+                    }}
+                    toggleProps={{
+                      variant: "plain",
+                    }}
+                    items={[
+                      <MenuButton.Item
+                        key="reset-link"
+                        onClick={() => reset()}
+                        description={_("Start from scratch with the default configuration")}
+                      >
+                        {_("Reset to defaults")}
+                      </MenuButton.Item>,
+                    ]}
+                  >
+                    <Icon name="more_horiz" className="agm-strong-icon" />
+                  </MenuButton>
+                </Flex>
+              }
               description={_(
                 "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
               )}
-              actions={
-                <>
-                  <SplitItem>
-                    <ConfigureDeviceMenu />
-                  </SplitItem>
-                  <SplitItem>
-                    <ConfigEditorMenu />
-                  </SplitItem>
-                </>
-              }
             >
               <ConfigEditor />
             </Page.Section>
@@ -256,7 +280,35 @@ export default function ProposalPage(): React.ReactNode {
   return (
     <Page>
       <Page.Header>
-        <Content component="h2">{_("Storage")}</Content>
+        <Flex>
+          <FlexItem>
+            <Content component="h2">{_("Storage")}</Content>
+          </FlexItem>
+          <FlexItem grow={{ default: "grow" }} />
+          <FlexItem>
+            <MenuButton
+              menuProps={{
+                popperProps: {
+                  position: "end",
+                },
+              }}
+              toggleProps={{
+                variant: "plain",
+              }}
+              items={[
+                <MenuButton.Item
+                  key="reset-link"
+                  onClick={() => reset()}
+                  description={_("Start from scratch with the default configuration")}
+                >
+                  {_("Reset to defaults")}
+                </MenuButton.Item>,
+              ]}
+            >
+              <Icon name="more_horiz" className="agm-strong-icon" />
+            </MenuButton>
+          </FlexItem>
+        </Flex>
       </Page.Header>
       <Page.Content>
         {isDeprecated && <Loading text={_("Reloading data, please wait...")} />}

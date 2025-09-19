@@ -27,6 +27,7 @@ import React from "react";
 // value.
 import Apps from "@icons/apps.svg?component";
 import AppRegistration from "@icons/app_registration.svg?component";
+import ArrowDropDown from "@icons/arrow_drop_down.svg?component";
 import Backspace from "@icons/backspace.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
 import ChevronLeft from "@icons/chevron_left.svg?component";
@@ -67,6 +68,7 @@ import WifiOff from "@icons/wifi_off.svg?component";
 const icons = {
   apps: Apps,
   app_registration: AppRegistration,
+  arrow_drop_down: ArrowDropDown,
   backspace: Backspace,
   check_circle: CheckCircle,
   chevron_left: ChevronLeft,
