@@ -548,9 +548,20 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
+.agm-centered-icon {
+  font-size: 1.25rem;
+  vertical-align: top;
+}
+
 .agm-strong-icon {
   font-size: 1.6rem;
   vertical-align: middle;
+}
+
+.no-default-icon {
+  .pf-v6-c-button__icon {
+    display: none;
+  }
 }
 
 // FIXME: make ir more generic, if possible, or even without CSS but not

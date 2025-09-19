@@ -32,6 +32,8 @@ import {
   CardHeaderProps,
   CardProps,
   Divider,
+  Flex,
+  FlexItem,
   PageGroup,
   PageGroupProps,
   PageSection,
@@ -55,6 +57,8 @@ import { _ } from "~/i18n";
 type SectionProps = {
   /** The section title */
   title?: React.ReactNode;
+  /** Actions to display next to the title */
+  titleActions?: React.ReactNode;
   /** The value used for accessible label */
   "aria-label"?: string;
   /** Elements to be rendered in the section footer */
@@ -122,6 +126,7 @@ const Header = ({ children, ...props }) => {
  */
 const Section = ({
   title,
+  titleActions,
   "aria-label": ariaLabel,
   description,
   actions,
@@ -151,9 +156,17 @@ const Section = ({
       {hasHeader && (
         <CardHeader {...pfCardHeaderProps}>
           {hasTitle && (
-            <Title id={titleId} headingLevel={headingLevel}>
-              {title}
-            </Title>
+            <Flex>
+              <Title id={titleId} headingLevel={headingLevel}>
+                {title}
+              </Title>
+              {titleActions && (
+                <>
+                  <FlexItem grow={{ default: "grow" }} />
+                  {titleActions}
+                </>
+              )}
+            </Flex>
           )}
           {hasDescription && <div className={textStyles.textColorPlaceholder}>{description}</div>}
         </CardHeader>

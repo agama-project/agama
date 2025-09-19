@@ -237,7 +237,7 @@ describe("RemoveDriveOption", () => {
       // improvements.
       const { user } = plainRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
 
-      const changeButton = screen.getByRole("button", { name: "Change" });
+      const changeButton = screen.getByRole("button", { name: /Use disk sdb/ });
       await user.click(changeButton);
       const drivesMenu = screen.getByRole("menu", { name: "Device /dev/sdb menu" });
       const deleteDriveButton = within(drivesMenu).getByRole("menuitem", {
@@ -253,7 +253,7 @@ describe("RemoveDriveOption", () => {
       // improvements.
       const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
 
-      const changeButton = screen.getByRole("button", { name: "Change" });
+      const changeButton = screen.getByRole("button", { name: /Use disk sda/ });
       await user.click(changeButton);
       const drivesMenu = screen.getByRole("menu", { name: "Device /dev/sda menu" });
       const deleteDriveButton = within(drivesMenu).queryByRole("menuitem", {
@@ -271,7 +271,7 @@ describe("RemoveDriveOption", () => {
       // improvements.
       const { user } = plainRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
 
-      const changeButton = screen.getByRole("button", { name: "Change" });
+      const changeButton = screen.getByRole("button", { name: /Use disk sdb/ });
       await user.click(changeButton);
       const drivesMenu = screen.getByRole("menu", { name: "Device /dev/sdb menu" });
       const deleteDriveButton = within(drivesMenu).queryByRole("menuitem", {
@@ -287,7 +287,7 @@ describe("RemoveDriveOption", () => {
       // improvements.
       const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
 
-      const changeButton = screen.getByRole("button", { name: "Change" });
+      const changeButton = screen.getByRole("button", { name: /Use disk sda/ });
       await user.click(changeButton);
       const drivesMenu = screen.getByRole("menu", { name: "Device /dev/sda menu" });
       const deleteDriveButton = within(drivesMenu).queryByRole("menuitem", {
