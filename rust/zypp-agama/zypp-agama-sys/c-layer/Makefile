@@ -10,7 +10,7 @@ clean:
 	rm -vf *.o *.a
 
 check:
-	git ls-files | grep '\.[ch]' | \
+	git ls-files | grep -E '\.(c|h|cxx|hxx)$' | \
 	  xargs --verbose clang-format --style=llvm --dry-run
 
 libagama-zypp.a: $(OBJ)
