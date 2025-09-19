@@ -1,0 +1,7 @@
+[package]
+name = "zypp-agama"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+zypp-agama-sys = { path="./zypp-agama-sys" }
