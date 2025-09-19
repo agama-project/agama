@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::supervisor::{l10n, Message, Scope};
-use agama_utils::ServiceError;
+use agama_utils::service;
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
@@ -36,7 +36,7 @@ pub enum Error {
     #[error(transparent)]
     L10n(#[from] l10n::Error),
     #[error(transparent)]
-    ServiceError(#[from] ServiceError<Message>),
+    Service(#[from] service::Error<Message>),
 }
 
 impl IntoResponse for Error {

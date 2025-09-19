@@ -22,9 +22,8 @@ use crate::{
     supervisor::{error::ServerResult, l10n, Error, Proposal, Scope, ScopeConfig, SystemInfo},
     web::EventsSender,
 };
-use agama_l10n::{Handler as L10nHandler, L10nAction};
 use agama_lib::install_settings::InstallSettings;
-use agama_utils::{Service as AgamaService, ServiceError};
+use agama_utils::{service, Service as AgamaService};
 use merge_struct::merge;
 use serde::Deserialize;
 use tokio::sync::{mpsc, oneshot};
@@ -223,47 +222,47 @@ impl AgamaService for Service {
             Self::Message::GetConfig { respond_to } => {
                 respond_to
                     .send(self.get_config().await)
-                    .map_err(|_| ServiceError::SendResponse)?;
+                    .map_err(|_| service::Error::SendResponse)?;
             }
             Self::Message::UpdateConfig { config } => {
                 self.update_config(config)
                     .await
-                    .map_err(|_| ServiceError::SendResponse)?;
+                    .map_err(|_| service::Error::SendResponse)?;
             }
             Self::Message::PatchConfig { config } => {
                 self.patch_config(config)
                     .await
-                    .map_err(|_| ServiceError::SendResponse)?;
+                    .map_err(|_| service::Error::SendResponse)?;
             }
             Self::Message::GetScopeConfig { scope, respond_to } => {
                 respond_to
                     .send(self.get_scope_config(scope).await)
-                    .map_err(|_| ServiceError::SendResponse)?;
+                    .map_err(|_| service::Error::SendResponse)?;
             }
             Self::Message::UpdateScopeConfig { config } => {
                 self.update_scope_config(config)
                     .await
-                    .map_err(|_| ServiceError::SendResponse)?;
+                    .map_err(|_| service::Error::SendResponse)?;
             }
             Self::Message::PatchScopeConfig { config } => {
                 self.patch_scope_config(config)
                     .await
-                    .map_err(|_| ServiceError::SendResponse)?;
+                    .map_err(|_| service::Error::SendResponse)?;
             }
             Self::Message::GetProposal { respond_to } => {
                 respond_to
                     .send(self.get_proposal().await.cloned())
-                    .map_err(|_| ServiceError::SendResponse)?;
+                    .map_err(|_| service::Error::SendResponse)?;
             }
             Self::Message::GetSystem { respond_to } => {
                 respond_to
                     .send(self.get_system().await?.clone())
-                    .map_err(|_| ServiceError::SendResponse)?;
+                    .map_err(|_| service::Error::SendResponse)?;
             }
             Self::Message::GetUserConfig { respond_to } => {
                 respond_to
                     .send(self.get_user_config().await.clone())
-                    .map_err(|_| ServiceError::SendResponse)?;
+                    .map_err(|_| service::Error::SendResponse)?;
             }
             _ => {
                 unimplemented!("TODO");

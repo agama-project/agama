@@ -18,9 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{Message, monitor};
+use crate::{monitor, Message};
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
-use agama_utils::ServiceError;
+use agama_utils::service;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -38,10 +38,8 @@ pub enum Error {
     InvalidKeymap(#[from] InvalidKeymapId),
     #[error("Could not apply the l10n settings: {0}")]
     Commit(#[from] std::io::Error),
-    #[error("Could not merge the current and the new configuration")]
-    Merge(#[from] serde_json::error::Error),
     #[error(transparent)]
-    ServiceError(#[from] ServiceError<Message>),
+    Service(#[from] service::Error<Message>),
     #[error(transparent)]
     Monitor(#[from] monitor::Error),
 }

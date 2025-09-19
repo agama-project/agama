@@ -18,12 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::Message;
 use agama_locale_data::{KeymapId, LocaleId};
 use agama_utils::dbus::{get_property, to_owned_hash};
 use tokio::sync::mpsc;
 use tokio_stream::StreamExt;
 use zbus::fdo::PropertiesProxy;
-use crate::{Message};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -76,7 +76,9 @@ impl<'a> Monitor<'a> {
                     .and_then(|l| l.parse::<LocaleId>().ok());
 
                 if let Some(locale_id) = locale_id {
-                    _ = self.channel.send(Message::UpdateLocale { locale: locale_id });
+                    _ = self
+                        .channel
+                        .send(Message::UpdateLocale { locale: locale_id });
                 }
             }
             if let Ok(keymap) = get_property::<String>(&changes, "VConsoleKeymap") {

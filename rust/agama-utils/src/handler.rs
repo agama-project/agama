@@ -20,14 +20,14 @@
 
 //! Implements utilities to build Agama services.
 
-use crate::ServiceError;
+use crate::service;
 use core::future::Future;
 use std::error::Error;
 use tokio::sync::{mpsc, oneshot};
 
 /// Setting all the &self references as &mut self makes not needed to mark with Sync.
 pub trait Handler: Send + Sync {
-    type Err: From<ServiceError<Self::Message>> + Error;
+    type Err: From<service::Error<Self::Message>> + Error;
     type Message: Send;
 
     fn channel(&self) -> &mpsc::UnboundedSender<Self::Message>;
@@ -42,7 +42,7 @@ pub trait Handler: Send + Sync {
             let message = func(tx);
             self.channel()
                 .send(message)
-                .map_err(|e| ServiceError::from(e))?;
+                .map_err(|e| service::Error::from(e))?;
             Ok(rx.await.unwrap())
         }
     }
@@ -50,7 +50,7 @@ pub trait Handler: Send + Sync {
     fn send(&self, message: Self::Message) -> Result<(), Self::Err> {
         self.channel()
             .send(message)
-            .map_err(|_| ServiceError::SendResponse)?;
+            .map_err(|_| service::Error::SendResponse)?;
         Ok(())
     }
 }
