@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,32 +18,28 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::model::LocaleConfig;
-use crate::http::{BaseHTTPClient, BaseHTTPClientError};
+use crate::Config;
+use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
+use serde::Serialize;
+use serde_with::{serde_as, DisplayFromStr};
 
-#[derive(Debug, thiserror::Error)]
-pub enum LocalizationHTTPClientError {
-    #[error(transparent)]
-    HTTP(#[from] BaseHTTPClientError),
+#[serde_as]
+#[derive(Clone, Debug, Serialize)]
+pub struct Proposal {
+    #[serde_as(as = "DisplayFromStr")]
+    pub keymap: KeymapId,
+    #[serde_as(as = "DisplayFromStr")]
+    pub locale: LocaleId,
+    #[serde_as(as = "DisplayFromStr")]
+    pub timezone: TimezoneId,
 }
 
-pub struct LocalizationHTTPClient {
-    client: BaseHTTPClient,
-}
-
-impl LocalizationHTTPClient {
-    pub fn new(base: BaseHTTPClient) -> Self {
-        Self { client: base }
-    }
-
-    pub async fn get_config(&self) -> Result<LocaleConfig, LocalizationHTTPClientError> {
-        Ok(self.client.get("/l10n/config").await?)
-    }
-
-    pub async fn set_config(
-        &self,
-        config: &LocaleConfig,
-    ) -> Result<(), LocalizationHTTPClientError> {
-        Ok(self.client.patch_void("/l10n/config", config).await?)
+impl From<&Config> for Proposal {
+    fn from(config: &Config) -> Self {
+        Proposal {
+            keymap: config.keymap.clone(),
+            locale: config.locale.clone(),
+            timezone: config.timezone.clone(),
+        }
     }
 }

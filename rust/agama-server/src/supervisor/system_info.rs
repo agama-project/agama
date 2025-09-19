@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,22 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Representation of the localization settings
+use crate::supervisor::l10n;
+use serde::Serialize;
 
-use serde::{Deserialize, Serialize};
-
-/// Localization settings for the system being installed (not the UI)
-/// FIXME: this one is close to CLI. A possible duplicate close to HTTP is LocaleConfig
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct LocalizationSettings {
-    /// like "en_US.UTF-8"
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub language: Option<String>,
-    /// like "cz(qwerty)"
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub keyboard: Option<String>,
-    /// like "Europe/Berlin"
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub timezone: Option<String>,
+#[derive(Clone, Debug, Serialize)]
+pub struct SystemInfo {
+    pub localization: l10n::SystemInfo,
 }

@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,11 +18,22 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod error;
-pub mod helpers;
-mod model;
-pub mod web;
+mod event;
+pub use event::EventsListener;
 
-pub use agama_lib::localization::model::LocaleConfig;
-pub use error::LocaleError;
-pub use model::{Keymap, L10n, LocaleEntry, TimezoneEntry};
+pub mod handler;
+pub use handler::Handler;
+
+mod service;
+pub use service::{Action, Message, Service};
+
+mod system_info;
+pub use system_info::SystemInfo;
+
+mod proposal;
+pub use proposal::Proposal;
+
+mod scope;
+pub use scope::{Scope, ScopeConfig};
+
+use agama_l10n as l10n;

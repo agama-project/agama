@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,13 +18,34 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements support for handling the localization settings
+pub mod handler;
+pub use handler::Handler;
 
-mod http_client;
-pub mod model;
-mod settings;
-mod store;
+mod service;
+pub use service::L10nAction;
+pub(crate) use service::{Message, Service};
 
-pub use http_client::LocalizationHTTPClient;
-pub use settings::LocalizationSettings;
-pub use store::{LocalizationStore, LocalizationStoreError};
+mod system_info;
+pub use system_info::SystemInfo;
+
+mod user_config;
+pub use user_config::UserConfig;
+
+mod proposal;
+pub use proposal::Proposal;
+
+mod event;
+pub use event::{Event, EventsReceiver, EventsSender};
+
+mod config;
+pub(crate) use config::Config;
+
+mod model;
+pub(crate) use model::{Keymap, LocaleEntry, Model, TimezoneEntry};
+
+mod monitor;
+pub(crate) use monitor::Monitor;
+
+pub mod actions;
+pub(crate) mod dbus;
+pub mod helpers;

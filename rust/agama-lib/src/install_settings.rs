@@ -26,13 +26,13 @@ use crate::context::InstallationContext;
 use crate::file_source::{FileSourceError, WithFileSource};
 use crate::files::model::UserFile;
 use crate::hostname::model::HostnameSettings;
+use crate::l10n;
 use crate::questions::config::QuestionsConfig;
 use crate::security::settings::SecuritySettings;
 use crate::storage::settings::zfcp::ZFCPConfig;
 use crate::{
-    localization::LocalizationSettings, network::NetworkSettings, product::ProductSettings,
-    scripts::ScriptsConfig, software::SoftwareSettings, storage::settings::dasd::DASDConfig,
-    users::UserSettings,
+    network::NetworkSettings, product::ProductSettings, scripts::ScriptsConfig,
+    software::SoftwareSettings, storage::settings::dasd::DASDConfig, users::UserSettings,
 };
 use fluent_uri::Uri;
 use serde::{Deserialize, Serialize};
@@ -54,7 +54,7 @@ pub enum InstallSettingsError {
 ///
 /// This struct represents installation settings. It serves as an entry point and it is composed of
 /// other structs which hold the settings for each area ("users", "software", etc.).
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InstallSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -83,7 +83,7 @@ pub struct InstallSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub network: Option<NetworkSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub localization: Option<LocalizationSettings>,
+    pub localization: Option<l10n::UserConfig>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub scripts: Option<ScriptsConfig>,
     #[serde(skip_serializing_if = "Option::is_none")]

@@ -25,8 +25,9 @@ import KeyboardSelection from "./KeyboardSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
+import { Keymap } from "~/types/l10n";
 
-const keymaps = [
+const keymaps: Keymap[] = [
   { id: "us", name: "English" },
   { id: "es", name: "Spanish" },
 ];
@@ -39,10 +40,9 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
-jest.mock("~/queries/l10n", () => ({
-  ...jest.requireActual("~/queries/l10n"),
-  useConfigMutation: () => mockConfigMutation,
-  useL10n: () => ({ keymaps, selectedKeymap: keymaps[0] }),
+jest.mock("~/queries/system", () => ({
+  ...jest.requireActual("~/queries/system"),
+  useSystem: () => ({ locale: { keymaps } }),
 }));
 
 jest.mock("react-router-dom", () => ({

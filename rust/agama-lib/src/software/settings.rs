@@ -27,7 +27,7 @@ use serde::{Deserialize, Serialize};
 use super::model::RepositoryParams;
 
 /// Software settings for installation
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct SoftwareSettings {
     /// List of user selected patterns to install.

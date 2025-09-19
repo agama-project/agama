@@ -18,13 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::fs::OpenOptions;
 use std::io::Write;
 use std::process::Command;
+use std::{env, fs::OpenOptions};
 
-use crate::error::Error;
-use agama_locale_data::InvalidLocaleCode;
-use agama_locale_data::{KeymapId, LocaleId};
+use agama_locale_data::{InvalidLocaleId, KeymapId, LocaleId, TimezoneId};
 use regex::Regex;
 
 pub mod keyboard;
@@ -35,127 +33,77 @@ pub use keyboard::Keymap;
 pub use locale::LocaleEntry;
 pub use timezone::TimezoneEntry;
 
-use super::{helpers, LocaleError};
+use crate::{helpers, service};
 use keyboard::KeymapsDatabase;
 use locale::LocalesDatabase;
 use timezone::TimezonesDatabase;
 
-pub struct L10n {
-    pub timezone: String,
+pub struct Model {
     pub timezones_db: TimezonesDatabase,
-    pub locales: Vec<LocaleId>,
     pub locales_db: LocalesDatabase,
-    pub keymap: KeymapId,
     pub keymaps_db: KeymapsDatabase,
-    pub ui_locale: LocaleId,
-    pub ui_keymap: KeymapId,
 }
 
-impl L10n {
-    pub fn new_with_locale(ui_locale: &LocaleId) -> Result<Self, Error> {
-        const DEFAULT_TIMEZONE: &str = "Europe/Berlin";
+impl Model {
+    pub fn new() -> Self {
+        Self {
+            locales_db: LocalesDatabase::new(),
+            timezones_db: TimezonesDatabase::new(),
+            keymaps_db: KeymapsDatabase::new(),
+        }
+    }
 
+    pub fn from_system() -> anyhow::Result<Self> {
+        let mut model = Self::new();
+        model.read(&model.locale())?;
+        Ok(model)
+    }
+
+    pub fn read(&mut self, ui_locale: &LocaleId) -> anyhow::Result<()> {
         let locale = ui_locale.to_string();
         let mut locales_db = LocalesDatabase::new();
         locales_db.read(&locale)?;
 
-        let mut default_locale = ui_locale.clone();
-        if !locales_db.exists(ui_locale) {
-            // TODO: handle the case where the database is empty (not expected!)
-            default_locale = locales_db.entries().first().unwrap().id.clone();
-        };
-
         let mut timezones_db = TimezonesDatabase::new();
         timezones_db.read(&ui_locale.language)?;
-
-        let mut default_timezone = DEFAULT_TIMEZONE.to_string();
-        if !timezones_db.exists(&default_timezone) {
-            default_timezone = timezones_db.entries().first().unwrap().code.to_string();
-        };
 
         let mut keymaps_db = KeymapsDatabase::new();
         keymaps_db.read()?;
 
-        let locale = Self {
-            keymap: "us".parse().unwrap(),
-            timezone: default_timezone,
-            locales: vec![default_locale],
-            locales_db,
-            timezones_db,
-            keymaps_db,
-            ui_locale: ui_locale.clone(),
-            ui_keymap: Self::ui_keymap()?,
-        };
-
-        Ok(locale)
-    }
-
-    pub fn set_locales(&mut self, locales: &Vec<String>) -> Result<(), LocaleError> {
-        let locale_ids: Result<Vec<LocaleId>, InvalidLocaleCode> = locales
-            .iter()
-            .cloned()
-            .map(|l| l.as_str().try_into())
-            .collect();
-        let locale_ids = locale_ids?;
-
-        for loc in &locale_ids {
-            if !self.locales_db.exists(loc) {
-                return Err(LocaleError::UnknownLocale(loc.clone()));
-            }
-        }
-
-        self.locales = locale_ids;
-        Ok(())
-    }
-
-    pub fn set_timezone(&mut self, timezone: &str) -> Result<(), LocaleError> {
-        // TODO: modify exists() to receive an `&str`
-        if !self.timezones_db.exists(&timezone.to_string()) {
-            return Err(LocaleError::UnknownTimezone(timezone.to_string()))?;
-        }
-        timezone.clone_into(&mut self.timezone);
-        Ok(())
-    }
-
-    pub fn set_keymap(&mut self, keymap_id: KeymapId) -> Result<(), LocaleError> {
-        if !self.keymaps_db.exists(&keymap_id) {
-            return Err(LocaleError::UnknownKeymap(keymap_id));
-        }
-
-        self.keymap = keymap_id;
         Ok(())
     }
 
     // TODO: use LocaleError
-    pub fn translate(&mut self, locale: &LocaleId) -> Result<(), Error> {
+    pub fn translate(&mut self, locale: &LocaleId) -> anyhow::Result<()> {
         helpers::set_service_locale(locale);
         self.timezones_db.read(&locale.language)?;
         self.locales_db.read(&locale.language)?;
-        self.ui_locale = locale.clone();
         Ok(())
     }
 
     // TODO: use LocaleError
-    pub fn set_ui_keymap(&mut self, keymap_id: KeymapId) -> Result<(), LocaleError> {
+    pub fn set_ui_keymap(&mut self, keymap_id: KeymapId) -> Result<(), service::Error> {
         if !self.keymaps_db.exists(&keymap_id) {
-            return Err(LocaleError::UnknownKeymap(keymap_id));
+            return Err(service::Error::UnknownKeymap(keymap_id));
         }
 
-        self.ui_keymap = keymap_id;
-
         Command::new("localectl")
-            .args(["set-keymap", &self.ui_keymap.dashed()])
+            .args(["set-keymap", &keymap_id.dashed()])
             .output()
-            .map_err(LocaleError::Commit)?;
+            .map_err(service::Error::Commit)?;
         Ok(())
     }
 
     // TODO: what should be returned value for commit?
-    pub fn commit(&self) -> Result<(), LocaleError> {
+    pub fn commit(
+        &self,
+        locale: &LocaleId,
+        keymap: &KeymapId,
+        timezone: &TimezoneId,
+    ) -> Result<(), service::Error> {
         const ROOT: &str = "/mnt";
         const VCONSOLE_CONF: &str = "/etc/vconsole.conf";
 
-        let locale = self.locales.first().cloned().unwrap_or_default();
         let mut cmd = Command::new("/usr/bin/systemd-firstboot");
         cmd.args([
             "--root",
@@ -164,9 +112,9 @@ impl L10n {
             "--locale",
             &locale.to_string(),
             "--keymap",
-            &self.keymap.dashed(),
+            &keymap.dashed(),
             "--timezone",
-            &self.timezone,
+            &timezone.to_string(),
         ]);
         tracing::info!("{:?}", &cmd);
 
@@ -190,10 +138,10 @@ impl L10n {
         Ok(())
     }
 
-    fn ui_keymap() -> Result<KeymapId, LocaleError> {
+    pub fn keymap(&self) -> Result<KeymapId, service::Error> {
         let output = Command::new("localectl")
             .output()
-            .map_err(LocaleError::Commit)?;
+            .map_err(service::Error::Commit)?;
         let output = String::from_utf8_lossy(&output.stdout);
 
         let keymap_regexp = Regex::new(r"(?m)VC Keymap: (.+)$").unwrap();
@@ -205,5 +153,14 @@ impl L10n {
 
         let keymap_id: KeymapId = keymap.parse().unwrap_or(KeymapId::default());
         Ok(keymap_id)
+    }
+
+    // FIXME: we could use D-Bus to read the locale and the keymap (see ui_keymap).
+    pub fn locale(&self) -> LocaleId {
+        let lang = env::var("LANG")
+            .ok()
+            .map(|v| v.parse::<LocaleId>().ok())
+            .flatten();
+        lang.unwrap_or(LocaleId::default())
     }
 }

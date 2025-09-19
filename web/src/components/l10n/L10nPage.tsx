@@ -24,9 +24,10 @@ import React from "react";
 import { Button, Content, Grid, GridItem } from "@patternfly/react-core";
 import { InstallerOptions, Link, Page } from "~/components/core";
 import { L10N as PATHS } from "~/routes/paths";
-import { useL10n } from "~/queries/l10n";
-import { _ } from "~/i18n";
 import { localConnection } from "~/utils";
+import { useProposal } from "~/queries/proposal";
+import { useSystem } from "~/queries/system";
+import { _ } from "~/i18n";
 
 const InstallerL10nSettingsInfo = () => {
   const info = localConnection()
@@ -66,7 +67,16 @@ const InstallerL10nSettingsInfo = () => {
  * Page for configuring localization.
  */
 export default function L10nPage() {
-  const { selectedLocale: locale, selectedTimezone: timezone, selectedKeymap: keymap } = useL10n();
+  // FIXME: retrieve selection from config when ready
+  const { localization: l10nProposal } = useProposal();
+  const { localization: l10n } = useSystem();
+
+  const locale = l10nProposal.locale && l10n.locales.find((l) => l.id === l10nProposal.locale);
+  const keymap = l10nProposal.keymap && l10n.keymaps.find((k) => k.id === l10nProposal.keymap);
+  const timezone =
+    l10nProposal.timezone && l10n.timezones.find((t) => t.id === l10nProposal.timezone);
+
+  console.log("locale", locale);
 
   return (
     <Page>

@@ -46,21 +46,12 @@ const tumbleweed: Product = {
 };
 
 const answerFn: AnswerCallback = jest.fn();
-const locales = [
-  { id: "en_US.UTF-8", name: "English", territory: "United States" },
-  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
-];
 
 jest.mock("~/queries/status", () => ({
   useInstallerStatus: () => ({
     phase: InstallationPhase.Config,
     isBusy: false,
   }),
-}));
-
-jest.mock("~/queries/l10n", () => ({
-  ...jest.requireActual("~/queries/l10n"),
-  useL10n: () => ({ locales, selectedLocale: locales[0] }),
 }));
 
 jest.mock("~/queries/software", () => ({

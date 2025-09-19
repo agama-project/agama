@@ -25,7 +25,7 @@ use crate::file_source::{FileSourceError, WithFileSource};
 
 use super::{InitScript, PostPartitioningScript, PostScript, PreScript};
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ScriptsConfig {
     /// User-defined pre-installation scripts

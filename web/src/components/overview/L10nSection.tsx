@@ -21,25 +21,12 @@
  */
 
 import React from "react";
-import { Content } from "@patternfly/react-core";
-import { useL10n } from "~/queries/l10n";
-import { _ } from "~/i18n";
 
 export default function L10nSection() {
-  const { selectedLocale: locale } = useL10n();
-
-  // TRANSLATORS: %s will be replaced by a language name and territory, example:
-  // "English (United States)".
-  const [msg1, msg2] = _("The system will use %s as its default language.").split("%s");
-
+  /* eslint-disable i18next/no-literal-string */
   return (
-    <Content>
-      <Content component="h3">{_("Localization")}</Content>
-      <Content>
-        {msg1}
-        <b>{`${locale.name} (${locale.territory})`}</b>
-        {msg2}
-      </Content>
-    </Content>
+    <div style={{ border: "2px solid red", width: "fit-content", padding: "2px" }}>
+      Overview/L10nSection: pending to either, removal or adaptation
+    </div>
   );
 }
