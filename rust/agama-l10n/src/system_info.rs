@@ -47,8 +47,8 @@ impl SystemInfo {
             locales,
             keymaps,
             timezones,
-            locale: model.ui_locale.clone(),
-            keymap: model.ui_keymap.clone(),
+            locale: model.locale(),
+            keymap: model.keymap().unwrap(),
             timezone: Default::default(),
         }
     }

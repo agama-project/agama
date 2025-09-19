@@ -42,6 +42,8 @@ pub enum Error {
     Commit(#[from] std::io::Error),
     #[error(transparent)]
     Service(#[from] service::Error),
+    #[error(transparent)]
+    Generic(#[from] anyhow::Error),
 }
 
 #[derive(Debug, Deserialize)]
