@@ -54,7 +54,7 @@ libsystemd = "0.7.0"
 subprocess = "0.2.9"
 gethostname = "1.0.0"
 tokio-util = "0.7.12"
-zypp-agama = { path = "../zypp-c-api/rust/zypp-agama" }
+zypp-agama = { path = "../zypp-agama" }
 glob = "0.3.1"
 tempfile = "3.13.0"
 url = "2.5.2"
