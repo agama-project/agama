@@ -38,7 +38,8 @@ static struct Zypp the_zypp {
 };
 
 void free_zypp(struct Zypp *zypp) noexcept {
-  // ensure that target is unloaded otherwise nasty things can happen if new zypp is created in different thread
+  // ensure that target is unloaded otherwise nasty things can happen if new
+  // zypp is created in different thread
   zypp->zypp_pointer->getTarget()->unload();
   zypp->zypp_pointer =
       NULL; // shared ptr assignment operator will free original pointer

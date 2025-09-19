@@ -16,3 +16,7 @@ libagama-zypp.a: $(OBJ)
 
 %.o: %.cxx $(DEPS)
 	$(CXX) -c -o $@ $< $(CXXFLAGS)
+
+format:
+	git ls-files | grep '\.[ch]' | \
+	  xargs --verbose clang-format --style=llvm -i
