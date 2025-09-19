@@ -20,14 +20,21 @@
 
 //! Implements utilities to build Agama services.
 
-use crate::service;
 use core::future::Future;
-use std::error::Error;
+use std::error;
 use tokio::sync::{mpsc, oneshot};
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error<T> {
+    #[error("Could not send the message")]
+    Send(#[from] mpsc::error::SendError<T>),
+    #[error("Could not receive the message")]
+    Recv(#[from] oneshot::error::RecvError),
+}
 
 /// Setting all the &self references as &mut self makes not needed to mark with Sync.
 pub trait Handler: Send + Sync {
-    type Err: From<service::Error<Self::Message>> + Error;
+    type Err: From<Error<Self::Message>> + error::Error;
     type Message: Send;
 
     fn channel(&self) -> &mpsc::UnboundedSender<Self::Message>;
@@ -40,17 +47,13 @@ pub trait Handler: Send + Sync {
         async {
             let (tx, rx) = oneshot::channel();
             let message = func(tx);
-            self.channel()
-                .send(message)
-                .map_err(|e| service::Error::from(e))?;
+            self.channel().send(message).map_err(|e| Error::from(e))?;
             Ok(rx.await.unwrap())
         }
     }
 
     fn send(&self, message: Self::Message) -> Result<(), Self::Err> {
-        self.channel()
-            .send(message)
-            .map_err(|_| service::Error::SendResponse)?;
+        self.channel().send(message).map_err(|e| Error::from(e))?;
         Ok(())
     }
 }

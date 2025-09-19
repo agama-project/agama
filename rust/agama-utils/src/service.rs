@@ -22,21 +22,17 @@
 
 use core::future::Future;
 use std::{any, error};
-use tokio::sync::{mpsc, oneshot};
+use tokio::sync::mpsc;
 
 #[derive(thiserror::Error, Debug)]
-pub enum Error<T> {
-    #[error("Could not send the message to the service")]
-    Send(#[from] mpsc::error::SendError<T>),
-    #[error("The service could not receive the message")]
-    Recv(#[from] oneshot::error::RecvError),
-    #[error("Could not send the response")]
+pub enum Error {
+    #[error("The service could not send the message")]
     SendResponse,
 }
 
 // Implements the basic behavior for an Agama service.
 pub trait Service: Send {
-    type Err: From<Error<Self::Message>> + error::Error;
+    type Err: From<Error> + error::Error;
     type Message: Send;
 
     /// Returns the service name used for logging and debugging purposes.

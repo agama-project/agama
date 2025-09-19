@@ -21,7 +21,7 @@
 mod event;
 pub use event::EventsListener;
 
-mod handler;
+pub mod handler;
 pub use handler::Handler;
 
 mod service;
@@ -35,8 +35,5 @@ pub use proposal::Proposal;
 
 mod scope;
 pub use scope::{Scope, ScopeConfig};
-
-mod error;
-pub use error::Error;
 
 use agama_l10n as l10n;

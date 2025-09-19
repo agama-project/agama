@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{Error, SystemInfo, UserConfig};
+use crate::{service, SystemInfo, UserConfig};
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 
 pub struct Config {
@@ -36,17 +36,17 @@ impl Config {
         }
     }
 
-    pub fn merge(&mut self, config: &UserConfig) -> Result<(), Error> {
+    pub fn merge(&mut self, config: &UserConfig) -> Result<(), service::Error> {
         if let Some(language) = &config.language {
-            self.locale = language.parse().map_err(Error::InvalidLocale)?
+            self.locale = language.parse().map_err(service::Error::InvalidLocale)?
         }
 
         if let Some(keyboard) = &config.keyboard {
-            self.keymap = keyboard.parse().map_err(Error::InvalidKeymap)?
+            self.keymap = keyboard.parse().map_err(service::Error::InvalidKeymap)?
         }
 
         if let Some(timezone) = &config.timezone {
-            self.timezone = timezone.parse().map_err(Error::InvalidTimezone)?;
+            self.timezone = timezone.parse().map_err(service::Error::InvalidTimezone)?;
         }
 
         Ok(())

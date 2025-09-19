@@ -19,11 +19,21 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    event::EventsSender, Error, L10nAction, Message, Monitor, Proposal, Service, SystemInfo,
-    UserConfig,
+    event::EventsSender, monitor, service, L10nAction, Message, Monitor, Proposal, Service,
+    SystemInfo, UserConfig,
 };
-use agama_utils::{Handler as AgamaHandler, Service as _};
+use agama_utils::{handler, Handler as AgamaHandler, Service as _};
 use tokio::sync::mpsc;
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error(transparent)]
+    Handler(#[from] handler::Error<Message>),
+    #[error(transparent)]
+    Service(#[from] service::Error),
+    #[error(transparent)]
+    Monitor(#[from] monitor::Error),
+}
 
 #[derive(Clone)]
 pub struct Handler {

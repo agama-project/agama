@@ -19,12 +19,20 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    supervisor::{Error, Message, Proposal, Scope, ScopeConfig, Service, SystemInfo},
+    supervisor::{service, Message, Proposal, Scope, ScopeConfig, Service, SystemInfo},
     web::EventsSender,
 };
 use agama_lib::install_settings::InstallSettings;
-use agama_utils::{Handler as AgamaHandler, Service as _};
+use agama_utils::{handler, Handler as AgamaHandler, Service as _};
 use tokio::sync::mpsc;
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error(transparent)]
+    Handler(#[from] handler::Error<Message>),
+    #[error(transparent)]
+    Service(#[from] service::Error),
+}
 
 #[derive(Clone)]
 pub struct Handler {

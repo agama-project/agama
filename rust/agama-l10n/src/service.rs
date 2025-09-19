@@ -18,11 +18,31 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{actions, Error, Event, Model, Proposal, SystemInfo, UserConfig};
-use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
-use agama_utils::Service as AgamaService;
+use crate::{actions, Config, Event, Model, Proposal, SystemInfo, UserConfig};
+use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
+use agama_utils::{service, Service as AgamaService};
 use serde::Deserialize;
 use tokio::sync::{mpsc, oneshot};
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error("Unknown locale code: {0}")]
+    UnknownLocale(LocaleId),
+    #[error("Invalid locale: {0}")]
+    InvalidLocale(#[from] InvalidLocaleId),
+    #[error("Unknown timezone: {0}")]
+    UnknownTimezone(String),
+    #[error("Invalid timezone")]
+    InvalidTimezone(#[from] InvalidTimezoneId),
+    #[error("Unknown keymap: {0}")]
+    UnknownKeymap(KeymapId),
+    #[error("Invalid keymap: {0}")]
+    InvalidKeymap(#[from] InvalidKeymapId),
+    #[error("Could not apply the l10n settings: {0}")]
+    Commit(#[from] std::io::Error),
+    #[error(transparent)]
+    Service(#[from] service::Error),
+}
 
 #[derive(Debug, Deserialize)]
 pub enum L10nAction {
@@ -110,7 +130,7 @@ impl Service {
 }
 
 impl AgamaService for Service {
-    type Err = Error;
+    type Err = service::Error;
     type Message = Message;
 
     fn channel(&mut self) -> &mut mpsc::UnboundedReceiver<Self::Message> {
@@ -145,57 +165,5 @@ impl AgamaService for Service {
         };
 
         Ok(())
-    }
-}
-
-struct Config {
-    locale: LocaleId,
-    keymap: KeymapId,
-    timezone: TimezoneId,
-}
-
-impl Config {
-    fn new_from(system: &SystemInfo) -> Self {
-        Self {
-            locale: system.locale.clone(),
-            keymap: system.keymap.clone(),
-            timezone: system.timezone.clone(),
-        }
-    }
-
-    fn merge(&mut self, config: &UserConfig) -> Result<(), Error> {
-        if let Some(language) = &config.language {
-            self.locale = language.parse().map_err(Error::InvalidLocale)?
-        }
-
-        if let Some(keyboard) = &config.keyboard {
-            self.keymap = keyboard.parse().map_err(Error::InvalidKeymap)?
-        }
-
-        if let Some(timezone) = &config.timezone {
-            self.timezone = timezone.parse().map_err(Error::InvalidTimezone)?;
-        }
-
-        Ok(())
-    }
-}
-
-impl From<&Config> for UserConfig {
-    fn from(config: &Config) -> Self {
-        UserConfig {
-            language: Some(config.locale.to_string()),
-            keyboard: Some(config.keymap.to_string()),
-            timezone: Some(config.timezone.to_string()),
-        }
-    }
-}
-
-impl From<&Config> for Proposal {
-    fn from(config: &Config) -> Self {
-        Proposal {
-            keymap: config.keymap.clone(),
-            locale: config.locale.clone(),
-            timezone: config.timezone.clone(),
-        }
     }
 }

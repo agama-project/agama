@@ -21,7 +21,7 @@
 //! This module implements Agama's HTTP API.
 
 use crate::{
-    supervisor::{self, Action, Error, Handler, Scope, ScopeConfig, SystemInfo},
+    supervisor::{self, Action, Handler, Scope, ScopeConfig, SystemInfo},
     web::EventsSender,
 };
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
@@ -33,13 +33,32 @@ use axum::{
 };
 use hyper::StatusCode;
 use serde::Serialize;
+use serde_json::json;
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error("The given configuration does not belong to the '{0}' scope.")]
+    Scope(Scope),
+    #[error(transparent)]
+    Supervisor(#[from] supervisor::handler::Error),
+}
+
+impl IntoResponse for Error {
+    fn into_response(self) -> Response {
+        tracing::warn!("Server return error {}", self);
+        let body = json!({
+            "error": self.to_string()
+        });
+        (StatusCode::BAD_REQUEST, Json(body)).into_response()
+    }
+}
+
+type ServerResult<T> = Result<T, Error>;
 
 #[derive(Clone)]
 pub struct ServerState {
     supervisor: Handler,
 }
-
-type ServerResult<T> = Result<T, Error>;
 
 /// Sets up and returns the axum service for the manager module
 pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError> {
@@ -118,7 +137,7 @@ async fn set_scope_config(
     Json(user_config): Json<ScopeConfig>,
 ) -> Result<(), Error> {
     if user_config.to_scope() != scope {
-        return Err(Error::NoMatchingScope(scope));
+        return Err(Error::Scope(scope));
     }
 
     if method.as_str() == "PATCH" {

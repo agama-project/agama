@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod handler;
+pub mod handler;
 pub use handler::Handler;
 
 mod service;
@@ -33,9 +33,6 @@ pub use user_config::UserConfig;
 
 mod proposal;
 pub use proposal::Proposal;
-
-mod error;
-pub use error::Error;
 
 mod event;
 pub use event::{Event, EventsReceiver, EventsSender};
