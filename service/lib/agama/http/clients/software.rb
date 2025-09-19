@@ -34,8 +34,67 @@ module Agama
           JSON.parse(get("software/proposal"))
         end
 
+        def probe
+          post("software/probe", nil)
+        end
+
+        def propose
+          # TODO: implement it
+          post("software/propose", nil)
+        end
+
+        def install
+          # TODO: implement it
+          post("software/install", nil)
+        end
+
+        def finish
+          # TODO: implement it
+          post("software/finish", nil)
+        end
+
+        def locale=(value)
+          # TODO: implement it
+          post("software/locale", value)
+        end
+
         def config
           JSON.parse(get("software/config"))
+        end
+
+        def errors?
+          # TODO: implement it together with checking type error
+          JSON.parse(get("software/issues"))
+        end
+
+        def get_resolvables(_unique_id, _type, _optional)
+          # TODO: implement on backend
+          JSON.parse(get("software/config"))
+        end
+
+        def provisions_selected?(_provisions)
+          # TODO: implement it, not sure how it should look like
+          []
+        end
+
+        def package_available?(_name)
+          # TODO: implement it, not sure how it should look like
+          true
+        end
+
+        def package_installed?(_name)
+          # TODO: implement it, not sure how it should look like
+          true
+        end
+
+        def set_resolvables(_unique_id, type, resolvables, optional)
+          # TODO: implement at backend proposal id
+          data = {
+            "names"    => resolvables,
+            "type"     => type,
+            "optional" => optional
+          }
+          JSON.parse(put("software/config"), data)
         end
 
         def add_patterns(patterns)
@@ -52,6 +111,11 @@ module Agama
           return unless modified
 
           put("software/config", { "patterns" => config_patterns })
+        end
+
+        def on_probe_finished(&block)
+          # TODO: it was agreed to change this storage observation to have the code
+          # in rust part and call via dbus ruby part
         end
       end
     end

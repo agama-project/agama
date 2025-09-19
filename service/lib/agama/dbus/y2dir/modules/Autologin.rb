@@ -25,7 +25,7 @@
 #
 # $Id$
 require "yast"
-require "agama/dbus/clients/software"
+require "agama/http/clients/software"
 
 module Yast
   class AutologinClass < Module
@@ -62,7 +62,7 @@ module Yast
       @pkg_initialized = false
 
       # Software service client
-      @dbus_client = nil
+      @software_client = nil
     end
 
     def available
@@ -176,7 +176,7 @@ module Yast
     #
     # @return Boolean
     def supported?
-      supported = dbus_client.provisions_selected?(DISPLAY_MANAGERS).any?
+      supported = software_client.provisions_selected?(DISPLAY_MANAGERS).any?
 
       if supported
         log.info("Autologin is supported")
@@ -204,8 +204,8 @@ module Yast
     # Software service client
     #
     # @return [Agama::DBus::Clients::Software] Software service client
-    def dbus_client
-      @dbus_client ||= Agama::DBus::Clients::Software.new
+    def software_client
+      @software_client ||= Agama::HTTP::Clients::Software.new(::Logger.new($stdout))
     end
   end
 

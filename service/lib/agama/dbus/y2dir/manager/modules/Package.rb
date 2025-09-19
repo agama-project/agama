@@ -18,7 +18,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "agama/dbus/clients/software"
+require "agama/http/clients/software"
 
 # :nodoc:
 module Yast
@@ -26,7 +26,7 @@ module Yast
   class PackageClass < Module
     def main
       puts "Loading mocked module #{__FILE__}"
-      @client = Agama::DBus::Clients::Software.instance
+      @client = Agama::HTTP::Clients::Software.new(::Logger.new($stdout))
     end
 
     # Determines whether a package is available.

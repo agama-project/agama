@@ -18,7 +18,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "agama/dbus/clients/software"
+require "agama/http/clients/software"
 
 # :nodoc:
 module Yast
@@ -26,12 +26,15 @@ module Yast
   class PackagesProposalClass < Module
     def main
       puts "Loading mocked module #{__FILE__}"
-      @client = Agama::DBus::Clients::Software.new
+      @client = Agama::HTTP::Clients::Software.new(::Logger.new($stdout))
     end
 
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/general/src/modules/PackagesProposal.rb#L118
     def AddResolvables(unique_id, type, resolvables, optional: false)
-      client.add_resolvables(unique_id, type, resolvables || [], optional: optional)
+      orig_resolvables = client.get_resolvables(unique_id, type, optional)
+      orig_resolvables += resolvables
+      orig_resolvables.uniq!
+      SetResolvables(unique_id, type, orig_resolvables, optional)
       true
     end
 
@@ -48,7 +51,10 @@ module Yast
 
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/general/src/modules/PackagesProposal.rb#L177
     def RemoveResolvables(unique_id, type, resolvables, optional: false)
-      client.remove_resolvables(unique_id, type, resolvables || [], optional: optional)
+      orig_resolvables = client.get_resolvables(unique_id, type, optional)
+      orig_resolvables -= resolvables
+      orig_resolvables.uniq!
+      SetResolvables(unique_id, type, orig_resolvables, optional)
       true
     end
 

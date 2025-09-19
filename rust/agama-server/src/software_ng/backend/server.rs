@@ -23,7 +23,7 @@ use std::{path::Path, sync::Arc};
 use agama_lib::{
     product::Product,
     software::{
-        model::{ResolvableType, SoftwareSelection},
+        model::{ResolvableType, SoftwareConfig, SoftwareSelection},
         Pattern,
     },
 };
@@ -44,6 +44,7 @@ pub enum SoftwareAction {
     Probe,
     GetProducts(oneshot::Sender<Vec<Product>>),
     GetPatterns(oneshot::Sender<Vec<Pattern>>),
+    GetConfig(oneshot::Sender<SoftwareConfig>),
     SelectProduct(String),
     SetResolvables {
         id: String,
@@ -144,6 +145,10 @@ impl SoftwareServiceServer {
                 self.select_product(product_id).await?;
             }
 
+            SoftwareAction::GetConfig(tx) => {
+                self.get_config(tx).await?;
+            }
+
             SoftwareAction::Probe => {
                 self.probe(zypp).await?;
             }
@@ -193,6 +198,24 @@ impl SoftwareServiceServer {
         })
         .map_err(SoftwareServiceError::LoadSourcesFailed)?;
 
+        Ok(())
+    }
+
+    /// Returns the software config.
+    async fn get_config(
+        &self,
+        tx: oneshot::Sender<SoftwareConfig>,
+    ) -> Result<(), SoftwareServiceError> {
+        let result = SoftwareConfig {
+            // TODO: implement all Nones
+            packages: None,
+            patterns: None,
+            product: self.selected_product.clone(),
+            extra_repositories: None,
+            only_required: None,
+        };
+        tx.send(result)
+            .map_err(|_| SoftwareServiceError::ResponseChannelClosed)?;
         Ok(())
     }
 

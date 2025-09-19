@@ -109,6 +109,7 @@ pub struct ProductSpec {
     pub name: String,
     pub description: String,
     pub icon: String,
+    #[serde(default)]
     pub registration: bool,
     pub version: Option<String>,
     pub software: SoftwareSpec,
@@ -173,18 +174,8 @@ mod test {
     fn test_load_registry() {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/share/products.d");
         let config = ProductsRegistry::load_from(path.as_path()).unwrap();
-        assert_eq!(config.products.len(), 1);
-
-        let product = &config.products[0];
-        assert_eq!(product.id, "Tumbleweed");
-        assert_eq!(product.name, "openSUSE Tumbleweed");
-        assert_eq!(product.icon, "Tumbleweed.svg");
-        assert_eq!(product.registration, false);
-        assert_eq!(product.version, Some("16.0".to_string()));
-        let software = &product.software;
-        assert_eq!(software.installation_repositories.len(), 11);
-        assert_eq!(software.installation_labels.len(), 4);
-        assert_eq!(software.base_product, "openSUSE");
+        // ensuring that we can load all products from tests
+        assert_eq!(config.products.len(), 8);
     }
 
     #[test]
@@ -193,6 +184,14 @@ mod test {
         let products = ProductsRegistry::load_from(path.as_path()).unwrap();
         let tw = products.find("Tumbleweed").unwrap();
         assert_eq!(tw.id, "Tumbleweed");
+        assert_eq!(tw.name, "openSUSE Tumbleweed");
+        assert_eq!(tw.icon, "Tumbleweed.svg");
+        assert_eq!(tw.registration, false);
+        assert_eq!(tw.version, None);
+        let software = &tw.software;
+        assert_eq!(software.installation_repositories.len(), 12);
+        assert_eq!(software.installation_labels.len(), 4);
+        assert_eq!(software.base_product, "openSUSE");
 
         let missing = products.find("Missing");
         assert!(missing.is_none());
