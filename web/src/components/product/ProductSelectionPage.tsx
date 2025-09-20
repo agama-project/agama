@@ -48,6 +48,7 @@ import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import LicenseDialog from "./LicenseDialog";
+import { useTranslation } from "react-i18next";
 
 const ResponsiveGridItem = ({ children }) => (
   <GridItem sm={10} smOffset={1} lg={8} lgOffset={2} xl={6} xlOffset={3}>
@@ -102,6 +103,7 @@ const BackLink = () => {
 };
 
 function ProductSelectionPage() {
+  const { t } = useTranslation();
   const setConfig = useConfigMutation();
   const registration = useRegistration();
   const { products, selectedProduct } = useProduct({ suspense: true });
@@ -136,7 +138,7 @@ function ProductSelectionPage() {
     // TRANSLATORS: Text used for the license acceptance checkbox. %s will be
     // replaced with the product name and the text in the square brackets [] is
     // used for the link to show the license, please keep the brackets.
-    _("I have read and accept the [license] for %s"),
+    t("I have read and accept the [license] for {{product.name}}", { product: nextProduct }),
     nextProduct?.name || selectedProduct?.name,
   ).split(/[[\]]/);
 
