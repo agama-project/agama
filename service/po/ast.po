@@ -8,16 +8,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-21 02:56+0000\n"
-"PO-Revision-Date: 2024-06-29 13:46+0000\n"
-"Last-Translator: Martin Hansen <mh306602@gmail.com>\n"
-"Language-Team: Norwegian Bokmål <https://l10n.opensuse.org/projects/agama/"
-"agama-service-master/nb_NO/>\n"
-"Language: nb_NO\n"
+"PO-Revision-Date: 2025-09-11 02:48+0000\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ast\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -33,34 +31,34 @@ msgstr ""
 #. @param data [Hash] Extra data provided to the D-Bus calls.
 #: service/lib/agama/manager.rb:98
 msgid "Analyze disks"
-msgstr "Analyser disker"
+msgstr ""
 
 #: service/lib/agama/manager.rb:98
 msgid "Configure software"
-msgstr "Konfigurer programvare"
+msgstr ""
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
 #: service/lib/agama/manager.rb:117
 msgid "Prepare disks"
-msgstr "Klargjør disker"
+msgstr ""
 
 #: service/lib/agama/manager.rb:118
 msgid "Install software"
-msgstr "Installer programvare"
+msgstr ""
 
 #: service/lib/agama/manager.rb:119
 msgid "Configure the system"
-msgstr "Konfigurer systemet"
+msgstr ""
 
 #. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 #: service/lib/agama/manager.rb:160
 msgid "Load software translations"
-msgstr "Last inn oversettelser for programvare"
+msgstr ""
 
 #: service/lib/agama/manager.rb:161
 msgid "Load storage translations"
-msgstr "Last inn oversettelser for lagring"
+msgstr ""
 
 #. @param certificate [Agama::SSL::Certificate]
 #. @return [Agama::Question]
@@ -118,14 +116,12 @@ msgstr ""
 #. @param digest [String] expected checksum
 #. @return [Boolean]
 #: service/lib/agama/software/callbacks/digest.rb:84
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "The checksum of the file %{file} is \"%{digest}\" but the expected checksum "
 "is unknown. This means that the origin and integrity of the file cannot be "
 "verified. Use it anyway?"
 msgstr ""
-"%{source} er ikke digitalt signert. Opphavet og integriteten av filen kan "
-"ikke bli verifisert. Bruk den uansett?"
 
 #. Callback to accept wrong digest
 #.
@@ -155,22 +151,18 @@ msgstr ""
 #. @param filename [String] File name
 #. @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
 #: service/lib/agama/software/callbacks/signature.rb:66
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "The file %{filename} from %{repo_url} is not digitally signed. The origin "
 "and integrity of the file cannot be verified. Use it anyway?"
 msgstr ""
-"%{source} er ikke digitalt signert. Opphavet og integriteten av filen kan "
-"ikke bli verifisert. Bruk den uansett?"
 
 #: service/lib/agama/software/callbacks/signature.rb:72
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "The file %{filename} is not digitally signed. The origin and integrity of "
 "the file cannot be verified. Use it anyway?"
 msgstr ""
-"%{source} er ikke digitalt signert. Opphavet og integriteten av filen kan "
-"ikke bli verifisert. Bruk den uansett?"
 
 #. Callback to handle signature verification failures
 #.
@@ -182,8 +174,6 @@ msgid ""
 "The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
 "want to trust this key?"
 msgstr ""
-"Nøkkelen %{id} (%{name}) med fingeravtrykk %{fingerprint} er ukjent. Vil du "
-"stole på denne nøkkelen?"
 
 #. Callback to handle unknown GPG keys
 #.
@@ -232,15 +222,15 @@ msgstr ""
 #. Should an error be raised?
 #: service/lib/agama/software/manager.rb:178
 msgid "Refreshing repositories metadata"
-msgstr "Oppdaterer pakkebrønn metadata"
+msgstr ""
 
 #: service/lib/agama/software/manager.rb:179
 msgid "Calculating the software proposal"
-msgstr "Kalkulerer programvareforslaget"
+msgstr ""
 
 #: service/lib/agama/software/manager.rb:183
 msgid "Initializing sources"
-msgstr "Initialiserer kilder"
+msgstr ""
 
 #. error message
 #: service/lib/agama/software/manager.rb:427
@@ -262,9 +252,9 @@ msgstr ""
 
 #. error message
 #: service/lib/agama/software/manager.rb:444
-#, fuzzy, c-format
+#, c-format
 msgid "Refreshing service '%s' failed."
-msgstr "Oppdaterer pakkebrønn metadata"
+msgstr ""
 
 #. rubocop:enable Metrics/AbcSize
 #: service/lib/agama/software/manager.rb:453
@@ -280,21 +270,21 @@ msgstr ""
 #: service/lib/agama/software/manager.rb:710
 #, c-format
 msgid "Could not read repository \"%s\""
-msgstr "Kunne ikke lese pakkebrønn \"%s\""
+msgstr ""
 
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:720
 msgid "Product not selected yet"
-msgstr "Produkt har ikke blitt valgt ennå"
+msgstr ""
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:729
 msgid "Product must be registered"
-msgstr "Produkt må bli registrert"
+msgstr ""
 
 #. Returns solver error messages from the last attempt
 #.
@@ -302,7 +292,7 @@ msgstr "Produkt må bli registrert"
 #: service/lib/agama/software/proposal.rb:276
 #, c-format
 msgid "Found %s dependency issues."
-msgstr "Fant %s avhengighetsproblemer."
+msgstr ""
 
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31
@@ -541,9 +531,8 @@ msgid "MD RAID"
 msgstr ""
 
 #: service/lib/agama/storage/config_checkers/search.rb:89
-#, fuzzy
 msgid "partition"
-msgstr "Partisjonerer"
+msgstr ""
 
 #: service/lib/agama/storage/config_checkers/search.rb:91
 msgid "LVM logical volume"
@@ -606,39 +595,33 @@ msgstr ""
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
 #: service/lib/agama/storage/finisher.rb:145
-#, fuzzy
 msgid "Copying important installation files to the target system"
-msgstr "Skriver pakkebrønnene til mål systemet"
+msgstr ""
 
 #. Constructor
 #: service/lib/agama/storage/finisher.rb:186
-#, fuzzy
 msgid "Writing Linux Security Modules configuration"
-msgstr "Velger Linux Sikkerhetsmoduler"
+msgstr ""
 
 #. Step to write the bootloader configuration
 #: service/lib/agama/storage/finisher.rb:197
-#, fuzzy
 msgid "Installing bootloader"
-msgstr "Installer programvare"
+msgstr ""
 
 #. Step to finish the Y2Storage configuration
 #: service/lib/agama/storage/finisher.rb:214
-#, fuzzy
 msgid "Adjusting storage configuration"
-msgstr "Ferdigstiller lagring konfigurasjon"
+msgstr ""
 
 #. Step to finish the iSCSI configuration
 #: service/lib/agama/storage/finisher.rb:225
-#, fuzzy
 msgid "Adjusting iSCSI configuration"
-msgstr "Ferdigstiller lagring konfigurasjon"
+msgstr ""
 
 #. Step to configure the file-system snapshots
 #: service/lib/agama/storage/finisher.rb:236
-#, fuzzy
 msgid "Configuring file systems snapshots"
-msgstr "Konfigurer systemet"
+msgstr ""
 
 #. Step to copy the installation logs
 #: service/lib/agama/storage/finisher.rb:254
@@ -657,9 +640,8 @@ msgstr ""
 
 #. Step to unmount the target file-systems
 #: service/lib/agama/storage/finisher.rb:346
-#, fuzzy
 msgid "Unmounting storage devices"
-msgstr "Undersøker lagringsenheter"
+msgstr ""
 
 #. Applies the target configs.
 #.
@@ -693,33 +675,33 @@ msgstr ""
 #. passwords).
 #: service/lib/agama/storage/manager.rb:133
 msgid "Activating storage devices"
-msgstr "Aktiverer lagringsenheter"
+msgstr ""
 
 #: service/lib/agama/storage/manager.rb:134
 msgid "Probing storage devices"
-msgstr "Undersøker lagringsenheter"
+msgstr ""
 
 #: service/lib/agama/storage/manager.rb:135
 msgid "Calculating the storage proposal"
-msgstr "Kalkulerer lagringsforslaget"
+msgstr ""
 
 #. Prepares the partitioning to install the system
 #: service/lib/agama/storage/manager.rb:161
 msgid "Preparing bootloader proposal"
-msgstr "Forbereder forslag til oppstartslaster"
+msgstr ""
 
 #. then also apply changes to that proposal
 #: service/lib/agama/storage/manager.rb:168
 msgid "Adding storage-related packages"
-msgstr "Legger til lagringsrelaterte pakker"
+msgstr ""
 
 #: service/lib/agama/storage/manager.rb:169
 msgid "Preparing the storage devices"
-msgstr "Forbereder lagringsenheter"
+msgstr ""
 
 #: service/lib/agama/storage/manager.rb:170
 msgid "Writing bootloader sysconfig"
-msgstr "Skriver oppstartslasterens sysconfig"
+msgstr ""
 
 #. Issue representing the proposal is not valid.
 #.
@@ -733,14 +715,14 @@ msgstr ""
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:356
 msgid "A problem ocurred while calculating the storage setup"
-msgstr "Ett problem oppsto under kalkulering av lagringsoppsettet"
+msgstr ""
 
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
 #: service/lib/agama/storage/proposal_strategies/guided.rb:135
 msgid "No device selected for installation"
-msgstr "Ingen enhet valgt for installasjon"
+msgstr ""
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
@@ -750,56 +732,11 @@ msgstr "Ingen enhet valgt for installasjon"
 msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
 "The following selected devices are not found in the system: %{devices}"
-msgstr[0] "Følgende valgte enhet ble ikke funnet i systemet: %{devices}"
-msgstr[1] "Følgende valgte enheter ble ikke funnet i systemet: %{devices}"
+msgstr[0] ""
+msgstr[1] ""
 
 #. Recalculates the list of issues
 #: service/lib/agama/users.rb:154
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Det er nødvendig å definere en bruker, angi root-passordet eller en "
-"offentlig SSH nøkkel"
-
-#~ msgid "Selecting Linux Security Modules"
-#~ msgstr "Velger Linux Sikkerhetsmoduler"
-
-#, perl-brace-format
-#~ msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
-#~ msgstr "Filen %{filename} fra pakkebrønnen %{repo_name} (%{repo_url})"
-
-#, perl-brace-format
-#~ msgid "The file %{filename}"
-#~ msgstr "Filen %{filename}"
-
-#, fuzzy
-#~ msgid "No device found for a mandatory partition"
-#~ msgstr "Ingen enhet valgt for installasjon"
-
-#~ msgid "Cannot accommodate the required file systems for installation"
-#~ msgstr "Kan ikke håndtere de nødvendige filsystemene for installasjon"
-
-#, fuzzy
-#~ msgid "No device found for an optional partition"
-#~ msgstr "Ingen enhet valgt for installasjon"
-
-#~ msgid "Probing Storage"
-#~ msgstr "Undersøker Lagring"
-
-#~ msgid "Writing Users"
-#~ msgstr "Skriver Brukere"
-
-#~ msgid "Writing Network Configuration"
-#~ msgstr "Skriver Nettverk Konfigurasjon"
-
-#~ msgid "Saving Language Settings"
-#~ msgstr "Lagrer Språk Innstillinger"
-
-#~ msgid "Writing repositories information"
-#~ msgstr "Skriver Pakkebrønn Informasjon"
-
-#~ msgid "Initializing target repositories"
-#~ msgstr "Initialiserer pakkebrønner"
-
-#~ msgid "Restoring original repositories"
-#~ msgstr "Gjenoppretter de originale pakkebrønnene"
