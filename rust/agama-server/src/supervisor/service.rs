@@ -103,7 +103,7 @@ impl Service {
 
         Ok(Self {
             // FIXME: perhaps we should build the handler in Handler::start.
-            l10n: l10n::Handler::start(events_sender).await?,
+            l10n: l10n::start_service(events_sender).await?,
             config: InstallSettings::default(),
             user_config: InstallSettings::default(),
             proposal: None,

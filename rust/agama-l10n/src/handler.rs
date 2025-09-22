@@ -41,19 +41,8 @@ pub struct Handler {
 }
 
 impl Handler {
-    pub async fn start(events: EventsSender) -> Result<Self, Error> {
-        let (sender, receiver) = mpsc::unbounded_channel();
-        let mut service = Service::from_system(receiver, events)?;
-        tokio::spawn(async move {
-            service.run().await;
-        });
-
-        let mut monitor = Monitor::new(sender.clone()).await?;
-        tokio::spawn(async move {
-            monitor.run().await.unwrap();
-        });
-
-        Ok(Self { sender })
+    pub fn new(sender: mpsc::UnboundedSender<Message>) -> Self {
+        Self { sender }
     }
 
     pub async fn get_config(&self) -> Result<UserConfig, Error> {
@@ -101,14 +90,12 @@ impl AgamaHandler for Handler {
 
 #[cfg(test)]
 mod tests {
-    use crate::UserConfig;
-
-    use super::Handler;
+    use crate::{start_service, UserConfig};
 
     #[tokio::test]
     async fn test_handle_config() -> Result<(), Box<dyn std::error::Error>> {
         let (events_sender, mut events_receiver) = tokio::sync::mpsc::unbounded_channel();
-        let handler = Handler::start(events_sender).await?;
+        let handler = start_service(events_sender).await?;
 
         let config = handler.get_config().await?;
         assert_eq!(config.language, Some("en_US.UTF-8".to_string()));

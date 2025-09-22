@@ -49,3 +49,20 @@ pub(crate) use monitor::Monitor;
 pub mod actions;
 pub(crate) mod dbus;
 pub mod helpers;
+
+use agama_utils::Service as _;
+use tokio::sync::mpsc;
+
+pub async fn start_service(events: EventsSender) -> Result<Handler, handler::Error> {
+    let (sender, receiver) = mpsc::unbounded_channel();
+    let mut service = Service::from_system(receiver, events)?;
+    tokio::spawn(async move {
+        service.run().await;
+    });
+    let mut monitor = Monitor::new(sender.clone()).await?;
+    tokio::spawn(async move {
+        monitor.run().await.unwrap();
+    });
+
+    Ok(Handler::new(sender))
+}
