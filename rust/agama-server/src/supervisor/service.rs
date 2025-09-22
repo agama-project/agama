@@ -37,8 +37,6 @@ pub enum Error {
     Service(#[from] service::Error),
 }
 
-pub type Result<T> = std::result::Result<T, Error>;
-
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
 pub enum Action {
@@ -92,7 +90,7 @@ impl Service {
     pub async fn start(
         messages: mpsc::UnboundedReceiver<Message>,
         events: EventsSender,
-    ) -> std::result::Result<Self, Error> {
+    ) -> Result<Self, Error> {
         let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
         let mut listener = EventsListener::new(events);
         listener.add_channel("l10n", events_receiver);
@@ -146,7 +144,7 @@ impl Service {
     /// Patches the user configuration with the given values.
     ///
     /// It merges the current configuration with the given one.
-    pub async fn patch_config(&mut self, user_config: InstallSettings) -> Result<()> {
+    pub async fn patch_config(&mut self, user_config: InstallSettings) -> Result<(), Error> {
         let config = merge(&self.user_config, &user_config).unwrap();
         self.update_config(config).await
     }
@@ -158,7 +156,7 @@ impl Service {
     ///
     /// FIXME: We should replace not given sections with the default ones.
     /// After all, now we have config/user/:scope URLs.
-    pub async fn update_config(&mut self, user_config: InstallSettings) -> Result<()> {
+    pub async fn update_config(&mut self, user_config: InstallSettings) -> Result<(), Error> {
         if let Some(l10n_user_config) = &user_config.localization {
             self.l10n.set_config(l10n_user_config).await?;
         }
@@ -169,7 +167,7 @@ impl Service {
     /// Patches the user configuration within the given scope.
     ///
     /// It merges the current configuration with the given one.
-    pub async fn patch_scope_config(&mut self, user_config: ScopeConfig) -> Result<()> {
+    pub async fn patch_scope_config(&mut self, user_config: ScopeConfig) -> Result<(), Error> {
         match user_config {
             ScopeConfig::L10n(new_config) => {
                 let base_config = self.user_config.localization.clone().unwrap_or_default();
@@ -187,7 +185,7 @@ impl Service {
     ///
     /// It replaces the current configuration with the given one and calculates a
     /// new proposal. Only the configuration in the given scope is affected.
-    pub async fn update_scope_config(&mut self, user_config: ScopeConfig) -> Result<()> {
+    pub async fn update_scope_config(&mut self, user_config: ScopeConfig) -> Result<(), Error> {
         match user_config {
             ScopeConfig::L10n(new_config) => {
                 self.l10n.set_config(&new_config).await?;
@@ -211,7 +209,7 @@ impl Service {
     }
 
     /// It returns the information of the underlying system.
-    pub async fn get_system(&self) -> std::result::Result<SystemInfo, Error> {
+    pub async fn get_system(&self) -> Result<SystemInfo, Error> {
         Ok(SystemInfo {
             localization: self.l10n.get_system().await?,
         })
