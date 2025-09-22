@@ -18,13 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use std::collections::HashMap;
+
 use agama_lib::{
     error::ServiceError,
     issue::Issue,
     product::Product,
     software::{
         model::{RegistrationInfo, ResolvableParams, SoftwareConfig},
-        Pattern,
+        Pattern, SelectedBy,
     },
 };
 use axum::{
@@ -168,7 +170,14 @@ async fn probe(State(state): State<SoftwareState>) -> Result<Json<()>, Error> {
     )
 )]
 async fn get_proposal(State(state): State<SoftwareState>) -> Result<Json<SoftwareProposal>, Error> {
-    unimplemented!("get the software proposal");
+    let config = state.client.get_config().await?;
+    let patterns = config.patterns.unwrap_or(HashMap::new());
+    let proposal = SoftwareProposal {
+        size: "TODO".to_string(),
+        patterns: patterns.iter().filter(|(_name, selected)| **selected).map(|(name,_selected)| (name.clone(), SelectedBy::User)).collect()
+    };
+
+    Ok(Json(proposal))
 }
 
 /// Returns the product issues
