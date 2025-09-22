@@ -310,6 +310,7 @@ export default function SearchedDeviceMenu({
         }}
         toggleProps={{
           variant: "plain",
+          style: { padding: 0 },
         }}
         items={[
           <ChangeDeviceMenuItem

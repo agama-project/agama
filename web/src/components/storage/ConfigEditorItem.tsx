@@ -22,7 +22,6 @@
 
 import React, { ReactNode } from "react";
 import {
-  DataListAction,
   DataListCell,
   DataListItem,
   DataListItemCells,
@@ -56,15 +55,15 @@ export default function ConfigEditorItem({ header, content, actions }: ConfigEdi
         <DataListItemCells
           dataListCells={[
             <DataListCell key="content">
-              <Flex direction={{ default: "column" }}>
-                <Title headingLevel="h4">{header}</Title>
+              <Flex direction={{ default: "column" }} gap={{ default: "gapNone" }}>
+                <Flex>
+                  <Title headingLevel="h4">{header}</Title> {actions}
+                </Flex>
                 <NestedContent>{content}</NestedContent>
               </Flex>
             </DataListCell>,
           ]}
         />
-        {/** @ts-expect-error: props required but not used, see https://github.com/patternfly/patternfly-react/issues/9823 **/}
-        <DataListAction>{actions}</DataListAction>
       </DataListItemRow>
     </DataListItem>
   );
