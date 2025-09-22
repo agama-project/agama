@@ -55,7 +55,8 @@ use tokio::sync::mpsc;
 
 pub async fn start_service(events: EventsSender) -> Result<Handler, handler::Error> {
     let (sender, receiver) = mpsc::unbounded_channel();
-    let mut service = Service::from_system(receiver, events)?;
+    let model = Model::from_system().unwrap();
+    let mut service = Service::new(model, receiver, events);
     tokio::spawn(async move {
         service.run().await;
     });
@@ -65,4 +66,151 @@ pub async fn start_service(events: EventsSender) -> Result<Handler, handler::Err
     });
 
     Ok(Handler::new(sender))
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        model::{
+            keyboard::KeymapsDatabase, locale::LocalesDatabase, timezone::TimezonesDatabase,
+            L10nAdapter,
+        },
+        service, Event, EventsReceiver, Handler, Keymap, LocaleEntry, Service, TimezoneEntry,
+        UserConfig,
+    };
+    use agama_locale_data::{KeymapId, LocaleId};
+    use agama_utils::Service as _;
+
+    pub struct TestModel {
+        pub locales: LocalesDatabase,
+        pub keymaps: KeymapsDatabase,
+        pub timezones: TimezonesDatabase,
+    }
+
+    impl L10nAdapter for TestModel {
+        fn locales_db(&self) -> &LocalesDatabase {
+            &self.locales
+        }
+
+        fn keymaps_db(&self) -> &KeymapsDatabase {
+            &self.keymaps
+        }
+
+        fn timezones_db(&self) -> &TimezonesDatabase {
+            &self.timezones
+        }
+
+        fn locale(&self) -> LocaleId {
+            LocaleId::default()
+        }
+
+        fn keymap(&self) -> Result<KeymapId, service::Error> {
+            Ok(KeymapId::default())
+        }
+    }
+
+    fn build_adapter() -> TestModel {
+        TestModel {
+            locales: LocalesDatabase::with_entries(&[
+                LocaleEntry {
+                    id: "en_US.UTF-8".parse().unwrap(),
+                    language: "English".to_string(),
+                    territory: "United States".to_string(),
+                    consolefont: None,
+                },
+                LocaleEntry {
+                    id: "es_ES.UTF-8".parse().unwrap(),
+                    language: "Spanish".to_string(),
+                    territory: "Spain".to_string(),
+                    consolefont: None,
+                },
+            ]),
+            keymaps: KeymapsDatabase::with_entries(&[
+                Keymap::new("us".parse().unwrap(), "English"),
+                Keymap::new("es".parse().unwrap(), "Spanish"),
+            ]),
+            timezones: TimezonesDatabase::with_entries(&[
+                TimezoneEntry {
+                    code: "Europe/Berlin".to_string(),
+                    parts: vec!["Europe".to_string(), "Berlin".to_string()],
+                    country: Some("Germany".to_string()),
+                },
+                TimezoneEntry {
+                    code: "Atlantic/Canary".to_string(),
+                    parts: vec!["Atlantic".to_string(), "Canary".to_string()],
+                    country: Some("Spain".to_string()),
+                },
+            ]),
+        }
+    }
+
+    async fn start_testing_service() -> Result<(EventsReceiver, Handler), Box<dyn std::error::Error>>
+    {
+        let (events_tx, events_rx) = tokio::sync::mpsc::unbounded_channel::<Event>();
+        let (messages_tx, messages_rx) = tokio::sync::mpsc::unbounded_channel();
+        let model = build_adapter();
+        let mut service = Service::new(model, messages_rx, events_tx);
+        tokio::spawn(async move {
+            service.run().await;
+        });
+        Ok((events_rx, Handler::new(messages_tx)))
+    }
+
+    #[tokio::test]
+    async fn test_get_and_set_config() -> Result<(), Box<dyn std::error::Error>> {
+        let (_events_rx, handler) = start_testing_service()
+            .await
+            .expect("Could not start the testing service");
+
+        let config = handler.get_config().await?;
+        assert_eq!(config.language, Some("en_US.UTF-8".to_string()));
+
+        let user_config = UserConfig {
+            language: Some("es_ES.UTF-8".to_string()),
+            keyboard: Some("es".to_string()),
+            timezone: Some("Atlantic/Canary".to_string()),
+        };
+        handler.set_config(&user_config).await?;
+
+        let updated = handler.get_config().await?;
+        assert_eq!(&updated, &user_config);
+
+        // let event = events_receiver
+        //     .recv()
+        //     .await
+        //     .expect("Did not receive the event");
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_get_system() -> Result<(), Box<dyn std::error::Error>> {
+        let (_events_rx, handler) = start_testing_service()
+            .await
+            .expect("Could not start the testing service");
+
+        let system = handler.get_system().await?;
+        assert_eq!(system.keymaps.len(), 1);
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_get_proposal() -> Result<(), Box<dyn std::error::Error>> {
+        let (_events_rx, handler) = start_testing_service()
+            .await
+            .expect("Could not start the testing service");
+
+        let user_config = UserConfig {
+            language: Some("es_ES.UTF-8".to_string()),
+            keyboard: Some("es".to_string()),
+            timezone: Some("Atlantic/Canary".to_string()),
+        };
+        handler.set_config(&user_config).await?;
+
+        let proposal = handler.get_proposal().await?;
+        assert_eq!(proposal.locale.to_string(), user_config.language.unwrap());
+        assert_eq!(proposal.keymap.to_string(), user_config.keyboard.unwrap());
+        assert_eq!(proposal.timezone.to_string(), user_config.timezone.unwrap());
+        Ok(())
+    }
 }

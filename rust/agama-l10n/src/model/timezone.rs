@@ -46,6 +46,13 @@ impl TimezonesDatabase {
         Self::default()
     }
 
+    #[cfg(test)]
+    pub fn with_entries(data: &[TimezoneEntry]) -> Self {
+        Self {
+            timezones: data.to_vec(),
+        }
+    }
+
     /// Initializes the list of known timezones.
     ///
     /// * `ui_language`: language to translate the descriptions (e.g., "en").

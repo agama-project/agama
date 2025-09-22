@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::Service;
+use crate::{model::L10nAdapter, Service};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -29,7 +29,7 @@ pub struct ConfigureSystemAction {
 
 impl ConfigureSystemAction {
     // FIXME: return an action error instead of using anyhow.
-    pub fn run(self, _l10n: &mut Service) -> anyhow::Result<()> {
+    pub fn run<T: L10nAdapter>(self, _l10n: &mut Service<T>) -> anyhow::Result<()> {
         // TODO: redesign actions
 
         // if let Some(language) = self.language {

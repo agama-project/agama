@@ -38,6 +38,14 @@ use keyboard::KeymapsDatabase;
 use locale::LocalesDatabase;
 use timezone::TimezonesDatabase;
 
+pub(crate) trait L10nAdapter: Send {
+    fn locales_db(&self) -> &LocalesDatabase;
+    fn timezones_db(&self) -> &TimezonesDatabase;
+    fn keymaps_db(&self) -> &KeymapsDatabase;
+    fn locale(&self) -> LocaleId;
+    fn keymap(&self) -> Result<KeymapId, service::Error>;
+}
+
 pub struct Model {
     pub timezones_db: TimezonesDatabase,
     pub locales_db: LocalesDatabase,
@@ -137,8 +145,21 @@ impl Model {
 
         Ok(())
     }
+}
 
-    pub fn keymap(&self) -> Result<KeymapId, service::Error> {
+impl L10nAdapter for Model {
+    fn locales_db(&self) -> &LocalesDatabase {
+        &self.locales_db
+    }
+    fn timezones_db(&self) -> &TimezonesDatabase {
+        &self.timezones_db
+    }
+
+    fn keymaps_db(&self) -> &KeymapsDatabase {
+        &self.keymaps_db
+    }
+
+    fn keymap(&self) -> Result<KeymapId, service::Error> {
         let output = Command::new("localectl")
             .output()
             .map_err(service::Error::Commit)?;
@@ -156,7 +177,7 @@ impl Model {
     }
 
     // FIXME: we could use D-Bus to read the locale and the keymap (see ui_keymap).
-    pub fn locale(&self) -> LocaleId {
+    fn locale(&self) -> LocaleId {
         let lang = env::var("LANG")
             .ok()
             .map(|v| v.parse::<LocaleId>().ok())

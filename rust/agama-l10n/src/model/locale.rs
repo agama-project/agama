@@ -56,6 +56,14 @@ impl LocalesDatabase {
         Self::default()
     }
 
+    #[cfg(test)]
+    pub fn with_entries(data: &[LocaleEntry]) -> Self {
+        Self {
+            known_locales: vec![],
+            locales: data.to_vec(),
+        }
+    }
+
     /// Loads the list of locales.
     ///
     /// It checks for a file in /etc/agama.d/locales containing the list of supported locales (one per line).

@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{actions, Config, Event, Model, Proposal, SystemInfo, UserConfig};
+use crate::{actions, model::L10nAdapter, Config, Event, Model, Proposal, SystemInfo, UserConfig};
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
 use agama_utils::{service, Service as AgamaService};
 use serde::Deserialize;
@@ -77,9 +77,12 @@ pub enum Message {
     },
 }
 
-pub struct Service {
+pub struct Service<T>
+where
+    T: L10nAdapter,
+{
     state: State,
-    model: Model,
+    model: T,
     messages: mpsc::UnboundedReceiver<Message>,
     events: mpsc::UnboundedSender<Event>,
 }
@@ -89,20 +92,15 @@ struct State {
     config: Config,
 }
 
-impl Service {
-    pub fn from_system(
-        messages: mpsc::UnboundedReceiver<Message>,
-        events: mpsc::UnboundedSender<Event>,
-    ) -> Result<Self, Error> {
-        let model = Model::from_system()?;
-        Ok(Self::new(model, messages, events))
-    }
-
+impl<T> Service<T>
+where
+    T: L10nAdapter,
+{
     pub fn new(
-        model: Model,
+        model: T,
         messages: mpsc::UnboundedReceiver<Message>,
         events: mpsc::UnboundedSender<Event>,
-    ) -> Self {
+    ) -> Service<T> {
         let system = SystemInfo::read_from(&model);
         let config = Config::new_from(&system);
 
@@ -139,7 +137,10 @@ impl Service {
     }
 }
 
-impl AgamaService for Service {
+impl<T> AgamaService for Service<T>
+where
+    T: L10nAdapter,
+{
     type Err = service::Error;
     type Message = Message;
 
