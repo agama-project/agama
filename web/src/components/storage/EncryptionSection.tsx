@@ -21,8 +21,9 @@
  */
 
 import React from "react";
-import { Card, CardBody, Content } from "@patternfly/react-core";
-import { Link, Page } from "~/components/core";
+import { Content, Split, Stack } from "@patternfly/react-core";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { Link } from "~/components/core";
 import { useEncryption } from "~/queries/storage/config-model";
 import { apiModel } from "~/api/storage/types";
 import { STORAGE } from "~/routes/paths";
@@ -42,21 +43,18 @@ export default function EncryptionSection() {
   const password = encryption?.password;
 
   return (
-    <Page.Section
-      title={_("Encryption")}
-      description={_(
-        "Protection for the information stored at \
-the new file systems, including data, programs, and system files.",
-      )}
-      pfCardBodyProps={{ isFilled: true }}
-      actions={<Link to={STORAGE.editEncryption}>{_("Edit")}</Link>}
-    >
-      <Card isCompact isPlain>
-        <CardBody>
-          <Content component="p">{encryptionLabel(method)}</Content>
-          {password && <PasswordCheck password={password} />}
-        </CardBody>
-      </Card>
-    </Page.Section>
+    <Stack hasGutter>
+      <div className={textStyles.textColorPlaceholder}>
+        {_(
+          "Protection for the information stored at \
+          the new file systems, including data, programs, and system files.",
+        )}
+      </div>
+      <Content component="p">{encryptionLabel(method)}</Content>
+      {password && <PasswordCheck password={password} />}
+      <Split hasGutter>
+        <Link to={STORAGE.editEncryption}>{_("Edit")}</Link>
+      </Split>
+    </Stack>
   );
 }

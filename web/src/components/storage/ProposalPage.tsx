@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Content,
@@ -28,20 +28,25 @@ import {
   GridItem,
   Split,
   SplitItem,
+  Stack,
   EmptyState,
   EmptyStateBody,
   EmptyStateFooter,
   List,
   ListItem,
-  Title,
   Stack,
   Flex,
   FlexItem,
+  Tab,
+  Tabs,
+  TabTitleText,
 } from "@patternfly/react-core";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { Page, Link } from "~/components/core/";
 import { Icon, Loading } from "~/components/layout";
 import ConfigEditor from "./ConfigEditor";
 import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
+import ConnectedDevicesMenu from "./ConnectedDevicesMenu";
 import EncryptionSection from "./EncryptionSection";
 import FixableConfigInfo from "./FixableConfigInfo";
 import ProposalFailedInfo from "./ProposalFailedInfo";
@@ -186,6 +191,14 @@ function ProposalSections(): React.ReactNode {
   const model = useConfigModel({ suspense: true });
   const systemErrors = useSystemErrors("storage");
   const hasResult = !systemErrors.length;
+  const { mutate: reset } = useResetConfigMutation();
+  const [active, setActive] = useState(0);
+  const handleTabClick = (
+    event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
+    tabIndex: number,
+  ) => {
+    setActive(tabIndex);
+  };
 
   return (
     <Grid hasGutter>
@@ -195,12 +208,9 @@ function ProposalSections(): React.ReactNode {
       <UnsupportedModelInfo />
       {model && (
         <>
-          <GridItem sm={12}>
+          <GridItem>
             <Page.Section
-              pfCardProps={{
-                "data-tutorial-locator": "devices-definitions",
-              }}
-              title={_("Installation Devices")}
+              title={_("Settings")}
               titleActions={
                 <Flex>
                   <FlexItem grow={{ default: "grow" }} />
@@ -229,14 +239,48 @@ function ProposalSections(): React.ReactNode {
                 </Flex>
               }
               description={_(
-                "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
+                "Changes in these settings will immediately update the 'Result' section below.",
               )}
             >
-              <ConfigEditor />
+              <Tabs activeKey={active} onSelect={handleTabClick} role="region">
+                <Tab
+                  key="devices"
+                  eventKey={0}
+                  title={<TabTitleText>{_("Installation devices")}</TabTitleText>}
+                >
+                  <Stack hasGutter>
+                    <div className={textStyles.textColorPlaceholder}>
+                      {_(
+                        "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
+                      )}
+                    </div>
+                    <ConfigEditor />
+                  </Stack>
+                </Tab>
+                <Tab
+                  key="encryption"
+                  eventKey={1}
+                  title={<TabTitleText>{_("Encryption")}</TabTitleText>}
+                >
+                  <EncryptionSection />
+                </Tab>
+                <Tab
+                  key="system"
+                  eventKey={2}
+                  title={<TabTitleText>{_("Boot options")}</TabTitleText>}
+                >
+                  <Stack hasGutter>
+                    <div className={textStyles.textColorPlaceholder}>
+                      {_(
+                        "To ensure the new system is able to boot, the installer may need to create or configure some \
+                        partitions in the appropriate disk.",
+                      )}
+                    </div>
+                    <div>{_("Description of the status and button to edit")}</div>
+                  </Stack>
+                </Tab>
+              </Tabs>
             </Page.Section>
-          </GridItem>
-          <GridItem sm={4}>
-            <EncryptionSection />
           </GridItem>
         </>
       )}
@@ -286,27 +330,7 @@ export default function ProposalPage(): React.ReactNode {
           </FlexItem>
           <FlexItem grow={{ default: "grow" }} />
           <FlexItem>
-            <MenuButton
-              menuProps={{
-                popperProps: {
-                  position: "end",
-                },
-              }}
-              toggleProps={{
-                variant: "plain",
-              }}
-              items={[
-                <MenuButton.Item
-                  key="reset-link"
-                  onClick={() => reset()}
-                  description={_("Start from scratch with the default configuration")}
-                >
-                  {_("Reset to defaults")}
-                </MenuButton.Item>,
-              ]}
-            >
-              <Icon name="more_horiz" className="agm-strong-icon" />
-            </MenuButton>
+            <ConnectedDevicesMenu />
           </FlexItem>
         </Flex>
       </Page.Header>
