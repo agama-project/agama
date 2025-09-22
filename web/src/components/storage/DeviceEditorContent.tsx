@@ -24,7 +24,7 @@ import React from "react";
 import UnusedMenu from "~/components/storage/UnusedMenu";
 import FilesystemMenu from "~/components/storage/FilesystemMenu";
 import PartitionsSection from "~/components/storage/PartitionsSection";
-import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
+import FindSpaceSection from "~/components/storage/FindSpaceSection";
 import { model, StorageDevice } from "~/types/storage";
 
 type DeviceEditorContentProps = { deviceModel: model.Drive | model.MdRaid; device: StorageDevice };
@@ -39,7 +39,7 @@ export default function DeviceEditorContent({
     <>
       {deviceModel.filesystem && <FilesystemMenu deviceModel={deviceModel} />}
       {!deviceModel.filesystem && <PartitionsSection device={deviceModel} />}
-      {!deviceModel.filesystem && <SpacePolicyMenu modelDevice={deviceModel} device={device} />}
+      {!deviceModel.filesystem && <FindSpaceSection modelDevice={deviceModel} device={device} />}
     </>
   );
 }
