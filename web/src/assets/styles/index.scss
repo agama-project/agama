@@ -502,6 +502,32 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   --pf-v6-c-table__sort-indicator--MarginInlineStart: var(--pf-t--global--spacer--xs);
 }
 
+// Temporary workaround for a recently introduced issue in PatternFly's
+// ExpandableSection, which causes the parent container to show scrollbars when
+// the section is collapsed. This was fixed in PatternFly core 3 days ago as of
+// writing (September 23rd, 2025):
+// https://github.com/patternfly/patternfly/pull/7843
+//
+// However, the issue we're facing  appears to be more related to the use of
+// `display: revert` in `&:where([hidden])`, which can leave the hidden element
+// in the layout flow and affect overflow behavior. The upstream fix addresses
+// this by applying `overflow: hidden` when the expandable section content is a
+// direct child of an expandable section that does *not* have the
+// `.pf-m-truncate` modifier.
+//
+// In our case, using `display: none` instead of `display: revert` works better,
+// as it ensures that nested expandable sections do not occupy layout space when
+// hidden. This can be seen in action visiting Storage > Result > Planned
+// actions"
+//
+// TODO: Re-test and remove this workaround once the updated PatternFly version is released.
+.pf-v6-c-expandable-section__content {
+  &:where([hidden]) {
+    display: none;
+  }
+  // overflow: hidden; // <- how it was fixed at upstream PatternFly code.
+}
+
 // Some utilities not found at PF
 .w-14ch {
   inline-size: 14ch;
