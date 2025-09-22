@@ -25,6 +25,8 @@ import React from "react";
 // NOTE: "@icons" and "@bolderIcons" are aliases to use a shorter path to real
 // @material-symbols icons locations. Check the tsconfig.json file to see its
 // value.
+import Add from "@icons/add.svg?component";
+import AddCircle from "@icons/add_circle.svg?component";
 import Apps from "@icons/apps.svg?component";
 import AppRegistration from "@icons/app_registration.svg?component";
 import ArrowDropDown from "@icons/arrow_drop_down.svg?component";
@@ -66,6 +68,8 @@ import Wifi from "@icons/wifi.svg?component";
 import WifiOff from "@icons/wifi_off.svg?component";
 
 const icons = {
+  add: Add,
+  add_circle: AddCircle,
   apps: Apps,
   app_registration: AppRegistration,
   arrow_drop_down: ArrowDropDown,

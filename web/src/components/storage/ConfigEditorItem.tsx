@@ -55,7 +55,7 @@ export default function ConfigEditorItem({ header, content, actions }: ConfigEdi
       <DataListItemRow>
         <DataListItemCells
           dataListCells={[
-            <DataListCell key="content" isFilled={false}>
+            <DataListCell key="content">
               <Flex direction={{ default: "column" }}>
                 <Title headingLevel="h4">{header}</Title>
                 <NestedContent>{content}</NestedContent>
