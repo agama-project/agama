@@ -34,7 +34,6 @@ import {
   EmptyStateFooter,
   List,
   ListItem,
-  Stack,
   Flex,
   FlexItem,
   Tab,
@@ -45,7 +44,6 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { Page, Link } from "~/components/core/";
 import { Icon, Loading } from "~/components/layout";
 import ConfigEditor from "./ConfigEditor";
-import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
 import ConnectedDevicesMenu from "./ConnectedDevicesMenu";
 import EncryptionSection from "./EncryptionSection";
 import FixableConfigInfo from "./FixableConfigInfo";
@@ -214,7 +212,6 @@ function ProposalSections(): React.ReactNode {
               titleActions={
                 <Flex>
                   <FlexItem grow={{ default: "grow" }} />
-                  <ConfigureDeviceMenu />
                   <MenuButton
                     menuProps={{
                       popperProps: {

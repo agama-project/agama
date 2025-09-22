@@ -23,7 +23,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
-import { Divider, MenuItemProps } from "@patternfly/react-core";
+import { Divider, Flex, MenuItemProps } from "@patternfly/react-core";
 import { useAvailableDevices } from "~/hooks/storage/system";
 import { useModel } from "~/hooks/storage/model";
 import { useAddDrive } from "~/hooks/storage/drive";
@@ -150,7 +150,7 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
         menuProps={{
           "aria-label": _("Configure device menu"),
           popperProps: {
-            position: "right",
+            position: "left",
           },
         }}
         toggleProps={{ variant: "plain" }}
@@ -172,7 +172,10 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
           </MenuButtonItem>,
         ]}
       >
-        {_("Use more devices")} <Icon name="arrow_drop_down" className="agm-centered-icon" />
+        <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+          {/** TODO: choose one, "add" or "add_circle", and remove the other at Icon.tsx */}
+          <Icon name="add_circle" /> {_("Add another device")}
+        </Flex>
       </MenuButton>
       {deviceSelectorOpen && (
         <DeviceSelectorModal
