@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements utilities to build Agama services.
+//! Implements the public API of an Agama service.
 
 use core::future::Future;
 use std::error;
@@ -32,13 +32,20 @@ pub enum Error<T> {
     Recv(#[from] oneshot::error::RecvError),
 }
 
-/// Setting all the &self references as &mut self makes not needed to mark with Sync.
+/// Usually, an Agama service runs on a separate task. To communicate
+/// with the service, you need to implement a [Handler]. This trait
+/// offers a basic API to send and receive messages from a Service.
+// Setting all the &self references as &mut self makes not needed to mark with Sync.
 pub trait Handler: Send + Sync {
     type Err: From<Error<Self::Message>> + error::Error;
     type Message: Send;
 
     fn channel(&self) -> &mpsc::UnboundedSender<Self::Message>;
 
+    /// Sends a message and waits for the response.
+    ///
+    /// * `func`: functio to build the message. It receives the channel
+    ///   to send the answer.
     fn send_and_wait<T, F>(&self, func: F) -> impl Future<Output = Result<T, Self::Err>> + Send
     where
         T: Send,
@@ -52,6 +59,9 @@ pub trait Handler: Send + Sync {
         }
     }
 
+    /// Sends a message but does not wait for the answer.
+    ///
+    /// * `message`: message to send to the service.
     fn send(&self, message: Self::Message) -> Result<(), Self::Err> {
         self.channel().send(message).map_err(|e| Error::from(e))?;
         Ok(())

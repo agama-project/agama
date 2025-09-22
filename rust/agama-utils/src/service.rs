@@ -18,7 +18,16 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Implements utilities to build Agama services.
+//! Offers a trait to implement an Agama service.
+//!
+//! An Agama service is composed of, at least, two parts:
+//!
+//! * The service itself, which holds the configuration and takes care of
+//!   performing the changes at installation time. It is private to each
+//!   Agama module (agama-l10n, agama-network, etc.). It should implement
+//!   the [Service trait].
+//! * The handler, which offers an API to talk to the service. It should
+//!   implement the [Handler](crate::Handler) trait.
 
 use core::future::Future;
 use std::{any, error};
@@ -30,7 +39,20 @@ pub enum Error {
     SendResponse,
 }
 
-// Implements the basic behavior for an Agama service.
+/// Implements the basic behavior for an Agama service.
+///
+/// It is responsible for:
+///
+/// * Holding the configuration.
+/// * Making an installation proposal for one aspect of the system
+///   (localization, partitioning, etc.).
+/// * Performing the changes a installation time.
+/// * Optionally, making changes to the system running Agama
+///   (e.g., changing the keyboard layout).
+///
+/// Usually, a service runs on a separate task and receives the actions to
+/// perform through a [mpsc::UnboundedReceiver
+/// channel](tokio::sync::mpsc::UnboundedReceiver).
 pub trait Service: Send {
     type Err: From<Error> + error::Error;
     type Message: Send;
