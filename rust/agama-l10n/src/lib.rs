@@ -18,6 +18,23 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+//! This crate implements the support for localization handling in Agama.
+//! It takes care of setting the locale, keymap and timezone for Agama itself
+//! and the target system.
+//!
+//! From a technical point of view, it includes:
+//!
+//! * The [UserConfig] struct that defines the settings the user can
+//! alter for the target system.
+//! * The [Proposal] struct that describes how the system will look like after
+//! the installation.
+//! * The [SystemInfo] which includes information about the system
+//! where Agama is running.
+//! * An [specific event type](Event) for localization-related events.
+//!
+//! The service can be started by calling the [start_service] function, which
+//! returns a [Handler] to interact with the system.
+
 pub mod handler;
 pub use handler::Handler;
 
@@ -53,6 +70,29 @@ pub mod helpers;
 use agama_utils::Service as _;
 use tokio::sync::mpsc;
 
+/// Starts the localization service.
+///
+/// It opens two Tokio tasks:
+///
+/// - The main service, which is reponsible for holding and applying the configuration.
+/// - A monitor which checks for changes in the underlying system (e.g., changing the keymap)
+///   and signals the main service accordingly.
+///
+/// ## Example
+///
+/// ```no_run
+/// # use tokio_test;
+/// # use tokio::sync::mpsc;
+/// use agama_l10n as l10n;
+/// # tokio_test::block_on(async {
+///
+/// let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
+/// let service = l10n::start_service(events_sender).await.unwrap();
+/// let config = service.get_config().await.unwrap();
+/// # })
+/// ```
+///
+/// * `events`: channel to emit the [localization-specific events](crate::Event).
 pub async fn start_service(events: EventsSender) -> Result<Handler, handler::Error> {
     let (sender, receiver) = mpsc::unbounded_channel();
     let model = Model::from_system().unwrap();

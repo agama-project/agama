@@ -23,15 +23,20 @@ use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
 use tokio::sync::mpsc;
 
+/// Localization-related events.
 #[serde_as]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "name")]
 pub enum Event {
+    /// The keymap of the Agama system has changed.
     KeymapChanged {
+        /// New keymap ID.
         #[serde_as(as = "DisplayFromStr")]
         keymap: KeymapId,
     },
+    /// The locale of the Agama system has changed.
     LocaleChanged {
+        /// New localization ID.
         #[serde_as(as = "DisplayFromStr")]
         locale: LocaleId,
     },

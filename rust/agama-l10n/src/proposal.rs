@@ -23,13 +23,17 @@ use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
 
+/// Describes what Agama proposes for the target system.
 #[serde_as]
 #[derive(Clone, Debug, Serialize)]
 pub struct Proposal {
+    /// Keymap (e.g., "us", "cz(qwerty)", etc.).
     #[serde_as(as = "DisplayFromStr")]
     pub keymap: KeymapId,
+    /// Locale (e.g., "en_US.UTF-8").
     #[serde_as(as = "DisplayFromStr")]
     pub locale: LocaleId,
+    /// Timezone (e.g., "Europe/Berlin").
     #[serde_as(as = "DisplayFromStr")]
     pub timezone: TimezoneId,
 }

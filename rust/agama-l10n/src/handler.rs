@@ -18,11 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    event::EventsSender, monitor, service, L10nAction, Message, Monitor, Proposal, Service,
-    SystemInfo, UserConfig,
-};
-use agama_utils::{handler, Handler as AgamaHandler, Service as _};
+//! Defines the handler to interact with the localization service.
+
+use crate::{monitor, service, L10nAction, Message, Proposal, SystemInfo, UserConfig};
+use agama_utils::{handler, Handler as AgamaHandler};
 use tokio::sync::mpsc;
 
 #[derive(thiserror::Error, Debug)]
@@ -35,6 +34,10 @@ pub enum Error {
     Monitor(#[from] monitor::Error),
 }
 
+/// Handler to interact with the service.
+///
+/// It offers a set of functions that allow interacting with the localization
+/// service, which runs in a different Tokio task.
 #[derive(Clone)]
 pub struct Handler {
     sender: mpsc::UnboundedSender<Message>,

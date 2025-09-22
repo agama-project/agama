@@ -18,6 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+//! Specific localization actions.
+
 use crate::{model::L10nAdapter, Service};
 use serde::Deserialize;
 

@@ -23,17 +23,17 @@
 use crate::Config;
 use serde::{Deserialize, Serialize};
 
-/// Configuration provided for localization.
+/// Localization configuration for the target system.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct UserConfig {
-    /// like "en_US.UTF-8"
+    /// Locale (e.g., "en_US.UTF-8").
     #[serde(skip_serializing_if = "Option::is_none")]
     pub language: Option<String>,
-    /// like "cz(qwerty)"
+    /// Keymap (e.g., "us", "cz(qwerty)", etc.).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub keyboard: Option<String>,
-    /// like "Europe/Berlin"
+    /// Timezone (e.g., "Europe/Berlin").
     #[serde(skip_serializing_if = "Option::is_none")]
     pub timezone: Option<String>,
 }

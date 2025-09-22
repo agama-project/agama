@@ -23,16 +23,24 @@ use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
 
+/// Localization-related information of the system where the installer
+/// is running.
 #[serde_as]
 #[derive(Clone, Debug, Serialize)]
 pub struct SystemInfo {
+    /// List of know locales.
     pub locales: Vec<LocaleEntry>,
+    /// List of known timezones.
     pub timezones: Vec<TimezoneEntry>,
+    /// List of known keymaps.
     pub keymaps: Vec<Keymap>,
+    /// Locale of the system where Agama is running.
     #[serde_as(as = "DisplayFromStr")]
     pub locale: LocaleId,
+    /// Keymap of the system where Agama is running.
     #[serde_as(as = "DisplayFromStr")]
     pub keymap: KeymapId,
+    /// Timezone of the system where Agama is running.
     #[serde_as(as = "DisplayFromStr")]
     pub timezone: TimezoneId,
 }
