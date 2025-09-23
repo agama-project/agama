@@ -110,9 +110,7 @@ impl ModelAdapter for Model {
     }
 
     fn keymap(&self) -> Result<KeymapId, service::Error> {
-        let output = Command::new("localectl")
-            .output()
-            .map_err(service::Error::Commit)?;
+        let output = Command::new("localectl").output()?;
         let output = String::from_utf8_lossy(&output.stdout);
 
         let keymap_regexp = Regex::new(r"(?m)VC Keymap: (.+)$").unwrap();
@@ -149,8 +147,7 @@ impl ModelAdapter for Model {
 
         Command::new("localectl")
             .args(["set-keymap", &keymap.dashed()])
-            .output()
-            .map_err(service::Error::Commit)?;
+            .output()?;
         Ok(())
     }
 

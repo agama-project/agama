@@ -25,7 +25,7 @@ use tokio::sync::{mpsc, oneshot};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("Unknown locale code: {0}")]
+    #[error("Unknown locale: {0}")]
     UnknownLocale(LocaleId),
     #[error("Unknown keymap: {0}")]
     UnknownKeymap(KeymapId),
@@ -37,8 +37,8 @@ pub enum Error {
     InvalidKeymap(#[from] InvalidKeymapId),
     #[error("Invalid timezone")]
     InvalidTimezone(#[from] InvalidTimezoneId),
-    #[error("Could not apply the l10n settings: {0}")]
-    Commit(#[from] std::io::Error),
+    #[error(transparent)]
+    IO(#[from] std::io::Error),
     #[error(transparent)]
     Service(#[from] service::Error),
     #[error(transparent)]
