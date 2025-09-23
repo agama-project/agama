@@ -135,7 +135,14 @@ where
     }
 
     fn set_config(&mut self, user_config: &UserConfig) -> Result<(), Error> {
-        self.state.config.merge(user_config)
+        let merged = self.state.config.merge(user_config)?;
+        if merged != self.state.config {
+            self.state.config = merged;
+            _ = self.events.send(Event::ProposalChanged {
+                proposal: self.get_proposal(),
+            });
+        }
+        Ok(())
     }
 
     fn get_proposal(&self) -> Proposal {
@@ -177,10 +184,11 @@ where
             Message::UpdateLocale { locale } => {
                 self.state.system.locale = locale.clone();
                 _ = self.events.send(Event::LocaleChanged { locale });
+                _ = self.events.send(Event::SystemChanged);
             }
             Message::UpdateKeymap { keymap } => {
-                self.state.system.keymap = keymap.clone();
-                _ = self.events.send(Event::KeymapChanged { keymap });
+                self.state.system.keymap = keymap;
+                _ = self.events.send(Event::SystemChanged);
             }
             Message::SetSystem { config } => {
                 self.set_system(config).unwrap();

@@ -116,6 +116,7 @@ mod tests {
     };
     use agama_locale_data::{KeymapId, LocaleId};
     use agama_utils::Service as _;
+    use tokio::sync::mpsc;
 
     pub struct TestModel {
         pub locales: LocalesDatabase,
@@ -182,8 +183,8 @@ mod tests {
 
     async fn start_testing_service() -> Result<(EventsReceiver, Handler), Box<dyn std::error::Error>>
     {
-        let (events_tx, events_rx) = tokio::sync::mpsc::unbounded_channel::<Event>();
-        let (messages_tx, messages_rx) = tokio::sync::mpsc::unbounded_channel();
+        let (events_tx, events_rx) = mpsc::unbounded_channel::<Event>();
+        let (messages_tx, messages_rx) = mpsc::unbounded_channel();
         let model = build_adapter();
         let mut service = Service::new(model, messages_rx, events_tx);
         tokio::spawn(async move {
@@ -194,7 +195,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_and_set_config() -> Result<(), Box<dyn std::error::Error>> {
-        let (_events_rx, handler) = start_testing_service()
+        let (mut events_rx, handler) = start_testing_service()
             .await
             .expect("Could not start the testing service");
 
@@ -211,10 +212,25 @@ mod tests {
         let updated = handler.get_config().await?;
         assert_eq!(&updated, &user_config);
 
-        // let event = events_receiver
-        //     .recv()
-        //     .await
-        //     .expect("Did not receive the event");
+        let event = events_rx.recv().await.expect("Did not receive the event");
+        assert!(matches!(event, Event::ProposalChanged { proposal: _ }));
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_set_config_without_changes() -> Result<(), Box<dyn std::error::Error>> {
+        let (mut events_rx, handler) = start_testing_service()
+            .await
+            .expect("Could not start the testing service");
+
+        let config = handler.get_config().await?;
+        assert_eq!(config.language, Some("en_US.UTF-8".to_string()));
+        handler.set_config(&config).await?;
+        // Wait until the action is dispatched.
+        _ = handler.get_config().await?;
+
+        let event = events_rx.try_recv();
+        assert!(matches!(event, Err(mpsc::error::TryRecvError::Empty)));
         Ok(())
     }
 

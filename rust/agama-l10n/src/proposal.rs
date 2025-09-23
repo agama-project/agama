@@ -20,12 +20,12 @@
 
 use crate::Config;
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
 
 /// Describes what Agama proposes for the target system.
 #[serde_as]
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Proposal {
     /// Keymap (e.g., "us", "cz(qwerty)", etc.).
     #[serde_as(as = "DisplayFromStr")]

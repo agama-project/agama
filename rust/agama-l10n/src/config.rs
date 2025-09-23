@@ -21,6 +21,7 @@
 use crate::{service, SystemInfo, UserConfig};
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 
+#[derive(Clone, PartialEq)]
 pub struct Config {
     pub locale: LocaleId,
     pub keymap: KeymapId,
@@ -36,19 +37,21 @@ impl Config {
         }
     }
 
-    pub fn merge(&mut self, config: &UserConfig) -> Result<(), service::Error> {
+    pub fn merge(&self, config: &UserConfig) -> Result<Self, service::Error> {
+        let mut merged = self.clone();
+
         if let Some(language) = &config.language {
-            self.locale = language.parse()?
+            merged.locale = language.parse()?
         }
 
         if let Some(keyboard) = &config.keyboard {
-            self.keymap = keyboard.parse()?
+            merged.keymap = keyboard.parse()?
         }
 
         if let Some(timezone) = &config.timezone {
-            self.timezone = timezone.parse()?;
+            merged.timezone = timezone.parse()?;
         }
 
-        Ok(())
+        Ok(merged)
     }
 }
