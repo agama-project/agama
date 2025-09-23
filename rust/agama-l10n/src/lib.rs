@@ -241,7 +241,7 @@ mod tests {
             .expect("Could not start the testing service");
 
         let system = handler.get_system().await?;
-        assert_eq!(system.keymaps.len(), 1);
+        assert_eq!(system.keymaps.len(), 2);
 
         Ok(())
     }
