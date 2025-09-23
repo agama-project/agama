@@ -39,6 +39,8 @@ pub enum Error {
     InvalidTimezone(#[from] InvalidTimezoneId),
     #[error("l10n service could not send the message")]
     SendResponse,
+    #[error("l10n service could not send the event")]
+    Event,
     #[error(transparent)]
     IO(#[from] std::io::Error),
     #[error(transparent)]
@@ -154,6 +156,11 @@ where
         self.model
             .install(proposal.locale, proposal.keymap, proposal.timezone)
     }
+
+    fn send_event(&self, event: Event) -> Result<(), Error> {
+        self.events.send(event).map_err(|_| Error::Event)?;
+        Ok(())
+    }
 }
 
 impl<T> AgamaService for Service<T>
@@ -170,31 +177,37 @@ where
     async fn dispatch(&mut self, message: Self::Message) -> Result<(), Self::Err> {
         match message {
             Message::GetConfig { respond_to } => {
-                respond_to.send(self.get_config()).unwrap();
+                respond_to
+                    .send(self.get_config())
+                    .map_err(|_| Error::SendResponse)?;
             }
             Message::SetConfig { config } => {
-                self.set_config(&config).unwrap();
+                self.set_config(&config)?;
             }
             Message::GetProposal { respond_to } => {
-                respond_to.send(self.get_proposal()).unwrap();
+                respond_to
+                    .send(self.get_proposal())
+                    .map_err(|_| Error::SendResponse)?;
             }
             Message::GetSystem { respond_to } => {
-                respond_to.send(self.get_system().clone()).unwrap();
+                respond_to
+                    .send(self.get_system().clone())
+                    .map_err(|_| Error::SendResponse)?;
             }
             Message::UpdateLocale { locale } => {
                 self.state.system.locale = locale.clone();
-                _ = self.events.send(Event::LocaleChanged { locale });
-                _ = self.events.send(Event::SystemChanged);
+                self.send_event(Event::LocaleChanged { locale })?;
+                self.send_event(Event::SystemChanged)?;
             }
             Message::UpdateKeymap { keymap } => {
                 self.state.system.keymap = keymap;
-                _ = self.events.send(Event::SystemChanged);
+                self.send_event(Event::SystemChanged)?;
             }
             Message::SetSystem { config } => {
-                self.set_system(config).unwrap();
+                self.set_system(config)?;
             }
             Message::Install => {
-                self.install().unwrap();
+                self.install()?;
             }
         };
 

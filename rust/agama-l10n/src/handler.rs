@@ -20,7 +20,7 @@
 
 //! Defines the handler to interact with the localization service.
 
-use crate::{monitor, service, Message, Proposal, SystemConfig, SystemInfo, UserConfig};
+use crate::{monitor, Message, Proposal, SystemConfig, SystemInfo, UserConfig};
 use agama_utils::{handler, Handler as AgamaHandler};
 use tokio::sync::mpsc;
 
@@ -47,10 +47,10 @@ impl Handler {
     }
 
     pub async fn get_system(&self) -> Result<SystemInfo, Error> {
-        let result = self
+        let system = self
             .send_and_wait(|tx| Message::GetSystem { respond_to: tx })
             .await?;
-        Ok(result)
+        Ok(system)
     }
 
     pub async fn set_system(&self, config: SystemConfig) -> Result<(), Error> {
@@ -58,10 +58,10 @@ impl Handler {
     }
 
     pub async fn get_config(&self) -> Result<UserConfig, Error> {
-        let result = self
+        let config = self
             .send_and_wait(|tx| Message::GetConfig { respond_to: tx })
             .await?;
-        Ok(result)
+        Ok(config)
     }
 
     pub async fn set_config(&self, config: &UserConfig) -> Result<(), Error> {
@@ -71,10 +71,10 @@ impl Handler {
     }
 
     pub async fn get_proposal(&self) -> Result<Proposal, Error> {
-        let result = self
+        let proposal = self
             .send_and_wait(|tx| Message::GetProposal { respond_to: tx })
             .await?;
-        Ok(result)
+        Ok(proposal)
     }
 
     pub async fn install(&self) -> Result<(), Error> {
