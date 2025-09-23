@@ -63,8 +63,8 @@ module Agama
         end
 
         def errors?
-          # TODO: implement it together with checking type error
-          JSON.parse(get("software/issues/software"))
+          # TODO: severity as integer is nasty for http API
+          JSON.parse(get("software/issues/software"))&.select{ |i| i["severity"] == 1}&.any?
         end
 
         def get_resolvables(_unique_id, _type, _optional)
