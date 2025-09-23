@@ -55,7 +55,7 @@ pub trait Handler: Send + Sync {
             let (tx, rx) = oneshot::channel();
             let message = func(tx);
             self.channel().send(message).map_err(|e| Error::from(e))?;
-            Ok(rx.await.unwrap())
+            Ok(rx.await.map_err(|e| Error::from(e))?)
         }
     }
 

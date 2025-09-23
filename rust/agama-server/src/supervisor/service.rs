@@ -35,6 +35,8 @@ pub enum Error {
     L10n(#[from] l10n::handler::Error),
     #[error(transparent)]
     Service(#[from] service::Error),
+    #[error("Cannot merge the configuration given")]
+    CannotMergeConfig,
 }
 
 #[derive(Debug, Deserialize)]
@@ -117,11 +119,11 @@ impl Service {
     /// Gets the current configuration.
     ///
     /// It includes user and default values.
-    pub async fn get_config(&self) -> InstallSettings {
-        InstallSettings {
-            localization: Some(self.l10n.get_config().await.unwrap()),
+    pub async fn get_config(&self) -> Result<InstallSettings, Error> {
+        Ok(InstallSettings {
+            localization: Some(self.l10n.get_config().await?),
             ..Default::default()
-        }
+        })
     }
 
     /// Gets the current configuration set by the user.
@@ -150,7 +152,8 @@ impl Service {
     ///
     /// It merges the current configuration with the given one.
     pub async fn patch_config(&mut self, user_config: InstallSettings) -> Result<(), Error> {
-        let config = merge(&self.user_config, &user_config).unwrap();
+        let config =
+            merge(&self.user_config, &user_config).map_err(|_| Error::CannotMergeConfig)?;
         self.update_config(config).await
     }
 
@@ -176,7 +179,8 @@ impl Service {
         match user_config {
             ScopeConfig::L10n(new_config) => {
                 let base_config = self.user_config.localization.clone().unwrap_or_default();
-                let config = merge(&base_config, &new_config).unwrap();
+                let config =
+                    merge(&base_config, &new_config).map_err(|_| Error::CannotMergeConfig)?;
                 // FIXME: we are doing pattern matching twice. Is it ok?
                 // Implementing a "merge" for ScopeConfig would allow to simplify this function.
                 self.update_scope_config(ScopeConfig::L10n(config)).await?;
@@ -241,7 +245,7 @@ impl AgamaService for Service {
         match message {
             Self::Message::GetConfig { respond_to } => {
                 respond_to
-                    .send(self.get_config().await)
+                    .send(self.get_config().await?)
                     .map_err(|_| service::Error::SendResponse)?;
             }
             Self::Message::UpdateConfig { config } => {
