@@ -81,7 +81,7 @@ export default function SpacePolicyMenu({ modelDevice, device }) {
           />
         ))}
       >
-        <Icon name="more_horiz" className="agm-strong-icon" />
+        <Icon name="more_vert" className="agm-strong-icon" />
       </MenuButton>
     </Flex>
   );
