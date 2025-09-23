@@ -32,7 +32,7 @@ import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
 import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
-import { Icon } from "../layout";
+import { _ } from "~/i18n";
 
 const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
   return (
@@ -67,9 +67,10 @@ export default function SpacePolicyMenu({ modelDevice, device }) {
 
   return (
     <Flex gap={{ default: "gapXs" }}>
+      <strong>{_("Find space")}</strong>
       <MenuButton
         toggleProps={{
-          variant: "plain",
+          variant: "plainText",
         }}
         items={SPACE_POLICIES.map((policy) => (
           <PolicyItem
@@ -81,7 +82,7 @@ export default function SpacePolicyMenu({ modelDevice, device }) {
           />
         ))}
       >
-        <Icon name="more_vert" className="agm-strong-icon" />
+        {driveUtils.contentActionsSummary(modelDevice)}
       </MenuButton>
     </Flex>
   );
