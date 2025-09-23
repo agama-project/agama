@@ -20,7 +20,7 @@
 
 use crate::{model::ModelAdapter, Config, Event, Proposal, SystemInfo, UserConfig};
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
-use agama_utils::{service, Service as AgamaService};
+use agama_utils::Service as AgamaService;
 use tokio::sync::{mpsc, oneshot};
 
 #[derive(thiserror::Error, Debug)]
@@ -37,10 +37,10 @@ pub enum Error {
     InvalidKeymap(#[from] InvalidKeymapId),
     #[error("Invalid timezone")]
     InvalidTimezone(#[from] InvalidTimezoneId),
+    #[error("l10n service could not send the message")]
+    SendResponse,
     #[error(transparent)]
     IO(#[from] std::io::Error),
-    #[error(transparent)]
-    Service(#[from] service::Error),
     #[error(transparent)]
     Generic(#[from] anyhow::Error),
 }
@@ -160,7 +160,7 @@ impl<T> AgamaService for Service<T>
 where
     T: ModelAdapter,
 {
-    type Err = service::Error;
+    type Err = Error;
     type Message = Message;
 
     fn channel(&mut self) -> &mut mpsc::UnboundedReceiver<Self::Message> {

@@ -24,7 +24,7 @@ use crate::{
     web::EventsSender,
 };
 use agama_lib::install_settings::InstallSettings;
-use agama_utils::{service, Service as AgamaService};
+use agama_utils::Service as AgamaService;
 use merge_struct::merge;
 use serde::Deserialize;
 use tokio::sync::{mpsc, oneshot};
@@ -33,10 +33,15 @@ use tokio::sync::{mpsc, oneshot};
 pub enum Error {
     #[error(transparent)]
     L10n(#[from] l10n::handler::Error),
+<<<<<<< HEAD
     #[error(transparent)]
     Service(#[from] service::Error),
     #[error("Cannot merge the configuration given")]
     CannotMergeConfig,
+=======
+    #[error("The supervisor service could not send the message")]
+    SendResponse,
+>>>>>>> 5a458ec8b (Move send error to correct place)
 }
 
 #[derive(Debug, Deserialize)]
@@ -246,47 +251,37 @@ impl AgamaService for Service {
             Self::Message::GetConfig { respond_to } => {
                 respond_to
                     .send(self.get_config().await?)
-                    .map_err(|_| service::Error::SendResponse)?;
+                    .map_err(|_| Error::SendResponse)?;
             }
             Self::Message::UpdateConfig { config } => {
-                self.update_config(config)
-                    .await
-                    .map_err(|_| service::Error::SendResponse)?;
+                self.update_config(config).await?;
             }
             Self::Message::PatchConfig { config } => {
-                self.patch_config(config)
-                    .await
-                    .map_err(|_| service::Error::SendResponse)?;
+                self.patch_config(config).await?;
             }
             Self::Message::GetScopeConfig { scope, respond_to } => {
                 respond_to
                     .send(self.get_scope_config(scope).await)
-                    .map_err(|_| service::Error::SendResponse)?;
+                    .map_err(|_| Error::SendResponse)?;
             }
             Self::Message::UpdateScopeConfig { config } => {
-                self.update_scope_config(config)
-                    .await
-                    .map_err(|_| service::Error::SendResponse)?;
+                self.update_scope_config(config).await?;
             }
-            Self::Message::PatchScopeConfig { config } => {
-                self.patch_scope_config(config)
-                    .await
-                    .map_err(|_| service::Error::SendResponse)?;
-            }
+            Self::Message::PatchScopeConfig { config } => self.patch_scope_config(config).await?,
             Self::Message::GetProposal { respond_to } => {
                 respond_to
                     .send(self.get_proposal().await.cloned())
-                    .map_err(|_| service::Error::SendResponse)?;
+                    .map_err(|_| Error::SendResponse)?;
             }
             Self::Message::GetSystem { respond_to } => {
                 respond_to
                     .send(self.get_system().await?.clone())
-                    .map_err(|_| service::Error::SendResponse)?;
+                    .map_err(|_| Error::SendResponse)?;
             }
             Self::Message::GetUserConfig { respond_to } => {
                 respond_to
                     .send(self.get_user_config().await.clone())
-                    .map_err(|_| service::Error::SendResponse)?;
+                    .map_err(|_| Error::SendResponse)?;
             }
             Self::Message::RunAction { action } => {
                 self.run_action(action).await?;

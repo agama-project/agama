@@ -33,12 +33,6 @@ use core::future::Future;
 use std::{any, error};
 use tokio::sync::mpsc;
 
-#[derive(thiserror::Error, Debug)]
-pub enum Error {
-    #[error("The service could not send the message")]
-    SendResponse,
-}
-
 /// Implements the basic behavior for an Agama service.
 ///
 /// It is responsible for:
@@ -54,7 +48,7 @@ pub enum Error {
 /// perform through a [mpsc::UnboundedReceiver
 /// channel](tokio::sync::mpsc::UnboundedReceiver).
 pub trait Service: Send {
-    type Err: From<Error> + error::Error;
+    type Err: error::Error;
     type Message: Send;
 
     /// Returns the service name used for logging and debugging purposes.
