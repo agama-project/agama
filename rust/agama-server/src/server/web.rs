@@ -62,8 +62,6 @@ pub struct ServerState {
 
 /// Sets up and returns the axum service for the manager module
 pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError> {
-    // let l10n = L10nModel::new_with_locale(&LocaleId::default()).unwrap();
-    // let l10n = L10nAgent::new(l10n);
     let supervisor = supervisor::Handler::start(events).await.unwrap();
     let state = ServerState { supervisor };
 
