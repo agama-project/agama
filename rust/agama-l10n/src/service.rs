@@ -50,6 +50,8 @@ pub enum Error {
 pub enum Action {
     #[serde(rename = "configureL10n")]
     ConfigureSystem(SystemConfig),
+    #[serde(rename = "installL10n")]
+    Commit,
 }
 
 #[derive(Debug, Deserialize)]
@@ -123,6 +125,18 @@ where
         &self.state.system
     }
 
+    fn get_config(&self) -> UserConfig {
+        (&self.state.config).into()
+    }
+
+    fn set_config(&mut self, user_config: &UserConfig) -> Result<(), Error> {
+        self.state.config.merge(user_config)
+    }
+
+    fn get_proposal(&self) -> Proposal {
+        (&self.state.config).into()
+    }
+
     // The system state is automatically updated by the monitor.
     fn configure_system(&mut self, config: SystemConfig) -> Result<(), Error> {
         if let Some(language) = &config.language {
@@ -136,21 +150,16 @@ where
         Ok(())
     }
 
-    fn get_config(&self) -> UserConfig {
-        (&self.state.config).into()
-    }
-
-    fn set_config(&mut self, user_config: &UserConfig) -> Result<(), Error> {
-        self.state.config.merge(user_config)
-    }
-
-    fn get_proposal(&self) -> Proposal {
-        (&self.state.config).into()
+    fn commit(&self) -> Result<(), Error> {
+        let proposal = self.get_proposal();
+        self.model
+            .commit(proposal.locale, proposal.keymap, proposal.timezone)
     }
 
     fn run_action(&mut self, action: Action) -> Result<(), Error> {
         match action {
             Action::ConfigureSystem(config) => self.configure_system(config),
+            Action::Commit => self.commit(),
         }
     }
 }

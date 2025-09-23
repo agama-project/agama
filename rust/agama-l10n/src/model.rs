@@ -51,11 +51,12 @@ pub trait ModelAdapter: Send {
     fn set_keymap(&mut self, _keymap: KeymapId) -> Result<(), service::Error> {
         Ok(())
     }
+
     fn commit(
         &self,
-        _locale: &LocaleId,
-        _keymap: &KeymapId,
-        _timezone: &TimezoneId,
+        _locale: LocaleId,
+        _keymap: KeymapId,
+        _timezone: TimezoneId,
     ) -> Result<(), service::Error> {
         Ok(())
     }
@@ -155,9 +156,9 @@ impl ModelAdapter for Model {
 
     fn commit(
         &self,
-        locale: &LocaleId,
-        keymap: &KeymapId,
-        timezone: &TimezoneId,
+        locale: LocaleId,
+        keymap: KeymapId,
+        timezone: TimezoneId,
     ) -> Result<(), service::Error> {
         const ROOT: &str = "/mnt";
         const VCONSOLE_CONF: &str = "/etc/vconsole.conf";
