@@ -60,18 +60,18 @@ const ChangeDeviceTitle = ({ modelDevice }) => {
 
   if (modelDevice.filesystem) {
     // TRANSLATORS: %s is a formatted mount point like '"/home"'
-    return sprintf(_("Select a disk to format as %s"), formattedPath(modelDevice.mountPath));
+    return sprintf(_("Change the disk to format as %s"), formattedPath(modelDevice.mountPath));
   }
 
   const mountPaths = modelDevice.getMountPaths();
   const hasMountPaths = mountPaths.length > 0;
 
   if (!hasMountPaths) {
-    return _("Select a disk to configure");
+    return _("Change the disk to configure");
   }
 
   if (mountPaths.includes("/")) {
-    return _("Select a disk to install the system");
+    return _("Change the disk to install the system");
   }
 
   const newMountPaths = modelDevice.partitions
@@ -81,7 +81,7 @@ const ChangeDeviceTitle = ({ modelDevice }) => {
   return sprintf(
     // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
     // single mount point in the singular case).
-    _("Select a disk to create %s"),
+    _("Change the disk to create %s"),
     formatList(newMountPaths),
   );
 };

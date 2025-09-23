@@ -174,7 +174,7 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
       >
         <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
           {/** TODO: choose one, "add" or "add_circle", and remove the other at Icon.tsx */}
-          <Icon name="add_circle" /> {_("Add another device")}
+          <Icon name="add_circle" /> {_("More devices")}
         </Flex>
       </MenuButton>
       {deviceSelectorOpen && (
