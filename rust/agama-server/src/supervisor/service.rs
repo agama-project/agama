@@ -33,15 +33,10 @@ use tokio::sync::{mpsc, oneshot};
 pub enum Error {
     #[error(transparent)]
     L10n(#[from] l10n::handler::Error),
-<<<<<<< HEAD
-    #[error(transparent)]
-    Service(#[from] service::Error),
     #[error("Cannot merge the configuration given")]
     CannotMergeConfig,
-=======
     #[error("The supervisor service could not send the message")]
     SendResponse,
->>>>>>> 5a458ec8b (Move send error to correct place)
 }
 
 #[derive(Debug, Deserialize)]
