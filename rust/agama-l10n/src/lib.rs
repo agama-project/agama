@@ -39,7 +39,7 @@ pub mod handler;
 pub use handler::Handler;
 
 mod service;
-pub use service::Action;
+pub use service::SystemConfig;
 pub(crate) use service::{Message, Service};
 
 mod system_info;

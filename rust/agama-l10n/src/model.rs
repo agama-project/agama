@@ -52,7 +52,7 @@ pub trait ModelAdapter: Send {
         Ok(())
     }
 
-    fn commit(
+    fn install(
         &self,
         _locale: LocaleId,
         _keymap: KeymapId,
@@ -154,7 +154,7 @@ impl ModelAdapter for Model {
         Ok(())
     }
 
-    fn commit(
+    fn install(
         &self,
         locale: LocaleId,
         keymap: KeymapId,

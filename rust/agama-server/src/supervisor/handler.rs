@@ -50,6 +50,13 @@ impl Handler {
         Ok(Self { sender })
     }
 
+    pub async fn get_system(&self) -> Result<SystemInfo, Error> {
+        let result = self
+            .send_and_wait(|tx| Message::GetSystem { respond_to: tx })
+            .await?;
+        Ok(result)
+    }
+
     pub async fn get_config(&self) -> Result<InstallSettings, Error> {
         let result = self
             .send_and_wait(|tx| Message::GetConfig { respond_to: tx })
@@ -105,13 +112,6 @@ impl Handler {
     pub async fn get_proposal(&self) -> Result<Option<Proposal>, Error> {
         let result = self
             .send_and_wait(|tx| Message::GetProposal { respond_to: tx })
-            .await?;
-        Ok(result)
-    }
-
-    pub async fn get_system(&self) -> Result<SystemInfo, Error> {
-        let result = self
-            .send_and_wait(|tx| Message::GetSystem { respond_to: tx })
             .await?;
         Ok(result)
     }

@@ -38,9 +38,14 @@ pub enum Error {
 }
 
 #[derive(Debug, Deserialize)]
-#[serde(untagged)]
 pub enum Action {
-    L10n(l10n::Action),
+    #[serde(rename = "configureL10n")]
+    ConfigureL10n {
+        language: Option<String>,
+        keyboard: Option<String>,
+    },
+    #[serde(rename = "install")]
+    Install,
 }
 
 #[derive(Debug)]
@@ -210,7 +215,14 @@ impl Service {
 
     pub async fn run_action(&mut self, action: Action) -> Result<(), Error> {
         match action {
-            Action::L10n(action) => self.l10n.run_action(action).await?,
+            Action::ConfigureL10n { language, keyboard } => {
+                self.l10n
+                    .set_system(l10n::SystemConfig { language, keyboard })
+                    .await?;
+            }
+            Action::Install => {
+                self.l10n.install().await?;
+            }
         }
 
         Ok(())

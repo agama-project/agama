@@ -21,7 +21,6 @@
 use crate::{model::ModelAdapter, Config, Event, Proposal, SystemInfo, UserConfig};
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
 use agama_utils::{service, Service as AgamaService};
-use serde::Deserialize;
 use tokio::sync::{mpsc, oneshot};
 
 #[derive(thiserror::Error, Debug)]
@@ -46,22 +45,14 @@ pub enum Error {
     Generic(#[from] anyhow::Error),
 }
 
-#[derive(Debug, Deserialize)]
-pub enum Action {
-    #[serde(rename = "configureL10n")]
-    ConfigureSystem(SystemConfig),
-    #[serde(rename = "installL10n")]
-    Commit,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct SystemConfig {
-    pub language: Option<String>,
-    pub keyboard: Option<String>,
-}
-
 #[derive(Debug)]
 pub enum Message {
+    GetSystem {
+        respond_to: oneshot::Sender<SystemInfo>,
+    },
+    SetSystem {
+        config: SystemConfig,
+    },
     GetConfig {
         respond_to: oneshot::Sender<UserConfig>,
     },
@@ -71,18 +62,19 @@ pub enum Message {
     GetProposal {
         respond_to: oneshot::Sender<Proposal>,
     },
-    GetSystem {
-        respond_to: oneshot::Sender<SystemInfo>,
-    },
     UpdateKeymap {
         keymap: KeymapId,
     },
     UpdateLocale {
         locale: LocaleId,
     },
-    RunAction {
-        action: Action,
-    },
+    Install,
+}
+
+#[derive(Debug)]
+pub struct SystemConfig {
+    pub language: Option<String>,
+    pub keyboard: Option<String>,
 }
 
 pub struct Service<T>
@@ -125,6 +117,19 @@ where
         &self.state.system
     }
 
+    // The system state is automatically updated by the monitor.
+    fn set_system(&mut self, config: SystemConfig) -> Result<(), Error> {
+        if let Some(language) = &config.language {
+            self.model.set_locale(language.parse()?)?;
+        }
+
+        if let Some(keyboard) = &config.keyboard {
+            self.model.set_keymap(keyboard.parse()?)?;
+        };
+
+        Ok(())
+    }
+
     fn get_config(&self) -> UserConfig {
         (&self.state.config).into()
     }
@@ -137,30 +142,10 @@ where
         (&self.state.config).into()
     }
 
-    // The system state is automatically updated by the monitor.
-    fn configure_system(&mut self, config: SystemConfig) -> Result<(), Error> {
-        if let Some(language) = &config.language {
-            self.model.set_locale(language.parse()?)?;
-        }
-
-        if let Some(keyboard) = &config.keyboard {
-            self.model.set_keymap(keyboard.parse()?)?;
-        };
-
-        Ok(())
-    }
-
-    fn commit(&self) -> Result<(), Error> {
+    fn install(&self) -> Result<(), Error> {
         let proposal = self.get_proposal();
         self.model
-            .commit(proposal.locale, proposal.keymap, proposal.timezone)
-    }
-
-    fn run_action(&mut self, action: Action) -> Result<(), Error> {
-        match action {
-            Action::ConfigureSystem(config) => self.configure_system(config),
-            Action::Commit => self.commit(),
-        }
+            .install(proposal.locale, proposal.keymap, proposal.timezone)
     }
 }
 
@@ -197,8 +182,11 @@ where
                 self.state.system.keymap = keymap.clone();
                 _ = self.events.send(Event::KeymapChanged { keymap });
             }
-            Message::RunAction { action } => {
-                self.run_action(action).unwrap();
+            Message::SetSystem { config } => {
+                self.set_system(config).unwrap();
+            }
+            Message::Install => {
+                self.install().unwrap();
             }
         };
 
