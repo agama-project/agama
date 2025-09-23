@@ -22,8 +22,6 @@
 
 import React from "react";
 import {
-  Divider,
-  Stack,
   ExpandableSection,
   Content,
   DataListItem,
@@ -38,7 +36,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import Text from "~/components/core/Text";
 import MenuButton from "~/components/core/MenuButton";
-import MenuHeader from "~/components/core/MenuHeader";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
 import { Partition } from "~/api/storage/types/model";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -106,38 +103,6 @@ const partitionsLabelText = (device) => {
     "The following partitions will be mounted.",
     num,
   );
-};
-
-// This function (and maybe the following ones) only makes sense with the current temporary
-// organization of the information, see FIXME at PartitionsMenu
-const PartitionsMenuHeader = ({ texts, device }) => {
-  const hasPartitions = device.partitions.some((p: Partition) => p.mountPath);
-
-  const textsContent = texts.length ? (
-    <Stack>
-      {texts.map((text, idx) => (
-        <span key={idx}>{text}</span>
-      ))}
-    </Stack>
-  ) : null;
-
-  if (textsContent) {
-    if (hasPartitions)
-      return (
-        <MenuHeader
-          description={
-            <Stack hasGutter>
-              {textsContent}
-              {partitionsLabelText(device)}
-            </Stack>
-          }
-        />
-      );
-
-    return <MenuHeader description={textsContent} />;
-  }
-
-  return <MenuHeader description={partitionsLabelText(device)} />;
 };
 
 const optionalPartitionsTexts = (device) => {
@@ -212,6 +177,18 @@ const PartitionRow = ({ partition, device }) => {
   );
 };
 
+const PartitionsSectionHeader = ({ device }) => {
+  const texts = optionalPartitionsTexts(device);
+  const hasPartitions = device.partitions.some((p: Partition) => p.mountPath);
+  if (hasPartitions) {
+    texts.push(partitionsLabelText(device));
+  }
+
+  // FIXME: not really i18n friendly.
+  const textsContent = texts.map((text, idx) => <span key={idx}>{text} </span>);
+  return <Content component="p">{textsContent}</Content>;
+};
+
 export default function PartitionsSection({ device }) {
   const navigate = useNavigate();
   const { list, listIndex } = device;
@@ -222,13 +199,7 @@ export default function PartitionsSection({ device }) {
   // aiming for a different organization of the widgets (eg. using a MenuGroup with a label to
   // render the list of partition). At that point we will be able to better distribute the logic.
 
-  const optionalTexts = optionalPartitionsTexts(device);
   const items = [];
-  if (!!optionalTexts.length || hasPartitions)
-    items.push(
-      <PartitionsMenuHeader key="header" texts={optionalTexts} device={device} />,
-      <Divider key="divider-partitions" component="li" />,
-    );
 
   if (hasPartitions) {
     items.push(
@@ -240,21 +211,10 @@ export default function PartitionsSection({ device }) {
     );
   }
 
-  items.push(
-    <MenuButton.Item
-      key="add-partition"
-      itemId="add-partition"
-      description={_("Add another partition or mount an existing one")}
-      onClick={() => navigate(newPartitionPath)}
-    >
-      {_("Add or use partition")}
-    </MenuButton.Item>,
-  );
-
   return (
     <ExpandableSection toggleText={driveUtils.contentDescription(device)}>
       <NestedContent margin="mxXl">
-        <Content component="p">{_("Lorem ipsum dolor sit amet")}</Content>
+        <PartitionsSectionHeader device={device} />
         <DataList aria-label={"List of partitions defined for [CHANGEME]"} isCompact>
           {device.partitions
             .filter((p: Partition) => p.mountPath)
@@ -263,7 +223,7 @@ export default function PartitionsSection({ device }) {
             })}
         </DataList>
         <Content component="p" style={{ marginBlockStart: "1rem" }}>
-          <Button variant="plain" key="add-partition">
+          <Button variant="plain" key="add-partition" onClick={() => navigate(newPartitionPath)}>
             <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapXs" }}>
               {/** TODO: choose one, "add" or "add_circle", and remove the other at Icon.tsx */}
               <Icon name="add_circle" /> {_("Add or use partition")}
