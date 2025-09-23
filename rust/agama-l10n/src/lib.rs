@@ -39,7 +39,7 @@ pub mod handler;
 pub use handler::Handler;
 
 mod service;
-pub use service::L10nAction;
+pub use service::Action;
 pub(crate) use service::{Message, Service};
 
 mod system_info;
@@ -63,7 +63,6 @@ pub(crate) use model::{Keymap, LocaleEntry, Model, TimezoneEntry};
 mod monitor;
 pub(crate) use monitor::Monitor;
 
-pub mod actions;
 pub(crate) mod dbus;
 pub mod helpers;
 
@@ -111,10 +110,7 @@ pub async fn start_service(events: EventsSender) -> Result<Handler, handler::Err
 #[cfg(test)]
 mod tests {
     use crate::{
-        model::{
-            keyboard::KeymapsDatabase, locale::LocalesDatabase, timezone::TimezonesDatabase,
-            L10nAdapter,
-        },
+        model::{KeymapsDatabase, LocalesDatabase, ModelAdapter, TimezonesDatabase},
         service, Event, EventsReceiver, Handler, Keymap, LocaleEntry, Service, TimezoneEntry,
         UserConfig,
     };
@@ -127,17 +123,17 @@ mod tests {
         pub timezones: TimezonesDatabase,
     }
 
-    impl L10nAdapter for TestModel {
-        fn locales_db(&self) -> &LocalesDatabase {
-            &self.locales
+    impl ModelAdapter for TestModel {
+        fn locales_db(&mut self) -> &mut LocalesDatabase {
+            &mut self.locales
         }
 
-        fn keymaps_db(&self) -> &KeymapsDatabase {
-            &self.keymaps
+        fn keymaps_db(&mut self) -> &mut KeymapsDatabase {
+            &mut self.keymaps
         }
 
-        fn timezones_db(&self) -> &TimezonesDatabase {
-            &self.timezones
+        fn timezones_db(&mut self) -> &mut TimezonesDatabase {
+            &mut self.timezones
         }
 
         fn locale(&self) -> LocaleId {

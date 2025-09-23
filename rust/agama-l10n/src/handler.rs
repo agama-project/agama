@@ -20,7 +20,7 @@
 
 //! Defines the handler to interact with the localization service.
 
-use crate::{monitor, service, L10nAction, Message, Proposal, SystemInfo, UserConfig};
+use crate::{monitor, service, Action, Message, Proposal, SystemInfo, UserConfig};
 use agama_utils::{handler, Handler as AgamaHandler};
 use tokio::sync::mpsc;
 
@@ -76,9 +76,8 @@ impl Handler {
         Ok(result)
     }
 
-    pub async fn dispatch_action(&self, action: L10nAction) -> Result<(), Error> {
-        self.send(Message::DispatchAction { action })?;
-        Ok(())
+    pub async fn run_action(&self, action: Action) -> Result<(), Error> {
+        self.send(Message::RunAction { action })
     }
 }
 

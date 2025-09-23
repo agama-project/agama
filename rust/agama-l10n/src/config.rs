@@ -38,15 +38,15 @@ impl Config {
 
     pub fn merge(&mut self, config: &UserConfig) -> Result<(), service::Error> {
         if let Some(language) = &config.language {
-            self.locale = language.parse().map_err(service::Error::InvalidLocale)?
+            self.locale = language.parse()?
         }
 
         if let Some(keyboard) = &config.keyboard {
-            self.keymap = keyboard.parse().map_err(service::Error::InvalidKeymap)?
+            self.keymap = keyboard.parse()?
         }
 
         if let Some(timezone) = &config.timezone {
-            self.timezone = timezone.parse().map_err(service::Error::InvalidTimezone)?;
+            self.timezone = timezone.parse()?;
         }
 
         Ok(())

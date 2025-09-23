@@ -149,11 +149,14 @@ async fn set_scope_config(
 }
 
 async fn run_action(
-    State(_state): State<ServerState>,
-    Json(_action): Json<Action>,
+    State(state): State<ServerState>,
+    Json(action): Json<Action>,
 ) -> Result<(), Error> {
-    // state.dispatch_action(action).await;
-    Ok(())
+    state
+        .supervisor
+        .run_action(action)
+        .await
+        .map_err(|e| e.into())
 }
 
 async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response> {

@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    supervisor::{service, Message, Proposal, Scope, ScopeConfig, Service, SystemInfo},
+    supervisor::{service, Action, Message, Proposal, Scope, ScopeConfig, Service, SystemInfo},
     web::EventsSender,
 };
 use agama_lib::install_settings::InstallSettings;
@@ -114,6 +114,10 @@ impl Handler {
             .send_and_wait(|tx| Message::GetSystem { respond_to: tx })
             .await?;
         Ok(result)
+    }
+
+    pub async fn run_action(&self, action: Action) -> Result<(), Error> {
+        self.send(Message::RunAction { action })
     }
 }
 

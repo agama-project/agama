@@ -40,7 +40,7 @@ pub enum Error {
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
 pub enum Action {
-    L10n(l10n::L10nAction),
+    L10n(l10n::Action),
 }
 
 #[derive(Debug)]
@@ -64,9 +64,6 @@ pub enum Message {
     PatchScopeConfig {
         config: ScopeConfig,
     },
-    RunAction {
-        action: Action,
-    },
     GetSystem {
         respond_to: oneshot::Sender<SystemInfo>,
     },
@@ -75,6 +72,9 @@ pub enum Message {
     },
     GetUserConfig {
         respond_to: oneshot::Sender<InstallSettings>,
+    },
+    RunAction {
+        action: Action,
     },
 }
 
@@ -196,13 +196,6 @@ impl Service {
         Ok(())
     }
 
-    // TODO: report error if the action fails.
-    pub async fn dispatch_action(&mut self, action: Action) {
-        match action {
-            Action::L10n(l10n_action) => self.l10n.dispatch_action(l10n_action).await.unwrap(),
-        }
-    }
-
     /// It returns the current proposal, if any.
     pub async fn get_proposal(&self) -> Option<&Proposal> {
         self.proposal.as_ref()
@@ -214,6 +207,14 @@ impl Service {
             localization: self.l10n.get_system().await?,
         })
     }
+
+    pub async fn run_action(&mut self, action: Action) -> Result<(), Error> {
+        match action {
+            Action::L10n(action) => self.l10n.run_action(action).await?,
+        }
+
+        Ok(())
+    }
 }
 
 impl AgamaService for Service {
@@ -224,8 +225,8 @@ impl AgamaService for Service {
         &mut self.messages
     }
 
-    async fn dispatch(&mut self, command: Self::Message) -> std::result::Result<(), Self::Err> {
-        match command {
+    async fn dispatch(&mut self, message: Self::Message) -> std::result::Result<(), Self::Err> {
+        match message {
             Self::Message::GetConfig { respond_to } => {
                 respond_to
                     .send(self.get_config().await)
@@ -271,8 +272,8 @@ impl AgamaService for Service {
                     .send(self.get_user_config().await.clone())
                     .map_err(|_| service::Error::SendResponse)?;
             }
-            _ => {
-                unimplemented!("TODO");
+            Self::Message::RunAction { action } => {
+                self.run_action(action).await?;
             }
         }
         Ok(())

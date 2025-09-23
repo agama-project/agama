@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{actions, model::L10nAdapter, Config, Event, Model, Proposal, SystemInfo, UserConfig};
+use crate::{model::ModelAdapter, Config, Event, Proposal, SystemInfo, UserConfig};
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
 use agama_utils::{service, Service as AgamaService};
 use serde::Deserialize;
@@ -28,16 +28,16 @@ use tokio::sync::{mpsc, oneshot};
 pub enum Error {
     #[error("Unknown locale code: {0}")]
     UnknownLocale(LocaleId),
-    #[error("Invalid locale: {0}")]
-    InvalidLocale(#[from] InvalidLocaleId),
-    #[error("Unknown timezone: {0}")]
-    UnknownTimezone(String),
-    #[error("Invalid timezone")]
-    InvalidTimezone(#[from] InvalidTimezoneId),
     #[error("Unknown keymap: {0}")]
     UnknownKeymap(KeymapId),
+    #[error("Unknown timezone: {0}")]
+    UnknownTimezone(String),
+    #[error("Invalid locale: {0}")]
+    InvalidLocale(#[from] InvalidLocaleId),
     #[error("Invalid keymap: {0}")]
     InvalidKeymap(#[from] InvalidKeymapId),
+    #[error("Invalid timezone")]
+    InvalidTimezone(#[from] InvalidTimezoneId),
     #[error("Could not apply the l10n settings: {0}")]
     Commit(#[from] std::io::Error),
     #[error(transparent)]
@@ -47,9 +47,15 @@ pub enum Error {
 }
 
 #[derive(Debug, Deserialize)]
-pub enum L10nAction {
+pub enum Action {
     #[serde(rename = "configureL10n")]
-    ConfigureSystem(actions::ConfigureSystemAction),
+    ConfigureSystem(SystemConfig),
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SystemConfig {
+    pub language: Option<String>,
+    pub keyboard: Option<String>,
 }
 
 #[derive(Debug)]
@@ -66,20 +72,20 @@ pub enum Message {
     GetSystem {
         respond_to: oneshot::Sender<SystemInfo>,
     },
-    DispatchAction {
-        action: L10nAction,
-    },
     UpdateKeymap {
         keymap: KeymapId,
     },
     UpdateLocale {
         locale: LocaleId,
     },
+    RunAction {
+        action: Action,
+    },
 }
 
 pub struct Service<T>
 where
-    T: L10nAdapter,
+    T: ModelAdapter,
 {
     state: State,
     model: T,
@@ -94,16 +100,15 @@ struct State {
 
 impl<T> Service<T>
 where
-    T: L10nAdapter,
+    T: ModelAdapter,
 {
     pub fn new(
-        model: T,
+        mut model: T,
         messages: mpsc::UnboundedReceiver<Message>,
         events: mpsc::UnboundedSender<Event>,
     ) -> Service<T> {
-        let system = SystemInfo::read_from(&model);
+        let system = SystemInfo::read_from(&mut model);
         let config = Config::new_from(&system);
-
         let state = State { system, config };
 
         Self {
@@ -112,6 +117,23 @@ where
             messages,
             events,
         }
+    }
+
+    fn get_system(&self) -> &SystemInfo {
+        &self.state.system
+    }
+
+    // The system state is automatically updated by the monitor.
+    fn configure_system(&mut self, config: SystemConfig) -> Result<(), Error> {
+        if let Some(language) = &config.language {
+            self.model.set_locale(language.parse()?)?;
+        }
+
+        if let Some(keyboard) = &config.keyboard {
+            self.model.set_keymap(keyboard.parse()?)?;
+        };
+
+        Ok(())
     }
 
     fn get_config(&self) -> UserConfig {
@@ -126,20 +148,16 @@ where
         (&self.state.config).into()
     }
 
-    fn get_system(&self) -> &SystemInfo {
-        &self.state.system
-    }
-
-    fn dispatch(&mut self, action: L10nAction) -> anyhow::Result<()> {
+    fn run_action(&mut self, action: Action) -> Result<(), Error> {
         match action {
-            L10nAction::ConfigureSystem(action) => action.run(self),
+            Action::ConfigureSystem(config) => self.configure_system(config),
         }
     }
 }
 
 impl<T> AgamaService for Service<T>
 where
-    T: L10nAdapter,
+    T: ModelAdapter,
 {
     type Err = service::Error;
     type Message = Message;
@@ -162,9 +180,6 @@ where
             Message::GetSystem { respond_to } => {
                 respond_to.send(self.get_system().clone()).unwrap();
             }
-            Message::DispatchAction { action } => {
-                self.dispatch(action).unwrap();
-            }
             Message::UpdateLocale { locale } => {
                 self.state.system.locale = locale.clone();
                 _ = self.events.send(Event::LocaleChanged { locale });
@@ -172,6 +187,9 @@ where
             Message::UpdateKeymap { keymap } => {
                 self.state.system.keymap = keymap.clone();
                 _ = self.events.send(Event::KeymapChanged { keymap });
+            }
+            Message::RunAction { action } => {
+                self.run_action(action).unwrap();
             }
         };
 
