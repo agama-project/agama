@@ -27,7 +27,7 @@ module Agama
       # HTTP client to interact with the localization API.
       class Localization < Base
         def finish
-          post("l10n/finish", nil)
+          post("v2/action", "install")
         end
       end
     end
