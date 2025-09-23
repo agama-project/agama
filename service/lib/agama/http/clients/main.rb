@@ -24,10 +24,10 @@ require "agama/http/clients/base"
 module Agama
   module HTTP
     module Clients
-      # HTTP client to interact with the localization API.
-      class Localization < Base
-        def finish
-          post("v2/action", "install")
+      # HTTP client to interact with the HTTP API.
+      class Main < Base
+        def install
+          post("v2/action", '"install"')
         end
       end
     end

@@ -53,7 +53,7 @@ describe Agama::Manager do
       Agama::Users, write: nil, issues: []
     )
   end
-  let(:locale) { instance_double(Agama::HTTP::Clients::Localization, finish: nil) }
+  let(:http_client) { instance_double(Agama::HTTP::Clients::Main, install: nil) }
   let(:network) { instance_double(Agama::Network, install: nil, startup: nil) }
   let(:storage) do
     instance_double(
@@ -72,7 +72,7 @@ describe Agama::Manager do
   before do
     allow(Agama::Network).to receive(:new).and_return(network)
     allow(Agama::ProxySetup).to receive(:instance).and_return(proxy)
-    allow(Agama::HTTP::Clients::Localization).to receive(:new).and_return(locale)
+    allow(Agama::HTTP::Clients::Main).to receive(:new).and_return(http_client)
     allow(Agama::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(Agama::DBus::Clients::Storage).to receive(:new).and_return(storage)
     allow(Agama::Users).to receive(:new).and_return(users)
@@ -156,7 +156,7 @@ describe Agama::Manager do
       expect(network).to receive(:install)
       expect(software).to receive(:install)
       expect(software).to receive(:finish)
-      expect(locale).to receive(:finish)
+      expect(http_client).to receive(:install)
       expect(storage).to receive(:install)
       expect(scripts).to receive(:run).with("postPartitioning")
       expect(storage).to receive(:finish)
