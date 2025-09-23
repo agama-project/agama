@@ -29,8 +29,6 @@ pub enum Error {
     #[error(transparent)]
     Handler(#[from] handler::Error<Message>),
     #[error(transparent)]
-    Service(#[from] service::Error),
-    #[error(transparent)]
     Monitor(#[from] monitor::Error),
 }
 
