@@ -174,7 +174,11 @@ async fn get_proposal(State(state): State<SoftwareState>) -> Result<Json<Softwar
     let patterns = config.patterns.unwrap_or(HashMap::new());
     let proposal = SoftwareProposal {
         size: "TODO".to_string(),
-        patterns: patterns.iter().filter(|(_name, selected)| **selected).map(|(name,_selected)| (name.clone(), SelectedBy::User)).collect()
+        patterns: patterns
+            .iter()
+            .filter(|(_name, selected)| **selected)
+            .map(|(name, _selected)| (name.clone(), SelectedBy::User))
+            .collect(),
     };
 
     Ok(Json(proposal))
