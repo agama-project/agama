@@ -64,7 +64,7 @@ module Agama
 
         def errors?
           # TODO: implement it together with checking type error
-          JSON.parse(get("software/issues"))
+          JSON.parse(get("software/issues/software"))
         end
 
         def get_resolvables(_unique_id, _type, _optional)
