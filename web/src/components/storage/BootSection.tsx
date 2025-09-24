@@ -34,16 +34,16 @@ import { _ } from "~/i18n";
 function bootLabel(isDefault: boolean, device: StorageDevice?) {
   if (isDefault) {
     return _(
-      "If needed, partitions to boot will be automatically setup at the installation disk \
+      "If needed, partitions to boot will be automatically set up at the installation disk \
       (ie. the one containing the '/' file system).",
     );
   }
 
-  if (!device) return _("The installer will not automatically setup any partition for booting.");
+  if (!device) return _("The installer will not automatically set up any partition for booting.");
 
   // TRANSLATORS: %s is replaced by a disk name and size (eg. "sda (500GiB)")
   return sprintf(
-    _("If needed, partitions to boot will be automatically setup at %s"),
+    _("If needed, partitions to boot will be automatically set up at %s"),
     deviceLabel(device),
   );
 }
