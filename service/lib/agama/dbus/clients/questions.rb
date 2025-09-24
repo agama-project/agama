@@ -132,6 +132,7 @@ module Agama
             question.qclass,
             question.text,
             question.options.map(&:to_s),
+            question.option_labels,
             question.default_option.to_s,
             question.data
           )
@@ -146,6 +147,7 @@ module Agama
             question.qclass,
             question.text,
             question.options.map(&:to_s),
+            question.option_labels,
             question.default_option.to_s,
             question.data
           )

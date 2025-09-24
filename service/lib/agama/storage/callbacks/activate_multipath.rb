@@ -63,12 +63,13 @@ module Agama
         #
         # @return [Question]
         def question
-          text = "The system seems to have multipath hardware. " \
-                 "Do you want to activate multipath?"
+          text = _("The system seems to have multipath hardware. " \
+                   "Do you want to activate multipath?")
 
           Question.new(
             qclass:         "storage.activate_multipath",
             text:           text,
+            # FIXME: can we change yes to Yes now?
             options:        [:yes, :no],
             default_option: :yes
           )

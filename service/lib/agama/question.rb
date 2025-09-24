@@ -19,12 +19,16 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast"
+
 module Agama
   # This class represents a question to be created
   #
   # Questions are used when some information needs to be asked. For example, a question could be
   # created for asking whether to continue or not when an error is detected.
   class Question
+    include Yast::I18n
+
     # Class of the question
     # Helps with identification of same type of questions
     #
@@ -42,6 +46,14 @@ module Agama
     #
     # @return [Array<Symbol>]
     attr_reader :options
+
+    # User visible (translated) option labels
+    #
+    # FIXME: make sure the caller does provide translations,
+    # probably even at the cost of more verbose usage
+    #
+    # @return [Array<Symbol>]
+    attr_reader :option_labels
 
     # Default option to use as answer
     #
@@ -63,6 +75,7 @@ module Agama
       @qclass = qclass
       @text = text
       @options = options
+      @option_labels = options.map { |sym| _(sym.to_s) }
       @default_option = default_option
       @data = data
     end
