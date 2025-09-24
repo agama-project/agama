@@ -20,10 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { LegacyRef } from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
+import MenuButton, { CustomToggleProps, MenuButtonItem } from "~/components/core/MenuButton";
 
 it("toggles the menu state on click", async () => {
   const { user } = plainRender(
@@ -236,4 +236,42 @@ it("calls the item action on click", async () => {
   const item2 = within(menu).getByRole("menuitem", { name: "item 2" });
   await user.click(item2);
   expect(action).toHaveBeenCalled();
+});
+
+it("allows receiving a fully custom toggle", async () => {
+  const LinkToggle = React.forwardRef(
+    (props: CustomToggleProps, ref: LegacyRef<HTMLAnchorElement>) => (
+      <a ref={ref} href="#" onClick={props.onClick}>
+        Link as a custom toggle
+      </a>
+    ),
+  );
+
+  const { user } = plainRender(
+    <MenuButton
+      menuProps={{ "aria-label": "test menu" }}
+      customToggle={<LinkToggle />}
+      items={[
+        <MenuButtonItem
+          key="item1"
+          items={[
+            <MenuButtonItem key="item11">{"item 1-1"}</MenuButtonItem>,
+            <MenuButtonItem key="item12">{"item 1-2"}</MenuButtonItem>,
+          ]}
+        >
+          item 1
+        </MenuButtonItem>,
+      ]}
+    />,
+  );
+  const toggle = screen.getByRole("link", { name: "Link as a custom toggle" });
+  await user.click(toggle);
+  const menu = screen.getByRole("menu", { name: "test menu" });
+  const item1 = within(menu).getByRole("menuitem", { name: "item 1" });
+  // Jsdom does not report correct styles, see https://github.com/jsdom/jsdom/issues/2986.
+  // const item11 = within(menu).getByRole("menuitem", { name: "item 1-1" });
+  // expect(item11).not.toBeVisible();
+  expect(item1).toHaveAttribute("aria-current", "false");
+  await user.click(item1);
+  expect(item1).toHaveAttribute("aria-current", "true");
 });
