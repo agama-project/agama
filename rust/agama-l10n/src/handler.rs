@@ -21,7 +21,6 @@
 //! Defines the handler to interact with the localization service.
 
 use crate::{
-    monitor,
     proposal::Proposal,
     service::{Message, SystemConfig},
     system_info::SystemInfo,
@@ -34,8 +33,6 @@ use tokio::sync::mpsc;
 pub enum Error {
     #[error(transparent)]
     Handler(#[from] handler::Error<Message>),
-    #[error(transparent)]
-    Monitor(#[from] monitor::Error),
 }
 
 /// Handler to interact with the service.
