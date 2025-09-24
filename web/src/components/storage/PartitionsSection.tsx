@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useId, useState } from "react";
 import {
   ExpandableSection,
   Content,
@@ -32,6 +32,8 @@ import {
   DataList,
   Button,
   Flex,
+  ExpandableSectionToggle,
+  ExpandableSectionProps,
 } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import Text from "~/components/core/Text";
@@ -46,6 +48,7 @@ import * as partitionUtils from "~/components/storage/utils/partition";
 import { _, n_ } from "~/i18n";
 import { NestedContent } from "../core";
 import { Icon } from "../layout";
+import { IconProps } from "../layout/Icon";
 
 const PartitionMenuItem = ({ device, mountPath }) => {
   const partition = device.getPartition(mountPath);
@@ -191,9 +194,19 @@ const PartitionsSectionHeader = ({ device }) => {
 
 export default function PartitionsSection({ device }) {
   const navigate = useNavigate();
+  const toggleId = useId();
+  const contentId = useId();
+  const [isExpanded, setIsExpanded] = useState(false);
   const { list, listIndex } = device;
   const newPartitionPath = generateEncodedPath(PATHS.addPartition, { list, listIndex });
   const hasPartitions = device.partitions.some((p: Partition) => p.mountPath);
+
+  const toggle = () => setIsExpanded(!isExpanded);
+  const iconName: IconProps["name"] = isExpanded ? "unfold_less" : "unfold_more";
+  const commonProps: Pick<
+    ExpandableSectionProps,
+    "toggleId" | "contentId" | "isExpanded" | "direction"
+  > = { toggleId, contentId, isExpanded, direction: "down" };
 
   // FIXME: All strings and widgets are now calculated and assembled here. But we are actually
   // aiming for a different organization of the widgets (eg. using a MenuGroup with a label to
@@ -212,25 +225,44 @@ export default function PartitionsSection({ device }) {
   }
 
   return (
-    <ExpandableSection toggleText={driveUtils.contentDescription(device)}>
-      <NestedContent margin="mxXl">
-        <PartitionsSectionHeader device={device} />
-        <DataList aria-label={"List of partitions defined for [CHANGEME]"} isCompact>
-          {device.partitions
-            .filter((p: Partition) => p.mountPath)
-            .map((p: Partition) => {
-              return <PartitionRow key={p.mountPath} partition={p} device={device} />;
-            })}
-        </DataList>
-        <Content component="p" style={{ marginBlockStart: "1rem" }}>
-          <Button variant="plain" key="add-partition" onClick={() => navigate(newPartitionPath)}>
-            <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapXs" }}>
-              {/** TODO: choose one, "add" or "add_circle", and remove the other at Icon.tsx */}
-              <Icon name="add_circle" /> {_("Add or use partition")}
-            </Flex>
-          </Button>
-        </Content>
-      </NestedContent>
-    </ExpandableSection>
+    <Flex direction={{ default: "column" }}>
+      <ExpandableSectionToggle
+        {...commonProps}
+        onToggle={toggle}
+        className="no-default-icon"
+        style={{ marginBlock: 0 }}
+      >
+        <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+          {driveUtils.contentDescription(device)}
+          <Icon name={iconName} />
+        </Flex>
+      </ExpandableSectionToggle>
+      <ExpandableSection isDetached {...commonProps} style={{ maxWidth: "fit-content" }}>
+        <NestedContent margin="mxLg">
+          <NestedContent margin="mySm">
+            <PartitionsSectionHeader device={device} />
+            <DataList aria-label={"List of partitions defined for [CHANGEME]"} isCompact>
+              {device.partitions
+                .filter((p: Partition) => p.mountPath)
+                .map((p: Partition) => {
+                  return <PartitionRow key={p.mountPath} partition={p} device={device} />;
+                })}
+            </DataList>
+            <Content component="p" style={{ marginBlockStart: "1rem" }}>
+              <Button
+                variant="plain"
+                key="add-partition"
+                onClick={() => navigate(newPartitionPath)}
+              >
+                <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapXs" }}>
+                  {/** TODO: choose one, "add" or "add_circle", and remove the other at Icon.tsx */}
+                  <Icon name="add_circle" /> {_("Add or use partition")}
+                </Flex>
+              </Button>
+            </Content>
+          </NestedContent>
+        </NestedContent>
+      </ExpandableSection>
+    </Flex>
   );
 }
