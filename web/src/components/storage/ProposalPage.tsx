@@ -41,7 +41,7 @@ import {
   TabTitleText,
 } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import { Page, Link } from "~/components/core/";
+import { Page, Link, NestedContent } from "~/components/core/";
 import { Icon, Loading } from "~/components/layout";
 import ConfigEditor from "./ConfigEditor";
 import ConnectedDevicesMenu from "./ConnectedDevicesMenu";
@@ -245,36 +245,42 @@ function ProposalSections(): React.ReactNode {
                   eventKey={0}
                   title={<TabTitleText>{_("Installation devices")}</TabTitleText>}
                 >
-                  <Stack hasGutter>
-                    <div className={textStyles.textColorPlaceholder}>
-                      {_(
-                        "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
-                      )}
-                    </div>
-                    <ConfigEditor />
-                  </Stack>
+                  <NestedContent margin="mtXs">
+                    <Stack hasGutter>
+                      <div className={textStyles.textColorPlaceholder}>
+                        {_(
+                          "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
+                        )}
+                      </div>
+                      <ConfigEditor />
+                    </Stack>
+                  </NestedContent>
                 </Tab>
                 <Tab
                   key="encryption"
                   eventKey={1}
                   title={<TabTitleText>{_("Encryption")}</TabTitleText>}
                 >
-                  <EncryptionSection />
+                  <NestedContent margin="mtXs">
+                    <EncryptionSection />
+                  </NestedContent>
                 </Tab>
                 <Tab
                   key="system"
                   eventKey={2}
                   title={<TabTitleText>{_("Boot options")}</TabTitleText>}
                 >
-                  <Stack hasGutter>
-                    <div className={textStyles.textColorPlaceholder}>
-                      {_(
-                        "To ensure the new system is able to boot, the installer may need to create or configure some \
-                        partitions in the appropriate disk.",
-                      )}
-                    </div>
-                    <div>{_("Description of the status and button to edit")}</div>
-                  </Stack>
+                  <NestedContent margin="mtXs">
+                    <Stack hasGutter>
+                      <div className={textStyles.textColorPlaceholder}>
+                        {_(
+                          "To ensure the new system is able to boot, the installer may need to create or configure some \
+                          partitions in the appropriate disk.",
+                        )}
+                      </div>
+                      <div>{_("Description of the status and button to edit")}</div>
+                    </Stack>
+                  </NestedContent>
                 </Tab>
               </Tabs>
             </Page.Section>
