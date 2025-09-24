@@ -32,11 +32,11 @@ pub enum Scope {
 
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(untagged)]
-pub enum ScopeConfig {
+pub enum ConfigScope {
     L10n(l10n::UserConfig),
 }
 
-impl ScopeConfig {
+impl ConfigScope {
     pub fn to_scope(&self) -> Scope {
         match &self {
             Self::L10n(_) => Scope::L10n,

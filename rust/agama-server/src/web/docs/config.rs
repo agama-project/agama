@@ -32,14 +32,14 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
     fn paths(&self) -> Paths {
         PathsBuilder::new()
             .path_from::<crate::server::web::__path_get_full_config>()
-            .path_from::<crate::server::web::__path_get_scope_full_config>()
-            .path_from::<crate::server::web::__path_get_scope_user_config>()
-            .path_from::<crate::server::web::__path_get_user_config>()
-            .path_from::<crate::server::web::__path_run_action>()
+            .path_from::<crate::server::web::__path_get_full_config_scope>()
+            .path_from::<crate::server::web::__path_get_config>()
             .path_from::<crate::server::web::__path_put_config>()
-            .path_from::<crate::server::web::__path_put_scope_config>()
             .path_from::<crate::server::web::__path_patch_config>()
-            .path_from::<crate::server::web::__path_patch_scope_config>()
+            .path_from::<crate::server::web::__path_get_config_scope>()
+            .path_from::<crate::server::web::__path_put_config_scope>()
+            .path_from::<crate::server::web::__path_patch_config_scope>()
+            .path_from::<crate::server::web::__path_run_action>()
             .build()
     }
 

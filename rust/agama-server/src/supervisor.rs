@@ -28,7 +28,7 @@ mod service;
 pub use service::Action;
 
 mod scope;
-pub use scope::{Scope, ScopeConfig};
+pub use scope::{ConfigScope, Scope};
 
 mod event;
 mod proposal;
@@ -100,7 +100,7 @@ mod test {
 
         assert!(handler.update_config(&config).is_ok());
 
-        let config = handler.get_config().await?;
+        let config = handler.get_full_config().await?;
         assert_eq!(config.localization, Some(localization));
 
         Ok(())
@@ -110,7 +110,7 @@ mod test {
     #[cfg(not(ci))]
     async fn test_patch_config() -> Result<(), Box<dyn std::error::Error>> {
         let handler = start_service().await;
-        let original = handler.get_config().await?;
+        let original = handler.get_full_config().await?;
 
         let l10n_patch = UserConfig {
             keyboard: Some("en".to_string()),
@@ -123,7 +123,7 @@ mod test {
         };
         assert!(handler.patch_config(&config).is_ok());
 
-        let config = handler.get_config().await?;
+        let config = handler.get_full_config().await?;
         let l10n = config.localization.unwrap();
         let l10n_original = original.localization.unwrap();
 

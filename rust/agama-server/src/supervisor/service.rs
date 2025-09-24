@@ -21,7 +21,7 @@
 use crate::supervisor::{
     l10n,
     proposal::Proposal,
-    scope::{Scope, ScopeConfig},
+    scope::{ConfigScope, Scope},
     system_info::SystemInfo,
 };
 use agama_lib::install_settings::InstallSettings;
@@ -53,6 +53,16 @@ pub enum Action {
 
 #[derive(Debug)]
 pub enum Message {
+    GetSystem {
+        respond_to: oneshot::Sender<SystemInfo>,
+    },
+    GetFullConfig {
+        respond_to: oneshot::Sender<InstallSettings>,
+    },
+    GetFullConfigScope {
+        scope: Scope,
+        respond_to: oneshot::Sender<Option<ConfigScope>>,
+    },
     GetConfig {
         respond_to: oneshot::Sender<InstallSettings>,
     },
@@ -62,24 +72,18 @@ pub enum Message {
     PatchConfig {
         config: InstallSettings,
     },
-    GetScopeConfig {
+    GetConfigScope {
         scope: Scope,
-        respond_to: oneshot::Sender<Option<ScopeConfig>>,
+        respond_to: oneshot::Sender<Option<ConfigScope>>,
     },
-    UpdateScopeConfig {
-        config: ScopeConfig,
+    UpdateConfigScope {
+        config: ConfigScope,
     },
-    PatchScopeConfig {
-        config: ScopeConfig,
-    },
-    GetSystem {
-        respond_to: oneshot::Sender<SystemInfo>,
+    PatchConfigScope {
+        config: ConfigScope,
     },
     GetProposal {
         respond_to: oneshot::Sender<Option<Proposal>>,
-    },
-    GetUserConfig {
-        respond_to: oneshot::Sender<InstallSettings>,
     },
     RunAction {
         action: Action,
@@ -105,27 +109,27 @@ impl Service {
         }
     }
 
+    /// It returns the information of the underlying system.
+    pub async fn get_system(&self) -> Result<SystemInfo, Error> {
+        Ok(SystemInfo {
+            localization: self.l10n.get_system().await?,
+        })
+    }
+
     /// Gets the current configuration.
     ///
     /// It includes user and default values.
-    pub async fn get_config(&self) -> Result<InstallSettings, Error> {
+    pub async fn get_full_config(&self) -> Result<InstallSettings, Error> {
         Ok(InstallSettings {
             localization: Some(self.l10n.get_config().await?),
             ..Default::default()
         })
     }
 
-    /// Gets the current configuration set by the user.
-    ///
-    /// It includes only the values that were set by the user.
-    pub async fn get_user_config(&self) -> &InstallSettings {
-        &self.user_config
-    }
-
     /// It returns the configuration for the given scope.
     ///
     /// * scope: scope to get the configuration for.
-    pub async fn get_scope_config(&self, scope: Scope) -> Option<ScopeConfig> {
+    pub async fn get_full_config_scope(&self, scope: Scope) -> Option<ConfigScope> {
         // FIXME: implement this logic at InstallSettings level: self.get_config().by_scope(...)
         // It would allow us to drop this method.
         match scope {
@@ -133,8 +137,15 @@ impl Service {
                 .config
                 .localization
                 .clone()
-                .map(|c| ScopeConfig::L10n(c)),
+                .map(|c| ConfigScope::L10n(c)),
         }
+    }
+
+    /// Gets the current configuration set by the user.
+    ///
+    /// It includes only the values that were set by the user.
+    pub async fn get_config(&self) -> &InstallSettings {
+        &self.user_config
     }
 
     /// Patches the user configuration with the given values.
@@ -161,21 +172,35 @@ impl Service {
         Ok(())
     }
 
+    /// It returns the configuration set by the user for the given scope.
+    ///
+    /// * scope: scope to get the configuration for.
+    pub async fn get_config_scope(&self, scope: Scope) -> Option<ConfigScope> {
+        // FIXME: implement this logic at InstallSettings level: self.get_config().by_scope(...)
+        // It would allow us to drop this method.
+        match scope {
+            Scope::L10n => self
+                .user_config
+                .localization
+                .clone()
+                .map(|c| ConfigScope::L10n(c)),
+        }
+    }
+
     /// Patches the user configuration within the given scope.
     ///
     /// It merges the current configuration with the given one.
-    pub async fn patch_scope_config(&mut self, user_config: ScopeConfig) -> Result<(), Error> {
+    pub async fn patch_config_scope(&mut self, user_config: ConfigScope) -> Result<(), Error> {
         match user_config {
-            ScopeConfig::L10n(new_config) => {
+            ConfigScope::L10n(new_config) => {
                 let base_config = self.user_config.localization.clone().unwrap_or_default();
                 let config =
                     merge(&base_config, &new_config).map_err(|_| Error::CannotMergeConfig)?;
                 // FIXME: we are doing pattern matching twice. Is it ok?
                 // Implementing a "merge" for ScopeConfig would allow to simplify this function.
-                self.update_scope_config(ScopeConfig::L10n(config)).await?;
+                self.update_config_scope(ConfigScope::L10n(config)).await?;
             }
         }
-
         Ok(())
     }
 
@@ -183,27 +208,19 @@ impl Service {
     ///
     /// It replaces the current configuration with the given one and calculates a
     /// new proposal. Only the configuration in the given scope is affected.
-    pub async fn update_scope_config(&mut self, user_config: ScopeConfig) -> Result<(), Error> {
+    pub async fn update_config_scope(&mut self, user_config: ConfigScope) -> Result<(), Error> {
         match user_config {
-            ScopeConfig::L10n(new_config) => {
+            ConfigScope::L10n(new_config) => {
                 self.l10n.set_config(&new_config).await?;
                 self.user_config.localization = Some(new_config);
             }
         }
-
         Ok(())
     }
 
     /// It returns the current proposal, if any.
     pub async fn get_proposal(&self) -> Option<&Proposal> {
         self.proposal.as_ref()
-    }
-
-    /// It returns the information of the underlying system.
-    pub async fn get_system(&self) -> Result<SystemInfo, Error> {
-        Ok(SystemInfo {
-            localization: self.l10n.get_system().await?,
-        })
     }
 
     pub async fn run_action(&mut self, action: Action) -> Result<(), Error> {
@@ -217,7 +234,6 @@ impl Service {
                 self.l10n.install().await?;
             }
         }
-
         Ok(())
     }
 }
@@ -232,9 +248,24 @@ impl AgamaService for Service {
 
     async fn dispatch(&mut self, message: Self::Message) -> std::result::Result<(), Self::Err> {
         match message {
+            Self::Message::GetSystem { respond_to } => {
+                respond_to
+                    .send(self.get_system().await?.clone())
+                    .map_err(|_| Error::SendResponse)?;
+            }
+            Self::Message::GetFullConfig { respond_to } => {
+                respond_to
+                    .send(self.get_full_config().await?)
+                    .map_err(|_| Error::SendResponse)?;
+            }
+            Self::Message::GetFullConfigScope { scope, respond_to } => {
+                respond_to
+                    .send(self.get_full_config_scope(scope).await)
+                    .map_err(|_| Error::SendResponse)?;
+            }
             Self::Message::GetConfig { respond_to } => {
                 respond_to
-                    .send(self.get_config().await?)
+                    .send(self.get_config().await.clone())
                     .map_err(|_| Error::SendResponse)?;
             }
             Self::Message::UpdateConfig { config } => {
@@ -243,28 +274,20 @@ impl AgamaService for Service {
             Self::Message::PatchConfig { config } => {
                 self.patch_config(config).await?;
             }
-            Self::Message::GetScopeConfig { scope, respond_to } => {
+            Self::Message::GetConfigScope { scope, respond_to } => {
                 respond_to
-                    .send(self.get_scope_config(scope).await)
+                    .send(self.get_config_scope(scope).await)
                     .map_err(|_| Error::SendResponse)?;
             }
-            Self::Message::UpdateScopeConfig { config } => {
-                self.update_scope_config(config).await?;
+            Self::Message::UpdateConfigScope { config } => {
+                self.update_config_scope(config).await?;
             }
-            Self::Message::PatchScopeConfig { config } => self.patch_scope_config(config).await?,
+            Self::Message::PatchConfigScope { config } => {
+                self.patch_config_scope(config).await?;
+            }
             Self::Message::GetProposal { respond_to } => {
                 respond_to
                     .send(self.get_proposal().await.cloned())
-                    .map_err(|_| Error::SendResponse)?;
-            }
-            Self::Message::GetSystem { respond_to } => {
-                respond_to
-                    .send(self.get_system().await?.clone())
-                    .map_err(|_| Error::SendResponse)?;
-            }
-            Self::Message::GetUserConfig { respond_to } => {
-                respond_to
-                    .send(self.get_user_config().await.clone())
                     .map_err(|_| Error::SendResponse)?;
             }
             Self::Message::RunAction { action } => {

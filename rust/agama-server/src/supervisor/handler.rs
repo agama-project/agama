@@ -20,7 +20,7 @@
 
 use crate::supervisor::{
     proposal::Proposal,
-    scope::{Scope, ScopeConfig},
+    scope::{ConfigScope, Scope},
     service::{self, Action, Message},
     system_info::SystemInfo,
 };
@@ -47,17 +47,34 @@ impl Handler {
     }
 
     pub async fn get_system(&self) -> Result<SystemInfo, Error> {
-        let result = self
+        let system = self
             .send_and_wait(|tx| Message::GetSystem { respond_to: tx })
             .await?;
-        Ok(result)
+        Ok(system)
+    }
+
+    pub async fn get_full_config(&self) -> Result<InstallSettings, Error> {
+        let config = self
+            .send_and_wait(|tx| Message::GetFullConfig { respond_to: tx })
+            .await?;
+        Ok(config)
+    }
+
+    pub async fn get_full_config_scope(&self, scope: Scope) -> Result<Option<ConfigScope>, Error> {
+        let config_scope = self
+            .send_and_wait(|tx| Message::GetFullConfigScope {
+                scope,
+                respond_to: tx,
+            })
+            .await?;
+        Ok(config_scope)
     }
 
     pub async fn get_config(&self) -> Result<InstallSettings, Error> {
-        let result = self
+        let config = self
             .send_and_wait(|tx| Message::GetConfig { respond_to: tx })
             .await?;
-        Ok(result)
+        Ok(config)
     }
 
     pub fn update_config(&self, config: &InstallSettings) -> Result<(), Error> {
@@ -74,42 +91,35 @@ impl Handler {
         Ok(())
     }
 
-    pub async fn get_scope_config(&self, scope: Scope) -> Result<Option<ScopeConfig>, Error> {
-        let result = self
-            .send_and_wait(|tx| Message::GetScopeConfig {
+    pub async fn get_config_scope(&self, scope: Scope) -> Result<Option<ConfigScope>, Error> {
+        let config_scope = self
+            .send_and_wait(|tx| Message::GetConfigScope {
                 scope,
                 respond_to: tx,
             })
             .await?;
-        Ok(result)
+        Ok(config_scope)
     }
 
-    pub fn update_scope_config(&self, config: ScopeConfig) -> Result<(), Error> {
-        self.send(Message::UpdateScopeConfig {
+    pub fn update_config_scope(&self, config: ConfigScope) -> Result<(), Error> {
+        self.send(Message::UpdateConfigScope {
             config: config.clone(),
         })?;
         Ok(())
     }
 
-    pub fn patch_scope_config(&self, config: ScopeConfig) -> Result<(), Error> {
-        self.send(Message::PatchScopeConfig {
+    pub fn patch_config_scope(&self, config: ConfigScope) -> Result<(), Error> {
+        self.send(Message::PatchConfigScope {
             config: config.clone(),
         })?;
         Ok(())
-    }
-
-    pub async fn get_user_config(&self) -> Result<InstallSettings, Error> {
-        let result = self
-            .send_and_wait(|tx| Message::GetUserConfig { respond_to: tx })
-            .await?;
-        Ok(result)
     }
 
     pub async fn get_proposal(&self) -> Result<Option<Proposal>, Error> {
-        let result = self
+        let proposal = self
             .send_and_wait(|tx| Message::GetProposal { respond_to: tx })
             .await?;
-        Ok(result)
+        Ok(proposal)
     }
 
     pub async fn run_action(&self, action: Action) -> Result<(), Error> {
