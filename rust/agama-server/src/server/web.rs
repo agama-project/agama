@@ -76,12 +76,12 @@ pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError
         .route(
             "/config/user/:scope",
             get(get_scope_user_config)
-                .put(set_scope_config)
-                .patch(set_scope_config),
+                .put(put_scope_config)
+                .patch(patch_scope_config),
         )
         .route(
             "/config/user",
-            get(get_user_config).patch(set_config).put(set_config),
+            get(get_user_config).put(put_config).patch(patch_config),
         )
         .route("/config/:scope", get(get_scope_full_config))
         .route("/config", get(get_full_config))
@@ -91,12 +91,34 @@ pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError
         .with_state(state))
 }
 
-#[axum::debug_handler]
+/// Returns the current configuration.
+#[utoipa::path(
+    get,
+    path = "/config",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "Agama configuration"),
+        (status = 400, description = "Not possible to retrieve the configuration")
+    )
+)]
 async fn get_full_config(State(state): State<ServerState>) -> ServerResult {
     let config = state.supervisor.get_config().await?;
     Ok(Json(config).into_response())
 }
 
+/// Returns the current configuration for the given scope.
+#[utoipa::path(
+    get,
+    path = "/config/{scope}",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "Agama configuration for the given scope"),
+        (status = 400, description = "Not possible to retrieve the configuration")
+    ),
+    params(
+        ("scope" = String, Path, description = "Configuration scope (e.g., 'storage', 'l10n', etc.")
+    )
+)]
 async fn get_scope_full_config(
     State(state): State<ServerState>,
     Path(scope): Path<Scope>,
@@ -105,11 +127,34 @@ async fn get_scope_full_config(
     Ok(to_option_response(config))
 }
 
+/// Returns the user specified configuration for the given scope.
+#[utoipa::path(
+    get,
+    path = "/config/user",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "User specified configuration"),
+        (status = 400, description = "Not possible to retrieve the configuration")
+    )
+)]
 async fn get_user_config(State(state): State<ServerState>) -> ServerResult {
     let config = state.supervisor.get_user_config().await?;
     Ok(Json(config).into_response())
 }
 
+/// Returns the user specified configuration for the given scope.
+#[utoipa::path(
+    get,
+    path = "/config/user/{scope}",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "User specified configuration for the given scope"),
+        (status = 400, description = "Not possible to retrieve the configuration")
+    ),
+    params(
+        ("scope" = String, Path, description = "Configuration scope (e.g., 'storage', 'l10n', etc.")
+    )
+)]
 async fn get_scope_user_config(
     State(state): State<ServerState>,
     Path(scope): Path<Scope>,
@@ -122,39 +167,132 @@ async fn get_scope_user_config(
     Ok(to_option_response(scope_config))
 }
 
-async fn set_config(
+/// Updates the configuration.
+///
+/// Replaces the whole configuration. If some value is missing, it will be
+/// removed.
+#[utoipa::path(
+    put,
+    path = "/config",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "The configuration was saved. Other operations can be running in background."),
+        (status = 400, description = "Not possible to retrieve the configuration")
+    ),
+    params(
+        ("config" = InstallSettings, description = "Configuration to apply.")
+    )
+)]
+async fn put_config(
     State(state): State<ServerState>,
-    method: axum::http::Method,
     Json(config): Json<InstallSettings>,
 ) -> ServerResult {
-    if method.as_str() == "PATCH" {
-        state.supervisor.patch_config(&config)?;
-    } else {
-        state.supervisor.update_config(&config)?;
-    }
-
+    state.supervisor.update_config(&config)?;
     Ok(().into_response())
 }
 
-async fn set_scope_config(
+/// Patches the configuration.
+///
+/// It only chagnes to the specified values, keeping the rest as they were.
+#[utoipa::path(
+    patch,
+    path = "/config",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "The configuration was saved. Other operations can be running in background."),
+        (status = 400, description = "Not possible to retrieve the configuration")
+    ),
+    params(
+        ("config" = InstallSettings, description = "Changes in the configuration")
+    )
+)]
+async fn patch_config(
     State(state): State<ServerState>,
-    method: axum::http::Method,
+    Json(config): Json<InstallSettings>,
+) -> ServerResult {
+    state.supervisor.patch_config(&config)?;
+    Ok(().into_response())
+}
+
+/// Updates the configuration for the given scope.
+///
+/// Replaces the whole configuration. If some value is missing, it will be
+/// removed.
+#[utoipa::path(
+    put,
+    path = "/config/{scope}",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "The configuration was saved. Other operations can be running in background."),
+        (status = 400, description = "Not possible to retrieve the configuration")
+    ),
+    params(
+        ("config" = InstallSettings, description = "Changes in the configuration"),
+        ("scope" = String, Path, description = "Configuration scope (e.g., 'storage', 'localization', etc.")
+    )
+)]
+async fn put_scope_config(
+    State(state): State<ServerState>,
     Path(scope): Path<Scope>,
     Json(user_config): Json<ScopeConfig>,
 ) -> ServerResult {
-    if user_config.to_scope() != scope {
+    set_scope_config(state, scope, user_config, false)
+}
+
+/// Patches the configuration for the given scope.
+///
+/// It only chagnes to the specified values, keeping the rest as they were.
+#[utoipa::path(
+    patch,
+    path = "/config/{scope}",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "The configuration was saved. Other operations can be running in background."),
+        (status = 400, description = "Not possible to retrieve the configuration")
+    ),
+    params(
+        ("config" = InstallSettings, description = "Changes in the configuration"),
+        ("scope" = String, Path, description = "Configuration scope (e.g., 'storage', 'l10n', etc.")
+    )
+)]
+async fn patch_scope_config(
+    State(state): State<ServerState>,
+    Path(scope): Path<Scope>,
+    Json(user_config): Json<ScopeConfig>,
+) -> ServerResult {
+    set_scope_config(state, scope, user_config, true)
+}
+
+fn set_scope_config(
+    state: ServerState,
+    scope: Scope,
+    config: ScopeConfig,
+    patch: bool,
+) -> ServerResult {
+    if config.to_scope() != scope {
         return Err(Error::Scope(scope));
     }
 
-    if method.as_str() == "PATCH" {
-        state.supervisor.patch_scope_config(user_config)?;
+    if patch {
+        state.supervisor.patch_scope_config(config)?;
     } else {
-        state.supervisor.update_scope_config(user_config)?;
+        state.supervisor.update_scope_config(config)?;
     }
-
     Ok(().into_response())
 }
 
+#[utoipa::path(
+    post,
+    path = "/actions",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "The action run successfully."),
+        (status = 400, description = "It was not possible to run the action.", body = Object)
+    ),
+    params(
+        ("action" = Action, description = "Description of the action to run"),
+    )
+)]
 async fn run_action(State(state): State<ServerState>, Json(action): Json<Action>) -> ServerResult {
     state.supervisor.run_action(action).await?;
     Ok(().into_response())

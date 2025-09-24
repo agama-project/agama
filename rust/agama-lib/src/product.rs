@@ -28,5 +28,5 @@ mod store;
 
 pub use client::{Product, ProductClient};
 pub use http_client::ProductHTTPClient;
-pub use settings::ProductSettings;
+pub use settings::{AddonSettings, ProductSettings};
 pub use store::{ProductStore, ProductStoreError};

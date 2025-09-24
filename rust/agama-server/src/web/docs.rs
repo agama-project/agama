@@ -20,6 +20,8 @@
 
 use utoipa::openapi::{Components, Info, InfoBuilder, OpenApi, OpenApiBuilder, Paths};
 
+mod config;
+pub use config::ConfigApiDocBuilder;
 mod hostname;
 pub use hostname::HostnameApiDocBuilder;
 mod network;

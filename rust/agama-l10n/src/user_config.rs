@@ -24,7 +24,8 @@ use crate::config::Config;
 use serde::{Deserialize, Serialize};
 
 /// Localization configuration for the target system.
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[schema(as = l10n::UserConfig)]
 #[serde(rename_all = "camelCase")]
 pub struct UserConfig {
     /// Locale (e.g., "en_US.UTF-8").

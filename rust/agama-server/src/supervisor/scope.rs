@@ -21,14 +21,16 @@
 use crate::supervisor::l10n;
 use serde::{Deserialize, Serialize};
 
-#[derive(Copy, Clone, Debug, strum::EnumString, strum::Display, Deserialize, PartialEq)]
+#[derive(
+    Copy, Clone, Debug, strum::EnumString, strum::Display, Deserialize, PartialEq, utoipa::ToSchema,
+)]
 #[strum(serialize_all = "snake_case")]
 #[serde(rename_all = "snake_case")]
 pub enum Scope {
     L10n,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(untagged)]
 pub enum ScopeConfig {
     L10n(l10n::UserConfig),

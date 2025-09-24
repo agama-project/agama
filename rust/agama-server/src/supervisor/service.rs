@@ -40,7 +40,7 @@ pub enum Error {
     SendResponse,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, utoipa::ToSchema)]
 pub enum Action {
     #[serde(rename = "configureL10n")]
     ConfigureL10n {

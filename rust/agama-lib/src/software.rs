@@ -29,5 +29,5 @@ mod store;
 
 pub use client::{Pattern, SelectedBy, SoftwareClient, UnknownSelectedBy};
 pub use http_client::{SoftwareHTTPClient, SoftwareHTTPClientError};
-pub use settings::SoftwareSettings;
+pub use settings::{PatternsMap, PatternsSettings, SoftwareSettings};
 pub use store::{SoftwareStore, SoftwareStoreError};

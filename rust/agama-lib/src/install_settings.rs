@@ -54,7 +54,7 @@ pub enum InstallSettingsError {
 ///
 /// This struct represents installation settings. It serves as an entry point and it is composed of
 /// other structs which hold the settings for each area ("users", "software", etc.).
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct InstallSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -66,6 +66,7 @@ pub struct InstallSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hostname: Option<HostnameSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schema(value_type = Object)]
     pub iscsi: Option<Box<RawValue>>,
     #[serde(flatten)]
     pub user: Option<UserSettings>,
@@ -76,9 +77,11 @@ pub struct InstallSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product: Option<ProductSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schema(value_type = Object)]
     pub storage: Option<Box<RawValue>>,
     #[serde(rename = "legacyAutoyastStorage")]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schema(value_type = Object)]
     pub storage_autoyast: Option<Box<RawValue>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub network: Option<NetworkSettings>,

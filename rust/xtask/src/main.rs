@@ -5,9 +5,9 @@ mod tasks {
 
     use agama_cli::Cli;
     use agama_server::web::docs::{
-        ApiDocBuilder, HostnameApiDocBuilder, ManagerApiDocBuilder, MiscApiDocBuilder,
-        NetworkApiDocBuilder, ProfileApiDocBuilder, QuestionsApiDocBuilder, ScriptsApiDocBuilder,
-        SoftwareApiDocBuilder, StorageApiDocBuilder, UsersApiDocBuilder,
+        ApiDocBuilder, ConfigApiDocBuilder, HostnameApiDocBuilder, ManagerApiDocBuilder,
+        MiscApiDocBuilder, NetworkApiDocBuilder, ProfileApiDocBuilder, QuestionsApiDocBuilder,
+        ScriptsApiDocBuilder, SoftwareApiDocBuilder, StorageApiDocBuilder, UsersApiDocBuilder,
     };
     use clap::CommandFactory;
     use clap_complete::aot;
@@ -64,6 +64,7 @@ mod tasks {
     pub fn generate_openapi() -> std::io::Result<()> {
         let out_dir = create_output_dir("openapi")?;
 
+        write_openapi(ConfigApiDocBuilder {}, out_dir.join("config.json"))?;
         write_openapi(HostnameApiDocBuilder {}, out_dir.join("hostname.json"))?;
         write_openapi(ManagerApiDocBuilder {}, out_dir.join("manager.json"))?;
         write_openapi(MiscApiDocBuilder {}, out_dir.join("misc.json"))?;
