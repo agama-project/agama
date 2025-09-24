@@ -50,6 +50,7 @@ import { NestedContent } from "../core";
 import { Icon } from "../layout";
 import { IconProps } from "../layout/Icon";
 import { sprintf } from "sprintf-js";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 const PartitionMenuItem = ({ device, mountPath }) => {
   const partition = device.getPartition(mountPath);
@@ -158,7 +159,7 @@ const PartitionRow = ({ partition, device }) => {
             }}
             toggleProps={{
               variant: "plain",
-              style: { padding: 0 },
+              className: spacingStyles.pXs,
               // TRANSLATORS: ARIA (accesibility) description of an button. %s is a mount path.
               "aria-label": sprintf(_("Options for partition %s"), partition.mountPath),
             }}
@@ -180,7 +181,7 @@ const PartitionRow = ({ partition, device }) => {
               </MenuButton.Item>,
             ]}
           >
-            <Icon name="more_horiz" className="agm-strong-icon" />
+            <Icon name="more_horiz" className="agm-three-dots-icon" />
           </MenuButton>
         </DataListAction>
       </DataListItemRow>
