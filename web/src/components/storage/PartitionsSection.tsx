@@ -49,6 +49,7 @@ import { _, n_ } from "~/i18n";
 import { NestedContent } from "../core";
 import { Icon } from "../layout";
 import { IconProps } from "../layout/Icon";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 const PartitionMenuItem = ({ device, mountPath }) => {
   const partition = device.getPartition(mountPath);
@@ -152,7 +153,7 @@ const PartitionRow = ({ partition, device }) => {
             }}
             toggleProps={{
               variant: "plain",
-              style: { padding: 0 },
+              className: spacingStyles.pXs,
             }}
             items={[
               <MenuButton.Item
@@ -172,7 +173,7 @@ const PartitionRow = ({ partition, device }) => {
               </MenuButton.Item>,
             ]}
           >
-            <Icon name="more_vert" className="agm-strong-icon" />
+            <Icon name="more_horiz" className="agm-three-dots-icon" />
           </MenuButton>
         </DataListAction>
       </DataListItemRow>
