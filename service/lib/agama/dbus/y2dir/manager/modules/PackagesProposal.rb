@@ -31,30 +31,30 @@ module Yast
 
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/general/src/modules/PackagesProposal.rb#L118
     def AddResolvables(unique_id, type, resolvables, optional: false)
-      orig_resolvables = client.get_resolvables(unique_id, type, optional)
+      orig_resolvables = client.get_resolvables(unique_id, type, optional: optional)
       orig_resolvables += resolvables
       orig_resolvables.uniq!
-      SetResolvables(unique_id, type, orig_resolvables, optional)
+      SetResolvables(unique_id, type, orig_resolvables, optional: optional)
       true
     end
 
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/general/src/modules/PackagesProposal.rb#L145
     def SetResolvables(unique_id, type, resolvables, optional: false)
-      client.set_resolvables(unique_id, type, resolvables || [], optional: optional)
+      client.set_resolvables(unique_id, type, resolvables || [], optional)
       true
     end
 
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/general/src/modules/PackagesProposal.rb#L285
     def GetResolvables(unique_id, type, optional: false)
-      client.get_resolvables(unique_id, type, optional: optional)
+      client.get_resolvables(unique_id, type, optional)
     end
 
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/general/src/modules/PackagesProposal.rb#L177
     def RemoveResolvables(unique_id, type, resolvables, optional: false)
-      orig_resolvables = client.get_resolvables(unique_id, type, optional)
+      orig_resolvables = client.get_resolvables(unique_id, type, optional: optional)
       orig_resolvables -= resolvables
       orig_resolvables.uniq!
-      SetResolvables(unique_id, type, orig_resolvables, optional)
+      SetResolvables(unique_id, type, orig_resolvables, optional: optional)
       true
     end
 

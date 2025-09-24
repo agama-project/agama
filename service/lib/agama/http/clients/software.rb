@@ -92,7 +92,7 @@ module Agama
             "type"     => type,
             "optional" => optional
           }
-          JSON.parse(put("software/resolvables/#{unique_id}"), data)
+          put("software/resolvables/#{unique_id}", data)
         end
 
         def add_patterns(patterns)
