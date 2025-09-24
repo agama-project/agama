@@ -21,7 +21,7 @@
 //! This module implements Agama's HTTP API.
 
 use crate::{
-    supervisor::{self, Action, Handler, Scope, ScopeConfig, SystemInfo},
+    supervisor::{handler, Action, Handler, Scope, ScopeConfig},
     web::EventsSender,
 };
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
@@ -40,7 +40,7 @@ pub enum Error {
     #[error("The given configuration does not belong to the '{0}' scope.")]
     Scope(Scope),
     #[error(transparent)]
-    Supervisor(#[from] supervisor::handler::Error),
+    Supervisor(#[from] handler::Error),
 }
 
 impl IntoResponse for Error {
@@ -53,12 +53,19 @@ impl IntoResponse for Error {
     }
 }
 
-type ServerResult<T> = Result<T, Error>;
+fn to_option_response<T: Serialize>(value: Option<T>) -> Response {
+    match value {
+        Some(inner) => Json(inner).into_response(),
+        None => StatusCode::NOT_FOUND.into_response(),
+    }
+}
 
 #[derive(Clone)]
 pub struct ServerState {
     supervisor: Handler,
 }
+
+type ServerResult = Result<Response, Error>;
 
 /// Sets up and returns the axum service for the manager module
 pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError> {
@@ -85,47 +92,48 @@ pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError
 }
 
 #[axum::debug_handler]
-async fn get_full_config(State(state): State<ServerState>) -> ServerResult<Json<InstallSettings>> {
-    Ok(Json(state.supervisor.get_config().await?))
+async fn get_full_config(State(state): State<ServerState>) -> ServerResult {
+    let config = state.supervisor.get_config().await?;
+    Ok(Json(config).into_response())
 }
 
 async fn get_scope_full_config(
     State(state): State<ServerState>,
     Path(scope): Path<Scope>,
-) -> ServerResult<Response> {
+) -> ServerResult {
     let config = state.supervisor.get_scope_config(scope).await?;
     Ok(to_option_response(config))
 }
 
-async fn get_user_config(State(state): State<ServerState>) -> ServerResult<Json<InstallSettings>> {
-    Ok(Json(state.supervisor.get_user_config().await?))
+async fn get_user_config(State(state): State<ServerState>) -> ServerResult {
+    let config = state.supervisor.get_user_config().await?;
+    Ok(Json(config).into_response())
 }
 
 async fn get_scope_user_config(
     State(state): State<ServerState>,
     Path(scope): Path<Scope>,
-) -> ServerResult<Response> {
+) -> ServerResult {
     let user_config = state.supervisor.get_user_config().await?;
-
-    let result = match scope {
-        Scope::L10n => &user_config.localization,
+    let scope_config = match scope {
+        Scope::L10n => user_config.localization,
     };
 
-    Ok(to_option_response(result.clone()))
+    Ok(to_option_response(scope_config))
 }
 
 async fn set_config(
     State(state): State<ServerState>,
     method: axum::http::Method,
     Json(config): Json<InstallSettings>,
-) -> ServerResult<()> {
+) -> ServerResult {
     if method.as_str() == "PATCH" {
         state.supervisor.patch_config(&config)?;
     } else {
         state.supervisor.update_config(&config)?;
     }
 
-    Ok(())
+    Ok(().into_response())
 }
 
 async fn set_scope_config(
@@ -133,7 +141,7 @@ async fn set_scope_config(
     method: axum::http::Method,
     Path(scope): Path<Scope>,
     Json(user_config): Json<ScopeConfig>,
-) -> Result<(), Error> {
+) -> ServerResult {
     if user_config.to_scope() != scope {
         return Err(Error::Scope(scope));
     }
@@ -143,35 +151,21 @@ async fn set_scope_config(
     } else {
         state.supervisor.update_scope_config(user_config)?;
     }
-    Ok(())
+
+    Ok(().into_response())
 }
 
-async fn run_action(
-    State(state): State<ServerState>,
-    Json(action): Json<Action>,
-) -> Result<(), Error> {
-    state
-        .supervisor
-        .run_action(action)
-        .await
-        .map_err(|e| e.into())
+async fn run_action(State(state): State<ServerState>, Json(action): Json<Action>) -> ServerResult {
+    state.supervisor.run_action(action).await?;
+    Ok(().into_response())
 }
 
-async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response> {
-    if let Some(proposal) = state.supervisor.get_proposal().await? {
-        Ok(Json(proposal).into_response())
-    } else {
-        Ok(StatusCode::NOT_FOUND.into_response())
-    }
+async fn get_proposal(State(state): State<ServerState>) -> ServerResult {
+    let proposal = state.supervisor.get_proposal().await?;
+    Ok(to_option_response(proposal))
 }
 
-async fn get_system(State(state): State<ServerState>) -> ServerResult<Json<SystemInfo>> {
-    Ok(Json(state.supervisor.get_system().await?))
-}
-
-fn to_option_response<T: Serialize>(value: Option<T>) -> Response {
-    match value {
-        Some(inner) => Json(inner).into_response(),
-        None => StatusCode::NOT_FOUND.into_response(),
-    }
+async fn get_system(State(state): State<ServerState>) -> ServerResult {
+    let system = state.supervisor.get_system().await?;
+    Ok(Json(system).into_response())
 }
