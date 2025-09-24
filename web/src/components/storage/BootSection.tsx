@@ -21,17 +21,19 @@
  */
 
 import React from "react";
-import { Content, Split, Stack } from "@patternfly/react-core";
+import { Content, Flex, Stack } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import { Link } from "~/components/core";
-import { Icon } from "~/components/layout";
+import Link from "~/components/core/Link";
+import Icon from "~/components/layout/Icon";
+import { StorageDevice } from "~/types/storage";
 import { useAvailableDrives } from "~/hooks/storage/system";
 import { useModel } from "~/hooks/storage/model";
 import { STORAGE } from "~/routes/paths";
 import { deviceLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 
-function bootLabel(isDefault: boolean, device: StorageDevice?) {
+function bootLabel(isDefault: boolean, device?: StorageDevice) {
   if (isDefault) {
     return _(
       "If needed, partitions to boot will be automatically set up at the installation disk \
@@ -62,12 +64,16 @@ export default function BootSection() {
           partitions in the appropriate disk.",
         )}
       </div>
-      <Content component="p">{bootLabel(boot.isDefault, device)}</Content>
-      <Split hasGutter>
+      <Content component="p" isEditorial>
+        {bootLabel(boot.isDefault, device)}
+      </Content>
+      <Flex>
         <Link to={STORAGE.editBootDevice} variant="plain">
-          <Icon name="edit_square" /> {_("Change")}
+          <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+            <Icon name="edit_square" /> {_("Change")}
+          </Flex>
         </Link>
-      </Split>
+      </Flex>
     </Stack>
   );
 }
