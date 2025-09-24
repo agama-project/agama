@@ -71,7 +71,7 @@ use tokio::sync::mpsc;
 
 /// Starts the localization service.
 ///
-/// It opens two Tokio tasks:
+/// It starts two Tokio tasks:
 ///
 /// - The main service, which is reponsible for holding and applying the configuration.
 /// - A monitor which checks for changes in the underlying system (e.g., changing the keymap)

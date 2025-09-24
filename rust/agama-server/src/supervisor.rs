@@ -36,4 +36,36 @@ pub use proposal::Proposal;
 mod scope;
 pub use scope::{Scope, ScopeConfig};
 
+use crate::web::EventsSender;
 use agama_l10n as l10n;
+use agama_utils::Service as _;
+use tokio::sync::mpsc;
+
+/// Starts the supervisor service.
+///
+/// It starts two Tokio tasks:
+///
+/// * The main service, called "Supervisor", which coordinates the rest of services
+///   an entry point for the HTTP API.
+/// * An events listener which retransmit the events from all the services.
+///
+/// It receives the following argument:
+///
+/// * `events`: channel to emit the [events](agama_lib::http::Event).
+pub async fn start_service(events: EventsSender) -> Result<Handler, handler::Error> {
+    let mut listener = EventsListener::new(events);
+    let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
+    let l10n = l10n::start_service(events_sender).await.unwrap();
+    listener.add_channel("l10n", events_receiver);
+    tokio::spawn(async move {
+        listener.run().await;
+    });
+
+    let (sender, receiver) = mpsc::unbounded_channel();
+    let mut service = Service::new(l10n, receiver);
+    tokio::spawn(async move {
+        service.run().await;
+    });
+
+    Ok(Handler::new(sender))
+}

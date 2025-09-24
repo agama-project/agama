@@ -62,7 +62,7 @@ pub struct ServerState {
 
 /// Sets up and returns the axum service for the manager module
 pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError> {
-    let supervisor = supervisor::Handler::start(events).await.unwrap();
+    let supervisor = crate::supervisor::start_service(events).await.unwrap();
     let state = ServerState { supervisor };
 
     Ok(Router::new()

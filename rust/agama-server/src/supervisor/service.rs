@@ -94,26 +94,14 @@ pub struct Service {
 }
 
 impl Service {
-    pub async fn start(
-        messages: mpsc::UnboundedReceiver<Message>,
-        events: EventsSender,
-    ) -> Result<Self, Error> {
-        let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
-        let mut listener = EventsListener::new(events);
-        listener.add_channel("l10n", events_receiver);
-
-        tokio::spawn(async move {
-            listener.run().await;
-        });
-
-        Ok(Self {
-            // FIXME: perhaps we should build the handler in Handler::start.
-            l10n: l10n::start_service(events_sender).await?,
+    pub fn new(l10n: l10n::Handler, messages: mpsc::UnboundedReceiver<Message>) -> Self {
+        Self {
+            l10n,
+            messages,
             config: InstallSettings::default(),
             user_config: InstallSettings::default(),
             proposal: None,
-            messages,
-        })
+        }
     }
 
     /// Gets the current configuration.
