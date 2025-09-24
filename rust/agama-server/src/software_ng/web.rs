@@ -53,7 +53,10 @@ pub async fn software_router(client: SoftwareServiceClient) -> Result<Router, Se
         .route("/config", put(set_config).get(get_config))
         .route("/probe", post(probe))
         .route("/proposal", get(get_proposal))
-        .route("/resolvables/:id", put(set_resolvables).get(get_resolvables))
+        .route(
+            "/resolvables/:id",
+            put(set_resolvables).get(get_resolvables),
+        )
         .route("/issues/product", get(product_issues))
         .route("/issues/software", get(software_issues))
         .route("/registration", get(get_registration))
@@ -286,14 +289,13 @@ async fn get_resolvables(
         // TODO: support more and move to Resolvable Kind
         "package" => Ok(ResolvableType::Package),
         "pattern" => Ok(ResolvableType::Pattern),
-        _ => Err(anyhow::Error::msg("Unknown resolveble type"))
+        _ => Err(anyhow::Error::msg("Unknown resolveble type")),
     }?;
 
-    let optional = query.get("optional").map_or(false, |v| v.as_str() == "true");
+    let optional = query
+        .get("optional")
+        .map_or(false, |v| v.as_str() == "true");
 
-
-    let result = state
-        .client
-        .get_resolvables(&id, typ, optional).await?;
+    let result = state.client.get_resolvables(&id, typ, optional).await?;
     Ok(Json(result))
 }

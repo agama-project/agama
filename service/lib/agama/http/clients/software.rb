@@ -64,7 +64,7 @@ module Agama
 
         def errors?
           # TODO: severity as integer is nasty for http API
-          JSON.parse(get("software/issues/software"))&.select{ |i| i["severity"] == 1}&.any?
+          JSON.parse(get("software/issues/software"))&.select { |i| i["severity"] == 1 }&.any?
         end
 
         def get_resolvables(unique_id, type, optional)

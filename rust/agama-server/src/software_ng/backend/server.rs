@@ -176,8 +176,10 @@ impl SoftwareServiceServer {
                 r#type,
                 optional,
             } => {
-                let result = self.software_selection
-                    .get(&id, r#type, optional).unwrap_or(vec![]);
+                let result = self
+                    .software_selection
+                    .get(&id, r#type, optional)
+                    .unwrap_or(vec![]);
                 tx.send(result)
                     .map_err(|_| SoftwareServiceError::ResponseChannelClosed)?;
             }
