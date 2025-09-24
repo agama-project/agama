@@ -54,6 +54,23 @@ interface MenuButtonItemProps extends Omit<MenuItemProps, "direction" | "drilldo
   upProps?: { label?: string };
 }
 
+export type CustomToggleProps = {
+  onClick?: () => void;
+  isExpanded?: boolean;
+};
+
+export type MenuButtonProps = {
+  items?: React.ReactNode[];
+  menuProps?: {
+    ["aria-label"]?: string;
+    ["aria-labelledby"]?: string;
+    closeOnClick?: boolean;
+    popperProps?: MenuPopperProps;
+  };
+  customToggle?: React.ReactElement<CustomToggleProps>;
+  toggleProps?: MenuToggleProps;
+};
+
 export function MenuButtonItem({
   items = [],
   upProps = { label: _("Back") },
@@ -97,21 +114,11 @@ export function MenuButtonItem({
   );
 }
 
-export type MenuButtonProps = {
-  items?: React.ReactNode[];
-  menuProps?: {
-    ["aria-label"]?: string;
-    ["aria-labelledby"]?: string;
-    closeOnClick?: boolean;
-    popperProps?: MenuPopperProps;
-  };
-  toggleProps?: MenuToggleProps;
-};
-
 export default function MenuButton({
   items = [],
   menuProps = {},
   toggleProps = {},
+  customToggle,
   children,
 }: React.PropsWithChildren<MenuButtonProps>): React.ReactNode {
   const menuRef = useRef();
@@ -178,6 +185,8 @@ export default function MenuButton({
     }
   };
 
+  const baseToggleProps = { ref: toggleRef, onClick: toggle, isExpanded: isOpen };
+
   return (
     <MenuContainer
       isOpen={isOpen}
@@ -185,9 +194,13 @@ export default function MenuButton({
       toggleRef={toggleRef}
       popperProps={{ direction: "down", enableFlip: false, ...menuProps.popperProps }}
       toggle={
-        <MenuToggle ref={toggleRef} onClick={toggle} isExpanded={isOpen} {...toggleProps}>
-          {children}
-        </MenuToggle>
+        React.isValidElement(customToggle) ? (
+          React.cloneElement(customToggle as React.ReactElement, baseToggleProps)
+        ) : (
+          <MenuToggle {...baseToggleProps} {...toggleProps}>
+            {children}
+          </MenuToggle>
+        )
       }
       menuRef={menuRef}
       menu={
