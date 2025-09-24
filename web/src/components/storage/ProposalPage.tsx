@@ -246,7 +246,7 @@ function ProposalSections(): React.ReactNode {
                   eventKey={0}
                   title={<TabTitleText>{_("Installation devices")}</TabTitleText>}
                 >
-                  <NestedContent margin="mtXs">
+                  <NestedContent margin="mtSm">
                     <Stack hasGutter>
                       <div className={textStyles.textColorPlaceholder}>
                         {_(
@@ -262,7 +262,7 @@ function ProposalSections(): React.ReactNode {
                   eventKey={1}
                   title={<TabTitleText>{_("Encryption")}</TabTitleText>}
                 >
-                  <NestedContent margin="mtXs">
+                  <NestedContent margin="mtSm">
                     <EncryptionSection />
                   </NestedContent>
                 </Tab>
@@ -271,7 +271,7 @@ function ProposalSections(): React.ReactNode {
                   eventKey={2}
                   title={<TabTitleText>{_("Boot options")}</TabTitleText>}
                 >
-                  <NestedContent margin="mtXs">
+                  <NestedContent margin="mtSm">
                     <BootSection />
                   </NestedContent>
                 </Tab>
