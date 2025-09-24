@@ -29,6 +29,7 @@ import { useZFCPSupported } from "~/queries/storage/zfcp";
 import { useDASDSupported } from "~/queries/storage/dasd";
 import { Icon } from "~/components/layout";
 import MenuButton from "../core/MenuButton";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 export default function ConnectedDevicesMenu() {
   const navigate = useNavigate();
@@ -45,6 +46,7 @@ export default function ConnectedDevicesMenu() {
       }}
       toggleProps={{
         variant: "plain",
+        className: spacingStyles.p_0,
         // TRANSLATORS: this is an ARIA (accesibility) description of an UI element
         "aria-label": _("More storage options"),
       }}
@@ -83,7 +85,7 @@ export default function ConnectedDevicesMenu() {
         </MenuButton.Item>,
       ]}
     >
-      <Icon name="more_horiz" className="agm-strong-icon" />
+      <Icon name="more_horiz" className="agm-three-dots-icon" />
     </MenuButton>
   );
 }

@@ -68,6 +68,7 @@ import { _, n_ } from "~/i18n";
 import { useProgress, useProgressChanges } from "~/queries/progress";
 import { useNavigate } from "react-router-dom";
 import MenuButton from "../core/MenuButton";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 function InvalidConfigEmptyState(): React.ReactNode {
   const errors = useConfigErrors("storage");
@@ -221,6 +222,7 @@ function ProposalSections(): React.ReactNode {
                     }}
                     toggleProps={{
                       variant: "plain",
+                      className: spacingStyles.p_0,
                     }}
                     items={[
                       <MenuButton.Item
@@ -232,7 +234,7 @@ function ProposalSections(): React.ReactNode {
                       </MenuButton.Item>,
                     ]}
                   >
-                    <Icon name="more_horiz" className="agm-strong-icon" />
+                    <Icon name="more_horiz" className="agm-three-dots-icon" />
                   </MenuButton>
                 </Flex>
               }
