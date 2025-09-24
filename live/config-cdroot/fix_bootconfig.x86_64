@@ -85,6 +85,9 @@ menuentry "Boot from Hard Disk" --class opensuse --class gnu-linux --class gnu -
       fi
     done
   fi
+  if [ "${grub_platform}" != "efi" ]; then
+    terminal_output console
+  fi
   exit
 }
 menuentry "Install $label" --class os --unrestricted {
