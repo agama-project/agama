@@ -18,11 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::event::EventsListener;
-use crate::{
-    supervisor::{l10n, Proposal, Scope, ScopeConfig, SystemInfo},
-    web::EventsSender,
-};
+use crate::supervisor::{l10n, Proposal, Scope, ScopeConfig, SystemInfo};
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::Service as AgamaService;
 use merge_struct::merge;
