@@ -25,12 +25,12 @@ use agama_lib::{
     issue::Issue,
     product::Product,
     software::{
-        model::{RegistrationInfo, ResolvableParams, SoftwareConfig},
+        model::{RegistrationInfo, ResolvableParams, ResolvableType, SoftwareConfig},
         Pattern, SelectedBy,
     },
 };
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     routing::{get, post, put},
     Json, Router,
 };
@@ -53,7 +53,7 @@ pub async fn software_router(client: SoftwareServiceClient) -> Result<Router, Se
         .route("/config", put(set_config).get(get_config))
         .route("/probe", post(probe))
         .route("/proposal", get(get_proposal))
-        .route("/resolvables/:id", put(set_resolvables))
+        .route("/resolvables/:id", put(set_resolvables).get(get_resolvables))
         .route("/issues/product", get(product_issues))
         .route("/issues/software", get(software_issues))
         .route("/registration", get(get_registration))
@@ -262,4 +262,38 @@ async fn set_resolvables(
         .client
         .set_resolvables(&id, params.r#type, &names, params.optional)?;
     Ok(Json(()))
+}
+
+/// Returns the resolvables list with the given `id`.
+#[utoipa::path(
+    get,
+    path = "/resolvables/:id",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "Read repositresolvable list"),
+        (status = 400, description = "The D-Bus service could not perform the action
+")
+    )
+)]
+async fn get_resolvables(
+    State(state): State<SoftwareState>,
+    Path(id): Path<String>,
+    Query(query): Query<HashMap<String, String>>,
+) -> Result<Json<Vec<String>>, Error> {
+    let default = "package".to_string();
+    let typ = query.get("type").unwrap_or(&default);
+    let typ = match typ.as_str() {
+        // TODO: support more and move to Resolvable Kind
+        "package" => Ok(ResolvableType::Package),
+        "pattern" => Ok(ResolvableType::Pattern),
+        _ => Err(anyhow::Error::msg("Unknown resolveble type"))
+    }?;
+
+    let optional = query.get("optional").map_or(false, |v| v.as_str() == "true");
+
+
+    let result = state
+        .client
+        .get_resolvables(&id, typ, optional).await?;
+    Ok(Json(result))
 }

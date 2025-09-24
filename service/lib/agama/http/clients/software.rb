@@ -67,9 +67,8 @@ module Agama
           JSON.parse(get("software/issues/software"))&.select{ |i| i["severity"] == 1}&.any?
         end
 
-        def get_resolvables(_unique_id, _type, _optional)
-          # TODO: implement on backend
-          JSON.parse(get("software/config"))
+        def get_resolvables(unique_id, type, optional)
+          JSON.parse(get("software/resolvables/#{unique_id}?type=#{type}&optional=#{optional}"))
         end
 
         def provisions_selected?(_provisions)
@@ -87,14 +86,13 @@ module Agama
           true
         end
 
-        def set_resolvables(_unique_id, type, resolvables, optional)
-          # TODO: implement at backend proposal id
+        def set_resolvables(unique_id, type, resolvables, optional)
           data = {
             "names"    => resolvables,
             "type"     => type,
             "optional" => optional
           }
-          JSON.parse(put("software/config"), data)
+          JSON.parse(put("software/resolvables/#{unique_id}"), data)
         end
 
         def add_patterns(patterns)

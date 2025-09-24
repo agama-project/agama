@@ -52,6 +52,12 @@ pub enum SoftwareAction {
         resolvables: Vec<String>,
         optional: bool,
     },
+    GetResolvables {
+        tx: oneshot::Sender<Vec<String>>,
+        id: String,
+        r#type: ResolvableType,
+        optional: bool,
+    },
 }
 
 /// Software service server.
@@ -161,7 +167,19 @@ impl SoftwareServiceServer {
             } => {
                 let resolvables: Vec<_> = resolvables.iter().map(String::as_str).collect();
                 self.software_selection
-                    .add(&id, r#type, optional, &resolvables);
+                    .set(&id, r#type, optional, &resolvables);
+            }
+
+            SoftwareAction::GetResolvables {
+                tx,
+                id,
+                r#type,
+                optional,
+            } => {
+                let result = self.software_selection
+                    .get(&id, r#type, optional).unwrap_or(vec![]);
+                tx.send(result)
+                    .map_err(|_| SoftwareServiceError::ResponseChannelClosed)?;
             }
         }
         Ok(())
