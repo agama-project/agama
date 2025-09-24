@@ -21,7 +21,7 @@
 //! This module implements Agama's HTTP API.
 
 use crate::{
-    supervisor::{handler, Action, ConfigScope, Handler, Scope},
+    supervisor::{handler, Action, ConfigScope, Handler, Scope, SystemInfo},
     web::EventsSender,
 };
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
@@ -65,7 +65,7 @@ pub struct ServerState {
     supervisor: Handler,
 }
 
-type ServerResult = Result<Response, Error>;
+type ServerResult<T> = Result<T, Error>;
 
 /// Sets up and returns the axum service for the manager module
 pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError> {
@@ -91,9 +91,9 @@ pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError
         .with_state(state))
 }
 
-async fn get_system(State(state): State<ServerState>) -> ServerResult {
+async fn get_system(State(state): State<ServerState>) -> ServerResult<Json<SystemInfo>> {
     let system = state.supervisor.get_system().await?;
-    Ok(Json(system).into_response())
+    Ok(Json(system))
 }
 
 /// Returns the current configuration.
@@ -106,9 +106,9 @@ async fn get_system(State(state): State<ServerState>) -> ServerResult {
         (status = 400, description = "Not possible to retrieve the configuration")
     )
 )]
-async fn get_full_config(State(state): State<ServerState>) -> ServerResult {
+async fn get_full_config(State(state): State<ServerState>) -> ServerResult<Json<InstallSettings>> {
     let config = state.supervisor.get_full_config().await?;
-    Ok(Json(config).into_response())
+    Ok(Json(config))
 }
 
 /// Returns the current configuration for the given scope.
@@ -127,7 +127,7 @@ async fn get_full_config(State(state): State<ServerState>) -> ServerResult {
 async fn get_full_config_scope(
     State(state): State<ServerState>,
     Path(scope): Path<Scope>,
-) -> ServerResult {
+) -> ServerResult<Response> {
     let config = state.supervisor.get_full_config_scope(scope).await?;
     Ok(to_option_response(config))
 }
@@ -142,9 +142,9 @@ async fn get_full_config_scope(
         (status = 400, description = "Not possible to retrieve the configuration")
     )
 )]
-async fn get_config(State(state): State<ServerState>) -> ServerResult {
+async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<InstallSettings>> {
     let config = state.supervisor.get_config().await?;
-    Ok(Json(config).into_response())
+    Ok(Json(config))
 }
 
 /// Returns the user specified configuration for the given scope.
@@ -163,7 +163,7 @@ async fn get_config(State(state): State<ServerState>) -> ServerResult {
 async fn get_config_scope(
     State(state): State<ServerState>,
     Path(scope): Path<Scope>,
-) -> ServerResult {
+) -> ServerResult<Response> {
     let config = state.supervisor.get_config_scope(scope).await?;
     Ok(to_option_response(config))
 }
@@ -187,9 +187,9 @@ async fn get_config_scope(
 async fn put_config(
     State(state): State<ServerState>,
     Json(config): Json<InstallSettings>,
-) -> ServerResult {
+) -> ServerResult<()> {
     state.supervisor.update_config(&config)?;
-    Ok(().into_response())
+    Ok(())
 }
 
 /// Patches the configuration.
@@ -210,9 +210,9 @@ async fn put_config(
 async fn patch_config(
     State(state): State<ServerState>,
     Json(config): Json<InstallSettings>,
-) -> ServerResult {
+) -> ServerResult<()> {
     state.supervisor.patch_config(&config)?;
-    Ok(().into_response())
+    Ok(())
 }
 
 /// Updates the configuration for the given scope.
@@ -236,8 +236,8 @@ async fn put_config_scope(
     State(state): State<ServerState>,
     Path(scope): Path<Scope>,
     Json(user_config): Json<ConfigScope>,
-) -> ServerResult {
-    set_scope_config(state, scope, user_config, false)
+) -> ServerResult<()> {
+    set_config_scope(state, scope, user_config, false)
 }
 
 /// Patches the configuration for the given scope.
@@ -260,16 +260,16 @@ async fn patch_config_scope(
     State(state): State<ServerState>,
     Path(scope): Path<Scope>,
     Json(user_config): Json<ConfigScope>,
-) -> ServerResult {
-    set_scope_config(state, scope, user_config, true)
+) -> ServerResult<()> {
+    set_config_scope(state, scope, user_config, true)
 }
 
-fn set_scope_config(
+fn set_config_scope(
     state: ServerState,
     scope: Scope,
     config: ConfigScope,
     patch: bool,
-) -> ServerResult {
+) -> ServerResult<()> {
     if config.to_scope() != scope {
         return Err(Error::Scope(scope));
     }
@@ -279,10 +279,10 @@ fn set_scope_config(
     } else {
         state.supervisor.update_config_scope(config)?;
     }
-    Ok(().into_response())
+    Ok(())
 }
 
-async fn get_proposal(State(state): State<ServerState>) -> ServerResult {
+async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response> {
     let proposal = state.supervisor.get_proposal().await?;
     Ok(to_option_response(proposal))
 }
@@ -299,7 +299,10 @@ async fn get_proposal(State(state): State<ServerState>) -> ServerResult {
         ("action" = Action, description = "Description of the action to run"),
     )
 )]
-async fn run_action(State(state): State<ServerState>, Json(action): Json<Action>) -> ServerResult {
+async fn run_action(
+    State(state): State<ServerState>,
+    Json(action): Json<Action>,
+) -> ServerResult<()> {
     state.supervisor.run_action(action).await?;
-    Ok(().into_response())
+    Ok(())
 }

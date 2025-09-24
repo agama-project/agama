@@ -30,9 +30,11 @@ pub use service::Action;
 mod scope;
 pub use scope::{ConfigScope, Scope};
 
+mod system_info;
+pub use system_info::SystemInfo;
+
 mod event;
 mod proposal;
-mod system_info;
 
 use agama_l10n as l10n;
 
