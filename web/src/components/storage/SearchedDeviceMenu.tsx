@@ -21,7 +21,7 @@
  */
 
 import React, { useState } from "react";
-import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
+import MenuButton, { CustomToggleProps, MenuButtonItem } from "~/components/core/MenuButton";
 import NewVgMenuOption from "./NewVgMenuOption";
 import { useAvailableDevices } from "~/hooks/storage/system";
 import { useModel } from "~/hooks/storage/model";
@@ -272,8 +272,9 @@ const targetDevices = (modelDevice, model, availableDevices): StorageDevice[] =>
 };
 
 export type SearchedDeviceMenuProps = {
-  modelDevice: model.Drive | model.MdRaid;
   selected: StorageDevice;
+  modelDevice: model.Drive | model.MdRaid;
+  toggle?: React.ReactElement<CustomToggleProps>;
   deleteFn: (device: model.Drive | model.MdRaid) => void;
 };
 
@@ -285,6 +286,7 @@ export type SearchedDeviceMenuProps = {
 export default function SearchedDeviceMenu({
   modelDevice,
   selected,
+  toggle,
   deleteFn,
 }: SearchedDeviceMenuProps): React.ReactNode {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
@@ -306,12 +308,9 @@ export default function SearchedDeviceMenu({
       <MenuButton
         menuProps={{
           "aria-label": sprintf(_("Device %s menu"), modelDevice.name),
-          popperProps: { position: "end" },
+          popperProps: { position: "end", maxWidth: "fit-content", minWidth: "fit-content" },
         }}
-        toggleProps={{
-          variant: "plain",
-          style: { padding: 0 },
-        }}
+        customToggle={toggle}
         items={[
           <ChangeDeviceMenuItem
             key="change"
