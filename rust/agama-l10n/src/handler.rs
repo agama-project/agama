@@ -20,7 +20,13 @@
 
 //! Defines the handler to interact with the localization service.
 
-use crate::{monitor, Message, Proposal, SystemConfig, SystemInfo, UserConfig};
+use crate::{
+    monitor,
+    proposal::Proposal,
+    service::{Message, SystemConfig},
+    system_info::SystemInfo,
+    user_config::UserConfig,
+};
 use agama_utils::{handler, Handler as AgamaHandler};
 use tokio::sync::mpsc;
 

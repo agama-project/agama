@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{model::ModelAdapter, Keymap, LocaleEntry, TimezoneEntry};
+use crate::model::{Keymap, LocaleEntry, ModelAdapter, TimezoneEntry};
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};

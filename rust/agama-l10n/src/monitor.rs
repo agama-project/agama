@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::Message;
+use crate::service::Message;
 use agama_locale_data::{KeymapId, LocaleId};
 use agama_utils::dbus::{get_property, to_owned_hash};
 use tokio::sync::mpsc;

@@ -43,7 +43,6 @@ pub use handler::Handler;
 
 mod service;
 pub use service::SystemConfig;
-pub(crate) use service::{Message, Service};
 
 mod system_info;
 pub use system_info::SystemInfo;
@@ -54,22 +53,20 @@ pub use user_config::UserConfig;
 mod proposal;
 pub use proposal::Proposal;
 
-mod event;
-pub use event::{Event, EventsReceiver, EventsSender};
+pub mod event;
+pub use event::Event;
 
-mod config;
-pub(crate) use config::Config;
-
-mod model;
-pub(crate) use model::{Keymap, LocaleEntry, Model, TimezoneEntry};
-
-mod monitor;
-pub(crate) use monitor::Monitor;
-
-pub(crate) mod dbus;
 pub mod helpers;
 
+mod config;
+mod dbus;
+mod model;
+mod monitor;
+
 use agama_utils::Service as _;
+use model::Model;
+use monitor::Monitor;
+use service::Service;
 use tokio::sync::mpsc;
 
 /// Starts the localization service.
@@ -95,7 +92,7 @@ use tokio::sync::mpsc;
 /// ```
 ///
 /// * `events`: channel to emit the [localization-specific events](crate::Event).
-pub async fn start_service(events: EventsSender) -> Result<Handler, Error> {
+pub async fn start_service(events: event::Sender) -> Result<Handler, Error> {
     let (sender, receiver) = mpsc::unbounded_channel();
     let model = Model::from_system()?;
     let mut service = Service::new(model, receiver, events);
@@ -113,9 +110,12 @@ pub async fn start_service(events: EventsSender) -> Result<Handler, Error> {
 #[cfg(test)]
 mod tests {
     use crate::{
-        model::{KeymapsDatabase, LocalesDatabase, ModelAdapter, TimezonesDatabase},
-        service, Event, EventsReceiver, Handler, Keymap, LocaleEntry, Service, TimezoneEntry,
-        UserConfig,
+        event::Receiver,
+        model::{
+            Keymap, KeymapsDatabase, LocaleEntry, LocalesDatabase, ModelAdapter, TimezoneEntry,
+            TimezonesDatabase,
+        },
+        service, Event, Handler, Service, UserConfig,
     };
     use agama_locale_data::{KeymapId, LocaleId};
     use agama_utils::Service as _;
@@ -184,8 +184,7 @@ mod tests {
         }
     }
 
-    async fn start_testing_service() -> Result<(EventsReceiver, Handler), Box<dyn std::error::Error>>
-    {
+    async fn start_testing_service() -> Result<(Receiver, Handler), Box<dyn std::error::Error>> {
         let (events_tx, events_rx) = mpsc::unbounded_channel::<Event>();
         let (messages_tx, messages_rx) = mpsc::unbounded_channel();
         let model = build_adapter();

@@ -32,5 +32,5 @@ pub enum Event {
     SystemChanged,
 }
 
-pub type EventsSender = mpsc::UnboundedSender<Event>;
-pub type EventsReceiver = mpsc::UnboundedReceiver<Event>;
+pub type Sender = mpsc::UnboundedSender<Event>;
+pub type Receiver = mpsc::UnboundedReceiver<Event>;

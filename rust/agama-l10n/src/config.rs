@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{service, SystemInfo, UserConfig};
+use crate::{service, system_info::SystemInfo, user_config::UserConfig};
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 
 #[derive(Clone, PartialEq)]

@@ -20,7 +20,7 @@
 
 //! Representation of the localization settings
 
-use crate::Config;
+use crate::config::Config;
 use serde::{Deserialize, Serialize};
 
 /// Localization configuration for the target system.
