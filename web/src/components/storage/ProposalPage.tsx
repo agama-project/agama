@@ -46,6 +46,7 @@ import { Icon, Loading } from "~/components/layout";
 import ConfigEditor from "./ConfigEditor";
 import ConnectedDevicesMenu from "./ConnectedDevicesMenu";
 import EncryptionSection from "./EncryptionSection";
+import BootSection from "./BootSection";
 import FixableConfigInfo from "./FixableConfigInfo";
 import ProposalFailedInfo from "./ProposalFailedInfo";
 import ProposalResultSection from "./ProposalResultSection";
@@ -271,15 +272,7 @@ function ProposalSections(): React.ReactNode {
                   title={<TabTitleText>{_("Boot options")}</TabTitleText>}
                 >
                   <NestedContent margin="mtXs">
-                    <Stack hasGutter>
-                      <div className={textStyles.textColorPlaceholder}>
-                        {_(
-                          "To ensure the new system is able to boot, the installer may need to create or configure some \
-                          partitions in the appropriate disk.",
-                        )}
-                      </div>
-                      <div>{_("Description of the status and button to edit")}</div>
-                    </Stack>
+                    <BootSection />
                   </NestedContent>
                 </Tab>
               </Tabs>
