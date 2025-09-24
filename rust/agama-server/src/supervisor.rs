@@ -18,6 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+mod error;
+pub use error::Error;
+
 mod event;
 pub use event::EventsListener;
 
@@ -52,10 +55,10 @@ use tokio::sync::mpsc;
 /// It receives the following argument:
 ///
 /// * `events`: channel to emit the [events](agama_lib::http::Event).
-pub async fn start_service(events: EventsSender) -> Result<Handler, handler::Error> {
+pub async fn start_service(events: EventsSender) -> Result<Handler, Error> {
     let mut listener = EventsListener::new(events);
     let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
-    let l10n = l10n::start_service(events_sender).await.unwrap();
+    let l10n = l10n::start_service(events_sender).await?;
     listener.add_channel("l10n", events_receiver);
     tokio::spawn(async move {
         listener.run().await;

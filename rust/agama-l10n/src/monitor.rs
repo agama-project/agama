@@ -23,7 +23,7 @@ use agama_locale_data::{KeymapId, LocaleId};
 use agama_utils::dbus::{get_property, to_owned_hash};
 use tokio::sync::mpsc;
 use tokio_stream::StreamExt;
-use zbus::fdo::PropertiesProxy;
+use zbus::fdo::{PropertiesChangedStream, PropertiesProxy};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -33,12 +33,12 @@ pub enum Error {
     DBus(#[from] zbus::Error),
 }
 
-pub struct Monitor<'a> {
+pub struct Monitor {
     channel: mpsc::UnboundedSender<Message>,
-    proxy: PropertiesProxy<'a>,
+    stream: PropertiesChangedStream,
 }
 
-impl<'a> Monitor<'a> {
+impl Monitor {
     pub async fn new(channel: mpsc::UnboundedSender<Message>) -> Result<Self, Error> {
         let dbus = zbus::Connection::system().await?;
         let proxy = PropertiesProxy::builder(&dbus)
@@ -46,17 +46,15 @@ impl<'a> Monitor<'a> {
             .destination("org.freedesktop.locale1")?
             .build()
             .await?;
-        Ok(Self { channel, proxy })
-    }
-
-    pub async fn run(&mut self) -> Result<(), Error> {
-        let mut stream = self
-            .proxy
+        let stream = proxy
             .receive_properties_changed()
             .await
             .map_err(Error::DBus)?;
+        Ok(Self { channel, stream })
+    }
 
-        while let Some(changes) = stream.next().await {
+    pub async fn run(&mut self) {
+        while let Some(changes) = self.stream.next().await {
             let Ok(args) = changes.args() else {
                 continue;
             };
@@ -83,11 +81,9 @@ impl<'a> Monitor<'a> {
             }
             if let Ok(keymap) = get_property::<String>(&changes, "VConsoleKeymap") {
                 if let Ok(keymap) = keymap.parse::<KeymapId>() {
-                    _ = self.channel.send(Message::UpdateKeymap { keymap })?;
+                    _ = self.channel.send(Message::UpdateKeymap { keymap });
                 }
             }
         }
-
-        Ok(())
     }
 }

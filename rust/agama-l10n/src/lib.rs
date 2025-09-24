@@ -35,6 +35,9 @@
 //! The service can be started by calling the [start_service] function, which
 //! returns a [Handler] to interact with the system.
 
+mod error;
+pub use error::Error;
+
 pub mod handler;
 pub use handler::Handler;
 
@@ -92,16 +95,16 @@ use tokio::sync::mpsc;
 /// ```
 ///
 /// * `events`: channel to emit the [localization-specific events](crate::Event).
-pub async fn start_service(events: EventsSender) -> Result<Handler, handler::Error> {
+pub async fn start_service(events: EventsSender) -> Result<Handler, Error> {
     let (sender, receiver) = mpsc::unbounded_channel();
-    let model = Model::from_system().unwrap();
+    let model = Model::from_system()?;
     let mut service = Service::new(model, receiver, events);
     tokio::spawn(async move {
         service.run().await;
     });
     let mut monitor = Monitor::new(sender.clone()).await?;
     tokio::spawn(async move {
-        monitor.run().await.unwrap();
+        monitor.run().await;
     });
 
     Ok(Handler::new(sender))
