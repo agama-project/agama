@@ -72,3 +72,68 @@ pub async fn start_service(events: EventsSender) -> Result<Handler, Error> {
 
     Ok(Handler::new(sender))
 }
+
+#[cfg(test)]
+mod test {
+    use crate::supervisor::{Handler, Service};
+    use agama_l10n::UserConfig;
+    use agama_lib::{http::Event, install_settings::InstallSettings};
+    use tokio::sync::{broadcast, mpsc};
+
+    async fn start_service() -> Handler {
+        let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
+        crate::supervisor::start_service(events_tx).await.unwrap()
+    }
+
+    #[tokio::test]
+    #[cfg(not(ci))]
+    async fn test_update_config() -> Result<(), Box<dyn std::error::Error>> {
+        let handler = start_service().await;
+
+        let localization = UserConfig {
+            language: Some("es_ES.UTF-8".to_string()),
+            keyboard: Some("es".to_string()),
+            timezone: Some("Atlantic/Canary".to_string()),
+        };
+
+        let config = InstallSettings {
+            localization: Some(localization.clone()),
+            ..Default::default()
+        };
+
+        assert!(handler.update_config(&config).is_ok());
+
+        let config = handler.get_config().await?;
+        assert_eq!(config.localization, Some(localization));
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    #[cfg(not(ci))]
+    async fn test_patch_config() -> Result<(), Box<dyn std::error::Error>> {
+        let handler = start_service().await;
+        let original = handler.get_config().await?;
+
+        let l10n_patch = UserConfig {
+            keyboard: Some("en".to_string()),
+            ..Default::default()
+        };
+
+        let config = InstallSettings {
+            localization: Some(l10n_patch.clone()),
+            ..Default::default()
+        };
+        assert!(handler.patch_config(&config).is_ok());
+
+        let config = handler.get_config().await?;
+        let l10n = config.localization.unwrap();
+        let l10n_original = original.localization.unwrap();
+
+        assert_eq!(l10n.keyboard, l10n_patch.keyboard);
+        assert_eq!(l10n.language, l10n_original.language);
+        assert_eq!(l10n.timezone, l10n_original.timezone);
+
+        Ok(())
+    }
+}
