@@ -18,7 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::supervisor::{l10n, Proposal, Scope, ScopeConfig, SystemInfo};
+use crate::supervisor::{
+    l10n,
+    proposal::Proposal,
+    scope::{Scope, ScopeConfig},
+    system_info::SystemInfo,
+};
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::Service as AgamaService;
 use merge_struct::merge;

@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::l10n;
+use crate::supervisor::l10n;
 use serde::{Deserialize, Serialize};
 
 #[derive(Copy, Clone, Debug, strum::EnumString, strum::Display, Deserialize, PartialEq)]

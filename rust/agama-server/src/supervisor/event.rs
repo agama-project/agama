@@ -18,22 +18,20 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::pin::Pin;
-
+use crate::web::EventsSender;
 use agama_lib::http::{Event, EventPayload};
+use std::pin::Pin;
 use tokio::sync::mpsc;
 use tokio_stream::{wrappers::UnboundedReceiverStream, Stream, StreamExt, StreamMap};
 
-use crate::web::EventsSender;
-
-pub struct EventsListener {
+pub struct Listener {
     inner: StreamMap<&'static str, Pin<Box<dyn Stream<Item = Event> + Send>>>,
     sender: EventsSender,
 }
 
-impl EventsListener {
+impl Listener {
     pub fn new(sender: EventsSender) -> Self {
-        EventsListener {
+        Listener {
             inner: StreamMap::new(),
             sender,
         }

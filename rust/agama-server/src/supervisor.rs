@@ -21,27 +21,24 @@
 mod error;
 pub use error::Error;
 
-mod event;
-pub use event::EventsListener;
-
 pub mod handler;
 pub use handler::Handler;
 
 mod service;
-pub use service::{Action, Message, Service};
-
-mod system_info;
-pub use system_info::SystemInfo;
-
-mod proposal;
-pub use proposal::Proposal;
+pub use service::Action;
 
 mod scope;
 pub use scope::{Scope, ScopeConfig};
 
-use crate::web::EventsSender;
+mod event;
+mod proposal;
+mod system_info;
+
 use agama_l10n as l10n;
+
+use crate::web::EventsSender;
 use agama_utils::Service as _;
+use service::Service;
 use tokio::sync::mpsc;
 
 /// Starts the supervisor service.
@@ -56,7 +53,7 @@ use tokio::sync::mpsc;
 ///
 /// * `events`: channel to emit the [events](agama_lib::http::Event).
 pub async fn start_service(events: EventsSender) -> Result<Handler, Error> {
-    let mut listener = EventsListener::new(events);
+    let mut listener = event::Listener::new(events);
     let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
     let l10n = l10n::start_service(events_sender).await?;
     listener.add_channel("l10n", events_receiver);
@@ -75,10 +72,10 @@ pub async fn start_service(events: EventsSender) -> Result<Handler, Error> {
 
 #[cfg(test)]
 mod test {
-    use crate::supervisor::{Handler, Service};
+    use crate::supervisor::Handler;
     use agama_l10n::UserConfig;
     use agama_lib::{http::Event, install_settings::InstallSettings};
-    use tokio::sync::{broadcast, mpsc};
+    use tokio::sync::broadcast;
 
     async fn start_service() -> Handler {
         let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
