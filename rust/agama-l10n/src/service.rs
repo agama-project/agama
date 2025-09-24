@@ -140,9 +140,7 @@ where
         let merged = self.state.config.merge(user_config)?;
         if merged != self.state.config {
             self.state.config = merged;
-            _ = self.events.send(Event::ProposalChanged {
-                proposal: self.get_proposal(),
-            });
+            _ = self.events.send(Event::ProposalChanged);
         }
         Ok(())
     }
@@ -196,7 +194,6 @@ where
             }
             Message::UpdateLocale { locale } => {
                 self.state.system.locale = locale.clone();
-                self.send_event(Event::LocaleChanged { locale })?;
                 self.send_event(Event::SystemChanged)?;
             }
             Message::UpdateKeymap { keymap } => {

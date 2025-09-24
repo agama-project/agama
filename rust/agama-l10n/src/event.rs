@@ -18,27 +18,16 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_locale_data::LocaleId;
 use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, DisplayFromStr};
 use tokio::sync::mpsc;
-
-use crate::Proposal;
 
 /// Localization-related events.
 // FIXME: is it really needed to implement Deserialize?
-#[serde_as]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "name")]
 pub enum Event {
-    /// The locale of the Agama system has changed.
-    LocaleChanged {
-        /// New localization ID.
-        #[serde_as(as = "DisplayFromStr")]
-        locale: LocaleId,
-    },
     /// Proposal changed.
-    ProposalChanged { proposal: Proposal },
+    ProposalChanged,
     /// The underlying system changed.
     SystemChanged,
 }

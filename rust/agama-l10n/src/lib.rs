@@ -216,7 +216,7 @@ mod tests {
         assert_eq!(&updated, &user_config);
 
         let event = events_rx.recv().await.expect("Did not receive the event");
-        assert!(matches!(event, Event::ProposalChanged { proposal: _ }));
+        assert!(matches!(event, Event::ProposalChanged));
         Ok(())
     }
 
