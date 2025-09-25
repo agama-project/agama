@@ -286,7 +286,7 @@ async fn get_resolvables(
     let default = "package".to_string();
     let typ = query.get("type").unwrap_or(&default);
     let typ = match typ.as_str() {
-        // TODO: support more and move to Resolvable Kind
+        // TODO: support more and move to ResolvableKind
         "package" => Ok(ResolvableType::Package),
         "pattern" => Ok(ResolvableType::Pattern),
         _ => Err(anyhow::Error::msg("Unknown resolveble type")),
