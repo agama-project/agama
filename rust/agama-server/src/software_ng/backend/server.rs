@@ -165,9 +165,7 @@ impl SoftwareServiceServer {
                 resolvables,
                 optional,
             } => {
-                let resolvables: Vec<_> = resolvables.iter().map(String::as_str).collect();
-                self.software_selection
-                    .set(&id, r#type, optional, &resolvables);
+                self.set_resolvables(id, r#type, resolvables, optional)?;
             }
 
             SoftwareAction::GetResolvables {
@@ -187,6 +185,19 @@ impl SoftwareServiceServer {
         Ok(())
     }
 
+    fn set_resolvables(
+        &mut self,
+        id: String,
+        r#type: ResolvableType,
+        resolvables: Vec<String>,
+        optional: bool,
+    ) -> Result<(), SoftwareServiceError> {
+        let resolvables: Vec<_> = resolvables.iter().map(String::as_str).collect();
+        self.software_selection
+            .set(&id, r#type, optional, &resolvables);
+        Ok(())
+    }
+
     /// Select the given product.
     async fn select_product(&mut self, product_id: String) -> Result<(), SoftwareServiceError> {
         tracing::info!("Selecting product {}", product_id);
@@ -199,7 +210,7 @@ impl SoftwareServiceServer {
         Ok(())
     }
 
-    async fn probe(&self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
+    async fn probe(&mut self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
         let product = self.find_selected_product().await?;
         let repositories = product.software.repositories();
         for (idx, repo) in repositories.iter().enumerate() {
@@ -217,6 +228,40 @@ impl SoftwareServiceServer {
             true
         })
         .map_err(SoftwareServiceError::LoadSourcesFailed)?;
+
+        let installer_id_string = "installer".to_string();
+        // select product
+        self.set_resolvables(
+            installer_id_string.clone(),
+            ResolvableType::Product,
+            vec![product.software.base_product.clone()],
+            false,
+        )?;
+        // select packages and patterns from product
+        self.set_resolvables(
+            installer_id_string.clone(),
+            ResolvableType::Package,
+            product.software.mandatory_packages,
+            false,
+        )?;
+        self.set_resolvables(
+            installer_id_string.clone(),
+            ResolvableType::Pattern,
+            product.software.mandatory_patterns,
+            false,
+        )?;
+        self.set_resolvables(
+            installer_id_string.clone(),
+            ResolvableType::Package,
+            product.software.optional_packages,
+            true,
+        )?;
+        self.set_resolvables(
+            installer_id_string.clone(),
+            ResolvableType::Pattern,
+            product.software.optional_patterns,
+            true,
+        )?;
 
         Ok(())
     }
@@ -271,8 +316,7 @@ impl SoftwareServiceServer {
         let product = self.find_selected_product().await?;
 
         let mandatory_patterns = product.software.mandatory_patterns.iter();
-        let optional_patterns = product.software.optional_patterns.unwrap_or(vec![]);
-        let optional_patterns = optional_patterns.iter();
+        let optional_patterns = product.software.optional_patterns.iter();
         let pattern_names: Vec<&str> = vec![mandatory_patterns, optional_patterns]
             .into_iter()
             .flatten()

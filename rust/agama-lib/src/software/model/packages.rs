@@ -44,6 +44,7 @@ pub struct SoftwareConfig {
 pub enum ResolvableType {
     Package = 0,
     Pattern = 1,
+    Product = 2,
 }
 
 /// Resolvable list specification.

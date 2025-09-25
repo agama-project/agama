@@ -128,11 +128,14 @@ pub struct SoftwareSpec {
     installation_repositories: Vec<RepositorySpec>,
     #[serde(default)]
     pub installation_labels: Vec<LabelSpec>,
+    #[serde(default)]
     pub mandatory_patterns: Vec<String>,
+    #[serde(default)]
     pub mandatory_packages: Vec<String>,
-    // TODO: the specification should always be a vector (even if empty).
-    pub optional_patterns: Option<Vec<String>>,
-    pub optional_packages: Option<Vec<String>>,
+    #[serde(default)]
+    pub optional_patterns: Vec<String>,
+    #[serde(default)]
+    pub optional_packages: Vec<String>,
     pub base_product: String,
 }
 
