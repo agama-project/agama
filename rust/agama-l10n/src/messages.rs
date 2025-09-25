@@ -20,6 +20,8 @@
 
 use std::fmt::Debug;
 
+use agama_locale_data::{KeymapId, LocaleId};
+
 #[derive(Debug)]
 pub struct GetSystem {}
 
@@ -53,3 +55,12 @@ pub struct GetProposal {}
 
 #[derive(Debug)]
 pub struct Install {}
+
+#[derive(Debug)]
+pub struct UpdateKeymap {
+    pub keymap: KeymapId,
+}
+
+pub struct UpdateLocale {
+    pub locale: LocaleId,
+}

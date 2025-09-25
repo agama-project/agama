@@ -44,6 +44,7 @@ pub mod handler;
 pub use handler::Handler;
 
 mod service;
+use monitor::Monitor;
 pub use service::SystemConfig;
 
 mod system_info;
@@ -96,16 +97,17 @@ use tokio::sync::mpsc;
 pub async fn start_service(events: event::Sender) -> Result<Handler, Error> {
     let (sender, receiver) = mpsc::unbounded_channel();
     let model = Model::from_system()?;
-    let mut service = Service::new(model, receiver, events);
+    let service = Service::new(model, receiver, events);
     tokio::spawn(async move {
         service.run().await;
     });
-    // let mut monitor = Monitor::new(sender.clone()).await?;
-    // tokio::spawn(async move {
-    //     monitor.run().await;
-    // });
+    let handler = Handler::new(sender);
+    let mut monitor = Monitor::new(handler.clone()).await?;
+    tokio::spawn(async move {
+        monitor.run().await;
+    });
 
-    Ok(Handler::new(sender))
+    Ok(handler)
 }
 
 #[cfg(test)]

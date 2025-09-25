@@ -18,9 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::service::Message;
+use crate::{service::Message, Handler};
 use agama_locale_data::{KeymapId, LocaleId};
-use agama_utils::dbus::{get_property, to_owned_hash};
+use agama_utils::{
+    actors::ActorHandle,
+    dbus::{get_property, to_owned_hash},
+};
 use tokio::sync::mpsc;
 use tokio_stream::StreamExt;
 use zbus::fdo::{PropertiesChangedStream, PropertiesProxy};
@@ -34,12 +37,12 @@ pub enum Error {
 }
 
 pub struct Monitor {
-    channel: mpsc::UnboundedSender<Message>,
+    handler: Handler,
     stream: PropertiesChangedStream,
 }
 
 impl Monitor {
-    pub async fn new(channel: mpsc::UnboundedSender<Message>) -> Result<Self, Error> {
+    pub async fn new(handler: crate::Handler) -> Result<Self, Error> {
         let dbus = zbus::Connection::system().await?;
         let proxy = PropertiesProxy::builder(&dbus)
             .path("/org/freedesktop/locale1")?
@@ -50,7 +53,7 @@ impl Monitor {
             .receive_properties_changed()
             .await
             .map_err(Error::DBus)?;
-        Ok(Self { channel, stream })
+        Ok(Self { handler, stream })
     }
 
     pub async fn run(&mut self) {
@@ -75,13 +78,13 @@ impl Monitor {
 
                 if let Some(locale_id) = locale_id {
                     _ = self
-                        .channel
-                        .send(Message::UpdateLocale { locale: locale_id });
+                        .handler
+                        .send(crate::messages::UpdateLocale { locale: locale_id });
                 }
             }
             if let Ok(keymap) = get_property::<String>(&changes, "VConsoleKeymap") {
                 if let Ok(keymap) = keymap.parse::<KeymapId>() {
-                    _ = self.channel.send(Message::UpdateKeymap { keymap });
+                    _ = self.handler.send(crate::messages::UpdateKeymap { keymap });
                 }
             }
         }

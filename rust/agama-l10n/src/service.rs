@@ -160,7 +160,6 @@ impl<T: ModelAdapter + 'static> Handles<messages::SetSystem<SystemConfig>> for S
         let config = &message.config;
         if let Some(language) = &config.language {
             self.model.set_locale(language.parse()?)?;
-            // self.model.set_locale(language.parse().unwrap()).unwrap();
         }
 
         if let Some(keyboard) = &config.keyboard {
@@ -188,7 +187,6 @@ impl<T: ModelAdapter + 'static> Handles<messages::SetConfig<UserConfig>> for Ser
         &mut self,
         message: messages::SetConfig<UserConfig>,
     ) -> Result<Self::Reply, Self::Error> {
-        println!("HANDLING");
         let merged = self.state.config.merge(&message.config)?;
         if merged != self.state.config {
             self.state.config = merged;
@@ -216,6 +214,28 @@ impl<T: ModelAdapter + 'static> Handles<messages::Install> for Service<T> {
         self.model
             .install(proposal.locale, proposal.keymap, proposal.timezone)
             .unwrap();
+        Ok(())
+    }
+}
+
+impl<T: ModelAdapter + 'static> Handles<messages::UpdateLocale> for Service<T> {
+    type Reply = ();
+    type Error = crate::service::Error;
+
+    fn handle(&mut self, message: messages::UpdateLocale) -> Result<Self::Reply, Self::Error> {
+        self.state.system.locale = message.locale;
+        _ = self.events.send(Event::SystemChanged);
+        Ok(())
+    }
+}
+
+impl<T: ModelAdapter + 'static> Handles<messages::UpdateKeymap> for Service<T> {
+    type Reply = ();
+    type Error = crate::service::Error;
+
+    fn handle(&mut self, message: messages::UpdateKeymap) -> Result<Self::Reply, Self::Error> {
+        self.state.system.keymap = message.keymap;
+        _ = self.events.send(Event::SystemChanged);
         Ok(())
     }
 }
