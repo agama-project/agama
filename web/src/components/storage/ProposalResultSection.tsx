@@ -21,8 +21,8 @@
  */
 
 import React, { useState } from "react";
-import { Alert, Skeleton, Stack, Tab, Tabs, TabTitleText } from "@patternfly/react-core";
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { Skeleton, Stack, Tab, Tabs, TabTitleText } from "@patternfly/react-core";
+import SmallWarning from "~/components/core/SmallWarning";
 import { Page, NestedContent } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
@@ -30,6 +30,7 @@ import { ProposalActionsDialog } from "~/components/storage";
 import { _, n_, formatList } from "~/i18n";
 import { useActions, useDevices } from "~/queries/storage";
 import { sprintf } from "sprintf-js";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 /**
  * @todo Create a component for rendering a customized skeleton
@@ -81,7 +82,7 @@ const DeletionsInfo = ({ manager }: { manager: DevicesManager }) => {
     );
   }
 
-  return <Alert variant="warning" isPlain isInline title={label} />;
+  return <SmallWarning text={label} />;
 };
 
 export type ActionsListProps = {
@@ -92,7 +93,7 @@ function ActionsList({ manager }: ActionsListProps) {
   const actions = manager.actions;
 
   return (
-    <Stack>
+    <Stack hasGutter>
       <DeletionsInfo manager={manager} />
       <ProposalActionsDialog actions={actions} />
     </Stack>
