@@ -19,11 +19,19 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    config::Config, event::Event, model::ModelAdapter, proposal::Proposal, system_info::SystemInfo,
+    config::Config,
+    event::Event,
+    messages,
+    model::{Model, ModelAdapter},
+    proposal::Proposal,
+    system_info::SystemInfo,
     user_config::UserConfig,
 };
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
-use agama_utils::Service as AgamaService;
+use agama_utils::{
+    actors::{Actor, Handles, MailboxReceiver},
+    Service as AgamaService,
+};
 use tokio::sync::{mpsc, oneshot};
 
 #[derive(thiserror::Error, Debug)]
@@ -76,7 +84,7 @@ pub enum Message {
     Install,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SystemConfig {
     pub language: Option<String>,
     pub keyboard: Option<String>,
@@ -88,7 +96,7 @@ where
 {
     state: State,
     model: T,
-    messages: mpsc::UnboundedReceiver<Message>,
+    messages: MailboxReceiver,
     events: mpsc::UnboundedSender<Event>,
 }
 
@@ -103,7 +111,7 @@ where
 {
     pub fn new(
         mut model: T,
-        messages: mpsc::UnboundedReceiver<Message>,
+        messages: MailboxReceiver,
         events: mpsc::UnboundedSender<Event>,
     ) -> Service<T> {
         let system = SystemInfo::read_from(&mut model);
@@ -117,100 +125,74 @@ where
             events,
         }
     }
+}
 
-    fn get_system(&self) -> &SystemInfo {
-        &self.state.system
+impl<T: ModelAdapter + 'static> Actor for Service<T> {
+    fn channel(&mut self) -> &mut agama_utils::actors::MailboxReceiver {
+        &mut self.messages
     }
+}
 
-    // The system state is automatically updated by the monitor.
-    fn set_system(&mut self, config: SystemConfig) -> Result<(), Error> {
+impl<T: ModelAdapter + 'static> Handles<messages::GetSystem> for Service<T> {
+    type Reply = SystemInfo;
+
+    fn handle(&mut self, _message: messages::GetSystem) -> Self::Reply {
+        self.state.system.clone()
+    }
+}
+
+impl<T: ModelAdapter + 'static> Handles<messages::SetSystem<SystemConfig>> for Service<T> {
+    type Reply = ();
+
+    fn handle(&mut self, message: messages::SetSystem<SystemConfig>) -> Self::Reply {
+        let config = &message.config;
         if let Some(language) = &config.language {
-            self.model.set_locale(language.parse()?)?;
+            // self.model.set_locale(language.parse()?)?;
+            self.model.set_locale(language.parse().unwrap()).unwrap();
         }
 
         if let Some(keyboard) = &config.keyboard {
-            self.model.set_keymap(keyboard.parse()?)?;
+            self.model.set_keymap(keyboard.parse().unwrap()).unwrap()
         };
-
-        Ok(())
     }
+}
 
-    fn get_config(&self) -> UserConfig {
+impl<T: ModelAdapter + 'static> Handles<messages::GetConfig> for Service<T> {
+    type Reply = UserConfig;
+
+    fn handle(&mut self, _message: messages::GetConfig) -> Self::Reply {
         (&self.state.config).into()
     }
+}
 
-    fn set_config(&mut self, user_config: &UserConfig) -> Result<(), Error> {
-        let merged = self.state.config.merge(user_config)?;
+impl<T: ModelAdapter + 'static> Handles<messages::SetConfig<UserConfig>> for Service<T> {
+    type Reply = ();
+
+    fn handle(&mut self, message: messages::SetConfig<UserConfig>) -> Self::Reply {
+        let merged = self.state.config.merge(&message.config).unwrap();
         if merged != self.state.config {
             self.state.config = merged;
             _ = self.events.send(Event::ProposalChanged);
         }
-        Ok(())
-    }
-
-    fn get_proposal(&self) -> Proposal {
-        (&self.state.config).into()
-    }
-
-    fn install(&self) -> Result<(), Error> {
-        let proposal = self.get_proposal();
-        self.model
-            .install(proposal.locale, proposal.keymap, proposal.timezone)
-    }
-
-    fn send_event(&self, event: Event) -> Result<(), Error> {
-        self.events.send(event).map_err(|_| Error::Event)?;
-        Ok(())
+        ()
     }
 }
 
-impl<T> AgamaService for Service<T>
-where
-    T: ModelAdapter,
-{
-    type Err = Error;
-    type Message = Message;
+impl<T: ModelAdapter + 'static> Handles<messages::GetProposal> for Service<T> {
+    type Reply = Proposal;
 
-    fn channel(&mut self) -> &mut mpsc::UnboundedReceiver<Self::Message> {
-        &mut self.messages
+    fn handle(&mut self, _message: messages::GetProposal) -> Self::Reply {
+        (&self.state.config).into()
     }
+}
 
-    async fn dispatch(&mut self, message: Self::Message) -> Result<(), Self::Err> {
-        match message {
-            Message::GetConfig { respond_to } => {
-                respond_to
-                    .send(self.get_config())
-                    .map_err(|_| Error::SendResponse)?;
-            }
-            Message::SetConfig { config } => {
-                self.set_config(&config)?;
-            }
-            Message::GetProposal { respond_to } => {
-                respond_to
-                    .send(self.get_proposal())
-                    .map_err(|_| Error::SendResponse)?;
-            }
-            Message::GetSystem { respond_to } => {
-                respond_to
-                    .send(self.get_system().clone())
-                    .map_err(|_| Error::SendResponse)?;
-            }
-            Message::UpdateLocale { locale } => {
-                self.state.system.locale = locale.clone();
-                self.send_event(Event::SystemChanged)?;
-            }
-            Message::UpdateKeymap { keymap } => {
-                self.state.system.keymap = keymap;
-                self.send_event(Event::SystemChanged)?;
-            }
-            Message::SetSystem { config } => {
-                self.set_system(config)?;
-            }
-            Message::Install => {
-                self.install()?;
-            }
-        };
+impl<T: ModelAdapter + 'static> Handles<messages::Install> for Service<T> {
+    type Reply = ();
 
-        Ok(())
+    fn handle(&mut self, _message: messages::Install) -> Self::Reply {
+        let proposal: Proposal = (&self.state.config).into();
+        self.model
+            .install(proposal.locale, proposal.keymap, proposal.timezone)
+            .unwrap();
     }
 }

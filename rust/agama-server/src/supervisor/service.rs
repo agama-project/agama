@@ -24,8 +24,9 @@ use crate::supervisor::{
     scope::{ConfigScope, Scope},
     system_info::SystemInfo,
 };
+use agama_l10n::messages::{self, GetConfig, GetSystem, Install, SetConfig, SetSystem};
 use agama_lib::install_settings::InstallSettings;
-use agama_utils::Service as AgamaService;
+use agama_utils::{actors::ActorHandle as _, Service as AgamaService};
 use merge_struct::merge;
 use serde::Deserialize;
 use tokio::sync::{mpsc, oneshot};
@@ -110,18 +111,18 @@ impl Service {
     }
 
     /// It returns the information of the underlying system.
-    pub async fn get_system(&self) -> Result<SystemInfo, Error> {
+    pub async fn get_system(&mut self) -> Result<SystemInfo, Error> {
         Ok(SystemInfo {
-            localization: self.l10n.get_system().await?,
+            localization: self.l10n.request(GetSystem {}).await.unwrap(),
         })
     }
 
     /// Gets the current configuration.
     ///
     /// It includes user and default values.
-    pub async fn get_full_config(&self) -> Result<InstallSettings, Error> {
+    pub async fn get_full_config(&mut self) -> Result<InstallSettings, Error> {
         Ok(InstallSettings {
-            localization: Some(self.l10n.get_config().await?),
+            localization: Some(self.l10n.request(GetConfig {}).await.unwrap()),
             ..Default::default()
         })
     }
@@ -129,7 +130,7 @@ impl Service {
     /// It returns the configuration for the given scope.
     ///
     /// * scope: scope to get the configuration for.
-    pub async fn get_full_config_scope(&self, scope: Scope) -> Option<ConfigScope> {
+    pub async fn get_full_config_scope(&mut self, scope: Scope) -> Option<ConfigScope> {
         // FIXME: implement this logic at InstallSettings level: self.get_config().by_scope(...)
         // It would allow us to drop this method.
         match scope {
@@ -166,7 +167,10 @@ impl Service {
     /// After all, now we have config/user/:scope URLs.
     pub async fn update_config(&mut self, user_config: InstallSettings) -> Result<(), Error> {
         if let Some(l10n_user_config) = &user_config.localization {
-            self.l10n.set_config(l10n_user_config).await?;
+            self.l10n
+                .send(SetConfig::new(l10n_user_config.clone()))
+                .unwrap();
+            // self.l10n.set_config(l10n_user_config).await?;
         }
         self.user_config = user_config;
         Ok(())
@@ -211,7 +215,8 @@ impl Service {
     pub async fn update_config_scope(&mut self, user_config: ConfigScope) -> Result<(), Error> {
         match user_config {
             ConfigScope::L10n(new_config) => {
-                self.l10n.set_config(&new_config).await?;
+                // self.l10n.set_config(&new_config).await?;
+                self.l10n.send(SetConfig::new(new_config.clone())).unwrap();
                 self.user_config.localization = Some(new_config);
             }
         }
@@ -226,13 +231,13 @@ impl Service {
     pub async fn run_action(&mut self, action: Action) -> Result<(), Error> {
         match action {
             Action::ConfigureL10n { language, keyboard } => {
-                self.l10n
-                    .set_system(l10n::SystemConfig { language, keyboard })
-                    .await?;
+                // self.l10n
+                //     .set_system(l10n::SystemConfig { language, keyboard })
+                //     .await?;
+                let config = l10n::SystemConfig { language, keyboard };
+                self.l10n.send(SetSystem::new(config)).unwrap();
             }
-            Action::Install => {
-                self.l10n.install().await?;
-            }
+            Action::Install => self.l10n.send(Install {}).unwrap(),
         }
         Ok(())
     }

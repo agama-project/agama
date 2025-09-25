@@ -35,6 +35,8 @@
 //! The service can be started by calling the [start_service] function, which
 //! returns a [Handler] to interact with the system.
 
+pub mod messages;
+
 mod error;
 pub use error::Error;
 
@@ -63,7 +65,7 @@ mod dbus;
 mod model;
 mod monitor;
 
-use agama_utils::Service as _;
+use agama_utils::{actors::Actor, Service as _};
 use model::Model;
 use monitor::Monitor;
 use service::Service;
@@ -87,7 +89,7 @@ use tokio::sync::mpsc;
 ///
 /// let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
 /// let service = l10n::start_service(events_sender).await.unwrap();
-/// let config = service.get_config().await.unwrap();
+/// // let config = service.get_config().await.unwrap();
 /// # })
 /// ```
 ///
@@ -99,10 +101,10 @@ pub async fn start_service(events: event::Sender) -> Result<Handler, Error> {
     tokio::spawn(async move {
         service.run().await;
     });
-    let mut monitor = Monitor::new(sender.clone()).await?;
-    tokio::spawn(async move {
-        monitor.run().await;
-    });
+    // let mut monitor = Monitor::new(sender.clone()).await?;
+    // tokio::spawn(async move {
+    //     monitor.run().await;
+    // });
 
     Ok(Handler::new(sender))
 }
@@ -111,6 +113,7 @@ pub async fn start_service(events: event::Sender) -> Result<Handler, Error> {
 mod tests {
     use crate::{
         event::Receiver,
+        messages,
         model::{
             Keymap, KeymapsDatabase, LocaleEntry, LocalesDatabase, ModelAdapter, TimezoneEntry,
             TimezonesDatabase,
@@ -118,7 +121,7 @@ mod tests {
         service, Event, Handler, Service, UserConfig,
     };
     use agama_locale_data::{KeymapId, LocaleId};
-    use agama_utils::Service as _;
+    use agama_utils::actors::{Actor, ActorHandle, MailboxSender};
     use tokio::sync::mpsc;
 
     pub struct TestModel {
@@ -184,24 +187,44 @@ mod tests {
         }
     }
 
-    async fn start_testing_service() -> Result<(Receiver, Handler), Box<dyn std::error::Error>> {
+    pub struct TestHandler {
+        sender: MailboxSender,
+    }
+
+    impl TestHandler {
+        pub fn new(sender: MailboxSender) -> Self {
+            Self {
+                sender,
+                // _model: PhantomData::<T>,
+            }
+        }
+    }
+
+    impl ActorHandle<Service<TestModel>> for TestHandler {
+        fn channel(&mut self) -> &mut agama_utils::actors::MailboxSender {
+            &mut self.sender
+        }
+    }
+    async fn start_testing_service(//) -> Result<(Receiver, Handler<TestModel>), Box<dyn std::error::Error>> {
+    ) -> Result<(Receiver, TestHandler), Box<dyn std::error::Error>> {
         let (events_tx, events_rx) = mpsc::unbounded_channel::<Event>();
         let (messages_tx, messages_rx) = mpsc::unbounded_channel();
         let model = build_adapter();
-        let mut service = Service::new(model, messages_rx, events_tx);
+        let service = Service::new(model, messages_rx, events_tx);
+        let handler = TestHandler::new(messages_tx);
         tokio::spawn(async move {
             service.run().await;
         });
-        Ok((events_rx, Handler::new(messages_tx)))
+        Ok((events_rx, handler))
     }
 
     #[tokio::test]
     async fn test_get_and_set_config() -> Result<(), Box<dyn std::error::Error>> {
-        let (mut events_rx, handler) = start_testing_service()
+        let (mut events_rx, mut handler) = start_testing_service()
             .await
             .expect("Could not start the testing service");
 
-        let config = handler.get_config().await?;
+        let config = handler.request(messages::GetConfig {}).await.unwrap();
         assert_eq!(config.language, Some("en_US.UTF-8".to_string()));
 
         let user_config = UserConfig {
@@ -209,9 +232,10 @@ mod tests {
             keyboard: Some("es".to_string()),
             timezone: Some("Atlantic/Canary".to_string()),
         };
-        handler.set_config(&user_config).await?;
+        handler.send(messages::SetConfig::new(user_config.clone()))?;
+        // handler.set_config(&user_config).await?;
 
-        let updated = handler.get_config().await?;
+        let updated = handler.request(messages::GetConfig {}).await?;
         assert_eq!(&updated, &user_config);
 
         let event = events_rx.recv().await.expect("Did not receive the event");
@@ -221,15 +245,17 @@ mod tests {
 
     #[tokio::test]
     async fn test_set_config_without_changes() -> Result<(), Box<dyn std::error::Error>> {
-        let (mut events_rx, handler) = start_testing_service()
+        let (mut events_rx, mut handler) = start_testing_service()
             .await
             .expect("Could not start the testing service");
 
-        let config = handler.get_config().await?;
+        // let config = handler.get_config().await?;
+        let config = handler.request(messages::GetConfig {}).await?;
         assert_eq!(config.language, Some("en_US.UTF-8".to_string()));
-        handler.set_config(&config).await?;
+        handler.send(messages::SetConfig::new(config.clone()))?;
         // Wait until the action is dispatched.
-        _ = handler.get_config().await?;
+        // _ = handler.get_config().await?;
+        let _ = handler.request(messages::GetConfig {}).await?;
 
         let event = events_rx.try_recv();
         assert!(matches!(event, Err(mpsc::error::TryRecvError::Empty)));
@@ -238,11 +264,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_system() -> Result<(), Box<dyn std::error::Error>> {
-        let (_events_rx, handler) = start_testing_service()
+        let (_events_rx, mut handler) = start_testing_service()
             .await
             .expect("Could not start the testing service");
 
-        let system = handler.get_system().await?;
+        let system = handler.request(messages::GetSystem {}).await?;
         assert_eq!(system.keymaps.len(), 2);
 
         Ok(())
@@ -250,7 +276,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_proposal() -> Result<(), Box<dyn std::error::Error>> {
-        let (_events_rx, handler) = start_testing_service()
+        let (_events_rx, mut handler) = start_testing_service()
             .await
             .expect("Could not start the testing service");
 
@@ -259,9 +285,9 @@ mod tests {
             keyboard: Some("es".to_string()),
             timezone: Some("Atlantic/Canary".to_string()),
         };
-        handler.set_config(&user_config).await?;
+        handler.send(messages::SetConfig::new(user_config.clone()))?;
 
-        let proposal = handler.get_proposal().await?;
+        let proposal = handler.request(messages::GetProposal {}).await?;
         assert_eq!(proposal.locale.to_string(), user_config.language.unwrap());
         assert_eq!(proposal.keymap.to_string(), user_config.keyboard.unwrap());
         assert_eq!(proposal.timezone.to_string(), user_config.timezone.unwrap());
