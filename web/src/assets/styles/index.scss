@@ -503,29 +503,24 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 }
 
 // Temporary workaround for a recently introduced issue in PatternFly's
-// ExpandableSection, which causes the parent container to show scrollbars when
-// the section is collapsed. This was fixed in PatternFly core 3 days ago as of
-// writing (September 23rd, 2025):
-// https://github.com/patternfly/patternfly/pull/7843
+// ExpandableSection, where the parent container displays scrollbars when the
+// section is collapsed. This issue has been fixed in PatternFly core on September
+// 23, 2025 (PR #7843): https://github.com/patternfly/patternfly/pull/7843
 //
-// However, the issue we're facing  appears to be more related to the use of
-// `display: revert` in `&:where([hidden])`, which can leave the hidden element
-// in the layout flow and affect overflow behavior. The upstream fix addresses
-// this by applying `overflow: hidden` when the expandable section content is a
-// direct child of an expandable section that does *not* have the
-// `.pf-m-truncate` modifier.
+// Applying the fix directly didn’t work in our case, as nested expandable
+// sections still take up space when collapsed. As a result, we’ve added an
+// extra `height: 0` rule, specifically targeting the collapsed [hidden]
+// content.
 //
-// In our case, using `display: none` instead of `display: revert` works better,
-// as it ensures that nested expandable sections do not occupy layout space when
-// hidden. This can be seen in action visiting Storage > Result > Planned
-// actions"
+// This workaround should be removed once the updated PatternFly version
+// includes the upstream fix for this issue.
 //
-// TODO: Re-test and remove this workaround once the updated PatternFly version is released.
-.pf-v6-c-expandable-section__content {
-  &:where([hidden]) {
-    display: none;
-  }
-  // overflow: hidden; // <- how it was fixed at upstream PatternFly code.
+// TODO: Re-test and remove this workaround once the next PatternFly release
+// includes the fix.
+.pf-v6-c-expandable-section:where(:not(.pf-m-truncate))
+  .pf-v6-c-expandable-section__content:where([hidden]) {
+  overflow: hidden;
+  height: 0;
 }
 
 // Some utilities not found at PF
