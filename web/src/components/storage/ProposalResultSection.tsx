@@ -21,15 +21,7 @@
  */
 
 import React, { useState } from "react";
-import {
-  Alert,
-  ExpandableSection,
-  Skeleton,
-  Stack,
-  Tab,
-  Tabs,
-  TabTitleText,
-} from "@patternfly/react-core";
+import { Alert, Skeleton, Stack, Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { Page, NestedContent } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
@@ -134,11 +126,7 @@ export default function ProposalResultSection({ isLoading = false }: ProposalRes
       )}
     >
       <Tabs activeKey={active} onSelect={handleTabClick} role="region">
-        <Tab
-          key="action"
-          eventKey={0}
-          title={<TabTitleText>{_("Actions")}</TabTitleText>}
-        >
+        <Tab key="action" eventKey={0} title={<TabTitleText>{_("Actions")}</TabTitleText>}>
           <NestedContent margin="mtSm">
             <Stack hasGutter>
               <div className={textStyles.textColorPlaceholder}>
@@ -148,17 +136,11 @@ export default function ProposalResultSection({ isLoading = false }: ProposalRes
             </Stack>
           </NestedContent>
         </Tab>
-        <Tab
-          key="staging"
-          eventKey={1}
-          title={<TabTitleText>{_("Final layout")}</TabTitleText>}
-        >
+        <Tab key="staging" eventKey={1} title={<TabTitleText>{_("Final layout")}</TabTitleText>}>
           <NestedContent margin="mtSm">
             <Stack hasGutter>
               <div className={textStyles.textColorPlaceholder}>
-                {_(
-                  "Final structure of the system after installation.",
-                )}
+                {_("Final structure of the system after installation.")}
               </div>
               <ProposalResultTable devicesManager={devicesManager} />
             </Stack>
