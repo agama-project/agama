@@ -201,6 +201,7 @@ impl SoftwareServiceServer {
         resolvables: Vec<String>,
         optional: bool,
     ) -> Result<(), SoftwareServiceError> {
+        tracing::info!("Set resolvables for {} with {:?}", id, resolvables);
         let resolvables: Vec<_> = resolvables.iter().map(String::as_str).collect();
         self.software_selection
             .set(zypp, &id, r#type, optional, &resolvables)?;
