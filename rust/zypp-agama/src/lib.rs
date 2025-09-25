@@ -120,6 +120,17 @@ impl Zypp {
         }
     }
 
+    pub fn switch_target(&self, root: &str) -> ZyppResult<()> {
+        let mut status: Status = Status::default();
+        let status_ptr = &mut status as *mut _;
+        let c_root = CString::new(root).unwrap();
+        unsafe {
+            zypp_agama_sys::switch_target(self.ptr, c_root.as_ptr(), status_ptr);
+            helpers::status_to_result_void(status)?;
+        }
+        Ok(())
+    }
+
     pub fn list_repositories(&self) -> ZyppResult<Vec<Repository>> {
         let mut repos_v = vec![];
 

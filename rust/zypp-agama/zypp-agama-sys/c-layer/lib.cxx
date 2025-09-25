@@ -95,6 +95,19 @@ static zypp::ZYpp::Ptr zypp_ptr() {
   return NULL;
 }
 
+void switch_target(struct Zypp *zypp, const char *root, struct Status *status) noexcept {
+  const std::string root_str(root);
+  try {
+    zypp->zypp_pointer->initializeTarget(root_str, false);
+  } catch (zypp::Exception &excpt) {
+    status->state = status->STATE_FAILED;
+    status->error = strdup(excpt.asUserString().c_str());
+  }
+
+  status->state = status->STATE_SUCCEED;
+  status->error = NULL;
+}
+
 // TODO: split init target into set of repo manager, initialize target and load
 // target and merge it in rust
 struct Zypp *init_target(const char *root, struct Status *status,

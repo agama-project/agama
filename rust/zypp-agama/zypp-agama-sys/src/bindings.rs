@@ -246,13 +246,15 @@ unsafe extern "C" {
         user_data: *mut ::std::os::raw::c_void,
     );
     pub fn free_status(s: *mut Status);
-    #[doc = " Initialize Zypp target (where to install packages to).\n The returned zypp context is not thread safe and should be protected by a\n mutex in the calling layer.\n @param root\n @param[out] status\n @param progress\n @param user_data\n @return zypp context"]
+    #[doc = " Initialize Zypp target (where to store zypp data).\n The returned zypp context is not thread safe and should be protected by a\n mutex in the calling layer.\n @param root\n @param[out] status\n @param progress\n @param user_data\n @return zypp context"]
     pub fn init_target(
         root: *const ::std::os::raw::c_char,
         status: *mut Status,
         progress: ProgressCallback,
         user_data: *mut ::std::os::raw::c_void,
     ) -> *mut Zypp;
+    #[doc = " Switch Zypp target (where to install packages to).\n @param root\n @param[out] status"]
+    pub fn switch_target(zypp: *mut Zypp, root: *const ::std::os::raw::c_char, status: *mut Status);
     #[doc = " Marks resolvable for installation\n @param zypp see \\ref init_target\n @param name resolvable name\n @param kind kind of resolvable\n @param who who do selection. If NOT_SELECTED is used, it will be empty\n operation.\n @param[out] status (will overwrite existing contents)"]
     pub fn resolvable_select(
         zypp: *mut Zypp,
