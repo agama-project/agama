@@ -91,4 +91,20 @@ impl SoftwareServiceClient {
         })?;
         Ok(())
     }
+
+    pub async fn get_resolvables(
+        &self,
+        id: &str,
+        r#type: ResolvableType,
+        optional: bool,
+    ) -> Result<Vec<String>, SoftwareServiceError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(SoftwareAction::GetResolvables {
+            tx,
+            id: id.to_string(),
+            r#type,
+            optional,
+        })?;
+        Ok(rx.await?)
+    }
 }
