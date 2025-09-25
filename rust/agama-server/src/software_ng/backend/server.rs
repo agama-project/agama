@@ -157,6 +157,7 @@ impl SoftwareServiceServer {
 
             SoftwareAction::Probe => {
                 self.probe(zypp).await?;
+                self.run_solver(zypp)?;
             }
 
             SoftwareAction::SetResolvables {
@@ -166,6 +167,7 @@ impl SoftwareServiceServer {
                 optional,
             } => {
                 self.set_resolvables(zypp, id, r#type, resolvables, optional)?;
+                self.run_solver(zypp)?;
             }
 
             SoftwareAction::GetResolvables {
@@ -196,6 +198,13 @@ impl SoftwareServiceServer {
         let resolvables: Vec<_> = resolvables.iter().map(String::as_str).collect();
         self.software_selection
             .set(zypp, &id, r#type, optional, &resolvables);
+        Ok(())
+    }
+
+    // runs solver. It should be able in future to generate solver issues
+    fn run_solver(&self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
+        let result = zypp.run_solver()?;
+        tracing::info!("Solver runs ends with {}", result);
         Ok(())
     }
 
