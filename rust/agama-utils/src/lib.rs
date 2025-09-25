@@ -21,6 +21,9 @@
 //! This crate offers a set of utility struct and functions to be used accross
 //! other Agama's crates.
 
+mod actors;
+pub use actors::{Actor, Envelope, Handles, MailboxMessage};
+
 pub mod handler;
 pub use handler::Handler;
 
