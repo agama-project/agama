@@ -21,7 +21,7 @@
 //! This module implements Agama's HTTP API.
 
 use crate::{
-    supervisor::{handler, Action, ConfigScope, Handler, Scope, SystemInfo},
+    supervisor::{self, handler, Action, ConfigScope, Handler, Scope, SystemInfo},
     web::EventsSender,
 };
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
@@ -69,7 +69,7 @@ type ServerResult<T> = Result<T, Error>;
 
 /// Sets up and returns the axum service for the manager module
 pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError> {
-    let supervisor = crate::supervisor::start_service(events).await.unwrap();
+    let supervisor = supervisor::start(events).await.unwrap();
     let state = ServerState { supervisor };
 
     Ok(Router::new()
