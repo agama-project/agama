@@ -24,6 +24,14 @@ use core::future::Future;
 use std::error;
 use tokio::sync::{mpsc, oneshot};
 
+use crate::actors::ActorError;
+
+#[derive(thiserror::Error, Debug)]
+pub enum HandlerActorError {
+    #[error("Actor communication error")]
+    Actor(#[from] ActorError),
+}
+
 #[derive(thiserror::Error, Debug)]
 pub enum Error<T> {
     #[error("Could not send the message")]

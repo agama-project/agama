@@ -30,9 +30,18 @@
 //!
 //! ```
 //! use agama_utils::actors::{
-//!     Actor, ActorHandle, Handles, MailboxMessage, MailboxSender, MailboxReceiver
+//!     Actor, ActorError, ActorHandle, Handles, MailboxMessage, MailboxSender, MailboxReceiver
 //! };
+//! use std::convert::Infallible;
 //! use tokio::sync::mpsc;
+//!
+//! #[derive(thiserror::Error, Debug)]
+//! pub enum MyActorError {
+//!     #[error(transparent)]
+//!     Infallible(#[from] std::convert::Infallible),
+//!     #[error(transparent)]
+//!     Actor(#[from] ActorError)
+//! }
 //!
 //! struct Counter {
 //!     value: u32,
@@ -65,17 +74,20 @@
 //! // Let's implement a handler for each message type.
 //! impl Handles<Inc> for Counter {
 //!     type Reply = ();
+//!     type Error = Infallible;
 //!
-//!     fn handle(&mut self, message: Inc) -> Self::Reply {
+//!     fn handle(&mut self, message: Inc) -> Result<Self::Reply, Self::Error> {
 //!         self.value += message.amount;
+//!         Ok(())
 //!     }
 //! }
 //!
 //! impl Handles<Get> for Counter {
 //!     type Reply = u32;
+//!     type Error = Infallible;
 //!
-//!    fn handle(&mut self, message: Get) -> Self::Reply {
-//!        self.value
+//!    fn handle(&mut self, message: Get) -> Result<Self::Reply, Self::Error> {
+//!        Ok(self.value)
 //!    }
 //! }
 //!
@@ -85,6 +97,8 @@
 //! }
 //!
 //! impl ActorHandle<Counter> for MyActorHandle {
+//!     type Error = MyActorError;
+//!
 //!     fn channel(&mut self) -> &mut MailboxSender {
 //!         &mut self.sender
 //!     }
@@ -161,7 +175,8 @@ pub trait Actor: Send + Sized + 'static {
 pub struct Envelope<M: Send + 'static, A: Handles<M>> {
     message: M,
     _actor: PhantomData<A>,
-    reply_sender: Option<oneshot::Sender<<A as Handles<M>>::Reply>>,
+    reply_sender:
+        Option<oneshot::Sender<Result<<A as Handles<M>>::Reply, <A as Handles<M>>::Error>>>,
 }
 
 /// Represents any message to be send over the actor channel.
@@ -179,12 +194,15 @@ where
     M: Send + 'static,
     A: Handles<M> + Send + 'static,
     <A as Handles<M>>::Reply: Send + 'static,
+    <A as Handles<M>>::Error: std::error::Error + Send + 'static,
 {
     fn handle_message(self: Box<Self>, actor: &mut dyn Any) {
         if let Some(an_actor) = actor.downcast_mut::<A>() {
             let reply = an_actor.handle(self.message);
             if let Some(sender) = self.reply_sender {
-                _ = sender.send(reply); //.unwrap();
+                _ = sender
+                    .send(reply)
+                    .inspect_err(|e| eprintln!("Could not send the reply"));
             }
         } else {
             eprintln!("Unexpected actor type");
@@ -202,22 +220,26 @@ pub type MailboxReceiver = mpsc::UnboundedReceiver<Box<dyn MailboxMessage>>;
 /// Actors should implement this trait for each kind of message they want to handle.
 pub trait Handles<M: Send + 'static>: Actor + Sized {
     type Reply: Send + 'static;
+    type Error: std::error::Error;
 
-    fn handle(&mut self, message: M) -> Self::Reply;
+    fn handle(&mut self, message: M) -> Result<Self::Reply, Self::Error>;
 }
 
 /// Represents a handle to interact with an actor.
 ///
 /// It offers methods to send messages to an actor.
 pub trait ActorHandle<A: Actor> {
+    type Error: From<ActorError>;
+
     fn channel(&mut self) -> &mut MailboxSender;
 
     /// Sends a message and does not wait for the reply.
-    fn send<M>(&mut self, message: M) -> Result<(), ActorError>
+    fn send<M>(&mut self, message: M) -> Result<(), Self::Error>
     where
         M: Send + 'static,
         A: Handles<M> + Send + 'static,
         <A as Handles<M>>::Reply: Send + 'static,
+        <A as Handles<M>>::Error: std::error::Error + Send + 'static,
     {
         let envelope = Envelope {
             message,
@@ -234,11 +256,12 @@ pub trait ActorHandle<A: Actor> {
     fn request<M>(
         &mut self,
         message: M,
-    ) -> impl Future<Output = Result<<A as Handles<M>>::Reply, ActorError>>
+    ) -> impl Future<Output = Result<<A as Handles<M>>::Reply, Self::Error>>
     where
         M: Send + 'static,
         A: Handles<M> + Send + 'static,
         <A as Handles<M>>::Reply: Send + 'static,
+        <A as Handles<M>>::Error: std::error::Error + Send + 'static + Into<Self::Error>,
     {
         async {
             let (reply_tx, reply_rx) = oneshot::channel();
@@ -247,13 +270,19 @@ pub trait ActorHandle<A: Actor> {
                 _actor: PhantomData::<A>,
                 reply_sender: Some(reply_tx),
             };
+
             self.channel()
                 .send(Box::new(envelope))
                 .map_err(|_| ActorError::Send(A::name()))?;
-            let value = reply_rx
+
+            let result = reply_rx
                 .await
                 .map_err(|_| ActorError::Response(A::name()))?;
-            Ok(value)
+
+            match result {
+                Ok(inner) => Ok(inner),
+                Err(error) => Err(error.into()),
+            }
         }
     }
 }

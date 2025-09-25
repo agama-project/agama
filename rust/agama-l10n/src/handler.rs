@@ -20,20 +20,14 @@
 
 //! Defines the handler to interact with the localization service.
 
-use std::marker::PhantomData;
-
 use crate::{
-    model::{Model, ModelAdapter},
-    proposal::Proposal,
-    service::{Message, Service, SystemConfig},
-    system_info::SystemInfo,
-    user_config::UserConfig,
+    model::Model,
+    service::{Message, Service},
 };
 use agama_utils::{
     actors::{ActorHandle, MailboxSender},
-    handler, Handler as AgamaHandler,
+    handler,
 };
-use tokio::sync::mpsc;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -59,54 +53,12 @@ impl Handler {
             // _model: PhantomData::<T>,
         }
     }
-
-    // pub async fn get_system(&self) -> Result<SystemInfo, Error> {
-    //     let system = self
-    //         .send_and_wait(|tx| Message::GetSystem { respond_to: tx })
-    //         .await?;
-    //     Ok(system)
-    // }
-
-    //     pub async fn set_system(&self, config: SystemConfig) -> Result<(), Error> {
-    //         self.send(Message::SetSystem { config })
-    //     }
-
-    //     pub async fn get_config(&self) -> Result<UserConfig, Error> {
-    //         let config = self
-    //             .send_and_wait(|tx| Message::GetConfig { respond_to: tx })
-    //             .await?;
-    //         Ok(config)
-    //     }
-
-    //     pub async fn set_config(&self, config: &UserConfig) -> Result<(), Error> {
-    //         self.send(Message::SetConfig {
-    //             config: config.clone(),
-    //         })
-    //     }
-
-    //     pub async fn get_proposal(&self) -> Result<Proposal, Error> {
-    //         let proposal = self
-    //             .send_and_wait(|tx| Message::GetProposal { respond_to: tx })
-    //             .await?;
-    //         Ok(proposal)
-    //     }
-
-    //     pub async fn install(&self) -> Result<(), Error> {
-    //         self.send(Message::Install)
-    //     }
 }
 
 impl ActorHandle<Service<Model>> for Handler {
+    type Error = crate::service::Error;
+
     fn channel(&mut self) -> &mut agama_utils::actors::MailboxSender {
         &mut self.sender
     }
 }
-
-// impl AgamaHandler for Handler {
-//     type Err = Error;
-//     type Message = Message;
-
-//     fn channel(&self) -> &mpsc::UnboundedSender<Self::Message> {
-//         &self.sender
-//     }
-// }

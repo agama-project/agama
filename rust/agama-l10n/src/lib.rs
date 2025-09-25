@@ -67,7 +67,6 @@ mod monitor;
 
 use agama_utils::{actors::Actor, Service as _};
 use model::Model;
-use monitor::Monitor;
 use service::Service;
 use tokio::sync::mpsc;
 
@@ -121,7 +120,10 @@ mod tests {
         service, Event, Handler, Service, UserConfig,
     };
     use agama_locale_data::{KeymapId, LocaleId};
-    use agama_utils::actors::{Actor, ActorHandle, MailboxSender};
+    use agama_utils::{
+        actors::{Actor, ActorHandle, MailboxSender},
+        handler::HandlerActorError,
+    };
     use tokio::sync::mpsc;
 
     pub struct TestModel {
@@ -201,6 +203,8 @@ mod tests {
     }
 
     impl ActorHandle<Service<TestModel>> for TestHandler {
+        type Error = crate::service::Error;
+
         fn channel(&mut self) -> &mut agama_utils::actors::MailboxSender {
             &mut self.sender
         }
@@ -232,14 +236,36 @@ mod tests {
             keyboard: Some("es".to_string()),
             timezone: Some("Atlantic/Canary".to_string()),
         };
-        handler.send(messages::SetConfig::new(user_config.clone()))?;
-        // handler.set_config(&user_config).await?;
+        handler
+            .request(messages::SetConfig::new(user_config.clone()))
+            .await?;
 
         let updated = handler.request(messages::GetConfig {}).await?;
         assert_eq!(&updated, &user_config);
 
         let event = events_rx.recv().await.expect("Did not receive the event");
         assert!(matches!(event, Event::ProposalChanged));
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_set_invalid_config() -> Result<(), Box<dyn std::error::Error>> {
+        let (_events_rx, mut handler) = start_testing_service()
+            .await
+            .expect("Could not start the testing service");
+
+        let user_config = UserConfig {
+            language: Some("es-ES.UTF-8".to_string()),
+            ..Default::default()
+        };
+
+        let result = handler
+            .request(messages::SetConfig::new(user_config.clone()))
+            .await;
+        assert!(matches!(
+            result,
+            Err(crate::service::Error::InvalidLocale(_))
+        ));
         Ok(())
     }
 

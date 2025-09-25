@@ -18,30 +18,38 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use std::fmt::Debug;
+
+#[derive(Debug)]
 pub struct GetSystem {}
 
+#[derive(Debug)]
 pub struct SetSystem<T> {
     pub config: T,
 }
 
-impl<T> SetSystem<T> {
+impl<T: Debug> SetSystem<T> {
     pub fn new(config: T) -> Self {
         Self { config }
     }
 }
 
+#[derive(Debug)]
 pub struct GetConfig {}
 
+#[derive(Debug)]
 pub struct SetConfig<T> {
     pub config: T,
 }
 
-impl<T> SetConfig<T> {
+impl<T: Debug> SetConfig<T> {
     pub fn new(config: T) -> Self {
         Self { config }
     }
 }
 
+#[derive(Debug)]
 pub struct GetProposal {}
 
+#[derive(Debug)]
 pub struct Install {}
