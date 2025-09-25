@@ -29,22 +29,24 @@
 //! Let's have a look to an example implementing a simple counter.
 //!
 //! ```
-//! use agama_utils::actors::{Actor, ActorHandle, Handles, MailboxMessage};
+//! use agama_utils::actors::{
+//!     Actor, ActorHandle, Handles, MailboxMessage, MailboxSender, MailboxReceiver
+//! };
 //! use tokio::sync::mpsc;
 //!
 //! struct Counter {
 //!     value: u32,
-//!     receiver: mpsc::UnboundedReceiver<Box<dyn MailboxMessage>>,
+//!     receiver: MailboxReceiver,
 //! }
 //!
 //! impl Counter {
-//!     pub fn new(receiver: mpsc::UnboundedReceiver<Box<dyn MailboxMessage>>) -> Self {
+//!     pub fn new(receiver: MailboxReceiver) -> Self {
 //!         Self { receiver, value: 0 }
 //!     }
 //! }
 //!
 //! impl Actor for Counter {
-//!     fn channel(&mut self) -> &mut mpsc::UnboundedReceiver<Box<dyn MailboxMessage>> {
+//!     fn channel(&mut self) -> &mut MailboxReceiver {
 //!         &mut self.receiver
 //!     }
 //! }
@@ -79,11 +81,11 @@
 //!
 //! // Finally, let's create a handle to make it easy to interact with the counter.
 //! struct MyActorHandle {
-//!     sender: mpsc::UnboundedSender<Box<dyn MailboxMessage>>,
+//!     sender: MailboxSender,
 //! }
 //!
 //! impl ActorHandle<Counter> for MyActorHandle {
-//!     fn channel(&mut self) -> &mut mpsc::UnboundedSender<Box<dyn MailboxMessage>> {
+//!     fn channel(&mut self) -> &mut MailboxSender {
 //!         &mut self.sender
 //!     }
 //! }
@@ -111,6 +113,14 @@
 use std::{any::Any, future::Future, marker::PhantomData};
 use tokio::sync::{mpsc, oneshot};
 
+#[derive(thiserror::Error, Debug)]
+pub enum ActorError {
+    #[error("Could not send a message to actor {0}")]
+    Send(&'static str),
+    #[error("Could not get a response from actor {0}")]
+    Response(&'static str),
+}
+
 /// Represents an actor which receives the messages using an unbounded channel
 /// of MailboxMessage objects.
 pub trait Actor: Send + Sized + 'static {
@@ -122,7 +132,7 @@ pub trait Actor: Send + Sized + 'static {
     }
 
     /// Returns the channel to receive the messages.
-    fn channel(&mut self) -> &mut mpsc::UnboundedReceiver<Box<dyn MailboxMessage>>;
+    fn channel(&mut self) -> &mut MailboxReceiver;
 
     /// Main loop of the service.
     ///
@@ -182,13 +192,10 @@ where
     }
 }
 
-#[derive(thiserror::Error, Debug)]
-pub enum ActorError {
-    #[error("Could not send a message to actor {0}")]
-    Send(&'static str),
-    #[error("Could not get a response from actor {0}")]
-    Response(&'static str),
-}
+/// Channel to send a messages to an actor.
+pub type MailboxSender = mpsc::UnboundedSender<Box<dyn MailboxMessage>>;
+/// Channel to receive messages for an actor.
+pub type MailboxReceiver = mpsc::UnboundedReceiver<Box<dyn MailboxMessage>>;
 
 /// Handling of a message.
 ///
@@ -203,7 +210,7 @@ pub trait Handles<M: Send + 'static>: Actor + Sized {
 ///
 /// It offers methods to send messages to an actor.
 pub trait ActorHandle<A: Actor> {
-    fn channel(&mut self) -> &mut mpsc::UnboundedSender<Box<dyn MailboxMessage>>;
+    fn channel(&mut self) -> &mut MailboxSender;
 
     /// Sends a message and does not wait for the reply.
     fn send<M>(&mut self, message: M) -> Result<(), ActorError>
