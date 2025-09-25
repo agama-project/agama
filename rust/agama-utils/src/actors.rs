@@ -19,11 +19,95 @@
 // find current contact information at www.suse.com.
 
 //! This module implements a tiny actors system to be used by services. Ideally,
-//! each service should implement an Actor and a handler for each of the
-//! messages it is able to handle.
+//! each Agama service should be composed, at least, of:
 //!
-use std::{any::Any, future::Future, marker::PhantomData};
+//! * An actor which implements the [Actor] trait. It should implement the
+//!   [Handles] trait for each message it wants to handle.
+//! * An actor handle which implements the [ActorHandle] trait.
+//!
+//! Let's have a look to an example implementing a simple counter.
+//!
+//! ```
+//! use agama_utils::actors::{Actor, ActorHandle, Handles, MailboxMessage};
+//! use tokio::sync::mpsc;
+//!
+//! struct Counter {
+//!     value: u32,
+//!     receiver: mpsc::UnboundedReceiver<Box<dyn MailboxMessage>>,
+//! }
+//!
+//! impl Counter {
+//!     pub fn new(receiver: mpsc::UnboundedReceiver<Box<dyn MailboxMessage>>) -> Self {
+//!         Self { receiver, value: 0 }
+//!     }
+//! }
+//!
+//! impl Actor for Counter {
+//!     fn channel(&mut self) -> &mut mpsc::UnboundedReceiver<Box<dyn MailboxMessage>> {
+//!         &mut self.receiver
+//!     }
+//! }
+//!
+//! // Message to increment the counter
+//! struct Inc { amount: u32 }
+//!
+//! impl Inc {
+//!     pub fn new(amount: u32) -> Self {
+//!         Self { amount }
+//!     }
+//! }
+//!
+//! impl Handles<Inc> for Counter {
+//!     type Reply = ();
+//!
+//!     fn handle(&mut self, message: Inc) -> Self::Reply {
+//!         self.value += message.amount;
+//!     }
+//! }
+//!
+//! // Message to get the value
+//! struct Get {}
+//!
+//! impl Handles<Get> for Counter {
+//!     type Reply = u32;
+//!
+//!    fn handle(&mut self, message: Get) -> Self::Reply {
+//!        self.value
+//!    }
+//! }
+//!
+//! // Finally, the handle
+//! struct MyActorHandle {
+//!     sender: mpsc::UnboundedSender<Box<dyn MailboxMessage>>,
+//! }
+//!
+//! impl ActorHandle<Counter> for MyActorHandle {
+//!     fn channel(&mut self) -> &mut mpsc::UnboundedSender<Box<dyn MailboxMessage>> {
+//!         &mut self.sender
+//!     }
+//! }
+//!
+//! #[tokio::main]
+//! async fn main() {
+//!     let (tx, rx) = mpsc::unbounded_channel();
+//!     let actor = Counter::new(rx);
+//!     tokio::spawn(async move {
+//!         actor.run().await;
+//!     });
+//!
+//!     let mut handle = MyActorHandle { sender: tx.clone() };
+//!     for i in 0..100 {
+//!         _ = handle.send(Inc::new(i));
+//!     }
+//!     let value = handle
+//!         .request(Get {})
+//!         .await
+//!         .expect("Could not get the response from the actor");
+//!     assert_eq!(value, 4950);
+//! }
+//! ```
 
+use std::{any::Any, future::Future, marker::PhantomData};
 use tokio::sync::{mpsc, oneshot};
 
 /// Represents an actor which receives the messages using an unbounded channel
@@ -163,86 +247,5 @@ pub trait ActorHandle<A: Actor> {
                 .map_err(|_| ActorError::Response(A::name()))?;
             Ok(value)
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use tokio::sync::mpsc;
-
-    use super::*;
-
-    struct MyActor {
-        state: u32,
-        receiver: mpsc::UnboundedReceiver<Box<dyn MailboxMessage>>,
-    }
-
-    impl MyActor {
-        pub fn new(receiver: mpsc::UnboundedReceiver<Box<dyn MailboxMessage>>) -> Self {
-            Self { receiver, state: 0 }
-        }
-    }
-
-    impl Actor for MyActor {
-        fn channel(&mut self) -> &mut mpsc::UnboundedReceiver<Box<dyn MailboxMessage>> {
-            &mut self.receiver
-        }
-    }
-
-    impl Handles<Inc> for MyActor {
-        type Reply = ();
-
-        fn handle(&mut self, message: Inc) -> Self::Reply {
-            self.state += message.amount;
-        }
-    }
-
-    impl Handles<Get> for MyActor {
-        type Reply = u32;
-
-        fn handle(&mut self, _message: Get) -> Self::Reply {
-            self.state
-        }
-    }
-
-    struct MyActorHandle {
-        sender: mpsc::UnboundedSender<Box<dyn MailboxMessage>>,
-    }
-
-    impl ActorHandle<MyActor> for MyActorHandle {
-        fn channel(&mut self) -> &mut mpsc::UnboundedSender<Box<dyn MailboxMessage>> {
-            &mut self.sender
-        }
-    }
-
-    struct Inc {
-        amount: u32,
-    }
-
-    impl Inc {
-        pub fn new(amount: u32) -> Self {
-            Self { amount }
-        }
-    }
-
-    struct Get {}
-
-    #[tokio::test]
-    async fn test_running_actor() {
-        let (tx, rx) = mpsc::unbounded_channel();
-        let actor = MyActor::new(rx);
-        tokio::spawn(async move {
-            actor.run().await;
-        });
-
-        let mut handle = MyActorHandle { sender: tx.clone() };
-        for _ in 0..100 {
-            _ = handle.send(Inc::new(5));
-        }
-        let value = handle
-            .request(Get {})
-            .await
-            .expect("Could not get the response from the actor");
-        assert_eq!(value, 500);
     }
 }
