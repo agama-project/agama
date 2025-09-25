@@ -162,7 +162,8 @@ impl SoftwareServiceServer {
             }
 
             SoftwareAction::Install(tx) => {
-                tx.send(self.install(zypp)?);
+                tx.send(self.install(zypp)?)
+                    .map_err(|_| SoftwareServiceError::ResponseChannelClosed)?;
             }
 
             SoftwareAction::SetResolvables {
@@ -202,7 +203,7 @@ impl SoftwareServiceServer {
     ) -> Result<(), SoftwareServiceError> {
         let resolvables: Vec<_> = resolvables.iter().map(String::as_str).collect();
         self.software_selection
-            .set(zypp, &id, r#type, optional, &resolvables);
+            .set(zypp, &id, r#type, optional, &resolvables)?;
         Ok(())
     }
 
