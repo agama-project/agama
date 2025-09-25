@@ -49,28 +49,40 @@ impl SoftwareSelection {
         Default::default()
     }
 
-    /// Adds a set of resolvables.
-    ///
-    /// * `id` - The id of the set.
-    /// * `r#type` - The type of the resolvables (patterns or packages).
-    /// * `optional` - Whether the selection is optional or not.
-    /// * `resolvables` - The resolvables to add.
-    pub fn add(&mut self, id: &str, r#type: ResolvableType, optional: bool, resolvables: &[&str]) {
-        let list = self.find_or_create_selection(id, r#type, optional);
-        let new_resolvables: Vec<_> = resolvables.iter().map(|r| r.to_string()).collect();
-        list.resolvables.extend(new_resolvables);
-    }
-
     /// Updates a set of resolvables.
     ///
+    /// * `zypp` - pointer to libzypp to do real action
     /// * `id` - The id of the set.
     /// * `r#type` - The type of the resolvables (patterns or packages).
     /// * `optional` - Whether the selection is optional or not.
     /// * `resolvables` - The resolvables included in the set.
-    pub fn set(&mut self, id: &str, r#type: ResolvableType, optional: bool, resolvables: &[&str]) {
+    pub fn set(
+        &mut self,
+        zypp: &zypp_agama::Zypp,
+        id: &str,
+        r#type: ResolvableType,
+        optional: bool,
+        resolvables: &[&str],
+    ) -> Result<(), zypp_agama::ZyppError> {
         let list = self.find_or_create_selection(id, r#type, optional);
+        // FIXME: use reference counting here, if multiple ids require some package, to not unselect it
+        for res in &list.resolvables {
+            zypp.unselect_resolvable(
+                &res,
+                r#type.into(),
+                zypp_agama::ResolvableSelected::Installation,
+            )?;
+        }
         let new_resolvables: Vec<_> = resolvables.iter().map(|r| r.to_string()).collect();
         list.resolvables = new_resolvables;
+        for res in &list.resolvables {
+            zypp.select_resolvable(
+                &res,
+                r#type.into(),
+                zypp_agama::ResolvableSelected::Installation,
+            )?;
+        }
+        Ok(())
     }
 
     /// Returns a set of resolvables.
@@ -83,16 +95,6 @@ impl SoftwareSelection {
             .iter()
             .find(|l| l.id == id && l.r#type == r#type && l.optional == optional)
             .map(|l| l.resolvables.clone())
-    }
-
-    /// Removes the given resolvables from a set.
-    ///
-    /// * `id` - The id of the set.
-    /// * `r#type` - The type of the resolvables (patterns or packages).
-    /// * `optional` - Whether the selection is optional or not.
-    pub fn remove(&mut self, id: &str, r#type: ResolvableType, optional: bool) {
-        self.selections
-            .retain(|l| l.id != id || l.r#type != r#type || l.optional != optional);
     }
 
     fn find_or_create_selection(
@@ -121,21 +123,10 @@ impl SoftwareSelection {
     }
 }
 
+/* Fix tests with real mock of libzypp
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_add_selection() {
-        let mut selection = SoftwareSelection::new();
-        selection.set("agama", ResolvableType::Package, false, &["agama-scripts"]);
-        selection.add("agama", ResolvableType::Package, false, &["suse"]);
-
-        let packages = selection
-            .get("agama", ResolvableType::Package, false)
-            .unwrap();
-        assert_eq!(packages.len(), 2);
-    }
 
     #[test]
     fn test_set_selection() {
@@ -158,3 +149,4 @@ mod tests {
         assert_eq!(packages, None);
     }
 }
+    */

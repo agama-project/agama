@@ -165,7 +165,7 @@ impl SoftwareServiceServer {
                 resolvables,
                 optional,
             } => {
-                self.set_resolvables(id, r#type, resolvables, optional)?;
+                self.set_resolvables(zypp, id, r#type, resolvables, optional)?;
             }
 
             SoftwareAction::GetResolvables {
@@ -187,6 +187,7 @@ impl SoftwareServiceServer {
 
     fn set_resolvables(
         &mut self,
+        zypp: &zypp_agama::Zypp,
         id: String,
         r#type: ResolvableType,
         resolvables: Vec<String>,
@@ -194,7 +195,7 @@ impl SoftwareServiceServer {
     ) -> Result<(), SoftwareServiceError> {
         let resolvables: Vec<_> = resolvables.iter().map(String::as_str).collect();
         self.software_selection
-            .set(&id, r#type, optional, &resolvables);
+            .set(zypp, &id, r#type, optional, &resolvables);
         Ok(())
     }
 
@@ -232,6 +233,7 @@ impl SoftwareServiceServer {
         let installer_id_string = "installer".to_string();
         // select product
         self.set_resolvables(
+            zypp,
             installer_id_string.clone(),
             ResolvableType::Product,
             vec![product.software.base_product.clone()],
@@ -239,24 +241,28 @@ impl SoftwareServiceServer {
         )?;
         // select packages and patterns from product
         self.set_resolvables(
+            zypp,
             installer_id_string.clone(),
             ResolvableType::Package,
             product.software.mandatory_packages,
             false,
         )?;
         self.set_resolvables(
+            zypp,
             installer_id_string.clone(),
             ResolvableType::Pattern,
             product.software.mandatory_patterns,
             false,
         )?;
         self.set_resolvables(
+            zypp,
             installer_id_string.clone(),
             ResolvableType::Package,
             product.software.optional_packages,
             true,
         )?;
         self.set_resolvables(
+            zypp,
             installer_id_string.clone(),
             ResolvableType::Pattern,
             product.software.optional_patterns,

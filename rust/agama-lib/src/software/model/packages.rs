@@ -38,13 +38,25 @@ pub struct SoftwareConfig {
 }
 
 /// Software resolvable type (package or pattern).
-#[derive(Debug, Deserialize, Serialize, strum::Display, utoipa::ToSchema, PartialEq)]
+#[derive(
+    Clone, Copy, Debug, Deserialize, Serialize, strum::Display, utoipa::ToSchema, PartialEq,
+)]
 #[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
 pub enum ResolvableType {
     Package = 0,
     Pattern = 1,
     Product = 2,
+}
+
+impl From<ResolvableType> for zypp_agama::ResolvableKind {
+    fn from(value: ResolvableType) -> Self {
+        match value {
+            ResolvableType::Package => zypp_agama::ResolvableKind::Package,
+            ResolvableType::Product => zypp_agama::ResolvableKind::Product,
+            ResolvableType::Pattern => zypp_agama::ResolvableKind::Pattern,
+        }
+    }
 }
 
 /// Resolvable list specification.
