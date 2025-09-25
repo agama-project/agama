@@ -51,9 +51,7 @@ export default function EncryptionSection() {
           the new file systems, including data, programs, and system files.",
         )}
       </div>
-      <Content component="p" isEditorial>
-        {encryptionLabel(method)}
-      </Content>
+      <Content isEditorial>{encryptionLabel(method)}</Content>
       {password && <PasswordCheck password={password} />}
       <Split hasGutter>
         <Link to={STORAGE.editEncryption} variant="plain">
