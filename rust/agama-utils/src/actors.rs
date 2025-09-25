@@ -18,8 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module implements a tiny actors system to be used by services. Ideally,
-//! each Agama service should be composed, at least, of:
+//! This module implements a tiny actors system to be used by services.
+//!
+//! Ideally, each Agama service should be composed, at least, of:
 //!
 //! * An actor which implements the [Actor] trait. It should implement the
 //!   [Handles] trait for each message it wants to handle.
@@ -48,7 +49,7 @@
 //!     }
 //! }
 //!
-//! // Message to increment the counter
+//! // Message to increment and get the current value.
 //! struct Inc { amount: u32 }
 //!
 //! impl Inc {
@@ -57,6 +58,9 @@
 //!     }
 //! }
 //!
+//! struct Get {}
+//!
+//! // Let's implement a handler for each message type.
 //! impl Handles<Inc> for Counter {
 //!     type Reply = ();
 //!
@@ -64,9 +68,6 @@
 //!         self.value += message.amount;
 //!     }
 //! }
-//!
-//! // Message to get the value
-//! struct Get {}
 //!
 //! impl Handles<Get> for Counter {
 //!     type Reply = u32;
@@ -76,7 +77,7 @@
 //!    }
 //! }
 //!
-//! // Finally, the handle
+//! // Finally, let's create a handle to make it easy to interact with the counter.
 //! struct MyActorHandle {
 //!     sender: mpsc::UnboundedSender<Box<dyn MailboxMessage>>,
 //! }
