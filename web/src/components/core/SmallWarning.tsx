@@ -20,37 +20,17 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
-import SmallWarning from "~/components/core/SmallWarning";
-import { checkPassword } from "~/api/users";
-import { _ } from "~/i18n";
+import React from "react";
+import { Flex, Icon } from "@patternfly/react-core";
+import PFWarningIcon from "@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon";
 
-const MINIMAL_SCORE = 50;
-
-const PasswordCheck = ({ password }: { password: string }) => {
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (!password) return;
-
-    checkPassword(password).then((result) => {
-      if (result.failure) {
-        setError(result.failure);
-      } else if (result.success && result.success < MINIMAL_SCORE) {
-        setError(_("The password is weak"));
-      } else {
-        setError("");
-      }
-    });
-  }, [password]);
-
-  if (!error) return;
-
+export default function SmallWarning({ text }: { text: string }) {
   return (
-    <div aria-live="polite">
-      <SmallWarning text={error} />
-    </div>
+    <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapXs" }}>
+      <Icon status="warning">
+        <PFWarningIcon />
+      </Icon>
+      <strong>{text}</strong>
+    </Flex>
   );
-};
-
-export default PasswordCheck;
+}
