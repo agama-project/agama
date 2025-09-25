@@ -42,6 +42,7 @@ const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 #[derive(Debug)]
 pub enum SoftwareAction {
     Probe,
+    Install(oneshot::Sender<bool>),
     GetProducts(oneshot::Sender<Vec<Product>>),
     GetPatterns(oneshot::Sender<Vec<Pattern>>),
     GetConfig(oneshot::Sender<SoftwareConfig>),
@@ -160,6 +161,10 @@ impl SoftwareServiceServer {
                 self.run_solver(zypp)?;
             }
 
+            SoftwareAction::Install(tx) => {
+                tx.send(self.install(zypp)?);
+            }
+
             SoftwareAction::SetResolvables {
                 id,
                 r#type,
@@ -206,6 +211,15 @@ impl SoftwareServiceServer {
         let result = zypp.run_solver()?;
         tracing::info!("Solver runs ends with {}", result);
         Ok(())
+    }
+
+    // Install rpms
+    fn install(&self, zypp: &zypp_agama::Zypp) -> Result<bool, SoftwareServiceError> {
+        let target = "/mnt";
+        zypp.switch_target(target)?;
+        let result = zypp.commit()?;
+        tracing::info!("libzypp commit ends with {}", result);
+        Ok(result)
     }
 
     /// Select the given product.

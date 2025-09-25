@@ -10,7 +10,7 @@ clean:
 	rm -vf *.o *.a
 
 check:
-	git ls-files | grep -E '\.(c|h|cxx|hxx)$' | \
+	git ls-files | grep -E '\.(c|h|cxx|hxx)$$' | \
 	  xargs --verbose clang-format --style=llvm --dry-run
 
 libagama-zypp.a: $(OBJ)
@@ -20,5 +20,5 @@ libagama-zypp.a: $(OBJ)
 	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
 format:
-	git ls-files | grep -E '\.(c|h|cxx|hxx)$' | \
+	git ls-files | grep -E '\.(c|h|cxx|hxx)$$' | \
 	  xargs --verbose clang-format --style=llvm -i

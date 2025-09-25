@@ -255,6 +255,8 @@ unsafe extern "C" {
     ) -> *mut Zypp;
     #[doc = " Switch Zypp target (where to install packages to).\n @param root\n @param[out] status"]
     pub fn switch_target(zypp: *mut Zypp, root: *const ::std::os::raw::c_char, status: *mut Status);
+    #[doc = " Commit zypp settings and install\n TODO: callbacks\n @param zypp\n @param status\n @return true if there is no error"]
+    pub fn commit(zypp: *mut Zypp, status: *mut Status) -> bool;
     #[doc = " Marks resolvable for installation\n @param zypp see \\ref init_target\n @param name resolvable name\n @param kind kind of resolvable\n @param who who do selection. If NOT_SELECTED is used, it will be empty\n operation.\n @param[out] status (will overwrite existing contents)"]
     pub fn resolvable_select(
         zypp: *mut Zypp,

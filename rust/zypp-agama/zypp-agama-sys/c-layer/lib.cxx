@@ -19,6 +19,7 @@
 #include <zypp/ResStatus.h>
 #include <zypp/Resolvable.h>
 #include <zypp/ZYpp.h>
+#include <zypp/ZYppCommit.h>
 #include <zypp/ZYppFactory.h>
 #include <zypp/base/LogControl.h>
 #include <zypp/base/Logger.h>
@@ -95,7 +96,8 @@ static zypp::ZYpp::Ptr zypp_ptr() {
   return NULL;
 }
 
-void switch_target(struct Zypp *zypp, const char *root, struct Status *status) noexcept {
+void switch_target(struct Zypp *zypp, const char *root,
+                   struct Status *status) noexcept {
   const std::string root_str(root);
   try {
     zypp->zypp_pointer->initializeTarget(root_str, false);
@@ -106,6 +108,19 @@ void switch_target(struct Zypp *zypp, const char *root, struct Status *status) n
 
   status->state = status->STATE_SUCCEED;
   status->error = NULL;
+}
+
+bool commit(struct Zypp *zypp, struct Status *status) noexcept {
+  try {
+    zypp::ZYppCommitPolicy policy;
+    zypp::ZYppCommitResult result = zypp->zypp_pointer->commit(policy);
+    status->state = status->STATE_SUCCEED;
+    status->error = NULL;
+    return result.noError();
+  } catch (zypp::Exception &excpt) {
+    status->state = status->STATE_FAILED;
+    status->error = strdup(excpt.asUserString().c_str());
+  }
 }
 
 // TODO: split init target into set of repo manager, initialize target and load

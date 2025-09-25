@@ -75,6 +75,12 @@ impl SoftwareServiceClient {
         Ok(())
     }
 
+    pub async fn install(&self) -> Result<bool, SoftwareServiceError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(SoftwareAction::Install(tx))?;
+        Ok(rx.await?)
+    }
+
     pub fn set_resolvables(
         &self,
         id: &str,

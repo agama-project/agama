@@ -57,7 +57,15 @@ struct Zypp *init_target(const char *root, struct Status *status,
 /// Switch Zypp target (where to install packages to).
 /// @param root
 /// @param[out] status
-void switch_target(struct Zypp *zypp, const char *root, struct Status *status) noexcept;
+void switch_target(struct Zypp *zypp, const char *root,
+                   struct Status *status) noexcept;
+
+/// Commit zypp settings and install
+/// TODO: callbacks
+/// @param zypp
+/// @param status
+/// @return true if there is no error
+bool commit(struct Zypp *zypp, struct Status *status) noexcept;
 
 enum RESOLVABLE_KIND {
   RESOLVABLE_PRODUCT,

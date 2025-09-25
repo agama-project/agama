@@ -52,6 +52,7 @@ pub async fn software_router(client: SoftwareServiceClient) -> Result<Router, Se
         // FIXME: it should be PATCH (using PUT just for backward compatibility).
         .route("/config", put(set_config).get(get_config))
         .route("/probe", post(probe))
+        .route("/install", post(install))
         .route("/proposal", get(get_proposal))
         .route(
             "/resolvables/:id",
@@ -159,6 +160,24 @@ async fn get_config(State(state): State<SoftwareState>) -> Result<Json<SoftwareC
 async fn probe(State(state): State<SoftwareState>) -> Result<Json<()>, Error> {
     state.client.probe().await?;
     Ok(Json(()))
+}
+
+/// Install rpms.
+///
+///
+#[utoipa::path(
+    post,
+    path = "/install",
+    context_path = "/api/software",
+    responses(
+        (status = 200, description = "Installation succeed"),
+        (status = 400, description = "The D-Bus service could not perform the action
+")
+    ),
+    operation_id = "software_probe"
+)]
+async fn install(State(state): State<SoftwareState>) -> Result<Json<bool>, Error> {
+    Ok(Json(state.client.install().await?))
 }
 
 /// Returns the proposal information.
