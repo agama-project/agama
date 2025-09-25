@@ -22,7 +22,7 @@
 //! other Agama's crates.
 
 mod actors;
-pub use actors::{Actor, Envelope, Handles, MailboxMessage};
+pub use actors::{Actor, ActorHandle, Envelope, Handles, MailboxMessage};
 
 pub mod handler;
 pub use handler::Handler;
