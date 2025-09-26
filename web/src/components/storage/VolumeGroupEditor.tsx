@@ -20,16 +20,30 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId } from "react";
-import { Divider, Flex, Title } from "@patternfly/react-core";
+import React, { forwardRef, useId, useState } from "react";
+import {
+  Button,
+  Content,
+  DataList,
+  DataListItem,
+  DataListItemRow,
+  DataListItemCells,
+  DataListCell,
+  DataListAction,
+  ExpandableSection,
+  ExpandableSectionToggle,
+  ExpandableSectionProps,
+  Flex,
+  FlexItem,
+  Title,
+} from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
-import Link from "~/components/core/Link";
+import * as partitionUtils from "~/components/storage/utils/partition";
+import { NestedContent } from "../core";
 import Text from "~/components/core/Text";
-import MenuButton from "~/components/core/MenuButton";
-import MenuHeader from "~/components/core/MenuHeader";
+import MenuButton, { CustomToggleProps } from "~/components/core/MenuButton";
 import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
-import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
-import Icon from "~/components/layout/Icon";
+import Icon, { IconProps } from "~/components/layout/Icon";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { model } from "~/types/storage";
 import { baseName, formattedPath } from "~/components/storage/utils";
@@ -40,6 +54,8 @@ import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
   const deleteVolumeGroup = useDeleteVolumeGroup();
@@ -100,20 +116,67 @@ const EditVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
   );
 };
 
-const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
+const LvRow = ({ lv, vg }) => {
+  const navigate = useNavigate();
+  const editPath = generateEncodedPath(PATHS.volumeGroup.logicalVolume.edit, {
+    id: vg.vgName,
+    logicalVolumeId: lv.mountPath,
+  });
+  const deleteLogicalVolume = useDeleteLogicalVolume();
+  const description = partitionUtils.typeWithSize(lv);
+
   return (
-    <MenuButton
-      menuProps={{
-        popperProps: {
-          position: "end",
-        },
-      }}
-      toggleProps={{ variant: "plain" }}
-      items={[<EditVgOption key="edit" vg={vg} />, <DeleteVgOption key="delete" vg={vg} />]}
-    >
-      <Text className="action-text">{_("Change")}</Text>{" "}
-      <Icon name="more_horiz" className="agm-strong-icon" />
-    </MenuButton>
+    <DataListItem>
+      <DataListItemRow>
+        <DataListItemCells
+          dataListCells={[
+            <DataListCell key={`${lv.mountPath}-path`} width={1}>
+              <Text isBold>{lv.mountPath}</Text>
+            </DataListCell>,
+            <DataListCell key={`${lv.mountPath}-description`} width={5} isFilled>
+              {description}
+            </DataListCell>,
+          ]}
+        />
+        <DataListAction
+          id={`actions-for-${lv.mountPath}`}
+          aria-labelledby={`actions-for-${lv.mountPath}`}
+          // TRANSLATORS: ARIA (accesibility) description of an UI element. %s is a mount path.
+          aria-label={sprintf(_("Volume group %s"), lv.mountPath)}
+        >
+          <MenuButton
+            menuProps={{
+              popperProps: {
+                position: "end",
+              },
+            }}
+            toggleProps={{
+              variant: "plain",
+              className: spacingStyles.pXs,
+            }}
+            items={[
+              <MenuButton.Item
+                key={`edit-${lv.mountPath}`}
+                aria-label={`Edit ${lv.mountPath}`}
+                onClick={() => editPath && navigate(editPath)}
+              >
+                <Icon name="edit_square" /> {_("Edit")}
+              </MenuButton.Item>,
+              <MenuButton.Item
+                key={`delete-${lv.mountPath}`}
+                aria-label={`Delete ${lv.mountPath}`}
+                onClick={() => deleteLogicalVolume(vg.vgName, lv.mountPath)}
+                isDanger
+              >
+                <Icon name="delete" /> {_("Delete")}
+              </MenuButton.Item>,
+            ]}
+          >
+            <Icon name="more_horiz" className="agm-three-dots-icon" />
+          </MenuButton>
+        </DataListAction>
+      </DataListItemRow>
+    </DataListItem>
   );
 };
 
@@ -125,24 +188,79 @@ const VgHeader = ({ vg }: { vg: model.VolumeGroup }) => {
   return <Title headingLevel="h4">{sprintf(title, vg.vgName)}</Title>;
 };
 
-const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
+type VgMenuToggleProps = CustomToggleProps & {
+  vg: model.VolumeGroup;
+};
+
+const VgMenuToggle = forwardRef(({ vg, ...props }: VgMenuToggleProps, ref) => {
+  return (
+    <Button
+      variant="link"
+      ref={ref}
+      style={{ display: "inline", width: "fit-content" }}
+      className={[textStyles.fontFamilyHeading, textStyles.fontSizeMd].join(" ")}
+      {...props}
+    >
+      <Flex
+        alignItems={{ default: "alignItemsCenter" }}
+        gap={{ default: "gapSm" }}
+        flexWrap={{ default: "nowrap" }}
+        style={{ whiteSpace: "normal", textAlign: "start" }}
+      >
+        <FlexItem>
+          <VgHeader vg={vg} {...props} />
+        </FlexItem>
+        <FlexItem>
+          <Icon name="keyboard_arrow_down" style={{ verticalAlign: "middle" }} />
+        </FlexItem>
+      </Flex>
+    </Button>
+  );
+});
+
+const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
+  return (
+    <MenuButton
+      menuProps={{
+        popperProps: { position: "end", maxWidth: "fit-content", minWidth: "fit-content" },
+      }}
+      customToggle={<VgMenuToggle vg={vg} />}
+      items={[<EditVgOption key="edit" vg={vg} />, <DeleteVgOption key="delete" vg={vg} />]}
+    />
+  );
+};
+
+const AddLvButton = ({ vg }: { vg: model.VolumeGroup }) => {
   const navigate = useNavigate();
-  const deleteLogicalVolume = useDeleteLogicalVolume();
-  const ariaLabelId = useId();
-  const toggleTextId = useId();
   const newLvPath = generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: vg.vgName });
+
+  return (
+    <Button variant="plain" key="add-logical-volume" onClick={() => navigate(newLvPath)}>
+      <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapXs" }}>
+        {/** TODO: choose one, "add" or "add_circle", and remove the other at Icon.tsx */}
+        <Icon name="add_circle" /> {_("Add logical volume")}
+      </Flex>
+    </Button>
+  );
+};
+
+const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
+  const toggleId = useId();
+  const contentId = useId();
+  const [isExpanded, setIsExpanded] = useState(false);
   const menuAriaLabel = sprintf(_("Logical volumes for %s"), vg.vgName);
 
-  if (isEmpty(vg.logicalVolumes)) {
-    return (
-      <Link to={newLvPath} variant="link" isInline>
-        {_("Add logical volume")}
-      </Link>
-    );
-  }
+  const toggle = () => setIsExpanded(!isExpanded);
+  const iconName: IconProps["name"] = isExpanded ? "unfold_less" : "unfold_more";
+  const commonProps: Pick<ExpandableSectionProps, "toggleId" | "contentId" | "isExpanded"> = {
+    toggleId,
+    contentId,
+    isExpanded,
+  };
 
-  // FIXME: The markup is strange just for consistency with PartitionsMenu. See FIXME there.
-  // The markup should be fixed in both places (eg. to use MenuGroup) in a consistent way.
+  if (isEmpty(vg.logicalVolumes)) {
+    return <AddLvButton vg={vg} />;
+  }
 
   const description = n_(
     "The following logical volume will be created",
@@ -151,52 +269,33 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
   );
 
   return (
-    <Flex gap={{ default: "gapXs" }}>
-      <Text isBold aria-hidden>
-        {_("Details")}
-      </Text>
-      <Text id={ariaLabelId} srOnly>
-        {menuAriaLabel}
-      </Text>
-      <MenuButton
-        menuProps={{
-          "aria-labelledby": ariaLabelId,
-        }}
-        toggleProps={{
-          variant: "plainText",
-          "aria-labelledby": `${ariaLabelId} ${toggleTextId}`,
-        }}
-        items={[
-          <MenuHeader key="head" description={description} />,
-          <Divider key="divider" component="li" />,
-        ]
-          .concat(
-            vg.logicalVolumes.map((lv) => {
-              return (
-                <MountPathMenuItem
-                  key={lv.mountPath}
-                  device={lv}
-                  editPath={generateEncodedPath(PATHS.volumeGroup.logicalVolume.edit, {
-                    id: vg.vgName,
-                    logicalVolumeId: lv.mountPath,
-                  })}
-                  deleteFn={() => deleteLogicalVolume(vg.vgName, lv.mountPath)}
-                />
-              );
-            }),
-          )
-          .concat(
-            <MenuButton.Item
-              key="add-logical-volume"
-              itemId="add-logical-volume"
-              onClick={() => navigate(newLvPath)}
-            >
-              {_("Add logical volume")}
-            </MenuButton.Item>,
-          )}
+    <Flex direction={{ default: "column" }}>
+      <ExpandableSectionToggle
+        {...commonProps}
+        onToggle={toggle}
+        className="no-default-icon"
+        style={{ marginBlock: 0 }}
       >
-        <Text id={toggleTextId}>{contentDescription(vg)}</Text>
-      </MenuButton>
+        <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+          {contentDescription(vg)}
+          <Icon name={iconName} />
+        </Flex>
+      </ExpandableSectionToggle>
+      <ExpandableSection isDetached {...commonProps} style={{ maxWidth: "fit-content" }}>
+        <NestedContent margin="mxLg">
+          <NestedContent margin="mySm">
+            <Content component="p">{description}</Content>
+            <DataList aria-label={menuAriaLabel} isCompact>
+              {vg.logicalVolumes.map((lv) => {
+                return <LvRow key={lv.mountPath} lv={lv} vg={vg} />;
+              })}
+            </DataList>
+            <Content component="p" style={{ marginBlockStart: "1rem" }}>
+              <AddLvButton vg={vg} />
+            </Content>
+          </NestedContent>
+        </NestedContent>
+      </ExpandableSection>
     </Flex>
   );
 };
@@ -205,10 +304,8 @@ export type VolumeGroupEditorProps = { vg: model.VolumeGroup };
 
 export default function VolumeGroupEditor({ vg }: VolumeGroupEditorProps) {
   return (
-    <ConfigEditorItem
-      header={<VgHeader vg={vg} />}
-      content={<LogicalVolumes vg={vg} />}
-      actions={<VgMenu vg={vg} />}
-    />
+    <ConfigEditorItem header={<VgMenu vg={vg} />}>
+      <LogicalVolumes vg={vg} />
+    </ConfigEditorItem>
   );
 }
