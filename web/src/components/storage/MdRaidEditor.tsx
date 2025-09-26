@@ -20,19 +20,56 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { forwardRef } from "react";
+import Icon from "~/components/layout/Icon";
 import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
 import MdRaidHeader from "~/components/storage/MdRaidHeader";
 import DeviceEditorContent from "~/components/storage/DeviceEditorContent";
 import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
+import { CustomToggleProps } from "~/components/core/MenuButton";
 import { model, StorageDevice } from "~/types/storage";
 import { MdRaid } from "~/types/storage/model";
 import { useDeleteMdRaid } from "~/hooks/storage/md-raid";
+import { Button, Flex, FlexItem } from "@patternfly/react-core";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 type MdRaidDeviceMenuProps = {
   raid: model.MdRaid;
   selected: StorageDevice;
 };
+
+type MdRaidDeviceMenuToggleProps = CustomToggleProps & {
+  raid: model.MdRaid;
+  device: StorageDevice;
+};
+
+const MdRaidDeviceMenuToggle = forwardRef(
+  ({ raid, device, ...props }: MdRaidDeviceMenuToggleProps, ref) => {
+    return (
+      <Button
+        variant="link"
+        ref={ref}
+        style={{ display: "inline", width: "fit-content" }}
+        className={[textStyles.fontFamilyHeading, textStyles.fontSizeMd].join(" ")}
+        {...props}
+      >
+        <Flex
+          alignItems={{ default: "alignItemsCenter" }}
+          gap={{ default: "gapSm" }}
+          flexWrap={{ default: "nowrap" }}
+          style={{ whiteSpace: "normal", textAlign: "start" }}
+        >
+          <FlexItem>
+            <MdRaidHeader raid={raid} device={device} {...props} />
+          </FlexItem>
+          <FlexItem>
+            <Icon name="keyboard_arrow_down" style={{ verticalAlign: "middle" }} />
+          </FlexItem>
+        </Flex>
+      </Button>
+    );
+  },
+);
 
 /**
  * Internal component that renders generic actions available for an MdRaid device.
@@ -41,7 +78,14 @@ const MdRaidDeviceMenu = ({ raid, selected }: MdRaidDeviceMenuProps): React.Reac
   const deleteMdRaid = useDeleteMdRaid();
   const deleteFn = (device: model.MdRaid) => deleteMdRaid(device.name);
 
-  return <SearchedDeviceMenu modelDevice={raid} selected={selected} deleteFn={deleteFn} />;
+  return (
+    <SearchedDeviceMenu
+      modelDevice={raid}
+      selected={selected}
+      deleteFn={deleteFn}
+      toggle={<MdRaidDeviceMenuToggle raid={raid} device={selected} />}
+    />
+  );
 };
 
 type MdRaidEditorProps = { raid: MdRaid; raidDevice: StorageDevice };
@@ -52,10 +96,8 @@ type MdRaidEditorProps = { raid: MdRaid; raidDevice: StorageDevice };
  */
 export default function MdRaidEditor({ raid, raidDevice }: MdRaidEditorProps) {
   return (
-    <ConfigEditorItem
-      header={<MdRaidHeader raid={raid} device={raidDevice} />}
-      content={<DeviceEditorContent deviceModel={raid} device={raidDevice} />}
-      actions={<MdRaidDeviceMenu raid={raid} selected={raidDevice} />}
-    />
+    <ConfigEditorItem header={<MdRaidDeviceMenu raid={raid} selected={raidDevice} />}>
+      <DeviceEditorContent deviceModel={raid} device={raidDevice} />
+    </ConfigEditorItem>
   );
 }
