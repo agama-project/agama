@@ -56,7 +56,6 @@ mod ws;
 use agama_lib::{connection, error::ServiceError, http::Event};
 use common::{IssuesService, ProgressService};
 pub use config::ServiceConfig;
-use event::log_event;
 pub use event::{EventsReceiver, EventsSender};
 pub use service::MainServiceBuilder;
 use std::path::Path;
@@ -190,7 +189,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
     tokio::pin!(stream);
     let e = events.clone();
     while let Some((_, event)) = stream.next().await {
-        log_event(&event);
         _ = e.send(event);
     }
     Ok(())
