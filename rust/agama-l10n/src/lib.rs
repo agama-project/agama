@@ -40,8 +40,6 @@ pub mod messages;
 mod error;
 pub use error::Error;
 
-pub mod handler;
-
 mod service;
 use monitor::Monitor;
 pub use service::SystemConfig;

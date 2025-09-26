@@ -18,24 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    messages,
-    model::ModelAdapter,
-    service::{Message, Service},
-};
+use crate::{messages, model::ModelAdapter, service::Service};
 use agama_locale_data::{KeymapId, LocaleId};
 use agama_utils::{
     actors::ActorHandler,
     dbus::{get_property, to_owned_hash},
 };
-use tokio::sync::mpsc;
 use tokio_stream::StreamExt;
 use zbus::fdo::{PropertiesChangedStream, PropertiesProxy};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("Monitor could not send the message to the service")]
-    Send(#[from] mpsc::error::SendError<Message>),
     #[error(transparent)]
     DBus(#[from] zbus::Error),
 }

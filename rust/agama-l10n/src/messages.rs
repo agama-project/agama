@@ -18,21 +18,18 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::fmt::Debug;
-
 use agama_locale_data::{KeymapId, LocaleId};
 use agama_utils::actors::Message;
 
 use crate::{Proposal, SystemInfo, UserConfig};
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct GetSystem {}
 
 impl Message for GetSystem {
     type Reply = SystemInfo;
 }
 
-#[derive(Debug)]
 pub struct SetSystem<T> {
     pub config: T,
 }
@@ -41,20 +38,18 @@ impl<T: Send + 'static> Message for SetSystem<T> {
     type Reply = ();
 }
 
-impl<T: Debug> SetSystem<T> {
+impl<T> SetSystem<T> {
     pub fn new(config: T) -> Self {
         Self { config }
     }
 }
 
-#[derive(Debug)]
 pub struct GetConfig {}
 
 impl Message for GetConfig {
     type Reply = UserConfig;
 }
 
-#[derive(Debug)]
 pub struct SetConfig<T> {
     pub config: T,
 }
@@ -63,27 +58,24 @@ impl<T: Send + 'static> Message for SetConfig<T> {
     type Reply = ();
 }
 
-impl<T: Debug> SetConfig<T> {
+impl<T> SetConfig<T> {
     pub fn new(config: T) -> Self {
         Self { config }
     }
 }
 
-#[derive(Debug)]
 pub struct GetProposal {}
 
 impl Message for GetProposal {
     type Reply = Proposal;
 }
 
-#[derive(Debug)]
 pub struct Install {}
 
 impl Message for Install {
     type Reply = ();
 }
 
-#[derive(Debug)]
 pub struct UpdateKeymap {
     pub keymap: KeymapId,
 }

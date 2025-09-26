@@ -18,8 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::convert::Infallible;
-
 use crate::{
     config::Config, event::Event, messages, model::ModelAdapter, proposal::Proposal,
     system_info::SystemInfo, user_config::UserConfig,
@@ -27,7 +25,7 @@ use crate::{
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
 use agama_utils::actors::{Actor, ActorError, Handler};
 use async_trait::async_trait;
-use tokio::sync::{mpsc, oneshot};
+use tokio::sync::mpsc;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -53,34 +51,6 @@ pub enum Error {
     Generic(#[from] anyhow::Error),
     #[error("Actor communication error")]
     Actor(#[from] ActorError),
-    #[error("Infallible")]
-    Infallible(#[from] Infallible),
-}
-
-#[derive(Debug)]
-pub enum Message {
-    GetSystem {
-        respond_to: oneshot::Sender<SystemInfo>,
-    },
-    SetSystem {
-        config: SystemConfig,
-    },
-    GetConfig {
-        respond_to: oneshot::Sender<UserConfig>,
-    },
-    SetConfig {
-        config: UserConfig,
-    },
-    GetProposal {
-        respond_to: oneshot::Sender<Proposal>,
-    },
-    UpdateKeymap {
-        keymap: KeymapId,
-    },
-    UpdateLocale {
-        locale: LocaleId,
-    },
-    Install,
 }
 
 #[derive(Clone, Debug)]
