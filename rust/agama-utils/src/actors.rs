@@ -157,6 +157,20 @@ impl<A: Actor> ActorHandler<A> {
         let v = rx.await.map_err(|_| ActorError::Response(A::name()))?;
         v
     }
+
+    /// Sends a message and does not wait for the answer.
+    ///
+    /// * `msg`: message to send to the actor.
+    pub fn cast<M: Message>(&self, msg: M) -> Result<(), A::Error>
+    where
+        A: Handler<M>,
+    {
+        let message = Envelope::new(msg, None);
+        self.sender
+            .send(Box::new(message))
+            .map_err(|_| ActorError::Send(A::name()))?;
+        Ok(())
+    }
 }
 
 pub fn spawn_actor<A: Actor>(mut actor: A) -> ActorHandler<A> {
@@ -250,6 +264,14 @@ mod tests {
         let value = handle.call(Get {}).await?;
         assert_eq!(value, 5);
 
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_cast_function() -> Result<(), Box<dyn std::error::Error>> {
+        let actor = MyActor::default();
+        let handle = spawn_actor(actor);
+        _ = handle.cast(Inc { amount: 5 });
         Ok(())
     }
 }
