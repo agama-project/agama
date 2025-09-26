@@ -20,14 +20,8 @@
 
 //! Defines the handler to interact with the localization service.
 
-use crate::{
-    model::Model,
-    service::{Message, Service},
-};
-use agama_utils::{
-    actors::{ActorHandle, MailboxSender},
-    handler,
-};
+use crate::service::Message;
+use agama_utils::handler;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -35,30 +29,25 @@ pub enum Error {
     Handler(#[from] handler::Error<Message>),
 }
 
-/// Handler to interact with the service.
-///
-/// It offers a set of functions that allow interacting with the localization
-/// service, which runs in a different Tokio task.
-#[derive(Clone)]
 // pub struct Handler<T: ModelAdapter + 'static> {
-pub struct Handler {
-    sender: MailboxSender,
-}
+// pub struct Handler {
+//     sender: MailboxSender,
+// }
 
 // impl<T: ModelAdapter + 'static> Handler<T> {
-impl Handler {
-    pub fn new(sender: MailboxSender) -> Self {
-        Self {
-            sender,
-            // _model: PhantomData::<T>,
-        }
-    }
-}
+// impl Handler {
+//     pub fn new(sender: MailboxSender) -> Self {
+//         Self {
+//             sender,
+//             // _model: PhantomData::<T>,
+//         }
+//     }
+// }
 
-impl ActorHandle<Service<Model>> for Handler {
-    type Error = crate::service::Error;
+// impl ActorHandle<Service<Model>> for Handler {
+//     type Error = crate::service::Error;
 
-    fn channel(&mut self) -> &mut agama_utils::actors::MailboxSender {
-        &mut self.sender
-    }
-}
+//     fn channel(&mut self) -> &mut agama_utils::actors::MailboxSender {
+//         &mut self.sender
+//     }
+// }

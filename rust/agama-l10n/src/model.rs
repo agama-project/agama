@@ -37,7 +37,7 @@ use std::io::Write;
 use std::process::Command;
 use std::{env, fs::OpenOptions};
 
-pub trait ModelAdapter: Send {
+pub trait ModelAdapter: Send + 'static {
     fn locales_db(&mut self) -> &mut LocalesDatabase;
     fn timezones_db(&mut self) -> &mut TimezonesDatabase;
     fn keymaps_db(&mut self) -> &mut KeymapsDatabase;

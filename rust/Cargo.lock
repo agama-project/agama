@@ -59,6 +59,7 @@ dependencies = [
  "agama-locale-data",
  "agama-utils",
  "anyhow",
+ "async-trait",
  "gettext-rs",
  "merge-struct",
  "regex",

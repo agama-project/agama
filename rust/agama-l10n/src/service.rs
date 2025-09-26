@@ -21,20 +21,12 @@
 use std::convert::Infallible;
 
 use crate::{
-    config::Config,
-    event::Event,
-    messages,
-    model::{Model, ModelAdapter},
-    proposal::Proposal,
-    system_info::SystemInfo,
-    user_config::UserConfig,
+    config::Config, event::Event, messages, model::ModelAdapter, proposal::Proposal,
+    system_info::SystemInfo, user_config::UserConfig,
 };
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
-use agama_utils::{
-    actors::{Actor, ActorError, Handles, MailboxReceiver},
-    handler::HandlerActorError,
-    Service as AgamaService,
-};
+use agama_utils::actors::{Actor, ActorError, Handler};
+use async_trait::async_trait;
 use tokio::sync::{mpsc, oneshot};
 
 #[derive(thiserror::Error, Debug)]
@@ -103,7 +95,6 @@ where
 {
     state: State,
     model: T,
-    messages: MailboxReceiver,
     events: mpsc::UnboundedSender<Event>,
 }
 
@@ -116,11 +107,7 @@ impl<T> Service<T>
 where
     T: ModelAdapter,
 {
-    pub fn new(
-        mut model: T,
-        messages: MailboxReceiver,
-        events: mpsc::UnboundedSender<Event>,
-    ) -> Service<T> {
+    pub fn new(mut model: T, events: mpsc::UnboundedSender<Event>) -> Service<T> {
         let system = SystemInfo::read_from(&mut model);
         let config = Config::new_from(&system);
         let state = State { system, config };
@@ -128,35 +115,25 @@ where
         Self {
             state,
             model,
-            messages,
             events,
         }
     }
 }
 
-impl<T: ModelAdapter + 'static> Actor for Service<T> {
-    fn channel(&mut self) -> &mut agama_utils::actors::MailboxReceiver {
-        &mut self.messages
-    }
+impl<T: ModelAdapter> Actor for Service<T> {
+    type Error = Error;
 }
 
-impl<T: ModelAdapter + 'static> Handles<messages::GetSystem> for Service<T> {
-    type Reply = SystemInfo;
-    type Error = Infallible;
-
-    fn handle(&mut self, _message: messages::GetSystem) -> Result<Self::Reply, Self::Error> {
+#[async_trait]
+impl<T: ModelAdapter> Handler<messages::GetSystem> for Service<T> {
+    async fn handle(&mut self, _message: messages::GetSystem) -> Result<SystemInfo, Error> {
         Ok(self.state.system.clone())
     }
 }
 
-impl<T: ModelAdapter + 'static> Handles<messages::SetSystem<SystemConfig>> for Service<T> {
-    type Reply = ();
-    type Error = crate::service::Error;
-
-    fn handle(
-        &mut self,
-        message: messages::SetSystem<SystemConfig>,
-    ) -> Result<Self::Reply, Self::Error> {
+#[async_trait]
+impl<T: ModelAdapter> Handler<messages::SetSystem<SystemConfig>> for Service<T> {
+    async fn handle(&mut self, message: messages::SetSystem<SystemConfig>) -> Result<(), Error> {
         let config = &message.config;
         if let Some(language) = &config.language {
             self.model.set_locale(language.parse()?)?;
@@ -170,23 +147,16 @@ impl<T: ModelAdapter + 'static> Handles<messages::SetSystem<SystemConfig>> for S
     }
 }
 
-impl<T: ModelAdapter + 'static> Handles<messages::GetConfig> for Service<T> {
-    type Reply = UserConfig;
-    type Error = crate::service::Error;
-
-    fn handle(&mut self, _message: messages::GetConfig) -> Result<Self::Reply, Self::Error> {
+#[async_trait]
+impl<T: ModelAdapter> Handler<messages::GetConfig> for Service<T> {
+    async fn handle(&mut self, _message: messages::GetConfig) -> Result<UserConfig, Error> {
         Ok((&self.state.config).into())
     }
 }
 
-impl<T: ModelAdapter + 'static> Handles<messages::SetConfig<UserConfig>> for Service<T> {
-    type Reply = ();
-    type Error = crate::service::Error;
-
-    fn handle(
-        &mut self,
-        message: messages::SetConfig<UserConfig>,
-    ) -> Result<Self::Reply, Self::Error> {
+#[async_trait]
+impl<T: ModelAdapter> Handler<messages::SetConfig<UserConfig>> for Service<T> {
+    async fn handle(&mut self, message: messages::SetConfig<UserConfig>) -> Result<(), Error> {
         let merged = self.state.config.merge(&message.config)?;
         if merged != self.state.config {
             self.state.config = merged;
@@ -196,20 +166,16 @@ impl<T: ModelAdapter + 'static> Handles<messages::SetConfig<UserConfig>> for Ser
     }
 }
 
-impl<T: ModelAdapter + 'static> Handles<messages::GetProposal> for Service<T> {
-    type Reply = Proposal;
-    type Error = crate::service::Error;
-
-    fn handle(&mut self, _message: messages::GetProposal) -> Result<Self::Reply, Self::Error> {
+#[async_trait]
+impl<T: ModelAdapter> Handler<messages::GetProposal> for Service<T> {
+    async fn handle(&mut self, _message: messages::GetProposal) -> Result<Proposal, Error> {
         Ok((&self.state.config).into())
     }
 }
 
-impl<T: ModelAdapter + 'static> Handles<messages::Install> for Service<T> {
-    type Reply = ();
-    type Error = crate::service::Error;
-
-    fn handle(&mut self, _message: messages::Install) -> Result<Self::Reply, Self::Error> {
+#[async_trait]
+impl<T: ModelAdapter> Handler<messages::Install> for Service<T> {
+    async fn handle(&mut self, _message: messages::Install) -> Result<(), Error> {
         let proposal: Proposal = (&self.state.config).into();
         self.model
             .install(proposal.locale, proposal.keymap, proposal.timezone)
@@ -218,24 +184,20 @@ impl<T: ModelAdapter + 'static> Handles<messages::Install> for Service<T> {
     }
 }
 
-impl<T: ModelAdapter + 'static> Handles<messages::UpdateLocale> for Service<T> {
-    type Reply = ();
-    type Error = crate::service::Error;
-
-    fn handle(&mut self, message: messages::UpdateLocale) -> Result<Self::Reply, Self::Error> {
+#[async_trait]
+impl<T: ModelAdapter> Handler<messages::UpdateLocale> for Service<T> {
+    async fn handle(&mut self, message: messages::UpdateLocale) -> Result<(), Error> {
         self.state.system.locale = message.locale;
-        _ = self.events.send(Event::SystemChanged);
+        // _ = self.events.send(Event::SystemChanged);
         Ok(())
     }
 }
 
-impl<T: ModelAdapter + 'static> Handles<messages::UpdateKeymap> for Service<T> {
-    type Reply = ();
-    type Error = crate::service::Error;
-
-    fn handle(&mut self, message: messages::UpdateKeymap) -> Result<Self::Reply, Self::Error> {
+#[async_trait]
+impl<T: ModelAdapter> Handler<messages::UpdateKeymap> for Service<T> {
+    async fn handle(&mut self, message: messages::UpdateKeymap) -> Result<(), Error> {
         self.state.system.keymap = message.keymap;
-        _ = self.events.send(Event::SystemChanged);
+        // _ = self.events.send(Event::SystemChanged);
         Ok(())
     }
 }

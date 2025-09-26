@@ -21,13 +21,24 @@
 use std::fmt::Debug;
 
 use agama_locale_data::{KeymapId, LocaleId};
+use agama_utils::actors::Message;
 
-#[derive(Debug)]
+use crate::{Proposal, SystemInfo, UserConfig};
+
+#[derive(Debug, Clone)]
 pub struct GetSystem {}
+
+impl Message for GetSystem {
+    type Reply = SystemInfo;
+}
 
 #[derive(Debug)]
 pub struct SetSystem<T> {
     pub config: T,
+}
+
+impl<T: Send + 'static> Message for SetSystem<T> {
+    type Reply = ();
 }
 
 impl<T: Debug> SetSystem<T> {
@@ -39,9 +50,17 @@ impl<T: Debug> SetSystem<T> {
 #[derive(Debug)]
 pub struct GetConfig {}
 
+impl Message for GetConfig {
+    type Reply = UserConfig;
+}
+
 #[derive(Debug)]
 pub struct SetConfig<T> {
     pub config: T,
+}
+
+impl<T: Send + 'static> Message for SetConfig<T> {
+    type Reply = ();
 }
 
 impl<T: Debug> SetConfig<T> {
@@ -53,14 +72,30 @@ impl<T: Debug> SetConfig<T> {
 #[derive(Debug)]
 pub struct GetProposal {}
 
+impl Message for GetProposal {
+    type Reply = Proposal;
+}
+
 #[derive(Debug)]
 pub struct Install {}
+
+impl Message for Install {
+    type Reply = ();
+}
 
 #[derive(Debug)]
 pub struct UpdateKeymap {
     pub keymap: KeymapId,
 }
 
+impl Message for UpdateKeymap {
+    type Reply = ();
+}
+
 pub struct UpdateLocale {
     pub locale: LocaleId,
+}
+
+impl Message for UpdateLocale {
+    type Reply = ();
 }
