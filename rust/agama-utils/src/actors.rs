@@ -59,7 +59,7 @@ pub trait Actor: 'static + Send + Sized {
 
 /// Marker trait to indicate that a struct is a message.
 // FIXME: remove the clone
-pub trait Message: 'static + Send + Sized + Clone {
+pub trait Message: 'static + Send + Sized {
     type Reply: 'static + Send;
 }
 
@@ -70,7 +70,7 @@ pub struct Envelope<A: Actor, M: Message>
 where
     A: Handler<M>,
 {
-    message: M,
+    message: Option<M>,
     _actor: PhantomData<A>,
     // sender: Option<tokio::sync::oneshot::Sender<M::Reply>>,
     sender: Option<ReplySender<A, M>>,
@@ -82,7 +82,7 @@ where
 {
     pub fn new(message: M, sender: Option<ReplySender<A, M>>) -> Self {
         Self {
-            message,
+            message: Some(message),
             _actor: PhantomData,
             sender,
         }
@@ -93,7 +93,13 @@ where
     /// The actor must implement a handler for this type of messages. It takes
     /// care of sending the response if a sender channel was given.
     pub async fn handle(&mut self, actor: &mut A) {
-        let result = actor.handle(self.message.clone()).await;
+        // To avoid clonning, we need to be able to take the value
+        // while keeping the &mut self reference valid.
+        let Some(msg) = self.message.take() else {
+            eprintln!("Did not find a message!");
+            return;
+        };
+        let result = actor.handle(msg).await;
         if let Some(sender) = self.sender.take() {
             _ = sender.send(result);
         }
