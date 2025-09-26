@@ -20,8 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId } from "react";
-import { Divider, Flex, Title } from "@patternfly/react-core";
+import React, { forwardRef, useId } from "react";
+import { Button, Divider, Flex, FlexItem, Title } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import Link from "~/components/core/Link";
 import Text from "~/components/core/Text";
@@ -40,6 +40,7 @@ import { generateEncodedPath } from "~/utils";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _, n_, formatList } from "~/i18n";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
   const deleteVolumeGroup = useDeleteVolumeGroup();
@@ -100,29 +101,54 @@ const EditVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
   );
 };
 
-const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
-  return (
-    <MenuButton
-      menuProps={{
-        popperProps: {
-          position: "end",
-        },
-      }}
-      toggleProps={{ variant: "plain" }}
-      items={[<EditVgOption key="edit" vg={vg} />, <DeleteVgOption key="delete" vg={vg} />]}
-    >
-      <Text className="action-text">{_("Change")}</Text>{" "}
-      <Icon name="more_horiz" className="agm-strong-icon" />
-    </MenuButton>
-  );
-};
-
 const VgHeader = ({ vg }: { vg: model.VolumeGroup }) => {
   const title = vg.logicalVolumes.length
     ? _("Create LVM volume group %s")
     : _("Empty LVM volume group %s");
 
   return <Title headingLevel="h4">{sprintf(title, vg.vgName)}</Title>;
+};
+
+type VgMenuToggleProps = CustomToggleProps & {
+  vg: model.VolumeGroup;
+};
+
+const VgMenuToggle = forwardRef(({ vg, ...props }: VgMenuToggleProps, ref) => {
+  return (
+    <Button
+      variant="link"
+      ref={ref}
+      style={{ display: "inline", width: "fit-content" }}
+      className={[textStyles.fontFamilyHeading, textStyles.fontSizeMd].join(" ")}
+      {...props}
+    >
+      <Flex
+        alignItems={{ default: "alignItemsCenter" }}
+        gap={{ default: "gapSm" }}
+        flexWrap={{ default: "nowrap" }}
+        style={{ whiteSpace: "normal", textAlign: "start" }}
+      >
+        <FlexItem>
+          <VgHeader vg={vg} {...props} />
+        </FlexItem>
+        <FlexItem>
+          <Icon name="keyboard_arrow_down" style={{ verticalAlign: "middle" }} />
+        </FlexItem>
+      </Flex>
+    </Button>
+  );
+});
+
+const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
+  return (
+    <MenuButton
+      menuProps={{
+        popperProps: { position: "end", maxWidth: "fit-content", minWidth: "fit-content" },
+      }}
+      customToggle={<VgMenuToggle vg={vg} />}
+      items={[<EditVgOption key="edit" vg={vg} />, <DeleteVgOption key="delete" vg={vg} />]}
+    />
+  );
 };
 
 const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
@@ -205,10 +231,8 @@ export type VolumeGroupEditorProps = { vg: model.VolumeGroup };
 
 export default function VolumeGroupEditor({ vg }: VolumeGroupEditorProps) {
   return (
-    <ConfigEditorItem
-      header={<VgHeader vg={vg} />}
-      content={<LogicalVolumes vg={vg} />}
-      actions={<VgMenu vg={vg} />}
-    />
+    <ConfigEditorItem header={<VgMenu vg={vg} />}>
+      <LogicalVolumes vg={vg} />
+    </ConfigEditorItem>
   );
 }
