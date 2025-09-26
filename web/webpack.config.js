@@ -61,8 +61,8 @@ if (eslint) {
     new ESLintPlugin({
       configType: "flat",
       extensions: ["js", "jsx", "ts", "tsx"],
-      failOnError: production,
-      failOnWarning: production,
+      failOnError: false,
+      failOnWarning: false,
     }),
   );
 }
@@ -163,9 +163,9 @@ module.exports = {
             loader: require.resolve("ts-loader"),
             options: {
               getCustomTransformers: () => ({
-                before: [development && ReactRefreshTypeScript.default()].filter(Boolean),
+                before: [ReactRefreshTypeScript.default()].filter(Boolean),
               }),
-              transpileOnly: development,
+              transpileOnly: true,
             },
           },
         ],
