@@ -158,7 +158,7 @@ impl<T: ModelAdapter> Handler<messages::Install> for Service<T> {
 impl<T: ModelAdapter> Handler<messages::UpdateLocale> for Service<T> {
     async fn handle(&mut self, message: messages::UpdateLocale) -> Result<(), Error> {
         self.state.system.locale = message.locale;
-        // _ = self.events.send(Event::SystemChanged);
+        _ = self.events.send(Event::SystemChanged);
         Ok(())
     }
 }
@@ -167,7 +167,7 @@ impl<T: ModelAdapter> Handler<messages::UpdateLocale> for Service<T> {
 impl<T: ModelAdapter> Handler<messages::UpdateKeymap> for Service<T> {
     async fn handle(&mut self, message: messages::UpdateKeymap) -> Result<(), Error> {
         self.state.system.keymap = message.keymap;
-        // _ = self.events.send(Event::SystemChanged);
+        _ = self.events.send(Event::SystemChanged);
         Ok(())
     }
 }
