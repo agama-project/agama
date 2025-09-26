@@ -18,113 +18,25 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module implements a tiny actors system to be used by services.
+//! This module implements a tiny actors system to be used by the services.
 //!
 //! Ideally, each Agama service should be composed, at least, of:
 //!
 //! * An actor which implements the [Actor] trait. It should implement the
-//!   [Handles] trait for each message it wants to handle.
-//! * An actor handle which implements the [ActorHandle] trait.
+//!   [Handler] trait for each message it wants to handle.
+//! * An actor handle, represented by the [ActorHandle] generic struct.
 //!
 //! Let's have a look to an example implementing a simple counter.
 //!
-//! ```
-//! use agama_utils::actors::{
-//!     Actor, ActorError, ActorHandle, Handles, MailboxMessage, MailboxSender, MailboxReceiver
-//! };
-//! use std::convert::Infallible;
-//! use tokio::sync::mpsc;
-//!
-//! #[derive(thiserror::Error, Debug)]
-//! pub enum MyActorError {
-//!     #[error(transparent)]
-//!     Infallible(#[from] std::convert::Infallible),
-//!     #[error(transparent)]
-//!     Actor(#[from] ActorError)
-//! }
-//!
-//! struct Counter {
-//!     value: u32,
-//!     receiver: MailboxReceiver,
-//! }
-//!
-//! impl Counter {
-//!     pub fn new(receiver: MailboxReceiver) -> Self {
-//!         Self { receiver, value: 0 }
-//!     }
-//! }
-//!
-//! impl Actor for Counter {
-//!     fn channel(&mut self) -> &mut MailboxReceiver {
-//!         &mut self.receiver
-//!     }
-//! }
-//!
-//! // Message to increment and get the current value.
-//! struct Inc { amount: u32 }
-//!
-//! impl Inc {
-//!     pub fn new(amount: u32) -> Self {
-//!         Self { amount }
-//!     }
-//! }
-//!
-//! struct Get {}
-//!
-//! // Let's implement a handler for each message type.
-//! impl Handles<Inc> for Counter {
-//!     type Reply = ();
-//!     type Error = Infallible;
-//!
-//!     fn handle(&mut self, message: Inc) -> Result<Self::Reply, Self::Error> {
-//!         self.value += message.amount;
-//!         Ok(())
-//!     }
-//! }
-//!
-//! impl Handles<Get> for Counter {
-//!     type Reply = u32;
-//!     type Error = Infallible;
-//!
-//!    fn handle(&mut self, message: Get) -> Result<Self::Reply, Self::Error> {
-//!        Ok(self.value)
-//!    }
-//! }
-//!
-//! // Finally, let's create a handle to make it easy to interact with the counter.
-//! struct MyActorHandle {
-//!     sender: MailboxSender,
-//! }
-//!
-//! impl ActorHandle<Counter> for MyActorHandle {
-//!     type Error = MyActorError;
-//!
-//!     fn channel(&mut self) -> &mut MailboxSender {
-//!         &mut self.sender
-//!     }
-//! }
 //!
 //! #[tokio::main]
 //! async fn main() {
-//!     let (tx, rx) = mpsc::unbounded_channel();
-//!     let actor = Counter::new(rx);
-//!     tokio::spawn(async move {
-//!         actor.run().await;
-//!     });
-//!
-//!     let mut handle = MyActorHandle { sender: tx.clone() };
-//!     for i in 0..100 {
-//!         _ = handle.send(Inc::new(i));
-//!     }
-//!     let value = handle
-//!         .request(Get {})
-//!         .await
-//!         .expect("Could not get the response from the actor");
-//!     assert_eq!(value, 4950);
+//!     println!("TODO");
 //! }
 //! ```
 
-use std::{any::Any, future::Future, marker::PhantomData};
+use async_trait::async_trait;
+use std::marker::PhantomData;
 use tokio::sync::{mpsc, oneshot};
 
 #[derive(thiserror::Error, Debug)]
@@ -135,154 +47,175 @@ pub enum ActorError {
     Response(&'static str),
 }
 
-/// Represents an actor which receives the messages using an unbounded channel
-/// of MailboxMessage objects.
-pub trait Actor: Send + Sized + 'static {
-    /// Returns the service name used for logging and debugging purposes.
-    ///
-    /// An example might be "agama_l10n::l10n::L10n".
-    fn name() -> &'static str {
-        std::any::type_name::<Self>()
-    }
+/// Marker trait to indicate that a struct works as an actor.
+pub trait Actor: 'static + Send + Sized {}
 
-    /// Returns the channel to receive the messages.
-    fn channel(&mut self) -> &mut MailboxReceiver;
-
-    /// Main loop of the service.
-    ///
-    /// It dispatches one message at a time.
-    fn run(mut self) -> impl Future<Output = ()> + Send {
-        async move {
-            loop {
-                let message = self.channel().recv().await;
-                let Some(message) = message else {
-                    eprintln!("channel closed for {}", Self::name());
-                    break;
-                };
-
-                message.handle_message(&mut self);
-                // if let Err(error) = &mut self.dispatch(message).await {
-                //     eprintln!("error dispatching command: {error}");
-                // }
-            }
-        }
-    }
+/// Marker trait to indicate that a struct is a message.
+// FIXME: remove the clone
+pub trait Message: 'static + Send + Sized + Clone {
+    type Reply: 'static + Send;
 }
 
-/// Wrapper around a message to make it possible to send it to an actor.
-///
-/// Check the MailboxMessage trait.
-pub struct Envelope<M: Send + 'static, A: Handles<M>> {
+/// Represents a message for a given actor.
+pub struct Envelope<A: Actor, M: Message>
+where
+    A: Handler<M>,
+{
     message: M,
     _actor: PhantomData<A>,
-    reply_sender:
-        Option<oneshot::Sender<Result<<A as Handles<M>>::Reply, <A as Handles<M>>::Error>>>,
+    sender: Option<tokio::sync::oneshot::Sender<M::Reply>>,
 }
 
-/// Represents any message to be send over the actor channel.
-///
-/// These actors system uses type erasure to send any kind of message over the
-/// channel. The messages are wrapped in an Envelope and this trait makes sure
-/// that the original message can be extracted again when it is received. This
-/// trait is automatically implemented for the Envelope struct.
-pub trait MailboxMessage: Send {
-    fn handle_message(self: Box<Self>, actor: &mut dyn Any);
-}
-
-impl<M, A> MailboxMessage for Envelope<M, A>
+impl<A: Actor, M: Message> Envelope<A, M>
 where
-    M: Send + 'static,
-    A: Handles<M> + Send + 'static,
-    <A as Handles<M>>::Reply: Send + 'static,
-    <A as Handles<M>>::Error: std::error::Error + Send + 'static,
+    A: Handler<M>,
 {
-    fn handle_message(self: Box<Self>, actor: &mut dyn Any) {
-        if let Some(an_actor) = actor.downcast_mut::<A>() {
-            let reply = an_actor.handle(self.message);
-            if let Some(sender) = self.reply_sender {
-                _ = sender
-                    .send(reply)
-                    .inspect_err(|e| eprintln!("Could not send the reply"));
-            }
-        } else {
-            eprintln!("Unexpected actor type");
-        }
-    }
-}
-
-/// Channel to send a messages to an actor.
-pub type MailboxSender = mpsc::UnboundedSender<Box<dyn MailboxMessage>>;
-/// Channel to receive messages for an actor.
-pub type MailboxReceiver = mpsc::UnboundedReceiver<Box<dyn MailboxMessage>>;
-
-/// Handling of a message.
-///
-/// Actors should implement this trait for each kind of message they want to handle.
-pub trait Handles<M: Send + 'static>: Actor + Sized {
-    type Reply: Send + 'static;
-    type Error: std::error::Error;
-
-    fn handle(&mut self, message: M) -> Result<Self::Reply, Self::Error>;
-}
-
-/// Represents a handle to interact with an actor.
-///
-/// It offers methods to send messages to an actor.
-pub trait ActorHandle<A: Actor> {
-    type Error: From<ActorError>;
-
-    fn channel(&mut self) -> &mut MailboxSender;
-
-    /// Sends a message and does not wait for the reply.
-    fn send<M>(&mut self, message: M) -> Result<(), Self::Error>
-    where
-        M: Send + 'static,
-        A: Handles<M> + Send + 'static,
-        <A as Handles<M>>::Reply: Send + 'static,
-        <A as Handles<M>>::Error: std::error::Error + Send + 'static,
-    {
-        let envelope = Envelope {
+    pub fn new(message: M, sender: Option<tokio::sync::oneshot::Sender<M::Reply>>) -> Self {
+        Self {
             message,
-            _actor: PhantomData::<A>,
-            reply_sender: None,
-        };
-        self.channel()
-            .send(Box::new(envelope))
-            .map_err(|_| ActorError::Send(A::name()))?;
-        Ok(())
+            _actor: PhantomData,
+            sender,
+        }
     }
 
-    /// Sends a message and returns the reply.
-    fn request<M>(
-        &mut self,
-        message: M,
-    ) -> impl Future<Output = Result<<A as Handles<M>>::Reply, Self::Error>>
-    where
-        M: Send + 'static,
-        A: Handles<M> + Send + 'static,
-        <A as Handles<M>>::Reply: Send + 'static,
-        <A as Handles<M>>::Error: std::error::Error + Send + 'static + Into<Self::Error>,
-    {
-        async {
-            let (reply_tx, reply_rx) = oneshot::channel();
-            let envelope = Envelope {
-                message,
-                _actor: PhantomData::<A>,
-                reply_sender: Some(reply_tx),
-            };
-
-            self.channel()
-                .send(Box::new(envelope))
-                .map_err(|_| ActorError::Send(A::name()))?;
-
-            let result = reply_rx
-                .await
-                .map_err(|_| ActorError::Response(A::name()))?;
-
-            match result {
-                Ok(inner) => Ok(inner),
-                Err(error) => Err(error.into()),
-            }
+    /// Process the message using the given actor.
+    ///
+    /// The actor must implement a handler for this type of messages. It takes
+    /// care of sending the response if a sender channel was given.
+    pub async fn handle(&mut self, actor: &mut A) {
+        let result = actor.handle(self.message.clone()).await;
+        if let Some(sender) = self.sender.take() {
+            _ = sender.send(result);
         }
+    }
+}
+
+/// Generic message handling.
+///
+/// The handling mechanisms consist on calling a handle method for the message
+/// and the actor.
+#[async_trait]
+pub trait EnvelopeHandler<A: Actor>: 'static + Send {
+    async fn handle(&mut self, actor: &mut A);
+}
+
+/// Implementation of the generic message handling mechanism for each actor and
+/// message type.
+///
+/// The actor has to implement Handler<M> to handle a given message M.
+#[async_trait]
+impl<A: Actor, M: Message> EnvelopeHandler<A> for Envelope<A, M>
+where
+    A: Handler<M>,
+{
+    async fn handle(&mut self, actor: &mut A) {
+        self.handle(actor).await;
+    }
+}
+
+/// Message handling for a given message type.
+#[async_trait]
+pub trait Handler<M: Message>
+where
+    Self: Actor,
+{
+    async fn handle(&mut self, message: M) -> M::Reply;
+}
+
+pub struct ActorHandle<A: Actor> {
+    sender: mpsc::UnboundedSender<Box<dyn EnvelopeHandler<A>>>,
+}
+
+impl<A: Actor> ActorHandle<A> {
+    pub async fn call<M: Message>(&self, msg: M) -> M::Reply
+    where
+        A: Handler<M>,
+    {
+        let (tx, rx) = oneshot::channel();
+        let message = Envelope::new(msg, Some(tx));
+        self.sender.send(Box::new(message)).unwrap();
+        rx.await.unwrap()
+    }
+}
+
+pub fn spawn_actor<A: Actor>(mut actor: A) -> ActorHandle<A> {
+    let (tx, mut rx) = mpsc::unbounded_channel();
+    let handler = ActorHandle::<A> { sender: tx };
+
+    tokio::spawn(async move {
+        while let Some(mut msg) = rx.recv().await {
+            msg.handle(&mut actor).await;
+        }
+    });
+
+    handler
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[derive(Default)]
+    pub struct MyActor {
+        counter: u32,
+    }
+
+    impl Actor for MyActor {}
+
+    #[derive(Clone)]
+    pub struct Inc {
+        amount: u32,
+    }
+
+    #[derive(Clone)]
+    pub struct Dec {
+        amount: u32,
+    }
+
+    #[derive(Clone)]
+    pub struct Get {}
+
+    impl Message for Inc {
+        type Reply = ();
+    }
+
+    impl Message for Dec {
+        type Reply = ();
+    }
+
+    impl Message for Get {
+        type Reply = u32;
+    }
+
+    #[async_trait]
+    impl Handler<Inc> for MyActor {
+        async fn handle(&mut self, message: Inc) {
+            self.counter += message.amount;
+        }
+    }
+
+    #[async_trait]
+    impl Handler<Dec> for MyActor {
+        async fn handle(&mut self, message: Dec) {
+            self.counter -= message.amount;
+        }
+    }
+
+    #[async_trait]
+    impl Handler<Get> for MyActor {
+        async fn handle(&mut self, _message: Get) -> u32 {
+            self.counter
+        }
+    }
+
+    // pub struct AnotherActor<T> {}
+
+    #[tokio::test]
+    async fn test_name() {
+        let actor = MyActor::default();
+        let handle = spawn_actor(actor);
+        handle.call(Inc { amount: 30 }).await;
+        let value = handle.call(Get {}).await;
+        assert_eq!(value, 30);
     }
 }
