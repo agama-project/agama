@@ -32,5 +32,7 @@ pub enum Event {
     SystemChanged,
 }
 
+/// Multi-producer single-consumer events sender.
 pub type Sender = mpsc::UnboundedSender<Event>;
+/// Multi-producer single-consumer events receiver.
 pub type Receiver = mpsc::UnboundedReceiver<Event>;

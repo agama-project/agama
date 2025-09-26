@@ -33,7 +33,7 @@
 //! * An [specific event type](Event) for localization-related events.
 //!
 //! The service can be started by calling the [start_service] function, which
-//! returns a [Handler] to interact with the system.
+//! returns a [agama_utils::actors::ActorHandler] to interact with the system.
 
 pub mod messages;
 
@@ -85,7 +85,8 @@ use service::Service;
 ///
 /// let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
 /// let service = l10n::start_service(events_sender).await.unwrap();
-/// // let config = service.get_config().await.unwrap();
+/// let config = service.call(l10n::messages::GetConfig {}).await;
+/// dbg!(config);
 /// # })
 /// ```
 ///
