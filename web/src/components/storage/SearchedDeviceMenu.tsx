@@ -34,7 +34,6 @@ import { sprintf } from "sprintf-js";
 import { _, formatList } from "~/i18n";
 import DeviceSelectorModal from "./DeviceSelectorModal";
 import { MenuItemProps } from "@patternfly/react-core";
-import { Icon } from "../layout";
 
 const baseName = (device: StorageDevice): string => deviceBaseName(device, true);
 
@@ -321,9 +320,7 @@ export default function SearchedDeviceMenu({
           <NewVgMenuOption key="add-vg-option" device={modelDevice} />,
           <RemoveEntryOption key="delete-disk-option" device={modelDevice} onClick={deleteFn} />,
         ]}
-      >
-        <Icon name="more_vert" className="agm-strong-icon" />
-      </MenuButton>
+      />
       {isSelectorOpen && (
         <DeviceSelectorModal
           title={<ChangeDeviceTitle modelDevice={modelDevice} />}
