@@ -369,6 +369,29 @@ shared_examples "with size" do
       )
     end
 
+    context "if min size is not configured" do
+      let(:size) do
+        {
+          min: "1 GiB",
+          max: "10 GiB"
+        }
+      end
+
+      before do
+        config.size.min = nil
+      end
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:size]).to eq(
+          {
+            min: "current",
+            max: 10.GiB.to_i
+          }
+        )
+      end
+    end
+
     context "if max size is unlimited" do
       let(:size) do
         {
@@ -381,6 +404,28 @@ shared_examples "with size" do
         expect(config_json[:size]).to eq(
           {
             min: 1.GiB.to_i
+          }
+        )
+      end
+    end
+
+    context "if max size is not configured" do
+      let(:size) do
+        {
+          min: "1 GiB"
+        }
+      end
+
+      before do
+        config.size.max = nil
+      end
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:size]).to eq(
+          {
+            min: 1.GiB.to_i,
+            max: "current"
           }
         )
       end
