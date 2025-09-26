@@ -25,7 +25,7 @@ use crate::{
 };
 use agama_locale_data::{KeymapId, LocaleId};
 use agama_utils::{
-    actors::ActorHandle,
+    actors::ActorHandler,
     dbus::{get_property, to_owned_hash},
 };
 use tokio::sync::mpsc;
@@ -41,12 +41,12 @@ pub enum Error {
 }
 
 pub struct Monitor<T: ModelAdapter + 'static> {
-    handler: ActorHandle<Service<T>>,
+    handler: ActorHandler<Service<T>>,
     stream: PropertiesChangedStream,
 }
 
 impl<T: ModelAdapter> Monitor<T> {
-    pub async fn new(handler: ActorHandle<Service<T>>) -> Result<Self, Error> {
+    pub async fn new(handler: ActorHandler<Service<T>>) -> Result<Self, Error> {
         let dbus = zbus::Connection::system().await?;
         let proxy = PropertiesProxy::builder(&dbus)
             .path("/org/freedesktop/locale1")?

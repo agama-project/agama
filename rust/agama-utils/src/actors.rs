@@ -133,18 +133,18 @@ pub trait Handler<M: Message>: Actor {
     async fn handle(&mut self, message: M) -> Result<M::Reply, Self::Error>;
 }
 
-pub struct ActorHandle<A: Actor> {
+pub struct ActorHandler<A: Actor> {
     sender: mpsc::UnboundedSender<Box<dyn EnvelopeHandler<A>>>,
 }
 
-impl<A: Actor> Clone for ActorHandle<A> {
+impl<A: Actor> Clone for ActorHandler<A> {
     fn clone(&self) -> Self {
         let sender = self.sender.clone();
-        ActorHandle::<A> { sender }
+        ActorHandler::<A> { sender }
     }
 }
 
-impl<A: Actor> ActorHandle<A> {
+impl<A: Actor> ActorHandler<A> {
     pub async fn call<M: Message>(&self, msg: M) -> Result<M::Reply, A::Error>
     where
         A: Handler<M>,
@@ -159,9 +159,9 @@ impl<A: Actor> ActorHandle<A> {
     }
 }
 
-pub fn spawn_actor<A: Actor>(mut actor: A) -> ActorHandle<A> {
+pub fn spawn_actor<A: Actor>(mut actor: A) -> ActorHandler<A> {
     let (tx, mut rx) = mpsc::unbounded_channel();
-    let handler = ActorHandle::<A> { sender: tx };
+    let handler = ActorHandler::<A> { sender: tx };
 
     tokio::spawn(async move {
         while let Some(mut msg) = rx.recv().await {

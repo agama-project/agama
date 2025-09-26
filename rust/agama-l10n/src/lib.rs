@@ -65,7 +65,7 @@ mod dbus;
 mod model;
 mod monitor;
 
-use agama_utils::actors::ActorHandle;
+use agama_utils::actors::ActorHandler;
 use model::Model;
 use service::Service;
 
@@ -92,7 +92,7 @@ use service::Service;
 /// ```
 ///
 /// * `events`: channel to emit the [localization-specific events](crate::Event).
-pub async fn start_service(events: event::Sender) -> Result<ActorHandle<Service<Model>>, Error> {
+pub async fn start_service(events: event::Sender) -> Result<ActorHandler<Service<Model>>, Error> {
     let model = Model::from_system()?;
     let service = Service::new(model, events);
     let handler = agama_utils::actors::spawn_actor(service);
@@ -117,7 +117,7 @@ mod tests {
         service, Event, Service, UserConfig,
     };
     use agama_locale_data::{KeymapId, LocaleId};
-    use agama_utils::actors::{spawn_actor, ActorHandle};
+    use agama_utils::actors::{spawn_actor, ActorHandler};
     use tokio::sync::mpsc;
 
     pub struct TestModel {
@@ -184,7 +184,7 @@ mod tests {
     }
 
     fn start_testing_service(//) -> Result<(Receiver, Handler<TestModel>), Box<dyn std::error::Error>> {
-    ) -> (Receiver, ActorHandle<Service<TestModel>>) {
+    ) -> (Receiver, ActorHandler<Service<TestModel>>) {
         let (events_tx, events_rx) = mpsc::unbounded_channel::<Event>();
         let model = build_adapter();
         let service = Service::new(model, events_tx);
