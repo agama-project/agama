@@ -18,20 +18,90 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module implements a tiny actors system to be used by the services.
+//! This module implements a tiny actors system to be used by Agama services.
 //!
-//! Ideally, each Agama service should be composed, at least, of:
+//! It is a minimal implementation which does not include supervision, links,
+//! etc. It only includes:
 //!
-//! * An actor which implements the [Actor] trait. It should implement the
-//!   [Handler] trait for each message it wants to handle.
-//! * An actor handle, represented by the [ActorHandle] generic struct.
+//! * An [Actor] trait to mark its implementors as potential actors.
+//! * A [Message] trait to define actors messages, defining its return type.
+//! * A [Handler] trait to implement the behavior of an particular actor (which
+//!   implements [Actor]) when it receives a given message.
+//! * A generic struct [ActorHandler] which allows sending messages to a given
+//!   actor.
+//! * A [spawn_actor] function to run the actor on a separate thread. It returns
+//!   an [ActorHandler] to interact with the actor.
+//!
+//! The approach ensures compile-time checks of the messages an actor can
+//! handle.
 //!
 //! Let's have a look to an example implementing a simple counter.
 //!
+//! ```
+//! use agama_utils::actors::{
+//!     Actor, ActorError, Message, Handler, spawn_actor
+//! };
+//! use async_trait::async_trait;
+//!
+//! #[derive(Default)]
+//! pub struct MyActor {
+//!     counter: u32,
+//! }
+//!
+//! #[derive(thiserror::Error, Debug)]
+//! pub enum MyActorError {
+//!     #[error("Actor system error")]
+//!     Actor(#[from] ActorError),
+//! }
+//!
+//! impl Actor for MyActor {
+//!     type Error = MyActorError;
+//! }
+//!
+//! #[derive(Clone)]
+//! pub struct Inc {
+//!     amount: u32,
+//! }
+//!
+//! #[derive(Clone)]
+//! pub struct Get {}
+//!
+//! impl Message for Inc {
+//!     type Reply = ();
+//! }
+//!
+//! impl Message for Get {
+//!     type Reply = u32;
+//! }
+//!
+//! #[async_trait]
+//! impl Handler<Inc> for MyActor {
+//!     async fn handle(&mut self, message: Inc) -> Result<(), MyActorError> {
+//!         self.counter += message.amount;
+//!         Ok(())
+//!     }
+//! }
+//!
+//! #[async_trait]
+//! impl Handler<Get> for MyActor {
+//!     async fn handle(&mut self, _message: Get) -> Result<u32, MyActorError> {
+//!         Ok(self.counter)
+//!     }
+//! }
 //!
 //! #[tokio::main]
 //! async fn main() {
-//!     println!("TODO");
+//! let actor = MyActor::default();
+//! // Spawn a separate Tokio task to run the actor.
+//! let handle = spawn_actor(actor);
+//!
+//! // Send some messages using the "call" function.
+//! _ = handle.call(Inc { amount: 5 }).await;
+//! let value = handle.call(Get {}).await.unwrap_or_default();
+//! assert_eq!(value, 5);
+//!
+//! // If you prefer, you can send a message and forget about the answer using the "cast" function.
+//! _ = handle.cast(Inc { amount: 1 });
 //! }
 //! ```
 
@@ -39,6 +109,7 @@ use async_trait::async_trait;
 use std::marker::PhantomData;
 use tokio::sync::{mpsc, oneshot};
 
+/// Internal actors errors, mostly communication issues.
 #[derive(thiserror::Error, Debug)]
 pub enum ActorError {
     #[error("Could not send a message to actor {0}")]
@@ -47,8 +118,12 @@ pub enum ActorError {
     Response(&'static str),
 }
 
-/// Marker trait to indicate that a struct works as an actor.
+/// Marks its implementors as potential actors.
+///
+/// It enables those structs to handle actors messages.
 pub trait Actor: 'static + Send {
+    /// Actor error type. It should implement the conversion from the
+    /// [ActorError] type, which represents communication-level problems.
     type Error: std::error::Error + From<ActorError> + Send + 'static;
 
     #[inline]
@@ -57,15 +132,18 @@ pub trait Actor: 'static + Send {
     }
 }
 
-/// Marker trait to indicate that a struct is a message.
+/// Marker trait to indicate that a its implementor is a potential message.
 pub trait Message: 'static + Send {
+    /// Defines the return type of the message.
     type Reply: 'static + Send;
 }
 
 type ReplySender<A, M> = oneshot::Sender<Result<<M as Message>::Reply, <A as Actor>::Error>>;
 
 /// Represents a message for a given actor.
-pub struct Envelope<A: Actor, M: Message>
+///
+/// It contains the message and the channel, if any, to send the reply.
+struct Envelope<A: Actor, M: Message>
 where
     A: Handler<M>,
 {
@@ -86,10 +164,10 @@ where
         }
     }
 
-    /// Process the message using the given actor.
+    /// Processes the message using the given actor.
     ///
-    /// The actor must implement a handler for this type of messages. It takes
-    /// care of sending the response if a sender channel was given.
+    /// The actor must implement [a handler](Handler) for this type of messages.
+    /// It takes care of sending the response if a sender channel was given.
     pub async fn handle(&mut self, actor: &mut A) {
         // To avoid clonning, we need to be able to take the value
         // while keeping the &mut self reference valid.
@@ -104,19 +182,16 @@ where
     }
 }
 
-/// Generic message handling.
+/// Envelope handler.
 ///
-/// The handling mechanisms consist on calling a handle method for the message
-/// and the actor.
+/// The handling mechanisms consist on calling a `handle` method for the message
+/// and the actor. It is implemented for any [Actor] that implements a [Handler]
+/// for a given [Messge].
 #[async_trait]
-pub trait EnvelopeHandler<A: Actor>: 'static + Send {
+trait EnvelopeHandler<A: Actor>: 'static + Send {
     async fn handle(&mut self, actor: &mut A);
 }
 
-/// Implementation of the generic message handling mechanism for each actor and
-/// message type.
-///
-/// The actor has to implement Handler<M> to handle a given message M.
 #[async_trait]
 impl<A: Actor, M: Message> EnvelopeHandler<A> for Envelope<A, M>
 where
@@ -127,12 +202,19 @@ where
     }
 }
 
-/// Message handling for a given message type.
+/// Implements an [Actor's](Actor) handler for a given [Message].
 #[async_trait]
 pub trait Handler<M: Message>: Actor {
     async fn handle(&mut self, message: M) -> Result<M::Reply, Self::Error>;
 }
 
+/// Implements a mechanism to communicate with a given actor.
+///
+/// An actor handle contains a channel to communicate with an Actor and offers a
+/// set of functions to communicate with it.
+///
+/// It is possible to clone a handler so you can interact with the actor from
+/// different places.
 pub struct ActorHandler<A: Actor> {
     sender: mpsc::UnboundedSender<Box<dyn EnvelopeHandler<A>>>,
 }
@@ -145,6 +227,9 @@ impl<A: Actor> Clone for ActorHandler<A> {
 }
 
 impl<A: Actor> ActorHandler<A> {
+    /// Sends a message and waits for the answer.
+    ///
+    /// * `msg`: message to send to the actor.
     pub async fn call<M: Message>(&self, msg: M) -> Result<M::Reply, A::Error>
     where
         A: Handler<M>,
@@ -154,8 +239,7 @@ impl<A: Actor> ActorHandler<A> {
         self.sender
             .send(Box::new(message))
             .map_err(|_| ActorError::Send(A::name()))?;
-        let v = rx.await.map_err(|_| ActorError::Response(A::name()))?;
-        v
+        rx.await.map_err(|_| ActorError::Response(A::name()))?
     }
 
     /// Sends a message and does not wait for the answer.
@@ -173,6 +257,9 @@ impl<A: Actor> ActorHandler<A> {
     }
 }
 
+/// Spawns a Tokio task and process the messages coming from the action handler.
+///
+/// * `actor`: actor to spawn.
 pub fn spawn_actor<A: Actor>(mut actor: A) -> ActorHandler<A> {
     let (tx, mut rx) = mpsc::unbounded_channel();
     let handler = ActorHandler::<A> { sender: tx };
@@ -184,94 +271,4 @@ pub fn spawn_actor<A: Actor>(mut actor: A) -> ActorHandler<A> {
     });
 
     handler
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[derive(Default)]
-    pub struct MyActor {
-        counter: u32,
-    }
-
-    #[derive(thiserror::Error, Debug)]
-    pub enum MyActorError {
-        #[error("Actor system error")]
-        Actor(#[from] ActorError),
-    }
-
-    impl Actor for MyActor {
-        type Error = MyActorError;
-    }
-
-    #[derive(Clone)]
-    pub struct Inc {
-        amount: u32,
-    }
-
-    #[derive(Clone)]
-    pub struct Dec {
-        amount: u32,
-    }
-
-    #[derive(Clone)]
-    pub struct Get {}
-
-    impl Message for Inc {
-        type Reply = ();
-    }
-
-    impl Message for Dec {
-        type Reply = ();
-    }
-
-    impl Message for Get {
-        type Reply = u32;
-    }
-
-    #[async_trait]
-    impl Handler<Inc> for MyActor {
-        async fn handle(&mut self, message: Inc) -> Result<(), MyActorError> {
-            self.counter += message.amount;
-            Ok(())
-        }
-    }
-
-    #[async_trait]
-    impl Handler<Dec> for MyActor {
-        async fn handle(&mut self, message: Dec) -> Result<(), MyActorError> {
-            self.counter -= message.amount;
-            Ok(())
-        }
-    }
-
-    #[async_trait]
-    impl Handler<Get> for MyActor {
-        async fn handle(&mut self, _message: Get) -> Result<u32, MyActorError> {
-            Ok(self.counter)
-        }
-    }
-
-    #[tokio::test]
-    async fn test_call_function() -> Result<(), Box<dyn std::error::Error>> {
-        let actor = MyActor::default();
-        let handle = spawn_actor(actor);
-        for i in 0..5 {
-            _ = handle.call(Inc { amount: i }).await;
-        }
-        handle.call(Dec { amount: 5 }).await?;
-        let value = handle.call(Get {}).await?;
-        assert_eq!(value, 5);
-
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn test_cast_function() -> Result<(), Box<dyn std::error::Error>> {
-        let actor = MyActor::default();
-        let handle = spawn_actor(actor);
-        _ = handle.cast(Inc { amount: 5 });
-        Ok(())
-    }
 }
