@@ -48,7 +48,7 @@ pub enum ActorError {
 }
 
 /// Marker trait to indicate that a struct works as an actor.
-pub trait Actor: 'static + Send + Sized {
+pub trait Actor: 'static + Send {
     type Error: std::error::Error + From<ActorError> + Send + 'static;
 
     #[inline]
@@ -58,8 +58,7 @@ pub trait Actor: 'static + Send + Sized {
 }
 
 /// Marker trait to indicate that a struct is a message.
-// FIXME: remove the clone
-pub trait Message: 'static + Send + Sized {
+pub trait Message: 'static + Send {
     type Reply: 'static + Send;
 }
 
@@ -72,7 +71,6 @@ where
 {
     message: Option<M>,
     _actor: PhantomData<A>,
-    // sender: Option<tokio::sync::oneshot::Sender<M::Reply>>,
     sender: Option<ReplySender<A, M>>,
 }
 
@@ -131,10 +129,7 @@ where
 
 /// Message handling for a given message type.
 #[async_trait]
-pub trait Handler<M: Message>
-where
-    Self: Actor,
-{
+pub trait Handler<M: Message>: Actor {
     async fn handle(&mut self, message: M) -> Result<M::Reply, Self::Error>;
 }
 
