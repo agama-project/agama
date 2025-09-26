@@ -165,7 +165,7 @@ module.exports = {
               getCustomTransformers: () => ({
                 before: [development && ReactRefreshTypeScript.default()].filter(Boolean),
               }),
-              transpileOnly: development,
+              transpileOnly: true,
             },
           },
         ],
