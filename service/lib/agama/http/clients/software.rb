@@ -39,13 +39,15 @@ module Agama
         end
 
         def propose
-          # TODO: implement it
-          post("software/propose", nil)
+          # it is noop, probe already do proposal
+          #post("software/propose", nil)
         end
 
         def install
-          # TODO: implement it
-          post("software/install", nil)
+          http = Net::HTTP::new("localhost")
+          # FIXME: we need to improve it as it can e.g. wait for user interaction.
+          http.read_timeout = 3*60*60 # set timeout to three hours for rpm installation
+          http.post("/api/software/install", "", headers)
         end
 
         def finish
