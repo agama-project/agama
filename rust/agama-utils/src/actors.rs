@@ -142,6 +142,13 @@ pub struct ActorHandle<A: Actor> {
     sender: mpsc::UnboundedSender<Box<dyn EnvelopeHandler<A>>>,
 }
 
+impl<A: Actor> Clone for ActorHandle<A> {
+    fn clone(&self) -> Self {
+        let sender = self.sender.clone();
+        ActorHandle::<A> { sender }
+    }
+}
+
 impl<A: Actor> ActorHandle<A> {
     pub async fn call<M: Message>(&self, msg: M) -> Result<M::Reply, A::Error>
     where
