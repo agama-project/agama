@@ -48,13 +48,22 @@ pub enum ActorError {
 }
 
 /// Marker trait to indicate that a struct works as an actor.
-pub trait Actor: 'static + Send + Sized {}
+pub trait Actor: 'static + Send + Sized {
+    type Error: std::error::Error + From<ActorError> + Send + 'static;
+
+    #[inline]
+    fn name() -> &'static str {
+        std::any::type_name::<Self>()
+    }
+}
 
 /// Marker trait to indicate that a struct is a message.
 // FIXME: remove the clone
 pub trait Message: 'static + Send + Sized + Clone {
     type Reply: 'static + Send;
 }
+
+type ReplySender<A, M> = oneshot::Sender<Result<<M as Message>::Reply, <A as Actor>::Error>>;
 
 /// Represents a message for a given actor.
 pub struct Envelope<A: Actor, M: Message>
@@ -63,14 +72,15 @@ where
 {
     message: M,
     _actor: PhantomData<A>,
-    sender: Option<tokio::sync::oneshot::Sender<M::Reply>>,
+    // sender: Option<tokio::sync::oneshot::Sender<M::Reply>>,
+    sender: Option<ReplySender<A, M>>,
 }
 
 impl<A: Actor, M: Message> Envelope<A, M>
 where
     A: Handler<M>,
 {
-    pub fn new(message: M, sender: Option<tokio::sync::oneshot::Sender<M::Reply>>) -> Self {
+    pub fn new(message: M, sender: Option<ReplySender<A, M>>) -> Self {
         Self {
             message,
             _actor: PhantomData,
@@ -119,7 +129,7 @@ pub trait Handler<M: Message>
 where
     Self: Actor,
 {
-    async fn handle(&mut self, message: M) -> M::Reply;
+    async fn handle(&mut self, message: M) -> Result<M::Reply, Self::Error>;
 }
 
 pub struct ActorHandle<A: Actor> {
@@ -127,14 +137,17 @@ pub struct ActorHandle<A: Actor> {
 }
 
 impl<A: Actor> ActorHandle<A> {
-    pub async fn call<M: Message>(&self, msg: M) -> M::Reply
+    pub async fn call<M: Message>(&self, msg: M) -> Result<M::Reply, A::Error>
     where
         A: Handler<M>,
     {
         let (tx, rx) = oneshot::channel();
         let message = Envelope::new(msg, Some(tx));
-        self.sender.send(Box::new(message)).unwrap();
-        rx.await.unwrap()
+        self.sender
+            .send(Box::new(message))
+            .map_err(|_| ActorError::Send(A::name()))?;
+        let v = rx.await.map_err(|_| ActorError::Response(A::name()))?;
+        v
     }
 }
 
@@ -160,7 +173,15 @@ mod tests {
         counter: u32,
     }
 
-    impl Actor for MyActor {}
+    #[derive(thiserror::Error, Debug)]
+    pub enum MyActorError {
+        #[error("Actor system error")]
+        Actor(#[from] ActorError),
+    }
+
+    impl Actor for MyActor {
+        type Error = MyActorError;
+    }
 
     #[derive(Clone)]
     pub struct Inc {
@@ -189,33 +210,38 @@ mod tests {
 
     #[async_trait]
     impl Handler<Inc> for MyActor {
-        async fn handle(&mut self, message: Inc) {
+        async fn handle(&mut self, message: Inc) -> Result<(), MyActorError> {
             self.counter += message.amount;
+            Ok(())
         }
     }
 
     #[async_trait]
     impl Handler<Dec> for MyActor {
-        async fn handle(&mut self, message: Dec) {
+        async fn handle(&mut self, message: Dec) -> Result<(), MyActorError> {
             self.counter -= message.amount;
+            Ok(())
         }
     }
 
     #[async_trait]
     impl Handler<Get> for MyActor {
-        async fn handle(&mut self, _message: Get) -> u32 {
-            self.counter
+        async fn handle(&mut self, _message: Get) -> Result<u32, MyActorError> {
+            Ok(self.counter)
         }
     }
 
-    // pub struct AnotherActor<T> {}
-
     #[tokio::test]
-    async fn test_name() {
+    async fn test_call_function() -> Result<(), Box<dyn std::error::Error>> {
         let actor = MyActor::default();
         let handle = spawn_actor(actor);
-        handle.call(Inc { amount: 30 }).await;
-        let value = handle.call(Get {}).await;
-        assert_eq!(value, 30);
+        for i in 0..5 {
+            _ = handle.call(Inc { amount: i }).await;
+        }
+        handle.call(Dec { amount: 5 }).await?;
+        let value = handle.call(Get {}).await?;
+        assert_eq!(value, 5);
+
+        Ok(())
     }
 }
