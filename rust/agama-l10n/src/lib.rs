@@ -25,11 +25,11 @@
 //! From a technical point of view, it includes:
 //!
 //! * The [UserConfig] struct that defines the settings the user can
-//! alter for the target system.
+//!   alter for the target system.
 //! * The [Proposal] struct that describes how the system will look like after
-//! the installation.
+//!   the installation.
 //! * The [SystemInfo] which includes information about the system
-//! where Agama is running.
+//!   where Agama is running.
 //! * An [specific event type](Event) for localization-related events.
 //!
 //! The service can be started by calling the [start_service] function, which

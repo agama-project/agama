@@ -82,18 +82,20 @@ pub struct Model {
     pub keymaps_db: KeymapsDatabase,
 }
 
-impl Model {
-    pub fn new() -> Self {
+impl Default for Model {
+    fn default() -> Self {
         Self {
             locales_db: LocalesDatabase::new(),
             timezones_db: TimezonesDatabase::new(),
             keymaps_db: KeymapsDatabase::new(),
         }
     }
+}
 
+impl Model {
     /// Initializes the struct with the information from the underlying system.
     pub fn from_system() -> Result<Self, service::Error> {
-        let mut model = Self::new();
+        let mut model = Self::default();
         model.read(&model.locale())?;
         Ok(model)
     }
@@ -143,9 +145,8 @@ impl ModelAdapter for Model {
     fn locale(&self) -> LocaleId {
         let lang = env::var("LANG")
             .ok()
-            .map(|v| v.parse::<LocaleId>().ok())
-            .flatten();
-        lang.unwrap_or(LocaleId::default())
+            .and_then(|v| v.parse::<LocaleId>().ok());
+        lang.unwrap_or_default()
     }
 
     fn set_locale(&mut self, locale: LocaleId) -> Result<(), service::Error> {
@@ -199,10 +200,10 @@ impl ModelAdapter for Model {
                 // the font entry is missing in a file created by "systemd-firstboot", just append it at the end
                 let mut file = OpenOptions::new()
                     .append(true)
-                    .open(format!("{}{}", ROOT, VCONSOLE_CONF))?;
+                    .open(format!("{ROOT}{VCONSOLE_CONF}"))?;
 
                 tracing::info!("Configuring console font \"{:?}\"", font);
-                writeln!(file, "\nFONT={}.psfu", font)?;
+                writeln!(file, "\nFONT={font}.psfu")?;
             }
         }
 
