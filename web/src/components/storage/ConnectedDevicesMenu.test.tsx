@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender, mockNavigateFn } from "~/test-utils";
+import { installerRender, mockNavigateFn } from "~/test-utils";
 import ConnectedDevicesMenu from "./ConnectedDevicesMenu";
 import { STORAGE as PATHS } from "~/routes/paths";
 
@@ -50,7 +50,7 @@ beforeEach(() => {
 });
 
 async function openMenu() {
-  const { user } = plainRender(<ConnectedDevicesMenu />);
+  const { user } = installerRender(<ConnectedDevicesMenu />);
   const button = screen.getByRole("button", { name: "More storage options" });
   await user.click(button);
   const menu = screen.getByRole("menu");
@@ -58,7 +58,7 @@ async function openMenu() {
 }
 
 it("renders the menu", () => {
-  const { container } = plainRender(<ConnectedDevicesMenu />);
+  const { container } = installerRender(<ConnectedDevicesMenu />);
   const icon = container.querySelector("svg");
   expect(icon).toHaveAttribute("data-icon-name", "more_horiz");
 });

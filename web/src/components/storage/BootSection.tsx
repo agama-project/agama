@@ -89,7 +89,7 @@ export default function BootSection() {
         {bootLabel(boot.isDefault, device)}
       </Content>
       <Flex>
-        <Link to={STORAGE.editBootDevice} variant="plain">
+        <Link to={STORAGE.editBootDevice} keepQuery variant="plain">
           <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
             <Icon name="edit_square" /> {_("Change")}
           </Flex>

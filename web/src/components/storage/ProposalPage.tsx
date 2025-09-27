@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   Content,
@@ -66,7 +66,7 @@ import { useSystemErrors, useConfigErrors } from "~/queries/issues";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
 import { useProgress, useProgressChanges } from "~/queries/progress";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import MenuButton from "../core/MenuButton";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
@@ -188,16 +188,19 @@ function ProposalEmptyState(): React.ReactNode {
 }
 
 function ProposalSections(): React.ReactNode {
+  const [searchParams, setSearchParams] = useSearchParams();
   const model = useConfigModel({ suspense: true });
   const systemErrors = useSystemErrors("storage");
   const hasResult = !systemErrors.length;
   const { mutate: reset } = useResetConfigMutation();
-  const [active, setActive] = useState(0);
   const handleTabClick = (
     event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
     tabIndex: number,
   ) => {
-    setActive(tabIndex);
+    setSearchParams((sp) => {
+      sp.set("st", tabIndex.toString());
+      return sp;
+    });
   };
 
   return (
@@ -242,10 +245,14 @@ function ProposalSections(): React.ReactNode {
                 "Changes in these settings will immediately update the 'Result' section below.",
               )}
             >
-              <Tabs activeKey={active} onSelect={handleTabClick} role="region">
+              <Tabs
+                activeKey={searchParams.get("st") || "0"}
+                onSelect={handleTabClick}
+                role="region"
+              >
                 <Tab
                   key="devices"
-                  eventKey={0}
+                  eventKey={"0"}
                   title={<TabTitleText>{_("Installation devices")}</TabTitleText>}
                 >
                   <NestedContent margin="mtSm">
@@ -261,7 +268,7 @@ function ProposalSections(): React.ReactNode {
                 </Tab>
                 <Tab
                   key="encryption"
-                  eventKey={1}
+                  eventKey={"1"}
                   title={<TabTitleText>{_("Encryption")}</TabTitleText>}
                 >
                   <NestedContent margin="mtSm">
@@ -270,7 +277,7 @@ function ProposalSections(): React.ReactNode {
                 </Tab>
                 <Tab
                   key="system"
-                  eventKey={2}
+                  eventKey={"2"}
                   title={<TabTitleText>{_("Boot options")}</TabTitleText>}
                 >
                   <NestedContent margin="mtSm">

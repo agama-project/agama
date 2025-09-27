@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { IssuesAlert } from "~/components/core";
 import { Issue, IssueSeverity, IssueSource } from "~/types/issues";
 import { SOFTWARE } from "~/routes/paths";
@@ -35,7 +35,7 @@ describe("IssueAlert", () => {
       severity: IssueSeverity.Error,
       kind: "generic",
     };
-    plainRender(<IssuesAlert issues={[issue]} />);
+    installerRender(<IssuesAlert issues={[issue]} />);
     expect(screen.getByText(issue.description)).toBeInTheDocument();
   });
 
@@ -46,7 +46,7 @@ describe("IssueAlert", () => {
       severity: IssueSeverity.Error,
       kind: "solver",
     };
-    plainRender(<IssuesAlert issues={[issue]} />);
+    installerRender(<IssuesAlert issues={[issue]} />);
     const link = screen.getByRole("link", { name: "Review and fix" });
     expect(link).toHaveAttribute("href", SOFTWARE.conflicts);
   });

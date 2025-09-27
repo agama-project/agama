@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { ProposalResultSection } from "~/components/storage";
 import { devices, actions } from "./test-data/full-result-example";
 
@@ -51,7 +51,7 @@ describe("ProposalResultSection", () => {
     });
 
     it("does not render a warning when there are not delete actions", () => {
-      plainRender(<ProposalResultSection />);
+      installerRender(<ProposalResultSection />);
       expect(screen.queryByText(/destructive/)).not.toBeInTheDocument();
     });
   });
@@ -66,18 +66,18 @@ describe("ProposalResultSection", () => {
     });
 
     it("renders the affected systems in the deletion reminder, if any", () => {
-      plainRender(<ProposalResultSection />);
+      installerRender(<ProposalResultSection />);
       expect(screen.queryByText(/affecting openSUSE/)).toBeInTheDocument();
     });
   });
 
   it("renders a reminder about the delete actions", () => {
-    plainRender(<ProposalResultSection />);
+    installerRender(<ProposalResultSection />);
     expect(screen.queryByText(/4 destructive/)).toBeInTheDocument();
   });
 
   it("renders a treegrid including all relevant information about final result", async () => {
-    const { user } = plainRender(<ProposalResultSection />);
+    const { user } = installerRender(<ProposalResultSection />);
     const tab = screen.getByRole("tab", { name: /Final layout/ });
 
     await user.click(tab);
