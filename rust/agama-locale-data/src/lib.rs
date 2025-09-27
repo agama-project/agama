@@ -84,7 +84,7 @@ pub fn get_localectl_keymaps() -> LocaleDataResult<Vec<KeymapId>> {
     let output = Command::new("localectl")
         .arg("list-keymaps")
         .output()
-        .map_err(|e| LocaleDataError::CouldNotReadKeymaps(e))?
+        .map_err(LocaleDataError::CouldNotReadKeymaps)?
         .stdout;
     let output = String::from_utf8_lossy(&output);
     let ret: Vec<_> = output.lines().flat_map(|l| l.parse().ok()).collect();
