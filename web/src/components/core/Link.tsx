@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Button, ButtonProps } from "@patternfly/react-core";
-import { To, useHref, useLinkClickHandler } from "react-router-dom";
+import { To, useHref, useLinkClickHandler, useLocation } from "react-router-dom";
 
 export type LinkProps = Omit<ButtonProps, "component"> & {
   /** The target route */
@@ -31,6 +31,8 @@ export type LinkProps = Omit<ButtonProps, "component"> & {
   replace?: boolean;
   /** Whether use PF/Button primary variant */
   isPrimary?: boolean;
+  /** Whether preserve the URL query string or not */
+  keepQuery?: boolean;
 };
 
 /**
@@ -45,12 +47,18 @@ export default function Link({
   isPrimary,
   variant,
   children,
+  state,
+  keepQuery = false,
   onClick,
   ...props
 }: LinkProps) {
+  const location = useLocation();
   const href = useHref(to);
   const linkVariant = isPrimary ? "primary" : variant || "secondary";
-  const handleClick = useLinkClickHandler(to, { replace });
+  const destination = keepQuery ? ({ pathname: to, search: location.search } as To) : to;
+  const options = { replace };
+  const handleClick = useLinkClickHandler(destination, options);
+
   return (
     <Button
       component="a"

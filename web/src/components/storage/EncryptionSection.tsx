@@ -54,7 +54,7 @@ export default function EncryptionSection() {
       <Content isEditorial>{encryptionLabel(method)}</Content>
       {password && <PasswordCheck password={password} />}
       <Split hasGutter>
-        <Link to={STORAGE.editEncryption} variant="plain">
+        <Link to={STORAGE.editEncryption} keepQuery variant="plain">
           <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
             <Icon name="edit_square" /> {_("Change")}
           </Flex>
