@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { Skeleton, Stack, Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import SmallWarning from "~/components/core/SmallWarning";
 import { Page, NestedContent } from "~/components/core";
@@ -31,6 +31,7 @@ import { _, n_, formatList } from "~/i18n";
 import { useActions, useDevices } from "~/queries/storage";
 import { sprintf } from "sprintf-js";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { useSearchParams } from "react-router-dom";
 
 /**
  * @todo Create a component for rendering a customized skeleton
@@ -105,16 +106,19 @@ export type ProposalResultSectionProps = {
 };
 
 export default function ProposalResultSection({ isLoading = false }: ProposalResultSectionProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const system = useDevices("system", { suspense: true });
   const staging = useDevices("result", { suspense: true });
   const actions = useActions();
   const devicesManager = new DevicesManager(system, staging, actions);
-  const [active, setActive] = useState(0);
   const handleTabClick = (
     event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
     tabIndex: number,
   ) => {
-    setActive(tabIndex);
+    setSearchParams((sp) => {
+      sp.set("rt", tabIndex.toString());
+      return sp;
+    });
   };
 
   if (isLoading) return <ResultSkeleton />;
@@ -126,8 +130,8 @@ export default function ProposalResultSection({ isLoading = false }: ProposalRes
         "Result of applying the configuration described at the 'Settings' section above.",
       )}
     >
-      <Tabs activeKey={active} onSelect={handleTabClick} role="region">
-        <Tab key="action" eventKey={0} title={<TabTitleText>{_("Actions")}</TabTitleText>}>
+      <Tabs activeKey={searchParams.get("rt") || "0"} onSelect={handleTabClick} role="region">
+        <Tab key="action" eventKey={"0"} title={<TabTitleText>{_("Actions")}</TabTitleText>}>
           <NestedContent margin="mtSm">
             <Stack hasGutter>
               <div className={textStyles.textColorPlaceholder}>
@@ -137,7 +141,7 @@ export default function ProposalResultSection({ isLoading = false }: ProposalRes
             </Stack>
           </NestedContent>
         </Tab>
-        <Tab key="staging" eventKey={1} title={<TabTitleText>{_("Final layout")}</TabTitleText>}>
+        <Tab key="staging" eventKey={"1"} title={<TabTitleText>{_("Final layout")}</TabTitleText>}>
           <NestedContent margin="mtSm">
             <Stack hasGutter>
               <div className={textStyles.textColorPlaceholder}>

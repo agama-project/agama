@@ -243,7 +243,7 @@ const Action = ({ navigateTo, children, ...props }: ActionProps) => {
  */
 const Cancel = ({ navigateTo = "..", children, ...props }: ActionProps) => {
   return (
-    <Link to={navigateTo} variant="link" {...props}>
+    <Link to={navigateTo} variant="link" keepQuery {...props}>
       {children || _("Cancel")}
     </Link>
   );

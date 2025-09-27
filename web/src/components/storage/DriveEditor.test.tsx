@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import DriveEditor from "~/components/storage/DriveEditor";
 import { StorageDevice, model } from "~/types/storage";
 import { Volume } from "~/api/storage/types";
@@ -235,7 +235,7 @@ describe("RemoveDriveOption", () => {
       // @ts-expect-error: drives are not typed on purpose because
       // isReusingPartitions should be a calculated data. Mocking needs a lot of
       // improvements.
-      const { user } = plainRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
+      const { user } = installerRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
 
       const changeButton = screen.getByRole("button", { name: /Use disk sdb/ });
       await user.click(changeButton);
@@ -251,7 +251,7 @@ describe("RemoveDriveOption", () => {
       // @ts-expect-error: drives are not typed on purpose because
       // isReusingPartitions should be a calculated data. Mocking needs a lot of
       // improvements.
-      const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
+      const { user } = installerRender(<DriveEditor drive={drive1} driveDevice={sda} />);
 
       const changeButton = screen.getByRole("button", { name: /Use disk sda/ });
       await user.click(changeButton);
@@ -269,7 +269,7 @@ describe("RemoveDriveOption", () => {
       // @ts-expect-error: drives are not typed on purpose because
       // isReusingPartitions should be a calculated data. Mocking needs a lot of
       // improvements.
-      const { user } = plainRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
+      const { user } = installerRender(<DriveEditor drive={drive2} driveDevice={sdb} />);
 
       const changeButton = screen.getByRole("button", { name: /Use disk sdb/ });
       await user.click(changeButton);
@@ -285,7 +285,7 @@ describe("RemoveDriveOption", () => {
       // @ts-expect-error: drives are not typed on purpose because
       // isReusingPartitions should be a calculated data. Mocking needs a lot of
       // improvements.
-      const { user } = plainRender(<DriveEditor drive={drive1} driveDevice={sda} />);
+      const { user } = installerRender(<DriveEditor drive={drive1} driveDevice={sda} />);
 
       const changeButton = screen.getByRole("button", { name: /Use disk sda/ });
       await user.click(changeButton);
