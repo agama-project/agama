@@ -8,16 +8,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-16 09:47+0000\n"
-"PO-Revision-Date: 2025-09-11 08:59+0000\n"
-"Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
-"Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/agama-"
-"service-sle-16/fi/>\n"
-"Language: fi\n"
+"PO-Revision-Date: 2025-09-11 14:37+0000\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ast\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.13.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -25,7 +23,7 @@ msgstr ""
 #: service/lib/agama/autoyast/profile_reporter.rb:51
 #, perl-brace-format
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
-msgstr "AutoYaST-profiilissa löydettiin tukemattomia kohita: %{keys}."
+msgstr ""
 
 #. Runs the config phase
 #.
@@ -33,34 +31,34 @@ msgstr "AutoYaST-profiilissa löydettiin tukemattomia kohita: %{keys}."
 #. @param data [Hash] Extra data provided to the D-Bus calls.
 #: service/lib/agama/manager.rb:99
 msgid "Analyze disks"
-msgstr "Levyjen analysointi"
+msgstr ""
 
 #: service/lib/agama/manager.rb:99
 msgid "Configure software"
-msgstr "Ohjelmistojen asetukset"
+msgstr ""
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
 #: service/lib/agama/manager.rb:118
 msgid "Prepare disks"
-msgstr "Levyjen valmistelu"
+msgstr ""
 
 #: service/lib/agama/manager.rb:119
 msgid "Install software"
-msgstr "Ohjelmistojen asennus"
+msgstr ""
 
 #: service/lib/agama/manager.rb:120
 msgid "Configure the system"
-msgstr "Järjestelmän asetukset"
+msgstr ""
 
 #. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 #: service/lib/agama/manager.rb:161
 msgid "Load software translations"
-msgstr "Lataa ohjelmistojen käännökset"
+msgstr ""
 
 #: service/lib/agama/manager.rb:162
 msgid "Load storage translations"
-msgstr "Lataa tallennustilan käännökset"
+msgstr ""
 
 #. @param certificate [Agama::SSL::Certificate]
 #. @return [Agama::Question]
@@ -69,38 +67,36 @@ msgid ""
 "Trying to import a self signed certificate. Do you want to trust it and "
 "register the product?"
 msgstr ""
-"Yritetään tuoda itse allekirjoitettua varmennetta. Luotetaanko siihen ja "
-"rekisteröidään tuote?"
 
 #. TRANSLATORS: button label, try downloading the failed package again
 #: service/lib/agama/software/callbacks/base.rb:48
 msgid "Try again"
-msgstr "Yritä uudelleen"
+msgstr ""
 
 #. TRANSLATORS: button label, ignore the failed download, skip package installation
 #: service/lib/agama/software/callbacks/base.rb:54
 msgid "Continue anyway"
-msgstr "Jatka joka tapauksessa"
+msgstr ""
 
 #. TRANSLATORS: button label, abort the installation completely after an error
 #: service/lib/agama/software/callbacks/base.rb:60
 msgid "Abort installation"
-msgstr "Keskeytä asennus"
+msgstr ""
 
 #. TRANSLATORS: button label, skip the error
 #: service/lib/agama/software/callbacks/base.rb:66
 msgid "Skip"
-msgstr "Ohita"
+msgstr ""
 
 #. TRANSLATORS: button label
 #: service/lib/agama/software/callbacks/base.rb:72
 msgid "Yes"
-msgstr "Kyllä"
+msgstr ""
 
 #. TRANSLATORS: button label
 #: service/lib/agama/software/callbacks/base.rb:78
 msgid "No"
-msgstr "Ei"
+msgstr ""
 
 #. Callback to accept a file without a checksum
 #.
@@ -113,10 +109,6 @@ msgid ""
 "that although the file is part of the signed repository, the list of "
 "checksums does not mention this file. Use it anyway?"
 msgstr ""
-"Tarkistussummaa tiedostolle %{file} ei löydy ohjelmalähteestä. Tämä "
-"tarkoittaa että vaikka tiedosto on osa allekirjoitettua ohjelmalähdettä, "
-"tarkistussummien luettelossa ei ole mainintaa tästä tiedostosta. Käytetäänkö "
-"sitä tästä huolimatta?"
 
 #. Callback to accept an unknown digest
 #.
@@ -130,9 +122,6 @@ msgid ""
 "is unknown. This means that the origin and integrity of the file cannot be "
 "verified. Use it anyway?"
 msgstr ""
-"Tarkistussumma tiedostolle %{file} on \"%{digest}\" mutta odotettua "
-"tarkistussummaa ei tiedetä. Tämä tarkoittaa että tiedoston alkuperää ja "
-"eheyttä ei voida vahvistaa. Käytetäänkö sitä tästä huolimatta?"
 
 #. Callback to accept wrong digest
 #.
@@ -147,9 +136,6 @@ msgid ""
 "be \"%{expected}\". The file has changed by accident or by an attacker since "
 "the creater signed it. Use it anyway?"
 msgstr ""
-"Tarkistussumma tiedostolle %{file} on \"%{found}\" mutta sen odotettiin "
-"olevan \"%{expected}\". Tiedosto on muuttunut vahingossa tai hyökkääjän "
-"toimesta sen luomisen jälkeen. Käytetäänkö sitä tästä huolimatta?"
 
 #. DoneProvide callback
 #.
@@ -158,7 +144,7 @@ msgstr ""
 #. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
 #: service/lib/agama/software/callbacks/script.rb:50
 msgid "There was a problem running a package script."
-msgstr "Ongelma suoritettaessa paketin komentojonoa."
+msgstr ""
 
 #. Callback to handle unsigned files
 #.
@@ -170,9 +156,6 @@ msgid ""
 "The file %{filename} from %{repo_url} is not digitally signed. The origin "
 "and integrity of the file cannot be verified. Use it anyway?"
 msgstr ""
-"Tiedostoa %{filename} lähteestä %{repo_url} ei ole allekirjoitettu "
-"digitaalisesti. Tiedoston alkuperää ja eheyttä ei voida vahvistaa. "
-"Käytetäänkö sitä tästä huolimatta?"
 
 #: service/lib/agama/software/callbacks/signature.rb:72
 #, perl-brace-format
@@ -180,8 +163,6 @@ msgid ""
 "The file %{filename} is not digitally signed. The origin and integrity of "
 "the file cannot be verified. Use it anyway?"
 msgstr ""
-"Tiedostoa %{filename} ei ole allekirjoitettu digitaalisesti. Tiedoston "
-"alkuperää ja eheyttä ei voida vahvistaa. Käytetäänkö sitä tästä huolimatta?"
 
 #. Callback to handle signature verification failures
 #.
@@ -193,8 +174,6 @@ msgid ""
 "The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
 "want to trust this key?"
 msgstr ""
-"Avain %{id} (%{name}) sormenjäljellä %{fingerprint} on tuntematon. "
-"Luotetaanko tähän avaimeen?"
 
 #. Callback to handle unknown GPG keys
 #.
@@ -207,9 +186,6 @@ msgid ""
 "The file %{filename} from %{repo_url} is digitally signed with the following "
 "unknown GnuPG key: %{key_id}. Use it anyway?"
 msgstr ""
-"Tiedosto %{filename} lähteestä %{repo_url} on allekirjoitettu digitaalisesti "
-"seuraavalla tuntemattomalla GnuPG-avaimella: %{key_id}. Tiedoston alkuperää "
-"ja eheyttä ei voida vahvistaa. Käytetäänkö sitä tästä huolimatta?"
 
 #: service/lib/agama/software/callbacks/signature.rb:137
 #, perl-brace-format
@@ -217,9 +193,6 @@ msgid ""
 "The file %{filename} is digitally signed with the following unknown GnuPG "
 "key: %{key_id}. Use it anyway?"
 msgstr ""
-"Tiedosto %{filename} on allekirjoitettu digitaalisesti seuraavalla "
-"tuntemattomalla GnuPG-avaimella: %{key_id}. Tiedoston alkuperää ja eheyttä "
-"ei voida vahvistaa. Käytetäänkö sitä tästä huolimatta?"
 
 #. Callback to handle file verification failures
 #.
@@ -233,9 +206,6 @@ msgid ""
 "GnuPG key, but the integrity check failed: %{key_id} (%{key_name}). Use it "
 "anyway?"
 msgstr ""
-"Tiedosto %{filename} lähteestä %{repo_url} on allekirjoitettu digitaalisesti "
-"seuraavalla GnuPG-avaimella mutta eheyden varmistaminen epäonnistui: %"
-"{key_id} (%{key_name}). Käytetäänkö sitä tästä huolimatta?"
 
 #: service/lib/agama/software/callbacks/signature.rb:175
 #, perl-brace-format
@@ -243,57 +213,54 @@ msgid ""
 "The file %{filename} is digitally signed with the following GnuPG key, but "
 "the integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
 msgstr ""
-"Tiedosto %{filename} on allekirjoitettu digitaalisesti seuraavalla GnuPG-"
-"avaimella mutta eheyden varmistaminen epäonnistui: %{key_id} (%{key_name}). "
-"Käytetäänkö sitä tästä huolimatta?"
 
 #. TRANSLATORS: button label, trust the GPG key or the signature
 #: service/lib/agama/software/callbacks/signature.rb:199
 msgid "Trust"
-msgstr "Luota"
+msgstr ""
 
 #. Should an error be raised?
 #: service/lib/agama/software/manager.rb:178
 msgid "Refreshing repositories metadata"
-msgstr "Päivitetään ohjelmalähteiden metatietoja"
+msgstr ""
 
 #: service/lib/agama/software/manager.rb:179
 msgid "Calculating the software proposal"
-msgstr "Lasketaan ohjelmistoehdotusta"
+msgstr ""
 
 #: service/lib/agama/software/manager.rb:183
 msgid "Initializing sources"
-msgstr "Otetaan ohjelmalähteitä käyttöön"
+msgstr ""
 
 #. error message
 #: service/lib/agama/software/manager.rb:427
 #, c-format
 msgid "Adding service '%s' failed."
-msgstr "Palvelun ”%s” lisääminen epäonnistui.."
+msgstr ""
 
 #. error message
 #: service/lib/agama/software/manager.rb:432
 #, c-format
 msgid "Updating service '%s' failed."
-msgstr "Palvelun ”%s” päivittämien epäonnistui."
+msgstr ""
 
 #. error message
 #: service/lib/agama/software/manager.rb:438
 #, c-format
 msgid "Saving service '%s' failed."
-msgstr "Palvelun ”%s” tallentaminen epäonnistui."
+msgstr ""
 
 #. error message
 #: service/lib/agama/software/manager.rb:444
 #, c-format
 msgid "Refreshing service '%s' failed."
-msgstr "Palvelun ”%s” virkistäminen epäonnistui."
+msgstr ""
 
 #. rubocop:enable Metrics/AbcSize
 #: service/lib/agama/software/manager.rb:453
 #, c-format
 msgid "Removing service '%s' failed."
-msgstr "Palvelun ”%s” poistaminen epäonnistui."
+msgstr ""
 
 #. Issues related to the software proposal.
 #.
@@ -303,21 +270,21 @@ msgstr "Palvelun ”%s” poistaminen epäonnistui."
 #: service/lib/agama/software/manager.rb:710
 #, c-format
 msgid "Could not read repository \"%s\""
-msgstr "Ohjelmalähdettä \"%s\" ei voi lukea"
+msgstr ""
 
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:720
 msgid "Product not selected yet"
-msgstr "Tuotetta ei ole vielä valittu"
+msgstr ""
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
 #: service/lib/agama/software/manager.rb:729
 msgid "Product must be registered"
-msgstr "Tuote tulee olla rekisteröity"
+msgstr ""
 
 #. Returns solver error messages from the last attempt
 #.
@@ -325,43 +292,43 @@ msgstr "Tuote tulee olla rekisteröity"
 #: service/lib/agama/software/proposal.rb:276
 #, c-format
 msgid "Found %s dependency issues."
-msgstr "Löydettiin %s riippuvuusongelmaa."
+msgstr ""
 
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31
 msgid "Certificate:"
-msgstr "Varmenne:"
+msgstr ""
 
 #: service/lib/agama/ssl/certificate_details.rb:31
 msgid "Issued To"
-msgstr "Myönnetty kohteelle"
+msgstr ""
 
 #: service/lib/agama/ssl/certificate_details.rb:32
 msgid "Issued By"
-msgstr "Julkaisija"
+msgstr ""
 
 #: service/lib/agama/ssl/certificate_details.rb:32
 msgid "SHA1 Fingerprint: "
-msgstr "SHA1-sormenjälki: "
+msgstr ""
 
 #: service/lib/agama/ssl/certificate_details.rb:34
 msgid "SHA256 Fingerprint: "
-msgstr "SHA256-sormenjälki: "
+msgstr ""
 
 #. label followed by the SSL certificate identification
 #: service/lib/agama/ssl/certificate_details.rb:46
 msgid "Common Name (CN): "
-msgstr "Yleinen nimi (CN): "
+msgstr ""
 
 #. label followed by the SSL certificate identification
 #: service/lib/agama/ssl/certificate_details.rb:48
 msgid "Organization (O): "
-msgstr "Organisaatio (O): "
+msgstr ""
 
 #. label followed by the SSL certificate identification
 #: service/lib/agama/ssl/certificate_details.rb:50
 msgid "Organization Unit (OU): "
-msgstr "Organisaatioyksikkö (OU): "
+msgstr ""
 
 #. Issue when the device has several users.
 #.
@@ -369,7 +336,7 @@ msgstr "Organisaatioyksikkö (OU): "
 #: service/lib/agama/storage/config_checkers/alias.rb:74
 #, c-format
 msgid "The device with alias '%s' is used by more than one device"
-msgstr "Aliaksella ”%s” varustettua laitetta käyttää useampi kuin yksi laite"
+msgstr ""
 
 #. Issue when the device has both filesystem and a user.
 #.
@@ -380,7 +347,6 @@ msgid ""
 "The device with alias '%s' cannot be formatted because it is used by other "
 "device"
 msgstr ""
-"Laitetta aliaksella ”%s” ei voi alustaa koska se on toisen laitteen käytössä"
 
 #. Issue when the device has both partitions and a user.
 #.
@@ -391,7 +357,6 @@ msgid ""
 "The device with alias '%s' cannot be partitioned because it is used by other "
 "device"
 msgstr ""
-"Laitetta aliaksella ”%s” ei voi osioida koska se on toisen laitteen käytössä"
 
 #. Error if a boot device is required and unknown.
 #.
@@ -401,13 +366,13 @@ msgstr ""
 #. @return [Issue, nil]
 #: service/lib/agama/storage/config_checkers/boot.rb:75
 msgid "The boot device cannot be automatically selected"
-msgstr "Käynnistyslaitetta ei voi valita automaattisesti"
+msgstr ""
 
 #. TRANSLATORS: %s is replaced by a device alias (e.g., "boot").
 #: service/lib/agama/storage/config_checkers/boot.rb:86
 #, c-format
 msgid "There is no boot device with alias '%s'"
-msgstr "Käynnistyslaitetta aliaksella ”%s” ei ole"
+msgstr ""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
@@ -416,27 +381,26 @@ msgstr "Käynnistyslaitetta aliaksella ”%s” ei ole"
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr ""
-"Salauslausetta ei ole annettu (vaaditaan salaustavalle ”%{crypt_method}”)."
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
 #: service/lib/agama/storage/config_checkers/encryption.rb:93
 #, perl-brace-format
 msgid "Encryption method '%{crypt_method}' is not available in this system."
-msgstr "Salaustapa ”%{crypt_method}” ei ole saatavilla tälle järjestelmälle."
+msgstr ""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
 #: service/lib/agama/storage/config_checkers/encryption.rb:120
 #, perl-brace-format
 msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
-msgstr "”%{crypt_method}” ei ole tämän laitteen salaukseen sopiva salaustapa."
+msgstr ""
 
 #. TRANSLATORS: %s is replaced by a mount path (e.g., "/home").
 #: service/lib/agama/storage/config_checkers/filesystem.rb:79
 #, c-format
 msgid "Missing file system type for '%s'"
-msgstr "Tiedostojärjestelmän tyyppi puuttuu kohteelle ”%s”"
+msgstr ""
 
 #. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
 #. %{path} is replaced by a mount path (e.g., "/home").
@@ -444,26 +408,25 @@ msgstr "Tiedostojärjestelmän tyyppi puuttuu kohteelle ”%s”"
 #, perl-brace-format
 msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr ""
-"Tiedostojärjestelmän tyyppi ”%{filesystem}” ei ole sopiva kohteelle ”%{path}”"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
 #: service/lib/agama/storage/config_checkers/logical_volume.rb:82
 #, c-format
 msgid "There is no LVM thin pool volume with alias '%s'"
-msgstr "LVM-ohutvarantotaltiota aliaksella ”%s” ei ole"
+msgstr ""
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "md1").
 #: service/lib/agama/storage/config_checkers/md_raid.rb:98
 #, c-format
 msgid "There is no MD RAID member device with alias '%s'"
-msgstr "MD RAID -jäsenlaitetta aliaksella ”%s” ei ole"
+msgstr ""
 
 #. Issue if the MD RAID level is missing and the device is not reused.
 #.
 #. @return [Issue, nil]
 #: service/lib/agama/storage/config_checkers/md_raid.rb:110
 msgid "There is a MD RAID without level"
-msgstr "MD RAID ilman määritettyä tasoa havaittu"
+msgstr ""
 
 #. Issue if the MD RAID does not contain enough member devices.
 #.
@@ -471,7 +434,7 @@ msgstr "MD RAID ilman määritettyä tasoa havaittu"
 #: service/lib/agama/storage/config_checkers/md_raid.rb:121
 #, c-format
 msgid "At least %s devices are required for %s"
-msgstr "Ainakin %s laitetta vaaditaan kohteelle %s"
+msgstr ""
 
 #. Issue if the device member is deleted.
 #.
@@ -483,7 +446,6 @@ msgid ""
 "The device '%{member}' cannot be deleted because it is part of the MD RAID %"
 "{md_raid}"
 msgstr ""
-"Laitetta ”%{member}” ei voi poistaa koska se on osa MD_RAIDia %{md_raid}"
 
 #. Issue if the device member is resized.
 #.
@@ -495,8 +457,6 @@ msgid ""
 "The device '%{member}' cannot be resized because it is part of the MD RAID %"
 "{md_raid}"
 msgstr ""
-"Laitteen ”%{member}” kokoa ei voi muuttaa koska se on osa MD_RAIDia %"
-"{md_raid}"
 
 #. Issue if the device member is formatted.
 #.
@@ -508,7 +468,6 @@ msgid ""
 "The device '%{member}' cannot be formatted because it is part of the MD RAID "
 "%{md_raid}"
 msgstr ""
-"Laitetta ”%{member}” ei voi alustaa koska se on osa MD_RAIDia %{md_raid}"
 
 #. Issue if the device member is partitioned.
 #.
@@ -520,7 +479,6 @@ msgid ""
 "The device '%{member}' cannot be partitioned because it is part of the MD "
 "RAID %{md_raid}"
 msgstr ""
-"Laitetta ”%{member}” ei voi osioida koska se on osa MD_RAIDia %{md_raid}"
 
 #. Issue if the device member is used by other device (e.g., as target for physical volumes).
 #.
@@ -532,7 +490,6 @@ msgid ""
 "The device '%{member}' cannot be used because it is part of the MD RAID %"
 "{md_raid}"
 msgstr ""
-"Laitetta ”%{member}” ei voi käyttää koska se on osa MD_RAIDia %{md_raid}"
 
 #. Issue if the parent of the device member is formatted.
 #.
@@ -544,60 +501,59 @@ msgid ""
 "The device '%{device}' cannot be formatted because it is part of the MD RAID "
 "%{md_raid}"
 msgstr ""
-"Laitetta ”%{device}” ei voi alustaa koska se on osa MD_RAIDia %{md_raid}"
 
 #. TRANSLATORS: 'method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1').
 #: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:61
 #, perl-brace-format
 msgid "'%{method}' is not a suitable method to encrypt the physical volumes."
-msgstr "Salaustapa ”%{method}” ei ole sopiva fyysisten taltioiden salaamiseen."
+msgstr ""
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
 #: service/lib/agama/storage/config_checkers/search.rb:74
 #, c-format
 msgid "Mandatory device %s not found"
-msgstr "Vaadittua laitetta %s ei löydy"
+msgstr ""
 
 #. TRANSLATORS: %s is replaced by a device type (e.g., "drive").
 #: service/lib/agama/storage/config_checkers/search.rb:77
 #, c-format
 msgid "Mandatory %s not found"
-msgstr "Vaadittua %s ei löydy"
+msgstr ""
 
 #. @return [String]
 #: service/lib/agama/storage/config_checkers/search.rb:85
 msgid "drive"
-msgstr "asema"
+msgstr ""
 
 #: service/lib/agama/storage/config_checkers/search.rb:87
 msgid "MD RAID"
-msgstr "MD RAID"
+msgstr ""
 
 #: service/lib/agama/storage/config_checkers/search.rb:89
 msgid "partition"
-msgstr "osio"
+msgstr ""
 
 #: service/lib/agama/storage/config_checkers/search.rb:91
 msgid "LVM logical volume"
-msgstr "Looginen LVM-taltio"
+msgstr ""
 
 #: service/lib/agama/storage/config_checkers/search.rb:93
 msgid "device"
-msgstr "laite"
+msgstr ""
 
 #. Issue if the volume group name is missing.
 #.
 #. @return [Issue, nil]
 #: service/lib/agama/storage/config_checkers/volume_group.rb:76
 msgid "There is a volume group without name"
-msgstr "Nimetön taltioryhmä löytynyt"
+msgstr ""
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
 #: service/lib/agama/storage/config_checkers/volume_group.rb:106
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
-msgstr "Fyysistä LVM-taltiota aliaksella ”%s” ei ole"
+msgstr ""
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
 #: service/lib/agama/storage/config_checkers/volume_group.rb:133
@@ -606,14 +562,12 @@ msgid ""
 "The list of target devices for the volume group '%s' is mixing reused "
 "devices and new devices"
 msgstr ""
-"Taltioryhmän ”%s” luettelo kohdelaitteista sekoittaa uudelleenkäytettyjä "
-"laitteita ja uusia laitteita"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checkers/volume_group.rb:153
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
-msgstr "Fyysisille LVM-taltioillle aliaksella ”%s” ei ole kohdelaitetta"
+msgstr ""
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checkers/volume_groups.rb:66
@@ -621,7 +575,6 @@ msgstr "Fyysisille LVM-taltioillle aliaksella ”%s” ei ole kohdelaitetta"
 msgid ""
 "The device '%s' is used several times as target device for physical volumes"
 msgstr ""
-"Laitetta ”%s” on käytetty useaan kertaan fyysisten taltioiden kohdelaitteena"
 
 #. Text of the reason preventing to shrink because there is no content.
 #.
@@ -632,81 +585,78 @@ msgid ""
 "case the device does contain a file system or a storage system that is not "
 "supported, resizing will most likely cause data loss."
 msgstr ""
-"Tiedostojärjestelmää tai tallennusjärjestelmää ei havaittu laitteella. "
-"Mikäli laitteella on kuitenkin tiedosto- tai tallennusjärjestelmä jota ei "
-"tueta, laitteen koon muuttaminen aiheuttaa luultavasti tietojen häviämistä."
 
 #. Text of the reason preventing to shrink because there is no valid minimum size.
 #.
 #. @return [String, nil] nil if there is a minimum size or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:162
 msgid "Shrinking is not supported by this device"
-msgstr "Tämä laite ei tue koon pienentämistä"
+msgstr ""
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
 #: service/lib/agama/storage/finisher.rb:145
 msgid "Copying important installation files to the target system"
-msgstr "Kopioidaan tärkeitä asennustiedostoja kohdejärjestelmään"
+msgstr ""
 
 #. Constructor
 #: service/lib/agama/storage/finisher.rb:186
 msgid "Writing Linux Security Modules configuration"
-msgstr "Kirjoitetaan Linuxin tietoturvamoduuleiden (LSM) asetuksia"
+msgstr ""
 
 #. Step to write the bootloader configuration
 #: service/lib/agama/storage/finisher.rb:197
 msgid "Installing bootloader"
-msgstr "Asennetaan käynnistyslatainta"
+msgstr ""
 
 #. Step to finish the Y2Storage configuration
 #: service/lib/agama/storage/finisher.rb:214
 msgid "Adjusting storage configuration"
-msgstr "Tallennustilan asetusten muuttaminen"
+msgstr ""
 
 #. Step to finish the iSCSI configuration
 #: service/lib/agama/storage/finisher.rb:225
 msgid "Adjusting iSCSI configuration"
-msgstr "Määritetään iSCSI-asetuksia"
+msgstr ""
 
 #. Step to configure the file-system snapshots
 #: service/lib/agama/storage/finisher.rb:236
 msgid "Configuring file systems snapshots"
-msgstr "Tehdään tiedostojärjestelmien tilannevedosten asetuksia"
+msgstr ""
 
 #. Step to copy the installation logs
 #: service/lib/agama/storage/finisher.rb:254
 msgid "Copying logs"
-msgstr "Kopioidaan lokeja"
+msgstr ""
 
 #. Executes post-installation scripts
 #: service/lib/agama/storage/finisher.rb:288
 msgid "Running user-defined scripts"
-msgstr "Suoritetaan käyttäjän määrittämät komentojonot"
+msgstr ""
 
 #. Executes post-installation scripts
 #: service/lib/agama/storage/finisher.rb:327
 msgid "Deploying user-defined files"
-msgstr "Viedään käyttöön käyttäjän määrittämät tiedostot"
+msgstr ""
 
 #. Step to unmount the target file-systems
 #: service/lib/agama/storage/finisher.rb:346
 msgid "Unmounting storage devices"
-msgstr "Irrotetaan tallennuslaitteita"
+msgstr ""
 
 #. Applies the target configs.
 #.
 #. @param config [ISCSI::Config]
 #: service/lib/agama/storage/iscsi/manager.rb:300
 msgid "Logout iSCSI targets"
-msgstr "Kirjaudutaan ulos iSCSI-kohteista"
+msgstr ""
 
 #: service/lib/agama/storage/iscsi/manager.rb:301
 msgid "Discover iSCSI targets"
-msgstr "Havaitaan iSCSI-kohteita"
+msgstr ""
 
 #: service/lib/agama/storage/iscsi/manager.rb:302
 msgid "Login iSCSI targets"
-msgstr "Kirjaudutaan sisään iSCSI-kohteisiin"
+msgstr ""
 
 #. Login issue.
 #.
@@ -715,7 +665,7 @@ msgstr "Kirjaudutaan sisään iSCSI-kohteisiin"
 #: service/lib/agama/storage/iscsi/manager.rb:366
 #, c-format
 msgid "Cannot login to iSCSI target %s"
-msgstr "iSCSI-kohteeseen %s ei voi kirjautua"
+msgstr ""
 
 #. Probes storage devices and performs an initial proposal
 #.
@@ -725,33 +675,33 @@ msgstr "iSCSI-kohteeseen %s ei voi kirjautua"
 #. passwords).
 #: service/lib/agama/storage/manager.rb:133
 msgid "Activating storage devices"
-msgstr "Otetaan tallennuslaitteita käyttöön"
+msgstr ""
 
 #: service/lib/agama/storage/manager.rb:134
 msgid "Probing storage devices"
-msgstr "Havaitaan tallennuslaitteita"
+msgstr ""
 
 #: service/lib/agama/storage/manager.rb:135
 msgid "Calculating the storage proposal"
-msgstr "Lasketaan tallennustilan käyttöehdotusta"
+msgstr ""
 
 #. Prepares the partitioning to install the system
 #: service/lib/agama/storage/manager.rb:161
 msgid "Preparing bootloader proposal"
-msgstr "Valmistellaan alkulatausohjelman ehdotusta"
+msgstr ""
 
 #. then also apply changes to that proposal
 #: service/lib/agama/storage/manager.rb:168
 msgid "Adding storage-related packages"
-msgstr "Lisätään tallennukseen liittyviä paketteja"
+msgstr ""
 
 #: service/lib/agama/storage/manager.rb:169
 msgid "Preparing the storage devices"
-msgstr "Valmistellaan tallennuslaitteita"
+msgstr ""
 
 #: service/lib/agama/storage/manager.rb:170
 msgid "Writing bootloader sysconfig"
-msgstr "Kirjoitetaan alkulatausohjelman asetuksia"
+msgstr ""
 
 #. Issue representing the proposal is not valid.
 #.
@@ -759,21 +709,20 @@ msgstr "Kirjoitetaan alkulatausohjelman asetuksia"
 #: service/lib/agama/storage/proposal.rb:345
 msgid "Cannot calculate a valid storage setup with the current configuration"
 msgstr ""
-"Nykyisillä asetuksilla ei voi laskea kelvollista tallennustilamääritystä"
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:356
 msgid "A problem ocurred while calculating the storage setup"
-msgstr "Tallennustila-asetusten laskemisessa tapahtui ongelma"
+msgstr ""
 
 #. Returns an issue if there is no target device.
 #.
 #. @return [Issue, nil]
 #: service/lib/agama/storage/proposal_strategies/guided.rb:135
 msgid "No device selected for installation"
-msgstr "Asennukselle ei ole valittu laitetta"
+msgstr ""
 
 #. Returns an issue if any of the devices required for the proposal is not found
 #.
@@ -783,34 +732,11 @@ msgstr "Asennukselle ei ole valittu laitetta"
 msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
 "The following selected devices are not found in the system: %{devices}"
-msgstr[0] "Seuraava valittu laite ei löydy järjestelmästä: %{devices}"
-msgstr[1] "Seuraavat valitut laitteet eivät löydy järjestelmästä: %{devices}"
+msgstr[0] ""
+msgstr[1] ""
 
 #. Recalculates the list of issues
 #: service/lib/agama/users.rb:154
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Joko käyttäjän, pääkäyttäjän salasanan tai julkisen SSH-avaimen "
-"määrittäminen vaaditaan"
-
-#~ msgid "Selecting Linux Security Modules"
-#~ msgstr "Valitaan Linuxin tietoturvamoduuleita (LSM)"
-
-#, perl-brace-format
-#~ msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
-#~ msgstr "Tiedosto %{filename} ohjelmalähteestä %{repo_name} (%{repo_url})"
-
-#, perl-brace-format
-#~ msgid "The file %{filename}"
-#~ msgstr "Tiedosto %{filename}"
-
-#~ msgid "No device found for a mandatory drive"
-#~ msgstr "Tarvittavalle asemalle ei löydy laitetta"
-
-#~ msgid "No device found for a mandatory partition"
-#~ msgstr "Tarvittavalle osiolle ei löydy laitetta"
-
-#~ msgid "Cannot accommodate the required file systems for installation"
-#~ msgstr ""
-#~ "Asennukseen tarvittavia tiedostojärjestelmiä ei saada sovitettua käyttöön"
