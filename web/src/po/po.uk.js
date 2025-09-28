@@ -76,6 +76,16 @@ export default {
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Для нового розділу %3$s буде використано типовий діапазон розмірів між %1$s і %2$s"
   ],
+  "A new partition will be created for %s": [
+    "Для %s буде створено новий розділ",
+    "Для %s будуть створені нові розділи",
+    "Для %s будуть створені нові розділи"
+  ],
+  "A new volume will be created for %s": [
+    "Для %s буде створено новий том",
+    "Для %s будуть створені нові томи",
+    "Для %s будуть створені нові томи"
+  ],
   "A partition may be deleted": [
     "Розділ може бути видалений"
   ],
@@ -183,6 +193,11 @@ export default {
   ],
   "Already using all available disks": [
     "Вже використані всі наявні диски"
+  ],
+  "An existing partition will be used for %s": [
+    "Для %s буде використано наявний розділ",
+    "Для %s будуть використані наявні розділи",
+    "Для %s будуть використані наявні розділи"
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Всі розділи буде видалено, а всі дані на диску буде втрачено."
