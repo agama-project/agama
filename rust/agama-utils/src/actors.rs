@@ -58,12 +58,10 @@
 //!     type Error = MyActorError;
 //! }
 //!
-//! #[derive(Clone)]
 //! pub struct Inc {
 //!     amount: u32,
 //! }
 //!
-//! #[derive(Clone)]
 //! pub struct Get {}
 //!
 //! impl Message for Inc {
