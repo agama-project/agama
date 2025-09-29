@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId, useState } from "react";
+import React, { useId } from "react";
 import {
   ExpandableSection,
   Content,
@@ -30,12 +30,11 @@ import {
   DataListCell,
   DataListAction,
   DataList,
-  Button,
   Flex,
   ExpandableSectionToggle,
   ExpandableSectionProps,
 } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import Text from "~/components/core/Text";
 import MenuButton from "~/components/core/MenuButton";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
@@ -46,11 +45,12 @@ import * as driveUtils from "~/components/storage/utils/drive";
 import { generateEncodedPath } from "~/utils";
 import * as partitionUtils from "~/components/storage/utils/partition";
 import { _, n_ } from "~/i18n";
-import { NestedContent } from "../core";
+import { Link, NestedContent } from "../core";
 import { Icon } from "../layout";
 import { IconProps } from "../layout/Icon";
 import { sprintf } from "sprintf-js";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import { toggle } from "radashi";
 
 const PartitionMenuItem = ({ device, mountPath }) => {
   const partition = device.getPartition(mountPath);
@@ -122,7 +122,6 @@ const optionalPartitionsTexts = (device) => {
 
 const PartitionRow = ({ partition, device }) => {
   // const partition = device.getPartition(mountPath);
-  const navigate = useNavigate();
   const { list, listIndex } = device;
   const editPath = generateEncodedPath(PATHS.editPartition, {
     list,
@@ -167,7 +166,8 @@ const PartitionRow = ({ partition, device }) => {
               <MenuButton.Item
                 key={`edit-${partition.mountPath}`}
                 aria-label={`Edit ${partition.mountPath}`}
-                onClick={() => editPath && navigate(editPath)}
+                to={editPath}
+                keepQuery
               >
                 <Icon name="edit_square" /> {_("Edit")}
               </MenuButton.Item>,
@@ -202,15 +202,23 @@ const PartitionsSectionHeader = ({ device }) => {
 };
 
 export default function PartitionsSection({ device }) {
-  const navigate = useNavigate();
+  const [qs, setQs] = useSearchParams();
   const toggleId = useId();
   const contentId = useId();
-  const [isExpanded, setIsExpanded] = useState(false);
   const { list, listIndex } = device;
+  const index = `${list[0]}${listIndex}`;
+  const expanded = qs.get("expanded")?.split(",");
+  const isExpanded = expanded?.includes(index);
   const newPartitionPath = generateEncodedPath(PATHS.addPartition, { list, listIndex });
   const hasPartitions = device.partitions.some((p: Partition) => p.mountPath);
 
-  const toggle = () => setIsExpanded(!isExpanded);
+  const onToggle = () => {
+    setQs((params) => {
+      const nextExpanded = toggle(expanded, index);
+      params.set("expanded", nextExpanded.join(","));
+      return params;
+    });
+  };
   const iconName: IconProps["name"] = isExpanded ? "unfold_less" : "unfold_more";
   const commonProps: Pick<ExpandableSectionProps, "toggleId" | "contentId" | "isExpanded"> = {
     toggleId,
@@ -238,7 +246,7 @@ export default function PartitionsSection({ device }) {
     <Flex direction={{ default: "column" }}>
       <ExpandableSectionToggle
         {...commonProps}
-        onToggle={toggle}
+        onToggle={onToggle}
         className="no-default-icon"
         style={{ marginBlock: 0 }}
       >
@@ -263,16 +271,12 @@ export default function PartitionsSection({ device }) {
                 })}
             </DataList>
             <Content component="p" style={{ marginBlockStart: "1rem" }}>
-              <Button
-                variant="plain"
-                key="add-partition"
-                onClick={() => navigate(newPartitionPath)}
-              >
+              <Link variant="plain" key="add-partition" keepQuery to={newPartitionPath}>
                 <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapXs" }}>
                   {/** TODO: choose one, "add" or "add_circle", and remove the other at Icon.tsx */}
                   <Icon name="add_circle" /> {_("Add or use partition")}
                 </Flex>
-              </Button>
+              </Link>
             </Content>
           </NestedContent>
         </NestedContent>
