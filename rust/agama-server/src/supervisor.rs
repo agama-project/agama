@@ -27,16 +27,16 @@ pub use scope::{ConfigScope, Scope};
 mod system_info;
 pub use system_info::SystemInfo;
 
-mod event;
+mod listener;
 mod proposal;
 
 pub use agama_l10n as l10n;
 
 use crate::web::EventsSender;
 use agama_utils::actors::ActorHandler;
+use listener::Listener;
 use service::Service;
 use tokio::sync::mpsc;
-// pub type Handler = ActorHandler<Service<l10n::Model>>;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -58,7 +58,7 @@ pub enum Error {
 pub async fn start_service(
     events: EventsSender,
 ) -> Result<ActorHandler<Service<l10n::Model>>, Error> {
-    let mut listener = event::Listener::new(events);
+    let mut listener = Listener::new(events);
     let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
     let l10n = l10n::start_service(events_sender).await?;
     listener.add_channel("l10n", events_receiver);
