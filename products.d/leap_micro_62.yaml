@@ -25,8 +25,7 @@ software:
   mandatory_patterns:
     - cockpit
     - base
-    - transactional
-    - traditional
+    - base_transactional
     - hardware
     - selinux
 
@@ -44,8 +43,18 @@ software:
     - sssd_ldap
 
   mandatory_packages:
+    - firewalld
+    - kernel-firmware-all
+    - kernel-default-extra
+    - libpwquality-tools
+    - lzop
     - NetworkManager
     - openSUSE-repos-LeapMicro
+    - suseconnect-ng
+    - systemd-default-settings-branding-SLE-Micro
+    - wpa_supplicant
+    - opensuse-migration-tool
+
   optional_packages: null
   base_product: Leap-Micro
 
