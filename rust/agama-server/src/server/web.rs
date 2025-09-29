@@ -21,10 +21,11 @@
 //! This module implements Agama's HTTP API.
 
 use crate::{
-    supervisor::{handler, Action, ConfigScope, Handler, Scope, SystemInfo},
+    supervisor::{self, l10n, message, service::Service, ConfigScope, Scope, SystemInfo},
     web::EventsSender,
 };
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
+use agama_utils::actors::ActorHandler;
 use axum::{
     extract::{Path, State},
     response::{IntoResponse, Response},
@@ -40,7 +41,7 @@ pub enum Error {
     #[error("The given configuration does not belong to the '{0}' scope.")]
     Scope(Scope),
     #[error(transparent)]
-    Supervisor(#[from] handler::Error),
+    Supervisor(#[from] supervisor::service::Error),
 }
 
 impl IntoResponse for Error {
@@ -62,7 +63,7 @@ fn to_option_response<T: Serialize>(value: Option<T>) -> Response {
 
 #[derive(Clone)]
 pub struct ServerState {
-    supervisor: Handler,
+    supervisor: ActorHandler<Service<l10n::Model>>,
 }
 
 type ServerResult<T> = Result<T, Error>;
@@ -92,7 +93,7 @@ pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError
 }
 
 async fn get_system(State(state): State<ServerState>) -> ServerResult<Json<SystemInfo>> {
-    let system = state.supervisor.get_system().await?;
+    let system = state.supervisor.call(message::GetSystem).await?;
     Ok(Json(system))
 }
 
@@ -107,7 +108,7 @@ async fn get_system(State(state): State<ServerState>) -> ServerResult<Json<Syste
     )
 )]
 async fn get_full_config(State(state): State<ServerState>) -> ServerResult<Json<InstallSettings>> {
-    let config = state.supervisor.get_full_config().await?;
+    let config = state.supervisor.call(message::GetFullConfig).await?;
     Ok(Json(config))
 }
 
@@ -128,7 +129,10 @@ async fn get_full_config_scope(
     State(state): State<ServerState>,
     Path(scope): Path<Scope>,
 ) -> ServerResult<Response> {
-    let config = state.supervisor.get_full_config_scope(scope).await?;
+    let config = state
+        .supervisor
+        .call(message::GetFullConfigScope::new(scope))
+        .await?;
     Ok(to_option_response(config))
 }
 
@@ -143,7 +147,7 @@ async fn get_full_config_scope(
     )
 )]
 async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<InstallSettings>> {
-    let config = state.supervisor.get_config().await?;
+    let config = state.supervisor.call(message::GetConfig).await?;
     Ok(Json(config))
 }
 
@@ -164,7 +168,10 @@ async fn get_config_scope(
     State(state): State<ServerState>,
     Path(scope): Path<Scope>,
 ) -> ServerResult<Response> {
-    let config = state.supervisor.get_config_scope(scope).await?;
+    let config = state
+        .supervisor
+        .call(message::GetConfigScope::new(scope))
+        .await?;
     Ok(to_option_response(config))
 }
 
@@ -188,7 +195,10 @@ async fn put_config(
     State(state): State<ServerState>,
     Json(config): Json<InstallSettings>,
 ) -> ServerResult<()> {
-    state.supervisor.update_config(&config)?;
+    state
+        .supervisor
+        .call(message::SetConfig::new(config))
+        .await?;
     Ok(())
 }
 
@@ -211,7 +221,10 @@ async fn patch_config(
     State(state): State<ServerState>,
     Json(config): Json<InstallSettings>,
 ) -> ServerResult<()> {
-    state.supervisor.patch_config(&config)?;
+    state
+        .supervisor
+        .call(message::UpdateConfig::new(config))
+        .await?;
     Ok(())
 }
 
@@ -235,9 +248,17 @@ async fn patch_config(
 async fn put_config_scope(
     State(state): State<ServerState>,
     Path(scope): Path<Scope>,
-    Json(user_config): Json<ConfigScope>,
+    Json(config_scope): Json<ConfigScope>,
 ) -> ServerResult<()> {
-    set_config_scope(state, scope, user_config, false)
+    if config_scope.to_scope() != scope {
+        return Err(Error::Scope(scope));
+    }
+
+    state
+        .supervisor
+        .call(message::SetConfigScope::new(config_scope))
+        .await?;
+    Ok(())
 }
 
 /// Patches the configuration for the given scope.
@@ -259,31 +280,21 @@ async fn put_config_scope(
 async fn patch_config_scope(
     State(state): State<ServerState>,
     Path(scope): Path<Scope>,
-    Json(user_config): Json<ConfigScope>,
+    Json(config_scope): Json<ConfigScope>,
 ) -> ServerResult<()> {
-    set_config_scope(state, scope, user_config, true)
-}
-
-fn set_config_scope(
-    state: ServerState,
-    scope: Scope,
-    config: ConfigScope,
-    patch: bool,
-) -> ServerResult<()> {
-    if config.to_scope() != scope {
+    if config_scope.to_scope() != scope {
         return Err(Error::Scope(scope));
     }
 
-    if patch {
-        state.supervisor.patch_config_scope(config)?;
-    } else {
-        state.supervisor.update_config_scope(config)?;
-    }
+    state
+        .supervisor
+        .call(message::UpdateConfigScope::new(config_scope))
+        .await?;
     Ok(())
 }
 
 async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response> {
-    let proposal = state.supervisor.get_proposal().await?;
+    let proposal = state.supervisor.call(message::GetProposal).await?;
     Ok(to_option_response(proposal))
 }
 
@@ -296,13 +307,16 @@ async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response
         (status = 400, description = "It was not possible to run the action.", body = Object)
     ),
     params(
-        ("action" = Action, description = "Description of the action to run"),
+        ("action" = message::Action, description = "Description of the action to run"),
     )
 )]
 async fn run_action(
     State(state): State<ServerState>,
-    Json(action): Json<Action>,
+    Json(action): Json<message::Action>,
 ) -> ServerResult<()> {
-    state.supervisor.run_action(action).await?;
+    state
+        .supervisor
+        .call(message::RunAction::new(action))
+        .await?;
     Ok(())
 }

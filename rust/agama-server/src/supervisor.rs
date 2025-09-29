@@ -21,11 +21,8 @@
 mod error;
 pub use error::Error;
 
-pub mod handler;
-pub use handler::Handler;
-
-mod service;
-pub use service::Action;
+pub mod message;
+pub mod service;
 
 mod scope;
 pub use scope::{ConfigScope, Scope};
@@ -36,10 +33,10 @@ pub use system_info::SystemInfo;
 mod event;
 mod proposal;
 
-use agama_l10n as l10n;
+pub use agama_l10n as l10n;
 
 use crate::web::EventsSender;
-use agama_utils::Service as _;
+use agama_utils::actors::ActorHandler;
 use service::Service;
 use tokio::sync::mpsc;
 
@@ -54,7 +51,9 @@ use tokio::sync::mpsc;
 /// It receives the following argument:
 ///
 /// * `events`: channel to emit the [events](agama_lib::http::Event).
-pub async fn start_service(events: EventsSender) -> Result<Handler, Error> {
+pub async fn start_service(
+    events: EventsSender,
+) -> Result<ActorHandler<Service<l10n::Model>>, Error> {
     let mut listener = event::Listener::new(events);
     let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
     let l10n = l10n::start_service(events_sender).await?;
@@ -63,23 +62,19 @@ pub async fn start_service(events: EventsSender) -> Result<Handler, Error> {
         listener.run().await;
     });
 
-    let (sender, receiver) = mpsc::unbounded_channel();
-    let mut service = Service::new(l10n, receiver);
-    tokio::spawn(async move {
-        service.run().await;
-    });
-
-    Ok(Handler::new(sender))
+    let service = Service::new(l10n);
+    let handler = agama_utils::actors::spawn_actor(service);
+    Ok(handler)
 }
 
 #[cfg(test)]
 mod test {
-    use crate::supervisor::Handler;
-    use agama_l10n::UserConfig;
+    use crate::supervisor::{l10n, message, service::Service};
     use agama_lib::{http::Event, install_settings::InstallSettings};
+    use agama_utils::actors::ActorHandler;
     use tokio::sync::broadcast;
 
-    async fn start_service() -> Handler {
+    async fn start_service() -> ActorHandler<Service<l10n::Model>> {
         let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
         crate::supervisor::start_service(events_tx).await.unwrap()
     }
@@ -89,7 +84,7 @@ mod test {
     async fn test_update_config() -> Result<(), Box<dyn std::error::Error>> {
         let handler = start_service().await;
 
-        let localization = UserConfig {
+        let localization = l10n::UserConfig {
             language: Some("es_ES.UTF-8".to_string()),
             keyboard: Some("es".to_string()),
             timezone: Some("Atlantic/Canary".to_string()),
@@ -100,9 +95,10 @@ mod test {
             ..Default::default()
         };
 
-        assert!(handler.update_config(&config).is_ok());
+        let message = message::SetConfig::new(config);
+        assert!(handler.call(message).await.is_ok());
 
-        let config = handler.get_full_config().await?;
+        let config = handler.call(message::GetFullConfig).await?;
         assert_eq!(config.localization, Some(localization));
 
         Ok(())
@@ -112,9 +108,9 @@ mod test {
     #[cfg(not(ci))]
     async fn test_patch_config() -> Result<(), Box<dyn std::error::Error>> {
         let handler = start_service().await;
-        let original = handler.get_full_config().await?;
+        let original = handler.call(message::GetFullConfig).await?;
 
-        let l10n_patch = UserConfig {
+        let l10n_patch = l10n::UserConfig {
             keyboard: Some("en".to_string()),
             ..Default::default()
         };
@@ -123,9 +119,10 @@ mod test {
             localization: Some(l10n_patch.clone()),
             ..Default::default()
         };
-        assert!(handler.patch_config(&config).is_ok());
+        let message = message::UpdateConfig::new(config);
+        assert!(handler.call(message).await.is_ok());
 
-        let config = handler.get_full_config().await?;
+        let config = handler.call(message::GetConfig).await?;
         let l10n = config.localization.unwrap();
         let l10n_original = original.localization.unwrap();
 

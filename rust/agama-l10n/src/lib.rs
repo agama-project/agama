@@ -35,14 +35,18 @@
 //! The service can be started by calling the [start_service] function, which
 //! returns a [agama_utils::actors::ActorHandler] to interact with the system.
 
+pub type Handler<T> = ActorHandler<Service<T>>;
+
 pub mod messages;
 
 mod error;
 pub use error::Error;
 
 mod service;
-use monitor::Monitor;
-pub use service::SystemConfig;
+pub use service::{Service, SystemConfig};
+
+mod model;
+pub use model::{Model, ModelAdapter};
 
 mod system_info;
 pub use system_info::SystemInfo;
@@ -60,12 +64,10 @@ pub mod helpers;
 
 mod config;
 mod dbus;
-mod model;
 mod monitor;
 
 use agama_utils::actors::ActorHandler;
-use model::Model;
-use service::Service;
+use monitor::Monitor;
 
 /// Starts the localization service.
 ///
