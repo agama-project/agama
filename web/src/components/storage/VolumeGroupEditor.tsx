@@ -285,7 +285,11 @@ const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
         <NestedContent margin="mxLg">
           <NestedContent margin="mySm">
             <Content component="p">{description}</Content>
-            <DataList aria-label={menuAriaLabel} isCompact>
+            <DataList
+              aria-label={menuAriaLabel}
+              isCompact
+              style={{ width: "fit-content", minWidth: "40dvw", maxWidth: "60dwh" }}
+            >
               {vg.logicalVolumes.map((lv) => {
                 return <LvRow key={lv.mountPath} lv={lv} vg={vg} />;
               })}
