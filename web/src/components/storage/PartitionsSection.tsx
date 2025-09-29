@@ -247,11 +247,15 @@ export default function PartitionsSection({ device }) {
           <Icon name={iconName} />
         </Flex>
       </ExpandableSectionToggle>
-      <ExpandableSection isDetached {...commonProps} style={{ maxWidth: "fit-content" }}>
+      <ExpandableSection isDetached {...commonProps}>
         <NestedContent margin="mxLg">
           <NestedContent margin="mySm">
             <PartitionsSectionHeader device={device} />
-            <DataList isCompact aria-label={_("Partitions")} >
+            <DataList
+              isCompact
+              aria-label={_("Partitions")}
+              style={{ width: "fit-content", minWidth: "40dvw", maxWidth: "60dwh" }}
+            >
               {device.partitions
                 .filter((p: Partition) => p.mountPath)
                 .map((p: Partition) => {
