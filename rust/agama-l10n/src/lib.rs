@@ -42,7 +42,7 @@ pub mod messages;
 mod error;
 pub use error::Error;
 
-mod service;
+pub mod service;
 pub use service::{Service, SystemConfig};
 
 mod model;
