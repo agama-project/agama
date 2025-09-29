@@ -18,9 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod error;
-pub use error::Error;
-
 pub mod message;
 pub mod service;
 
@@ -39,6 +36,13 @@ use crate::web::EventsSender;
 use agama_utils::actors::ActorHandler;
 use service::Service;
 use tokio::sync::mpsc;
+// pub type Handler = ActorHandler<Service<l10n::Model>>;
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error("Could not start the l10n service")]
+    L10n(#[from] l10n::Error),
+}
 
 /// Starts the supervisor service.
 ///
