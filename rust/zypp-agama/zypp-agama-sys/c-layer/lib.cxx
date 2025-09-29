@@ -104,6 +104,7 @@ void switch_target(struct Zypp *zypp, const char *root,
   } catch (zypp::Exception &excpt) {
     status->state = status->STATE_FAILED;
     status->error = strdup(excpt.asUserString().c_str());
+    return;
   }
 
   status->state = status->STATE_SUCCEED;
@@ -120,6 +121,7 @@ bool commit(struct Zypp *zypp, struct Status *status) noexcept {
   } catch (zypp::Exception &excpt) {
     status->state = status->STATE_FAILED;
     status->error = strdup(excpt.asUserString().c_str());
+    return false;
   }
 }
 

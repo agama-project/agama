@@ -201,7 +201,13 @@ impl SoftwareServiceServer {
         resolvables: Vec<String>,
         optional: bool,
     ) -> Result<(), SoftwareServiceError> {
-        tracing::info!("Set resolvables for {} with {:?}", id, resolvables);
+        tracing::info!(
+            "Set resolvables for {} with type {} optional {} and list {:?}",
+            id,
+            r#type,
+            optional,
+            resolvables
+        );
         let resolvables: Vec<_> = resolvables.iter().map(String::as_str).collect();
         self.software_selection
             .set(zypp, &id, r#type, optional, &resolvables)?;
@@ -255,8 +261,17 @@ impl SoftwareServiceServer {
         })
         .map_err(SoftwareServiceError::LoadSourcesFailed)?;
 
+        self.select_product_software(zypp, product)?;
+
+        Ok(())
+    }
+
+    fn select_product_software(
+        &mut self,
+        zypp: &zypp_agama::Zypp,
+        product: ProductSpec,
+    ) -> Result<(), SoftwareServiceError> {
         let installer_id_string = "installer".to_string();
-        // select product
         self.set_resolvables(
             zypp,
             installer_id_string.clone(),
@@ -264,7 +279,6 @@ impl SoftwareServiceServer {
             vec![product.software.base_product.clone()],
             false,
         )?;
-        // select packages and patterns from product
         self.set_resolvables(
             zypp,
             installer_id_string.clone(),
@@ -293,7 +307,6 @@ impl SoftwareServiceServer {
             product.software.optional_patterns,
             true,
         )?;
-
         Ok(())
     }
 
