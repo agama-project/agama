@@ -89,17 +89,17 @@
 //!
 //! #[tokio::main]
 //! async fn main() {
-//! let actor = MyActor::default();
-//! // Spawn a separate Tokio task to run the actor.
-//! let handle = spawn_actor(actor);
+//!     let actor = MyActor::default();
+//!     // Spawn a separate Tokio task to run the actor.
+//!     let handle = spawn_actor(actor);
 //!
-//! // Send some messages using the "call" function.
-//! _ = handle.call(Inc { amount: 5 }).await;
-//! let value = handle.call(Get {}).await.unwrap_or_default();
-//! assert_eq!(value, 5);
+//!     // Send some messages using the "call" function.
+//!     _ = handle.call(Inc { amount: 5 }).await;
+//!     let value = handle.call(Get {}).await.unwrap_or_default();
+//!     assert_eq!(value, 5);
 //!
-//! // If you prefer, you can send a message and forget about the answer using the "cast" function.
-//! _ = handle.cast(Inc { amount: 1 });
+//!     // If you prefer, you can send a message and forget about the answer using the "cast" function.
+//!     _ = handle.cast(Inc { amount: 1 });
 //! }
 //! ```
 
