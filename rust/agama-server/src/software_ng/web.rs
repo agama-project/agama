@@ -174,7 +174,7 @@ async fn probe(State(state): State<SoftwareState>) -> Result<Json<()>, Error> {
         (status = 400, description = "The D-Bus service could not perform the action
 ")
     ),
-    operation_id = "software_probe"
+    operation_id = "software_install"
 )]
 async fn install(State(state): State<SoftwareState>) -> Result<Json<bool>, Error> {
     Ok(Json(state.client.install().await?))

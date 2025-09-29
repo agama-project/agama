@@ -100,7 +100,7 @@ void switch_target(struct Zypp *zypp, const char *root,
                    struct Status *status) noexcept {
   const std::string root_str(root);
   try {
-    zypp->zypp_pointer->initializeTarget(root_str, false);
+    zypp->zypp_pointer->initializeTarget(root_str, false /* rebuild rpmdb: no */);
   } catch (zypp::Exception &excpt) {
     status->state = status->STATE_FAILED;
     status->error = strdup(excpt.asUserString().c_str());
