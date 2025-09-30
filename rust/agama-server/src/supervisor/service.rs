@@ -46,7 +46,6 @@ pub enum Error {
 pub struct Service<T: l10n::ModelAdapter> {
     l10n: Handler<l10n::service::Service<T>>,
     config: InstallSettings,
-    proposal: Option<Proposal>,
 }
 
 impl<T: l10n::ModelAdapter> Service<T> {
@@ -54,7 +53,6 @@ impl<T: l10n::ModelAdapter> Service<T> {
         Self {
             l10n,
             config: InstallSettings::default(),
-            proposal: None,
         }
     }
 }
@@ -207,7 +205,8 @@ impl<T: l10n::ModelAdapter> MessageHandler<message::UpdateConfigScope> for Servi
 impl<T: l10n::ModelAdapter> MessageHandler<message::GetProposal> for Service<T> {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
-        Ok(self.proposal.clone())
+        let localization = self.l10n.call(l10n::message::GetProposal).await?;
+        Ok(Some(Proposal { localization }))
     }
 }
 
