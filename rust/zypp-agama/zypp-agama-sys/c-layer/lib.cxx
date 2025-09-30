@@ -19,6 +19,7 @@
 #include <zypp/ResStatus.h>
 #include <zypp/Resolvable.h>
 #include <zypp/ZYpp.h>
+#include <zypp/ZYppCommit.h>
 #include <zypp/ZYppFactory.h>
 #include <zypp/base/LogControl.h>
 #include <zypp/base/Logger.h>
@@ -95,6 +96,31 @@ static zypp::ZYpp::Ptr zypp_ptr() {
   return NULL;
 }
 
+void switch_target(struct Zypp *zypp, const char *root,
+                   struct Status *status) noexcept {
+  const std::string root_str(root);
+  try {
+    zypp->zypp_pointer->initializeTarget(root_str, false /* rebuild rpmdb: no */);
+  } catch (zypp::Exception &excpt) {
+    STATUS_EXCEPT(status, excpt);
+    return;
+  }
+
+  STATUS_OK(status);
+}
+
+bool commit(struct Zypp *zypp, struct Status *status) noexcept {
+  try {
+    zypp::ZYppCommitPolicy policy;
+    zypp::ZYppCommitResult result = zypp->zypp_pointer->commit(policy);
+    STATUS_OK(status);
+    return result.noError();
+  } catch (zypp::Exception &excpt) {
+    STATUS_EXCEPT(status, excpt);
+    return false;
+  }
+}
+
 // TODO: split init target into set of repo manager, initialize target and load
 // target and merge it in rust
 struct Zypp *init_target(const char *root, struct Status *status,
@@ -131,14 +157,12 @@ struct Zypp *init_target(const char *root, struct Status *status,
       progress("Reading Installed Packages", 1, 2, user_data);
     zypp->zypp_pointer->target()->load();
   } catch (zypp::Exception &excpt) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup(excpt.asUserString().c_str());
+    STATUS_EXCEPT(status, excpt);
     the_zypp.zypp_pointer = NULL;
     return NULL;
   }
 
-  status->state = status->STATE_SUCCEED;
-  status->error = NULL;
+  STATUS_OK(status);
   return zypp;
 }
 
@@ -214,8 +238,7 @@ void resolvable_select(struct Zypp *_zypp, const char *name,
     return;
   }
 
-  status->state = Status::STATE_SUCCEED;
-  status->error = NULL;
+  STATUS_OK(status);
   auto value = transactby_from(who);
   selectable->setToInstall(value);
 }
@@ -241,8 +264,7 @@ void resolvable_unselect(struct Zypp *_zypp, const char *name,
 
   auto value = transactby_from(who);
   selectable->unset(value);
-  status->state = Status::STATE_SUCCEED;
-  status->error = NULL;
+  STATUS_OK(status);
 }
 
 struct PatternInfos get_patterns_info(struct Zypp *_zypp,
@@ -291,8 +313,7 @@ struct PatternInfos get_patterns_info(struct Zypp *_zypp,
     result.size++;
   };
 
-  status->state = Status::STATE_SUCCEED;
-  status->error = NULL;
+  STATUS_OK(status);
   return result;
 }
 
@@ -310,12 +331,10 @@ void free_pattern_infos(const struct PatternInfos *infos) noexcept {
 
 bool run_solver(struct Zypp *zypp, struct Status *status) noexcept {
   try {
-    status->state = Status::STATE_SUCCEED;
-    status->error = NULL;
+    STATUS_OK(status);
     return zypp->zypp_pointer->resolver()->resolvePool();
   } catch (zypp::Exception &excpt) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup(excpt.asUserString().c_str());
+    STATUS_EXCEPT(status, excpt);
     return false; // do not matter much as status indicate failure
   }
 }
@@ -341,12 +360,10 @@ void refresh_repository(struct Zypp *zypp, const char *alias,
     zypp->repo_manager->refreshMetadata(
         zypp_repo,
         zypp::RepoManager::RawMetadataRefreshPolicy::RefreshIfNeeded);
-    status->state = status->STATE_SUCCEED;
-    status->error = NULL;
+    STATUS_OK(status);
     unset_zypp_download_callbacks();
   } catch (zypp::Exception &excpt) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup(excpt.asUserString().c_str());
+    STATUS_EXCEPT(status, excpt);
     unset_zypp_download_callbacks(); // TODO: we can add C++ final action helper
                                      // if it is more common
   }
@@ -367,11 +384,9 @@ void add_repository(struct Zypp *zypp, const char *alias, const char *url,
     zypp_repo.setAlias(alias);
 
     zypp->repo_manager->addRepository(zypp_repo, zypp_callback);
-    status->state = status->STATE_SUCCEED;
-    status->error = NULL;
+    STATUS_OK(status);
   } catch (zypp::Exception &excpt) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup(excpt.asUserString().c_str());
+    STATUS_EXCEPT(status, excpt);
   }
 }
 
@@ -390,11 +405,9 @@ void remove_repository(struct Zypp *zypp, const char *alias,
                                // match correct repo
 
     zypp->repo_manager->removeRepository(zypp_repo, zypp_callback);
-    status->state = status->STATE_SUCCEED;
-    status->error = NULL;
+    STATUS_OK(status);
   } catch (zypp::Exception &excpt) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup(excpt.asUserString().c_str());
+    STATUS_EXCEPT(status, excpt);
   }
 }
 
@@ -422,8 +435,7 @@ struct RepositoryList list_repositories(struct Zypp *zypp,
   }
 
   struct RepositoryList result = {static_cast<unsigned>(size), repos};
-  status->state = status->STATE_SUCCEED;
-  status->error = NULL;
+  STATUS_OK(status);
   return result;
 }
 
@@ -446,11 +458,9 @@ void load_repository_cache(struct Zypp *zypp, const char *alias,
     // NOTE: loadFromCache has an optional `progress` parameter but it ignores
     // it anyway
     zypp->repo_manager->loadFromCache(zypp_repo);
-    status->state = status->STATE_SUCCEED;
-    status->error = NULL;
+    STATUS_OK(status);
   } catch (zypp::Exception &excpt) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup(excpt.asUserString().c_str());
+    STATUS_EXCEPT(status, excpt);
   }
 }
 
@@ -475,11 +485,9 @@ void build_repository_cache(struct Zypp *zypp, const char *alias,
     auto progress = create_progress_callback(callback, user_data);
     zypp->repo_manager->buildCache(
         zypp_repo, zypp::RepoManagerFlags::BuildIfNeeded, progress);
-    status->state = status->STATE_SUCCEED;
-    status->error = NULL;
+    STATUS_OK(status);
   } catch (zypp::Exception &excpt) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup(excpt.asUserString().c_str());
+    STATUS_EXCEPT(status, excpt);
   }
 }
 
@@ -493,11 +501,9 @@ void import_gpg_key(struct Zypp *zypp, const char *const pathname,
     // will trigger "Trust this?" callbacks.
     bool trusted = true;
     zypp->zypp_pointer->keyRing()->importKey(key, trusted);
-    status->state = status->STATE_SUCCEED;
-    status->error = NULL;
-  } catch (std::exception e) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup(e.what());
+    STATUS_OK(status);
+  } catch (zypp::Exception &excpt) {
+    STATUS_EXCEPT(status, excpt);
   }
 }
 }

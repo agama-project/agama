@@ -43,7 +43,7 @@ struct Zypp;
 /// execution?
 typedef void (*ProgressCallback)(const char *text, unsigned stage,
                                  unsigned total, void *user_data);
-/// Initialize Zypp target (where to install packages to).
+/// Initialize Zypp target (where to store zypp data).
 /// The returned zypp context is not thread safe and should be protected by a
 /// mutex in the calling layer.
 /// @param root
@@ -53,6 +53,19 @@ typedef void (*ProgressCallback)(const char *text, unsigned stage,
 /// @return zypp context
 struct Zypp *init_target(const char *root, struct Status *status,
                          ProgressCallback progress, void *user_data) noexcept;
+
+/// Switch Zypp target (where to install packages to).
+/// @param root
+/// @param[out] status
+void switch_target(struct Zypp *zypp, const char *root,
+                   struct Status *status) noexcept;
+
+/// Commit zypp settings and install
+/// TODO: callbacks
+/// @param zypp
+/// @param status
+/// @return true if there is no error
+bool commit(struct Zypp *zypp, struct Status *status) noexcept;
 
 enum RESOLVABLE_KIND {
   RESOLVABLE_PRODUCT,

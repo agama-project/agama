@@ -76,6 +76,9 @@ pub enum SoftwareServiceError {
 
     #[error("Listing patterns failed: {0}")]
     ListPatternsFailed(#[source] ZyppError),
+
+    #[error("Error from libzypp: {0}")]
+    ZyppError(#[from] zypp_agama::ZyppError),
 }
 
 /// Builds and starts the software service.

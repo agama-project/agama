@@ -24,7 +24,7 @@
 //! It reads the list of products from the `products.d` directory (usually,
 //! `/usr/share/agama/products.d`).
 
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
 use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
 use std::path::{Path, PathBuf};
 
@@ -123,16 +123,26 @@ impl ProductSpec {
     }
 }
 
+fn parse_optional<'de, D>(d: D) -> Result<Vec<String>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Deserialize::deserialize(d).map(|x: Option<_>| x.unwrap_or_default())
+}
+
 #[derive(Clone, Debug, Deserialize)]
 pub struct SoftwareSpec {
     installation_repositories: Vec<RepositorySpec>,
     #[serde(default)]
     pub installation_labels: Vec<LabelSpec>,
+    #[serde(default)]
     pub mandatory_patterns: Vec<String>,
+    #[serde(default)]
     pub mandatory_packages: Vec<String>,
-    // TODO: the specification should always be a vector (even if empty).
-    pub optional_patterns: Option<Vec<String>>,
-    pub optional_packages: Option<Vec<String>>,
+    #[serde(deserialize_with = "parse_optional")]
+    pub optional_patterns: Vec<String>,
+    #[serde(deserialize_with = "parse_optional")]
+    pub optional_packages: Vec<String>,
     pub base_product: String,
 }
 

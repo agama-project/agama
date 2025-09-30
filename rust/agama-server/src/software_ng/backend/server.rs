@@ -42,6 +42,7 @@ const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 #[derive(Debug)]
 pub enum SoftwareAction {
     Probe,
+    Install(oneshot::Sender<bool>),
     GetProducts(oneshot::Sender<Vec<Product>>),
     GetPatterns(oneshot::Sender<Vec<Pattern>>),
     GetConfig(oneshot::Sender<SoftwareConfig>),
@@ -157,6 +158,12 @@ impl SoftwareServiceServer {
 
             SoftwareAction::Probe => {
                 self.probe(zypp).await?;
+                self.run_solver(zypp)?;
+            }
+
+            SoftwareAction::Install(tx) => {
+                tx.send(self.install(zypp)?)
+                    .map_err(|_| SoftwareServiceError::ResponseChannelClosed)?;
             }
 
             SoftwareAction::SetResolvables {
@@ -165,9 +172,8 @@ impl SoftwareServiceServer {
                 resolvables,
                 optional,
             } => {
-                let resolvables: Vec<_> = resolvables.iter().map(String::as_str).collect();
-                self.software_selection
-                    .set(&id, r#type, optional, &resolvables);
+                self.set_resolvables(zypp, id, r#type, resolvables, optional)?;
+                self.run_solver(zypp)?;
             }
 
             SoftwareAction::GetResolvables {
@@ -187,6 +193,43 @@ impl SoftwareServiceServer {
         Ok(())
     }
 
+    fn set_resolvables(
+        &mut self,
+        zypp: &zypp_agama::Zypp,
+        id: String,
+        r#type: ResolvableType,
+        resolvables: Vec<String>,
+        optional: bool,
+    ) -> Result<(), SoftwareServiceError> {
+        tracing::info!(
+            "Set resolvables for {} with type {} optional {} and list {:?}",
+            id,
+            r#type,
+            optional,
+            resolvables
+        );
+        let resolvables: Vec<_> = resolvables.iter().map(String::as_str).collect();
+        self.software_selection
+            .set(zypp, &id, r#type, optional, &resolvables)?;
+        Ok(())
+    }
+
+    // runs solver. It should be able in future to generate solver issues
+    fn run_solver(&self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
+        let result = zypp.run_solver()?;
+        tracing::info!("Solver runs ends with {}", result);
+        Ok(())
+    }
+
+    // Install rpms
+    fn install(&self, zypp: &zypp_agama::Zypp) -> Result<bool, SoftwareServiceError> {
+        let target = "/mnt";
+        zypp.switch_target(target)?;
+        let result = zypp.commit()?;
+        tracing::info!("libzypp commit ends with {}", result);
+        Ok(result)
+    }
+
     /// Select the given product.
     async fn select_product(&mut self, product_id: String) -> Result<(), SoftwareServiceError> {
         tracing::info!("Selecting product {}", product_id);
@@ -199,7 +242,7 @@ impl SoftwareServiceServer {
         Ok(())
     }
 
-    async fn probe(&self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
+    async fn probe(&mut self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
         let product = self.find_selected_product().await?;
         let repositories = product.software.repositories();
         for (idx, repo) in repositories.iter().enumerate() {
@@ -218,6 +261,52 @@ impl SoftwareServiceServer {
         })
         .map_err(SoftwareServiceError::LoadSourcesFailed)?;
 
+        self.select_product_software(zypp, product)?;
+
+        Ok(())
+    }
+
+    fn select_product_software(
+        &mut self,
+        zypp: &zypp_agama::Zypp,
+        product: ProductSpec,
+    ) -> Result<(), SoftwareServiceError> {
+        let installer_id_string = "installer".to_string();
+        self.set_resolvables(
+            zypp,
+            installer_id_string.clone(),
+            ResolvableType::Product,
+            vec![product.software.base_product.clone()],
+            false,
+        )?;
+        self.set_resolvables(
+            zypp,
+            installer_id_string.clone(),
+            ResolvableType::Package,
+            product.software.mandatory_packages,
+            false,
+        )?;
+        self.set_resolvables(
+            zypp,
+            installer_id_string.clone(),
+            ResolvableType::Pattern,
+            product.software.mandatory_patterns,
+            false,
+        )?;
+        self.set_resolvables(
+            zypp,
+            installer_id_string.clone(),
+            ResolvableType::Package,
+            product.software.optional_packages,
+            true,
+        )?;
+        self.set_resolvables(
+            zypp,
+            installer_id_string.clone(),
+            ResolvableType::Pattern,
+            product.software.optional_patterns,
+            true,
+        )?;
         Ok(())
     }
 
@@ -271,8 +360,7 @@ impl SoftwareServiceServer {
         let product = self.find_selected_product().await?;
 
         let mandatory_patterns = product.software.mandatory_patterns.iter();
-        let optional_patterns = product.software.optional_patterns.unwrap_or(vec![]);
-        let optional_patterns = optional_patterns.iter();
+        let optional_patterns = product.software.optional_patterns.iter();
         let pattern_names: Vec<&str> = vec![mandatory_patterns, optional_patterns]
             .into_iter()
             .flatten()

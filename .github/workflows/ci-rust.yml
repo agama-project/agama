@@ -58,8 +58,6 @@ jobs:
 
     - name: Git Checkout
       uses: actions/checkout@v4
-      with:
-        submodules: recursive
 
     - name: Rust toolchain
       run: |
@@ -74,29 +72,41 @@ jobs:
     timeout-minutes: 20
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ./rust
+    container:
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
+      options: --security-opt seccomp=unconfined
 
     steps:
 
+    - name: Configure and refresh repositories
+      # disable unused repositories to have faster refresh
+      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
+
+    - name: Install required packages
+      run: zypper --non-interactive install
+        clang-devel
+        libzypp-devel
+        gcc-c++
+        git
+        libopenssl-3-devel
+        make
+        openssl-3
+        pam-devel
+        rustup
+
+    - name: Configure git
+      run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
     - name: Git Checkout
       uses: actions/checkout@v4
-      with:
-        submodules: recursive
+
+    - name: Install Rust toolchains
+      run: rustup toolchain install stable
 
     - name: Rust toolchain
       run: |
         rustup show
         cargo --version
-
-    - name: Install packages
-      run: |
-        sudo apt-get update
-        sudo apt-get -y install libclang-18-dev libpam0g-dev
-
-    - name: Installed packages
-      run: apt list --installed
 
     - name: Rust cache
       uses: actions/cache@v4
@@ -108,6 +118,7 @@ jobs:
 
     - name: Run clippy linter
       run: cargo clippy
+      working-directory: ./rust
 
   tests:
     # the default timeout is 6 hours, that's too much if the job gets stuck
@@ -152,8 +163,6 @@ jobs:
 
     - name: Git Checkout
       uses: actions/checkout@v4
-      with:
-        submodules: recursive
 
     - name: Install Rust toolchains
       run: rustup toolchain install stable
@@ -253,8 +262,6 @@ jobs:
 
     - name: Git Checkout
       uses: actions/checkout@v4
-      with:
-        submodules: recursive
 
     - name: Install Rust toolchains
       run: rustup toolchain install stable
