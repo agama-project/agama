@@ -21,7 +21,7 @@
 //! This module implements Agama's HTTP API.
 
 use crate::{
-    supervisor::{self, l10n, message, service::Service, ConfigScope, Scope, SystemInfo},
+    supervisor::{self, l10n, message, ConfigScope, Scope, Service, SystemInfo},
     web::EventsSender,
 };
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
