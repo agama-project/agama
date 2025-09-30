@@ -88,7 +88,7 @@ pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError
         .route("/config", get(get_full_config))
         .route("/system", get(get_system))
         .route("/proposal", get(get_proposal))
-        .route("/actions", post(run_action))
+        .route("/action", post(run_action))
         .with_state(state))
 }
 
