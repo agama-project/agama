@@ -25,7 +25,7 @@ use crate::{
     web::EventsSender,
 };
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
-use agama_utils::actors::ActorHandler;
+use agama_utils::actor::Handler;
 use axum::{
     extract::{Path, State},
     response::{IntoResponse, Response},
@@ -63,7 +63,7 @@ fn to_option_response<T: Serialize>(value: Option<T>) -> Response {
 
 #[derive(Clone)]
 pub struct ServerState {
-    supervisor: ActorHandler<Service<l10n::Model>>,
+    supervisor: Handler<Service<l10n::Model>>,
 }
 
 type ServerResult<T> = Result<T, Error>;

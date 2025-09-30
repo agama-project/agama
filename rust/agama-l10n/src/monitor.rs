@@ -18,10 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{messages, model::ModelAdapter, service::Service};
+use crate::{message, model::ModelAdapter, service::Service};
 use agama_locale_data::{KeymapId, LocaleId};
 use agama_utils::{
-    actors::ActorHandler,
+    actor::Handler,
     dbus::{get_property, to_owned_hash},
 };
 use tokio_stream::StreamExt;
@@ -34,12 +34,12 @@ pub enum Error {
 }
 
 pub struct Monitor<T: ModelAdapter + 'static> {
-    handler: ActorHandler<Service<T>>,
+    handler: Handler<Service<T>>,
     stream: PropertiesChangedStream,
 }
 
 impl<T: ModelAdapter> Monitor<T> {
-    pub async fn new(handler: ActorHandler<Service<T>>) -> Result<Self, Error> {
+    pub async fn new(handler: Handler<Service<T>>) -> Result<Self, Error> {
         let dbus = zbus::Connection::system().await?;
         let proxy = PropertiesProxy::builder(&dbus)
             .path("/org/freedesktop/locale1")?
@@ -76,13 +76,13 @@ impl<T: ModelAdapter> Monitor<T> {
                 if let Some(locale_id) = locale_id {
                     _ = self
                         .handler
-                        .call(messages::UpdateLocale { locale: locale_id })
+                        .call(message::UpdateLocale { locale: locale_id })
                         .await;
                 }
             }
             if let Ok(keymap) = get_property::<String>(&changes, "VConsoleKeymap") {
                 if let Ok(keymap) = keymap.parse::<KeymapId>() {
-                    _ = self.handler.call(messages::UpdateKeymap { keymap }).await;
+                    _ = self.handler.call(message::UpdateKeymap { keymap }).await;
                 }
             }
         }

@@ -38,8 +38,8 @@
 //! Let's have a look to an example implementing a simple counter.
 //!
 //! ```
-//! use agama_utils::actors::{
-//!     Actor, ActorError, Message, Handler, spawn_actor
+//! use agama_utils::actor::{
+//!     self, Actor, Error, Message, MessageHandler
 //! };
 //! use async_trait::async_trait;
 //!
@@ -51,7 +51,7 @@
 //! #[derive(thiserror::Error, Debug)]
 //! pub enum MyActorError {
 //!     #[error("Actor system error")]
-//!     Actor(#[from] ActorError),
+//!     Actor(#[from] Error),
 //! }
 //!
 //! impl Actor for MyActor {
@@ -62,7 +62,7 @@
 //!     amount: u32,
 //! }
 //!
-//! pub struct Get {}
+//! pub struct Get;
 //!
 //! impl Message for Inc {
 //!     type Reply = ();
@@ -73,7 +73,7 @@
 //! }
 //!
 //! #[async_trait]
-//! impl Handler<Inc> for MyActor {
+//! impl MessageHandler<Inc> for MyActor {
 //!     async fn handle(&mut self, message: Inc) -> Result<(), MyActorError> {
 //!         self.counter += message.amount;
 //!         Ok(())
@@ -81,7 +81,7 @@
 //! }
 //!
 //! #[async_trait]
-//! impl Handler<Get> for MyActor {
+//! impl MessageHandler<Get> for MyActor {
 //!     async fn handle(&mut self, _message: Get) -> Result<u32, MyActorError> {
 //!         Ok(self.counter)
 //!     }
@@ -91,11 +91,11 @@
 //! async fn main() {
 //!     let actor = MyActor::default();
 //!     // Spawn a separate Tokio task to run the actor.
-//!     let handle = spawn_actor(actor);
+//!     let handle = actor::spawn(actor);
 //!
 //!     // Send some messages using the "call" function.
 //!     _ = handle.call(Inc { amount: 5 }).await;
-//!     let value = handle.call(Get {}).await.unwrap_or_default();
+//!     let value = handle.call(Get).await.unwrap_or_default();
 //!     assert_eq!(value, 5);
 //!
 //!     // If you prefer, you can send a message and forget about the answer using the "cast" function.
@@ -109,7 +109,7 @@ use tokio::sync::{mpsc, oneshot};
 
 /// Internal actors errors, mostly communication issues.
 #[derive(thiserror::Error, Debug)]
-pub enum ActorError {
+pub enum Error {
     #[error("Could not send a message to actor {0}")]
     Send(&'static str),
     #[error("Could not get a response from actor {0}")]
@@ -122,7 +122,7 @@ pub enum ActorError {
 pub trait Actor: 'static + Send {
     /// Actor error type. It should implement the conversion from the
     /// [ActorError] type, which represents communication-level problems.
-    type Error: std::error::Error + From<ActorError> + Send + 'static;
+    type Error: std::error::Error + From<Error> + Send + 'static;
 
     #[inline]
     fn name() -> &'static str {
@@ -143,7 +143,7 @@ type ReplySender<A, M> = oneshot::Sender<Result<<M as Message>::Reply, <A as Act
 /// It contains the message and the channel, if any, to send the reply.
 struct Envelope<A: Actor, M: Message>
 where
-    A: Handler<M>,
+    A: MessageHandler<M>,
 {
     message: Option<M>,
     _actor: PhantomData<A>,
@@ -152,7 +152,7 @@ where
 
 impl<A: Actor, M: Message> Envelope<A, M>
 where
-    A: Handler<M>,
+    A: MessageHandler<M>,
 {
     pub fn new(message: M, sender: Option<ReplySender<A, M>>) -> Self {
         Self {
@@ -193,7 +193,7 @@ trait EnvelopeHandler<A: Actor>: 'static + Send {
 #[async_trait]
 impl<A: Actor, M: Message> EnvelopeHandler<A> for Envelope<A, M>
 where
-    A: Handler<M>,
+    A: MessageHandler<M>,
 {
     async fn handle(&mut self, actor: &mut A) {
         self.handle(actor).await;
@@ -202,7 +202,7 @@ where
 
 /// Implements an [Actor's](Actor) handler for a given [Message].
 #[async_trait]
-pub trait Handler<M: Message>: Actor {
+pub trait MessageHandler<M: Message>: Actor {
     async fn handle(&mut self, message: M) -> Result<M::Reply, Self::Error>;
 }
 
@@ -213,31 +213,31 @@ pub trait Handler<M: Message>: Actor {
 ///
 /// It is possible to clone a handler so you can interact with the actor from
 /// different places.
-pub struct ActorHandler<A: Actor> {
+pub struct Handler<A: Actor> {
     sender: mpsc::UnboundedSender<Box<dyn EnvelopeHandler<A>>>,
 }
 
-impl<A: Actor> Clone for ActorHandler<A> {
+impl<A: Actor> Clone for Handler<A> {
     fn clone(&self) -> Self {
         let sender = self.sender.clone();
-        ActorHandler::<A> { sender }
+        Handler::<A> { sender }
     }
 }
 
-impl<A: Actor> ActorHandler<A> {
+impl<A: Actor> Handler<A> {
     /// Sends a message and waits for the answer.
     ///
     /// * `msg`: message to send to the actor.
     pub async fn call<M: Message>(&self, msg: M) -> Result<M::Reply, A::Error>
     where
-        A: Handler<M>,
+        A: MessageHandler<M>,
     {
         let (tx, rx) = oneshot::channel();
         let message = Envelope::new(msg, Some(tx));
         self.sender
             .send(Box::new(message))
-            .map_err(|_| ActorError::Send(A::name()))?;
-        rx.await.map_err(|_| ActorError::Response(A::name()))?
+            .map_err(|_| Error::Send(A::name()))?;
+        rx.await.map_err(|_| Error::Response(A::name()))?
     }
 
     /// Sends a message and does not wait for the answer.
@@ -245,12 +245,12 @@ impl<A: Actor> ActorHandler<A> {
     /// * `msg`: message to send to the actor.
     pub fn cast<M: Message>(&self, msg: M) -> Result<(), A::Error>
     where
-        A: Handler<M>,
+        A: MessageHandler<M>,
     {
         let message = Envelope::new(msg, None);
         self.sender
             .send(Box::new(message))
-            .map_err(|_| ActorError::Send(A::name()))?;
+            .map_err(|_| Error::Send(A::name()))?;
         Ok(())
     }
 }
@@ -258,9 +258,9 @@ impl<A: Actor> ActorHandler<A> {
 /// Spawns a Tokio task and process the messages coming from the action handler.
 ///
 /// * `actor`: actor to spawn.
-pub fn spawn_actor<A: Actor>(mut actor: A) -> ActorHandler<A> {
+pub fn spawn<A: Actor>(mut actor: A) -> Handler<A> {
     let (tx, mut rx) = mpsc::unbounded_channel();
-    let handler = ActorHandler::<A> { sender: tx };
+    let handler = Handler::<A> { sender: tx };
 
     tokio::spawn(async move {
         while let Some(mut msg) = rx.recv().await {

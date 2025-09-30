@@ -19,12 +19,12 @@
 // find current contact information at www.suse.com.
 
 use agama_locale_data::{KeymapId, LocaleId};
-use agama_utils::actors::Message;
+use agama_utils::actor::Message;
 
 use crate::{Proposal, SystemInfo, UserConfig};
 
 #[derive(Clone)]
-pub struct GetSystem {}
+pub struct GetSystem;
 
 impl Message for GetSystem {
     type Reply = SystemInfo;
@@ -44,7 +44,7 @@ impl<T> SetSystem<T> {
     }
 }
 
-pub struct GetConfig {}
+pub struct GetConfig;
 
 impl Message for GetConfig {
     type Reply = UserConfig;
@@ -64,13 +64,13 @@ impl<T> SetConfig<T> {
     }
 }
 
-pub struct GetProposal {}
+pub struct GetProposal;
 
 impl Message for GetProposal {
     type Reply = Proposal;
 }
 
-pub struct Install {}
+pub struct Install;
 
 impl Message for Install {
     type Reply = ();

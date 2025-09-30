@@ -22,7 +22,7 @@ use crate::supervisor::{
     proposal::Proposal, scope::ConfigScope, scope::Scope, system_info::SystemInfo,
 };
 use agama_lib::install_settings::InstallSettings;
-use agama_utils::actors::Message;
+use agama_utils::actor::Message;
 use serde::Deserialize;
 
 /// Gets the information of the underlying system.

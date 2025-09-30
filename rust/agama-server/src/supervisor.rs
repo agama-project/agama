@@ -33,7 +33,7 @@ mod proposal;
 pub use agama_l10n as l10n;
 
 use crate::web::EventsSender;
-use agama_utils::actors::ActorHandler;
+use agama_utils::actor::{self, Handler};
 use listener::Listener;
 use service::Service;
 use tokio::sync::mpsc;
@@ -55,9 +55,7 @@ pub enum Error {
 /// It receives the following argument:
 ///
 /// * `events`: channel to emit the [events](agama_lib::http::Event).
-pub async fn start_service(
-    events: EventsSender,
-) -> Result<ActorHandler<Service<l10n::Model>>, Error> {
+pub async fn start_service(events: EventsSender) -> Result<Handler<Service<l10n::Model>>, Error> {
     let mut listener = Listener::new(events);
     let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
     let l10n = l10n::start_service(events_sender).await?;
@@ -67,7 +65,7 @@ pub async fn start_service(
     });
 
     let service = Service::new(l10n);
-    let handler = agama_utils::actors::spawn_actor(service);
+    let handler = actor::spawn(service);
     Ok(handler)
 }
 
@@ -75,10 +73,10 @@ pub async fn start_service(
 mod test {
     use crate::supervisor::{l10n, message, service::Service};
     use agama_lib::{http::Event, install_settings::InstallSettings};
-    use agama_utils::actors::ActorHandler;
+    use agama_utils::actor::Handler;
     use tokio::sync::broadcast;
 
-    async fn start_service() -> ActorHandler<Service<l10n::Model>> {
+    async fn start_service() -> Handler<Service<l10n::Model>> {
         let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
         crate::supervisor::start_service(events_tx).await.unwrap()
     }

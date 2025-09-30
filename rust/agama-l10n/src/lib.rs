@@ -35,10 +35,6 @@
 //! The service can be started by calling the [start_service] function, which
 //! returns a [agama_utils::actors::ActorHandler] to interact with the system.
 
-pub type Handler<T> = ActorHandler<Service<T>>;
-
-pub mod messages;
-
 mod error;
 pub use error::Error;
 
@@ -61,12 +57,13 @@ pub mod event;
 pub use event::Event;
 
 pub mod helpers;
+pub mod message;
 
 mod config;
 mod dbus;
 mod monitor;
 
-use agama_utils::actors::ActorHandler;
+use agama_utils::actor::{self, Handler};
 use monitor::Monitor;
 
 /// Starts the localization service.
@@ -87,16 +84,16 @@ use monitor::Monitor;
 ///
 /// let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
 /// let service = l10n::start_service(events_sender).await.unwrap();
-/// let config = service.call(l10n::messages::GetConfig {}).await;
+/// let config = service.call(l10n::messages::GetConfig).await;
 /// dbg!(config);
 /// # })
 /// ```
 ///
 /// * `events`: channel to emit the [localization-specific events](crate::Event).
-pub async fn start_service(events: event::Sender) -> Result<ActorHandler<Service<Model>>, Error> {
+pub async fn start_service(events: event::Sender) -> Result<Handler<Service<Model>>, Error> {
     let model = Model::from_system()?;
     let service = Service::new(model, events);
-    let handler = agama_utils::actors::spawn_actor(service);
+    let handler = actor::spawn(service);
 
     let mut monitor = Monitor::new(handler.clone()).await?;
     tokio::spawn(async move {
@@ -110,7 +107,7 @@ pub async fn start_service(events: event::Sender) -> Result<ActorHandler<Service
 mod tests {
     use crate::{
         event::Receiver,
-        messages,
+        message,
         model::{
             Keymap, KeymapsDatabase, LocaleEntry, LocalesDatabase, ModelAdapter, TimezoneEntry,
             TimezonesDatabase,
@@ -118,7 +115,7 @@ mod tests {
         service, Event, Service, UserConfig,
     };
     use agama_locale_data::{KeymapId, LocaleId};
-    use agama_utils::actors::{spawn_actor, ActorHandler};
+    use agama_utils::actor::{self, Handler};
     use tokio::sync::mpsc;
 
     pub struct TestModel {
@@ -185,12 +182,12 @@ mod tests {
     }
 
     fn start_testing_service(//) -> Result<(Receiver, Handler<TestModel>), Box<dyn std::error::Error>> {
-    ) -> (Receiver, ActorHandler<Service<TestModel>>) {
+    ) -> (Receiver, Handler<Service<TestModel>>) {
         let (events_tx, events_rx) = mpsc::unbounded_channel::<Event>();
         let model = build_adapter();
         let service = Service::new(model, events_tx);
 
-        let handler = spawn_actor(service);
+        let handler = actor::spawn(service);
         (events_rx, handler)
     }
 
@@ -198,7 +195,7 @@ mod tests {
     async fn test_get_and_set_config() -> Result<(), Box<dyn std::error::Error>> {
         let (mut events_rx, handler) = start_testing_service();
 
-        let config = handler.call(messages::GetConfig {}).await.unwrap();
+        let config = handler.call(message::GetConfig).await.unwrap();
         assert_eq!(config.language, Some("en_US.UTF-8".to_string()));
 
         let user_config = UserConfig {
@@ -207,10 +204,10 @@ mod tests {
             timezone: Some("Atlantic/Canary".to_string()),
         };
         handler
-            .call(messages::SetConfig::new(user_config.clone()))
+            .call(message::SetConfig::new(user_config.clone()))
             .await?;
 
-        let updated = handler.call(messages::GetConfig {}).await?;
+        let updated = handler.call(message::GetConfig).await?;
         assert_eq!(&updated, &user_config);
 
         let event = events_rx.recv().await.expect("Did not receive the event");
@@ -228,7 +225,7 @@ mod tests {
         };
 
         let result = handler
-            .call(messages::SetConfig::new(user_config.clone()))
+            .call(message::SetConfig::new(user_config.clone()))
             .await;
         assert!(matches!(
             result,
@@ -242,13 +239,13 @@ mod tests {
         let (mut events_rx, handler) = start_testing_service();
 
         // let config = handler.get_config().await?;
-        let config = handler.call(messages::GetConfig {}).await?;
+        let config = handler.call(message::GetConfig).await?;
         assert_eq!(config.language, Some("en_US.UTF-8".to_string()));
-        let message = messages::SetConfig::new(config.clone());
+        let message = message::SetConfig::new(config.clone());
         handler.call(message).await?;
         // Wait until the action is dispatched.
         // _ = handler.get_config().await?;
-        let _ = handler.call(messages::GetConfig {}).await?;
+        let _ = handler.call(message::GetConfig).await?;
 
         let event = events_rx.try_recv();
         assert!(matches!(event, Err(mpsc::error::TryRecvError::Empty)));
@@ -259,7 +256,7 @@ mod tests {
     async fn test_get_system() -> Result<(), Box<dyn std::error::Error>> {
         let (_events_rx, handler) = start_testing_service();
 
-        let system = handler.call(messages::GetSystem {}).await?;
+        let system = handler.call(message::GetSystem).await?;
         assert_eq!(system.keymaps.len(), 2);
 
         Ok(())
@@ -274,10 +271,10 @@ mod tests {
             keyboard: Some("es".to_string()),
             timezone: Some("Atlantic/Canary".to_string()),
         };
-        let message = messages::SetConfig::new(user_config.clone());
+        let message = message::SetConfig::new(user_config.clone());
         handler.call(message).await?;
 
-        let proposal = handler.call(messages::GetProposal {}).await?;
+        let proposal = handler.call(message::GetProposal).await?;
         assert_eq!(proposal.locale.to_string(), user_config.language.unwrap());
         assert_eq!(proposal.keymap.to_string(), user_config.keyboard.unwrap());
         assert_eq!(proposal.timezone.to_string(), user_config.timezone.unwrap());

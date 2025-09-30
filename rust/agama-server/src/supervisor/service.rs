@@ -26,7 +26,7 @@ use crate::supervisor::{
     system_info::SystemInfo,
 };
 use agama_lib::install_settings::InstallSettings;
-use agama_utils::actors::{self, Actor, Handler};
+use agama_utils::actor::{self, Actor, Handler, MessageHandler};
 use async_trait::async_trait;
 use merge_struct::merge;
 use std::convert::Infallible;
@@ -36,7 +36,7 @@ pub enum Error {
     #[error("Cannot merge the configuration")]
     MergeConfig,
     #[error(transparent)]
-    Actor(#[from] actors::ActorError),
+    Actor(#[from] actor::Error),
     #[error(transparent)]
     L10n(#[from] l10n::service::Error),
     #[error("Infallible")]
@@ -44,13 +44,13 @@ pub enum Error {
 }
 
 pub struct Service<T: l10n::ModelAdapter> {
-    l10n: l10n::Handler<T>,
+    l10n: Handler<l10n::service::Service<T>>,
     config: InstallSettings,
     proposal: Option<Proposal>,
 }
 
 impl<T: l10n::ModelAdapter> Service<T> {
-    pub fn new(l10n: l10n::Handler<T>) -> Self {
+    pub fn new(l10n: Handler<l10n::Service<T>>) -> Self {
         Self {
             l10n,
             config: InstallSettings::default(),
@@ -64,10 +64,10 @@ impl<T: l10n::ModelAdapter> Actor for Service<T> {
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> Handler<message::GetSystem> for Service<T> {
+impl<T: l10n::ModelAdapter> MessageHandler<message::GetSystem> for Service<T> {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
-        let l10n_system = self.l10n.call(l10n::messages::GetSystem {}).await?;
+        let l10n_system = self.l10n.call(l10n::message::GetSystem).await?;
         Ok(SystemInfo {
             localization: l10n_system,
         })
@@ -75,12 +75,12 @@ impl<T: l10n::ModelAdapter> Handler<message::GetSystem> for Service<T> {
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> Handler<message::GetFullConfig> for Service<T> {
+impl<T: l10n::ModelAdapter> MessageHandler<message::GetFullConfig> for Service<T> {
     /// Gets the current configuration.
     ///
     /// It includes user and default values.
     async fn handle(&mut self, _message: message::GetFullConfig) -> Result<InstallSettings, Error> {
-        let l10n_config = self.l10n.call(l10n::messages::GetConfig {}).await?;
+        let l10n_config = self.l10n.call(l10n::message::GetConfig).await?;
         Ok(InstallSettings {
             localization: Some(l10n_config),
             ..Default::default()
@@ -89,7 +89,7 @@ impl<T: l10n::ModelAdapter> Handler<message::GetFullConfig> for Service<T> {
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> Handler<message::GetFullConfigScope> for Service<T> {
+impl<T: l10n::ModelAdapter> MessageHandler<message::GetFullConfigScope> for Service<T> {
     /// It returns the configuration for the given scope.
     async fn handle(
         &mut self,
@@ -97,7 +97,7 @@ impl<T: l10n::ModelAdapter> Handler<message::GetFullConfigScope> for Service<T> 
     ) -> Result<Option<ConfigScope>, Error> {
         let option = match message.scope {
             Scope::L10n => {
-                let l10n_config = self.l10n.call(l10n::messages::GetConfig {}).await?;
+                let l10n_config = self.l10n.call(l10n::message::GetConfig).await?;
                 Some(ConfigScope::L10n(l10n_config))
             }
         };
@@ -106,7 +106,7 @@ impl<T: l10n::ModelAdapter> Handler<message::GetFullConfigScope> for Service<T> 
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> Handler<message::GetConfig> for Service<T> {
+impl<T: l10n::ModelAdapter> MessageHandler<message::GetConfig> for Service<T> {
     /// Gets the current configuration set by the user.
     ///
     /// It includes only the values that were set by the user.
@@ -116,7 +116,7 @@ impl<T: l10n::ModelAdapter> Handler<message::GetConfig> for Service<T> {
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> Handler<message::SetConfig> for Service<T> {
+impl<T: l10n::ModelAdapter> MessageHandler<message::SetConfig> for Service<T> {
     /// Sets the user configuration with the given values.
     ///
     /// It merges the values in the top-level. Therefore, if the configuration
@@ -127,7 +127,7 @@ impl<T: l10n::ModelAdapter> Handler<message::SetConfig> for Service<T> {
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
         if let Some(l10n_config) = &message.config.localization {
             self.l10n
-                .call(l10n::messages::SetConfig::new(l10n_config.clone()))
+                .call(l10n::message::SetConfig::new(l10n_config.clone()))
                 .await?;
         }
         self.config = message.config;
@@ -136,7 +136,7 @@ impl<T: l10n::ModelAdapter> Handler<message::SetConfig> for Service<T> {
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> Handler<message::UpdateConfig> for Service<T> {
+impl<T: l10n::ModelAdapter> MessageHandler<message::UpdateConfig> for Service<T> {
     /// Patches the user configuration with the given values.
     ///
     /// It merges the current configuration with the given one.
@@ -147,7 +147,7 @@ impl<T: l10n::ModelAdapter> Handler<message::UpdateConfig> for Service<T> {
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> Handler<message::GetConfigScope> for Service<T> {
+impl<T: l10n::ModelAdapter> MessageHandler<message::GetConfigScope> for Service<T> {
     /// It returns the configuration set by the user for the given scope.
     async fn handle(
         &mut self,
@@ -167,7 +167,7 @@ impl<T: l10n::ModelAdapter> Handler<message::GetConfigScope> for Service<T> {
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> Handler<message::SetConfigScope> for Service<T> {
+impl<T: l10n::ModelAdapter> MessageHandler<message::SetConfigScope> for Service<T> {
     /// Sets the user configuration within the given scope.
     ///
     /// It replaces the current configuration with the given one and calculates a
@@ -176,7 +176,7 @@ impl<T: l10n::ModelAdapter> Handler<message::SetConfigScope> for Service<T> {
         match message.config {
             ConfigScope::L10n(l10n_config) => {
                 self.l10n
-                    .call(l10n::messages::SetConfig::new(l10n_config.clone()))
+                    .call(l10n::message::SetConfig::new(l10n_config.clone()))
                     .await?;
                 self.config.localization = Some(l10n_config);
             }
@@ -186,7 +186,7 @@ impl<T: l10n::ModelAdapter> Handler<message::SetConfigScope> for Service<T> {
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> Handler<message::UpdateConfigScope> for Service<T> {
+impl<T: l10n::ModelAdapter> MessageHandler<message::UpdateConfigScope> for Service<T> {
     /// Patches the user configuration within the given scope.
     ///
     /// It merges the current configuration with the given one.
@@ -204,7 +204,7 @@ impl<T: l10n::ModelAdapter> Handler<message::UpdateConfigScope> for Service<T> {
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> Handler<message::GetProposal> for Service<T> {
+impl<T: l10n::ModelAdapter> MessageHandler<message::GetProposal> for Service<T> {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         Ok(self.proposal.clone())
@@ -212,16 +212,16 @@ impl<T: l10n::ModelAdapter> Handler<message::GetProposal> for Service<T> {
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> Handler<message::RunAction> for Service<T> {
+impl<T: l10n::ModelAdapter> MessageHandler<message::RunAction> for Service<T> {
     /// It runs the given action.
     async fn handle(&mut self, message: message::RunAction) -> Result<(), Error> {
         match message.action {
             Action::ConfigureL10n { language, keyboard } => {
                 let l10n_config = l10n::SystemConfig { language, keyboard };
-                let l10n_message = l10n::messages::SetSystem::new(l10n_config);
+                let l10n_message = l10n::message::SetSystem::new(l10n_config);
                 self.l10n.call(l10n_message).await?;
             }
-            Action::Install => self.l10n.call(l10n::messages::Install {}).await?,
+            Action::Install => self.l10n.call(l10n::message::Install).await?,
         }
         Ok(())
     }
