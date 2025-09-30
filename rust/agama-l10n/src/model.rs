@@ -101,14 +101,9 @@ impl Model {
     }
 
     fn read(&mut self, locale: &LocaleId) -> Result<(), service::Error> {
-        let mut locales_db = LocalesDatabase::new();
-        locales_db.read(&locale.language)?;
-
-        let mut timezones_db = TimezonesDatabase::new();
-        timezones_db.read(&locale.language)?;
-
-        let mut keymaps_db = KeymapsDatabase::new();
-        keymaps_db.read()?;
+        self.locales_db.read(&locale.language)?;
+        self.timezones_db.read(&locale.language)?;
+        self.keymaps_db.read()?;
 
         Ok(())
     }
