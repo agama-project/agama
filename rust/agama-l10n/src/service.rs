@@ -19,12 +19,13 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    config::Config, event::Event, model::ModelAdapter, proposal::Proposal, system_info::SystemInfo,
-    user_config::UserConfig,
+    config::Config, event::Event, message, model::ModelAdapter, proposal::Proposal,
+    system_info::SystemInfo, user_config::UserConfig,
 };
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
-use agama_utils::Service as AgamaService;
-use tokio::sync::{mpsc, oneshot};
+use agama_utils::actor::{self, Actor, MessageHandler};
+use async_trait::async_trait;
+use tokio::sync::mpsc;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -40,43 +41,17 @@ pub enum Error {
     InvalidKeymap(#[from] InvalidKeymapId),
     #[error("Invalid timezone")]
     InvalidTimezone(#[from] InvalidTimezoneId),
-    #[error("l10n service could not send the message")]
-    SendResponse,
     #[error("l10n service could not send the event")]
     Event,
+    #[error(transparent)]
+    Actor(#[from] actor::Error),
     #[error(transparent)]
     IO(#[from] std::io::Error),
     #[error(transparent)]
     Generic(#[from] anyhow::Error),
 }
 
-#[derive(Debug)]
-pub enum Message {
-    GetSystem {
-        respond_to: oneshot::Sender<SystemInfo>,
-    },
-    SetSystem {
-        config: SystemConfig,
-    },
-    GetConfig {
-        respond_to: oneshot::Sender<UserConfig>,
-    },
-    SetConfig {
-        config: UserConfig,
-    },
-    GetProposal {
-        respond_to: oneshot::Sender<Proposal>,
-    },
-    UpdateKeymap {
-        keymap: KeymapId,
-    },
-    UpdateLocale {
-        locale: LocaleId,
-    },
-    Install,
-}
-
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SystemConfig {
     pub language: Option<String>,
     pub keyboard: Option<String>,
@@ -88,7 +63,6 @@ where
 {
     state: State,
     model: T,
-    messages: mpsc::UnboundedReceiver<Message>,
     events: mpsc::UnboundedSender<Event>,
 }
 
@@ -101,11 +75,7 @@ impl<T> Service<T>
 where
     T: ModelAdapter,
 {
-    pub fn new(
-        mut model: T,
-        messages: mpsc::UnboundedReceiver<Message>,
-        events: mpsc::UnboundedSender<Event>,
-    ) -> Service<T> {
+    pub fn new(mut model: T, events: mpsc::UnboundedSender<Event>) -> Service<T> {
         let system = SystemInfo::read_from(&mut model);
         let config = Config::new_from(&system);
         let state = State { system, config };
@@ -113,17 +83,26 @@ where
         Self {
             state,
             model,
-            messages,
             events,
         }
     }
+}
 
-    fn get_system(&self) -> &SystemInfo {
-        &self.state.system
+impl<T: ModelAdapter> Actor for Service<T> {
+    type Error = Error;
+}
+
+#[async_trait]
+impl<T: ModelAdapter> MessageHandler<message::GetSystem> for Service<T> {
+    async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
+        Ok(self.state.system.clone())
     }
+}
 
-    // The system state is automatically updated by the monitor.
-    fn set_system(&mut self, config: SystemConfig) -> Result<(), Error> {
+#[async_trait]
+impl<T: ModelAdapter> MessageHandler<message::SetSystem<SystemConfig>> for Service<T> {
+    async fn handle(&mut self, message: message::SetSystem<SystemConfig>) -> Result<(), Error> {
+        let config = &message.config;
         if let Some(language) = &config.language {
             self.model.set_locale(language.parse()?)?;
         }
@@ -134,83 +113,59 @@ where
 
         Ok(())
     }
+}
 
-    fn get_config(&self) -> UserConfig {
-        (&self.state.config).into()
+#[async_trait]
+impl<T: ModelAdapter> MessageHandler<message::GetConfig> for Service<T> {
+    async fn handle(&mut self, _message: message::GetConfig) -> Result<UserConfig, Error> {
+        Ok((&self.state.config).into())
     }
+}
 
-    fn set_config(&mut self, user_config: &UserConfig) -> Result<(), Error> {
-        let merged = self.state.config.merge(user_config)?;
+#[async_trait]
+impl<T: ModelAdapter> MessageHandler<message::SetConfig<UserConfig>> for Service<T> {
+    async fn handle(&mut self, message: message::SetConfig<UserConfig>) -> Result<(), Error> {
+        let merged = self.state.config.merge(&message.config)?;
         if merged != self.state.config {
             self.state.config = merged;
             _ = self.events.send(Event::ProposalChanged);
         }
         Ok(())
     }
+}
 
-    fn get_proposal(&self) -> Proposal {
-        (&self.state.config).into()
+#[async_trait]
+impl<T: ModelAdapter> MessageHandler<message::GetProposal> for Service<T> {
+    async fn handle(&mut self, _message: message::GetProposal) -> Result<Proposal, Error> {
+        Ok((&self.state.config).into())
     }
+}
 
-    fn install(&self) -> Result<(), Error> {
-        let proposal = self.get_proposal();
+#[async_trait]
+impl<T: ModelAdapter> MessageHandler<message::Install> for Service<T> {
+    async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
+        let proposal: Proposal = (&self.state.config).into();
         self.model
             .install(proposal.locale, proposal.keymap, proposal.timezone)
-    }
-
-    fn send_event(&self, event: Event) -> Result<(), Error> {
-        self.events.send(event).map_err(|_| Error::Event)?;
+            .unwrap();
         Ok(())
     }
 }
 
-impl<T> AgamaService for Service<T>
-where
-    T: ModelAdapter,
-{
-    type Err = Error;
-    type Message = Message;
-
-    fn channel(&mut self) -> &mut mpsc::UnboundedReceiver<Self::Message> {
-        &mut self.messages
+#[async_trait]
+impl<T: ModelAdapter> MessageHandler<message::UpdateLocale> for Service<T> {
+    async fn handle(&mut self, message: message::UpdateLocale) -> Result<(), Error> {
+        self.state.system.locale = message.locale;
+        _ = self.events.send(Event::SystemChanged);
+        Ok(())
     }
+}
 
-    async fn dispatch(&mut self, message: Self::Message) -> Result<(), Self::Err> {
-        match message {
-            Message::GetConfig { respond_to } => {
-                respond_to
-                    .send(self.get_config())
-                    .map_err(|_| Error::SendResponse)?;
-            }
-            Message::SetConfig { config } => {
-                self.set_config(&config)?;
-            }
-            Message::GetProposal { respond_to } => {
-                respond_to
-                    .send(self.get_proposal())
-                    .map_err(|_| Error::SendResponse)?;
-            }
-            Message::GetSystem { respond_to } => {
-                respond_to
-                    .send(self.get_system().clone())
-                    .map_err(|_| Error::SendResponse)?;
-            }
-            Message::UpdateLocale { locale } => {
-                self.state.system.locale = locale.clone();
-                self.send_event(Event::SystemChanged)?;
-            }
-            Message::UpdateKeymap { keymap } => {
-                self.state.system.keymap = keymap;
-                self.send_event(Event::SystemChanged)?;
-            }
-            Message::SetSystem { config } => {
-                self.set_system(config)?;
-            }
-            Message::Install => {
-                self.install()?;
-            }
-        };
-
+#[async_trait]
+impl<T: ModelAdapter> MessageHandler<message::UpdateKeymap> for Service<T> {
+    async fn handle(&mut self, message: message::UpdateKeymap) -> Result<(), Error> {
+        self.state.system.keymap = message.keymap;
+        _ = self.events.send(Event::SystemChanged);
         Ok(())
     }
 }

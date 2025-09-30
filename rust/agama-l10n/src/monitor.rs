@@ -18,28 +18,28 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::service::Message;
+use crate::{message, model::ModelAdapter, service::Service};
 use agama_locale_data::{KeymapId, LocaleId};
-use agama_utils::dbus::{get_property, to_owned_hash};
-use tokio::sync::mpsc;
+use agama_utils::{
+    actor::Handler,
+    dbus::{get_property, to_owned_hash},
+};
 use tokio_stream::StreamExt;
 use zbus::fdo::{PropertiesChangedStream, PropertiesProxy};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("Monitor could not send the message to the service")]
-    Send(#[from] mpsc::error::SendError<Message>),
     #[error(transparent)]
     DBus(#[from] zbus::Error),
 }
 
-pub struct Monitor {
-    channel: mpsc::UnboundedSender<Message>,
+pub struct Monitor<T: ModelAdapter + 'static> {
+    handler: Handler<Service<T>>,
     stream: PropertiesChangedStream,
 }
 
-impl Monitor {
-    pub async fn new(channel: mpsc::UnboundedSender<Message>) -> Result<Self, Error> {
+impl<T: ModelAdapter> Monitor<T> {
+    pub async fn new(handler: Handler<Service<T>>) -> Result<Self, Error> {
         let dbus = zbus::Connection::system().await?;
         let proxy = PropertiesProxy::builder(&dbus)
             .path("/org/freedesktop/locale1")?
@@ -50,7 +50,7 @@ impl Monitor {
             .receive_properties_changed()
             .await
             .map_err(Error::DBus)?;
-        Ok(Self { channel, stream })
+        Ok(Self { handler, stream })
     }
 
     pub async fn run(&mut self) {
@@ -75,13 +75,14 @@ impl Monitor {
 
                 if let Some(locale_id) = locale_id {
                     _ = self
-                        .channel
-                        .send(Message::UpdateLocale { locale: locale_id });
+                        .handler
+                        .call(message::UpdateLocale { locale: locale_id })
+                        .await;
                 }
             }
             if let Ok(keymap) = get_property::<String>(&changes, "VConsoleKeymap") {
                 if let Ok(keymap) = keymap.parse::<KeymapId>() {
-                    _ = self.channel.send(Message::UpdateKeymap { keymap });
+                    _ = self.handler.call(message::UpdateKeymap { keymap }).await;
                 }
             }
         }

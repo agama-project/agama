@@ -46,6 +46,7 @@ pub struct SystemInfo {
 }
 
 impl SystemInfo {
+    /// Reads the information from the system adapter.
     pub fn read_from<T: ModelAdapter>(model: &mut T) -> Self {
         let locales = model.locales_db().entries().clone();
         let keymaps = model.keymaps_db().entries().clone();

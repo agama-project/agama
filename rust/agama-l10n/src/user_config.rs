@@ -23,7 +23,9 @@
 use crate::config::Config;
 use serde::{Deserialize, Serialize};
 
-/// Localization configuration for the target system.
+/// User configuration for the localization of the target system.
+///
+/// This configuration is provided by the user, so all the values are optional.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[schema(as = l10n::UserConfig)]
 #[serde(rename_all = "camelCase")]
@@ -39,6 +41,8 @@ pub struct UserConfig {
     pub timezone: Option<String>,
 }
 
+/// Converts the localization configuration, which contains values for all the
+/// elements, into a user configuration.
 impl From<&Config> for UserConfig {
     fn from(config: &Config) -> Self {
         UserConfig {

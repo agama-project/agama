@@ -19,39 +19,52 @@
 // find current contact information at www.suse.com.
 
 mod keyboard;
-pub use keyboard::Keymap;
-pub use keyboard::KeymapsDatabase;
+pub use keyboard::{Keymap, KeymapsDatabase};
 
 mod locale;
-pub use locale::LocaleEntry;
-pub use locale::LocalesDatabase;
+pub use locale::{LocaleEntry, LocalesDatabase};
 
 mod timezone;
-pub use timezone::TimezoneEntry;
-pub use timezone::TimezonesDatabase;
+pub use timezone::{TimezoneEntry, TimezonesDatabase};
 
 use crate::{helpers, service};
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use regex::Regex;
-use std::io::Write;
-use std::process::Command;
-use std::{env, fs::OpenOptions};
+use std::{env, fs::OpenOptions, io::Write, process::Command};
 
-pub trait ModelAdapter: Send {
+/// Abstract the localization-related configuration from the underlying system.
+///
+/// It offers an API to query and set different localization elements of a
+/// system. This trait can be implemented to replace the real system during
+/// tests.
+pub trait ModelAdapter: Send + 'static {
+    /// Locales database.
     fn locales_db(&mut self) -> &mut LocalesDatabase;
+
+    /// Timezones database.
     fn timezones_db(&mut self) -> &mut TimezonesDatabase;
+
+    /// Keymaps database.
     fn keymaps_db(&mut self) -> &mut KeymapsDatabase;
+
+    /// Current system locale.
     fn locale(&self) -> LocaleId;
+
+    /// Current system keymap.
     fn keymap(&self) -> Result<KeymapId, service::Error>;
 
+    /// Change the locale of the system.
     fn set_locale(&mut self, _locale: LocaleId) -> Result<(), service::Error> {
         Ok(())
     }
 
+    /// Change the keymap of the system.
     fn set_keymap(&mut self, _keymap: KeymapId) -> Result<(), service::Error> {
         Ok(())
     }
 
+    /// Apply the changes to target system. It is expected to be called almost
+    /// at the end of the installation.
     fn install(
         &self,
         _locale: LocaleId,
@@ -62,23 +75,27 @@ pub trait ModelAdapter: Send {
     }
 }
 
+/// [ModelAdapter] implementation for systemd-based systems.
 pub struct Model {
     pub timezones_db: TimezonesDatabase,
     pub locales_db: LocalesDatabase,
     pub keymaps_db: KeymapsDatabase,
 }
 
-impl Model {
-    pub fn new() -> Self {
+impl Default for Model {
+    fn default() -> Self {
         Self {
             locales_db: LocalesDatabase::new(),
             timezones_db: TimezonesDatabase::new(),
             keymaps_db: KeymapsDatabase::new(),
         }
     }
+}
 
+impl Model {
+    /// Initializes the struct with the information from the underlying system.
     pub fn from_system() -> Result<Self, service::Error> {
-        let mut model = Self::new();
+        let mut model = Self::default();
         model.read(&model.locale())?;
         Ok(model)
     }
@@ -128,9 +145,8 @@ impl ModelAdapter for Model {
     fn locale(&self) -> LocaleId {
         let lang = env::var("LANG")
             .ok()
-            .map(|v| v.parse::<LocaleId>().ok())
-            .flatten();
-        lang.unwrap_or(LocaleId::default())
+            .and_then(|v| v.parse::<LocaleId>().ok());
+        lang.unwrap_or_default()
     }
 
     fn set_locale(&mut self, locale: LocaleId) -> Result<(), service::Error> {
@@ -184,10 +200,10 @@ impl ModelAdapter for Model {
                 // the font entry is missing in a file created by "systemd-firstboot", just append it at the end
                 let mut file = OpenOptions::new()
                     .append(true)
-                    .open(format!("{}{}", ROOT, VCONSOLE_CONF))?;
+                    .open(format!("{ROOT}{VCONSOLE_CONF}"))?;
 
                 tracing::info!("Configuring console font \"{:?}\"", font);
-                writeln!(file, "\nFONT={}.psfu", font)?;
+                writeln!(file, "\nFONT={font}.psfu")?;
             }
         }
 

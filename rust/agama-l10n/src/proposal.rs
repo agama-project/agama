@@ -38,6 +38,10 @@ pub struct Proposal {
     pub timezone: TimezoneId,
 }
 
+/// Turns the configuration into a proposal.
+///
+/// It is possible because, in the l10n module, the configuration and the
+/// proposal are mostly the same.
 impl From<&Config> for Proposal {
     fn from(config: &Config) -> Self {
         Proposal {

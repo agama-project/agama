@@ -25,24 +25,24 @@
 //! From a technical point of view, it includes:
 //!
 //! * The [UserConfig] struct that defines the settings the user can
-//! alter for the target system.
+//!   alter for the target system.
 //! * The [Proposal] struct that describes how the system will look like after
-//! the installation.
+//!   the installation.
 //! * The [SystemInfo] which includes information about the system
-//! where Agama is running.
+//!   where Agama is running.
 //! * An [specific event type](Event) for localization-related events.
 //!
 //! The service can be started by calling the [start_service] function, which
-//! returns a [Handler] to interact with the system.
+//! returns a [agama_utils::actors::ActorHandler] to interact with the system.
 
 pub mod start;
 pub use start::start;
 
-pub mod handler;
-pub use handler::Handler;
+pub mod service;
+pub use service::{Service, SystemConfig};
 
-mod service;
-pub use service::SystemConfig;
+mod model;
+pub use model::{Model, ModelAdapter};
 
 mod system_info;
 pub use system_info::SystemInfo;
@@ -57,8 +57,227 @@ pub mod event;
 pub use event::Event;
 
 pub mod helpers;
+pub mod message;
 
 mod config;
 mod dbus;
-mod model;
 mod monitor;
+
+use agama_utils::actor::{self, Handler};
+use monitor::Monitor;
+
+/// Starts the localization service.
+///
+/// It starts two Tokio tasks:
+///
+/// - The main service, which is reponsible for holding and applying the configuration.
+/// - A monitor which checks for changes in the underlying system (e.g., changing the keymap)
+///   and signals the main service accordingly.
+///
+/// ## Example
+///
+/// ```no_run
+/// # use tokio_test;
+/// # use tokio::sync::mpsc;
+/// use agama_l10n as l10n;
+/// # tokio_test::block_on(async {
+///
+/// let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
+/// let service = l10n::start_service(events_sender).await.unwrap();
+/// let config = service.call(l10n::messages::GetConfig).await;
+/// dbg!(config);
+/// # })
+/// ```
+///
+/// * `events`: channel to emit the [localization-specific events](crate::Event).
+pub async fn start_service(events: event::Sender) -> Result<Handler<Service<Model>>, Error> {
+    let model = Model::from_system()?;
+    let service = Service::new(model, events);
+    let handler = actor::spawn(service);
+
+    let mut monitor = Monitor::new(handler.clone()).await?;
+    tokio::spawn(async move {
+        monitor.run().await;
+    });
+
+    Ok(handler)
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        event::Receiver,
+        message,
+        model::{
+            Keymap, KeymapsDatabase, LocaleEntry, LocalesDatabase, ModelAdapter, TimezoneEntry,
+            TimezonesDatabase,
+        },
+        service, Event, Service, UserConfig,
+    };
+    use agama_locale_data::{KeymapId, LocaleId};
+    use agama_utils::actor::{self, Handler};
+    use tokio::sync::mpsc;
+
+    pub struct TestModel {
+        pub locales: LocalesDatabase,
+        pub keymaps: KeymapsDatabase,
+        pub timezones: TimezonesDatabase,
+    }
+
+    impl ModelAdapter for TestModel {
+        fn locales_db(&mut self) -> &mut LocalesDatabase {
+            &mut self.locales
+        }
+
+        fn keymaps_db(&mut self) -> &mut KeymapsDatabase {
+            &mut self.keymaps
+        }
+
+        fn timezones_db(&mut self) -> &mut TimezonesDatabase {
+            &mut self.timezones
+        }
+
+        fn locale(&self) -> LocaleId {
+            LocaleId::default()
+        }
+
+        fn keymap(&self) -> Result<KeymapId, service::Error> {
+            Ok(KeymapId::default())
+        }
+    }
+
+    fn build_adapter() -> TestModel {
+        TestModel {
+            locales: LocalesDatabase::with_entries(&[
+                LocaleEntry {
+                    id: "en_US.UTF-8".parse().unwrap(),
+                    language: "English".to_string(),
+                    territory: "United States".to_string(),
+                    consolefont: None,
+                },
+                LocaleEntry {
+                    id: "es_ES.UTF-8".parse().unwrap(),
+                    language: "Spanish".to_string(),
+                    territory: "Spain".to_string(),
+                    consolefont: None,
+                },
+            ]),
+            keymaps: KeymapsDatabase::with_entries(&[
+                Keymap::new("us".parse().unwrap(), "English"),
+                Keymap::new("es".parse().unwrap(), "Spanish"),
+            ]),
+            timezones: TimezonesDatabase::with_entries(&[
+                TimezoneEntry {
+                    code: "Europe/Berlin".to_string(),
+                    parts: vec!["Europe".to_string(), "Berlin".to_string()],
+                    country: Some("Germany".to_string()),
+                },
+                TimezoneEntry {
+                    code: "Atlantic/Canary".to_string(),
+                    parts: vec!["Atlantic".to_string(), "Canary".to_string()],
+                    country: Some("Spain".to_string()),
+                },
+            ]),
+        }
+    }
+
+    fn start_testing_service(//) -> Result<(Receiver, Handler<TestModel>), Box<dyn std::error::Error>> {
+    ) -> (Receiver, Handler<Service<TestModel>>) {
+        let (events_tx, events_rx) = mpsc::unbounded_channel::<Event>();
+        let model = build_adapter();
+        let service = Service::new(model, events_tx);
+
+        let handler = actor::spawn(service);
+        (events_rx, handler)
+    }
+
+    #[tokio::test]
+    async fn test_get_and_set_config() -> Result<(), Box<dyn std::error::Error>> {
+        let (mut events_rx, handler) = start_testing_service();
+
+        let config = handler.call(message::GetConfig).await.unwrap();
+        assert_eq!(config.language, Some("en_US.UTF-8".to_string()));
+
+        let user_config = UserConfig {
+            language: Some("es_ES.UTF-8".to_string()),
+            keyboard: Some("es".to_string()),
+            timezone: Some("Atlantic/Canary".to_string()),
+        };
+        handler
+            .call(message::SetConfig::new(user_config.clone()))
+            .await?;
+
+        let updated = handler.call(message::GetConfig).await?;
+        assert_eq!(&updated, &user_config);
+
+        let event = events_rx.recv().await.expect("Did not receive the event");
+        assert!(matches!(event, Event::ProposalChanged));
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_set_invalid_config() -> Result<(), Box<dyn std::error::Error>> {
+        let (_events_rx, handler) = start_testing_service();
+
+        let user_config = UserConfig {
+            language: Some("es-ES.UTF-8".to_string()),
+            ..Default::default()
+        };
+
+        let result = handler
+            .call(message::SetConfig::new(user_config.clone()))
+            .await;
+        assert!(matches!(
+            result,
+            Err(crate::service::Error::InvalidLocale(_))
+        ));
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_set_config_without_changes() -> Result<(), Box<dyn std::error::Error>> {
+        let (mut events_rx, handler) = start_testing_service();
+
+        // let config = handler.get_config().await?;
+        let config = handler.call(message::GetConfig).await?;
+        assert_eq!(config.language, Some("en_US.UTF-8".to_string()));
+        let message = message::SetConfig::new(config.clone());
+        handler.call(message).await?;
+        // Wait until the action is dispatched.
+        // _ = handler.get_config().await?;
+        let _ = handler.call(message::GetConfig).await?;
+
+        let event = events_rx.try_recv();
+        assert!(matches!(event, Err(mpsc::error::TryRecvError::Empty)));
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_get_system() -> Result<(), Box<dyn std::error::Error>> {
+        let (_events_rx, handler) = start_testing_service();
+
+        let system = handler.call(message::GetSystem).await?;
+        assert_eq!(system.keymaps.len(), 2);
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_get_proposal() -> Result<(), Box<dyn std::error::Error>> {
+        let (_events_rx, handler) = start_testing_service();
+
+        let user_config = UserConfig {
+            language: Some("es_ES.UTF-8".to_string()),
+            keyboard: Some("es".to_string()),
+            timezone: Some("Atlantic/Canary".to_string()),
+        };
+        let message = message::SetConfig::new(user_config.clone());
+        handler.call(message).await?;
+
+        let proposal = handler.call(message::GetProposal).await?;
+        assert_eq!(proposal.locale.to_string(), user_config.language.unwrap());
+        assert_eq!(proposal.keymap.to_string(), user_config.keyboard.unwrap());
+        assert_eq!(proposal.timezone.to_string(), user_config.timezone.unwrap());
+        Ok(())
+    }
+}
