@@ -145,9 +145,17 @@ impl ModelAdapter for Model {
     }
 
     fn set_locale(&mut self, locale: LocaleId) -> Result<(), service::Error> {
+        if !self.locales_db.exists(&locale) {
+            return Err(service::Error::UnknownLocale(locale));
+        }
+
+        Command::new("localectl")
+            .args(["set-locale", &format!("LANG={}", locale)])
+            .output()?;
+
         helpers::set_service_locale(&locale);
-        self.timezones_db().read(&locale.language)?;
-        self.locales_db().read(&locale.language)?;
+        self.timezones_db.read(&locale.language)?;
+        self.locales_db.read(&locale.language)?;
         Ok(())
     }
 

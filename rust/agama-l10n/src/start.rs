@@ -52,7 +52,7 @@ pub enum Error {
 ///
 /// let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
 /// let service = l10n::start(events_sender).await.unwrap();
-/// let config = service.call(l10n::messages::GetConfig).await;
+/// let config = service.call(l10n::message::GetConfig).await;
 /// dbg!(config);
 /// # })
 /// ```
