@@ -203,6 +203,15 @@ function ProposalSections(): React.ReactNode {
     });
   };
 
+  const onReset = () => {
+    reset();
+    setSearchParams((params) => {
+      params.delete("expanded");
+      params.delete("st");
+      return params;
+    });
+  };
+
   return (
     <Grid hasGutter>
       <ProposalTransactionalInfo />
@@ -230,7 +239,7 @@ function ProposalSections(): React.ReactNode {
                     items={[
                       <MenuButton.Item
                         key="reset-link"
-                        onClick={() => reset()}
+                        onClick={onReset}
                         description={_("Start from scratch with the default configuration")}
                       >
                         {_("Reset to defaults")}
