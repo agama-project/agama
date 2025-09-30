@@ -123,7 +123,7 @@ impl SoftwareSelection {
     }
 }
 
-/* Fix tests with real mock of libzypp
+/* TODO: Fix tests with real mock of libzypp
 #[cfg(test)]
 mod tests {
     use super::*;
