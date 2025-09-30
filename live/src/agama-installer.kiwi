@@ -130,6 +130,9 @@
         <package name="gnome-session-wayland"/>
         <package name="gnome-kiosk"/>
         <package name="spice-vdagent"/>
+
+        <!-- just for testing  -->
+        <package name="xf86-video-nouveau"/>
     </packages>
 
     <!-- common packages for openSUSE Tumbleweed and Leap distributions -->
