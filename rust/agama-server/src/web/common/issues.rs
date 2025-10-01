@@ -36,7 +36,11 @@
 //! At this point, it only handles the issues that are exposed through D-Bus.
 
 use crate::web::EventsSender;
-use agama_lib::{event, http::Event, issue::Issue};
+use agama_lib::{
+    event,
+    http::Event,
+    issue::{Issue, IssueError},
+};
 use agama_utils::dbus::build_properties_changed_stream;
 use axum::{extract::State, routing::get, Json, Router};
 use std::collections::HashMap;
@@ -66,6 +70,8 @@ pub enum IssuesServiceError {
     DBusName(#[from] zbus::names::Error),
     #[error("Could not send the event: {0}")]
     SendEvent(#[from] broadcast::error::SendError<Event>),
+    #[error("Issue conversion error")]
+    Conversion(#[from] IssueError),
 }
 
 #[derive(Debug)]

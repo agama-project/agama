@@ -53,7 +53,7 @@ pub mod files;
 pub mod hostname;
 pub mod http;
 pub mod install_settings;
-pub mod issue;
+pub use agama_utils::issue;
 pub mod jobs;
 pub mod logs;
 pub mod manager;
