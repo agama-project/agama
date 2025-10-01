@@ -165,6 +165,7 @@ jobs:
       # See https://github.com/xd009642/tarpaulin/discussions/772
       run: cargo tarpaulin --workspace --all-targets --doc --out xml --target-dir target-coverage --skip-clean -- --nocapture
       env:
+        PATH: "share/bin:$PATH"
         # use the "stable" tool chain (installed by default) instead of the "nightly" default in tarpaulin
         RUSTC_BOOTSTRAP: 1
         RUSTUP_TOOLCHAIN: stable
