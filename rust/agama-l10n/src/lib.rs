@@ -47,8 +47,8 @@ pub use model::{Model, ModelAdapter};
 mod system_info;
 pub use system_info::SystemInfo;
 
-mod user_config;
-pub use user_config::UserConfig;
+mod config;
+pub use config::Config;
 
 mod proposal;
 pub use proposal::Proposal;
@@ -59,6 +59,6 @@ pub use event::Event;
 pub mod helpers;
 pub mod message;
 
-mod config;
 mod dbus;
+mod extended_config;
 mod monitor;

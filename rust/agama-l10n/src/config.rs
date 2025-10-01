@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2024] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,40 +18,41 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{service, system_info::SystemInfo, user_config::UserConfig};
-use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
+//! Representation of the localization settings
 
-#[derive(Clone, PartialEq)]
+use crate::extended_config::ExtendedConfig;
+use serde::{Deserialize, Serialize};
+
+/// User configuration for the localization of the target system.
+///
+/// This configuration is provided by the user, so all the values are optional.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[schema(as = l10n::UserConfig)]
+#[serde(rename_all = "camelCase")]
 pub struct Config {
-    pub locale: LocaleId,
-    pub keymap: KeymapId,
-    pub timezone: TimezoneId,
+    /// Locale (e.g., "en_US.UTF-8").
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "locale")]
+    #[serde(alias = "language")]
+    pub language: Option<String>,
+    /// Keymap (e.g., "us", "cz(qwerty)", etc.).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "keymap")]
+    #[serde(alias = "keyboard")]
+    pub keyboard: Option<String>,
+    /// Timezone (e.g., "Europe/Berlin").
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timezone: Option<String>,
 }
 
-impl Config {
-    pub fn new_from(system: &SystemInfo) -> Self {
-        Self {
-            locale: system.locale.clone(),
-            keymap: system.keymap.clone(),
-            timezone: system.timezone.clone(),
+/// Converts the localization configuration, which contains values for all the
+/// elements, into a user configuration.
+impl From<&ExtendedConfig> for Config {
+    fn from(config: &ExtendedConfig) -> Self {
+        Config {
+            language: Some(config.locale.to_string()),
+            keyboard: Some(config.keymap.to_string()),
+            timezone: Some(config.timezone.to_string()),
         }
-    }
-
-    pub fn merge(&self, config: &UserConfig) -> Result<Self, service::Error> {
-        let mut merged = self.clone();
-
-        if let Some(language) = &config.language {
-            merged.locale = language.parse()?
-        }
-
-        if let Some(keyboard) = &config.keyboard {
-            merged.keymap = keyboard.parse()?
-        }
-
-        if let Some(timezone) = &config.timezone {
-            merged.timezone = timezone.parse()?;
-        }
-
-        Ok(merged)
     }
 }

@@ -18,36 +18,40 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::extended_config::ExtendedConfig;
+use crate::{config::Config, service, system_info::SystemInfo};
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
-use serde::{Deserialize, Serialize};
-use serde_with::{serde_as, DisplayFromStr};
 
-/// Describes what Agama proposes for the target system.
-#[serde_as]
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct Proposal {
-    /// Keymap (e.g., "us", "cz(qwerty)", etc.).
-    #[serde_as(as = "DisplayFromStr")]
-    pub keymap: KeymapId,
-    /// Locale (e.g., "en_US.UTF-8").
-    #[serde_as(as = "DisplayFromStr")]
+#[derive(Clone, PartialEq)]
+pub struct ExtendedConfig {
     pub locale: LocaleId,
-    /// Timezone (e.g., "Europe/Berlin").
-    #[serde_as(as = "DisplayFromStr")]
+    pub keymap: KeymapId,
     pub timezone: TimezoneId,
 }
 
-/// Turns the configuration into a proposal.
-///
-/// It is possible because, in the l10n module, the configuration and the
-/// proposal are mostly the same.
-impl From<&ExtendedConfig> for Proposal {
-    fn from(config: &ExtendedConfig) -> Self {
-        Proposal {
-            keymap: config.keymap.clone(),
-            locale: config.locale.clone(),
-            timezone: config.timezone.clone(),
+impl ExtendedConfig {
+    pub fn new_from(system: &SystemInfo) -> Self {
+        Self {
+            locale: system.locale.clone(),
+            keymap: system.keymap.clone(),
+            timezone: system.timezone.clone(),
         }
+    }
+
+    pub fn merge(&self, config: &Config) -> Result<Self, service::Error> {
+        let mut merged = self.clone();
+
+        if let Some(language) = &config.language {
+            merged.locale = language.parse()?
+        }
+
+        if let Some(keyboard) = &config.keyboard {
+            merged.keymap = keyboard.parse()?
+        }
+
+        if let Some(timezone) = &config.timezone {
+            merged.timezone = timezone.parse()?;
+        }
+
+        Ok(merged)
     }
 }

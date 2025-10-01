@@ -20,7 +20,7 @@
 
 pub mod common;
 
-use agama_l10n::UserConfig;
+use agama_l10n::Config;
 use agama_lib::error::ServiceError;
 use agama_lib::install_settings::InstallSettings;
 use agama_server::server::server_service;
@@ -79,7 +79,7 @@ async fn test_get_user_config() -> Result<(), Box<dyn Error>> {
 #[test]
 #[cfg(not(ci))]
 async fn test_put_user_config() -> Result<(), Box<dyn Error>> {
-    let localization = UserConfig {
+    let localization = Config {
         language: Some("es_ES.UTF-8".to_string()),
         keyboard: Some("es".to_string()),
         timezone: Some("Atlantic/Canary".to_string()),
@@ -114,7 +114,7 @@ async fn test_put_user_config() -> Result<(), Box<dyn Error>> {
         r#""localization":{"language":"es_ES.UTF-8","keyboard":"es","timezone":"Atlantic/Canary"#
     ));
 
-    let localization = UserConfig {
+    let localization = Config {
         language: None,
         keyboard: Some("en".to_string()),
         timezone: None,
@@ -148,7 +148,7 @@ async fn test_put_user_config() -> Result<(), Box<dyn Error>> {
 #[test]
 #[cfg(not(ci))]
 async fn test_patch_user_config() -> Result<(), Box<dyn Error>> {
-    let localization = UserConfig {
+    let localization = Config {
         language: Some("es_ES.UTF-8".to_string()),
         keyboard: Some("es".to_string()),
         timezone: Some("Atlantic/Canary".to_string()),
@@ -170,7 +170,7 @@ async fn test_patch_user_config() -> Result<(), Box<dyn Error>> {
     let response = server_service.clone().oneshot(request).await.unwrap();
     assert_eq!(response.status(), StatusCode::OK);
 
-    let localization = UserConfig {
+    let localization = Config {
         language: None,
         keyboard: Some("en".to_string()),
         timezone: None,

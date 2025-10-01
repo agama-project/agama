@@ -33,7 +33,7 @@ pub enum Scope {
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(untagged)]
 pub enum ConfigScope {
-    L10n(l10n::UserConfig),
+    L10n(l10n::Config),
 }
 
 impl ConfigScope {

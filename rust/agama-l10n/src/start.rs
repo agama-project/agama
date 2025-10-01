@@ -80,7 +80,7 @@ mod tests {
             Keymap, KeymapsDatabase, LocaleEntry, LocalesDatabase, ModelAdapter, TimezoneEntry,
             TimezonesDatabase,
         },
-        service, Event, Service, UserConfig,
+        service, Config, Event, Service,
     };
     use agama_locale_data::{KeymapId, LocaleId};
     use agama_utils::actor::{self, Handler};
@@ -166,7 +166,7 @@ mod tests {
         let config = handler.call(message::GetConfig).await.unwrap();
         assert_eq!(config.language, Some("en_US.UTF-8".to_string()));
 
-        let user_config = UserConfig {
+        let user_config = Config {
             language: Some("es_ES.UTF-8".to_string()),
             keyboard: Some("es".to_string()),
             timezone: Some("Atlantic/Canary".to_string()),
@@ -187,7 +187,7 @@ mod tests {
     async fn test_set_invalid_config() -> Result<(), Box<dyn std::error::Error>> {
         let (_events_rx, handler) = start_testing_service();
 
-        let user_config = UserConfig {
+        let user_config = Config {
             language: Some("es-ES.UTF-8".to_string()),
             ..Default::default()
         };
@@ -234,7 +234,7 @@ mod tests {
     async fn test_get_proposal() -> Result<(), Box<dyn std::error::Error>> {
         let (_events_rx, handler) = start_testing_service();
 
-        let user_config = UserConfig {
+        let user_config = Config {
             language: Some("es_ES.UTF-8".to_string()),
             keyboard: Some("es".to_string()),
             timezone: Some("Atlantic/Canary".to_string()),

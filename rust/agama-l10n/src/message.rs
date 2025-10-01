@@ -21,7 +21,7 @@
 use agama_locale_data::{KeymapId, LocaleId};
 use agama_utils::actor::Message;
 
-use crate::{Proposal, SystemInfo, UserConfig};
+use crate::{Config, Proposal, SystemInfo};
 
 #[derive(Clone)]
 pub struct GetSystem;
@@ -47,7 +47,7 @@ impl<T> SetSystem<T> {
 pub struct GetConfig;
 
 impl Message for GetConfig {
-    type Reply = UserConfig;
+    type Reply = Config;
 }
 
 pub struct SetConfig<T> {

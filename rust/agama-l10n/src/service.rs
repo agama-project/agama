@@ -19,8 +19,8 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    config::Config, event::Event, message, model::ModelAdapter, proposal::Proposal,
-    system_info::SystemInfo, user_config::UserConfig,
+    config::Config, event::Event, extended_config::ExtendedConfig, message, model::ModelAdapter,
+    proposal::Proposal, system_info::SystemInfo,
 };
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
 use agama_utils::actor::{self, Actor, MessageHandler};
@@ -68,7 +68,7 @@ where
 
 struct State {
     system: SystemInfo,
-    config: Config,
+    config: ExtendedConfig,
 }
 
 impl<T> Service<T>
@@ -77,7 +77,7 @@ where
 {
     pub fn new(mut model: T, events: mpsc::UnboundedSender<Event>) -> Service<T> {
         let system = SystemInfo::read_from(&mut model);
-        let config = Config::new_from(&system);
+        let config = ExtendedConfig::new_from(&system);
         let state = State { system, config };
 
         Self {
@@ -117,14 +117,14 @@ impl<T: ModelAdapter> MessageHandler<message::SetSystem<SystemConfig>> for Servi
 
 #[async_trait]
 impl<T: ModelAdapter> MessageHandler<message::GetConfig> for Service<T> {
-    async fn handle(&mut self, _message: message::GetConfig) -> Result<UserConfig, Error> {
+    async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, Error> {
         Ok((&self.state.config).into())
     }
 }
 
 #[async_trait]
-impl<T: ModelAdapter> MessageHandler<message::SetConfig<UserConfig>> for Service<T> {
-    async fn handle(&mut self, message: message::SetConfig<UserConfig>) -> Result<(), Error> {
+impl<T: ModelAdapter> MessageHandler<message::SetConfig<Config>> for Service<T> {
+    async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
         let merged = self.state.config.merge(&message.config)?;
         if merged != self.state.config {
             self.state.config = merged;
