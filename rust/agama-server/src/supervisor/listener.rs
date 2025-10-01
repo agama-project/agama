@@ -24,14 +24,19 @@ use std::pin::Pin;
 use tokio::sync::mpsc;
 use tokio_stream::{wrappers::UnboundedReceiverStream, Stream, StreamExt, StreamMap};
 
-pub struct Listener {
+/// Listens for events of each service and retransmit them over the websocket.
+///
+/// The events from each service comes in their own types (e.g.,
+/// `agama_l10n::Event`) and has to be converted to the [Event
+/// struct](agama_lib::http::Event).
+pub struct EventsListener {
     inner: StreamMap<&'static str, Pin<Box<dyn Stream<Item = Event> + Send>>>,
     sender: EventsSender,
 }
 
-impl Listener {
+impl EventsListener {
     pub fn new(sender: EventsSender) -> Self {
-        Listener {
+        EventsListener {
             inner: StreamMap::new(),
             sender,
         }

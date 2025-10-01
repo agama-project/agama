@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    supervisor::{l10n, listener::Listener, service::Service},
+    supervisor::{l10n, listener::EventsListener, service::Service},
     web::EventsSender,
 };
 use agama_utils::actor::{self, Handler};
@@ -43,7 +43,7 @@ pub enum Error {
 ///
 /// * `events`: channel to emit the [events](agama_lib::http::Event).
 pub async fn start(events: EventsSender) -> Result<Handler<Service<l10n::Model>>, Error> {
-    let mut listener = Listener::new(events);
+    let mut listener = EventsListener::new(events);
     let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
     let l10n = l10n::start(events_sender).await?;
     listener.add_channel("l10n", events_receiver);
