@@ -120,7 +120,7 @@ mod test {
             config.localization.unwrap()
         );
 
-        let full_config = handler.call(message::GetFullConfig).await?;
+        let full_config = handler.call(message::GetExtendedConfig).await?;
         let l10n_config = full_config.localization.unwrap();
 
         assert!(l10n_config.language.is_some());

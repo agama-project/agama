@@ -73,11 +73,14 @@ impl<T: l10n::ModelAdapter> MessageHandler<message::GetSystem> for Service<T> {
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> MessageHandler<message::GetFullConfig> for Service<T> {
+impl<T: l10n::ModelAdapter> MessageHandler<message::GetExtendedConfig> for Service<T> {
     /// Gets the current configuration.
     ///
     /// It includes user and default values.
-    async fn handle(&mut self, _message: message::GetFullConfig) -> Result<InstallSettings, Error> {
+    async fn handle(
+        &mut self,
+        _message: message::GetExtendedConfig,
+    ) -> Result<InstallSettings, Error> {
         let l10n_config = self.l10n.call(l10n::message::GetConfig).await?;
         Ok(InstallSettings {
             localization: Some(l10n_config),
@@ -87,11 +90,11 @@ impl<T: l10n::ModelAdapter> MessageHandler<message::GetFullConfig> for Service<T
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> MessageHandler<message::GetFullConfigScope> for Service<T> {
+impl<T: l10n::ModelAdapter> MessageHandler<message::GetExtendedConfigScope> for Service<T> {
     /// It returns the configuration for the given scope.
     async fn handle(
         &mut self,
-        message: message::GetFullConfigScope,
+        message: message::GetExtendedConfigScope,
     ) -> Result<Option<ConfigScope>, Error> {
         let option = match message.scope {
             Scope::L10n => {

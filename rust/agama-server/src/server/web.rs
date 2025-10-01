@@ -78,19 +78,19 @@ pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError
     let state = ServerState { supervisor };
 
     Ok(Router::new()
+        .route("/system", get(get_system))
+        .route("/extended_config/:scope", get(get_extended_config_scope))
+        .route("/extended_config", get(get_extended_config))
         .route(
-            "/config/user/:scope",
+            "/config/:scope",
             get(get_config_scope)
                 .put(put_config_scope)
                 .patch(patch_config_scope),
         )
         .route(
-            "/config/user",
+            "/config",
             get(get_config).put(put_config).patch(patch_config),
         )
-        .route("/config/:scope", get(get_full_config_scope))
-        .route("/config", get(get_full_config))
-        .route("/system", get(get_system))
         .route("/proposal", get(get_proposal))
         .route("/action", post(run_action))
         .with_state(state))
@@ -104,22 +104,24 @@ async fn get_system(State(state): State<ServerState>) -> ServerResult<Json<Syste
 /// Returns the current configuration.
 #[utoipa::path(
     get,
-    path = "/config",
+    path = "/extended_config",
     context_path = "/api/v2",
     responses(
         (status = 200, description = "Agama configuration"),
         (status = 400, description = "Not possible to retrieve the configuration")
     )
 )]
-async fn get_full_config(State(state): State<ServerState>) -> ServerResult<Json<InstallSettings>> {
-    let config = state.supervisor.call(message::GetFullConfig).await?;
+async fn get_extended_config(
+    State(state): State<ServerState>,
+) -> ServerResult<Json<InstallSettings>> {
+    let config = state.supervisor.call(message::GetExtendedConfig).await?;
     Ok(Json(config))
 }
 
 /// Returns the current configuration for the given scope.
 #[utoipa::path(
     get,
-    path = "/config/{scope}",
+    path = "/extended_config/{scope}",
     context_path = "/api/v2",
     responses(
         (status = 200, description = "Agama configuration for the given scope"),
@@ -129,13 +131,13 @@ async fn get_full_config(State(state): State<ServerState>) -> ServerResult<Json<
         ("scope" = String, Path, description = "Configuration scope (e.g., 'storage', 'l10n', etc.")
     )
 )]
-async fn get_full_config_scope(
+async fn get_extended_config_scope(
     State(state): State<ServerState>,
     Path(scope): Path<Scope>,
 ) -> ServerResult<Response> {
     let config = state
         .supervisor
-        .call(message::GetFullConfigScope::new(scope))
+        .call(message::GetExtendedConfigScope::new(scope))
         .await?;
     Ok(to_option_response(config))
 }
@@ -143,7 +145,7 @@ async fn get_full_config_scope(
 /// Returns the user specified configuration for the given scope.
 #[utoipa::path(
     get,
-    path = "/config/user",
+    path = "/config",
     context_path = "/api/v2",
     responses(
         (status = 200, description = "User specified configuration"),
@@ -158,7 +160,7 @@ async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<Insta
 /// Returns the user specified configuration for the given scope.
 #[utoipa::path(
     get,
-    path = "/config/user/{scope}",
+    path = "/config/{scope}",
     context_path = "/api/v2",
     responses(
         (status = 200, description = "User specified configuration for the given scope"),

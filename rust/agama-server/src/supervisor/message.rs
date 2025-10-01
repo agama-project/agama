@@ -37,25 +37,25 @@ impl Message for GetSystem {
 ///
 /// It includes user and default values.
 #[derive(Debug)]
-pub struct GetFullConfig;
+pub struct GetExtendedConfig;
 
-impl Message for GetFullConfig {
+impl Message for GetExtendedConfig {
     type Reply = InstallSettings;
 }
 
 /// Gets a scope from the full config.
 #[derive(Debug)]
-pub struct GetFullConfigScope {
+pub struct GetExtendedConfigScope {
     pub scope: Scope,
 }
 
-impl GetFullConfigScope {
+impl GetExtendedConfigScope {
     pub fn new(scope: Scope) -> Self {
         Self { scope }
     }
 }
 
-impl Message for GetFullConfigScope {
+impl Message for GetExtendedConfigScope {
     type Reply = Option<ConfigScope>;
 }
 
