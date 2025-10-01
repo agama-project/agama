@@ -32,9 +32,13 @@ use serde::{Deserialize, Serialize};
 pub struct UserConfig {
     /// Locale (e.g., "en_US.UTF-8").
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "locale")]
+    #[serde(alias = "language")]
     pub language: Option<String>,
     /// Keymap (e.g., "us", "cz(qwerty)", etc.).
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "keymap")]
+    #[serde(alias = "keyboard")]
     pub keyboard: Option<String>,
     /// Timezone (e.g., "Europe/Berlin").
     #[serde(skip_serializing_if = "Option::is_none")]
