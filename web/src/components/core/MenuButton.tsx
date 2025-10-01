@@ -33,6 +33,7 @@ import {
   MenuPopperProps,
   MenuItemProps,
   MenuToggleProps,
+  MenuProps,
 } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 
@@ -99,19 +100,32 @@ export function MenuButtonItem({
 
 export type MenuButtonProps = {
   items?: React.ReactNode[];
+  // FIXME: use menuProps for allow forwarding any PF/Menu props to the wrapped
+  // PF/MEnu and use a generic props for the closeOnClick and other custom.
+  // I.e.,
+  //
+  // menuProps?: MenuProps;
+  // popperProps?: MenuPopperProps;
+  // props?: {
+  //   closeOnClick?: boolean;
+  // }
+  //
   menuProps?: {
     ["aria-label"]?: string;
     ["aria-labelledby"]?: string;
     closeOnClick?: boolean;
     popperProps?: MenuPopperProps;
+    isScrollable?: MenuProps["isScrollable"];
   };
   toggleProps?: MenuToggleProps;
+  menuHeader?: React.ReactNode;
 };
 
 export default function MenuButton({
   items = [],
   menuProps = {},
   toggleProps = {},
+  menuHeader,
   children,
 }: React.PropsWithChildren<MenuButtonProps>): React.ReactNode {
   const menuRef = useRef();
@@ -203,7 +217,9 @@ export default function MenuButton({
           drilldownItemPath={drilldownPath}
           ref={menuRef}
           onClick={() => menuProps.closeOnClick && setIsOpen(false)}
+          isScrollable={menuProps.isScrollable}
         >
+          {menuHeader}
           <MenuContent menuHeight={`${menuHeights[activeMenu]}px`}>
             <MenuList
               aria-label={menuProps["aria-label"]}

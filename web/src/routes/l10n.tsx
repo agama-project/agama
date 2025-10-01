@@ -21,10 +21,13 @@
  */
 
 import React from "react";
-import { L10nPage, LocaleSelection, KeymapSelection, TimezoneSelection } from "~/components/l10n";
+import { LocaleSelection, KeymapSelection, TimezoneSelection, L10nPage } from "~/components/l10n";
+import L10nFormPage from "~/components/l10n/L10nFormPage";
 import { Route } from "~/types/routes";
 import { L10N as PATHS } from "~/routes/paths";
 import { N_ } from "~/i18n";
+
+console.log(L10nPage);
 
 const routes = (): Route => ({
   path: PATHS.root,
@@ -35,7 +38,7 @@ const routes = (): Route => ({
   children: [
     {
       index: true,
-      element: <L10nPage />,
+      element: <L10nFormPage />,
     },
     {
       path: PATHS.localeSelection,
