@@ -20,21 +20,25 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, patch } from "~/api/http";
+import { get, patch, post } from "~/api/http";
 
 /**
  * Returns the system config
  */
-const fetchSystem = (): Promise<object> => get("/api/server/system");
+const fetchSystem = (): Promise<object> => get("/api/v2/system");
 
 /**
  * Returns the proposal
  */
-const fetchProposal = (): Promise<object> => get("/api/server/proposal");
+const fetchProposal = (): Promise<object> => get("/api/v2/proposal");
 
 /**
  * Updates configuration
  */
-const updateConfig = (config) => patch("/api/server/config/user", config);
+const updateConfig = (config) => patch("/api/v2/config/user", config);
+/**
+ * Triggers an action
+ */
+const trigger = (action) => post("/api/v2/action", action);
 
-export { fetchSystem, fetchProposal, updateConfig };
+export { fetchSystem, fetchProposal, updateConfig, trigger };

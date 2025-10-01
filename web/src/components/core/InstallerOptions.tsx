@@ -606,6 +606,13 @@ export default function InstallerOptions({
     e.preventDefault();
     dispatchDialogAction({ type: "SET_BUSY" });
 
+    // TODO: send unique request for all; await no longer works here
+    // keep logical order, reuse first, the trigger second, to avoid the latest
+    // "eating" the first request.
+    // const request = {};
+    // ...
+    // if(something) request.someelse  = whatever
+
     try {
       if (variant !== "language" && localConnection()) {
         await changeKeymap(formState.keymap);
