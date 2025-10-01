@@ -123,9 +123,9 @@ mod test {
         let full_config = handler.call(message::GetFullConfig).await?;
         let l10n_config = full_config.localization.unwrap();
 
-        assert_ne!(l10n_config.language, None);
-        assert_ne!(l10n_config.keyboard, None);
-        assert_ne!(l10n_config.timezone, None);
+        assert!(l10n_config.language.is_some());
+        assert!(l10n_config.keyboard.is_some());
+        assert!(l10n_config.timezone.is_some());
 
         Ok(())
     }
