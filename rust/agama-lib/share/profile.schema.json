@@ -1,11 +1,20 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "$id": "https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/profile.schema.json",
+  "$id": "https://github.com/agama-project/agama/blob/master/rust/agama-lib/share/profile.schema.json",
   "title": "Profile",
   "description": "Profile definition for automated installation",
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "$schema": {
+      "title": "URL of the JSON validation schema",
+      "description": "The schema location is ignored by the installer, it always uses the built-in schema, but it can be useful for automatic validation and code completion in some editors",
+      "type": "string",
+      "examples": [
+        "https://raw.githubusercontent.com/agama-project/agama/refs/heads/SLE-16/rust/agama-lib/share/profile.schema.json",
+        "https://raw.githubusercontent.com/agama-project/agama/refs/heads/master/rust/agama-lib/share/profile.schema.json"
+      ]
+    },
     "files": {
       "title": "User-defined files to deploy",
       "description": "User-defined files to deploy after installation just before post install scripts",
@@ -290,7 +299,17 @@
         "id": {
           "title": "Product identifier",
           "description": "The id field from a products.d/foo.yaml file",
-          "type": "string"
+          "type": "string",
+          "examples": [
+            "Kalpa",
+            "MicroOS",
+            "openSUSE_Leap_Micro",
+            "openSUSE_Leap",
+            "SLES_SAP",
+            "SLES",
+            "Slowroll",
+            "Tumbleweed"
+          ]
         },
         "registrationCode": {
           "title": "Product registration code",
