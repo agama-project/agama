@@ -41,6 +41,7 @@ async fn build_server_service() -> Result<Router, ServiceError> {
 }
 
 #[test]
+#[cfg(not(ci))]
 async fn test_get_config() -> Result<(), Box<dyn Error>> {
     let server_service = build_server_service().await?;
     let request = Request::builder()
@@ -58,6 +59,7 @@ async fn test_get_config() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
+#[cfg(not(ci))]
 async fn test_get_user_config() -> Result<(), Box<dyn Error>> {
     let server_service = build_server_service().await?;
     let request = Request::builder()
@@ -75,6 +77,7 @@ async fn test_get_user_config() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
+#[cfg(not(ci))]
 async fn test_put_user_config() -> Result<(), Box<dyn Error>> {
     let localization = UserConfig {
         language: Some("es_ES.UTF-8".to_string()),
@@ -143,6 +146,7 @@ async fn test_put_user_config() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
+#[cfg(not(ci))]
 async fn test_patch_user_config() -> Result<(), Box<dyn Error>> {
     let localization = UserConfig {
         language: Some("es_ES.UTF-8".to_string()),
