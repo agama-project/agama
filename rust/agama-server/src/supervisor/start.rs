@@ -58,14 +58,14 @@ pub async fn start(events: EventsSender) -> Result<Handler<Service<l10n::Model>>
 
 #[cfg(test)]
 mod test {
-    use crate::supervisor::{l10n, message, service::Service};
+    use crate::supervisor::{self, l10n, message, service::Service};
     use agama_lib::{http::Event, install_settings::InstallSettings};
     use agama_utils::actor::Handler;
     use tokio::sync::broadcast;
 
     async fn start_service() -> Handler<Service<l10n::Model>> {
         let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
-        crate::supervisor::start(events_tx).await.unwrap()
+        supervisor::start(events_tx).await.unwrap()
     }
 
     #[tokio::test]

@@ -26,6 +26,7 @@ use crate::{
 };
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
 use agama_utils::actor::Handler;
+use anyhow;
 use axum::{
     extract::{Path, State},
     response::{IntoResponse, Response},
@@ -70,7 +71,10 @@ type ServerResult<T> = Result<T, Error>;
 
 /// Sets up and returns the axum service for the manager module
 pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError> {
-    let supervisor = supervisor::start(events).await.unwrap();
+    let supervisor = supervisor::start(events)
+        .await
+        .map_err(|e| anyhow::Error::new(e))?;
+
     let state = ServerState { supervisor };
 
     Ok(Router::new()
