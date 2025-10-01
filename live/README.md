@@ -35,8 +35,6 @@ This directory contains a set of files that are used to build the Agama Live ISO
 - [src](src) subdirectory contains all source files which are copied unmodified to the OBS project
 - [root](root) subdirectory contains files which are added to the Live ISO root system (inside the
   squashfs image)
-- [root-PXE](root-PXE) subdirectory contains specific files for the image used for the PXE boot, see
-  a separate [PXE documentation](PXE.md) for more details about the PXE boot
 - [config-cdroot](config-cdroot) subdirectory contains file which are copied to the uncompressed
   root of the ISO image, the files can be accessed just by mounting the ISO file or the DVD medium
 - [test](test) subdirectory contains tests to verify correctness of content. Can be run with `make check`
@@ -88,8 +86,6 @@ By default this will build the openSUSE image. If you want to build another imag
 
 ```shell
 make build FLAVOR=<flavor>
-# for building the openSUSE-PXE flavor:
-make build FLAVOR=openSUSE-PXE
 ```
 
 See the [_multibuild](src/_multibuild) file for the list of available build flavors.
