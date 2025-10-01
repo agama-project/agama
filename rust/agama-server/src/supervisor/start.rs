@@ -73,22 +73,25 @@ mod test {
     async fn test_update_config() -> Result<(), Box<dyn std::error::Error>> {
         let handler = start_service().await;
 
-        let localization = l10n::UserConfig {
-            language: Some("es_ES.UTF-8".to_string()),
-            keyboard: Some("es".to_string()),
-            timezone: Some("Atlantic/Canary".to_string()),
-        };
-
-        let config = InstallSettings {
-            localization: Some(localization.clone()),
+        let input_config = InstallSettings {
+            localization: Some(l10n::UserConfig {
+                language: Some("es_ES.UTF-8".to_string()),
+                keyboard: Some("es".to_string()),
+                timezone: Some("Atlantic/Canary".to_string()),
+            }),
             ..Default::default()
         };
 
-        let message = message::SetConfig::new(config);
-        assert!(handler.call(message).await.is_ok());
+        handler
+            .call(message::SetConfig::new(input_config.clone()))
+            .await?;
 
-        let config = handler.call(message::GetFullConfig).await?;
-        assert_eq!(config.localization, Some(localization));
+        let config = handler.call(message::GetConfig).await?;
+
+        assert_eq!(
+            input_config.localization.unwrap(),
+            config.localization.unwrap()
+        );
 
         Ok(())
     }
@@ -97,27 +100,32 @@ mod test {
     #[cfg(not(ci))]
     async fn test_patch_config() -> Result<(), Box<dyn std::error::Error>> {
         let handler = start_service().await;
-        let original = handler.call(message::GetFullConfig).await?;
 
-        let l10n_patch = l10n::UserConfig {
-            keyboard: Some("en".to_string()),
+        let input_config = InstallSettings {
+            localization: Some(l10n::UserConfig {
+                keyboard: Some("es".to_string()),
+                ..Default::default()
+            }),
             ..Default::default()
         };
 
-        let config = InstallSettings {
-            localization: Some(l10n_patch.clone()),
-            ..Default::default()
-        };
-        let message = message::UpdateConfig::new(config);
-        assert!(handler.call(message).await.is_ok());
+        handler
+            .call(message::UpdateConfig::new(input_config.clone()))
+            .await?;
 
         let config = handler.call(message::GetConfig).await?;
-        let l10n = config.localization.unwrap();
-        let l10n_original = original.localization.unwrap();
 
-        assert_eq!(l10n.keyboard, l10n_patch.keyboard);
-        assert_eq!(l10n.language, l10n_original.language);
-        assert_eq!(l10n.timezone, l10n_original.timezone);
+        assert_eq!(
+            input_config.localization.unwrap(),
+            config.localization.unwrap()
+        );
+
+        let full_config = handler.call(message::GetFullConfig).await?;
+        let l10n_config = full_config.localization.unwrap();
+
+        assert_ne!(l10n_config.language, None);
+        assert_ne!(l10n_config.keyboard, None);
+        assert_ne!(l10n_config.timezone, None);
 
         Ok(())
     }
