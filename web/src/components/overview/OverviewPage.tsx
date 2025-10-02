@@ -26,9 +26,12 @@ import { Page } from "~/components/core";
 import L10nSection from "./L10nSection";
 import StorageSection from "./StorageSection";
 import SoftwareSection from "./SoftwareSection";
-import { _ } from "~/i18n";
+import { _, n_ } from "~/i18n";
+import { useTranslation } from "react-i18next";
 
 export default function OverviewPage() {
+  const { t } = useTranslation();
+
   return (
     <Page>
       <Page.Header>
@@ -40,7 +43,7 @@ export default function OverviewPage() {
           <GridItem sm={12}>
             <Stack hasGutter>
               <Content>
-                {_(
+                {t(
                   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.",
                 )}
               </Content>
