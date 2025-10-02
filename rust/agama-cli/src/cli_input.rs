@@ -63,21 +63,26 @@ impl CliInput {
     /// so that it works (on localhost) even if server's working directory is different.
     /// See also: [`body_for_web`](Self::body_for_web).
     pub fn add_query(&self, base_url: &mut Url) -> io::Result<()> {
+        if let Some(pair) = self.get_query() {
+            base_url.query_pairs_mut().append_pair(&pair.0, &pair.1);
+        }
+
+        Ok(())
+    }
+
+    /// Prepares *self* for use as an url query. So in case of "url" or "path" it
+    /// returns ("url", url_value) resp ("path", absolute_path) tuplle
+    pub fn get_query(&self) -> Option<(String, String)> {
         match self {
             Self::Url(url) => {
-                base_url.query_pairs_mut().append_pair("url", url);
+                Some((String::from("url"), url.clone()))
             }
             Self::Path(path) => {
-                let pathbuf = Self::absolute(Path::new(path))?;
-                let pathstr = pathbuf
-                    .to_str()
-                    .ok_or(std::io::Error::other("Stringifying current directory"))?;
-                base_url.query_pairs_mut().append_pair("path", pathstr);
+                Some((String::from("path"), Self::absolute(path).unwrap().display().to_string()))
             }
-            Self::Stdin => (),
-            Self::Full(_) => (),
-        };
-        Ok(())
+            Self::Stdin => None,
+            Self::Full(_) => None,
+        }
     }
 
     /// Make *path* absolute by prepending the current directory
