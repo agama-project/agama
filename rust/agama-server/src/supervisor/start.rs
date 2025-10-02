@@ -75,8 +75,8 @@ mod test {
 
         let input_config = InstallSettings {
             localization: Some(l10n::Config {
-                language: Some("es_ES.UTF-8".to_string()),
-                keyboard: Some("es".to_string()),
+                locale: Some("es_ES.UTF-8".to_string()),
+                keymap: Some("es".to_string()),
                 timezone: Some("Atlantic/Canary".to_string()),
             }),
             ..Default::default()
@@ -103,7 +103,7 @@ mod test {
 
         let input_config = InstallSettings {
             localization: Some(l10n::Config {
-                keyboard: Some("es".to_string()),
+                keymap: Some("es".to_string()),
                 ..Default::default()
             }),
             ..Default::default()
@@ -123,8 +123,8 @@ mod test {
         let extended_config = handler.call(message::GetExtendedConfig).await?;
         let l10n_config = extended_config.localization.unwrap();
 
-        assert!(l10n_config.language.is_some());
-        assert!(l10n_config.keyboard.is_some());
+        assert!(l10n_config.locale.is_some());
+        assert!(l10n_config.keymap.is_some());
         assert!(l10n_config.timezone.is_some());
 
         Ok(())

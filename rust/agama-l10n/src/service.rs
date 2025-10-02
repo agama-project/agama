@@ -51,12 +51,6 @@ pub enum Error {
     Generic(#[from] anyhow::Error),
 }
 
-#[derive(Clone, Debug)]
-pub struct SystemConfig {
-    pub language: Option<String>,
-    pub keyboard: Option<String>,
-}
-
 pub struct Service<T>
 where
     T: ModelAdapter,
@@ -100,15 +94,18 @@ impl<T: ModelAdapter> MessageHandler<message::GetSystem> for Service<T> {
 }
 
 #[async_trait]
-impl<T: ModelAdapter> MessageHandler<message::SetSystem<SystemConfig>> for Service<T> {
-    async fn handle(&mut self, message: message::SetSystem<SystemConfig>) -> Result<(), Error> {
+impl<T: ModelAdapter> MessageHandler<message::SetSystem<message::SystemConfig>> for Service<T> {
+    async fn handle(
+        &mut self,
+        message: message::SetSystem<message::SystemConfig>,
+    ) -> Result<(), Error> {
         let config = &message.config;
-        if let Some(language) = &config.language {
-            self.model.set_locale(language.parse()?)?;
+        if let Some(locale) = &config.locale {
+            self.model.set_locale(locale.parse()?)?;
         }
 
-        if let Some(keyboard) = &config.keyboard {
-            self.model.set_keymap(keyboard.parse()?)?;
+        if let Some(keymap) = &config.keymap {
+            self.model.set_keymap(keymap.parse()?)?;
         };
 
         Ok(())

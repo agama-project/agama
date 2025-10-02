@@ -39,7 +39,7 @@ pub mod start;
 pub use start::start;
 
 pub mod service;
-pub use service::{Service, SystemConfig};
+pub use service::Service;
 
 mod model;
 pub use model::{Model, ModelAdapter};

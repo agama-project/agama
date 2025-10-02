@@ -80,8 +80,8 @@ async fn test_get_user_config() -> Result<(), Box<dyn Error>> {
 #[cfg(not(ci))]
 async fn test_put_user_config() -> Result<(), Box<dyn Error>> {
     let localization = Config {
-        language: Some("es_ES.UTF-8".to_string()),
-        keyboard: Some("es".to_string()),
+        locale: Some("es_ES.UTF-8".to_string()),
+        keymap: Some("es".to_string()),
         timezone: Some("Atlantic/Canary".to_string()),
     };
 
@@ -115,8 +115,8 @@ async fn test_put_user_config() -> Result<(), Box<dyn Error>> {
     ));
 
     let localization = Config {
-        language: None,
-        keyboard: Some("en".to_string()),
+        locale: None,
+        keymap: Some("en".to_string()),
         timezone: None,
     };
     config.localization = Some(localization);
@@ -149,8 +149,8 @@ async fn test_put_user_config() -> Result<(), Box<dyn Error>> {
 #[cfg(not(ci))]
 async fn test_patch_user_config() -> Result<(), Box<dyn Error>> {
     let localization = Config {
-        language: Some("es_ES.UTF-8".to_string()),
-        keyboard: Some("es".to_string()),
+        locale: Some("es_ES.UTF-8".to_string()),
+        keymap: Some("es".to_string()),
         timezone: Some("Atlantic/Canary".to_string()),
     };
 
@@ -171,8 +171,8 @@ async fn test_patch_user_config() -> Result<(), Box<dyn Error>> {
     assert_eq!(response.status(), StatusCode::OK);
 
     let localization = Config {
-        language: None,
-        keyboard: Some("en".to_string()),
+        locale: None,
+        keymap: Some("en".to_string()),
         timezone: None,
     };
     config.localization = Some(localization);

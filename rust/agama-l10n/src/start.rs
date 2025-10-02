@@ -164,19 +164,19 @@ mod tests {
         let (mut events_rx, handler) = start_testing_service();
 
         let config = handler.call(message::GetConfig).await.unwrap();
-        assert_eq!(config.language, Some("en_US.UTF-8".to_string()));
+        assert_eq!(config.locale, Some("en_US.UTF-8".to_string()));
 
-        let user_config = Config {
-            language: Some("es_ES.UTF-8".to_string()),
-            keyboard: Some("es".to_string()),
+        let input_config = Config {
+            locale: Some("es_ES.UTF-8".to_string()),
+            keymap: Some("es".to_string()),
             timezone: Some("Atlantic/Canary".to_string()),
         };
         handler
-            .call(message::SetConfig::new(user_config.clone()))
+            .call(message::SetConfig::new(input_config.clone()))
             .await?;
 
         let updated = handler.call(message::GetConfig).await?;
-        assert_eq!(&updated, &user_config);
+        assert_eq!(&updated, &input_config);
 
         let event = events_rx.recv().await.expect("Did not receive the event");
         assert!(matches!(event, Event::ProposalChanged));
@@ -187,13 +187,13 @@ mod tests {
     async fn test_set_invalid_config() -> Result<(), Box<dyn std::error::Error>> {
         let (_events_rx, handler) = start_testing_service();
 
-        let user_config = Config {
-            language: Some("es-ES.UTF-8".to_string()),
+        let input_config = Config {
+            locale: Some("es-ES.UTF-8".to_string()),
             ..Default::default()
         };
 
         let result = handler
-            .call(message::SetConfig::new(user_config.clone()))
+            .call(message::SetConfig::new(input_config.clone()))
             .await;
         assert!(matches!(
             result,
@@ -208,7 +208,7 @@ mod tests {
 
         // let config = handler.get_config().await?;
         let config = handler.call(message::GetConfig).await?;
-        assert_eq!(config.language, Some("en_US.UTF-8".to_string()));
+        assert_eq!(config.locale, Some("en_US.UTF-8".to_string()));
         let message = message::SetConfig::new(config.clone());
         handler.call(message).await?;
         // Wait until the action is dispatched.
@@ -234,18 +234,21 @@ mod tests {
     async fn test_get_proposal() -> Result<(), Box<dyn std::error::Error>> {
         let (_events_rx, handler) = start_testing_service();
 
-        let user_config = Config {
-            language: Some("es_ES.UTF-8".to_string()),
-            keyboard: Some("es".to_string()),
+        let input_config = Config {
+            locale: Some("es_ES.UTF-8".to_string()),
+            keymap: Some("es".to_string()),
             timezone: Some("Atlantic/Canary".to_string()),
         };
-        let message = message::SetConfig::new(user_config.clone());
+        let message = message::SetConfig::new(input_config.clone());
         handler.call(message).await?;
 
         let proposal = handler.call(message::GetProposal).await?;
-        assert_eq!(proposal.locale.to_string(), user_config.language.unwrap());
-        assert_eq!(proposal.keymap.to_string(), user_config.keyboard.unwrap());
-        assert_eq!(proposal.timezone.to_string(), user_config.timezone.unwrap());
+        assert_eq!(proposal.locale.to_string(), input_config.locale.unwrap());
+        assert_eq!(proposal.keymap.to_string(), input_config.keymap.unwrap());
+        assert_eq!(
+            proposal.timezone.to_string(),
+            input_config.timezone.unwrap()
+        );
         Ok(())
     }
 }

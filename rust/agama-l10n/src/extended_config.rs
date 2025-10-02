@@ -40,11 +40,11 @@ impl ExtendedConfig {
     pub fn merge(&self, config: &Config) -> Result<Self, service::Error> {
         let mut merged = self.clone();
 
-        if let Some(language) = &config.language {
+        if let Some(language) = &config.locale {
             merged.locale = language.parse()?
         }
 
-        if let Some(keyboard) = &config.keyboard {
+        if let Some(keyboard) = &config.keymap {
             merged.keymap = keyboard.parse()?
         }
 

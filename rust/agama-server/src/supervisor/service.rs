@@ -218,9 +218,8 @@ impl<T: l10n::ModelAdapter> MessageHandler<message::RunAction> for Service<T> {
     /// It runs the given action.
     async fn handle(&mut self, message: message::RunAction) -> Result<(), Error> {
         match message.action {
-            Action::ConfigureL10n { language, keyboard } => {
-                let l10n_config = l10n::SystemConfig { language, keyboard };
-                let l10n_message = l10n::message::SetSystem::new(l10n_config);
+            Action::ConfigureL10n(config) => {
+                let l10n_message = l10n::message::SetSystem::new(config);
                 self.l10n.call(l10n_message).await?;
             }
             Action::Install => self.l10n.call(l10n::message::Install).await?,

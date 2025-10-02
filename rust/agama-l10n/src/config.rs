@@ -32,14 +32,12 @@ use serde::{Deserialize, Serialize};
 pub struct Config {
     /// Locale (e.g., "en_US.UTF-8").
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(rename = "locale")]
     #[serde(alias = "language")]
-    pub language: Option<String>,
+    pub locale: Option<String>,
     /// Keymap (e.g., "us", "cz(qwerty)", etc.).
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(rename = "keymap")]
     #[serde(alias = "keyboard")]
-    pub keyboard: Option<String>,
+    pub keymap: Option<String>,
     /// Timezone (e.g., "Europe/Berlin").
     #[serde(skip_serializing_if = "Option::is_none")]
     pub timezone: Option<String>,
@@ -50,8 +48,8 @@ pub struct Config {
 impl From<&ExtendedConfig> for Config {
     fn from(config: &ExtendedConfig) -> Self {
         Config {
-            language: Some(config.locale.to_string()),
-            keyboard: Some(config.keymap.to_string()),
+            locale: Some(config.locale.to_string()),
+            keymap: Some(config.keymap.to_string()),
             timezone: Some(config.timezone.to_string()),
         }
     }

@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::supervisor::{
-    proposal::Proposal, scope::ConfigScope, scope::Scope, system_info::SystemInfo,
+    l10n, proposal::Proposal, scope::ConfigScope, scope::Scope, system_info::SystemInfo,
 };
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::actor::Message;
@@ -174,10 +174,7 @@ impl Message for RunAction {
 #[derive(Debug, Deserialize, utoipa::ToSchema)]
 pub enum Action {
     #[serde(rename = "configureL10n")]
-    ConfigureL10n {
-        language: Option<String>,
-        keyboard: Option<String>,
-    },
+    ConfigureL10n(l10n::message::SystemConfig),
     #[serde(rename = "install")]
     Install,
 }
