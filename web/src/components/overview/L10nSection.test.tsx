@@ -33,11 +33,16 @@ const locales: Locale[] = [
 
 jest.mock("~/queries/system", () => ({
   ...jest.requireActual("~/queries/system"),
-  useSystem: () => ({ locale: { locales } }),
+  useSystem: () => ({ localization: { locales } }),
+}));
+
+jest.mock("~/queries/proposal", () => ({
+  ...jest.requireActual("~/queries/proposal"),
+  useProposal: () => ({ localization: { locale: "en_US.UTF-8" } }),
 }));
 
 it("displays the selected locale", async () => {
   plainRender(<L10nSection />, { withL10n: true });
 
-  await screen.findByText("English (United States)");
+  await screen.findByText(/English \(United States\)/);
 });
