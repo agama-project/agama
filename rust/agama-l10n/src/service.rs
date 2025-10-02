@@ -51,12 +51,6 @@ pub enum Error {
     Generic(#[from] anyhow::Error),
 }
 
-#[derive(Clone, Debug)]
-pub struct SystemConfig {
-    pub language: Option<String>,
-    pub keyboard: Option<String>,
-}
-
 pub struct Service {
     state: State,
     model: Box<dyn ModelAdapter + Send + 'static>,
