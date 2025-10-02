@@ -24,7 +24,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { locationReload, setLocationSearch } from "~/utils";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
-import { LocaleConfig } from "~/types/l10n";
 import { fetchSystem, trigger } from "~/api/api";
 import { System } from "~/types/system";
 

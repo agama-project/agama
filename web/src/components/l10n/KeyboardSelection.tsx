@@ -39,6 +39,7 @@ export default function KeyboardSelection() {
   const {
     localization: { keymap: currentKeymap },
   } = useProposal();
+
   // FIXME: get current keymap from either, proposal or config
   const [selected, setSelected] = useState(currentKeymap);
   const [filteredKeymaps, setFilteredKeymaps] = useState(

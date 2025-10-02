@@ -33,12 +33,16 @@ const locales: Locale[] = [
 
 jest.mock("~/queries/system", () => ({
   ...jest.requireActual("~/queries/system"),
-  useSystem: () => ({ localization: { locales } }),
+  useSystem: () => ({
+    localization: { locale: "en_US.UTF-8", locales, keymap: "us" },
+  }),
 }));
 
 jest.mock("~/queries/proposal", () => ({
   ...jest.requireActual("~/queries/proposal"),
-  useProposal: () => ({ localization: { locale: "en_US.UTF-8" } }),
+  useProposal: () => ({
+    localization: { locale: "en_US.UTF-8", keymap: "us" },
+  }),
 }));
 
 it("displays the selected locale", () => {
