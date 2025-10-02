@@ -20,27 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, patch, post } from "~/api/http";
-import { Proposal } from "~/types/proposal";
-import { System } from "~/types/system";
+import { LocaleConfig } from "./l10n";
 
-/**
- * Returns the system config
- */
-const fetchSystem = (): Promise<System> => get("/api/v2/system");
+type System = {
+  localization?: LocaleConfig;
+};
 
-/**
- * Returns the proposal
- */
-const fetchProposal = (): Promise<Proposal> => get("/api/v2/proposal");
-
-/**
- * Updates configuration
- */
-const updateConfig = (config) => patch("/api/v2/config", config);
-/**
- * Triggers an action
- */
-const trigger = (action) => post("/api/v2/action", action);
-
-export { fetchSystem, fetchProposal, updateConfig, trigger };
+export type { System };

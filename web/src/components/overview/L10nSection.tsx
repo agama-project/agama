@@ -25,11 +25,13 @@ import { Content } from "@patternfly/react-core";
 import { useProposal } from "~/queries/proposal";
 import { useSystem } from "~/queries/system";
 import { _ } from "~/i18n";
+import { Locale } from "~/types/l10n";
 
 export default function L10nSection() {
   const { localization: l10nProposal } = useProposal();
   const { localization: l10n } = useSystem();
-  const locale = l10nProposal.locale && l10n.locales.find((l) => l.id === l10nProposal.locale);
+  const locale =
+    l10nProposal.locale && l10n.locales.find((l: Locale) => l.id === l10nProposal.locale);
 
   // TRANSLATORS: %s will be replaced by a language name and territory, example:
   // "English (United States)".

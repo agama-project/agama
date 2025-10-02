@@ -26,6 +26,7 @@ import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
 import { LocaleConfig } from "~/types/l10n";
 import { fetchSystem, trigger } from "~/api/api";
+import { System } from "~/types/system";
 
 const L10nContext = React.createContext(null);
 
@@ -238,7 +239,7 @@ function InstallerL10nProvider({
   children,
 }: {
   initialLanguage?: string;
-  fetchConfigFn?: () => Promise<LocaleConfig>;
+  fetchConfigFn?: () => Promise<System>;
   children?: React.ReactNode;
 }) {
   const fetchConfig = fetchConfigFn || fetchSystem;

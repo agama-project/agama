@@ -67,6 +67,10 @@ type Timezone = {
 
 type LocaleConfig = {
   /**
+   * Selected locale for installation (e.g, "en_US.UTF-8")
+   */
+  locale?: string;
+  /**
    * List of locales to install (e.g., ["en_US.UTF-8"]).
    */
   locales?: string[];
@@ -78,15 +82,6 @@ type LocaleConfig = {
    * Selected timezone for installation (e.g., "Atlantic/Canary").
    */
   timezone?: string;
-
-  /**
-   * Locale to be used in the UI.
-   */
-  uiLocale?: string;
-  /**
-   * Locale to be used in the UI.
-   */
-  uiKeymap?: string;
 };
 
 export type { Keymap, Locale, Timezone, LocaleConfig };
