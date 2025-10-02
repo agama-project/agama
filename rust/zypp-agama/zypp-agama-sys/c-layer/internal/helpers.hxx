@@ -9,15 +9,16 @@
   fprintf(stderr, __VA_ARGS__);                                                \
   abort()
 
-#define STATUS_OK(status) ({\
-  status->state = status->STATE_SUCCEED;\
-  status->error = NULL;\
-})
+#define STATUS_OK(status)                                                      \
+  ({                                                                           \
+    status->state = status->STATE_SUCCEED;                                     \
+    status->error = NULL;                                                      \
+  })
 
-#define STATUS_EXCEPT(status, excpt) ({\
-    status->state = status->STATE_FAILED;\
-    status->error = strdup(excpt.asUserString().c_str());\
-})
-
+#define STATUS_EXCEPT(status, excpt)                                           \
+  ({                                                                           \
+    status->state = status->STATE_FAILED;                                      \
+    status->error = strdup(excpt.asUserString().c_str());                      \
+  })
 
 #endif

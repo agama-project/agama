@@ -100,7 +100,8 @@ void switch_target(struct Zypp *zypp, const char *root,
                    struct Status *status) noexcept {
   const std::string root_str(root);
   try {
-    zypp->zypp_pointer->initializeTarget(root_str, false /* rebuild rpmdb: no */);
+    zypp->zypp_pointer->initializeTarget(root_str,
+                                         false /* rebuild rpmdb: no */);
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);
     return;
@@ -369,6 +370,16 @@ void refresh_repository(struct Zypp *zypp, const char *alias,
   }
 }
 
+bool is_local_url(const char *url, struct Status *status) noexcept {
+  try {
+    zypp::Url z_url(url);
+    STATUS_OK(status);
+    return z_url.schemeIsLocal();
+  } catch (zypp::Exception &excpt) {
+    STATUS_EXCEPT(status, excpt);
+  }
+}
+
 void add_repository(struct Zypp *zypp, const char *alias, const char *url,
                     struct Status *status, ZyppProgressCallback callback,
                     void *user_data) noexcept {
@@ -391,7 +402,7 @@ void add_repository(struct Zypp *zypp, const char *alias, const char *url,
 }
 
 void disable_repository(struct Zypp *zypp, const char *alias,
-                    struct Status *status ) noexcept {
+                        struct Status *status) noexcept {
   if (zypp->repo_manager == NULL) {
     status->state = status->STATE_FAILED;
     status->error = strdup("Internal Error: Repo manager is not initialized.");
@@ -407,8 +418,8 @@ void disable_repository(struct Zypp *zypp, const char *alias,
   }
 }
 
-void set_repository_url(struct Zypp *zypp, const char *alias,
-                    const char *url, struct Status *status ) noexcept {
+void set_repository_url(struct Zypp *zypp, const char *alias, const char *url,
+                        struct Status *status) noexcept {
   if (zypp->repo_manager == NULL) {
     status->state = status->STATE_FAILED;
     status->error = strdup("Internal Error: Repo manager is not initialized.");

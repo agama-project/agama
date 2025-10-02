@@ -46,14 +46,14 @@ void add_repository(struct Zypp *zypp, const char *alias, const char *url,
 /// @param zypp see \ref init_target
 /// @param alias identifier of repository
 void disable_repository(struct Zypp *zypp, const char *alias,
-                    struct Status *status) noexcept;
+                        struct Status *status) noexcept;
 
 /// Changes url of given repository
 /// @param zypp see \ref init_target
 /// @param alias identifier of repository
 /// @param alias have to be unique
-void set_repository_url(struct Zypp *zypp, const char *alias,
-                    const char *url, struct Status *status) noexcept;
+void set_repository_url(struct Zypp *zypp, const char *alias, const char *url,
+                        struct Status *status) noexcept;
 
 /// Removes repository from repo manager
 /// @param zypp see \ref init_target

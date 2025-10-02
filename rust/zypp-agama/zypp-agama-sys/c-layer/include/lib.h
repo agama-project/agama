@@ -149,6 +149,12 @@ void free_pattern_infos(const struct PatternInfos *infos) noexcept;
 void import_gpg_key(struct Zypp *zypp, const char *const pathname,
                     struct Status *status) noexcept;
 
+/// check if url has local schema
+/// @param url url to check
+/// @param[out] status (will overwrite existing contents)
+/// @return true if url is local, for invalid url status is set to error
+bool is_local_url(const char *url, struct Status *status) noexcept;
+
 /// Runs solver
 /// @param zypp see \ref init_target
 /// @param[out] status (will overwrite existing contents)

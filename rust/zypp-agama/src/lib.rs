@@ -1,6 +1,7 @@
 use std::{
     ffi::CString,
     os::raw::{c_char, c_uint, c_void},
+    result,
     sync::Mutex,
 };
 
@@ -29,15 +30,14 @@ pub struct Repository {
 impl Repository {
     /// check if url points to local repository.
     /// Can be None if url is invalid
-    pub fn is_local(&self) -> Result<bool, url::ParseError> {
-        let url = url::Url::parse(&self.url)?;
-        let result = url.scheme() == "cd"
-            || url.scheme() == "dvd"
-            || url.scheme() == "dir"
-            || url.scheme() == "hd"
-            || url.scheme() == "iso"
-            || url.scheme() == "file";
-        Ok(result)
+    pub fn is_local(&self) -> Result<bool, ZyppError> {
+        unsafe {
+            let c_url = CString::new(self.url.as_str()).unwrap();
+            let mut status: Status = Status::default();
+            let status_ptr = &mut status as *mut _;
+            let result = zypp_agama_sys::is_local_url(c_url.as_ptr(), status_ptr);
+            status_to_result_void(status).map(|_| result)
+        }
     }
 }
 
