@@ -37,7 +37,7 @@ use tower::ServiceExt;
 async fn build_server_service() -> Result<Router, ServiceError> {
     let (tx, _rx) = channel(16);
 
-    server_service(tx).await
+    server_service(tx, None).await
 }
 
 #[test]
@@ -73,7 +73,7 @@ async fn test_get_empty_config() -> Result<(), Box<dyn Error>> {
     assert_eq!(response.status(), StatusCode::OK);
 
     let body = body_to_string(response.into_body()).await;
-    assert_eq!(&body, "");
+    assert_eq!(&body, "{}");
 
     Ok(())
 }

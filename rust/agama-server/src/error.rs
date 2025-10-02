@@ -26,10 +26,7 @@ use axum::{
 };
 use serde_json::json;
 
-use crate::{
-    users::password::PasswordCheckerError,
-    web::common::{IssuesServiceError, ProgressServiceError},
-};
+use crate::{users::password::PasswordCheckerError, web::common::ProgressServiceError};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -41,8 +38,6 @@ pub enum Error {
     Service(#[from] ServiceError),
     #[error("Questions service error: {0}")]
     Questions(QuestionsError),
-    #[error("Issues service error: {0}")]
-    Issues(#[from] IssuesServiceError),
     #[error("Progress service error: {0}")]
     Progress(#[from] ProgressServiceError),
     #[error("Could not check the password")]

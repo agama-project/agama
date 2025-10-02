@@ -26,7 +26,7 @@ use std::sync::OnceLock;
 use std::{fmt::Display, str::FromStr};
 use thiserror::Error;
 
-#[derive(Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq, utoipa::ToSchema)]
 pub struct TimezoneId(String);
 
 impl Default for TimezoneId {
@@ -38,6 +38,12 @@ impl Default for TimezoneId {
 impl Display for TimezoneId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
+    }
+}
+
+impl TimezoneId {
+    pub fn as_str(&self) -> &str {
+        self.0.as_str()
     }
 }
 

@@ -18,10 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use std::collections::HashMap;
+
 use crate::supervisor::{
     l10n, proposal::Proposal, scope::ConfigScope, scope::Scope, system_info::SystemInfo,
 };
-use agama_lib::install_settings::InstallSettings;
+use agama_lib::{install_settings::InstallSettings, issue::Issue};
 use agama_utils::actor::Message;
 use serde::Deserialize;
 
@@ -153,6 +155,13 @@ pub struct GetProposal;
 
 impl Message for GetProposal {
     type Reply = Option<Proposal>;
+}
+
+/// Gets the installation issues.
+pub struct GetIssues;
+
+impl Message for GetIssues {
+    type Reply = HashMap<String, Vec<Issue>>;
 }
 
 /// Runs the given action.

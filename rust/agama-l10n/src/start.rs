@@ -24,7 +24,10 @@ use crate::{
     monitor::{self, Monitor},
     service::{self, Service},
 };
-use agama_utils::actor::{self, Handler};
+use agama_utils::{
+    actor::{self, Handler},
+    issue,
+};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -41,26 +44,16 @@ pub enum Error {
 /// - The main service, which is reponsible for holding and applying the configuration.
 /// - A monitor which checks for changes in the underlying system (e.g., changing the keymap)
 ///   and signals the main service accordingly.
-///
-/// ## Example
-///
-/// ```no_run
-/// # use tokio_test;
-/// # use tokio::sync::mpsc;
-/// use agama_l10n as l10n;
-/// # tokio_test::block_on(async {
-///
-/// let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
-/// let service = l10n::start(events_sender).await.unwrap();
-/// let config = service.call(l10n::message::GetConfig).await;
-/// dbg!(config);
-/// # })
-/// ```
+/// - It depends on the issues service to keep the installation issues.
 ///
 /// * `events`: channel to emit the [localization-specific events](crate::Event).
-pub async fn start(events: event::Sender) -> Result<Handler<Service>, Error> {
+/// * `issues`: handler to the issues service.
+pub async fn start(
+    issues: Handler<issue::Service>,
+    events: event::Sender,
+) -> Result<Handler<Service>, Error> {
     let model = Model::from_system()?;
-    let service = Service::new(model, events);
+    let service = Service::new(model, issues, events);
     let handler = actor::spawn(service);
 
     let mut monitor = Monitor::new(handler.clone()).await?;
@@ -83,7 +76,10 @@ mod tests {
         service, Config, Event, Service,
     };
     use agama_locale_data::{KeymapId, LocaleId};
-    use agama_utils::actor::{self, Handler};
+    use agama_utils::{
+        actor::{self, Handler},
+        issue,
+    };
     use tokio::sync::mpsc;
 
     pub struct TestModel {
@@ -93,16 +89,16 @@ mod tests {
     }
 
     impl ModelAdapter for TestModel {
-        fn locales_db(&mut self) -> &mut LocalesDatabase {
-            &mut self.locales
+        fn locales_db(&self) -> &LocalesDatabase {
+            &self.locales
         }
 
-        fn keymaps_db(&mut self) -> &mut KeymapsDatabase {
-            &mut self.keymaps
+        fn keymaps_db(&self) -> &KeymapsDatabase {
+            &self.keymaps
         }
 
-        fn timezones_db(&mut self) -> &mut TimezonesDatabase {
-            &mut self.timezones
+        fn timezones_db(&self) -> &TimezonesDatabase {
+            &self.timezones
         }
 
         fn locale(&self) -> LocaleId {
@@ -136,12 +132,12 @@ mod tests {
             ]),
             timezones: TimezonesDatabase::with_entries(&[
                 TimezoneEntry {
-                    code: "Europe/Berlin".to_string(),
+                    id: "Europe/Berlin".parse().unwrap(),
                     parts: vec!["Europe".to_string(), "Berlin".to_string()],
                     country: Some("Germany".to_string()),
                 },
                 TimezoneEntry {
-                    code: "Atlantic/Canary".to_string(),
+                    id: "Atlantic/Canary".parse().unwrap(),
                     parts: vec!["Atlantic".to_string(), "Canary".to_string()],
                     country: Some("Spain".to_string()),
                 },
@@ -149,18 +145,21 @@ mod tests {
         }
     }
 
-    fn start_testing_service() -> (Receiver, Handler<Service>) {
+    async fn start_testing_service() -> (Receiver, Handler<Service>, Handler<issue::Service>) {
+        let (events_tx, _events_rx) = mpsc::unbounded_channel::<issue::IssuesChanged>();
+        let issues = issue::start(events_tx, None).await.unwrap();
+
         let (events_tx, events_rx) = mpsc::unbounded_channel::<Event>();
         let model = build_adapter();
-        let service = Service::new(model, events_tx);
+        let service = Service::new(model, issues.clone(), events_tx);
 
         let handler = actor::spawn(service);
-        (events_rx, handler)
+        (events_rx, handler, issues)
     }
 
     #[tokio::test]
     async fn test_get_and_set_config() -> Result<(), Box<dyn std::error::Error>> {
-        let (mut events_rx, handler) = start_testing_service();
+        let (mut events_rx, handler, _issues) = start_testing_service().await;
 
         let config = handler.call(message::GetConfig).await.unwrap();
         assert_eq!(config.locale, Some("en_US.UTF-8".to_string()));
@@ -184,7 +183,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_set_invalid_config() -> Result<(), Box<dyn std::error::Error>> {
-        let (_events_rx, handler) = start_testing_service();
+        let (_events_rx, handler, _issues) = start_testing_service().await;
 
         let input_config = Config {
             locale: Some("es-ES.UTF-8".to_string()),
@@ -203,7 +202,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_set_config_without_changes() -> Result<(), Box<dyn std::error::Error>> {
-        let (mut events_rx, handler) = start_testing_service();
+        let (mut events_rx, handler, _issues) = start_testing_service().await;
 
         let config = handler.call(message::GetConfig).await?;
         assert_eq!(config.locale, Some("en_US.UTF-8".to_string()));
@@ -218,8 +217,25 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_set_config_unknown_values() -> Result<(), Box<dyn std::error::Error>> {
+        let (mut _events_rx, handler, issues) = start_testing_service().await;
+
+        let config = Config {
+            keymap: Some("jk".to_string()),
+            locale: Some("xx_XX.UTF-8".to_string()),
+            timezone: Some("Unknown/Unknown".to_string()),
+        };
+        let _ = handler.call(message::SetConfig::new(config)).await?;
+
+        let found_issues = issues.call(issue::message::Get).await?;
+        let l10n_issues = found_issues.get("localization").unwrap();
+        assert_eq!(l10n_issues.len(), 3);
+        Ok(())
+    }
+
+    #[tokio::test]
     async fn test_get_system() -> Result<(), Box<dyn std::error::Error>> {
-        let (_events_rx, handler) = start_testing_service();
+        let (_events_rx, handler, _issues) = start_testing_service().await;
 
         let system = handler.call(message::GetSystem).await?;
         assert_eq!(system.keymaps.len(), 2);
@@ -229,7 +245,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_proposal() -> Result<(), Box<dyn std::error::Error>> {
-        let (_events_rx, handler) = start_testing_service();
+        let (_events_rx, handler, _issues) = start_testing_service().await;
 
         let input_config = Config {
             locale: Some("es_ES.UTF-8".to_string()),

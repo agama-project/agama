@@ -23,7 +23,10 @@ use crate::{
     proposal::Proposal, system_info::SystemInfo,
 };
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
-use agama_utils::actor::{self, Actor, MessageHandler};
+use agama_utils::{
+    actor::{self, Actor, Handler, MessageHandler},
+    issue::{self, Issue},
+};
 use async_trait::async_trait;
 use tokio::sync::mpsc;
 
@@ -54,6 +57,7 @@ pub enum Error {
 pub struct Service {
     state: State,
     model: Box<dyn ModelAdapter + Send + 'static>,
+    issues: Handler<issue::Service>,
     events: mpsc::UnboundedSender<Event>,
 }
 
@@ -64,18 +68,56 @@ struct State {
 
 impl Service {
     pub fn new<T: ModelAdapter + Send + 'static>(
-        mut model: T,
+        model: T,
+        issues: Handler<issue::Service>,
         events: mpsc::UnboundedSender<Event>,
     ) -> Service {
-        let system = SystemInfo::read_from(&mut model);
+        let system = SystemInfo::read_from(&model);
         let config = ExtendedConfig::new_from(&system);
         let state = State { system, config };
 
         Self {
             state,
             model: Box::new(model),
+            issues,
             events,
         }
+    }
+
+    pub fn find_issues(&self) -> Vec<Issue> {
+        let config = &self.state.config;
+        let mut issues = vec![];
+        if !self.model.locales_db().exists(&config.locale) {
+            issues.push(Issue {
+                description: format!("Locale '{}' is unknown", &config.locale),
+                details: None,
+                source: issue::IssueSource::Config,
+                severity: issue::IssueSeverity::Warn,
+                kind: "unknown_locale".to_string(),
+            });
+        }
+
+        if !self.model.keymaps_db().exists(&config.keymap) {
+            issues.push(Issue {
+                description: format!("Keymap '{}' is unknown", &config.keymap),
+                details: None,
+                source: issue::IssueSource::Config,
+                severity: issue::IssueSeverity::Warn,
+                kind: "unknown_keymap".to_string(),
+            });
+        }
+
+        if !self.model.timezones_db().exists(&config.timezone) {
+            issues.push(Issue {
+                description: format!("Timezone '{}' is unknown", &config.timezone),
+                details: None,
+                source: issue::IssueSource::Config,
+                severity: issue::IssueSeverity::Warn,
+                kind: "unknown_timezone".to_string(),
+            });
+        }
+
+        issues
     }
 }
 
@@ -120,10 +162,16 @@ impl MessageHandler<message::GetConfig> for Service {
 impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
         let merged = self.state.config.merge(&message.config)?;
-        if merged != self.state.config {
-            self.state.config = merged;
-            _ = self.events.send(Event::ProposalChanged);
+        if merged == self.state.config {
+            return Ok(());
         }
+
+        self.state.config = merged;
+        let issues = self.find_issues();
+        _ = self
+            .issues
+            .cast(issue::message::Update::new("localization", issues));
+        _ = self.events.send(Event::ProposalChanged);
         Ok(())
     }
 }

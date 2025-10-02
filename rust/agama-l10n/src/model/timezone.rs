@@ -20,8 +20,7 @@
 
 //! This module provides support for reading the timezones database.
 
-use agama_locale_data::territory::Territories;
-use agama_locale_data::timezone_part::TimezoneIdParts;
+use agama_locale_data::{territory::Territories, timezone_part::TimezoneIdParts, TimezoneId};
 use serde::Serialize;
 use std::collections::HashMap;
 
@@ -29,7 +28,7 @@ use std::collections::HashMap;
 #[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 pub struct TimezoneEntry {
     /// Timezone identifier (e.g. "Atlantic/Canary").
-    pub code: String,
+    pub id: TimezoneId,
     /// Localized parts (e.g., "Atlántico", "Canarias").
     pub parts: Vec<String>,
     /// Localized name of the territory this timezone is associated to
@@ -62,8 +61,8 @@ impl TimezonesDatabase {
     }
 
     /// Determines whether a timezone exists in the database.
-    pub fn exists(&self, timezone: &String) -> bool {
-        self.timezones.iter().any(|t| &t.code == timezone)
+    pub fn exists(&self, timezone: &TimezoneId) -> bool {
+        self.timezones.iter().any(|t| &t.id == timezone)
     }
 
     /// Returns the list of timezones.
@@ -87,15 +86,17 @@ impl TimezonesDatabase {
         let ret = timezones
             .into_iter()
             .filter_map(|tz| {
-                let parts = translate_parts(&tz, ui_language, &tz_parts);
-                let country = translate_country(&tz, ui_language, &tz_countries, &territories);
+                tz.parse::<TimezoneId>()
+                    .inspect_err(|e| println!("Ignoring timezone {tz}: {e}"))
+                    .ok()
+            })
+            .filter_map(|id| {
+                let parts = translate_parts(id.as_str(), ui_language, &tz_parts);
+                let country =
+                    translate_country(id.as_str(), ui_language, &tz_countries, &territories);
                 match country {
-                    None if !COUNTRYLESS.contains(&tz.as_str()) => None,
-                    _ => Some(TimezoneEntry {
-                        code: tz,
-                        parts,
-                        country,
-                    }),
+                    None if !COUNTRYLESS.contains(&id.as_str()) => None,
+                    _ => Some(TimezoneEntry { id, parts, country }),
                 }
             })
             .collect();
@@ -143,9 +144,9 @@ mod tests {
         let found_timezones = db.entries();
         let found = found_timezones
             .iter()
-            .find(|tz| tz.code == "Europe/Berlin")
+            .find(|tz| tz.id.as_str() == "Europe/Berlin")
             .unwrap();
-        assert_eq!(&found.code, "Europe/Berlin");
+        assert_eq!(found.id.as_str(), "Europe/Berlin");
         assert_eq!(
             found.parts,
             vec!["Europa".to_string(), "Berlín".to_string()]
@@ -157,7 +158,11 @@ mod tests {
     fn test_read_timezone_without_country() {
         let mut db = TimezonesDatabase::new();
         db.read("es").unwrap();
-        let timezone = db.entries().iter().find(|tz| tz.code == "UTC").unwrap();
+        let timezone = db
+            .entries()
+            .iter()
+            .find(|tz| tz.id.as_str() == "UTC")
+            .unwrap();
         assert_eq!(timezone.country, None);
     }
 
@@ -168,7 +173,7 @@ mod tests {
         let timezone = db
             .entries()
             .iter()
-            .find(|tz| tz.code == "Europe/Kiev")
+            .find(|tz| tz.id.as_str() == "Europe/Kiev")
             .unwrap();
         assert_eq!(timezone.country, Some("Ukraine".to_string()));
     }
@@ -177,7 +182,9 @@ mod tests {
     fn test_timezone_exists() {
         let mut db = TimezonesDatabase::new();
         db.read("es").unwrap();
-        assert!(db.exists(&"Atlantic/Canary".to_string()));
-        assert!(!db.exists(&"Unknown/Unknown".to_string()));
+        let canary = "Atlantic/Canary".parse().unwrap();
+        let unknown = "Unknown/Unknown".parse().unwrap();
+        assert!(db.exists(&canary));
+        assert!(!db.exists(&unknown));
     }
 }

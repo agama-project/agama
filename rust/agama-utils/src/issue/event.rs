@@ -18,6 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod web;
-pub use web::server_service;
-pub mod types;
+use serde::{Deserialize, Serialize};
+use tokio::sync::mpsc;
+
+/// Issues changed event.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct IssuesChanged;
+
+/// Multi-producer single-consumer events sender.
+pub type Sender = mpsc::UnboundedSender<IssuesChanged>;
+/// Multi-producer single-consumer events receiver.
+pub type Receiver = mpsc::UnboundedReceiver<IssuesChanged>;

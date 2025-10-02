@@ -18,131 +18,43 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use serde::{Deserialize, Serialize};
-use strum::FromRepr;
+//! Service to keep the installation issues in a centralized place.
+//!
+//! This service offers and API for other services to register the issues.
+//! Additionally, it is responsible for emitting the corresponding event when
+//! the list of issues changes.
+//!
+//! The service can be started calling the [start] function, which returns an
+//! [agama_utils::actors::ActorHandler] to interact with it.
+//!
+//! # Example
+//!
+//! ```no_run
+//! use agama_utils::issue::{self, message};
+//! use tokio::sync::mpsc;
+//!
+//! # tokio_test::block_on(async {
+//! async fn use_issues_service() {
+//!     let (events_tx, _events_rx) = mpsc::unbounded_channel();
+//!     let issues = issue::start(events_tx, None).await.unwrap();
+//!     _ = issues.call(message::Update::new("my-service", vec![]));
+//! }
+//! # });
+//!
+//! ```
 
-#[derive(thiserror::Error, Debug)]
-pub enum IssueError {
-    #[error("D-Bus conversion error")]
-    DBus(#[from] zbus::zvariant::Error),
-    #[error("Unknown issue source: {0}")]
-    UnknownSource(u8),
-    #[error("Unknown issue severity: {0}")]
-    UnknownSeverity(u8),
-}
+pub mod event;
+pub use event::IssuesChanged;
 
-#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
-pub struct Issue {
-    description: String,
-    details: Option<String>,
-    source: IssueSource,
-    severity: IssueSeverity,
-    kind: String,
-}
+pub mod model;
+pub use model::{Issue, IssueSeverity, IssueSource};
 
-#[derive(Clone, Copy, Debug, Deserialize, Serialize, FromRepr, PartialEq, utoipa::ToSchema)]
-#[repr(u8)]
-pub enum IssueSource {
-    Generic = 0,
-    System = 1,
-    Config = 2,
-}
+pub mod service;
+pub use service::Service;
 
-#[derive(Clone, Copy, Debug, Deserialize, Serialize, FromRepr, PartialEq, utoipa::ToSchema)]
-#[repr(u8)]
-pub enum IssueSeverity {
-    Warn = 0,
-    Error = 1,
-}
+pub mod message;
 
-impl TryFrom<&zbus::zvariant::Value<'_>> for Issue {
-    type Error = IssueError;
+pub mod start;
+pub use start::start;
 
-    fn try_from(value: &zbus::zvariant::Value<'_>) -> Result<Self, Self::Error> {
-        let value = value.downcast_ref::<zbus::zvariant::Structure>()?;
-        let fields = value.fields();
-
-        let Some([description, kind, details, source, severity]) = fields.get(0..5) else {
-            return Err(zbus::zvariant::Error::Message(
-                "Not enough elements for building an Issue.".to_string(),
-            ))?;
-        };
-
-        let description: String = description.try_into()?;
-        let kind: String = kind.try_into()?;
-        let details: String = details.try_into()?;
-        let source: u32 = source.try_into()?;
-        let source = source as u8;
-        let source = IssueSource::from_repr(source).ok_or(IssueError::UnknownSource(source))?;
-
-        let severity: u32 = severity.try_into()?;
-        let severity = severity as u8;
-        let severity =
-            IssueSeverity::from_repr(severity).ok_or(IssueError::UnknownSeverity(severity))?;
-
-        Ok(Issue {
-            description,
-            kind,
-            details: if details.is_empty() {
-                None
-            } else {
-                Some(details.to_string())
-            },
-            source,
-            severity,
-        })
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use zbus::zvariant;
-    use zvariant::{Structure, Value};
-
-    #[test]
-    fn test_issue_from_dbus() {
-        let dbus_issue = Structure::from((
-            "Product not selected",
-            "missing_product",
-            "A product is required.",
-            1 as u32,
-            0 as u32,
-        ));
-
-        let issue = Issue::try_from(&Value::Structure(dbus_issue)).unwrap();
-        assert_eq!(&issue.description, "Product not selected");
-        assert_eq!(&issue.kind, "missing_product");
-        assert_eq!(issue.details, Some("A product is required.".to_string()));
-        assert_eq!(issue.source, IssueSource::System);
-        assert_eq!(issue.severity, IssueSeverity::Warn);
-    }
-
-    #[test]
-    fn test_unknown_issue_source() {
-        let dbus_issue = Structure::from((
-            "Product not selected",
-            "missing_product",
-            "A product is required.",
-            5 as u32,
-            0 as u32,
-        ));
-
-        let issue = Issue::try_from(&Value::Structure(dbus_issue));
-        assert!(matches!(issue, Err(IssueError::UnknownSource(5))));
-    }
-
-    #[test]
-    fn test_unknown_issue_severity() {
-        let dbus_issue = Structure::from((
-            "Product not selected",
-            "missing_product",
-            "A product is required.",
-            0 as u32,
-            5 as u32,
-        ));
-
-        let issue = Issue::try_from(&Value::Structure(dbus_issue));
-        assert!(matches!(issue, Err(IssueError::UnknownSeverity(5))));
-    }
-}
+mod monitor;

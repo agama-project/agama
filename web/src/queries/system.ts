@@ -32,7 +32,7 @@ const transformLocales = (locales) =>
 const tranformKeymaps = (keymaps) => keymaps.map(({ id, description: name }) => ({ id, name }));
 
 const transformTimezones = (timezones) =>
-  timezones.map(({ code: id, parts, country }) => {
+  timezones.map(({ id, parts, country }) => {
     const utcOffset = tzOffset(id, new Date());
     return { id, parts, country, utcOffset };
   });

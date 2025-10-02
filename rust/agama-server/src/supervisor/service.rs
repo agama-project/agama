@@ -26,10 +26,13 @@ use crate::supervisor::{
     system_info::SystemInfo,
 };
 use agama_lib::install_settings::InstallSettings;
-use agama_utils::actor::{self, Actor, Handler, MessageHandler};
+use agama_utils::{
+    actor::{self, Actor, Handler, MessageHandler},
+    issue,
+};
 use async_trait::async_trait;
 use merge_struct::merge;
-use std::convert::Infallible;
+use std::{collections::HashMap, convert::Infallible};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -39,19 +42,23 @@ pub enum Error {
     Actor(#[from] actor::Error),
     #[error(transparent)]
     L10n(#[from] l10n::service::Error),
+    #[error(transparent)]
+    Issues(#[from] agama_utils::issue::service::Error),
     #[error("Infallible")]
     Infallible(#[from] Infallible),
 }
 
 pub struct Service {
     l10n: Handler<l10n::service::Service>,
+    issues: Handler<issue::Service>,
     config: InstallSettings,
 }
 
 impl Service {
-    pub fn new(l10n: Handler<l10n::Service>) -> Self {
+    pub fn new(l10n: Handler<l10n::Service>, issues: Handler<issue::Service>) -> Self {
         Self {
             l10n,
+            issues,
             config: InstallSettings::default(),
         }
     }
@@ -210,6 +217,17 @@ impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let localization = self.l10n.call(l10n::message::GetProposal).await?;
         Ok(Some(Proposal { localization }))
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetIssues> for Service {
+    /// It returns the current proposal, if any.
+    async fn handle(
+        &mut self,
+        _message: message::GetIssues,
+    ) -> Result<HashMap<String, Vec<issue::Issue>>, Error> {
+        Ok(self.issues.call(issue::message::Get).await?)
     }
 }
 
