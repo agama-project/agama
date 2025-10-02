@@ -390,6 +390,23 @@ void add_repository(struct Zypp *zypp, const char *alias, const char *url,
   }
 }
 
+void disable_repository(struct Zypp *zypp, const char *alias,
+                    struct Status *status ) noexcept {
+  if (zypp->repo_manager == NULL) {
+    status->state = status->STATE_FAILED;
+    status->error = strdup("Internal Error: Repo manager is not initialized.");
+    return;
+  }
+  try {
+    zypp::RepoInfo r_info = zypp->repo_manager->getRepo(alias);
+    r_info.setEnabled(false);
+    zypp->repo_manager->modifyRepository(r_info);
+    STATUS_OK(status);
+  } catch (zypp::Exception &excpt) {
+    STATUS_EXCEPT(status, excpt);
+  }
+}
+
 void remove_repository(struct Zypp *zypp, const char *alias,
                        struct Status *status, ZyppProgressCallback callback,
                        void *user_data) noexcept {

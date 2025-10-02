@@ -26,6 +26,21 @@ pub struct Repository {
     pub user_name: String,
 }
 
+impl Repository {
+    /// check if url points to local repository.
+    /// Can be None if url is invalid
+    pub fn is_local(&self) -> Result<bool, url::ParseError> {
+        let url = url::Url::parse(&self.url)?;
+        let result = url.scheme() == "cd" ||
+            url.scheme() == "dvd" ||
+            url.scheme() == "dir" ||
+            url.scheme() == "hd" ||
+            url.scheme() == "iso" ||
+            url.scheme() == "file";
+        Ok(result)
+    }
+}
+
 // TODO: should we add also e.g. serd serializers here?
 #[derive(Debug)]
 pub struct PatternInfo {
@@ -302,6 +317,17 @@ impl Zypp {
                 cb,
                 &mut closure as *mut _ as *mut c_void,
             );
+
+            helpers::status_to_result_void(status)
+        }
+    }
+
+    pub fn disable_repository(&self, alias: &str) -> ZyppResult<()> {
+        unsafe {
+            let mut status: Status = Status::default();
+            let status_ptr = &mut status as *mut _ as *mut Status;
+            let c_alias = CString::new(alias).unwrap();
+            zypp_agama_sys::disable_repository(self.ptr, c_alias.as_ptr(), status_ptr);
 
             helpers::status_to_result_void(status)
         }

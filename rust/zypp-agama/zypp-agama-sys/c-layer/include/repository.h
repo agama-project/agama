@@ -42,6 +42,12 @@ void add_repository(struct Zypp *zypp, const char *alias, const char *url,
                     struct Status *status, ZyppProgressCallback callback,
                     void *user_data) noexcept;
 
+/// Disable repository in repo manager
+/// @param zypp see \ref init_target
+/// @param alias have to be unique
+void disable_repository(struct Zypp *zypp, const char *alias,
+                    struct Status *status) noexcept;
+
 /// Removes repository from repo manager
 /// @param zypp see \ref init_target
 /// @param alias have to be unique

@@ -43,6 +43,7 @@ const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 pub enum SoftwareAction {
     Probe,
     Install(oneshot::Sender<bool>),
+    Finish,
     GetProducts(oneshot::Sender<Vec<Product>>),
     GetPatterns(oneshot::Sender<Vec<Pattern>>),
     GetConfig(oneshot::Sender<SoftwareConfig>),
@@ -70,8 +71,6 @@ pub struct SoftwareServiceServer {
     selected_product: Option<String>,
     software_selection: SoftwareSelection,
 }
-
-const SERVICE_NAME: &str = "org.opensuse.Agama.Software1";
 
 impl SoftwareServiceServer {
     /// Starts the software service loop and returns a client.
@@ -164,6 +163,10 @@ impl SoftwareServiceServer {
             SoftwareAction::Install(tx) => {
                 tx.send(self.install(zypp)?)
                     .map_err(|_| SoftwareServiceError::ResponseChannelClosed)?;
+            }
+
+            SoftwareAction::Finish => {
+                self.finish(zypp).await?;
             }
 
             SoftwareAction::SetResolvables {
@@ -263,6 +266,32 @@ impl SoftwareServiceServer {
 
         self.select_product_software(zypp, product)?;
 
+        Ok(())
+    }
+
+    async fn finish(&mut self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
+        self.remove_dud_repo(zypp)?;
+        self.disable_local_repos(zypp)?;
+        Ok(())
+    }
+
+    fn remove_dud_repo(&self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
+        const DUD_NAME: &str = "AgamaDriverUpdate";
+        let repos = zypp.list_repositories()?;
+        let repo = repos.iter().find(|r| r.alias.as_str() == DUD_NAME);
+        if let Some(repo) = repo {
+            zypp.remove_repository(&repo.alias, |_,_| true)?;
+        }
+        Ok(())
+    }
+
+    fn disable_local_repos(&self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
+        let repos = zypp.list_repositories()?;
+        // if url is invalid, then do not disable it and do not touch it
+        let repos = repos.iter().filter(|r| r.is_local().unwrap_or(false) );
+        for r in repos {
+            zypp.disable_repository(&r.alias)?;
+        }
         Ok(())
     }
 

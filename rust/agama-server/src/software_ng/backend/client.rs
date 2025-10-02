@@ -81,6 +81,11 @@ impl SoftwareServiceClient {
         Ok(rx.await?)
     }
 
+    pub async fn finish(&self) -> Result<(), SoftwareServiceError> {
+        self.actions.send(SoftwareAction::Finish)?;
+        Ok(())
+    }
+
     pub fn set_resolvables(
         &self,
         id: &str,
