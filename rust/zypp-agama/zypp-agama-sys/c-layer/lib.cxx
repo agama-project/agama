@@ -377,6 +377,7 @@ bool is_local_url(const char *url, struct Status *status) noexcept {
     return z_url.schemeIsLocal();
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);
+    return false;
   }
 }
 

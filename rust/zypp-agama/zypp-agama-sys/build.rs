@@ -19,12 +19,24 @@ fn update_file(file_path: &str, contents: &str) {
     }
 }
 
+const WARNING_PREFIX: &str = "cargo::warning=";
+// For each line in *stderr*, println! the line
+// prefixed with WARNING_PREFIX
+fn show_warnings(stderr: Vec<u8>) {
+    let stderr_str = String::from_utf8_lossy(&stderr);
+    for line in stderr_str.lines() {
+        println!("{}{}", WARNING_PREFIX, line);
+    }
+}
+
 fn main() {
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let mut cmd = Command::new("make");
     cmd.arg("-C");
     cmd.arg(Path::new(&manifest_dir).join("c-layer").as_os_str());
-    let result = cmd.status().expect("Failed to start make process");
+    let output = cmd.output().expect("Failed to start make process");
+    let result = output.status;
+    show_warnings(output.stderr);
     if !result.success() {
         panic!("Building C library failed.\n");
     }
