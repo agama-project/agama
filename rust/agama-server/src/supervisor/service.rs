@@ -43,13 +43,13 @@ pub enum Error {
     Infallible(#[from] Infallible),
 }
 
-pub struct Service<T: l10n::ModelAdapter> {
-    l10n: Handler<l10n::service::Service<T>>,
+pub struct Service {
+    l10n: Handler<l10n::service::Service>,
     config: InstallSettings,
 }
 
-impl<T: l10n::ModelAdapter> Service<T> {
-    pub fn new(l10n: Handler<l10n::Service<T>>) -> Self {
+impl Service {
+    pub fn new(l10n: Handler<l10n::Service>) -> Self {
         Self {
             l10n,
             config: InstallSettings::default(),
@@ -57,12 +57,12 @@ impl<T: l10n::ModelAdapter> Service<T> {
     }
 }
 
-impl<T: l10n::ModelAdapter> Actor for Service<T> {
+impl Actor for Service {
     type Error = Error;
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> MessageHandler<message::GetSystem> for Service<T> {
+impl MessageHandler<message::GetSystem> for Service {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let l10n_system = self.l10n.call(l10n::message::GetSystem).await?;
@@ -73,7 +73,7 @@ impl<T: l10n::ModelAdapter> MessageHandler<message::GetSystem> for Service<T> {
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> MessageHandler<message::GetExtendedConfig> for Service<T> {
+impl MessageHandler<message::GetExtendedConfig> for Service {
     /// Gets the current configuration.
     ///
     /// It includes user and default values.
@@ -90,7 +90,7 @@ impl<T: l10n::ModelAdapter> MessageHandler<message::GetExtendedConfig> for Servi
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> MessageHandler<message::GetExtendedConfigScope> for Service<T> {
+impl MessageHandler<message::GetExtendedConfigScope> for Service {
     /// It returns the configuration for the given scope.
     async fn handle(
         &mut self,
@@ -107,7 +107,7 @@ impl<T: l10n::ModelAdapter> MessageHandler<message::GetExtendedConfigScope> for 
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> MessageHandler<message::GetConfig> for Service<T> {
+impl MessageHandler<message::GetConfig> for Service {
     /// Gets the current configuration set by the user.
     ///
     /// It includes only the values that were set by the user.
@@ -117,7 +117,7 @@ impl<T: l10n::ModelAdapter> MessageHandler<message::GetConfig> for Service<T> {
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> MessageHandler<message::SetConfig> for Service<T> {
+impl MessageHandler<message::SetConfig> for Service {
     /// Sets the user configuration with the given values.
     ///
     /// It merges the values in the top-level. Therefore, if the configuration
@@ -137,7 +137,7 @@ impl<T: l10n::ModelAdapter> MessageHandler<message::SetConfig> for Service<T> {
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> MessageHandler<message::UpdateConfig> for Service<T> {
+impl MessageHandler<message::UpdateConfig> for Service {
     /// Patches the user configuration with the given values.
     ///
     /// It merges the current configuration with the given one.
@@ -148,7 +148,7 @@ impl<T: l10n::ModelAdapter> MessageHandler<message::UpdateConfig> for Service<T>
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> MessageHandler<message::GetConfigScope> for Service<T> {
+impl MessageHandler<message::GetConfigScope> for Service {
     /// It returns the configuration set by the user for the given scope.
     async fn handle(
         &mut self,
@@ -168,7 +168,7 @@ impl<T: l10n::ModelAdapter> MessageHandler<message::GetConfigScope> for Service<
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> MessageHandler<message::SetConfigScope> for Service<T> {
+impl MessageHandler<message::SetConfigScope> for Service {
     /// Sets the user configuration within the given scope.
     ///
     /// It replaces the current configuration with the given one and calculates a
@@ -187,7 +187,7 @@ impl<T: l10n::ModelAdapter> MessageHandler<message::SetConfigScope> for Service<
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> MessageHandler<message::UpdateConfigScope> for Service<T> {
+impl MessageHandler<message::UpdateConfigScope> for Service {
     /// Patches the user configuration within the given scope.
     ///
     /// It merges the current configuration with the given one.
@@ -205,7 +205,7 @@ impl<T: l10n::ModelAdapter> MessageHandler<message::UpdateConfigScope> for Servi
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> MessageHandler<message::GetProposal> for Service<T> {
+impl MessageHandler<message::GetProposal> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let localization = self.l10n.call(l10n::message::GetProposal).await?;
@@ -214,7 +214,7 @@ impl<T: l10n::ModelAdapter> MessageHandler<message::GetProposal> for Service<T> 
 }
 
 #[async_trait]
-impl<T: l10n::ModelAdapter> MessageHandler<message::RunAction> for Service<T> {
+impl MessageHandler<message::RunAction> for Service {
     /// It runs the given action.
     async fn handle(&mut self, message: message::RunAction) -> Result<(), Error> {
         match message.action {

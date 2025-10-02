@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{message, model::ModelAdapter, service::Service};
+use crate::{message, service::Service};
 use agama_locale_data::{KeymapId, LocaleId};
 use agama_utils::{
     actor::Handler,
@@ -33,13 +33,13 @@ pub enum Error {
     DBus(#[from] zbus::Error),
 }
 
-pub struct Monitor<T: ModelAdapter + 'static> {
-    handler: Handler<Service<T>>,
+pub struct Monitor {
+    handler: Handler<Service>,
     stream: PropertiesChangedStream,
 }
 
-impl<T: ModelAdapter> Monitor<T> {
-    pub async fn new(handler: Handler<Service<T>>) -> Result<Self, Error> {
+impl Monitor {
+    pub async fn new(handler: Handler<Service>) -> Result<Self, Error> {
         let dbus = zbus::Connection::system().await?;
         let proxy = PropertiesProxy::builder(&dbus)
             .path("/org/freedesktop/locale1")?

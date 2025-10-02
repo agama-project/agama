@@ -51,12 +51,15 @@ pub enum Error {
     Generic(#[from] anyhow::Error),
 }
 
-pub struct Service<T>
-where
-    T: ModelAdapter,
-{
+#[derive(Clone, Debug)]
+pub struct SystemConfig {
+    pub language: Option<String>,
+    pub keyboard: Option<String>,
+}
+
+pub struct Service {
     state: State,
-    model: T,
+    model: Box<dyn ModelAdapter + Send + 'static>,
     events: mpsc::UnboundedSender<Event>,
 }
 
@@ -65,36 +68,36 @@ struct State {
     config: ExtendedConfig,
 }
 
-impl<T> Service<T>
-where
-    T: ModelAdapter,
-{
-    pub fn new(mut model: T, events: mpsc::UnboundedSender<Event>) -> Service<T> {
+impl Service {
+    pub fn new<T: ModelAdapter + Send + 'static>(
+        mut model: T,
+        events: mpsc::UnboundedSender<Event>,
+    ) -> Service {
         let system = SystemInfo::read_from(&mut model);
         let config = ExtendedConfig::new_from(&system);
         let state = State { system, config };
 
         Self {
             state,
-            model,
+            model: Box::new(model),
             events,
         }
     }
 }
 
-impl<T: ModelAdapter> Actor for Service<T> {
+impl Actor for Service {
     type Error = Error;
 }
 
 #[async_trait]
-impl<T: ModelAdapter> MessageHandler<message::GetSystem> for Service<T> {
+impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         Ok(self.state.system.clone())
     }
 }
 
 #[async_trait]
-impl<T: ModelAdapter> MessageHandler<message::SetSystem<message::SystemConfig>> for Service<T> {
+impl MessageHandler<message::SetSystem<message::SystemConfig>> for Service {
     async fn handle(
         &mut self,
         message: message::SetSystem<message::SystemConfig>,
@@ -113,14 +116,14 @@ impl<T: ModelAdapter> MessageHandler<message::SetSystem<message::SystemConfig>> 
 }
 
 #[async_trait]
-impl<T: ModelAdapter> MessageHandler<message::GetConfig> for Service<T> {
+impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, Error> {
         Ok((&self.state.config).into())
     }
 }
 
 #[async_trait]
-impl<T: ModelAdapter> MessageHandler<message::SetConfig<Config>> for Service<T> {
+impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
         let merged = self.state.config.merge(&message.config)?;
         if merged != self.state.config {
@@ -132,14 +135,14 @@ impl<T: ModelAdapter> MessageHandler<message::SetConfig<Config>> for Service<T> 
 }
 
 #[async_trait]
-impl<T: ModelAdapter> MessageHandler<message::GetProposal> for Service<T> {
+impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Proposal, Error> {
         Ok((&self.state.config).into())
     }
 }
 
 #[async_trait]
-impl<T: ModelAdapter> MessageHandler<message::Install> for Service<T> {
+impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
         let proposal: Proposal = (&self.state.config).into();
         self.model
@@ -150,7 +153,7 @@ impl<T: ModelAdapter> MessageHandler<message::Install> for Service<T> {
 }
 
 #[async_trait]
-impl<T: ModelAdapter> MessageHandler<message::UpdateLocale> for Service<T> {
+impl MessageHandler<message::UpdateLocale> for Service {
     async fn handle(&mut self, message: message::UpdateLocale) -> Result<(), Error> {
         self.state.system.locale = message.locale;
         _ = self.events.send(Event::SystemChanged);
@@ -159,7 +162,7 @@ impl<T: ModelAdapter> MessageHandler<message::UpdateLocale> for Service<T> {
 }
 
 #[async_trait]
-impl<T: ModelAdapter> MessageHandler<message::UpdateKeymap> for Service<T> {
+impl MessageHandler<message::UpdateKeymap> for Service {
     async fn handle(&mut self, message: message::UpdateKeymap) -> Result<(), Error> {
         self.state.system.keymap = message.keymap;
         _ = self.events.send(Event::SystemChanged);

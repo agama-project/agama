@@ -21,7 +21,7 @@
 //! This module implements Agama's HTTP API.
 
 use crate::{
-    supervisor::{self, l10n, message, ConfigScope, Scope, Service, SystemInfo},
+    supervisor::{self, message, ConfigScope, Scope, Service, SystemInfo},
     web::EventsSender,
 };
 use agama_lib::{error::ServiceError, install_settings::InstallSettings};
@@ -64,7 +64,7 @@ fn to_option_response<T: Serialize>(value: Option<T>) -> Response {
 
 #[derive(Clone)]
 pub struct ServerState {
-    supervisor: Handler<Service<l10n::Model>>,
+    supervisor: Handler<Service>,
 }
 
 type ServerResult<T> = Result<T, Error>;

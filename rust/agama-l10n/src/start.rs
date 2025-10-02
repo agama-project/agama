@@ -58,7 +58,7 @@ pub enum Error {
 /// ```
 ///
 /// * `events`: channel to emit the [localization-specific events](crate::Event).
-pub async fn start(events: event::Sender) -> Result<Handler<Service<Model>>, Error> {
+pub async fn start(events: event::Sender) -> Result<Handler<Service>, Error> {
     let model = Model::from_system()?;
     let service = Service::new(model, events);
     let handler = actor::spawn(service);
@@ -150,7 +150,7 @@ mod tests {
     }
 
     fn start_testing_service(//) -> Result<(Receiver, Handler<TestModel>), Box<dyn std::error::Error>> {
-    ) -> (Receiver, Handler<Service<TestModel>>) {
+    ) -> (Receiver, Handler<Service>) {
         let (events_tx, events_rx) = mpsc::unbounded_channel::<Event>();
         let model = build_adapter();
         let service = Service::new(model, events_tx);

@@ -42,7 +42,7 @@ pub enum Error {
 /// It receives the following argument:
 ///
 /// * `events`: channel to emit the [events](agama_lib::http::Event).
-pub async fn start(events: EventsSender) -> Result<Handler<Service<l10n::Model>>, Error> {
+pub async fn start(events: EventsSender) -> Result<Handler<Service>, Error> {
     let mut listener = EventsListener::new(events);
     let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
     let l10n = l10n::start(events_sender).await?;
@@ -63,7 +63,7 @@ mod test {
     use agama_utils::actor::Handler;
     use tokio::sync::broadcast;
 
-    async fn start_service() -> Handler<Service<l10n::Model>> {
+    async fn start_service() -> Handler<Service> {
         let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
         supervisor::start(events_tx).await.unwrap()
     }
