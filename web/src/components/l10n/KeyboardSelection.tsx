@@ -49,10 +49,9 @@ export default function KeyboardSelection() {
   const searchHelp = _("Filter by description or keymap code");
 
   const onSubmit = async (e: React.SyntheticEvent) => {
-    console.log("selected", selected);
     e.preventDefault();
     // FIXME: udpate when new API is ready
-    updateConfig({ localization: { keyboard: selected } });
+    updateConfig({ localization: { keymap: selected } });
     navigate(-1);
   };
 

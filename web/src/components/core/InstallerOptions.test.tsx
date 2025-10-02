@@ -62,7 +62,7 @@ const mockChangeUILanguage = jest.fn();
 
 jest.mock("~/queries/system", () => ({
   ...jest.requireActual("~/queries/system"),
-  useSystem: () => ({ locale: { locales, keymaps } }),
+  useSystem: () => ({ localization: { locales, keymaps, locale: "us_US.UTF-8", keymap: "us" } }),
 }));
 
 jest.mock("~/queries/status", () => ({

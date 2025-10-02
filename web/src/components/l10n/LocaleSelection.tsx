@@ -47,7 +47,7 @@ export default function LocaleSelection() {
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    updateConfig({ localization: { language: selected } });
+    updateConfig({ localization: { locale: selected } });
     navigate(-1);
   };
 
