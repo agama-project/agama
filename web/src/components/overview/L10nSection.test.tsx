@@ -41,8 +41,8 @@ jest.mock("~/queries/proposal", () => ({
   useProposal: () => ({ localization: { locale: "en_US.UTF-8" } }),
 }));
 
-it("displays the selected locale", async () => {
-  plainRender(<L10nSection />, { withL10n: true });
+it("displays the selected locale", () => {
+  plainRender(<L10nSection />);
 
-  await screen.findByText(/English \(United States\)/);
+  expect(screen.getByText(/English \(United States\)/)).toBeInTheDocument();
 });
