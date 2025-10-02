@@ -96,19 +96,29 @@ pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError
         .with_state(state))
 }
 
+/// Returns the information about the system.
+#[utoipa::path(
+    get,
+    path = "/system",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "System information."),
+        (status = 400, description = "Not possible to retrieve the system information.")
+    )
+)]
 async fn get_system(State(state): State<ServerState>) -> ServerResult<Json<SystemInfo>> {
     let system = state.supervisor.call(message::GetSystem).await?;
     Ok(Json(system))
 }
 
-/// Returns the current configuration.
+/// Returns the extended configuration.
 #[utoipa::path(
     get,
     path = "/extended_config",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "Agama configuration"),
-        (status = 400, description = "Not possible to retrieve the configuration")
+        (status = 200, description = "Extended configuration"),
+        (status = 400, description = "Not possible to retrieve the configuration.")
     )
 )]
 async fn get_extended_config(
@@ -118,17 +128,17 @@ async fn get_extended_config(
     Ok(Json(config))
 }
 
-/// Returns the current configuration for the given scope.
+/// Returns the extended configuration for the given scope.
 #[utoipa::path(
     get,
     path = "/extended_config/{scope}",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "Agama configuration for the given scope"),
-        (status = 400, description = "Not possible to retrieve the configuration")
+        (status = 200, description = "Extended configuration for the given scope."),
+        (status = 400, description = "Not possible to retrieve the configuration scope.")
     ),
     params(
-        ("scope" = String, Path, description = "Configuration scope (e.g., 'storage', 'l10n', etc.")
+        ("scope" = String, Path, description = "Configuration scope (e.g., 'storage', 'l10n', etc).")
     )
 )]
 async fn get_extended_config_scope(
@@ -142,14 +152,14 @@ async fn get_extended_config_scope(
     Ok(to_option_response(config))
 }
 
-/// Returns the user specified configuration for the given scope.
+/// Returns the configuration.
 #[utoipa::path(
     get,
     path = "/config",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "User specified configuration"),
-        (status = 400, description = "Not possible to retrieve the configuration")
+        (status = 200, description = "Configuration."),
+        (status = 400, description = "Not possible to retrieve the configuration.")
     )
 )]
 async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<InstallSettings>> {
@@ -157,17 +167,17 @@ async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<Insta
     Ok(Json(config))
 }
 
-/// Returns the user specified configuration for the given scope.
+/// Returns the configuration for the given scope.
 #[utoipa::path(
     get,
     path = "/config/{scope}",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "User specified configuration for the given scope"),
-        (status = 400, description = "Not possible to retrieve the configuration")
+        (status = 200, description = "Configuration for the given scope."),
+        (status = 400, description = "Not possible to retrieve the configuration scope.")
     ),
     params(
-        ("scope" = String, Path, description = "Configuration scope (e.g., 'storage', 'l10n', etc.")
+        ("scope" = String, Path, description = "Configuration scope (e.g., 'storage', 'l10n', etc).")
     )
 )]
 async fn get_config_scope(
@@ -183,15 +193,14 @@ async fn get_config_scope(
 
 /// Updates the configuration.
 ///
-/// Replaces the whole configuration. If some value is missing, it will be
-/// removed.
+/// Replaces the whole configuration. If some value is missing, it will be removed.
 #[utoipa::path(
     put,
     path = "/config",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "The configuration was saved. Other operations can be running in background."),
-        (status = 400, description = "Not possible to retrieve the configuration")
+        (status = 200, description = "The configuration was replaced. Other operations can be running in background."),
+        (status = 400, description = "Not possible to replace the configuration.")
     ),
     params(
         ("config" = InstallSettings, description = "Configuration to apply.")
@@ -210,17 +219,17 @@ async fn put_config(
 
 /// Patches the configuration.
 ///
-/// It only chagnes to the specified values, keeping the rest as they were.
+/// It only changes the specified values, keeping the rest as they are.
 #[utoipa::path(
     patch,
     path = "/config",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "The configuration was saved. Other operations can be running in background."),
-        (status = 400, description = "Not possible to retrieve the configuration")
+        (status = 200, description = "The configuration was patched. Other operations can be running in background."),
+        (status = 400, description = "Not possible to patch the configuration.")
     ),
     params(
-        ("config" = InstallSettings, description = "Changes in the configuration")
+        ("config" = InstallSettings, description = "Changes in the configuration.")
     )
 )]
 async fn patch_config(
@@ -236,19 +245,18 @@ async fn patch_config(
 
 /// Updates the configuration for the given scope.
 ///
-/// Replaces the whole configuration. If some value is missing, it will be
-/// removed.
+/// Replaces the whole scope. If some value is missing, it will be removed.
 #[utoipa::path(
     put,
     path = "/config/{scope}",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "The configuration was saved. Other operations can be running in background."),
-        (status = 400, description = "Not possible to retrieve the configuration")
+        (status = 200, description = "The configuration scope was replaced. Other operations can be running in background."),
+        (status = 400, description = "Not possible to replace the configuration scope.")
     ),
     params(
-        ("config" = InstallSettings, description = "Changes in the configuration"),
-        ("scope" = String, Path, description = "Configuration scope (e.g., 'storage', 'localization', etc.")
+        ("config" = InstallSettings, description = "Configuration scope to apply."),
+        ("scope" = String, Path, description = "Configuration scope (e.g., 'storage', 'localization', etc).")
     )
 )]
 async fn put_config_scope(
@@ -269,18 +277,18 @@ async fn put_config_scope(
 
 /// Patches the configuration for the given scope.
 ///
-/// It only chagnes to the specified values, keeping the rest as they were.
+/// It only chagnes the specified values, keeping the rest as they are.
 #[utoipa::path(
     patch,
     path = "/config/{scope}",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "The configuration was saved. Other operations can be running in background."),
-        (status = 400, description = "Not possible to retrieve the configuration")
+        (status = 200, description = "The configuration scope was patched. Other operations can be running in background."),
+        (status = 400, description = "Not possible to patch the configuration scope.")
     ),
     params(
-        ("config" = InstallSettings, description = "Changes in the configuration"),
-        ("scope" = String, Path, description = "Configuration scope (e.g., 'storage', 'l10n', etc.")
+        ("config" = InstallSettings, description = "Changes in the configuration scope."),
+        ("scope" = String, Path, description = "Configuration scope (e.g., 'storage', 'l10n', etc).")
     )
 )]
 async fn patch_config_scope(
@@ -299,6 +307,16 @@ async fn patch_config_scope(
     Ok(())
 }
 
+/// Returns how the target system is configured (proposal).
+#[utoipa::path(
+    get,
+    path = "/proposal",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "Proposal successfully retrieved."),
+        (status = 400, description = "Not possible to retrieve the proposal.")
+    )
+)]
 async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response> {
     let proposal = state.supervisor.call(message::GetProposal).await?;
     Ok(to_option_response(proposal))
@@ -309,11 +327,11 @@ async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response
     path = "/actions",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "The action run successfully."),
-        (status = 400, description = "It was not possible to run the action.", body = Object)
+        (status = 200, description = "Action successfully run."),
+        (status = 400, description = "Not possible to run the action.", body = Object)
     ),
     params(
-        ("action" = message::Action, description = "Description of the action to run"),
+        ("action" = message::Action, description = "Description of the action to run."),
     )
 )]
 async fn run_action(
