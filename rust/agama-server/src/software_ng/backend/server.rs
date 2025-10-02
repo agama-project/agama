@@ -274,6 +274,19 @@ impl SoftwareServiceServer {
         self.disable_local_repos(zypp)?;
         self.registration_finish()?;
         self.modify_zypp_conf()?;
+        self.modify_full_repo(zypp)?;
+        Ok(())
+    }
+
+    fn modify_full_repo(&self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
+        let repos = zypp.list_repositories()?;
+        // if url is invalid, then do not disable it and do not touch it
+        let repos = repos
+            .iter()
+            .filter(|r| r.url.starts_with("dvd:/install?devices="));
+        for r in repos {
+            zypp.set_repository_url(&r.alias, "dvd:/install")?;
+        }
         Ok(())
     }
 
@@ -282,7 +295,7 @@ impl SoftwareServiceServer {
         let repos = zypp.list_repositories()?;
         let repo = repos.iter().find(|r| r.alias.as_str() == DUD_NAME);
         if let Some(repo) = repo {
-            zypp.remove_repository(&repo.alias, |_,_| true)?;
+            zypp.remove_repository(&repo.alias, |_, _| true)?;
         }
         Ok(())
     }
@@ -290,7 +303,7 @@ impl SoftwareServiceServer {
     fn disable_local_repos(&self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
         let repos = zypp.list_repositories()?;
         // if url is invalid, then do not disable it and do not touch it
-        let repos = repos.iter().filter(|r| r.is_local().unwrap_or(false) );
+        let repos = repos.iter().filter(|r| r.is_local().unwrap_or(false));
         for r in repos {
             zypp.disable_repository(&r.alias)?;
         }

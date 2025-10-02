@@ -301,10 +301,17 @@ unsafe extern "C" {
         callback: ZyppProgressCallback,
         user_data: *mut ::std::os::raw::c_void,
     );
-    #[doc = " Disable repository in repo manager\n @param zypp see \\ref init_target\n @param alias have to be unique"]
+    #[doc = " Disable repository in repo manager\n @param zypp see \\ref init_target\n @param alias identifier of repository"]
     pub fn disable_repository(
         zypp: *mut Zypp,
         alias: *const ::std::os::raw::c_char,
+        status: *mut Status,
+    );
+    #[doc = " Changes url of given repository\n @param zypp see \\ref init_target\n @param alias identifier of repository\n @param alias have to be unique"]
+    pub fn set_repository_url(
+        zypp: *mut Zypp,
+        alias: *const ::std::os::raw::c_char,
+        url: *const ::std::os::raw::c_char,
         status: *mut Status,
     );
     #[doc = " Removes repository from repo manager\n @param zypp see \\ref init_target\n @param alias have to be unique\n @param[out] status (will overwrite existing contents)\n @param callback pointer to function with callback or NULL\n @param user_data"]

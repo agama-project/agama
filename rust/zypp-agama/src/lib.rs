@@ -31,12 +31,12 @@ impl Repository {
     /// Can be None if url is invalid
     pub fn is_local(&self) -> Result<bool, url::ParseError> {
         let url = url::Url::parse(&self.url)?;
-        let result = url.scheme() == "cd" ||
-            url.scheme() == "dvd" ||
-            url.scheme() == "dir" ||
-            url.scheme() == "hd" ||
-            url.scheme() == "iso" ||
-            url.scheme() == "file";
+        let result = url.scheme() == "cd"
+            || url.scheme() == "dvd"
+            || url.scheme() == "dir"
+            || url.scheme() == "hd"
+            || url.scheme() == "iso"
+            || url.scheme() == "file";
         Ok(result)
     }
 }
@@ -328,6 +328,23 @@ impl Zypp {
             let status_ptr = &mut status as *mut _ as *mut Status;
             let c_alias = CString::new(alias).unwrap();
             zypp_agama_sys::disable_repository(self.ptr, c_alias.as_ptr(), status_ptr);
+
+            helpers::status_to_result_void(status)
+        }
+    }
+
+    pub fn set_repository_url(&self, alias: &str, url: &str) -> ZyppResult<()> {
+        unsafe {
+            let mut status: Status = Status::default();
+            let status_ptr = &mut status as *mut _ as *mut Status;
+            let c_alias = CString::new(alias).unwrap();
+            let c_url = CString::new(url).unwrap();
+            zypp_agama_sys::set_repository_url(
+                self.ptr,
+                c_alias.as_ptr(),
+                c_url.as_ptr(),
+                status_ptr,
+            );
 
             helpers::status_to_result_void(status)
         }
