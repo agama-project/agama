@@ -42,7 +42,27 @@ async fn build_server_service() -> Result<Router, ServiceError> {
 
 #[test]
 #[cfg(not(ci))]
-async fn test_get_config() -> Result<(), Box<dyn Error>> {
+async fn test_get_extended_config() -> Result<(), Box<dyn Error>> {
+    let server_service = build_server_service().await?;
+    let request = Request::builder()
+        .uri("/extended_config")
+        .body(Body::empty())
+        .unwrap();
+
+    let response = server_service.oneshot(request).await.unwrap();
+    assert_eq!(response.status(), StatusCode::OK);
+
+    let body = body_to_string(response.into_body()).await;
+    assert!(body.contains(r#""locale""#));
+    assert!(body.contains(r#""keymap""#));
+    assert!(body.contains(r#""timezone""#));
+
+    Ok(())
+}
+
+#[test]
+#[cfg(not(ci))]
+async fn test_get_empty_config() -> Result<(), Box<dyn Error>> {
     let server_service = build_server_service().await?;
     let request = Request::builder()
         .uri("/config")
@@ -53,32 +73,14 @@ async fn test_get_config() -> Result<(), Box<dyn Error>> {
     assert_eq!(response.status(), StatusCode::OK);
 
     let body = body_to_string(response.into_body()).await;
-    assert!(body.contains(r#""localization":{"language":"en_US.UTF-8"#));
+    assert_eq!(&body, "");
 
     Ok(())
 }
 
 #[test]
 #[cfg(not(ci))]
-async fn test_get_user_config() -> Result<(), Box<dyn Error>> {
-    let server_service = build_server_service().await?;
-    let request = Request::builder()
-        .uri("/config/user")
-        .body(Body::empty())
-        .unwrap();
-
-    let response = server_service.oneshot(request).await.unwrap();
-    assert_eq!(response.status(), StatusCode::OK);
-
-    let body = body_to_string(response.into_body()).await;
-    assert!(!body.contains(r#""localization""#));
-
-    Ok(())
-}
-
-#[test]
-#[cfg(not(ci))]
-async fn test_put_user_config() -> Result<(), Box<dyn Error>> {
+async fn test_put_config() -> Result<(), Box<dyn Error>> {
     let localization = Config {
         locale: Some("es_ES.UTF-8".to_string()),
         keymap: Some("es".to_string()),
@@ -92,7 +94,7 @@ async fn test_put_user_config() -> Result<(), Box<dyn Error>> {
 
     let server_service = build_server_service().await?;
     let request = Request::builder()
-        .uri("/config/user")
+        .uri("/config")
         .header("Content-Type", "application/json")
         .method(Method::PUT)
         .body(serde_json::to_string(&config)?)
@@ -102,7 +104,7 @@ async fn test_put_user_config() -> Result<(), Box<dyn Error>> {
     assert_eq!(response.status(), StatusCode::OK);
 
     let request = Request::builder()
-        .uri("/config/user")
+        .uri("/config")
         .body(Body::empty())
         .unwrap();
 
@@ -111,7 +113,7 @@ async fn test_put_user_config() -> Result<(), Box<dyn Error>> {
 
     let body = body_to_string(response.into_body()).await;
     assert!(body.contains(
-        r#""localization":{"language":"es_ES.UTF-8","keyboard":"es","timezone":"Atlantic/Canary"#
+        r#""localization":{"locale":"es_ES.UTF-8","keymap":"es","timezone":"Atlantic/Canary"#
     ));
 
     let localization = Config {
@@ -122,7 +124,7 @@ async fn test_put_user_config() -> Result<(), Box<dyn Error>> {
     config.localization = Some(localization);
 
     let request = Request::builder()
-        .uri("/config/user")
+        .uri("/config")
         .header("Content-Type", "application/json")
         .method(Method::PUT)
         .body(serde_json::to_string(&config)?)
@@ -132,7 +134,7 @@ async fn test_put_user_config() -> Result<(), Box<dyn Error>> {
     assert_eq!(response.status(), StatusCode::OK);
 
     let request = Request::builder()
-        .uri("/config/user")
+        .uri("/config")
         .body(Body::empty())
         .unwrap();
 
@@ -140,14 +142,14 @@ async fn test_put_user_config() -> Result<(), Box<dyn Error>> {
     assert_eq!(response.status(), StatusCode::OK);
 
     let body = body_to_string(response.into_body()).await;
-    assert!(body.contains(r#""localization":{"keyboard":"en"}"#));
+    assert!(body.contains(r#""localization":{"keymap":"en"}"#));
 
     Ok(())
 }
 
 #[test]
 #[cfg(not(ci))]
-async fn test_patch_user_config() -> Result<(), Box<dyn Error>> {
+async fn test_patch_config() -> Result<(), Box<dyn Error>> {
     let localization = Config {
         locale: Some("es_ES.UTF-8".to_string()),
         keymap: Some("es".to_string()),
@@ -161,7 +163,7 @@ async fn test_patch_user_config() -> Result<(), Box<dyn Error>> {
 
     let server_service = build_server_service().await?;
     let request = Request::builder()
-        .uri("/config/user")
+        .uri("/config")
         .header("Content-Type", "application/json")
         .method(Method::PUT)
         .body(serde_json::to_string(&config)?)
@@ -178,7 +180,7 @@ async fn test_patch_user_config() -> Result<(), Box<dyn Error>> {
     config.localization = Some(localization);
 
     let request = Request::builder()
-        .uri("/config/user")
+        .uri("/config")
         .header("Content-Type", "application/json")
         .method(Method::PATCH)
         .body(serde_json::to_string(&config)?)
@@ -187,7 +189,7 @@ async fn test_patch_user_config() -> Result<(), Box<dyn Error>> {
     let response = server_service.clone().oneshot(request).await.unwrap();
     assert_eq!(response.status(), StatusCode::OK);
     let request = Request::builder()
-        .uri("/config/user")
+        .uri("/config")
         .body(Body::empty())
         .unwrap();
 
@@ -196,7 +198,7 @@ async fn test_patch_user_config() -> Result<(), Box<dyn Error>> {
 
     let body = body_to_string(response.into_body()).await;
     assert!(body.contains(
-        r#""localization":{"language":"es_ES.UTF-8","keyboard":"en","timezone":"Atlantic/Canary"#
+        r#""localization":{"locale":"es_ES.UTF-8","keymap":"en","timezone":"Atlantic/Canary"#
     ));
 
     Ok(())
