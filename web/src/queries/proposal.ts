@@ -20,7 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import { useSuspenseQuery } from "@tanstack/react-query";
+import React from "react";
+import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
+import { useInstallerClient } from "~/context/installer";
 import { fetchProposal } from "~/api/api";
 
 /**
@@ -38,4 +40,18 @@ const useProposal = () => {
   return config;
 };
 
-export { useProposal };
+const useProposalChanges = () => {
+  const queryClient = useQueryClient();
+  const client = useInstallerClient();
+
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.onEvent((event) => {
+      if (event.type === "l10n" && event.name === "ProposalChanged") {
+        queryClient.invalidateQueries({ queryKey: ["proposal"] });
+      }
+    });
+  }, [client, queryClient]);
+};
+export { useProposal, useProposalChanges };

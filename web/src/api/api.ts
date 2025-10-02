@@ -35,7 +35,7 @@ const fetchProposal = (): Promise<object> => get("/api/v2/proposal");
 /**
  * Updates configuration
  */
-const updateConfig = (config) => patch("/api/v2/config/user", config);
+const updateConfig = (config) => patch("/api/v2/config", config);
 /**
  * Triggers an action
  */

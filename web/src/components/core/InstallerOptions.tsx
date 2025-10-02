@@ -588,10 +588,10 @@ export default function InstallerOptions({
   const reuseSettings = () => {
     // FIXME: export and use languageToLocale from context/installerL10n
     const systemLocale = locales.find((l) => l.id.startsWith(formState.language.replace("-", "_")));
-    const systemL10n: { language?: Locale["id"]; keyboard?: Keymap["id"] } = {};
+    const systemL10n: { locale?: Locale["id"]; keymap?: Keymap["id"] } = {};
     // FIXME: use a fallback if no system locale was found ?
-    if (variant !== "keyboard") systemL10n.language = systemLocale?.id;
-    if (variant !== "language" && localConnection()) systemL10n.keyboard = formState.keymap;
+    if (variant !== "keyboard") systemL10n.locale = systemLocale?.id;
+    if (variant !== "language" && localConnection()) systemL10n.keymap = formState.keymap;
 
     updateConfig({ localization: systemL10n });
   };

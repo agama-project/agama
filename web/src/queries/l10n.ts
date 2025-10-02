@@ -38,7 +38,7 @@ const useL10nConfigChanges = () => {
     if (!client) return;
 
     return client.onEvent((event) => {
-      if (event.type === "L10nConfigChanged") {
+      if (event.type === "l10n" && event.name === "ProposalChanged") {
         queryClient.invalidateQueries({ queryKey: ["l10n"] });
       }
     });

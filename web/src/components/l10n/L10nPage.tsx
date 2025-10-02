@@ -76,8 +76,6 @@ export default function L10nPage() {
   const timezone =
     l10nProposal.timezone && l10n.timezones.find((t) => t.id === l10nProposal.timezone);
 
-  console.log("locale", locale);
-
   return (
     <Page>
       <Page.Header>

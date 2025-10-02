@@ -21,12 +21,28 @@
  */
 
 import React from "react";
+import { Content } from "@patternfly/react-core";
+import { useProposal } from "~/queries/proposal";
+import { useSystem } from "~/queries/system";
+import { _ } from "~/i18n";
 
 export default function L10nSection() {
-  /* eslint-disable i18next/no-literal-string */
+  const { localization: l10nProposal } = useProposal();
+  const { localization: l10n } = useSystem();
+  const locale = l10nProposal.locale && l10n.locales.find((l) => l.id === l10nProposal.locale);
+
+  // TRANSLATORS: %s will be replaced by a language name and territory, example:
+  // "English (United States)".
+  const [msg1, msg2] = _("The system will use %s as its default language.").split("%s");
+
   return (
-    <div style={{ border: "2px solid red", width: "fit-content", padding: "2px" }}>
-      Overview/L10nSection: pending to either, removal or adaptation
-    </div>
+    <Content>
+      <Content component="h3">{_("Localization")}</Content>
+      <Content>
+        <b>
+          {locale ? `${msg1}${locale.name} (${locale.territory})${msg2}` : _("Not selected yet")}
+        </b>
+      </Content>
+    </Content>
   );
 }

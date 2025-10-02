@@ -20,8 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
+import React from "react";
 import { tzOffset } from "@date-fns/tz/tzOffset";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useInstallerClient } from "~/context/installer";
 import { fetchSystem } from "~/api/api";
 
 const transformLocales = (locales) =>
@@ -61,6 +63,9 @@ const systemQuery = () => {
         locales: transformLocales(data.localization.locales),
         keymaps: tranformKeymaps(data.localization.keymaps),
         timezones: transformTimezones(data.localization.timezones),
+        locale: data.locale,
+        keypmap: data.keymap,
+        timezone: data.timezone,
       },
     }),
   };
@@ -71,4 +76,19 @@ const useSystem = () => {
   return config;
 };
 
-export { useSystem };
+const useSystemChanges = () => {
+  const queryClient = useQueryClient();
+  const client = useInstallerClient();
+
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.onEvent((event) => {
+      if (event.type === "l10n" && event.name === "SystemChanged") {
+        queryClient.invalidateQueries({ queryKey: ["system"] });
+      }
+    });
+  }, [client, queryClient]);
+};
+
+export { useSystem, useSystemChanges };
