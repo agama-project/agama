@@ -42,7 +42,7 @@ Returns the *extended config* JSON.
 
 There is a distinction between *extended config* and *config*:
 
-* The *config* is the config explicity set by the clients.
+* The *config* is the config explicitly set by the clients.
 * The *extended config* is the config used for calculating the proposal and it is built by merging the the *config* with the default *extended config*. The default *extended config* is built from the *system info* and the *product info*.
 
 For example, if only the *locale* was configured by the user, then the *config*  has no *keymap* property. Nevertheless, the *extended config* would have a *keymap* with the value from the default *extended config*.

@@ -149,8 +149,7 @@ mod tests {
         }
     }
 
-    fn start_testing_service(//) -> Result<(Receiver, Handler<TestModel>), Box<dyn std::error::Error>> {
-    ) -> (Receiver, Handler<Service>) {
+    fn start_testing_service() -> (Receiver, Handler<Service>) {
         let (events_tx, events_rx) = mpsc::unbounded_channel::<Event>();
         let model = build_adapter();
         let service = Service::new(model, events_tx);
@@ -206,13 +205,11 @@ mod tests {
     async fn test_set_config_without_changes() -> Result<(), Box<dyn std::error::Error>> {
         let (mut events_rx, handler) = start_testing_service();
 
-        // let config = handler.get_config().await?;
         let config = handler.call(message::GetConfig).await?;
         assert_eq!(config.locale, Some("en_US.UTF-8".to_string()));
         let message = message::SetConfig::new(config.clone());
         handler.call(message).await?;
         // Wait until the action is dispatched.
-        // _ = handler.get_config().await?;
         let _ = handler.call(message::GetConfig).await?;
 
         let event = events_rx.try_recv();
