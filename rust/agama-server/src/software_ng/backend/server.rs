@@ -272,6 +272,8 @@ impl SoftwareServiceServer {
     async fn finish(&mut self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
         self.remove_dud_repo(zypp)?;
         self.disable_local_repos(zypp)?;
+        self.registration_finish()?;
+        self.modify_zypp_conf()?;
         Ok(())
     }
 
@@ -292,6 +294,16 @@ impl SoftwareServiceServer {
         for r in repos {
             zypp.disable_repository(&r.alias)?;
         }
+        Ok(())
+    }
+
+    fn registration_finish(&self) -> Result<(), SoftwareServiceError> {
+        // TODO: implement when registration is ready
+        Ok(())
+    }
+
+    fn modify_zypp_conf(&self) -> Result<(), SoftwareServiceError> {
+        // TODO: implement when requireOnly is implemented
         Ok(())
     }
 
