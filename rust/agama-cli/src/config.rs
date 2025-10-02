@@ -25,6 +25,7 @@ use agama_lib::{
     profile::ProfileValidator, profile::ValidationOutcome, utils::FileFormat,
     Store as SettingsStore,
 };
+use agama_lib::profile::ProfileHTTPClient;
 use anyhow::{anyhow, Context};
 use clap::Subcommand;
 use console::style;
@@ -197,20 +198,9 @@ async fn validate_client(
     client: &BaseHTTPClient,
     url_or_path: CliInput,
 ) -> anyhow::Result<ValidationOutcome> {
-    // unwrap OK: joining a parsable constant to a valid Url
-    let mut url = client.base_url.join("profile/validate").unwrap();
-    url_or_path.add_query(&mut url)?;
-
-    let body = url_or_path.body_for_web()?;
-    // we use plain text .body instead of .json
-    let response = client
-        .client
-        .request(reqwest::Method::POST, url)
-        .body(body)
-        .send()
-        .await?;
-
-    Ok(client.deserialize_or_error(response).await?)
+    ProfileHTTPClient::new(client.clone())
+        .validate(url_or_path.get_query(), url_or_path.body_for_web()?)
+        .await
 }
 
 async fn validate(
@@ -325,11 +315,7 @@ async fn generate(
 /// to our web backend.
 /// Return well-formed Agama JSON on success.
 async fn autoyast_client(client: &BaseHTTPClient, url: &Uri<String>) -> anyhow::Result<String> {
-    // FIXME: how to escape it?
-    let api_url = format!("/profile/autoyast?url={}", url);
-    let output: Box<serde_json::value::RawValue> = client.post(&api_url, &()).await?;
-    let config_string = format!("{}", output);
-    Ok(config_string)
+    ProfileHTTPClient::new(client.clone()).from_autoyast(url).await
 }
 
 // Retrieve and preprocess the profile.
@@ -360,22 +346,9 @@ async fn from_json_or_jsonnet(
 /// Evaluate a Jsonnet profile, by doing a HTTP client request.
 /// Return well-formed Agama JSON on success.
 async fn evaluate_client(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<String> {
-    // unwrap OK: joining a parsable constant to a valid Url
-    let mut url = client.base_url.join("profile/evaluate").unwrap();
-    url_or_path.add_query(&mut url)?;
-
-    let body = url_or_path.body_for_web()?;
-    // we use plain text .body instead of .json
-    let response: Result<reqwest::Response, agama_lib::error::ServiceError> = client
-        .client
-        .request(reqwest::Method::POST, url)
-        .body(body)
-        .send()
+    ProfileHTTPClient::new(client.clone())
+        .from_jsonnet(url_or_path.get_query(), url_or_path.body_for_web()?)
         .await
-        .map_err(|e| e.into());
-
-    let output: Box<serde_json::value::RawValue> = client.deserialize_or_error(response?).await?;
-    Ok(output.to_string())
 }
 
 /// Edit the installation settings using an external editor.
