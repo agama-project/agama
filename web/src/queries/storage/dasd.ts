@@ -36,11 +36,22 @@ import { hex } from "~/utils";
 import { DASDDevice, FormatJob } from "~/types/dasd";
 import { fetchStorageJobs } from "~/api/storage";
 
+// FIXME: should them be under "storage" cache?
+const storageDasdKeys = {
+  all: () => ["dasd"] as const,
+  devices: () => [...storageDasdKeys.all(), "devices"] as const,
+  supported: () => [...storageDasdKeys.all(), "supported"] as const,
+  formatJobs: () => [...storageDasdKeys.all(), "formatJobs"] as const,
+  // FIXME: what is data?
+  formatJob: (data: string) => [...storageDasdKeys.formatJobs(), data] as const,
+  runningFormatJobs: () => [...storageDasdKeys.formatJobs(), "running"] as const,
+};
+
 /**
  * Returns a query for retrieving the dasd devices
  */
 const dasdDevicesQuery = () => ({
-  queryKey: ["dasd", "devices"],
+  queryKey: storageDasdKeys.devices(),
   queryFn: fetchDASDDevices,
 });
 
@@ -53,7 +64,7 @@ const useDASDDevices = () => {
 };
 
 const dasdSupportedQuery = {
-  queryKey: ["dasd", "supported"],
+  queryKey: storageDasdKeys.supported(),
   queryFn: supportedDASD,
 };
 
@@ -69,7 +80,7 @@ const useDASDSupported = (): boolean => {
  * Returns a query for retrieving the running dasd format jobs
  */
 const dasdRunningFormatJobsQuery = () => ({
-  queryKey: ["dasd", "formatJobs", "running"],
+  queryKey: storageDasdKeys.runningFormatJobs(),
   queryFn: () =>
     fetchStorageJobs().then((jobs) =>
       jobs.filter((j) => j.running).map(({ id }) => ({ jobId: id })),
@@ -99,7 +110,7 @@ const useDASDFormatJobChanges = () => {
       // TODO: for simplicity we now just invalidate query instead of manually adding, removing or changing devices
       switch (event.type) {
         case "DASDFormatJobChanged": {
-          const data = queryClient.getQueryData(["dasd", "formatJobs", "running"]) as FormatJob[];
+          const data = queryClient.getQueryData(storageDasdKeys.runningFormatJobs()) as FormatJob[];
           const nextData = data.map((job) => {
             if (job.jobId !== event.jobId) return job;
 
@@ -108,23 +119,23 @@ const useDASDFormatJobChanges = () => {
               summary: { ...job?.summary, ...event.summary },
             };
           });
-          queryClient.setQueryData(["dasd", "formatJobs", "running"], nextData);
+          queryClient.setQueryData(storageDasdKeys.runningFormatJobs(), nextData);
           break;
         }
         case "JobAdded": {
           const formatJob: FormatJob = { jobId: event.job.id };
-          const data = queryClient.getQueryData(["dasd", "formatJobs", "running"]) as FormatJob[];
+          const data = queryClient.getQueryData(storageDasdKeys.runningFormatJobs()) as FormatJob[];
 
-          queryClient.setQueryData(["dasd", "formatJobs", "running"], [...data, formatJob]);
+          queryClient.setQueryData(storageDasdKeys.runningFormatJobs(), [...data, formatJob]);
           break;
         }
         case "JobChanged": {
           const { id, running } = event.job;
           if (running) return;
-          const data = queryClient.getQueryData(["dasd", "formatJobs", "running"]) as FormatJob[];
+          const data = queryClient.getQueryData(storageDasdKeys.runningFormatJobs()) as FormatJob[];
           const nextData = data.filter((j) => j.jobId !== id);
           if (data.length !== nextData.length) {
-            queryClient.setQueryData(["dasd", "formatJobs", "running"], nextData);
+            queryClient.setQueryData(storageDasdKeys.runningFormatJobs(), nextData);
           }
           break;
         }
@@ -150,7 +161,7 @@ const useDASDDevicesChanges = () => {
       switch (event.type) {
         case "DASDDeviceAdded": {
           const device: DASDDevice = event.device;
-          queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
+          queryClient.setQueryData(storageDasdKeys.devices(), (prev: DASDDevice[]) => {
             return [...prev, device];
           });
           break;
@@ -158,7 +169,7 @@ const useDASDDevicesChanges = () => {
         case "DASDDeviceRemoved": {
           const device: DASDDevice = event.device;
           const { id } = device;
-          queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
+          queryClient.setQueryData(storageDasdKeys.devices(), (prev: DASDDevice[]) => {
             const res = prev.filter((dev) => dev.id !== id);
             return res;
           });
@@ -167,7 +178,7 @@ const useDASDDevicesChanges = () => {
         case "DASDDeviceChanged": {
           const device: DASDDevice = event.device;
           const { id } = device;
-          queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
+          queryClient.setQueryData(storageDasdKeys.devices(), (prev: DASDDevice[]) => {
             // deep copy of original to have it immutable
             const res = [...prev];
             const index = res.findIndex((dev) => dev.id === id);
@@ -211,7 +222,7 @@ const useDASDMutation = () => {
       }
     },
     onSuccess: (_: object, { action, devices }: { action: string; devices: string[] }) => {
-      queryClient.setQueryData(["dasd", "devices"], (prev: DASDDevice[]) => {
+      queryClient.setQueryData(storageDasdKeys.devices(), (prev: DASDDevice[]) => {
         const nextData = prev.map((prevDev) => {
           const dev = { ...prevDev };
           if (devices.includes(dev.id)) {
@@ -250,8 +261,9 @@ const useFormatDASDMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: formatDASD,
+    // FIXME: what is data?
     onSuccess: (data: string) => {
-      queryClient.setQueryData(["dasd", "formatJob", data], { jobId: data });
+      queryClient.setQueryData(storageDasdKeys.formatJob(data), { jobId: data });
     },
   };
 

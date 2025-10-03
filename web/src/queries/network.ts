@@ -46,12 +46,21 @@ import {
   updateConnection,
 } from "~/api/network";
 
+const networkKeys = {
+  all: () => ["network"] as const,
+  state: () => [...networkKeys.all(), "state"] as const,
+  devices: () => [...networkKeys.all(), "devices"] as const,
+  connections: () => [...networkKeys.all(), "connections"] as const,
+  connection: (name: string) => [...networkKeys.connections(), name] as const,
+  accessPoints: () => [...networkKeys.all(), "accessPoints"] as const,
+};
+
 /**
  * Returns a query for retrieving the general network configuration
  */
 const stateQuery = () => {
   return {
-    queryKey: ["network", "state"],
+    queryKey: networkKeys.state(),
     queryFn: fetchState,
   };
 };
@@ -60,7 +69,7 @@ const stateQuery = () => {
  * Returns a query for retrieving the list of known devices
  */
 const devicesQuery = () => ({
-  queryKey: ["network", "devices"],
+  queryKey: networkKeys.devices(),
   queryFn: async () => {
     const devices = await fetchDevices();
     return devices.map(Device.fromApi);
@@ -72,7 +81,7 @@ const devicesQuery = () => ({
  * Returns a query for retrieving data for the given connection name
  */
 const connectionQuery = (name: string) => ({
-  queryKey: ["network", "connections", name],
+  queryKey: networkKeys.connection(name),
   queryFn: async () => {
     const connection = await fetchConnection(name);
     return Connection.fromApi(connection);
@@ -84,7 +93,7 @@ const connectionQuery = (name: string) => ({
  * Returns a query for retrieving the list of known connections
  */
 const connectionsQuery = () => ({
-  queryKey: ["network", "connections"],
+  queryKey: networkKeys.connections(),
   queryFn: async () => {
     const connections = await fetchConnections();
     return connections.map(Connection.fromApi);
@@ -97,7 +106,7 @@ const connectionsQuery = () => ({
  * the signal strength.
  */
 const accessPointsQuery = () => ({
-  queryKey: ["network", "accessPoints"],
+  queryKey: networkKeys.accessPoints(),
   queryFn: async (): Promise<AccessPoint[]> => {
     const accessPoints = await fetchAccessPoints();
     return accessPoints.map(AccessPoint.fromApi).sort((a, b) => b.strength - a.strength);
@@ -117,9 +126,9 @@ const useAddConnectionMutation = () => {
     mutationFn: (newConnection: Connection) =>
       addConnection(newConnection.toApi()).then(() => applyChanges()),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
-      queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
-      queryClient.invalidateQueries({ queryKey: ["network", "accessPoints"] });
+      queryClient.invalidateQueries({ queryKey: networkKeys.connections() });
+      queryClient.invalidateQueries({ queryKey: networkKeys.devices() });
+      queryClient.invalidateQueries({ queryKey: networkKeys.accessPoints() });
     },
   };
   return useMutation(query);
@@ -136,8 +145,8 @@ const useConnectionMutation = () => {
     mutationFn: (newConnection: Connection) =>
       updateConnection(newConnection.toApi()).then(() => applyChanges()),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
-      queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
+      queryClient.invalidateQueries({ queryKey: networkKeys.connections() });
+      queryClient.invalidateQueries({ queryKey: networkKeys.devices() });
     },
   };
   return useMutation(query);
@@ -173,7 +182,7 @@ const useConnectionPersistMutation = () => {
       });
 
       // Update the cached data with the optimistically updated connections
-      queryClient.setQueryData(["network", "connections"], updatedConnections);
+      queryClient.setQueryData(networkKeys.connections(), updatedConnections);
 
       // Return the previous state for potential rollback
       return { previousConnections };
@@ -203,8 +212,8 @@ const useRemoveConnectionMutation = () => {
         .then(() => applyChanges())
         .catch((e) => console.log(e)),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["network", "connections"] });
-      queryClient.invalidateQueries({ queryKey: ["network", "devices"] });
+      queryClient.invalidateQueries({ queryKey: networkKeys.connections() });
+      queryClient.invalidateQueries({ queryKey: networkKeys.devices() });
     },
   };
   return useMutation(query);
@@ -222,18 +231,18 @@ const useNetworkChanges = () => {
 
   const updateDevices = useCallback(
     (func: (devices: Device[]) => Device[]) => {
-      const devices: Device[] = queryClient.getQueryData(["network", "devices"]);
+      const devices: Device[] = queryClient.getQueryData(networkKeys.devices());
       if (!devices) return;
 
       const updatedDevices = func(devices);
-      queryClient.setQueryData(["network", "devices"], updatedDevices);
+      queryClient.setQueryData(networkKeys.devices(), updatedDevices);
     },
     [queryClient],
   );
 
   const updateConnectionState = useCallback(
     (id: string, state: string) => {
-      const connections: Connection[] = queryClient.getQueryData(["network", "connections"]);
+      const connections: Connection[] = queryClient.getQueryData(networkKeys.connections());
       if (!connections) return;
 
       const updatedConnections = connections.map((conn) => {
@@ -244,7 +253,7 @@ const useNetworkChanges = () => {
         }
         return conn;
       });
-      queryClient.setQueryData(["network", "connections"], updatedConnections);
+      queryClient.setQueryData(networkKeys.connections(), updatedConnections);
     },
     [queryClient],
   );

@@ -44,79 +44,104 @@ import { config, apiModel, ProductParams, Volume } from "~/api/storage/types";
 import { Action, StorageDevice } from "~/types/storage";
 import { QueryHookOptions } from "~/types/queries";
 
+type DevicesScope = "result" | "system";
+
+const storageKeys = {
+  all: () => ["storage"] as const,
+  deprecated: () => [...storageKeys.all(), "dirty"] as const,
+  config: () => [...storageKeys.all(), "config"] as const,
+  apiModel: () => [...storageKeys.all(), "apiModel"] as const,
+  // FIXME: should it be under "apiModel" cache?
+  solvedApiModel: (apiModel?: apiModel.Config) =>
+    [...storageKeys.all(), "solvedApiModel", JSON.stringify(apiModel)] as const,
+  devices: () => [...storageKeys.all(), "devices"] as const,
+  devicesActions: () => [...storageKeys.all(), "devices", "actions"] as const,
+  devicesByScope: (scope: DevicesScope) => [...storageKeys.all(), "devices", scope] as const,
+  productParams: () => [...storageKeys.all(), "productParams"] as const,
+  volumes: () => [...storageKeys.all(), "volumes"] as const,
+  // FIXME: should it under "volumes" cache instead?
+  volume: (mountPath: string) => [...storageKeys.all(), "volume", mountPath] as const,
+  // FIXME: should be them under "drives" cache?
+  availableDrives: () => [...storageKeys.all(), "availableDrives"] as const,
+  candidateDrives: () => [...storageKeys.all(), "candidateDrives"] as const,
+  // FIXME: should be them under "raids" cache?
+  availableMdRaids: () => [...storageKeys.all(), "availableMdRaids"] as const,
+  candidateMdRaids: () => [...storageKeys.all(), "candidateMdRaids"] as const,
+};
+
 const configQuery = {
-  queryKey: ["storage", "config"],
+  queryKey: storageKeys.config(),
   queryFn: fetchConfig,
   staleTime: Infinity,
 };
 
 const apiModelQuery = {
-  queryKey: ["storage", "apiModel"],
+  queryKey: storageKeys.apiModel(),
   queryFn: fetchConfigModel,
   staleTime: Infinity,
 };
 
 const solveApiModelQuery = (apiModel?: apiModel.Config) => ({
-  queryKey: ["storage", "solveApiModel", JSON.stringify(apiModel)],
+  queryKey: storageKeys.solvedApiModel(apiModel),
   queryFn: () => (apiModel ? solveConfigModel(apiModel) : Promise.resolve(null)),
   staleTime: Infinity,
 });
 
-const devicesQuery = (scope: "result" | "system") => ({
-  queryKey: ["storage", "devices", scope],
+const devicesQuery = (scope: DevicesScope) => ({
+  queryKey: storageKeys.devicesByScope(scope),
   queryFn: () => fetchDevices(scope),
   staleTime: Infinity,
 });
 
 const availableDrivesQuery = () => ({
-  queryKey: ["storage", "availableDrives"],
+  queryKey: storageKeys.availableDrives(),
   queryFn: fetchAvailableDrives,
   staleTime: Infinity,
 });
 
 const candidateDrivesQuery = () => ({
-  queryKey: ["storage", "candidateDrives"],
+  queryKey: storageKeys.candidateDrives(),
   queryFn: fetchCandidateDrives,
   staleTime: Infinity,
 });
 
 const availableMdRaidsQuery = () => ({
-  queryKey: ["storage", "availableMdRaids"],
+  queryKey: storageKeys.availableMdRaids(),
   queryFn: fetchAvailableMdRaids,
   staleTime: Infinity,
 });
 
 const candidateMdRaidsQuery = () => ({
-  queryKey: ["storage", "candidateMdRaids"],
+  queryKey: storageKeys.candidateMdRaids(),
   queryFn: fetchCandidateMdRaids,
   staleTime: Infinity,
 });
 
 const productParamsQuery = {
-  queryKey: ["storage", "productParams"],
+  queryKey: storageKeys.productParams(),
   queryFn: fetchProductParams,
   staleTime: Infinity,
 };
 
 const volumeQuery = (mountPath: string) => ({
-  queryKey: ["storage", "volume", mountPath],
+  queryKey: storageKeys.volume(mountPath),
   queryFn: () => fetchVolume(mountPath),
   staleTime: Infinity,
 });
 
 const volumesQuery = (mountPaths: string[]) => ({
-  queryKey: ["storage", "volumes"],
+  queryKey: storageKeys.volumes(),
   queryFn: () => fetchVolumes(mountPaths),
   staleTime: Infinity,
 });
 
 const actionsQuery = {
-  queryKey: ["storage", "devices", "actions"],
+  queryKey: storageKeys.devicesActions(),
   queryFn: fetchActions,
 };
 
 const deprecatedQuery = {
-  queryKey: ["storage", "dirty"],
+  queryKey: storageKeys.deprecated(),
   queryFn: fetchDevicesDirty,
 };
 
@@ -137,7 +162,7 @@ const useConfigMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: async (config: config.Config) => await setConfig(config),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: storageKeys.all() }),
   };
 
   return useMutation(query);
@@ -150,7 +175,7 @@ const useResetConfigMutation = () => {
   const queryClient = useQueryClient();
   const query = {
     mutationFn: async () => await resetConfig(),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: storageKeys.all() }),
   };
 
   return useMutation(query);
@@ -255,7 +280,7 @@ const useDeprecatedChanges = () => {
 
     return client.onEvent(({ type, dirty: value }) => {
       if (type === "DevicesDirty") {
-        queryClient.setQueryData(deprecatedQuery.queryKey, value);
+        queryClient.setQueryData(storageKeys.deprecated(), value);
       }
     });
   });
@@ -270,13 +295,14 @@ const useReprobeMutation = () => {
     mutationFn: async () => {
       await reprobe();
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["storage"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: storageKeys.all() }),
   };
 
   return useMutation(query);
 };
 
 export {
+  storageKeys,
   productParamsQuery,
   apiModelQuery,
   availableDrivesQuery,
