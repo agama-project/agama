@@ -26,6 +26,20 @@ pub struct Repository {
     pub user_name: String,
 }
 
+impl Repository {
+    /// check if url points to local repository.
+    /// Can be Err if url is invalid
+    pub fn is_local(&self) -> Result<bool, ZyppError> {
+        unsafe {
+            let c_url = CString::new(self.url.as_str()).unwrap();
+            let mut status: Status = Status::default();
+            let status_ptr = &mut status as *mut _;
+            let result = zypp_agama_sys::is_local_url(c_url.as_ptr(), status_ptr);
+            status_to_result_void(status).map(|_| result)
+        }
+    }
+}
+
 // TODO: should we add also e.g. serd serializers here?
 #[derive(Debug)]
 pub struct PatternInfo {
@@ -301,6 +315,34 @@ impl Zypp {
                 status_ptr,
                 cb,
                 &mut closure as *mut _ as *mut c_void,
+            );
+
+            helpers::status_to_result_void(status)
+        }
+    }
+
+    pub fn disable_repository(&self, alias: &str) -> ZyppResult<()> {
+        unsafe {
+            let mut status: Status = Status::default();
+            let status_ptr = &mut status as *mut _;
+            let c_alias = CString::new(alias).unwrap();
+            zypp_agama_sys::disable_repository(self.ptr, c_alias.as_ptr(), status_ptr);
+
+            helpers::status_to_result_void(status)
+        }
+    }
+
+    pub fn set_repository_url(&self, alias: &str, url: &str) -> ZyppResult<()> {
+        unsafe {
+            let mut status: Status = Status::default();
+            let status_ptr = &mut status as *mut _;
+            let c_alias = CString::new(alias).unwrap();
+            let c_url = CString::new(url).unwrap();
+            zypp_agama_sys::set_repository_url(
+                self.ptr,
+                c_alias.as_ptr(),
+                c_url.as_ptr(),
+                status_ptr,
             );
 
             helpers::status_to_result_void(status)

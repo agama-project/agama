@@ -100,7 +100,8 @@ void switch_target(struct Zypp *zypp, const char *root,
                    struct Status *status) noexcept {
   const std::string root_str(root);
   try {
-    zypp->zypp_pointer->initializeTarget(root_str, false /* rebuild rpmdb: no */);
+    zypp->zypp_pointer->initializeTarget(root_str,
+                                         false /* rebuild rpmdb: no */);
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);
     return;
@@ -369,6 +370,17 @@ void refresh_repository(struct Zypp *zypp, const char *alias,
   }
 }
 
+bool is_local_url(const char *url, struct Status *status) noexcept {
+  try {
+    zypp::Url z_url(url);
+    STATUS_OK(status);
+    return z_url.schemeIsLocal();
+  } catch (zypp::Exception &excpt) {
+    STATUS_EXCEPT(status, excpt);
+    return false;
+  }
+}
+
 void add_repository(struct Zypp *zypp, const char *alias, const char *url,
                     struct Status *status, ZyppProgressCallback callback,
                     void *user_data) noexcept {
@@ -384,6 +396,41 @@ void add_repository(struct Zypp *zypp, const char *alias, const char *url,
     zypp_repo.setAlias(alias);
 
     zypp->repo_manager->addRepository(zypp_repo, zypp_callback);
+    STATUS_OK(status);
+  } catch (zypp::Exception &excpt) {
+    STATUS_EXCEPT(status, excpt);
+  }
+}
+
+void disable_repository(struct Zypp *zypp, const char *alias,
+                        struct Status *status) noexcept {
+  if (zypp->repo_manager == NULL) {
+    status->state = status->STATE_FAILED;
+    status->error = strdup("Internal Error: Repo manager is not initialized.");
+    return;
+  }
+  try {
+    zypp::RepoInfo r_info = zypp->repo_manager->getRepo(alias);
+    r_info.setEnabled(false);
+    zypp->repo_manager->modifyRepository(r_info);
+    STATUS_OK(status);
+  } catch (zypp::Exception &excpt) {
+    STATUS_EXCEPT(status, excpt);
+  }
+}
+
+void set_repository_url(struct Zypp *zypp, const char *alias, const char *url,
+                        struct Status *status) noexcept {
+  if (zypp->repo_manager == NULL) {
+    status->state = status->STATE_FAILED;
+    status->error = strdup("Internal Error: Repo manager is not initialized.");
+    return;
+  }
+  try {
+    zypp::RepoInfo r_info = zypp->repo_manager->getRepo(alias);
+    zypp::Url z_url(url);
+    r_info.setBaseUrl(z_url);
+    zypp->repo_manager->modifyRepository(r_info);
     STATUS_OK(status);
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);
