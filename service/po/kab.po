@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-07 02:50+0000\n"
-"PO-Revision-Date: 2025-05-21 14:59+0000\n"
+"POT-Creation-Date: 2025-09-28 02:56+0000\n"
+"PO-Revision-Date: 2025-09-17 09:59+0000\n"
 "Last-Translator: Athmane MOKRAOUI <butterflyoffire+opensuse@protonmail.com>\n"
 "Language-Team: Kabyle <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/kab/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.11.4\n"
+"X-Generator: Weblate 5.13.3\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -88,17 +88,17 @@ msgstr "Semmet asebded"
 #. TRANSLATORS: button label, skip the error
 #: service/lib/agama/software/callbacks/base.rb:66
 msgid "Skip"
-msgstr ""
+msgstr "Ttu"
 
 #. TRANSLATORS: button label
 #: service/lib/agama/software/callbacks/base.rb:72
 msgid "Yes"
-msgstr ""
+msgstr "Ih"
 
 #. TRANSLATORS: button label
 #: service/lib/agama/software/callbacks/base.rb:78
 msgid "No"
-msgstr ""
+msgstr "Uhu"
 
 #. Callback to accept a file without a checksum
 #.
@@ -299,7 +299,7 @@ msgstr ""
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31
 msgid "Certificate:"
-msgstr ""
+msgstr "Aselkin:"
 
 #: service/lib/agama/ssl/certificate_details.rb:31
 msgid "Issued To"
@@ -526,7 +526,7 @@ msgstr ""
 #. @return [String]
 #: service/lib/agama/storage/config_checkers/search.rb:85
 msgid "drive"
-msgstr ""
+msgstr "anuḍaf"
 
 #: service/lib/agama/storage/config_checkers/search.rb:87
 msgid "MD RAID"
@@ -534,7 +534,7 @@ msgstr ""
 
 #: service/lib/agama/storage/config_checkers/search.rb:89
 msgid "partition"
-msgstr ""
+msgstr "aḥric"
 
 #: service/lib/agama/storage/config_checkers/search.rb:91
 msgid "LVM logical volume"
@@ -542,7 +542,7 @@ msgstr ""
 
 #: service/lib/agama/storage/config_checkers/search.rb:93
 msgid "device"
-msgstr ""
+msgstr "ibenk"
 
 #. Issue if the volume group name is missing.
 #.
