@@ -48,7 +48,7 @@ impl TimezoneId {
 }
 
 #[derive(Clone, Error, Debug)]
-#[error("Not a valid timezone: {0}")]
+#[error("Invalid timezone ID: {0}")]
 pub struct InvalidTimezoneId(String);
 
 impl FromStr for TimezoneId {
@@ -90,7 +90,7 @@ impl Default for LocaleId {
 }
 
 #[derive(Clone, Error, Debug)]
-#[error("Not a valid locale string: {0}")]
+#[error("Invalid locale ID: {0}")]
 pub struct InvalidLocaleId(String);
 
 impl FromStr for LocaleId {

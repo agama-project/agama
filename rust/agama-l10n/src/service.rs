@@ -38,11 +38,11 @@ pub enum Error {
     UnknownKeymap(KeymapId),
     #[error("Unknown timezone: {0}")]
     UnknownTimezone(String),
-    #[error("Invalid locale: {0}")]
+    #[error(transparent)]
     InvalidLocale(#[from] InvalidLocaleId),
-    #[error("Invalid keymap: {0}")]
+    #[error(transparent)]
     InvalidKeymap(#[from] InvalidKeymapId),
-    #[error("Invalid timezone")]
+    #[error(transparent)]
     InvalidTimezone(#[from] InvalidTimezoneId),
     #[error("l10n service could not send the event")]
     Event,
