@@ -27,7 +27,7 @@ import { Question } from "~/types/questions";
 import { Product } from "~/types/software";
 import { InstallationPhase } from "~/types/status";
 import QuestionWithPassword from "~/components/questions/QuestionWithPassword";
-import { Locale } from "~/types/l10n";
+import { Locale, Keymap } from "~/types/l10n";
 
 const answerFn = jest.fn();
 const question: Question = {
