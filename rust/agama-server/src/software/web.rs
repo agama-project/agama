@@ -731,10 +731,10 @@ async fn read_config(state: &SoftwareState<'_>) -> Result<SoftwareConfig, Error>
 pub struct SoftwareProposal {
     /// Space required for installation. It is returned as a formatted string which includes
     /// a number and a unit (e.g., "GiB").
-    size: String,
+    pub size: String,
     /// Patterns selection. It is represented as a hash map where the key is the pattern's name
     /// and the value why the pattern is selected.
-    patterns: HashMap<String, SelectedBy>,
+    pub patterns: HashMap<String, SelectedBy>,
 }
 
 /// Returns the proposal information.

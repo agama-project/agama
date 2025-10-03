@@ -333,7 +333,7 @@ impl BaseHTTPClient {
             // let text = String::from_utf8_lossy(&bytes);
             // eprintln!("Response body: {}", text);
 
-            serde_json::from_slice(&bytes).map_err(|e| e.into())
+            Ok(serde_json::from_slice(&bytes)?)
         } else {
             Err(self.build_backend_error(response).await)
         }

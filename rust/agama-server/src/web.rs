@@ -32,11 +32,13 @@ use crate::{
     l10n::web::l10n_service,
     manager::web::{manager_service, manager_stream},
     network::{web::network_service, NetworkManagerAdapter},
+    products::ProductsRegistry,
     profile::web::profile_service,
     questions::web::{questions_service, questions_stream},
     scripts::web::scripts_service,
     security::security_service,
     software::web::{software_service, software_streams},
+    software_ng::software_ng_service,
     storage::web::{iscsi::iscsi_service, storage_service, storage_streams},
     users::web::{users_service, users_streams},
     web::common::{jobs_stream, service_status_stream},
@@ -58,7 +60,8 @@ use common::{IssuesService, ProgressService};
 pub use config::ServiceConfig;
 pub use event::{EventsReceiver, EventsSender};
 pub use service::MainServiceBuilder;
-use std::path::Path;
+use std::{path::Path, sync::Arc};
+use tokio::sync::Mutex;
 use tokio_stream::{StreamExt, StreamMap};
 
 /// Returns a service that implements the web-based Agama API.
@@ -80,6 +83,9 @@ where
         .await
         .expect("Could not connect to NetworkManager to read the configuration");
 
+    let products = ProductsRegistry::load().expect("Could not load the products registry.");
+    let products = Arc::new(Mutex::new(products));
+
     let issues = IssuesService::start(dbus.clone(), events.clone()).await;
     let progress = ProgressService::start(dbus.clone(), events.clone()).await;
 
@@ -91,25 +97,22 @@ where
         )
         .add_service("/security", security_service(dbus.clone()).await?)
         .add_service(
-            "/software",
-            software_service(
-                dbus.clone(),
-                events.subscribe(),
-                issues.clone(),
-                progress.clone(),
-            )
-            .await?,
-        )
-        .add_service(
             "/storage",
             storage_service(dbus.clone(), issues.clone(), progress).await?,
         )
         .add_service("/iscsi", iscsi_service(dbus.clone(), issues.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
-        .add_service("/network", network_service(network_adapter, events).await?)
+        .add_service(
+            "/network",
+            network_service(network_adapter, events.clone()).await?,
+        )
         .add_service("/questions", questions_service(dbus.clone()).await?)
         .add_service("/users", users_service(dbus.clone(), issues).await?)
         .add_service("/scripts", scripts_service().await?)
+        .add_service(
+            "/software",
+            software_ng_service(events.clone(), Arc::clone(&products)).await,
+        )
         .add_service("/files", files_service().await?)
         .add_service("/hostname", hostname_service().await?)
         .add_service("/profile", profile_service().await?)
