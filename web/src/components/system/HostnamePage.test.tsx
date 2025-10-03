@@ -60,8 +60,8 @@ jest.mock("~/queries/software", () => ({
   },
 }));
 
-jest.mock("~/queries/system", () => ({
-  ...jest.requireActual("~/queries/system"),
+jest.mock("~/queries/hostname", () => ({
+  ...jest.requireActual("~/queries/hostname"),
   useHostname: () => ({ transient: "agama-node", static: mockStaticHostname }),
   useHostnameMutation: () => ({ mutateAsync: mockHostnameMutation }),
 }));
