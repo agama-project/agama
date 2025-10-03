@@ -1,7 +1,6 @@
 use std::{
     ffi::CString,
     os::raw::{c_char, c_uint, c_void},
-    result,
     sync::Mutex,
 };
 
@@ -29,7 +28,7 @@ pub struct Repository {
 
 impl Repository {
     /// check if url points to local repository.
-    /// Can be None if url is invalid
+    /// Can be Err if url is invalid
     pub fn is_local(&self) -> Result<bool, ZyppError> {
         unsafe {
             let c_url = CString::new(self.url.as_str()).unwrap();
@@ -325,7 +324,7 @@ impl Zypp {
     pub fn disable_repository(&self, alias: &str) -> ZyppResult<()> {
         unsafe {
             let mut status: Status = Status::default();
-            let status_ptr = &mut status as *mut _ as *mut Status;
+            let status_ptr = &mut status as *mut _;
             let c_alias = CString::new(alias).unwrap();
             zypp_agama_sys::disable_repository(self.ptr, c_alias.as_ptr(), status_ptr);
 
@@ -336,7 +335,7 @@ impl Zypp {
     pub fn set_repository_url(&self, alias: &str, url: &str) -> ZyppResult<()> {
         unsafe {
             let mut status: Status = Status::default();
-            let status_ptr = &mut status as *mut _ as *mut Status;
+            let status_ptr = &mut status as *mut _;
             let c_alias = CString::new(alias).unwrap();
             let c_url = CString::new(url).unwrap();
             zypp_agama_sys::set_repository_url(
