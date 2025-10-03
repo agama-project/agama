@@ -49,6 +49,7 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
     storage: _("Storage"),
     software: _("Software"),
     product: _("Registration"),
+    localization: _("Localization"),
     iscsi: _("iSCSI"),
   };
 
