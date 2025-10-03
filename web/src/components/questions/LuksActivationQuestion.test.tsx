@@ -45,6 +45,20 @@ const tumbleweed: Product = {
   registration: false,
 };
 
+const locales: Locale[] = [
+  { id: "en_US.UTF-8", name: "English", territory: "United States" },
+  { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+];
+const keymaps: Keymap[] = [
+  { id: "us", name: "English" },
+  { id: "es", name: "Spanish" },
+];
+
+jest.mock("~/queries/system", () => ({
+  ...jest.requireActual("~/queries/l10n"),
+  useSystem: () => ({ localization: { locales, keymaps, keymap: "us", language: "de-DE" } }),
+}));
+
 const answerFn: AnswerCallback = jest.fn();
 
 jest.mock("~/queries/status", () => ({

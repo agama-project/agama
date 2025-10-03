@@ -51,6 +51,11 @@ const locales: Locale[] = [
   { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
 ];
 
+const keymaps: Keymap[] = [
+  { id: "us", name: "English" },
+  { id: "es", name: "Spanish" },
+];
+
 jest.mock("~/queries/status", () => ({
   useInstallerStatus: () => ({
     phase: InstallationPhase.Config,
@@ -60,7 +65,7 @@ jest.mock("~/queries/status", () => ({
 
 jest.mock("~/queries/system", () => ({
   ...jest.requireActual("~/queries/l10n"),
-  useSystem: () => ({ locale: { locales } }),
+  useSystem: () => ({ localization: { locales, keymaps, keymap: "us", language: "de-DE" } }),
 }));
 
 jest.mock("~/queries/software", () => ({
