@@ -42,7 +42,6 @@ import { _ } from "~/i18n";
 const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
   const issues = useAllIssues().filter((i) => i.severity === IssueSeverity.Error);
   const { phase } = useInstallerStatus({ suspense: true });
-  const { issues: issuesByScope } = issues;
 
   // FIXME: share below headers with navigation menu
   const scopeHeaders = {
@@ -50,9 +49,10 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
     storage: _("Storage"),
     software: _("Software"),
     product: _("Registration"),
+    iscsi: _("iSCSI"),
   };
 
-  if (issues.isEmpty || phase === InstallationPhase.Install) return;
+  if (issues.length === 0 || phase === InstallationPhase.Install) return;
 
   return (
     <NotificationDrawer ref={ref}>
@@ -64,8 +64,9 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
               "Before installing, you have to make some decisions. Click on each section to review the settings.",
             )}
           </p>
-          {Object.entries(issuesByScope).map(([scope, issues], idx) => {
-            if (issues.length === 0) return null;
+          {Object.keys(scopeHeaders).map((scope, idx) => {
+            const scopeIssues = issues.filter((i) => i.scope === scope);
+            if (scopeIssues.length === 0) return null;
             // FIXME: address this better or use the /product(s)? namespace instead of
             // /registration.
             const section = scope === "product" ? "registration" : scope;
@@ -80,7 +81,7 @@ const IssuesDrawer = forwardRef(({ onClose }: { onClose: () => void }, ref) => {
                     </Link>
                   </h4>
                   <ul>
-                    {issues.map((issue, subIdx) => {
+                    {scopeIssues.map((issue, subIdx) => {
                       const variant = issue.severity === IssueSeverity.Error ? "warning" : "info";
 
                       return (

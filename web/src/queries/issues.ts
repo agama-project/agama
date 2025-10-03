@@ -21,22 +21,16 @@
  */
 
 import React from "react";
-import { useQueryClient, useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
-import { IssuesList, IssuesScope, IssueSeverity, IssueSource } from "~/types/issues";
+import { IssuesScope, IssueSeverity, IssueSource, Issue } from "~/types/issues";
 import { fetchIssues } from "~/api/issues";
 
-const scopesFromPath = {
-  "/org/opensuse/Agama/Software1": "software",
-  "/org/opensuse/Agama/Software1/Product": "product",
-  "/org/opensuse/Agama/Storage1": "storage",
-  "/org/opensuse/Agama/Users1": "users",
-};
-
-const issuesQuery = (scope: IssuesScope) => {
+const issuesQuery = (selectFn?: (i: Issue[]) => Issue[]) => {
   return {
-    queryKey: ["issues", scope],
-    queryFn: () => fetchIssues(scope),
+    queryKey: ["issues"],
+    queryFn: fetchIssues,
+    select: selectFn,
   };
 };
 
@@ -46,22 +40,18 @@ const issuesQuery = (scope: IssuesScope) => {
  * @param scope - Scope to get the issues from.
  * @return issues for the given scope.
  */
-const useIssues = (scope: IssuesScope) => {
-  const { data } = useSuspenseQuery(issuesQuery(scope));
+const useIssues = (scope: IssuesScope): Issue[] => {
+  const { data } = useSuspenseQuery(
+    issuesQuery((issues: Issue[]) => {
+      return issues.filter((i: Issue) => i.scope === scope);
+    }),
+  );
   return data;
 };
 
-const useAllIssues = () => {
-  const queries = [
-    issuesQuery("product"),
-    issuesQuery("software"),
-    issuesQuery("storage"),
-    issuesQuery("users"),
-  ];
-
-  const [{ data: product }, { data: software }, { data: storage }, { data: users }] =
-    useSuspenseQueries({ queries });
-  return new IssuesList(product, software, storage, users);
+const useAllIssues = (): Issue[] => {
+  const { data } = useSuspenseQuery(issuesQuery());
+  return data;
 };
 
 const useIssuesChanges = () => {
@@ -72,15 +62,8 @@ const useIssuesChanges = () => {
     if (!client) return;
 
     return client.onEvent((event) => {
-      if (event.type === "IssuesChanged") {
-        const path = event.path;
-        const scope = scopesFromPath[path];
-        // TODO: use setQueryData because all the issues are included in the event
-        if (scope) {
-          queryClient.invalidateQueries({ queryKey: ["issues", scope] });
-        } else {
-          console.warn(`Unknown scope ${path}`);
-        }
+      if (event.type === "IssuesUpdated") {
+        queryClient.invalidateQueries({ queryKey: ["issues"] });
       }
     });
   }, [client, queryClient]);

@@ -24,6 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { StorageSection } from "~/components/overview";
+import { IssueSeverity, IssueSource } from "~/types/issues";
 
 let mockModel = {
   drives: [],
@@ -248,8 +249,9 @@ describe("when there is no configuration model (unsupported features)", () => {
           description: "System error",
           kind: "storage",
           details: "",
-          source: 1,
-          severity: 1,
+          source: IssueSource.System,
+          severity: IssueSeverity.Error,
+          scope: "storage",
         },
       ];
     });
