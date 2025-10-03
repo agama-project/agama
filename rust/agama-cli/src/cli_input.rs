@@ -74,12 +74,11 @@ impl CliInput {
     /// returns ("url", url_value) resp ("path", absolute_path) tuplle
     pub fn get_query(&self) -> Option<(String, String)> {
         match self {
-            Self::Url(url) => {
-                Some((String::from("url"), url.clone()))
-            }
-            Self::Path(path) => {
-                Some((String::from("path"), Self::absolute(path).unwrap().display().to_string()))
-            }
+            Self::Url(url) => Some((String::from("url"), url.clone())),
+            Self::Path(path) => Some((
+                String::from("path"),
+                Self::absolute(path).unwrap().display().to_string(),
+            )),
             Self::Stdin => None,
             Self::Full(_) => None,
         }

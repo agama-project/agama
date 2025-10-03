@@ -20,12 +20,12 @@
 
 use std::{io::Write, path::PathBuf, process::Command};
 
+use agama_lib::profile::ProfileHTTPClient;
 use agama_lib::{
     context::InstallationContext, http::BaseHTTPClient, install_settings::InstallSettings,
     profile::ProfileValidator, profile::ValidationOutcome, utils::FileFormat,
     Store as SettingsStore,
 };
-use agama_lib::profile::ProfileHTTPClient;
 use anyhow::{anyhow, Context};
 use clap::Subcommand;
 use console::style;
@@ -315,7 +315,9 @@ async fn generate(
 /// to our web backend.
 /// Return well-formed Agama JSON on success.
 async fn autoyast_client(client: &BaseHTTPClient, url: &Uri<String>) -> anyhow::Result<String> {
-    ProfileHTTPClient::new(client.clone()).from_autoyast(url).await
+    ProfileHTTPClient::new(client.clone())
+        .from_autoyast(url)
+        .await
 }
 
 // Retrieve and preprocess the profile.

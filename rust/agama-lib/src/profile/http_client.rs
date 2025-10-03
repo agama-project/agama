@@ -18,10 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::error;
 use crate::http::BaseHTTPClient;
 use crate::profile::ValidationOutcome;
 use fluent_uri::Uri;
-use crate::error;
 
 pub struct ProfileHTTPClient {
     client: BaseHTTPClient,
@@ -39,7 +39,8 @@ impl ProfileHTTPClient {
         body: String,
     ) -> anyhow::Result<ValidationOutcome> {
         // we use plain text .body instead of .json
-        let mut url = self.client
+        let mut url = self
+            .client
             .base_url
             .join("profile/validate")
             // unwrap OK: joining a parsable constant to a valid Url
@@ -49,7 +50,8 @@ impl ProfileHTTPClient {
             url.query_pairs_mut().append_pair(&query.0, &query.1);
         }
 
-        let response = self.client
+        let response = self
+            .client
             .client
             .request(reqwest::Method::POST, url)
             .body(body)
@@ -64,20 +66,18 @@ impl ProfileHTTPClient {
     pub async fn from_jsonnet(
         &self,
         query: Option<(String, String)>,
-        body: String
+        body: String,
     ) -> anyhow::Result<String> {
         // unwrap OK: joining a parsable constant to a valid Url
-        let mut url = self.client
-            .base_url
-            .join("profile/evaluate")
-            .unwrap();
+        let mut url = self.client.base_url.join("profile/evaluate").unwrap();
 
         if let Some(query) = query {
             url.query_pairs_mut().append_pair(&query.0, &query.1);
         }
 
         // we use plain text .body instead of .json
-        let response: Result<reqwest::Response, error::ServiceError> = self.client
+        let response: Result<reqwest::Response, error::ServiceError> = self
+            .client
             .client
             .request(reqwest::Method::POST, url)
             .body(body)
@@ -85,7 +85,8 @@ impl ProfileHTTPClient {
             .await
             .map_err(|e| e.into());
 
-        let output: Box<serde_json::value::RawValue> = self.client.deserialize_or_error(response?).await?;
+        let output: Box<serde_json::value::RawValue> =
+            self.client.deserialize_or_error(response?).await?;
         Ok(output.to_string())
     }
 
