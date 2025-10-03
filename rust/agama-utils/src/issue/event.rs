@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,21 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod progress;
-pub use progress::{ProgressChanged, ProgressChangedArgs, ProgressChangedStream, ProgressProxy};
+use serde::{Deserialize, Serialize};
+use tokio::sync::mpsc;
 
-mod service_status;
-pub use service_status::ServiceStatusProxy;
+/// Issues changed event.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct IssuesChanged;
 
-mod manager1;
-pub use manager1::Manager1Proxy;
-
-pub mod questions;
-
-mod locale;
-pub use locale::LocaleMixinProxy;
-
-pub mod jobs;
-
-mod hostname1;
-pub use hostname1::Hostname1Proxy;
+/// Multi-producer single-consumer events sender.
+pub type Sender = mpsc::UnboundedSender<IssuesChanged>;
+/// Multi-producer single-consumer events receiver.
+pub type Receiver = mpsc::UnboundedReceiver<IssuesChanged>;

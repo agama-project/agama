@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,21 +18,39 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod progress;
-pub use progress::{ProgressChanged, ProgressChangedArgs, ProgressChangedStream, ProgressProxy};
+use super::Issue;
+use crate::actor::Message;
+use std::collections::HashMap;
 
-mod service_status;
-pub use service_status::ServiceStatusProxy;
+pub struct Get;
 
-mod manager1;
-pub use manager1::Manager1Proxy;
+impl Message for Get {
+    type Reply = HashMap<String, Vec<Issue>>;
+}
 
-pub mod questions;
+// FIXME: consider an alternative approach to avoid pub(crate),
+// making it only visible to the service.
+pub struct Update {
+    pub(crate) list: String,
+    pub(crate) issues: Vec<Issue>,
+    pub(crate) notify: bool,
+}
 
-mod locale;
-pub use locale::LocaleMixinProxy;
+impl Update {
+    pub fn new(list: &str, issues: Vec<Issue>) -> Self {
+        Self {
+            list: list.to_string(),
+            issues,
+            notify: true,
+        }
+    }
 
-pub mod jobs;
+    pub fn notify(mut self, notify: bool) -> Self {
+        self.notify = notify;
+        self
+    }
+}
 
-mod hostname1;
-pub use hostname1::Hostname1Proxy;
+impl Message for Update {
+    type Reply = ();
+}

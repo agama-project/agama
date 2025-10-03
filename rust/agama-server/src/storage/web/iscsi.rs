@@ -25,10 +25,7 @@
 //! * `iscsi_service` which returns the Axum service.
 //! * `iscsi_stream` which offers an stream that emits the iSCSI-related events coming from D-Bus.
 
-use crate::{
-    error::Error,
-    web::common::{EventStreams, IssuesClient, IssuesRouterBuilder},
-};
+use crate::{error::Error, web::common::EventStreams};
 use agama_lib::{
     error::ServiceError,
     event,
@@ -39,7 +36,6 @@ use agama_lib::{
     },
 };
 use agama_utils::dbus::{get_optional_property, to_owned_hash};
-use anyhow::Context;
 use axum::{
     extract::{Path, State},
     http::StatusCode,
@@ -143,23 +139,13 @@ pub async fn storage_iscsi_service<T>(dbus: &zbus::Connection) -> Result<Router<
 /// It acts as a proxy to Agama D-Bus service.
 ///
 /// * `dbus`: D-Bus connection to use.
-pub async fn iscsi_service<T>(
-    dbus: zbus::Connection,
-    issues: IssuesClient,
-) -> Result<Router<T>, ServiceError> {
-    const DBUS_SERVICE: &str = "org.opensuse.Agama.Storage1";
-    const DBUS_PATH: &str = "/org/opensuse/Agama/Storage1/ISCSI";
-
+pub async fn iscsi_service<T>(dbus: zbus::Connection) -> Result<Router<T>, ServiceError> {
     let client = ISCSIClient::new(dbus.clone()).await?;
     let state = ISCSIState { client };
     // FIXME: use anyhow temporarily until we adapt all these methods to return
     // the crate::error::Error instead of ServiceError.
-    let issues_router = IssuesRouterBuilder::new(DBUS_SERVICE, DBUS_PATH, issues.clone())
-        .build()
-        .context("Could not build an issues router")?;
     let router = Router::new()
         .route("/config", post(set_config))
-        .nest("/issues", issues_router)
         .with_state(state);
     Ok(router)
 }

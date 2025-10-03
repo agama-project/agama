@@ -47,7 +47,7 @@ pub struct SystemInfo {
 
 impl SystemInfo {
     /// Reads the information from the system adapter.
-    pub fn read_from<T: ModelAdapter>(model: &mut T) -> Self {
+    pub fn read_from<T: ModelAdapter>(model: &T) -> Self {
         let locales = model.locales_db().entries().clone();
         let keymaps = model.keymaps_db().entries().clone();
         let timezones = model.timezones_db().entries().clone();

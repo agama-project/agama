@@ -34,6 +34,7 @@ describe("IssueAlert", () => {
       source: IssueSource.Config,
       severity: IssueSeverity.Error,
       kind: "generic",
+      scope: "software",
     };
     plainRender(<IssuesAlert issues={[issue]} />);
     expect(screen.getByText(issue.description)).toBeInTheDocument();
@@ -45,6 +46,7 @@ describe("IssueAlert", () => {
       source: IssueSource.Config,
       severity: IssueSeverity.Error,
       kind: "solver",
+      scope: "software",
     };
     plainRender(<IssuesAlert issues={[issue]} />);
     const link = screen.getByRole("link", { name: "Review and fix" });

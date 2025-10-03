@@ -35,10 +35,9 @@ use crate::{
     users::{FirstUser, RootUser},
 };
 use agama_l10n as l10n;
+use agama_utils::issue;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-
-use crate::issue::Issue;
 
 /// Agama event.
 ///
@@ -121,10 +120,7 @@ pub enum EventPayload {
         service: String,
         status: u32,
     },
-    IssuesChanged {
-        path: String,
-        issues: Vec<Issue>,
-    },
+    Issues(issue::IssuesChanged),
     ValidationChanged {
         service: String,
         path: String,
@@ -189,6 +185,12 @@ pub enum EventPayload {
 impl From<l10n::Event> for EventPayload {
     fn from(value: l10n::Event) -> Self {
         EventPayload::L10nEvent(value)
+    }
+}
+
+impl From<issue::IssuesChanged> for EventPayload {
+    fn from(_value: issue::IssuesChanged) -> Self {
+        EventPayload::Issues(issue::IssuesChanged)
     }
 }
 

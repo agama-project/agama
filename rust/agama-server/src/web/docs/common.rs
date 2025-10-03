@@ -23,78 +23,11 @@
 
 use super::ApiDocBuilder;
 use crate::web::common::ServiceStatus;
-use agama_lib::{issue::Issue, progress::Progress};
+use agama_lib::progress::Progress;
 use utoipa::openapi::{
-    path::OperationBuilder, schema::RefBuilder, ArrayBuilder, Components, ComponentsBuilder,
-    ContentBuilder, HttpMethod, PathItem, Paths, PathsBuilder, ResponseBuilder, ResponsesBuilder,
+    path::OperationBuilder, schema::RefBuilder, Components, ComponentsBuilder, ContentBuilder,
+    HttpMethod, PathItem, Paths, PathsBuilder, ResponseBuilder, ResponsesBuilder,
 };
-
-/// Implements a builder for the issues API documentation.
-#[derive(Default)]
-pub struct IssuesApiDocBuilder {
-    paths: Vec<(String, PathItem)>,
-}
-
-impl IssuesApiDocBuilder {
-    pub fn new() -> Self {
-        Default::default()
-    }
-
-    /// Adds a new issues API path.
-    ///
-    /// * `path`: path of the API.
-    /// * `summary`: summary to be included in the OpenAPI documentation.
-    /// * `operation_id`: operation ID of the API.
-    pub fn add(self, path: &str, summary: &str, operation_id: &str) -> Self {
-        let mut paths = self.paths;
-        paths.push((path.to_string(), Self::issues_path(summary, operation_id)));
-        Self { paths }
-    }
-
-    fn issues_path(summary: &'_ str, operation_id: &'_ str) -> PathItem {
-        PathItem::new(
-            HttpMethod::Get,
-            OperationBuilder::new()
-                .summary(Some(summary))
-                .operation_id(Some(operation_id))
-                .responses(
-                    ResponsesBuilder::new().response(
-                        "200",
-                        ResponseBuilder::new()
-                            .description("List of found issues")
-                            .content(
-                                "application/json",
-                                ContentBuilder::new()
-                                    .schema(Some(
-                                        ArrayBuilder::new().items(RefBuilder::new().ref_location(
-                                            "#/components/schemas/Issue".to_string(),
-                                        )),
-                                    ))
-                                    .build(),
-                            ),
-                    ),
-                ),
-        )
-    }
-}
-
-impl ApiDocBuilder for IssuesApiDocBuilder {
-    fn title(&self) -> String {
-        "Issues HTTP API".to_string()
-    }
-
-    fn paths(&self) -> Paths {
-        let mut paths_builder = PathsBuilder::new();
-        for (path, item) in self.paths.iter() {
-            paths_builder = paths_builder.path(path, item.clone());
-        }
-        paths_builder.build()
-    }
-
-    fn components(&self) -> Components {
-        ComponentsBuilder::new().schema_from::<Issue>().build()
-    }
-}
 
 /// Implements a builder for the service status API documentation.
 pub struct ServiceStatusApiDocBuilder {

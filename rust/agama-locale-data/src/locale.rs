@@ -26,7 +26,7 @@ use std::sync::OnceLock;
 use std::{fmt::Display, str::FromStr};
 use thiserror::Error;
 
-#[derive(Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq, utoipa::ToSchema)]
 pub struct TimezoneId(String);
 
 impl Default for TimezoneId {
@@ -41,8 +41,14 @@ impl Display for TimezoneId {
     }
 }
 
+impl TimezoneId {
+    pub fn as_str(&self) -> &str {
+        self.0.as_str()
+    }
+}
+
 #[derive(Clone, Error, Debug)]
-#[error("Not a valid timezone: {0}")]
+#[error("Invalid timezone ID: {0}")]
 pub struct InvalidTimezoneId(String);
 
 impl FromStr for TimezoneId {
@@ -84,7 +90,7 @@ impl Default for LocaleId {
 }
 
 #[derive(Clone, Error, Debug)]
-#[error("Not a valid locale string: {0}")]
+#[error("Invalid locale ID: {0}")]
 pub struct InvalidLocaleId(String);
 
 impl FromStr for LocaleId {

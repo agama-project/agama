@@ -30,6 +30,7 @@ import { useLocation } from "react-router-dom";
 import { SIDE_PATHS } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { Icon } from "../layout";
+import { isEmpty } from "radashi";
 
 /**
  * List of paths where the InstallButton must not be shown.
@@ -81,7 +82,7 @@ const InstallButton = (
   const issues = useAllIssues().filter((i) => i.severity === IssueSeverity.Error);
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const hasIssues = !issues.isEmpty;
+  const hasIssues = !isEmpty(issues);
 
   if (SIDE_PATHS.includes(location.pathname)) return;
 
