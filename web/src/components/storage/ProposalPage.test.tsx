@@ -110,8 +110,8 @@ jest.mock("./ProposalFailedInfo", () => () => <div>failed info</div>);
 jest.mock("./UnsupportedModelInfo", () => () => <div>unsupported info</div>);
 jest.mock("./ProposalResultSection", () => () => <div>result</div>);
 jest.mock("./ConfigEditor", () => () => <div>installation devices</div>);
-jest.mock("./ConfigureDeviceMenu", () => () => <div>add device menu</div>);
-jest.mock("./ConfigEditorMenu", () => () => <div>config editor menu</div>);
+jest.mock("./EncryptionSection", () => () => <div>encryption section</div>);
+jest.mock("./BootSection", () => () => <div>boot section</div>);
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>registration alert</div>
 ));

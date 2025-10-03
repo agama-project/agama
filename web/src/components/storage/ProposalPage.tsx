@@ -28,18 +28,25 @@ import {
   GridItem,
   Split,
   SplitItem,
+  Stack,
   EmptyState,
   EmptyStateBody,
   EmptyStateFooter,
   List,
   ListItem,
+  Flex,
+  FlexItem,
+  Tab,
+  Tabs,
+  TabTitleText,
 } from "@patternfly/react-core";
-import { Page, Link } from "~/components/core/";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { Page, Link, NestedContent } from "~/components/core/";
 import { Icon, Loading } from "~/components/layout";
 import ConfigEditor from "./ConfigEditor";
-import ConfigEditorMenu from "./ConfigEditorMenu";
-import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
+import ConnectedDevicesMenu from "./ConnectedDevicesMenu";
 import EncryptionSection from "./EncryptionSection";
+import BootSection from "./BootSection";
 import FixableConfigInfo from "./FixableConfigInfo";
 import ProposalFailedInfo from "./ProposalFailedInfo";
 import ProposalResultSection from "./ProposalResultSection";
@@ -59,7 +66,9 @@ import { useSystemErrors, useConfigErrors } from "~/queries/issues";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
 import { useProgress, useProgressChanges } from "~/queries/progress";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import MenuButton from "../core/MenuButton";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 function InvalidConfigEmptyState(): React.ReactNode {
   const errors = useConfigErrors("storage");
@@ -179,9 +188,29 @@ function ProposalEmptyState(): React.ReactNode {
 }
 
 function ProposalSections(): React.ReactNode {
+  const [searchParams, setSearchParams] = useSearchParams();
   const model = useConfigModel({ suspense: true });
   const systemErrors = useSystemErrors("storage");
   const hasResult = !systemErrors.length;
+  const { mutate: reset } = useResetConfigMutation();
+  const handleTabClick = (
+    event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
+    tabIndex: number,
+  ) => {
+    setSearchParams((sp) => {
+      sp.set("st", tabIndex.toString());
+      return sp;
+    });
+  };
+
+  const onReset = () => {
+    reset();
+    setSearchParams((params) => {
+      params.delete("expanded");
+      params.delete("st");
+      return params;
+    });
+  };
 
   return (
     <Grid hasGutter>
@@ -191,28 +220,81 @@ function ProposalSections(): React.ReactNode {
       <UnsupportedModelInfo />
       {model && (
         <>
-          <GridItem sm={8}>
+          <GridItem>
             <Page.Section
-              title={_("Installation Devices")}
-              description={_(
-                "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
-              )}
-              actions={
-                <>
-                  <SplitItem>
-                    <ConfigureDeviceMenu />
-                  </SplitItem>
-                  <SplitItem>
-                    <ConfigEditorMenu />
-                  </SplitItem>
-                </>
+              title={_("Settings")}
+              titleActions={
+                <Flex>
+                  <FlexItem grow={{ default: "grow" }} />
+                  <MenuButton
+                    menuProps={{
+                      popperProps: {
+                        position: "end",
+                      },
+                    }}
+                    toggleProps={{
+                      variant: "plain",
+                      className: spacingStyles.p_0,
+                    }}
+                    items={[
+                      <MenuButton.Item
+                        key="reset-link"
+                        onClick={onReset}
+                        description={_("Start from scratch with the default configuration")}
+                      >
+                        {_("Reset to defaults")}
+                      </MenuButton.Item>,
+                    ]}
+                  >
+                    <Icon name="more_horiz" className="agm-three-dots-icon" />
+                  </MenuButton>
+                </Flex>
               }
+              description={_(
+                "Changes in these settings will immediately update the 'Result' section below.",
+              )}
             >
-              <ConfigEditor />
+              <Tabs
+                activeKey={searchParams.get("st") || "0"}
+                onSelect={handleTabClick}
+                role="region"
+              >
+                <Tab
+                  key="devices"
+                  eventKey={"0"}
+                  title={<TabTitleText>{_("Installation devices")}</TabTitleText>}
+                >
+                  <NestedContent margin="mtSm">
+                    <Stack hasGutter>
+                      <div className={textStyles.textColorPlaceholder}>
+                        {_(
+                          "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
+                        )}
+                      </div>
+                      <ConfigEditor />
+                    </Stack>
+                  </NestedContent>
+                </Tab>
+                <Tab
+                  key="encryption"
+                  eventKey={"1"}
+                  title={<TabTitleText>{_("Encryption")}</TabTitleText>}
+                >
+                  <NestedContent margin="mtSm">
+                    <EncryptionSection />
+                  </NestedContent>
+                </Tab>
+                <Tab
+                  key="system"
+                  eventKey={"2"}
+                  title={<TabTitleText>{_("Boot options")}</TabTitleText>}
+                >
+                  <NestedContent margin="mtSm">
+                    <BootSection />
+                  </NestedContent>
+                </Tab>
+              </Tabs>
             </Page.Section>
-          </GridItem>
-          <GridItem sm={4}>
-            <EncryptionSection />
           </GridItem>
         </>
       )}
@@ -256,7 +338,15 @@ export default function ProposalPage(): React.ReactNode {
   return (
     <Page>
       <Page.Header>
-        <Content component="h2">{_("Storage")}</Content>
+        <Flex>
+          <FlexItem>
+            <Content component="h2">{_("Storage")}</Content>
+          </FlexItem>
+          <FlexItem grow={{ default: "grow" }} />
+          <FlexItem>
+            <ConnectedDevicesMenu />
+          </FlexItem>
+        </Flex>
       </Page.Header>
       <Page.Content>
         {isDeprecated && <Loading text={_("Reloading data, please wait...")} />}

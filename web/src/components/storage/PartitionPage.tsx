@@ -21,7 +21,7 @@
  */
 
 import React, { useId } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   ActionGroup,
   Content,
@@ -692,6 +692,7 @@ function AutoSizeInfo({ value }: AutoSizeInfoProps): React.ReactNode {
  */
 const PartitionPageForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const headingId = useId();
   const [mountPoint, setMountPoint] = React.useState(NO_VALUE);
   const [target, setTarget] = React.useState(NEW_PARTITION);
@@ -796,7 +797,7 @@ const PartitionPageForm = () => {
     if (initialValue) editPartition(list, listIndex, initialValue.mountPoint, partitionConfig);
     else addPartition(list, listIndex, partitionConfig);
 
-    navigate(PATHS.root);
+    navigate({ pathname: PATHS.root, search: location.search });
   };
 
   const isFormValid = errors.length === 0;
