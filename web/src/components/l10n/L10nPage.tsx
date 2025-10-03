@@ -70,6 +70,7 @@ export default function L10nPage() {
   // FIXME: retrieve selection from config when ready
   const { localization: l10nProposal } = useProposal();
   const { localization: l10n } = useSystem();
+  console.log(l10nProposal);
 
   const locale = l10nProposal.locale && l10n.locales.find((l) => l.id === l10nProposal.locale);
   const keymap = l10nProposal.keymap && l10n.keymaps.find((k) => k.id === l10nProposal.keymap);
@@ -94,7 +95,7 @@ export default function L10nPage() {
               }
             >
               <Content isEditorial>
-                {locale ? `${locale.name} - ${locale.territory}` : _("Not selected yet")}
+                {locale ? `${locale.name} - ${locale.territory}` : _("Wrong selection")}
               </Content>
             </Page.Section>
           </GridItem>
@@ -107,7 +108,7 @@ export default function L10nPage() {
                 </Link>
               }
             >
-              <Content isEditorial>{keymap ? keymap.name : _("Not selected yet")}</Content>
+              <Content isEditorial>{keymap ? keymap.name : _("Wrong selection")}</Content>
             </Page.Section>
           </GridItem>
           <GridItem md={4}>
@@ -120,7 +121,7 @@ export default function L10nPage() {
               }
             >
               <Content isEditorial>
-                {timezone ? (timezone.parts || []).join(" - ") : _("Not selected yet")}
+                {timezone ? (timezone.parts || []).join(" - ") : _("Wrong selection")}
               </Content>
             </Page.Section>
           </GridItem>

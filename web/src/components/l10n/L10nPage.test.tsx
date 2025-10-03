@@ -73,9 +73,9 @@ beforeEach(() => {
       locales,
       keymaps,
       timezones,
+      locale: "en_US.UTF-8",
       keymap: "us",
       timezone: "Europe/Berlin",
-      locale: "en_US.UTF-8",
     },
   };
 });
@@ -94,6 +94,19 @@ it("renders a section for configuring the language", () => {
   within(region).getByText("Change");
 });
 
+describe("if the language selected is wrong", () => {
+  beforeEach(() => {
+    mockProposedData.localization.locale = "us_US.UTF-8";
+  });
+
+  it("renders a button for selecting a language", () => {
+    installerRender(<L10nPage />);
+    const region = screen.getByRole("region", { name: "Language" });
+    within(region).getByText("Wrong selection");
+    within(region).getByText("Select");
+  });
+});
+
 it("renders a section for configuring the keyboard", () => {
   installerRender(<L10nPage />);
   const region = screen.getByRole("region", { name: "Keyboard" });
@@ -101,9 +114,35 @@ it("renders a section for configuring the keyboard", () => {
   within(region).getByText("Change");
 });
 
+describe("if the keyboard selected is wrong", () => {
+  beforeEach(() => {
+    mockProposedData.localization.keymap = "ess";
+  });
+
+  it("renders a button for selecting a keyboard", () => {
+    installerRender(<L10nPage />);
+    const region = screen.getByRole("region", { name: "Keyboard" });
+    within(region).getByText("Wrong selection");
+    within(region).getByText("Select");
+  });
+});
+
 it("renders a section for configuring the time zone", () => {
   installerRender(<L10nPage />);
   const region = screen.getByRole("region", { name: "Time zone" });
   within(region).getByText("Europe - Berlin");
   within(region).getByText("Change");
+});
+
+describe("if the time zone selected is wrong", () => {
+  beforeEach(() => {
+    mockProposedData.localization.timezone = "Europee/Beeerlin";
+  });
+
+  it("renders a button for selecting a time zone", () => {
+    installerRender(<L10nPage />);
+    const region = screen.getByRole("region", { name: "Time zone" });
+    within(region).getByText("Wrong selection");
+    within(region).getByText("Select");
+  });
 });
