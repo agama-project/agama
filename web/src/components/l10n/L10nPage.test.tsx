@@ -25,9 +25,11 @@ import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import L10nPage from "~/components/l10n/L10nPage";
 import { Keymap, Locale, Timezone } from "~/types/l10n";
+import { System } from "~/types/system";
+import { Proposal } from "~/types/proposal";
 
-let mockLoadedData;
-
+let mockSystemData: System;
+let mockProposedData: Proposal;
 const locales: Locale[] = [
   { id: "en_US.UTF-8", name: "English", territory: "United States" },
   { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
@@ -50,15 +52,30 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
 jest.mock("~/components/core/InstallerOptions", () => () => <div>InstallerOptions Mock</div>);
 
 jest.mock("~/queries/system", () => ({
-  useSystem: () => mockLoadedData,
+  useSystem: () => mockSystemData,
+}));
+
+jest.mock("~/queries/proposal", () => ({
+  useProposal: () => mockProposedData,
 }));
 
 beforeEach(() => {
-  mockLoadedData = {
-    locale: {
+  mockSystemData = {
+    localization: {
       locales,
       keymaps,
       timezones,
+    },
+  };
+
+  mockProposedData = {
+    localization: {
+      locales,
+      keymaps,
+      timezones,
+      keymap: "us",
+      timezone: "Europe/Berlin",
+      locale: "en_US.UTF-8",
     },
   };
 });
@@ -77,15 +94,6 @@ it("renders a section for configuring the language", () => {
   within(region).getByText("Change");
 });
 
-describe("if there is no selected language", () => {
-  it("renders a button for selecting a language", () => {
-    installerRender(<L10nPage />);
-    const region = screen.getByRole("region", { name: "Language" });
-    within(region).getByText("Not selected yet");
-    within(region).getByText("Select");
-  });
-});
-
 it("renders a section for configuring the keyboard", () => {
   installerRender(<L10nPage />);
   const region = screen.getByRole("region", { name: "Keyboard" });
@@ -93,27 +101,9 @@ it("renders a section for configuring the keyboard", () => {
   within(region).getByText("Change");
 });
 
-describe("if there is no selected keyboard", () => {
-  it("renders a button for selecting a keyboard", () => {
-    installerRender(<L10nPage />);
-    const region = screen.getByRole("region", { name: "Keyboard" });
-    within(region).getByText("Not selected yet");
-    within(region).getByText("Select");
-  });
-});
-
 it("renders a section for configuring the time zone", () => {
   installerRender(<L10nPage />);
   const region = screen.getByRole("region", { name: "Time zone" });
   within(region).getByText("Europe - Berlin");
   within(region).getByText("Change");
-});
-
-describe("if there is no selected time zone", () => {
-  it("renders a button for selecting a time zone", () => {
-    installerRender(<L10nPage />);
-    const region = screen.getByRole("region", { name: "Time zone" });
-    within(region).getByText("Not selected yet");
-    within(region).getByText("Select");
-  });
 });

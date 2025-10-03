@@ -31,6 +31,8 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
+const mockUpdateConfigFn = jest.fn();
+
 const timezones: Timezone[] = [
   { id: "Europe/Berlin", parts: ["Europe", "Berlin"], country: "Germany", utcOffset: 120 },
   { id: "Europe/Madrid", parts: ["Europe", "Madrid"], country: "Spain", utcOffset: 120 },
@@ -48,18 +50,24 @@ const timezones: Timezone[] = [
   },
 ];
 
-const mockConfigMutation = {
-  mutate: jest.fn(),
-};
-
 jest.mock("~/queries/system", () => ({
   ...jest.requireActual("~/queries/system"),
-  useSystem: () => ({ locale: { timezones } }),
+  useSystem: () => ({ localization: { timezones } }),
+}));
+
+jest.mock("~/queries/proposal", () => ({
+  ...jest.requireActual("~/queries/proposal"),
+  useProposal: () => ({ localization: { timezones, timezone: "Europe/Berlin" } }),
 }));
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockNavigateFn,
+}));
+
+jest.mock("~/api/api", () => ({
+  ...jest.requireActual("~/api/api"),
+  updateConfig: (config) => mockUpdateConfigFn(config),
 }));
 
 beforeEach(() => {
@@ -81,7 +89,7 @@ it("allows changing the timezone", async () => {
   await user.click(option);
   const button = await screen.findByRole("button", { name: "Select" });
   await user.click(button);
-  expect(mockConfigMutation.mutate).toHaveBeenCalledWith({ timezone: "Europe/Madrid" });
+  expect(mockUpdateConfigFn).toHaveBeenCalledWith({ localization: { timezone: "Europe/Madrid" } });
   expect(mockNavigateFn).toHaveBeenCalledWith(-1);
 });
 

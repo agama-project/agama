@@ -20,10 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { LocaleConfig } from "./l10n";
+import { Localization } from "./l10n";
 
 type System = {
-  localization?: LocaleConfig;
+  localization?: Localization;
 };
 
 export type { System };
