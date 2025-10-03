@@ -21,7 +21,6 @@
 use crate::{
     auth::ClientId,
     jobs::Job,
-    localization::model::LocaleConfig,
     manager::InstallationPhase,
     network::model::NetworkChange,
     progress::Progress,
@@ -35,6 +34,7 @@ use crate::{
     },
     users::{FirstUser, RootUser},
 };
+use agama_l10n as l10n;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -81,10 +81,11 @@ impl Event {
 #[serde(tag = "type")]
 pub enum EventPayload {
     ClientConnected,
-    L10nConfigChanged(LocaleConfig),
     LocaleChanged {
         locale: String,
     },
+    #[serde(rename = "l10n")]
+    L10nEvent(l10n::Event),
     DevicesDirty {
         dirty: bool,
     },
@@ -183,6 +184,12 @@ pub enum EventPayload {
     ZFCPControllerRemoved {
         device: ZFCPController,
     },
+}
+
+impl From<l10n::Event> for EventPayload {
+    fn from(value: l10n::Event) -> Self {
+        EventPayload::L10nEvent(value)
+    }
 }
 
 /// Makes it easier to create an event, reducing the boilerplate.

@@ -20,7 +20,6 @@
 
 //! This module provides support for reading the locales database.
 
-use crate::error::Error;
 use agama_locale_data::LocaleId;
 use anyhow::Context;
 use serde::Serialize;
@@ -57,13 +56,21 @@ impl LocalesDatabase {
         Self::default()
     }
 
+    #[cfg(test)]
+    pub fn with_entries(data: &[LocaleEntry]) -> Self {
+        Self {
+            known_locales: vec![],
+            locales: data.to_vec(),
+        }
+    }
+
     /// Loads the list of locales.
     ///
     /// It checks for a file in /etc/agama.d/locales containing the list of supported locales (one per line).
     /// It it does not exists, calls `localectl list-locales`.
     ///
     /// * `ui_language`: language to translate the descriptions (e.g., "en").
-    pub fn read(&mut self, ui_language: &str) -> Result<(), Error> {
+    pub fn read(&mut self, ui_language: &str) -> anyhow::Result<()> {
         self.known_locales = Self::get_locales_list()?;
         self.locales = self.get_locales(ui_language)?;
         Ok(())
@@ -89,7 +96,7 @@ impl LocalesDatabase {
     /// Gets the supported locales information.
     ///
     /// * `ui_language`: language to use in the translations.
-    fn get_locales(&self, ui_language: &str) -> Result<Vec<LocaleEntry>, Error> {
+    fn get_locales(&self, ui_language: &str) -> anyhow::Result<Vec<LocaleEntry>> {
         const DEFAULT_LANG: &str = "en";
         let mut result = Vec::with_capacity(self.known_locales.len());
         let languages = agama_locale_data::get_languages()?;
@@ -135,7 +142,7 @@ impl LocalesDatabase {
         Ok(result)
     }
 
-    fn get_locales_list() -> Result<Vec<LocaleId>, Error> {
+    fn get_locales_list() -> anyhow::Result<Vec<LocaleId>> {
         const LOCALES_LIST_PATH: &str = "/etc/agama.d/locales";
 
         let locales = fs::read_to_string(LOCALES_LIST_PATH).map(Self::get_locales_from_string);
@@ -159,10 +166,7 @@ impl LocalesDatabase {
     }
 
     fn get_locales_from_string(locales: String) -> Vec<LocaleId> {
-        locales
-            .lines()
-            .filter_map(|line| TryInto::<LocaleId>::try_into(line).ok())
-            .collect()
+        locales.lines().filter_map(|l| l.parse().ok()).collect()
     }
 }
 
@@ -178,7 +182,7 @@ mod tests {
         let mut db = LocalesDatabase::new();
         db.read("de").unwrap();
         let found_locales = db.entries();
-        let spanish: LocaleId = "es_ES".try_into().unwrap();
+        let spanish = "es_ES".parse::<LocaleId>().unwrap();
         let found = found_locales
             .iter()
             .find(|l| l.id == spanish)
@@ -189,14 +193,14 @@ mod tests {
 
     #[test]
     fn test_try_into_locale() {
-        let locale = LocaleId::try_from("es_ES.UTF-16").unwrap();
+        let locale = "es_ES.UTF-16".parse::<LocaleId>().unwrap();
         assert_eq!(&locale.language, "es");
         assert_eq!(&locale.territory, "ES");
         assert_eq!(&locale.encoding, "UTF-16");
 
         assert_eq!(locale.to_string(), String::from("es_ES.UTF-16"));
 
-        let invalid = LocaleId::try_from(".");
+        let invalid = ".".parse::<LocaleId>();
         assert!(invalid.is_err());
     }
 
@@ -206,8 +210,8 @@ mod tests {
     fn test_locale_exists() {
         let mut db = LocalesDatabase::new();
         db.read("en").unwrap();
-        let en_us = LocaleId::try_from("en_US").unwrap();
-        let unknown = LocaleId::try_from("unknown_UNKNOWN").unwrap();
+        let en_us = "en_US".parse::<LocaleId>().unwrap();
+        let unknown = "unknown_UNKNOWN".parse::<LocaleId>().unwrap();
         assert!(db.exists(&en_us));
         assert!(!db.exists(&unknown));
     }

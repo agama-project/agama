@@ -20,7 +20,6 @@
 
 //! This module provides support for reading the timezones database.
 
-use crate::error::Error;
 use agama_locale_data::territory::Territories;
 use agama_locale_data::timezone_part::TimezoneIdParts;
 use serde::Serialize;
@@ -47,10 +46,17 @@ impl TimezonesDatabase {
         Self::default()
     }
 
+    #[cfg(test)]
+    pub fn with_entries(data: &[TimezoneEntry]) -> Self {
+        Self {
+            timezones: data.to_vec(),
+        }
+    }
+
     /// Initializes the list of known timezones.
     ///
     /// * `ui_language`: language to translate the descriptions (e.g., "en").
-    pub fn read(&mut self, ui_language: &str) -> Result<(), Error> {
+    pub fn read(&mut self, ui_language: &str) -> anyhow::Result<()> {
         self.timezones = self.get_timezones(ui_language)?;
         Ok(())
     }
@@ -71,7 +77,7 @@ impl TimezonesDatabase {
     /// containing the translation of each part of the language.
     ///
     /// * `ui_language`: language to translate the descriptions (e.g., "en").
-    fn get_timezones(&self, ui_language: &str) -> Result<Vec<TimezoneEntry>, Error> {
+    fn get_timezones(&self, ui_language: &str) -> anyhow::Result<Vec<TimezoneEntry>> {
         let timezones = agama_locale_data::get_timezones();
         let tz_parts = agama_locale_data::get_timezone_parts()?;
         let territories = agama_locale_data::get_territories()?;

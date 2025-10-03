@@ -20,19 +20,35 @@
  * find current contact information at www.suse.com.
  */
 
-import { get, put } from "~/api/http";
-import { Hostname } from "~/types/system";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { fetchHostname, updateHostname } from "~/api/hostname";
 
 /**
- * Returns the hostname configuration
+ * Returns a query for retrieving the hostname configuration
  */
-const fetchHostname = (): Promise<Hostname> => get("/api/hostname/config");
+const hostnameQuery = () => ({
+  queryKey: ["system", "hostname"],
+  queryFn: fetchHostname,
+});
 
 /**
- * Updates the hostname configuration
- *
- * @param hostname - Object containing hostname updates
+ * Hook that returns the hostname configuration
  */
-const updateHostname = (user: Partial<Hostname>) => put("/api/hostname/config", user);
+const useHostname = () => {
+  const { data: hostname } = useSuspenseQuery(hostnameQuery());
+  return hostname;
+};
 
-export { fetchHostname, updateHostname };
+/*
+ * Hook that returns a mutation to change the hostname
+ */
+const useHostnameMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: updateHostname,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["system", "hostname"] }),
+  };
+  return useMutation(query);
+};
+
+export { useHostname, useHostnameMutation };

@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,19 +18,21 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use serde::{Deserialize, Serialize};
+mod start;
+pub use start::start;
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct LocaleConfig {
-    /// Locales to install in the target system
-    pub locales: Option<Vec<String>>,
-    /// Keymap for the target system
-    pub keymap: Option<String>,
-    /// Timezone for the target system
-    pub timezone: Option<String>,
-    /// User-interface locale. It is actually not related to the `locales` property.
-    pub ui_locale: Option<String>,
-    /// User-interface locale. It is relevant only on local installations.
-    pub ui_keymap: Option<String>,
-}
+pub mod service;
+pub use service::Service;
+
+mod scope;
+pub use scope::{ConfigScope, Scope};
+
+mod system_info;
+pub use system_info::SystemInfo;
+
+pub mod message;
+
+mod listener;
+mod proposal;
+
+pub use agama_l10n as l10n;

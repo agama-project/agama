@@ -24,10 +24,10 @@ use std::{
     process::{ExitCode, Termination},
 };
 
+use agama_l10n::helpers as l10n_helpers;
 use agama_lib::{auth::AuthToken, connection_to};
 use agama_server::{
     cert::Certificate,
-    l10n::helpers,
     logs::init_logging,
     web::{self, run_monitor},
 };
@@ -316,7 +316,7 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
 /// Start serving the API.
 /// `options`: command-line arguments.
 async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
-    _ = helpers::init_locale();
+    _ = l10n_helpers::init_locale();
     init_logging().context("Could not initialize the logger")?;
 
     let (tx, _) = channel(16);

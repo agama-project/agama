@@ -29,13 +29,13 @@ use crate::{
     error::Error,
     files::web::files_service,
     hostname::web::hostname_service,
-    l10n::web::l10n_service,
     manager::web::{manager_service, manager_stream},
     network::{web::network_service, NetworkManagerAdapter},
     profile::web::profile_service,
     questions::web::{questions_service, questions_stream},
     scripts::web::scripts_service,
     security::security_service,
+    server::server_service,
     software::web::{software_service, software_streams},
     storage::web::{iscsi::iscsi_service, storage_service, storage_streams},
     users::web::{users_service, users_streams},
@@ -84,11 +84,11 @@ where
     let progress = ProgressService::start(dbus.clone(), events.clone()).await;
 
     let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
-        .add_service("/l10n", l10n_service(dbus.clone(), events.clone()).await?)
         .add_service(
             "/manager",
             manager_service(dbus.clone(), progress.clone()).await?,
         )
+        .add_service("/v2", server_service(events.clone()).await?)
         .add_service("/security", security_service(dbus.clone()).await?)
         .add_service(
             "/software",

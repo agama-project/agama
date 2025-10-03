@@ -20,20 +20,37 @@
 
 //! Representation of the localization settings
 
+use crate::extended_config::ExtendedConfig;
 use serde::{Deserialize, Serialize};
 
-/// Localization settings for the system being installed (not the UI)
-/// FIXME: this one is close to CLI. A possible duplicate close to HTTP is LocaleConfig
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
+/// User configuration for the localization of the target system.
+///
+/// This configuration is provided by the user, so all the values are optional.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[schema(as = l10n::UserConfig)]
 #[serde(rename_all = "camelCase")]
-pub struct LocalizationSettings {
-    /// like "en_US.UTF-8"
+pub struct Config {
+    /// Locale (e.g., "en_US.UTF-8").
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub language: Option<String>,
-    /// like "cz(qwerty)"
+    #[serde(alias = "language")]
+    pub locale: Option<String>,
+    /// Keymap (e.g., "us", "cz(qwerty)", etc.).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub keyboard: Option<String>,
-    /// like "Europe/Berlin"
+    #[serde(alias = "keyboard")]
+    pub keymap: Option<String>,
+    /// Timezone (e.g., "Europe/Berlin").
     #[serde(skip_serializing_if = "Option::is_none")]
     pub timezone: Option<String>,
+}
+
+/// Converts the localization configuration, which contains values for all the
+/// elements, into a user configuration.
+impl From<&ExtendedConfig> for Config {
+    fn from(config: &ExtendedConfig) -> Self {
+        Config {
+            locale: Some(config.locale.to_string()),
+            keymap: Some(config.keymap.to_string()),
+            timezone: Some(config.timezone.to_string()),
+        }
+    }
 }

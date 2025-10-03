@@ -20,35 +20,75 @@
  * find current contact information at www.suse.com.
  */
 
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { fetchHostname, updateHostname } from "~/api/system";
+import React from "react";
+import { tzOffset } from "@date-fns/tz/tzOffset";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useInstallerClient } from "~/context/installer";
+import { fetchSystem } from "~/api/api";
+
+const transformLocales = (locales) =>
+  locales.map(({ id, language: name, territory }) => ({ id, name, territory }));
+
+const tranformKeymaps = (keymaps) => keymaps.map(({ id, description: name }) => ({ id, name }));
+
+const transformTimezones = (timezones) =>
+  timezones.map(({ code: id, parts, country }) => {
+    const utcOffset = tzOffset(id, new Date());
+    return { id, parts, country, utcOffset };
+  });
 
 /**
- * Returns a query for retrieving the hostname configuration
+ * Returns a query for retrieving the localization configuration
  */
-const hostnameQuery = () => ({
-  queryKey: ["system", "hostname"],
-  queryFn: fetchHostname,
-});
+const systemQuery = () => {
+  return {
+    queryKey: ["system"],
+    queryFn: fetchSystem,
 
-/**
- * Hook that returns the hostname configuration
- */
-const useHostname = () => {
-  const { data: hostname } = useSuspenseQuery(hostnameQuery());
-  return hostname;
-};
+    // FIXME: We previously had separate fetch functions (fetchLocales,
+    // fetchKeymaps, fetchTimezones) that each applied specific transformations to
+    // the raw API data, for example, adding `utcOffset` to timezones or
+    // changing keys to follow a consistent structure (e.g. `id` vs `code`).
+    //
+    // Now that we've consolidated these into a single "system" cache, instead of
+    // individual caches, those transformations are currently missing. While it's
+    // more efficient to fetch everything in one request, we may still want to apply
+    // those transformations only once. Ideally, this logic should live outside the
+    // React Query layer, in a dedicated "state layer" or transformation step, so
+    // that data remains normalized and consistently shaped for the rest of the app.
 
-/*
- * Hook that returns a mutation to change the hostname
- */
-const useHostnameMutation = () => {
-  const queryClient = useQueryClient();
-  const query = {
-    mutationFn: updateHostname,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["system", "hostname"] }),
+    select: (data) => ({
+      ...data,
+      localization: {
+        locales: transformLocales(data.localization.locales),
+        keymaps: tranformKeymaps(data.localization.keymaps),
+        timezones: transformTimezones(data.localization.timezones),
+        locale: data.locale,
+        keypmap: data.keymap,
+        timezone: data.timezone,
+      },
+    }),
   };
-  return useMutation(query);
 };
 
-export { useHostname, useHostnameMutation };
+const useSystem = () => {
+  const { data: config } = useSuspenseQuery(systemQuery());
+  return config;
+};
+
+const useSystemChanges = () => {
+  const queryClient = useQueryClient();
+  const client = useInstallerClient();
+
+  React.useEffect(() => {
+    if (!client) return;
+
+    return client.onEvent((event) => {
+      if (event.type === "l10n" && event.name === "SystemChanged") {
+        queryClient.invalidateQueries({ queryKey: ["system"] });
+      }
+    });
+  }, [client, queryClient]);
+};
+
+export { useSystem, useSystemChanges };

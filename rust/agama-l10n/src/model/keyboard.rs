@@ -72,6 +72,13 @@ impl KeymapsDatabase {
         Self::default()
     }
 
+    #[cfg(test)]
+    pub fn with_entries(data: &[Keymap]) -> Self {
+        Self {
+            keymaps: data.to_vec(),
+        }
+    }
+
     /// Reads the list of keymaps.
     pub fn read(&mut self) -> anyhow::Result<()> {
         self.keymaps = get_keymaps()?;

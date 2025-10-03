@@ -65,7 +65,20 @@ type Timezone = {
   utcOffset: number;
 };
 
+type Localization = {
+  locales?: Locale[];
+  keymaps?: Keymap[];
+  timezones?: Timezone[];
+  locale?: string;
+  keymap?: string;
+  timezone?: string;
+};
+
 type LocaleConfig = {
+  /**
+   * Selected locale for installation (e.g, "en_US.UTF-8")
+   */
+  locale?: string;
   /**
    * List of locales to install (e.g., ["en_US.UTF-8"]).
    */
@@ -78,15 +91,6 @@ type LocaleConfig = {
    * Selected timezone for installation (e.g., "Atlantic/Canary").
    */
   timezone?: string;
-
-  /**
-   * Locale to be used in the UI.
-   */
-  uiLocale?: string;
-  /**
-   * Locale to be used in the UI.
-   */
-  uiKeymap?: string;
 };
 
-export type { Keymap, Locale, Timezone, LocaleConfig };
+export type { Keymap, Locale, Timezone, LocaleConfig, Localization };

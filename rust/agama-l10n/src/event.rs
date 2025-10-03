@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,32 +18,21 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::model::LocaleConfig;
-use crate::http::{BaseHTTPClient, BaseHTTPClientError};
+use serde::{Deserialize, Serialize};
+use tokio::sync::mpsc;
 
-#[derive(Debug, thiserror::Error)]
-pub enum LocalizationHTTPClientError {
-    #[error(transparent)]
-    HTTP(#[from] BaseHTTPClientError),
+/// Localization-related events.
+// FIXME: is it really needed to implement Deserialize?
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(tag = "name")]
+pub enum Event {
+    /// Proposal changed.
+    ProposalChanged,
+    /// The underlying system changed.
+    SystemChanged,
 }
 
-pub struct LocalizationHTTPClient {
-    client: BaseHTTPClient,
-}
-
-impl LocalizationHTTPClient {
-    pub fn new(base: BaseHTTPClient) -> Self {
-        Self { client: base }
-    }
-
-    pub async fn get_config(&self) -> Result<LocaleConfig, LocalizationHTTPClientError> {
-        Ok(self.client.get("/l10n/config").await?)
-    }
-
-    pub async fn set_config(
-        &self,
-        config: &LocaleConfig,
-    ) -> Result<(), LocalizationHTTPClientError> {
-        Ok(self.client.patch_void("/l10n/config", config).await?)
-    }
-}
+/// Multi-producer single-consumer events sender.
+pub type Sender = mpsc::UnboundedSender<Event>;
+/// Multi-producer single-consumer events receiver.
+pub type Receiver = mpsc::UnboundedReceiver<Event>;

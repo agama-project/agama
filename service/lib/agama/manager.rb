@@ -135,7 +135,7 @@ module Agama
         on_target do
           users.write
           network.install
-          language.finish
+          http_client.install
           software.finish
           storage.finish
         end
@@ -184,11 +184,11 @@ module Agama
       ProxySetup.instance
     end
 
-    # Language manager
+    # HTTP client.
     #
-    # @return [HTTP::Clients::Localization]
-    def language
-      @language ||= Agama::HTTP::Clients::Localization.new(logger)
+    # @return [HTTP::Clients::Base]
+    def http_client
+      @http_client ||= Agama::HTTP::Clients::Main.new(logger)
     end
 
     # Users client

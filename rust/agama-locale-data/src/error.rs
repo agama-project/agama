@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,20 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_locale_data::{InvalidKeymap, InvalidLocaleCode, KeymapId, LocaleId};
+use quick_xml::DeError;
 
 #[derive(thiserror::Error, Debug)]
-pub enum LocaleError {
-    #[error("Unknown locale code: {0}")]
-    UnknownLocale(LocaleId),
-    #[error("Invalid locale: {0}")]
-    InvalidLocale(#[from] InvalidLocaleCode),
-    #[error("Unknown timezone: {0}")]
-    UnknownTimezone(String),
-    #[error("Unknown keymap: {0}")]
-    UnknownKeymap(KeymapId),
-    #[error("Invalid keymap: {0}")]
-    InvalidKeymap(#[from] InvalidKeymap),
-    #[error("Could not apply the l10n settings: {0}")]
-    Commit(#[from] std::io::Error),
+pub enum LocaleDataError {
+    #[error("Could not read file {0}")]
+    IO(String, #[source] std::io::Error),
+    #[error("Could not deserialize langtable data from {0}")]
+    Deserialize(String, #[source] DeError),
+    #[error("Could not read the keymaps")]
+    CouldNotReadKeymaps(#[source] std::io::Error),
 }

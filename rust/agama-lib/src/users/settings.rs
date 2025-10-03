@@ -25,7 +25,7 @@ use super::{FirstUser, RootUser};
 /// User settings
 ///
 /// Holds the user settings for the installation.
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct UserSettings {
     #[serde(rename = "user")]
@@ -38,7 +38,7 @@ pub struct UserSettings {
 /// First user settings
 ///
 /// Holds the settings for the first user.
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct FirstUserSettings {
     /// First user's full name
@@ -92,7 +92,7 @@ impl From<FirstUser> for FirstUserSettings {
 /// Represents a user password.
 ///
 /// It holds the password and whether it is a hashed or a plain text password.
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct UserPassword {
     /// User password
@@ -105,7 +105,7 @@ pub struct UserPassword {
 /// Root user settings
 ///
 /// Holds the settings for the root user.
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct RootUserSettings {
     /// Root user password

@@ -38,8 +38,8 @@ jest.mock("~/queries/issues", () => ({
 
 jest.mock("~/queries/software", () => ({
   usePatterns: () => testingPatterns,
-  useProposal: () => testingProposal,
-  useProposalChanges: jest.fn(),
+  useSoftwareProposal: () => testingProposal,
+  useSoftwareProposalChanges: jest.fn(),
   useRepositories: () => [],
   useRepositoryMutation: () => ({ mutate: jest.fn() }),
 }));
