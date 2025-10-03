@@ -53,9 +53,7 @@ const tumbleweed: Product = {
 
 let mockSelectedProduct: Product;
 
-const mockL10nConfigMutation = {
-  mutate: jest.fn(),
-};
+const mockUpdateConfigFn = jest.fn();
 
 const mockChangeUIKeymap = jest.fn();
 const mockChangeUILanguage = jest.fn();
@@ -63,6 +61,11 @@ const mockChangeUILanguage = jest.fn();
 jest.mock("~/queries/system", () => ({
   ...jest.requireActual("~/queries/system"),
   useSystem: () => ({ localization: { locales, keymaps, locale: "us_US.UTF-8", keymap: "us" } }),
+}));
+
+jest.mock("~/api/api", () => ({
+  ...jest.requireActual("~/api/api"),
+  updateConfig: (config) => mockUpdateConfigFn(config),
 }));
 
 jest.mock("~/queries/status", () => ({
@@ -184,9 +187,11 @@ describe("InstallerOptions", () => {
       await user.selectOptions(keymapSelector, "English (UK)");
 
       await user.click(acceptButton);
-      expect(mockL10nConfigMutation.mutate).toHaveBeenCalledWith({
-        locales: ["es_ES.UTF-8"],
-        keymap: "gb",
+      expect(mockUpdateConfigFn).toHaveBeenCalledWith({
+        localization: {
+          locale: "es_ES.UTF-8",
+          keymap: "gb",
+        },
       });
     });
 
@@ -208,7 +213,7 @@ describe("InstallerOptions", () => {
       await user.selectOptions(languageSelector, "Español");
       await user.selectOptions(keymapSelector, "English (UK)");
       await user.click(acceptButton);
-      expect(mockL10nConfigMutation.mutate).not.toHaveBeenCalled();
+      expect(mockUpdateConfigFn).not.toHaveBeenCalled();
     });
 
     it("includes a link to localization page", async () => {
@@ -303,8 +308,10 @@ describe("InstallerOptions", () => {
       await user.selectOptions(languageSelector, "Español");
 
       await user.click(acceptButton);
-      expect(mockL10nConfigMutation.mutate).toHaveBeenCalledWith({
-        locales: ["es_ES.UTF-8"],
+      expect(mockUpdateConfigFn).toHaveBeenCalledWith({
+        localization: {
+          locale: "es_ES.UTF-8",
+        },
       });
     });
 
@@ -322,7 +329,7 @@ describe("InstallerOptions", () => {
       expect(reuseSettings).not.toBeChecked();
       await user.selectOptions(languageSelector, "Español");
       await user.click(acceptButton);
-      expect(mockL10nConfigMutation.mutate).not.toHaveBeenCalled();
+      expect(mockUpdateConfigFn).not.toHaveBeenCalled();
     });
 
     it("includes a link to localization page", async () => {
@@ -392,8 +399,10 @@ describe("InstallerOptions", () => {
       await user.selectOptions(keymapSelector, "English (UK)");
 
       await user.click(acceptButton);
-      expect(mockL10nConfigMutation.mutate).toHaveBeenCalledWith({
-        keymap: "gb",
+      expect(mockUpdateConfigFn).toHaveBeenCalledWith({
+        localization: {
+          keymap: "gb",
+        },
       });
     });
 
@@ -413,7 +422,7 @@ describe("InstallerOptions", () => {
       expect(reuseSettings).not.toBeChecked();
       await user.selectOptions(keymapSelector, "English (UK)");
       await user.click(acceptButton);
-      expect(mockL10nConfigMutation.mutate).not.toHaveBeenCalled();
+      expect(mockUpdateConfigFn).not.toHaveBeenCalled();
     });
 
     it("includes a link to localization page", async () => {
