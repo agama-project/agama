@@ -39,8 +39,6 @@ use agama_utils::issue;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use crate::issue::Issue;
-
 /// Agama event.
 ///
 /// It represents an event that occurs in Agama.
@@ -122,11 +120,7 @@ pub enum EventPayload {
         service: String,
         status: u32,
     },
-    IssuesUpdated,
-    IssuesChanged {
-        path: String,
-        issues: Vec<Issue>,
-    },
+    Issues(issue::IssuesChanged),
     ValidationChanged {
         service: String,
         path: String,
@@ -196,7 +190,7 @@ impl From<l10n::Event> for EventPayload {
 
 impl From<issue::IssuesChanged> for EventPayload {
     fn from(_value: issue::IssuesChanged) -> Self {
-        EventPayload::IssuesUpdated
+        EventPayload::Issues(issue::IssuesChanged)
     }
 }
 
