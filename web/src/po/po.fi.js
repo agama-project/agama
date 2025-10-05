@@ -229,13 +229,13 @@ export default {
     "Tunnistautuminen"
   ],
   "Authentication by initiator": [
-    ""
+    "Alullepanijan mukaan tunnistautuminen"
   ],
   "Authentication by target": [
-    ""
+    "Kohteen mukaan tunnistautuminen"
   ],
   "Auto LUNs Scan": [
-    ""
+    "Automaattinen LUN-skannaus"
   ],
   "Automatic": [
     "Automaattinen"
@@ -244,10 +244,10 @@ export default {
     "Automaattinen (DHCP)"
   ],
   "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    ""
+    "Automaattinen LUN-skannaus on [pois käytöstä]. LUNien asetukset tulee määrittää       käsin ohjaimen aktivoinnin jälkeen."
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    ""
+    "Automaattinen LUN-skannaus on [käytössä]. NPIV-tilassa toimivan ohjaimen       aktivoiminen määrittää automaattisesti kaikkien LUNien asetukset."
   ],
   "Available products": [
     "Saatavilla olevat tuotteet"
@@ -403,7 +403,7 @@ export default {
     "Asetukset eivät ajan tasalla"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    ""
+    "Asetukset luettu kohteesta iSCSI Boot Firmware Table (iBFT)."
   ],
   "Configuration unreachable or invalid": [
     "Asetuksia ei voida ladata tai ne eivät ole kelvollisia"
@@ -502,7 +502,7 @@ export default {
     "Jatkaminen asentamatta pakettia voi johtaa rikkinäiseen järjestelmään. Joissain tapauksissa järjestelmä ei välttämättä edes käynnisty."
   ],
   "Controllers": [
-    ""
+    "Ohjaimet"
   ],
   "Could not authenticate against the server, please check it.": [
     "Palvelimelle ei voitu tunnistautua, ole hyvä ja tarkista."
@@ -637,13 +637,13 @@ export default {
     "Yhteys katkaistu"
   ],
   "Discover": [
-    ""
+    "Havaitse"
   ],
   "Discover and connect to iSCSI targets": [
     "Löydä ja yhdistä iSCSI-kohteita"
   ],
   "Discover iSCSI Targets": [
-    ""
+    "Havaitse iSCSI-kohteita"
   ],
   "Discover iSCSI targets": [
     "Havaitaan iSCSI-kohteita"
@@ -858,7 +858,7 @@ export default {
     "Yhdyskäytävän voi määrittää vain tilassa ”Manuaalinen”"
   ],
   "GiB": [
-    ""
+    "GiB"
   ],
   "Go to network page": [
     "Mene verkko-sivulle"
@@ -934,19 +934,19 @@ export default {
     "Virheellinen käyttäjänimi"
   ],
   "Initiator": [
-    ""
+    "Alullepanija (initiator)"
   ],
   "Initiator details": [
-    ""
+    "Alullepanijan tiedot"
   ],
   "Initiator name": [
-    ""
+    "Alullepanijan nimi"
   ],
   "Initiator name could not be updated": [
-    ""
+    "Alullepanijan nimeä ei voi päivittää"
   ],
   "Initiator name successfully updated": [
-    ""
+    "Alullepanijan nimi päivitettty"
   ],
   "Install": [
     "Asenna"
@@ -1120,7 +1120,7 @@ export default {
     "Päänavigointi"
   ],
   "Make sure you provide the correct values": [
-    ""
+    "Varmista että tarjoat oikeita arvoja"
   ],
   "Manage DASD devices": [
     "Hallitse DASD-laitteita"
@@ -1263,10 +1263,10 @@ export default {
     "Laitteita ei löydy"
   ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    ""
+    "iSCSI Boot Firmware Table (iBFT):tä ei löydy. Alullepanija (initiator) voidaan määrittää käsin."
   ],
   "No iSCSI targets found.": [
-    ""
+    "iSCSI-kohteita ei löydy."
   ],
   "No logical volumes are defined yet": [
     "Loogisia taltioita ei ole vielä määritetty"
@@ -1284,10 +1284,10 @@ export default {
     "Kiinteitä yhteyksiä ei löydy"
   ],
   "No zFCP controllers found.": [
-    ""
+    "zFCP-ohjaimia ei löydy."
   ],
   "No zFCP disks found.": [
-    ""
+    "zFCP-levyjä ei löydy."
   ],
   "None": [
     "Ei mitään"
@@ -1335,7 +1335,7 @@ export default {
     "Käynnistyksessä"
   ],
   "Only available if authentication by target is provided": [
-    ""
+    "Käytettävissä vain kohteen mukaan tunnistautumisen kanssa"
   ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "Vain uudelleenkäytettyjä osioita sekä varaamatonta tilaa tullaan käyttämään."
@@ -1422,22 +1422,22 @@ export default {
     "Tarkista onko se käynnissä."
   ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    ""
+    "Käytä iSCSI-havaitsemistoimintoa saatavilla olevien iSCSI-kohteiden löytämiseksi."
   ],
   "Please, provide its password to log in to the system.": [
     "Kirjoita salasana jota käytetään järjestelmään kirjautumiseen."
   ],
   "Please, try to activate a zFCP controller.": [
-    ""
+    "Yritä aktivoida zFCP-ohjain."
   ],
   "Please, try to activate a zFCP disk.": [
-    ""
+    "Yritä aktivoida zFCP-levy."
   ],
   "Port": [
     "Portti"
   ],
   "Portal": [
-    ""
+    "Portaali"
   ],
   "Pre-installation checks": [
     "Ennen asennusta tehtävät tarkistukset"
@@ -1470,7 +1470,7 @@ export default {
     "Kysmys"
   ],
   "Read zFCP devices": [
-    ""
+    "Lue zFCP-laitteita"
   ],
   "Reboot": [
     "Käynnistä uudelleen"
@@ -1671,7 +1671,7 @@ export default {
     "Aseta DIAG päälle"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
-    ""
+    "Aseta pysyvä isäntänimi joka ei muuta verkkopäivityksissä."
   ],
   "Setting up connection": [
     "Muodostetaan yhteyttä"
@@ -1789,10 +1789,10 @@ export default {
     "TPM-sinetöinti vaatii uuden järjestelmän suoran käynnistämisen."
   ],
   "Target Password": [
-    ""
+    "Kohteen salasana"
   ],
   "Targets": [
-    ""
+    "Kohteet"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM-ryhmä ”%1$s” säilyy levyllä %2$s"
@@ -1899,7 +1899,7 @@ export default {
     "Seuraavat ohjelmistoryhmät on valittu asennukseen:"
   ],
   "The initiator name cannot be blank": [
-    ""
+    "Alullepanijan nimi ei voi olla tyhjä"
   ],
   "The installation on your machine is complete.": [
     "Asennus laitteelle on valmis."
@@ -1999,7 +1999,7 @@ export default {
     "Koko laitetta tullaan käyttämään kohteelle %s"
   ],
   "The zFCP disk was not activated.": [
-    ""
+    "zFCP-levyä ei aktivoitu."
   ],
   "There are no disks available for the installation.": [
     "Asennusta varten ei ole saatavilla levyjä."
@@ -2028,16 +2028,16 @@ export default {
     "Nämä ovat asennettavan tuotteen asetukset. Asennusohjelman kieltä voi muuttaa yläpalkin [asetuspaneelista]."
   ],
   "This action could destroy any data stored on the device.": [
-    ""
+    "Tämä toiminto voi tuhota kaikki laitteelle tallennetut tiedot."
   ],
   "This action could destroy any data stored on the devices listed below.": [
-    ""
+    "Tämä toiminto voi tuhota kaikki alla luetelluille laitteille tallennetut tiedot."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Tämä laajennus ei ole saatavilla palvelimella. Pyydä palvelimen ylläpitoa peilaamaan laajennus."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    ""
+    "Isäntänimi on dynaaminen ja voi muuttua uudelleenkäynnistyksen tai verkkopäivityksen myötä, siten kuten paikallinen verkkoylläpitäjä on määritellyt."
   ],
   "This license is not available in %s.": [
     "Lisenssiä ei ole saatavilla tuotteelle %s."
@@ -2115,10 +2115,10 @@ export default {
     "Päivitä saatavilla olevia laitteita ja aktivoi salatut laitteet"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
-    ""
+    "Isäntänimen päivittäminen nyt tai myöhemmin ei muuta tällä hetkellä rekisteröityä isäntänimeä."
   ],
   "Updating the initiator name": [
-    ""
+    "Päivitetään alullepanijan nimeä"
   ],
   "Upload": [
     "Lataa"
@@ -2253,7 +2253,7 @@ export default {
     "Käytetään [%s]-näppämistöä"
   ],
   "Using a hashed password.": [
-    ""
+    "Käytetään tiivisteellistä salasanaa."
   ],
   "Using an existing partition": [
     "Käytä olemassa olevaa osioita"
@@ -2382,9 +2382,9 @@ export default {
     "zFCP"
   ],
   "zFCP Disk Activation": [
-    ""
+    "zFCP-levyaktivointi"
   ],
   "zFCP Disk activation form": [
-    ""
+    "zFCP-levyaktivoinnin lomake"
   ]
 };

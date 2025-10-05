@@ -15,6 +15,10 @@ export default {
   "%1$s at %2$s": [
     "%1$s %2$s'de"
   ],
+  "%1$s will be created as a partition at %2$s": [
+    "%1$s bölümü (%2$s) olarak oluşturulacak",
+    "%1$s bölümleri (%2$s) olarak oluşturulacak"
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s hala '%2$s' LVM grubunu ve önyükleme için gereken herhangi bir bölümü içerecektir"
   ],
@@ -40,8 +44,8 @@ export default {
     "%s logosu"
   ],
   "%s will be created as a logical volume": [
-    "",
-    ""
+    "%s mantıksal bir birim olarak oluşturulacak",
+    "%s mantıksal bir birimler olarak oluşturulacak"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s hala yapılandırılmış LVM gruplarını ve önyükleme için gereken tüm bölümleri içerecektir"
@@ -69,6 +73,14 @@ export default {
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Yeni %3$s için %1$s ile %2$s arasında genel bir boyut aralığı kullanılacak"
+  ],
+  "A new partition will be created for %s": [
+    "Yeni bölüm %s için oluşturulacak",
+    "Yeni bölümler %s için oluşturulacak"
+  ],
+  "A new volume will be created for %s": [
+    "Yeni bir birim %s için oluşturulacak",
+    "Yeni birimler %s için oluşturulacak"
   ],
   "A partition may be deleted": [
     "Bir bölüm silinebilir"
@@ -178,6 +190,10 @@ export default {
   "Already using all available disks": [
     "Zaten tüm kullanılabilir diskler kullanılıyor"
   ],
+  "An existing partition will be used for %s": [
+    "Mevcut bölüm %s için kullanılacak",
+    "Mevcut bölümler %s için kullanılacak"
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Mevcut herhangi bir bölüm kaldırılacak ve diskteki tüm veriler kaybolacaktır."
   ],
@@ -186,6 +202,10 @@ export default {
   ],
   "Apply selected solution": [
     "Seçilen çözümü uygula"
+  ],
+  "Apply to the selected device": [
+    "Seçili cihaz biçimlendirilsin mi?",
+    "Seçili %s cihazları biçimlendirilsin mi?"
   ],
   "Applying changes": [
     "Değişiklikleri uygula"
@@ -384,6 +404,9 @@ export default {
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Yapılandırma iSCSI Önyükleme Ürün Yazılımı Tablosu'ndan (iBFT) okundu."
+  ],
+  "Configuration unreachable or invalid": [
+    "Konfigürasyon ulaşılamaz veya geçersiz"
   ],
   "Configure DASD": [
     "DASD'yi yapılandırın"
@@ -728,12 +751,12 @@ export default {
     "Ext4"
   ],
   "Extend the installation beyond the currently selected device": [
-    "",
-    ""
+    "Kurulumu şu anda seçili olan cihazın ötesine genişletin",
+    "Kurulumu şu anda seçili olan %d cihazların ötesine genişletin"
   ],
   "Extend the installation beyond the currently selected disk": [
-    "",
-    ""
+    "Kurulumu şu anda seçili olan diskin ötesine geçirin",
+    "Kurulumu şu anda seçili olan %d disklerin ötesine geçirin"
   ],
   "Extensions": [
     "Uzantılar"
@@ -1134,6 +1157,14 @@ export default {
   ],
   "More languages might be available for the selected product at [Localization] page": [
     "Seçili ürün için [Yerelleştirme] sayfasında daha fazla dil mevcut olabilir"
+  ],
+  "Moreover, the following partition will be created.": [
+    "Ayrıca, aşağıdaki bölüm oluşturulacak veya bağlanacaktır.",
+    "Ayrıca, aşağıdaki bölümler oluşturulacak veya bağlanacaktır."
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "Ayrıca, aşağıdaki bölüm oluşturulacak veya bağlanacaktır.",
+    "Ayrıca, aşağıdaki bölümler oluşturulacak veya bağlanacaktır."
   ],
   "Moreover, the following partitions will be created or mounted": [
     "Ayrıca, aşağıdaki bölümler oluşturulacak veya bağlanacaktır"
@@ -1769,6 +1800,10 @@ export default {
   "The configuration has been updated externally.": [
     "Yapılandırma harici olarak güncellendi."
   ],
+  "The configuration must be adapted to address the following issue:": [
+    "Kuruluma başlamadan önce aşağıdaki sorunu gidermeniz gerekmektedir:",
+    "Kuruluma başlamadan önce aşağıdaki sorunları gidermeniz gerekmektedir:"
+  ],
   "The configured LVM groups will remain at %s": [
     "Yapılandırılan LVM grupları %s konumunda kalacaktır"
   ],
@@ -1794,8 +1829,8 @@ export default {
     "Mevcut dosya sistemi %s konumuna bağlanacak"
   ],
   "The current storage configuration has the following issue:": [
-    "",
-    ""
+    "Mevcut depolama konfigürasyonunda şu sorun var:",
+    "Mevcut depolama konfigürasyonunda şu sorunlar var:"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Veriler tutulacak, ancak mevcut bölümler ihtiyaç halinde yeniden boyutlandırılacak."
@@ -1845,6 +1880,18 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Güvenilir Platform Modülünü (Trusted Platform Module) (TPM) şifrelenmiş cihazları otomatik olarak açacak şekilde yapılandırmanın son adımı, yeni sistemin ilk önyüklemesi sırasında gerçekleştirilecektir. Bunun çalışması için makinenin doğrudan yeni önyükleyiciye önyükleme yapması gerekir."
   ],
+  "The following logical volume will be created": [
+    "Aşağıdaki mantıksal birim oluşturulacak",
+    "Aşağıdaki mantıksal birimler oluşturulacak"
+  ],
+  "The following partition will be created.": [
+    "Aşağıdaki bölüm oluşturulacak veya bağlanacak.",
+    "Aşağıdaki bölümler oluşturulacak veya bağlanacak."
+  ],
+  "The following partition will be mounted.": [
+    "Aşağıdaki bölüm bağlanacak.",
+    "Aşağıdaki bölümler bağlanacak."
+  ],
   "The following partitions will be created or mounted": [
     "Aşağıdaki bölümler oluşturulacak veya bağlanacak"
   ],
@@ -1868,6 +1915,10 @@ export default {
   ],
   "The installer requires [root] user privileges.": [
     "Yükleyici [root] kullanıcı ayrıcalıklarını gerektirir."
+  ],
+  "The logical volume will also be deleted": [
+    "Mantıksal birimde silinecek",
+    "Mantıksal birimlerdede silinecek"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Maksimum, GiB veya GB gibi bir birimin izlediği bir sayı olmalıdır"
@@ -1959,9 +2010,13 @@ export default {
   "There are not usable partitions": [
     "Kullanılabilir bölüm yok"
   ],
+  "There is %d destructive action planned": [
+    "yıkıcı %d eylemi planlandı",
+    "yıkıcı %d eylemleri planlandı"
+  ],
   "There is %d destructive action planned affecting %s": [
-    "",
-    ""
+    "%d planlanan yıkım askiyonu %s'i etkiliyor",
+    "%d planlanan yıkım askiyonları %s'i etkiliyor"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Bunlar en alakalı kurulum ayarlarıdır. Daha fazla ayrıntı için menüdeki bölümlere göz atmaktan çekinmeyin."
