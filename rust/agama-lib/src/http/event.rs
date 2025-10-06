@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::issue::Issue;
 use crate::{
     auth::ClientId,
     jobs::Job,
@@ -35,10 +36,9 @@ use crate::{
     users::{FirstUser, RootUser},
 };
 use agama_l10n as l10n;
+use agama_utils::progress;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-
-use crate::issue::Issue;
 
 /// Agama event.
 ///
@@ -84,6 +84,8 @@ pub enum EventPayload {
     LocaleChanged {
         locale: String,
     },
+    #[serde(rename = "progress")]
+    ProgressEvent(progress::Event),
     #[serde(rename = "l10n")]
     L10nEvent(l10n::Event),
     DevicesDirty {
@@ -184,6 +186,12 @@ pub enum EventPayload {
     ZFCPControllerRemoved {
         device: ZFCPController,
     },
+}
+
+impl From<progress::Event> for EventPayload {
+    fn from(value: progress::Event) -> Self {
+        EventPayload::ProgressEvent(value)
+    }
 }
 
 impl From<l10n::Event> for EventPayload {

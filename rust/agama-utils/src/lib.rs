@@ -29,4 +29,4 @@ pub use service::Service;
 pub mod dbus;
 pub mod openapi;
 
-mod progress;
+pub mod progress;

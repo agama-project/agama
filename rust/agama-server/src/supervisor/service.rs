@@ -26,10 +26,19 @@ use crate::supervisor::{
     system_info::SystemInfo,
 };
 use agama_lib::install_settings::InstallSettings;
-use agama_utils::actor::{self, Actor, Handler, MessageHandler};
+use agama_utils::{
+    actor::{self, Actor, Handler, MessageHandler},
+    progress,
+};
 use async_trait::async_trait;
 use merge_struct::merge;
 use std::convert::Infallible;
+
+const PROGRESS_SCOPE: &str = "main";
+
+fn progress_scope() -> String {
+    PROGRESS_SCOPE.to_string()
+}
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -38,30 +47,61 @@ pub enum Error {
     #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error(transparent)]
+    Progress(#[from] progress::service::Error),
+    #[error(transparent)]
     L10n(#[from] l10n::service::Error),
-    #[error("Infallible")]
+    #[error(transparent)]
     Infallible(#[from] Infallible),
 }
 
-pub enum State {
+enum State {
     Configuring,
     Installing,
     Finished,
 }
 
 pub struct Service {
-    l10n: Handler<l10n::service::Service>,
+    progress: Handler<progress::Service>,
+    l10n: Handler<l10n::Service>,
     state: State,
     config: InstallSettings,
 }
 
 impl Service {
-    pub fn new(l10n: Handler<l10n::Service>) -> Self {
+    pub fn new(progress: Handler<progress::Service>, l10n: Handler<l10n::Service>) -> Self {
         Self {
+            progress,
             l10n,
             state: State::Configuring,
             config: InstallSettings::default(),
         }
+    }
+
+    async fn start_install(&mut self) -> Result<(), Error> {
+        self.state = State::Installing;
+        // TODO: translate progress steps.
+        self.progress
+            .call(progress::message::StartWithSteps::new(
+                progress_scope(),
+                vec!["Installing l10n".to_string()],
+            ))
+            .await?;
+        Ok(())
+    }
+
+    async fn progress_step(&self) -> Result<(), Error> {
+        self.progress
+            .call(progress::message::Next::new(progress_scope()))
+            .await?;
+        Ok(())
+    }
+
+    async fn finish_install(&mut self) -> Result<(), Error> {
+        self.state = State::Finished;
+        self.progress
+            .call(progress::message::Finish::new(progress_scope()))
+            .await?;
+        Ok(())
     }
 }
 
@@ -231,9 +271,10 @@ impl MessageHandler<message::RunAction> for Service {
                 self.l10n.call(l10n_message).await?;
             }
             Action::Install => {
-                self.state = State::Installing;
+                self.start_install().await?;
+                self.progress_step().await?;
                 self.l10n.call(l10n::message::Install).await?;
-                self.state = State::Finished;
+                self.finish_install().await?
             }
         }
         Ok(())
