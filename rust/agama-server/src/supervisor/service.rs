@@ -32,6 +32,7 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use merge_struct::merge;
+use serde::Serialize;
 use std::convert::Infallible;
 
 const PROGRESS_SCOPE: &str = "main";
@@ -54,7 +55,9 @@ pub enum Error {
     Infallible(#[from] Infallible),
 }
 
-enum State {
+#[derive(Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum State {
     Configuring,
     Installing,
     Finished,
@@ -107,6 +110,18 @@ impl Service {
 
 impl Actor for Service {
     type Error = Error;
+}
+
+#[async_trait]
+impl MessageHandler<message::GetStatus> for Service {
+    /// It returns the status of the installation.
+    async fn handle(&mut self, _message: message::GetStatus) -> Result<message::Status, Error> {
+        let progresses = self.progress.call(progress::message::Get).await?;
+        Ok(message::Status {
+            state: self.state.clone(),
+            progresses,
+        })
+    }
 }
 
 #[async_trait]

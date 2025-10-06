@@ -19,8 +19,10 @@
 // find current contact information at www.suse.com.
 
 use crate::progress::service::Error;
+use serde::Serialize;
 
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Default, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct Progress {
     pub scope: String,
     pub size: usize,

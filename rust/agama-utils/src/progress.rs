@@ -28,4 +28,6 @@ pub mod event;
 pub use event::Event;
 
 pub mod message;
+
 mod model;
+pub use model::Progress;
