@@ -274,6 +274,32 @@ impl Zypp {
         }
     }
 
+    pub fn is_package_selected(&self, tag: &str) -> ZyppResult<bool> {
+        unsafe {
+            let mut status: Status = Status::default();
+            let status_ptr = &mut status as *mut _;
+            let c_tag = CString::new(tag).unwrap();
+            let res = zypp_agama_sys::is_package_selected(self.ptr, c_tag.as_ptr(), status_ptr);
+
+            helpers::status_to_result_void(status)?;
+
+            Ok(res)
+        }
+    }
+
+    pub fn is_package_available(&self, tag: &str) -> ZyppResult<bool> {
+        unsafe {
+            let mut status: Status = Status::default();
+            let status_ptr = &mut status as *mut _;
+            let c_tag = CString::new(tag).unwrap();
+            let res = zypp_agama_sys::is_package_available(self.ptr, c_tag.as_ptr(), status_ptr);
+
+            helpers::status_to_result_void(status)?;
+
+            Ok(res)
+        }
+    }
+
     pub fn refresh_repository(
         &self,
         alias: &str,

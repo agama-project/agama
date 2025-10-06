@@ -381,6 +381,49 @@ bool is_local_url(const char *url, struct Status *status) noexcept {
   }
 }
 
+static bool package_check(Zypp *zypp, const char *tag, bool selected,
+                          Status *status) noexcept {
+  try {
+    std::string s_tag(tag);
+    if (s_tag.empty()) {
+      status->state = status->STATE_FAILED;
+      status->error = strdup("Internal Error: Package tag is empty.");
+      return false;
+    }
+
+    // look for packages
+    zypp::Capability cap(s_tag, zypp::ResKind::package);
+    zypp::sat::WhatProvides possibleProviders(cap);
+
+    for (auto iter = possibleProviders.begin(); iter != possibleProviders.end();
+         ++iter) {
+      zypp::PoolItem provider = zypp::ResPool::instance().find(*iter);
+
+      if (selected) {
+        // is it installed?
+        return provider.status().isToBeInstalled();
+      } else {
+        // it is available...
+        // in yast2 it returns true only if it is not installed,
+        // so in agama context it is always true
+        return true;
+      }
+    }
+  } catch (zypp::Exception &excpt) {
+    STATUS_EXCEPT(status, excpt);
+    return false;
+  }
+}
+
+bool is_package_available(Zypp *zypp, const char *tag,
+                          Status *status) noexcept {
+  return package_check(zypp, tag, false, status);
+}
+
+bool is_package_selected(Zypp *zypp, const char *tag, Status *status) noexcept {
+  return package_check(zypp, tag, true, status);
+}
+
 void add_repository(struct Zypp *zypp, const char *alias, const char *url,
                     struct Status *status, ZyppProgressCallback callback,
                     void *user_data) noexcept {

@@ -70,6 +70,20 @@ impl SoftwareServiceClient {
         Ok(rx.await?)
     }
 
+    pub async fn is_package_available(&self, tag: String) -> Result<bool, SoftwareServiceError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions
+            .send(SoftwareAction::PackageAvailable(tag, tx))?;
+        Ok(rx.await?)
+    }
+
+    pub async fn is_package_selected(&self, tag: String) -> Result<bool, SoftwareServiceError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions
+            .send(SoftwareAction::PackageSelected(tag, tx))?;
+        Ok(rx.await?)
+    }
+
     pub async fn probe(&self) -> Result<(), SoftwareServiceError> {
         self.actions.send(SoftwareAction::Probe)?;
         Ok(())

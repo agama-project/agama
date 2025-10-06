@@ -47,6 +47,8 @@ pub enum SoftwareAction {
     GetProducts(oneshot::Sender<Vec<Product>>),
     GetPatterns(oneshot::Sender<Vec<Pattern>>),
     GetConfig(oneshot::Sender<SoftwareConfig>),
+    PackageAvailable(String, oneshot::Sender<bool>),
+    PackageSelected(String, oneshot::Sender<bool>),
     SelectProduct(String),
     SetResolvables {
         id: String,
@@ -153,6 +155,14 @@ impl SoftwareServiceServer {
 
             SoftwareAction::GetConfig(tx) => {
                 self.get_config(tx).await?;
+            }
+
+            SoftwareAction::PackageSelected(tag, tx) => {
+                self.package_selected(zypp, tag, tx).await?;
+            }
+
+            SoftwareAction::PackageAvailable(tag, tx) => {
+                self.package_available(zypp, tag, tx).await?;
             }
 
             SoftwareAction::Probe => {
@@ -377,6 +387,30 @@ impl SoftwareServiceServer {
             extra_repositories: None,
             only_required: None,
         };
+        tx.send(result)
+            .map_err(|_| SoftwareServiceError::ResponseChannelClosed)?;
+        Ok(())
+    }
+
+    async fn package_available(
+        &self,
+        zypp: &zypp_agama::Zypp,
+        tag: String,
+        tx: oneshot::Sender<bool>,
+    ) -> Result<(), SoftwareServiceError> {
+        let result = zypp.is_package_available(&tag)?;
+        tx.send(result)
+            .map_err(|_| SoftwareServiceError::ResponseChannelClosed)?;
+        Ok(())
+    }
+
+    async fn package_selected(
+        &self,
+        zypp: &zypp_agama::Zypp,
+        tag: String,
+        tx: oneshot::Sender<bool>,
+    ) -> Result<(), SoftwareServiceError> {
+        let result = zypp.is_package_selected(&tag)?;
         tx.send(result)
             .map_err(|_| SoftwareServiceError::ResponseChannelClosed)?;
         Ok(())
