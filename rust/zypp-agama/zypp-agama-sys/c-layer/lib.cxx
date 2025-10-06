@@ -395,20 +395,16 @@ static bool package_check(Zypp *zypp, const char *tag, bool selected,
     zypp::Capability cap(s_tag, zypp::ResKind::package);
     zypp::sat::WhatProvides possibleProviders(cap);
 
+    // if we check only for availability, then just check that quickly
+    if (!selected)
+      return !possibleProviders.empty();
+
     for (auto iter = possibleProviders.begin(); iter != possibleProviders.end();
          ++iter) {
       zypp::PoolItem provider = zypp::ResPool::instance().find(*iter);
-
-      if (selected) {
-        // is it installed? if so return true, otherwise check next candidate
-        if (provider.status().isToBeInstalled())
-          return true;
-      } else {
-        // it is available...
-        // in yast2 it returns true only if it is not installed,
-        // so in agama context it is always true
+      // is it installed? if so return true, otherwise check next candidate
+      if (provider.status().isToBeInstalled())
         return true;
-      }
     }
 
     return false;
