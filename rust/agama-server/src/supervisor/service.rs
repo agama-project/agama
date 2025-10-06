@@ -43,8 +43,15 @@ pub enum Error {
     Infallible(#[from] Infallible),
 }
 
+pub enum State {
+    Configuring,
+    Installing,
+    Finished,
+}
+
 pub struct Service {
     l10n: Handler<l10n::service::Service>,
+    state: State,
     config: InstallSettings,
 }
 
@@ -52,6 +59,7 @@ impl Service {
     pub fn new(l10n: Handler<l10n::Service>) -> Self {
         Self {
             l10n,
+            state: State::Configuring,
             config: InstallSettings::default(),
         }
     }
@@ -222,7 +230,11 @@ impl MessageHandler<message::RunAction> for Service {
                 let l10n_message = l10n::message::SetSystem::new(config);
                 self.l10n.call(l10n_message).await?;
             }
-            Action::Install => self.l10n.call(l10n::message::Install).await?,
+            Action::Install => {
+                self.state = State::Installing;
+                self.l10n.call(l10n::message::Install).await?;
+                self.state = State::Finished;
+            }
         }
         Ok(())
     }
