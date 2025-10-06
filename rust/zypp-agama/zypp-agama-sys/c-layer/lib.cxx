@@ -127,9 +127,8 @@ bool commit(struct Zypp *zypp, struct Status *status) noexcept {
 struct Zypp *init_target(const char *root, struct Status *status,
                          ProgressCallback progress, void *user_data) noexcept {
   if (the_zypp.zypp_pointer != NULL) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup("Cannot have two init_target concurrently, "
-                           "libzypp not ready for this. Call free_zypp first.");
+    STATUS_ERROR(status, "Cannot have two init_target concurrently, "
+                         "libzypp not ready for this. Call free_zypp first.");
     return NULL;
   }
 
@@ -225,17 +224,15 @@ void resolvable_select(struct Zypp *_zypp, const char *name,
                        enum RESOLVABLE_KIND kind, enum RESOLVABLE_SELECTED who,
                        struct Status *status) noexcept {
   if (who == RESOLVABLE_SELECTED::NOT_SELECTED) {
-    status->state = Status::STATE_SUCCEED;
-    status->error = NULL;
+    STATUS_OK(status);
     return;
   }
 
   zypp::Resolvable::Kind z_kind = kind_to_zypp_kind(kind);
   auto selectable = zypp::ui::Selectable::get(z_kind, name);
   if (!selectable) {
-    status->state = status->STATE_FAILED;
-    status->error =
-        format_alloc("Failed to find %s with name '%s'", z_kind.c_str(), name);
+    STATUS_ERR_MSG(status, format_alloc("Failed to find %s with name '%s'",
+                                        z_kind.c_str(), name));
     return;
   }
 
@@ -248,24 +245,21 @@ void resolvable_unselect(struct Zypp *_zypp, const char *name,
                          enum RESOLVABLE_KIND kind,
                          enum RESOLVABLE_SELECTED who,
                          struct Status *status) noexcept {
+  STATUS_OK(status);
   if (who == RESOLVABLE_SELECTED::NOT_SELECTED) {
-    status->state = Status::STATE_SUCCEED;
-    status->error = NULL;
     return;
   }
 
   zypp::Resolvable::Kind z_kind = kind_to_zypp_kind(kind);
   auto selectable = zypp::ui::Selectable::get(z_kind, name);
   if (!selectable) {
-    status->state = status->STATE_FAILED;
-    status->error =
-        format_alloc("Failed to find %s with name '%s'", z_kind.c_str(), name);
+    STATUS_ERR_MSG(status, format_alloc("Failed to find %s with name '%s'",
+                                        z_kind.c_str(), name));
     return;
   }
 
   auto value = transactby_from(who);
   selectable->unset(value);
-  STATUS_OK(status);
 }
 
 struct PatternInfos get_patterns_info(struct Zypp *_zypp,
@@ -344,16 +338,16 @@ void refresh_repository(struct Zypp *zypp, const char *alias,
                         struct Status *status,
                         struct DownloadProgressCallbacks *callbacks) noexcept {
   if (zypp->repo_manager == NULL) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup("Internal Error: Repo manager is not initialized.");
+    STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return;
   }
   try {
     zypp::RepoInfo zypp_repo = zypp->repo_manager->getRepo(alias);
     if (zypp_repo == zypp::RepoInfo::noRepo) {
-      status->state = status->STATE_FAILED;
-      status->error = format_alloc(
-          "Cannot refresh repo with alias %s. Repo not found.", alias);
+      STATUS_ERR_MSG(
+          status,
+          format_alloc("Cannot refresh repo with alias %s. Repo not found.",
+                       alias));
       return;
     }
 
@@ -386,8 +380,7 @@ static bool package_check(Zypp *zypp, const char *tag, bool selected,
   try {
     std::string s_tag(tag);
     if (s_tag.empty()) {
-      status->state = status->STATE_FAILED;
-      status->error = strdup("Internal Error: Package tag is empty.");
+      STATUS_ERROR(status, "Internal Error: Package tag is empty.");
       return false;
     }
 
@@ -427,8 +420,7 @@ void add_repository(struct Zypp *zypp, const char *alias, const char *url,
                     struct Status *status, ZyppProgressCallback callback,
                     void *user_data) noexcept {
   if (zypp->repo_manager == NULL) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup("Internal Error: Repo manager is not initialized.");
+    STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return;
   }
   try {
@@ -447,8 +439,7 @@ void add_repository(struct Zypp *zypp, const char *alias, const char *url,
 void disable_repository(struct Zypp *zypp, const char *alias,
                         struct Status *status) noexcept {
   if (zypp->repo_manager == NULL) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup("Internal Error: Repo manager is not initialized.");
+    STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return;
   }
   try {
@@ -464,8 +455,7 @@ void disable_repository(struct Zypp *zypp, const char *alias,
 void set_repository_url(struct Zypp *zypp, const char *alias, const char *url,
                         struct Status *status) noexcept {
   if (zypp->repo_manager == NULL) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup("Internal Error: Repo manager is not initialized.");
+    STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return;
   }
   try {
@@ -483,8 +473,7 @@ void remove_repository(struct Zypp *zypp, const char *alias,
                        struct Status *status, ZyppProgressCallback callback,
                        void *user_data) noexcept {
   if (zypp->repo_manager == NULL) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup("Internal Error: Repo manager is not initialized.");
+    STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return;
   }
   try {
@@ -503,8 +492,7 @@ void remove_repository(struct Zypp *zypp, const char *alias,
 struct RepositoryList list_repositories(struct Zypp *zypp,
                                         struct Status *status) noexcept {
   if (zypp->repo_manager == NULL) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup("Internal Error: Repo manager is not initialized.");
+    STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return {0, NULL};
   }
 
@@ -531,16 +519,15 @@ struct RepositoryList list_repositories(struct Zypp *zypp,
 void load_repository_cache(struct Zypp *zypp, const char *alias,
                            struct Status *status) noexcept {
   if (zypp->repo_manager == NULL) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup("Internal Error: Repo manager is not initialized.");
-    return;
+    STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
   }
   try {
     zypp::RepoInfo zypp_repo = zypp->repo_manager->getRepo(alias);
     if (zypp_repo == zypp::RepoInfo::noRepo) {
-      status->state = status->STATE_FAILED;
-      status->error = format_alloc(
-          "Cannot load repo with alias %s. Repo not found.", alias);
+      STATUS_ERR_MSG(
+          status,
+          format_alloc("Cannot load repo with alias %s. Repo not found.",
+                       alias));
       return;
     }
 
@@ -558,16 +545,16 @@ void build_repository_cache(struct Zypp *zypp, const char *alias,
                             ZyppProgressCallback callback,
                             void *user_data) noexcept {
   if (zypp->repo_manager == NULL) {
-    status->state = status->STATE_FAILED;
-    status->error = strdup("Internal Error: Repo manager is not initialized.");
+    STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return;
   }
   try {
     zypp::RepoInfo zypp_repo = zypp->repo_manager->getRepo(alias);
     if (zypp_repo == zypp::RepoInfo::noRepo) {
-      status->state = status->STATE_FAILED;
-      status->error = format_alloc(
-          "Cannot load repo with alias %s. Repo not found.", alias);
+      STATUS_ERR_MSG(
+          status,
+          format_alloc("Cannot load repo with alias %s. Repo not found.",
+                       alias));
       return;
     }
 

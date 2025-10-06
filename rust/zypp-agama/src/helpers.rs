@@ -6,7 +6,7 @@ pub(crate) unsafe fn string_from_ptr(c_ptr: *const i8) -> String {
 // Safety requirements: ...
 pub(crate) unsafe fn status_to_result<R>(
     mut status: zypp_agama_sys::Status,
-    result: R
+    result: R,
 ) -> Result<R, crate::ZyppError> {
     let res = if status.state == zypp_agama_sys::Status_STATE_STATE_SUCCEED {
         Ok(result)

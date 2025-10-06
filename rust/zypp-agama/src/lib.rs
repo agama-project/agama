@@ -14,7 +14,7 @@ pub mod errors;
 pub use errors::ZyppError;
 
 mod helpers;
-use helpers::{status_to_result_void, status_to_result, string_from_ptr};
+use helpers::{status_to_result, status_to_result_void, string_from_ptr};
 
 pub mod callbacks;
 
