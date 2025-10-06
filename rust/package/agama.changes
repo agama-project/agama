@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Oct  3 20:11:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Introduce the new HTTP API (gh#agama-project/agama#2715).
+- Reimplement the localization service as part of the new API,
+  following the new actors-based approach.
+
+-------------------------------------------------------------------
 Mon Sep 15 21:09:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not log the events to prevent leaking passwords (bsc#1249622).
