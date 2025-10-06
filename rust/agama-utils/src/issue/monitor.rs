@@ -40,6 +40,9 @@ pub enum Error {
 }
 
 /// Listens the D-Bus server and updates the list of issues.
+///
+/// It retrieves and keeps up-to-date the list of issues for the Agama services
+/// that offers a D-Bus API.
 pub struct Monitor {
     handler: Handler<Service>,
     dbus: zbus::Connection,
@@ -60,6 +63,7 @@ impl Monitor {
         Self { handler, dbus }
     }
 
+    /// Run the monitor on a separate Tokio task.
     pub async fn run(&self) -> Result<(), Error> {
         let mut messages = build_properties_changed_stream(&self.dbus).await?;
 
@@ -163,6 +167,7 @@ impl Monitor {
         }
     }
 
+    /// Turns the D-Bus path into an issues list ID.
     fn list_id_from_path(path: &str) -> Option<&'static str> {
         match path {
             SOFTWARE_PATH => Some("software"),

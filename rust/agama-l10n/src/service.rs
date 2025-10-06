@@ -54,6 +54,14 @@ pub enum Error {
     Generic(#[from] anyhow::Error),
 }
 
+/// Localization service.
+///
+/// It is responsible for handling the localization part of the installation:
+///
+/// * Reads the list of known locales, keymaps and timezones.
+/// * Keeps track of the localization settings of the underlying system (the installer).
+/// * Holds the user configuration.
+/// * Applies the user configuration at the end of the installation.
 pub struct Service {
     state: State,
     model: Box<dyn ModelAdapter + Send + 'static>,
@@ -84,7 +92,10 @@ impl Service {
         }
     }
 
-    pub fn find_issues(&self) -> Vec<Issue> {
+    /// Returns configuration issues.
+    ///
+    /// It returns an issue for each unknown element (locale, keymap and timezone).
+    fn find_issues(&self) -> Vec<Issue> {
         let config = &self.state.config;
         let mut issues = vec![];
         if !self.model.locales_db().exists(&config.locale) {

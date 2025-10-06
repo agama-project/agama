@@ -18,13 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+//! This module defines some ancillary types for the HTTP API.
+
 use std::collections::HashMap;
 
 use agama_utils::issue;
 use serde::Serialize;
 
 #[derive(Serialize, utoipa::ToSchema)]
-/// Represents the installation issues for each scope.
+/// Holds the installation issues for each scope.
 pub struct IssuesMap {
     /// iSCSI issues.
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -41,6 +43,7 @@ pub struct IssuesMap {
     /// Software management issues.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub software: Vec<issue::Issue>,
+    /// First user and authentication issues.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub users: Vec<issue::Issue>,
 }
