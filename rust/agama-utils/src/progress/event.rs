@@ -18,15 +18,19 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This crate offers a set of utility struct and functions to be used accross
-//! other Agama's crates.
+use serde::{Deserialize, Serialize};
+use tokio::sync::mpsc;
 
-pub mod actor;
+/// Progress-related events.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(tag = "name")]
+pub enum Event {
+    /// Progress changed.
+    ProgressChanged,
+}
 
-pub mod service;
-pub use service::Service;
+/// Multi-producer single-consumer events sender.
+pub type Sender = mpsc::UnboundedSender<Event>;
 
-pub mod dbus;
-pub mod openapi;
-
-mod progress;
+/// Multi-producer single-consumer events receiver.
+pub type Receiver = mpsc::UnboundedReceiver<Event>;
