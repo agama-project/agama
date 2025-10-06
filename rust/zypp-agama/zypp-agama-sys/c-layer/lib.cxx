@@ -400,8 +400,9 @@ static bool package_check(Zypp *zypp, const char *tag, bool selected,
       zypp::PoolItem provider = zypp::ResPool::instance().find(*iter);
 
       if (selected) {
-        // is it installed?
-        return provider.status().isToBeInstalled();
+        // is it installed? if so return true, otherwise check next candidate
+        if (provider.status().isToBeInstalled())
+          return true;
       } else {
         // it is available...
         // in yast2 it returns true only if it is not installed,
@@ -409,6 +410,8 @@ static bool package_check(Zypp *zypp, const char *tag, bool selected,
         return true;
       }
     }
+
+    return false;
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);
     return false;
