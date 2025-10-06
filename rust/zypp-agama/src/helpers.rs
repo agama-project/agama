@@ -4,11 +4,12 @@ pub(crate) unsafe fn string_from_ptr(c_ptr: *const i8) -> String {
 }
 
 // Safety requirements: ...
-pub(crate) unsafe fn status_to_result_void(
+pub(crate) unsafe fn status_to_result<R>(
     mut status: zypp_agama_sys::Status,
-) -> Result<(), crate::ZyppError> {
+    result: R
+) -> Result<R, crate::ZyppError> {
     let res = if status.state == zypp_agama_sys::Status_STATE_STATE_SUCCEED {
-        Ok(())
+        Ok(result)
     } else {
         Err(crate::ZyppError::new(
             string_from_ptr(status.error).as_str(),
@@ -18,4 +19,11 @@ pub(crate) unsafe fn status_to_result_void(
     zypp_agama_sys::free_status(status_ptr as *mut _);
 
     res
+}
+
+// Safety requirements: ...
+pub(crate) unsafe fn status_to_result_void(
+    status: zypp_agama_sys::Status,
+) -> Result<(), crate::ZyppError> {
+    status_to_result(status, ())
 }

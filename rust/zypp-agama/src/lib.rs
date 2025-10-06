@@ -14,7 +14,7 @@ pub mod errors;
 pub use errors::ZyppError;
 
 mod helpers;
-use helpers::{status_to_result_void, string_from_ptr};
+use helpers::{status_to_result_void, status_to_result, string_from_ptr};
 
 pub mod callbacks;
 
@@ -35,7 +35,7 @@ impl Repository {
             let mut status: Status = Status::default();
             let status_ptr = &mut status as *mut _;
             let result = zypp_agama_sys::is_local_url(c_url.as_ptr(), status_ptr);
-            status_to_result_void(status).map(|_| result)
+            status_to_result(status, result)
         }
     }
 }
@@ -140,9 +140,8 @@ impl Zypp {
         let c_root = CString::new(root).unwrap();
         unsafe {
             zypp_agama_sys::switch_target(self.ptr, c_root.as_ptr(), status_ptr);
-            helpers::status_to_result_void(status)?;
+            helpers::status_to_result_void(status)
         }
-        Ok(())
     }
 
     pub fn commit(&self) -> ZyppResult<bool> {
@@ -150,8 +149,7 @@ impl Zypp {
         let status_ptr = &mut status as *mut _;
         unsafe {
             let res = zypp_agama_sys::commit(self.ptr, status_ptr);
-            helpers::status_to_result_void(status)?;
-            Ok(res)
+            helpers::status_to_result(status, res)
         }
     }
 
@@ -178,7 +176,7 @@ impl Zypp {
             let repos_rawp = &mut repos;
             zypp_agama_sys::free_repository_list(repos_rawp as *mut _);
 
-            helpers::status_to_result_void(status).and(Ok(repos_v))
+            helpers::status_to_result(status, repos_v)
         }
     }
 
@@ -281,9 +279,7 @@ impl Zypp {
             let c_tag = CString::new(tag).unwrap();
             let res = zypp_agama_sys::is_package_selected(self.ptr, c_tag.as_ptr(), status_ptr);
 
-            helpers::status_to_result_void(status)?;
-
-            Ok(res)
+            helpers::status_to_result(status, res)
         }
     }
 
@@ -294,9 +290,7 @@ impl Zypp {
             let c_tag = CString::new(tag).unwrap();
             let res = zypp_agama_sys::is_package_available(self.ptr, c_tag.as_ptr(), status_ptr);
 
-            helpers::status_to_result_void(status)?;
-
-            Ok(res)
+            helpers::status_to_result(status, res)
         }
     }
 
@@ -435,8 +429,7 @@ impl Zypp {
             let mut status: Status = Status::default();
             let status_ptr = &mut status as *mut _;
             let r_res = zypp_agama_sys::run_solver(self.ptr, status_ptr);
-            let result = helpers::status_to_result_void(status);
-            result.and(Ok(r_res))
+            helpers::status_to_result(status, r_res)
         }
     }
 
