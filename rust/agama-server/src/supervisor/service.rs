@@ -33,7 +33,6 @@ use agama_utils::{
 use async_trait::async_trait;
 use merge_struct::merge;
 use serde::Serialize;
-use std::convert::Infallible;
 
 const PROGRESS_SCOPE: &str = "main";
 
@@ -47,8 +46,6 @@ pub enum Error {
     Progress(#[from] progress::service::Error),
     #[error(transparent)]
     L10n(#[from] l10n::service::Error),
-    #[error(transparent)]
-    Infallible(#[from] Infallible),
 }
 
 #[derive(Clone, Serialize, utoipa::ToSchema)]
