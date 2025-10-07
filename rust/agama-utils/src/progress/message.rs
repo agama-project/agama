@@ -30,13 +30,15 @@ impl Message for Get {
 pub struct Start {
     pub scope: String,
     pub size: usize,
+    pub step: String,
 }
 
 impl Start {
-    pub fn new(scope: &str, size: usize) -> Self {
+    pub fn new(scope: &str, size: usize, step: &str) -> Self {
         Self {
             scope: scope.to_string(),
             size,
+            step: step.to_string(),
         }
     }
 }

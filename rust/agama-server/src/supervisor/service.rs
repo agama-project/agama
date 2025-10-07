@@ -79,7 +79,7 @@ impl Service {
         }
     }
 
-    async fn start_install(&mut self) -> Result<(), Error> {
+    async fn install(&mut self) -> Result<(), Error> {
         self.state = State::Installing;
         // TODO: translate progress steps.
         self.progress
@@ -88,17 +88,7 @@ impl Service {
                 vec!["Installing l10n"],
             ))
             .await?;
-        Ok(())
-    }
-
-    async fn progress_step(&self) -> Result<(), Error> {
-        self.progress
-            .call(progress::message::Next::new(PROGRESS_SCOPE))
-            .await?;
-        Ok(())
-    }
-
-    async fn finish_install(&mut self) -> Result<(), Error> {
+        self.l10n.call(l10n::message::Install).await?;
         self.state = State::Finished;
         self.progress
             .call(progress::message::Finish::new(PROGRESS_SCOPE))
@@ -285,10 +275,7 @@ impl MessageHandler<message::RunAction> for Service {
                 self.l10n.call(l10n_message).await?;
             }
             Action::Install => {
-                self.start_install().await?;
-                self.progress_step().await?;
-                self.l10n.call(l10n::message::Install).await?;
-                self.finish_install().await?
+                self.install().await?;
             }
         }
         Ok(())

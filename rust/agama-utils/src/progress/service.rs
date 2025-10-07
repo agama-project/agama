@@ -76,7 +76,7 @@ impl MessageHandler<message::Get> for Service {
 impl MessageHandler<message::Start> for Service {
     async fn handle(&mut self, message: message::Start) -> Result<(), Error> {
         self.progresses
-            .push(Progress::new(message.scope, message.size));
+            .push(Progress::new(message.scope, message.size, message.step));
         self.events.send(Event::ProgressChanged)?;
         Ok(())
     }

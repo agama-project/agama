@@ -29,19 +29,21 @@ pub struct Progress {
     /// Max number of steps
     pub size: usize,
     /// List of steps
-    pub steps: Option<Vec<String>>,
+    pub steps: Vec<String>,
     /// Current step
-    pub step: Option<String>,
+    pub step: String,
     /// Index of the current step
-    pub index: Option<usize>,
+    pub index: usize,
 }
 
 impl Progress {
-    pub fn new(scope: String, size: usize) -> Self {
+    pub fn new(scope: String, size: usize, step: String) -> Self {
         Self {
             scope,
             size,
-            ..Default::default()
+            steps: Vec::new(),
+            step,
+            index: 1,
         }
     }
 
@@ -49,40 +51,29 @@ impl Progress {
         Self {
             scope,
             size: steps.len(),
-            steps: Some(steps),
-            ..Default::default()
+            steps: steps.clone(),
+            step: steps.first().map_or(String::new(), |s| s.clone()),
+            index: 1,
         }
     }
 
     pub fn next(&mut self) -> Result<(), Error> {
-        match self.index {
-            Some(index) if index >= self.size => Err(Error::NextStep(self.scope.clone())),
-            Some(index) => {
-                let next_index = index + 1;
-                self.index = Some(next_index);
-                self.step = self.get_step(next_index);
-                Ok(())
-            }
-            None => {
-                let first_index = 1;
-                self.index = Some(first_index);
-                self.step = self.get_step(first_index);
-                Ok(())
-            }
+        if self.index >= self.size {
+            return Err(Error::NextStep(self.scope.clone()));
         }
+
+        self.index += 1;
+        self.step = self.get_step(self.index).unwrap_or(String::new());
+        Ok(())
     }
 
     pub fn next_step(&mut self, step: String) -> Result<(), Error> {
-        self.next().and_then(|_| {
-            self.step = Some(step);
-            Ok(())
-        })
+        self.next()?;
+        self.step = step;
+        Ok(())
     }
 
     fn get_step(&self, index: usize) -> Option<String> {
-        self.steps
-            .as_ref()
-            .and_then(|n| n.get(index - 1))
-            .and_then(|n| Some(n.clone()))
+        self.steps.get(index - 1).map(|s| s.clone())
     }
 }
