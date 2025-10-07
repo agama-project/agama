@@ -58,8 +58,11 @@ pub enum Error {
 #[derive(Clone, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum State {
+    /// Configuring the installation
     Configuring,
+    /// Installing the system
     Installing,
+    /// Installation finished
     Finished,
 }
 

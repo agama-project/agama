@@ -24,10 +24,15 @@ use serde::Serialize;
 #[derive(Clone, Default, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Progress {
+    /// Scope of the progress
     pub scope: String,
+    /// Max number of steps
     pub size: usize,
+    /// List of steps
     pub steps: Option<Vec<String>>,
+    /// Current step
     pub step: Option<String>,
+    /// Index of the current step
     pub index: Option<usize>,
 }
 

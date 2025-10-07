@@ -31,8 +31,10 @@ pub struct GetStatus;
 #[derive(Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Status {
+    /// State of the installation
     pub state: service::State,
     #[serde(skip_serializing_if = "Vec::is_empty")]
+    /// Active progresses
     pub progresses: Vec<Progress>,
 }
 

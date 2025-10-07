@@ -163,6 +163,9 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema_from::<agama_lib::users::UserSettings>()
             .schema_from::<crate::software::web::SoftwareProposal>()
             .schema_from::<crate::supervisor::message::Action>()
+            .schema_from::<crate::supervisor::message::Status>()
+            .schema_from::<crate::supervisor::service::State>()
+            .schema_from::<agama_utils::progress::Progress>()
             .build()
     }
 }
