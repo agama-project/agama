@@ -24,7 +24,6 @@
 #include <zypp/base/LogControl.h>
 #include <zypp/base/Logger.h>
 
-#include <cstdarg>
 #include <zypp/ui/Selectable.h>
 
 extern "C" {
@@ -46,29 +45,6 @@ void free_zypp(struct Zypp *zypp) noexcept {
       NULL; // shared ptr assignment operator will free original pointer
   delete (zypp->repo_manager);
   zypp->repo_manager = NULL;
-}
-
-// helper to get allocated formated string. Sadly C does not provide any
-// portable way to do it. if we are ok with GNU or glib then it provides it
-static char *format_alloc(const char *const format...) {
-  // `vsnprintf()` changes `va_list`'s state, so using it after that is UB.
-  // We need the args twice, so it is safer to just get two copies.
-  va_list args1;
-  va_list args2;
-  va_start(args1, format);
-  va_start(args2, format);
-
-  // vsnprintf with len 0 just return needed size and add trailing zero.
-  size_t needed = 1 + vsnprintf(NULL, 0, format, args1);
-
-  char *buffer = (char *)malloc(needed * sizeof(char));
-
-  vsnprintf(buffer, needed, format, args2);
-
-  va_end(args1);
-  va_end(args2);
-
-  return buffer;
 }
 
 static zypp::ZYpp::Ptr zypp_ptr() {
@@ -231,8 +207,8 @@ void resolvable_select(struct Zypp *_zypp, const char *name,
   zypp::Resolvable::Kind z_kind = kind_to_zypp_kind(kind);
   auto selectable = zypp::ui::Selectable::get(z_kind, name);
   if (!selectable) {
-    STATUS_ERR_MSG(status, format_alloc("Failed to find %s with name '%s'",
-                                        z_kind.c_str(), name));
+    STATUS_ERROR(status, "Failed to find %s with name '%s'", z_kind.c_str(),
+                 name);
     return;
   }
 
@@ -253,8 +229,8 @@ void resolvable_unselect(struct Zypp *_zypp, const char *name,
   zypp::Resolvable::Kind z_kind = kind_to_zypp_kind(kind);
   auto selectable = zypp::ui::Selectable::get(z_kind, name);
   if (!selectable) {
-    STATUS_ERR_MSG(status, format_alloc("Failed to find %s with name '%s'",
-                                        z_kind.c_str(), name));
+    STATUS_ERROR(status, "Failed to find %s with name '%s'", z_kind.c_str(),
+                 name);
     return;
   }
 
@@ -344,10 +320,8 @@ void refresh_repository(struct Zypp *zypp, const char *alias,
   try {
     zypp::RepoInfo zypp_repo = zypp->repo_manager->getRepo(alias);
     if (zypp_repo == zypp::RepoInfo::noRepo) {
-      STATUS_ERR_MSG(
-          status,
-          format_alloc("Cannot refresh repo with alias %s. Repo not found.",
-                       alias));
+      STATUS_ERROR(status, "Cannot refresh repo with alias %s. Repo not found.",
+                   alias);
       return;
     }
 
@@ -524,10 +498,8 @@ void load_repository_cache(struct Zypp *zypp, const char *alias,
   try {
     zypp::RepoInfo zypp_repo = zypp->repo_manager->getRepo(alias);
     if (zypp_repo == zypp::RepoInfo::noRepo) {
-      STATUS_ERR_MSG(
-          status,
-          format_alloc("Cannot load repo with alias %s. Repo not found.",
-                       alias));
+      STATUS_ERROR(status, "Cannot load repo with alias %s. Repo not found.",
+                   alias);
       return;
     }
 
@@ -551,10 +523,8 @@ void build_repository_cache(struct Zypp *zypp, const char *alias,
   try {
     zypp::RepoInfo zypp_repo = zypp->repo_manager->getRepo(alias);
     if (zypp_repo == zypp::RepoInfo::noRepo) {
-      STATUS_ERR_MSG(
-          status,
-          format_alloc("Cannot load repo with alias %s. Repo not found.",
-                       alias));
+      STATUS_ERROR(status, "Cannot load repo with alias %s. Repo not found.",
+                   alias);
       return;
     }
 
