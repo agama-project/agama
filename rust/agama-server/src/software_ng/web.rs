@@ -34,6 +34,7 @@ use axum::{
     routing::{get, post, put},
     Json, Router,
 };
+use serde::Deserialize;
 
 use crate::{error::Error, software::web::SoftwareProposal};
 
@@ -59,11 +60,59 @@ pub async fn software_router(client: SoftwareServiceClient) -> Result<Router, Se
             "/resolvables/:id",
             put(set_resolvables).get(get_resolvables),
         )
+        .route("/available", get(get_available))
+        .route("/selected", get(get_selected))
         .route("/issues/product", get(product_issues))
         .route("/issues/software", get(software_issues))
         .route("/registration", get(get_registration))
         .with_state(state);
     Ok(router)
+}
+
+#[derive(Deserialize)]
+struct QueryParam {
+    /// tag that can be either package name, provides or even contained file path
+    tag: String,
+}
+
+/// Returns the true if package is available.
+///
+/// * `state`: service state.
+#[utoipa::path(
+    get,
+    path = "/available",
+    context_path = "/api/software_ng",
+    responses(
+        (status = 200, description = "Whenever matching package is available"),
+        (status = 400, description = "Failed to check if package is available")
+    )
+)]
+async fn get_available(
+    Query(query): Query<QueryParam>,
+    State(state): State<SoftwareState>,
+) -> Result<Json<bool>, Error> {
+    let result = state.client.is_package_available(query.tag).await?;
+    Ok(Json(result))
+}
+
+/// Returns the true if package is selected.
+///
+/// * `state`: service state.
+#[utoipa::path(
+    get,
+    path = "/selected",
+    context_path = "/api/software_ng",
+    responses(
+        (status = 200, description = "Whenever matching package is selected for installation"),
+        (status = 400, description = "Failed to check if package is selected")
+    )
+)]
+async fn get_selected(
+    Query(query): Query<QueryParam>,
+    State(state): State<SoftwareState>,
+) -> Result<Json<bool>, Error> {
+    let result = state.client.is_package_selected(query.tag).await?;
+    Ok(Json(result))
 }
 
 /// Returns the list of available products.

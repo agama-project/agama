@@ -287,6 +287,18 @@ unsafe extern "C" {
     );
     #[doc = " check if url has local schema\n @param url url to check\n @param[out] status (will overwrite existing contents)\n @return true if url is local, for invalid url status is set to error"]
     pub fn is_local_url(url: *const ::std::os::raw::c_char, status: *mut Status) -> bool;
+    #[doc = " check if package is available\n @param zypp see \\ref init_target\n @param tag package name, provides or file path\n @param[out] status (will overwrite existing contents)\n @return true if package is available. In case of error it fills status and\n return value is undefined"]
+    pub fn is_package_available(
+        zypp: *mut Zypp,
+        tag: *const ::std::os::raw::c_char,
+        status: *mut Status,
+    ) -> bool;
+    #[doc = " check if package is selected for installation\n @param zypp see \\ref init_target\n @param tag package name, provides or file path\n @param[out] status (will overwrite existing contents)\n @return true if package is selected. In case of error it fills status and\n return value is undefined"]
+    pub fn is_package_selected(
+        zypp: *mut Zypp,
+        tag: *const ::std::os::raw::c_char,
+        status: *mut Status,
+    ) -> bool;
     #[doc = " Runs solver\n @param zypp see \\ref init_target\n @param[out] status (will overwrite existing contents)\n @return true if solver pass and false if it found some dependency issues"]
     pub fn run_solver(zypp: *mut Zypp, status: *mut Status) -> bool;
     #[doc = " the last call that will free all pointers to zypp holded by agama"]

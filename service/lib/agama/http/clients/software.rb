@@ -55,7 +55,6 @@ module Agama
         end
 
         def finish
-          # TODO: implement it
           post("software/finish", nil)
         end
 
@@ -77,19 +76,20 @@ module Agama
           JSON.parse(get("software/resolvables/#{unique_id}?type=#{type}&optional=#{optional}"))
         end
 
-        def provisions_selected?(_provisions)
-          # TODO: implement it, not sure how it should look like
-          []
+        # (Yes, with a question mark. Bad naming.)
+        # @return [Array<String>] Those names that are selected for installation
+        def provisions_selected?(provisions)
+          provisions.select do |prov|
+            package_installed?(prov)
+          end
         end
 
         def package_available?(_name)
-          # TODO: implement it, not sure how it should look like
-          true
+          JSON.parse(get("software/available?tag=#{name}"))
         end
 
-        def package_installed?(_name)
-          # TODO: implement it, not sure how it should look like
-          true
+        def package_installed?(name)
+          JSON.parse(get("software/selected?tag=#{name}"))
         end
 
         def set_resolvables(unique_id, type, resolvables, optional)

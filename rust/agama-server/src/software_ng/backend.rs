@@ -81,6 +81,8 @@ pub enum SoftwareServiceError {
     ZyppError(#[from] zypp_agama::ZyppError),
 }
 
+pub type SoftwareServiceResult<R> = Result<R, SoftwareServiceError>;
+
 /// Builds and starts the software service.
 ///
 pub struct SoftwareService {}

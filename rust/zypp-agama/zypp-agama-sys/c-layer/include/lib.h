@@ -155,6 +155,24 @@ void import_gpg_key(struct Zypp *zypp, const char *const pathname,
 /// @return true if url is local, for invalid url status is set to error
 bool is_local_url(const char *url, struct Status *status) noexcept;
 
+/// check if package is available
+/// @param zypp see \ref init_target
+/// @param tag package name, provides or file path
+/// @param[out] status (will overwrite existing contents)
+/// @return true if package is available. In case of error it fills status and
+/// return value is undefined
+bool is_package_available(struct Zypp *zypp, const char *tag,
+                          struct Status *status) noexcept;
+
+/// check if package is selected for installation
+/// @param zypp see \ref init_target
+/// @param tag package name, provides or file path
+/// @param[out] status (will overwrite existing contents)
+/// @return true if package is selected. In case of error it fills status and
+/// return value is undefined
+bool is_package_selected(struct Zypp *zypp, const char *tag,
+                         struct Status *status) noexcept;
+
 /// Runs solver
 /// @param zypp see \ref init_target
 /// @param[out] status (will overwrite existing contents)

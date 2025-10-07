@@ -31,6 +31,7 @@ use tokio::sync::{mpsc, oneshot, Mutex};
 
 use crate::{
     products::{ProductSpec, ProductsRegistry},
+    software_ng::backend::SoftwareServiceResult,
     web::EventsSender,
 };
 
@@ -47,6 +48,8 @@ pub enum SoftwareAction {
     GetProducts(oneshot::Sender<Vec<Product>>),
     GetPatterns(oneshot::Sender<Vec<Pattern>>),
     GetConfig(oneshot::Sender<SoftwareConfig>),
+    PackageAvailable(String, oneshot::Sender<bool>),
+    PackageSelected(String, oneshot::Sender<bool>),
     SelectProduct(String),
     SetResolvables {
         id: String,
@@ -79,7 +82,7 @@ impl SoftwareServiceServer {
     pub fn start(
         events: EventsSender,
         products: Arc<Mutex<ProductsRegistry>>,
-    ) -> Result<SoftwareServiceClient, SoftwareServiceError> {
+    ) -> SoftwareServiceResult<SoftwareServiceClient> {
         let (sender, receiver) = mpsc::unbounded_channel();
 
         let server = Self {
@@ -113,7 +116,7 @@ impl SoftwareServiceServer {
     }
 
     /// Runs the server dispatching the actions received through the input channel.
-    async fn run(mut self) -> Result<(), SoftwareServiceError> {
+    async fn run(mut self) -> SoftwareServiceResult<()> {
         let zypp = self.initialize_target_dir()?;
 
         loop {
@@ -137,7 +140,7 @@ impl SoftwareServiceServer {
         &mut self,
         action: SoftwareAction,
         zypp: &zypp_agama::Zypp,
-    ) -> Result<(), SoftwareServiceError> {
+    ) -> SoftwareServiceResult<()> {
         match action {
             SoftwareAction::GetProducts(tx) => {
                 self.get_products(tx).await?;
@@ -153,6 +156,14 @@ impl SoftwareServiceServer {
 
             SoftwareAction::GetConfig(tx) => {
                 self.get_config(tx).await?;
+            }
+
+            SoftwareAction::PackageSelected(tag, tx) => {
+                self.package_selected(zypp, tag, tx).await?;
+            }
+
+            SoftwareAction::PackageAvailable(tag, tx) => {
+                self.package_available(zypp, tag, tx).await?;
             }
 
             SoftwareAction::Probe => {
@@ -203,7 +214,7 @@ impl SoftwareServiceServer {
         r#type: ResolvableType,
         resolvables: Vec<String>,
         optional: bool,
-    ) -> Result<(), SoftwareServiceError> {
+    ) -> SoftwareServiceResult<()> {
         tracing::info!(
             "Set resolvables for {} with type {} optional {} and list {:?}",
             id,
@@ -218,14 +229,14 @@ impl SoftwareServiceServer {
     }
 
     // runs solver. It should be able in future to generate solver issues
-    fn run_solver(&self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
+    fn run_solver(&self, zypp: &zypp_agama::Zypp) -> SoftwareServiceResult<()> {
         let result = zypp.run_solver()?;
         tracing::info!("Solver runs ends with {}", result);
         Ok(())
     }
 
     // Install rpms
-    fn install(&self, zypp: &zypp_agama::Zypp) -> Result<bool, SoftwareServiceError> {
+    fn install(&self, zypp: &zypp_agama::Zypp) -> SoftwareServiceResult<bool> {
         let target = "/mnt";
         zypp.switch_target(target)?;
         let result = zypp.commit()?;
@@ -234,7 +245,7 @@ impl SoftwareServiceServer {
     }
 
     /// Select the given product.
-    async fn select_product(&mut self, product_id: String) -> Result<(), SoftwareServiceError> {
+    async fn select_product(&mut self, product_id: String) -> SoftwareServiceResult<()> {
         tracing::info!("Selecting product {}", product_id);
         let products = self.products.lock().await;
         if products.find(&product_id).is_none() {
@@ -245,7 +256,7 @@ impl SoftwareServiceServer {
         Ok(())
     }
 
-    async fn probe(&mut self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
+    async fn probe(&mut self, zypp: &zypp_agama::Zypp) -> SoftwareServiceResult<()> {
         let product = self.find_selected_product().await?;
         let repositories = product.software.repositories();
         for (idx, repo) in repositories.iter().enumerate() {
@@ -269,7 +280,7 @@ impl SoftwareServiceServer {
         Ok(())
     }
 
-    async fn finish(&mut self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
+    async fn finish(&mut self, zypp: &zypp_agama::Zypp) -> SoftwareServiceResult<()> {
         self.remove_dud_repo(zypp)?;
         self.disable_local_repos(zypp)?;
         self.registration_finish()?;
@@ -278,7 +289,7 @@ impl SoftwareServiceServer {
         Ok(())
     }
 
-    fn modify_full_repo(&self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
+    fn modify_full_repo(&self, zypp: &zypp_agama::Zypp) -> SoftwareServiceResult<()> {
         let repos = zypp.list_repositories()?;
         // if url is invalid, then do not disable it and do not touch it
         let repos = repos
@@ -290,7 +301,7 @@ impl SoftwareServiceServer {
         Ok(())
     }
 
-    fn remove_dud_repo(&self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
+    fn remove_dud_repo(&self, zypp: &zypp_agama::Zypp) -> SoftwareServiceResult<()> {
         const DUD_NAME: &str = "AgamaDriverUpdate";
         let repos = zypp.list_repositories()?;
         let repo = repos.iter().find(|r| r.alias.as_str() == DUD_NAME);
@@ -300,7 +311,7 @@ impl SoftwareServiceServer {
         Ok(())
     }
 
-    fn disable_local_repos(&self, zypp: &zypp_agama::Zypp) -> Result<(), SoftwareServiceError> {
+    fn disable_local_repos(&self, zypp: &zypp_agama::Zypp) -> SoftwareServiceResult<()> {
         let repos = zypp.list_repositories()?;
         // if url is invalid, then do not disable it and do not touch it
         let repos = repos.iter().filter(|r| r.is_local().unwrap_or(false));
@@ -310,12 +321,12 @@ impl SoftwareServiceServer {
         Ok(())
     }
 
-    fn registration_finish(&self) -> Result<(), SoftwareServiceError> {
+    fn registration_finish(&self) -> SoftwareServiceResult<()> {
         // TODO: implement when registration is ready
         Ok(())
     }
 
-    fn modify_zypp_conf(&self) -> Result<(), SoftwareServiceError> {
+    fn modify_zypp_conf(&self) -> SoftwareServiceResult<()> {
         // TODO: implement when requireOnly is implemented
         Ok(())
     }
@@ -324,7 +335,7 @@ impl SoftwareServiceServer {
         &mut self,
         zypp: &zypp_agama::Zypp,
         product: ProductSpec,
-    ) -> Result<(), SoftwareServiceError> {
+    ) -> SoftwareServiceResult<()> {
         let installer_id_string = "installer".to_string();
         self.set_resolvables(
             zypp,
@@ -365,10 +376,7 @@ impl SoftwareServiceServer {
     }
 
     /// Returns the software config.
-    async fn get_config(
-        &self,
-        tx: oneshot::Sender<SoftwareConfig>,
-    ) -> Result<(), SoftwareServiceError> {
+    async fn get_config(&self, tx: oneshot::Sender<SoftwareConfig>) -> SoftwareServiceResult<()> {
         let result = SoftwareConfig {
             // TODO: implement all Nones
             packages: None,
@@ -382,11 +390,32 @@ impl SoftwareServiceServer {
         Ok(())
     }
 
-    /// Returns the list of products.
-    async fn get_products(
+    async fn package_available(
         &self,
-        tx: oneshot::Sender<Vec<Product>>,
-    ) -> Result<(), SoftwareServiceError> {
+        zypp: &zypp_agama::Zypp,
+        tag: String,
+        tx: oneshot::Sender<bool>,
+    ) -> SoftwareServiceResult<()> {
+        let result = zypp.is_package_available(&tag)?;
+        tx.send(result)
+            .map_err(|_| SoftwareServiceError::ResponseChannelClosed)?;
+        Ok(())
+    }
+
+    async fn package_selected(
+        &self,
+        zypp: &zypp_agama::Zypp,
+        tag: String,
+        tx: oneshot::Sender<bool>,
+    ) -> SoftwareServiceResult<()> {
+        let result = zypp.is_package_selected(&tag)?;
+        tx.send(result)
+            .map_err(|_| SoftwareServiceError::ResponseChannelClosed)?;
+        Ok(())
+    }
+
+    /// Returns the list of products.
+    async fn get_products(&self, tx: oneshot::Sender<Vec<Product>>) -> SoftwareServiceResult<()> {
         let products = self.products.lock().await;
         // FIXME: implement this conversion at model's level.
         let products: Vec<_> = products
@@ -410,7 +439,7 @@ impl SoftwareServiceServer {
         &self,
         tx: oneshot::Sender<Vec<Pattern>>,
         zypp: &zypp_agama::Zypp,
-    ) -> Result<(), SoftwareServiceError> {
+    ) -> SoftwareServiceResult<()> {
         let product = self.find_selected_product().await?;
 
         let mandatory_patterns = product.software.mandatory_patterns.iter();
@@ -442,7 +471,7 @@ impl SoftwareServiceServer {
         Ok(())
     }
 
-    fn initialize_target_dir(&self) -> Result<zypp_agama::Zypp, SoftwareServiceError> {
+    fn initialize_target_dir(&self) -> SoftwareServiceResult<zypp_agama::Zypp> {
         let target_dir = Path::new(TARGET_DIR);
         if target_dir.exists() {
             _ = std::fs::remove_dir_all(target_dir);
@@ -477,7 +506,7 @@ impl SoftwareServiceServer {
     // Returns the spec of the selected product.
     //
     // It causes the spec to be cloned, so we should find a better way to do this.
-    async fn find_selected_product(&self) -> Result<ProductSpec, SoftwareServiceError> {
+    async fn find_selected_product(&self) -> SoftwareServiceResult<ProductSpec> {
         let products = self.products.lock().await;
         let Some(product_id) = &self.selected_product else {
             return Err(SoftwareServiceError::NoSelectedProduct);
