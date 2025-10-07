@@ -76,6 +76,8 @@ module Agama
           JSON.parse(get("software/resolvables/#{unique_id}?type=#{type}&optional=#{optional}"))
         end
 
+        # (Yes, with a question mark. Bad naming.)
+        # @return [Array<String>] Those names that are selected for installation
         def provisions_selected?(provisions)
           provisions.select do |prov|
             package_installed?(prov)
