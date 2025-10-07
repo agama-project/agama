@@ -184,23 +184,40 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_progress_error_next() -> Result<(), Box<dyn std::error::Error>> {
+    async fn test_progress_missing_step() -> Result<(), Box<dyn std::error::Error>> {
         let (_receiver, handler) = start_testing_service();
 
         handler.call(message::Start::new("test", 1, "")).await?;
         let error = handler.call(message::Next::new("test")).await;
-        assert!(matches!(error, Err(service::Error::NextStep(s)) if s == "test"));
+        assert!(matches!(error, Err(service::Error::MissingStep(scope)) if scope == "test"));
 
         Ok(())
     }
 
     #[tokio::test]
-    async fn test_progress_error_scope() -> Result<(), Box<dyn std::error::Error>> {
+    async fn test_missing_progress() -> Result<(), Box<dyn std::error::Error>> {
         let (_receiver, handler) = start_testing_service();
 
         handler.call(message::Start::new("test1", 2, "")).await?;
         let error = handler.call(message::Next::new("test2")).await;
-        assert!(matches!(error, Err(service::Error::Progress(s)) if s == "test2"));
+        assert!(matches!(error, Err(service::Error::MissingProgress(scope)) if scope == "test2"));
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_duplicated_progress() -> Result<(), Box<dyn std::error::Error>> {
+        let (_receiver, handler) = start_testing_service();
+
+        handler.call(message::Start::new("test", 2, "")).await?;
+
+        let error = handler.call(message::Start::new("test", 1, "")).await;
+        assert!(matches!(error, Err(service::Error::DuplicatedProgress(scope)) if scope == "test"));
+
+        let error = handler
+            .call(message::StartWithSteps::new("test", vec!["step"]))
+            .await;
+        assert!(matches!(error, Err(service::Error::DuplicatedProgress(scope)) if scope == "test"));
 
         Ok(())
     }

@@ -29,10 +29,12 @@ use tokio::sync::mpsc::error::SendError;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+    #[error("Progress already exists for {0}")]
+    DuplicatedProgress(String),
     #[error("Progress does not exist for {0}")]
-    Progress(String),
+    MissingProgress(String),
     #[error("Next step does not exist for {0}")]
-    NextStep(String),
+    MissingStep(String),
     #[error(transparent)]
     Event(#[from] SendError<Event>),
     #[error(transparent)]
@@ -75,6 +77,9 @@ impl MessageHandler<message::Get> for Service {
 #[async_trait]
 impl MessageHandler<message::Start> for Service {
     async fn handle(&mut self, message: message::Start) -> Result<(), Error> {
+        if self.get_progress(message.scope.clone()).is_some() {
+            return Err(Error::DuplicatedProgress(message.scope));
+        }
         self.progresses
             .push(Progress::new(message.scope, message.size, message.step));
         self.events.send(Event::ProgressChanged)?;
@@ -85,6 +90,9 @@ impl MessageHandler<message::Start> for Service {
 #[async_trait]
 impl MessageHandler<message::StartWithSteps> for Service {
     async fn handle(&mut self, message: message::StartWithSteps) -> Result<(), Error> {
+        if self.get_progress(message.scope.clone()).is_some() {
+            return Err(Error::DuplicatedProgress(message.scope));
+        }
         self.progresses
             .push(Progress::new_with_steps(message.scope, message.steps));
         self.events.send(Event::ProgressChanged)?;
@@ -96,7 +104,7 @@ impl MessageHandler<message::StartWithSteps> for Service {
 impl MessageHandler<message::Next> for Service {
     async fn handle(&mut self, message: message::Next) -> Result<(), Error> {
         self.get_progress(message.scope.clone())
-            .ok_or(Error::Progress(message.scope))
+            .ok_or(Error::MissingProgress(message.scope))
             .and_then(|p| p.next())?;
         self.events.send(Event::ProgressChanged)?;
         Ok(())
@@ -107,7 +115,7 @@ impl MessageHandler<message::Next> for Service {
 impl MessageHandler<message::NextStep> for Service {
     async fn handle(&mut self, message: message::NextStep) -> Result<(), Error> {
         self.get_progress(message.scope.clone())
-            .ok_or(Error::Progress(message.scope))
+            .ok_or(Error::MissingProgress(message.scope))
             .and_then(|p| p.next_step(message.step))?;
         self.events.send(Event::ProgressChanged)?;
         Ok(())
@@ -119,7 +127,7 @@ impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, message: message::Finish) -> Result<(), Error> {
         let index = self
             .get_progress_index(message.scope.clone())
-            .ok_or(Error::Progress(message.scope))?;
+            .ok_or(Error::MissingProgress(message.scope))?;
         self.progresses.remove(index);
         self.events.send(Event::ProgressChanged)?;
         Ok(())

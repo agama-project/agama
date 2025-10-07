@@ -59,7 +59,7 @@ impl Progress {
 
     pub fn next(&mut self) -> Result<(), Error> {
         if self.index >= self.size {
-            return Err(Error::NextStep(self.scope.clone()));
+            return Err(Error::MissingStep(self.scope.clone()));
         }
 
         self.index += 1;
