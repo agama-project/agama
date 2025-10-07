@@ -19,7 +19,11 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    supervisor::{l10n, listener::EventsListener, service::Service},
+    supervisor::{
+        l10n,
+        listener::{self, EventsListener},
+        service::Service,
+    },
     web::EventsSender,
 };
 use agama_utils::{
@@ -58,9 +62,7 @@ pub async fn start(events: EventsSender) -> Result<Handler<Service>, Error> {
     let l10n = l10n::start(events_sender).await?;
     listener.add_channel("l10n", events_receiver);
 
-    tokio::spawn(async move {
-        listener.run().await;
-    });
+    listener::spawn(listener);
 
     let service = Service::new(progress, l10n);
     let handler = actor::spawn(service);
