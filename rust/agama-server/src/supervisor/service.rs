@@ -37,10 +37,6 @@ use std::convert::Infallible;
 
 const PROGRESS_SCOPE: &str = "main";
 
-fn progress_scope() -> String {
-    PROGRESS_SCOPE.to_string()
-}
-
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Cannot merge the configuration")]
@@ -88,8 +84,8 @@ impl Service {
         // TODO: translate progress steps.
         self.progress
             .call(progress::message::StartWithSteps::new(
-                progress_scope(),
-                vec!["Installing l10n".to_string()],
+                PROGRESS_SCOPE,
+                vec!["Installing l10n"],
             ))
             .await?;
         Ok(())
@@ -97,7 +93,7 @@ impl Service {
 
     async fn progress_step(&self) -> Result<(), Error> {
         self.progress
-            .call(progress::message::Next::new(progress_scope()))
+            .call(progress::message::Next::new(PROGRESS_SCOPE))
             .await?;
         Ok(())
     }
@@ -105,7 +101,7 @@ impl Service {
     async fn finish_install(&mut self) -> Result<(), Error> {
         self.state = State::Finished;
         self.progress
-            .call(progress::message::Finish::new(progress_scope()))
+            .call(progress::message::Finish::new(PROGRESS_SCOPE))
             .await?;
         Ok(())
     }

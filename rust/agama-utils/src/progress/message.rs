@@ -33,8 +33,11 @@ pub struct Start {
 }
 
 impl Start {
-    pub fn new(scope: String, size: usize) -> Self {
-        Self { scope, size }
+    pub fn new(scope: &str, size: usize) -> Self {
+        Self {
+            scope: scope.to_string(),
+            size,
+        }
     }
 }
 
@@ -48,8 +51,11 @@ pub struct StartWithSteps {
 }
 
 impl StartWithSteps {
-    pub fn new(scope: String, steps: Vec<String>) -> Self {
-        Self { scope, steps }
+    pub fn new(scope: &str, steps: Vec<&str>) -> Self {
+        Self {
+            scope: scope.to_string(),
+            steps: steps.into_iter().map(|s| s.to_owned()).collect(),
+        }
     }
 }
 
@@ -62,8 +68,10 @@ pub struct Next {
 }
 
 impl Next {
-    pub fn new(scope: String) -> Self {
-        Self { scope }
+    pub fn new(scope: &str) -> Self {
+        Self {
+            scope: scope.to_string(),
+        }
     }
 }
 
@@ -77,8 +85,11 @@ pub struct NextStep {
 }
 
 impl NextStep {
-    pub fn new(scope: String, step: String) -> Self {
-        Self { scope, step }
+    pub fn new(scope: &str, step: &str) -> Self {
+        Self {
+            scope: scope.to_string(),
+            step: step.to_string(),
+        }
     }
 }
 
@@ -91,8 +102,10 @@ pub struct Finish {
 }
 
 impl Finish {
-    pub fn new(scope: String) -> Self {
-        Self { scope }
+    pub fn new(scope: &str) -> Self {
+        Self {
+            scope: scope.to_string(),
+        }
     }
 }
 
