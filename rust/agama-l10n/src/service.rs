@@ -19,13 +19,17 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    config::Config, event::Event, extended_config::ExtendedConfig, message, model::ModelAdapter,
-    proposal::Proposal, system_info::SystemInfo,
+    config::Config,
+    event::{self, Event},
+    extended_config::ExtendedConfig,
+    message,
+    model::ModelAdapter,
+    proposal::Proposal,
+    system_info::SystemInfo,
 };
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
 use agama_utils::actor::{self, Actor, MessageHandler};
 use async_trait::async_trait;
-use tokio::sync::mpsc;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -54,7 +58,7 @@ pub enum Error {
 pub struct Service {
     state: State,
     model: Box<dyn ModelAdapter + Send + 'static>,
-    events: mpsc::UnboundedSender<Event>,
+    events: event::Sender,
 }
 
 struct State {
@@ -63,10 +67,7 @@ struct State {
 }
 
 impl Service {
-    pub fn new<T: ModelAdapter + Send + 'static>(
-        mut model: T,
-        events: mpsc::UnboundedSender<Event>,
-    ) -> Service {
+    pub fn new<T: ModelAdapter + Send + 'static>(mut model: T, events: event::Sender) -> Service {
         let system = SystemInfo::read_from(&mut model);
         let config = ExtendedConfig::new_from(&system);
         let state = State { system, config };
