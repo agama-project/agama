@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Oct  6 08:16:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt to the new "installation issues" API (gh#agama-project/agama#2775).
+
+-------------------------------------------------------------------
 Fri Oct  3 20:11:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Start adapting the UI to the new HTTP API

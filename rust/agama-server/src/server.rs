@@ -20,3 +20,4 @@
 
 pub mod web;
 pub use web::server_service;
+pub mod types;

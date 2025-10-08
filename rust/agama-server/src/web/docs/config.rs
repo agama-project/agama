@@ -58,6 +58,8 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema_from::<agama_lib::hostname::model::HostnameSettings>()
             .schema_from::<agama_lib::install_settings::InstallSettings>()
             .schema_from::<agama_lib::issue::Issue>()
+            .schema_from::<agama_lib::issue::IssueSeverity>()
+            .schema_from::<agama_lib::issue::IssueSource>()
             .schema_from::<agama_lib::network::NetworkSettings>()
             .schema_from::<agama_lib::network::model::AccessPoint>()
             .schema_from::<agama_lib::network::model::BondConfig>()

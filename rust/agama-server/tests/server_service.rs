@@ -37,7 +37,7 @@ use tower::ServiceExt;
 async fn build_server_service() -> Result<Router, ServiceError> {
     let (tx, _rx) = channel(16);
 
-    server_service(tx).await
+    server_service(tx, None).await
 }
 
 #[test]

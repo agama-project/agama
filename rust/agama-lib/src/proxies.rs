@@ -29,9 +29,6 @@ pub use manager1::Manager1Proxy;
 
 pub mod questions;
 
-mod issues;
-pub use issues::IssuesProxy;
-
 mod locale;
 pub use locale::LocaleMixinProxy;
 

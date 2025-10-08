@@ -39,13 +39,13 @@ use std::{env, fs::OpenOptions, io::Write, process::Command};
 /// tests.
 pub trait ModelAdapter: Send + 'static {
     /// Locales database.
-    fn locales_db(&mut self) -> &mut LocalesDatabase;
+    fn locales_db(&self) -> &LocalesDatabase;
 
     /// Timezones database.
-    fn timezones_db(&mut self) -> &mut TimezonesDatabase;
+    fn timezones_db(&self) -> &TimezonesDatabase;
 
     /// Keymaps database.
-    fn keymaps_db(&mut self) -> &mut KeymapsDatabase;
+    fn keymaps_db(&self) -> &KeymapsDatabase;
 
     /// Current system locale.
     fn locale(&self) -> LocaleId;
@@ -67,9 +67,9 @@ pub trait ModelAdapter: Send + 'static {
     /// at the end of the installation.
     fn install(
         &self,
-        _locale: LocaleId,
-        _keymap: KeymapId,
-        _timezone: TimezoneId,
+        _locale: &LocaleId,
+        _keymap: &KeymapId,
+        _timezone: &TimezoneId,
     ) -> Result<(), service::Error> {
         Ok(())
     }
@@ -110,15 +110,15 @@ impl Model {
 }
 
 impl ModelAdapter for Model {
-    fn locales_db(&mut self) -> &mut LocalesDatabase {
-        &mut self.locales_db
+    fn locales_db(&self) -> &LocalesDatabase {
+        &self.locales_db
     }
-    fn timezones_db(&mut self) -> &mut TimezonesDatabase {
-        &mut self.timezones_db
+    fn timezones_db(&self) -> &TimezonesDatabase {
+        &self.timezones_db
     }
 
-    fn keymaps_db(&mut self) -> &mut KeymapsDatabase {
-        &mut self.keymaps_db
+    fn keymaps_db(&self) -> &KeymapsDatabase {
+        &self.keymaps_db
     }
 
     fn keymap(&self) -> Result<KeymapId, service::Error> {
@@ -172,9 +172,9 @@ impl ModelAdapter for Model {
 
     fn install(
         &self,
-        locale: LocaleId,
-        keymap: KeymapId,
-        timezone: TimezoneId,
+        locale: &LocaleId,
+        keymap: &KeymapId,
+        timezone: &TimezoneId,
     ) -> Result<(), service::Error> {
         const ROOT: &str = "/mnt";
         const VCONSOLE_CONF: &str = "/etc/vconsole.conf";

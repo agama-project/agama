@@ -20,10 +20,7 @@
 
 use utoipa::openapi::{Components, ComponentsBuilder, OpenApi, Paths, PathsBuilder};
 
-use super::{
-    common::{IssuesApiDocBuilder, ServiceStatusApiDocBuilder},
-    ApiDocBuilder,
-};
+use super::{common::ServiceStatusApiDocBuilder, ApiDocBuilder};
 
 pub struct SoftwareApiDocBuilder;
 
@@ -52,7 +49,6 @@ impl ApiDocBuilder for SoftwareApiDocBuilder {
 
     fn components(&self) -> Components {
         ComponentsBuilder::new()
-            .schema_from::<agama_lib::issue::Issue>()
             .schema_from::<agama_lib::product::Product>()
             .schema_from::<agama_lib::software::Pattern>()
             .schema_from::<agama_lib::software::SelectedBy>()
@@ -72,20 +68,7 @@ impl ApiDocBuilder for SoftwareApiDocBuilder {
     }
 
     fn nested(&self) -> Option<OpenApi> {
-        let mut issues = IssuesApiDocBuilder::new()
-            .add(
-                "/api/software/issues/software",
-                "List of software-related issues",
-                "software_issues",
-            )
-            .add(
-                "/api/product/issues/product",
-                "List of product-related issues",
-                "product_issues",
-            )
-            .build();
         let status = ServiceStatusApiDocBuilder::new("/api/storage/status").build();
-        issues.merge(status);
-        Some(issues)
+        Some(status)
     }
 }

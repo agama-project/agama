@@ -28,7 +28,10 @@ use crate::{
     system_info::SystemInfo,
 };
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
-use agama_utils::actor::{self, Actor, MessageHandler};
+use agama_utils::{
+    actor::{self, Actor, Handler, MessageHandler},
+    issue::{self, Issue},
+};
 use async_trait::async_trait;
 
 #[derive(thiserror::Error, Debug)]
@@ -39,11 +42,11 @@ pub enum Error {
     UnknownKeymap(KeymapId),
     #[error("Unknown timezone: {0}")]
     UnknownTimezone(String),
-    #[error("Invalid locale: {0}")]
+    #[error(transparent)]
     InvalidLocale(#[from] InvalidLocaleId),
-    #[error("Invalid keymap: {0}")]
+    #[error(transparent)]
     InvalidKeymap(#[from] InvalidKeymapId),
-    #[error("Invalid timezone")]
+    #[error(transparent)]
     InvalidTimezone(#[from] InvalidTimezoneId),
     #[error("l10n service could not send the event")]
     Event,
@@ -53,30 +56,91 @@ pub enum Error {
     IO(#[from] std::io::Error),
     #[error(transparent)]
     Generic(#[from] anyhow::Error),
+    #[error("There is no proposal for localization")]
+    MissingProposal,
 }
 
+/// Localization service.
+///
+/// It is responsible for handling the localization part of the installation:
+///
+/// * Reads the list of known locales, keymaps and timezones.
+/// * Keeps track of the localization settings of the underlying system (the installer).
+/// * Holds the user configuration.
+/// * Applies the user configuration at the end of the installation.
 pub struct Service {
     state: State,
     model: Box<dyn ModelAdapter + Send + 'static>,
+    issues: Handler<issue::Service>,
     events: event::Sender,
 }
 
 struct State {
     system: SystemInfo,
     config: ExtendedConfig,
+    proposal: Option<Proposal>,
 }
 
 impl Service {
-    pub fn new<T: ModelAdapter + Send + 'static>(mut model: T, events: event::Sender) -> Service {
-        let system = SystemInfo::read_from(&mut model);
+    pub fn new<T: ModelAdapter + Send + 'static>(
+        model: T,
+        issues: Handler<issue::Service>,
+        events: event::Sender,
+    ) -> Service {
+        let system = SystemInfo::read_from(&model);
         let config = ExtendedConfig::new_from(&system);
-        let state = State { system, config };
+        let proposal = (&config).into();
+        let state = State {
+            system,
+            config,
+            proposal: Some(proposal),
+        };
 
         Self {
             state,
             model: Box::new(model),
+            issues,
             events,
         }
+    }
+
+    /// Returns configuration issues.
+    ///
+    /// It returns an issue for each unknown element (locale, keymap and timezone).
+    fn find_issues(&self) -> Vec<Issue> {
+        let config = &self.state.config;
+        let mut issues = vec![];
+        if !self.model.locales_db().exists(&config.locale) {
+            issues.push(Issue {
+                description: format!("Locale '{}' is unknown", &config.locale),
+                details: None,
+                source: issue::IssueSource::Config,
+                severity: issue::IssueSeverity::Error,
+                kind: "unknown_locale".to_string(),
+            });
+        }
+
+        if !self.model.keymaps_db().exists(&config.keymap) {
+            issues.push(Issue {
+                description: format!("Keymap '{}' is unknown", &config.keymap),
+                details: None,
+                source: issue::IssueSource::Config,
+                severity: issue::IssueSeverity::Error,
+                kind: "unknown_keymap".to_string(),
+            });
+        }
+
+        if !self.model.timezones_db().exists(&config.timezone) {
+            issues.push(Issue {
+                description: format!("Timezone '{}' is unknown", &config.timezone),
+                details: None,
+                source: issue::IssueSource::Config,
+                severity: issue::IssueSeverity::Error,
+                kind: "unknown_timezone".to_string(),
+            });
+        }
+
+        issues
     }
 }
 
@@ -121,28 +185,43 @@ impl MessageHandler<message::GetConfig> for Service {
 impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
         let merged = self.state.config.merge(&message.config)?;
-        if merged != self.state.config {
-            self.state.config = merged;
-            _ = self.events.send(Event::ProposalChanged);
+        if merged == self.state.config {
+            return Ok(());
         }
+
+        self.state.config = merged;
+        let issues = self.find_issues();
+
+        self.state.proposal = if issues.is_empty() {
+            Some((&self.state.config).into())
+        } else {
+            None
+        };
+
+        _ = self
+            .issues
+            .cast(issue::message::Update::new("localization", issues));
+        _ = self.events.send(Event::ProposalChanged);
         Ok(())
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
-    async fn handle(&mut self, _message: message::GetProposal) -> Result<Proposal, Error> {
-        Ok((&self.state.config).into())
+    async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
+        Ok(self.state.proposal.clone())
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
-        let proposal: Proposal = (&self.state.config).into();
+        let Some(proposal) = &self.state.proposal else {
+            return Err(Error::MissingProposal);
+        };
+
         self.model
-            .install(proposal.locale, proposal.keymap, proposal.timezone)
-            .unwrap();
+            .install(&proposal.locale, &proposal.keymap, &proposal.timezone)?;
         Ok(())
     }
 }

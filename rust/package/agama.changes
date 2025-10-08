@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct  8 06:48:47 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Introduce a new "installation issues" API. The issues for all
+  services are exposed through a /issues resource (gh#agama-project/agama#2775).
+
+-------------------------------------------------------------------
 Wed Oct  8 06:27:14 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Add service for reporting progress and extend HTTP API to allow

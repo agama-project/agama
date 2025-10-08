@@ -28,11 +28,12 @@ use crate::supervisor::{
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    progress,
+    issue, progress,
 };
 use async_trait::async_trait;
 use merge_struct::merge;
 use serde::Serialize;
+use std::collections::HashMap;
 
 const PROGRESS_SCOPE: &str = "main";
 
@@ -46,6 +47,8 @@ pub enum Error {
     Progress(#[from] progress::service::Error),
     #[error(transparent)]
     L10n(#[from] l10n::service::Error),
+    #[error(transparent)]
+    Issues(#[from] agama_utils::issue::service::Error),
 }
 
 #[derive(Clone, Serialize, utoipa::ToSchema)]
@@ -60,17 +63,23 @@ pub enum State {
 }
 
 pub struct Service {
+    l10n: Handler<l10n::service::Service>,
+    issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
-    l10n: Handler<l10n::Service>,
     state: State,
     config: InstallSettings,
 }
 
 impl Service {
-    pub fn new(progress: Handler<progress::Service>, l10n: Handler<l10n::Service>) -> Self {
+    pub fn new(
+        l10n: Handler<l10n::Service>,
+        issues: Handler<issue::Service>,
+        progress: Handler<progress::Service>,
+    ) -> Self {
         Self {
-            progress,
             l10n,
+            issues,
+            progress,
             state: State::Configuring,
             config: InstallSettings::default(),
         }
@@ -259,6 +268,17 @@ impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let localization = self.l10n.call(l10n::message::GetProposal).await?;
         Ok(Some(Proposal { localization }))
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetIssues> for Service {
+    /// It returns the current proposal, if any.
+    async fn handle(
+        &mut self,
+        _message: message::GetIssues,
+    ) -> Result<HashMap<String, Vec<issue::Issue>>, Error> {
+        Ok(self.issues.call(issue::message::Get).await?)
     }
 }
 

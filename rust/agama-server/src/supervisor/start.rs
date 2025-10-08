@@ -28,7 +28,7 @@ use crate::{
 };
 use agama_utils::{
     actor::{self, Handler},
-    progress,
+    issue, progress,
 };
 use tokio::sync::mpsc;
 
@@ -38,6 +38,8 @@ pub enum Error {
     Progress(#[from] progress::start::Error),
     #[error(transparent)]
     L10n(#[from] l10n::start::Error),
+    #[error(transparent)]
+    Issues(#[from] issue::start::Error),
 }
 
 /// Starts the supervisor service.
@@ -51,21 +53,31 @@ pub enum Error {
 /// It receives the following argument:
 ///
 /// * `events`: channel to emit the [events](agama_lib::http::Event).
-pub async fn start(events: EventsSender) -> Result<Handler<Service>, Error> {
+/// * `dbus`: connection to Agama's D-Bus server. If it is not given, those features
+///           that require to connect to the Agama's D-Bus server won't work.
+pub async fn start(
+    events: EventsSender,
+    dbus: Option<zbus::Connection>,
+) -> Result<Handler<Service>, Error> {
     let mut listener = EventsListener::new(events);
+
+    let (events_sender, events_receiver) = mpsc::unbounded_channel::<issue::Event>();
+    let issues = issue::start(events_sender, dbus).await?;
+    listener.add_channel("issues", events_receiver);
 
     let (events_sender, events_receiver) = mpsc::unbounded_channel::<progress::Event>();
     let progress = progress::start(events_sender).await?;
     listener.add_channel("progress", events_receiver);
 
     let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
-    let l10n = l10n::start(events_sender).await?;
+    let l10n = l10n::start(issues.clone(), events_sender).await?;
     listener.add_channel("l10n", events_receiver);
+
+    let service = Service::new(l10n, issues, progress);
+    let handler = actor::spawn(service);
 
     listener::spawn(listener);
 
-    let service = Service::new(progress, l10n);
-    let handler = actor::spawn(service);
     Ok(handler)
 }
 
@@ -78,7 +90,7 @@ mod test {
 
     async fn start_service() -> Handler<Service> {
         let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
-        supervisor::start(events_tx).await.unwrap()
+        supervisor::start(events_tx, None).await.unwrap()
     }
 
     #[tokio::test]

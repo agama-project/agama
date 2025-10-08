@@ -37,6 +37,8 @@ use hyper::StatusCode;
 use serde::Serialize;
 use serde_json::json;
 
+use super::types::IssuesMap;
+
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("The given configuration does not belong to the '{0}' scope.")]
@@ -70,8 +72,15 @@ pub struct ServerState {
 type ServerResult<T> = Result<T, Error>;
 
 /// Sets up and returns the axum service for the manager module
-pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError> {
-    let supervisor = supervisor::start(events)
+///
+/// * `events`: channel to send events to the websocket.
+/// * `dbus`: connection to Agama's D-Bus server. If it is not given, those features
+///           that require to connect to the Agama's D-Bus server won't work.
+pub async fn server_service(
+    events: EventsSender,
+    dbus: Option<zbus::Connection>,
+) -> Result<Router, ServiceError> {
+    let supervisor = supervisor::start(events, dbus)
         .await
         .map_err(|e| anyhow::Error::new(e))?;
 
@@ -94,6 +103,7 @@ pub async fn server_service(events: EventsSender) -> Result<Router, ServiceError
         )
         .route("/proposal", get(get_proposal))
         .route("/action", post(run_action))
+        .route("/issues", get(get_issues))
         .with_state(state))
 }
 
@@ -336,6 +346,22 @@ async fn patch_config_scope(
 async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response> {
     let proposal = state.supervisor.call(message::GetProposal).await?;
     Ok(to_option_response(proposal))
+}
+
+/// Returns the issues for each scope.
+#[utoipa::path(
+    get,
+    path = "/issues",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "Agama issues", body = IssuesMap),
+        (status = 400, description = "Not possible to retrieve the issues")
+    )
+)]
+async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<IssuesMap>> {
+    let issues = state.supervisor.call(message::GetIssues).await?;
+    let issues_map: IssuesMap = issues.into();
+    Ok(Json(issues_map))
 }
 
 #[utoipa::path(

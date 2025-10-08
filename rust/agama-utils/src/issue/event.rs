@@ -18,11 +18,18 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::supervisor::l10n;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+use tokio::sync::mpsc;
 
-#[derive(Clone, Debug, Serialize)]
-pub struct Proposal {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub localization: Option<l10n::Proposal>,
+/// Issues changed event.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(tag = "name")]
+pub enum Event {
+    /// Issues changed.
+    IssuesChanged,
 }
+
+/// Multi-producer single-consumer events sender.
+pub type Sender = mpsc::UnboundedSender<Event>;
+/// Multi-producer single-consumer events receiver.
+pub type Receiver = mpsc::UnboundedReceiver<Event>;

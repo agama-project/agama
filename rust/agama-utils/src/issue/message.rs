@@ -18,11 +18,39 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::supervisor::l10n;
-use serde::Serialize;
+use super::Issue;
+use crate::actor::Message;
+use std::collections::HashMap;
 
-#[derive(Clone, Debug, Serialize)]
-pub struct Proposal {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub localization: Option<l10n::Proposal>,
+pub struct Get;
+
+impl Message for Get {
+    type Reply = HashMap<String, Vec<Issue>>;
+}
+
+// FIXME: consider an alternative approach to avoid pub(crate),
+// making it only visible to the service.
+pub struct Update {
+    pub(crate) list: String,
+    pub(crate) issues: Vec<Issue>,
+    pub(crate) notify: bool,
+}
+
+impl Update {
+    pub fn new(list: &str, issues: Vec<Issue>) -> Self {
+        Self {
+            list: list.to_string(),
+            issues,
+            notify: true,
+        }
+    }
+
+    pub fn notify(mut self, notify: bool) -> Self {
+        self.notify = notify;
+        self
+    }
+}
+
+impl Message for Update {
+    type Reply = ();
 }
