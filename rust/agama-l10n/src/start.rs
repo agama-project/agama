@@ -172,6 +172,9 @@ mod tests {
         let updated = handler.call(message::GetConfig).await?;
         assert_eq!(&updated, &input_config);
 
+        let proposal = handler.call(message::GetProposal).await?;
+        assert!(proposal.is_some());
+
         let event = events_rx.recv().await.expect("Did not receive the event");
         assert!(matches!(event, Event::ProposalChanged));
         Ok(())
@@ -226,6 +229,9 @@ mod tests {
         let found_issues = issues.call(issue::message::Get).await?;
         let l10n_issues = found_issues.get("localization").unwrap();
         assert_eq!(l10n_issues.len(), 3);
+
+        let proposal = handler.call(message::GetProposal).await?;
+        assert!(proposal.is_none());
         Ok(())
     }
 

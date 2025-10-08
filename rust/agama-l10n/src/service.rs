@@ -89,10 +89,11 @@ impl Service {
     ) -> Service {
         let system = SystemInfo::read_from(&model);
         let config = ExtendedConfig::new_from(&system);
+        let proposal = (&config).into();
         let state = State {
             system,
             config,
-            proposal: None,
+            proposal: Some(proposal),
         };
 
         Self {
