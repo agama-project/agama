@@ -88,3 +88,12 @@ impl Monitor {
         }
     }
 }
+
+/// Spawns a Tokio task for the monitor.
+///
+/// * `monitor`: monitor to spawn.
+pub fn spawn(mut monitor: Monitor) {
+    tokio::spawn(async move {
+        monitor.run().await;
+    });
+}

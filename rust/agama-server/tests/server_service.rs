@@ -73,7 +73,7 @@ async fn test_get_empty_config() -> Result<(), Box<dyn Error>> {
     assert_eq!(response.status(), StatusCode::OK);
 
     let body = body_to_string(response.into_body()).await;
-    assert_eq!(&body, "");
+    assert_eq!(&body, "{}");
 
     Ok(())
 }

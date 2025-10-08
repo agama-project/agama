@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct  8 06:27:14 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add service for reporting progress and extend HTTP API to allow
+  getting the installation status (gh#agama-project/agama#2787).
+
+-------------------------------------------------------------------
 Fri Oct  3 20:11:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Introduce the new HTTP API (gh#agama-project/agama#2715).

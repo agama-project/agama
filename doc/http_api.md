@@ -27,7 +27,7 @@ GET PUT PATCH   /config
 GET PUT PATCH   /config/{scope}
 GET POST PATCH  /questions
 GET             /proposal
-GET             /state
+GET             /status
 GET             /issues
 POST            /action
 ~~~
@@ -58,6 +58,10 @@ The scope can be indicated to manage only part of the config, for example *PUT /
 ### POST /action
 
 Allows performing actions that cannot be done as side effect of applying a config. For example, start the installation, reload the system, etc. The *actions schema* defines the possible actions, parameters, etc.
+
+### GET /status
+
+Reports the status of the installation. It contains the installation state (*configuring*, *installing*, *finished*) and the active progresses.
 
 ### Example: reload the system
 

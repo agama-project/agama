@@ -63,3 +63,12 @@ impl EventsListener {
         }
     }
 }
+
+/// Spawns a Tokio task for the listener.
+///
+/// * `listener`: listener to spawn.
+pub fn spawn(listener: EventsListener) {
+    tokio::spawn(async move {
+        listener.run().await;
+    });
+}

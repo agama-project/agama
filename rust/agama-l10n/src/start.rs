@@ -62,12 +62,8 @@ pub async fn start(events: event::Sender) -> Result<Handler<Service>, Error> {
     let model = Model::from_system()?;
     let service = Service::new(model, events);
     let handler = actor::spawn(service);
-
-    let mut monitor = Monitor::new(handler.clone()).await?;
-    tokio::spawn(async move {
-        monitor.run().await;
-    });
-
+    let monitor = Monitor::new(handler.clone()).await?;
+    monitor::spawn(monitor);
     Ok(handler)
 }
 

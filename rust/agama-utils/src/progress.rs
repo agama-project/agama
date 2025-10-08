@@ -18,15 +18,16 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This crate offers a set of utility struct and functions to be used accross
-//! other Agama's crates.
-
-pub mod actor;
+pub mod start;
+pub use start::start;
 
 pub mod service;
 pub use service::Service;
 
-pub mod dbus;
-pub mod openapi;
+pub mod event;
+pub use event::Event;
 
-pub mod progress;
+pub mod message;
+
+mod model;
+pub use model::Progress;
