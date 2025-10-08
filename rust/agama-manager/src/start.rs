@@ -19,13 +19,11 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    supervisor::{
-        l10n,
-        listener::{self, EventsListener},
-        service::Service,
-    },
-    web::EventsSender,
+    l10n,
+    listener::{self, EventsListener},
+    service::Service,
 };
+use agama_lib::http;
 use agama_utils::{
     actor::{self, Handler},
     issue, progress,
@@ -42,11 +40,11 @@ pub enum Error {
     Issues(#[from] issue::start::Error),
 }
 
-/// Starts the supervisor service.
+/// Starts the manager service.
 ///
 /// It starts two Tokio tasks:
 ///
-/// * The main service, called "Supervisor", which coordinates the rest of services
+/// * The main service, called "Manager", which coordinates the rest of services
 ///   an entry point for the HTTP API.
 /// * An events listener which retransmit the events from all the services.
 ///
@@ -56,7 +54,7 @@ pub enum Error {
 /// * `dbus`: connection to Agama's D-Bus server. If it is not given, those features
 ///           that require to connect to the Agama's D-Bus server won't work.
 pub async fn start(
-    events: EventsSender,
+    events: http::event::Sender,
     dbus: Option<zbus::Connection>,
 ) -> Result<Handler<Service>, Error> {
     let mut listener = EventsListener::new(events);

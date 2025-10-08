@@ -18,11 +18,28 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::supervisor::l10n;
-use serde::Serialize;
+use crate::l10n;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Serialize)]
-pub struct Proposal {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub localization: Option<l10n::Proposal>,
+#[derive(
+    Copy, Clone, Debug, strum::EnumString, strum::Display, Deserialize, PartialEq, utoipa::ToSchema,
+)]
+#[strum(serialize_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
+pub enum Scope {
+    L10n,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(untagged)]
+pub enum ConfigScope {
+    L10n(l10n::Config),
+}
+
+impl ConfigScope {
+    pub fn to_scope(&self) -> Scope {
+        match &self {
+            Self::L10n(_) => Scope::L10n,
+        }
+    }
 }

@@ -130,6 +130,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "agama-manager"
+version = "0.1.0"
+dependencies = [
+ "agama-l10n",
+ "agama-lib",
+ "agama-utils",
+ "async-trait",
+ "merge-struct",
+ "serde",
+ "serde_json",
+ "strum",
+ "thiserror 2.0.16",
+ "tokio",
+ "tokio-stream",
+ "tokio-test",
+ "tracing",
+ "utoipa",
+ "zbus",
+]
+
+[[package]]
 name = "agama-network"
 version = "0.1.0"
 dependencies = [
@@ -161,6 +182,7 @@ dependencies = [
  "agama-l10n",
  "agama-lib",
  "agama-locale-data",
+ "agama-manager",
  "agama-utils",
  "anyhow",
  "async-trait",

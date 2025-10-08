@@ -38,6 +38,10 @@ use agama_l10n as l10n;
 use agama_utils::{issue, progress};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use tokio::sync::broadcast;
+
+pub type Sender = broadcast::Sender<Event>;
+pub type Receiver = broadcast::Receiver<Event>;
 
 /// Agama event.
 ///
