@@ -81,14 +81,14 @@ pub async fn start(
 
 #[cfg(test)]
 mod test {
-    use crate::supervisor::{self, l10n, message, service::Service};
-    use agama_lib::{http::Event, install_settings::InstallSettings};
+    use crate::{self as manager, l10n, message, service::Service};
+    use agama_lib::{http, install_settings::InstallSettings};
     use agama_utils::actor::Handler;
     use tokio::sync::broadcast;
 
     async fn start_service() -> Handler<Service> {
-        let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
-        supervisor::start(events_tx, None).await.unwrap()
+        let (events_sender, _events_receiver) = broadcast::channel::<http::Event>(16);
+        manager::start(events_sender, None).await.unwrap()
     }
 
     #[tokio::test]
