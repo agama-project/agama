@@ -67,9 +67,9 @@ pub trait ModelAdapter: Send + 'static {
     /// at the end of the installation.
     fn install(
         &self,
-        _locale: LocaleId,
-        _keymap: KeymapId,
-        _timezone: TimezoneId,
+        _locale: &LocaleId,
+        _keymap: &KeymapId,
+        _timezone: &TimezoneId,
     ) -> Result<(), service::Error> {
         Ok(())
     }
@@ -172,9 +172,9 @@ impl ModelAdapter for Model {
 
     fn install(
         &self,
-        locale: LocaleId,
-        keymap: KeymapId,
-        timezone: TimezoneId,
+        locale: &LocaleId,
+        keymap: &KeymapId,
+        timezone: &TimezoneId,
     ) -> Result<(), service::Error> {
         const ROOT: &str = "/mnt";
         const VCONSOLE_CONF: &str = "/etc/vconsole.conf";

@@ -56,6 +56,8 @@ pub enum Error {
     IO(#[from] std::io::Error),
     #[error(transparent)]
     Generic(#[from] anyhow::Error),
+    #[error("There is no proposal for localization")]
+    MissingProposal,
 }
 
 /// Localization service.
@@ -213,9 +215,12 @@ impl MessageHandler<message::GetProposal> for Service {
 #[async_trait]
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
-        let proposal: Proposal = (&self.state.config).into();
+        let Some(proposal) = &self.state.proposal else {
+            return Err(Error::MissingProposal);
+        };
+
         self.model
-            .install(proposal.locale, proposal.keymap, proposal.timezone)
+            .install(&proposal.locale, &proposal.keymap, &proposal.timezone)
             .unwrap();
         Ok(())
     }
