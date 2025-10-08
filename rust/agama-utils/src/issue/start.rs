@@ -66,7 +66,9 @@ mod tests {
         let issues_list = issues.call(message::Get).await.unwrap();
         assert!(issues_list.is_empty());
 
-        _ = issues.cast(message::Update::new("my-service", vec![issue]));
+        _ = issues
+            .cast(message::Update::new("my-service", vec![issue]))
+            .unwrap();
 
         let issues_list = issues.call(message::Get).await.unwrap();
         assert_eq!(issues_list.len(), 1);
@@ -91,7 +93,7 @@ mod tests {
         assert!(issues_list.is_empty());
 
         let update = message::Update::new("my-service", vec![issue]).notify(false);
-        _ = issues.cast(update);
+        _ = issues.cast(update).unwrap();
 
         let issues_list = issues.call(message::Get).await.unwrap();
         assert_eq!(issues_list.len(), 1);

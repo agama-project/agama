@@ -117,7 +117,7 @@ impl Monitor {
             .map(Issue::try_from)
             .collect::<Result<Vec<_>, _>>()?;
 
-        self.update_issues(path.as_str(), issues, true);
+        self.update_issues(path.as_str(), issues, true)?;
 
         Ok(())
     }
@@ -148,13 +148,13 @@ impl Monitor {
             .into_iter()
             .map(Issue::try_from)
             .collect::<Result<Vec<_>, _>>()?;
-        self.update_issues(path, issues, false);
+        self.update_issues(path, issues, false)?;
 
         Ok(())
     }
 
     /// Updates the list of issues.
-    fn update_issues(&self, path: &str, issues: Vec<Issue>, notify: bool) {
+    fn update_issues(&self, path: &str, issues: Vec<Issue>, notify: bool) -> Result<(), Error> {
         match Self::list_id_from_path(path) {
             Some(list) => {
                 _ = self
@@ -165,6 +165,7 @@ impl Monitor {
                 eprintln!("Unknown issues object {}", path);
             }
         }
+        Ok(())
     }
 
     /// Turns the D-Bus path into an issues list ID.
