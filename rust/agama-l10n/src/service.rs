@@ -76,6 +76,7 @@ pub struct Service {
 struct State {
     system: SystemInfo,
     config: ExtendedConfig,
+    proposal: Option<Proposal>,
 }
 
 impl Service {
@@ -86,7 +87,11 @@ impl Service {
     ) -> Service {
         let system = SystemInfo::read_from(&model);
         let config = ExtendedConfig::new_from(&system);
-        let state = State { system, config };
+        let state = State {
+            system,
+            config,
+            proposal: None,
+        };
 
         Self {
             state,
@@ -183,6 +188,13 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
 
         self.state.config = merged;
         let issues = self.find_issues();
+
+        self.state.proposal = if issues.is_empty() {
+            None
+        } else {
+            Some((&self.state.config).into())
+        };
+
         _ = self
             .issues
             .cast(issue::message::Update::new("localization", issues));
@@ -193,8 +205,8 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
 
 #[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
-    async fn handle(&mut self, _message: message::GetProposal) -> Result<Proposal, Error> {
-        Ok((&self.state.config).into())
+    async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
+        Ok(self.state.proposal.clone())
     }
 }
 

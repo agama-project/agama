@@ -73,7 +73,7 @@ impl<T> SetConfig<T> {
 pub struct GetProposal;
 
 impl Message for GetProposal {
-    type Reply = Proposal;
+    type Reply = Option<Proposal>;
 }
 
 pub struct Install;

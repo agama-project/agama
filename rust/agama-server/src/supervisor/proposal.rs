@@ -23,5 +23,6 @@ use serde::Serialize;
 
 #[derive(Clone, Debug, Serialize)]
 pub struct Proposal {
-    pub localization: l10n::Proposal,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub localization: Option<l10n::Proposal>,
 }

@@ -251,7 +251,10 @@ mod tests {
         let message = message::SetConfig::new(input_config.clone());
         handler.call(message).await?;
 
-        let proposal = handler.call(message::GetProposal).await?;
+        let proposal = handler
+            .call(message::GetProposal)
+            .await?
+            .expect("Could not get the proposal");
         assert_eq!(proposal.locale.to_string(), input_config.locale.unwrap());
         assert_eq!(proposal.keymap.to_string(), input_config.keymap.unwrap());
         assert_eq!(
