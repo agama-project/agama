@@ -190,9 +190,9 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
         let issues = self.find_issues();
 
         self.state.proposal = if issues.is_empty() {
-            None
-        } else {
             Some((&self.state.config).into())
+        } else {
+            None
         };
 
         _ = self
