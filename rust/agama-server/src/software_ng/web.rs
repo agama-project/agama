@@ -81,7 +81,7 @@ struct QueryParam {
 #[utoipa::path(
     get,
     path = "/available",
-    context_path = "/api/software_ng",
+    context_path = "/api/software",
     responses(
         (status = 200, description = "Whenever matching package is available"),
         (status = 400, description = "Failed to check if package is available")
@@ -101,7 +101,7 @@ async fn get_available(
 #[utoipa::path(
     get,
     path = "/selected",
-    context_path = "/api/software_ng",
+    context_path = "/api/software",
     responses(
         (status = 200, description = "Whenever matching package is selected for installation"),
         (status = 400, description = "Failed to check if package is selected")
@@ -121,7 +121,7 @@ async fn get_selected(
 #[utoipa::path(
     get,
     path = "/products",
-    context_path = "/api/software_ng",
+    context_path = "/api/software",
     responses(
         (status = 200, description = "List of known products", body = Vec<Product>),
         (status = 400, description = "Cannot read the list of products")
@@ -138,7 +138,7 @@ async fn get_products(State(state): State<SoftwareState>) -> Result<Json<Vec<Pro
 #[utoipa::path(
     get,
     path = "/patterns",
-    context_path = "/api/software_ng",
+    context_path = "/api/software",
     responses(
         (status = 200, description = "List of product patterns", body = Vec<Pattern>),
         (status = 400, description = "Cannot read the list of patterns")
@@ -156,7 +156,7 @@ async fn get_patterns(State(state): State<SoftwareState>) -> Result<Json<Vec<Pat
 #[utoipa::path(
     put,
     path = "/config",
-    context_path = "/api/software_ng",
+    context_path = "/api/software",
     operation_id = "set_software_config",
     responses(
         (status = 200, description = "Set the software configuration"),
@@ -180,7 +180,7 @@ async fn set_config(
 #[utoipa::path(
     get,
     path = "/config",
-    context_path = "/api/software_ng",
+    context_path = "/api/software",
     operation_id = "get_software_config",
     responses(
         (status = 200, description = "Get the software configuration"),
@@ -254,7 +254,7 @@ async fn finish(State(state): State<SoftwareState>) -> Result<Json<()>, Error> {
 #[utoipa::path(
     get,
     path = "/proposal",
-    context_path = "/api/software_ng",
+    context_path = "/api/software",
     responses(
         (status = 200, description = "Software proposal", body = SoftwareProposal)
     )
@@ -280,7 +280,7 @@ async fn get_proposal(State(state): State<SoftwareState>) -> Result<Json<Softwar
 #[utoipa::path(
     get,
     path = "/issues/product",
-    context_path = "/api/software_ng",
+    context_path = "/api/software",
     responses(
         (status = 200, description = "Product issues", body = Vec<Issue>)
     )
@@ -296,7 +296,7 @@ async fn product_issues(State(state): State<SoftwareState>) -> Result<Json<Vec<I
 #[utoipa::path(
     get,
     path = "/issues/software",
-    context_path = "/api/software_ng",
+    context_path = "/api/software",
     responses(
         (status = 200, description = "Product issues", body = Vec<Issue>)
     )
