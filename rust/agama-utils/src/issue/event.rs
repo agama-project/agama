@@ -23,9 +23,13 @@ use tokio::sync::mpsc;
 
 /// Issues changed event.
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct IssuesChanged;
+#[serde(tag = "name")]
+pub enum Event {
+    /// Issues changed.
+    IssuesChanged,
+}
 
 /// Multi-producer single-consumer events sender.
-pub type Sender = mpsc::UnboundedSender<IssuesChanged>;
+pub type Sender = mpsc::UnboundedSender<Event>;
 /// Multi-producer single-consumer events receiver.
-pub type Receiver = mpsc::UnboundedReceiver<IssuesChanged>;
+pub type Receiver = mpsc::UnboundedReceiver<Event>;

@@ -18,7 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::issue::Issue;
 use crate::{
     auth::ClientId,
     jobs::Job,
@@ -123,7 +122,8 @@ pub enum EventPayload {
         service: String,
         status: u32,
     },
-    Issues(issue::IssuesChanged),
+    #[serde(rename = "issues")]
+    Issues(issue::Event),
     ValidationChanged {
         service: String,
         path: String,
@@ -197,9 +197,9 @@ impl From<l10n::Event> for EventPayload {
     }
 }
 
-impl From<issue::IssuesChanged> for EventPayload {
-    fn from(_value: issue::IssuesChanged) -> Self {
-        EventPayload::Issues(issue::IssuesChanged)
+impl From<issue::Event> for EventPayload {
+    fn from(value: issue::Event) -> Self {
+        EventPayload::Issues(value)
     }
 }
 

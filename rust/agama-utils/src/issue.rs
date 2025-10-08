@@ -44,7 +44,7 @@
 //! ```
 
 pub mod event;
-pub use event::IssuesChanged;
+pub use event::Event;
 
 pub mod model;
 pub use model::{Issue, IssueSeverity, IssueSource};

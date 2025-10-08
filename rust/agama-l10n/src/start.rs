@@ -142,7 +142,7 @@ mod tests {
     }
 
     async fn start_testing_service() -> (Receiver, Handler<Service>, Handler<issue::Service>) {
-        let (events_tx, _events_rx) = mpsc::unbounded_channel::<issue::IssuesChanged>();
+        let (events_tx, _events_rx) = mpsc::unbounded_channel::<issue::Event>();
         let issues = issue::start(events_tx, None).await.unwrap();
 
         let (events_tx, events_rx) = mpsc::unbounded_channel::<Event>();

@@ -61,7 +61,7 @@ pub async fn start(
 ) -> Result<Handler<Service>, Error> {
     let mut listener = EventsListener::new(events);
 
-    let (events_sender, events_receiver) = mpsc::unbounded_channel::<issue::IssuesChanged>();
+    let (events_sender, events_receiver) = mpsc::unbounded_channel::<issue::Event>();
     let issues = issue::start(events_sender, dbus).await?;
     listener.add_channel("issues", events_receiver);
 
