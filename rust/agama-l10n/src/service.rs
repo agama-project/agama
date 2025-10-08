@@ -107,7 +107,7 @@ impl Service {
                 description: format!("Locale '{}' is unknown", &config.locale),
                 details: None,
                 source: issue::IssueSource::Config,
-                severity: issue::IssueSeverity::Warn,
+                severity: issue::IssueSeverity::Error,
                 kind: "unknown_locale".to_string(),
             });
         }
@@ -117,7 +117,7 @@ impl Service {
                 description: format!("Keymap '{}' is unknown", &config.keymap),
                 details: None,
                 source: issue::IssueSource::Config,
-                severity: issue::IssueSeverity::Warn,
+                severity: issue::IssueSeverity::Error,
                 kind: "unknown_keymap".to_string(),
             });
         }
@@ -127,7 +127,7 @@ impl Service {
                 description: format!("Timezone '{}' is unknown", &config.timezone),
                 details: None,
                 source: issue::IssueSource::Config,
-                severity: issue::IssueSeverity::Warn,
+                severity: issue::IssueSeverity::Error,
                 kind: "unknown_timezone".to_string(),
             });
         }
