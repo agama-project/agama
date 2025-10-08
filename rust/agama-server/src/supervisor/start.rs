@@ -19,18 +19,24 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    supervisor::{l10n, listener::EventsListener, service::Service},
+    supervisor::{
+        l10n,
+        listener::{self, EventsListener},
+        service::Service,
+    },
     web::EventsSender,
 };
 use agama_utils::{
     actor::{self, Handler},
-    issue,
+    issue, progress,
 };
 use tokio::sync::mpsc;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("Could not start the l10n service")]
+    #[error(transparent)]
+    Progress(#[from] progress::start::Error),
+    #[error(transparent)]
     L10n(#[from] l10n::start::Error),
     #[error("Could not start the issues service")]
     Issues(#[from] issue::start::Error),
@@ -59,16 +65,18 @@ pub async fn start(
     let issues = issue::start(events_sender, dbus).await?;
     listener.add_channel("issues", events_receiver);
 
+    let (events_sender, events_receiver) = mpsc::unbounded_channel::<progress::Event>();
+    let progress = progress::start(events_sender).await?;
+    listener.add_channel("progress", events_receiver);
+
     let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
     let l10n = l10n::start(issues.clone(), events_sender).await?;
     listener.add_channel("l10n", events_receiver);
 
-    let service = Service::new(l10n, issues.clone());
+    let service = Service::new(l10n, issues, progress);
     let handler = actor::spawn(service);
 
-    tokio::spawn(async move {
-        listener.run().await;
-    });
+    listener::spawn(listener);
 
     Ok(handler)
 }

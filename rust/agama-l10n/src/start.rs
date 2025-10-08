@@ -55,12 +55,8 @@ pub async fn start(
     let model = Model::from_system()?;
     let service = Service::new(model, issues, events);
     let handler = actor::spawn(service);
-
-    let mut monitor = Monitor::new(handler.clone()).await?;
-    tokio::spawn(async move {
-        monitor.run().await;
-    });
-
+    let monitor = Monitor::new(handler.clone()).await?;
+    monitor::spawn(monitor);
     Ok(handler)
 }
 

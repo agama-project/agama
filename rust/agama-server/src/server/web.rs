@@ -87,6 +87,7 @@ pub async fn server_service(
     let state = ServerState { supervisor };
 
     Ok(Router::new()
+        .route("/status", get(get_status))
         .route("/system", get(get_system))
         .route("/extended_config/:scope", get(get_extended_config_scope))
         .route("/extended_config", get(get_extended_config))
@@ -104,6 +105,21 @@ pub async fn server_service(
         .route("/action", post(run_action))
         .route("/issues", get(get_issues))
         .with_state(state))
+}
+
+/// Returns the status of the installation.
+#[utoipa::path(
+    get,
+    path = "/status",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "Status of the installation."),
+        (status = 400, description = "Not possible to retrieve the status of the installation.")
+    )
+)]
+async fn get_status(State(state): State<ServerState>) -> ServerResult<Json<message::Status>> {
+    let status = state.supervisor.call(message::GetStatus).await?;
+    Ok(Json(status))
 }
 
 /// Returns the information about the system.

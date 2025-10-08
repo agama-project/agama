@@ -21,11 +21,28 @@
 use std::collections::HashMap;
 
 use crate::supervisor::{
-    l10n, proposal::Proposal, scope::ConfigScope, scope::Scope, system_info::SystemInfo,
+    l10n, proposal::Proposal, scope::ConfigScope, scope::Scope, service, system_info::SystemInfo,
 };
 use agama_lib::{install_settings::InstallSettings, issue::Issue};
-use agama_utils::actor::Message;
-use serde::Deserialize;
+use agama_utils::{actor::Message, progress::Progress};
+use serde::{Deserialize, Serialize};
+
+/// Gets the installation status.
+pub struct GetStatus;
+
+#[derive(Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Status {
+    /// State of the installation
+    pub state: service::State,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    /// Active progresses
+    pub progresses: Vec<Progress>,
+}
+
+impl Message for GetStatus {
+    type Reply = Status;
+}
 
 /// Gets the information of the underlying system.
 #[derive(Debug)]
