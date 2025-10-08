@@ -18,8 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::web::EventsSender;
-use agama_lib::http::{Event, EventPayload};
+use agama_lib::http;
 use std::pin::Pin;
 use tokio::sync::mpsc;
 use tokio_stream::{wrappers::UnboundedReceiverStream, Stream, StreamExt, StreamMap};
@@ -30,12 +29,12 @@ use tokio_stream::{wrappers::UnboundedReceiverStream, Stream, StreamExt, StreamM
 /// `agama_l10n::Event`) and has to be converted to the [Event
 /// struct](agama_lib::http::Event).
 pub struct EventsListener {
-    inner: StreamMap<&'static str, Pin<Box<dyn Stream<Item = Event> + Send>>>,
-    sender: EventsSender,
+    inner: StreamMap<&'static str, Pin<Box<dyn Stream<Item = http::Event> + Send>>>,
+    sender: http::event::Sender,
 }
 
 impl EventsListener {
-    pub fn new(sender: EventsSender) -> Self {
+    pub fn new(sender: http::event::Sender) -> Self {
         EventsListener {
             inner: StreamMap::new(),
             sender,
@@ -47,10 +46,10 @@ impl EventsListener {
         name: &'static str,
         channel: mpsc::UnboundedReceiver<T>,
     ) where
-        EventPayload: From<T>,
+        http::EventPayload: From<T>,
     {
-        let stream =
-            UnboundedReceiverStream::new(channel).map(|e| Event::new(EventPayload::from(e)));
+        let stream = UnboundedReceiverStream::new(channel)
+            .map(|e| http::Event::new(http::EventPayload::from(e)));
         self.inner.insert(name, Box::pin(stream));
     }
 

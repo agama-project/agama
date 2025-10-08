@@ -39,4 +39,3 @@ pub mod web;
 pub use web::service;
 pub mod server;
 pub mod software_ng;
-pub(crate) mod supervisor;

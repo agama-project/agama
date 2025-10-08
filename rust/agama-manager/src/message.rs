@@ -18,14 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::collections::HashMap;
-
-use crate::supervisor::{
+use crate::{
     l10n, proposal::Proposal, scope::ConfigScope, scope::Scope, service, system_info::SystemInfo,
 };
 use agama_lib::{install_settings::InstallSettings, issue::Issue};
 use agama_utils::{actor::Message, progress::Progress};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 /// Gets the installation status.
 pub struct GetStatus;
