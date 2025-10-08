@@ -220,8 +220,7 @@ impl MessageHandler<message::Install> for Service {
         };
 
         self.model
-            .install(&proposal.locale, &proposal.keymap, &proposal.timezone)
-            .unwrap();
+            .install(&proposal.locale, &proposal.keymap, &proposal.timezone)?;
         Ok(())
     }
 }
