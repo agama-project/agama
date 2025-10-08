@@ -38,7 +38,7 @@ pub enum Error {
     Progress(#[from] progress::start::Error),
     #[error(transparent)]
     L10n(#[from] l10n::start::Error),
-    #[error("Could not start the issues service")]
+    #[error(transparent)]
     Issues(#[from] issue::start::Error),
 }
 

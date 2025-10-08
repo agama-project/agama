@@ -18,11 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::{event, message, Event, Issue};
+use super::{event, message, Issue};
 use crate::actor::{self, Actor, MessageHandler};
 use async_trait::async_trait;
 use std::collections::HashMap;
-use tokio::sync::mpsc;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -34,11 +33,11 @@ pub enum Error {
 
 pub struct Service {
     issues: HashMap<String, Vec<Issue>>,
-    events: mpsc::UnboundedSender<Event>,
+    events: event::Sender,
 }
 
 impl Service {
-    pub fn new(events: mpsc::UnboundedSender<Event>) -> Self {
+    pub fn new(events: event::Sender) -> Self {
         Self {
             issues: HashMap::new(),
             events,

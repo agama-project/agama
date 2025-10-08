@@ -18,7 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::{event, monitor::Monitor, service, Service};
+use super::{
+    event,
+    monitor::{self, Monitor},
+    service, Service,
+};
 use crate::actor::{self, Handler};
 
 #[derive(thiserror::Error, Debug)]
@@ -35,12 +39,8 @@ pub async fn start(
     let handler = actor::spawn(service);
 
     if let Some(conn) = dbus {
-        let monitor = Monitor::new(handler.clone(), conn);
-        tokio::spawn(async move {
-            if let Err(e) = monitor.run().await {
-                println!("Error running the issues monitor: {e:?}");
-            }
-        });
+        let dbus_monitor = Monitor::new(handler.clone(), conn);
+        monitor::spawn(dbus_monitor);
     }
 
     Ok(handler)
@@ -76,7 +76,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_update_wo_event() -> Result<(), Box<dyn std::error::Error>> {
+    async fn test_update_without_event() -> Result<(), Box<dyn std::error::Error>> {
         let (events_tx, mut events_rx) = mpsc::unbounded_channel();
         let issues = issue::start(events_tx, None).await.unwrap();
         let issue = Issue {

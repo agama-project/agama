@@ -64,7 +64,7 @@ impl Monitor {
     }
 
     /// Run the monitor on a separate Tokio task.
-    pub async fn run(&self) -> Result<(), Error> {
+    async fn run(&self) -> Result<(), Error> {
         let mut messages = build_properties_changed_stream(&self.dbus).await?;
 
         self.initialize_issues(MANAGER_SERVICE, USERS_PATH).await?;
@@ -178,4 +178,15 @@ impl Monitor {
             _ => None,
         }
     }
+}
+
+/// Spawns a Tokio task for the monitor.
+///
+/// * `monitor`: monitor to spawn.
+pub fn spawn(monitor: Monitor) {
+    tokio::spawn(async move {
+        if let Err(e) = monitor.run().await {
+            println!("Error running the issues monitor: {e:?}");
+        }
+    });
 }
