@@ -303,7 +303,7 @@ const usePatterns = (): Pattern[] => {
 /**
  * Returns current software proposal
  */
-const useProposal = (): SoftwareProposal => {
+const useSoftwareProposal = (): SoftwareProposal => {
   const { data: proposal } = useSuspenseQuery(proposalQuery());
   return proposal;
 };
@@ -392,7 +392,7 @@ const useProductChanges = () => {
  *
  * When the selected patterns change, it invalidates the proposal query.
  */
-const useProposalChanges = () => {
+const useSoftwareProposalChanges = () => {
   const client = useInstallerClient();
   const queryClient = useQueryClient();
 
@@ -438,8 +438,8 @@ export {
   usePatterns,
   useProduct,
   useProductChanges,
-  useProposal,
-  useProposalChanges,
+  useSoftwareProposal,
+  useSoftwareProposalChanges,
   useRegisterAddonMutation,
   useRegisterMutation,
   useRegisteredAddons,

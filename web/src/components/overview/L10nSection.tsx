@@ -22,11 +22,16 @@
 
 import React from "react";
 import { Content } from "@patternfly/react-core";
-import { useL10n } from "~/queries/l10n";
+import { useProposal } from "~/queries/proposal";
+import { useSystem } from "~/queries/system";
 import { _ } from "~/i18n";
+import { Locale } from "~/types/l10n";
 
 export default function L10nSection() {
-  const { selectedLocale: locale } = useL10n();
+  const { localization: l10nProposal } = useProposal();
+  const { localization: l10n } = useSystem();
+  const locale =
+    l10nProposal.locale && l10n.locales.find((l: Locale) => l.id === l10nProposal.locale);
 
   // TRANSLATORS: %s will be replaced by a language name and territory, example:
   // "English (United States)".
@@ -36,9 +41,9 @@ export default function L10nSection() {
     <Content>
       <Content component="h3">{_("Localization")}</Content>
       <Content>
-        {msg1}
-        <b>{`${locale.name} (${locale.territory})`}</b>
-        {msg2}
+        <b>
+          {locale ? `${msg1}${locale.name} (${locale.territory})${msg2}` : _("Not selected yet")}
+        </b>
       </Content>
     </Content>
   );

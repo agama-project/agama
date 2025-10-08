@@ -24,8 +24,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import { locationReload, setLocationSearch } from "~/utils";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
-import { fetchConfig as defaultFetchConfig, updateConfig } from "~/api/l10n";
-import { LocaleConfig } from "~/types/l10n";
+import { fetchSystem, trigger } from "~/api/api";
+import { System } from "~/types/system";
 
 const L10nContext = React.createContext(null);
 
@@ -137,9 +137,9 @@ function languageToLocale(language: string): string {
  *
  * @return Language tag from the backend locale.
  */
-async function languageFromBackend(fetchConfig: () => Promise<LocaleConfig>): Promise<string> {
+async function languageFromBackend(fetchConfig): Promise<string> {
   const config = await fetchConfig();
-  return languageFromLocale(config.uiLocale);
+  return languageFromLocale(config?.localization?.locale);
 }
 
 /**
@@ -238,19 +238,20 @@ function InstallerL10nProvider({
   children,
 }: {
   initialLanguage?: string;
-  fetchConfigFn?: () => Promise<LocaleConfig>;
+  fetchConfigFn?: () => Promise<System>;
   children?: React.ReactNode;
 }) {
-  const fetchConfig = fetchConfigFn || defaultFetchConfig;
+  const fetchConfig = fetchConfigFn || fetchSystem;
   const [language, setLanguage] = useState(initialLanguage);
   const [keymap, setKeymap] = useState(undefined);
 
+  // FIXME: NEW-API: sync and updateConfig with new API once it's ready.
   const syncBackendLanguage = useCallback(async () => {
     const backendLanguage = await languageFromBackend(fetchConfig);
     if (backendLanguage === language) return;
 
     // FIXME: fallback to en-US if the language is not supported.
-    await updateConfig({ uiLocale: languageToLocale(language) });
+    await trigger({ configureL10n: { language: languageToLocale(language) } });
   }, [fetchConfig, language]);
 
   const changeLanguage = useCallback(
@@ -289,7 +290,7 @@ function InstallerL10nProvider({
   const changeKeymap = useCallback(
     async (id: string) => {
       setKeymap(id);
-      await updateConfig({ uiKeymap: id });
+      await trigger({ configureL10n: { keymap: id } });
     },
     [setKeymap],
   );
@@ -300,12 +301,12 @@ function InstallerL10nProvider({
 
   useEffect(() => {
     if (!language) return;
-
+    //
     syncBackendLanguage();
   }, [language, syncBackendLanguage]);
 
   useEffect(() => {
-    fetchConfig().then((c) => setKeymap(c.uiKeymap));
+    fetchConfig().then((c) => setKeymap(c?.localization?.keymap));
   }, [setKeymap, fetchConfig]);
 
   const value = { language, changeLanguage, keymap, changeKeymap };

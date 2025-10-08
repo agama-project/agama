@@ -23,7 +23,7 @@
 /**
  * Known scopes for issues.
  */
-type IssuesScope = "product" | "software" | "storage" | "users";
+type IssuesScope = "localization" | "product" | "software" | "storage" | "users" | "iscsi";
 
 /**
  * Source of the issue
@@ -32,11 +32,11 @@ type IssuesScope = "product" | "software" | "storage" | "users";
  */
 enum IssueSource {
   /** Unknown source (it is kind of a fallback value) */
-  Unknown = 0,
+  Unknown = "unknown",
   /** An unexpected situation in the system (e.g., missing device). */
-  System = 1,
+  System = "system",
   /** Wrong or incomplete configuration (e.g., an authentication mechanism is not set) */
-  Config = 2,
+  Config = "config",
 }
 
 /**
@@ -46,15 +46,15 @@ enum IssueSource {
  */
 enum IssueSeverity {
   /** Just a warning, the installation can start */
-  Warn = 0,
+  Warn = "warn",
   /** An important problem that makes the installation not possible */
-  Error = 1,
+  Error = "error",
 }
 
 /**
- * Pre-installation issue
+ * Pre-installation issue as they come from the API.
  */
-type Issue = {
+type ApiIssue = {
   /** Issue description */
   description: string;
   /** Issue kind **/
@@ -68,36 +68,21 @@ type Issue = {
 };
 
 /**
- * Issues list
+ * Issues grouped by scope as they come from the API.
  */
-class IssuesList {
-  /** List of issues grouped by scope */
-  issues: { [key: string]: Issue[] };
-  /** Whether the list is empty */
-  isEmpty: boolean;
+type IssuesMap = {
+  localization?: ApiIssue[];
+  software?: ApiIssue[];
+  product?: ApiIssue[];
+  storage?: ApiIssue[];
+  iscsi?: ApiIssue[];
+  users?: ApiIssue[];
+};
 
-  constructor(product: Issue[], software: Issue[], storage: Issue[], users: Issue[]) {
-    this.issues = {
-      product,
-      software,
-      storage,
-      users,
-    };
-    this.isEmpty = !Object.values(this.issues).some((v) => v.length > 0);
-  }
-
-  /**
-   * Creates a new list only with the issues that match the given function
-   */
-  filter(fn) {
-    return new IssuesList(
-      this.issues["product"].filter(fn),
-      this.issues["software"].filter(fn),
-      this.issues["storage"].filter(fn),
-      this.issues["users"].filter(fn),
-    );
-  }
-}
+/**
+ * Pre-installation issue augmented with the scope.
+ */
+type Issue = ApiIssue & { scope: IssuesScope };
 
 /**
  * Validation error
@@ -106,5 +91,5 @@ type ValidationError = {
   message: string;
 };
 
-export { IssueSource, IssuesList, IssueSeverity };
-export type { Issue, IssuesScope, ValidationError };
+export { IssueSource, IssueSeverity };
+export type { ApiIssue, IssuesMap, IssuesScope, Issue, ValidationError };

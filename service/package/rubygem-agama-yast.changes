@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct  3 20:11:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the new HTTP API to write the localization configuration
+  to the target system (gh#agama-project/agama#2715).
+
+-------------------------------------------------------------------
 Mon Sep 15 13:50:54 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Fix JSON conversion for not configured sizes (bsc#1249591).

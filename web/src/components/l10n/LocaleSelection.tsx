@@ -24,24 +24,30 @@ import React, { useState } from "react";
 import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
-import { _ } from "~/i18n";
-import { useConfigMutation, useL10n } from "~/queries/l10n";
+import { updateConfig } from "~/api/api";
+import { useSystem } from "~/queries/system";
+import { useProposal } from "~/queries/proposal";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { _ } from "~/i18n";
 
 // TODO: Add documentation
 // TODO: Evaluate if worth it extracting the selector
 export default function LocaleSelection() {
   const navigate = useNavigate();
-  const setConfig = useConfigMutation();
-  const { locales, selectedLocale: currentLocale } = useL10n();
-  const [selected, setSelected] = useState(currentLocale.id);
+  const {
+    localization: { locales },
+  } = useSystem();
+  const {
+    localization: { locale: currentLocale },
+  } = useProposal();
+  const [selected, setSelected] = useState(currentLocale);
   const [filteredLocales, setFilteredLocales] = useState(locales);
 
   const searchHelp = _("Filter by language, territory or locale code");
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    setConfig.mutate({ locales: [selected] });
+    updateConfig({ localization: { locale: selected } });
     navigate(-1);
   };
 

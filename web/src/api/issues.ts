@@ -21,18 +21,17 @@
  */
 
 import { get } from "~/api/http";
-import { Issue, IssuesScope } from "~/types/issues";
-
-const URLS = {
-  product: "software/issues/product",
-  software: "software/issues/software",
-  users: "users/issues",
-  storage: "storage/issues",
-};
+import { Issue, IssuesMap, IssuesScope } from "~/types/issues";
 
 /**
  * Return the issues of the given scope.
  */
-const fetchIssues = (scope: IssuesScope): Promise<Issue[]> => get(`/api/${URLS[scope]}`);
+const fetchIssues = async (): Promise<Issue[]> => {
+  const issues = (await get(`/api/v2/issues`)) as IssuesMap;
+  return Object.keys(issues).reduce((all: Issue[], key: IssuesScope) => {
+    const scoped = issues[key].map((i) => ({ ...i, scope: key }));
+    return all.concat(scoped);
+  }, []);
+};
 
 export { fetchIssues };

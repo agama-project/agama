@@ -24,7 +24,8 @@ import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { Loading } from "~/components/layout";
 import { useProduct, useProductChanges } from "~/queries/software";
-import { useL10nConfigChanges } from "~/queries/l10n";
+import { useProposalChanges } from "~/queries/proposal";
+import { useSystemChanges } from "~/queries/system";
 import { useIssuesChanges } from "~/queries/issues";
 import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status";
 import { useDeprecatedChanges } from "~/queries/storage";
@@ -37,7 +38,8 @@ import AlertOutOfSync from "~/components/core/AlertOutOfSync";
  * Main application component.
  */
 function App() {
-  useL10nConfigChanges();
+  useProposalChanges();
+  useSystemChanges();
   useProductChanges();
   useIssuesChanges();
   useInstallerStatusChanges();

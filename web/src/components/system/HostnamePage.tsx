@@ -33,7 +33,7 @@ import {
 } from "@patternfly/react-core";
 import { NestedContent, Page } from "~/components/core";
 import { useProduct, useRegistration } from "~/queries/software";
-import { useHostname, useHostnameMutation } from "~/queries/system";
+import { useHostname, useHostnameMutation } from "~/queries/hostname";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";

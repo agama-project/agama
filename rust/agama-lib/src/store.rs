@@ -27,7 +27,6 @@ use crate::{
     hostname::store::{HostnameStore, HostnameStoreError},
     http::BaseHTTPClient,
     install_settings::InstallSettings,
-    localization::{LocalizationStore, LocalizationStoreError},
     manager::{http_client::ManagerHTTPClientError, InstallationPhase, ManagerHTTPClient},
     network::{NetworkStore, NetworkStoreError},
     product::{ProductHTTPClient, ProductStore, ProductStoreError},
@@ -76,8 +75,6 @@ pub enum StoreError {
     #[error(transparent)]
     ISCSI(#[from] ISCSIHTTPClientError),
     #[error(transparent)]
-    Localization(#[from] LocalizationStoreError),
-    #[error(transparent)]
     Scripts(#[from] ScriptsStoreError),
     // FIXME: it uses the client instead of the store.
     #[error(transparent)]
@@ -110,7 +107,6 @@ pub struct Store {
     security: SecurityStore,
     software: SoftwareStore,
     storage: StorageStore,
-    localization: LocalizationStore,
     scripts: ScriptsStore,
     iscsi_client: ISCSIHTTPClient,
     manager_client: ManagerHTTPClient,
@@ -125,7 +121,6 @@ impl Store {
             dasd: DASDStore::new(http_client.clone()),
             files: FilesStore::new(http_client.clone()),
             hostname: HostnameStore::new(http_client.clone()),
-            localization: LocalizationStore::new(http_client.clone()),
             users: UsersStore::new(http_client.clone()),
             network: NetworkStore::new(http_client.clone()),
             questions: QuestionsStore::new(http_client.clone()),
@@ -155,7 +150,6 @@ impl Store {
             software: self.software.load().await?.to_option(),
             user: Some(self.users.load().await?),
             product: Some(self.product.load().await?),
-            localization: Some(self.localization.load().await?),
             scripts: self.scripts.load().await?.to_option(),
             zfcp: self.zfcp.load().await?,
             ..Default::default()
@@ -208,11 +202,6 @@ impl Store {
         }
         // here detect if product is properly selected, so later it can be checked
         let is_product_selected = self.detect_selected_product().await?;
-        // ordering: localization after product as some product may miss some locales
-        if let Some(localization) = &settings.localization {
-            Store::ensure_selected_product(is_product_selected)?;
-            self.localization.store(localization).await?;
-        }
         if let Some(software) = &settings.software {
             Store::ensure_selected_product(is_product_selected)?;
             self.software.store(software).await?;

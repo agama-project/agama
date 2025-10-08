@@ -1,42 +1,88 @@
----
-## HTTP API: An Overview
+# HTTP API
 
-This document outlines the **public HTTP API**. It provides an alternative way to interact with the system, complementing the Command Line Interface (CLI) and web user interface. It's important to note that both the CLI and web UI also leverage this HTTP API for their operations.
+This document outlines the HTTP API of Agama. It provides an alternative way to interact with the system, complementing the Command Line Interface (CLI) and web user interface. It's important to note that both the CLI and web UI also leverage this HTTP API for their operations.
 
----
-### API Documentation
-
-Agama uses **OpenAPI** to document its HTTP API. You can generate the documentation using the following commands:
+**Note**: Agama uses *OpenAPI* to document its HTTP API. You can generate the documentation using the following commands:
 
 ```shell
 (cd rust; cargo xtask openapi)
 cat rust/out/openapi/*.json
 ```
 
----
-### Request and Response Body
+## Overview
 
-The Agama HTTP API uses **JSON** as its request and response body format. The schema for this JSON is thoroughly documented within the OpenAPI specification.
+The API is designed around 3 main concepts: *system*, *config* and *proposal*.
 
----
-### Configuration-Based API
+* *system*: represents the current status of the running system.
+* *config*: represents the configuration for installing the target system.
+* *proposal*: represents what is going to be done in the target system.
 
-For automated installations, the system provides two primary API endpoints for managing configurations across various modules:
+The *config* contains elements that can modify the *system*, the *proposal* or both. For example, the *dasd* config changes the *system*, and the *storage* config changes the *proposal*. In other cases like *network*, the config can affect to both *system* and *proposal*.
 
-* **GET `/api/${module}/config`**: Use this endpoint to **export** the current system configuration for a specific module.
-* **PUT `/api/${module}/config`**: Use this endpoint to **load** an unattended installation profile for a specific module. In some cases, the loaded configuration is also immediately applied; further details are available below.
+~~~
+GET             /system
+GET             /extended_config
+GET             /extended_config/{scope}
+GET PUT PATCH   /config
+GET PUT PATCH   /config/{scope}
+GET POST PATCH  /questions
+GET             /proposal
+GET             /status
+GET             /issues
+POST            /action
+~~~
 
----
-### Future Enhancements: PATCH `/api/${module}/config` for Targeted Modifications
+### GET /system
 
-Following internal discussions, we plan to introduce a **PATCH `/api/${module}/config`** endpoint. This new endpoint will enable more granular modifications and applications of configurations, and it will replace the existing HTTP API methods used for modifications. While not strictly required, the structure of the PATCH request will likely mirror the configuration's existing layout.
+Returns a JSON with the info of the system (storage devices, network connections, current localization, etc).
 
-This enhancement will allow you to modify specific parts of the configuration. In some cases, these changes can be applied immediately without needing a full installation. This is especially useful for technologies that require configuration to be applied *before* an installation begins, such as:
+### GET /extended_config
 
-* Network settings
-* System registration
-* iSCSI
-* DASD
-* zFCP
+Returns the *extended config* JSON.
 
-The key advantage of this PATCH approach is its ability to minimize **race conditions** and to more easily keep the configuration manipulation API closely aligned with the core configuration API. By only modifying the necessary parts of the configuration, it reduces conflicts, which is particularly helpful in scenarios like rapid clicks within the web user interface.
+There is a distinction between *extended config* and *config*:
+
+* The *config* is the config explicitly set by the clients.
+* The *extended config* is the config used for calculating the proposal and it is built by merging the the *config* with the default *extended config*. The default *extended config* is built from the *system info* and the *product info*.
+
+For example, if only the *locale* was configured by the user, then the *config*  has no *keymap* property. Nevertheless, the *extended config* would have a *keymap* with the value from the default *extended config*.
+
+The scope can be indicated to retrieve only a part of the config, for example *GET /extended_config/l10n*.
+
+### GET PUT PATCH /config
+
+Reads, replaces or modifies the explicitly set *config*. In case of patching, the given config is merged into the current *extended config*.
+
+The scope can be indicated to manage only part of the config, for example *PUT /config/l10n*.
+
+### POST /action
+
+Allows performing actions that cannot be done as side effect of applying a config. For example, start the installation, reload the system, etc. The *actions schema* defines the possible actions, parameters, etc.
+
+### GET /status
+
+Reports the status of the installation. It contains the installation state (*configuring*, *installing*, *finished*) and the active progresses.
+
+### Example: reload the system
+
+In some cases, clients need to request a system reload. For example, if you create a RAID device using the terminal, then you need to reload the system in order to see the new device. In the future, reloading the system could be automatically done (e.g., by listening udisk D-Bus). For now, reloading has to be manually requested.
+
+~~~
+POST /action { "reloadSystem": { scope: "storage" } }
+~~~
+
+### Example: change the system localization
+
+Sometimes we need to directly modify the system without changing the config. For example, switching the locale of the running system (UI language).
+
+~~~
+POST /action { "configureL10n": { language: "es_ES" } }
+~~~
+
+### Example: start installation
+
+The installation can be started by calling the proper action.
+
+~~~
+POST /action "install"
+~~~

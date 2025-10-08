@@ -23,7 +23,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Addon settings for registration
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct AddonSettings {
     pub id: String,
@@ -37,7 +37,7 @@ pub struct AddonSettings {
 }
 
 /// Software settings for installation
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct ProductSettings {
     /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.)

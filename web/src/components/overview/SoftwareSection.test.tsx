@@ -32,8 +32,8 @@ let mockTestingProposal: SoftwareProposal;
 
 jest.mock("~/queries/software", () => ({
   usePatterns: () => mockTestingPatterns,
-  useProposal: () => mockTestingProposal,
-  useProposalChanges: () => jest.fn(),
+  useSoftwareProposal: () => mockTestingProposal,
+  useSoftwareProposalChanges: () => jest.fn(),
 }));
 
 describe("SoftwareSection", () => {

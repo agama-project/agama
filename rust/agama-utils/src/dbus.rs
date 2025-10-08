@@ -18,6 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+//! Utilities to interact with D-Bus types.
+
 use std::collections::HashMap;
 use zbus::{message::Type as MessageType, MatchRule, MessageStream};
 use zvariant::{self, OwnedObjectPath, OwnedValue, Value};
