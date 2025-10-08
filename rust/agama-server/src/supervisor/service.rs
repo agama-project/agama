@@ -82,7 +82,7 @@ impl Service {
         self.progress
             .call(progress::message::StartWithSteps::new(
                 PROGRESS_SCOPE,
-                vec!["Installing l10n"],
+                &["Installing l10n"],
             ))
             .await?;
         self.l10n.call(l10n::message::Install).await?;

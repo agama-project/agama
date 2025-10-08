@@ -128,7 +128,7 @@ mod tests {
         handler
             .call(message::StartWithSteps::new(
                 "test",
-                vec!["first step", "second step", "third step"],
+                &["first step", "second step", "third step"],
             ))
             .await?;
 
@@ -215,7 +215,7 @@ mod tests {
         assert!(matches!(error, Err(service::Error::DuplicatedProgress(scope)) if scope == "test"));
 
         let error = handler
-            .call(message::StartWithSteps::new("test", vec!["step"]))
+            .call(message::StartWithSteps::new("test", &["step"]))
             .await;
         assert!(matches!(error, Err(service::Error::DuplicatedProgress(scope)) if scope == "test"));
 

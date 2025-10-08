@@ -53,10 +53,10 @@ pub struct StartWithSteps {
 }
 
 impl StartWithSteps {
-    pub fn new(scope: &str, steps: Vec<&str>) -> Self {
+    pub fn new(scope: &str, steps: &[&str]) -> Self {
         Self {
             scope: scope.to_string(),
-            steps: steps.into_iter().map(|s| s.to_owned()).collect(),
+            steps: steps.into_iter().map(ToString::to_string).collect(),
         }
     }
 }
