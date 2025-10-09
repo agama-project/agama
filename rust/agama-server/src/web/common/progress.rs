@@ -35,10 +35,9 @@
 //!
 //! At this point, it only handles the progress that are exposed through D-Bus.
 
-use crate::web::EventsSender;
 use agama_lib::{
     event,
-    http::Event,
+    http::{self, Event},
     progress::{Progress, ProgressSequence},
     proxies::{ProgressChanged, ProgressProxy},
 };
@@ -77,7 +76,7 @@ pub enum ProgressCommand {
 pub struct ProgressService {
     cache: HashMap<String, ProgressSequence>,
     commands: mpsc::Receiver<ProgressCommand>,
-    events: EventsSender,
+    events: http::event::Sender,
     dbus: zbus::Connection,
 }
 
@@ -88,7 +87,7 @@ impl ProgressService {
     ///
     /// * Commands from a client ([ProgressClient]).
     /// * Relevant events from D-Bus.
-    pub async fn start(dbus: zbus::Connection, events: EventsSender) -> ProgressClient {
+    pub async fn start(dbus: zbus::Connection, events: http::event::Sender) -> ProgressClient {
         let (tx, rx) = mpsc::channel(4);
         let mut service = ProgressService {
             cache: HashMap::new(),

@@ -27,16 +27,13 @@
 
 use crate::{
     error::Error,
-    web::{
-        common::{service_status_router, EventStreams, ProgressClient, ProgressRouterBuilder},
-        EventsReceiver,
-    },
+    web::common::{service_status_router, EventStreams, ProgressClient, ProgressRouterBuilder},
 };
 
 use agama_lib::{
     error::ServiceError,
     event,
-    http::{Event, EventPayload},
+    http::{self, Event, EventPayload},
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
         model::{
@@ -221,7 +218,7 @@ fn reason_to_selected_by(
 /// * `events`: channel to listen for events.
 /// * `products`: list of products (shared behind a mutex).
 pub async fn receive_events(
-    mut events: EventsReceiver,
+    mut events: http::event::Receiver,
     products: Arc<RwLock<Vec<Product>>>,
     config: Arc<RwLock<Option<SoftwareConfig>>>,
     client: ProductClient<'_>,
@@ -265,7 +262,7 @@ pub async fn receive_events(
 /// Sets up and returns the axum service for the software module.
 pub async fn software_service(
     dbus: zbus::Connection,
-    events: EventsReceiver,
+    events: http::event::Receiver,
     progress: ProgressClient,
 ) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &str = "org.opensuse.Agama.Software1";

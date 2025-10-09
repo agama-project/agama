@@ -20,7 +20,7 @@
 
 //! This module implements the web API for the network module.
 
-use crate::{error::Error, web::EventsSender};
+use crate::error::Error;
 use anyhow::Context;
 use axum::{
     extract::{Path, State},
@@ -33,7 +33,7 @@ use uuid::Uuid;
 
 use agama_lib::{
     error::ServiceError,
-    event,
+    event, http,
     network::{
         error::NetworkStateError,
         model::{AccessPoint, Connection, Device, GeneralState},
@@ -85,7 +85,7 @@ struct NetworkServiceState {
 /// * `events`: sending-half of the broadcast channel.
 pub async fn network_service<T: Adapter + Send + Sync + 'static>(
     adapter: T,
-    events: EventsSender,
+    events: http::event::Sender,
 ) -> Result<Router, ServiceError> {
     let network = NetworkSystem::new(adapter);
     // FIXME: we are somehow abusing ServiceError. The HTTP/JSON API should have its own
