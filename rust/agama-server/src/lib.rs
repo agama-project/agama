@@ -37,6 +37,6 @@ pub mod storage;
 pub mod users;
 pub mod web;
 pub use web::service;
-pub mod software_ng;
 pub mod server;
+pub mod software_ng;
 pub(crate) mod supervisor;
