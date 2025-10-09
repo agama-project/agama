@@ -8,7 +8,6 @@ rust-version.workspace = true
 
 [dependencies]
 anyhow = "1.0"
-agama-locale-data = { path = "../agama-locale-data" }
 agama-lib = { path = "../agama-lib" }
 agama-utils = { path = "../agama-utils" }
 agama-l10n = { path = "../agama-l10n" }
@@ -58,7 +57,6 @@ gethostname = "1.0.0"
 tokio-util = "0.7.12"
 tempfile = "3.13.0"
 url = "2.5.2"
-merge-struct = "0.1.0"
 strum = { version = "0.27.2", features = ["derive"] }
 
 [[bin]]
