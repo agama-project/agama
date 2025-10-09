@@ -23,15 +23,16 @@ pub(crate) mod web;
 
 use std::sync::Arc;
 
+use agama_lib::http::event;
 use axum::Router;
 use backend::SoftwareService;
 pub use backend::SoftwareServiceError;
 use tokio::sync::Mutex;
 
-use crate::{products::ProductsRegistry, web::EventsSender};
+use crate::{products::ProductsRegistry};
 
 pub async fn software_ng_service(
-    events: EventsSender,
+    events: event::Sender,
     products: Arc<Mutex<ProductsRegistry>>,
 ) -> Router {
     let client =
