@@ -21,7 +21,6 @@
 use crate::{
     auth::ClientId,
     jobs::Job,
-    localization::model::LocaleConfig,
     manager::InstallationPhase,
     network::model::NetworkChange,
     progress::Progress,
@@ -35,10 +34,10 @@ use crate::{
     },
     users::{FirstUser, RootUser},
 };
+use agama_l10n as l10n;
+use agama_utils::{issue, progress};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-
-use crate::issue::Issue;
 
 /// Agama event.
 ///
@@ -81,10 +80,13 @@ impl Event {
 #[serde(tag = "type")]
 pub enum EventPayload {
     ClientConnected,
-    L10nConfigChanged(LocaleConfig),
     LocaleChanged {
         locale: String,
     },
+    #[serde(rename = "progress")]
+    ProgressEvent(progress::Event),
+    #[serde(rename = "l10n")]
+    L10nEvent(l10n::Event),
     DevicesDirty {
         dirty: bool,
     },
@@ -120,10 +122,8 @@ pub enum EventPayload {
         service: String,
         status: u32,
     },
-    IssuesChanged {
-        path: String,
-        issues: Vec<Issue>,
-    },
+    #[serde(rename = "issues")]
+    Issues(issue::Event),
     ValidationChanged {
         service: String,
         path: String,
@@ -183,6 +183,24 @@ pub enum EventPayload {
     ZFCPControllerRemoved {
         device: ZFCPController,
     },
+}
+
+impl From<progress::Event> for EventPayload {
+    fn from(value: progress::Event) -> Self {
+        EventPayload::ProgressEvent(value)
+    }
+}
+
+impl From<l10n::Event> for EventPayload {
+    fn from(value: l10n::Event) -> Self {
+        EventPayload::L10nEvent(value)
+    }
+}
+
+impl From<issue::Event> for EventPayload {
+    fn from(value: issue::Event) -> Self {
+        EventPayload::Issues(value)
+    }
 }
 
 /// Makes it easier to create an event, reducing the boilerplate.

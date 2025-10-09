@@ -27,6 +27,7 @@ import { AnswerCallback, Question } from "~/types/questions";
 import { InstallationPhase } from "~/types/status";
 import { Product } from "~/types/software";
 import LuksActivationQuestion from "~/components/questions/LuksActivationQuestion";
+import { Locale, Keymap } from "~/types/l10n";
 
 let question: Question;
 const questionMock: Question = {
@@ -45,22 +46,27 @@ const tumbleweed: Product = {
   registration: false,
 };
 
-const answerFn: AnswerCallback = jest.fn();
-const locales = [
+const locales: Locale[] = [
   { id: "en_US.UTF-8", name: "English", territory: "United States" },
   { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
 ];
+const keymaps: Keymap[] = [
+  { id: "us", name: "English" },
+  { id: "es", name: "Spanish" },
+];
+
+jest.mock("~/queries/system", () => ({
+  ...jest.requireActual("~/queries/l10n"),
+  useSystem: () => ({ localization: { locales, keymaps, keymap: "us", language: "de-DE" } }),
+}));
+
+const answerFn: AnswerCallback = jest.fn();
 
 jest.mock("~/queries/status", () => ({
   useInstallerStatus: () => ({
     phase: InstallationPhase.Config,
     isBusy: false,
   }),
-}));
-
-jest.mock("~/queries/l10n", () => ({
-  ...jest.requireActual("~/queries/l10n"),
-  useL10n: () => ({ locales, selectedLocale: locales[0] }),
 }));
 
 jest.mock("~/queries/software", () => ({

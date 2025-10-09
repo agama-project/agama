@@ -43,9 +43,9 @@ describe Agama::Manager do
 
   let(:software) do
     instance_double(
-      Agama::DBus::Clients::Software,
-      probe: nil, install: nil, propose: nil, finish: nil, on_product_selected: nil,
-      on_service_status_change: nil, selected_product: product, errors?: false
+      Agama::HTTP::Clients::Software,
+      probe: nil, install: nil, propose: nil, finish: nil,
+      config: { "product" => product }, errors?: false
     )
   end
   let(:users) do
@@ -53,7 +53,7 @@ describe Agama::Manager do
       Agama::Users, write: nil, issues: []
     )
   end
-  let(:locale) { instance_double(Agama::HTTP::Clients::Localization, finish: nil) }
+  let(:http_client) { instance_double(Agama::HTTP::Clients::Main, install: nil) }
   let(:network) { instance_double(Agama::Network, install: nil, startup: nil) }
   let(:storage) do
     instance_double(
@@ -72,8 +72,8 @@ describe Agama::Manager do
   before do
     allow(Agama::Network).to receive(:new).and_return(network)
     allow(Agama::ProxySetup).to receive(:instance).and_return(proxy)
-    allow(Agama::HTTP::Clients::Localization).to receive(:new).and_return(locale)
-    allow(Agama::DBus::Clients::Software).to receive(:new).and_return(software)
+    allow(Agama::HTTP::Clients::Main).to receive(:new).and_return(http_client)
+    allow(Agama::HTTP::Clients::Software).to receive(:new).and_return(software)
     allow(Agama::DBus::Clients::Storage).to receive(:new).and_return(storage)
     allow(Agama::Users).to receive(:new).and_return(users)
     allow(Agama::HTTP::Clients::Scripts).to receive(:new)
@@ -156,7 +156,7 @@ describe Agama::Manager do
       expect(network).to receive(:install)
       expect(software).to receive(:install)
       expect(software).to receive(:finish)
-      expect(locale).to receive(:finish)
+      expect(http_client).to receive(:install)
       expect(storage).to receive(:install)
       expect(scripts).to receive(:run).with("postPartitioning")
       expect(storage).to receive(:finish)

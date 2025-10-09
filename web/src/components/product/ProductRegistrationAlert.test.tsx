@@ -28,7 +28,7 @@ import { Product } from "~/types/software";
 import { useProduct } from "~/queries/software";
 import { useIssues } from "~/queries/issues";
 import { PRODUCT, REGISTRATION, ROOT } from "~/routes/paths";
-import { Issue } from "~/types/issues";
+import { Issue, IssueSeverity, IssueSource } from "~/types/issues";
 
 const tw: Product = {
   id: "Tumbleweed",
@@ -59,8 +59,9 @@ const registrationIssue: Issue = {
   description: "Product must be registered",
   details: "",
   kind: "missing_registration",
-  source: 0,
-  severity: 0,
+  source: IssueSource.Unknown,
+  severity: IssueSeverity.Warn,
+  scope: "storage",
 };
 
 jest.mock("~/queries/issues", () => ({

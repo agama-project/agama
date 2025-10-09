@@ -30,7 +30,7 @@ require "agama/with_progress"
 require "agama/installation_phase"
 require "agama/service_status_recorder"
 require "agama/dbus/service_status"
-require "agama/dbus/clients/software"
+require "agama/http/clients/software"
 require "agama/dbus/clients/storage"
 require "agama/helpers"
 require "agama/http"
@@ -44,7 +44,7 @@ module Agama
   # It is responsible for orchestrating the installation process. For module
   # specific stuff it delegates it to the corresponding module class (e.g.,
   # {Agama::Network}, {Agama::Storage::Proposal}, etc.) or asks
-  # other services via D-Bus (e.g., `org.opensuse.Agama.Software1`).
+  # other services via HTTP (e.g., `/software`).
   class Manager
     include WithProgress
     include WithLocale
@@ -83,7 +83,7 @@ module Agama
       installation_phase.startup
       # FIXME: hot-fix for decision taken at bsc#1224868 (RC1)
       network.startup
-      config_phase if software.selected_product
+      config_phase if software.config["product"]
 
       logger.info("Startup phase done")
       service_status.idle
@@ -135,7 +135,7 @@ module Agama
         on_target do
           users.write
           network.install
-          language.finish
+          http_client.install
           software.finish
           storage.finish
         end
@@ -170,11 +170,13 @@ module Agama
     #
     # @return [DBus::Clients::Software]
     def software
-      @software ||= DBus::Clients::Software.new.tap do |client|
-        client.on_service_status_change do |status|
-          service_status_recorder.save(client.service.name, status)
-        end
-      end
+      @software ||= HTTP::Clients::Software.new(logger)
+      # TODO: watch for http websocket events regarding software status
+      # software.tap do |client|
+      #  client.on_service_status_change do |status|
+      #    service_status_recorder.save(client.service.name, status)
+      #  end
+      # end
     end
 
     # ProxySetup instance
@@ -184,11 +186,11 @@ module Agama
       ProxySetup.instance
     end
 
-    # Language manager
+    # HTTP client.
     #
-    # @return [HTTP::Clients::Localization]
-    def language
-      @language ||= Agama::HTTP::Clients::Localization.new(logger)
+    # @return [HTTP::Clients::Base]
+    def http_client
+      @http_client ||= Agama::HTTP::Clients::Main.new(logger)
     end
 
     # Users client

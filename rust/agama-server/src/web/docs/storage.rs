@@ -21,7 +21,7 @@
 use utoipa::openapi::{Components, ComponentsBuilder, OpenApi, Paths, PathsBuilder};
 
 use super::{
-    common::{IssuesApiDocBuilder, ProgressApiDocBuilder, ServiceStatusApiDocBuilder},
+    common::{ProgressApiDocBuilder, ServiceStatusApiDocBuilder},
     ApiDocBuilder,
 };
 
@@ -83,7 +83,6 @@ impl ApiDocBuilder for StorageApiDocBuilder {
 
     fn components(&self) -> Components {
         ComponentsBuilder::new()
-            .schema_from::<agama_lib::issue::Issue>()
             .schema_from::<agama_lib::storage::client::iscsi::ISCSIAuth>()
             .schema_from::<agama_lib::storage::client::iscsi::ISCSIInitiator>()
             .schema_from::<agama_lib::storage::client::iscsi::ISCSINode>()
@@ -133,17 +132,9 @@ impl ApiDocBuilder for StorageApiDocBuilder {
     }
 
     fn nested(&self) -> Option<OpenApi> {
-        let mut issues = IssuesApiDocBuilder::new()
-            .add(
-                "/api/storage/issues",
-                "List of storage-related issues",
-                "storage_issues",
-            )
-            .build();
-        let status = ServiceStatusApiDocBuilder::new("/api/storage/status").build();
+        let mut status = ServiceStatusApiDocBuilder::new("/api/storage/status").build();
         let progress = ProgressApiDocBuilder::new("/api/storage/progress").build();
-        issues.merge(status);
-        issues.merge(progress);
-        Some(issues)
+        status.merge(progress);
+        Some(status)
     }
 }

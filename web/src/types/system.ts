@@ -20,16 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-type Hostname = {
-  /**
-   * The hostname set during runtime or during early boot.
-   */
-  transient: string;
-  /**
-   * The hostname specified by /etc/hostname which has higher priority than a
-   * transient hostname.
-   */
-  static: string;
+import { Localization } from "./l10n";
+
+type System = {
+  localization?: Localization;
 };
 
-export type { Hostname };
+export type { System };

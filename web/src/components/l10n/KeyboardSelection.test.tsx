@@ -25,24 +25,32 @@ import KeyboardSelection from "./KeyboardSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
+import { Keymap } from "~/types/l10n";
 
-const keymaps = [
+const keymaps: Keymap[] = [
   { id: "us", name: "English" },
   { id: "es", name: "Spanish" },
 ];
 
-const mockConfigMutation = {
-  mutate: jest.fn(),
-};
+const mockUpdateConfigFn = jest.fn();
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
-jest.mock("~/queries/l10n", () => ({
-  ...jest.requireActual("~/queries/l10n"),
-  useConfigMutation: () => mockConfigMutation,
-  useL10n: () => ({ keymaps, selectedKeymap: keymaps[0] }),
+jest.mock("~/queries/system", () => ({
+  ...jest.requireActual("~/queries/system"),
+  useSystem: () => ({ localization: { keymaps } }),
+}));
+
+jest.mock("~/queries/proposal", () => ({
+  ...jest.requireActual("~/queries/proposal"),
+  useProposal: () => ({ localization: { keymap: "us" } }),
+}));
+
+jest.mock("~/api/api", () => ({
+  ...jest.requireActual("~/api/api"),
+  updateConfig: (config) => mockUpdateConfigFn(config),
 }));
 
 jest.mock("react-router-dom", () => ({
@@ -57,6 +65,6 @@ it("allows changing the keyboard", async () => {
   await userEvent.click(option);
   const button = await screen.findByRole("button", { name: "Select" });
   await userEvent.click(button);
-  expect(mockConfigMutation.mutate).toHaveBeenCalledWith({ keymap: "es" });
+  expect(mockUpdateConfigFn).toHaveBeenCalledWith({ localization: { keymap: "es" } });
   expect(mockNavigateFn).toHaveBeenCalledWith(-1);
 });

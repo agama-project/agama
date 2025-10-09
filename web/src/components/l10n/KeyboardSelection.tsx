@@ -24,16 +24,24 @@ import React, { useState } from "react";
 import { Content, Flex, Form, FormGroup, Radio } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { ListSearch, Page } from "~/components/core";
+import { updateConfig } from "~/api/api";
+import { useSystem } from "~/queries/system";
+import { useProposal } from "~/queries/proposal";
 import { _ } from "~/i18n";
-import { useConfigMutation, useL10n } from "~/queries/l10n";
 
 // TODO: Add documentation
 // TODO: Evaluate if worth it extracting the selector
 export default function KeyboardSelection() {
   const navigate = useNavigate();
-  const setConfig = useConfigMutation();
-  const { keymaps, selectedKeymap: currentKeymap } = useL10n();
-  const [selected, setSelected] = useState(currentKeymap.id);
+  const {
+    localization: { keymaps },
+  } = useSystem();
+  const {
+    localization: { keymap: currentKeymap },
+  } = useProposal();
+
+  // FIXME: get current keymap from either, proposal or config
+  const [selected, setSelected] = useState(currentKeymap);
   const [filteredKeymaps, setFilteredKeymaps] = useState(
     keymaps.sort((k1, k2) => (k1.name > k2.name ? 1 : -1)),
   );
@@ -42,7 +50,8 @@ export default function KeyboardSelection() {
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    setConfig.mutate({ keymap: selected });
+    // FIXME: udpate when new API is ready
+    updateConfig({ localization: { keymap: selected } });
     navigate(-1);
   };
 

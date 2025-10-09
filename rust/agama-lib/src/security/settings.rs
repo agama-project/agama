@@ -25,7 +25,7 @@ use serde::{Deserialize, Serialize};
 use super::model::SSLFingerprint;
 
 /// Security settings for installation
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct SecuritySettings {
     /// List of user selected patterns to install.

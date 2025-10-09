@@ -1,0 +1,111 @@
+id: LeapMicro_6.2
+name: openSUSE Leap Micro 6.2 Beta
+archs: x86_64,aarch64
+# ------------------------------------------------------------------------------
+# WARNING: When changing the product description delete the translations located
+# at the at translations/description key below to avoid using obsolete
+# translations!!
+# ------------------------------------------------------------------------------
+description: 'Leap Micro is an ultra-reliable, lightweight operating system
+  built for containerized and virtualized workloads.'
+icon: LeapMicro.svg
+software:
+  installation_repositories:
+    - url: https://download.opensuse.org/distribution/leap-micro/6.2/product/repo/openSUSE-Leap-Micro-6.2-x86_64
+      archs: x86_64
+    - url: https://download.opensuse.org/distribution/leap-micro/6.2/product/repo/openSUSE-Leap-Micro-6.2-aarch64
+      archs: aarch64
+  # device labels for offline installation media
+  installation_labels:
+    - label: openSUSE-Leap-Micro-DVD-x86_64
+      archs: x86_64
+    - label: openSUSE-Leap-Micro-DVD-aarch64
+      archs: aarch64
+
+  mandatory_patterns:
+    - cockpit
+    - base
+    - transactional
+    - traditional
+    - hardware
+    - selinux
+
+  optional_patterns: null
+
+  user_patterns:
+    - cloud
+    - container_runtime
+    - fips
+    - ima_evm
+    - kvm_host
+    - ra_agent
+    - ra_verifier
+    - salt_minion
+    - sssd_ldap
+
+  mandatory_packages:
+    - NetworkManager
+    - openSUSE-repos-LeapMicro
+  optional_packages: null
+  base_product: Leap-Micro
+
+security:
+  lsm: selinux
+  available_lsms:
+    selinux:
+      patterns:
+        - selinux
+    none:
+      patterns: null
+
+storage:
+  space_policy: delete
+  volumes:
+    - "/"
+    - "/var"
+  volume_templates:
+    - mount_path: "/"
+      filesystem: btrfs
+      btrfs:
+        snapshots: true
+        read_only: true
+        default_subvolume: "@"
+        subvolumes:
+          - path: home
+          - path: opt
+          - path: root
+          - path: srv
+          - path: usr/local
+          - path: boot/writable
+          # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
+          - path: var
+            copy_on_write: false
+          # Architecture specific subvolumes
+          - path: boot/grub2/arm64-efi
+            archs: aarch64
+          - path: boot/grub2/x86_64-efi
+            archs: x86_64
+      size:
+        auto: true
+      outline:
+        required: true
+        snapshots_configurable: false
+        filesystems:
+          - btrfs
+        auto_size:
+          base_min: 5 GiB
+          base_max: 25 GiB
+          max_fallback_for:
+            - "/var"
+    - mount_path: "/var"
+      filesystem: btrfs
+      mount_options:
+        - "x-initrd.mount"
+        - "nodatacow"
+      size:
+        auto: false
+        min: 5 GiB
+      outline:
+        required: false
+        filesystems:
+          - btrfs

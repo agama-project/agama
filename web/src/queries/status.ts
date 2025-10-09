@@ -66,9 +66,6 @@ const useInstallerStatusChanges = () => {
       const data = queryClient.getQueryData(["status"]) as object;
 
       switch (type) {
-        case "IssuesChanged":
-          queryClient.invalidateQueries({ queryKey: ["status"] });
-          break;
         case "InstallationPhaseChanged":
           if (!data) {
             console.warn("Ignoring InstallationPhaseChanged event", event);

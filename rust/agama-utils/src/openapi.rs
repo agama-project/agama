@@ -18,6 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+//! OpenAPI utility functions.
+
 pub mod schemas {
     use serde_json::json;
     use utoipa::openapi::{

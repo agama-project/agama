@@ -139,6 +139,7 @@ $SUDO $ZYPPER install \
   clang-devel \
   gzip \
   jsonnet \
+  libzypp-devel \
   lshw \
   NetworkManager \
   pam-devel \
