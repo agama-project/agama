@@ -47,16 +47,18 @@ mod auth;
 pub mod common;
 mod config;
 pub mod docs;
-mod event;
 mod http;
 mod service;
 mod state;
 mod ws;
 
-use agama_lib::{connection, error::ServiceError, http::Event};
+use agama_lib::{
+    connection,
+    error::ServiceError,
+    http::event::{self, Event},
+};
 use common::ProgressService;
 pub use config::ServiceConfig;
-pub use event::{EventsReceiver, EventsSender};
 pub use service::MainServiceBuilder;
 use std::path::Path;
 use tokio_stream::{StreamExt, StreamMap};
@@ -69,7 +71,7 @@ use tokio_stream::{StreamExt, StreamMap};
 /// * `web_ui_dir`: public directory containing the web UI.
 pub async fn service<P>(
     config: ServiceConfig,
-    events: EventsSender,
+    events: event::Sender,
     dbus: zbus::Connection,
     web_ui_dir: P,
 ) -> Result<Router, ServiceError>
@@ -116,7 +118,7 @@ where
 /// The events are sent to the `events` channel.
 ///
 /// * `events`: channel to send the events to.
-pub async fn run_monitor(events: EventsSender) -> Result<(), ServiceError> {
+pub async fn run_monitor(events: event::Sender) -> Result<(), ServiceError> {
     let connection = connection().await?;
     tokio::spawn(run_events_monitor(connection, events.clone()));
 
@@ -127,7 +129,7 @@ pub async fn run_monitor(events: EventsSender) -> Result<(), ServiceError> {
 ///
 /// * `connection`: D-Bus connection.
 /// * `events`: channel to send the events to.
-async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Result<(), Error> {
+async fn run_events_monitor(dbus: zbus::Connection, events: event::Sender) -> Result<(), Error> {
     let mut stream = StreamMap::new();
 
     stream.insert("manager", manager_stream(dbus.clone()).await?);

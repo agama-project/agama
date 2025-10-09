@@ -20,11 +20,8 @@
 
 //! This module implements Agama's HTTP API.
 
-use crate::{
-    supervisor::{self, message, ConfigScope, Scope, Service, SystemInfo},
-    web::EventsSender,
-};
-use agama_lib::{error::ServiceError, install_settings::InstallSettings};
+use agama_lib::{error::ServiceError, http, install_settings::InstallSettings};
+use agama_manager::{self as manager, message, ConfigScope, Scope, SystemInfo};
 use agama_utils::actor::Handler;
 use anyhow;
 use axum::{
@@ -44,7 +41,7 @@ pub enum Error {
     #[error("The given configuration does not belong to the '{0}' scope.")]
     Scope(Scope),
     #[error(transparent)]
-    Supervisor(#[from] supervisor::service::Error),
+    Manager(#[from] manager::service::Error),
 }
 
 impl IntoResponse for Error {
@@ -66,7 +63,7 @@ fn to_option_response<T: Serialize>(value: Option<T>) -> Response {
 
 #[derive(Clone)]
 pub struct ServerState {
-    supervisor: Handler<Service>,
+    manager: Handler<manager::Service>,
 }
 
 type ServerResult<T> = Result<T, Error>;
@@ -77,14 +74,14 @@ type ServerResult<T> = Result<T, Error>;
 /// * `dbus`: connection to Agama's D-Bus server. If it is not given, those features
 ///           that require to connect to the Agama's D-Bus server won't work.
 pub async fn server_service(
-    events: EventsSender,
+    events: http::event::Sender,
     dbus: Option<zbus::Connection>,
 ) -> Result<Router, ServiceError> {
-    let supervisor = supervisor::start(events, dbus)
+    let manager = manager::start(events, dbus)
         .await
         .map_err(|e| anyhow::Error::new(e))?;
 
-    let state = ServerState { supervisor };
+    let state = ServerState { manager };
 
     Ok(Router::new()
         .route("/status", get(get_status))
@@ -118,7 +115,7 @@ pub async fn server_service(
     )
 )]
 async fn get_status(State(state): State<ServerState>) -> ServerResult<Json<message::Status>> {
-    let status = state.supervisor.call(message::GetStatus).await?;
+    let status = state.manager.call(message::GetStatus).await?;
     Ok(Json(status))
 }
 
@@ -133,7 +130,7 @@ async fn get_status(State(state): State<ServerState>) -> ServerResult<Json<messa
     )
 )]
 async fn get_system(State(state): State<ServerState>) -> ServerResult<Json<SystemInfo>> {
-    let system = state.supervisor.call(message::GetSystem).await?;
+    let system = state.manager.call(message::GetSystem).await?;
     Ok(Json(system))
 }
 
@@ -150,7 +147,7 @@ async fn get_system(State(state): State<ServerState>) -> ServerResult<Json<Syste
 async fn get_extended_config(
     State(state): State<ServerState>,
 ) -> ServerResult<Json<InstallSettings>> {
-    let config = state.supervisor.call(message::GetExtendedConfig).await?;
+    let config = state.manager.call(message::GetExtendedConfig).await?;
     Ok(Json(config))
 }
 
@@ -172,7 +169,7 @@ async fn get_extended_config_scope(
     Path(scope): Path<Scope>,
 ) -> ServerResult<Response> {
     let config = state
-        .supervisor
+        .manager
         .call(message::GetExtendedConfigScope::new(scope))
         .await?;
     Ok(to_option_response(config))
@@ -189,7 +186,7 @@ async fn get_extended_config_scope(
     )
 )]
 async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<InstallSettings>> {
-    let config = state.supervisor.call(message::GetConfig).await?;
+    let config = state.manager.call(message::GetConfig).await?;
     Ok(Json(config))
 }
 
@@ -211,7 +208,7 @@ async fn get_config_scope(
     Path(scope): Path<Scope>,
 ) -> ServerResult<Response> {
     let config = state
-        .supervisor
+        .manager
         .call(message::GetConfigScope::new(scope))
         .await?;
     Ok(to_option_response(config))
@@ -236,10 +233,7 @@ async fn put_config(
     State(state): State<ServerState>,
     Json(config): Json<InstallSettings>,
 ) -> ServerResult<()> {
-    state
-        .supervisor
-        .call(message::SetConfig::new(config))
-        .await?;
+    state.manager.call(message::SetConfig::new(config)).await?;
     Ok(())
 }
 
@@ -263,7 +257,7 @@ async fn patch_config(
     Json(config): Json<InstallSettings>,
 ) -> ServerResult<()> {
     state
-        .supervisor
+        .manager
         .call(message::UpdateConfig::new(config))
         .await?;
     Ok(())
@@ -295,7 +289,7 @@ async fn put_config_scope(
     }
 
     state
-        .supervisor
+        .manager
         .call(message::SetConfigScope::new(config_scope))
         .await?;
     Ok(())
@@ -327,7 +321,7 @@ async fn patch_config_scope(
     }
 
     state
-        .supervisor
+        .manager
         .call(message::UpdateConfigScope::new(config_scope))
         .await?;
     Ok(())
@@ -344,7 +338,7 @@ async fn patch_config_scope(
     )
 )]
 async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response> {
-    let proposal = state.supervisor.call(message::GetProposal).await?;
+    let proposal = state.manager.call(message::GetProposal).await?;
     Ok(to_option_response(proposal))
 }
 
@@ -359,7 +353,7 @@ async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response
     )
 )]
 async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<IssuesMap>> {
-    let issues = state.supervisor.call(message::GetIssues).await?;
+    let issues = state.manager.call(message::GetIssues).await?;
     let issues_map: IssuesMap = issues.into();
     Ok(Json(issues_map))
 }
@@ -380,9 +374,6 @@ async fn run_action(
     State(state): State<ServerState>,
     Json(action): Json<message::Action>,
 ) -> ServerResult<()> {
-    state
-        .supervisor
-        .call(message::RunAction::new(action))
-        .await?;
+    state.manager.call(message::RunAction::new(action)).await?;
     Ok(())
 }

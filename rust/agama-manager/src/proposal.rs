@@ -18,10 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::supervisor::l10n;
+use crate::l10n;
 use serde::Serialize;
 
 #[derive(Clone, Debug, Serialize)]
-pub struct SystemInfo {
-    pub localization: l10n::SystemInfo,
+pub struct Proposal {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub localization: Option<l10n::Proposal>,
 }

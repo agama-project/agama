@@ -5,6 +5,7 @@ members = [
     "agama-l10n",
     "agama-lib",
     "agama-locale-data",
+    "agama-manager",
     "agama-network",
     "agama-server",
     "agama-utils",

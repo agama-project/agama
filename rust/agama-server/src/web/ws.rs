@@ -20,10 +20,8 @@
 
 //! Implements the websocket handling.
 
-use std::sync::Arc;
-
-use super::{state::ServiceState, EventsSender};
-use agama_lib::auth::ClientId;
+use super::state::ServiceState;
+use agama_lib::{auth::ClientId, http};
 use axum::{
     extract::{
         ws::{Message, WebSocket},
@@ -32,6 +30,7 @@ use axum::{
     response::IntoResponse,
     Extension,
 };
+use std::sync::Arc;
 
 pub async fn ws_handler(
     State(state): State<ServiceState>,
@@ -41,7 +40,11 @@ pub async fn ws_handler(
     ws.on_upgrade(move |socket| handle_socket(socket, state.events, client_id))
 }
 
-async fn handle_socket(mut socket: WebSocket, events: EventsSender, client_id: Arc<ClientId>) {
+async fn handle_socket(
+    mut socket: WebSocket,
+    events: http::event::Sender,
+    client_id: Arc<ClientId>,
+) {
     let mut rx = events.subscribe();
 
     let conn_event = agama_lib::event!(ClientConnected, client_id.as_ref());

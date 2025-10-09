@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,8 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::http::Event;
-use tokio::sync::broadcast::{Receiver, Sender};
+use crate::l10n;
+use serde::Serialize;
 
-pub type EventsSender = Sender<Event>;
-pub type EventsReceiver = Receiver<Event>;
+#[derive(Clone, Debug, Serialize)]
+pub struct SystemInfo {
+    pub localization: l10n::SystemInfo,
+}
