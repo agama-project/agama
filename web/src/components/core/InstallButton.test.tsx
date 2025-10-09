@@ -24,11 +24,11 @@ import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { InstallButton } from "~/components/core";
-import { IssuesList } from "~/types/issues";
 import { PRODUCT, ROOT } from "~/routes/paths";
+import { Issue, IssueSeverity, IssueSource } from "~/types/issues";
 
 const mockStartInstallationFn = jest.fn();
-let mockIssuesList: IssuesList;
+let mockIssuesList: Issue[];
 
 jest.mock("~/api/manager", () => ({
   ...jest.requireActual("~/api/manager"),
@@ -52,20 +52,16 @@ const clickInstallButton = async () => {
 describe("InstallButton", () => {
   describe("when there are installation issues", () => {
     beforeEach(() => {
-      mockIssuesList = new IssuesList(
-        [
-          {
-            description: "Fake Issue",
-            kind: "generic",
-            source: 0,
-            severity: 1,
-            details: "Fake Issue details",
-          },
-        ],
-        [],
-        [],
-        [],
-      );
+      mockIssuesList = [
+        {
+          description: "Fake Issue",
+          kind: "generic",
+          source: IssueSource.Unknown,
+          severity: IssueSeverity.Error,
+          details: "Fake Issue details",
+          scope: "product",
+        },
+      ];
     });
 
     it("renders additional information to warn users about found problems", async () => {
@@ -90,7 +86,7 @@ describe("InstallButton", () => {
 
   describe("when there are not installation issues", () => {
     beforeEach(() => {
-      mockIssuesList = new IssuesList([], [], [], []);
+      mockIssuesList = [];
     });
 
     it("renders the button without any additional information", async () => {
@@ -134,20 +130,16 @@ describe("InstallButton", () => {
 
   describe("when there are only non-critical issues", () => {
     beforeEach(() => {
-      mockIssuesList = new IssuesList(
-        [
-          {
-            description: "Fake warning",
-            kind: "generic",
-            source: 0,
-            severity: 0,
-            details: "Fake Issue details",
-          },
-        ],
-        [],
-        [],
-        [],
-      );
+      mockIssuesList = [
+        {
+          description: "Fake warning",
+          kind: "generic",
+          source: IssueSource.Unknown,
+          severity: IssueSeverity.Warn,
+          details: "Fake Issue details",
+          scope: "product",
+        },
+      ];
     });
 
     it("renders the button without any additional information", async () => {

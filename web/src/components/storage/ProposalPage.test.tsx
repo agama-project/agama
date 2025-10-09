@@ -30,7 +30,7 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import ProposalPage from "~/components/storage/ProposalPage";
 import { StorageDevice } from "~/types/storage";
-import { Issue } from "~/types/issues";
+import { Issue, IssueSeverity, IssueSource } from "~/types/issues";
 
 const disk: StorageDevice = {
   sid: 60,
@@ -49,16 +49,18 @@ const systemError: Issue = {
   description: "System error",
   kind: "storage",
   details: "",
-  source: 1,
-  severity: 1,
+  source: IssueSource.System,
+  severity: IssueSeverity.Error,
+  scope: "storage",
 };
 
 const configError: Issue = {
   description: "Config error",
   kind: "storage",
   details: "",
-  source: 2,
-  severity: 1,
+  source: IssueSource.Config,
+  severity: IssueSeverity.Error,
+  scope: "storage",
 };
 
 const mockUseAvailableDevices = jest.fn();

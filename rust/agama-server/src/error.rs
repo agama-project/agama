@@ -27,10 +27,8 @@ use axum::{
 use serde_json::json;
 
 use crate::{
-    l10n::LocaleError,
-    software_ng::SoftwareServiceError,
-    users::password::PasswordCheckerError,
-    web::common::{IssuesServiceError, ProgressServiceError},
+    software_ng::SoftwareServiceError, users::password::PasswordCheckerError,
+    web::common::ProgressServiceError,
 };
 
 #[derive(thiserror::Error, Debug)]
@@ -43,12 +41,8 @@ pub enum Error {
     Service(#[from] ServiceError),
     #[error("Questions service error: {0}")]
     Questions(QuestionsError),
-    #[error("Locale service error: {0}")]
-    Locale(#[from] LocaleError),
     #[error("Software service error: {0}")]
     SoftwareServiceError(#[from] SoftwareServiceError),
-    #[error("Issues service error: {0}")]
-    Issues(#[from] IssuesServiceError),
     #[error("Progress service error: {0}")]
     Progress(#[from] ProgressServiceError),
     #[error("Could not check the password")]

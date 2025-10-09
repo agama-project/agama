@@ -24,18 +24,29 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { L10nSection } from "~/components/overview";
+import { Locale } from "~/types/l10n";
 
-const locales = [
+const locales: Locale[] = [
   { id: "en_US.UTF-8", name: "English", territory: "United States" },
   { id: "de_DE.UTF-8", name: "German", territory: "Germany" },
 ];
 
-jest.mock("~/queries/l10n", () => ({
-  useL10n: () => ({ locales, selectedLocale: locales[0] }),
+jest.mock("~/queries/system", () => ({
+  ...jest.requireActual("~/queries/system"),
+  useSystem: () => ({
+    localization: { locale: "en_US.UTF-8", locales, keymap: "us" },
+  }),
 }));
 
-it("displays the selected locale", async () => {
-  plainRender(<L10nSection />, { withL10n: true });
+jest.mock("~/queries/proposal", () => ({
+  ...jest.requireActual("~/queries/proposal"),
+  useProposal: () => ({
+    localization: { locale: "en_US.UTF-8", keymap: "us" },
+  }),
+}));
 
-  await screen.findByText("English (United States)");
+it("displays the selected locale", () => {
+  plainRender(<L10nSection />);
+
+  expect(screen.getByText(/English \(United States\)/)).toBeInTheDocument();
 });

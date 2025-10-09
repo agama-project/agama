@@ -39,8 +39,8 @@ import UsedSize from "./UsedSize";
 import { useIssues } from "~/queries/issues";
 import {
   usePatterns,
-  useProposal,
-  useProposalChanges,
+  useSoftwareProposal,
+  useSoftwareProposalChanges,
   useRepositories,
   useRepositoryMutation,
 } from "~/queries/software";
@@ -134,14 +134,14 @@ const ReloadSection = ({
  */
 function SoftwarePage(): React.ReactNode {
   const issues = useIssues("software");
-  const proposal = useProposal();
+  const proposal = useSoftwareProposal();
   const patterns = usePatterns();
   const repos = useRepositories();
 
   const [loading, setLoading] = useState(false);
   const { mutate: probe } = useRepositoryMutation(() => setLoading(false));
 
-  useProposalChanges();
+  useSoftwareProposalChanges();
 
   // Selected patterns section should fill the full width in big screen too when
   // there is no information for rendering the Proposal Size section.

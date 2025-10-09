@@ -29,5 +29,5 @@ mod store;
 
 pub use client::{FirstUser, RootUser, UsersClient};
 pub use http_client::UsersHTTPClient;
-pub use settings::{FirstUserSettings, RootUserSettings, UserSettings};
+pub use settings::{FirstUserSettings, RootUserSettings, UserPassword, UserSettings};
 pub use store::{UsersStore, UsersStoreError};

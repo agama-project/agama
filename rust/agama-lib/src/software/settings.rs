@@ -27,7 +27,7 @@ use serde::{Deserialize, Serialize};
 use super::model::RepositoryParams;
 
 /// Software settings for installation
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct SoftwareSettings {
     /// List of user selected patterns to install.
@@ -44,14 +44,14 @@ pub struct SoftwareSettings {
     pub only_required: Option<bool>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(untagged)]
 pub enum PatternsSettings {
     PatternsList(Vec<String>),
     PatternsMap(PatternsMap),
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 pub struct PatternsMap {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub add: Option<Vec<String>>,

@@ -24,7 +24,6 @@ pub mod dbus;
 pub mod error;
 pub mod files;
 pub mod hostname;
-pub mod l10n;
 pub mod logs;
 pub mod manager;
 pub mod network;
@@ -38,5 +37,6 @@ pub mod storage;
 pub mod users;
 pub mod web;
 pub use web::service;
-
+pub mod server;
 pub mod software_ng;
+pub(crate) mod supervisor;

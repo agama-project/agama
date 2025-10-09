@@ -35,8 +35,9 @@ const configError: Issue = {
   description: "Config error",
   kind: "storage",
   details: "",
-  source: 2,
-  severity: 1,
+  source: IssueSource.Config,
+  severity: IssueSeverity.Error,
+  scope: "storage",
 };
 
 const storageIssue: Issue = {
@@ -45,6 +46,7 @@ const storageIssue: Issue = {
   kind: "storage_issue",
   source: IssueSource.Unknown,
   severity: IssueSeverity.Error,
+  scope: "storage",
 };
 
 const mockApiModel: apiModel.Config = {

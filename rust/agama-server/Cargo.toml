@@ -11,16 +11,17 @@ anyhow = "1.0"
 agama-locale-data = { path = "../agama-locale-data" }
 agama-lib = { path = "../agama-lib" }
 agama-utils = { path = "../agama-utils" }
+agama-l10n = { path = "../agama-l10n" }
 zbus = { version = "5", default-features = false, features = ["tokio"] }
 uuid = { version = "1.10.0", features = ["v4"] }
 thiserror = "2.0.12"
 serde = { version = "1.0.210", features = ["derive"] }
-tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread", "sync"] }
 tokio-stream = "0.1.16"
 gettext-rs = { version = "0.7.1", features = ["gettext-system"] }
 regex = "1.11.0"
 async-trait = "0.1.83"
-axum = { version = "0.7.7", features = ["ws"] }
+axum = { version = "0.7.7", features = ["ws", "macros"] }
 serde_json = "1.0.128"
 tower-http = { version = "0.6.2", features = [
     "compression-br",
@@ -59,6 +60,8 @@ glob = "0.3.1"
 tempfile = "3.13.0"
 url = "2.5.2"
 serde_yaml = "0.9.34"
+merge-struct = "0.1.0"
+strum = { version = "0.27.2", features = ["derive"] }
 
 [[bin]]
 name = "agama-dbus-server"

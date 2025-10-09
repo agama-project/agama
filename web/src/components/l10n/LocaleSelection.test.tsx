@@ -25,24 +25,32 @@ import LocaleSelection from "./LocaleSelection";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { mockNavigateFn, installerRender } from "~/test-utils";
+import { Locale } from "~/types/l10n";
 
-const locales = [
+const locales: Locale[] = [
   { id: "en_US.UTF-8", name: "English", territory: "United States" },
   { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
 ];
 
-const mockConfigMutation = {
-  mutate: jest.fn(),
-};
+const mockUpdateConfigFn = jest.fn();
 
 jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
   <div>ProductRegistrationAlert Mock</div>
 ));
 
-jest.mock("~/queries/l10n", () => ({
-  ...jest.requireActual("~/queries/l10n"),
-  useL10n: () => ({ locales, selectedLocale: locales[0] }),
-  useConfigMutation: () => mockConfigMutation,
+jest.mock("~/queries/system", () => ({
+  ...jest.requireActual("~/queries/system"),
+  useSystem: () => ({ localization: { locales } }),
+}));
+
+jest.mock("~/queries/proposal", () => ({
+  ...jest.requireActual("~/queries/proposal"),
+  useProposal: () => ({ localization: { locales, locale: "us_US.UTF-8", keymap: "us" } }),
+}));
+
+jest.mock("~/api/api", () => ({
+  ...jest.requireActual("~/api/api"),
+  updateConfig: (config) => mockUpdateConfigFn(config),
 }));
 
 jest.mock("react-router-dom", () => ({
@@ -57,6 +65,8 @@ it("allows changing the keyboard", async () => {
   await userEvent.click(option);
   const button = await screen.findByRole("button", { name: "Select" });
   await userEvent.click(button);
-  expect(mockConfigMutation.mutate).toHaveBeenCalledWith({ locales: ["es_ES.UTF-8"] });
+  expect(mockUpdateConfigFn).toHaveBeenCalledWith({
+    localization: { locale: "es_ES.UTF-8" },
+  });
   expect(mockNavigateFn).toHaveBeenCalledWith(-1);
 });
