@@ -20,12 +20,12 @@
 
 //! This module defines some ancillary types for the HTTP API.
 
+use agama_lib::install_settings::InstallSettings;
+use agama_utils::issue;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use agama_utils::issue;
-use serde::Serialize;
-
-#[derive(Serialize, utoipa::ToSchema)]
+#[derive(Deserialize, Serialize, utoipa::ToSchema)]
 /// Holds the installation issues for each scope.
 pub struct IssuesMap {
     /// iSCSI issues.
@@ -59,4 +59,11 @@ impl From<HashMap<String, Vec<issue::Issue>>> for IssuesMap {
             users: value.remove("users").unwrap_or_default(),
         }
     }
+}
+
+#[derive(Deserialize, Serialize, utoipa::ToSchema)]
+/// Patch for the config.
+pub struct ConfigPatch {
+    /// Update for the current config.
+    pub update: Option<InstallSettings>,
 }
