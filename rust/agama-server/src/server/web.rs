@@ -20,6 +20,7 @@
 
 //! This module implements Agama's HTTP API.
 
+use crate::server::types::{ConfigPatch, IssuesMap};
 use agama_lib::{error::ServiceError, http, install_settings::InstallSettings};
 use agama_manager::{self as manager, message, SystemInfo};
 use agama_utils::actor::Handler;
@@ -34,8 +35,6 @@ use hyper::StatusCode;
 use serde::Serialize;
 use serde_json::json;
 
-use super::types::IssuesMap;
-
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error(transparent)]
@@ -49,13 +48,6 @@ impl IntoResponse for Error {
             "error": self.to_string()
         });
         (StatusCode::BAD_REQUEST, Json(body)).into_response()
-    }
-}
-
-fn to_option_response<T: Serialize>(value: Option<T>) -> Response {
-    match value {
-        Some(inner) => Json(inner).into_response(),
-        None => StatusCode::NOT_FOUND.into_response(),
     }
 }
 
@@ -197,12 +189,14 @@ async fn put_config(
 )]
 async fn patch_config(
     State(state): State<ServerState>,
-    Json(config): Json<InstallSettings>,
+    Json(patch): Json<ConfigPatch>,
 ) -> ServerResult<()> {
-    state
-        .manager
-        .call(message::UpdateConfig::new(config))
-        .await?;
+    if let Some(config) = patch.update {
+        state
+            .manager
+            .call(message::UpdateConfig::new(config))
+            .await?;
+    }
     Ok(())
 }
 
@@ -255,4 +249,11 @@ async fn run_action(
 ) -> ServerResult<()> {
     state.manager.call(message::RunAction::new(action)).await?;
     Ok(())
+}
+
+fn to_option_response<T: Serialize>(value: Option<T>) -> Response {
+    match value {
+        Some(inner) => Json(inner).into_response(),
+        None => StatusCode::NOT_FOUND.into_response(),
+    }
 }

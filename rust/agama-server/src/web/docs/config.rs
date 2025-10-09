@@ -159,6 +159,8 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema_from::<agama_lib::users::RootUserSettings>()
             .schema_from::<agama_lib::users::UserPassword>()
             .schema_from::<agama_lib::users::UserSettings>()
+            .schema_from::<crate::server::types::ConfigPatch>()
+            .schema_from::<crate::server::types::IssuesMap>()
             .schema_from::<crate::software::web::SoftwareProposal>()
             .schema_from::<agama_manager::message::Action>()
             .schema_from::<agama_manager::message::Status>()
