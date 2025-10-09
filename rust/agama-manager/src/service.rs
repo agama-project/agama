@@ -22,7 +22,6 @@ use crate::{
     l10n,
     message::{self, Action},
     proposal::Proposal,
-    scope::{ConfigScope, Scope},
     system_info::SystemInfo,
 };
 use agama_lib::install_settings::InstallSettings;
@@ -148,23 +147,6 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::GetExtendedConfigScope> for Service {
-    /// It returns the configuration for the given scope.
-    async fn handle(
-        &mut self,
-        message: message::GetExtendedConfigScope,
-    ) -> Result<Option<ConfigScope>, Error> {
-        let option = match message.scope {
-            Scope::L10n => {
-                let l10n_config = self.l10n.call(l10n::message::GetConfig).await?;
-                Some(ConfigScope::L10n(l10n_config))
-            }
-        };
-        Ok(option)
-    }
-}
-
-#[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
     /// Gets the current configuration set by the user.
     ///
@@ -202,63 +184,6 @@ impl MessageHandler<message::UpdateConfig> for Service {
     async fn handle(&mut self, message: message::UpdateConfig) -> Result<(), Error> {
         let config = merge(&self.config, &message.config).map_err(|_| Error::MergeConfig)?;
         self.handle(message::SetConfig::new(config)).await
-    }
-}
-
-#[async_trait]
-impl MessageHandler<message::GetConfigScope> for Service {
-    /// It returns the configuration set by the user for the given scope.
-    async fn handle(
-        &mut self,
-        message: message::GetConfigScope,
-    ) -> Result<Option<ConfigScope>, Error> {
-        // FIXME: implement this logic at InstallSettings level: self.get_config().by_scope(...)
-        // It would allow us to drop this method.
-        let option = match message.scope {
-            Scope::L10n => self
-                .config
-                .localization
-                .clone()
-                .map(|c| ConfigScope::L10n(c)),
-        };
-        Ok(option)
-    }
-}
-
-#[async_trait]
-impl MessageHandler<message::SetConfigScope> for Service {
-    /// Sets the user configuration within the given scope.
-    ///
-    /// It replaces the current configuration with the given one and calculates a
-    /// new proposal. Only the configuration in the given scope is affected.
-    async fn handle(&mut self, message: message::SetConfigScope) -> Result<(), Error> {
-        match message.config {
-            ConfigScope::L10n(l10n_config) => {
-                self.l10n
-                    .call(l10n::message::SetConfig::new(l10n_config.clone()))
-                    .await?;
-                self.config.localization = Some(l10n_config);
-            }
-        }
-        Ok(())
-    }
-}
-
-#[async_trait]
-impl MessageHandler<message::UpdateConfigScope> for Service {
-    /// Patches the user configuration within the given scope.
-    ///
-    /// It merges the current configuration with the given one.
-    async fn handle(&mut self, message: message::UpdateConfigScope) -> Result<(), Error> {
-        match message.config {
-            ConfigScope::L10n(l10n_config) => {
-                let base_config = self.config.localization.clone().unwrap_or_default();
-                let config = merge(&base_config, &l10n_config).map_err(|_| Error::MergeConfig)?;
-                self.handle(message::SetConfigScope::new(ConfigScope::L10n(config)))
-                    .await?;
-            }
-        }
-        Ok(())
     }
 }
 
