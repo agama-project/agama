@@ -24,9 +24,6 @@ pub use start::start;
 pub mod service;
 pub use service::Service;
 
-mod scope;
-pub use scope::{ConfigScope, Scope};
-
 mod system_info;
 pub use system_info::SystemInfo;
 
