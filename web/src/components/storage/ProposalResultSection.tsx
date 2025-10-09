@@ -31,7 +31,7 @@ import { _, n_, formatList } from "~/i18n";
 import { useActions, useDevices } from "~/queries/storage";
 import { sprintf } from "sprintf-js";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import { useSearchParams } from "react-router-dom";
+import { useStorageUiState } from "~/context/storage-ui-state";
 
 /**
  * @todo Create a component for rendering a customized skeleton
@@ -106,7 +106,7 @@ export type ProposalResultSectionProps = {
 };
 
 export default function ProposalResultSection({ isLoading = false }: ProposalResultSectionProps) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { uiState, setUiState } = useStorageUiState();
   const system = useDevices("system", { suspense: true });
   const staging = useDevices("result", { suspense: true });
   const actions = useActions();
@@ -115,9 +115,9 @@ export default function ProposalResultSection({ isLoading = false }: ProposalRes
     event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
     tabIndex: number,
   ) => {
-    setSearchParams((sp) => {
-      sp.set("rt", tabIndex.toString());
-      return sp;
+    setUiState((state) => {
+      state.set("rt", tabIndex.toString());
+      return state;
     });
   };
 
@@ -130,7 +130,7 @@ export default function ProposalResultSection({ isLoading = false }: ProposalRes
         "Result of applying the configuration described at the 'Settings' section above.",
       )}
     >
-      <Tabs activeKey={searchParams.get("rt") || "0"} onSelect={handleTabClick} role="region">
+      <Tabs activeKey={uiState.get("rt") || "0"} onSelect={handleTabClick} role="region">
         <Tab key="action" eventKey={"0"} title={<TabTitleText>{_("Actions")}</TabTitleText>}>
           <NestedContent margin="mtSm">
             <Stack hasGutter>

@@ -34,7 +34,7 @@ import {
   ExpandableSectionToggle,
   ExpandableSectionProps,
 } from "@patternfly/react-core";
-import { useSearchParams } from "react-router-dom";
+import { useStorageUiState } from "~/context/storage-ui-state";
 import Text from "~/components/core/Text";
 import MenuButton from "~/components/core/MenuButton";
 import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
@@ -202,21 +202,21 @@ const PartitionsSectionHeader = ({ device }) => {
 };
 
 export default function PartitionsSection({ device }) {
-  const [qs, setQs] = useSearchParams();
+  const { uiState, setUiState } = useStorageUiState();
   const toggleId = useId();
   const contentId = useId();
   const { list, listIndex } = device;
   const index = `${list[0]}${listIndex}`;
-  const expanded = qs.get("expanded")?.split(",");
+  const expanded = uiState.get("expanded")?.split(",");
   const isExpanded = expanded?.includes(index);
   const newPartitionPath = generateEncodedPath(PATHS.addPartition, { list, listIndex });
   const hasPartitions = device.partitions.some((p: Partition) => p.mountPath);
 
   const onToggle = () => {
-    setQs((params) => {
+    setUiState((state) => {
       const nextExpanded = toggle(expanded, index);
-      params.set("expanded", nextExpanded.join(","));
-      return params;
+      state.set("expanded", nextExpanded.join(","));
+      return state;
     });
   };
   const iconName: IconProps["name"] = isExpanded ? "unfold_less" : "unfold_more";
