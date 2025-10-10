@@ -110,6 +110,7 @@ impl ApiDocBuilder for NetworkApiDocBuilder {
             .schema_from::<agama_lib::network::model::DhcpIaid>()
             .schema_from::<agama_lib::network::model::Dhcp6Settings>()
             .schema_from::<agama_lib::network::model::DhcpDuid>()
+            .schema_from::<agama_lib::network::model::LinkLocal>()
             .schema_from::<crate::network::web::PersistParams>()
             .schema("IpAddr", schemas::ip_addr())
             .schema("IpInet", schemas::ip_inet())
