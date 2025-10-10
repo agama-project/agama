@@ -18,18 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use serde::{Deserialize, Serialize};
-use tokio::sync::mpsc;
+//! This module contains all Agama public types that might be available over
+//! the HTTP and WebSocket API.
 
-/// Issues changed event.
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(tag = "name")]
-pub enum Event {
-    /// Issues changed.
-    IssuesChanged,
-}
-
-/// Multi-producer single-consumer events sender.
-pub type Sender = mpsc::UnboundedSender<Event>;
-/// Multi-producer single-consumer events receiver.
-pub type Receiver = mpsc::UnboundedReceiver<Event>;
+pub mod event;
+pub use event::{Event, EventsReceiver, EventsSender};

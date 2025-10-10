@@ -18,8 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::{event, message, Issue};
-use crate::actor::{self, Actor, MessageHandler};
+use super::{message, Issue};
+use crate::{
+    actor::{self, Actor, MessageHandler},
+    types::{Event, EventsSender},
+};
 use async_trait::async_trait;
 use std::collections::HashMap;
 
@@ -33,11 +36,11 @@ pub enum Error {
 
 pub struct Service {
     issues: HashMap<String, Vec<Issue>>,
-    events: event::Sender,
+    events: EventsSender,
 }
 
 impl Service {
-    pub fn new(events: event::Sender) -> Self {
+    pub fn new(events: EventsSender) -> Self {
         Self {
             issues: HashMap::new(),
             events,
@@ -69,7 +72,7 @@ impl MessageHandler<message::Update> for Service {
         }
 
         if message.notify {
-            _ = self.events.send(event::Event::IssuesChanged);
+            _ = self.events.send(Event::IssuesChanged);
         }
         Ok(())
     }

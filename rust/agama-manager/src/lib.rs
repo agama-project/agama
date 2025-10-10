@@ -29,7 +29,6 @@ pub use system_info::SystemInfo;
 
 pub mod message;
 
-mod listener;
 mod proposal;
 
 pub use agama_l10n as l10n;

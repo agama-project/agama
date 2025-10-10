@@ -32,3 +32,5 @@ pub mod dbus;
 pub mod openapi;
 
 pub mod progress;
+
+pub mod types;

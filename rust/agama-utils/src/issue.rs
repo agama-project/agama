@@ -31,20 +31,17 @@
 //!
 //! ```no_run
 //! use agama_utils::issue::{self, message};
-//! use tokio::sync::mpsc;
+//! use tokio::sync::broadcast;
 //!
 //! # tokio_test::block_on(async {
 //! async fn use_issues_service() {
-//!     let (events_tx, _events_rx) = mpsc::unbounded_channel();
+//!     let (events_tx, _events_rx) = broadcast::channel(16);
 //!     let issues = issue::start(events_tx, None).await.unwrap();
 //!     _ = issues.call(message::Update::new("my-service", vec![]));
 //! }
 //! # });
 //!
 //! ```
-
-pub mod event;
-pub use event::Event;
 
 pub mod model;
 pub use model::{Issue, IssueSeverity, IssueSource};

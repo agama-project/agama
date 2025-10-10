@@ -18,17 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    l10n,
-    listener::{self, EventsListener},
-    service::Service,
-};
-use agama_lib::http;
+use crate::{l10n, service::Service};
 use agama_utils::{
     actor::{self, Handler},
     issue, progress,
+    types::EventsSender,
 };
-use tokio::sync::mpsc;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -54,27 +49,15 @@ pub enum Error {
 /// * `dbus`: connection to Agama's D-Bus server. If it is not given, those features
 ///           that require to connect to the Agama's D-Bus server won't work.
 pub async fn start(
-    events: http::event::OldSender,
+    events: EventsSender,
     dbus: Option<zbus::Connection>,
 ) -> Result<Handler<Service>, Error> {
-    let mut listener = EventsListener::new(events);
-
-    let (events_sender, events_receiver) = mpsc::unbounded_channel::<issue::Event>();
-    let issues = issue::start(events_sender, dbus).await?;
-    listener.add_channel("issues", events_receiver);
-
-    let (events_sender, events_receiver) = mpsc::unbounded_channel::<progress::Event>();
-    let progress = progress::start(events_sender).await?;
-    listener.add_channel("progress", events_receiver);
-
-    let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
-    let l10n = l10n::start(issues.clone(), events_sender).await?;
-    listener.add_channel("l10n", events_receiver);
+    let issues = issue::start(events.clone(), dbus).await?;
+    let progress = progress::start(events.clone()).await?;
+    let l10n = l10n::start(issues.clone(), events.clone()).await?;
 
     let service = Service::new(l10n, issues, progress);
     let handler = actor::spawn(service);
-
-    listener::spawn(listener);
 
     Ok(handler)
 }
@@ -83,11 +66,11 @@ pub async fn start(
 mod test {
     use crate::{self as manager, l10n, message, service::Service};
     use agama_lib::{http, install_settings::InstallSettings};
-    use agama_utils::actor::Handler;
+    use agama_utils::{actor::Handler, types::Event};
     use tokio::sync::broadcast;
 
     async fn start_service() -> Handler<Service> {
-        let (events_sender, _events_receiver) = broadcast::channel::<http::OldEvent>(16);
+        let (events_sender, _events_receiver) = broadcast::channel::<Event>(16);
         manager::start(events_sender, None).await.unwrap()
     }
 

@@ -18,21 +18,21 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use serde::{Deserialize, Serialize};
-use tokio::sync::mpsc;
+use tokio::sync::broadcast;
 
-/// Localization-related events.
-// FIXME: is it really needed to implement Deserialize?
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(tag = "name")]
+#[derive(Clone, Debug)]
 pub enum Event {
+    // FIXME: move service::State to agama_utils::types::manager.
+    StatusChanged,
+    /// The list of issues has changed.
+    IssuesChanged,
+    /// Progress changed.
+    ProgressChanged,
     /// Proposal changed.
     ProposalChanged,
     /// The underlying system changed.
     SystemChanged,
 }
 
-/// Multi-producer single-consumer events sender.
-pub type Sender = mpsc::UnboundedSender<Event>;
-/// Multi-producer single-consumer events receiver.
-pub type Receiver = mpsc::UnboundedReceiver<Event>;
+pub type EventsSender = broadcast::Sender<Event>;
+pub type EventsReceiver = broadcast::Receiver<Event>;

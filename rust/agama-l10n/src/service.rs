@@ -19,18 +19,14 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    config::Config,
-    event::{self, Event},
-    extended_config::ExtendedConfig,
-    message,
-    model::ModelAdapter,
-    proposal::Proposal,
-    system_info::SystemInfo,
+    config::Config, extended_config::ExtendedConfig, message, model::ModelAdapter,
+    proposal::Proposal, system_info::SystemInfo,
 };
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     issue::{self, Issue},
+    types::{Event, EventsSender},
 };
 use async_trait::async_trait;
 
@@ -72,7 +68,7 @@ pub struct Service {
     state: State,
     model: Box<dyn ModelAdapter + Send + 'static>,
     issues: Handler<issue::Service>,
-    events: event::Sender,
+    events: EventsSender,
 }
 
 struct State {
@@ -85,7 +81,7 @@ impl Service {
     pub fn new<T: ModelAdapter + Send + 'static>(
         model: T,
         issues: Handler<issue::Service>,
-        events: event::Sender,
+        events: EventsSender,
     ) -> Service {
         let system = SystemInfo::read_from(&model);
         let config = ExtendedConfig::new_from(&system);

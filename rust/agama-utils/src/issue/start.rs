@@ -19,11 +19,13 @@
 // find current contact information at www.suse.com.
 
 use super::{
-    event,
     monitor::{self, Monitor},
     service, Service,
 };
-use crate::actor::{self, Handler};
+use crate::{
+    actor::{self, Handler},
+    types::EventsSender,
+};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -32,7 +34,7 @@ pub enum Error {
 }
 
 pub async fn start(
-    events: event::Sender,
+    events: EventsSender,
     dbus: Option<zbus::Connection>,
 ) -> Result<Handler<Service>, Error> {
     let service = Service::new(events);
@@ -48,12 +50,15 @@ pub async fn start(
 
 #[cfg(test)]
 mod tests {
-    use crate::issue::{self, message, Issue, IssueSeverity, IssueSource};
-    use tokio::sync::mpsc::{self, error::TryRecvError};
+    use crate::{
+        issue::{self, message, Issue, IssueSeverity, IssueSource},
+        types::Event,
+    };
+    use tokio::sync::broadcast::{self, error::TryRecvError};
 
     #[tokio::test]
     async fn test_get_and_update_issues() -> Result<(), Box<dyn std::error::Error>> {
-        let (events_tx, mut events_rx) = mpsc::unbounded_channel();
+        let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
         let issues = issue::start(events_tx, None).await.unwrap();
         let issue = Issue {
             description: "Product not selected".to_string(),
@@ -73,13 +78,13 @@ mod tests {
         let issues_list = issues.call(message::Get).await.unwrap();
         assert_eq!(issues_list.len(), 1);
 
-        assert!(events_rx.recv().await.is_some());
+        assert!(events_rx.recv().await.is_ok());
         Ok(())
     }
 
     #[tokio::test]
     async fn test_update_without_event() -> Result<(), Box<dyn std::error::Error>> {
-        let (events_tx, mut events_rx) = mpsc::unbounded_channel();
+        let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
         let issues = issue::start(events_tx, None).await.unwrap();
         let issue = Issue {
             description: "Product not selected".to_string(),

@@ -19,13 +19,11 @@
 // find current contact information at www.suse.com.
 
 use crate::actor::{self, Actor, MessageHandler};
+use crate::progress::message;
 use crate::progress::model::Progress;
-use crate::progress::{
-    event::{self, Event},
-    message,
-};
+use crate::types::{Event, EventsSender};
 use async_trait::async_trait;
-use tokio::sync::mpsc::error::SendError;
+use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -36,18 +34,18 @@ pub enum Error {
     #[error("Next step does not exist for {0}")]
     MissingStep(String),
     #[error(transparent)]
-    Event(#[from] SendError<Event>),
+    Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
     Actor(#[from] actor::Error),
 }
 
 pub struct Service {
-    events: event::Sender,
+    events: EventsSender,
     progresses: Vec<Progress>,
 }
 
 impl Service {
-    pub fn new(events: event::Sender) -> Service {
+    pub fn new(events: EventsSender) -> Service {
         Self {
             events,
             progresses: Vec::new(),

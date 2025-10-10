@@ -20,7 +20,8 @@
 
 use crate::{
     actor::{self, Handler},
-    progress::{event, service::Service},
+    progress::service::Service,
+    types::EventsSender,
 };
 use std::convert::Infallible;
 
@@ -32,8 +33,8 @@ pub enum Error {
 
 /// Starts the progress service.
 ///
-/// * `events`: channel to emit the [progress-specific events](crate::progress::event::Event).
-pub async fn start(events: event::Sender) -> Result<Handler<Service>, Error> {
+/// * `events`: channel to emit the [events](agama_utils::types::Event).
+pub async fn start(events: EventsSender) -> Result<Handler<Service>, Error> {
     let handler = actor::spawn(Service::new(events));
     Ok(handler)
 }
@@ -42,14 +43,14 @@ pub async fn start(events: event::Sender) -> Result<Handler<Service>, Error> {
 mod tests {
     use crate::actor::{self, Handler};
     use crate::progress::{
-        event::{Event, Receiver},
         message,
         service::{self, Service},
     };
-    use tokio::sync::mpsc;
+    use crate::types::{Event, EventsReceiver};
+    use tokio::sync::broadcast;
 
-    fn start_testing_service() -> (Receiver, Handler<Service>) {
-        let (events, receiver) = mpsc::unbounded_channel::<Event>();
+    fn start_testing_service() -> (EventsReceiver, Handler<Service>) {
+        let (events, receiver) = broadcast::channel::<Event>(16);
         let service = Service::new(events);
 
         let handler = actor::spawn(service);

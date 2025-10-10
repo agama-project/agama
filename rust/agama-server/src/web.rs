@@ -41,6 +41,7 @@ use crate::{
     users::web::{users_service, users_streams},
     web::common::{jobs_stream, service_status_stream},
 };
+use agama_utils::types::EventsSender;
 use axum::Router;
 
 mod auth;
@@ -71,7 +72,8 @@ use tokio_stream::{StreamExt, StreamMap};
 /// * `web_ui_dir`: public directory containing the web UI.
 pub async fn service<P>(
     config: ServiceConfig,
-    events: event::OldSender,
+    events: EventsSender,
+    old_events: event::OldSender,
     dbus: zbus::Connection,
     web_ui_dir: P,
 ) -> Result<Router, ServiceError>
@@ -82,9 +84,9 @@ where
         .await
         .expect("Could not connect to NetworkManager to read the configuration");
 
-    let progress = ProgressService::start(dbus.clone(), events.clone()).await;
+    let progress = ProgressService::start(dbus.clone(), old_events.clone()).await;
 
-    let router = MainServiceBuilder::new(events.clone(), web_ui_dir)
+    let router = MainServiceBuilder::new(old_events.clone(), web_ui_dir)
         .add_service(
             "/manager",
             manager_service(dbus.clone(), progress.clone()).await?,
@@ -96,12 +98,15 @@ where
         .add_service("/security", security_service(dbus.clone()).await?)
         .add_service(
             "/software",
-            software_service(dbus.clone(), events.subscribe(), progress.clone()).await?,
+            software_service(dbus.clone(), old_events.subscribe(), progress.clone()).await?,
         )
         .add_service("/storage", storage_service(dbus.clone(), progress).await?)
         .add_service("/iscsi", iscsi_service(dbus.clone()).await?)
         .add_service("/bootloader", bootloader_service(dbus.clone()).await?)
-        .add_service("/network", network_service(network_adapter, events).await?)
+        .add_service(
+            "/network",
+            network_service(network_adapter, old_events).await?,
+        )
         .add_service("/questions", questions_service(dbus.clone()).await?)
         .add_service("/users", users_service(dbus.clone()).await?)
         .add_service("/scripts", scripts_service().await?)
