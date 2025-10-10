@@ -31,7 +31,9 @@ pub enum Error {
     UnknownSeverity(u8),
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
+// NOTE: in order to compare two issues, it should be enough to compare the description
+// and the details.
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq, Hash, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Issue {
     pub description: String,
@@ -41,7 +43,9 @@ pub struct Issue {
     pub kind: String,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Serialize, FromRepr, PartialEq, utoipa::ToSchema)]
+#[derive(
+    Clone, Copy, Debug, Deserialize, Serialize, FromRepr, PartialEq, Eq, Hash, utoipa::ToSchema,
+)]
 #[repr(u8)]
 #[serde(rename_all = "camelCase")]
 pub enum IssueSource {
@@ -50,7 +54,9 @@ pub enum IssueSource {
     Config = 2,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Serialize, FromRepr, PartialEq, utoipa::ToSchema)]
+#[derive(
+    Clone, Copy, Debug, Deserialize, Serialize, FromRepr, PartialEq, Eq, Hash, utoipa::ToSchema,
+)]
 #[repr(u8)]
 #[serde(rename_all = "camelCase")]
 pub enum IssueSeverity {

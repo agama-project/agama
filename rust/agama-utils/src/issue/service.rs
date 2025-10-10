@@ -24,7 +24,7 @@ use crate::{
     types::{Event, EventsSender},
 };
 use async_trait::async_trait;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -65,6 +65,17 @@ impl MessageHandler<message::Get> for Service {
 #[async_trait]
 impl MessageHandler<message::Update> for Service {
     async fn handle(&mut self, message: message::Update) -> Result<(), Error> {
+        // Compare whether the issues has changed.
+        let old_issues_hash: HashSet<_> = self
+            .issues
+            .get(&message.list)
+            .map(|v| v.iter().cloned().collect())
+            .unwrap_or_default();
+        let new_issues_hash: HashSet<_> = message.issues.iter().cloned().collect();
+        if old_issues_hash == new_issues_hash {
+            return Ok(());
+        }
+
         if message.issues.is_empty() {
             _ = self.issues.remove(&message.list);
         } else {

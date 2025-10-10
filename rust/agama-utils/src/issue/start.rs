@@ -56,21 +56,24 @@ mod tests {
     };
     use tokio::sync::broadcast::{self, error::TryRecvError};
 
-    #[tokio::test]
-    async fn test_get_and_update_issues() -> Result<(), Box<dyn std::error::Error>> {
-        let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
-        let issues = issue::start(events_tx, None).await.unwrap();
-        let issue = Issue {
+    fn build_issue() -> Issue {
+        Issue {
             description: "Product not selected".to_string(),
             kind: "missing_product".to_string(),
             details: Some("A product is required.".to_string()),
             source: IssueSource::Config,
             severity: IssueSeverity::Error,
-        };
+        }
+    }
 
+    #[tokio::test]
+    async fn test_get_and_update_issues() -> Result<(), Box<dyn std::error::Error>> {
+        let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
+        let issues = issue::start(events_tx, None).await.unwrap();
         let issues_list = issues.call(message::Get).await.unwrap();
         assert!(issues_list.is_empty());
 
+        let issue = build_issue();
         _ = issues
             .cast(message::Update::new("my-service", vec![issue]))
             .unwrap();
@@ -86,23 +89,33 @@ mod tests {
     async fn test_update_without_event() -> Result<(), Box<dyn std::error::Error>> {
         let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
         let issues = issue::start(events_tx, None).await.unwrap();
-        let issue = Issue {
-            description: "Product not selected".to_string(),
-            kind: "missing_product".to_string(),
-            details: Some("A product is required.".to_string()),
-            source: IssueSource::Config,
-            severity: IssueSeverity::Error,
-        };
 
         let issues_list = issues.call(message::Get).await.unwrap();
         assert!(issues_list.is_empty());
 
+        let issue = build_issue();
         let update = message::Update::new("my-service", vec![issue]).notify(false);
         _ = issues.cast(update).unwrap();
 
         let issues_list = issues.call(message::Get).await.unwrap();
         assert_eq!(issues_list.len(), 1);
 
+        assert!(matches!(events_rx.try_recv(), Err(TryRecvError::Empty)));
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_update_without_change() -> Result<(), Box<dyn std::error::Error>> {
+        let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
+        let issues = issue::start(events_tx, None).await.unwrap();
+
+        let issue = build_issue();
+        let update = message::Update::new("my-service", vec![issue.clone()]);
+        issues.call(update).await.unwrap();
+        assert!(events_rx.try_recv().is_ok());
+
+        let update = message::Update::new("my-service", vec![issue]);
+        issues.call(update).await.unwrap();
         assert!(matches!(events_rx.try_recv(), Err(TryRecvError::Empty)));
         Ok(())
     }
