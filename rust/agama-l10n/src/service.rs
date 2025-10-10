@@ -30,6 +30,8 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 
+pub(crate) const SCOPE: &str = "localization";
+
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("Unknown locale: {0}")]
@@ -194,10 +196,10 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
             None
         };
 
-        _ = self
-            .issues
-            .cast(issue::message::Update::new("localization", issues));
-        _ = self.events.send(Event::ProposalChanged);
+        _ = self.issues.cast(issue::message::Update::new(SCOPE, issues));
+        _ = self.events.send(Event::ProposalChanged {
+            scope: SCOPE.to_string(),
+        });
         Ok(())
     }
 }
@@ -226,7 +228,9 @@ impl MessageHandler<message::Install> for Service {
 impl MessageHandler<message::UpdateLocale> for Service {
     async fn handle(&mut self, message: message::UpdateLocale) -> Result<(), Error> {
         self.state.system.locale = message.locale;
-        _ = self.events.send(Event::SystemChanged);
+        _ = self.events.send(Event::SystemChanged {
+            scope: SCOPE.to_string(),
+        });
         Ok(())
     }
 }
@@ -235,7 +239,9 @@ impl MessageHandler<message::UpdateLocale> for Service {
 impl MessageHandler<message::UpdateKeymap> for Service {
     async fn handle(&mut self, message: message::UpdateKeymap) -> Result<(), Error> {
         self.state.system.keymap = message.keymap;
-        _ = self.events.send(Event::SystemChanged);
+        _ = self.events.send(Event::SystemChanged {
+            scope: SCOPE.to_string(),
+        });
         Ok(())
     }
 }

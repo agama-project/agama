@@ -176,7 +176,7 @@ mod tests {
         assert!(proposal.is_some());
 
         let event = events_rx.recv().await.expect("Did not receive the event");
-        assert!(matches!(event, Event::ProposalChanged));
+        assert!(matches!(event, Event::ProposalChanged { scope: _scope }));
         Ok(())
     }
 

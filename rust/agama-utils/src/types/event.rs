@@ -31,9 +31,13 @@ pub enum Event {
     /// Progress changed.
     ProgressChanged,
     /// Proposal changed.
-    ProposalChanged,
+    ProposalChanged {
+        scope: String,
+    },
     /// The underlying system changed.
-    SystemChanged,
+    SystemChanged {
+        scope: String,
+    },
 }
 
 pub type EventsSender = broadcast::Sender<Event>;
