@@ -48,7 +48,7 @@ const useProposalChanges = () => {
     if (!client) return;
 
     return client.onEvent((event) => {
-      if (event.type === "l10n" && event.name === "ProposalChanged") {
+      if (event.type === "ProposalChanged" && event.scope === "localization") {
         queryClient.invalidateQueries({ queryKey: ["proposal"] });
       }
     });

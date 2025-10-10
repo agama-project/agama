@@ -84,7 +84,7 @@ const useSystemChanges = () => {
     if (!client) return;
 
     return client.onEvent((event) => {
-      if (event.type === "l10n" && event.name === "SystemChanged") {
+      if (event.type === "SystemChanged" && event.scope === "localization") {
         queryClient.invalidateQueries({ queryKey: ["system"] });
       }
     });

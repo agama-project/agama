@@ -62,7 +62,7 @@ const useIssuesChanges = () => {
     if (!client) return;
 
     return client.onEvent((event) => {
-      if (event.name === "IssuesChanged") {
+      if (event.type === "IssuesChanged") {
         queryClient.invalidateQueries({ queryKey: ["issues"] });
         queryClient.invalidateQueries({ queryKey: ["status"] });
       }
