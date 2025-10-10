@@ -18,23 +18,19 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    l10n,
-    message::{self, Action},
-    proposal::Proposal,
-    system_info::SystemInfo,
-};
+use crate::l10n;
+use crate::message::{self, Action};
+use crate::proposal::Proposal;
+use crate::system_info::SystemInfo;
 use agama_lib::install_settings::InstallSettings;
-use agama_utils::{
-    actor::{self, Actor, Handler, MessageHandler},
-    issue, progress,
-};
+use agama_utils::actor::{self, Actor, Handler, MessageHandler};
+use agama_utils::issue;
+use agama_utils::progress;
+use agama_utils::types::Scope;
 use async_trait::async_trait;
 use merge_struct::merge;
 use serde::Serialize;
 use std::collections::HashMap;
-
-const PROGRESS_SCOPE: &str = "main";
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -89,14 +85,14 @@ impl Service {
         // TODO: translate progress steps.
         self.progress
             .call(progress::message::StartWithSteps::new(
-                PROGRESS_SCOPE,
+                Scope::Manager,
                 &["Installing l10n"],
             ))
             .await?;
         self.l10n.call(l10n::message::Install).await?;
         self.state = State::Finished;
         self.progress
-            .call(progress::message::Finish::new(PROGRESS_SCOPE))
+            .call(progress::message::Finish::new(Scope::Manager))
             .await?;
         Ok(())
     }

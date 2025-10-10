@@ -18,9 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{l10n, proposal::Proposal, service, system_info::SystemInfo};
-use agama_lib::{install_settings::InstallSettings, issue::Issue};
-use agama_utils::{actor::Message, progress::Progress};
+use crate::l10n;
+use crate::proposal::Proposal;
+use crate::service;
+use crate::system_info::SystemInfo;
+use agama_lib::install_settings::InstallSettings;
+use agama_lib::issue::Issue;
+use agama_utils::actor::Message;
+use agama_utils::types::Progress;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
