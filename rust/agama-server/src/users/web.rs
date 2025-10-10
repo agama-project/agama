@@ -32,7 +32,7 @@ use crate::{
 use agama_lib::{
     error::ServiceError,
     event,
-    http::Event,
+    http::OldEvent,
     users::{model::RootPatchSettings, proxies::Users1Proxy, FirstUser, RootUser, UsersClient},
 };
 use axum::{
@@ -76,7 +76,7 @@ pub async fn users_streams(dbus: zbus::Connection) -> Result<EventStreams, Error
 
 async fn first_user_changed_stream(
     dbus: zbus::Connection,
-) -> Result<impl Stream<Item = Event> + Send, Error> {
+) -> Result<impl Stream<Item = OldEvent> + Send, Error> {
     let proxy = Users1Proxy::new(&dbus).await?;
     let stream = proxy
         .receive_first_user_changed()
@@ -99,7 +99,7 @@ async fn first_user_changed_stream(
 
 async fn root_user_changed_stream(
     dbus: zbus::Connection,
-) -> Result<impl Stream<Item = Event> + Send, Error> {
+) -> Result<impl Stream<Item = OldEvent> + Send, Error> {
     let proxy = Users1Proxy::new(&dbus).await?;
     let stream = proxy
         .receive_root_user_changed()

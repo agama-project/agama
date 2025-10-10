@@ -18,19 +18,30 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::types::scope::Scope;
 use serde::{Deserialize, Serialize};
-use tokio::sync::mpsc;
+use tokio::sync::broadcast;
 
-/// Progress-related events.
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(tag = "name")]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(tag = "type")]
 pub enum Event {
+    // FIXME: move service::State to agama_utils::types::manager.
+    StatusChanged,
+    /// The list of issues has changed.
+    IssuesChanged,
     /// Progress changed.
-    ProgressChanged,
+    ProgressChanged {
+        scope: Scope,
+    },
+    /// Proposal changed.
+    ProposalChanged {
+        scope: String,
+    },
+    /// The underlying system changed.
+    SystemChanged {
+        scope: String,
+    },
 }
 
-/// Multi-producer single-consumer events sender.
-pub type Sender = mpsc::UnboundedSender<Event>;
-
-/// Multi-producer single-consumer events receiver.
-pub type Receiver = mpsc::UnboundedReceiver<Event>;
+pub type Sender = broadcast::Sender<Event>;
+pub type Receiver = broadcast::Receiver<Event>;

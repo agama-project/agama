@@ -85,7 +85,7 @@ struct NetworkServiceState {
 /// * `events`: sending-half of the broadcast channel.
 pub async fn network_service<T: Adapter + Send + Sync + 'static>(
     adapter: T,
-    events: http::event::Sender,
+    events: http::event::OldSender,
 ) -> Result<Router, ServiceError> {
     let network = NetworkSystem::new(adapter);
     // FIXME: we are somehow abusing ServiceError. The HTTP/JSON API should have its own

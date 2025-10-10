@@ -31,7 +31,7 @@ use agama_lib::{
     auth::ClientId,
     error::ServiceError,
     event,
-    http::Event,
+    http::OldEvent,
     storage::{
         model::{Action, Device, DeviceSid, ProposalSettings, ProposalSettingsPatch, Volume},
         proxies::Storage1Proxy,
@@ -87,7 +87,9 @@ pub async fn storage_streams(dbus: zbus::Connection) -> Result<EventStreams, Err
     Ok(result)
 }
 
-async fn devices_dirty_stream(dbus: zbus::Connection) -> Result<impl Stream<Item = Event>, Error> {
+async fn devices_dirty_stream(
+    dbus: zbus::Connection,
+) -> Result<impl Stream<Item = OldEvent>, Error> {
     let proxy = Storage1Proxy::new(&dbus).await?;
     let stream = proxy
         .receive_deprecated_system_changed()
@@ -102,7 +104,7 @@ async fn devices_dirty_stream(dbus: zbus::Connection) -> Result<impl Stream<Item
     Ok(stream)
 }
 
-async fn configured_stream(dbus: zbus::Connection) -> Result<impl Stream<Item = Event>, Error> {
+async fn configured_stream(dbus: zbus::Connection) -> Result<impl Stream<Item = OldEvent>, Error> {
     let proxy = Storage1Proxy::new(&dbus).await?;
     let stream = proxy.receive_configured().await?.filter_map(|signal| {
         if let Ok(args) = signal.args() {

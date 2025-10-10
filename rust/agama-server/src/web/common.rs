@@ -34,9 +34,9 @@ pub use jobs::{jobs_service, jobs_stream};
 mod progress;
 pub use progress::{ProgressClient, ProgressRouterBuilder, ProgressService, ProgressServiceError};
 
-use super::Event;
+use super::OldEvent;
 
-pub type EventStreams = Vec<(&'static str, Pin<Box<dyn Stream<Item = Event> + Send>>)>;
+pub type EventStreams = Vec<(&'static str, Pin<Box<dyn Stream<Item = OldEvent> + Send>>)>;
 
 /// Builds a router to the `org.opensuse.Agama1.ServiceStatus` interface of the
 /// given D-Bus object.
@@ -106,7 +106,7 @@ pub async fn service_status_stream(
     dbus: zbus::Connection,
     destination: &'static str,
     path: &'static str,
-) -> Result<Pin<Box<dyn Stream<Item = Event> + Send>>, Error> {
+) -> Result<Pin<Box<dyn Stream<Item = OldEvent> + Send>>, Error> {
     let proxy = build_service_status_proxy(&dbus, destination, path).await?;
     let stream = proxy
         .receive_current_changed()

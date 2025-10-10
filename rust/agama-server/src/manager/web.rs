@@ -51,7 +51,7 @@ use crate::{
     error::Error,
     web::common::{service_status_router, ProgressClient, ProgressRouterBuilder},
 };
-use agama_lib::http::Event;
+use agama_lib::http::OldEvent;
 
 #[derive(Clone)]
 pub struct ManagerState<'a> {
@@ -66,7 +66,7 @@ pub struct ManagerState<'a> {
 /// * `connection`: D-Bus connection to listen for events.
 pub async fn manager_stream(
     dbus: zbus::Connection,
-) -> Result<Pin<Box<dyn Stream<Item = Event> + Send>>, Error> {
+) -> Result<Pin<Box<dyn Stream<Item = OldEvent> + Send>>, Error> {
     let proxy = Manager1Proxy::new(&dbus).await?;
     let stream = proxy
         .receive_current_installation_phase_changed()

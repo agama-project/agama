@@ -18,21 +18,25 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+//! This module includes the struct that represent a service progress step.
+
 use serde::{Deserialize, Serialize};
-use tokio::sync::mpsc;
 
-/// Localization-related events.
-// FIXME: is it really needed to implement Deserialize?
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(tag = "name")]
-pub enum Event {
-    /// Proposal changed.
-    ProposalChanged,
-    /// The underlying system changed.
-    SystemChanged,
+/// Scope to distinguish each service.
+#[derive(
+    Copy,
+    Clone,
+    Debug,
+    strum::EnumString,
+    strum::Display,
+    Deserialize,
+    Serialize,
+    utoipa::ToSchema,
+    PartialEq,
+)]
+#[strum(serialize_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
+pub enum Scope {
+    Manager,
+    L10n,
 }
-
-/// Multi-producer single-consumer events sender.
-pub type Sender = mpsc::UnboundedSender<Event>;
-/// Multi-producer single-consumer events receiver.
-pub type Receiver = mpsc::UnboundedReceiver<Event>;

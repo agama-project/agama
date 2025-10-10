@@ -37,7 +37,7 @@
 
 use agama_lib::{
     event,
-    http::{self, Event},
+    http::{self, OldEvent},
     progress::{Progress, ProgressSequence},
     proxies::{ProgressChanged, ProgressProxy},
 };
@@ -64,7 +64,7 @@ pub enum ProgressServiceError {
     #[error("Invalid D-Bus name: {0}")]
     DBusName(#[from] zbus::names::Error),
     #[error("Could not send the event: {0}")]
-    SendEvent(#[from] broadcast::error::SendError<Event>),
+    SendEvent(#[from] broadcast::error::SendError<OldEvent>),
 }
 
 #[derive(Debug)]
@@ -76,7 +76,7 @@ pub enum ProgressCommand {
 pub struct ProgressService {
     cache: HashMap<String, ProgressSequence>,
     commands: mpsc::Receiver<ProgressCommand>,
-    events: http::event::Sender,
+    events: http::event::OldSender,
     dbus: zbus::Connection,
 }
 
@@ -87,7 +87,7 @@ impl ProgressService {
     ///
     /// * Commands from a client ([ProgressClient]).
     /// * Relevant events from D-Bus.
-    pub async fn start(dbus: zbus::Connection, events: http::event::Sender) -> ProgressClient {
+    pub async fn start(dbus: zbus::Connection, events: http::event::OldSender) -> ProgressClient {
         let (tx, rx) = mpsc::channel(4);
         let mut service = ProgressService {
             cache: HashMap::new(),

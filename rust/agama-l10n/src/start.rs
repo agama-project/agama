@@ -18,16 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    event,
-    model::Model,
-    monitor::{self, Monitor},
-    service::{self, Service},
-};
-use agama_utils::{
-    actor::{self, Handler},
-    issue,
-};
+use crate::model::Model;
+use crate::monitor::{self, Monitor};
+use crate::service::{self, Service};
+use agama_utils::actor::{self, Handler};
+use agama_utils::issue;
+use agama_utils::types::event;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -62,21 +58,18 @@ pub async fn start(
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        event::Receiver,
-        message,
-        model::{
-            Keymap, KeymapsDatabase, LocaleEntry, LocalesDatabase, ModelAdapter, TimezoneEntry,
-            TimezonesDatabase,
-        },
-        service, Config, Event, Service,
+    use crate::message;
+    use crate::model::{
+        Keymap, KeymapsDatabase, LocaleEntry, LocalesDatabase, ModelAdapter, TimezoneEntry,
+        TimezonesDatabase,
     };
+    use crate::service::{self, Service};
+    use crate::Config;
     use agama_locale_data::{KeymapId, LocaleId};
-    use agama_utils::{
-        actor::{self, Handler},
-        issue,
-    };
-    use tokio::sync::mpsc;
+    use agama_utils::actor::{self, Handler};
+    use agama_utils::issue;
+    use agama_utils::types::event::{self, Event};
+    use tokio::sync::broadcast;
 
     pub struct TestModel {
         pub locales: LocalesDatabase,
@@ -141,11 +134,11 @@ mod tests {
         }
     }
 
-    async fn start_testing_service() -> (Receiver, Handler<Service>, Handler<issue::Service>) {
-        let (events_tx, _events_rx) = mpsc::unbounded_channel::<issue::Event>();
-        let issues = issue::start(events_tx, None).await.unwrap();
+    async fn start_testing_service() -> (event::Receiver, Handler<Service>, Handler<issue::Service>)
+    {
+        let (events_tx, events_rx) = broadcast::channel::<Event>(16);
+        let issues = issue::start(events_tx.clone(), None).await.unwrap();
 
-        let (events_tx, events_rx) = mpsc::unbounded_channel::<Event>();
         let model = build_adapter();
         let service = Service::new(model, issues.clone(), events_tx);
 
@@ -176,7 +169,7 @@ mod tests {
         assert!(proposal.is_some());
 
         let event = events_rx.recv().await.expect("Did not receive the event");
-        assert!(matches!(event, Event::ProposalChanged));
+        assert!(matches!(event, Event::ProposalChanged { scope: _scope }));
         Ok(())
     }
 
@@ -211,7 +204,7 @@ mod tests {
         let _ = handler.call(message::GetConfig).await?;
 
         let event = events_rx.try_recv();
-        assert!(matches!(event, Err(mpsc::error::TryRecvError::Empty)));
+        assert!(matches!(event, Err(broadcast::error::TryRecvError::Empty)));
         Ok(())
     }
 

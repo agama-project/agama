@@ -18,10 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::{event, message, Issue};
 use crate::actor::{self, Actor, MessageHandler};
+use crate::issue::{message, Issue};
+use crate::types::event::{self, Event};
 use async_trait::async_trait;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -62,6 +63,17 @@ impl MessageHandler<message::Get> for Service {
 #[async_trait]
 impl MessageHandler<message::Update> for Service {
     async fn handle(&mut self, message: message::Update) -> Result<(), Error> {
+        // Compare whether the issues has changed.
+        let old_issues_hash: HashSet<_> = self
+            .issues
+            .get(&message.list)
+            .map(|v| v.iter().cloned().collect())
+            .unwrap_or_default();
+        let new_issues_hash: HashSet<_> = message.issues.iter().cloned().collect();
+        if old_issues_hash == new_issues_hash {
+            return Ok(());
+        }
+
         if message.issues.is_empty() {
             _ = self.issues.remove(&message.list);
         } else {
@@ -69,7 +81,7 @@ impl MessageHandler<message::Update> for Service {
         }
 
         if message.notify {
-            _ = self.events.send(event::Event::IssuesChanged);
+            _ = self.events.send(Event::IssuesChanged);
         }
         Ok(())
     }
