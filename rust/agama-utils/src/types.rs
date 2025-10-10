@@ -22,7 +22,7 @@
 //! the HTTP and WebSocket API.
 
 pub mod event;
-pub use event::{Event, EventsReceiver, EventsSender};
+pub use event::Event;
 
 pub mod progress;
 pub use progress::Progress;

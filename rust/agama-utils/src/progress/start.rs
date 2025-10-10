@@ -18,11 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    actor::{self, Handler},
-    progress::service::Service,
-    types::EventsSender,
-};
+use crate::actor::{self, Handler};
+use crate::progress::service::Service;
+use crate::types::event;
 use std::convert::Infallible;
 
 #[derive(thiserror::Error, Debug)]
@@ -34,7 +32,7 @@ pub enum Error {
 /// Starts the progress service.
 ///
 /// * `events`: channel to emit the [events](agama_utils::types::Event).
-pub async fn start(events: EventsSender) -> Result<Handler<Service>, Error> {
+pub async fn start(events: event::Sender) -> Result<Handler<Service>, Error> {
     let handler = actor::spawn(Service::new(events));
     Ok(handler)
 }
@@ -44,12 +42,12 @@ mod tests {
     use crate::actor::{self, Handler};
     use crate::progress::message;
     use crate::progress::service::{self, Service};
+    use crate::types::event::{self, Event};
     use crate::types::progress;
     use crate::types::scope::Scope;
-    use crate::types::{Event, EventsReceiver};
     use tokio::sync::broadcast;
 
-    fn start_testing_service() -> (EventsReceiver, Handler<Service>) {
+    fn start_testing_service() -> (event::Receiver, Handler<Service>) {
         let (events, receiver) = broadcast::channel::<Event>(16);
         let service = Service::new(events);
 

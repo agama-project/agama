@@ -18,14 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::{
-    monitor::{self, Monitor},
-    service, Service,
-};
-use crate::{
-    actor::{self, Handler},
-    types::EventsSender,
-};
+use crate::actor::{self, Handler};
+use crate::issue::monitor::{self, Monitor};
+use crate::issue::service::{self, Service};
+use crate::types::event;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -34,7 +30,7 @@ pub enum Error {
 }
 
 pub async fn start(
-    events: EventsSender,
+    events: event::Sender,
     dbus: Option<zbus::Connection>,
 ) -> Result<Handler<Service>, Error> {
     let service = Service::new(events);
@@ -50,10 +46,8 @@ pub async fn start(
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        issue::{self, message, Issue, IssueSeverity, IssueSource},
-        types::Event,
-    };
+    use crate::issue::{self, message, Issue, IssueSeverity, IssueSource};
+    use crate::types::event::Event;
     use tokio::sync::broadcast::{self, error::TryRecvError};
 
     fn build_issue() -> Issue {

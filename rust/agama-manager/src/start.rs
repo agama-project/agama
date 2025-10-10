@@ -18,12 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{l10n, service::Service};
-use agama_utils::{
-    actor::{self, Handler},
-    issue, progress,
-    types::EventsSender,
-};
+use crate::l10n;
+use crate::service::Service;
+use agama_utils::actor::{self, Handler};
+use agama_utils::issue;
+use agama_utils::progress;
+use agama_utils::types::event;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -45,11 +45,11 @@ pub enum Error {
 ///
 /// It receives the following argument:
 ///
-/// * `events`: channel to emit the [events](agama_lib::http::Event).
+/// * `events`: channel to emit the [events](agama_utils::Event).
 /// * `dbus`: connection to Agama's D-Bus server. If it is not given, those features
 ///           that require to connect to the Agama's D-Bus server won't work.
 pub async fn start(
-    events: EventsSender,
+    events: event::Sender,
     dbus: Option<zbus::Connection>,
 ) -> Result<Handler<Service>, Error> {
     let issues = issue::start(events.clone(), dbus).await?;
@@ -64,9 +64,13 @@ pub async fn start(
 
 #[cfg(test)]
 mod test {
-    use crate::{self as manager, l10n, message, service::Service};
+    use crate::l10n;
+    use crate::message;
+    use crate::service::Service;
+    use crate::{self as manager};
     use agama_lib::install_settings::InstallSettings;
-    use agama_utils::{actor::Handler, types::Event};
+    use agama_utils::actor::Handler;
+    use agama_utils::types::Event;
     use tokio::sync::broadcast;
 
     async fn start_service() -> Handler<Service> {

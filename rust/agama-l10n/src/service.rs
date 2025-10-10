@@ -18,16 +18,16 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    config::Config, extended_config::ExtendedConfig, message, model::ModelAdapter,
-    proposal::Proposal, system_info::SystemInfo,
-};
+use crate::config::Config;
+use crate::extended_config::ExtendedConfig;
+use crate::message;
+use crate::model::ModelAdapter;
+use crate::proposal::Proposal;
+use crate::system_info::SystemInfo;
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
-use agama_utils::{
-    actor::{self, Actor, Handler, MessageHandler},
-    issue::{self, Issue},
-    types::{Event, EventsSender},
-};
+use agama_utils::actor::{self, Actor, Handler, MessageHandler};
+use agama_utils::issue::{self, Issue};
+use agama_utils::types::event::{self, Event};
 use async_trait::async_trait;
 
 pub(crate) const SCOPE: &str = "localization";
@@ -70,7 +70,7 @@ pub struct Service {
     state: State,
     model: Box<dyn ModelAdapter + Send + 'static>,
     issues: Handler<issue::Service>,
-    events: EventsSender,
+    events: event::Sender,
 }
 
 struct State {
@@ -83,7 +83,7 @@ impl Service {
     pub fn new<T: ModelAdapter + Send + 'static>(
         model: T,
         issues: Handler<issue::Service>,
-        events: EventsSender,
+        events: event::Sender,
     ) -> Service {
         let system = SystemInfo::read_from(&model);
         let config = ExtendedConfig::new_from(&system);

@@ -20,9 +20,9 @@
 
 use crate::actor::{self, Actor, MessageHandler};
 use crate::progress::message;
+use crate::types::event::{self, Event};
 use crate::types::progress::{self, Progress};
 use crate::types::scope::Scope;
-use crate::types::{Event, EventsSender};
 use async_trait::async_trait;
 use tokio::sync::broadcast;
 
@@ -41,12 +41,12 @@ pub enum Error {
 }
 
 pub struct Service {
-    events: EventsSender,
+    events: event::Sender,
     progresses: Vec<Progress>,
 }
 
 impl Service {
-    pub fn new(events: EventsSender) -> Service {
+    pub fn new(events: event::Sender) -> Service {
         Self {
             events,
             progresses: Vec::new(),

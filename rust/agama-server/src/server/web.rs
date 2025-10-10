@@ -21,16 +21,19 @@
 //! This module implements Agama's HTTP API.
 
 use crate::server::types::{ConfigPatch, IssuesMap};
-use agama_lib::{error::ServiceError, install_settings::InstallSettings};
-use agama_manager::{self as manager, message, SystemInfo};
-use agama_utils::{actor::Handler, types::EventsSender};
+use agama_lib::error::ServiceError;
+use agama_lib::install_settings::InstallSettings;
+use agama_manager::message;
+use agama_manager::SystemInfo;
+use agama_manager::{self as manager};
+use agama_utils::actor::Handler;
+use agama_utils::types::event;
 use anyhow;
-use axum::{
-    extract::State,
-    response::{IntoResponse, Response},
-    routing::{get, post},
-    Json, Router,
-};
+use axum::extract::State;
+use axum::response::{IntoResponse, Response};
+use axum::routing::{get, post};
+use axum::Json;
+use axum::Router;
 use hyper::StatusCode;
 use serde::Serialize;
 use serde_json::json;
@@ -64,7 +67,7 @@ type ServerResult<T> = Result<T, Error>;
 /// * `dbus`: connection to Agama's D-Bus server. If it is not given, those features
 ///           that require to connect to the Agama's D-Bus server won't work.
 pub async fn server_service(
-    events: EventsSender,
+    events: event::Sender,
     dbus: Option<zbus::Connection>,
 ) -> Result<Router, ServiceError> {
     let manager = manager::start(events, dbus)

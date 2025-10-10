@@ -18,16 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    model::Model,
-    monitor::{self, Monitor},
-    service::{self, Service},
-};
-use agama_utils::{
-    actor::{self, Handler},
-    issue,
-    types::EventsSender,
-};
+use crate::model::Model;
+use crate::monitor::{self, Monitor};
+use crate::service::{self, Service};
+use agama_utils::actor::{self, Handler};
+use agama_utils::issue;
+use agama_utils::types::event;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -50,7 +46,7 @@ pub enum Error {
 /// * `issues`: handler to the issues service.
 pub async fn start(
     issues: Handler<issue::Service>,
-    events: EventsSender,
+    events: event::Sender,
 ) -> Result<Handler<Service>, Error> {
     let model = Model::from_system()?;
     let service = Service::new(model, issues, events);
@@ -62,20 +58,17 @@ pub async fn start(
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        message,
-        model::{
-            Keymap, KeymapsDatabase, LocaleEntry, LocalesDatabase, ModelAdapter, TimezoneEntry,
-            TimezonesDatabase,
-        },
-        service, Config, Service,
+    use crate::message;
+    use crate::model::{
+        Keymap, KeymapsDatabase, LocaleEntry, LocalesDatabase, ModelAdapter, TimezoneEntry,
+        TimezonesDatabase,
     };
+    use crate::service::{self, Service};
+    use crate::Config;
     use agama_locale_data::{KeymapId, LocaleId};
-    use agama_utils::{
-        actor::{self, Handler},
-        issue,
-        types::{Event, EventsReceiver},
-    };
+    use agama_utils::actor::{self, Handler};
+    use agama_utils::issue;
+    use agama_utils::types::event::{self, Event};
     use tokio::sync::broadcast;
 
     pub struct TestModel {
@@ -141,7 +134,7 @@ mod tests {
         }
     }
 
-    async fn start_testing_service() -> (EventsReceiver, Handler<Service>, Handler<issue::Service>)
+    async fn start_testing_service() -> (event::Receiver, Handler<Service>, Handler<issue::Service>)
     {
         let (events_tx, events_rx) = broadcast::channel::<Event>(16);
         let issues = issue::start(events_tx.clone(), None).await.unwrap();

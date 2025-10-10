@@ -43,5 +43,5 @@ pub enum Event {
     },
 }
 
-pub type EventsSender = broadcast::Sender<Event>;
-pub type EventsReceiver = broadcast::Receiver<Event>;
+pub type Sender = broadcast::Sender<Event>;
+pub type Receiver = broadcast::Receiver<Event>;

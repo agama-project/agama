@@ -21,7 +21,7 @@
 use super::http::{login, login_from_query, logout, session};
 use super::{config::ServiceConfig, state::ServiceState};
 use agama_lib::{auth::TokenClaims, http};
-use agama_utils::types::EventsSender;
+use agama_utils::types::event;
 use axum::http::HeaderValue;
 use axum::middleware::Next;
 use axum::{
@@ -56,7 +56,7 @@ use tracing::Span;
 /// * A number of authenticated services that are added using the `add_service` function.
 pub struct MainServiceBuilder {
     config: ServiceConfig,
-    events: EventsSender,
+    events: event::Sender,
     old_events: http::event::OldSender,
     api_router: Router<ServiceState>,
     public_dir: PathBuf,
@@ -67,7 +67,7 @@ impl MainServiceBuilder {
     ///
     /// * `events`: channel to send events through the WebSocket.
     /// * `public_dir`: path to the public directory.
-    pub fn new<P>(events: EventsSender, old_events: http::event::OldSender, public_dir: P) -> Self
+    pub fn new<P>(events: event::Sender, old_events: http::event::OldSender, public_dir: P) -> Self
     where
         P: AsRef<Path>,
     {

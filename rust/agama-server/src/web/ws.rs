@@ -22,7 +22,7 @@
 
 use super::state::ServiceState;
 use agama_lib::{auth::ClientId, http};
-use agama_utils::types::EventsSender;
+use agama_utils::types::event;
 use axum::{
     extract::{
         ws::{Message, WebSocket},
@@ -55,7 +55,7 @@ pub async fn ws_handler(
 
 async fn handle_socket(
     mut socket: WebSocket,
-    events: EventsSender,
+    events: event::Sender,
     old_events: http::event::OldSender,
     client_id: Arc<ClientId>,
 ) {
