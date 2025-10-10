@@ -20,7 +20,7 @@
 
 use crate::actor::{self, Actor, MessageHandler};
 use crate::progress::message;
-use crate::progress::model::Progress;
+use crate::types::progress::{self, Progress};
 use crate::types::{Event, EventsSender};
 use async_trait::async_trait;
 use tokio::sync::broadcast;
@@ -31,8 +31,8 @@ pub enum Error {
     DuplicatedProgress(String),
     #[error("Progress does not exist for {0}")]
     MissingProgress(String),
-    #[error("Next step does not exist for {0}")]
-    MissingStep(String),
+    #[error(transparent)]
+    Progress(#[from] progress::Error),
     #[error(transparent)]
     Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
@@ -105,20 +105,22 @@ impl MessageHandler<message::StartWithSteps> for Service {
 #[async_trait]
 impl MessageHandler<message::Next> for Service {
     async fn handle(&mut self, message: message::Next) -> Result<(), Error> {
-        self.get_mut_progress(message.scope.as_str())
-            .ok_or(Error::MissingProgress(message.scope))
-            .and_then(|p| p.next())?;
+        let Some(progress) = self.get_mut_progress(message.scope.as_str()) else {
+            return Err(Error::MissingProgress(message.scope));
+        };
+        progress.next()?;
         self.events.send(Event::ProgressChanged)?;
         Ok(())
     }
 }
 
 #[async_trait]
-impl MessageHandler<message::NextStep> for Service {
-    async fn handle(&mut self, message: message::NextStep) -> Result<(), Error> {
-        self.get_mut_progress(message.scope.as_str())
-            .ok_or(Error::MissingProgress(message.scope))
-            .and_then(|p| p.next_step(message.step))?;
+impl MessageHandler<message::NextWithStep> for Service {
+    async fn handle(&mut self, message: message::NextWithStep) -> Result<(), Error> {
+        let Some(progress) = self.get_mut_progress(message.scope.as_str()) else {
+            return Err(Error::MissingProgress(message.scope));
+        };
+        progress.next_with_step(message.step)?;
         self.events.send(Event::ProgressChanged)?;
         Ok(())
     }

@@ -42,10 +42,9 @@ pub async fn start(events: EventsSender) -> Result<Handler<Service>, Error> {
 #[cfg(test)]
 mod tests {
     use crate::actor::{self, Handler};
-    use crate::progress::{
-        message,
-        service::{self, Service},
-    };
+    use crate::progress::message;
+    use crate::service::{self, Service};
+    use crate::types::progress;
     use crate::types::{Event, EventsReceiver};
     use tokio::sync::broadcast;
 
@@ -81,7 +80,7 @@ mod tests {
 
         // Second step
         handler
-            .call(message::NextStep::new("test", "second step"))
+            .call(message::NextWithStep::new("test", "second step"))
             .await?;
 
         let event = receiver.recv().await.unwrap();
@@ -190,7 +189,9 @@ mod tests {
 
         handler.call(message::Start::new("test", 1, "")).await?;
         let error = handler.call(message::Next::new("test")).await;
-        assert!(matches!(error, Err(service::Error::MissingStep(scope)) if scope == "test"));
+        assert!(
+            matches!(error, Err(service::Error::Progress(progress::Error::MissingStep(scope))) if scope == "test")
+        );
 
         Ok(())
     }

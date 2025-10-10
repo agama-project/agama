@@ -18,8 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::actor::Message;
-use crate::progress::model::Progress;
+use crate::{actor::Message, types::progress::Progress};
 
 pub struct Get;
 
@@ -81,12 +80,12 @@ impl Message for Next {
     type Reply = ();
 }
 
-pub struct NextStep {
+pub struct NextWithStep {
     pub scope: String,
     pub step: String,
 }
 
-impl NextStep {
+impl NextWithStep {
     pub fn new(scope: &str, step: &str) -> Self {
         Self {
             scope: scope.to_string(),
@@ -95,7 +94,7 @@ impl NextStep {
     }
 }
 
-impl Message for NextStep {
+impl Message for NextWithStep {
     type Reply = ();
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2024] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,8 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::progress::service::Error;
+//! This module includes the struct that represent a service progress step.
+
 use serde::Serialize;
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error("Next step does not exist for {0}")]
+    MissingStep(String),
+}
 
 #[derive(Clone, Default, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
@@ -67,7 +74,7 @@ impl Progress {
         Ok(())
     }
 
-    pub fn next_step(&mut self, step: String) -> Result<(), Error> {
+    pub fn next_with_step(&mut self, step: String) -> Result<(), Error> {
         self.next()?;
         self.step = step;
         Ok(())

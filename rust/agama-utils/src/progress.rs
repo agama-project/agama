@@ -25,6 +25,3 @@ pub mod service;
 pub use service::Service;
 
 pub mod message;
-
-mod model;
-pub use model::Progress;

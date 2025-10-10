@@ -23,3 +23,5 @@
 
 pub mod event;
 pub use event::{Event, EventsReceiver, EventsSender};
+
+pub mod progress;
