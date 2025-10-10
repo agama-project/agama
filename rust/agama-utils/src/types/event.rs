@@ -29,7 +29,9 @@ pub enum Event {
     /// The list of issues has changed.
     IssuesChanged,
     /// Progress changed.
-    ProgressChanged,
+    ProgressChanged {
+        scope: String,
+    },
     /// Proposal changed.
     ProposalChanged {
         scope: String,

@@ -82,9 +82,14 @@ impl MessageHandler<message::Start> for Service {
         if self.get_progress(message.scope.as_str()).is_some() {
             return Err(Error::DuplicatedProgress(message.scope));
         }
-        self.progresses
-            .push(Progress::new(message.scope, message.size, message.step));
-        self.events.send(Event::ProgressChanged)?;
+        self.progresses.push(Progress::new(
+            message.scope.clone(),
+            message.size,
+            message.step,
+        ));
+        self.events.send(Event::ProgressChanged {
+            scope: message.scope,
+        })?;
         Ok(())
     }
 }
@@ -95,9 +100,13 @@ impl MessageHandler<message::StartWithSteps> for Service {
         if self.get_progress(message.scope.as_str()).is_some() {
             return Err(Error::DuplicatedProgress(message.scope));
         }
-        self.progresses
-            .push(Progress::new_with_steps(message.scope, message.steps));
-        self.events.send(Event::ProgressChanged)?;
+        self.progresses.push(Progress::new_with_steps(
+            message.scope.clone(),
+            message.steps,
+        ));
+        self.events.send(Event::ProgressChanged {
+            scope: message.scope,
+        })?;
         Ok(())
     }
 }
@@ -109,7 +118,9 @@ impl MessageHandler<message::Next> for Service {
             return Err(Error::MissingProgress(message.scope));
         };
         progress.next()?;
-        self.events.send(Event::ProgressChanged)?;
+        self.events.send(Event::ProgressChanged {
+            scope: message.scope,
+        })?;
         Ok(())
     }
 }
@@ -121,7 +132,9 @@ impl MessageHandler<message::NextWithStep> for Service {
             return Err(Error::MissingProgress(message.scope));
         };
         progress.next_with_step(message.step)?;
-        self.events.send(Event::ProgressChanged)?;
+        self.events.send(Event::ProgressChanged {
+            scope: message.scope,
+        })?;
         Ok(())
     }
 }
@@ -131,9 +144,11 @@ impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, message: message::Finish) -> Result<(), Error> {
         let index = self
             .get_progress_index(message.scope.as_str())
-            .ok_or(Error::MissingProgress(message.scope))?;
+            .ok_or(Error::MissingProgress(message.scope.clone()))?;
         self.progresses.remove(index);
-        self.events.send(Event::ProgressChanged)?;
+        self.events.send(Event::ProgressChanged {
+            scope: message.scope,
+        })?;
         Ok(())
     }
 }

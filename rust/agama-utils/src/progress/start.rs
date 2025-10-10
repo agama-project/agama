@@ -43,7 +43,7 @@ pub async fn start(events: EventsSender) -> Result<Handler<Service>, Error> {
 mod tests {
     use crate::actor::{self, Handler};
     use crate::progress::message;
-    use crate::service::{self, Service};
+    use crate::progress::service::{self, Service};
     use crate::types::progress;
     use crate::types::{Event, EventsReceiver};
     use tokio::sync::broadcast;
@@ -66,7 +66,7 @@ mod tests {
             .await?;
 
         let event = receiver.recv().await.unwrap();
-        assert!(matches!(event, Event::ProgressChanged));
+        assert!(matches!(event, Event::ProgressChanged { scope } if scope == "test"));
 
         let progresses = handler.call(message::Get).await?;
         assert_eq!(progresses.len(), 1);
@@ -84,7 +84,7 @@ mod tests {
             .await?;
 
         let event = receiver.recv().await.unwrap();
-        assert!(matches!(event, Event::ProgressChanged));
+        assert!(matches!(event, Event::ProgressChanged { scope } if scope == "test"));
 
         let progresses = handler.call(message::Get).await.unwrap();
         let progress = progresses.first().unwrap();
@@ -98,7 +98,7 @@ mod tests {
         handler.call(message::Next::new("test")).await?;
 
         let event = receiver.recv().await.unwrap();
-        assert!(matches!(event, Event::ProgressChanged));
+        assert!(matches!(event, Event::ProgressChanged { scope } if scope == "test"));
 
         let progresses = handler.call(message::Get).await.unwrap();
         let progress = progresses.first().unwrap();
@@ -112,7 +112,7 @@ mod tests {
         handler.call(message::Finish::new("test")).await?;
 
         let event = receiver.recv().await.unwrap();
-        assert!(matches!(event, Event::ProgressChanged));
+        assert!(matches!(event, Event::ProgressChanged { scope } if scope == "test"));
 
         let progresses = handler.call(message::Get).await.unwrap();
         assert!(progresses.is_empty());
