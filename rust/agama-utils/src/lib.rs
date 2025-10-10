@@ -22,13 +22,7 @@
 //! other Agama's crates.
 
 pub mod actor;
-
-pub mod service;
-pub use service::Service;
-
-pub mod issue;
-
 pub mod dbus;
+pub mod issue;
 pub mod openapi;
-
 pub mod progress;
