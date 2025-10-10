@@ -25,7 +25,7 @@ use std::{collections::HashMap, task::Poll};
 use agama_lib::{
     error::ServiceError,
     event,
-    http::Event,
+    http::OldEvent,
     storage::{
         client::zfcp::ZFCPClient,
         model::zfcp::{ZFCPController, ZFCPDisk},
@@ -127,7 +127,7 @@ impl ZFCPDiskStream {
     fn handle_change(
         cache: &mut ObjectsCache<ZFCPDisk>,
         change: &DBusObjectChange,
-    ) -> Result<Event, ZFCPDiskStreamError> {
+    ) -> Result<OldEvent, ZFCPDiskStreamError> {
         match change {
             DBusObjectChange::Added(path, values) => {
                 let device = Self::update_device(cache, path, values)?;
@@ -150,7 +150,7 @@ impl ZFCPDiskStream {
 }
 
 impl Stream for ZFCPDiskStream {
-    type Item = Event;
+    type Item = OldEvent;
 
     fn poll_next(
         self: std::pin::Pin<&mut Self>,
@@ -261,7 +261,7 @@ impl ZFCPControllerStream {
     fn handle_change(
         cache: &mut ObjectsCache<ZFCPController>,
         change: &DBusObjectChange,
-    ) -> Result<Event, ZFCPControllerStreamError> {
+    ) -> Result<OldEvent, ZFCPControllerStreamError> {
         match change {
             DBusObjectChange::Added(path, values) => {
                 let device = Self::update_device(cache, path, values)?;
@@ -284,7 +284,7 @@ impl ZFCPControllerStream {
 }
 
 impl Stream for ZFCPControllerStream {
-    type Item = Event;
+    type Item = OldEvent;
 
     fn poll_next(
         self: std::pin::Pin<&mut Self>,

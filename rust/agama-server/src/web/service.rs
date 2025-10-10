@@ -55,7 +55,7 @@ use tracing::Span;
 /// * A number of authenticated services that are added using the `add_service` function.
 pub struct MainServiceBuilder {
     config: ServiceConfig,
-    events: http::event::Sender,
+    events: http::event::OldSender,
     api_router: Router<ServiceState>,
     public_dir: PathBuf,
 }
@@ -65,7 +65,7 @@ impl MainServiceBuilder {
     ///
     /// * `events`: channel to send events through the WebSocket.
     /// * `public_dir`: path to the public directory.
-    pub fn new<P>(events: http::event::Sender, public_dir: P) -> Self
+    pub fn new<P>(events: http::event::OldSender, public_dir: P) -> Self
     where
         P: AsRef<Path>,
     {

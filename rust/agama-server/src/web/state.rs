@@ -30,6 +30,6 @@ use std::path::PathBuf;
 #[derive(Clone)]
 pub struct ServiceState {
     pub config: ServiceConfig,
-    pub events: http::event::Sender,
+    pub events: http::event::OldSender,
     pub public_dir: PathBuf,
 }

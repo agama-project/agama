@@ -55,7 +55,7 @@ mod ws;
 use agama_lib::{
     connection,
     error::ServiceError,
-    http::event::{self, Event},
+    http::event::{self, OldEvent},
 };
 use common::ProgressService;
 pub use config::ServiceConfig;
@@ -71,7 +71,7 @@ use tokio_stream::{StreamExt, StreamMap};
 /// * `web_ui_dir`: public directory containing the web UI.
 pub async fn service<P>(
     config: ServiceConfig,
-    events: event::Sender,
+    events: event::OldSender,
     dbus: zbus::Connection,
     web_ui_dir: P,
 ) -> Result<Router, ServiceError>
@@ -118,7 +118,7 @@ where
 /// The events are sent to the `events` channel.
 ///
 /// * `events`: channel to send the events to.
-pub async fn run_monitor(events: event::Sender) -> Result<(), ServiceError> {
+pub async fn run_monitor(events: event::OldSender) -> Result<(), ServiceError> {
     let connection = connection().await?;
     tokio::spawn(run_events_monitor(connection, events.clone()));
 
@@ -129,7 +129,7 @@ pub async fn run_monitor(events: event::Sender) -> Result<(), ServiceError> {
 ///
 /// * `connection`: D-Bus connection.
 /// * `events`: channel to send the events to.
-async fn run_events_monitor(dbus: zbus::Connection, events: event::Sender) -> Result<(), Error> {
+async fn run_events_monitor(dbus: zbus::Connection, events: event::OldSender) -> Result<(), Error> {
     let mut stream = StreamMap::new();
 
     stream.insert("manager", manager_stream(dbus.clone()).await?);

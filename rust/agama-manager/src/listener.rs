@@ -29,12 +29,12 @@ use tokio_stream::{wrappers::UnboundedReceiverStream, Stream, StreamExt, StreamM
 /// `agama_l10n::Event`) and has to be converted to the [Event
 /// struct](agama_lib::http::Event).
 pub struct EventsListener {
-    inner: StreamMap<&'static str, Pin<Box<dyn Stream<Item = http::Event> + Send>>>,
-    sender: http::event::Sender,
+    inner: StreamMap<&'static str, Pin<Box<dyn Stream<Item = http::OldEvent> + Send>>>,
+    sender: http::event::OldSender,
 }
 
 impl EventsListener {
-    pub fn new(sender: http::event::Sender) -> Self {
+    pub fn new(sender: http::event::OldSender) -> Self {
         EventsListener {
             inner: StreamMap::new(),
             sender,
@@ -49,7 +49,7 @@ impl EventsListener {
         http::EventPayload: From<T>,
     {
         let stream = UnboundedReceiverStream::new(channel)
-            .map(|e| http::Event::new(http::EventPayload::from(e)));
+            .map(|e| http::OldEvent::new(http::EventPayload::from(e)));
         self.inner.insert(name, Box::pin(stream));
     }
 

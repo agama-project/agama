@@ -64,7 +64,7 @@ type ServerResult<T> = Result<T, Error>;
 /// * `dbus`: connection to Agama's D-Bus server. If it is not given, those features
 ///           that require to connect to the Agama's D-Bus server won't work.
 pub async fn server_service(
-    events: http::event::Sender,
+    events: http::event::OldSender,
     dbus: Option<zbus::Connection>,
 ) -> Result<Router, ServiceError> {
     let manager = manager::start(events, dbus)

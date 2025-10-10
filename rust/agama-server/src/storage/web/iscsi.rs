@@ -29,7 +29,7 @@ use crate::{error::Error, web::common::EventStreams};
 use agama_lib::{
     error::ServiceError,
     event,
-    http::Event,
+    http::OldEvent,
     storage::{
         client::iscsi::{ISCSIAuth, ISCSIInitiator, ISCSINode, LoginResult},
         ISCSIClient,
@@ -72,7 +72,7 @@ pub async fn iscsi_stream(dbus: &zbus::Connection) -> Result<EventStreams, Error
 
 async fn initiator_stream(
     dbus: &zbus::Connection,
-) -> Result<impl Stream<Item = Event> + Send, Error> {
+) -> Result<impl Stream<Item = OldEvent> + Send, Error> {
     let proxy = PropertiesProxy::builder(dbus)
         .destination("org.opensuse.Agama.Storage1")?
         .path("/org/opensuse/Agama/Storage1")?
@@ -91,7 +91,7 @@ async fn initiator_stream(
     Ok(stream)
 }
 
-fn handle_initiator_change(change: PropertiesChanged) -> Result<Option<Event>, ServiceError> {
+fn handle_initiator_change(change: PropertiesChanged) -> Result<Option<OldEvent>, ServiceError> {
     let args = change.args()?;
     let iscsi_iface =
         InterfaceName::from_str_unchecked("org.opensuse.Agama.Storage1.ISCSI.Initiator");

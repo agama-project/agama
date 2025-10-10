@@ -25,7 +25,7 @@ use std::{collections::HashMap, task::Poll};
 use agama_lib::{
     error::ServiceError,
     event,
-    http::Event,
+    http::OldEvent,
     storage::{
         client::dasd::DASDClient,
         model::dasd::{DASDDevice, DASDFormatSummary},
@@ -134,7 +134,7 @@ impl DASDDeviceStream {
     fn handle_change(
         cache: &mut ObjectsCache<DASDDevice>,
         change: &DBusObjectChange,
-    ) -> Result<Event, DASDDeviceStreamError> {
+    ) -> Result<OldEvent, DASDDeviceStreamError> {
         match change {
             DBusObjectChange::Added(path, values) => {
                 let device = Self::update_device(cache, path, values)?;
@@ -157,7 +157,7 @@ impl DASDDeviceStream {
 }
 
 impl Stream for DASDDeviceStream {
-    type Item = Event;
+    type Item = OldEvent;
 
     fn poll_next(
         self: std::pin::Pin<&mut Self>,
@@ -204,7 +204,7 @@ impl DASDFormatJobStream {
         Ok(Self { inner })
     }
 
-    fn handle_change(message: Result<Message, zbus::Error>) -> Option<Event> {
+    fn handle_change(message: Result<Message, zbus::Error>) -> Option<OldEvent> {
         let Ok(message) = message else {
             return None;
         };
@@ -224,7 +224,7 @@ impl DASDFormatJobStream {
         event
     }
 
-    fn to_event(path: String, properties_changed: &PropertiesChangedArgs) -> Option<Event> {
+    fn to_event(path: String, properties_changed: &PropertiesChangedArgs) -> Option<OldEvent> {
         let dict = properties_changed
             .changed_properties()
             .get("Summary")?
@@ -260,7 +260,7 @@ impl DASDFormatJobStream {
 }
 
 impl Stream for DASDFormatJobStream {
-    type Item = Event;
+    type Item = OldEvent;
 
     fn poll_next(
         self: std::pin::Pin<&mut Self>,

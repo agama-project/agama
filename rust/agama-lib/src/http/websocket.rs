@@ -34,7 +34,7 @@ use tokio_tungstenite::{
 };
 use url::Url;
 
-use super::Event;
+use super::OldEvent;
 use crate::auth::AuthToken;
 
 #[derive(Debug, thiserror::Error)]
@@ -102,10 +102,10 @@ impl WebSocketClient {
     /// Receive an event from the websocket.
     ///
     /// It returns the message as an event.
-    pub async fn receive(&mut self) -> Result<Event, WebSocketError> {
+    pub async fn receive(&mut self) -> Result<OldEvent, WebSocketError> {
         let msg = self.socket.next().await.ok_or(WebSocketError::Closed)?;
         let content = msg?.to_string();
-        let event: Event = serde_json::from_str(&content)?;
+        let event: OldEvent = serde_json::from_str(&content)?;
         Ok(event)
     }
 }

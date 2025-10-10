@@ -42,7 +42,7 @@ pub async fn ws_handler(
 
 async fn handle_socket(
     mut socket: WebSocket,
-    events: http::event::Sender,
+    events: http::event::OldSender,
     client_id: Arc<ClientId>,
 ) {
     let mut rx = events.subscribe();

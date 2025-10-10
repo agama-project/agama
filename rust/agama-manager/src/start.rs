@@ -54,7 +54,7 @@ pub enum Error {
 /// * `dbus`: connection to Agama's D-Bus server. If it is not given, those features
 ///           that require to connect to the Agama's D-Bus server won't work.
 pub async fn start(
-    events: http::event::Sender,
+    events: http::event::OldSender,
     dbus: Option<zbus::Connection>,
 ) -> Result<Handler<Service>, Error> {
     let mut listener = EventsListener::new(events);
@@ -87,7 +87,7 @@ mod test {
     use tokio::sync::broadcast;
 
     async fn start_service() -> Handler<Service> {
-        let (events_sender, _events_receiver) = broadcast::channel::<http::Event>(16);
+        let (events_sender, _events_receiver) = broadcast::channel::<http::OldEvent>(16);
         manager::start(events_sender, None).await.unwrap()
     }
 
