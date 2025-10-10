@@ -22,6 +22,7 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::broadcast;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(tag = "type")]
 pub enum Event {
     // FIXME: move service::State to agama_utils::types::manager.
     StatusChanged,
