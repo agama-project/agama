@@ -86,15 +86,12 @@ where
 
     let progress = ProgressService::start(dbus.clone(), old_events.clone()).await;
 
-    let router = MainServiceBuilder::new(old_events.clone(), web_ui_dir)
+    let router = MainServiceBuilder::new(events.clone(), old_events.clone(), web_ui_dir)
         .add_service(
             "/manager",
             manager_service(dbus.clone(), progress.clone()).await?,
         )
-        .add_service(
-            "/v2",
-            server_service(events.clone(), Some(dbus.clone())).await?,
-        )
+        .add_service("/v2", server_service(events, Some(dbus.clone())).await?)
         .add_service("/security", security_service(dbus.clone()).await?)
         .add_service(
             "/software",

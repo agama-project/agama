@@ -65,7 +65,7 @@ pub async fn start(
 #[cfg(test)]
 mod test {
     use crate::{self as manager, l10n, message, service::Service};
-    use agama_lib::{http, install_settings::InstallSettings};
+    use agama_lib::install_settings::InstallSettings;
     use agama_utils::{actor::Handler, types::Event};
     use tokio::sync::broadcast;
 
