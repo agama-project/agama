@@ -25,3 +25,7 @@ pub mod event;
 pub use event::{Event, EventsReceiver, EventsSender};
 
 pub mod progress;
+pub use progress::Progress;
+
+pub mod scope;
+pub use scope::Scope;

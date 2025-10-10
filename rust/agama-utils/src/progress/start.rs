@@ -45,6 +45,7 @@ mod tests {
     use crate::progress::message;
     use crate::progress::service::{self, Service};
     use crate::types::progress;
+    use crate::types::scope::Scope;
     use crate::types::{Event, EventsReceiver};
     use tokio::sync::broadcast;
 
@@ -62,17 +63,17 @@ mod tests {
 
         // Start a progress (first step)
         handler
-            .call(message::Start::new("test", 3, "first step"))
+            .call(message::Start::new(Scope::L10n, 3, "first step"))
             .await?;
 
         let event = receiver.recv().await.unwrap();
-        assert!(matches!(event, Event::ProgressChanged { scope } if scope == "test"));
+        assert!(matches!(event, Event::ProgressChanged { scope } if scope == Scope::L10n));
 
         let progresses = handler.call(message::Get).await?;
         assert_eq!(progresses.len(), 1);
 
         let progress = progresses.first().unwrap();
-        assert_eq!(progress.scope, "test");
+        assert_eq!(progress.scope, Scope::L10n);
         assert_eq!(progress.size, 3);
         assert!(progress.steps.is_empty());
         assert_eq!(progress.step, "first step");
@@ -80,39 +81,39 @@ mod tests {
 
         // Second step
         handler
-            .call(message::NextWithStep::new("test", "second step"))
+            .call(message::NextWithStep::new(Scope::L10n, "second step"))
             .await?;
 
         let event = receiver.recv().await.unwrap();
-        assert!(matches!(event, Event::ProgressChanged { scope } if scope == "test"));
+        assert!(matches!(event, Event::ProgressChanged { scope } if scope == Scope::L10n));
 
         let progresses = handler.call(message::Get).await.unwrap();
         let progress = progresses.first().unwrap();
-        assert_eq!(progress.scope, "test");
+        assert_eq!(progress.scope, Scope::L10n);
         assert_eq!(progress.size, 3);
         assert!(progress.steps.is_empty());
         assert_eq!(progress.step, "second step");
         assert_eq!(progress.index, 2);
 
         // Last step (without step text)
-        handler.call(message::Next::new("test")).await?;
+        handler.call(message::Next::new(Scope::L10n)).await?;
 
         let event = receiver.recv().await.unwrap();
-        assert!(matches!(event, Event::ProgressChanged { scope } if scope == "test"));
+        assert!(matches!(event, Event::ProgressChanged { scope } if scope == Scope::L10n));
 
         let progresses = handler.call(message::Get).await.unwrap();
         let progress = progresses.first().unwrap();
-        assert_eq!(progress.scope, "test");
+        assert_eq!(progress.scope, Scope::L10n);
         assert_eq!(progress.size, 3);
         assert!(progress.steps.is_empty());
         assert_eq!(progress.step, "");
         assert_eq!(progress.index, 3);
 
         // Finish the progress
-        handler.call(message::Finish::new("test")).await?;
+        handler.call(message::Finish::new(Scope::L10n)).await?;
 
         let event = receiver.recv().await.unwrap();
-        assert!(matches!(event, Event::ProgressChanged { scope } if scope == "test"));
+        assert!(matches!(event, Event::ProgressChanged { scope } if scope == Scope::L10n));
 
         let progresses = handler.call(message::Get).await.unwrap();
         assert!(progresses.is_empty());
@@ -127,14 +128,14 @@ mod tests {
         // Start a progress (first step)
         handler
             .call(message::StartWithSteps::new(
-                "test",
+                Scope::L10n,
                 &["first step", "second step", "third step"],
             ))
             .await?;
 
         let progresses = handler.call(message::Get).await?;
         let progress = progresses.first().unwrap();
-        assert_eq!(progress.scope, "test");
+        assert_eq!(progress.scope, Scope::L10n);
         assert_eq!(progress.size, 3);
         assert_eq!(progress.steps.len(), 3);
         assert_eq!(progress.steps[0], "first step");
@@ -144,7 +145,7 @@ mod tests {
         assert_eq!(progress.index, 1);
 
         // Second step
-        handler.call(message::Next::new("test")).await?;
+        handler.call(message::Next::new(Scope::L10n)).await?;
 
         let progresses = handler.call(message::Get).await.unwrap();
         let progress = progresses.first().unwrap();
@@ -152,7 +153,7 @@ mod tests {
         assert_eq!(progress.index, 2);
 
         // Third step
-        handler.call(message::Next::new("test")).await?;
+        handler.call(message::Next::new(Scope::L10n)).await?;
 
         let progresses = handler.call(message::Get).await.unwrap();
         let progress = progresses.first().unwrap();
@@ -160,7 +161,7 @@ mod tests {
         assert_eq!(progress.index, 3);
 
         // Finish the progress
-        handler.call(message::Finish::new("test")).await?;
+        handler.call(message::Finish::new(Scope::L10n)).await?;
 
         let progresses = handler.call(message::Get).await.unwrap();
         assert!(progresses.is_empty());
@@ -172,13 +173,17 @@ mod tests {
     async fn test_several_progresses() -> Result<(), Box<dyn std::error::Error>> {
         let (_receiver, handler) = start_testing_service();
 
-        handler.call(message::Start::new("test1", 2, "")).await?;
-        handler.call(message::Start::new("test2", 2, "")).await?;
+        handler
+            .call(message::Start::new(Scope::Manager, 2, ""))
+            .await?;
+        handler
+            .call(message::Start::new(Scope::L10n, 2, ""))
+            .await?;
 
         let progresses = handler.call(message::Get).await.unwrap();
         assert_eq!(progresses.len(), 2);
-        assert_eq!(progresses[0].scope, "test1");
-        assert_eq!(progresses[1].scope, "test2");
+        assert_eq!(progresses[0].scope, Scope::Manager);
+        assert_eq!(progresses[1].scope, Scope::L10n);
 
         Ok(())
     }
@@ -187,11 +192,13 @@ mod tests {
     async fn test_progress_missing_step() -> Result<(), Box<dyn std::error::Error>> {
         let (_receiver, handler) = start_testing_service();
 
-        handler.call(message::Start::new("test", 1, "")).await?;
-        let error = handler.call(message::Next::new("test")).await;
-        assert!(
-            matches!(error, Err(service::Error::Progress(progress::Error::MissingStep(scope))) if scope == "test")
-        );
+        handler
+            .call(message::Start::new(Scope::L10n, 1, ""))
+            .await?;
+        let error = handler.call(message::Next::new(Scope::L10n)).await;
+        assert!(matches!(
+            error,
+            Err(service::Error::Progress(progress::Error::MissingStep(scope))) if scope == Scope::L10n));
 
         Ok(())
     }
@@ -200,9 +207,13 @@ mod tests {
     async fn test_missing_progress() -> Result<(), Box<dyn std::error::Error>> {
         let (_receiver, handler) = start_testing_service();
 
-        handler.call(message::Start::new("test1", 2, "")).await?;
-        let error = handler.call(message::Next::new("test2")).await;
-        assert!(matches!(error, Err(service::Error::MissingProgress(scope)) if scope == "test2"));
+        handler
+            .call(message::Start::new(Scope::Manager, 2, ""))
+            .await?;
+        let error = handler.call(message::Next::new(Scope::L10n)).await;
+        assert!(
+            matches!(error, Err(service::Error::MissingProgress(scope)) if scope == Scope::L10n)
+        );
 
         Ok(())
     }
@@ -211,15 +222,21 @@ mod tests {
     async fn test_duplicated_progress() -> Result<(), Box<dyn std::error::Error>> {
         let (_receiver, handler) = start_testing_service();
 
-        handler.call(message::Start::new("test", 2, "")).await?;
+        handler
+            .call(message::Start::new(Scope::L10n, 2, ""))
+            .await?;
 
-        let error = handler.call(message::Start::new("test", 1, "")).await;
-        assert!(matches!(error, Err(service::Error::DuplicatedProgress(scope)) if scope == "test"));
+        let error = handler.call(message::Start::new(Scope::L10n, 1, "")).await;
+        assert!(
+            matches!(error, Err(service::Error::DuplicatedProgress(scope)) if scope == Scope::L10n)
+        );
 
         let error = handler
-            .call(message::StartWithSteps::new("test", &["step"]))
+            .call(message::StartWithSteps::new(Scope::L10n, &["step"]))
             .await;
-        assert!(matches!(error, Err(service::Error::DuplicatedProgress(scope)) if scope == "test"));
+        assert!(
+            matches!(error, Err(service::Error::DuplicatedProgress(scope)) if scope == Scope::L10n)
+        );
 
         Ok(())
     }

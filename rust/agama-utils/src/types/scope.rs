@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2024] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,30 +18,25 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::types::scope::Scope;
+//! This module includes the struct that represent a service progress step.
+
 use serde::{Deserialize, Serialize};
-use tokio::sync::broadcast;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(tag = "type")]
-pub enum Event {
-    // FIXME: move service::State to agama_utils::types::manager.
-    StatusChanged,
-    /// The list of issues has changed.
-    IssuesChanged,
-    /// Progress changed.
-    ProgressChanged {
-        scope: Scope,
-    },
-    /// Proposal changed.
-    ProposalChanged {
-        scope: String,
-    },
-    /// The underlying system changed.
-    SystemChanged {
-        scope: String,
-    },
+/// Scope to distinguish each service.
+#[derive(
+    Copy,
+    Clone,
+    Debug,
+    strum::EnumString,
+    strum::Display,
+    Deserialize,
+    Serialize,
+    utoipa::ToSchema,
+    PartialEq,
+)]
+#[strum(serialize_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
+pub enum Scope {
+    Manager,
+    L10n,
 }
-
-pub type EventsSender = broadcast::Sender<Event>;
-pub type EventsReceiver = broadcast::Receiver<Event>;

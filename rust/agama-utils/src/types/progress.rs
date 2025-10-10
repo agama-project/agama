@@ -20,19 +20,20 @@
 
 //! This module includes the struct that represent a service progress step.
 
+use crate::types::scope::Scope;
 use serde::Serialize;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("Next step does not exist for {0}")]
-    MissingStep(String),
+    MissingStep(Scope),
 }
 
-#[derive(Clone, Default, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Progress {
     /// Scope of the progress
-    pub scope: String,
+    pub scope: Scope,
     /// Max number of steps
     pub size: usize,
     /// List of steps
@@ -44,7 +45,7 @@ pub struct Progress {
 }
 
 impl Progress {
-    pub fn new(scope: String, size: usize, step: String) -> Self {
+    pub fn new(scope: Scope, size: usize, step: String) -> Self {
         Self {
             scope,
             size,
@@ -54,7 +55,7 @@ impl Progress {
         }
     }
 
-    pub fn new_with_steps(scope: String, steps: Vec<String>) -> Self {
+    pub fn new_with_steps(scope: Scope, steps: Vec<String>) -> Self {
         Self {
             scope,
             size: steps.len(),
@@ -66,7 +67,7 @@ impl Progress {
 
     pub fn next(&mut self) -> Result<(), Error> {
         if self.index >= self.size {
-            return Err(Error::MissingStep(self.scope.clone()));
+            return Err(Error::MissingStep(self.scope));
         }
 
         self.index += 1;
