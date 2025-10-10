@@ -502,6 +502,27 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   --pf-v6-c-table__sort-indicator--MarginInlineStart: var(--pf-t--global--spacer--xs);
 }
 
+// Temporary workaround for a recently introduced issue in PatternFly's
+// ExpandableSection, where the parent container displays scrollbars when the
+// section is collapsed. This issue has been fixed in PatternFly core on September
+// 23, 2025 (PR #7843): https://github.com/patternfly/patternfly/pull/7843
+//
+// Applying the fix directly didn’t work in our case, as nested expandable
+// sections still take up space when collapsed. As a result, we’ve added an
+// extra `height: 0` rule, specifically targeting the collapsed [hidden]
+// content.
+//
+// This workaround should be removed once the updated PatternFly version
+// includes the upstream fix for this issue.
+//
+// TODO: Re-test and remove this workaround once the next PatternFly release
+// includes the fix.
+.pf-v6-c-expandable-section:where(:not(.pf-m-truncate))
+  .pf-v6-c-expandable-section__content:where([hidden]) {
+  overflow: hidden;
+  height: 0;
+}
+
 // Some utilities not found at PF
 .w-14ch {
   inline-size: 14ch;
@@ -527,9 +548,20 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
+.agm-three-dots-icon {
+  font-size: 1.1rem;
+  vertical-align: text-top;
+}
+
 .agm-strong-icon {
   font-size: 1.6rem;
   vertical-align: middle;
+}
+
+.no-default-icon {
+  .pf-v6-c-button__icon {
+    display: none;
+  }
 }
 
 // FIXME: make ir more generic, if possible, or even without CSS but not

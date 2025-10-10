@@ -20,15 +20,18 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
-import { Alert, ExpandableSection, Skeleton, Stack } from "@patternfly/react-core";
-import { Page } from "~/components/core";
+import React from "react";
+import { Skeleton, Stack, Tab, Tabs, TabTitleText } from "@patternfly/react-core";
+import SmallWarning from "~/components/core/SmallWarning";
+import { Page, NestedContent } from "~/components/core";
 import DevicesManager from "~/components/storage/DevicesManager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import { ProposalActionsDialog } from "~/components/storage";
 import { _, n_, formatList } from "~/i18n";
 import { useActions, useDevices } from "~/queries/storage";
 import { sprintf } from "sprintf-js";
+import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import { useStorageUiState } from "~/context/storage-ui-state";
 
 /**
  * @todo Create a component for rendering a customized skeleton
@@ -80,7 +83,7 @@ const DeletionsInfo = ({ manager }: { manager: DevicesManager }) => {
     );
   }
 
-  return <Alert variant="warning" isPlain isInline title={label} />;
+  return <SmallWarning text={label} />;
 };
 
 export type ActionsListProps = {
@@ -89,22 +92,11 @@ export type ActionsListProps = {
 
 function ActionsList({ manager }: ActionsListProps) {
   const actions = manager.actions;
-  const [isExpanded, setIsExpanded] = useState(false);
-  const toggleText = isExpanded
-    ? _("Collapse the list of planned actions")
-    : sprintf(_("Check the %d planned actions"), actions.length);
 
   return (
-    <Stack>
+    <Stack hasGutter>
       <DeletionsInfo manager={manager} />
-      <ExpandableSection
-        isIndented
-        isExpanded={isExpanded}
-        onToggle={() => setIsExpanded(!isExpanded)}
-        toggleText={toggleText}
-      >
-        <ProposalActionsDialog actions={actions} />
-      </ExpandableSection>
+      <ProposalActionsDialog actions={actions} />
     </Stack>
   );
 }
@@ -114,10 +106,20 @@ export type ProposalResultSectionProps = {
 };
 
 export default function ProposalResultSection({ isLoading = false }: ProposalResultSectionProps) {
+  const { uiState, setUiState } = useStorageUiState();
   const system = useDevices("system", { suspense: true });
   const staging = useDevices("result", { suspense: true });
   const actions = useActions();
   const devicesManager = new DevicesManager(system, staging, actions);
+  const handleTabClick = (
+    event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
+    tabIndex: number,
+  ) => {
+    setUiState((state) => {
+      state.set("rt", tabIndex.toString());
+      return state;
+    });
+  };
 
   if (isLoading) return <ResultSkeleton />;
 
@@ -125,13 +127,31 @@ export default function ProposalResultSection({ isLoading = false }: ProposalRes
     <Page.Section
       title={_("Result")}
       description={_(
-        "During installation, several actions will be performed to setup the layout shown at the table below.",
+        "Result of applying the configuration described at the 'Settings' section above.",
       )}
     >
-      <Stack>
-        <ActionsList manager={devicesManager} />
-        <ProposalResultTable devicesManager={devicesManager} />
-      </Stack>
+      <Tabs activeKey={uiState.get("rt") || "0"} onSelect={handleTabClick} role="region">
+        <Tab key="action" eventKey={"0"} title={<TabTitleText>{_("Actions")}</TabTitleText>}>
+          <NestedContent margin="mtSm">
+            <Stack hasGutter>
+              <div className={textStyles.textColorPlaceholder}>
+                {_("The following actions will be performed in the system during installation.")}
+              </div>
+              <ActionsList manager={devicesManager} />
+            </Stack>
+          </NestedContent>
+        </Tab>
+        <Tab key="staging" eventKey={"1"} title={<TabTitleText>{_("Final layout")}</TabTitleText>}>
+          <NestedContent margin="mtSm">
+            <Stack hasGutter>
+              <div className={textStyles.textColorPlaceholder}>
+                {_("Final structure of the system after installation.")}
+              </div>
+              <ProposalResultTable devicesManager={devicesManager} />
+            </Stack>
+          </NestedContent>
+        </Tab>
+      </Tabs>
     </Page.Section>
   );
 }

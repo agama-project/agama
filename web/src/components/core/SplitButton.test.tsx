@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, waitForElementToBeRemoved, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import SplitButton from "./SplitButton";
 
 const mainOnClickFn = jest.fn();
@@ -36,21 +36,21 @@ const SplitButtonTest = ({ href }: { href?: string }) => (
 
 describe("SplitButton", () => {
   it("renders two buttons if href prop is not provided: the main action button and the toggle button", () => {
-    plainRender(<SplitButtonTest />);
+    installerRender(<SplitButtonTest />);
 
     screen.getByRole("button", { name: "Test" });
     screen.getByRole("button", { name: "More actions" });
   });
 
   it("renders the main action as a link and the toggle as a button when the 'href' prop is provided", () => {
-    plainRender(<SplitButtonTest href="somewhere" />);
+    installerRender(<SplitButtonTest href="somewhere" />);
 
     screen.getByRole("link", { name: "Test" });
     screen.getByRole("button", { name: "More actions" });
   });
 
   it("triggers the 'onClick' function when the main action button is clicked", async () => {
-    const { user } = plainRender(<SplitButtonTest />);
+    const { user } = installerRender(<SplitButtonTest />);
 
     const mainAction = screen.getByRole("button", { name: "Test" });
     await user.click(mainAction);
@@ -58,7 +58,7 @@ describe("SplitButton", () => {
   });
 
   it("allows expanding and collapsing the menu holding additional actions when the toggle button is clicked", async () => {
-    const { user } = plainRender(<SplitButtonTest />);
+    const { user } = installerRender(<SplitButtonTest />);
 
     const toggleAction = screen.getByRole("button", { name: "More actions" });
     expect(toggleAction).toHaveAttribute("aria-haspopup");
@@ -78,7 +78,7 @@ describe("SplitButton", () => {
   });
 
   it("closes the menu when a secondary action is clicked", async () => {
-    const { user } = plainRender(<SplitButtonTest />);
+    const { user } = installerRender(<SplitButtonTest />);
 
     const toggleAction = screen.getByRole("button", { name: "More actions" });
     expect(toggleAction).toHaveAttribute("aria-expanded", "false");
