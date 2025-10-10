@@ -56,7 +56,8 @@ use tokio::sync::{broadcast, mpsc, oneshot};
 
 use crate::{
     http::{
-        BaseHTTPClient, BaseHTTPClientError, OldEvent, EventPayload, WebSocketClient, WebSocketError,
+        BaseHTTPClient, BaseHTTPClientError, EventPayload, OldEvent, WebSocketClient,
+        WebSocketError,
     },
     manager::{InstallationPhase, InstallerStatus},
     progress::Progress,

@@ -87,7 +87,9 @@ pub async fn storage_streams(dbus: zbus::Connection) -> Result<EventStreams, Err
     Ok(result)
 }
 
-async fn devices_dirty_stream(dbus: zbus::Connection) -> Result<impl Stream<Item = OldEvent>, Error> {
+async fn devices_dirty_stream(
+    dbus: zbus::Connection,
+) -> Result<impl Stream<Item = OldEvent>, Error> {
     let proxy = Storage1Proxy::new(&dbus).await?;
     let stream = proxy
         .receive_deprecated_system_changed()
