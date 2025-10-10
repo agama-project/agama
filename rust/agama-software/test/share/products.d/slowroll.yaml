@@ -1,0 +1,169 @@
+id: Slowroll
+name: Slowroll
+archs: x86_64
+# ------------------------------------------------------------------------------
+# WARNING: When changing the product description delete the translations located
+# at the at translations/description key below to avoid using obsolete
+# translations!!
+# ------------------------------------------------------------------------------
+description: 'An experimental and slightly slower rolling release of openSUSE
+  designed to update less often than Tumbleweed but more often than Leap without
+  forcing users to choose between "stable" and newer packages.'
+icon: Slowroll.svg
+# Do not manually change any translations! See README.md for more details.
+translations:
+  description:
+    ca: Una versió experimental d'openSUSE però lleugerament més lenta quant a la
+      continuïtat, dissenyada per actualitzar-se amb menys freqüència que el
+      Tumbleweed però més sovint que el Leap, sense obligar els usuaris a triar
+      entre paquets estables i nous.
+    cs: Experimentální a mírně zpomalené rolující vydání openSUSE, které je navržené
+      tak, aby se aktualizovalo méně často než Tumbleweed. Zároveň se však
+      aktualizuje častěji než Leap, aby se uživatelé nemuseli rozhodovat mezi
+      "stabilními" a novějšími balíčky.
+    de: Ein experimentelles und etwas langsameres Rolling Release von openSUSE, das
+      darauf ausgelegt ist, weniger häufig als Tumbleweed, aber häufiger als
+      Leap zu aktualisieren, ohne die Benutzer zu zwingen, zwischen „stabilen“
+      und neueren Paketen zu wählen.
+    es: Una versión experimental y de actualización contínua ligeramente más lenta
+      de openSUSE, diseñada para actualizarse con menos frecuencia que
+      Tumbleweed pero más a menudo que Leap, sin obligar a los usuarios a elegir
+      entre paquetes "estables" y más nuevos.
+    ja: 実験的なディストリビューションではありますが、 Tumbleweed よりは比較的ゆっくりした、かつ Leap よりは速いペースで公開される
+      openSUSE ローリングリリース型ディストリビューションです。 "安定性" と最新パッケージの中間を目指しています。
+    pt_BR: Uma versão experimental e um pouco mais lenta do openSUSE, projetada para
+      atualizar com menos frequência que o Tumbleweed, mas com mais frequência
+      que o Leap, sem forçar os usuários a escolher entre pacotes "estáveis" e
+      mais novos.
+    sv: En experimentell och något långsammare rullande utgåva av openSUSE utformad
+      för att få nya paketuppdateringar mer sällan än Tumbleweed men oftare än
+      Leap utan att tvinga användarna att välja mellan "stabila" eller nyare
+      paket.
+software:
+  installation_repositories:
+    - url: https://download.opensuse.org/slowroll/repo/oss/
+      archs: x86_64
+    - url: https://download.opensuse.org/slowroll/repo/non-oss/
+      archs: x86_64
+
+  mandatory_patterns:
+    - enhanced_base
+  optional_patterns: null
+  user_patterns:
+    - basic-desktop
+    - gnome
+    - kde
+    - yast2_basis
+    - yast2_desktop
+    - yast2_server
+    - multimedia
+    - office
+  mandatory_packages:
+    - NetworkManager
+    - openSUSE-repos-Slowroll
+    - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
+  optional_packages: null
+  base_product: openSUSE
+
+security:
+  lsm: apparmor
+  available_lsms:
+    apparmor:
+      patterns:
+        - apparmor
+    selinux:
+      patterns:
+        - selinux
+    none:
+      patterns: null
+
+storage:
+  boot_strategy: BLS
+  space_policy: delete
+  volumes:
+    - "/"
+    - "swap"
+  volume_templates:
+    - mount_path: "/"
+      filesystem: btrfs
+      btrfs:
+        snapshots: true
+        read_only: false
+        default_subvolume: "0"
+        subvolumes:
+          - path: home
+          - path: opt
+          - path: root
+          - path: srv
+          - path: usr/local
+          # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
+          - path: var
+            copy_on_write: false
+          # Architecture specific subvolumes
+          - path: boot/grub2/arm64-efi
+            archs: aarch64
+          - path: boot/grub2/arm-efi
+            archs: arm
+          - path: boot/grub2/i386-pc
+            archs: x86_64
+          - path: boot/grub2/powerpc-ieee1275
+            archs: ppc,!board_powernv
+          - path: boot/grub2/s390x-emu
+            archs: s390
+          - path: boot/grub2/x86_64-efi
+            archs: x86_64
+          - path: boot/grub2/riscv64-efi
+            archs: riscv64
+      size:
+        auto: true
+      outline:
+        required: true
+        filesystems:
+          - btrfs
+          - ext2
+          - ext3
+          - ext4
+          - xfs
+        auto_size:
+          base_min: 5 GiB
+          base_max: 15 GiB
+          snapshots_increment: 250%
+          max_fallback_for:
+            - "/home"
+        snapshots_configurable: true
+    - mount_path: "swap"
+      filesystem: swap
+      size:
+        min: 1 GiB
+        max: 2 GiB
+      outline:
+        required: false
+        filesystems:
+          - swap
+    - mount_path: "/home"
+      filesystem: xfs
+      size:
+        auto: false
+        min: 5 GiB
+        max: unlimited
+      outline:
+        required: false
+        filesystems:
+          - btrfs
+          - ext2
+          - ext3
+          - ext4
+          - xfs
+    - filesystem: xfs
+      size:
+        auto: false
+        min: 512 MiB
+      outline:
+        required: false
+        filesystems:
+          - btrfs
+          - ext2
+          - ext3
+          - ext4
+          - xfs
+          - vfat
