@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-16 09:47+0000\n"
+"POT-Creation-Date: 2025-10-08 09:26+0000\n"
 "PO-Revision-Date: 2025-09-16 09:47+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -64,8 +64,8 @@ msgstr ""
 #. @return [Agama::Question]
 #: service/lib/agama/registration.rb:424
 msgid ""
-"Trying to import a self signed certificate. Do you want to trust it and regist"
-"er the product?"
+"Trying to import a self signed certificate. Do you want to trust it and "
+"register the product?"
 msgstr ""
 
 #. TRANSLATORS: button label, try downloading the failed package again
@@ -105,9 +105,9 @@ msgstr ""
 #: service/lib/agama/software/callbacks/digest.rb:58
 #, perl-brace-format
 msgid ""
-"No checksum for the file %{file} was found in the repository. This means that "
-"although the file is part of the signed repository, the list of checksums does"
-" not mention this file. Use it anyway?"
+"No checksum for the file %{file} was found in the repository. This means "
+"that although the file is part of the signed repository, the list of "
+"checksums does not mention this file. Use it anyway?"
 msgstr ""
 
 #. Callback to accept an unknown digest
@@ -118,9 +118,9 @@ msgstr ""
 #: service/lib/agama/software/callbacks/digest.rb:84
 #, perl-brace-format
 msgid ""
-"The checksum of the file %{file} is \"%{digest}\" but the expected checksum is u"
-"nknown. This means that the origin and integrity of the file cannot be verifie"
-"d. Use it anyway?"
+"The checksum of the file %{file} is \"%{digest}\" but the expected checksum "
+"is unknown. This means that the origin and integrity of the file cannot be "
+"verified. Use it anyway?"
 msgstr ""
 
 #. Callback to accept wrong digest
@@ -132,9 +132,9 @@ msgstr ""
 #: service/lib/agama/software/callbacks/digest.rb:111
 #, perl-brace-format
 msgid ""
-"The expected checksum of file %{file} is \"%{found}\" but it was expected to be "
-"\"%{expected}\". The file has changed by accident or by an attacker since the cr"
-"eater signed it. Use it anyway?"
+"The expected checksum of file %{file} is \"%{found}\" but it was expected to "
+"be \"%{expected}\". The file has changed by accident or by an attacker since "
+"the creater signed it. Use it anyway?"
 msgstr ""
 
 #. DoneProvide callback
@@ -153,15 +153,15 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:66
 #, perl-brace-format
 msgid ""
-"The file %{filename} from %{repo_url} is not digitally signed. The origin and "
-"integrity of the file cannot be verified. Use it anyway?"
+"The file %{filename} from %{repo_url} is not digitally signed. The origin "
+"and integrity of the file cannot be verified. Use it anyway?"
 msgstr ""
 
 #: service/lib/agama/software/callbacks/signature.rb:72
 #, perl-brace-format
 msgid ""
-"The file %{filename} is not digitally signed. The origin and integrity of the "
-"file cannot be verified. Use it anyway?"
+"The file %{filename} is not digitally signed. The origin and integrity of "
+"the file cannot be verified. Use it anyway?"
 msgstr ""
 
 #. Callback to handle signature verification failures
@@ -171,8 +171,8 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:100
 #, perl-brace-format
 msgid ""
-"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you wan"
-"t to trust this key?"
+"The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
+"want to trust this key?"
 msgstr ""
 
 #. Callback to handle unknown GPG keys
@@ -183,15 +183,15 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:131
 #, perl-brace-format
 msgid ""
-"The file %{filename} from %{repo_url} is digitally signed with the following u"
-"nknown GnuPG key: %{key_id}. Use it anyway?"
+"The file %{filename} from %{repo_url} is digitally signed with the following "
+"unknown GnuPG key: %{key_id}. Use it anyway?"
 msgstr ""
 
 #: service/lib/agama/software/callbacks/signature.rb:137
 #, perl-brace-format
 msgid ""
-"The file %{filename} is digitally signed with the following unknown GnuPG key:"
-" %{key_id}. Use it anyway?"
+"The file %{filename} is digitally signed with the following unknown GnuPG "
+"key: %{key_id}. Use it anyway?"
 msgstr ""
 
 #. Callback to handle file verification failures
@@ -202,16 +202,16 @@ msgstr ""
 #: service/lib/agama/software/callbacks/signature.rb:168
 #, perl-brace-format
 msgid ""
-"The file %{filename} from %{repo_url} is digitally signed with the following G"
-"nuPG key, but the integrity check failed: %{key_id} (%{key_name}). Use it anyw"
-"ay?"
+"The file %{filename} from %{repo_url} is digitally signed with the following "
+"GnuPG key, but the integrity check failed: %{key_id} (%{key_name}). Use it "
+"anyway?"
 msgstr ""
 
 #: service/lib/agama/software/callbacks/signature.rb:175
 #, perl-brace-format
 msgid ""
-"The file %{filename} is digitally signed with the following GnuPG key, but the"
-" integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
+"The file %{filename} is digitally signed with the following GnuPG key, but "
+"the integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
 msgstr ""
 
 #. TRANSLATORS: button label, trust the GPG key or the signature
@@ -344,8 +344,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/alias.rb:95
 #, c-format
 msgid ""
-"The device with alias '%s' cannot be formatted because it is used by other dev"
-"ice"
+"The device with alias '%s' cannot be formatted because it is used by other "
+"device"
 msgstr ""
 
 #. Issue when the device has both partitions and a user.
@@ -354,8 +354,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/alias.rb:118
 #, c-format
 msgid ""
-"The device with alias '%s' cannot be partitioned because it is used by other d"
-"evice"
+"The device with alias '%s' cannot be partitioned because it is used by other "
+"device"
 msgstr ""
 
 #. Error if a boot device is required and unknown.
@@ -378,7 +378,8 @@ msgstr ""
 #. (e.g., 'luks1', 'random_swap').
 #: service/lib/agama/storage/config_checkers/encryption.rb:78
 #, perl-brace-format
-msgid "No passphrase provided (required for using the method '%{crypt_method}')."
+msgid ""
+"No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr ""
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
@@ -442,8 +443,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:168
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be deleted because it is part of the MD RAID %{m"
-"d_raid}"
+"The device '%{member}' cannot be deleted because it is part of the MD RAID %"
+"{md_raid}"
 msgstr ""
 
 #. Issue if the device member is resized.
@@ -453,8 +454,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:191
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be resized because it is part of the MD RAID %{m"
-"d_raid}"
+"The device '%{member}' cannot be resized because it is part of the MD RAID %"
+"{md_raid}"
 msgstr ""
 
 #. Issue if the device member is formatted.
@@ -464,8 +465,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:214
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be formatted because it is part of the MD RAID %"
-"{md_raid}"
+"The device '%{member}' cannot be formatted because it is part of the MD RAID "
+"%{md_raid}"
 msgstr ""
 
 #. Issue if the device member is partitioned.
@@ -475,8 +476,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:237
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be partitioned because it is part of the MD RAID"
-" %{md_raid}"
+"The device '%{member}' cannot be partitioned because it is part of the MD "
+"RAID %{md_raid}"
 msgstr ""
 
 #. Issue if the device member is used by other device (e.g., as target for physical volumes).
@@ -486,8 +487,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:259
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be used because it is part of the MD RAID %{md_r"
-"aid}"
+"The device '%{member}' cannot be used because it is part of the MD RAID %"
+"{md_raid}"
 msgstr ""
 
 #. Issue if the parent of the device member is formatted.
@@ -497,8 +498,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:284
 #, perl-brace-format
 msgid ""
-"The device '%{device}' cannot be formatted because it is part of the MD RAID %"
-"{md_raid}"
+"The device '%{device}' cannot be formatted because it is part of the MD RAID "
+"%{md_raid}"
 msgstr ""
 
 #. TRANSLATORS: 'method' is the identifier of the method to encrypt the device
@@ -558,8 +559,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/volume_group.rb:133
 #, c-format
 msgid ""
-"The list of target devices for the volume group '%s' is mixing reused devices "
-"and new devices"
+"The list of target devices for the volume group '%s' is mixing reused "
+"devices and new devices"
 msgstr ""
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
@@ -571,7 +572,8 @@ msgstr ""
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checkers/volume_groups.rb:66
 #, c-format
-msgid "The device '%s' is used several times as target device for physical volumes"
+msgid ""
+"The device '%s' is used several times as target device for physical volumes"
 msgstr ""
 
 #. Text of the reason preventing to shrink because there is no content.
@@ -579,9 +581,9 @@ msgstr ""
 #. @return [String, nil] nil if there is content or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:151
 msgid ""
-"Neither a file system nor a storage system was detected on the device. In case"
-" the device does contain a file system or a storage system that is not support"
-"ed, resizing will most likely cause data loss."
+"Neither a file system nor a storage system was detected on the device. In "
+"case the device does contain a file system or a storage system that is not "
+"supported, resizing will most likely cause data loss."
 msgstr ""
 
 #. Text of the reason preventing to shrink because there is no valid minimum size.
@@ -728,11 +730,13 @@ msgstr ""
 #: service/lib/agama/storage/proposal_strategies/guided.rb:151
 #, perl-brace-format
 msgid "The following selected device is not found in the system: %{devices}"
-msgid_plural "The following selected devices are not found in the system: %{devices}"
+msgid_plural ""
+"The following selected devices are not found in the system: %{devices}"
 msgstr[0] ""
 msgstr[1] ""
 
 #. Recalculates the list of issues
 #: service/lib/agama/users.rb:154
-msgid "Defining a user, setting the root password or a SSH public key is required"
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
