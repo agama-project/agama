@@ -21,6 +21,7 @@
 //! Representation of the network settings
 
 use super::types::{DeviceState, DeviceType, Status};
+use crate::{error::NetworkStateError, NetworkState};
 use agama_utils::openapi::schemas;
 use cidr::IpInet;
 use serde::{Deserialize, Serialize};
@@ -35,6 +36,32 @@ pub struct NetworkSettings {
     pub connections: Vec<NetworkConnection>,
 }
 
+impl TryFrom<NetworkState> for NetworkSettings {
+    type Error = NetworkStateError;
+
+    fn try_from(state: NetworkState) -> Result<Self, Self::Error> {
+        let connections = &state.connections;
+
+        let network_connections = connections
+            .iter()
+            .filter(|c| c.controller.is_none())
+            .map(|c| {
+                let mut conn = NetworkConnection::try_from(c.clone()).unwrap();
+                if let Some(ref mut bond) = conn.bond {
+                    bond.ports = state.ports_for(c.uuid);
+                }
+                if let Some(ref mut bridge) = conn.bridge {
+                    bridge.ports = state.ports_for(c.uuid);
+                };
+                conn
+            })
+            .collect();
+
+        Ok(NetworkSettings {
+            connections: network_connections,
+        })
+    }
+}
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct MatchSettings {
     #[serde(skip_serializing_if = "Vec::is_empty", default)]

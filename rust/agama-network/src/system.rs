@@ -25,7 +25,7 @@ use crate::{
         AccessPoint, Connection, Device, GeneralState, NetworkChange, NetworkState, StateConfig,
     },
     types::DeviceType,
-    Adapter, NetworkAdapterError,
+    Adapter, NetworkAdapterError, SystemInfo,
 };
 use std::error::Error;
 use tokio::sync::{
@@ -161,6 +161,17 @@ impl NetworkSystemClient {
     pub async fn get_connections(&self) -> Result<Vec<Connection>, NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::GetConnections(tx))?;
+        Ok(rx.await?)
+    }
+    pub async fn get_extended_config(&self) -> Result<NetworkState, NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::GetExtendedConfig(tx))?;
+        Ok(rx.await?)
+    }
+
+    pub async fn get_system_config(&self) -> Result<SystemInfo, NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions.send(Action::GetSystemConfig(tx))?;
         Ok(rx.await?)
     }
 
@@ -310,6 +321,13 @@ impl<T: Adapter> NetworkSystemServer<T> {
                 let conn = self.state.get_connection_by_uuid(uuid);
                 tx.send(conn.cloned()).unwrap();
             }
+            Action::GetSystemConfig(tx) => {
+                let result = self.read().await?.try_into()?;
+                tx.send(result).unwrap();
+            }
+            Action::GetExtendedConfig(tx) => {
+                tx.send(self.state.clone()).unwrap();
+            }
             Action::GetConnections(tx) => {
                 let connections = self
                     .state
@@ -422,6 +440,11 @@ impl<T: Adapter> NetworkSystemServer<T> {
             .collect::<Vec<_>>();
 
         Ok((conn, controlled))
+    }
+
+    /// Reads the system network configuration.
+    pub async fn read(&mut self) -> Result<NetworkState, NetworkAdapterError> {
+        self.adapter.read(StateConfig::default()).await
     }
 
     /// Writes the network configuration.

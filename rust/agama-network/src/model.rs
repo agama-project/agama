@@ -252,6 +252,20 @@ impl NetworkState {
             )),
         }
     }
+
+    pub fn ports_for(&self, uuid: Uuid) -> Vec<String> {
+        self.connections
+            .iter()
+            .filter(|c| c.controller == Some(uuid))
+            .map(|c| {
+                if let Some(interface) = c.interface.to_owned() {
+                    interface
+                } else {
+                    c.clone().id
+                }
+            })
+            .collect()
+    }
 }
 
 #[cfg(test)]
@@ -474,7 +488,7 @@ pub struct GeneralState {
 
 /// Access Point
 #[serde_as]
-#[derive(Default, Debug, Clone, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct AccessPoint {
     #[serde_as(as = "DisplayFromStr")]

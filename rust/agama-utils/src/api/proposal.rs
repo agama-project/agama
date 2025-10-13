@@ -25,4 +25,5 @@ use serde::Serialize;
 pub struct Proposal {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub l10n: Option<l10n::Proposal>,
+    pub network: Option<NetworkSettings>,
 }

@@ -20,11 +20,17 @@
 
 use crate::l10n;
 use crate::service::Service;
+use agama_lib::network::{
+    NetworkAdapterError, NetworkClientError, NetworkManagerAdapter, NetworkSystem,
+    NetworkSystemError,
+};
 use agama_utils::{
     actor::{self, Handler},
     api::event,
     issue, progress, question,
 };
+
+use tokio::sync::mpsc;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -34,6 +40,12 @@ pub enum Error {
     L10n(#[from] l10n::start::Error),
     #[error(transparent)]
     Issues(#[from] issue::start::Error),
+    #[error(transparent)]
+    NetworkClient(#[from] NetworkClientError),
+    #[error(transparent)]
+    NetworkAdapter(#[from] NetworkAdapterError),
+    #[error(transparent)]
+    NetworkSystem(#[from] NetworkSystemError),
 }
 
 /// Starts the manager service.
@@ -57,8 +69,12 @@ pub async fn start(
     let issues = issue::start(events.clone(), dbus).await?;
     let progress = progress::start(events.clone()).await?;
     let l10n = l10n::start(issues.clone(), events.clone()).await?;
+    let network_adapter = NetworkManagerAdapter::from_system()
+        .await
+        .expect("Could not connect to NetworkManager");
+    let network = NetworkSystem::new(network_adapter).start().await?;
 
-    let service = Service::new(l10n, issues, progress, questions, events.clone());
+    let service = Service::new(l10n, network, issues, progress, questions, events.clone());
     let handler = actor::spawn(service);
     Ok(handler)
 }

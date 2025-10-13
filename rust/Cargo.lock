@@ -131,6 +131,7 @@ name = "agama-manager"
 version = "0.1.0"
 dependencies = [
  "agama-l10n",
+ "agama-network",
  "agama-utils",
  "async-trait",
  "merge-struct",
@@ -173,6 +174,7 @@ dependencies = [
  "agama-lib",
  "agama-locale-data",
  "agama-manager",
+ "agama-network",
  "agama-utils",
  "anyhow",
  "async-trait",
