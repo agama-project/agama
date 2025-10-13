@@ -171,6 +171,23 @@ async fn set_config(
         state.client.select_product(&product).await?;
     }
 
+    if let Some(patterns) = config.patterns {
+        let selected_patterns: Vec<_> = patterns
+            .iter()
+            .filter(|(_name, selected)| **selected)
+            .map(|(name, _selected)| name.as_str())
+            .collect();
+
+        tracing::info!("Setting selected patterns: {:?}", selected_patterns);
+
+        state.client.set_resolvables(
+            "user_patterns",
+            ResolvableType::Pattern,
+            &selected_patterns,
+            false,
+        )?
+    }
+
     Ok(())
 }
 
