@@ -192,6 +192,9 @@ struct Zypp *init_target(const char *root, struct Status *status,
 
   const std::string root_str(root);
 
+  // create the libzypp lock also in the target directory
+  setenv("ZYPP_LOCKFILE_ROOT", root, 1 /* allow overwrite */);
+
   struct Zypp *zypp = NULL;
   try {
     zypp::RepoManagerOptions repo_manager_options(root);
