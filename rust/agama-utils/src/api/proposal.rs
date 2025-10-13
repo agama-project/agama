@@ -27,6 +27,7 @@ use serde_json::Value;
 pub struct Proposal {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub l10n: Option<l10n::Proposal>,
+    pub network: Option<NetworkSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub storage: Option<Value>,
 }

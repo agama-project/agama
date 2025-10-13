@@ -19,11 +19,17 @@
 // find current contact information at www.suse.com.
 
 use crate::{l10n, service::Service, storage};
+use agama_lib::network::{
+    NetworkAdapterError, NetworkClientError, NetworkManagerAdapter, NetworkSystem,
+    NetworkSystemError,
+};
 use agama_utils::{
     actor::{self, Handler},
     api::event,
     issue, progress, question,
 };
+
+use tokio::sync::mpsc;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -34,6 +40,12 @@ pub enum Error {
     #[error(transparent)]
     L10n(#[from] l10n::start::Error),
     #[error(transparent)]
+    #[error(transparent)]
+    NetworkClient(#[from] NetworkClientError),
+    #[error(transparent)]
+    NetworkAdapter(#[from] NetworkAdapterError),
+    #[error(transparent)]
+    NetworkSystem(#[from] NetworkSystemError),
     Storage(#[from] storage::start::Error),
 }
 
@@ -51,8 +63,12 @@ pub async fn start(
     let progress = progress::start(events.clone()).await?;
     let l10n = l10n::start(issues.clone(), events.clone()).await?;
     let storage = storage::start(progress.clone(), issues.clone(), events.clone(), dbus).await?;
+    let network_adapter = NetworkManagerAdapter::from_system()
+        .await
+        .expect("Could not connect to NetworkManager");
+    let network = NetworkSystem::new(network_adapter).start().await?;
 
-    let service = Service::new(l10n, storage, issues, progress, questions, events);
+    let service = Service::new(l10n, network, storage, issues, progress, questions, events);
     let handler = actor::spawn(service);
     Ok(handler)
 }

@@ -19,6 +19,8 @@
 // find current contact information at www.suse.com.
 
 use crate::{l10n, message, storage};
+
+use agama_network::{error::NetworkStateError, NetworkSystemClient, NetworkSystemError};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -50,10 +52,15 @@ pub enum Error {
     Questions(#[from] question::service::Error),
     #[error(transparent)]
     Progress(#[from] progress::service::Error),
+    #[error(transparent)]
+    NetworkSystemError(#[from] NetworkSystemError),
+    #[error(transparent)]
+    NetworkStateError(#[from] NetworkStateError),
 }
 
 pub struct Service {
     l10n: Handler<l10n::Service>,
+    network: NetworkSystemClient,
     storage: Handler<storage::Service>,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
@@ -66,6 +73,7 @@ pub struct Service {
 impl Service {
     pub fn new(
         l10n: Handler<l10n::Service>,
+        network: NetworkSystemClient,
         storage: Handler<storage::Service>,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
@@ -74,6 +82,7 @@ impl Service {
     ) -> Self {
         Self {
             l10n,
+            network,
             storage,
             issues,
             progress,
@@ -147,7 +156,12 @@ impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
         let storage = self.storage.call(storage::message::GetSystem).await?;
-        Ok(SystemInfo { l10n, storage })
+        let network = self.network.get_system_config().await?;
+        Ok(SystemInfo {
+            l10n,
+            network,
+            storage,
+        })
     }
 }
 
@@ -159,10 +173,17 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
+        let network_config: agama_network::SystemInfo =
+            self.network.get_extended_config().await?.try_into()?;
+        let network = Some(NetworkSettings {
+            connections: network_config.connections,
+        });
         let storage = self.storage.call(storage::message::GetConfig).await?;
+
         Ok(Config {
             l10n: Some(l10n),
-            questions,
+            questions: Some(questions),
+            network,
             storage,
         })
     }
@@ -239,7 +260,17 @@ impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
         let storage = self.storage.call(storage::message::GetProposal).await?;
-        Ok(Some(Proposal { l10n, storage }))
+        let network_config: agama_network::SystemInfo =
+            self.network.get_extended_config().await?.try_into()?;
+        let network = Some(NetworkSettings {
+            connections: network_config.connections,
+        });
+
+        Ok(Some(Proposal {
+            l10n,
+            network,
+            storage,
+        }))
     }
 }
 
