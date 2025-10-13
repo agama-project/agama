@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2024] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,17 +18,28 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module contains all Agama public types that might be available over
-//! the HTTP and WebSocket API.
+use crate::types::progress::Progress;
+use serde::Serialize;
 
-pub mod event;
-pub use event::Event;
+// Information about the status of the installation.
+#[derive(Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Status {
+    /// State of the installation
+    pub state: State,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    /// Active progresses
+    pub progresses: Vec<Progress>,
+}
 
-pub mod progress;
-pub use progress::Progress;
-
-pub mod scope;
-pub use scope::Scope;
-
-pub mod status;
-pub use status::Status;
+/// Represents the current state of the installation process.
+#[derive(Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum State {
+    /// Configuring the installation
+    Configuring,
+    /// Installing the system
+    Installing,
+    /// Installation finished
+    Finished,
+}

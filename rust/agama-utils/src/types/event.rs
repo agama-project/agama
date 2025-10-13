@@ -25,23 +25,23 @@ use tokio::sync::broadcast;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Event {
-    // FIXME: move service::State to agama_utils::types::manager.
-    StatusChanged,
-    /// The list of issues has changed.
-    IssuesChanged {
-        scope: Scope,
-    },
+    // The state of the installation changed.
+    StateChanged,
     /// Progress changed.
     ProgressChanged {
         scope: Scope,
     },
-    /// Proposal changed.
-    ProposalChanged {
+    /// The list of issues has changed.
+    IssuesChanged {
         scope: Scope,
     },
     /// The underlying system changed.
     SystemChanged {
         scope: String,
+    },
+    /// Proposal changed.
+    ProposalChanged {
+        scope: Scope,
     },
 }
 

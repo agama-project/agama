@@ -163,8 +163,6 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema_from::<crate::server::types::IssuesMap>()
             .schema_from::<crate::software::web::SoftwareProposal>()
             .schema_from::<agama_manager::message::Action>()
-            .schema_from::<agama_manager::message::Status>()
-            .schema_from::<agama_manager::service::State>()
             .schema_from::<agama_utils::types::progress::Progress>()
             .schema_from::<agama_utils::types::status::Status>()
             .schema_from::<agama_utils::types::status::State>()

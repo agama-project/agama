@@ -56,9 +56,8 @@ pub async fn start(
     let progress = progress::start(events.clone()).await?;
     let l10n = l10n::start(issues.clone(), events.clone()).await?;
 
-    let service = Service::new(l10n, issues, progress);
+    let service = Service::new(l10n, issues, progress, events.clone());
     let handler = actor::spawn(service);
-
     Ok(handler)
 }
 
@@ -74,7 +73,14 @@ mod test {
     use tokio::sync::broadcast;
 
     async fn start_service() -> Handler<Service> {
-        let (events_sender, _events_receiver) = broadcast::channel::<Event>(16);
+        let (events_sender, mut events_receiver) = broadcast::channel::<Event>(16);
+
+        tokio::spawn(async move {
+            while let Ok(event) = events_receiver.recv().await {
+                println!("{:?}", event);
+            }
+        });
+
         manager::start(events_sender, None).await.unwrap()
     }
 
@@ -111,9 +117,17 @@ mod test {
     async fn test_patch_config() -> Result<(), Box<dyn std::error::Error>> {
         let handler = start_service().await;
 
+        // Ensure the keymap is different to the system one.
+        let config = handler.call(message::GetExtendedConfig).await?;
+        let keymap = if config.localization.unwrap().keymap.unwrap() == "es" {
+            "en"
+        } else {
+            "es"
+        };
+
         let input_config = InstallSettings {
             localization: Some(l10n::Config {
-                keymap: Some("es".to_string()),
+                keymap: Some(keymap.to_string()),
                 ..Default::default()
             }),
             ..Default::default()

@@ -20,28 +20,16 @@
 
 use crate::l10n;
 use crate::proposal::Proposal;
-use crate::service;
 use crate::system_info::SystemInfo;
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::actor::Message;
 use agama_utils::issue::Issue;
-use agama_utils::types::scope::Scope;
-use agama_utils::types::Progress;
-use serde::{Deserialize, Serialize};
+use agama_utils::types::{Scope, Status};
+use serde::Deserialize;
 use std::collections::HashMap;
 
 /// Gets the installation status.
 pub struct GetStatus;
-
-#[derive(Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct Status {
-    /// State of the installation
-    pub state: service::State,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    /// Active progresses
-    pub progresses: Vec<Progress>,
-}
 
 impl Message for GetStatus {
     type Reply = Status;

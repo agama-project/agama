@@ -26,16 +26,19 @@ use agama_lib::install_settings::InstallSettings;
 use agama_utils::actor::{self, Actor, Handler, MessageHandler};
 use agama_utils::issue;
 use agama_utils::progress;
-use agama_utils::types::Scope;
+use agama_utils::types::status::State;
+use agama_utils::types::{event, Event, Scope, Status};
 use async_trait::async_trait;
 use merge_struct::merge;
-use serde::Serialize;
 use std::collections::HashMap;
+use tokio::sync::broadcast;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Cannot merge the configuration")]
     MergeConfig,
+    #[error(transparent)]
+    Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error(transparent)]
@@ -46,23 +49,13 @@ pub enum Error {
     Issues(#[from] agama_utils::issue::service::Error),
 }
 
-#[derive(Clone, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub enum State {
-    /// Configuring the installation
-    Configuring,
-    /// Installing the system
-    Installing,
-    /// Installation finished
-    Finished,
-}
-
 pub struct Service {
     l10n: Handler<l10n::service::Service>,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     state: State,
     config: InstallSettings,
+    events: event::Sender,
 }
 
 impl Service {
@@ -70,11 +63,13 @@ impl Service {
         l10n: Handler<l10n::Service>,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
+        events: event::Sender,
     ) -> Self {
         Self {
             l10n,
             issues,
             progress,
+            events,
             state: State::Configuring,
             config: InstallSettings::default(),
         }
@@ -82,6 +77,7 @@ impl Service {
 
     async fn install(&mut self) -> Result<(), Error> {
         self.state = State::Installing;
+        self.events.send(Event::StateChanged)?;
         // TODO: translate progress steps.
         self.progress
             .call(progress::message::StartWithSteps::new(
@@ -90,10 +86,11 @@ impl Service {
             ))
             .await?;
         self.l10n.call(l10n::message::Install).await?;
-        self.state = State::Finished;
         self.progress
             .call(progress::message::Finish::new(Scope::Manager))
             .await?;
+        self.state = State::Finished;
+        self.events.send(Event::StateChanged)?;
         Ok(())
     }
 }
@@ -105,9 +102,9 @@ impl Actor for Service {
 #[async_trait]
 impl MessageHandler<message::GetStatus> for Service {
     /// It returns the status of the installation.
-    async fn handle(&mut self, _message: message::GetStatus) -> Result<message::Status, Error> {
+    async fn handle(&mut self, _message: message::GetStatus) -> Result<Status, Error> {
         let progresses = self.progress.call(progress::message::Get).await?;
-        Ok(message::Status {
+        Ok(Status {
             state: self.state.clone(),
             progresses,
         })

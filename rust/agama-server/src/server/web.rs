@@ -27,7 +27,7 @@ use agama_manager::message;
 use agama_manager::SystemInfo;
 use agama_manager::{self as manager};
 use agama_utils::actor::Handler;
-use agama_utils::types::event;
+use agama_utils::types::{event, Status};
 use anyhow;
 use axum::extract::State;
 use axum::response::{IntoResponse, Response};
@@ -100,7 +100,7 @@ pub async fn server_service(
         (status = 400, description = "Not possible to retrieve the status of the installation.")
     )
 )]
-async fn get_status(State(state): State<ServerState>) -> ServerResult<Json<message::Status>> {
+async fn get_status(State(state): State<ServerState>) -> ServerResult<Json<Status>> {
     let status = state.manager.call(message::GetStatus).await?;
     Ok(Json(status))
 }
