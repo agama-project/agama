@@ -53,7 +53,9 @@ mod service;
 mod state;
 mod ws;
 
-use agama_lib::{connection, error::ServiceError, http::event::OldEvent};
+use agama_lib::connection;
+use agama_lib::error::ServiceError;
+use agama_lib::http::event::{OldEvent, OldSender};
 use common::ProgressService;
 pub use config::ServiceConfig;
 pub use service::MainServiceBuilder;

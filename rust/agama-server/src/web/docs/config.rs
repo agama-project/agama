@@ -165,7 +165,7 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema_from::<agama_manager::message::Action>()
             .schema_from::<agama_manager::message::Status>()
             .schema_from::<agama_manager::service::State>()
-            .schema_from::<agama_utils::progress::Progress>()
+            .schema_from::<agama_utils::types::progress::Progress>()
             .build()
     }
 }
