@@ -28,7 +28,9 @@ use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, Key
 use agama_utils::actor::{self, Actor, Handler, MessageHandler};
 use agama_utils::issue::{self, Issue};
 use agama_utils::types::event::{self, Event};
+use agama_utils::types::scope::Scope;
 use async_trait::async_trait;
+use tokio::sync::broadcast;
 
 pub(crate) const SCOPE: &str = "localization";
 
@@ -46,8 +48,10 @@ pub enum Error {
     InvalidKeymap(#[from] InvalidKeymapId),
     #[error(transparent)]
     InvalidTimezone(#[from] InvalidTimezoneId),
-    #[error("l10n service could not send the event")]
-    Event,
+    #[error(transparent)]
+    Event(#[from] broadcast::error::SendError<Event>),
+    #[error(transparent)]
+    Issue(#[from] issue::service::Error),
     #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error(transparent)]
@@ -196,10 +200,10 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
             None
         };
 
-        _ = self.issues.cast(issue::message::Update::new(SCOPE, issues));
-        _ = self.events.send(Event::ProposalChanged {
-            scope: SCOPE.to_string(),
-        });
+        self.issues
+            .cast(issue::message::Update::new(SCOPE, issues))?;
+        self.events
+            .send(Event::ProposalChanged { scope: Scope::L10n })?;
         Ok(())
     }
 }

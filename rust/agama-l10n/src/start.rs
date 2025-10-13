@@ -69,6 +69,7 @@ mod tests {
     use agama_utils::actor::{self, Handler};
     use agama_utils::issue;
     use agama_utils::types::event::{self, Event};
+    use agama_utils::types::scope::Scope;
     use tokio::sync::broadcast;
 
     pub struct TestModel {
@@ -169,7 +170,10 @@ mod tests {
         assert!(proposal.is_some());
 
         let event = events_rx.recv().await.expect("Did not receive the event");
-        assert!(matches!(event, Event::ProposalChanged { scope: _scope }));
+        assert!(matches!(
+            event,
+            Event::ProposalChanged { scope: Scope::L10n }
+        ));
         Ok(())
     }
 
