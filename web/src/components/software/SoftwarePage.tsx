@@ -136,7 +136,8 @@ function SoftwarePage(): React.ReactNode {
   const issues = useIssues("software");
   const proposal = useSoftwareProposal();
   const patterns = usePatterns();
-  const repos = useRepositories();
+  // FIXME: temporarily disabled, the API end point is not implemented yet
+  const repos = []; // useRepositories();
 
   const [loading, setLoading] = useState(false);
   const { mutate: probe } = useRepositoryMutation(() => setLoading(false));
