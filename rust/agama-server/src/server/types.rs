@@ -22,6 +22,7 @@
 
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::issue;
+use agama_utils::types::Scope;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -48,15 +49,15 @@ pub struct IssuesMap {
     pub users: Vec<issue::Issue>,
 }
 
-impl From<HashMap<String, Vec<issue::Issue>>> for IssuesMap {
-    fn from(mut value: HashMap<String, Vec<issue::Issue>>) -> Self {
+impl From<HashMap<Scope, Vec<issue::Issue>>> for IssuesMap {
+    fn from(mut value: HashMap<Scope, Vec<issue::Issue>>) -> Self {
         Self {
-            iscsi: value.remove("iscsi").unwrap_or_default(),
-            localization: value.remove("localization").unwrap_or_default(),
-            product: value.remove("product").unwrap_or_default(),
-            software: value.remove("software").unwrap_or_default(),
-            storage: value.remove("storage").unwrap_or_default(),
-            users: value.remove("users").unwrap_or_default(),
+            iscsi: value.remove(&Scope::Iscsi).unwrap_or_default(),
+            localization: value.remove(&Scope::L10n).unwrap_or_default(),
+            product: value.remove(&Scope::Product).unwrap_or_default(),
+            software: value.remove(&Scope::Software).unwrap_or_default(),
+            storage: value.remove(&Scope::Storage).unwrap_or_default(),
+            users: value.remove(&Scope::Users).unwrap_or_default(),
         }
     }
 }

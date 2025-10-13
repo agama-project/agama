@@ -27,6 +27,8 @@ use serde::{Deserialize, Serialize};
     Copy,
     Clone,
     Debug,
+    Eq,
+    Hash,
     strum::EnumString,
     strum::Display,
     Deserialize,
@@ -39,4 +41,9 @@ use serde::{Deserialize, Serialize};
 pub enum Scope {
     Manager,
     L10n,
+    Product,
+    Software,
+    Storage,
+    Iscsi,
+    Users,
 }

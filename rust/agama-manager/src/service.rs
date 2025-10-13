@@ -198,7 +198,7 @@ impl MessageHandler<message::GetIssues> for Service {
     async fn handle(
         &mut self,
         _message: message::GetIssues,
-    ) -> Result<HashMap<String, Vec<issue::Issue>>, Error> {
+    ) -> Result<HashMap<Scope, Vec<issue::Issue>>, Error> {
         Ok(self.issues.call(issue::message::Get).await?)
     }
 }

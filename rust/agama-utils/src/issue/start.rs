@@ -48,6 +48,7 @@ pub async fn start(
 mod tests {
     use crate::issue::{self, message, Issue, IssueSeverity, IssueSource};
     use crate::types::event::Event;
+    use crate::types::scope::Scope;
     use tokio::sync::broadcast::{self, error::TryRecvError};
 
     fn build_issue() -> Issue {
@@ -69,7 +70,7 @@ mod tests {
 
         let issue = build_issue();
         _ = issues
-            .cast(message::Update::new("my-service", vec![issue]))
+            .cast(message::Update::new(Scope::Manager, vec![issue]))
             .unwrap();
 
         let issues_list = issues.call(message::Get).await.unwrap();
@@ -88,7 +89,7 @@ mod tests {
         assert!(issues_list.is_empty());
 
         let issue = build_issue();
-        let update = message::Update::new("my-service", vec![issue]).notify(false);
+        let update = message::Update::new(Scope::Manager, vec![issue]).notify(false);
         _ = issues.cast(update).unwrap();
 
         let issues_list = issues.call(message::Get).await.unwrap();
@@ -104,11 +105,11 @@ mod tests {
         let issues = issue::start(events_tx, None).await.unwrap();
 
         let issue = build_issue();
-        let update = message::Update::new("my-service", vec![issue.clone()]);
+        let update = message::Update::new(Scope::Manager, vec![issue.clone()]);
         issues.call(update).await.unwrap();
         assert!(events_rx.try_recv().is_ok());
 
-        let update = message::Update::new("my-service", vec![issue]);
+        let update = message::Update::new(Scope::Manager, vec![issue]);
         issues.call(update).await.unwrap();
         assert!(matches!(events_rx.try_recv(), Err(TryRecvError::Empty)));
         Ok(())

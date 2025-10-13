@@ -224,7 +224,7 @@ mod tests {
         let _ = handler.call(message::SetConfig::new(config)).await?;
 
         let found_issues = issues.call(issue::message::Get).await?;
-        let l10n_issues = found_issues.get("localization").unwrap();
+        let l10n_issues = found_issues.get(&Scope::L10n).unwrap();
         assert_eq!(l10n_issues.len(), 3);
 
         let proposal = handler.call(message::GetProposal).await?;

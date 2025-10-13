@@ -201,7 +201,7 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
         };
 
         self.issues
-            .cast(issue::message::Update::new(SCOPE, issues))?;
+            .cast(issue::message::Update::new(Scope::L10n, issues))?;
         self.events
             .send(Event::ProposalChanged { scope: Scope::L10n })?;
         Ok(())

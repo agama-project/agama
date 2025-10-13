@@ -28,7 +28,9 @@ pub enum Event {
     // FIXME: move service::State to agama_utils::types::manager.
     StatusChanged,
     /// The list of issues has changed.
-    IssuesChanged,
+    IssuesChanged {
+        scope: Scope,
+    },
     /// Progress changed.
     ProgressChanged {
         scope: Scope,

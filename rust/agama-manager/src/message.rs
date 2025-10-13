@@ -25,6 +25,7 @@ use crate::system_info::SystemInfo;
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::actor::Message;
 use agama_utils::issue::Issue;
+use agama_utils::types::scope::Scope;
 use agama_utils::types::Progress;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -116,7 +117,7 @@ impl Message for GetProposal {
 pub struct GetIssues;
 
 impl Message for GetIssues {
-    type Reply = HashMap<String, Vec<Issue>>;
+    type Reply = HashMap<Scope, Vec<Issue>>;
 }
 
 /// Runs the given action.

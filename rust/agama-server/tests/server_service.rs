@@ -35,7 +35,13 @@ use tokio::{sync::broadcast::channel, test};
 use tower::ServiceExt;
 
 async fn build_server_service() -> Result<Router, ServiceError> {
-    let (tx, _rx) = channel(16);
+    let (tx, mut rx) = channel(16);
+
+    tokio::spawn(async move {
+        while let Ok(event) = rx.recv().await {
+            println!("{:?}", event);
+        }
+    });
 
     server_service(tx, None).await
 }

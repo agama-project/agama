@@ -19,21 +19,25 @@
 // find current contact information at www.suse.com.
 
 use crate::actor::{self, Actor, MessageHandler};
-use crate::issue::{message, Issue};
+use crate::issue::{message, model, Issue};
 use crate::types::event::{self, Event};
+use crate::types::Scope;
 use async_trait::async_trait;
 use std::collections::{HashMap, HashSet};
+use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error(transparent)]
+    Event(#[from] broadcast::error::SendError<Event>),
+    #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error(transparent)]
-    Model(#[from] super::model::Error),
+    Model(#[from] model::Error),
 }
 
 pub struct Service {
-    issues: HashMap<String, Vec<Issue>>,
+    issues: HashMap<Scope, Vec<Issue>>,
     events: event::Sender,
 }
 
@@ -55,7 +59,7 @@ impl MessageHandler<message::Get> for Service {
     async fn handle(
         &mut self,
         _message: message::Get,
-    ) -> Result<HashMap<String, Vec<Issue>>, Error> {
+    ) -> Result<HashMap<Scope, Vec<Issue>>, Error> {
         Ok(self.issues.clone())
     }
 }
@@ -66,7 +70,7 @@ impl MessageHandler<message::Update> for Service {
         // Compare whether the issues has changed.
         let old_issues_hash: HashSet<_> = self
             .issues
-            .get(&message.list)
+            .get(&message.scope)
             .map(|v| v.iter().cloned().collect())
             .unwrap_or_default();
         let new_issues_hash: HashSet<_> = message.issues.iter().cloned().collect();
@@ -75,13 +79,15 @@ impl MessageHandler<message::Update> for Service {
         }
 
         if message.issues.is_empty() {
-            _ = self.issues.remove(&message.list);
+            _ = self.issues.remove(&message.scope);
         } else {
-            self.issues.insert(message.list, message.issues);
+            self.issues.insert(message.scope, message.issues);
         }
 
         if message.notify {
-            _ = self.events.send(Event::IssuesChanged);
+            self.events.send(Event::IssuesChanged {
+                scope: message.scope,
+            })?;
         }
         Ok(())
     }
