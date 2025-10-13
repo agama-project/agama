@@ -83,10 +83,11 @@ impl MessageHandler<message::Start> for Service {
         if self.get_progress(message.scope).is_some() {
             return Err(Error::DuplicatedProgress(message.scope));
         }
-        self.progresses
-            .push(Progress::new(message.scope, message.size, message.step));
+        let progress = Progress::new(message.scope, message.size, message.step);
+        self.progresses.push(progress.clone());
         self.events.send(Event::ProgressChanged {
             scope: message.scope,
+            progress,
         })?;
         Ok(())
     }
@@ -98,10 +99,11 @@ impl MessageHandler<message::StartWithSteps> for Service {
         if self.get_progress(message.scope).is_some() {
             return Err(Error::DuplicatedProgress(message.scope));
         }
-        self.progresses
-            .push(Progress::new_with_steps(message.scope, message.steps));
+        let progress = Progress::new_with_steps(message.scope, message.steps);
+        self.progresses.push(progress.clone());
         self.events.send(Event::ProgressChanged {
             scope: message.scope,
+            progress,
         })?;
         Ok(())
     }
@@ -114,8 +116,10 @@ impl MessageHandler<message::Next> for Service {
             return Err(Error::MissingProgress(message.scope));
         };
         progress.next()?;
+        let progress = progress.clone();
         self.events.send(Event::ProgressChanged {
             scope: message.scope,
+            progress,
         })?;
         Ok(())
     }
@@ -128,8 +132,10 @@ impl MessageHandler<message::NextWithStep> for Service {
             return Err(Error::MissingProgress(message.scope));
         };
         progress.next_with_step(message.step)?;
+        let progress = progress.clone();
         self.events.send(Event::ProgressChanged {
             scope: message.scope,
+            progress,
         })?;
         Ok(())
     }
@@ -142,7 +148,7 @@ impl MessageHandler<message::Finish> for Service {
             .get_progress_index(message.scope)
             .ok_or(Error::MissingProgress(message.scope))?;
         self.progresses.remove(index);
-        self.events.send(Event::ProgressChanged {
+        self.events.send(Event::ProgressFinished {
             scope: message.scope,
         })?;
         Ok(())

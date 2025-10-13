@@ -67,18 +67,31 @@ mod tests {
         let event = receiver.recv().await.unwrap();
         assert!(matches!(
             event,
-            Event::ProgressChanged { scope: Scope::L10n }
+            Event::ProgressChanged {
+                scope: Scope::L10n,
+                progress: _
+            }
         ));
+
+        let Event::ProgressChanged {
+            scope: _,
+            progress: event_progress,
+        } = event
+        else {
+            panic!("Unexpected event: {:?}", event);
+        };
+
+        assert_eq!(event_progress.scope, Scope::L10n);
+        assert_eq!(event_progress.size, 3);
+        assert!(event_progress.steps.is_empty());
+        assert_eq!(event_progress.step, "first step");
+        assert_eq!(event_progress.index, 1);
 
         let progresses = handler.call(message::Get).await?;
         assert_eq!(progresses.len(), 1);
 
         let progress = progresses.first().unwrap();
-        assert_eq!(progress.scope, Scope::L10n);
-        assert_eq!(progress.size, 3);
-        assert!(progress.steps.is_empty());
-        assert_eq!(progress.step, "first step");
-        assert_eq!(progress.index, 1);
+        assert_eq!(*progress, event_progress);
 
         // Second step
         handler
@@ -88,7 +101,10 @@ mod tests {
         let event = receiver.recv().await.unwrap();
         assert!(matches!(
             event,
-            Event::ProgressChanged { scope: Scope::L10n }
+            Event::ProgressChanged {
+                scope: Scope::L10n,
+                progress: _
+            }
         ));
 
         let progresses = handler.call(message::Get).await.unwrap();
@@ -105,7 +121,10 @@ mod tests {
         let event = receiver.recv().await.unwrap();
         assert!(matches!(
             event,
-            Event::ProgressChanged { scope: Scope::L10n }
+            Event::ProgressChanged {
+                scope: Scope::L10n,
+                progress: _
+            }
         ));
 
         let progresses = handler.call(message::Get).await.unwrap();
@@ -122,7 +141,7 @@ mod tests {
         let event = receiver.recv().await.unwrap();
         assert!(matches!(
             event,
-            Event::ProgressChanged { scope: Scope::L10n }
+            Event::ProgressFinished { scope: Scope::L10n }
         ));
 
         let progresses = handler.call(message::Get).await.unwrap();

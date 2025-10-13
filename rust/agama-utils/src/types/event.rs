@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::types::progress::Progress;
 use crate::types::scope::Scope;
 use serde::{Deserialize, Serialize};
 use tokio::sync::broadcast;
@@ -29,6 +30,11 @@ pub enum Event {
     StateChanged,
     /// Progress changed.
     ProgressChanged {
+        scope: Scope,
+        progress: Progress,
+    },
+    /// Progress finished.
+    ProgressFinished {
         scope: Scope,
     },
     /// The list of issues has changed.

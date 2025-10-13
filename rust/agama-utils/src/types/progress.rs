@@ -21,7 +21,7 @@
 //! This module includes the struct that represent a service progress step.
 
 use crate::types::scope::Scope;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -29,7 +29,7 @@ pub enum Error {
     MissingStep(Scope),
 }
 
-#[derive(Clone, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Progress {
     /// Scope of the progress
