@@ -41,7 +41,6 @@ import {
   usePatterns,
   useSoftwareProposal,
   useSoftwareProposalChanges,
-  useRepositories,
   useRepositoryMutation,
 } from "~/queries/software";
 import { Pattern, SelectedBy } from "~/types/software";
