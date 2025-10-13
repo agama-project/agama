@@ -186,7 +186,8 @@ impl MessageHandler<message::GetConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
-        let merged = self.state.config.merge(&message.config)?;
+        let config = ExtendedConfig::new_from(&self.state.system);
+        let merged = config.merge(&message.config)?;
         if merged == self.state.config {
             return Ok(());
         }

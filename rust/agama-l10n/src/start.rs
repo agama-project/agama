@@ -174,6 +174,28 @@ mod tests {
             event,
             Event::ProposalChanged { scope: Scope::L10n }
         ));
+
+        let input_config = Config {
+            locale: None,
+            keymap: Some("es".to_string()),
+            timezone: None,
+        };
+
+        // Use system info for missing values.
+        handler
+            .call(message::SetConfig::new(input_config.clone()))
+            .await?;
+
+        let updated = handler.call(message::GetConfig).await?;
+        assert_eq!(
+            updated,
+            Config {
+                locale: Some("en_US.UTF-8".to_string()),
+                keymap: Some("es".to_string()),
+                timezone: Some("Europe/Berlin".to_string()),
+            }
+        );
+
         Ok(())
     }
 
