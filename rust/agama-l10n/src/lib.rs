@@ -44,9 +44,6 @@ pub use service::Service;
 mod model;
 pub use model::{Model, ModelAdapter};
 
-mod system_info;
-pub use system_info::SystemInfo;
-
 mod proposal;
 pub use proposal::Proposal;
 

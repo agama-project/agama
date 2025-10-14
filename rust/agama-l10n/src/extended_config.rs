@@ -19,9 +19,9 @@
 // find current contact information at www.suse.com.
 
 use crate::service;
-use crate::system_info::SystemInfo;
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use agama_utils::api;
+use agama_utils::api::l10n::SystemInfo;
 
 #[derive(Clone, PartialEq)]
 pub struct ExtendedConfig {

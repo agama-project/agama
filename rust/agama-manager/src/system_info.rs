@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::l10n;
+use agama_utils::api::l10n;
 use serde::Serialize;
 
 #[derive(Clone, Debug, Serialize)]

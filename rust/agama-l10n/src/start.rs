@@ -59,15 +59,13 @@ pub async fn start(
 #[cfg(test)]
 mod tests {
     use crate::message;
-    use crate::model::{
-        Keymap, KeymapsDatabase, LocaleEntry, LocalesDatabase, ModelAdapter, TimezoneEntry,
-        TimezonesDatabase,
-    };
+    use crate::model::{KeymapsDatabase, LocalesDatabase, ModelAdapter, TimezonesDatabase};
     use crate::service::{self, Service};
     use agama_locale_data::{KeymapId, LocaleId};
     use agama_utils::actor::{self, Handler};
     use agama_utils::api;
     use agama_utils::api::event::{self, Event};
+    use agama_utils::api::l10n::{Keymap, LocaleEntry, TimezoneEntry};
     use agama_utils::api::scope::Scope;
     use agama_utils::issue;
     use tokio::sync::broadcast;

@@ -19,10 +19,10 @@
 // find current contact information at www.suse.com.
 
 use crate::proposal::Proposal;
-use crate::system_info::SystemInfo;
 use agama_locale_data::{KeymapId, LocaleId};
 use agama_utils::actor::Message;
 use agama_utils::api;
+use agama_utils::api::l10n::SystemInfo;
 use serde::Deserialize;
 
 #[derive(Clone)]

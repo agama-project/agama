@@ -229,9 +229,12 @@ dependencies = [
 name = "agama-utils"
 version = "0.1.0"
 dependencies = [
+ "agama-locale-data",
  "async-trait",
+ "gettext-rs",
  "serde",
  "serde_json",
+ "serde_with",
  "strum",
  "thiserror 2.0.16",
  "tokio",

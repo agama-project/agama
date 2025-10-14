@@ -22,11 +22,11 @@ use crate::extended_config::ExtendedConfig;
 use crate::message;
 use crate::model::ModelAdapter;
 use crate::proposal::Proposal;
-use crate::system_info::SystemInfo;
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
 use agama_utils::actor::{self, Actor, Handler, MessageHandler};
 use agama_utils::api;
 use agama_utils::api::event::{self, Event};
+use agama_utils::api::l10n::SystemInfo;
 use agama_utils::api::scope::Scope;
 use agama_utils::issue::{self, Issue};
 use async_trait::async_trait;
@@ -87,7 +87,7 @@ impl Service {
         issues: Handler<issue::Service>,
         events: event::Sender,
     ) -> Service {
-        let system = SystemInfo::read_from(&model);
+        let system = model.read_system_info();
         let config = ExtendedConfig::new_from(&system);
         let proposal = (&config).into();
         let state = State {
