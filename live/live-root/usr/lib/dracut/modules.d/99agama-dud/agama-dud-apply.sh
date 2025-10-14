@@ -253,7 +253,7 @@ setup_from_modules_order() {
     rmmod "${module_order[$i]}" 2>&1
   done
 
-  cp "${dud_modules_dir}/module.order" "${NEWROOT}/etc/modules-load.d/99-agama.conf"
+  cat "${dud_modules_dir}/module.order" >>"${NEWROOT}/etc/modules-load.d/99-agama.conf"
 }
 
 # Sets up the kernel modules.
