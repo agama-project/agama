@@ -21,8 +21,8 @@
 //! This module defines some ancillary types for the HTTP API.
 
 use agama_lib::install_settings::InstallSettings;
+use agama_utils::api::Scope;
 use agama_utils::issue;
-use agama_utils::types::Scope;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 

@@ -41,7 +41,7 @@ use crate::{
     users::web::{users_service, users_streams},
     web::common::{jobs_stream, service_status_stream},
 };
-use agama_utils::types::event;
+use agama_utils::api::event;
 use axum::Router;
 
 mod auth;

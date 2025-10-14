@@ -25,8 +25,8 @@ pub mod service;
 pub use service::Service;
 
 pub mod actor;
+pub mod api;
 pub mod dbus;
 pub mod issue;
 pub mod openapi;
 pub mod progress;
-pub mod types;

@@ -19,8 +19,8 @@
 // find current contact information at www.suse.com.
 
 use crate::actor::Message;
-use crate::types::progress::Progress;
-use crate::types::scope::Scope;
+use crate::api::progress::Progress;
+use crate::api::scope::Scope;
 
 pub struct Get;
 

@@ -19,11 +19,10 @@
 // find current contact information at www.suse.com.
 
 pub mod common;
-
-use agama_l10n::Config;
 use agama_lib::error::ServiceError;
 use agama_lib::install_settings::InstallSettings;
 use agama_server::server::server_service;
+use agama_utils::api;
 use axum::{
     body::Body,
     http::{Method, Request, StatusCode},
@@ -87,7 +86,7 @@ async fn test_get_empty_config() -> Result<(), Box<dyn Error>> {
 #[test]
 #[cfg(not(ci))]
 async fn test_put_config() -> Result<(), Box<dyn Error>> {
-    let localization = Config {
+    let localization = api::l10n::Config {
         locale: Some("es_ES.UTF-8".to_string()),
         keymap: Some("es".to_string()),
         timezone: Some("Atlantic/Canary".to_string()),
@@ -122,7 +121,7 @@ async fn test_put_config() -> Result<(), Box<dyn Error>> {
         r#""localization":{"locale":"es_ES.UTF-8","keymap":"es","timezone":"Atlantic/Canary"#
     ));
 
-    let localization = Config {
+    let localization = api::l10n::Config {
         locale: None,
         keymap: Some("en".to_string()),
         timezone: None,
@@ -158,7 +157,7 @@ async fn test_put_config() -> Result<(), Box<dyn Error>> {
 async fn test_patch_config() -> Result<(), Box<dyn Error>> {
     use agama_server::server::types::ConfigPatch;
 
-    let localization = Config {
+    let localization = api::l10n::Config {
         locale: Some("es_ES.UTF-8".to_string()),
         keymap: Some("es".to_string()),
         timezone: Some("Atlantic/Canary".to_string()),
@@ -180,7 +179,7 @@ async fn test_patch_config() -> Result<(), Box<dyn Error>> {
     let response = server_service.clone().oneshot(request).await.unwrap();
     assert_eq!(response.status(), StatusCode::OK);
 
-    let localization = Config {
+    let localization = api::l10n::Config {
         locale: None,
         keymap: Some("en".to_string()),
         timezone: None,

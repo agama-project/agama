@@ -25,10 +25,10 @@ use crate::proposal::Proposal;
 use crate::system_info::SystemInfo;
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
 use agama_utils::actor::{self, Actor, Handler, MessageHandler};
+use agama_utils::api;
+use agama_utils::api::event::{self, Event};
+use agama_utils::api::scope::Scope;
 use agama_utils::issue::{self, Issue};
-use agama_utils::types;
-use agama_utils::types::event::{self, Event};
-use agama_utils::types::scope::Scope;
 use async_trait::async_trait;
 use tokio::sync::broadcast;
 
@@ -176,9 +176,9 @@ impl MessageHandler<message::SetSystem<message::SystemConfig>> for Service {
 
 #[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
-    async fn handle(&mut self, _message: message::GetConfig) -> Result<types::l10n::Config, Error> {
+    async fn handle(&mut self, _message: message::GetConfig) -> Result<api::l10n::Config, Error> {
         let config = self.state.config.clone();
-        Ok(types::l10n::Config {
+        Ok(api::l10n::Config {
             locale: Some(config.locale.to_string()),
             keymap: Some(config.keymap.to_string()),
             timezone: Some(config.timezone.to_string()),
@@ -187,10 +187,10 @@ impl MessageHandler<message::GetConfig> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::SetConfig<types::l10n::Config>> for Service {
+impl MessageHandler<message::SetConfig<api::l10n::Config>> for Service {
     async fn handle(
         &mut self,
-        message: message::SetConfig<types::l10n::Config>,
+        message: message::SetConfig<api::l10n::Config>,
     ) -> Result<(), Error> {
         let config = ExtendedConfig::new_from(&self.state.system);
         let merged = config.merge(&message.config)?;

@@ -18,8 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::types::progress::Progress;
-use crate::types::scope::Scope;
+use crate::api::progress::Progress;
+use crate::api::scope::Scope;
 use serde::{Deserialize, Serialize};
 use tokio::sync::broadcast;
 

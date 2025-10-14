@@ -20,7 +20,7 @@
 
 //! This module includes the struct that represent a service progress step.
 
-use crate::types::scope::Scope;
+use crate::api::scope::Scope;
 use serde::{Deserialize, Serialize};
 
 #[derive(thiserror::Error, Debug)]

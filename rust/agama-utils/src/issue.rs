@@ -31,7 +31,7 @@
 //!
 //! ```no_run
 //! use agama_utils::issue::{self, message};
-//! use agama_utils::types::Scope;
+//! use agama_utils::api::Scope;
 //! use tokio::sync::broadcast;
 //!
 //! # tokio_test::block_on(async {

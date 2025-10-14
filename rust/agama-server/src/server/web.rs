@@ -27,7 +27,7 @@ use agama_manager::message;
 use agama_manager::SystemInfo;
 use agama_manager::{self as manager};
 use agama_utils::actor::Handler;
-use agama_utils::types::{event, Status};
+use agama_utils::api::{event, Status};
 use anyhow;
 use axum::extract::State;
 use axum::response::{IntoResponse, Response};

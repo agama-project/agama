@@ -21,7 +21,7 @@
 use super::http::{login, login_from_query, logout, session};
 use super::{config::ServiceConfig, state::ServiceState};
 use agama_lib::{auth::TokenClaims, http};
-use agama_utils::types::event;
+use agama_utils::api::event;
 use axum::http::HeaderValue;
 use axum::middleware::Next;
 use axum::{

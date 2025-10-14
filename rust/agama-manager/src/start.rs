@@ -21,9 +21,9 @@
 use crate::l10n;
 use crate::service::Service;
 use agama_utils::actor::{self, Handler};
+use agama_utils::api::event;
 use agama_utils::issue;
 use agama_utils::progress;
-use agama_utils::types::event;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -63,13 +63,13 @@ pub async fn start(
 
 #[cfg(test)]
 mod test {
-    use crate::l10n;
     use crate::message;
     use crate::service::Service;
     use crate::{self as manager};
     use agama_lib::install_settings::InstallSettings;
     use agama_utils::actor::Handler;
-    use agama_utils::types::Event;
+    use agama_utils::api;
+    use agama_utils::api::Event;
     use tokio::sync::broadcast;
 
     async fn start_service() -> Handler<Service> {
@@ -90,7 +90,7 @@ mod test {
         let handler = start_service().await;
 
         let input_config = InstallSettings {
-            localization: Some(l10n::Config {
+            localization: Some(api::l10n::Config {
                 locale: Some("es_ES.UTF-8".to_string()),
                 keymap: Some("es".to_string()),
                 timezone: Some("Atlantic/Canary".to_string()),
@@ -126,7 +126,7 @@ mod test {
         };
 
         let input_config = InstallSettings {
-            localization: Some(l10n::Config {
+            localization: Some(api::l10n::Config {
                 keymap: Some(keymap.to_string()),
                 ..Default::default()
             }),

@@ -19,9 +19,9 @@
 // find current contact information at www.suse.com.
 
 use crate::actor::Handler;
+use crate::api::scope::Scope;
 use crate::dbus::build_properties_changed_stream;
 use crate::issue::{self, message, model, Issue, Service};
-use crate::types::scope::Scope;
 use tokio_stream::StreamExt;
 use zbus::fdo::PropertiesChanged;
 use zbus::names::BusName;

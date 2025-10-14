@@ -22,7 +22,7 @@
 
 use super::state::ServiceState;
 use agama_lib::{auth::ClientId, http};
-use agama_utils::types::event;
+use agama_utils::api::event;
 use axum::{
     extract::{
         ws::{Message, WebSocket},

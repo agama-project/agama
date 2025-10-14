@@ -21,7 +21,7 @@
 use crate::service;
 use crate::system_info::SystemInfo;
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
-use agama_utils::types;
+use agama_utils::api;
 
 #[derive(Clone, PartialEq)]
 pub struct ExtendedConfig {
@@ -39,7 +39,7 @@ impl ExtendedConfig {
         }
     }
 
-    pub fn merge(&self, config: &types::l10n::Config) -> Result<Self, service::Error> {
+    pub fn merge(&self, config: &api::l10n::Config) -> Result<Self, service::Error> {
         let mut merged = self.clone();
 
         if let Some(language) = &config.locale {

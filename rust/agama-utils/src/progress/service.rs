@@ -19,10 +19,10 @@
 // find current contact information at www.suse.com.
 
 use crate::actor::{self, Actor, MessageHandler};
+use crate::api::event::{self, Event};
+use crate::api::progress::{self, Progress};
+use crate::api::scope::Scope;
 use crate::progress::message;
-use crate::types::event::{self, Event};
-use crate::types::progress::{self, Progress};
-use crate::types::scope::Scope;
 use async_trait::async_trait;
 use tokio::sync::broadcast;
 

@@ -19,8 +19,8 @@
 // find current contact information at www.suse.com.
 
 use crate::actor::{self, Handler};
+use crate::api::event;
 use crate::progress::service::Service;
-use crate::types::event;
 use std::convert::Infallible;
 
 #[derive(thiserror::Error, Debug)]
@@ -40,11 +40,11 @@ pub async fn start(events: event::Sender) -> Result<Handler<Service>, Error> {
 #[cfg(test)]
 mod tests {
     use crate::actor::{self, Handler};
+    use crate::api::event::{self, Event};
+    use crate::api::progress;
+    use crate::api::scope::Scope;
     use crate::progress::message;
     use crate::progress::service::{self, Service};
-    use crate::types::event::{self, Event};
-    use crate::types::progress;
-    use crate::types::scope::Scope;
     use tokio::sync::broadcast;
 
     fn start_testing_service() -> (event::Receiver, Handler<Service>) {

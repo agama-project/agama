@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::types::progress::Progress;
+use crate::api::progress::Progress;
 use serde::Serialize;
 
 // Information about the status of the installation.

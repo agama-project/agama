@@ -22,7 +22,7 @@
 
 use super::config::ServiceConfig;
 use agama_lib::http;
-use agama_utils::types::event;
+use agama_utils::api::event;
 use std::path::PathBuf;
 
 /// Web service state.

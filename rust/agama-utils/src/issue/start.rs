@@ -19,9 +19,9 @@
 // find current contact information at www.suse.com.
 
 use crate::actor::{self, Handler};
+use crate::api::event;
 use crate::issue::monitor::{self, Monitor};
 use crate::issue::service::{self, Service};
-use crate::types::event;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -46,9 +46,9 @@ pub async fn start(
 
 #[cfg(test)]
 mod tests {
+    use crate::api::event::Event;
+    use crate::api::scope::Scope;
     use crate::issue::{self, message, Issue, IssueSeverity, IssueSource};
-    use crate::types::event::Event;
-    use crate::types::scope::Scope;
     use tokio::sync::broadcast::{self, error::TryRecvError};
 
     fn build_issue() -> Issue {

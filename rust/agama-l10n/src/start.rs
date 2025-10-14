@@ -22,8 +22,8 @@ use crate::model::Model;
 use crate::monitor::{self, Monitor};
 use crate::service::{self, Service};
 use agama_utils::actor::{self, Handler};
+use agama_utils::api::event;
 use agama_utils::issue;
-use agama_utils::types::event;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -66,10 +66,10 @@ mod tests {
     use crate::service::{self, Service};
     use agama_locale_data::{KeymapId, LocaleId};
     use agama_utils::actor::{self, Handler};
+    use agama_utils::api;
+    use agama_utils::api::event::{self, Event};
+    use agama_utils::api::scope::Scope;
     use agama_utils::issue;
-    use agama_utils::types;
-    use agama_utils::types::event::{self, Event};
-    use agama_utils::types::scope::Scope;
     use tokio::sync::broadcast;
 
     pub struct TestModel {
@@ -154,7 +154,7 @@ mod tests {
         let config = handler.call(message::GetConfig).await.unwrap();
         assert_eq!(config.locale, Some("en_US.UTF-8".to_string()));
 
-        let input_config = types::l10n::Config {
+        let input_config = api::l10n::Config {
             locale: Some("es_ES.UTF-8".to_string()),
             keymap: Some("es".to_string()),
             timezone: Some("Atlantic/Canary".to_string()),
@@ -175,7 +175,7 @@ mod tests {
             Event::ProposalChanged { scope: Scope::L10n }
         ));
 
-        let input_config = types::l10n::Config {
+        let input_config = api::l10n::Config {
             locale: None,
             keymap: Some("es".to_string()),
             timezone: None,
@@ -189,7 +189,7 @@ mod tests {
         let updated = handler.call(message::GetConfig).await?;
         assert_eq!(
             updated,
-            types::l10n::Config {
+            api::l10n::Config {
                 locale: Some("en_US.UTF-8".to_string()),
                 keymap: Some("es".to_string()),
                 timezone: Some("Europe/Berlin".to_string()),
@@ -203,7 +203,7 @@ mod tests {
     async fn test_set_invalid_config() -> Result<(), Box<dyn std::error::Error>> {
         let (_events_rx, handler, _issues) = start_testing_service().await;
 
-        let input_config = types::l10n::Config {
+        let input_config = api::l10n::Config {
             locale: Some("es-ES.UTF-8".to_string()),
             ..Default::default()
         };
@@ -235,7 +235,7 @@ mod tests {
     async fn test_set_config_unknown_values() -> Result<(), Box<dyn std::error::Error>> {
         let (mut _events_rx, handler, issues) = start_testing_service().await;
 
-        let config = types::l10n::Config {
+        let config = api::l10n::Config {
             keymap: Some("jk".to_string()),
             locale: Some("xx_XX.UTF-8".to_string()),
             timezone: Some("Unknown/Unknown".to_string()),
@@ -265,7 +265,7 @@ mod tests {
     async fn test_get_proposal() -> Result<(), Box<dyn std::error::Error>> {
         let (_events_rx, handler, _issues) = start_testing_service().await;
 
-        let input_config = types::l10n::Config {
+        let input_config = api::l10n::Config {
             locale: Some("es_ES.UTF-8".to_string()),
             keymap: Some("es".to_string()),
             timezone: Some("Atlantic/Canary".to_string()),

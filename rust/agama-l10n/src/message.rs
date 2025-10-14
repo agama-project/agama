@@ -22,7 +22,7 @@ use crate::proposal::Proposal;
 use crate::system_info::SystemInfo;
 use agama_locale_data::{KeymapId, LocaleId};
 use agama_utils::actor::Message;
-use agama_utils::types;
+use agama_utils::api;
 use serde::Deserialize;
 
 #[derive(Clone)]
@@ -55,7 +55,7 @@ pub struct SystemConfig {
 pub struct GetConfig;
 
 impl Message for GetConfig {
-    type Reply = types::l10n::Config;
+    type Reply = api::l10n::Config;
 }
 
 pub struct SetConfig<T> {
