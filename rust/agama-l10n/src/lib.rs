@@ -47,9 +47,6 @@ pub use model::{Model, ModelAdapter};
 mod system_info;
 pub use system_info::SystemInfo;
 
-mod config;
-pub use config::Config;
-
 mod proposal;
 pub use proposal::Proposal;
 

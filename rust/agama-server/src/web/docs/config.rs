@@ -46,7 +46,6 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema("IpAddr", schemas::ip_addr())
             .schema("IpInet", schemas::ip_inet())
             .schema("macaddr.MacAddr6", schemas::mac_addr6())
-            .schema_from::<agama_l10n::Config>()
             .schema_from::<agama_l10n::message::SystemConfig>()
             .schema_from::<agama_lib::bootloader::model::BootloaderSettings>()
             .schema_from::<agama_lib::file_source::FileSource>()
@@ -167,6 +166,7 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema_from::<agama_utils::types::status::Status>()
             .schema_from::<agama_utils::types::status::State>()
             .schema_from::<agama_utils::types::scope::Scope>()
+            .schema_from::<agama_utils::types::l10n::Config>()
             .build()
     }
 }

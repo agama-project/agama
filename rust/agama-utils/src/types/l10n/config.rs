@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,14 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Representation of the localization settings
-
-use crate::extended_config::ExtendedConfig;
 use serde::{Deserialize, Serialize};
 
-/// User configuration for the localization of the target system.
-///
-/// This configuration is provided by the user, so all the values are optional.
+/// Localization config.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[schema(as = l10n::UserConfig)]
 #[serde(rename_all = "camelCase")]
@@ -41,16 +36,4 @@ pub struct Config {
     /// Timezone (e.g., "Europe/Berlin").
     #[serde(skip_serializing_if = "Option::is_none")]
     pub timezone: Option<String>,
-}
-
-/// Converts the localization configuration, which contains values for all the
-/// elements, into a user configuration.
-impl From<&ExtendedConfig> for Config {
-    fn from(config: &ExtendedConfig) -> Self {
-        Config {
-            locale: Some(config.locale.to_string()),
-            keymap: Some(config.keymap.to_string()),
-            timezone: Some(config.timezone.to_string()),
-        }
-    }
 }

@@ -26,7 +26,6 @@ use crate::context::InstallationContext;
 use crate::file_source::{FileSourceError, WithFileSource};
 use crate::files::model::UserFile;
 use crate::hostname::model::HostnameSettings;
-use crate::l10n;
 use crate::questions::config::QuestionsConfig;
 use crate::security::settings::SecuritySettings;
 use crate::storage::settings::zfcp::ZFCPConfig;
@@ -34,6 +33,7 @@ use crate::{
     network::NetworkSettings, product::ProductSettings, scripts::ScriptsConfig,
     software::SoftwareSettings, storage::settings::dasd::DASDConfig, users::UserSettings,
 };
+use agama_utils::types;
 use fluent_uri::Uri;
 use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
@@ -86,7 +86,7 @@ pub struct InstallSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub network: Option<NetworkSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub localization: Option<l10n::Config>,
+    pub localization: Option<types::l10n::Config>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub scripts: Option<ScriptsConfig>,
     #[serde(skip_serializing_if = "Option::is_none")]

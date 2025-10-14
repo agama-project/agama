@@ -18,7 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::config::Config;
 use crate::extended_config::ExtendedConfig;
 use crate::message;
 use crate::model::ModelAdapter;
@@ -27,6 +26,7 @@ use crate::system_info::SystemInfo;
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
 use agama_utils::actor::{self, Actor, Handler, MessageHandler};
 use agama_utils::issue::{self, Issue};
+use agama_utils::types;
 use agama_utils::types::event::{self, Event};
 use agama_utils::types::scope::Scope;
 use async_trait::async_trait;
@@ -176,14 +176,22 @@ impl MessageHandler<message::SetSystem<message::SystemConfig>> for Service {
 
 #[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
-    async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, Error> {
-        Ok((&self.state.config).into())
+    async fn handle(&mut self, _message: message::GetConfig) -> Result<types::l10n::Config, Error> {
+        let config = self.state.config.clone();
+        Ok(types::l10n::Config {
+            locale: Some(config.locale.to_string()),
+            keymap: Some(config.keymap.to_string()),
+            timezone: Some(config.timezone.to_string()),
+        })
     }
 }
 
 #[async_trait]
-impl MessageHandler<message::SetConfig<Config>> for Service {
-    async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
+impl MessageHandler<message::SetConfig<types::l10n::Config>> for Service {
+    async fn handle(
+        &mut self,
+        message: message::SetConfig<types::l10n::Config>,
+    ) -> Result<(), Error> {
         let config = ExtendedConfig::new_from(&self.state.system);
         let merged = config.merge(&message.config)?;
         if merged == self.state.config {

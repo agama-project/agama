@@ -18,4 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub use agama_l10n::Config;
+//! This module contains all Agama public types that might be available over
+//! the HTTP and WebSocket API.
+
+pub mod config;
+pub use config::Config;
