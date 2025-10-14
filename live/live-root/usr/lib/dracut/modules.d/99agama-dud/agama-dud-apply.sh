@@ -245,7 +245,7 @@ update_kernel_modules() {
 setup_from_modules_order() {
   dud_modules_dir=$1
 
-  module_order=$(<"${dud_modules_dir}/module.order")
+  readarray -t module_order <"${dud_modules_dir}/module.order"
   # unload the modules in reverse order
   local idx
   idx=("${!module_order[@]}")
