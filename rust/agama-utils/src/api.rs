@@ -33,4 +33,7 @@ pub use scope::Scope;
 pub mod status;
 pub use status::Status;
 
+pub mod system_info;
+pub use system_info::SystemInfo;
+
 pub mod l10n;

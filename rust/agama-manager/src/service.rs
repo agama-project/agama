@@ -21,11 +21,10 @@
 use crate::l10n;
 use crate::message::{self, Action};
 use crate::proposal::Proposal;
-use crate::system_info::SystemInfo;
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::actor::{self, Actor, Handler, MessageHandler};
 use agama_utils::api::status::State;
-use agama_utils::api::{event, Event, Scope, Status};
+use agama_utils::api::{event, Event, Scope, Status, SystemInfo};
 use agama_utils::issue;
 use agama_utils::progress;
 use async_trait::async_trait;
