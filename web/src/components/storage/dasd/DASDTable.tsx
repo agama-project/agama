@@ -410,6 +410,16 @@ const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState
       const waitingFor = prev.filter((id) => action.payload !== id);
       return { ...state, waitingFor };
     }
+
+    case "UPDATE_DEVICE": {
+      const selectedDevices = state.selectedDevices.map(
+        (dev) => action.payload.id === dev.id ? action.payload : dev
+      );
+      const devicesToFormat = state.devicesToFormat.map(
+        (dev) => action.payload.id === dev.id ? action.payload : dev
+      );
+      return { ...state, selectedDevices, devicesToFormat };
+    }
   }
 };
 
@@ -488,6 +498,7 @@ export default function DASDTable() {
 
     return client.onEvent((event) => {
       if (event.type === "DASDDeviceChanged") {
+        dispatch({ type: "UPDATE_DEVICE", payload: event.device });
         dispatch({ type: "UPDATE_WAITING", payload: event.device.id });
       }
     });
