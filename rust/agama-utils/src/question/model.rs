@@ -33,6 +33,7 @@ pub enum Error {
 #[serde(rename_all = "camelCase")]
 pub struct Question {
     pub id: u32,
+    #[serde(flatten)]
     pub spec: QuestionSpec,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub answer: Option<QuestionAnswer>,
@@ -48,8 +49,9 @@ impl Question {
     }
 
     // FIXME: check whether the answer is valid.
-    pub fn set_answer(&mut self, answer: QuestionAnswer) {
+    pub fn set_answer(&mut self, answer: QuestionAnswer) -> Result<(), Error> {
         self.answer = Some(answer);
+        Ok(())
     }
 }
 
@@ -66,7 +68,7 @@ pub struct QuestionSpec {
     // FIXME: set the proper value_type (or an alternative)
     #[schema(value_type = String)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub additional_data: Option<HashMap<String, Box<RawValue>>>,
+    pub data: Option<HashMap<String, Box<RawValue>>>,
 }
 
 impl QuestionSpec {
@@ -77,7 +79,7 @@ impl QuestionSpec {
             field: QuestionField::None,
             actions: vec![],
             default_action: None,
-            additional_data: None,
+            data: None,
         }
     }
 

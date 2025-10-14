@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 use async_trait::async_trait;
+use tokio::sync::broadcast;
 
 use super::{message, model::Question};
 use crate::{
@@ -28,6 +29,8 @@ use crate::{
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+    #[error(transparent)]
+    Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error(transparent)]
@@ -69,11 +72,9 @@ impl MessageHandler<message::Ask> for Service {
         self.current_id += 1;
         let question = Question::new(self.current_id, message.question);
         self.questions.push(question);
-        self.events
-            .send(Event::QuestionAdded {
-                id: self.current_id,
-            })
-            .unwrap();
+        self.events.send(Event::QuestionAdded {
+            id: self.current_id,
+        })?;
         Ok(self.current_id)
     }
 }
@@ -84,10 +85,9 @@ impl MessageHandler<message::Answer> for Service {
         let found = self.questions.iter_mut().find(|q| q.id == message.id);
         match found {
             Some(question) => {
-                question.set_answer(message.answer);
+                question.set_answer(message.answer)?;
                 self.events
-                    .send(Event::QuestionAnswered { id: message.id })
-                    .unwrap();
+                    .send(Event::QuestionAnswered { id: message.id })?;
                 Ok(())
             }
             None => Err(Error::UnknownQuestion(message.id)),
