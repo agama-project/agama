@@ -45,13 +45,14 @@ export default function GenericQuestion({
     answerCallback(question);
   };
 
+  const spec = question.spec;
   return (
     <Popup isOpen aria-label={_("Question")}>
-      <Content>{question.text}</Content>
+      <Content>{spec.text}</Content>
       <Popup.Actions>
         <QuestionActions
-          actions={question.options}
-          defaultAction={question.defaultOption}
+          actions={spec.actions}
+          defaultAction={spec.defaultAction}
           actionCallback={actionCallback}
         />
       </Popup.Actions>

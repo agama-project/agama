@@ -18,16 +18,41 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This crate offers a set of utility struct and functions to be used accross
-//! other Agama's crates.
+use crate::actor::Message;
 
-pub mod service;
-pub use service::Service;
+use super::{
+    model::{Question, QuestionAnswer},
+    QuestionSpec,
+};
 
-pub mod actor;
-pub mod api;
-pub mod dbus;
-pub mod issue;
-pub mod openapi;
-pub mod progress;
-pub mod question;
+/// Gets the list of questions.
+pub struct Get;
+
+impl Message for Get {
+    type Reply = Vec<Question>;
+}
+
+/// Asks a question, adding it to the list of questions.
+pub struct Ask {
+    pub question: QuestionSpec,
+}
+
+impl Ask {
+    pub fn new(question: QuestionSpec) -> Self {
+        Self { question }
+    }
+}
+
+impl Message for Ask {
+    type Reply = u32;
+}
+
+/// Answers a question, updating its current representation.
+pub struct Answer {
+    pub id: u32,
+    pub answer: QuestionAnswer,
+}
+
+impl Message for Answer {
+    type Reply = ();
+}

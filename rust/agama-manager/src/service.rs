@@ -24,8 +24,8 @@ use agama_utils::actor::{self, Actor, Handler, MessageHandler};
 use agama_utils::api::event;
 use agama_utils::api::status::State;
 use agama_utils::api::{Action, Config, Event, IssueMap, Proposal, Scope, Status, SystemInfo};
-use agama_utils::issue;
 use agama_utils::progress;
+use agama_utils::{issue, question};
 use async_trait::async_trait;
 use merge_struct::merge;
 use tokio::sync::broadcast;
@@ -43,7 +43,9 @@ pub enum Error {
     #[error(transparent)]
     L10n(#[from] l10n::service::Error),
     #[error(transparent)]
-    IssueService(#[from] issue::service::Error),
+    Issues(#[from] issue::service::Error),
+    #[error(transparent)]
+    Questions(#[from] question::service::Error),
 }
 
 pub struct Service {
@@ -60,6 +62,7 @@ impl Service {
         l10n: Handler<l10n::Service>,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
+        _questions: Handler<question::Service>,
         events: event::Sender,
     ) -> Self {
         Self {
