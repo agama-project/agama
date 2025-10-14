@@ -366,7 +366,8 @@ type DASDTableAction =
   | { type: "REQUEST_FORMAT"; payload: DASDTableState["devicesToFormat"] }
   | { type: "CANCEL_FORMAT_REQUEST" }
   | { type: "START_WAITING"; payload: DASDDevice["id"][] }
-  | { type: "UPDATE_WAITING"; payload: DASDDevice["id"] };
+  | { type: "UPDATE_WAITING"; payload: DASDDevice["id"] }
+  | { type: "UPDATE_DEVICE"; payload: DASDDevice };
 
 /**
  * Reducer function that handles all DASD table state transitions.
@@ -409,6 +410,16 @@ const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState
       const prev = state.waitingFor;
       const waitingFor = prev.filter((id) => action.payload !== id);
       return { ...state, waitingFor };
+    }
+
+    case "UPDATE_DEVICE": {
+      const selectedDevices = state.selectedDevices.map((dev) =>
+        action.payload.id === dev.id ? action.payload : dev,
+      );
+      const devicesToFormat = state.devicesToFormat.map((dev) =>
+        action.payload.id === dev.id ? action.payload : dev,
+      );
+      return { ...state, selectedDevices, devicesToFormat };
     }
   }
 };
@@ -488,6 +499,7 @@ export default function DASDTable() {
 
     return client.onEvent((event) => {
       if (event.type === "DASDDeviceChanged") {
+        dispatch({ type: "UPDATE_DEVICE", payload: event.device });
         dispatch({ type: "UPDATE_WAITING", payload: event.device.id });
       }
     });
