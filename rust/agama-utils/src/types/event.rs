@@ -43,7 +43,7 @@ pub enum Event {
     },
     /// The underlying system changed.
     SystemChanged {
-        scope: String,
+        scope: Scope,
     },
     /// Proposal changed.
     ProposalChanged {

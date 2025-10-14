@@ -32,8 +32,6 @@ use agama_utils::types::scope::Scope;
 use async_trait::async_trait;
 use tokio::sync::broadcast;
 
-pub(crate) const SCOPE: &str = "localization";
-
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("Unknown locale: {0}")]
@@ -233,9 +231,9 @@ impl MessageHandler<message::Install> for Service {
 impl MessageHandler<message::UpdateLocale> for Service {
     async fn handle(&mut self, message: message::UpdateLocale) -> Result<(), Error> {
         self.state.system.locale = message.locale;
-        _ = self.events.send(Event::SystemChanged {
-            scope: SCOPE.to_string(),
-        });
+        _ = self
+            .events
+            .send(Event::SystemChanged { scope: Scope::L10n });
         Ok(())
     }
 }
@@ -244,9 +242,9 @@ impl MessageHandler<message::UpdateLocale> for Service {
 impl MessageHandler<message::UpdateKeymap> for Service {
     async fn handle(&mut self, message: message::UpdateKeymap) -> Result<(), Error> {
         self.state.system.keymap = message.keymap;
-        _ = self.events.send(Event::SystemChanged {
-            scope: SCOPE.to_string(),
-        });
+        _ = self
+            .events
+            .send(Event::SystemChanged { scope: Scope::L10n });
         Ok(())
     }
 }
