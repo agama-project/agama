@@ -19,10 +19,9 @@
 // find current contact information at www.suse.com.
 
 use crate::l10n;
-use crate::proposal::Proposal;
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::actor::Message;
-use agama_utils::api::{Scope, Status, SystemInfo};
+use agama_utils::api::{Proposal, Scope, Status, SystemInfo};
 use agama_utils::issue::Issue;
 use serde::Deserialize;
 use std::collections::HashMap;

@@ -18,11 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::proposal::Proposal;
 use agama_locale_data::{KeymapId, LocaleId};
 use agama_utils::actor::Message;
 use agama_utils::api;
-use agama_utils::api::l10n::SystemInfo;
+use agama_utils::api::l10n::{Proposal, SystemInfo};
 use serde::Deserialize;
 
 #[derive(Clone)]

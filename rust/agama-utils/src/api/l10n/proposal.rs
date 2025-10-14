@@ -18,11 +18,21 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::l10n;
-use serde::Serialize;
+use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
+use serde::{Deserialize, Serialize};
+use serde_with::{serde_as, DisplayFromStr};
 
-#[derive(Clone, Debug, Serialize)]
+/// Describes what Agama proposes for the target system.
+#[serde_as]
+#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 pub struct Proposal {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub localization: Option<l10n::Proposal>,
+    /// Keymap (e.g., "us", "cz(qwerty)", etc.).
+    #[serde_as(as = "DisplayFromStr")]
+    pub keymap: KeymapId,
+    /// Locale (e.g., "en_US.UTF-8").
+    #[serde_as(as = "DisplayFromStr")]
+    pub locale: LocaleId,
+    /// Timezone (e.g., "Europe/Berlin").
+    #[serde_as(as = "DisplayFromStr")]
+    pub timezone: TimezoneId,
 }

@@ -162,13 +162,15 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema_from::<crate::server::types::IssuesMap>()
             .schema_from::<crate::software::web::SoftwareProposal>()
             .schema_from::<agama_manager::message::Action>()
-            .schema_from::<agama_utils::api::Progress>()
             .schema_from::<agama_utils::api::Status>()
+            .schema_from::<agama_utils::api::Progress>()
             .schema_from::<agama_utils::api::status::State>()
             .schema_from::<agama_utils::api::Scope>()
             .schema_from::<agama_utils::api::SystemInfo>()
             .schema_from::<agama_utils::api::l10n::SystemInfo>()
             .schema_from::<agama_utils::api::l10n::Config>()
+            .schema_from::<agama_utils::api::Proposal>()
+            .schema_from::<agama_utils::api::l10n::Proposal>()
             .build()
     }
 }

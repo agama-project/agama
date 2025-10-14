@@ -21,8 +21,11 @@
 //! This module contains all Agama public types that might be available over
 //! the HTTP and WebSocket API.
 
-pub mod config;
+mod config;
 pub use config::Config;
 
-pub mod system_info;
+mod system_info;
 pub use system_info::{Keymap, LocaleEntry, SystemInfo, TimezoneEntry};
+
+mod proposal;
+pub use proposal::Proposal;

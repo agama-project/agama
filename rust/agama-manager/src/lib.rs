@@ -25,6 +25,5 @@ pub mod service;
 pub use service::Service;
 
 pub mod message;
-mod proposal;
 
 pub use agama_l10n as l10n;
