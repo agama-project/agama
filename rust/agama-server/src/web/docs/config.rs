@@ -168,9 +168,15 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema_from::<agama_utils::api::Scope>()
             .schema_from::<agama_utils::api::SystemInfo>()
             .schema_from::<agama_utils::api::l10n::SystemInfo>()
+            .schema_from::<agama_utils::api::l10n::LocaleEntry>()
+            .schema_from::<agama_utils::api::l10n::Keymap>()
+            .schema_from::<agama_utils::api::l10n::TimezoneEntry>()
             .schema_from::<agama_utils::api::l10n::Config>()
             .schema_from::<agama_utils::api::Proposal>()
             .schema_from::<agama_utils::api::l10n::Proposal>()
+            .schema_from::<agama_locale_data::LocaleId>()
+            .schema_from::<agama_locale_data::KeymapId>()
+            .schema_from::<agama_locale_data::TimezoneId>()
             .build()
     }
 }
