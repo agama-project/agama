@@ -19,11 +19,11 @@
 // find current contact information at www.suse.com.
 
 use crate::l10n;
-use crate::message::{self, Action};
+use crate::message;
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::actor::{self, Actor, Handler, MessageHandler};
 use agama_utils::api::status::State;
-use agama_utils::api::{event, Event, Proposal, Scope, Status, SystemInfo};
+use agama_utils::api::{event, Action, Event, Proposal, Scope, Status, SystemInfo};
 use agama_utils::issue;
 use agama_utils::progress;
 use async_trait::async_trait;

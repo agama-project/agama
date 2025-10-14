@@ -25,7 +25,7 @@ use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, Key
 use agama_utils::actor::{self, Actor, Handler, MessageHandler};
 use agama_utils::api;
 use agama_utils::api::event::{self, Event};
-use agama_utils::api::l10n::{Proposal, SystemInfo};
+use agama_utils::api::l10n::{Proposal, SystemConfig, SystemInfo};
 use agama_utils::api::scope::Scope;
 use agama_utils::issue::{self, Issue};
 use async_trait::async_trait;
@@ -157,11 +157,8 @@ impl MessageHandler<message::GetSystem> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::SetSystem<message::SystemConfig>> for Service {
-    async fn handle(
-        &mut self,
-        message: message::SetSystem<message::SystemConfig>,
-    ) -> Result<(), Error> {
+impl MessageHandler<message::SetSystem<SystemConfig>> for Service {
+    async fn handle(&mut self, message: message::SetSystem<SystemConfig>) -> Result<(), Error> {
         let config = &message.config;
         if let Some(locale) = &config.locale {
             self.model.set_locale(locale.parse()?)?;

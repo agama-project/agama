@@ -26,7 +26,7 @@ use agama_lib::install_settings::InstallSettings;
 use agama_manager::message;
 use agama_manager::{self as manager};
 use agama_utils::actor::Handler;
-use agama_utils::api::{event, Status, SystemInfo};
+use agama_utils::api::{event, Action, Status, SystemInfo};
 use anyhow;
 use axum::extract::State;
 use axum::response::{IntoResponse, Response};
@@ -242,12 +242,12 @@ async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<Issue
         (status = 400, description = "Not possible to run the action.", body = Object)
     ),
     params(
-        ("action" = message::Action, description = "Description of the action to run."),
+        ("action" = Action, description = "Description of the action to run."),
     )
 )]
 async fn run_action(
     State(state): State<ServerState>,
-    Json(action): Json<message::Action>,
+    Json(action): Json<Action>,
 ) -> ServerResult<()> {
     state.manager.call(message::RunAction::new(action)).await?;
     Ok(())

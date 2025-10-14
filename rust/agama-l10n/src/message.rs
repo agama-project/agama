@@ -22,7 +22,6 @@ use agama_locale_data::{KeymapId, LocaleId};
 use agama_utils::actor::Message;
 use agama_utils::api;
 use agama_utils::api::l10n::{Proposal, SystemInfo};
-use serde::Deserialize;
 
 #[derive(Clone)]
 pub struct GetSystem;
@@ -43,12 +42,6 @@ impl<T> SetSystem<T> {
     pub fn new(config: T) -> Self {
         Self { config }
     }
-}
-
-#[derive(Clone, Debug, Deserialize, utoipa::ToSchema)]
-pub struct SystemConfig {
-    pub locale: Option<String>,
-    pub keymap: Option<String>,
 }
 
 pub struct GetConfig;

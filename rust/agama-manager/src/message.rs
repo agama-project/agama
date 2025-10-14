@@ -18,12 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::l10n;
 use agama_lib::install_settings::InstallSettings;
 use agama_utils::actor::Message;
-use agama_utils::api::{Proposal, Scope, Status, SystemInfo};
+use agama_utils::api::{Action, Proposal, Scope, Status, SystemInfo};
 use agama_utils::issue::Issue;
-use serde::Deserialize;
 use std::collections::HashMap;
 
 /// Gets the installation status.
@@ -120,12 +118,4 @@ impl RunAction {
 
 impl Message for RunAction {
     type Reply = ();
-}
-
-#[derive(Debug, Deserialize, utoipa::ToSchema)]
-pub enum Action {
-    #[serde(rename = "configureL10n")]
-    ConfigureL10n(l10n::message::SystemConfig),
-    #[serde(rename = "install")]
-    Install,
 }

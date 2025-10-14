@@ -18,17 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module contains all Agama public types that might be available over
-//! the HTTP and WebSocket API.
+use crate::api::l10n;
+use serde::Deserialize;
 
-mod config;
-pub use config::Config;
-
-mod system_info;
-pub use system_info::{Keymap, LocaleEntry, SystemInfo, TimezoneEntry};
-
-mod system_config;
-pub use system_config::SystemConfig;
-
-mod proposal;
-pub use proposal::Proposal;
+#[derive(Debug, Deserialize, utoipa::ToSchema)]
+pub enum Action {
+    #[serde(rename = "configureL10n")]
+    ConfigureL10n(l10n::SystemConfig),
+    #[serde(rename = "install")]
+    Install,
+}

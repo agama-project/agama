@@ -33,10 +33,13 @@ pub use scope::Scope;
 pub mod status;
 pub use status::Status;
 
-pub mod system_info;
+mod system_info;
 pub use system_info::SystemInfo;
 
-pub mod proposal;
+mod proposal;
 pub use proposal::Proposal;
+
+mod action;
+pub use action::Action;
 
 pub mod l10n;
