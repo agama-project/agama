@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::extended_config::ExtendedConfig;
+use crate::config::Config;
 use crate::message;
 use crate::model::ModelAdapter;
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
@@ -72,7 +72,7 @@ pub enum Error {
 /// * Applies the user configuration at the end of the installation.
 pub struct Service {
     system: SystemInfo,
-    config: ExtendedConfig,
+    config: Config,
     model: Box<dyn ModelAdapter + Send + 'static>,
     issues: Handler<issue::Service>,
     events: event::Sender,
@@ -85,7 +85,7 @@ impl Service {
         events: event::Sender,
     ) -> Service {
         let system = model.read_system_info();
-        let config = ExtendedConfig::new_from(&system);
+        let config = Config::new_from(&system);
 
         Self {
             system,
@@ -192,7 +192,7 @@ impl MessageHandler<message::SetConfig<api::l10n::Config>> for Service {
         &mut self,
         message: message::SetConfig<api::l10n::Config>,
     ) -> Result<(), Error> {
-        let config = ExtendedConfig::new_from(&self.system);
+        let config = Config::new_from(&self.system);
         let merged = config.merge(&message.config)?;
         if merged == self.config {
             return Ok(());

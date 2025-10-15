@@ -24,13 +24,13 @@ use agama_utils::api;
 use agama_utils::api::l10n::SystemInfo;
 
 #[derive(Clone, PartialEq)]
-pub struct ExtendedConfig {
+pub struct Config {
     pub locale: LocaleId,
     pub keymap: KeymapId,
     pub timezone: TimezoneId,
 }
 
-impl ExtendedConfig {
+impl Config {
     pub fn new_from(system: &SystemInfo) -> Self {
         Self {
             locale: system.locale.clone(),

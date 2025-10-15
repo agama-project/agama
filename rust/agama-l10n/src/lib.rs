@@ -44,8 +44,8 @@ pub use service::Service;
 mod model;
 pub use model::{Model, ModelAdapter};
 
+mod config;
 mod dbus;
-mod extended_config;
 pub mod helpers;
 pub mod message;
 mod monitor;
