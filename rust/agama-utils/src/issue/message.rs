@@ -19,8 +19,8 @@
 // find current contact information at www.suse.com.
 
 use crate::actor::Message;
+use crate::api::issue::Issue;
 use crate::api::Scope;
-use crate::issue::Issue;
 use std::collections::HashMap;
 
 pub struct Get;

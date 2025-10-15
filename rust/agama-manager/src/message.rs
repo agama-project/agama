@@ -19,8 +19,7 @@
 // find current contact information at www.suse.com.
 
 use agama_utils::actor::Message;
-use agama_utils::api::{Action, Config, Proposal, Scope, Status, SystemInfo};
-use agama_utils::issue::Issue;
+use agama_utils::api::{Action, Config, Issue, Proposal, Scope, Status, SystemInfo};
 use std::collections::HashMap;
 
 /// Gets the installation status.

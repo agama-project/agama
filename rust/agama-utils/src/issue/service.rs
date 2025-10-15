@@ -19,9 +19,12 @@
 // find current contact information at www.suse.com.
 
 use crate::actor::{self, Actor, MessageHandler};
-use crate::api::event::{self, Event};
-use crate::api::Scope;
-use crate::issue::{message, model, Issue};
+use crate::api::event;
+use crate::api::event::Event;
+use crate::api::issue;
+use crate::api::issue::Issue;
+use crate::api::scope::Scope;
+use crate::issue::message;
 use async_trait::async_trait;
 use std::collections::{HashMap, HashSet};
 use tokio::sync::broadcast;
@@ -33,7 +36,7 @@ pub enum Error {
     #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error(transparent)]
-    Model(#[from] model::Error),
+    Issue(#[from] issue::Error),
 }
 
 pub struct Service {

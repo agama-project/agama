@@ -20,8 +20,7 @@
 
 //! This module defines some ancillary types for the HTTP API.
 
-use agama_utils::api::Scope;
-use agama_utils::issue;
+use agama_utils::api::{Issue, Scope};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -30,26 +29,26 @@ use std::collections::HashMap;
 pub struct IssuesMap {
     /// iSCSI issues.
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub iscsi: Vec<issue::Issue>,
+    pub iscsi: Vec<Issue>,
     /// Localization issues.
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub localization: Vec<issue::Issue>,
+    pub localization: Vec<Issue>,
     /// Product related issues (product selection, registration, etc.).
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub product: Vec<issue::Issue>,
+    pub product: Vec<Issue>,
     /// Storage related issues.
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub storage: Vec<issue::Issue>,
+    pub storage: Vec<Issue>,
     /// Software management issues.
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub software: Vec<issue::Issue>,
+    pub software: Vec<Issue>,
     /// First user and authentication issues.
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    pub users: Vec<issue::Issue>,
+    pub users: Vec<Issue>,
 }
 
-impl From<HashMap<Scope, Vec<issue::Issue>>> for IssuesMap {
-    fn from(mut value: HashMap<Scope, Vec<issue::Issue>>) -> Self {
+impl From<HashMap<Scope, Vec<Issue>>> for IssuesMap {
+    fn from(mut value: HashMap<Scope, Vec<Issue>>) -> Self {
         Self {
             iscsi: value.remove(&Scope::Iscsi).unwrap_or_default(),
             localization: value.remove(&Scope::L10n).unwrap_or_default(),

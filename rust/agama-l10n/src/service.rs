@@ -24,10 +24,11 @@ use crate::model::ModelAdapter;
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
 use agama_utils::actor::{self, Actor, Handler, MessageHandler};
 use agama_utils::api;
-use agama_utils::api::event::{self, Event};
+use agama_utils::api::event;
+use agama_utils::api::event::Event;
 use agama_utils::api::l10n::{Proposal, SystemConfig, SystemInfo};
-use agama_utils::api::scope::Scope;
-use agama_utils::issue::{self, Issue};
+use agama_utils::api::{Issue, IssueSeverity, IssueSource, Scope};
+use agama_utils::issue;
 use async_trait::async_trait;
 use tokio::sync::broadcast;
 
@@ -48,7 +49,9 @@ pub enum Error {
     #[error(transparent)]
     Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
-    Issue(#[from] issue::service::Error),
+    Issue(#[from] api::issue::Error),
+    #[error(transparent)]
+    IssueService(#[from] issue::service::Error),
     #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error(transparent)]
@@ -115,8 +118,8 @@ impl Service {
             issues.push(Issue {
                 description: format!("Locale '{}' is unknown", &config.locale),
                 details: None,
-                source: issue::IssueSource::Config,
-                severity: issue::IssueSeverity::Error,
+                source: IssueSource::Config,
+                severity: IssueSeverity::Error,
                 kind: "unknown_locale".to_string(),
             });
         }
@@ -125,8 +128,8 @@ impl Service {
             issues.push(Issue {
                 description: format!("Keymap '{}' is unknown", &config.keymap),
                 details: None,
-                source: issue::IssueSource::Config,
-                severity: issue::IssueSeverity::Error,
+                source: IssueSource::Config,
+                severity: IssueSeverity::Error,
                 kind: "unknown_keymap".to_string(),
             });
         }
@@ -135,8 +138,8 @@ impl Service {
             issues.push(Issue {
                 description: format!("Timezone '{}' is unknown", &config.timezone),
                 details: None,
-                source: issue::IssueSource::Config,
-                severity: issue::IssueSeverity::Error,
+                source: IssueSource::Config,
+                severity: IssueSeverity::Error,
                 kind: "unknown_timezone".to_string(),
             });
         }

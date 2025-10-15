@@ -44,9 +44,6 @@
 //!
 //! ```
 
-pub mod model;
-pub use model::{Issue, IssueSeverity, IssueSource};
-
 pub mod service;
 pub use service::Service;
 

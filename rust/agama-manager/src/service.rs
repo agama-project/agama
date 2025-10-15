@@ -23,7 +23,7 @@ use crate::message;
 use agama_utils::actor::{self, Actor, Handler, MessageHandler};
 use agama_utils::api::event;
 use agama_utils::api::status::State;
-use agama_utils::api::{Action, Config, Event, Proposal, Scope, Status, SystemInfo};
+use agama_utils::api::{Action, Config, Event, Issue, Proposal, Scope, Status, SystemInfo};
 use agama_utils::issue;
 use agama_utils::progress;
 use async_trait::async_trait;
@@ -44,7 +44,7 @@ pub enum Error {
     #[error(transparent)]
     L10n(#[from] l10n::service::Error),
     #[error(transparent)]
-    Issues(#[from] agama_utils::issue::service::Error),
+    IssueService(#[from] issue::service::Error),
 }
 
 pub struct Service {
@@ -190,7 +190,7 @@ impl MessageHandler<message::GetIssues> for Service {
     async fn handle(
         &mut self,
         _message: message::GetIssues,
-    ) -> Result<HashMap<Scope, Vec<issue::Issue>>, Error> {
+    ) -> Result<HashMap<Scope, Vec<Issue>>, Error> {
         Ok(self.issues.call(issue::message::Get).await?)
     }
 }

@@ -33,6 +33,9 @@ pub use scope::Scope;
 pub mod status;
 pub use status::Status;
 
+pub mod issue;
+pub use issue::{Issue, IssueSeverity, IssueSource};
+
 mod system_info;
 pub use system_info::SystemInfo;
 

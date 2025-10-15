@@ -47,8 +47,10 @@ pub async fn start(
 #[cfg(test)]
 mod tests {
     use crate::api::event::Event;
+    use crate::api::issue::{Issue, IssueSeverity, IssueSource};
     use crate::api::scope::Scope;
-    use crate::issue::{self, message, Issue, IssueSeverity, IssueSource};
+    use crate::issue;
+    use crate::issue::message;
     use tokio::sync::broadcast::{self, error::TryRecvError};
 
     fn build_issue() -> Issue {

@@ -19,9 +19,13 @@
 // find current contact information at www.suse.com.
 
 use crate::actor::Handler;
+use crate::api::issue;
+use crate::api::issue::Issue;
 use crate::api::scope::Scope;
 use crate::dbus::build_properties_changed_stream;
-use crate::issue::{self, message, model, Issue, Service};
+use crate::issue::message;
+use crate::issue::service;
+use crate::issue::Service;
 use tokio_stream::StreamExt;
 use zbus::fdo::PropertiesChanged;
 use zbus::names::BusName;
@@ -37,9 +41,9 @@ pub enum Error {
     #[error(transparent)]
     DBus(#[from] zbus::Error),
     #[error(transparent)]
-    Issue(#[from] issue::service::Error),
+    Service(#[from] service::Error),
     #[error(transparent)]
-    Model(#[from] model::Error),
+    Issue(#[from] issue::Error),
 }
 
 /// Listens the D-Bus server and updates the list of issues.
