@@ -23,8 +23,5 @@ pub use service::Service;
 
 pub mod message;
 
-pub mod config;
-pub use config::{Config, Policy};
-
 pub mod start;
 pub use start::start;

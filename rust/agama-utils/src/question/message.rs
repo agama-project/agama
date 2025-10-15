@@ -18,7 +18,32 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{actor::Message, api};
+use crate::{
+    actor::Message,
+    api::{self, question::Config},
+};
+
+/// Gets questions configuration (policy, pre-defined answers, etc.).
+pub struct GetConfig;
+
+impl Message for GetConfig {
+    type Reply = Config;
+}
+
+/// Sets questions configuration (policy, pre-defined answers, etc.).
+pub struct SetConfig {
+    pub config: Config,
+}
+
+impl SetConfig {
+    pub fn new(config: Config) -> Self {
+        Self { config }
+    }
+}
+
+impl Message for SetConfig {
+    type Reply = ();
+}
 
 /// Gets the list of questions.
 pub struct Get;

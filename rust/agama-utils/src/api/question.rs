@@ -19,4 +19,6 @@
 // find current contact information at www.suse.com.
 
 mod config;
-pub use config::{Action, Error, Question, QuestionAnswer, QuestionField, QuestionSpec};
+pub use config::{
+    Action, Config, Error, Policy, Question, QuestionAnswer, QuestionField, QuestionSpec,
+};

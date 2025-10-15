@@ -29,6 +29,47 @@ pub enum Error {
     InvalidAnswer(u32),
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum Policy {
+    /// Automatically answer questions.
+    Auto,
+    /// Ask the user.
+    User,
+}
+
+/// Data structure for single JSON answer. For variables specification see
+/// corresponding [agama_lib::questions::GenericQuestion] fields.
+/// The *matcher* part is: `class`, `text`, `data`.
+/// The *answer* part is: `answer`, `password`.
+#[derive(Clone, Serialize, Deserialize, PartialEq, Debug, utoipa::ToSchema)]
+pub struct Answer {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub class: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub text: Option<String>,
+    /// A matching GenericQuestion can have other data fields too
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub data: Option<HashMap<String, String>>,
+    /// The answer text is the only mandatory part of an Answer
+    #[serde(alias = "action")]
+    pub answer: String,
+    /// All possible mixins have to be here, so they can be specified in an Answer
+    #[serde(alias = "password")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub value: Option<String>,
+}
+
+/// Questions configuration.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Config {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub policy: Option<Policy>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub answers: Option<Vec<Answer>>,
+}
+
 /// Represents a question including its [specification](QuestionSpec) and [answer](QuestionAnswer).
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]

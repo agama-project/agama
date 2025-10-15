@@ -24,7 +24,11 @@ use tokio::sync::broadcast;
 use super::message;
 use crate::{
     actor::{self, Actor, MessageHandler},
-    api::{self, event, question::Question, Event},
+    api::{
+        self, event,
+        question::{Config, Question},
+        Event,
+    },
 };
 
 #[derive(thiserror::Error, Debug)]
@@ -40,6 +44,7 @@ pub enum Error {
 }
 
 pub struct Service {
+    config: Config,
     questions: Vec<Question>,
     current_id: u32,
     events: event::Sender,
@@ -48,6 +53,7 @@ pub struct Service {
 impl Service {
     pub fn new(events: event::Sender) -> Self {
         Self {
+            config: Default::default(),
             questions: vec![],
             current_id: 0,
             events,
@@ -57,6 +63,21 @@ impl Service {
 
 impl Actor for Service {
     type Error = Error;
+}
+
+#[async_trait]
+impl MessageHandler<message::GetConfig> for Service {
+    async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, Error> {
+        Ok(self.config.clone())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::SetConfig> for Service {
+    async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
+        self.config = message.config;
+        Ok(())
+    }
 }
 
 #[async_trait]

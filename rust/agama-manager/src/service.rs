@@ -52,6 +52,7 @@ pub struct Service {
     l10n: Handler<l10n::service::Service>,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
+    questions: Handler<question::Service>,
     state: State,
     config: Config,
     events: event::Sender,
@@ -62,13 +63,14 @@ impl Service {
         l10n: Handler<l10n::Service>,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
-        _questions: Handler<question::Service>,
+        questions: Handler<question::Service>,
         events: event::Sender,
     ) -> Self {
         Self {
             l10n,
             issues,
             progress,
+            questions,
             events,
             state: State::Configuring,
             config: Config::default(),
@@ -127,7 +129,11 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     /// It includes user and default values.
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
-        Ok(Config { l10n: Some(l10n) })
+        let questions = self.questions.call(question::message::GetConfig).await?;
+        Ok(Config {
+            l10n: Some(l10n),
+            questions: Some(questions),
+        })
     }
 }
 
@@ -154,6 +160,12 @@ impl MessageHandler<message::SetConfig> for Service {
         if let Some(l10n) = &message.config.l10n {
             self.l10n
                 .call(l10n::message::SetConfig::new(l10n.clone()))
+                .await?;
+        }
+
+        if let Some(questions) = &message.config.questions {
+            self.questions
+                .call(question::message::SetConfig::new(questions.clone()))
                 .await?;
         }
         self.config = message.config;

@@ -99,6 +99,7 @@ mod test {
                 keymap: Some("es".to_string()),
                 timezone: Some("Atlantic/Canary".to_string()),
             }),
+            ..Default::default()
         };
 
         handler
@@ -130,6 +131,7 @@ mod test {
                 keymap: Some(keymap.to_string()),
                 ..Default::default()
             }),
+            ..Default::default()
         };
 
         handler
