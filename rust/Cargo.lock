@@ -61,17 +61,12 @@ dependencies = [
  "anyhow",
  "async-trait",
  "gettext-rs",
- "merge-struct",
  "regex",
- "serde",
- "serde_json",
- "serde_with",
  "thiserror 2.0.16",
  "tokio",
  "tokio-stream",
  "tokio-test",
  "tracing",
- "utoipa",
  "zbus",
 ]
 
