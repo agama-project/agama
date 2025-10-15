@@ -18,31 +18,19 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module contains all Agama public types that might be available over
-//! the HTTP and WebSocket API.
+use crate::api::l10n;
+use serde::{Deserialize, Serialize};
 
-pub mod event;
-pub use event::Event;
+#[derive(Clone, Debug, Default, Deserialize, Serialize, utoipa::ToSchema)]
+pub struct Config {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(alias = "localization")]
+    pub l10n: Option<l10n::Config>,
+}
 
-pub mod progress;
-pub use progress::Progress;
-
-pub mod scope;
-pub use scope::Scope;
-
-pub mod status;
-pub use status::Status;
-
-mod system_info;
-pub use system_info::SystemInfo;
-
-pub mod config;
-pub use config::Config;
-
-mod proposal;
-pub use proposal::Proposal;
-
-mod action;
-pub use action::Action;
-
-pub mod l10n;
+/// Patch for the config.
+#[derive(Deserialize, Serialize, utoipa::ToSchema)]
+pub struct Patch {
+    /// Update for the current config.
+    pub update: Option<Config>,
+}

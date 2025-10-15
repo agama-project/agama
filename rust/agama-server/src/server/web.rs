@@ -20,13 +20,14 @@
 
 //! This module implements Agama's HTTP API.
 
-use crate::server::types::{ConfigPatch, IssuesMap};
+use crate::server::types::IssuesMap;
 use agama_lib::error::ServiceError;
-use agama_lib::install_settings::InstallSettings;
+use agama_manager as manager;
 use agama_manager::message;
-use agama_manager::{self as manager};
 use agama_utils::actor::Handler;
-use agama_utils::api::{event, Action, Status, SystemInfo};
+use agama_utils::api::config;
+use agama_utils::api::event;
+use agama_utils::api::{Action, Config, Status, SystemInfo};
 use anyhow;
 use axum::extract::State;
 use axum::response::{IntoResponse, Response};
@@ -129,9 +130,7 @@ async fn get_system(State(state): State<ServerState>) -> ServerResult<Json<Syste
         (status = 400, description = "Not possible to retrieve the configuration.")
     )
 )]
-async fn get_extended_config(
-    State(state): State<ServerState>,
-) -> ServerResult<Json<InstallSettings>> {
+async fn get_extended_config(State(state): State<ServerState>) -> ServerResult<Json<Config>> {
     let config = state.manager.call(message::GetExtendedConfig).await?;
     Ok(Json(config))
 }
@@ -146,7 +145,7 @@ async fn get_extended_config(
         (status = 400, description = "Not possible to retrieve the configuration.")
     )
 )]
-async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<InstallSettings>> {
+async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<Config>> {
     let config = state.manager.call(message::GetConfig).await?;
     Ok(Json(config))
 }
@@ -163,12 +162,12 @@ async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<Insta
         (status = 400, description = "Not possible to replace the configuration.")
     ),
     params(
-        ("config" = InstallSettings, description = "Configuration to apply.")
+        ("config" = Config, description = "Configuration to apply.")
     )
 )]
 async fn put_config(
     State(state): State<ServerState>,
-    Json(config): Json<InstallSettings>,
+    Json(config): Json<Config>,
 ) -> ServerResult<()> {
     state.manager.call(message::SetConfig::new(config)).await?;
     Ok(())
@@ -186,12 +185,12 @@ async fn put_config(
         (status = 400, description = "Not possible to patch the configuration.")
     ),
     params(
-        ("config" = InstallSettings, description = "Changes in the configuration.")
+        ("config" = Config, description = "Changes in the configuration.")
     )
 )]
 async fn patch_config(
     State(state): State<ServerState>,
-    Json(patch): Json<ConfigPatch>,
+    Json(patch): Json<config::Patch>,
 ) -> ServerResult<()> {
     if let Some(config) = patch.update {
         state

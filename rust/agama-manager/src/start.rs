@@ -63,13 +63,12 @@ pub async fn start(
 
 #[cfg(test)]
 mod test {
+    use crate as manager;
     use crate::message;
     use crate::service::Service;
-    use crate::{self as manager};
-    use agama_lib::install_settings::InstallSettings;
     use agama_utils::actor::Handler;
-    use agama_utils::api;
-    use agama_utils::api::Event;
+    use agama_utils::api::l10n;
+    use agama_utils::api::{Config, Event};
     use tokio::sync::broadcast;
 
     async fn start_service() -> Handler<Service> {
@@ -89,13 +88,12 @@ mod test {
     async fn test_update_config() -> Result<(), Box<dyn std::error::Error>> {
         let handler = start_service().await;
 
-        let input_config = InstallSettings {
-            localization: Some(api::l10n::Config {
+        let input_config = Config {
+            l10n: Some(l10n::Config {
                 locale: Some("es_ES.UTF-8".to_string()),
                 keymap: Some("es".to_string()),
                 timezone: Some("Atlantic/Canary".to_string()),
             }),
-            ..Default::default()
         };
 
         handler
@@ -104,10 +102,7 @@ mod test {
 
         let config = handler.call(message::GetConfig).await?;
 
-        assert_eq!(
-            input_config.localization.unwrap(),
-            config.localization.unwrap()
-        );
+        assert_eq!(input_config.l10n.unwrap(), config.l10n.unwrap());
 
         Ok(())
     }
@@ -119,18 +114,17 @@ mod test {
 
         // Ensure the keymap is different to the system one.
         let config = handler.call(message::GetExtendedConfig).await?;
-        let keymap = if config.localization.unwrap().keymap.unwrap() == "es" {
+        let keymap = if config.l10n.unwrap().keymap.unwrap() == "es" {
             "en"
         } else {
             "es"
         };
 
-        let input_config = InstallSettings {
-            localization: Some(api::l10n::Config {
+        let input_config = Config {
+            l10n: Some(l10n::Config {
                 keymap: Some(keymap.to_string()),
                 ..Default::default()
             }),
-            ..Default::default()
         };
 
         handler
@@ -139,13 +133,10 @@ mod test {
 
         let config = handler.call(message::GetConfig).await?;
 
-        assert_eq!(
-            input_config.localization.unwrap(),
-            config.localization.unwrap()
-        );
+        assert_eq!(input_config.l10n.unwrap(), config.l10n.unwrap());
 
         let extended_config = handler.call(message::GetExtendedConfig).await?;
-        let l10n_config = extended_config.localization.unwrap();
+        let l10n_config = extended_config.l10n.unwrap();
 
         assert!(l10n_config.locale.is_some());
         assert!(l10n_config.keymap.is_some());

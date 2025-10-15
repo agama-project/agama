@@ -20,7 +20,6 @@
 
 //! This module defines some ancillary types for the HTTP API.
 
-use agama_lib::install_settings::InstallSettings;
 use agama_utils::api::Scope;
 use agama_utils::issue;
 use serde::{Deserialize, Serialize};
@@ -60,11 +59,4 @@ impl From<HashMap<Scope, Vec<issue::Issue>>> for IssuesMap {
             users: value.remove(&Scope::Users).unwrap_or_default(),
         }
     }
-}
-
-#[derive(Deserialize, Serialize, utoipa::ToSchema)]
-/// Patch for the config.
-pub struct ConfigPatch {
-    /// Update for the current config.
-    pub update: Option<InstallSettings>,
 }

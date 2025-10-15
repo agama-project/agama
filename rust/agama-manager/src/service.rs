@@ -20,10 +20,10 @@
 
 use crate::l10n;
 use crate::message;
-use agama_lib::install_settings::InstallSettings;
 use agama_utils::actor::{self, Actor, Handler, MessageHandler};
+use agama_utils::api::event;
 use agama_utils::api::status::State;
-use agama_utils::api::{event, Action, Event, Proposal, Scope, Status, SystemInfo};
+use agama_utils::api::{Action, Config, Event, Proposal, Scope, Status, SystemInfo};
 use agama_utils::issue;
 use agama_utils::progress;
 use async_trait::async_trait;
@@ -52,7 +52,7 @@ pub struct Service {
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     state: State,
-    config: InstallSettings,
+    config: Config,
     events: event::Sender,
 }
 
@@ -69,7 +69,7 @@ impl Service {
             progress,
             events,
             state: State::Configuring,
-            config: InstallSettings::default(),
+            config: Config::default(),
         }
     }
 
@@ -125,13 +125,10 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     /// Gets the current configuration.
     ///
     /// It includes user and default values.
-    async fn handle(
-        &mut self,
-        _message: message::GetExtendedConfig,
-    ) -> Result<InstallSettings, Error> {
-        let l10n_config = self.l10n.call(l10n::message::GetConfig).await?;
-        Ok(InstallSettings {
-            localization: Some(l10n_config),
+    async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
+        let l10n = self.l10n.call(l10n::message::GetConfig).await?;
+        Ok(Config {
+            l10n: Some(l10n),
             ..Default::default()
         })
     }
@@ -142,7 +139,7 @@ impl MessageHandler<message::GetConfig> for Service {
     /// Gets the current configuration set by the user.
     ///
     /// It includes only the values that were set by the user.
-    async fn handle(&mut self, _message: message::GetConfig) -> Result<InstallSettings, Error> {
+    async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, Error> {
         Ok(self.config.clone())
     }
 }
@@ -157,9 +154,9 @@ impl MessageHandler<message::SetConfig> for Service {
     /// FIXME: We should replace not given sections with the default ones.
     /// After all, now we have config/user/:scope URLs.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        if let Some(l10n_config) = &message.config.localization {
+        if let Some(l10n) = &message.config.l10n {
             self.l10n
-                .call(l10n::message::SetConfig::new(l10n_config.clone()))
+                .call(l10n::message::SetConfig::new(l10n.clone()))
                 .await?;
         }
         self.config = message.config;
