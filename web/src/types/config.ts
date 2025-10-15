@@ -22,8 +22,8 @@
 
 import { Localization } from "./l10n";
 
-type Proposal = {
+type Config = {
   l10n?: Localization;
 };
 
-export type { Proposal };
+export type { Config };

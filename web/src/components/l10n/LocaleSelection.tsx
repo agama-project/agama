@@ -35,10 +35,10 @@ import { _ } from "~/i18n";
 export default function LocaleSelection() {
   const navigate = useNavigate();
   const {
-    localization: { locales },
+    l10n: { locales },
   } = useSystem();
   const {
-    localization: { locale: currentLocale },
+    l10n: { locale: currentLocale },
   } = useProposal();
   const [selected, setSelected] = useState(currentLocale);
   const [filteredLocales, setFilteredLocales] = useState(locales);
@@ -47,7 +47,7 @@ export default function LocaleSelection() {
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    updateConfig({ localization: { locale: selected } });
+    updateConfig({ l10n: { locale: selected } });
     navigate(-1);
   };
 

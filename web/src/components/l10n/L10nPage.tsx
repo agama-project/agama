@@ -68,14 +68,16 @@ const InstallerL10nSettingsInfo = () => {
  */
 export default function L10nPage() {
   // FIXME: retrieve selection from config when ready
-  const { localization: l10nProposal } = useProposal();
-  const { localization: l10n } = useSystem();
+  const { l10n: l10nProposal } = useProposal();
+  const { l10n: l10nSystem } = useSystem();
   console.log(l10nProposal);
 
-  const locale = l10nProposal.locale && l10n.locales.find((l) => l.id === l10nProposal.locale);
-  const keymap = l10nProposal.keymap && l10n.keymaps.find((k) => k.id === l10nProposal.keymap);
+  const locale =
+    l10nProposal.locale && l10nSystem.locales.find((l) => l.id === l10nProposal.locale);
+  const keymap =
+    l10nProposal.keymap && l10nSystem.keymaps.find((k) => k.id === l10nProposal.keymap);
   const timezone =
-    l10nProposal.timezone && l10n.timezones.find((t) => t.id === l10nProposal.timezone);
+    l10nProposal.timezone && l10nSystem.timezones.find((t) => t.id === l10nProposal.timezone);
 
   return (
     <Page>
