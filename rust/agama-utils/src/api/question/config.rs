@@ -71,6 +71,14 @@ impl Question {
 }
 
 /// Defines how a question should look like.
+///
+/// A question is composed by a set of actions and, optionally, and additional
+/// field. For instance, a question to decrypt a device using a password would have:
+///
+/// * a pair of actions, "decrypt" and "skip".
+/// * a password field.
+///
+/// In other cases, like a simple "yes/no" questions, the field would not be needed.
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct QuestionSpec {
@@ -218,9 +226,7 @@ impl Action {
 /// Question answer.
 ///
 /// It includes the action and, optionally, and additional value which depends
-/// on the question field. For instance, if you decide to decrypt a device using
-/// a password, the action could be "decrypt" and the value would e the
-/// password.
+/// on the question field.
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct QuestionAnswer {
     pub action: String,

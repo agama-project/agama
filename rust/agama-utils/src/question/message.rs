@@ -18,27 +18,22 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::actor::Message;
-
-use super::{
-    model::{Question, QuestionAnswer},
-    QuestionSpec,
-};
+use crate::{actor::Message, api};
 
 /// Gets the list of questions.
 pub struct Get;
 
 impl Message for Get {
-    type Reply = Vec<Question>;
+    type Reply = Vec<api::question::Question>;
 }
 
 /// Asks a question, adding it to the list of questions.
 pub struct Ask {
-    pub question: QuestionSpec,
+    pub question: api::question::QuestionSpec,
 }
 
 impl Ask {
-    pub fn new(question: QuestionSpec) -> Self {
+    pub fn new(question: api::question::QuestionSpec) -> Self {
         Self { question }
     }
 }
@@ -50,7 +45,7 @@ impl Message for Ask {
 /// Answers a question, updating its current representation.
 pub struct Answer {
     pub id: u32,
-    pub answer: QuestionAnswer,
+    pub answer: api::question::QuestionAnswer,
 }
 
 impl Message for Answer {

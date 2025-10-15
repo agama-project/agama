@@ -40,11 +40,11 @@ pub async fn start(events: event::Sender) -> Result<Handler<Service>, Error> {
 #[cfg(test)]
 mod tests {
     use crate::{
-        api::Event,
-        question::{
-            self, message,
-            model::{QuestionAnswer, QuestionSpec},
+        api::{
+            question::{QuestionAnswer, QuestionSpec},
+            Event,
         },
+        question::{self, message},
     };
     use tokio::sync::broadcast;
 

@@ -18,13 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod model;
-pub use model::{Action, Error, QuestionAnswer, QuestionSpec};
-
 pub mod service;
 pub use service::Service;
 
 pub mod message;
+
+pub mod config;
+pub use config::{Config, Policy};
 
 pub mod start;
 pub use start::start;

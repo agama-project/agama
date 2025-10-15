@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2024] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,36 +18,5 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module contains all Agama public types that might be available over
-//! the HTTP and WebSocket API.
-
-pub mod event;
-pub use event::Event;
-
-pub mod progress;
-pub use progress::Progress;
-
-pub mod scope;
-pub use scope::Scope;
-
-pub mod status;
-pub use status::Status;
-
-pub mod issue;
-pub use issue::{Issue, IssueMap, IssueSeverity, IssueSource};
-
-mod system_info;
-pub use system_info::SystemInfo;
-
-pub mod config;
-pub use config::Config;
-
-mod proposal;
-pub use proposal::Proposal;
-
-mod action;
-pub use action::Action;
-
-pub mod l10n;
-
-pub mod question;
+mod config;
+pub use config::{Action, Error, Question, QuestionAnswer, QuestionField, QuestionSpec};

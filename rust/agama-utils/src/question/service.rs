@@ -21,10 +21,10 @@
 use async_trait::async_trait;
 use tokio::sync::broadcast;
 
-use super::{message, model::Question};
+use super::message;
 use crate::{
     actor::{self, Actor, MessageHandler},
-    api::{event, Event},
+    api::{self, event, question::Question, Event},
 };
 
 #[derive(thiserror::Error, Debug)]
@@ -34,7 +34,7 @@ pub enum Error {
     #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error(transparent)]
-    Model(#[from] super::model::Error),
+    Model(#[from] api::question::Error),
     #[error("Unknown question: {0}")]
     UnknownQuestion(u32),
 }
@@ -61,7 +61,10 @@ impl Actor for Service {
 
 #[async_trait]
 impl MessageHandler<message::Get> for Service {
-    async fn handle(&mut self, _message: message::Get) -> Result<Vec<Question>, Error> {
+    async fn handle(
+        &mut self,
+        _message: message::Get,
+    ) -> Result<Vec<api::question::Question>, Error> {
         Ok(self.questions.clone())
     }
 }
