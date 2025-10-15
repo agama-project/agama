@@ -59,7 +59,7 @@ const useQuestionsChanges = () => {
     if (!client) return;
 
     return client.onEvent((event) => {
-      if (event.type === "QuestionsChanged") {
+      if (event.type === "QuestionAdded" || event.type === "QuestionAnswered") {
         queryClient.invalidateQueries({ queryKey: ["questions"] });
       }
     });

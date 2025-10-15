@@ -23,7 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { Question } from "~/types/questions";
+import { Question, FieldType } from "~/types/questions";
 import PackageErrorQuestion from "~/components/questions/PackageErrorQuestion";
 
 const answerFn = jest.fn();
@@ -31,8 +31,12 @@ const question: Question = {
   id: 1,
   class: "software.package_error.provide_error",
   text: "Package download failed",
-  options: ["Retry", "Skip"],
-  defaultOption: "Retry",
+  field: { type: FieldType.None },
+  actions: [
+    { id: "retry", label: "Retry" },
+    { id: "skip", label: "Skip" },
+  ],
+  defaultAction: "Retry",
   data: { package: "foo", error_code: "INVALID" },
 };
 
@@ -53,7 +57,7 @@ describe("PackageErrorQuestion", () => {
       const retryButton = await screen.findByRole("button", { name: "Retry" });
       await user.click(retryButton);
 
-      expect(question).toEqual(expect.objectContaining({ answer: "Retry" }));
+      expect(question.answer).toEqual(expect.objectContaining({ action: "retry" }));
       expect(answerFn).toHaveBeenCalledWith(question);
     });
   });

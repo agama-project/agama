@@ -65,8 +65,8 @@ export default function RegistrationCertificateQuestion({
   question: Question;
   answerCallback: AnswerCallback;
 }): React.ReactNode {
-  const actionCallback = (option: string) => {
-    question.answer = option;
+  const actionCallback = (action: string) => {
+    question.answer = { action };
     answerCallback(question);
   };
 
@@ -94,8 +94,8 @@ export default function RegistrationCertificateQuestion({
       </Stack>
       <Popup.Actions>
         <QuestionActions
-          actions={question.options}
-          defaultAction={question.defaultOption}
+          actions={question.actions}
+          defaultAction={question.defaultAction}
           actionCallback={actionCallback}
         />
       </Popup.Actions>

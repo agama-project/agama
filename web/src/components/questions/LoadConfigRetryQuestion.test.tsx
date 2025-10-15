@@ -23,21 +23,26 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { Question } from "~/types/questions";
+import { Question, FieldType } from "~/types/questions";
 import LoadConfigRetryQuestion from "~/components/questions/LoadConfigRetryQuestion";
 
 const question: Question = {
   id: 1,
+  class: "retry",
   text: "It was not possible to load the configuration from http://wrong.config.file. It was unreachable or invalid. Do you want to try again?",
+  field: { type: FieldType.None },
   data: {
     error: `Could not generate the configuration: Retrieving data from URL http://wrong.config.file
 
-Caused by:
-0: Could not retrieve http://wrong.config.file/
-1: [6] Could not resolve hostname (Could not resolve host: wrong.config.file)`,
+  Caused by:
+  0: Could not retrieve http://wrong.config.file/
+  1: [6] Could not resolve hostname (Could not resolve host: wrong.config.file)`,
   },
-  options: ["yes", "no"],
-  defaultOption: "no",
+  actions: [
+    { id: "yes", label: "Yes" },
+    { id: "no", label: "No" },
+  ],
+  defaultAction: "no",
 };
 
 const answerFn = jest.fn();
@@ -68,12 +73,12 @@ it("calls the callback with answer value", async () => {
   const yesButton = await screen.findByRole("button", { name: "Yes" });
   await user.click(yesButton);
 
-  expect(question).toEqual(expect.objectContaining({ answer: "yes" }));
+  expect(question.answer).toEqual(expect.objectContaining({ action: "yes" }));
   expect(answerFn).toHaveBeenCalledWith(question);
 
   const noButton = await screen.findByRole("button", { name: "No" });
   await user.click(noButton);
 
-  expect(question).toEqual(expect.objectContaining({ answer: "no" }));
+  expect(question.answer).toEqual(expect.objectContaining({ action: "no" }));
   expect(answerFn).toHaveBeenCalledWith(question);
 });

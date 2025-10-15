@@ -40,19 +40,18 @@ export default function GenericQuestion({
   question: Question;
   answerCallback: AnswerCallback;
 }): React.ReactNode {
-  const actionCallback = (option: string) => {
-    question.answer = option;
+  const actionCallback = (action: string) => {
+    question.answer = { action };
     answerCallback(question);
   };
 
-  const spec = question.spec;
   return (
     <Popup isOpen aria-label={_("Question")}>
-      <Content>{spec.text}</Content>
+      <Content>{question.text}</Content>
       <Popup.Actions>
         <QuestionActions
-          actions={spec.actions}
-          defaultAction={spec.defaultAction}
+          actions={question.actions}
+          defaultAction={question.defaultAction}
           actionCallback={actionCallback}
         />
       </Popup.Actions>

@@ -29,13 +29,14 @@ import UnsupportedAutoYaST from "~/components/questions/UnsupportedAutoYaST";
 import RegistrationCertificateQuestion from "~/components/questions/RegistrationCertificateQuestion";
 import LoadConfigRetryQuestion from "~/components/questions/LoadConfigRetryQuestion";
 import { useQuestions, useQuestionsConfig, useQuestionsChanges } from "~/queries/questions";
-import { AnswerCallback, QuestionType } from "~/types/questions";
+import { AnswerCallback, FieldType } from "~/types/questions";
 
 export default function Questions(): React.ReactNode {
   useQuestionsChanges();
-  const pendingQuestions = useQuestions();
+  const allQuestions = useQuestions();
   const questionsConfig = useQuestionsConfig();
 
+  const pendingQuestions = allQuestions.filter((q) => !q.answer);
   if (pendingQuestions.length === 0) return null;
 
   const answerQuestion: AnswerCallback = (answeredQuestion) =>
@@ -46,33 +47,35 @@ export default function Questions(): React.ReactNode {
 
   let QuestionComponent = GenericQuestion;
 
+  const questionClass = currentQuestion.class;
+
   // show specialized popup for question which need password
-  if (currentQuestion.type === QuestionType.withPassword) {
+  if (currentQuestion.field.type === FieldType.Password) {
     QuestionComponent = QuestionWithPassword;
   }
 
   // show specialized popup for luks activation question
   // more can follow as it will be needed
-  if (currentQuestion.class === "storage.luks_activation") {
+  if (questionClass === "storage.luks_activation") {
     QuestionComponent = LuksActivationQuestion;
   }
 
-  if (currentQuestion.class === "autoyast.unsupported") {
+  if (questionClass === "autoyast.unsupported") {
     QuestionComponent = UnsupportedAutoYaST;
   }
 
   // special popup for package errors (libzypp callbacks)
-  if (currentQuestion.class?.startsWith("software.package_error.")) {
+  if (questionClass.startsWith("software.package_error.")) {
     QuestionComponent = PackageErrorQuestion;
   }
 
   // special popup for self signed registration certificate
-  if (currentQuestion.class === "registration.certificate") {
+  if (questionClass === "registration.certificate") {
     QuestionComponent = RegistrationCertificateQuestion;
   }
 
   // special popup for self signed registration certificate
-  if (currentQuestion.class === "load.retry") {
+  if (questionClass === "load.retry") {
     QuestionComponent = LoadConfigRetryQuestion;
   }
 

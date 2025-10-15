@@ -23,14 +23,19 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { Question } from "~/types/questions";
+import { Question, FieldType } from "~/types/questions";
 import RegistrationCertificateQuestion from "~/components/questions/RegistrationCertificateQuestion";
 
 const question: Question = {
   id: 1,
+  class: "registration.certificate",
   text: "Trust certificate?",
-  options: ["yes", "no"],
-  defaultOption: "yes",
+  field: { type: FieldType.None },
+  actions: [
+    { id: "yes", label: "Yes" },
+    { id: "no", label: "No" },
+  ],
+  defaultAction: "yes",
   data: {
     url: "https://test.com",
     issuer_name: "test",
@@ -55,10 +60,11 @@ it("renders the question text", async () => {
 it("renders the certificate data", async () => {
   renderQuestion();
 
-  await screen.findByText(question.data.url);
-  await screen.findByText(question.data.issuer_name);
-  await screen.findByText(question.data.issue_date);
-  await screen.findByText(question.data.expiration_date);
-  await screen.findByText(question.data.sha1_fingerprint);
-  await screen.findByText(question.data.sha256_fingerprint);
+  const data = question.data;
+  await screen.findByText(data.url);
+  await screen.findByText(data.issuer_name);
+  await screen.findByText(data.issue_date);
+  await screen.findByText(data.expiration_date);
+  await screen.findByText(data.sha1_fingerprint);
+  await screen.findByText(data.sha256_fingerprint);
 });

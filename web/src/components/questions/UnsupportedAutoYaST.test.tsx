@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { AnswerCallback, Question } from "~/types/questions";
+import { AnswerCallback, Question, FieldType } from "~/types/questions";
 import UnsupportedAutoYaST from "~/components/questions/UnsupportedAutoYaST";
 import { plainRender } from "~/test-utils";
 
@@ -30,8 +30,12 @@ const question: Question = {
   id: 1,
   class: "autoyast.unsupported",
   text: "Some elements from the AutoYaST profile are not supported.",
-  options: ["abort", "continue"],
-  defaultOption: "continue",
+  field: { type: FieldType.String },
+  actions: [
+    { id: "abort", label: "Abort" },
+    { id: "continue", label: "Continue" },
+  ],
+  defaultAction: "continue",
   data: {
     unsupported: "dns-server",
     planned: "iscsi-client",

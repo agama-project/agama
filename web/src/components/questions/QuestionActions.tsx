@@ -23,13 +23,7 @@
 import React from "react";
 import { Popup } from "~/components/core";
 import { fork } from "radashi";
-
-/**
- * Returns given text capitalized
- *
- * TODO: make it work with i18n
- */
-const label = (text: string): string => `${text[0].toUpperCase()}${text.slice(1)}`;
+import { Action } from "~/types/questions";
 
 /**
  * A component for building a Question actions, using the defaultAction
@@ -51,12 +45,12 @@ export default function QuestionActions({
   actionCallback,
   conditions = {},
 }: {
-  actions: string[];
+  actions: Action[];
   defaultAction?: string;
   actionCallback: (action: string) => void;
   conditions?: { disable?: { [key: string]: boolean } };
 }): React.ReactNode {
-  let [[primaryAction], secondaryActions] = fork(actions, (a: string) => a === defaultAction);
+  let [[primaryAction], secondaryActions] = fork(actions, (a: Action) => a.id === defaultAction);
 
   // Ensure there is always a primary action
   if (!primaryAction) [primaryAction, ...secondaryActions] = secondaryActions;
@@ -64,19 +58,19 @@ export default function QuestionActions({
   return (
     <>
       <Popup.PrimaryAction
-        key={primaryAction}
-        onClick={() => actionCallback(primaryAction)}
-        isDisabled={conditions?.disable?.[primaryAction]}
+        key={primaryAction.id}
+        onClick={() => actionCallback(primaryAction.id)}
+        isDisabled={conditions?.disable?.[primaryAction.id]}
       >
-        {label(primaryAction)}
+        {primaryAction.label}
       </Popup.PrimaryAction>
       {secondaryActions.map((action) => (
         <Popup.SecondaryAction
-          key={action}
-          onClick={() => actionCallback(action)}
-          isDisabled={conditions?.disable?.[action]}
+          key={action.id}
+          onClick={() => actionCallback(action.id)}
+          isDisabled={conditions?.disable?.[action.id]}
         >
-          {label(action)}
+          {action.label}
         </Popup.SecondaryAction>
       ))}
     </>

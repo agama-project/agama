@@ -69,8 +69,8 @@ export default function UnsupportedAutoYaST({
   question: Question;
   answerCallback: AnswerCallback;
 }) {
-  const actionCallback = (option: string) => {
-    question.answer = option;
+  const actionCallback = (action: string) => {
+    question.answer = { action };
     answerCallback(question);
   };
 
@@ -107,8 +107,8 @@ export default function UnsupportedAutoYaST({
       </Stack>
       <Popup.Actions>
         <QuestionActions
-          actions={question.options}
-          defaultAction={question.defaultOption}
+          actions={question.actions}
+          defaultAction={question.defaultAction}
           actionCallback={actionCallback}
         />
       </Popup.Actions>

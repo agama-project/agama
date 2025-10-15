@@ -20,32 +20,44 @@
  * find current contact information at www.suse.com.
  */
 
-/**
- * Enum for question types
- */
-enum QuestionType {
-  generic = "generic",
-  withPassword = "withPassword",
-}
-
 type Question = {
   id: number;
-  type?: QuestionType;
-  class?: string;
-  options?: string[];
-  defaultOption?: string;
-  text?: string;
+  text: string;
+  class: string;
+  field: SelectionField | Field;
+  actions: Action[];
+  defaultAction?: string;
   data?: { [key: string]: string };
-  answer?: string;
-  password?: string;
+  answer?: Answer;
+};
+
+type Field = {
+  type: FieldType;
+};
+
+type SelectionField = {
+  type: FieldType.Select;
+  options: object;
+};
+
+type Action = {
+  id: string;
+  label: string;
 };
 
 type Answer = {
-  generic?: { answer: string };
-  withPassword?: { password: string };
+  action: string;
+  value?: string;
 };
+
+enum FieldType {
+  None = "none",
+  Password = "password",
+  String = "string",
+  Select = "select",
+}
 
 type AnswerCallback = (answeredQuestion: Question) => void;
 
-export { QuestionType };
-export type { Answer, AnswerCallback, Question };
+export { FieldType };
+export type { Question, Action, AnswerCallback };
