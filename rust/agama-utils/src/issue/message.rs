@@ -19,14 +19,13 @@
 // find current contact information at www.suse.com.
 
 use crate::actor::Message;
-use crate::api::issue::Issue;
+use crate::api::issue::{Issue, IssueMap};
 use crate::api::Scope;
-use std::collections::HashMap;
 
 pub struct Get;
 
 impl Message for Get {
-    type Reply = HashMap<Scope, Vec<Issue>>;
+    type Reply = IssueMap;
 }
 
 // FIXME: consider an alternative approach to avoid pub(crate),

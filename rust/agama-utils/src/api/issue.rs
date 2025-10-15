@@ -18,8 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::api::scope::Scope;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use strum::FromRepr;
+
+pub type IssueMap = HashMap<Scope, Vec<Issue>>;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {

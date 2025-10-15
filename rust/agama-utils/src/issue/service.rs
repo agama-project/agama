@@ -22,11 +22,10 @@ use crate::actor::{self, Actor, MessageHandler};
 use crate::api::event;
 use crate::api::event::Event;
 use crate::api::issue;
-use crate::api::issue::Issue;
-use crate::api::scope::Scope;
+use crate::api::issue::IssueMap;
 use crate::issue::message;
 use async_trait::async_trait;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
@@ -40,14 +39,14 @@ pub enum Error {
 }
 
 pub struct Service {
-    issues: HashMap<Scope, Vec<Issue>>,
+    issues: IssueMap,
     events: event::Sender,
 }
 
 impl Service {
     pub fn new(events: event::Sender) -> Self {
         Self {
-            issues: HashMap::new(),
+            issues: IssueMap::new(),
             events,
         }
     }
@@ -59,10 +58,7 @@ impl Actor for Service {
 
 #[async_trait]
 impl MessageHandler<message::Get> for Service {
-    async fn handle(
-        &mut self,
-        _message: message::Get,
-    ) -> Result<HashMap<Scope, Vec<Issue>>, Error> {
+    async fn handle(&mut self, _message: message::Get) -> Result<IssueMap, Error> {
         Ok(self.issues.clone())
     }
 }

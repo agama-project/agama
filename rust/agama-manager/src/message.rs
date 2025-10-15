@@ -19,8 +19,7 @@
 // find current contact information at www.suse.com.
 
 use agama_utils::actor::Message;
-use agama_utils::api::{Action, Config, Issue, Proposal, Scope, Status, SystemInfo};
-use std::collections::HashMap;
+use agama_utils::api::{Action, Config, IssueMap, Proposal, Status, SystemInfo};
 
 /// Gets the installation status.
 pub struct GetStatus;
@@ -99,7 +98,7 @@ impl Message for GetProposal {
 pub struct GetIssues;
 
 impl Message for GetIssues {
-    type Reply = HashMap<Scope, Vec<Issue>>;
+    type Reply = IssueMap;
 }
 
 /// Runs the given action.

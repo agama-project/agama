@@ -20,14 +20,13 @@
 
 //! This module implements Agama's HTTP API.
 
-use crate::server::types::IssuesMap;
 use agama_lib::error::ServiceError;
 use agama_manager as manager;
 use agama_manager::message;
 use agama_utils::actor::Handler;
 use agama_utils::api::config;
 use agama_utils::api::event;
-use agama_utils::api::{Action, Config, Status, SystemInfo};
+use agama_utils::api::{Action, Config, IssueMap, Status, SystemInfo};
 use anyhow;
 use axum::extract::State;
 use axum::response::{IntoResponse, Response};
@@ -222,13 +221,13 @@ async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response
     path = "/issues",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "Agama issues", body = IssuesMap),
+        (status = 200, description = "Agama issues", body = IssueMap),
         (status = 400, description = "Not possible to retrieve the issues")
     )
 )]
-async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<IssuesMap>> {
+async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<IssueMap>> {
     let issues = state.manager.call(message::GetIssues).await?;
-    let issues_map: IssuesMap = issues.into();
+    let issues_map: IssueMap = issues.into();
     Ok(Json(issues_map))
 }
 

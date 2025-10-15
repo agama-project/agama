@@ -23,12 +23,11 @@ use crate::message;
 use agama_utils::actor::{self, Actor, Handler, MessageHandler};
 use agama_utils::api::event;
 use agama_utils::api::status::State;
-use agama_utils::api::{Action, Config, Event, Issue, Proposal, Scope, Status, SystemInfo};
+use agama_utils::api::{Action, Config, Event, IssueMap, Proposal, Scope, Status, SystemInfo};
 use agama_utils::issue;
 use agama_utils::progress;
 use async_trait::async_trait;
 use merge_struct::merge;
-use std::collections::HashMap;
 use tokio::sync::broadcast;
 
 #[derive(Debug, thiserror::Error)]
@@ -187,10 +186,7 @@ impl MessageHandler<message::GetProposal> for Service {
 #[async_trait]
 impl MessageHandler<message::GetIssues> for Service {
     /// It returns the current proposal, if any.
-    async fn handle(
-        &mut self,
-        _message: message::GetIssues,
-    ) -> Result<HashMap<Scope, Vec<Issue>>, Error> {
+    async fn handle(&mut self, _message: message::GetIssues) -> Result<IssueMap, Error> {
         Ok(self.issues.call(issue::message::Get).await?)
     }
 }
