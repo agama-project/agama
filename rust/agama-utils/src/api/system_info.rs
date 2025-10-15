@@ -23,5 +23,5 @@ use serde::Serialize;
 
 #[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 pub struct SystemInfo {
-    pub localization: l10n::SystemInfo,
+    pub l10n: l10n::SystemInfo,
 }

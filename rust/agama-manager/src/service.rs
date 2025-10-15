@@ -112,10 +112,8 @@ impl MessageHandler<message::GetStatus> for Service {
 impl MessageHandler<message::GetSystem> for Service {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
-        let l10n_system = self.l10n.call(l10n::message::GetSystem).await?;
-        Ok(SystemInfo {
-            localization: l10n_system,
-        })
+        let l10n = self.l10n.call(l10n::message::GetSystem).await?;
+        Ok(SystemInfo { l10n })
     }
 }
 
@@ -126,10 +124,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     /// It includes user and default values.
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
-        Ok(Config {
-            l10n: Some(l10n),
-            ..Default::default()
-        })
+        Ok(Config { l10n: Some(l10n) })
     }
 }
 
@@ -178,8 +173,8 @@ impl MessageHandler<message::UpdateConfig> for Service {
 impl MessageHandler<message::GetProposal> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
-        let localization = self.l10n.call(l10n::message::GetProposal).await?;
-        Ok(Some(Proposal { localization }))
+        let l10n = self.l10n.call(l10n::message::GetProposal).await?;
+        Ok(Some(Proposal { l10n }))
     }
 }
 

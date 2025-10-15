@@ -24,5 +24,5 @@ use serde::Serialize;
 #[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 pub struct Proposal {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub localization: Option<l10n::Proposal>,
+    pub l10n: Option<l10n::Proposal>,
 }
