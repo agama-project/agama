@@ -62,7 +62,7 @@ pub struct AnswerRule {
     pub data: Option<HashMap<String, String>>,
     /// The answer text is the only mandatory part of an Answer
     #[serde(flatten)]
-    pub answer: QuestionAnswer,
+    pub answer: Answer,
 }
 
 impl AnswerRule {
@@ -107,7 +107,7 @@ pub struct Question {
     pub spec: QuestionSpec,
     /// Question answer.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub answer: Option<QuestionAnswer>,
+    pub answer: Option<Answer>,
 }
 
 impl Question {
@@ -131,7 +131,7 @@ impl Question {
     /// FIXME: check whether the answer is valid.
     ///
     /// * `answer`: question answer.
-    pub fn set_answer(&mut self, answer: QuestionAnswer) -> Result<(), Error> {
+    pub fn set_answer(&mut self, answer: Answer) -> Result<(), Error> {
         self.answer = Some(answer);
         Ok(())
     }
@@ -304,7 +304,7 @@ impl Action {
 /// It includes the action and, optionally, and additional value which depends
 /// on the question field.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
-pub struct QuestionAnswer {
+pub struct Answer {
     pub action: String,
     #[serde(alias = "password")]
     pub value: Option<String>,
@@ -358,7 +358,7 @@ mod tests {
 
     #[test]
     fn test_answers_to() {
-        let answer = QuestionAnswer {
+        let answer = Answer {
             action: "cancel".to_string(),
             value: None,
         };

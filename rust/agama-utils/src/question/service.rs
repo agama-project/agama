@@ -26,7 +26,7 @@ use crate::{
     actor::{self, Actor, MessageHandler},
     api::{
         self, event,
-        question::{Config, Policy, Question, QuestionAnswer, QuestionSpec},
+        question::{Answer, Config, Policy, Question, QuestionSpec},
         Event,
     },
 };
@@ -60,7 +60,7 @@ impl Service {
         }
     }
 
-    pub fn find_answer(&self, spec: &QuestionSpec) -> Option<QuestionAnswer> {
+    pub fn find_answer(&self, spec: &QuestionSpec) -> Option<Answer> {
         let answer = self
             .config
             .answers
@@ -73,7 +73,7 @@ impl Service {
         }
 
         if let Some(Policy::Auto) = self.config.policy {
-            spec.default_action.clone().map(|action| QuestionAnswer {
+            spec.default_action.clone().map(|action| Answer {
                 action,
                 value: None,
             })

@@ -73,7 +73,7 @@ impl Message for Ask {
 /// Answers a question, updating its current representation.
 pub struct Answer {
     pub id: u32,
-    pub answer: api::question::QuestionAnswer,
+    pub answer: api::question::Answer,
 }
 
 impl Message for Answer {

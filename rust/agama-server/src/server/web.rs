@@ -26,7 +26,7 @@ use agama_manager::message;
 use agama_utils::actor::Handler;
 use agama_utils::api::config;
 use agama_utils::api::event;
-use agama_utils::api::question::{Question, QuestionAnswer, QuestionSpec};
+use agama_utils::api::question::{Answer, Question, QuestionSpec};
 use agama_utils::api::{Action, Config, IssueMap, Status, SystemInfo};
 use agama_utils::question;
 use anyhow;
@@ -284,7 +284,7 @@ async fn ask_question(
 pub struct AnswerPayload {
     id: u32,
     #[serde(flatten)]
-    answer: QuestionAnswer,
+    answer: Answer,
 }
 
 /// Registers a new question.

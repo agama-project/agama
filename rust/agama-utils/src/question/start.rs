@@ -41,7 +41,7 @@ pub async fn start(events: event::Sender) -> Result<Handler<Service>, Error> {
 mod tests {
     use crate::{
         api::{
-            question::{AnswerRule, Config, Policy, QuestionAnswer, QuestionSpec},
+            question::{Answer, AnswerRule, Config, Policy, QuestionSpec},
             Event,
         },
         question::{self, message},
@@ -66,7 +66,7 @@ mod tests {
         assert!(question.answer.is_none());
 
         // Answer the question
-        let answer = QuestionAnswer {
+        let answer = Answer {
             action: "yes".to_string(),
             value: None,
         };
@@ -118,7 +118,7 @@ mod tests {
         let questions = question::start(events_tx).await.unwrap();
 
         // Define a rule and an answer.
-        let answer = QuestionAnswer {
+        let answer = Answer {
             action: "no".to_string(),
             value: None,
         };
