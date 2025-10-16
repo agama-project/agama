@@ -19,8 +19,10 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::{
-    connection, http::BaseHTTPClient, proxies::questions::QuestionsProxy,
-    questions::http_client::HTTPClient,
+    connection,
+    http::BaseHTTPClient,
+    proxies::questions::QuestionsProxy,
+    questions::{config::QuestionsPolicy, http_client::HTTPClient},
 };
 use anyhow::anyhow;
 use clap::{Args, Subcommand, ValueEnum};
@@ -62,8 +64,15 @@ pub enum Modes {
     NonInteractive,
 }
 
-async fn set_mode(proxy: QuestionsProxy<'_>, value: Modes) -> anyhow::Result<()> {
-    proxy
+async fn set_mode(value: Modes) -> anyhow::Result<()> {
+    let policy = if value == Modes::Interactive {
+        QuestionsPolicy::User
+    } else {
+        QuestionsPolicy::Auto
+    };
+
+    client
+        .proxy
         .set_interactive(value == Modes::Interactive)
         .await
         .map_err(|e| e.into())
@@ -78,9 +87,7 @@ async fn set_answers(proxy: QuestionsProxy<'_>, path: String) -> anyhow::Result<
 
 async fn list_questions(client: BaseHTTPClient) -> anyhow::Result<()> {
     let client = HTTPClient::new(client);
-    let questions = client.list_questions().await?;
-    // FIXME: if performance is bad, we can skip converting json from http to struct and then
-    // serialize it, but it won't be pretty string
+    let questions = client.get_questions().await?;
     let questions_json = serde_json::to_string_pretty(&questions)?;
     println!("{}", questions_json);
     Ok(())
@@ -103,11 +110,8 @@ async fn ask_question(client: BaseHTTPClient) -> anyhow::Result<()> {
 }
 
 pub async fn run(client: BaseHTTPClient, subcommand: QuestionsCommands) -> anyhow::Result<()> {
-    let connection = connection().await?;
-    let proxy = QuestionsProxy::new(&connection).await?;
-
     match subcommand {
-        QuestionsCommands::Mode(value) => set_mode(proxy, value.value).await,
+        QuestionsCommands::Mode(value) => set_mode(value.value).await,
         QuestionsCommands::Answers { path } => set_answers(proxy, path).await,
         QuestionsCommands::List => list_questions(client).await,
         QuestionsCommands::Ask => ask_question(client).await,
