@@ -113,7 +113,7 @@ module Agama
             end
           end
         end
-        # rubocop:enable Metrics/ParameterLists, Metrics/MethodLength
+      # rubocop:enable Metrics/ParameterLists, Metrics/MethodLength
 
       private
 
