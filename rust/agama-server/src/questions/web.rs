@@ -33,7 +33,7 @@ use agama_lib::{
     proxies::questions::{GenericQuestionProxy, QuestionWithPasswordProxy, QuestionsProxy},
     questions::{
         answers::{self, Answers},
-        config::{QuestionsConfig, QuestionsPolicy},
+        config::{QuestionsConfig, Policy},
         model::{self, GenericQuestion, PasswordAnswer, Question, QuestionWithPassword},
     },
 };
@@ -433,8 +433,8 @@ async fn set_config(
 ) -> Result<(), Error> {
     if let Some(policy) = config.policy {
         let interactive = match policy {
-            QuestionsPolicy::User => true,
-            QuestionsPolicy::Auto => false,
+            Policy::User => true,
+            Policy::Auto => false,
         };
 
         state.questions.set_interactive(interactive).await?;

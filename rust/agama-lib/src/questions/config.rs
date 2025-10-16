@@ -24,7 +24,7 @@ use super::answers::Answer;
 
 #[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub enum QuestionsPolicy {
+pub enum Policy {
     /// Automatically answer questions.
     Auto,
     /// Ask the user.
@@ -36,7 +36,7 @@ pub enum QuestionsPolicy {
 #[serde(rename_all = "camelCase")]
 pub struct QuestionsConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub policy: Option<QuestionsPolicy>,
+    pub policy: Option<Policy>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub answers: Option<Vec<Answer>>,
 }
