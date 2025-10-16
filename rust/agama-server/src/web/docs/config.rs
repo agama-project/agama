@@ -39,7 +39,7 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .path_from::<crate::server::web::__path_get_proposal>()
             .path_from::<crate::server::web::__path_get_questions>()
             .path_from::<crate::server::web::__path_ask_question>()
-            .path_from::<crate::server::web::__path_answer_question>()
+            .path_from::<crate::server::web::__path_update_question>()
             .path_from::<crate::server::web::__path_run_action>()
             .build()
     }
@@ -180,6 +180,7 @@ impl ApiDocBuilder for ConfigApiDocBuilder {
             .schema_from::<agama_utils::api::question::QuestionField>()
             .schema_from::<agama_utils::api::question::QuestionSpec>()
             .schema_from::<agama_utils::api::question::SelectionOption>()
+            .schema_from::<agama_utils::api::question::UpdateOperation>()
             .schema_from::<agama_utils::api::status::State>()
             .schema_from::<crate::software::web::SoftwareProposal>()
             .build()

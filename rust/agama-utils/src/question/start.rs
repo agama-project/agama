@@ -146,4 +146,30 @@ mod tests {
 
         Ok(())
     }
+
+    #[tokio::test]
+    async fn test_delete_question() -> Result<(), Box<dyn std::error::Error>> {
+        let (events_tx, mut _events_rx) = broadcast::channel(16);
+        let questions = question::start(events_tx).await.unwrap();
+
+        // Ask the question
+        let question = questions
+            .call(message::Ask::new(build_question_spec()))
+            .await?;
+
+        let all_questions = questions.call(message::Get).await?;
+        let found = all_questions.into_iter().find(|q| q.id == question.id);
+        assert!(found.is_some());
+
+        // Delete the question
+        questions
+            .call(message::Delete { id: question.id })
+            .await
+            .unwrap();
+        let all_questions = questions.call(message::Get).await?;
+        let found = all_questions.into_iter().find(|q| q.id == question.id);
+        assert!(found.is_none());
+
+        Ok(())
+    }
 }

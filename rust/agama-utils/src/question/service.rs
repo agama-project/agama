@@ -151,3 +151,11 @@ impl MessageHandler<message::Answer> for Service {
         }
     }
 }
+
+#[async_trait]
+impl MessageHandler<message::Delete> for Service {
+    async fn handle(&mut self, message: message::Delete) -> Result<(), Error> {
+        self.questions.retain_mut(|q| q.id != message.id);
+        Ok(())
+    }
+}

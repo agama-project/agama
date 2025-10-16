@@ -310,6 +310,17 @@ pub struct Answer {
     pub value: Option<String>,
 }
 
+/// Represents an update operation over the list of questions.
+///
+/// It is used by the HTTP layer only.
+#[derive(Deserialize, utoipa::ToSchema)]
+pub enum UpdateOperation {
+    /// Answer the question with the given answer.
+    Answer { id: u32, answer: Answer },
+    /// Remove the question.
+    Remove(u32),
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -26,6 +26,7 @@ use agama_manager::message;
 use agama_utils::actor::Handler;
 use agama_utils::api::config;
 use agama_utils::api::event;
+use agama_utils::api::question::UpdateOperation;
 use agama_utils::api::question::{Answer, Question, QuestionSpec};
 use agama_utils::api::{Action, Config, IssueMap, Status, SystemInfo};
 use agama_utils::question;
@@ -97,7 +98,7 @@ pub async fn server_service(
         .route("/issues", get(get_issues))
         .route(
             "/questions",
-            get(get_questions).post(ask_question).patch(answer_question),
+            get(get_questions).post(ask_question).patch(update_question),
         )
         .with_state(state))
 }
@@ -280,31 +281,35 @@ async fn ask_question(
     Ok(Json(question))
 }
 
-#[derive(Deserialize, utoipa::ToSchema)]
-pub struct AnswerPayload {
-    id: u32,
-    #[serde(flatten)]
-    answer: Answer,
-}
-
-/// Registers a new question.
+/// Updates the question collection by answering or removing a question.
 #[utoipa::path(
-    post,
+    patch,
     path = "/questions",
     context_path = "/api/v2",
+    request_body = UpdateOperation,
     responses(
-        (status = 200, description = "The question was answered successfully"),
-        (status = 400, description = "Not possible to register the question")
+        (status = 200, description = "The question was answered or deleted"),
+        (status = 400, description = "It was not possible to update the question")
     )
 )]
-async fn answer_question(
+async fn update_question(
     State(state): State<ServerState>,
-    Json(AnswerPayload { id, answer }): Json<AnswerPayload>,
+    Json(operation): Json<UpdateOperation>,
 ) -> ServerResult<()> {
-    state
-        .questions
-        .call(question::message::Answer { id, answer })
-        .await?;
+    match operation {
+        UpdateOperation::Answer { id, answer } => {
+            state
+                .questions
+                .call(question::message::Answer { id, answer })
+                .await?;
+        }
+        UpdateOperation::Remove(id) => {
+            state
+                .questions
+                .call(question::message::Delete { id })
+                .await?;
+        }
+    }
     Ok(())
 }
 

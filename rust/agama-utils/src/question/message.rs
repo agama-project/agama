@@ -79,3 +79,12 @@ pub struct Answer {
 impl Message for Answer {
     type Reply = ();
 }
+
+/// Removes a question from the list.
+pub struct Delete {
+    pub id: u32,
+}
+
+impl Message for Delete {
+    type Reply = ();
+}
