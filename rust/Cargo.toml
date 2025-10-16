@@ -7,7 +7,7 @@ members = [
     "agama-locale-data",
     "agama-manager",
     "agama-network",
-    "agama-server",
+    "agama-server", "agama-storage",
     "agama-utils",
     "xtask",
 ]

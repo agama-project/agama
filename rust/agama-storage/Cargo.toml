@@ -1,0 +1,12 @@
+[package]
+name = "agama-storage"
+version = "0.1.0"
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+agama-utils = { path = "../agama-utils" }
+thiserror = "2.0.16"
+async-trait = "0.1.89"
+zbus = "5.7.1"
+serde_json = { version = "1.0.140", features = ["raw_value"] }

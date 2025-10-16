@@ -217,6 +217,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "agama-storage"
+version = "0.1.0"
+dependencies = [
+ "agama-utils",
+ "async-trait",
+ "serde_json",
+ "thiserror 2.0.16",
+ "zbus",
+]
+
+[[package]]
 name = "agama-utils"
 version = "0.1.0"
 dependencies = [

@@ -38,14 +38,6 @@ pub enum Error {
 
 /// Starts the manager service.
 ///
-/// It starts two Tokio tasks:
-///
-/// * The main service, called "Manager", which coordinates the rest of services
-///   an entry point for the HTTP API.
-/// * An events listener which retransmit the events from all the services.
-///
-/// It receives the following argument:
-///
 /// * `events`: channel to emit the [events](agama_utils::Event).
 /// * `dbus`: connection to Agama's D-Bus server. If it is not given, those features
 ///           that require to connect to the Agama's D-Bus server won't work.
