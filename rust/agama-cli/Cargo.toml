@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.5.19", features = ["derive", "wrap_help"] }
 agama-lib = { path = "../agama-lib" }
+agama-utils = { path = "../agama-utils" }
 serde_json = "1.0.128"
 indicatif = "0.17.8"
 thiserror = "2.0.12"

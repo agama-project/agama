@@ -6,6 +6,7 @@ edition.workspace = true
 
 [dependencies]
 agama-lib = { path = "../agama-lib" }
+agama-utils = { path = "../agama-utils" }
 anyhow = { version = "1.0.98" }
 tempfile = "3.20.0"
 thiserror = "2.0.12"

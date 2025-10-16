@@ -313,7 +313,7 @@ pub struct Answer {
 /// Represents an update operation over the list of questions.
 ///
 /// It is used by the HTTP layer only.
-#[derive(Deserialize, utoipa::ToSchema)]
+#[derive(Serialize, Deserialize, utoipa::ToSchema)]
 pub enum UpdateOperation {
     /// Answer the question with the given answer.
     Answer { id: u32, answer: Answer },

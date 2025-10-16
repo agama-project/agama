@@ -20,15 +20,8 @@
 
 //! This module offers a mechanism to ask questions to users.
 
-use std::collections::HashMap;
-
-use agama_lib::{
-    http::BaseHTTPClient,
-    questions::{
-        http_client::HTTPClient as QuestionsHTTPClient,
-        model::{GenericQuestion, Question},
-    },
-};
+use agama_lib::{http::BaseHTTPClient, questions::http_client::HTTPClient as QuestionsHTTPClient};
+use agama_utils::api::question::QuestionSpec;
 
 pub struct UserQuestions {
     questions: QuestionsHTTPClient,
@@ -43,24 +36,13 @@ impl UserQuestions {
 
     /// Asks the user whether to retry loading the profile.
     pub async fn should_retry(&self, text: &str, error: &str) -> anyhow::Result<bool> {
-        let data = HashMap::from([("error".to_string(), error.to_string())]);
-        let generic = GenericQuestion {
-            id: None,
-            class: "load.retry".to_string(),
-            text: text.to_string(),
-            options: vec!["Yes".to_string(), "No".to_string()],
-            default_option: "No".to_string(),
-            data,
-        };
-        let question = Question {
-            generic,
-            with_password: None,
-        };
+        let question = QuestionSpec::new(text, "load.retry")
+            .with_actions(&[("yes", "Yes"), ("no", "No")])
+            .with_default_action("no")
+            .with_data(&[("error", error)]);
+
         let question = self.questions.create_question(&question).await?;
-        let answer = self
-            .questions
-            .get_answer(question.generic.id.unwrap())
-            .await?;
-        Ok(answer.generic.answer == "Yes")
+        let answer = self.questions.get_answer(question.id).await?;
+        Ok(answer.action == "yes")
     }
 }

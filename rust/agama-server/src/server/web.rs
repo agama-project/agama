@@ -27,7 +27,7 @@ use agama_utils::actor::Handler;
 use agama_utils::api::config;
 use agama_utils::api::event;
 use agama_utils::api::question::UpdateOperation;
-use agama_utils::api::question::{Answer, Question, QuestionSpec};
+use agama_utils::api::question::{Question, QuestionSpec};
 use agama_utils::api::{Action, Config, IssueMap, Status, SystemInfo};
 use agama_utils::question;
 use anyhow;
@@ -37,7 +37,6 @@ use axum::routing::{get, post};
 use axum::Json;
 use axum::Router;
 use hyper::StatusCode;
-use serde::Deserialize;
 use serde::Serialize;
 use serde_json::json;
 
