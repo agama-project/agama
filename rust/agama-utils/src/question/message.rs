@@ -20,7 +20,10 @@
 
 use crate::{
     actor::Message,
-    api::{self, question::Config},
+    api::{
+        self,
+        question::{Config, Question},
+    },
 };
 
 /// Gets questions configuration (policy, pre-defined answers, etc.).
@@ -64,7 +67,7 @@ impl Ask {
 }
 
 impl Message for Ask {
-    type Reply = u32;
+    type Reply = Question;
 }
 
 /// Answers a question, updating its current representation.

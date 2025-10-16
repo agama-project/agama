@@ -272,12 +272,12 @@ async fn get_questions(State(state): State<ServerState>) -> ServerResult<Json<Ve
 async fn ask_question(
     State(state): State<ServerState>,
     Json(question): Json<QuestionSpec>,
-) -> ServerResult<Json<u32>> {
-    let id = state
+) -> ServerResult<Json<Question>> {
+    let question = state
         .questions
         .call(question::message::Ask::new(question))
         .await?;
-    Ok(Json(id))
+    Ok(Json(question))
 }
 
 #[derive(Deserialize, utoipa::ToSchema)]

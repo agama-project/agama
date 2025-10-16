@@ -18,6 +18,39 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+//! Service to handle questions for users.
+//!
+//! This service offers and API to register and answer questions. The questions
+//! can be answered:
+//!
+//! * By the user (the UI is responsible for updating the question with the given answer).
+//! * Using a pre-defined answer for specific questions (set through the `SetConfig` message).
+//! * Using the default action (set through the `SetConfig` message).
+//!
+//! The service can be started calling the [start] function, which returns an
+//! [agama_utils::actors::ActorHandler] to interact with it.
+//!
+//! # Example
+//!
+//! ```no_run
+//! use agama_utils::{
+//!     api::question::QuestionSpec,
+//!     question::{self, message},
+//! };
+//! use tokio::sync::broadcast;
+//!
+//! # tokio_test::block_on(async {
+//! async fn use_questions_service() {
+//!     let (events_tx, _events_rx) = broadcast::channel(16);
+//!
+//!     let question = QuestionSpec::new("Please, enter a username", "username")
+//!        .as_string()
+//!        .with_actions(&[("next", "Next"), ("cancel", "Cancel")]);
+//!     let questions = question::start(events_tx).await.unwrap();
+//!     _ = questions.call(message::Ask::new(question));
+//! }
+//! # });
+//! ```
 pub mod service;
 pub use service::Service;
 

@@ -41,7 +41,7 @@ pub async fn start(events: event::Sender) -> Result<Handler<Service>, Error> {
 mod tests {
     use crate::{
         api::{
-            question::{QuestionAnswer, QuestionSpec},
+            question::{AnswerRule, Config, Policy, QuestionAnswer, QuestionSpec},
             Event,
         },
         question::{self, message},
@@ -51,36 +51,98 @@ mod tests {
     fn build_question_spec() -> QuestionSpec {
         QuestionSpec::new("Do you want to continue?", "continue")
             .with_actions(&[("yes", "Yes"), ("no", "No")])
+            .with_default_action("no")
     }
 
     #[tokio::test]
     async fn test_ask_and_answer_question() -> Result<(), Box<dyn std::error::Error>> {
         let (events_tx, mut events_rx) = broadcast::channel(16);
         let questions = question::start(events_tx).await.unwrap();
-        let question_id = questions
+
+        // Ask the question
+        let question = questions
             .call(message::Ask::new(build_question_spec()))
             .await?;
+        assert!(question.answer.is_none());
 
+        // Answer the question
         let answer = QuestionAnswer {
             action: "yes".to_string(),
             value: None,
         };
         questions
             .call(message::Answer {
-                id: question_id,
+                id: question.id,
                 answer,
             })
             .await?;
-        _ = questions.call(message::Get).await?;
 
         let new_question = events_rx.recv().await?;
-        assert!(matches!(new_question, Event::QuestionAdded { id }));
+        assert!(matches!(new_question, Event::QuestionAdded { id: _ }));
 
         let answer_question = events_rx.recv().await?;
         assert!(matches!(
             answer_question,
             Event::QuestionAnswered { id: _id }
         ));
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_auto_answer_question_by_policy() -> Result<(), Box<dyn std::error::Error>> {
+        let (events_tx, mut _events_rx) = broadcast::channel(16);
+        let questions = question::start(events_tx).await.unwrap();
+
+        // Set the configuration
+        let config = Config {
+            policy: Some(Policy::Auto),
+            ..Default::default()
+        };
+        questions.call(message::SetConfig::new(config)).await?;
+
+        // Ask the question
+        let question = questions
+            .call(message::Ask::new(build_question_spec()))
+            .await?;
+
+        // Check the answer
+        assert!(question.answer.is_some());
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_auto_answer_question_by_rule() -> Result<(), Box<dyn std::error::Error>> {
+        let (events_tx, mut _events_rx) = broadcast::channel(16);
+        let questions = question::start(events_tx).await.unwrap();
+
+        // Define a rule and an answer.
+        let answer = QuestionAnswer {
+            action: "no".to_string(),
+            value: None,
+        };
+        let rule_by_class = AnswerRule {
+            text: None,
+            class: Some("continue".to_string()),
+            data: None,
+            answer: answer.clone(),
+        };
+
+        // Set the configuration
+        let config = Config {
+            policy: Some(Policy::User),
+            answers: vec![rule_by_class],
+        };
+        questions.call(message::SetConfig::new(config)).await?;
+
+        // Ask the question
+        let question = questions
+            .call(message::Ask::new(build_question_spec()))
+            .await?;
+
+        // Check the answer
+        assert_eq!(question.answer, Some(answer));
 
         Ok(())
     }

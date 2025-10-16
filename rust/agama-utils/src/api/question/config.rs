@@ -19,7 +19,6 @@
 // find current contact information at www.suse.com.
 
 use serde::{Deserialize, Serialize};
-use serde_json::value::RawValue;
 use std::collections::HashMap;
 
 #[derive(thiserror::Error, Debug)]
@@ -29,7 +28,17 @@ pub enum Error {
     InvalidAnswer(u32),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+/// Questions configuration.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Config {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub policy: Option<Policy>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub answers: Vec<AnswerRule>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Policy {
     /// Automatically answer questions.
@@ -42,8 +51,8 @@ pub enum Policy {
 /// corresponding [agama_lib::questions::GenericQuestion] fields.
 /// The *matcher* part is: `class`, `text`, `data`.
 /// The *answer* part is: `answer`, `password`.
-#[derive(Clone, Serialize, Deserialize, PartialEq, Debug, utoipa::ToSchema)]
-pub struct Answer {
+#[derive(Clone, Serialize, Deserialize, Debug, utoipa::ToSchema)]
+pub struct AnswerRule {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub class: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -52,22 +61,39 @@ pub struct Answer {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<HashMap<String, String>>,
     /// The answer text is the only mandatory part of an Answer
-    #[serde(alias = "action")]
-    pub answer: String,
-    /// All possible mixins have to be here, so they can be specified in an Answer
-    #[serde(alias = "password")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub value: Option<String>,
+    #[serde(flatten)]
+    pub answer: QuestionAnswer,
 }
 
-/// Questions configuration.
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct Config {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub policy: Option<Policy>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub answers: Option<Vec<Answer>>,
+impl AnswerRule {
+    /// Determines whether the answer responds to the given question.
+    ///
+    /// * `spec`: question spect to compare with.
+    pub fn answers_to(&self, spec: &QuestionSpec) -> bool {
+        if let Some(class) = &self.class {
+            if spec.class != *class {
+                return false;
+            }
+        }
+
+        if let Some(text) = &self.text {
+            if spec.text != *text {
+                return false;
+            }
+        }
+
+        if let Some(data) = &self.data {
+            return data.iter().all(|(key, value)| {
+                let Some(e_val) = spec.data.get(key) else {
+                    return false;
+                };
+
+                e_val == value
+            });
+        }
+
+        true
+    }
 }
 
 /// Represents a question including its [specification](QuestionSpec) and [answer](QuestionAnswer).
@@ -142,8 +168,8 @@ pub struct QuestionSpec {
     /// Additional data that can be set for any question.
     // FIXME: set the proper value_type.
     #[schema(value_type = HashMap<String, String>)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub data: Option<HashMap<String, Box<RawValue>>>,
+    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
+    pub data: HashMap<String, String>,
 }
 
 impl QuestionSpec {
@@ -158,7 +184,7 @@ impl QuestionSpec {
             field: QuestionField::None,
             actions: vec![],
             default_action: None,
-            data: None,
+            data: HashMap::new(),
         }
     }
 
@@ -196,7 +222,7 @@ impl QuestionSpec {
         self
     }
 
-    /// Sets the available actions.o
+    /// Sets the available actions.
     ///
     /// * `actions`: available actions in `(id, label)` format.
     pub fn with_actions(mut self, actions: &[(&str, &str)]) -> Self {
@@ -204,6 +230,17 @@ impl QuestionSpec {
             .iter()
             .map(|(id, label)| Action::new(id, label))
             .collect();
+        self
+    }
+
+    /// Sets the additional data.
+    ///
+    /// * `data`: available actions in `(id, label)` format.
+    pub fn with_data(mut self, data: &[(&str, &str)]) -> Self {
+        self.data = data
+            .iter()
+            .map(|(id, label)| (id.to_string(), label.to_string()))
+            .collect::<HashMap<String, String>>();
         self
     }
 }
@@ -268,9 +305,10 @@ impl Action {
 ///
 /// It includes the action and, optionally, and additional value which depends
 /// on the question field.
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 pub struct QuestionAnswer {
     pub action: String,
+    #[serde(alias = "password")]
     pub value: Option<String>,
 }
 
@@ -318,5 +356,50 @@ mod tests {
         ));
         assert_eq!(q.actions[0], Action::new("decrypt", "Decrypt"));
         assert_eq!(q.actions[1], Action::new("skip", "Skip"));
+    }
+
+    #[test]
+    fn test_answers_to() {
+        let answer = QuestionAnswer {
+            action: "cancel".to_string(),
+            value: None,
+        };
+
+        let q = QuestionSpec::new("Please, enter a username", "username")
+            .as_string()
+            .with_data(&[("id", "1")])
+            .with_actions(&[("next", "Next"), ("cancel", "Cancel")]);
+
+        let rule_by_text = AnswerRule {
+            text: Some("Please, enter a username".to_string()),
+            class: Default::default(),
+            data: Default::default(),
+            answer: answer.clone(),
+        };
+        assert!(rule_by_text.answers_to(&q));
+
+        let rule_by_class = AnswerRule {
+            text: Default::default(),
+            class: Some("username".to_string()),
+            data: Default::default(),
+            answer: answer.clone(),
+        };
+        assert!(rule_by_class.answers_to(&q));
+
+        let rule_by_data = AnswerRule {
+            text: Default::default(),
+            class: Default::default(),
+            data: Some(HashMap::from([("id".to_string(), "1".to_string())])),
+            answer: answer.clone(),
+        };
+        assert!(rule_by_data.answers_to(&q));
+
+        let not_matching_rule = AnswerRule {
+            text: Some("Another text".to_string()),
+            class: None,
+            data: None,
+            answer: answer.clone(),
+        };
+        assert!(!not_matching_rule.answers_to(&q));
     }
 }

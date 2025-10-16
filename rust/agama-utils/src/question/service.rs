@@ -26,7 +26,7 @@ use crate::{
     actor::{self, Actor, MessageHandler},
     api::{
         self, event,
-        question::{Config, Question},
+        question::{Config, Policy, Question, QuestionAnswer, QuestionSpec},
         Event,
     },
 };
@@ -57,6 +57,28 @@ impl Service {
             questions: vec![],
             current_id: 0,
             events,
+        }
+    }
+
+    pub fn find_answer(&self, spec: &QuestionSpec) -> Option<QuestionAnswer> {
+        let answer = self
+            .config
+            .answers
+            .iter()
+            .find(|a| a.answers_to(&spec))
+            .map(|r| r.answer.clone());
+
+        if answer.is_some() {
+            return answer;
+        }
+
+        if let Some(Policy::Auto) = self.config.policy {
+            spec.default_action.clone().map(|action| QuestionAnswer {
+                action,
+                value: None,
+            })
+        } else {
+            None
         }
     }
 }
@@ -92,14 +114,25 @@ impl MessageHandler<message::Get> for Service {
 
 #[async_trait]
 impl MessageHandler<message::Ask> for Service {
-    async fn handle(&mut self, message: message::Ask) -> Result<u32, Error> {
+    async fn handle(&mut self, message: message::Ask) -> Result<Question, Error> {
         self.current_id += 1;
-        let question = Question::new(self.current_id, message.question);
-        self.questions.push(question);
+
+        let mut question = Question::new(self.current_id, message.question);
+        if let Some(answer) = self.find_answer(&question.spec) {
+            _ = question.set_answer(answer);
+        }
+        self.questions.push(question.clone());
+
         self.events.send(Event::QuestionAdded {
             id: self.current_id,
         })?;
-        Ok(self.current_id)
+
+        if question.answer.is_some() {
+            self.events.send(Event::QuestionAnswered {
+                id: self.current_id,
+            })?;
+        }
+        Ok(question)
     }
 }
 

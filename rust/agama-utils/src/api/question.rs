@@ -20,5 +20,6 @@
 
 mod config;
 pub use config::{
-    Action, Config, Error, Policy, Question, QuestionAnswer, QuestionField, QuestionSpec,
+    Action, AnswerRule, Config, Error, Policy, Question, QuestionAnswer, QuestionField,
+    QuestionSpec,
 };
