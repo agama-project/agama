@@ -31,6 +31,7 @@ use agama_server::{
     logs::init_logging,
     web::{self, run_monitor},
 };
+use agama_utils::api::event::Receiver;
 use anyhow::Context;
 use axum::{
     extract::Request as AxumRequest,
@@ -322,7 +323,8 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
     let (tx, _) = channel(16);
     run_monitor(tx.clone()).await?;
 
-    let (events_tx, _) = channel(16);
+    let (events_tx, events_rx) = channel(16);
+    monitor_events_channel(events_rx);
 
     let config = web::ServiceConfig::load()?;
 
@@ -379,6 +381,18 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
 fn write_token(path: &str, secret: &str) -> anyhow::Result<()> {
     let token = AuthToken::generate(secret)?;
     Ok(token.write(path)?)
+}
+
+// Keep the receiver running to avoid the channel being closed.
+fn monitor_events_channel(mut events_rx: Receiver) {
+    tokio::spawn(async move {
+        loop {
+            if let Err(error) = events_rx.recv().await {
+                eprintln!("Error receiving events: {error}");
+                break;
+            }
+        }
+    });
 }
 
 /// Represents the result of execution.
