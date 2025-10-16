@@ -161,8 +161,6 @@ pub struct QuestionSpec {
     /// List of available actions.
     pub actions: Vec<Action>,
     /// Default action.
-    /// Question class (e.g., "autoyast.unsupported"). It works as a hint for
-    /// the UI or as the selected option when not using the "auto" policy.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub default_action: Option<String>,
     /// Additional data that can be set for any question.
