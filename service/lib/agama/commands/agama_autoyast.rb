@@ -26,7 +26,7 @@ require "agama/autoyast/profile_fetcher"
 require "agama/autoyast/profile_reporter"
 require "agama/autoyast/profile_checker"
 require "agama/cmdline_args"
-require "agama/dbus/clients/questions"
+require "agama/http/clients"
 
 module Agama
   # :nodoc:
@@ -96,7 +96,7 @@ module Agama
       end
 
       def questions_client
-        @questions_client ||= Agama::DBus::Clients::Questions.new(logger: logger)
+        @questions_client ||= Agama::HTTP::Clients::Questions.new(logger)
       end
 
       # Whether the report is enabled or not.

@@ -22,23 +22,23 @@
 require_relative "../../../test_helper"
 require "agama/storage/callbacks/activate_luks"
 require "agama/question_with_password"
-require "agama/dbus/clients/questions"
-require "agama/dbus/clients/question"
+require "agama/http/clients"
+require "agama/question"
+require "agama/answer"
 require "storage"
 
 describe Agama::Storage::Callbacks::ActivateLuks do
   subject { described_class.new(questions_client, logger) }
 
-  let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
+  let(:questions_client) { instance_double(Agama::HTTP::Clients::Questions) }
+  let(:answer) { nil }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   describe "#call" do
     before do
-      allow(questions_client).to receive(:ask).and_yield(question_client)
+      allow(questions_client).to receive(:ask).and_yield(answer)
     end
-
-    let(:question_client) { instance_double(Agama::DBus::Clients::Question) }
 
     let(:luks_info) do
       instance_double(Storage::LuksInfo,
@@ -58,10 +58,7 @@ describe Agama::Storage::Callbacks::ActivateLuks do
     end
 
     context "when the question is answered as :skip" do
-      before do
-        allow(question_client).to receive(:answer).and_return(:skip)
-        allow(question_client).to receive(:password).and_return("notsecret")
-      end
+      let(:answer) { Agama::Answer.new(:skip, "notsecret") }
 
       it "returns a tuple containing false and the password" do
         expect(subject.call(luks_info, attempt)).to eq([false, "notsecret"])
@@ -69,10 +66,7 @@ describe Agama::Storage::Callbacks::ActivateLuks do
     end
 
     context "when the question is answered as :decrypt" do
-      before do
-        allow(question_client).to receive(:answer).and_return(:decrypt)
-        allow(question_client).to receive(:password).and_return("notsecret")
-      end
+      let(:answer) { Agama::Answer.new(:decrypt, "notsecret") }
 
       it "returns a tuple containing true and the password" do
         expect(subject.call(luks_info, attempt)).to eq([true, "notsecret"])

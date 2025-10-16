@@ -21,22 +21,21 @@
 
 require_relative "../../../test_helper"
 require "agama/storage/callbacks/activate_multipath"
-require "agama/dbus/clients/questions"
-require "agama/dbus/clients/question"
+require "agama/http/clients"
+require "agama/answer"
 
 describe Agama::Storage::Callbacks::ActivateMultipath do
   subject { described_class.new(questions_client, logger) }
 
-  let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
+  let(:questions_client) { instance_double(Agama::HTTP::Clients::Questions) }
+  let(:answer) { Agama::Answer.new(:no) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   describe "#call" do
     before do
-      allow(questions_client).to receive(:ask).and_yield(question_client)
+      allow(questions_client).to receive(:ask).and_yield(answer)
     end
-
-    let(:question_client) { instance_double(Agama::DBus::Clients::Question) }
 
     context "if the devices do not look like real multipath" do
       let(:real_multipath) { false }
@@ -64,9 +63,7 @@ describe Agama::Storage::Callbacks::ActivateMultipath do
       end
 
       context "and the question is answered as :yes" do
-        before do
-          allow(question_client).to receive(:answer).and_return(:yes)
-        end
+        let(:answer) { Agama::Answer.new(:yes) }
 
         it "returns true" do
           expect(subject.call(real_multipath)).to eq(true)
@@ -74,9 +71,7 @@ describe Agama::Storage::Callbacks::ActivateMultipath do
       end
 
       context "and the question is answered as :no" do
-        before do
-          allow(question_client).to receive(:answer).and_return(:no)
-        end
+        let(:answer) { Agama::Answer.new(:no) }
 
         it "returns false" do
           expect(subject.call(real_multipath)).to eq(false)

@@ -300,7 +300,7 @@ describe Agama::Registration do
             q_client = double
             expect(q_client).to receive(:ask).and_yield(q_client)
             expect(q_client).to receive(:answer).and_return(:Abort)
-            expect(Agama::DBus::Clients::Questions).to receive(:new)
+            expect(Agama::HTTP::Clients::Questions).to receive(:new)
               .and_return(q_client)
 
             expect { subject.register("11112222", email: "test@test.com") }.to(

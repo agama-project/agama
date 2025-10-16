@@ -21,22 +21,23 @@
 
 require_relative "../../../test_helper"
 require "agama/software/callbacks/provide"
-require "agama/dbus/clients/questions"
-require "agama/dbus/clients/question"
+require "agama/http/clients/questions"
+require "agama/question"
+require "agama/answer"
 
 describe Agama::Software::Callbacks::Provide do
   subject { described_class.new(questions_client, logger) }
 
-  let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
+  let(:questions_client) { instance_double(Agama::HTTP::Clients::Questions) }
+  let(:question) { instance_double(Agama::Question, answer: answer) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:answer) { subject.retry_label.to_sym }
+  let(:answer) { Agama::Answer.new(subject.retry_label) }
 
   describe "#done_provide" do
     before do
-      allow(questions_client).to receive(:ask).and_yield(question_client)
-      allow(question_client).to receive(:answer).and_return(answer)
+      allow(questions_client).to receive(:ask).and_yield(answer)
     end
 
     let(:question_client) { instance_double(Agama::DBus::Clients::Question) }
@@ -69,8 +70,6 @@ describe Agama::Software::Callbacks::Provide do
     end
 
     context "when the user answers :Retry" do
-      let(:answer) { subject.retry_label.to_sym }
-
       it "returns 'R'" do
         ret = subject.done_provide(
           2, "Some dummy reason", "dummy-package"
@@ -80,7 +79,7 @@ describe Agama::Software::Callbacks::Provide do
     end
 
     context "when the user answers :Skip" do
-      let(:answer) { subject.continue_label.to_sym }
+      let(:answer) { Agama::Answer.new(subject.continue_label) }
 
       it "returns 'I'" do
         ret = subject.done_provide(

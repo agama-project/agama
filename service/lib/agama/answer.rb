@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2025] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -32,7 +32,7 @@ module Agama
     end
 
     def initialize(action, value = nil)
-      @action = action
+      @action = action.to_sym
       @value = value
     end
   end

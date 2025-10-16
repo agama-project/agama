@@ -59,7 +59,7 @@ describe Agama::Question do
         with_answer = api_question.merge("answer" => { "action" => "yes", "value" => "secret" })
         question = described_class.from_api(with_answer)
         answer = question.answer
-        expect(answer.action).to eq("yes")
+        expect(answer.action).to eq(:yes)
         expect(answer.value).to eq("secret")
       end
     end

@@ -30,7 +30,7 @@ module Agama
 
       # Constructor
       #
-      # @param questions_client [Agama::DBus::Clients::Questions]
+      # @param questions_client [Agama::HTTP::Clients::Questions]
       # @param logger [Logger]
       def initialize(questions_client, logger)
         textdomain "agama"
@@ -53,16 +53,16 @@ module Agama
         question = Agama::Question.new(
           qclass:         "autoyast.unsupported",
           text:           message,
-          options:        [:Continue, :Abort],
-          default_option: :Continue,
+          options:        [:continue, :abort],
+          default_option: :continue,
           data:           {
             "planned"     => planned.map(&:key).join(","),
             "unsupported" => unsupported.map(&:key).join(",")
           }
         )
 
-        questions_client.ask(question) do |question_client|
-          question_client.answer == :Continue
+        questions_client.ask(question) do |answer|
+          answer == :continue
         end
       end
 

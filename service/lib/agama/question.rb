@@ -103,7 +103,7 @@ module Agama
         if option.is_a?(Hash)
           option
         else
-          { "id" => option, "label" => option.capitalize }
+          { "id" => option.to_s, "label" => option.to_s.capitalize }
         end
       end
 
@@ -111,7 +111,7 @@ module Agama
         "text"          => @text,
         "class"         => @qclass,
         "actions"       => actions,
-        "defaultAction" => @default_option,
+        "defaultAction" => @default_option.to_s,
         "data"          => @data
       }
     end

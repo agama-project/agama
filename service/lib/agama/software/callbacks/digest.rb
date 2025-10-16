@@ -68,8 +68,8 @@ module Agama
             options:        [yes_label.to_sym, no_label.to_sym],
             default_option: yes_label.to_sym
           )
-          questions_client.ask(question) do |question_client|
-            question_client.answer == yes_label.to_sym
+          questions_client.ask(question) do |answer|
+            answer.action == yes_label.to_sym
           end
         end
 
@@ -94,8 +94,8 @@ module Agama
             options:        [yes_label.to_sym, no_label.to_sym],
             default_option: yes_label.to_sym
           )
-          questions_client.ask(question) do |question_client|
-            question_client.answer == yes_label.to_sym
+          questions_client.ask(question) do |answer|
+            answer.action == yes_label.to_sym
           end
         end
 
@@ -121,8 +121,8 @@ module Agama
             options:        [yes_label.to_sym, no_label.to_sym],
             default_option: yes_label.to_sym
           )
-          questions_client.ask(question) do |question_client|
-            question_client.answer == yes_label.to_sym
+          questions_client.ask(question) do |answer|
+            answer.action == yes_label.to_sym
           end
         end
 

@@ -54,14 +54,14 @@ module Agama
             options: [retry_label, continue_label],
             data:    { "details" => description }
           )
-          questions_client.ask(question) do |question_client|
-            (question_client.answer == retry_label.to_sym) ? "R" : "I"
+          questions_client.ask(question) do |answer|
+            (answer.action == retry_label.to_sym) ? "R" : "I"
           end
         end
 
       private
 
-        # @return [Agama::DBus::Clients::Questions]
+        # @return [Agama::HTTP::Clients::Questions]
         attr_reader :questions_client
 
         # @return [Logger]

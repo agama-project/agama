@@ -29,7 +29,7 @@ require "agama/registration"
 require "agama/software/manager"
 require "agama/software/product"
 require "agama/software/proposal"
-require "agama/dbus/clients/questions"
+require "agama/http/clients"
 
 describe Agama::Software::Manager do
   subject { described_class.new(config, logger) }
@@ -79,7 +79,7 @@ describe Agama::Software::Manager do
   end
 
   let(:questions_client) do
-    instance_double(Agama::DBus::Clients::Questions)
+    instance_double(Agama::HTTP::Clients::Questions)
   end
 
   let(:target_dir) { Dir.mktmpdir }
@@ -104,7 +104,7 @@ describe Agama::Software::Manager do
       .and_return(base_url)
     allow(Yast::Pkg).to receive(:SourceCreate)
     allow(Yast::Installation).to receive(:destdir).and_return(destdir)
-    allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
+    allow(Agama::HTTP::Clients::Questions).to receive(:new).and_return(questions_client)
     allow(Agama::Software::RepositoriesManager).to receive(:instance).and_return(repositories)
     allow(Agama::Software::Proposal).to receive(:new).and_return(proposal)
     allow(Agama::ProductReader).to receive(:new).and_call_original

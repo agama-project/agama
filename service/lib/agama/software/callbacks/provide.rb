@@ -74,8 +74,8 @@ module Agama
             data:    { "package" => name, "error_code" => error_code }
           )
 
-          questions_client.ask(question) do |question_client|
-            (question_client.answer == retry_label.to_sym) ? "R" : "I"
+          questions_client.ask(question) do |answer|
+            (answer.action == retry_label.to_sym) ? "R" : "I"
           end
         end
       end

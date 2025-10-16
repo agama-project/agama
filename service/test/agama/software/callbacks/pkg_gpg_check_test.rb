@@ -27,7 +27,7 @@ require "agama/software/callbacks/pkg_gpg_check"
 describe Agama::Software::Callbacks::PkgGpgCheck do
   subject { described_class.new(questions_client, logger) }
 
-  let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
+  let(:questions_client) { instance_double(Agama::HTTP::Clients::Questions) }
   let(:logger) { Logger.new($stdout, level: :error) }
 
   describe "#pkg_gpg_check" do

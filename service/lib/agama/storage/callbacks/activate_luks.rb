@@ -29,7 +29,7 @@ module Agama
       class ActivateLuks
         # Constructor
         #
-        # @param questions_client [Agama::DBus::Clients::Questions]
+        # @param questions_client [Agama::HTTP::Clients::Questions]
         # @param logger [Logger]
         def initialize(questions_client, logger)
           @questions_client = questions_client
@@ -49,9 +49,9 @@ module Agama
         def call(info, attempt)
           question = question(info, attempt)
 
-          questions_client.ask(question) do |question_client|
-            activate = question_client.answer == :decrypt
-            password = question_client.password
+          questions_client.ask(question) do |answer|
+            activate = answer.action == :decrypt
+            password = answer.value
 
             [activate, password]
           end
@@ -59,7 +59,7 @@ module Agama
 
       private
 
-        # @return [Agama::DBus::Clients::Questions]
+        # @return [Agama::HTTP::Clients::Questions]
         attr_reader :questions_client
 
         # @return [Logger]

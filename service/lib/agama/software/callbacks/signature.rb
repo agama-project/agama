@@ -82,8 +82,8 @@ module Agama
             default_option: no_label.to_sym,
             data:           { "filename" => filename }
           )
-          questions_client.ask(question) do |question_client|
-            question_client.answer == yes_label.to_sym
+          questions_client.ask(question) do |answer|
+            answer.action == yes_label.to_sym
           end
         end
 
@@ -114,8 +114,8 @@ module Agama
             }
           )
 
-          questions_client.ask(question) do |question_client|
-            question_client.answer == trust_label.to_sym
+          questions_client.ask(question) do |answer|
+            answer.action == trust_label.to_sym
           end
         end
 
@@ -151,8 +151,8 @@ module Agama
             }
           )
 
-          questions_client.ask(question) do |question_client|
-            question_client.answer == yes_label.to_sym
+          questions_client.ask(question) do |answer|
+            answer.action == yes_label.to_sym
           end
         end
 
@@ -186,8 +186,8 @@ module Agama
             default_option: no_label.to_sym,
             data:           { "filename" => filename }
           )
-          questions_client.ask(question) do |question_client|
-            question_client.answer == yes_label.to_sym
+          questions_client.ask(question) do |answer|
+            answer.action == yes_label.to_sym
           end
         end
 

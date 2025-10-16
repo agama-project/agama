@@ -21,18 +21,17 @@
 
 require_relative "../../../test_helper"
 require "agama/software/callbacks/signature"
-require "agama/dbus/clients/questions"
-require "agama/dbus/clients/question"
+require "agama/http/clients"
+require "agama/question"
+require "agama/answer"
 
 describe Agama::Software::Callbacks::Signature do
   before do
-    allow(questions_client).to receive(:ask).and_yield(question_client)
-    allow(question_client).to receive(:answer).and_return(answer)
+    allow(questions_client).to receive(:ask).and_yield(answer)
   end
 
-  let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
-
-  let(:question_client) { instance_double(Agama::DBus::Clients::Question) }
+  let(:questions_client) { instance_double(Agama::HTTP::Clients::Questions) }
+  let(:question) { instance_double(Agama::Question, answer: answer) }
 
   let(:answer) { nil }
 
@@ -42,7 +41,7 @@ describe Agama::Software::Callbacks::Signature do
 
   describe "#accept_unsigned_file" do
     context "when the user answers :Yes" do
-      let(:answer) { :Yes }
+      let(:answer) { Agama::Answer.new(:Yes) }
 
       it "returns true" do
         expect(subject.accept_unsigned_file("repomd.xml", -1)).to eq(true)
@@ -50,7 +49,7 @@ describe Agama::Software::Callbacks::Signature do
     end
 
     context "when the user answers :No" do
-      let(:answer) { :No }
+      let(:answer) { Agama::Answer.new(:No) }
 
       it "returns false" do
         expect(subject.accept_unsigned_file("repomd.xml", -1)).to eq(false)
@@ -88,7 +87,7 @@ describe Agama::Software::Callbacks::Signature do
   end
 
   describe "import_gpg_key" do
-    let(:answer) { :Trust }
+    let(:answer) { Agama::Answer.new("Trust") }
 
     let(:key) do
       {
@@ -99,7 +98,7 @@ describe Agama::Software::Callbacks::Signature do
     end
 
     context "when the user answers :Trust" do
-      let(:answer) { :Trust }
+      let(:answer) { Agama::Answer.new(:Trust) }
 
       it "returns true" do
         expect(subject.import_gpg_key(key, 1)).to eq(true)
@@ -107,7 +106,7 @@ describe Agama::Software::Callbacks::Signature do
     end
 
     context "when the user answers :Skip" do
-      let(:answer) { :Skip }
+      let(:answer) { Agama::Answer.new(:Skip) }
 
       it "returns false" do
         expect(subject.import_gpg_key(key, 1)).to eq(false)
@@ -126,7 +125,7 @@ describe Agama::Software::Callbacks::Signature do
 
   describe "#accept_unknown_gpg_key" do
     context "when the user answers :Yes" do
-      let(:answer) { :Yes }
+      let(:answer) { Agama::Answer.new(:Yes) }
 
       it "returns true" do
         expect(subject.accept_unknown_gpg_key("repomd.xml", "KEYID", 1)).to eq(true)
@@ -134,7 +133,7 @@ describe Agama::Software::Callbacks::Signature do
     end
 
     context "when the user answers :No" do
-      let(:answer) { :No }
+      let(:answer) { Agama::Answer.new(:No) }
 
       it "returns false" do
         expect(subject.accept_unknown_gpg_key("repomd.xml", "KEYID", 1)).to eq(false)
@@ -172,7 +171,7 @@ describe Agama::Software::Callbacks::Signature do
   end
 
   describe "accept_verification_failed" do
-    let(:answer) { :Trust }
+    let(:answer) { Agama::Answer.new(:Trust) }
 
     let(:key) do
       {
@@ -185,7 +184,7 @@ describe Agama::Software::Callbacks::Signature do
     let(:filename) { "repomd.xml" }
 
     context "when the user answers :Yes" do
-      let(:answer) { :Yes }
+      let(:answer) { Agama::Answer.new(:Yes) }
 
       it "returns true" do
         expect(subject.accept_verification_failed(filename, key, 1)).to eq(true)
@@ -193,7 +192,7 @@ describe Agama::Software::Callbacks::Signature do
     end
 
     context "when the user answers :No" do
-      let(:answer) { :No }
+      let(:answer) { Agama::Answer.new(:No) }
 
       it "returns false" do
         expect(subject.accept_verification_failed(filename, key, 1)).to eq(false)
