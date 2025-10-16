@@ -32,7 +32,6 @@ use crate::{
     manager::web::{manager_service, manager_stream},
     network::{web::network_service, NetworkManagerAdapter},
     profile::web::profile_service,
-    questions::web::{questions_service, questions_stream},
     scripts::web::scripts_service,
     security::security_service,
     server::server_service,
@@ -102,7 +101,6 @@ where
             "/network",
             network_service(network_adapter, old_events).await?,
         )
-        .add_service("/questions", questions_service(dbus.clone()).await?)
         .add_service("/users", users_service(dbus.clone()).await?)
         .add_service("/scripts", scripts_service().await?)
         .add_service("/files", files_service().await?)
@@ -179,7 +177,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: OldSender) -> Result
         )
         .await?,
     );
-    stream.insert("questions", questions_stream(dbus.clone()).await?);
 
     tokio::pin!(stream);
     let e = events.clone();

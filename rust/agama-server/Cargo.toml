@@ -61,10 +61,6 @@ url = "2.5.2"
 strum = { version = "0.27.2", features = ["derive"] }
 
 [[bin]]
-name = "agama-dbus-server"
-path = "src/agama-dbus-server.rs"
-
-[[bin]]
 name = "agama-web-server"
 path = "src/agama-web-server.rs"
 

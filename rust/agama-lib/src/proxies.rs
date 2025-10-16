@@ -27,8 +27,6 @@ pub use service_status::ServiceStatusProxy;
 mod manager1;
 pub use manager1::Manager1Proxy;
 
-pub mod questions;
-
 mod locale;
 pub use locale::LocaleMixinProxy;
 
