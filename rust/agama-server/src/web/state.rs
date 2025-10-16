@@ -22,6 +22,7 @@
 
 use super::config::ServiceConfig;
 use agama_lib::http;
+use agama_utils::api::event;
 use std::path::PathBuf;
 
 /// Web service state.
@@ -30,6 +31,7 @@ use std::path::PathBuf;
 #[derive(Clone)]
 pub struct ServiceState {
     pub config: ServiceConfig,
-    pub events: http::event::Sender,
+    pub events: event::Sender,
+    pub old_events: http::event::OldSender,
     pub public_dir: PathBuf,
 }

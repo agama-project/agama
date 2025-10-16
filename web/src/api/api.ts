@@ -21,6 +21,7 @@
  */
 
 import { get, patch, post } from "~/api/http";
+import { Config } from "~/types/config";
 import { Proposal } from "~/types/proposal";
 import { System } from "~/types/system";
 
@@ -37,7 +38,7 @@ const fetchProposal = (): Promise<Proposal> => get("/api/v2/proposal");
 /**
  * Updates configuration
  */
-const updateConfig = (config) => patch("/api/v2/config", { update: config });
+const updateConfig = (config: Config) => patch("/api/v2/config", { update: config });
 /**
  * Triggers an action
  */

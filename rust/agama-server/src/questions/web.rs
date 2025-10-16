@@ -29,7 +29,7 @@ use crate::error::Error;
 use agama_lib::{
     error::ServiceError,
     event,
-    http::Event,
+    http::OldEvent,
     proxies::questions::{GenericQuestionProxy, QuestionWithPasswordProxy, QuestionsProxy},
     questions::{
         answers::{self, Answers},
@@ -285,7 +285,7 @@ pub async fn questions_service(dbus: zbus::Connection) -> Result<Router, Service
 
 pub async fn questions_stream(
     dbus: zbus::Connection,
-) -> Result<Pin<Box<dyn Stream<Item = Event> + Send>>, Error> {
+) -> Result<Pin<Box<dyn Stream<Item = OldEvent> + Send>>, Error> {
     let question_path = OwnedObjectPath::from(
         ObjectPath::try_from("/org/opensuse/Agama1/Questions")
             .context("failed to create object path")?,

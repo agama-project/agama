@@ -18,28 +18,35 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::{event, message, Issue};
 use crate::actor::{self, Actor, MessageHandler};
+use crate::api::event;
+use crate::api::event::Event;
+use crate::api::issue;
+use crate::api::issue::IssueMap;
+use crate::issue::message;
 use async_trait::async_trait;
-use std::collections::HashMap;
+use std::collections::HashSet;
+use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error(transparent)]
+    Event(#[from] broadcast::error::SendError<Event>),
+    #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error(transparent)]
-    Model(#[from] super::model::Error),
+    Issue(#[from] issue::Error),
 }
 
 pub struct Service {
-    issues: HashMap<String, Vec<Issue>>,
+    issues: IssueMap,
     events: event::Sender,
 }
 
 impl Service {
     pub fn new(events: event::Sender) -> Self {
         Self {
-            issues: HashMap::new(),
+            issues: IssueMap::new(),
             events,
         }
     }
@@ -51,10 +58,7 @@ impl Actor for Service {
 
 #[async_trait]
 impl MessageHandler<message::Get> for Service {
-    async fn handle(
-        &mut self,
-        _message: message::Get,
-    ) -> Result<HashMap<String, Vec<Issue>>, Error> {
+    async fn handle(&mut self, _message: message::Get) -> Result<IssueMap, Error> {
         Ok(self.issues.clone())
     }
 }
@@ -62,14 +66,27 @@ impl MessageHandler<message::Get> for Service {
 #[async_trait]
 impl MessageHandler<message::Update> for Service {
     async fn handle(&mut self, message: message::Update) -> Result<(), Error> {
+        // Compare whether the issues has changed.
+        let old_issues_hash: HashSet<_> = self
+            .issues
+            .get(&message.scope)
+            .map(|v| v.iter().cloned().collect())
+            .unwrap_or_default();
+        let new_issues_hash: HashSet<_> = message.issues.iter().cloned().collect();
+        if old_issues_hash == new_issues_hash {
+            return Ok(());
+        }
+
         if message.issues.is_empty() {
-            _ = self.issues.remove(&message.list);
+            _ = self.issues.remove(&message.scope);
         } else {
-            self.issues.insert(message.list, message.issues);
+            self.issues.insert(message.scope, message.issues);
         }
 
         if message.notify {
-            _ = self.events.send(event::Event::IssuesChanged);
+            self.events.send(Event::IssuesChanged {
+                scope: message.scope,
+            })?;
         }
         Ok(())
     }

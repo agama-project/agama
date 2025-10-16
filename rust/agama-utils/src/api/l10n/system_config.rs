@@ -18,10 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::l10n;
-use serde::Serialize;
+use serde::Deserialize;
 
-#[derive(Clone, Debug, Serialize)]
-pub struct SystemInfo {
-    pub localization: l10n::SystemInfo,
+#[derive(Clone, Debug, Deserialize, utoipa::ToSchema)]
+pub struct SystemConfig {
+    pub locale: Option<String>,
+    pub keymap: Option<String>,
 }

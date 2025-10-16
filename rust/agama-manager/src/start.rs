@@ -18,17 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    l10n,
-    listener::{self, EventsListener},
-    service::Service,
-};
-use agama_lib::http;
-use agama_utils::{
-    actor::{self, Handler},
-    issue, progress,
-};
-use tokio::sync::mpsc;
+use crate::l10n;
+use crate::service::Service;
+use agama_utils::actor::{self, Handler};
+use agama_utils::api::event;
+use agama_utils::issue;
+use agama_utils::progress;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -50,44 +45,41 @@ pub enum Error {
 ///
 /// It receives the following argument:
 ///
-/// * `events`: channel to emit the [events](agama_lib::http::Event).
+/// * `events`: channel to emit the [events](agama_utils::Event).
 /// * `dbus`: connection to Agama's D-Bus server. If it is not given, those features
 ///           that require to connect to the Agama's D-Bus server won't work.
 pub async fn start(
-    events: http::event::Sender,
+    events: event::Sender,
     dbus: Option<zbus::Connection>,
 ) -> Result<Handler<Service>, Error> {
-    let mut listener = EventsListener::new(events);
+    let issues = issue::start(events.clone(), dbus).await?;
+    let progress = progress::start(events.clone()).await?;
+    let l10n = l10n::start(issues.clone(), events.clone()).await?;
 
-    let (events_sender, events_receiver) = mpsc::unbounded_channel::<issue::Event>();
-    let issues = issue::start(events_sender, dbus).await?;
-    listener.add_channel("issues", events_receiver);
-
-    let (events_sender, events_receiver) = mpsc::unbounded_channel::<progress::Event>();
-    let progress = progress::start(events_sender).await?;
-    listener.add_channel("progress", events_receiver);
-
-    let (events_sender, events_receiver) = mpsc::unbounded_channel::<l10n::Event>();
-    let l10n = l10n::start(issues.clone(), events_sender).await?;
-    listener.add_channel("l10n", events_receiver);
-
-    let service = Service::new(l10n, issues, progress);
+    let service = Service::new(l10n, issues, progress, events.clone());
     let handler = actor::spawn(service);
-
-    listener::spawn(listener);
-
     Ok(handler)
 }
 
 #[cfg(test)]
 mod test {
-    use crate::{self as manager, l10n, message, service::Service};
-    use agama_lib::{http, install_settings::InstallSettings};
+    use crate as manager;
+    use crate::message;
+    use crate::service::Service;
     use agama_utils::actor::Handler;
+    use agama_utils::api::l10n;
+    use agama_utils::api::{Config, Event};
     use tokio::sync::broadcast;
 
     async fn start_service() -> Handler<Service> {
-        let (events_sender, _events_receiver) = broadcast::channel::<http::Event>(16);
+        let (events_sender, mut events_receiver) = broadcast::channel::<Event>(16);
+
+        tokio::spawn(async move {
+            while let Ok(event) = events_receiver.recv().await {
+                println!("{:?}", event);
+            }
+        });
+
         manager::start(events_sender, None).await.unwrap()
     }
 
@@ -96,13 +88,12 @@ mod test {
     async fn test_update_config() -> Result<(), Box<dyn std::error::Error>> {
         let handler = start_service().await;
 
-        let input_config = InstallSettings {
-            localization: Some(l10n::Config {
+        let input_config = Config {
+            l10n: Some(l10n::Config {
                 locale: Some("es_ES.UTF-8".to_string()),
                 keymap: Some("es".to_string()),
                 timezone: Some("Atlantic/Canary".to_string()),
             }),
-            ..Default::default()
         };
 
         handler
@@ -111,10 +102,7 @@ mod test {
 
         let config = handler.call(message::GetConfig).await?;
 
-        assert_eq!(
-            input_config.localization.unwrap(),
-            config.localization.unwrap()
-        );
+        assert_eq!(input_config.l10n.unwrap(), config.l10n.unwrap());
 
         Ok(())
     }
@@ -124,12 +112,19 @@ mod test {
     async fn test_patch_config() -> Result<(), Box<dyn std::error::Error>> {
         let handler = start_service().await;
 
-        let input_config = InstallSettings {
-            localization: Some(l10n::Config {
-                keymap: Some("es".to_string()),
+        // Ensure the keymap is different to the system one.
+        let config = handler.call(message::GetExtendedConfig).await?;
+        let keymap = if config.l10n.unwrap().keymap.unwrap() == "es" {
+            "en"
+        } else {
+            "es"
+        };
+
+        let input_config = Config {
+            l10n: Some(l10n::Config {
+                keymap: Some(keymap.to_string()),
                 ..Default::default()
             }),
-            ..Default::default()
         };
 
         handler
@@ -138,13 +133,10 @@ mod test {
 
         let config = handler.call(message::GetConfig).await?;
 
-        assert_eq!(
-            input_config.localization.unwrap(),
-            config.localization.unwrap()
-        );
+        assert_eq!(input_config.l10n.unwrap(), config.l10n.unwrap());
 
         let extended_config = handler.call(message::GetExtendedConfig).await?;
-        let l10n_config = extended_config.localization.unwrap();
+        let l10n_config = extended_config.l10n.unwrap();
 
         assert!(l10n_config.locale.is_some());
         assert!(l10n_config.keymap.is_some());

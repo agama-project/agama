@@ -65,7 +65,7 @@ jest.mock("~/queries/status", () => ({
 
 jest.mock("~/queries/system", () => ({
   ...jest.requireActual("~/queries/l10n"),
-  useSystem: () => ({ localization: { locales, keymaps, keymap: "us", language: "de-DE" } }),
+  useSystem: () => ({ l10n: { locales, keymaps, keymap: "us", language: "de-DE" } }),
 }));
 
 jest.mock("~/queries/software", () => ({

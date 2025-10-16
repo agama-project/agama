@@ -44,21 +44,8 @@ pub use service::Service;
 mod model;
 pub use model::{Model, ModelAdapter};
 
-mod system_info;
-pub use system_info::SystemInfo;
-
 mod config;
-pub use config::Config;
-
-mod proposal;
-pub use proposal::Proposal;
-
-pub mod event;
-pub use event::Event;
-
+mod dbus;
 pub mod helpers;
 pub mod message;
-
-mod dbus;
-mod extended_config;
 mod monitor;

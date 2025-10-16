@@ -26,7 +26,6 @@ use crate::context::InstallationContext;
 use crate::file_source::{FileSourceError, WithFileSource};
 use crate::files::model::UserFile;
 use crate::hostname::model::HostnameSettings;
-use crate::l10n;
 use crate::questions::config::QuestionsConfig;
 use crate::security::settings::SecuritySettings;
 use crate::storage::settings::zfcp::ZFCPConfig;
@@ -85,8 +84,6 @@ pub struct InstallSettings {
     pub storage_autoyast: Option<Box<RawValue>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub network: Option<NetworkSettings>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub localization: Option<l10n::Config>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub scripts: Option<ScriptsConfig>,
     #[serde(skip_serializing_if = "Option::is_none")]

@@ -18,10 +18,22 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod start;
-pub use start::start;
+use serde::{Deserialize, Serialize};
 
-pub mod service;
-pub use service::Service;
-
-pub mod message;
+/// Localization config.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[schema(as = l10n::UserConfig)]
+#[serde(rename_all = "camelCase")]
+pub struct Config {
+    /// Locale (e.g., "en_US.UTF-8").
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(alias = "language")]
+    pub locale: Option<String>,
+    /// Keymap (e.g., "us", "cz(qwerty)", etc.).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(alias = "keyboard")]
+    pub keymap: Option<String>,
+    /// Timezone (e.g., "Europe/Berlin").
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub timezone: Option<String>,
+}

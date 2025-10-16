@@ -40,12 +40,12 @@ jest.mock("~/components/product/ProductRegistrationAlert", () => () => (
 
 jest.mock("~/queries/system", () => ({
   ...jest.requireActual("~/queries/system"),
-  useSystem: () => ({ localization: { keymaps } }),
+  useSystem: () => ({ l10n: { keymaps } }),
 }));
 
 jest.mock("~/queries/proposal", () => ({
   ...jest.requireActual("~/queries/proposal"),
-  useProposal: () => ({ localization: { keymap: "us" } }),
+  useProposal: () => ({ l10n: { keymap: "us" } }),
 }));
 
 jest.mock("~/api/api", () => ({
@@ -65,6 +65,6 @@ it("allows changing the keyboard", async () => {
   await userEvent.click(option);
   const button = await screen.findByRole("button", { name: "Select" });
   await userEvent.click(button);
-  expect(mockUpdateConfigFn).toHaveBeenCalledWith({ localization: { keymap: "es" } });
+  expect(mockUpdateConfigFn).toHaveBeenCalledWith({ l10n: { keymap: "es" } });
   expect(mockNavigateFn).toHaveBeenCalledWith(-1);
 });

@@ -18,9 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{actor::Handler, dbus::build_properties_changed_stream};
-
-use super::{message, model, Issue, Service};
+use crate::actor::Handler;
+use crate::api::issue;
+use crate::api::issue::Issue;
+use crate::api::scope::Scope;
+use crate::dbus::build_properties_changed_stream;
+use crate::issue::message;
+use crate::issue::service;
+use crate::issue::Service;
 use tokio_stream::StreamExt;
 use zbus::fdo::PropertiesChanged;
 use zbus::names::BusName;
@@ -29,14 +34,16 @@ use zvariant::OwnedObjectPath;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error(transparent)]
-    DBus(#[from] zbus::Error),
     #[error("Error parsing issues from D-Bus: {0}")]
     InvalidIssue(#[from] zbus::zvariant::Error),
     #[error("Invalid D-Bus name")]
     InvalidDBusName(#[from] zbus::names::Error),
     #[error(transparent)]
-    Model(#[from] model::Error),
+    DBus(#[from] zbus::Error),
+    #[error(transparent)]
+    Service(#[from] service::Error),
+    #[error(transparent)]
+    Issue(#[from] issue::Error),
 }
 
 /// Listens the D-Bus server and updates the list of issues.
@@ -155,11 +162,10 @@ impl Monitor {
 
     /// Updates the list of issues.
     fn update_issues(&self, path: &str, issues: Vec<Issue>, notify: bool) -> Result<(), Error> {
-        match Self::list_id_from_path(path) {
-            Some(list) => {
-                _ = self
-                    .handler
-                    .cast(message::Update::new(list, issues).notify(notify));
+        match Self::scope_from_path(path) {
+            Some(scope) => {
+                self.handler
+                    .cast(message::Update::new(scope, issues).notify(notify))?;
             }
             None => {
                 eprintln!("Unknown issues object {}", path);
@@ -168,14 +174,14 @@ impl Monitor {
         Ok(())
     }
 
-    /// Turns the D-Bus path into an issues list ID.
-    fn list_id_from_path(path: &str) -> Option<&'static str> {
+    /// Turns the D-Bus path into a scope.
+    fn scope_from_path(path: &str) -> Option<Scope> {
         match path {
-            SOFTWARE_PATH => Some("software"),
-            PRODUCT_PATH => Some("product"),
-            STORAGE_PATH => Some("storage"),
-            USERS_PATH => Some("users"),
-            ISCSI_PATH => Some("iscsi"),
+            SOFTWARE_PATH => Some(Scope::Software),
+            PRODUCT_PATH => Some(Scope::Product),
+            STORAGE_PATH => Some(Scope::Storage),
+            USERS_PATH => Some(Scope::Users),
+            ISCSI_PATH => Some(Scope::Iscsi),
             _ => None,
         }
     }

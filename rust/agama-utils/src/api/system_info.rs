@@ -18,10 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod start;
-pub use start::start;
+use crate::api::l10n;
+use serde::Serialize;
 
-pub mod service;
-pub use service::Service;
-
-pub mod message;
+#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+pub struct SystemInfo {
+    pub l10n: l10n::SystemInfo,
+}

@@ -18,19 +18,38 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::api::progress::Progress;
+use crate::api::scope::Scope;
 use serde::{Deserialize, Serialize};
-use tokio::sync::mpsc;
+use tokio::sync::broadcast;
 
-/// Progress-related events.
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(tag = "name")]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(tag = "type")]
 pub enum Event {
+    // The state of the installation changed.
+    StateChanged,
     /// Progress changed.
-    ProgressChanged,
+    ProgressChanged {
+        scope: Scope,
+        progress: Progress,
+    },
+    /// Progress finished.
+    ProgressFinished {
+        scope: Scope,
+    },
+    /// The list of issues has changed.
+    IssuesChanged {
+        scope: Scope,
+    },
+    /// The underlying system changed.
+    SystemChanged {
+        scope: Scope,
+    },
+    /// Proposal changed.
+    ProposalChanged {
+        scope: Scope,
+    },
 }
 
-/// Multi-producer single-consumer events sender.
-pub type Sender = mpsc::UnboundedSender<Event>;
-
-/// Multi-producer single-consumer events receiver.
-pub type Receiver = mpsc::UnboundedReceiver<Event>;
+pub type Sender = broadcast::Sender<Event>;
+pub type Receiver = broadcast::Receiver<Event>;

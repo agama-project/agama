@@ -33,7 +33,7 @@ use crate::{
 use agama_lib::{
     error::ServiceError,
     event,
-    http::{self, Event, EventPayload},
+    http::{self, EventPayload, OldEvent},
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
         model::{
@@ -104,7 +104,7 @@ pub async fn software_streams(dbus: zbus::Connection) -> Result<EventStreams, Er
 
 async fn product_changed_stream(
     dbus: zbus::Connection,
-) -> Result<impl Stream<Item = Event>, Error> {
+) -> Result<impl Stream<Item = OldEvent>, Error> {
     let proxy = SoftwareProductProxy::new(&dbus).await?;
     let stream = proxy
         .receive_selected_product_changed()
@@ -121,7 +121,7 @@ async fn product_changed_stream(
 
 async fn patterns_changed_stream(
     dbus: zbus::Connection,
-) -> Result<impl Stream<Item = Event>, Error> {
+) -> Result<impl Stream<Item = OldEvent>, Error> {
     let proxy = Software1Proxy::new(&dbus).await?;
     let stream = proxy
         .receive_selected_patterns_changed()
@@ -144,7 +144,7 @@ async fn patterns_changed_stream(
 
 async fn conflicts_changed_stream(
     dbus: zbus::Connection,
-) -> Result<impl Stream<Item = Event>, Error> {
+) -> Result<impl Stream<Item = OldEvent>, Error> {
     let proxy = Software1Proxy::new(&dbus).await?;
     let stream = proxy
         .receive_conflicts_changed()
@@ -166,7 +166,7 @@ async fn conflicts_changed_stream(
 
 async fn registration_email_changed_stream(
     dbus: zbus::Connection,
-) -> Result<impl Stream<Item = Event>, Error> {
+) -> Result<impl Stream<Item = OldEvent>, Error> {
     let proxy = RegistrationProxy::new(&dbus).await?;
     let stream = proxy
         .receive_email_changed()
@@ -184,7 +184,7 @@ async fn registration_email_changed_stream(
 
 async fn registration_code_changed_stream(
     dbus: zbus::Connection,
-) -> Result<impl Stream<Item = Event>, Error> {
+) -> Result<impl Stream<Item = OldEvent>, Error> {
     let proxy = RegistrationProxy::new(&dbus).await?;
     let stream = proxy
         .receive_reg_code_changed()
@@ -218,7 +218,7 @@ fn reason_to_selected_by(
 /// * `events`: channel to listen for events.
 /// * `products`: list of products (shared behind a mutex).
 pub async fn receive_events(
-    mut events: http::event::Receiver,
+    mut events: http::event::OldReceiver,
     products: Arc<RwLock<Vec<Product>>>,
     config: Arc<RwLock<Option<SoftwareConfig>>>,
     client: ProductClient<'_>,
@@ -262,7 +262,7 @@ pub async fn receive_events(
 /// Sets up and returns the axum service for the software module.
 pub async fn software_service(
     dbus: zbus::Connection,
-    events: http::event::Receiver,
+    events: http::event::OldReceiver,
     progress: ProgressClient,
 ) -> Result<Router, ServiceError> {
     const DBUS_SERVICE: &str = "org.opensuse.Agama.Software1";

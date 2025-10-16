@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2024] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,21 +18,28 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use serde::{Deserialize, Serialize};
-use tokio::sync::mpsc;
+use crate::api::progress::Progress;
+use serde::Serialize;
 
-/// Localization-related events.
-// FIXME: is it really needed to implement Deserialize?
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(tag = "name")]
-pub enum Event {
-    /// Proposal changed.
-    ProposalChanged,
-    /// The underlying system changed.
-    SystemChanged,
+// Information about the status of the installation.
+#[derive(Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Status {
+    /// State of the installation
+    pub state: State,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    /// Active progresses
+    pub progresses: Vec<Progress>,
 }
 
-/// Multi-producer single-consumer events sender.
-pub type Sender = mpsc::UnboundedSender<Event>;
-/// Multi-producer single-consumer events receiver.
-pub type Receiver = mpsc::UnboundedReceiver<Event>;
+/// Represents the current state of the installation process.
+#[derive(Clone, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum State {
+    /// Configuring the installation
+    Configuring,
+    /// Installing the system
+    Installing,
+    /// Installation finished
+    Finished,
+}

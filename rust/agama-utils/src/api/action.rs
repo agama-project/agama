@@ -18,4 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub use agama_l10n::Config;
+use crate::api::l10n;
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize, utoipa::ToSchema)]
+pub enum Action {
+    #[serde(rename = "configureL10n")]
+    ConfigureL10n(l10n::SystemConfig),
+    #[serde(rename = "install")]
+    Install,
+}

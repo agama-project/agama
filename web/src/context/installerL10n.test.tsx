@@ -99,7 +99,7 @@ describe("InstallerL10nProvider", () => {
     describe("when the language is already set", () => {
       beforeEach(() => {
         document.cookie = "agamaLang=en-US; path=/;";
-        mockFetchConfigFn.mockResolvedValue({ localization: { locale: "en_US.UTF-8" } });
+        mockFetchConfigFn.mockResolvedValue({ l10n: { locale: "en_US.UTF-8" } });
       });
 
       it("displays the children content and does not reload", async () => {
@@ -123,7 +123,7 @@ describe("InstallerL10nProvider", () => {
         // Ensure both, UI and backend mock languages, are in sync since
         // client.setUILocale is mocked too.
         // See navigator.language in the beforeAll at the top of the file.
-        mockFetchConfigFn.mockResolvedValue({ localization: { locale: "es_ES.UTF-8" } });
+        mockFetchConfigFn.mockResolvedValue({ l10n: { locale: "es_ES.UTF-8" } });
       });
 
       it("sets the language from backend", async () => {
@@ -158,7 +158,7 @@ describe("InstallerL10nProvider", () => {
     describe("when the language is already set to 'cs-CZ'", () => {
       beforeEach(() => {
         document.cookie = "agamaLang=cs-CZ; path=/;";
-        mockFetchConfigFn.mockResolvedValue({ localization: { locale: "cs_CZ.UTF-8" } });
+        mockFetchConfigFn.mockResolvedValue({ l10n: { locale: "cs_CZ.UTF-8" } });
       });
 
       it("displays the children content and does not reload", async () => {
@@ -183,7 +183,7 @@ describe("InstallerL10nProvider", () => {
     describe("when the language is set to 'en-US'", () => {
       beforeEach(() => {
         document.cookie = "agamaLang=en-US; path=/;";
-        mockFetchConfigFn.mockResolvedValue({ localization: { locale: "en_US" } });
+        mockFetchConfigFn.mockResolvedValue({ l10n: { locale: "en_US" } });
       });
 
       it.skip("sets the 'cs-CZ' language and reloads", async () => {
@@ -206,7 +206,7 @@ describe("InstallerL10nProvider", () => {
 
         await waitFor(() => screen.getByText("ahoj"));
         expect(mockUpdateConfigFn).toHaveBeenCalledWith({
-          localization: { locale: "cs_CZ.UTF-8" },
+          l10n: { locale: "cs_CZ.UTF-8" },
         });
       });
     });
@@ -236,7 +236,7 @@ describe("InstallerL10nProvider", () => {
 
         await waitFor(() => screen.getByText("ahoj"));
         expect(mockUpdateConfigFn).toHaveBeenCalledWith({
-          localization: { locale: "cs_CZ.UTF-8" },
+          l10n: { locale: "cs_CZ.UTF-8" },
         });
       });
     });

@@ -60,7 +60,7 @@ const mockChangeUILanguage = jest.fn();
 
 jest.mock("~/queries/system", () => ({
   ...jest.requireActual("~/queries/system"),
-  useSystem: () => ({ localization: { locales, keymaps, locale: "us_US.UTF-8", keymap: "us" } }),
+  useSystem: () => ({ l10n: { locales, keymaps, locale: "us_US.UTF-8", keymap: "us" } }),
 }));
 
 jest.mock("~/api/api", () => ({
@@ -188,7 +188,7 @@ describe("InstallerOptions", () => {
 
       await user.click(acceptButton);
       expect(mockUpdateConfigFn).toHaveBeenCalledWith({
-        localization: {
+        l10n: {
           locale: "es_ES.UTF-8",
           keymap: "gb",
         },
@@ -309,7 +309,7 @@ describe("InstallerOptions", () => {
 
       await user.click(acceptButton);
       expect(mockUpdateConfigFn).toHaveBeenCalledWith({
-        localization: {
+        l10n: {
           locale: "es_ES.UTF-8",
         },
       });
@@ -400,7 +400,7 @@ describe("InstallerOptions", () => {
 
       await user.click(acceptButton);
       expect(mockUpdateConfigFn).toHaveBeenCalledWith({
-        localization: {
+        l10n: {
           keymap: "gb",
         },
       });

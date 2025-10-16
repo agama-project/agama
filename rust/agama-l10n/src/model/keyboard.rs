@@ -18,44 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_locale_data::{get_localectl_keymaps, keyboard::XkbConfigRegistry, KeymapId};
-use gettextrs::*;
-use serde::ser::{Serialize, SerializeStruct};
+use agama_locale_data::get_localectl_keymaps;
+use agama_locale_data::keyboard::XkbConfigRegistry;
+use agama_locale_data::KeymapId;
+use agama_utils::api::l10n::Keymap;
 use std::collections::HashMap;
-
-// Minimal representation of a keymap
-#[derive(Clone, Debug, utoipa::ToSchema)]
-pub struct Keymap {
-    /// Keymap identifier (e.g., "us")
-    pub id: KeymapId,
-    /// Keymap description
-    description: String,
-}
-
-impl Keymap {
-    pub fn new(id: KeymapId, description: &str) -> Self {
-        Self {
-            id,
-            description: description.to_string(),
-        }
-    }
-
-    pub fn localized_description(&self) -> String {
-        gettext(&self.description)
-    }
-}
-
-impl Serialize for Keymap {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let mut state = serializer.serialize_struct("Keymap", 2)?;
-        state.serialize_field("id", &self.id.to_string())?;
-        state.serialize_field("description", &self.localized_description())?;
-        state.end()
-    }
-}
 
 /// Represents the keymaps database.
 ///

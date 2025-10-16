@@ -18,12 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::{
-    event,
-    monitor::{self, Monitor},
-    service, Service,
-};
 use crate::actor::{self, Handler};
+use crate::api::event;
+use crate::issue::monitor::{self, Monitor};
+use crate::issue::service::{self, Service};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -48,56 +46,73 @@ pub async fn start(
 
 #[cfg(test)]
 mod tests {
-    use crate::issue::{self, message, Issue, IssueSeverity, IssueSource};
-    use tokio::sync::mpsc::{self, error::TryRecvError};
+    use crate::api::event::Event;
+    use crate::api::issue::{Issue, IssueSeverity, IssueSource};
+    use crate::api::scope::Scope;
+    use crate::issue;
+    use crate::issue::message;
+    use tokio::sync::broadcast::{self, error::TryRecvError};
 
-    #[tokio::test]
-    async fn test_get_and_update_issues() -> Result<(), Box<dyn std::error::Error>> {
-        let (events_tx, mut events_rx) = mpsc::unbounded_channel();
-        let issues = issue::start(events_tx, None).await.unwrap();
-        let issue = Issue {
+    fn build_issue() -> Issue {
+        Issue {
             description: "Product not selected".to_string(),
             kind: "missing_product".to_string(),
             details: Some("A product is required.".to_string()),
             source: IssueSource::Config,
             severity: IssueSeverity::Error,
-        };
+        }
+    }
 
+    #[tokio::test]
+    async fn test_get_and_update_issues() -> Result<(), Box<dyn std::error::Error>> {
+        let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
+        let issues = issue::start(events_tx, None).await.unwrap();
         let issues_list = issues.call(message::Get).await.unwrap();
         assert!(issues_list.is_empty());
 
+        let issue = build_issue();
         _ = issues
-            .cast(message::Update::new("my-service", vec![issue]))
+            .cast(message::Update::new(Scope::Manager, vec![issue]))
             .unwrap();
 
         let issues_list = issues.call(message::Get).await.unwrap();
         assert_eq!(issues_list.len(), 1);
 
-        assert!(events_rx.recv().await.is_some());
+        assert!(events_rx.recv().await.is_ok());
         Ok(())
     }
 
     #[tokio::test]
     async fn test_update_without_event() -> Result<(), Box<dyn std::error::Error>> {
-        let (events_tx, mut events_rx) = mpsc::unbounded_channel();
+        let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
         let issues = issue::start(events_tx, None).await.unwrap();
-        let issue = Issue {
-            description: "Product not selected".to_string(),
-            kind: "missing_product".to_string(),
-            details: Some("A product is required.".to_string()),
-            source: IssueSource::Config,
-            severity: IssueSeverity::Error,
-        };
 
         let issues_list = issues.call(message::Get).await.unwrap();
         assert!(issues_list.is_empty());
 
-        let update = message::Update::new("my-service", vec![issue]).notify(false);
+        let issue = build_issue();
+        let update = message::Update::new(Scope::Manager, vec![issue]).notify(false);
         _ = issues.cast(update).unwrap();
 
         let issues_list = issues.call(message::Get).await.unwrap();
         assert_eq!(issues_list.len(), 1);
 
+        assert!(matches!(events_rx.try_recv(), Err(TryRecvError::Empty)));
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_update_without_change() -> Result<(), Box<dyn std::error::Error>> {
+        let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
+        let issues = issue::start(events_tx, None).await.unwrap();
+
+        let issue = build_issue();
+        let update = message::Update::new(Scope::Manager, vec![issue.clone()]);
+        issues.call(update).await.unwrap();
+        assert!(events_rx.try_recv().is_ok());
+
+        let update = message::Update::new(Scope::Manager, vec![issue]);
+        issues.call(update).await.unwrap();
         assert!(matches!(events_rx.try_recv(), Err(TryRecvError::Empty)));
         Ok(())
     }

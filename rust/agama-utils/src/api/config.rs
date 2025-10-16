@@ -18,10 +18,19 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod start;
-pub use start::start;
+use crate::api::l10n;
+use serde::{Deserialize, Serialize};
 
-pub mod service;
-pub use service::Service;
+#[derive(Clone, Debug, Default, Deserialize, Serialize, utoipa::ToSchema)]
+pub struct Config {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(alias = "localization")]
+    pub l10n: Option<l10n::Config>,
+}
 
-pub mod message;
+/// Patch for the config.
+#[derive(Deserialize, Serialize, utoipa::ToSchema)]
+pub struct Patch {
+    /// Update for the current config.
+    pub update: Option<Config>,
+}

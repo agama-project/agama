@@ -18,10 +18,32 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod start;
-pub use start::start;
+//! This module includes the struct that represent a service progress step.
 
-pub mod service;
-pub use service::Service;
+use serde::{Deserialize, Serialize};
 
-pub mod message;
+/// Scope to distinguish each service.
+#[derive(
+    Copy,
+    Clone,
+    Debug,
+    Eq,
+    Hash,
+    strum::EnumString,
+    strum::Display,
+    Deserialize,
+    Serialize,
+    utoipa::ToSchema,
+    PartialEq,
+)]
+#[strum(serialize_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
+pub enum Scope {
+    Manager,
+    L10n,
+    Product,
+    Software,
+    Storage,
+    Iscsi,
+    Users,
+}

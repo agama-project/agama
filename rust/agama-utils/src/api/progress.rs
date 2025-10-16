@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2024] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,14 +18,22 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::progress::service::Error;
-use serde::Serialize;
+//! This module includes the struct that represent a service progress step.
 
-#[derive(Clone, Default, Serialize, utoipa::ToSchema)]
+use crate::api::scope::Scope;
+use serde::{Deserialize, Serialize};
+
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error("Next step does not exist for {0}")]
+    MissingStep(Scope),
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Progress {
     /// Scope of the progress
-    pub scope: String,
+    pub scope: Scope,
     /// Max number of steps
     pub size: usize,
     /// List of steps
@@ -37,7 +45,7 @@ pub struct Progress {
 }
 
 impl Progress {
-    pub fn new(scope: String, size: usize, step: String) -> Self {
+    pub fn new(scope: Scope, size: usize, step: String) -> Self {
         Self {
             scope,
             size,
@@ -47,7 +55,7 @@ impl Progress {
         }
     }
 
-    pub fn new_with_steps(scope: String, steps: Vec<String>) -> Self {
+    pub fn new_with_steps(scope: Scope, steps: Vec<String>) -> Self {
         Self {
             scope,
             size: steps.len(),
@@ -59,7 +67,7 @@ impl Progress {
 
     pub fn next(&mut self) -> Result<(), Error> {
         if self.index >= self.size {
-            return Err(Error::MissingStep(self.scope.clone()));
+            return Err(Error::MissingStep(self.scope));
         }
 
         self.index += 1;
@@ -67,7 +75,7 @@ impl Progress {
         Ok(())
     }
 
-    pub fn next_step(&mut self, step: String) -> Result<(), Error> {
+    pub fn next_with_step(&mut self, step: String) -> Result<(), Error> {
         self.next()?;
         self.step = step;
         Ok(())

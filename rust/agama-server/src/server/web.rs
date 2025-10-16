@@ -20,17 +20,19 @@
 
 //! This module implements Agama's HTTP API.
 
-use crate::server::types::{ConfigPatch, IssuesMap};
-use agama_lib::{error::ServiceError, http, install_settings::InstallSettings};
-use agama_manager::{self as manager, message, SystemInfo};
+use agama_lib::error::ServiceError;
+use agama_manager as manager;
+use agama_manager::message;
 use agama_utils::actor::Handler;
+use agama_utils::api::config;
+use agama_utils::api::event;
+use agama_utils::api::{Action, Config, IssueMap, Status, SystemInfo};
 use anyhow;
-use axum::{
-    extract::State,
-    response::{IntoResponse, Response},
-    routing::{get, post},
-    Json, Router,
-};
+use axum::extract::State;
+use axum::response::{IntoResponse, Response};
+use axum::routing::{get, post};
+use axum::Json;
+use axum::Router;
 use hyper::StatusCode;
 use serde::Serialize;
 use serde_json::json;
@@ -64,7 +66,7 @@ type ServerResult<T> = Result<T, Error>;
 /// * `dbus`: connection to Agama's D-Bus server. If it is not given, those features
 ///           that require to connect to the Agama's D-Bus server won't work.
 pub async fn server_service(
-    events: http::event::Sender,
+    events: event::Sender,
     dbus: Option<zbus::Connection>,
 ) -> Result<Router, ServiceError> {
     let manager = manager::start(events, dbus)
@@ -97,7 +99,7 @@ pub async fn server_service(
         (status = 400, description = "Not possible to retrieve the status of the installation.")
     )
 )]
-async fn get_status(State(state): State<ServerState>) -> ServerResult<Json<message::Status>> {
+async fn get_status(State(state): State<ServerState>) -> ServerResult<Json<Status>> {
     let status = state.manager.call(message::GetStatus).await?;
     Ok(Json(status))
 }
@@ -127,9 +129,7 @@ async fn get_system(State(state): State<ServerState>) -> ServerResult<Json<Syste
         (status = 400, description = "Not possible to retrieve the configuration.")
     )
 )]
-async fn get_extended_config(
-    State(state): State<ServerState>,
-) -> ServerResult<Json<InstallSettings>> {
+async fn get_extended_config(State(state): State<ServerState>) -> ServerResult<Json<Config>> {
     let config = state.manager.call(message::GetExtendedConfig).await?;
     Ok(Json(config))
 }
@@ -144,7 +144,7 @@ async fn get_extended_config(
         (status = 400, description = "Not possible to retrieve the configuration.")
     )
 )]
-async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<InstallSettings>> {
+async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<Config>> {
     let config = state.manager.call(message::GetConfig).await?;
     Ok(Json(config))
 }
@@ -161,12 +161,12 @@ async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<Insta
         (status = 400, description = "Not possible to replace the configuration.")
     ),
     params(
-        ("config" = InstallSettings, description = "Configuration to apply.")
+        ("config" = Config, description = "Configuration to apply.")
     )
 )]
 async fn put_config(
     State(state): State<ServerState>,
-    Json(config): Json<InstallSettings>,
+    Json(config): Json<Config>,
 ) -> ServerResult<()> {
     state.manager.call(message::SetConfig::new(config)).await?;
     Ok(())
@@ -184,12 +184,12 @@ async fn put_config(
         (status = 400, description = "Not possible to patch the configuration.")
     ),
     params(
-        ("config" = InstallSettings, description = "Changes in the configuration.")
+        ("config" = Config, description = "Changes in the configuration.")
     )
 )]
 async fn patch_config(
     State(state): State<ServerState>,
-    Json(patch): Json<ConfigPatch>,
+    Json(patch): Json<config::Patch>,
 ) -> ServerResult<()> {
     if let Some(config) = patch.update {
         state
@@ -221,13 +221,13 @@ async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response
     path = "/issues",
     context_path = "/api/v2",
     responses(
-        (status = 200, description = "Agama issues", body = IssuesMap),
+        (status = 200, description = "Agama issues", body = IssueMap),
         (status = 400, description = "Not possible to retrieve the issues")
     )
 )]
-async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<IssuesMap>> {
+async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<IssueMap>> {
     let issues = state.manager.call(message::GetIssues).await?;
-    let issues_map: IssuesMap = issues.into();
+    let issues_map: IssueMap = issues.into();
     Ok(Json(issues_map))
 }
 
@@ -240,12 +240,12 @@ async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<Issue
         (status = 400, description = "Not possible to run the action.", body = Object)
     ),
     params(
-        ("action" = message::Action, description = "Description of the action to run."),
+        ("action" = Action, description = "Description of the action to run."),
     )
 )]
 async fn run_action(
     State(state): State<ServerState>,
-    Json(action): Json<message::Action>,
+    Json(action): Json<Action>,
 ) -> ServerResult<()> {
     state.manager.call(message::RunAction::new(action)).await?;
     Ok(())

@@ -18,11 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::l10n;
-use serde::Serialize;
+//! This module contains all Agama public types that might be available over
+//! the HTTP and WebSocket API.
 
-#[derive(Clone, Debug, Serialize)]
-pub struct Proposal {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub localization: Option<l10n::Proposal>,
-}
+mod config;
+pub use config::Config;
+
+mod system_info;
+pub use system_info::{Keymap, LocaleEntry, SystemInfo, TimezoneEntry};
+
+mod system_config;
+pub use system_config::SystemConfig;
+
+mod proposal;
+pub use proposal::Proposal;

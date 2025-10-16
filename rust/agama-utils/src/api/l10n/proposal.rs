@@ -18,40 +18,21 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{config::Config, service, system_info::SystemInfo};
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
+use serde::{Deserialize, Serialize};
+use serde_with::{serde_as, DisplayFromStr};
 
-#[derive(Clone, PartialEq)]
-pub struct ExtendedConfig {
-    pub locale: LocaleId,
+/// Describes what Agama proposes for the target system.
+#[serde_as]
+#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
+pub struct Proposal {
+    /// Keymap (e.g., "us", "cz(qwerty)", etc.).
+    #[serde_as(as = "DisplayFromStr")]
     pub keymap: KeymapId,
+    /// Locale (e.g., "en_US.UTF-8").
+    #[serde_as(as = "DisplayFromStr")]
+    pub locale: LocaleId,
+    /// Timezone (e.g., "Europe/Berlin").
+    #[serde_as(as = "DisplayFromStr")]
     pub timezone: TimezoneId,
-}
-
-impl ExtendedConfig {
-    pub fn new_from(system: &SystemInfo) -> Self {
-        Self {
-            locale: system.locale.clone(),
-            keymap: system.keymap.clone(),
-            timezone: system.timezone.clone(),
-        }
-    }
-
-    pub fn merge(&self, config: &Config) -> Result<Self, service::Error> {
-        let mut merged = self.clone();
-
-        if let Some(language) = &config.locale {
-            merged.locale = language.parse()?
-        }
-
-        if let Some(keyboard) = &config.keymap {
-            merged.keymap = keyboard.parse()?
-        }
-
-        if let Some(timezone) = &config.timezone {
-            merged.timezone = timezone.parse()?;
-        }
-
-        Ok(merged)
-    }
 }

@@ -139,7 +139,7 @@ function languageToLocale(language: string): string {
  */
 async function languageFromBackend(fetchConfig): Promise<string> {
   const config = await fetchConfig();
-  return languageFromLocale(config?.localization?.locale);
+  return languageFromLocale(config?.l10n?.locale);
 }
 
 /**
@@ -306,7 +306,7 @@ function InstallerL10nProvider({
   }, [language, syncBackendLanguage]);
 
   useEffect(() => {
-    fetchConfig().then((c) => setKeymap(c?.localization?.keymap));
+    fetchConfig().then((c) => setKeymap(c?.l10n?.keymap));
   }, [setKeymap, fetchConfig]);
 
   const value = { language, changeLanguage, keymap, changeKeymap };
