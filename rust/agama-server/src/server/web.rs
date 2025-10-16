@@ -283,6 +283,7 @@ async fn ask_question(
 #[derive(Deserialize, utoipa::ToSchema)]
 pub struct AnswerPayload {
     id: u32,
+    #[serde(flatten)]
     answer: QuestionAnswer,
 }
 
