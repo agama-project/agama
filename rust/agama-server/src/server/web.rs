@@ -74,7 +74,7 @@ type ServerResult<T> = Result<T, Error>;
 ///   that require to connect to the Agama's D-Bus server won't work.
 pub async fn server_service(
     events: event::Sender,
-    dbus: Option<zbus::Connection>,
+    dbus: zbus::Connection,
 ) -> Result<Router, ServiceError> {
     let questions = question::start(events.clone())
         .await

@@ -44,7 +44,7 @@ pub enum Error {
 pub async fn start(
     questions: Handler<question::Service>,
     events: event::Sender,
-    dbus: Option<zbus::Connection>,
+    dbus: zbus::Connection,
 ) -> Result<Handler<Service>, Error> {
     let issues = issue::start(events.clone(), dbus).await?;
     let progress = progress::start(events.clone()).await?;
@@ -57,17 +57,17 @@ pub async fn start(
 
 #[cfg(test)]
 mod test {
-    use crate as manager;
-    use crate::message;
-    use crate::service::Service;
-    use agama_utils::actor::Handler;
-    use agama_utils::api::l10n;
-    use agama_utils::api::{Config, Event};
-    use agama_utils::question;
+    use crate::{self as manager, message, service::Service};
+    use agama_utils::{
+        actor::Handler,
+        api::{l10n, Config, Event},
+        question, test,
+    };
     use tokio::sync::broadcast;
 
     async fn start_service() -> Handler<Service> {
         let (events_sender, mut events_receiver) = broadcast::channel::<Event>(16);
+        let dbus = test::dbus::connection().await.unwrap();
 
         tokio::spawn(async move {
             while let Ok(event) = events_receiver.recv().await {
@@ -76,7 +76,7 @@ mod test {
         });
 
         let questions = question::start(events_sender.clone()).await.unwrap();
-        manager::start(questions, events_sender, None)
+        manager::start(questions, events_sender, dbus)
             .await
             .unwrap()
     }

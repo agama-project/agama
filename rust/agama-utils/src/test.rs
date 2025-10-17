@@ -18,21 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Service to keep the installation issues in a centralized place.
-//!
-//! This service offers and API for other services to register the issues.
-//! Additionally, it is responsible for emitting the corresponding event when
-//! the list of issues changes.
-//!
-//! The service can be started calling the [start] function, which returns an
-//! [agama_utils::actors::ActorHandler] to interact with it.
+//! This crate offers a set of utility struct and functions to be used accross
+//! other Agama's crates.
 
-pub mod service;
-pub use service::Service;
-
-pub mod message;
-
-pub mod start;
-pub use start::start;
-
-mod monitor;
+pub mod dbus;
