@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Oct 17 13:15:00 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt to the new questions HTTP API (gh#agama-project/agama#2813).
+
+-------------------------------------------------------------------
 Fri Oct  3 20:11:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the new HTTP API to write the localization configuration
