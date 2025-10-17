@@ -299,7 +299,7 @@ describe Agama::Registration do
           end
 
           it "opens question" do
-            expect(questions_client).to receive(:ask).and_yield(Agama::Answer::new(:Abort))
+            expect(questions_client).to receive(:ask).and_yield(Agama::Answer.new(:Abort))
             expect(Agama::HTTP::Clients::Questions).to receive(:new)
               .and_return(questions_client)
 
