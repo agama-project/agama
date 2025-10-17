@@ -46,8 +46,6 @@ install6 -D -t "${DESTDIR}${datadir}"/agama-cli "${SRCDIR}"/agama-lib/share/stor
 install6 -D -t "${DESTDIR}${datadir}"/agama-cli "${SRCDIR}"/agama-lib/share/storage.model.schema.json
 install6 -D -t "${DESTDIR}${datadir}"/agama-cli "${SRCDIR}"/share/agama.libsonnet
 
-install6 -D -t "${DESTDIR}${datadir}"/dbus-1/agama-services "${SRCDIR}"/share/org.opensuse.Agama1.service
-
 install -D -t "${DESTDIR}${libexecdir}" "${SRCDIR}"/share/agama-scripts.sh
 
 install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-autoinstall.service
