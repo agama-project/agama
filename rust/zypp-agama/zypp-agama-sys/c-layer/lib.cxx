@@ -135,23 +135,9 @@ static zypp::ZYpp::Ptr zypp_ptr() {
   boost::shared_ptr<AgamaLogger> logger(new AgamaLogger);
   zypp::base::LogControl::instance().setLineWriter(logger);
 
-  int max_count = 5;
-  unsigned int seconds = 3;
-
-  zypp::ZYpp::Ptr zypp = NULL;
-  while (zypp == NULL && max_count > 0) {
-    try {
-      zypp = zypp::getZYpp();
-
-      return zypp;
-    } catch (const zypp::Exception &excpt) {
-      max_count--;
-
-      sleep(seconds);
-    }
-  }
-
-  return NULL;
+  // do not do any magic waiting for lock as in agama context we work
+  // on our own root, so there should be no need to wait
+  return zypp::getZYpp();
 }
 
 void switch_target(struct Zypp *zypp, const char *root,
@@ -192,6 +178,9 @@ struct Zypp *init_target(const char *root, struct Status *status,
 
   const std::string root_str(root);
 
+  // create the libzypp lock also in the target directory
+  setenv("ZYPP_LOCKFILE_ROOT", root, 1 /* allow overwrite */);
+
   struct Zypp *zypp = NULL;
   try {
     zypp::RepoManagerOptions repo_manager_options(root);
@@ -209,6 +198,11 @@ struct Zypp *init_target(const char *root, struct Status *status,
     if (progress != NULL)
       progress("Initializing the Target System", 0, 2, user_data);
     the_zypp.zypp_pointer = zypp_ptr();
+    if (the_zypp.zypp_pointer == NULL) {
+        STATUS_ERROR(status, "Failed to obtain zypp pointer. "
+                         "See journalctl for details.");
+        return NULL;
+    }
     zypp = &the_zypp;
     zypp->zypp_pointer->initializeTarget(root_str, false);
     if (progress != NULL)

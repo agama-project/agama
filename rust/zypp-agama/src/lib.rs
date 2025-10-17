@@ -96,6 +96,7 @@ static GLOBAL_LOCK: Mutex<bool> = Mutex::new(false);
 /// The only instance of Zypp on which all zypp calls should be invoked.
 /// It is intentionally !Send and !Sync as libzypp gives no guarantees regarding
 /// threads, so it should be run only in single thread and sequentially.
+#[derive(Debug)]
 pub struct Zypp {
     ptr: *mut zypp_agama_sys::Zypp,
 }
@@ -579,12 +580,6 @@ mod tests {
         }
         {
             setup();
-            // when the target pathis not a (potential) root diretory
-            let result = Zypp::init_target("/dev/full", progress_cb);
-            assert!(result.is_err());
-        }
-        {
-            setup();
             // a nonexistent relative root triggers a C++ exception
             let result = Zypp::init_target("not_absolute", progress_cb);
             assert!(result.is_err());
@@ -598,7 +593,7 @@ mod tests {
             assert!(z2.is_err());
 
             // z1 call after init target for z2 to ensure that it is not dropped too soon
-            assert!(z1.is_ok())
+            assert!(z1.is_ok(), "z1 is not properly init {:?}.", z1);
         }
         {
             // list repositories test
@@ -614,6 +609,13 @@ mod tests {
             let zypp = Zypp::init_target(root, progress_cb)?;
             let repos = zypp.list_repositories()?;
             assert!(repos.len() == 1);
+        }
+        {
+            setup();
+            // when the target path is not a (potential) root diretory
+            // NOTE: run it as last test as it keeps ZyppLock in cached state, so next init root with correct path will fail.
+            let result = Zypp::init_target("/dev/full", progress_cb);
+            assert!(result.is_err());
         }
         Ok(())
     }
