@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-28 02:56+0000\n"
-"PO-Revision-Date: 2025-07-21 02:59+0000\n"
-"Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
+"POT-Creation-Date: 2025-10-12 02:50+0000\n"
+"PO-Revision-Date: 2025-10-05 17:59+0000\n"
+"Last-Translator: \"James \\\"Jim\\\" Ed Randson\" <jimedrand@disroot.org>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/id/>\n"
 "Language: id\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.13.3\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -353,7 +353,7 @@ msgstr "Sidik Jari SHA256: "
 #. label followed by the SSL certificate identification
 #: service/lib/agama/ssl/certificate_details.rb:46
 msgid "Common Name (CN): "
-msgstr "Common Name (CN): "
+msgstr "Nama Umum (CN): "
 
 #. label followed by the SSL certificate identification
 #: service/lib/agama/ssl/certificate_details.rb:48
