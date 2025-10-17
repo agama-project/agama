@@ -46,7 +46,7 @@ pub enum BaseHTTPClientError {
 /// Usage should be just thin layer in domain specific client.
 ///
 /// ```no_run
-///   use agama_lib::questions::model::Question;
+///   use agama_utils::api::question::Question;
 ///   use agama_lib::http::{BaseHTTPClient, BaseHTTPClientError};
 ///
 ///   async fn get_questions() -> Result<Vec<Question>, BaseHTTPClientError> {

@@ -153,7 +153,7 @@ mod test {
         let client = questions_client(server.url("/api"));
 
         let mock = server.mock(|when, then| {
-            when.method(GET).path("/api/questions");
+            when.method(GET).path("/api/v2/questions");
             then.status(200)
                 .header("content-type", "application/json")
                 .body(
@@ -162,7 +162,10 @@ mod test {
                             "id": 42,
                             "class": "foo",
                             "text": "Shape",
-                            "actions": [{ "id": "next", "Next" }, { "skip": "Skip" ] ],
+                            "actions": [
+                                { "id": "next", "label": "Next" },
+                                { "id": "skip", "label": "Skip" }
+                            ],
                             "defaultAction": "skip",
                             "data": { "id": "42" }
                         }
