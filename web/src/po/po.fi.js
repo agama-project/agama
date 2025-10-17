@@ -1,544 +1,544 @@
 export default {
   "": {
     "plural-forms": (n) => n != 1,
-    "language": "tr"
+    "language": "fi"
   },
   " Timezone selection": [
-    " Zaman dilimi seçimi"
+    " Aikavyöhykkeen valinta"
   ],
   "%1$s (%2$s)": [
-    "%1$s (%2$s)"
+    "%1$s (koko %2$s)"
   ],
   "%1$s - %2$s": [
     "%1$s - %2$s"
   ],
   "%1$s at %2$s": [
-    "%1$s %2$s'de"
+    "%1$s laitteella %2$s"
   ],
   "%1$s will be created as a partition at %2$s": [
-    "%1$s bölümü (%2$s) olarak oluşturulacak",
-    "%1$s bölümleri (%2$s) olarak oluşturulacak"
+    "%1$s luodaan osiona levylle %2$s",
+    "%1$s luodaan osioina levylle %2$s"
   ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
-    "%1$s hala '%2$s' LVM grubunu ve önyükleme için gereken herhangi bir bölümü içerecektir"
+    "%1$s sisältää edelleen LVM-ryhmän ”%2$s” sekä käynnistämiseen tarvittavat osiot"
   ],
   "%d of %d": [
-    "%d'den %d"
+    "%d / %d"
   ],
   "%s - %s": [
     "%s - %s"
   ],
   "%s [must be registered].": [
-    "%s [kayıtlı olmalı]."
+    "%s [tulee olla rekisteröity]."
   ],
   "%s disk": [
-    "disk %s"
+    "%s-levy"
   ],
   "%s has been registered with below information.": [
-    "%s aşağıdaki bilgilerle kayıt edildi."
+    "%s on rekisteröity alla olevilla tiedoilla."
   ],
   "%s is an immutable system with atomic updates. It uses a read-only Btrfs file system updated via snapshots.": [
-    "%s atomik güncellemelere sahip değişmez bir sistemdir. Anlık imajlar aracılığıyla güncellenen salt okunur bir Btrfs dosya sistemi kullanır."
+    "%s on muuttumaton, atomisilla päivityksillä varustettu järjestelmä. Se käyttää kirjoitussuojattua, tilannevedoksilla päivitettävää Btrfs-tiedostojärjestelmää."
   ],
   "%s logo": [
-    "%s logosu"
+    "%s -logo"
   ],
   "%s will be created as a logical volume": [
-    "%s mantıksal bir birim olarak oluşturulacak",
-    "%s mantıksal bir birimler olarak oluşturulacak"
+    "%s luodaan loogisena taltiona",
+    "%s luodaan loogisina taltioina"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
-    "%s hala yapılandırılmış LVM gruplarını ve önyükleme için gereken tüm bölümleri içerecektir"
+    "%s sisältää edelleen määritellyt LVM-ryhmät sekä käynnistämiseen tarvittavat osiot"
   ],
   "%s with %d partitions": [
-    "%s ile %d bölümler"
+    "%s-osiotaulu, %d osiota"
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
-    "Mümkünse %3$s için %2$s'den %1$s oluşturulacak"
+    "%1$s / %2$s tullaan luomaan kohteelle %3$s jos mahdollista"
   ],
   "A %1$s of at least %2$s will be created for %3$s if possible": [
-    "Mümkünse %3$s için en az %2$s'lik bir %1$s oluşturulacak"
+    "%1$s, kooltaan vähintään %2$s, tullaan luomaan kohteelle %3$s jos mahdollista"
   ],
   "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
-    "Mümkünse %4$s için %2$s ile %3$s arasında bir boyuta sahip %1$s oluşturulacak"
+    "%1$s kooltaan välillä %2$s - %3$s tullaan luomeelle kohteelle %4$s jos mahdollista"
   ],
   "A file system will be used for the whole device": [
-    "Tüm cihaz için bir dosya sistemi kullanılacak"
+    "Tiedostojärjestelmää tullaan käyttämään koko laitteelle"
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
-    "Yeni %2$s için genel bir asgari %1$s boyutu kullanılacak"
+    "Yleistä minimikokoa %1$s tullaan käyttämään uudelle laitteelle %2$s"
   ],
   "A generic size of %1$s will be used for the new %2$s": [
-    "Yeni %2$s için %1$s genel boyutu kullanılacak"
+    "Yleistä kokoa %1$s tullaan käyttämään uudelle laitteelle %2$s"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
-    "Yeni %3$s için %1$s ile %2$s arasında genel bir boyut aralığı kullanılacak"
+    "Yleistä kokoa väliltä %1$s - %2$s tullaan käyttämään uudelle laitteelle %3$s"
   ],
   "A new partition will be created for %s": [
-    "Yeni bölüm %s için oluşturulacak",
-    "Yeni bölümler %s için oluşturulacak"
+    "Uusi osio luodaan kohteelle %s",
+    "Uusia osioita luodaan kohteelle %s"
   ],
   "A new volume will be created for %s": [
-    "Yeni bir birim %s için oluşturulacak",
-    "Yeni birimler %s için oluşturulacak"
+    "Uusi taltio tullaan luomaan kohteelle %s",
+    "Uusia taltioita tullaan luomaan kohteelle %s"
   ],
   "A partition may be deleted": [
-    "Bir bölüm silinebilir"
+    "Osio saatetaan poistaa"
   ],
   "A partition may be shrunk": [
-    "Bir bölüm küçültülebilir"
+    "Osiota saatetaan pienentää"
   ],
   "A partition will be deleted": [
-    "Bir bölüm silinecek"
+    "Osio poistetaan"
   ],
   "Accept": [
-    "Kabul Et"
+    "Hyväksy"
   ],
   "Action": [
-    "Eylem"
+    "Toiminto"
   ],
   "Actions": [
-    "Eylemler"
+    "Toiminnot"
   ],
   "Activate": [
-    "Etkinleştir"
+    "Aktivoi"
   ],
   "Activate and format DASD devices": [
-    "DASD aygıtlarını etkinleştir ve biçimlendir"
+    "Aktivoi ja alusta DASD-laitteita"
   ],
   "Activate new disk": [
-    "Yeni diski etkinleştir"
+    "Aktivoi uusi levy"
   ],
   "Activate zFCP disk": [
-    "zFCP diskini etkinleştir"
+    "Aktivoi zFCP-levy"
   ],
   "Activate zFCP disks": [
-    "zFCP disklerini etkinleştirin"
+    "Aktivoi zFCP-levyt"
   ],
   "Activated": [
-    "Aktifleştirildi"
+    "Aktivoitu"
   ],
   "Add": [
-    "Ekle"
+    "Lisää"
   ],
   "Add DNS": [
-    "DNS Ekle"
+    "Lisää DNS"
   ],
   "Add LVM volume group": [
-    "LVM disk grubu ekle"
+    "Lisää LVM-taltioryhmä"
   ],
   "Add a partition or mount an existing one": [
-    "Bir bölüm ekleyin veya mevcut bir bölümü bağlayın"
+    "Lisää osio tai liitä olemassa oleva"
   ],
   "Add an address": [
-    "Adres ekle"
+    "Lisää osoite"
   ],
   "Add another DNS": [
-    "Başka bir DNS ekle"
+    "Lisää toinen DNS"
   ],
   "Add another address": [
-    "Başka Bir Adres Ekle"
+    "Lisää toinen osoite"
   ],
   "Add another partition or mount an existing one": [
-    "Başka bir bölüm ekleyin veya mevcut bir bölümü bağlayın"
+    "Lisää ylimääräinen osio tai liitä olemassa oleva"
   ],
   "Add device menu": [
-    "Cihaz menüsü ekle"
+    "Lisää laitevalikko"
   ],
   "Add logical volume": [
-    "Mantıksal birim ekle"
+    "Lisää looginen taltio"
   ],
   "Add or use partition": [
-    "Bölüm ekle veya kullan"
+    "Lisää tai käytä osiota"
   ],
   "Address": [
-    "Adres"
+    "Osoite"
   ],
   "Addresses": [
-    "Adresler"
+    "Osoitteet"
   ],
   "Addresses data list": [
-    "Adres veri listesi"
+    "Osoitteiden tietoluettelo"
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
-    "Yeni sistemin mevcut alana sığması için aşağıdaki ayarları düzenleyin."
+    "Muuta alla olevia asetuksia mahdollistaaksesi riittävän tilan löytymisen uudelle järjestelmälle."
   ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
-    "Tüm çakışmalar çözüldü veya hiçbiri tespit edilmedi. Kurulumunuza güvenle devam edebilirsiniz."
+    "Kaikki konfliktit on ratkaistu, tai yhtään ei havaittu. Asennusta voidaan jatkaa turvallisesti."
   ],
   "All content not configured to be mounted will be deleted": [
-    "Bağlanmak üzere yapılandırılmayan tüm içerikler silinecektir"
+    "Kaikki sisältö, joita ei ole asetettu liitettäväksi, tullaan poistamaan"
   ],
   "All content will be deleted": [
-    "Tüm içerik silinecek"
+    "Kaikki sisältö tullaan poistamaan"
   ],
   "All fields are required": [
-    "Tüm alanlar zorunludur"
+    "Kaikki kentät vaaditaan"
   ],
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
-    "Bu arayüz üzerinden yönetilen tüm ağ bağlantıları şu anda yalnızca kurulum sırasında kullanılacak şekilde ayarlanmıştır ve kurulu sisteme kopyalanmayacaktır"
+    "Kaikki tämän liittymän kautta hallitut verkkoyhteydet on asetettu käytettäväksi vain asennuksen aikana, eikä niitä kopioida asennettuun järjestelmään"
   ],
   "Allow growing": [
-    "Büyümeye izin ver"
+    "Salli suureneminen"
   ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
-    "İlk kullanıcıyı tanımlamanın yanı sıra, root kullanıcı için kimlik doğrulama yöntemleri de yapılandırılabilir."
+    "Ensimmäisen käyttäjän lisäksi on mahdollista määrittää pääkäyttäjän (root) tunnistautumistavat."
   ],
   "Already using all available devices": [
-    "Zaten uygun tüm aygıtlar kullanılıyor"
+    "Kaikki saatavilla olevat laitteet ovat jo käytössä"
   ],
   "Already using all available disks": [
-    "Zaten tüm kullanılabilir diskler kullanılıyor"
+    "Kaikki saatavilla olevat levyt ovat jo käytössä"
   ],
   "An existing partition will be used for %s": [
-    "Mevcut bölüm %s için kullanılacak",
-    "Mevcut bölümler %s için kullanılacak"
+    "Olemassa olevaa osiota käytetään kohteelle %s",
+    "Olemassa olevia osioita käytetään kohteelle %s"
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
-    "Mevcut herhangi bir bölüm kaldırılacak ve diskteki tüm veriler kaybolacaktır."
+    "Kaikki olemassa olevat osiot tullaan poistamaan ja levyn tiedot menetetään."
   ],
   "Any partition needed to boot will be configured.": [
-    "Önyükleme için gereken herhangi bir bölüm yapılandırılacaktır."
+    "Kaikkien käynnistämiseen käytettävien osioiden asetukset tehdään."
   ],
   "Apply selected solution": [
-    "Seçilen çözümü uygula"
+    "Toteuta valittu ratkaisu"
   ],
   "Apply to the selected device": [
-    "Seçili cihaz biçimlendirilsin mi?",
-    "Seçili %s aygıt biçimlendirilsin mi?"
+    "Toteuta valitulle laitteelle",
+    "Toteuta valituille %s laitteelle"
   ],
   "Applying changes": [
-    "Değişiklikleri uygula"
+    "Toteutetaan muutoksia"
   ],
   "As a new partition on %s": [
-    "%s üzerinde yeni bir bölüm olarak"
+    "Uutena osiona kohteelle %s"
   ],
   "At least one address must be provided for selected mode": [
-    "Seçilen mod için en az bir adres sağlanmalıdır"
+    "Ainakin yksi osoite tulee antaa valitussa tilassa"
   ],
   "At least one partition will be deleted": [
-    "En az bir bölüm silinecek"
+    "Ainakin yksi osio poistetaan"
   ],
   "At this point you can power off the machine.": [
-    "Bu noktada makineyi kapatabilirsiniz."
+    "Laite voidaan nyt sammuttaa."
   ],
   "At this point you can reboot the machine to log in to the new system.": [
-    "Bu noktada yeni sisteme giriş yapmak için makineyi yeniden başlatabilirsiniz."
+    "Laite voidaan nyt käynnistää uudelleen uuteen järjestelmään kirjautumiseksi."
   ],
   "Authentication": [
-    "Kimlik doğrulama"
+    "Tunnistautuminen"
   ],
   "Authentication by initiator": [
-    "Başlatıcıya göre kimlik doğrulama"
+    "Alullepanijan mukaan tunnistautuminen"
   ],
   "Authentication by target": [
-    "Hedefe göre kimlik doğrulama"
+    "Kohteen mukaan tunnistautuminen"
   ],
   "Auto LUNs Scan": [
-    "Kendiliğinden LUN Taraması"
+    "Automaattinen LUN-skannaus"
   ],
   "Automatic": [
-    "Kendiliğinden"
+    "Automaattinen"
   ],
   "Automatic (DHCP)": [
-    "Kendiliğinden (DHCP)"
+    "Automaattinen (DHCP)"
   ],
   "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    "Otomatik LUN taraması [devre dışı]. LUN'ların manuel olarak taranması gerekir       Bir kontrol cihazı etkinleştirildikten sonra yapılandırılır."
+    "Automaattinen LUN-skannaus on [pois käytöstä]. LUNien asetukset tulee määrittää       käsin ohjaimen aktivoinnin jälkeen."
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    "Otomatik LUN taraması [etkin]. Bir denetleyiciyi etkinleştirme       NPIV modunda çalıştırıldığında tüm LUN'lar otomatik olarak yapılandırılır."
+    "Automaattinen LUN-skannaus on [käytössä]. NPIV-tilassa toimivan ohjaimen       aktivoiminen määrittää automaattisesti kaikkien LUNien asetukset."
   ],
   "Available products": [
-    "Mevcut ürünler"
+    "Saatavilla olevat tuotteet"
   ],
   "Back": [
-    "Geri"
+    "Takaisin"
   ],
   "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
-    "Sistemdeki RAM miktarına bağlı olarak, %3$s için %1$s veya %2$s planlanacaktır"
+    "Järjestelmän RAM-muistin määrään perustuen %1$s / %2$s on suunniteltu kohteelle %3$s"
   ],
   "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
-    "Sistemdeki RAM miktarına bağlı olarak, %3$s için en az %2$s'lik bir %1$s planlanacaktır"
+    "Järjestelmän RAM-muistin määrään perustuen %1$s, kooltaan vähintään %2$s on suunniteltu kohteelle %3$s"
   ],
   "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
-    "Sistemdeki RAM miktarına bağlı olarak, %4$s için %2$s ile %3$s arasında bir boyuta sahip %1$s planlanacaktır."
+    "Järjestelmän RAM-muistin määrään perustuen %1$s , kooltaan %2$s - %3$s on suunniteltu kohteelle %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"
   ],
   "Before %s": [
-    "Önce %s"
+    "Ennen %s"
   ],
   "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "Kurulumdan önce, bazı seçimler yapmanız gerekiyor. Her bölümdeki ayarları gözden geçirin."
+    "Joitain valintoja tulee tehdä ennen asennusta. Käy läpi jokainen osio tarkistaaksesi asetukset."
   ],
   "Before starting the installation, you need to address the following problems:": [
-    "Kuruluma başlamadan önce aşağıdaki sorunları gidermeniz gerekmektedir:"
+    "Ennen asennuksen käynnistämistä sinun tulee ratkaista seuraavat ongelmat:"
   ],
   "Below %s devices are offline and cannot be formatted.": [
-    "%s'in altındaki cihazlar çevrimdışıdır ve biçimlendirilemez."
+    "Alla olevat %s laitteet eivät ole kytketty ja niitä ei voi alustaa."
   ],
   "Beta": [
     "Beta"
   ],
   "Bind to MAC address": [
-    "MAC adresine bağlan"
+    "Sido MAC-osoitteeseen"
   ],
   "Bind to device name": [
-    "Aygıt adına bağlan"
+    "Sido laitenimeen"
   ],
   "Binding": [
-    "Bağlayıcı"
+    "Sidotaan"
   ],
   "Binding settings for '%s'": [
-    "'%s' için bağlama ayarları"
+    "Sidotaan setuksia kohteelle ”%s”"
   ],
   "BitLocker": [
     "BitLocker"
   ],
   "Boot options": [
-    "Önyükleme seçenekleri"
+    "Käynnistysvalinnat"
   ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
-    "Anlık imajlarla Btrfs"
+    "Btrfs tilannevedoksilla"
   ],
   "Cancel": [
-    "İptal"
+    "Peru"
   ],
   "Cannot be changed in remote installation": [
-    "Uzaktan kurulumda değiştirilemez"
+    "Ei voi muuttaa etäasennuksessa"
   ],
   "Cannot connect to Agama server": [
-    "Agama sunucusuna bağlanılamıyor"
+    "Agama-palvelimeen ei yhteyttä"
   ],
   "Cannot format %s": [
-    "%s biçimlendirilemiyor"
+    "%s ei voida alustaa"
   ],
   "Cannot format all the selected devices": [
-    "Seçilen tüm cihazlar biçimlendirilemiyor"
+    "Kaikkia valittuja laitteita ei voi alustaa"
   ],
   "Change": [
-    "Değiştir"
+    "Muuta"
   ],
   "Change Language": [
-    "Dili değiştir"
+    "Vaihda kieltä"
   ],
   "Change boot options": [
-    "Önyükleme seçeneklerini değiştir"
+    "Muuta käynnistysvalintoja"
   ],
   "Change device menu": [
-    "Cihaz menüsünü değiştir"
+    "Laitteen valintavalikko"
   ],
   "Change display language": [
-    "Görüntüleme dilini değiştir"
+    "Vaihda näyttökieltä"
   ],
   "Change display language and keyboard layout": [
-    "Görüntüleme dilini ve klavye düzenini değiştir"
+    "Vaihda näyttökieltä ja näppäimistön asettelua"
   ],
   "Change filters and try again.": [
-    "Filtreleri değiştirip tekrar deneyin."
+    "Muuta suodattimia ja yritä uudelleen."
   ],
   "Change keyboard": [
-    "Klavyeyi değiştir"
+    "Vaihda näppäimistöä"
   ],
   "Change keyboard layout": [
-    "Klavye düzenini değiştir"
+    "Vaihda näppäimistön asettelua"
   ],
   "Change product": [
-    "Ürünü değiştir"
+    "Vaihda tuotetta"
   ],
   "Change selection": [
-    "Seçimi değiştir"
+    "Muuta valintoja"
   ],
   "Change the file system or mount point": [
-    "Dosya sistemini veya bağlama noktasını değiştirin"
+    "Vaihda tiedostojärjestelmää tai liitoskohtaa"
   ],
   "Channel ID": [
-    "Kanal Kimliği"
+    "Kanavatunniste"
   ],
   "Check the %d planned actions": [
-    "%d planlanan eylemi kontrol edin"
+    "Tarkista %d suunniteltua toimintoa"
   ],
   "Check the authentication parameters.": [
-    "Kimlik doğrulama parametrelerini kontrol edin."
+    "Tarkista tunnistautumisasetukset."
   ],
   "Check the following before continuing": [
-    "Devam etmeden önce aşağıdakileri kontrol edin"
+    "Tarkista seuraavat ennen jatkamista"
   ],
   "Choose a disk for placing the boot loader": [
-    "Önyükleyiciyi yerleştirmek için disk seç"
+    "Valitse levy jolle käynnistyslatain asennetaan"
   ],
   "Choose device to bind by MAC": [
-    "Bağlanacak cihazı MAC ile seçin"
+    "Valitse laite joka sidotaan MAC-osoitteeseen"
   ],
   "Choose device to bind by name": [
-    "Adına göre bağlanacak cihazı seçin"
+    "Valitse laite joka sidotaan nimellä"
   ],
   "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
-    "Bağlantının bir ağ cihazıyla nasıl ilişkilendirileceğini seçin. Bu, bağlantının hangi cihazı kullanacağını kontrol etmenize yardımcı olur."
+    "Valitse kuinka yhteys liittyy verkkolaitteeseen. Tällä voidaan hallita mitä laitetta yhteys käyttää."
   ],
   "Clear": [
-    "Temizle"
+    "Tyhjennä"
   ],
   "Clear all filters": [
-    "Tüm filtreleri temizle"
+    "Tyhjennä kaikki suodattimet"
   ],
   "Clear input": [
-    "Girişi temizle"
+    "Tyhjennä syöte"
   ],
   "Clear selected mount point": [
-    "Seçilen bağlama noktasını temizle"
+    "Tyhjennä valittu liitoskohta"
   ],
   "Close": [
-    "Kapat"
+    "Sulje"
   ],
   "Collapse the list of planned actions": [
-    "Planlanan eylemlerin listesini daraltın"
+    "Supista suunniteltujen toimintojen luettelo"
   ],
   "Configuration out of sync": [
-    "Yapılandırma senkronize değil"
+    "Asetukset eivät ajan tasalla"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
-    "Yapılandırma iSCSI Önyükleme Ürün Yazılımı Tablosu'ndan (iBFT) okundu."
+    "Asetukset luettu kohteesta iSCSI Boot Firmware Table (iBFT)."
   ],
   "Configuration unreachable or invalid": [
-    "Konfigürasyon ulaşılamaz veya geçersiz"
+    "Asetuksia ei voida ladata tai ne eivät ole kelvollisia"
   ],
   "Configure DASD": [
-    "DASD'yi yapılandırın"
+    "Tee DASD-asetukset"
   ],
   "Configure LVM Volume Group": [
-    "LVM Birim Grubunu Yapılandırın"
+    "Tee LVM-taltioryhmän asetukset"
   ],
   "Configure LVM logical volume at %s volume group": [
-    "LVM mantıksal birimini %s birim grubunda yapılandırın"
+    "Tee asetukset loogiselle LVM-taltiolle taltioryhmässä %s"
   ],
   "Configure device %s": [
-    "%s aygıtını yapılandır"
+    "Tee laitteen %s asetukset"
   ],
   "Configure device menu": [
-    "Cihaz yapılandırma menüsü"
+    "Laitteen asetusvalikko"
   ],
   "Configure iSCSI": [
-    "iSCSI'yi yapılandırın"
+    "Tee iSCSI-asetukset"
   ],
   "Configure partition at %s": [
-    "Bölmeyi %s konumunda yapılandır"
+    "Teen osion %s asetukset"
   ],
   "Configure zFCP": [
-    "zFCP'yi yapılandırın"
+    "Tee zFCP-asetukset"
   ],
   "Configured for installation only": [
-    "Yalnızca kurulum için yapılandırıldı"
+    "Asetukset tehty vain asennuksen ajaksi"
   ],
   "Configuring the product, please wait ...": [
-    "Ürün yapılandırılıyor, lütfen bekleyin..."
+    "Tehdään tuotteen asetuksia, odota hetki ..."
   ],
   "Confirm": [
-    "Onayla"
+    "Vahvista"
   ],
   "Confirm Installation": [
-    "Kurulumu Onayla"
+    "Vahvista asentaminen"
   ],
   "Confirm that you really want to continue.": [
-    "Gerçekten devam etmek istediğinizi onaylayın."
+    "Vahvista että haluat todella jatkaa."
   ],
   "Congratulations!": [
-    "Tebrikler!"
+    "Onnittelut!"
   ],
   "Connect": [
-    "Bağlan"
+    "Yhdistä"
   ],
   "Connect to %s": [
-    "%s'ye bağlan"
+    "Yhdistä verkkoon %s"
   ],
   "Connect to iSCSI targets": [
-    "iSCSI hedeflerine bağlanın"
+    "Yhdistä iSCSI-kohteisiin"
   ],
   "Connected": [
-    "Bağlı"
+    "Yhdistetty"
   ],
   "Connected (%s)": [
-    "Bağlandı (%s)"
+    "Yhdistetty (%s)"
   ],
   "Connected device": [
-    "Bağlı cihaz"
+    "Yhdistetty laite"
   ],
   "Connected devices": [
-    "Bağlı cihazlar"
+    "Yhdistetyt laitteet"
   ],
   "Connected devices tabs": [
-    "Bağlı cihazlar sekmeleri"
+    "Yhdistettyjen laitteiden välilehdet"
   ],
   "Connecting to %s": [
-    "%s'ye bağlanılıyor"
+    "Yhdistetään verkkoon %s"
   ],
   "Connection details": [
-    "Bağlantı ayrıntıları"
+    "Yhteyden tiedot"
   ],
   "Connection is available to all devices.": [
-    "Tüm cihazlara bağlantı mevcuttur."
+    "Yhteys on saatavilla kaikille laitteille."
   ],
   "Connection is bound to MAC address %s.": [
-    "Bağlantı %s MAC adresine bağlı."
+    "Yhteys on sidottu MAC-osoitteseen %s."
   ],
   "Connection is bound to device %s.": [
-    "Bağlantı %s aygıtına bağlı."
+    "Yhteys on sidottu laitteeseen %s."
   ],
   "Connection not found or lost": [
-    "Bağlantı bulunamadı veya kayboldu"
+    "Yhetyttä ei ole tai se on väinnyt"
   ],
   "Content": [
-    "İçerik"
+    "Sisältö"
   ],
   "Continue": [
-    "Devam et"
+    "Jatka"
   ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
-    "Paketi yüklemeden devam etmek bozuk bir sisteme neden olabilir. Bazı durumlarda sistem önyükleme bile yapmayabilir."
+    "Jatkaminen asentamatta pakettia voi johtaa rikkinäiseen järjestelmään. Joissain tapauksissa järjestelmä ei välttämättä edes käynnisty."
   ],
   "Controllers": [
-    "Kontrolörler"
+    "Ohjaimet"
   ],
   "Could not authenticate against the server, please check it.": [
-    "Sunucuya karşı kimlik doğrulaması yapılamadı, lütfen kontrol edin."
+    "Palvelimelle ei voitu tunnistautua, ole hyvä ja tarkista."
   ],
   "Could not connect to %s": [
-    "%s'ye bağlanılamadı"
+    "Kohteeseen %s ei voi yhdistää"
   ],
   "Could not log in. Please, make sure that the password is correct.": [
-    "Giriş yapılamadı. Lütfen şifrenin doğru olduğundan emin olun."
+    "Kirjautuminen ei onnistunut. Tarkista, että salasana on oikea."
   ],
   "Create LVM volume group %s": [
-    "LVM birim grubu %s'yi oluştur"
+    "Luo LVM-taltioryhmä %s"
   ],
   "Create LVM volume group on %s": [
-    "%s üzerinde LVM disk grubu oluştur"
+    "Luo LVM-taltioryhmä kohteelle %s"
   ],
   "Create another LVM volume group on %s": [
-    "%s üzerinde başka bir LVM disk grubu oluştur"
+    "Luo ylimääräinen LVM-taltioryhmä kohteelle %s"
   ],
   "Create user": [
-    "Kullanıcı oluştur"
+    "Luo käyttäjä"
   ],
   "Current %1$s at %2$s": [
-    "Mevcut %1$s %2$s'de"
+    "Nykyinen %1$s laitteella %2$s"
   ],
   "Current %s": [
-    "Mevcut %s"
+    "Tämänhetkinen %s"
   ],
   "Current content": [
-    "Güncel içerik"
+    "Nykyinen sisältö"
   ],
   "Current partitions will be kept": [
-    "Mevcut bölümler korunacaktır"
+    "Nykyiset osiot säilytetään"
   ],
   "Custom": [
-    "Özel"
+    "Mukautettu"
   ],
   "DASD": [
     "DASD"
@@ -553,193 +553,193 @@ export default {
     "DNS"
   ],
   "Deactivate": [
-    "Devre dışı bırak"
+    "Deaktivoi"
   ],
   "Deactivated": [
-    "Devre dışı bırakıldı"
+    "Deaktivoitu"
   ],
   "Default file system for %s": [
-    "%s için öntanımlı dosya sistemi"
+    "Oletustiedostojärjestelmä kohteelle %s"
   ],
   "Default file system for generic logical volumes": [
-    "Genel mantıksal birimler için öntanımlı dosya sistemi"
+    "Oletustiedostojärjestelmä loogisille taltioille"
   ],
   "Default file system for generic mount paths": [
-    "Genel bağlama yolları için öntanımlı dosya sistemi"
+    "Oletustiedostojärjestelmä yleiseille liitospoluille"
   ],
   "Default file system for generic partitions": [
-    "Genel bölümler için öntanımlı dosya sistemi"
+    "Oletustiedostojärjestelmä yleisille osioille"
   ],
   "Define a custom size": [
-    "Özel bir boyut tanımlayın"
+    "Määritä oma koko"
   ],
   "Define a new LVM on the disk": [
-    "Diskte yeni bir LVM tanımlayın"
+    "Määritä uusi LVM levylle"
   ],
   "Define a new LVM on top of one or several disks": [
-    "Bir veya birkaç diskin üzerine yeni bir LVM tanımlayın"
+    "Määritä uusi LVM yhdelle tai usemmalle levylle"
   ],
   "Define a user now": [
-    "Şimdi bir kullanıcı tanımlayın"
+    "Määritä käyttäjä nyt"
   ],
   "Define the first user with admin (sudo) privileges for system management.": [
-    "Sistem yönetimi için ilk kullanıcıyı admin (sudo) ayrıcalıklarıyla tanımlayın."
+    "Määritä ensimmäinen käyttäjä pääkäyttäjän (sudo) oikeuksin järjestelmän hallintaan."
   ],
   "Defined (hidden)": [
-    "Tanımlı (gizli)"
+    "Määritelty (piilotettu)"
   ],
   "Delete": [
-    "Sil"
+    "Poisto"
   ],
   "Delete current content": [
-    "Mevcut içeriği sil"
+    "Poista nykyinen sisältö"
   ],
   "Delete volume group": [
-    "Birim grubunu sil"
+    "Poista taltioryhmä"
   ],
   "Description": [
-    "Açıklama"
+    "Kuvaus"
   ],
   "Destroy current data and format device as": [
-    "Mevcut veriler silinecek ve cihaz şu şekilde biçimlendirilecek"
+    "Tuhoa nykyiset tiedot ja alusta laite tiedostojärjestelmällä"
   ],
   "Destroy current data and format partition as": [
-    "Mevcut verileri yok edin ve bölümü şu şekilde biçimlendirin"
+    "Tuhoa nykyiset tiedot ja alusta osio tiedostojärjestelmällä"
   ],
   "Details": [
-    "Ayrıntılar"
+    "Tiedot"
   ],
   "Details for %s": [
-    "%s için ayrıntılar"
+    "Tiedot kohteelle %s"
   ],
   "Details will appear after the connection is successfully established.": [
-    "Bağlantı başarıyla kurulduktan sonra ayrıntılar görünecektir."
+    "Kun yhteys on muodostettu, näet lisätietoja."
   ],
   "Device": [
-    "Cihaz"
+    "Laite"
   ],
   "Device %s menu": [
-    "Cihaz %s menüsü"
+    "Laitteen %s valikko"
   ],
   "Device Selection": [
-    "Cihaz Seçimi"
+    "Laitteen valinta"
   ],
   "Device details": [
-    "Aygıt ayrıntıları"
+    "Laitteen tiedot"
   ],
   "Discard": [
-    "At"
+    "Hylkää"
   ],
   "Discard the maximum size and continue with simplified configuration": [
-    "Maksimum boyutu atın ve basitleştirilmiş yapılandırmayla devam edin"
+    "Hylkää maksimikoko ja jatka yksinkertaistetuilla asetuksilla"
   ],
   "Disconnected": [
-    "Bağlantısı Kesildi"
+    "Yhteys katkaistu"
   ],
   "Discover": [
-    "Keşfet"
+    "Havaitse"
   ],
   "Discover and connect to iSCSI targets": [
-    "iSCSI hedeflerini keşfedin ve onlara bağlanın"
+    "Löydä ja yhdistä iSCSI-kohteita"
   ],
   "Discover iSCSI Targets": [
-    "iSCSI Hedeflerini Keşfedin"
+    "Havaitse iSCSI-kohteita"
   ],
   "Discover iSCSI targets": [
-    "iSCSI hedeflerini keşfedin"
+    "Havaitaan iSCSI-kohteita"
   ],
   "Disk": [
-    "Disk"
+    "Levy"
   ],
   "Disks": [
-    "Diskler"
+    "Levyt"
   ],
   "Do not configure": [
-    "Yapılandırmayın"
+    "Älä tee asetuksia"
   ],
   "Do not format %s and keep the data": [
-    "%s'yi biçimlendirmeyin ve verileri saklayın"
+    "Älä alusta kohdetta %s ja säilytä tiedot"
   ],
   "Do not use": [
-    "Kullanma"
+    "Älä käytä"
   ],
   "Download logs": [
-    "Günlükleri indir"
+    "Lataa lokit"
   ],
   "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Kurulum sırasında aşağıdaki tabloda gösterilen düzeni oluşturmak için çeşitli işlemler gerçekleştirilecektir."
+    "Useita toimintoja tullaan suorittamaan asennuksen aikana alla olevan taulukon mukaisesti."
   ],
   "Edit": [
-    "Düzenle"
+    "Muokkaa"
   ],
   "Edit %s": [
-    "%s'yi düzenle"
+    "Muokkaa kohdetta %s"
   ],
   "Edit binding settings": [
-    "Bağlama ayarlarını düzenle"
+    "Muokkaa sidosasetuksia"
   ],
   "Edit connection %s": [
-    "Bağlantıyı düzenle %s"
+    "Muokkaa yhteyttä %s"
   ],
   "Edit connection settings": [
-    "Bağlantı ayarlarını düzenle"
+    "Muokkaa yhteysasetuksia"
   ],
   "Edit user": [
-    "Kullanıcıyı düzenle"
+    "Muokkaa käyttäjää"
   ],
   "Edit volume group": [
-    "Birim grubunu düzenle"
+    "Muokkaa taltioryhmiä"
   ],
   "Email": [
-    "E-posta"
+    "Sähköposti"
   ],
   "Empty LVM volume group %s": [
-    "Boş LVM birim grubu %s"
+    "Tyhjennä LVM-taltioryhmä %s"
   ],
   "Encrypt the system": [
-    "Sistemi şifrele"
+    "Salaa järjestelmä"
   ],
   "Encrypted Device": [
-    "Şifrelenmiş Aygıt"
+    "Salattu laite"
   ],
   "Encryption": [
-    "Şifreleme"
+    "Salaus"
   ],
   "Encryption Password": [
-    "Şifreleme Şifresi"
+    "Salauksen salasana"
   ],
   "Encryption is disabled": [
-    "Şifreleme devre dışı bırakıldı"
+    "Salaus on pois päältä"
   ],
   "Encryption is enabled": [
-    "Şifreleme etkinleştirildi"
+    "Salaus on käytössä"
   ],
   "Encryption is enabled using TPM unlocking": [
-    "Şifreleme, TPM kilidini açma kullanılarak etkinleştirildi"
+    "Salaus on käytössä käyttäen TPM-avausta"
   ],
   "Encryption settings": [
-    "Şifreleme ayarları"
+    "Salausasetukset"
   ],
   "Enter a hostname.": [
-    "Bir ana bilgisayar adı girin."
+    "Syötä verkkonimi."
   ],
   "Enter a name": [
-    "Bir isim girin"
+    "Syötä nimi"
   ],
   "Enter a name for the volume group.": [
-    "Birim grubu için bir ad girin."
+    "Syötä taltioryhmän nimi."
   ],
   "ExFAT": [
     "ExFAT"
   ],
   "Example: https://myserver.com": [
-    "Örnek: https://sunucum.com"
+    "Esimerkki: https://minunpalvelin.fi"
   ],
   "Excellent signal": [
-    "Mükemmel sinyal"
+    "Erinomainen signaali"
   ],
   "Expiration date": [
-    "Son kullanma tarihi"
+    "Vanhentumispäivä"
   ],
   "Ext2": [
     "Ext2"
@@ -751,15 +751,15 @@ export default {
     "Ext4"
   ],
   "Extend the installation beyond the currently selected device": [
-    "Kurulumu şu anda seçili olan cihazın ötesine genişletin",
-    "Kurulumu şu anda seçili olan %d aygıtın ötesine genişlet"
+    "Laajenna asennusta käyttämään muutakin kuin nykyistä laitetta",
+    "Laajenna asennusta käyttämään muutakin kuin nykyisiä %d laitteita"
   ],
   "Extend the installation beyond the currently selected disk": [
-    "Kurulumu şu anda seçili olan diskin ötesine geçirin",
-    "Kurulumu şu anda seçili olan %d disklerin ötesine geçirin"
+    "Laajenna asennusta käyttämään muutakin kuin nykyistä levyä",
+    "Laajenna asennusta käyttämään muutakin kuin nykyisiä %d levyjä"
   ],
   "Extensions": [
-    "Uzantılar"
+    "Laajennukset"
   ],
   "F2FS": [
     "F2FS"
@@ -768,143 +768,143 @@ export default {
     "FAT"
   ],
   "Failed to calculate a storage layout": [
-    "Depolama düzeni hesaplanamadı"
+    "Tallennustilan määritysten laskeminen ei onnistunut"
   ],
   "File system": [
-    "Dosya sistemi"
+    "Tiedostojärjestelmä"
   ],
   "File system label": [
-    "Dosya sistemi etiketi"
+    "Tiedostojärjestelmän nimike"
   ],
   "Filesystems": [
-    "Dosya sistemleri"
+    "Tiedostojärjestelmät"
   ],
   "Filter by description or keymap code": [
-    "Açıklamaya veya tuş haritası koduna göre filtreleyin"
+    "Suodata kuvauksen tai näppäinkartan koodilla"
   ],
   "Filter by language, territory or locale code": [
-    "Dile, bölgeye veya yerel ayar koduna göre filtreleyin"
+    "Suodata kielen, alueen tai lokaalikoodin mukaan"
   ],
   "Filter by pattern title or description": [
-    "Desen başlığına veya açıklamasına göre filtrele"
+    "Suodata ohjelmistoryhmän nimen tai kuvauksen perusteella"
   ],
   "Filter by territory, time zone code or UTC offset": [
-    "Bölgeye, saat dilimi koduna veya UTC farkına göre filtreleyin"
+    "Suodata alueen, aikavyöhykoodin tai UTC-aikaeron mukaan"
   ],
   "Find space": [
-    "Boşluk bul"
+    "Vapauta tilaa"
   ],
   "Find space in %s": [
-    "%s'de boşluk bul"
+    "Vapauta tilaa kohteessa %s"
   ],
   "Finish": [
-    "Bitti"
+    "Valmis"
   ],
   "Finished": [
-    "Bitti"
+    "Valmistunut"
   ],
   "First user": [
-    "İlk kullanıcı"
+    "Ensimmäinen käyttäjä"
   ],
   "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
-    "Daha gelişmiş gereksinimler için kullanıcılar, ayrıntılı görünümler, ek sütunlar, filtreler ve genişletilmiş işlevsellik için daha fazla alan sağlayan bu tam sayfa, özel yol sürümüne geçebilirler."
+    "Edistyneempiin tarpeisiin voidaan vaihtaa koko sivun kokoinen versio käyttöön, joka tarjoaa enemmän tilaa tiedoille, lisäsarakkeita, suodattimia ja lisätoimintoja."
   ],
   "Format": [
-    "Biçim"
+    "Alusta"
   ],
   "Format RAID %s": [
-    "RAID %s'yi biçimlendir"
+    "Alusta RAID %s"
   ],
   "Format device %s": [
-    "Aygıtı biçimlendir %s"
+    "Alusta laite %s"
   ],
   "Format device as": [
-    "Aygıt şu şekilde biçimlendirilecek"
+    "Alusta laite tiedostojärjestelmällä"
   ],
   "Format disk %s": [
-    "%s diski biçimlendir"
+    "Alusta levy %s"
   ],
   "Format logical volume as": [
-    "Mantıksal birimi şu şekilde biçimlendir"
+    "Alusta looginen taltio tiedostojärjestelmällä"
   ],
   "Format now": [
-    "Şimdi biçimlendir"
+    "Alusta nyt"
   ],
   "Format partition as": [
-    "Bölümü şu şekilde biçimlendir"
+    "Alusta osio tiedostojärjestelmällä"
   ],
   "Format selected devices?": [
-    "Seçili cihazlar biçimlendirilsin mi?"
+    "Alustetaanko valitut laitteet?"
   ],
   "Format the whole device or mount an existing file system": [
-    "Tüm cihazı biçimlendirin veya mevcut bir dosya sistemini bağlayın"
+    "Alusta koko laite tai liitä olemassa oleva tiedostojärjestelmä"
   ],
   "Formatted": [
-    "Biçimlendirilmiş"
+    "Alustettu"
   ],
   "Formatting DASD devices": [
-    "DASD aygıtlarının biçimlendirilmesi"
+    "Alustetaan DASD-laitteita"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
-    "Tam Disk Şifrelemesi (FDE) yeni dosya sistemlerinde depolanan veri, program ve sistem dosyaları gibi bilgilerin korunmasını sağlar."
+    "Koko levyn salaus (FDE) mahdollistaa uusien tiedostojärjestelmien tietojen, kuten datan, ohjelmistojen ja järjestelmätiedostojen, turvaamisen."
   ],
   "Full name": [
-    "Tam isim"
+    "Koko nimi"
   ],
   "Gateway": [
-    "Ağ Geçidi"
+    "Yhdyskäytävä"
   ],
   "Gateway can be defined only in 'Manual' mode": [
-    "Ağ geçidi yalnızca 'Manuel' modda tanımlanabilir"
+    "Yhdyskäytävän voi määrittää vain tilassa ”Manuaalinen”"
   ],
   "GiB": [
-    "GB"
+    "GiB"
   ],
   "Go to network page": [
-    "Ağ sayfasına git"
+    "Mene verkko-sivulle"
   ],
   "Go to storage page": [
-    "Depolama sayfasına git"
+    "Mene tallennustilasivulle"
   ],
   "Good signal": [
-    "İyi sinyal"
+    "Hyvä signaali"
   ],
   "Hide": [
-    "Gizle"
+    "Piilota"
   ],
   "Hide %d subvolume action": [
-    "%d alt birim eylemini gizle",
-    "%d alt birim eylemlerini gizle"
+    "Piilota %d alitaltion toiminto",
+    "Piilota %d alitaltion toimintoa"
   ],
   "Hide details": [
-    "Ayrıntıları gizle"
+    "Piilota yksityiskohdat"
   ],
   "Hostname": [
-    "Ana bilgisayar adı"
+    "Verkkonimi"
   ],
   "Hostname could not be updated": [
-    "Ana bilgisayar adı güncellenemedi"
+    "Verkkonimeä ei voi päivittää"
   ],
   "Hostname successfully updated": [
-    "Ana bilgisayar adı başarıyla güncellendi"
+    "Verkkonimi päivitetty"
   ],
   "I have read and accept the [license] for %s": [
-    "%s için [lisansı] okudum ve kabul ediyorum"
+    "Olen lukenut ja hyväksyn [lisenssin] tuotteelle %s"
   ],
   "IP Address": [
-    "IP Adres"
+    "IP-osoite"
   ],
   "IP Addresses": [
-    "IP Adresleri"
+    "IP-osoitteet"
   ],
   "IP address": [
-    "IP adresi"
+    "IP-osoite"
   ],
   "IP addresses": [
-    "IP adresleri"
+    "IP-osoitteet"
   ],
   "IP settings": [
-    "IP ayarları"
+    "IP-asetukset"
   ],
   "IPv4": [
     "IPv4"
@@ -913,294 +913,294 @@ export default {
     "IPv6"
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
-    "Bu yükleyiciyi çalıştırmak için yerel medya kullanıldıysa bir sonraki önyüklemeden önce bunu kaldırın."
+    "Jos paikallista mediaa käytettiin tämän asennusohjelman suorittamiseen, irrota media ennen seuraavaa uudelleenkäynnistystä."
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Devam ederseniz sabit diskinizdeki bölümler, sağlanan kurulum ayarlarına göre değiştirilecektir."
+    "Jos jatkat, kiintolevyn osioita muokataan asennusasetusten mukaisesti."
   ],
   "In progress": [
-    "Devam ediyor"
+    "Käynnissä"
   ],
   "Incorrect IP address": [
-    "Yanlış IP adresi"
+    "Virheellinen IP-osoite"
   ],
   "Incorrect password": [
-    "Yanlış şifre"
+    "Virheellinen salasana"
   ],
   "Incorrect port": [
-    "Yanlış port"
+    "Virheellinen portti"
   ],
   "Incorrect user name": [
-    "Yanlış kullanıcı adı"
+    "Virheellinen käyttäjänimi"
   ],
   "Initiator": [
-    "Başlatıcı"
+    "Alullepanija (initiator)"
   ],
   "Initiator details": [
-    "Başlatıcı ayrıntıları"
+    "Alullepanijan tiedot"
   ],
   "Initiator name": [
-    "Başlatıcı adı"
+    "Alullepanijan nimi"
   ],
   "Initiator name could not be updated": [
-    "Başlatıcı adı güncellenemedi"
+    "Alullepanijan nimeä ei voi päivittää"
   ],
   "Initiator name successfully updated": [
-    "Başlatıcı adı başarıyla güncellendi"
+    "Alullepanijan nimi päivitettty"
   ],
   "Install": [
-    "Yükle"
+    "Asenna"
   ],
   "Install using an advanced configuration.": [
-    "Gelişmiş seçenekler ile kurulum yapın."
+    "Asenna käyttäen edistyneitä asetuksia."
   ],
   "Install using device %s and deleting all its content.": [
-    "%s aygıtını kullanarak yükleyin ve tüm içeriğini silin."
+    "Asenna käyttäen laitetta %s, poistaen kaiken sen nykyisen sisällön."
   ],
   "Install using device %s shrinking existing partitions as needed.": [
-    "%s aygıtını kullanarak kurulum yapın ve gerektiğinde mevcut bölümleri küçültün."
+    "Asenna käyttäen laitetta %s, pienentäen olemassa olevia osioita tarvittaessa."
   ],
   "Install using device %s with a custom strategy to find the needed space.": [
-    "Gerekli alanı bulmak için özel bir stratejiyle %s cihazını kullanarak yükleyin."
+    "Asenna käyttäen laitetta %s, löytäen tarvittavan tilan mukautetulla tavalla."
   ],
   "Install using device %s without modifying existing partitions.": [
-    "Mevcut bölümleri değiştirmeden, %s cihazını kullanarak yükleyin."
+    "Asenna käyttäen laitetta %s, muuttamatta olevia osioita."
   ],
   "Install using several devices and deleting all its content.": [
-    "%s aygıtını kullanarak yükleyin ve tüm içeriğini silin."
+    "Asenna käyttäen useita laitteita, poistaen kaiken nykyisen sisällön."
   ],
   "Install using several devices shrinking existing partitions as needed.": [
-    "%s aygıtını kullanarak kurulum yapın ve gerektiğinde mevcut bölümleri küçültün."
+    "Asenna käyttäen useita laitteita, pienentäen olemassa olevia osioita tarvittaessa."
   ],
   "Install using several devices with a custom strategy to find the needed space.": [
-    "İhtiyaç duyduğunuz alanı bulmak için özel bir stratejiyle birden fazla cihaz kullanarak kurulum yapın."
+    "Asenna käyttäen useita laitteita, löytäen tarvittavan tilan mukautetulla tavalla."
   ],
   "Install using several devices without modifying existing partitions.": [
-    "Mevcut bölümleri değiştirmeden %s aygıtını kullanarak yükleyin."
+    "Asenna käyttäen useita laitteita, muuttamatta olevia osioita."
   ],
   "Installation Devices": [
-    "Kurulum Aygıtları"
+    "Asennuslaitteet"
   ],
   "Installation will take %s.": [
-    "Kurulum %s kadar olacak."
+    "Asennus vie tilaa %s."
   ],
   "Installed system may not have network connections": [
-    "Kurulu sistemde ağ bağlantıları olmayabilir"
+    "Asennetussa järjestelmässä ei välttämättä ole verkkoyhteyttä"
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
-    "Bozuk bir paketin kurulumu sistem kararlılığını etkiler ve büyük bir güvenlik riski oluşturur!"
+    "Rikkinäisen paketin asentaminen vaikuttaa järjestelmän vakauteen ja on iso tietoturvariski!"
   ],
   "Installing the system, please wait...": [
-    "Sistem kuruluyor, lütfen bekleyin..."
+    "Asennetaan järjestelmää, ole hyvä ja odota..."
   ],
   "Interface": [
-    "Arayüz"
+    "Käyttöliittymä"
   ],
   "Invalid storage settings": [
-    "Geçersiz depolama ayarları"
+    "Virheelliset tallennustilan asetukset"
   ],
   "Ip prefix or netmask": [
-    "IP öneki veya ağ maskesi"
+    "IP-etuliite tai verkkomaski"
   ],
   "Issue date": [
-    "Düzenleme tarihi"
+    "Myöntämispäivä"
   ],
   "Issuer": [
-    "Yayıncı"
+    "Myöntäjä"
   ],
   "It doesn't exist or can't be reached.": [
-    "Yok veya ulaşılamaz."
+    "Se ei joko ole olemassa tai saavutettavissa."
   ],
   "It is chosen for booting": [
-    "Önyükleme için seçildi"
+    "Se on valittu käynnistämiseen"
   ],
   "It is chosen for booting and for some LVM groups": [
-    "Önyükleme ve bazı LVM grupları için seçilir"
+    "Se on valittu käynnistämiseenja joitain LVM-ryhmiä varten"
   ],
   "It is chosen for booting and for the LVM group '%s'": [
-    "Önyükleme ve '%s' LVM grubu için seçilir"
+    "Se on valittu käynnistämiseenja LVM-ryhmää ”%s” varten"
   ],
   "It is chosen for some LVM groups": [
-    "Bazı LVM grupları için seçilmiştir"
+    "Se on valittu LVM-ryhmiä varten"
   ],
   "It is chosen for the LVM group '%s'": [
-    "LVM grubu '%s' için seçildi"
+    "Se on LVM-ryhmää ”%s” varten"
   ],
   "It is not possible to allocate space for %s.": [
-    "%s için alan ayırmak olanaksız."
+    "Kohteelle %s ei ole mahdollista varata tilaa."
   ],
   "It is not possible to allocate space for the boot partition and for %s.": [
-    "Önyükleme bölümü ve %s için alan ayırmak olanaksız."
+    "Käynnistysosiolle ja kohteelle %s ei ole mahdollista varata tilaa."
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
-    "Şu anki yapılandırma ile sistemi kurmak olanaksızdır. Aşağıdaki ayarları düzenleyin."
+    "Järjestelmää ei voi asentaa nykyisillä asetuksilla. Muuta asetuksia alta."
   ],
   "It is offline and must be activated before formatting it.": [
-    "Çevrimdışıdır ve biçimlendirmeden önce etkinleştirilmesi gerekir."
+    "Se ei ole kytketty ja tulee aktivoida ennen alustusta."
   ],
   "It may take some time.": [
-    "Biraz zaman alabilir."
+    "Odota hetki."
   ],
   "JFS": [
     "JFS"
   ],
   "Keyboard": [
-    "Klavye"
+    "Näppäimistö"
   ],
   "Keyboard layout": [
-    "Klavye düzeni"
+    "Näppäimistön asettelu"
   ],
   "Keyboard selection": [
-    "Klavye seçimi"
+    "Näppäimistön valinta"
   ],
   "KiB": [
-    "KB"
+    "KiB"
   ],
   "LUN": [
     "LUN"
   ],
   "Label": [
-    "Etiket"
+    "Nimike"
   ],
   "Language": [
-    "Dil"
+    "Kieli"
   ],
   "Language and keyboard": [
-    "Dil ve klavye"
+    "Kieli ja näppäimistö"
   ],
   "Let the installer propose a sensible size": [
-    "Kurulumcunun makul bir boyut önermesine izin verin"
+    "Anna asennusohjelman suositella sopivaa kokoa"
   ],
   "Loading": [
-    "Yükleniyor"
+    "Ladataan"
   ],
   "Loading data...": [
-    "Veri yükleniyor..."
+    "Ladataan tietoja..."
   ],
   "Loading storage": [
-    "Depolama yükleniyor"
+    "Ladataan tallennustilaa"
   ],
   "Loading the installation repositories...": [
-    "Kurulum depoları yükleniyor..."
+    "Ladataan asennuslähteitä..."
   ],
   "Locale selection": [
-    "Yerelleştirme seçimi"
+    "Maa-asetusten valinnat"
   ],
   "Localization": [
-    "Yerelleştirme"
+    "Kotoistaminen"
   ],
   "Log in": [
-    "Giriş Yap"
+    "Kirjaudu sisään"
   ],
   "Log in as %s": [
-    "%s olarak oturum açın"
+    "Kirjaudu käyttäjänä %s"
   ],
   "Logical volume name": [
-    "Mantıksal birim adı"
+    "Loogisen taltion nimi"
   ],
   "Logical volumes for %s": [
-    "%s için mantıksal birimler"
+    "Loogiset taltiot kohteelle %s"
   ],
   "Login": [
-    "Oturum aç"
+    "Kirjaudu"
   ],
   "Login %s": [
-    "Giriş %s"
+    "Kirjautuminen %s"
   ],
   "Login form": [
-    "Giriş Formu"
+    "Kirjautuminen"
   ],
   "Logout": [
-    "Oturumu kapat"
+    "Kirjaudu ulos"
   ],
   "MAC": [
     "MAC"
   ],
   "Main navigation": [
-    "Ana gezinme"
+    "Päänavigointi"
   ],
   "Make sure you provide the correct values": [
-    "Doğru değerleri sağladığınızdan emin olun"
+    "Varmista että tarjoat oikeita arvoja"
   ],
   "Manage DASD devices": [
-    "DASD aygıtlarını yönet"
+    "Hallitse DASD-laitteita"
   ],
   "Manual": [
-    "Manuel"
+    "Manuaalinen"
   ],
   "Max channel": [
-    "Maksimum kanal"
+    "Maksimikanava"
   ],
   "MiB": [
-    "MB"
+    "MiB"
   ],
   "Min channel": [
-    "Minimum kanal"
+    "Minimikanava"
   ],
   "Mode": [
-    "Mod"
+    "Tapa"
   ],
   "Modify settings and physical volumes": [
-    "Ayarları ve fiziksel birimleri değiştirin"
+    "Muuta asetuksia ja fyysisiä taltioita"
   ],
   "More actions": [
-    "Daha çok eylem"
+    "Lisää toimintoja"
   ],
   "More devices": [
-    "Daha çok aygıt"
+    "Lisää laitteita"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    "Seçili ürün için daha çok klavye düzeni [Yerelleştirme] sayfasında bulunabilir"
+    "Lisää näppäimistöasetteluvaihtoehtoja valitulle tuotteelle saattaa olla tarjolla [Kotoistaminen]-sivulla"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    "Seçili ürün için daha çok dil ve klavye düzeni seçeneği [Yerelleştirme] sayfasında bulunabilir."
+    "Lisää kieli- ja näppäimistöasetteluvaihtoehtoja valitulle tuotteelle saattaa olla tarjolla [Kotoistaminen]-sivulla."
   ],
   "More languages might be available for the selected product at [Localization] page": [
-    "Seçili ürün için [Yerelleştirme] sayfasında daha çok dil bulunabilir"
+    "Lisää kieliä valitulle tuotteelle saattaa olla tarjolla [Kotoistaminen]-sivulla"
   ],
   "Moreover, the following partition will be created.": [
-    "Ayrıca, aşağıdaki bölüm oluşturulacak veya bağlanacaktır.",
-    "Ayrıca, aşağıdaki bölümler oluşturulacak veya bağlanacaktır."
+    "Lisäksi seuraava osio luodaan.",
+    "Lisäksi seuraavat osiot luodaan."
   ],
   "Moreover, the following partition will be mounted.": [
-    "Ayrıca, aşağıdaki bölüm oluşturulacak veya bağlanacaktır.",
-    "Ayrıca, aşağıdaki bölümler oluşturulacak veya bağlanacaktır."
+    "Lisäksi seuraava osio liitetään.",
+    "Lisäksi seuraavat osiot liitetään."
   ],
   "Moreover, the following partitions will be created or mounted": [
-    "Ayrıca, aşağıdaki bölümler oluşturulacak veya bağlanacaktır"
+    "Lisäksi seuravat osiot luodaan tai liitetään"
   ],
   "Mount Point": [
-    "Bağlantı Noktası"
+    "Liitoskohta"
   ],
   "Mount RAID %s": [
-    "RAID %s'yi Bağla"
+    "Liitäs RAID %s"
   ],
   "Mount disk %s": [
-    "%s diski bağla"
+    "Liitä levy %s"
   ],
   "Mount point": [
-    "Bağlantı noktası"
+    "Liitoskohta"
   ],
   "Mount point mode": [
-    "Bağlantı noktası modu"
+    "Liitoskohdan tilavalinta"
   ],
   "Mount point options": [
-    "Bağlantı noktası seçenekleri"
+    "Liitoskohdan valinnat"
   ],
   "Mount point toggle": [
-    "Bağlantı noktası değişimi"
+    "Liitoskohdan tila"
   ],
   "Move mount points": [
-    "Bağlantı noktalarını taşı"
+    "Siirrä liitoskohtia"
   ],
   "Move the mount points currently configured at the selected disks to logical                   volumes of this volume group.": [
-    "Seçili disklerde şu anda yapılandırılmış olan bağlama noktalarını bu                    birim grubunun mantıksal birimlerine taşıyın."
+    "Siirrä nykyisten valittujen levyjen asetettuja liitoskohtia tämän                   taltioryhmän loogisille taltioille."
   ],
   "Multipath": [
-    "Çoklu yol"
+    "Multipath"
   ],
   "Multiple conflicts found. You can address them in any order, and resolving one may resolve others.": [
-    "Birden fazla çakışma bulundu. Bunları herhangi bir sırayla ele alabilirsiniz ve birini çözmek diğerlerini de çözebilir."
+    "Useita konflikteja. Voit käsitellä ne missä tahansa järjestyksess, ja yhden ratkaiseminen saattaa ratkaista myös muita."
   ],
   "NFS": [
     "NFS"
@@ -1212,1144 +1212,1144 @@ export default {
     "NTFS"
   ],
   "Name": [
-    "İsim"
+    "Nimi"
   ],
   "Network": [
-    "Ağ"
+    "Verkko"
   ],
   "Network details": [
-    "Ağ ayrıntıları"
+    "Verkon tiedot"
   ],
   "Network not found or lost": [
-    "Ağ bulunamadı veya kaybedildi"
+    "Verkkoa ei ole tai se on hävinnyt"
   ],
   "New": [
-    "Yeni"
+    "Uusi"
   ],
   "No": [
-    "Hayır"
+    "Ei"
   ],
   "No DASD devices were found in this machine.": [
-    "Bu makinede DASD aygıtı bulunamadı."
+    "DASD-laitteita ei löydy tältä koneelta."
   ],
   "No Wi-Fi networks were found": [
-    "Hiçbir Wi-Fi ağı bulunamadı"
+    "Wi-Fi-verkkoja ei löydy"
   ],
   "No additional partitions will be created": [
-    "Ek bölüm oluşturulmayacak"
+    "Ylimääräisiä osioita ei luoda"
   ],
   "No additional software was selected.": [
-    "Hiçbir ek yazılım seçilmedi."
+    "Lisäohjelmistoja ei ole valittu."
   ],
   "No conflicts to address": [
-    "Ele alınacak bir çatışma yok"
+    "Ei selvitettäviä konflikteja"
   ],
   "No content found": [
-    "İçerik bulunamadı"
+    "Sisältöä ei löytynyt"
   ],
   "No device is currently using this connection.": [
-    "Şu anda bu bağlantıyı kullanan bir cihaz yok."
+    "Mikään laite ei käytä tätä yhteyttä."
   ],
   "No device selected yet": [
-    "Henüz hiçbir cihaz seçilmedi"
+    "Laitetta ei ole vielä valittu"
   ],
   "No devices available": [
-    "Hiçbir cihaz mevcut değil"
+    "Laitteita ei saatavilla"
   ],
   "No devices configured yet": [
-    "Henüz hiçbir cihaz yapılandırılmadı"
+    "Laitteiden asetuksia ei ole tehty"
   ],
   "No devices found": [
-    "Hiçbir cihaz bulunamadı"
+    "Laitteita ei löydy"
   ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be configured manually.": [
-    "iSCSI Önyükleme Ürün Yazılımı Tablosu (iBFT) bulunamadı. Başlatıcı manuel olarak yapılandırılabilir."
+    "iSCSI Boot Firmware Table (iBFT):tä ei löydy. Alullepanija (initiator) voidaan määrittää käsin."
   ],
   "No iSCSI targets found.": [
-    "Hiçbir iSCSI hedefi bulunamadı."
+    "iSCSI-kohteita ei löydy."
   ],
   "No logical volumes are defined yet": [
-    "Henüz mantıksal birimler tanımlanmadı"
+    "Loogisia taltioita ei ole vielä määritetty"
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
-    "Önyükleme için hiçbir bölüm kendiliğinden yapılandırılmayacak. Dikkatli kullanın."
+    "Käynnistämiseen käytettäviä osioita ei ole automaattisesti otettu käyttöön. Käytä tällaisia asetuksia varoen."
   ],
   "No support is planned.": [
-    "Herhangi bir destek planlanmamaktadır."
+    "Tukea ei ole suunniteltu."
   ],
   "No user defined yet.": [
-    "Henüz kullanıcı tanımlı değil."
+    "Käyttäjää ei ole vielä määritetty."
   ],
   "No wired connections were found": [
-    "Kablolu bağlantı bulunamadı"
+    "Kiinteitä yhteyksiä ei löydy"
   ],
   "No zFCP controllers found.": [
-    "Hiçbir zFCP denetleyicisi bulunamadı."
+    "zFCP-ohjaimia ei löydy."
   ],
   "No zFCP disks found.": [
-    "zFCP diski bulunamadı."
+    "zFCP-levyjä ei löydy."
   ],
   "None": [
-    "Yok"
+    "Ei mitään"
   ],
   "None of the keymaps match the filter.": [
-    "Hiçbir tuş haritası filtreye uymuyor."
+    "Yksikään näppäinkartta ei täsmää suodattimeen."
   ],
   "None of the locales match the filter.": [
-    "Hiçbir yerel ayar filtreye uymuyor."
+    "Yksikään lokaaleista ei täsmää suodattimeen."
   ],
   "None of the patterns match the filter.": [
-    "Desenlerin hiçbiri filtreyle eşleşmiyor."
+    "Yksikään ohjelmistoryhmä ei vastaa suodatinta."
   ],
   "None of the time zones match the filter.": [
-    "Hiçbir zaman dilimi filtreye uymuyor."
+    "Yksikään aikavyöhykkeistä ei täsmää suodattimeen."
   ],
   "None set": [
-    "Hiçbiri ayarlanmadı"
+    "Ei asetettu"
   ],
   "Not available": [
-    "Müsait değil"
+    "Ei saatavilla"
   ],
   "Not configured yet": [
-    "Henüz yapılandırılmadı"
+    "Asetuksia ei ole vielä tehty"
   ],
   "Not defined": [
-    "Tanımlanmamış"
+    "Ei määritelty"
   ],
   "Not implemented yet (%s)": [
-    "Henüz uygulanmadı (%s)"
+    "Ei vielä toteutettu (%s)"
   ],
   "Not possible with the current setup. Click to know more.": [
-    "Şu anki kurulum olanaksız. Daha çoğunu öğrenmek için tıklayın."
+    "Tämä ei ole mahdollista tällä kokoonpanolla. Napsauta oppiaksesi lisää aiheesta."
   ],
   "Not protected network": [
-    "Korunmayan ağ"
+    "Ei suojattu verkko"
   ],
   "Not selected yet": [
-    "Henüz seçilmedi"
+    "Ei valittu vielä"
   ],
   "Not supported (%s)": [
-    "Desteklenmiyor (%s)"
+    "Ei tuettu (%s)"
   ],
   "On boot": [
-    "Önyüklemede"
+    "Käynnistyksessä"
   ],
   "Only available if authentication by target is provided": [
-    "Yalnızca hedef tarafından kimlik doğrulaması sağlandığında kullanılabilir"
+    "Käytettävissä vain kohteen mukaan tunnistautumisen kanssa"
   ],
   "Only reused partitions and space not assigned to any partition will be used.": [
-    "Sadece yeniden kullanılan bölümler ve herhangi bir bölüme atanmamış alanlar kullanılacaktır."
+    "Vain uudelleenkäytettyjä osioita sekä varaamatonta tilaa tullaan käyttämään."
   ],
   "Only reused partitions will be used.": [
-    "Sadece yeniden kullanılan bölümler kullanılacaktır."
+    "Vain uudelleenkäytettyjä osioita tullaan käyttämään."
   ],
   "Options toggle": [
-    "Seçenekler geçişi"
+    "Valinnat-tila"
   ],
   "Other options": [
-    "Diğer seçenekler"
+    "Muut valinnat"
   ],
   "Other options toggle": [
-    "Diğer seçenekler arasında geçiş"
+    "Muiden valintojen tila"
   ],
   "Overview": [
-    "Genel bakış"
+    "Yleiskuva"
   ],
   "Package installation failed": [
-    "Paket kurulumu başarısız oldu"
+    "Paketin asennus epäonnistui"
   ],
   "Partition Info": [
-    "Bölüm Bilgisi"
+    "Osion tiedot"
   ],
   "Partitions needed for booting will also be adapted": [
-    "Önyükleme için gereken bölümler de uyarlanacak"
+    "Myös käynnistämiseen tarvittavia osioita mukautetaan"
   ],
   "Partitions needed for booting will remain at %s": [
-    "Önyükleme için gereken bölümler %s konumunda kalacak"
+    "Käynnistämiseen tarvittavat osiot säilyvät levyllä %s"
   ],
   "Partitions that are not reused will be removed and that data will be lost.": [
-    "Tekrar kullanılmayan bölümler kaldırılacak ve bu veriler kaybolacaktır."
+    "Osiot, joita ei uudelleenkäytetä, tullaan poistamaan ja niiden tiedot menetetään."
   ],
   "Partitions that are not reused will be resized as needed.": [
-    "Tekrar kullanılmayan bölümler ihtiyaç halinde yeniden boyutlandırılacaktır."
+    "Osioiden, joita ei uudelleenkäytetä, kokoja tullaan muuttamaan tarpeen mukaan."
   ],
   "Partitions that are not reused would be resized if needed.": [
-    "Tekrar kullanılmayan bölümler gerektiğinde yeniden boyutlandırılacaktır."
+    "Osioiden, joita ei uudelleenkäytetä, kokoja muutetaan tarpeen mukaan."
   ],
   "Partitions to boot will be allocated at the following device.": [
-    "Önyükleme için bölümler aşağıdaki aygıtta ayrılacaktır."
+    "Käynnistämiseen tarvittavat osiot otetaan käyttöön seuraavalta laitteelta."
   ],
   "Partitions to boot will be allocated at the installation disk %s.": [
-    "Önyükleme için bölümler kurulum diski %s'de ayrılacaktır."
+    "Käynnistämiseen tarvittavat osiot otetaan käyttöön asennuslevyltä %s."
   ],
   "Partitions to boot will be allocated at the installation disk.": [
-    "Önyükleme için gerekli bölümler kurulum diskinde ayrılacaktır."
+    "Käynnistämiseen tarvittavat osiot otetaan käyttöön asennuslevyltä."
   ],
   "Partitions will be used and created for %s": [
-    "Bölümler %s için kullanılacak ve oluşturulacak"
+    "Osioita tullaan luomaan ja käyttämään liitoskohdalle %s"
   ],
   "Password": [
-    "Parola"
+    "Salasana"
   ],
   "Password Required": [
-    "Parola Gerekli"
+    "Salasana vaaditaan"
   ],
   "Password confirmation": [
-    "Parola onayı"
+    "Salasanan vahvistus"
   ],
   "Password input": [
-    "Şifre girişi"
+    "Salasanan syöttö"
   ],
   "Password is empty.": [
-    "Şifre boş."
+    "Salasana on tyhjä."
   ],
   "Password visibility button": [
-    "Parola görünürlük düğmesi"
+    "Salasanan näkyvyyspainike"
   ],
   "Passwords do not match": [
-    "Parolalar uyuşmuyor"
+    "Salasanat eivät täsmää"
   ],
   "Pending": [
-    "Bekliyor"
+    "Odottaa"
   ],
   "PiB": [
-    "PB"
+    "PiB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
-    "Emin değilseniz lütfen iptal edin ve ayarları kontrol edin."
+    "Jos et ole varma, peru ja tarkista asetukset."
   ],
   "Please, check whether it is running.": [
-    "Çalışıp çalışmadığını kontrol edin lütfen."
+    "Tarkista onko se käynnissä."
   ],
   "Please, perform an iSCSI discovery in order to find available iSCSI targets.": [
-    "Lütfen kullanılabilir iSCSI hedeflerini bulmak için bir iSCSI keşfi gerçekleştirin."
+    "Käytä iSCSI-havaitsemistoimintoa saatavilla olevien iSCSI-kohteiden löytämiseksi."
   ],
   "Please, provide its password to log in to the system.": [
-    "Lütfen sisteme giriş yapabilmek için şifrenizi giriniz."
+    "Kirjoita salasana jota käytetään järjestelmään kirjautumiseen."
   ],
   "Please, try to activate a zFCP controller.": [
-    "Lütfen bir zFCP denetleyicisi etkinleştirmeyi deneyin."
+    "Yritä aktivoida zFCP-ohjain."
   ],
   "Please, try to activate a zFCP disk.": [
-    "Lütfen bir zFCP diski etkinleştirmeyi deneyin."
+    "Yritä aktivoida zFCP-levy."
   ],
   "Port": [
-    "Port"
+    "Portti"
   ],
   "Portal": [
-    "Portal"
+    "Portaali"
   ],
   "Pre-installation checks": [
-    "Ön kurulum kontrolleri"
+    "Ennen asennusta tehtävät tarkistukset"
   ],
   "Prefix length or netmask": [
-    "Önek uzunluğu veya ağ maskesi"
+    "Etuliitteen pituus tai verkkomaski"
   ],
   "Product is already registered": [
-    "Ürün zaten kayıtlı"
+    "Tuote on jo rekisteröity"
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Yeni dosya sistemlerinde depolanan veri, program ve sistem dosyaları gibi bilgilerin korunması."
+    "Uusien tiedostojärjestelmien tietojen turvaaminen, mukaanlukien data, ohjelmistot ja järjestelmätiedostot."
   ],
   "Provide email address": [
-    "E-posta adresini belirtin"
+    "Kirjoita sähköpostiosoite"
   ],
   "Provide registration code": [
-    "Kayıt kodunu sağlayın"
+    "Kirjoita rekisteröintikoodi"
   ],
   "Public SSH Key": [
-    "Genel SSH Anahtarı"
+    "Julkinen SSH-avain"
   ],
   "Public SSH Key is empty.": [
-    "Genel SSH Anahtarı boş."
+    "Julkinen SSH-avain on tyhjä."
   ],
   "Public network": [
-    "Herkese açık ağ"
+    "Julkinen verkko"
   ],
   "Question": [
-    "Soru"
+    "Kysmys"
   ],
   "Read zFCP devices": [
-    "zFCP aygıtlarını oku"
+    "Lue zFCP-laitteita"
   ],
   "Reboot": [
-    "Yeniden Başlat"
+    "Käynnistä uudelleen"
   ],
   "Recommended": [
-    "Tavsiye edilen"
+    "Suositeltu"
   ],
   "Register": [
-    "Kaydol"
+    "Rekisteröi"
   ],
   "Register using SUSE server": [
-    "SUSE sunucusunu kullanarak kaydol"
+    "Rekisteröi SUSE-palvelinta käyttämällä"
   ],
   "Register using a custom registration server": [
-    "Özel bir kayıt sunucusu kullanarak kaydol"
+    "Rekisteröi käyttäen mukautettua rekisteröintipalvelinta"
   ],
   "Registration": [
-    "Kayıt"
+    "Rekisteröinti"
   ],
   "Registration certificate": [
-    "Kayıt sertifikası"
+    "Rekisteröintivarmenn"
   ],
   "Registration code": [
-    "Kayıt kodu"
+    "Rekisteröintikoodi"
   ],
   "Registration server": [
-    "Kayıt sunucusu"
+    "Rekisteröintipalvelin"
   ],
   "ReiserFS": [
     "ReiserFS"
   ],
   "Reload": [
-    "Yenile"
+    "Lataa uudelleen"
   ],
   "Reload now": [
-    "Şimdi yeniden yükle"
+    "Lataa uudelleen nyt"
   ],
   "Reloading data, please wait...": [
-    "Veriler yeniden yükleniyor, lütfen bekleyin..."
+    "Ladataan tietoja uudelleen, odota..."
   ],
   "Reloading is required to get the latest data and avoid issues or data loss.": [
-    "En güncel verilere ulaşmak ve sorun veya veri kaybını önlemek için yeniden yükleme yapılması gerekir."
+    "Uusimpien tietojen saamiseksi sekä ongelmien tai tietojen menettämisen välttämiseksi tiedot tulee ladata uudelleen."
   ],
   "Remove": [
-    "Kaldır"
+    "Poista"
   ],
   "Remove the configuration for this disk": [
-    "Bu disk için yapılandırmayı kaldırın"
+    "Poista tämän levyn asetukset"
   ],
   "Repository load failed": [
-    "Depo yüklemesi başarısız oldu"
+    "Asennuslähteen lataaminen epäonnistui"
   ],
   "Rescan devices": [
-    "Aygıtları yeniden tara"
+    "Tutki laitteet uudelleen"
   ],
   "Reset to defaults": [
-    "Öntanımlılara sıfırla"
+    "Palauta oletuksiin"
   ],
   "Reset to the default configuration": [
-    "Öntanımlı yapılandırmaya sıfırla"
+    "Palauta oletusasetukset"
   ],
   "Resource not found or lost": [
-    "Kaynak bulunamadı veya kayboldu"
+    "Resrussia ei löydy tai se on menetetty"
   ],
   "Result": [
-    "Sonuç"
+    "Tulos"
   ],
   "Reused partitions will not be shrunk": [
-    "Yeniden kullanılan bölümler küçültülmeyecektir"
+    "Uudelleenkäytettyjä osioita ei tulla pienentämään"
   ],
   "Review and fix": [
-    "Gözden geçir ve düzelt"
+    "Tutki ja korjaa"
   ],
   "Root authentication methods": [
-    "Root kimlik doğrulama yöntemleri"
+    "Pääkäyttäjän tunnistautumistavat"
   ],
   "Root user": [
-    "Root kullanıcısı"
+    "Pääkäyttäjä"
   ],
   "Routes": [
-    "Rotalar"
+    "Reitit"
   ],
   "Row actions": [
-    "Satır eylemleri"
+    "Rivitoiminnot"
   ],
   "Row expansion": [
-    "Satır genişletme"
+    "Rivin laajennus"
   ],
   "Row selection": [
-    "Satır seçimi"
+    "Rivin valinta"
   ],
   "SD Card": [
-    "SD Kart"
+    "SD-kortti"
   ],
   "SHA1 fingerprint": [
-    "SHA1 parmak izi"
+    "SHA1-sormenjälki"
   ],
   "SHA256 fingerprint": [
-    "SHA256 parmak izi"
+    "SHA256-sormenjälki"
   ],
   "SSID": [
     "SSID"
   ],
   "SUSE Customer Center (SCC)": [
-    "SUSE Müşteri Merkezi (SMM)"
+    "SUSE-asiakaskeskus (SUSE Customer Center, SCC)"
   ],
   "Search": [
-    "Arama"
+    "Hae"
   ],
   "Secured network": [
-    "Güvenli ağ"
+    "Turvallinen verkko"
   ],
   "Security": [
-    "Güvenlik"
+    "Tietoturva"
   ],
   "See more details": [
-    "Daha çok ayrıntı gör"
+    "Lisää yksityiskohtia"
   ],
   "Select": [
-    "Seç"
+    "Valitse"
   ],
   "Select a device to define partitions or to mount": [
-    "Bölümleri tanımlamak veya bağlamak için bir aygıt seçin"
+    "Valitse laite osioiden määrittämiseen tai liittämiseen"
   ],
   "Select a disk": [
-    "Bir disk seçin"
+    "Valitse levy"
   ],
   "Select a disk to configure": [
-    "Yapılandırılacak disk seç"
+    "Valitse levy jonka asetukset tehdään"
   ],
   "Select a disk to create %s": [
-    "%s oluşturmak için disk seç"
+    "Valitse levy jolle luodaan liitoskohta %s"
   ],
   "Select a disk to define partitions or to mount": [
-    "Bölümleri tanımlamak veya bağlamak için disk seç"
+    "Valitse levy osioiden määrittämiseen tai liittämiseen"
   ],
   "Select a disk to format as %s": [
-    "%s olarak biçimlendirilecek disk seç"
+    "Valitse levy joka alustetaan liitoskohtaan %s"
   ],
   "Select a disk to install the system": [
-    "Sistemi kurmak için disk seç"
+    "Valitse levy jolle järjestelmä asennetaan"
   ],
   "Select a product": [
-    "Bir ürün seçin"
+    "Valitse tuote"
   ],
   "Select a solution to continue": [
-    "Devam etmek için bir çözüm seçin"
+    "Valitse ratkaisu jatkaaksesi"
   ],
   "Select another device to define partitions or to mount": [
-    "Bölümleri tanımlamak veya bağlamak için başka bir cihaz seçin"
+    "Valitse toinen laite osioiden määrittämiseen tai liittämiseen"
   ],
   "Select another disk to define partitions or to mount": [
-    "Bölümleri tanımlamak veya bağlamak için başka disk seç"
+    "Valitse toinen levy osioiden määrittämiseen tai liittämiseen"
   ],
   "Select at least one disk.": [
-    "En az bir disk seç."
+    "Valitse vähintään yksi levy."
   ],
   "Select devices to enable bulk actions.": [
-    "Toplu işlemleri etkinleştirmek için aygıtları seç."
+    "Valitse laitteita massatoimintojen toteuttamiseen."
   ],
   "Select or enter a mount point": [
-    "Bir bağlama noktası seçin veya girin"
+    "Valitse tai syötä liitoskohta"
   ],
   "Select or enter a mount point that is not already assigned to another device": [
-    "Başka bir cihaza henüz atanmamış bir bağlama noktası seçin veya girin"
+    "Valitse tai syötä kelvollinen liitoskohtaa joka ei ole jo toisen laitteen käytössä"
   ],
   "Select or enter a valid mount point": [
-    "Geçerli bir bağlama noktası seçin veya girin"
+    "Valitse tai syötä kelvollinen liitoskohtaa"
   ],
   "Select the disk to configure partitions for booting": [
-    "Önyükleme için bölümleri yapılandırmak üzere diski seçin"
+    "Valitse levy käynnistysosioiden määrittämiseksi"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
-    "Yeni sisteme yer açmak için her bölümle ne yapılacağını seçin."
+    "Valitse mitä jokaiselle osiolle tehdään, jotta uuden järjestelmän käyttöön vapautuisi tilaa."
   ],
   "Select what to do with each partition.": [
-    "Her bölümle ne yapılacağını seçin."
+    "Valitse mitä kullekin osiolle tehdään."
   ],
   "Selected disk cannot be changed": [
-    "Seçilen disk değiştirilemez"
+    "Valittua levyä ei voi muuttaa"
   ],
   "Selected patterns": [
-    "Seçilmiş desenler"
+    "Valitut ohjelmistoryhmät"
   ],
   "Server IP": [
-    "Sunucu IP'si"
+    "Palvelimen IP"
   ],
   "Server URL": [
-    "Sunucu URL'si"
+    "Palvelimen URL"
   ],
   "Server options": [
-    "Sunucu seçenekleri"
+    "Palvelinvalinnat"
   ],
   "Set DIAG off": [
-    "DIAG'ı kapatın"
+    "Aseta DIAG pois päältä"
   ],
   "Set DIAG on": [
-    "DIAG'ı açın"
+    "Aseta DIAG päälle"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
-    "Ağ güncellemeleriyle değişmeyecek kalıcı bir ana bilgisayar adı ayarlayın."
+    "Aseta pysyvä isäntänimi joka ei muuta verkkopäivityksissä."
   ],
   "Setting up connection": [
-    "Bağlantı kuruluyor"
+    "Muodostetaan yhteyttä"
   ],
   "Settings": [
-    "Ayarlar"
+    "Asetukset"
   ],
   "Several partitions will be deleted": [
-    "Birkaç bölüm silinecek"
+    "Useita osioita poistetaan"
   ],
   "Show": [
-    "Göster"
+    "Näytä"
   ],
   "Show %d subvolume action": [
-    "%d alt birim eylemini göster",
-    "%d alt birim eylemlerini göster"
+    "Näytä %d alitaltion toiminto",
+    "Näytä %d alitaltion toimintoa"
   ],
   "Show information about %s": [
-    "%s hakkında bilgi göster"
+    "Näytä tietoja kohteesta %s"
   ],
   "Show less actions": [
-    "Daha az eylem göster"
+    "Näytä vähemmän toimintoja"
   ],
   "Show more actions": [
-    "Daha çok eylem göster"
+    "Näytä enemmän toimintoja"
   ],
   "Shrink existing partitions": [
-    "Mevcut bölümleri küçült"
+    "Pienennä olevmassa olevia osioita"
   ],
   "Signal strength": [
-    "Sinyal gücü"
+    "Signaalin voimakkuus"
   ],
   "Size": [
-    "Boyut"
+    "Koko"
   ],
   "Size limits must be numbers followed by a unit like GiB or GB": [
-    "Boyut sınırları GiB veya GB gibi bir birimin ardından gelen sayılar olmalıdır"
+    "Kokorajojen tulee olla lukuja joita seuraa yksikkö kuten GiB tai GB"
   ],
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
-    "Boyut sınırları, isteğe bağlı olarak GiB veya GB gibi bir birimin takip ettiği sayılar olmalıdır"
+    "Kokorajojen tulee olla lukuja joita voi seurata yksikkö kuten GiB tai GB"
   ],
   "Size mode": [
-    "Boyut modu"
+    "Koon tila"
   ],
   "Size modes": [
-    "Boyut modları"
+    "Kokovalinnat"
   ],
   "Skip to content": [
-    "İçeriğe geç"
+    "Siirry sisältöön"
   ],
   "Skip to next": [
-    "Sonrakine atla"
+    "Siirry seuraavaan"
   ],
   "Skip to previous": [
-    "Öncekine atla"
+    "Siirry edelliseen"
   ],
   "Software": [
-    "Yazılım"
+    "Ohjelmistot"
   ],
   "Software %s": [
-    "Yazılım %s"
+    "Ohjelmisto-%s"
   ],
   "Software conflicts resolution": [
-    "Yazılım çatışmalarının çözümü"
+    "Ohjelmistojen konfliktien ratkaiseminen"
   ],
   "Software selection": [
-    "Yazılım seçimi"
+    "Ohjelmistojen valinta"
   ],
   "Some existing partitions may be shrunk": [
-    "Mevcut bazı bölümler küçültülebilir"
+    "Joitain olemassa olevia osioita tullaan pienentämään"
   ],
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "Bazı kurulum depoları yüklenemedi. Sistem bunlar olmadan yüklenemez."
+    "Joitain asennuslähteitä ei voi ladata. Järjestelmää ei voi asentaa ilman niitä."
   ],
   "Some of the elements in your AutoYaST profile are not supported.": [
-    "AutoYaST profilinizdeki bazı öğeler desteklenmiyor."
+    "Joitain AutoYaST-profiilin elementeistä ei ole tuettu."
   ],
   "Some partitions may be deleted": [
-    "Bazı bölümler silinebilir"
+    "Osioita saatetaan poistaa"
   ],
   "Some partitions may be shrunk": [
-    "Bazı bölümler küçültülebilir"
+    "Joitain osioita saatetaan pienentää"
   ],
   "Something went wrong": [
-    "Bir şeyler ters gitti"
+    "Tapahtui virhe"
   ],
   "Start configuring a basic installation": [
-    "Bir temel bir kurulumu yapılandırmaya başlayın"
+    "Ala perusasennuksen asetusten teko"
   ],
   "Start from scratch with the default configuration": [
-    "Öntanımlı yapılandırmayla sıfırdan başla"
+    "Lähde liikkeelle tyhjältä pöydältä oletusetuksilla"
   ],
   "Startup": [
-    "Başlangıç"
+    "Käynnistystapa"
   ],
   "Static hostname": [
-    "Durağan ana bilgisayar adı"
+    "Kiinteä verkkonimi"
   ],
   "Status": [
-    "Durum"
+    "Tila"
   ],
   "Storage": [
-    "Depolama"
+    "Tallennustila"
   ],
   "Structure of the new system, including disks to use and additional devices like LVM volume groups.": [
-    "Kullanılacak diskler ve LVM birim grupları gibi ek aygıtlar da olmak üzere yeni sistemin yapısı."
+    "Uuden järjestelmän rakenne, mukaan lukien käytettävät levyt ja lisälaitteet kuten LVM-taltioryhmät."
   ],
   "Suggested mount points": [
-    "Önerilen bağlama noktaları"
+    "Ehdotetut liitoskohdat"
   ],
   "Swap": [
-    "Swap"
+    "Sivutustila"
   ],
   "TPM sealing requires the new system to be booted directly.": [
-    "TPM yalıtımıyla yeni sistemin doğrudan başlatılması gerekir."
+    "TPM-sinetöinti vaatii uuden järjestelmän suoran käynnistämisen."
   ],
   "Target Password": [
-    "Hedef Şifre"
+    "Kohteen salasana"
   ],
   "Targets": [
-    "Hedefler"
+    "Kohteet"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
-    "LVM grubu '%1$s' %2$s konumunda kalacak"
+    "LVM-ryhmä ”%1$s” säilyy levyllä %2$s"
   ],
   "The configuration has been updated externally.": [
-    "Yapılandırma dışardan güncellendi."
+    "Asetuksia on muutettu ulkoisesti."
   ],
   "The configuration must be adapted to address the following issue:": [
-    "Kuruluma başlamadan önce aşağıdaki sorunu gidermeniz gerekmektedir:",
-    "Kuruluma başlamadan önce aşağıdaki sorunları gidermeniz gerekmektedir:"
+    "Asetuksia tulee muuttaa seuraavan ongelman ratkaisemiseksi:",
+    "Asetuksia tulee muuttaa seuraavien ongelmien ratkaisemiseksi:"
   ],
   "The configured LVM groups will remain at %s": [
-    "Yapılandırılan LVM grupları %s konumunda kalacaktır"
+    "Määritellyt LVM-ryhmät säilyvät levyllä %s"
   ],
   "The connection can be used by any available device.": [
-    "Bağlantıyı herhangi bir mevcut cihazdan kullanabilirsiniz."
+    "Mikään saatavilla oleva laite ei voi käyttää yhteyttä."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
-    "Bağlantı sadece kurulum sırasında kullanılacak olup, kurulu sistemde mevcut olmayacaktır."
+    "Yhteyttä käytetään vain asennuksen aikana, eikä se ole saatavilla asennetussa järjestelmässä."
   ],
   "The content may be deleted": [
-    "İçerik silinmiş olabilir"
+    "Sisältöä saatetaan poistaa"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
-    "Mevcut yapılandırma %2$s'nin %1$s'sini oluşturma girişimiyle sonuçlanacaktır."
+    "Nykyisillä asetuksilla %1$s / %2$s tullaan yrittämään luoda."
   ],
   "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
-    "Mevcut yapılandırma en az %2$s değerinde bir %1$s oluşturma girişimine yol açacaktır."
+    "Nykyisillä asetuksilla %1$s kooltaan vähintään %2$s tullaan yrittämään luoda."
   ],
   "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
-    "Mevcut yapılandırma, %2$s ile %3$s arasında bir boyutta %1$s oluşturma girişimine yol açacaktır."
+    "Nykyisillä asetuksilla %1$s kooltaan väliltä %2$s - %3$s tullaan yrittämään luoda."
   ],
   "The current file system will be mounted at %s": [
-    "Mevcut dosya sistemi %s konumuna bağlanacak"
+    "Nykyinen tiedostojärjestelmä liitetään kohteeseen %s"
   ],
   "The current storage configuration has the following issue:": [
-    "Mevcut depolama konfigürasyonunda şu sorun var:",
-    "Mevcut depolama konfigürasyonunda şu sorunlar var:"
+    "Nykyisissä tallennustilan asetuksissa on seuraava ongelma:",
+    "Nykyisissä tallennustilan asetuksissa on seuraavat ongelmat:"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
-    "Veriler tutulacak, ancak mevcut bölümler ihtiyaç halinde yeniden boyutlandırılacak."
+    "Tiedot säilytetään, mutta nykyisten osioiden kokoa tullaan muuttamaan tarpeen mukaan."
   ],
   "The data is kept. Only the space not assigned to any partition will be used.": [
-    "Veriler tutulur. Sadece herhangi bir bölüme atanmamış alan kullanılacaktır."
+    "Tiedot säilytetään. Vain varaamaton tila, jota mikään osio ei käytä, otetaan käyttöön."
   ],
   "The device cannot be shrunk:": [
-    "Cihaz daraltılamaz:"
+    "Laitetta ei voi pienentää:"
   ],
   "The device will be formatted": [
-    "Cihaz biçimlendirilecek"
+    "Laite alustetaan"
   ],
   "The device will be formatted as %1$s and mounted at %2$s": [
-    "Aygıt %1$s olarak biçimlendirilecek ve %2$s'ye bağlanacak"
+    "Laite alustetaan tiedostojärjestelmällä %1$s ja liitetään kohteeseen %2$s"
   ],
   "The device will be mounted": [
-    "Cihaz bağlanacak"
+    "Laite liitetään"
   ],
   "The device will be mounted at %s.": [
-    "Cihaz %s konumuna bağlanacak."
+    "Laite tullaan liittämään liitoskohtaan %s."
   ],
   "The device will be used by the new system.": [
-    "Cihaz yeni sistemde kullanılacak."
+    "Uusi järjestelmä käyttää tätä laitetta."
   ],
   "The disk is used for LVM": [
-    "Disk LVM için kullanılır"
+    "Tätä levyä käytetään LVM:ään"
   ],
   "The disk is used for LVM and boot": [
-    "Disk LVM ve önyükleme için kullanılır"
+    "Tätä levyä käytetään LVM:ään ja käynnistämiseen"
   ],
   "The disk is used for booting": [
-    "Disk önyükleme için kullanılır"
+    "Tätä levyä käytetään käynnistämiseen"
   ],
   "The encryption password did not work": [
-    "Şifreleme şifresi işe yaramadı"
+    "Salauksen salasana ei toiminut"
   ],
   "The extension has been registered with key %s.": [
-    "Uzantı %s anahtarıyla kaydedildi."
+    "Laajennus on rekisteröity avaimella %s."
   ],
   "The extension was registered without any registration code.": [
-    "Uzantı herhangi bir kayıt kodu olmadan kaydedildi."
+    "Laajennus rekisteröitiin ilman rekisteröintikoodia."
   ],
   "The final size can be bigger in order to fill the extra free space.": [
-    "Ekstra boş alanı doldurmak için son boyut daha büyük olabilir."
+    "Lopullinen koko voi olla isompi, jotta ylimääräinen tyhjä tila täytetään."
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
-    "Güvenilir Platform Modülünü (TPM) şifrelenmiş aygıtları kendiliğinden açacak biçimde yapılandırmanın son adımı, yeni sistemin ilk önyüklemesi sırasında gerçekleştirilecektir. Bunun çalışması için makine doğrudan yeni önyükleyiciye önyüklemelidir."
+    "Viimeinen kohta on tehdä Trusted Platform Module (TPM) -asetukset, jotta salattujen laitteiden aukaisu automaattisesti tapahtuu uuteen järjestelmään ensimmäistä kertaa käytettäessä. Jotta tämä toimisi, laite tulee käynnistää suoraan uudeen käynnistyslataimeen."
   ],
   "The following logical volume will be created": [
-    "Aşağıdaki mantıksal birim oluşturulacak",
-    "Aşağıdaki mantıksal birimler oluşturulacak"
+    "Seuraava looginen taltio luodaan",
+    "Seuraavat loogiset taltiot luodaan"
   ],
   "The following partition will be created.": [
-    "Aşağıdaki bölüm oluşturulacak veya bağlanacak.",
-    "Aşağıdaki bölümler oluşturulacak veya bağlanacak."
+    "Seuraavat osio luodaan.",
+    "Seuraavat osiot luodaan."
   ],
   "The following partition will be mounted.": [
-    "Aşağıdaki bölüm bağlanacak.",
-    "Aşağıdaki bölümler bağlanacak."
+    "Seuraava osio liitetään.",
+    "Seuraavat osiot liitetään."
   ],
   "The following partitions will be created or mounted": [
-    "Aşağıdaki bölümler oluşturulacak veya bağlanacak"
+    "Seuraavat osiot luodaan tai liitetään"
   ],
   "The following software patterns are selected for installation:": [
-    "Kurulum için aşağıdaki yazılım desenleri seçilmiştir:"
+    "Seuraavat ohjelmistoryhmät on valittu asennukseen:"
   ],
   "The initiator name cannot be blank": [
-    "Başlatıcı adı boş olamaz"
+    "Alullepanijan nimi ei voi olla tyhjä"
   ],
   "The installation on your machine is complete.": [
-    "Makinenize kurulum tamamlanmıştır."
+    "Asennus laitteelle on valmis."
   ],
   "The installation will take": [
-    "Kurulum yapılacak"
+    "Asennuksessa tulee kestämään"
   ],
   "The installation will take %s including:": [
-    "Kurulum %s kadar olacaktır ve şunları içerecektir:"
+    "Asennuksessa tulee kestämään %s, mukaan lukien:"
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
-    "Kurulum arayüzü artık kullanılamıyor, bu nedenle bu pencereyi güvenle kapatabilirsiniz."
+    "Asennuksen käyttöliittymä ei ole enää käytettävissä, joten tämän ikkunan voi sulkea turvallisesti."
   ],
   "The installer requires [root] user privileges.": [
-    "Yükleyici [root] kullanıcı ayrıcalıklarını gerektirir."
+    "Asennusohjelma vaatii [root]-käyttäjäoikeudet."
   ],
   "The logical volume will also be deleted": [
-    "Mantıksal birimde silinecek",
-    "Mantıksal birimlerdede silinecek"
+    "Looginen taltio myös poistetaan",
+    "Loogiset taltiot myös poistetaan"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
-    "Maksimum, GiB veya GB gibi bir birimin izlediği bir sayı olmalıdır"
+    "Maksimimäärän tulee olla luku jota seuraa yksikkö kuten GiB tai GB"
   ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
-    "Maksimum, isteğe bağlı olarak GiB veya GB gibi bir birim tarafından takip edilen bir sayı olmalıdır"
+    "Maisimin tulee olla luku jota voi seurata yksikkö kuten GiB tai GB"
   ],
   "The minimum cannot be greater than the maximum": [
-    "Minimum, maksimumdan büyük olamaz"
+    "Minimi ei voi olla isompi kuin maksimi"
   ],
   "The minimum must be a number followed by a unit like GiB or GB": [
-    "Minimum, GiB veya GB gibi bir birimin izlediği bir sayı olmalıdır"
+    "Minimin tulee olla luku jota seuraa yksikkö kuten GiB tai GB"
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
-    "Minimum, isteğe bağlı olarak GiB veya GB gibi bir birimin izlediği bir sayı olmalıdır"
+    "Minimin tulee olla luku jota voi seurata yksikkö kuten GiB tai GB"
   ],
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
-    "Modal seçici, kullanıcıyı bunaltmadan, hızlı ve kolay kullanım için tasarlanmış basitleştirilmiş bir arayüz sunar."
+    "Valitsin tarjoaa yksinkertaistetun käyttöliittymän nopeaan ja suoraviivaiseen käyttöön kuormittamatta käyttäjää liikaa."
   ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
-    "Gerekli LVM fiziksel birimleri, mantıksal birimlerin boyutlarına göre seçilen disklere bölümler                  halinde eklenecektir. Birden fazla disk                  seçerseniz, fiziksel birimler birkaç diske dağıtılabilir."
+    "Vaaditut fyysiset LVM-taltiot lisätään osioina valituille levyille,                 perustuen loogisten taltioiden kokoihin. Jos valitse useamman kuin yhden levyn                 fyysiset taltiot saatetaan jakaa usean levyn välille."
   ],
   "The password is weak": [
-    "Şifre zayıf"
+    "Salasana on heikko"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
-    "TPM sistemin bütünlüğünü doğrulayabiliyorsa, verileri başlatmak ve erişmek için parolaya gerek kalmayacaktır. TPM yalıtımı, yeni sistemin ilk çalıştırmada doğrudan başlatılmasını gerektirir."
+    "Salasanaa ei tarvita käynnistämiseen ja tietoihin pääsyyn, jos TPM onnistuu varmistamaan järjestelmän eheyden. TPM-sinetöinti vaatii, että uuteen järjestelmään käynnistetään suoraan ensimmäisellä kerralla."
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "%1$s için boyut, sistemdeki RAM miktarına ve %2$s için ayrı bir dosya sisteminin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
+    "Kohteen %1$s koko määritellään dynaamisesti järjestelmä RAM-muistin ja kohteen %2$s erillisen tiedostojärjestelmän olemassa olon perusteella."
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "%1$s için boyut, sistemdeki RAM miktarına ve %2$s için ayrı dosya sistemlerinin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
+    "Kohteen %1$s koko määritellään dynaamisesti järjestelmä RAM-muistin ja kohteen %2$s erillisten tiedostojärjestelmien olemassa olon perusteella."
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "%1$s için boyut, sistemdeki RAM miktarına, Btrfs anlık görüntülerinin kullanımına ve %2$s için ayrı bir dosya sisteminin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
+    "Kohteen %1$s koko määritellään dynaamisesti järjestelmä RAM-muistin, Btrfs-vedosten käytön ja kohteen %2$s erillisen tiedostojärjestelmän olemassa olon perusteella."
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "%1$s için boyut, sistemdeki RAM miktarına, Btrfs anlık görüntülerinin kullanımına ve %2$s için ayrı dosya sistemlerinin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
+    "Kohteen %1$s koko määritellään dynaamisesti järjestelmä RAM-muistin, Btrfs-vedosten käytön ja kohteen %2$s erillisten tiedostojärjestelmien olemassa olon perusteella."
   ],
   "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "%1$s için boyut, %2$s için ayrı bir dosya sisteminin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
+    "Kohteen %1$s koko määritellään dynaamisesti kohteen %2$s erillisen tiedostojärjestelmän olemassa olon perusteella."
   ],
   "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "%1$s için boyut, %2$s için ayrı dosya sistemlerinin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
+    "Kohteen %1$s koko määritellään dynaamisesti kohteen %2$s erillisten tiedostojärjestelmien olemassa olon perusteella."
   ],
   "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "%1$s için boyut, Btrfs anlık görüntülerinin kullanımına ve %2$s için ayrı bir dosya sisteminin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
+    "Kohteen %1$s koko määritellään dynaamisesti Btrfs-vedosten käytön ja kohteen %2$s erillisen tiedostojärjestelmän olemassa olon perusteella."
   ],
   "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "%1$s için boyut, Btrfs anlık görüntülerinin kullanımına ve %2$s için ayrı dosya sistemlerinin varlığına bağlı olarak dinamik olarak ayarlanacaktır."
+    "Kohteen %1$s koko määritellään dynaamisesti Btrfs-vedosten käytön ja kohteen %2$s erillisten tiedostojärjestelmien olemassa olon perusteella."
   ],
   "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "%s boyutu, sistemdeki RAM miktarına ve Btrfs anlık görüntülerinin kullanımına bağlı olarak dinamik olarak ayarlanacaktır."
+    "Kohteen %s koko määritellään dynaamisesti järjestelmä RAM-muistinja Btrfs-vedosten käytön perusteella."
   ],
   "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "%s boyutu, Btrfs anlık görüntülerinin kullanımına bağlı olarak dinamik olarak ayarlanacaktır."
+    "Kohteen %s koko määritellään dynaamisesti Btrfs-vedosten käytön perusteella."
   ],
   "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
-    "Boyut %s ile %s arasında bir aralık olarak yapılandırılmıştır, ancak bu arayüz belirli bir maksimum boyuta sahip aralıkları işleyemez."
+    "Koko on määritetty olemaan välillä %s ja %s, mutta tämä liitäntä ei voi käsitellä kokoalueita annetulla maksimikoolla."
   ],
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
-    "Boyut, GiB (2'nin kuvveti) veya GB (10'un kuvveti) biçiminde bir birimin izlediği bir sayı olmalıdır."
+    "Koon tulee olla luku, jota seuraa yksikkö kuten GiB (toisen potenssi) tai GB (kymmenen potenssi)."
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
-    "Depolama yapılandırması geçerli (aşağıdaki sonucu görün) ancak bu arayüz tarafından desteklenmeyen öğeler kullanıyor."
+    "Tallennustilan asetukset ovat kelvolliset (katso alla) mutta ne käyttävät elementtejä, joita tämä liitäntä ei tue."
   ],
   "The storage configuration uses elements not supported by this interface.": [
-    "Depolama yapılandırması bu arayüz tarafından desteklenmeyen öğeler kullanıyor."
+    "Tämä liitäntä ei tue tallennustilan käyttämäiä elementtejä."
   ],
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
-    "Sistem muhtemelen eksik veya devre dışı donanım nedeniyle Wi-Fi bağlantılarını desteklemiyor."
+    "Järjestelmä ei tue Wi-Fi-yhteyksiä, luultavasti puuttuvan tai käytöstä poistetun laitteiston takia."
   ],
   "The system will use %s as its default language.": [
-    "Sistem öntanımlı olarak %s dilini kullanacaktır."
+    "Järjestelmä käyttää kieltä %s oletuskielenä."
   ],
   "The whole device will be used for %s": [
-    "Tüm cihaz %s için kullanılacak"
+    "Koko laitetta tullaan käyttämään kohteelle %s"
   ],
   "The zFCP disk was not activated.": [
-    "zFCP diski etkinleştirilmedi."
+    "zFCP-levyä ei aktivoitu."
   ],
   "There are no disks available for the installation.": [
-    "Kurulum için kullanılabilir bir disk yok."
+    "Asennusta varten ei ole saatavilla levyjä."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
-    "Kurulum için kullanılabilir disk yok. Bazı aygıtları yapılandırmanız gerekebilir."
+    "Asennukseen ei ole käytettävissä levyjä. Jonkin laitteen asetukset tulee tehdä."
   ],
   "There are not usable partitions": [
-    "Kullanılabilir bölüm yok"
+    "Käytettävissä olevia osioita ei ole"
   ],
   "There is %d destructive action planned": [
-    "yıkıcı %d eylemi planlandı",
-    "yıkıcı %d eylemleri planlandı"
+    "%d tietoja tuhoava toiminto suunniteltu",
+    "%d tietoja tuhoavaa toimintoa suunniteltu"
   ],
   "There is %d destructive action planned affecting %s": [
-    "%d planlanan yıkım askiyonu %s'i etkiliyor",
-    "%d planlanan yıkım askiyonları %s'i etkiliyor"
+    "%d tietoja tuhoava toiminto suunniteltu kohteeseen %s",
+    "%d tietoja tuhoavaa toimintoa suunniteltu kohteeseen %s"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Bunlar belirgin kurulum ayarlarıdır. Daha çok ayrıntı için menüdeki bölümlere göz atmaktan çekinmeyin."
+    "Nämä ovat oleellisimmat asennuksen asetukset. Tutki valikon muita osioita vapaasti."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    "Bunlar, ürünün kurulacağı ayarlardır. Yükleyici dili ve klavye düzeni, üst çubuktan erişilebilen [ayarlar paneli] aracılığıyla ayarlanabilir."
+    "Nämä ovat asennettavan tuotteen asetukset. Asennusohjelman kieltä ja näppäimistön asettelua voi muuttaa yläpalkin [asetuspaneelista]."
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    "Bunlar, yüklenecek ürün için ayarlardır. Yükleyici dili, üst çubuktan erişilebilen [ayarlar paneli] aracılığıyla ayarlanabilir."
+    "Nämä ovat asennettavan tuotteen asetukset. Asennusohjelman kieltä voi muuttaa yläpalkin [asetuspaneelista]."
   ],
   "This action could destroy any data stored on the device.": [
-    "Bu eylem cihazda saklanan tüm verileri yok edebilir."
+    "Tämä toiminto voi tuhota kaikki laitteelle tallennetut tiedot."
   ],
   "This action could destroy any data stored on the devices listed below.": [
-    "Bu işlem aşağıda listelenen cihazlarda saklanan tüm verileri yok edebilir."
+    "Tämä toiminto voi tuhota kaikki alla luetelluille laitteille tallennetut tiedot."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
-    "Bu uzantı sunucuda mevcut değil. Sunucu yöneticisinden uzantıyı yansıtmasını isteyin."
+    "Tämä laajennus ei ole saatavilla palvelimella. Pyydä palvelimen ylläpitoa peilaamaan laajennus."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    "Bu ana bilgisayar adı değişkendir ve yeniden başlatma veya ağ güncellemesinden sonra yerel ağ yöneticisince yapılandırıldığı biçimde değişebilir."
+    "Isäntänimi on dynaaminen ja voi muuttua uudelleenkäynnistyksen tai verkkopäivityksen myötä, siten kuten paikallinen verkkoylläpitäjä on määritellyt."
   ],
   "This license is not available in %s.": [
-    "Bu lisans %s'de mevcut değil."
+    "Lisenssiä ei ole saatavilla tuotteelle %s."
   ],
   "This may take a moment while updates complete.": [
-    "Güncellemeler tamamlanana kadar bu işlem biraz zaman alabilir."
+    "Päivitysten valmistuminen vie jonkin verran aikaa."
   ],
   "This message will close automatically when everything is done.": [
-    "Her şey tamamlandığında bu ileti kendiliğinden kapanacaktır."
+    "Tämä viesti sulkeutuu automaattisesti kun kaikki on valmista."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
-    "Bu desen, netlik ve verimlilik arasında bir denge kurar: modal, basit seçimler için her şeyi hafif tutarken, tam görünüm daha derin keşifleri ve özellikle çok sayıda cihaza sahip kullanıcılar için daha karmaşık eylemleri destekler."
+    "Tämä valinta on selkeyden ja tehokkuuden väliltä: yksinkertaiset valinnat on helppo tehdä, kun taas täysi näkymä tukee syvempää paneutumista valintoihin ja monimutkaisempia toimintoja erityisesti runsaiden laitemäärien käyttäjille."
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
-    "Bu ürün kurulum sırasında yazılım desenlerinin seçilmesine izin vermez. Ancak kurulum tamamlandıktan sonra ek yazılım ekleyebilirsiniz."
+    "Tämä tuote ei salli ohjelmistoryhmien valitsemista asennuksen aikana. On kuitenkin mahdollista valita lisäohjelmistoja asennuksen jälkeen."
   ],
   "This space includes the base system and the selected software patterns, if any.": [
-    "Bu alan, varsa temel sistemi ve seçili yazılım desenlerini içerir."
+    "Tämä tila sisältää perusjärjestelmän ja mahdolliset valitut ohjelmistoryhmät."
   ],
   "This uses existing partitions at the disk": [
-    "Bu, diskteki mevcut bölümleri kullanır"
+    "Tämä käyttää levyn olemassa olevia osioita"
   ],
   "This uses the existing file system at the disk": [
-    "Bu, diskteki mevcut dosya sistemini kullanır"
+    "Tämä käyttää levyn olemassa olevaa tiedostojärjestelmää"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "Bu yalnızca yükleyici arayüzünü etkileyecektir, yüklenecek ürünü değil. Ürünün yerelleştirmesini daha sonra Yerelleştirme ayarları sayfasında ayarlayabilirsiniz."
+    "Tämä vaikuttaa vain asennusohjelman käyttöliittymään, ei asennettavaan tuotteeseen. Voit muuttaa tuotteen kotoistamisesta myöhemmin asetussivulta."
   ],
   "TiB": [
-    "TB"
+    "TiB"
   ],
   "Time zone": [
-    "Saat dilimi"
+    "Aikavyöhyke"
   ],
   "Tmpfs": [
     "Tmpfs"
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
-    "Yeni sistemin önyükleme yapabilmesini sağlamak için yükleyicinin uygun diskte bazı bölümler oluşturması veya yapılandırması gerekebilir."
+    "Jotta järjestelmä käynnistyisi, asennusohjelman saattaa täytyä luoda tai tehdä osioiden asetusmuutoksia soveltuvalla levyllä."
   ],
   "Transactional root file system": [
-    "İşlemsel kök dosya sistemi"
+    "Transaktionaalinen juuritiedostojärjestelmä"
   ],
   "Try again": [
-    "Tekrar deneyin"
+    "Yritä uudelleen"
   ],
   "Type": [
-    "Tip"
+    "Tyyppi"
   ],
   "URL": [
     "URL"
   ],
   "Unable to modify the settings": [
-    "Ayarlar değiştirilemiyor"
+    "Asetusten muuttaminen ei onnistu"
   ],
   "Unbound": [
-    "Bağlanmamış"
+    "Irrota sidos"
   ],
   "Unselect": [
-    "Seçimi kaldır"
+    "Poista valinta"
   ],
   "Unselect or activate them and try it again.": [
-    "Seçimi kaldırın veya etkinleştirin ve tekrar deneyin."
+    "Poista valintoja tai aktivoi laitteita, yritä sitten uudelleen."
   ],
   "Unsupported AutoYaST elements": [
-    "Desteklenmeyen AutoYaST öğeleri"
+    "Tukemattomia AutoYaST-elementtejä"
   ],
   "Unused space": [
-    "Kullanılmayan alan"
+    "Käyttämätöntä tilaa"
   ],
   "Up to %s can be recovered by shrinking the device.": [
-    "Cihazın küçültülmesiyle %s'ye kadar geri kazanılabilir."
+    "Enimmillään %s voidaan vapauttaa pienentämällä laitetta."
   ],
   "Update available disks and activate crypt devices": [
-    "Kullanılabilir diskleri güncelleyin ve şifreleme aygıtlarını etkinleştirin"
+    "Päivitä saatavilla olevia laitteita ja aktivoi salatut laitteet"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
-    "Ana bilgisayar adını şimdi veya daha sonra güncellemeniz, şu anda kayıtlı olan ana bilgisayar adını değiştirmeyecektir."
+    "Isäntänimen päivittäminen nyt tai myöhemmin ei muuta tällä hetkellä rekisteröityä isäntänimeä."
   ],
   "Updating the initiator name": [
-    "Başlatıcı adının güncellenmesi"
+    "Päivitetään alullepanijan nimeä"
   ],
   "Upload": [
-    "Yükle"
+    "Lataa"
   ],
   "Upload, paste, or drop an SSH public key": [
-    "Bir SSH genel anahtarını yükleyin, yapıştırın veya bırakın"
+    "Lataa, liitä tai pudota julkinen SSH-avain"
   ],
   "Use": [
-    "Kullan"
+    "Käytä"
   ],
   "Use RAID %s": [
-    "RAID %s'yi kullan"
+    "Käytä kohdetta RAID %s"
   ],
   "Use RAID %s for LVM and additional partitions": [
-    "LVM ve ek bölümler için RAID %s kullan"
+    "Käytä kohdetta RAID %s LVM-taltioihin ja lisäosioihin"
   ],
   "Use RAID %s for LVM, additional partitions and booting": [
-    "LVM, ek bölümler ve önyükleme için RAID %s kullan"
+    "Käytä kohdetta RAID %s asennukseen, lisäosioihin ja käynnistämiseen"
   ],
   "Use RAID %s for additional partitions": [
-    "Ek bölümler için RAID %s kullan"
+    "Käytä kohdetta RAID %s lisäosioihin"
   ],
   "Use RAID %s for additional partitions and booting": [
-    "Ek bölümler ve önyükleme için RAID %s kullan"
+    "Käytä kohdetta RAID %s lisäosioihin ja käynnistämiseen"
   ],
   "Use RAID %s to configure boot partitions": [
-    "Önyükleme bölümlerini yapılandırmak için RAID %s kullan"
+    "Käytä kohdetta RAID %s käynnistysosioiden asettamiseen"
   ],
   "Use RAID %s to host LVM": [
-    "LVM'yi barındırma için RAID %s kullan"
+    "Käytä kohdetta RAID %s LVM-taltioihin"
   ],
   "Use RAID %s to host LVM and boot": [
-    "LVM'yi barındırma ve önyükleme için RAID %s'yi kullan"
+    "Käytä kohdetta RAID %s LVM-taltioihin ja käynnistämiseen"
   ],
   "Use RAID %s to install": [
-    "Kurulum için RAID %s kullan"
+    "Käytä kohdetta RAID %s asennukseen"
   ],
   "Use RAID %s to install and boot": [
-    "Kurulum ve önyükleme için RAID %s kullan"
+    "Käytä RAID-kohdetta %s asennukseen ja käynnistämiseen"
   ],
   "Use RAID %s to install and host LVM": [
-    "Kurulum ve LVM'yi barındırmak için RAID %s'yi kullan"
+    "Käytä kohdetta RAID %s asennukseen ja LVM-taltioihin"
   ],
   "Use RAID %s to install, host LVM and boot": [
-    "Kurulum, LVM'yi barındırmak ve önyüklemek için RAID %s'yi kullan"
+    "Käytä kohdetta RAID %s asennukseen, LVM-taltioihin ja käynnistämiseen"
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
-    "Aygıtlarınızı ayarlamak için aşağıdaki eylemleri kullanın veya öntanımlı yapılandırmayla sıfırdan başlamak için %s ögesine tıklayın."
+    "Käytä alle olevia toimintoja laitteiden asetusten tekemiseen tai napsauta %s lähteäksesi liikkeelle tyhjältä pöydältä oletuasetuksilla."
   ],
   "Use available space": [
-    "Mevcut alanı kullan"
+    "Käytä käytettävissä olevaa tilaa"
   ],
   "Use disk %s": [
-    "%s diskini kullan"
+    "Käytä levyä %s"
   ],
   "Use disk %s for LVM and additional partitions": [
-    "LVM ve ek bölümler için %s diskini kullan"
+    "Käytä levyä %s LVM:n käyttöön ja lisäosioihin"
   ],
   "Use disk %s for LVM, additional partitions and booting": [
-    "LVM, ek bölümler ve önyükleme için %s diskini kullan"
+    "Käytä levyä %s LVM:n käyttöön, lisäosioihin ja käynnistymiseen"
   ],
   "Use disk %s for additional partitions": [
-    "Ek bölümler için %s diskini kullan"
+    "Käytä levyä %s llisäosioihin"
   ],
   "Use disk %s for additional partitions and booting": [
-    "Ek bölümler ve önyükleme için %s diskini kullan"
+    "Käytä levyä %s lisäosioihin ja käynnistymiseen"
   ],
   "Use disk %s to configure boot partitions": [
-    "Önyükleme bölümlerini yapılandırmak için %s diskini kullan"
+    "Käytä levyä %s käynnistymisosioiden määrittämiseen"
   ],
   "Use disk %s to host LVM": [
-    "LVM'yi barındırmak için %s diskini kullan"
+    "Käytä levyä %s LVM:n käyttöön"
   ],
   "Use disk %s to host LVM and boot": [
-    "LVM'yi barındırmak ve önyükleme için %s diskini kullan"
+    "Käytä levyä %s LVM:n käyttöön ja käynnistymiseen"
   ],
   "Use disk %s to install": [
-    "Kurulum için %s diskini kullan"
+    "Käytä levyä %s asennukseen"
   ],
   "Use disk %s to install and boot": [
-    "Kurulum ve önyükleme için %s diskini kullan"
+    "Käytä levyä %s asennukseen ja käynnistämiseen"
   ],
   "Use disk %s to install and host LVM": [
-    "Kurulum ve LVM'yi barındırma için %s diskini kullan"
+    "Käytä levyä %s asennukseen ja LVM:n käyttöön"
   ],
   "Use disk %s to install, host LVM and boot": [
-    "Kurulum, LVM'yi barındırma ve önyükleme %s diskini kullan"
+    "Käytä levyä %s asennukseen, LVM:n käyttöön ja käynnistymiseen"
   ],
   "Use for installation only": [
-    "Yalnızca kurulum için kullan"
+    "Käytä vain asentamiseen"
   ],
   "Use for the selected product too": [
-    "Seçili ürün için de kullan"
+    "Käytä myös valitulle tuotteelle"
   ],
   "Use password": [
-    "Şifre kullan"
+    "Käytä salasanaa"
   ],
   "Use public SSH Key": [
-    "Genel SSH Anahtarını Kullan"
+    "Käytä julkista SSH-avainta"
   ],
   "Use static hostname": [
-    "Durağan ana bilgisayar adı kullan"
+    "Käytä kiinteää verkkonimeä"
   ],
   "Use suggested username": [
-    "Önerilen kullanıcı adını kullan"
+    "Käytä ehdotettua käyttäjänimeä"
   ],
   "Use the RAID without partitions": [
-    "RAID'i bölümler olmadan kullan"
+    "Käytä RAIDia ilman osioita"
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
-    "Her önyüklemede kendiliğinden şifre çözümü için Güvenilir Platform Modülünü (TPM) kullan"
+    "Käytä Trusted Platform Module (TPM) -ominaisuutta salauksen purkamiseen automaattisesti jokaisessa käynnistyksessä"
   ],
   "Use the disk without partitions": [
-    "Bölümlendirme olmadan diski kullan"
+    "Käytä levyä ilman osioita"
   ],
   "Use these same settings for the selected product": [
-    "Seçili ürün için aynı ayarları kullan"
+    "Käytä näitä samoja asetuksia valitulle tuotteelle"
   ],
   "Used space": [
-    "Kullanılan alan"
+    "Käytetty tila"
   ],
   "User name": [
-    "Kullanıcı adı"
+    "Käyttäjänimi"
   ],
   "Username": [
-    "Kullanıcı adı"
+    "Käyttäjänimi"
   ],
   "Username suggestion dropdown": [
-    "Kullanıcı adı önerisi açılır listesi"
+    "Ehdotetun käyttäjänimen pudotusvalikko"
   ],
   "Using [%s] keyboard": [
-    "[%s] klavyesi kullanılıyor"
+    "Käytetään [%s]-näppämistöä"
   ],
   "Using a hashed password.": [
-    "Karma şifre kullanımı."
+    "Käytetään tiivisteellistä salasanaa."
   ],
   "Using an existing partition": [
-    "Mevcut bir bölümü kullan"
+    "Käytä olemassa olevaa osioita"
   ],
   "Using partition %s": [
-    "%s bölümü kullanılıyor"
+    "Käytetään osiota %s"
   ],
   "Using transient hostname: %s": [
-    "Geçici ana bilgisayar adı kullanılıyor: %s"
+    "Käytetään tilapäistä verkkonimeä: %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
-    "'%s' birim grubu zaten mevcut. Farklı bir ad girin."
+    "Taltioryhmä ”%s” on jo olemassa, syötä toinen nimi."
   ],
   "WPA & WPA2 Personal": [
-    "WPA ve WPA2 Kişisel"
+    "WPA & WPA2 henkilökohtainen"
   ],
   "WPA Password": [
-    "WPA Şifresi"
+    "WPA-salasana"
   ],
   "WWPN": [
     "WWPN"
   ],
   "Waiting for a mount point": [
-    "Bir bağlama noktası bekleniyor"
+    "Odotetaan liitoskohtaa"
   ],
   "Waiting for information about storage configuration": [
-    "Depolama yapılandırması hakkında bilgi bekleniyor"
+    "Odotetaan tietoja tallennustilan asetuksista"
   ],
   "Weak signal": [
-    "Zayıf sinyal"
+    "Heikko signaali"
   ],
   "Wi-Fi connection form": [
-    "Wi-Fi bağlantı formu"
+    "Wi-Fi-yhteyden lomake"
   ],
   "Wi-Fi networks": [
-    "Wi-Fi ağları"
+    "Wi-Fi-verkot"
   ],
   "Wi-Fi not supported": [
-    "Wi-Fi desteklenmiyor"
+    "Wi-Fi ei ole tuettu"
   ],
   "Will be supported in a future version.": [
-    "Gelecekteki bir sürümde desteklenecektir."
+    "Tullaan tukemaan tulevassa versiossa."
   ],
   "Wired connections": [
-    "Kablolu bağlantılar"
+    "Kiinteät yhteydet"
   ],
   "XFS": [
     "XFS"
   ],
   "Yes": [
-    "Evet"
+    "Kyllä"
   ],
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
-    "Mevcut ayarlarla kuruluma devam edebilir veya yapılandırmayı iptal edip daha basit bir yapılandırmayla sıfırdan kuruluma başlayabilirsiniz."
+    "Voit jatkaa asennusta nykyisillä asetuksilla tai saatat haluta hylätä asetukset ja aloittaa alusta yksinkertaisilla asetuksilla."
   ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "Daha sonra değiştiremezsiniz. Kayıt işlemine devam etmeden önce değiştirmek istiyorsanız %s bölümüne gidin."
+    "Et voi muuttaa sitä myöhemmin. Mene %s-osioon, jos haluat muokata sitä ennen rekisteröinnin jatkamista."
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
-    "Mevcut ayarları atıp, basit bir yapılandırmayla sıfırdan başlamak isteyebilirsiniz."
+    "Saatat haluta hylätä nykyiset asetukset ja aloittaa tyhjältä pöydältä yksinkertaisilla asetuksilla."
   ],
   "You may want to discard those settings and start from scratch with a simple configuration.": [
-    "Bu ayarları atıp, basit bir yapılandırmayla sıfırdan başlamak isteyebilirsiniz."
+    "Saatat haluta hylätä nykyiset asetukset ja aloittaa alusta yksinkertaisilla asetuksilla."
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
-    "Şifreleme olmadan halka açık bir ağa bağlanacaksınız. Verileriniz güvenli olmayabilir."
+    "Yhdistetään julkiseen verkkoon ilman salausta. Tietosi eivät välttämättä ole turvassa."
   ],
   "Your system is rebooting": [
-    "Sisteminiz yeniden başlatılıyor"
+    "Järjestelmä käynnistyy uudelleen"
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
-    "[CAPS LOCK] açık"
+    "[CAPS LOCK] on päällä"
   ],
   "[FIXME]": [
     "[FIXME]"
   ],
   "active": [
-    "aktif et"
+    "aktiivinen"
   ],
   "all": [
-    "tümü"
+    "kaikki"
   ],
   "approx. %s": [
-    "yaklaşık %s"
+    "noin %s"
   ],
   "at least %s": [
-    "en az %s"
+    "vähintään %s"
   ],
   "auto selected": [
-    "kendiliğinden seçildi"
+    "automaattisesti valittu"
   ],
   "hostname": [
-    "ana bilgisayar adı"
+    "isäntänimi"
   ],
   "iBFT": [
     "iBFT"
@@ -2358,33 +2358,33 @@ export default {
     "iSCSI"
   ],
   "logical volume": [
-    "mantıksal alan"
+    "looginen taltio"
   ],
   "no": [
-    "hayır"
+    "ei"
   ],
   "offline": [
-    "çevrimdışı"
+    "poiskytketty"
   ],
   "partition": [
-    "bölüm"
+    "osio"
   ],
   "read_only": [
-    "salt_okunur"
+    "vain_luku"
   ],
   "reset to defaults": [
-    "öntanımlılara sıfırla"
+    "palauta oletuksiin"
   ],
   "yes": [
-    "evet"
+    "kyllä"
   ],
   "zFCP": [
     "zFCP"
   ],
   "zFCP Disk Activation": [
-    "zFCP Disk Etkinleştirme"
+    "zFCP-levyaktivointi"
   ],
   "zFCP Disk activation form": [
-    "zFCP Disk aktivasyon formu"
+    "zFCP-levyaktivoinnin lomake"
   ]
 };

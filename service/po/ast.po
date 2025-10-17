@@ -8,16 +8,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-08 09:26+0000\n"
-"PO-Revision-Date: 2025-09-17 09:59+0000\n"
-"Last-Translator: Athmane MOKRAOUI <butterflyoffire+opensuse@protonmail.com>\n"
-"Language-Team: Kabyle <https://l10n.opensuse.org/projects/agama/agama-"
-"service-sle-16/kab/>\n"
-"Language: kab\n"
+"PO-Revision-Date: 2025-09-11 14:37+0000\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ast\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.13.3\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -37,7 +35,7 @@ msgstr ""
 
 #: service/lib/agama/manager.rb:99
 msgid "Configure software"
-msgstr "Swel aseɣẓan"
+msgstr ""
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
@@ -47,7 +45,7 @@ msgstr ""
 
 #: service/lib/agama/manager.rb:119
 msgid "Install software"
-msgstr "Sebded aseɣẓan"
+msgstr ""
 
 #: service/lib/agama/manager.rb:120
 msgid "Configure the system"
@@ -73,7 +71,7 @@ msgstr ""
 #. TRANSLATORS: button label, try downloading the failed package again
 #: service/lib/agama/software/callbacks/base.rb:48
 msgid "Try again"
-msgstr "Ɛṛeḍ tikkelt nniḍen"
+msgstr ""
 
 #. TRANSLATORS: button label, ignore the failed download, skip package installation
 #: service/lib/agama/software/callbacks/base.rb:54
@@ -83,22 +81,22 @@ msgstr ""
 #. TRANSLATORS: button label, abort the installation completely after an error
 #: service/lib/agama/software/callbacks/base.rb:60
 msgid "Abort installation"
-msgstr "Semmet asebded"
+msgstr ""
 
 #. TRANSLATORS: button label, skip the error
 #: service/lib/agama/software/callbacks/base.rb:66
 msgid "Skip"
-msgstr "Ttu"
+msgstr ""
 
 #. TRANSLATORS: button label
 #: service/lib/agama/software/callbacks/base.rb:72
 msgid "Yes"
-msgstr "Ih"
+msgstr ""
 
 #. TRANSLATORS: button label
 #: service/lib/agama/software/callbacks/base.rb:78
 msgid "No"
-msgstr "Uhu"
+msgstr ""
 
 #. Callback to accept a file without a checksum
 #.
@@ -299,7 +297,7 @@ msgstr ""
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31
 msgid "Certificate:"
-msgstr "Aselkin:"
+msgstr ""
 
 #: service/lib/agama/ssl/certificate_details.rb:31
 msgid "Issued To"
@@ -526,7 +524,7 @@ msgstr ""
 #. @return [String]
 #: service/lib/agama/storage/config_checkers/search.rb:85
 msgid "drive"
-msgstr "anuḍaf"
+msgstr ""
 
 #: service/lib/agama/storage/config_checkers/search.rb:87
 msgid "MD RAID"
@@ -534,7 +532,7 @@ msgstr ""
 
 #: service/lib/agama/storage/config_checkers/search.rb:89
 msgid "partition"
-msgstr "aḥric"
+msgstr ""
 
 #: service/lib/agama/storage/config_checkers/search.rb:91
 msgid "LVM logical volume"
@@ -542,7 +540,7 @@ msgstr ""
 
 #: service/lib/agama/storage/config_checkers/search.rb:93
 msgid "device"
-msgstr "ibenk"
+msgstr ""
 
 #. Issue if the volume group name is missing.
 #.
@@ -607,9 +605,8 @@ msgstr ""
 
 #. Step to write the bootloader configuration
 #: service/lib/agama/storage/finisher.rb:197
-#, fuzzy
 msgid "Installing bootloader"
-msgstr "Sebded aseɣẓan"
+msgstr ""
 
 #. Step to finish the Y2Storage configuration
 #: service/lib/agama/storage/finisher.rb:214
