@@ -104,7 +104,7 @@ export default {
     "Etkinleştir"
   ],
   "Activate and format DASD devices": [
-    "DASD cihazlarını etkinleştirin ve biçimlendirin"
+    "DASD aygıtlarını etkinleştir ve biçimlendir"
   ],
   "Activate new disk": [
     "Yeni diski etkinleştir"
@@ -185,7 +185,7 @@ export default {
     "İlk kullanıcıyı tanımlamanın yanı sıra, root kullanıcı için kimlik doğrulama yöntemleri de yapılandırılabilir."
   ],
   "Already using all available devices": [
-    "Zaten mevcut tüm cihazları kullanılıyor"
+    "Zaten uygun tüm aygıtlar kullanılıyor"
   ],
   "Already using all available disks": [
     "Zaten tüm kullanılabilir diskler kullanılıyor"
@@ -205,7 +205,7 @@ export default {
   ],
   "Apply to the selected device": [
     "Seçili cihaz biçimlendirilsin mi?",
-    "Seçili %s cihazları biçimlendirilsin mi?"
+    "Seçili %s aygıt biçimlendirilsin mi?"
   ],
   "Applying changes": [
     "Değişiklikleri uygula"
@@ -235,13 +235,13 @@ export default {
     "Hedefe göre kimlik doğrulama"
   ],
   "Auto LUNs Scan": [
-    "Otomatik LUN Taraması"
+    "Kendiliğinden LUN Taraması"
   ],
   "Automatic": [
-    "Otomatik"
+    "Kendiliğinden"
   ],
   "Automatic (DHCP)": [
-    "Otomatik (DHCP)"
+    "Kendiliğinden (DHCP)"
   ],
   "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
     "Otomatik LUN taraması [devre dışı]. LUN'ların manuel olarak taranması gerekir       Bir kontrol cihazı etkinleştirildikten sonra yapılandırılır."
@@ -370,7 +370,7 @@ export default {
     "Devam etmeden önce aşağıdakileri kontrol edin"
   ],
   "Choose a disk for placing the boot loader": [
-    "Önyükleme yükleyicisini yerleştirmek için bir disk seçin"
+    "Önyükleyiciyi yerleştirmek için disk seç"
   ],
   "Choose device to bind by MAC": [
     "Bağlanacak cihazı MAC ile seçin"
@@ -478,7 +478,7 @@ export default {
     "%s'ye bağlanılıyor"
   ],
   "Connection details": [
-    "Bağlantı detayları"
+    "Bağlantı ayrıntıları"
   ],
   "Connection is available to all devices.": [
     "Tüm cihazlara bağlantı mevcuttur."
@@ -559,16 +559,16 @@ export default {
     "Devre dışı bırakıldı"
   ],
   "Default file system for %s": [
-    "%s için varsayılan dosya sistemi"
+    "%s için öntanımlı dosya sistemi"
   ],
   "Default file system for generic logical volumes": [
-    "Genel mantıksal birimler için varsayılan dosya sistemi"
+    "Genel mantıksal birimler için öntanımlı dosya sistemi"
   ],
   "Default file system for generic mount paths": [
-    "Genel bağlama yolları için varsayılan dosya sistemi"
+    "Genel bağlama yolları için öntanımlı dosya sistemi"
   ],
   "Default file system for generic partitions": [
-    "Genel bölümler için varsayılan dosya sistemi"
+    "Genel bölümler için öntanımlı dosya sistemi"
   ],
   "Define a custom size": [
     "Özel bir boyut tanımlayın"
@@ -607,13 +607,13 @@ export default {
     "Mevcut verileri yok edin ve bölümü şu şekilde biçimlendirin"
   ],
   "Details": [
-    "Detaylar"
+    "Ayrıntılar"
   ],
   "Details for %s": [
     "%s için ayrıntılar"
   ],
   "Details will appear after the connection is successfully established.": [
-    "Bağlantı başarıyla kurulduktan sonra detaylar görünecektir."
+    "Bağlantı başarıyla kurulduktan sonra ayrıntılar görünecektir."
   ],
   "Device": [
     "Cihaz"
@@ -625,7 +625,7 @@ export default {
     "Cihaz Seçimi"
   ],
   "Device details": [
-    "Cihaz detayları"
+    "Aygıt ayrıntıları"
   ],
   "Discard": [
     "At"
@@ -752,7 +752,7 @@ export default {
   ],
   "Extend the installation beyond the currently selected device": [
     "Kurulumu şu anda seçili olan cihazın ötesine genişletin",
-    "Kurulumu şu anda seçili olan %d cihazların ötesine genişletin"
+    "Kurulumu şu anda seçili olan %d aygıtın ötesine genişlet"
   ],
   "Extend the installation beyond the currently selected disk": [
     "Kurulumu şu anda seçili olan diskin ötesine geçirin",
@@ -846,7 +846,7 @@ export default {
     "DASD aygıtlarının biçimlendirilmesi"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
-    "Tam Disk Şifrelemesi (FDE), veriler, programlar ve sistem dosyaları da dahil olmak üzere yeni dosya sistemlerinde depolanan bilgilerin korunmasına olanak tanır."
+    "Tam Disk Şifrelemesi (FDE) yeni dosya sistemlerinde depolanan veri, program ve sistem dosyaları gibi bilgilerin korunmasını sağlar."
   ],
   "Full name": [
     "Tam isim"
@@ -877,7 +877,7 @@ export default {
     "%d alt birim eylemlerini gizle"
   ],
   "Hide details": [
-    "Detayları gizle"
+    "Ayrıntıları gizle"
   ],
   "Hostname": [
     "Ana bilgisayar adı"
@@ -937,7 +937,7 @@ export default {
     "Başlatıcı"
   ],
   "Initiator details": [
-    "Başlatıcı detayları"
+    "Başlatıcı ayrıntıları"
   ],
   "Initiator name": [
     "Başlatıcı adı"
@@ -979,7 +979,7 @@ export default {
     "Mevcut bölümleri değiştirmeden %s aygıtını kullanarak yükleyin."
   ],
   "Installation Devices": [
-    "Kurulum Cihazları"
+    "Kurulum Aygıtları"
   ],
   "Installation will take %s.": [
     "Kurulum %s kadar olacak."
@@ -1027,13 +1027,13 @@ export default {
     "LVM grubu '%s' için seçildi"
   ],
   "It is not possible to allocate space for %s.": [
-    "%s için alan ayırmak mümkün değil."
+    "%s için alan ayırmak olanaksız."
   ],
   "It is not possible to allocate space for the boot partition and for %s.": [
-    "Önyükleme bölümü ve %s için alan ayırmak mümkün değil."
+    "Önyükleme bölümü ve %s için alan ayırmak olanaksız."
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
-    "Mevcut yapılandırma ile sistemi kurmak mümkün değildir. Aşağıdaki ayarları düzenleyin."
+    "Şu anki yapılandırma ile sistemi kurmak olanaksızdır. Aşağıdaki ayarları düzenleyin."
   ],
   "It is offline and must be activated before formatting it.": [
     "Çevrimdışıdır ve biçimlendirmeden önce etkinleştirilmesi gerekir."
@@ -1123,7 +1123,7 @@ export default {
     "Doğru değerleri sağladığınızdan emin olun"
   ],
   "Manage DASD devices": [
-    "DASD cihazlarını yönetin"
+    "DASD aygıtlarını yönet"
   ],
   "Manual": [
     "Manuel"
@@ -1144,19 +1144,19 @@ export default {
     "Ayarları ve fiziksel birimleri değiştirin"
   ],
   "More actions": [
-    "Daha fazla eylem"
+    "Daha çok eylem"
   ],
   "More devices": [
-    "Daha fazla cihaz"
+    "Daha çok aygıt"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    "Seçili ürün için daha fazla tuş haritası düzeni [Yerelleştirme] sayfasında mevcut olabilir"
+    "Seçili ürün için daha çok klavye düzeni [Yerelleştirme] sayfasında bulunabilir"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    "Seçili ürün için daha fazla dil ve klavye düzeni seçeneği [Yerelleştirme] sayfasında bulunabilir."
+    "Seçili ürün için daha çok dil ve klavye düzeni seçeneği [Yerelleştirme] sayfasında bulunabilir."
   ],
   "More languages might be available for the selected product at [Localization] page": [
-    "Seçili ürün için [Yerelleştirme] sayfasında daha fazla dil mevcut olabilir"
+    "Seçili ürün için [Yerelleştirme] sayfasında daha çok dil bulunabilir"
   ],
   "Moreover, the following partition will be created.": [
     "Ayrıca, aşağıdaki bölüm oluşturulacak veya bağlanacaktır.",
@@ -1218,7 +1218,7 @@ export default {
     "Ağ"
   ],
   "Network details": [
-    "Ağ detayları"
+    "Ağ ayrıntıları"
   ],
   "Network not found or lost": [
     "Ağ bulunamadı veya kaybedildi"
@@ -1272,7 +1272,7 @@ export default {
     "Henüz mantıksal birimler tanımlanmadı"
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
-    "Önyükleme için hiçbir bölüm otomatik olarak yapılandırılmayacak. Dikkatli kullanın."
+    "Önyükleme için hiçbir bölüm kendiliğinden yapılandırılmayacak. Dikkatli kullanın."
   ],
   "No support is planned.": [
     "Herhangi bir destek planlanmamaktadır."
@@ -1320,7 +1320,7 @@ export default {
     "Henüz uygulanmadı (%s)"
   ],
   "Not possible with the current setup. Click to know more.": [
-    "Mevcut kurulum mümkün değil. Daha fazlasını öğrenmek için tıklayın."
+    "Şu anki kurulum olanaksız. Daha çoğunu öğrenmek için tıklayın."
   ],
   "Not protected network": [
     "Korunmayan ağ"
@@ -1377,13 +1377,13 @@ export default {
     "Tekrar kullanılmayan bölümler gerektiğinde yeniden boyutlandırılacaktır."
   ],
   "Partitions to boot will be allocated at the following device.": [
-    "Önyükleme için bölümler aşağıdaki aygıta tahsis edilecektir."
+    "Önyükleme için bölümler aşağıdaki aygıtta ayrılacaktır."
   ],
   "Partitions to boot will be allocated at the installation disk %s.": [
-    "Önyükleme için bölümler kurulum diski %s'de tahsis edilecektir."
+    "Önyükleme için bölümler kurulum diski %s'de ayrılacaktır."
   ],
   "Partitions to boot will be allocated at the installation disk.": [
-    "Önyükleme için gerekli bölümler kurulum diskinde tahsis edilecektir."
+    "Önyükleme için gerekli bölümler kurulum diskinde ayrılacaktır."
   ],
   "Partitions will be used and created for %s": [
     "Bölümler %s için kullanılacak ve oluşturulacak"
@@ -1449,7 +1449,7 @@ export default {
     "Ürün zaten kayıtlı"
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Veriler, programlar ve sistem dosyaları dahil olmak üzere yeni dosya sistemlerinde depolanan bilgilerin korunması."
+    "Yeni dosya sistemlerinde depolanan veri, program ve sistem dosyaları gibi bilgilerin korunması."
   ],
   "Provide email address": [
     "E-posta adresini belirtin"
@@ -1524,13 +1524,13 @@ export default {
     "Depo yüklemesi başarısız oldu"
   ],
   "Rescan devices": [
-    "Cihazları yeniden tara"
+    "Aygıtları yeniden tara"
   ],
   "Reset to defaults": [
-    "Varsayılanlara sıfırla"
+    "Öntanımlılara sıfırla"
   ],
   "Reset to the default configuration": [
-    "Varsayılan yapılandırmaya sıfırla"
+    "Öntanımlı yapılandırmaya sıfırla"
   ],
   "Resource not found or lost": [
     "Kaynak bulunamadı veya kayboldu"
@@ -1587,7 +1587,7 @@ export default {
     "Güvenlik"
   ],
   "See more details": [
-    "Daha fazla ayrıntı görün"
+    "Daha çok ayrıntı gör"
   ],
   "Select": [
     "Seç"
@@ -1599,19 +1599,19 @@ export default {
     "Bir disk seçin"
   ],
   "Select a disk to configure": [
-    "Yapılandırılacak bir disk seçin"
+    "Yapılandırılacak disk seç"
   ],
   "Select a disk to create %s": [
-    "%s oluşturmak için bir disk seçin"
+    "%s oluşturmak için disk seç"
   ],
   "Select a disk to define partitions or to mount": [
-    "Bölümleri tanımlamak veya bağlamak için bir disk seçin"
+    "Bölümleri tanımlamak veya bağlamak için disk seç"
   ],
   "Select a disk to format as %s": [
-    "%s olarak biçimlendirilecek bir disk seçin"
+    "%s olarak biçimlendirilecek disk seç"
   ],
   "Select a disk to install the system": [
-    "Sistemi kurmak için bir disk seçin"
+    "Sistemi kurmak için disk seç"
   ],
   "Select a product": [
     "Bir ürün seçin"
@@ -1623,13 +1623,13 @@ export default {
     "Bölümleri tanımlamak veya bağlamak için başka bir cihaz seçin"
   ],
   "Select another disk to define partitions or to mount": [
-    "Bölümleri tanımlamak veya bağlamak için başka bir disk seçin"
+    "Bölümleri tanımlamak veya bağlamak için başka disk seç"
   ],
   "Select at least one disk.": [
-    "En az bir disk seçin."
+    "En az bir disk seç."
   ],
   "Select devices to enable bulk actions.": [
-    "Toplu işlemleri etkinleştirmek için cihazları seçin."
+    "Toplu işlemleri etkinleştirmek için aygıtları seç."
   ],
   "Select or enter a mount point": [
     "Bir bağlama noktası seçin veya girin"
@@ -1696,7 +1696,7 @@ export default {
     "Daha az eylem göster"
   ],
   "Show more actions": [
-    "Daha fazla eylem göster"
+    "Daha çok eylem göster"
   ],
   "Shrink existing partitions": [
     "Mevcut bölümleri küçült"
@@ -1762,13 +1762,13 @@ export default {
     "Bir temel bir kurulumu yapılandırmaya başlayın"
   ],
   "Start from scratch with the default configuration": [
-    "Varsayılan yapılandırmayla sıfırdan başlayın"
+    "Öntanımlı yapılandırmayla sıfırdan başla"
   ],
   "Startup": [
     "Başlangıç"
   ],
   "Static hostname": [
-    "Statik ana bilgisayar adı"
+    "Durağan ana bilgisayar adı"
   ],
   "Status": [
     "Durum"
@@ -1777,7 +1777,7 @@ export default {
     "Depolama"
   ],
   "Structure of the new system, including disks to use and additional devices like LVM volume groups.": [
-    "Kullanılacak diskler ve LVM birim grupları gibi ek cihazlar da dahil olmak üzere yeni sistemin yapısı."
+    "Kullanılacak diskler ve LVM birim grupları gibi ek aygıtlar da olmak üzere yeni sistemin yapısı."
   ],
   "Suggested mount points": [
     "Önerilen bağlama noktaları"
@@ -1798,7 +1798,7 @@ export default {
     "LVM grubu '%1$s' %2$s konumunda kalacak"
   ],
   "The configuration has been updated externally.": [
-    "Yapılandırma harici olarak güncellendi."
+    "Yapılandırma dışardan güncellendi."
   ],
   "The configuration must be adapted to address the following issue:": [
     "Kuruluma başlamadan önce aşağıdaki sorunu gidermeniz gerekmektedir:",
@@ -1878,7 +1878,7 @@ export default {
     "Ekstra boş alanı doldurmak için son boyut daha büyük olabilir."
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
-    "Güvenilir Platform Modülünü (Trusted Platform Module) (TPM) şifrelenmiş cihazları otomatik olarak açacak şekilde yapılandırmanın son adımı, yeni sistemin ilk önyüklemesi sırasında gerçekleştirilecektir. Bunun çalışması için makinenin doğrudan yeni önyükleyiciye önyükleme yapması gerekir."
+    "Güvenilir Platform Modülünü (TPM) şifrelenmiş aygıtları kendiliğinden açacak biçimde yapılandırmanın son adımı, yeni sistemin ilk önyüklemesi sırasında gerçekleştirilecektir. Bunun çalışması için makine doğrudan yeni önyükleyiciye önyüklemelidir."
   ],
   "The following logical volume will be created": [
     "Aşağıdaki mantıksal birim oluşturulacak",
@@ -1993,7 +1993,7 @@ export default {
     "Sistem muhtemelen eksik veya devre dışı donanım nedeniyle Wi-Fi bağlantılarını desteklemiyor."
   ],
   "The system will use %s as its default language.": [
-    "Sistem varsayılan dil olarak %s dilini kullanacaktır."
+    "Sistem öntanımlı olarak %s dilini kullanacaktır."
   ],
   "The whole device will be used for %s": [
     "Tüm cihaz %s için kullanılacak"
@@ -2005,7 +2005,7 @@ export default {
     "Kurulum için kullanılabilir bir disk yok."
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
-    "Kurulum için kullanılabilir disk yok. Bazı cihazları yapılandırmanız gerekebilir."
+    "Kurulum için kullanılabilir disk yok. Bazı aygıtları yapılandırmanız gerekebilir."
   ],
   "There are not usable partitions": [
     "Kullanılabilir bölüm yok"
@@ -2019,7 +2019,7 @@ export default {
     "%d planlanan yıkım askiyonları %s'i etkiliyor"
   ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
-    "Bunlar en alakalı kurulum ayarlarıdır. Daha fazla ayrıntı için menüdeki bölümlere göz atmaktan çekinmeyin."
+    "Bunlar belirgin kurulum ayarlarıdır. Daha çok ayrıntı için menüdeki bölümlere göz atmaktan çekinmeyin."
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
     "Bunlar, ürünün kurulacağı ayarlardır. Yükleyici dili ve klavye düzeni, üst çubuktan erişilebilen [ayarlar paneli] aracılığıyla ayarlanabilir."
@@ -2037,7 +2037,7 @@ export default {
     "Bu uzantı sunucuda mevcut değil. Sunucu yöneticisinden uzantıyı yansıtmasını isteyin."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    "Bu ana bilgisayar adı dinamiktir ve yerel ağ yöneticisi tarafından yapılandırıldığı şekilde yeniden başlatma veya ağ güncellemesinden sonra değişebilir."
+    "Bu ana bilgisayar adı değişkendir ve yeniden başlatma veya ağ güncellemesinden sonra yerel ağ yöneticisince yapılandırıldığı biçimde değişebilir."
   ],
   "This license is not available in %s.": [
     "Bu lisans %s'de mevcut değil."
@@ -2046,7 +2046,7 @@ export default {
     "Güncellemeler tamamlanana kadar bu işlem biraz zaman alabilir."
   ],
   "This message will close automatically when everything is done.": [
-    "Her şey tamamlandığında bu mesaj otomatik olarak kapanacaktır."
+    "Her şey tamamlandığında bu ileti kendiliğinden kapanacaktır."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Bu desen, netlik ve verimlilik arasında bir denge kurar: modal, basit seçimler için her şeyi hafif tutarken, tam görünüm daha derin keşifleri ve özellikle çok sayıda cihaza sahip kullanıcılar için daha karmaşık eylemleri destekler."
@@ -2133,40 +2133,40 @@ export default {
     "RAID %s'yi kullan"
   ],
   "Use RAID %s for LVM and additional partitions": [
-    "LVM ve ek bölümler için RAID %s kullanın"
+    "LVM ve ek bölümler için RAID %s kullan"
   ],
   "Use RAID %s for LVM, additional partitions and booting": [
-    "LVM, ek bölümler ve önyükleme için RAID %s kullanın"
+    "LVM, ek bölümler ve önyükleme için RAID %s kullan"
   ],
   "Use RAID %s for additional partitions": [
-    "Ek bölümler için RAID %s kullanın"
+    "Ek bölümler için RAID %s kullan"
   ],
   "Use RAID %s for additional partitions and booting": [
-    "Ek bölümler ve önyükleme için RAID %s kullanın"
+    "Ek bölümler ve önyükleme için RAID %s kullan"
   ],
   "Use RAID %s to configure boot partitions": [
-    "Önyükleme bölümlerini yapılandırmak için RAID %s kullanın"
+    "Önyükleme bölümlerini yapılandırmak için RAID %s kullan"
   ],
   "Use RAID %s to host LVM": [
-    "LVM'yi barındırmak için RAID %s kullanın"
+    "LVM'yi barındırma için RAID %s kullan"
   ],
   "Use RAID %s to host LVM and boot": [
-    "LVM'yi barındırmak ve önyükleme yapmak için RAID %s'yi kullanın"
+    "LVM'yi barındırma ve önyükleme için RAID %s'yi kullan"
   ],
   "Use RAID %s to install": [
-    "Kurulum için RAID %s kullanın"
+    "Kurulum için RAID %s kullan"
   ],
   "Use RAID %s to install and boot": [
-    "Yükleme ve önyükleme için RAID %s kullanın"
+    "Kurulum ve önyükleme için RAID %s kullan"
   ],
   "Use RAID %s to install and host LVM": [
-    "LVM'yi yüklemek ve barındırmak için RAID %s'yi kullanın"
+    "Kurulum ve LVM'yi barındırmak için RAID %s'yi kullan"
   ],
   "Use RAID %s to install, host LVM and boot": [
-    "LVM'yi yüklemek, barındırmak ve önyüklemek için RAID %s'yi kullanın"
+    "Kurulum, LVM'yi barındırmak ve önyüklemek için RAID %s'yi kullan"
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
-    "Aygıtlarınızı ayarlamak için aşağıdaki eylemleri kullanın veya varsayılan yapılandırmayla sıfırdan başlamak için %s öğesine tıklayın."
+    "Aygıtlarınızı ayarlamak için aşağıdaki eylemleri kullanın veya öntanımlı yapılandırmayla sıfırdan başlamak için %s ögesine tıklayın."
   ],
   "Use available space": [
     "Mevcut alanı kullan"
@@ -2178,7 +2178,7 @@ export default {
     "LVM ve ek bölümler için %s diskini kullan"
   ],
   "Use disk %s for LVM, additional partitions and booting": [
-    "LVM, ek bölümler ve önyükleme için %s diskini kullanın"
+    "LVM, ek bölümler ve önyükleme için %s diskini kullan"
   ],
   "Use disk %s for additional partitions": [
     "Ek bölümler için %s diskini kullan"
@@ -2187,31 +2187,31 @@ export default {
     "Ek bölümler ve önyükleme için %s diskini kullan"
   ],
   "Use disk %s to configure boot partitions": [
-    "Önyükleme bölümlerini yapılandırmak için %s diskini kullanın"
+    "Önyükleme bölümlerini yapılandırmak için %s diskini kullan"
   ],
   "Use disk %s to host LVM": [
-    "LVM'yi barındırmak için %s diskini kullanın"
+    "LVM'yi barındırmak için %s diskini kullan"
   ],
   "Use disk %s to host LVM and boot": [
-    "LVM'yi barındırmak ve önyükleme yapmak için %s diskini kullanın"
+    "LVM'yi barındırmak ve önyükleme için %s diskini kullan"
   ],
   "Use disk %s to install": [
-    "Yüklemek için %s diskini kullanın"
+    "Kurulum için %s diskini kullan"
   ],
   "Use disk %s to install and boot": [
-    "Yükleme ve önyükleme için %s diskini kullanın"
+    "Kurulum ve önyükleme için %s diskini kullan"
   ],
   "Use disk %s to install and host LVM": [
-    "LVM'yi yüklemek ve barındırmak için %s diskini kullanın"
+    "Kurulum ve LVM'yi barındırma için %s diskini kullan"
   ],
   "Use disk %s to install, host LVM and boot": [
-    "LVM'yi yüklemek, barındırmak ve önyüklemek için %s diskini kullanın"
+    "Kurulum, LVM'yi barındırma ve önyükleme %s diskini kullan"
   ],
   "Use for installation only": [
-    "Sadece kurulum için kullanın"
+    "Yalnızca kurulum için kullan"
   ],
   "Use for the selected product too": [
-    "Seçili ürün için de kullanın"
+    "Seçili ürün için de kullan"
   ],
   "Use password": [
     "Şifre kullan"
@@ -2220,7 +2220,7 @@ export default {
     "Genel SSH Anahtarını Kullan"
   ],
   "Use static hostname": [
-    "Statik ana bilgisayar adını kullan"
+    "Durağan ana bilgisayar adı kullan"
   ],
   "Use suggested username": [
     "Önerilen kullanıcı adını kullan"
@@ -2229,13 +2229,13 @@ export default {
     "RAID'i bölümler olmadan kullan"
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
-    "Her önyüklemede otomatik olarak şifre çözmek için Güvenilir Platform Modülünü (TPM) kullanın"
+    "Her önyüklemede kendiliğinden şifre çözümü için Güvenilir Platform Modülünü (TPM) kullan"
   ],
   "Use the disk without partitions": [
     "Bölümlendirme olmadan diski kullan"
   ],
   "Use these same settings for the selected product": [
-    "Seçili ürün için aynı ayarları kullanın"
+    "Seçili ürün için aynı ayarları kullan"
   ],
   "Used space": [
     "Kullanılan alan"
@@ -2346,7 +2346,7 @@ export default {
     "en az %s"
   ],
   "auto selected": [
-    "otomatik seçildi"
+    "kendiliğinden seçildi"
   ],
   "hostname": [
     "ana bilgisayar adı"
@@ -2373,7 +2373,7 @@ export default {
     "salt_okunur"
   ],
   "reset to defaults": [
-    "varsayılanlara sıfırla"
+    "öntanımlılara sıfırla"
   ],
   "yes": [
     "evet"
