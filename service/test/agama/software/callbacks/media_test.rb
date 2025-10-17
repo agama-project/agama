@@ -53,7 +53,7 @@ describe Agama::Software::Callbacks::Media do
     end
 
     context "when the user answers :Skip" do
-      let(:answer) { subject.continue_label.to_sym }
+      let(:answer) { Agama::Answer::new(subject.continue_label.to_sym) }
 
       it "returns 'S'" do
         ret = subject.media_change(
