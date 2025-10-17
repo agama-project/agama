@@ -30,10 +30,10 @@ module Agama
         # Adds a question
         #
         # @param question [Agama::Question]
-        # @return [Integer] question ID
+        # @return [Question, nil] created question or nil if the request failed
         def add(question)
           response = post("v2/questions", question.to_api)
-          response ? Question.from_api(response) : nil
+          response ? Question.from_api(JSON.parse(response.body)) : nil
         end
 
         def questions

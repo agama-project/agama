@@ -24,6 +24,7 @@ require "agama/http/clients/scripts"
 
 describe Agama::HTTP::Clients::Scripts do
   subject(:scripts) { described_class.new(Logger.new($stdout)) }
+  let(:response) { instance_double(Net::HTTPResponse, body: "") }
 
   before do
     allow(File).to receive(:read).with("/run/agama/token")
@@ -36,7 +37,7 @@ describe Agama::HTTP::Clients::Scripts do
       expect(Net::HTTP).to receive(:post).with(url, "post".to_json, {
         "Content-Type": "application/json",
         Authorization:  "Bearer 123456"
-      })
+      }).and_return(response)
       scripts.run("post")
     end
   end
