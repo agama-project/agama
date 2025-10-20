@@ -115,6 +115,8 @@
         <package name="ipmitool" />
         <!-- jsc#PED-13114 -->
         <package name="tpm2.0-tools" />
+        <!-- image cleanup tool -->
+        <package name="image-janitor"/>
     </packages>
 
     <!-- packages for local installation (desktop, browser, etc.) -->
