@@ -58,7 +58,7 @@ pub trait ModelAdapter: Send + Sync + 'static {
     fn products(&self) -> Vec<Product>;
 
     /// List of available repositories.
-    fn repositories(&self) -> Result<Vec<Repository>, service::Error>;
+    async fn repositories(&self) -> Result<Vec<Repository>, service::Error>;
 
     /// List of available licenses.
     fn licenses(&self) -> Result<Vec<License>, service::Error>;
@@ -67,7 +67,7 @@ pub trait ModelAdapter: Send + Sync + 'static {
     fn addons(&self) -> Result<Vec<AddonProperties>, service::Error>;
 
     /// selected product
-    fn selected_product(&self) -> Result<Option<String>, service::Error>;
+    fn selected_product(&self) -> Option<String>;
 
     /// info about registration
     fn registration_info(&self) -> Result<RegistrationInfo, service::Error>;
@@ -82,12 +82,7 @@ pub trait ModelAdapter: Send + Sync + 'static {
     async fn is_package_selected(&self, tag: String) -> Result<bool, service::Error>;
 
     /// Gets resolvables set for given combination of id, type and optional flag
-    fn get_resolvables(
-        &self,
-        id: &str,
-        r#type: ResolvableType,
-        optional: bool,
-    ) -> Vec<String>;
+    fn get_resolvables(&self, id: &str, r#type: ResolvableType, optional: bool) -> Vec<String>;
 
     /// Sets resolvables set for given combination of id, type and optional flag
     async fn set_resolvables(
@@ -178,23 +173,22 @@ impl ModelAdapter for Model {
 
     async fn is_package_available(&self, tag: String) -> Result<bool, service::Error> {
         let (tx, rx) = oneshot::channel();
-        self.zypp_sender.send(SoftwareAction::PackageAvailable(tag, tx))?;
+        self.zypp_sender
+            .send(SoftwareAction::PackageAvailable(tag, tx))?;
         Ok(rx.await??)
     }
 
     async fn is_package_selected(&self, tag: String) -> Result<bool, service::Error> {
         let (tx, rx) = oneshot::channel();
-        self.zypp_sender.send(SoftwareAction::PackageSelected(tag, tx))?;
+        self.zypp_sender
+            .send(SoftwareAction::PackageSelected(tag, tx))?;
         Ok(rx.await??)
     }
 
-    fn get_resolvables(
-        &self,
-        id: &str,
-        r#type: ResolvableType,
-        optional: bool,
-    ) -> Vec<String> {
-        self.software_selection.get(id, r#type, optional).unwrap_or_default()
+    fn get_resolvables(&self, id: &str, r#type: ResolvableType, optional: bool) -> Vec<String> {
+        self.software_selection
+            .get(id, r#type, optional)
+            .unwrap_or_default()
     }
 
     async fn set_resolvables(
@@ -204,7 +198,9 @@ impl ModelAdapter for Model {
         resolvables: &[&str],
         optional: bool,
     ) -> Result<(), service::Error> {
-        self.software_selection.set(&self.zypp_sender, id, r#type, optional, resolvables).await?;
+        self.software_selection
+            .set(&self.zypp_sender, id, r#type, optional, resolvables)
+            .await?;
         Ok(())
     }
 
@@ -312,8 +308,13 @@ impl ModelAdapter for Model {
         Ok(rx.await??)
     }
 
-    fn repositories(&self) -> Result<Vec<Repository>, service::Error> {
-        todo!()
+    // FIXME: do we want to store here only user specified repos or also ones e.g. get from registration server?
+    // now we query libzypp to get all of them
+    async fn repositories(&self) -> Result<Vec<Repository>, service::Error> {
+        let (tx, rx) = oneshot::channel();
+        self.zypp_sender
+            .send(SoftwareAction::ListRepositories(tx))?;
+        Ok(rx.await??)
     }
 
     fn licenses(&self) -> Result<Vec<License>, service::Error> {
@@ -324,8 +325,8 @@ impl ModelAdapter for Model {
         todo!()
     }
 
-    fn selected_product(&self) -> Result<Option<String>, service::Error> {
-        todo!()
+    fn selected_product(&self) -> Option<String> {
+        self.selected_product.clone().map(|p| p.id)
     }
 
     fn registration_info(&self) -> Result<RegistrationInfo, service::Error> {

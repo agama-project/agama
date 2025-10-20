@@ -56,25 +56,25 @@ impl SoftwareSelection {
     ) -> Result<(), service::Error> {
         let list = self.find_or_create_selection(id, r#type, optional);
         // FIXME: use reference counting here, if multiple ids require some package, to not unselect it
-            let (tx, rx) = oneshot::channel();
-            zypp.send(SoftwareAction::UnsetResolvables {
-                tx,
-                resolvables: list.resolvables.clone(),
-                r#type: r#type.into(),
-                optional
-            })?;
-            rx.await??;
+        let (tx, rx) = oneshot::channel();
+        zypp.send(SoftwareAction::UnsetResolvables {
+            tx,
+            resolvables: list.resolvables.clone(),
+            r#type: r#type.into(),
+            optional,
+        })?;
+        rx.await??;
 
         let new_resolvables: Vec<_> = resolvables.iter().map(|r| r.to_string()).collect();
         list.resolvables = new_resolvables;
         let (tx, rx) = oneshot::channel();
-            zypp.send(SoftwareAction::UnsetResolvables {
-                tx,
-                resolvables: list.resolvables.clone(),
-                r#type: r#type.into(),
-                optional
-            })?;
-            rx.await??;
+        zypp.send(SoftwareAction::UnsetResolvables {
+            tx,
+            resolvables: list.resolvables.clone(),
+            r#type: r#type.into(),
+            optional,
+        })?;
+        rx.await??;
         Ok(())
     }
 

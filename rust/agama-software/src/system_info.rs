@@ -47,7 +47,7 @@ impl SystemInfo {
     /// Reads the information from the system adapter.
     pub async fn read_from(model: &dyn ModelAdapter) -> Result<Self, service::Error> {
         let patterns = model.patterns().await?;
-        let repositories = model.repositories()?;
+        let repositories = model.repositories().await?;
         let products = model.products();
         let licenses = model.licenses()?;
         let addons = model.addons()?;

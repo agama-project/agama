@@ -26,7 +26,7 @@ use tokio::sync::{
 use zypp_agama::ZyppError;
 
 use crate::model::{
-    packages::{ResolvableType, SoftwareConfig},
+    packages::{Repository, ResolvableType, SoftwareConfig},
     pattern::{self, Pattern},
     product::Product,
     products::{ProductSpec, RepositorySpec},
@@ -86,6 +86,7 @@ pub enum SoftwareAction {
     AddRepositories(Vec<RepositorySpec>, oneshot::Sender<ZyppServerResult<()>>),
     Install(oneshot::Sender<ZyppServerResult<bool>>),
     Finish,
+    ListRepositories(oneshot::Sender<ZyppServerResult<Vec<Repository>>>),
     GetPatternsMetadata(Vec<String>, oneshot::Sender<ZyppServerResult<Vec<Pattern>>>),
     PackageAvailable(String, oneshot::Sender<Result<bool, ZyppError>>),
     PackageSelected(String, oneshot::Sender<Result<bool, ZyppError>>),
@@ -237,6 +238,31 @@ impl ZyppServer {
             SoftwareAction::Solve(tx) => {
                 let res = zypp.run_solver();
                 tx.send(res)
+                    .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
+            }
+
+            SoftwareAction::ListRepositories(tx) => {
+                let repos_res = zypp.list_repositories();
+                let result = repos_res
+                    .map(|repos| {
+                        repos
+                            .into_iter()
+                            .enumerate()
+                            .map(|(index, repo)| Repository {
+                                url: repo.url,
+                                // unwrap here is ok, as number of repos are low
+                                id: index.try_into().unwrap(), // TODO: remove it when not needed, DBus relict, alias should be always unique
+                                alias: repo.alias,
+                                name: repo.user_name,
+                                product_dir: "/".to_string(), // TODO: get it from zypp
+                                enabled: repo.enabled,
+                                loaded: true,
+                            })
+                            .collect()
+                    })
+                    .map_err(|e| e.into());
+
+                tx.send(result)
                     .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             }
         }
