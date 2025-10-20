@@ -20,10 +20,7 @@
 
 use crate::{
     actor::Message,
-    api::{
-        self,
-        question::{self, Config, Question},
-    },
+    api::question::{self, Config, Question},
 };
 
 /// Gets questions configuration (policy, pre-defined answers, etc.).

@@ -18,8 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::l10n;
-use crate::message;
+use crate::{l10n, message, storage};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -29,6 +28,7 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use merge_struct::merge;
+use serde_json::value::RawValue;
 use tokio::sync::broadcast;
 
 #[derive(Debug, thiserror::Error)]
@@ -40,17 +40,20 @@ pub enum Error {
     #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error(transparent)]
-    Progress(#[from] progress::service::Error),
-    #[error(transparent)]
     L10n(#[from] l10n::service::Error),
+    #[error(transparent)]
+    Storage(#[from] storage::service::Error),
     #[error(transparent)]
     Issues(#[from] issue::service::Error),
     #[error(transparent)]
     Questions(#[from] question::service::Error),
+    #[error(transparent)]
+    Progress(#[from] progress::service::Error),
 }
 
 pub struct Service {
-    l10n: Handler<l10n::service::Service>,
+    l10n: Handler<l10n::Service>,
+    storage: Handler<storage::Service>,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
@@ -62,6 +65,7 @@ pub struct Service {
 impl Service {
     pub fn new(
         l10n: Handler<l10n::Service>,
+        storage: Handler<storage::Service>,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
@@ -69,6 +73,7 @@ impl Service {
     ) -> Self {
         Self {
             l10n,
+            storage,
             issues,
             progress,
             questions,
@@ -216,5 +221,24 @@ impl MessageHandler<message::RunAction> for Service {
             }
         }
         Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetStorageModel> for Service {
+    /// It returns the storage model.
+    async fn handle(&mut self, _message: message::GetStorageModel) -> Result<Box<RawValue>, Error> {
+        Ok(self.storage.call(storage::message::GetModel).await?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::SetStorageModel> for Service {
+    /// It sets the storage model.
+    async fn handle(&mut self, message: message::SetStorageModel) -> Result<(), Error> {
+        Ok(self
+            .storage
+            .call(storage::message::SetModel::new(message.model))
+            .await?)
     }
 }

@@ -55,3 +55,13 @@ impl MessageHandler<message::GetModel> for Service {
         self.client.get_config_model().await.map_err(|e| e.into())
     }
 }
+
+#[async_trait]
+impl MessageHandler<message::SetModel> for Service {
+    async fn handle(&mut self, message: message::SetModel) -> Result<(), Error> {
+        self.client
+            .set_config_model(message.model)
+            .await
+            .map_err(|e| e.into())
+    }
+}

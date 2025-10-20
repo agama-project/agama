@@ -21,7 +21,12 @@
 //! Implements a client to access Agama's storage service.
 
 use serde_json::value::RawValue;
-use zbus::{names::BusName, zvariant::OwnedObjectPath, Connection};
+use std::collections::HashMap;
+use zbus::{
+    names::BusName,
+    zvariant::{self, OwnedObjectPath},
+    Connection,
+};
 
 const SERVICE_NAME: &str = "org.opensuse.Agama.Storage1";
 const OBJECT_PATH: &str = "/org/opensuse/Agama/Storage1";
@@ -51,10 +56,14 @@ impl Client {
     }
 
     pub async fn get_config_model(&self) -> Result<Box<RawValue>, Error> {
-        self.call("GetConfigModel").await
+        self.get_json("GetConfigModel").await
     }
 
-    async fn call(&self, method: &str) -> Result<Box<RawValue>, Error> {
+    pub async fn set_config_model(&self, model: Box<RawValue>) -> Result<(), Error> {
+        self.set_json("SetConfigModel", model).await
+    }
+
+    async fn get_json(&self, method: &str) -> Result<Box<RawValue>, Error> {
         let bus = BusName::try_from(SERVICE_NAME.to_string())?;
         let path = OwnedObjectPath::try_from(OBJECT_PATH)?;
         let message = self
@@ -64,5 +73,22 @@ impl Client {
 
         let value: String = message.body().deserialize()?;
         RawValue::from_string(value).map_err(|e| e.into())
+    }
+
+    async fn set_json(&self, method: &str, json: Box<RawValue>) -> Result<(), Error> {
+        let bus = BusName::try_from(SERVICE_NAME.to_string())?;
+        let path = OwnedObjectPath::try_from(OBJECT_PATH)?;
+        let data: HashMap<&str, &zvariant::Value> = HashMap::new();
+        self.connection
+            .call_method(
+                Some(&bus),
+                &path,
+                Some(INTERFACE),
+                method,
+                &(json.to_string(), data),
+            )
+            .await?;
+
+        Ok(())
     }
 }

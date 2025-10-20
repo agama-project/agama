@@ -39,7 +39,7 @@ use axum::{
 };
 use hyper::StatusCode;
 use serde::Serialize;
-use serde_json::json;
+use serde_json::{json, value::RawValue};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -99,6 +99,10 @@ pub async fn server_service(
         .route(
             "/questions",
             get(get_questions).post(ask_question).patch(update_question),
+        )
+        .route(
+            "/private/storage_model",
+            get(get_storage_model).put(set_storage_model),
         )
         .with_state(state))
 }
@@ -241,8 +245,7 @@ async fn get_proposal(State(state): State<ServerState>) -> ServerResult<Response
 )]
 async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<IssueMap>> {
     let issues = state.manager.call(message::GetIssues).await?;
-    let issues_map: IssueMap = issues.into();
-    Ok(Json(issues_map))
+    Ok(Json(issues))
 }
 
 /// Returns the issues for each scope.
@@ -330,6 +333,42 @@ async fn run_action(
     Json(action): Json<Action>,
 ) -> ServerResult<()> {
     state.manager.call(message::RunAction::new(action)).await?;
+    Ok(())
+}
+
+/// Returns how the target system is configured (proposal).
+#[utoipa::path(
+    get,
+    path = "/private/storage_model",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "Storage model was successfully retrieved."),
+        (status = 400, description = "Not possible to retrieve the storage model.")
+    )
+)]
+async fn get_storage_model(State(state): State<ServerState>) -> ServerResult<Json<Box<RawValue>>> {
+    let model = state.manager.call(message::GetStorageModel).await?;
+    Ok(Json(model))
+}
+
+#[utoipa::path(
+    put,
+    request_body = String,
+    path = "/private/storage_model",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "Set the storage model"),
+        (status = 400, description = "Not possible to set the storage model")
+    )
+)]
+async fn set_storage_model(
+    State(state): State<ServerState>,
+    Json(model): Json<Box<RawValue>>,
+) -> ServerResult<()> {
+    state
+        .manager
+        .call(message::SetStorageModel::new(model))
+        .await?;
     Ok(())
 }
 

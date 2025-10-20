@@ -27,3 +27,18 @@ pub struct GetModel;
 impl Message for GetModel {
     type Reply = Box<RawValue>;
 }
+
+#[derive(Clone)]
+pub struct SetModel {
+    pub model: Box<RawValue>,
+}
+
+impl SetModel {
+    pub fn new(model: Box<RawValue>) -> Self {
+        Self { model }
+    }
+}
+
+impl Message for SetModel {
+    type Reply = ();
+}

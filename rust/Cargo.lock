@@ -131,9 +131,11 @@ name = "agama-manager"
 version = "0.1.0"
 dependencies = [
  "agama-l10n",
+ "agama-storage",
  "agama-utils",
  "async-trait",
  "merge-struct",
+ "serde_json",
  "thiserror 2.0.16",
  "tokio",
  "tokio-test",

@@ -7,11 +7,13 @@ edition.workspace = true
 [dependencies]
 agama-utils = { path = "../agama-utils" }
 agama-l10n = { path = "../agama-l10n" }
+agama-storage = { path = "../agama-storage" }
 thiserror = "2.0.12"
 tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread", "sync"] }
 async-trait = "0.1.83"
 zbus = { version = "5", default-features = false, features = ["tokio"] }
 merge-struct = "0.1.0"
+serde_json = { version = "1.0.140", features = ["raw_value"] }
 
 [dev-dependencies]
 tokio-test = "0.4.4"
