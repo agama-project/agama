@@ -22,7 +22,7 @@ use crate::{
     actor::Message,
     api::{
         self,
-        question::{Config, Question},
+        question::{self, Config, Question},
     },
 };
 
@@ -52,16 +52,16 @@ impl Message for SetConfig {
 pub struct Get;
 
 impl Message for Get {
-    type Reply = Vec<api::question::Question>;
+    type Reply = Vec<question::Question>;
 }
 
 /// Asks a question, adding it to the list of questions.
 pub struct Ask {
-    pub question: api::question::QuestionSpec,
+    pub question: question::QuestionSpec,
 }
 
 impl Ask {
-    pub fn new(question: api::question::QuestionSpec) -> Self {
+    pub fn new(question: question::QuestionSpec) -> Self {
         Self { question }
     }
 }
@@ -73,7 +73,7 @@ impl Message for Ask {
 /// Answers a question, updating its current representation.
 pub struct Answer {
     pub id: u32,
-    pub answer: api::question::Answer,
+    pub answer: question::Answer,
 }
 
 impl Message for Answer {
