@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Fri Oct 17 13:14:31 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Add a new HTTP to register questions (gh#agama-project/agama#2813).
+- Add a new HTTP resource to register questions (gh#agama-project/agama#2813).
 
 -------------------------------------------------------------------
 Thu Oct 16 04:46:20 UTC 2025 - José Iván López González <jlopez@suse.com>
