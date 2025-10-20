@@ -59,9 +59,6 @@ module Agama
           # TODO: detect if no UI showed up to display the questions and time out?
           # for example:
           # (0..Float::INFINITY).each { |i| break if i > 100 && !question.displayed; ... }
-
-          # We should register the InterfacesAdded callback... BEFORE adding to avoid races.
-          # Stupid but simple way: poll the answer property, sleep, repeat
           loop do
             found = questions.find { |q| q.id == id }
             # raise an error if the question is not found.

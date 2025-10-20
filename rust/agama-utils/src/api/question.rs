@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -47,20 +47,23 @@ pub enum Policy {
     User,
 }
 
-/// Data structure for single JSON answer. For variables specification see
-/// corresponding [agama_lib::questions::GenericQuestion] fields.
-/// The *matcher* part is: `class`, `text`, `data`.
-/// The *answer* part is: `answer`, `password`.
+/// Defines the answer to use for any question which matches the rule.
+///
+/// If the rule matches with the question ([Self::class](AnserRule::class),
+/// [text](Self::text) or [Self::data], it applies the specified `answer`.
 #[derive(Clone, Serialize, Deserialize, Debug, utoipa::ToSchema)]
 pub struct AnswerRule {
+    /// Question class (see [QuestionSpec::class]).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub class: Option<String>,
+    /// Question text (see [QuestionSpec::text]).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub text: Option<String>,
-    /// A matching GenericQuestion can have other data fields too
+    /// A question can include custom data. If any of the entries matches,
+    /// the rule is applied (see [QuestionSpec::data]).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<HashMap<String, String>>,
-    /// The answer text is the only mandatory part of an Answer
+    /// The answer to use (see [QuestionSpec::answer]).
     #[serde(flatten)]
     pub answer: Answer,
 }
@@ -68,7 +71,7 @@ pub struct AnswerRule {
 impl AnswerRule {
     /// Determines whether the answer responds to the given question.
     ///
-    /// * `spec`: question spect to compare with.
+    /// * `spec`: question spec to compare with.
     pub fn answers_to(&self, spec: &QuestionSpec) -> bool {
         if let Some(class) = &self.class {
             if spec.class != *class {
@@ -152,7 +155,9 @@ pub struct QuestionSpec {
     /// Question text.
     pub text: String,
     /// Question class (e.g., "autoyast.unsupported"). It works as a hint for
-    /// the UI or to match pre-defined answers.
+    /// the UI or to match pre-defined answers. The values that are understood
+    /// by Agama's UI are documented [in the Questions
+    /// page](https://agama-project.github.io/docs/user/reference/profile/answers).
     pub class: String,
     /// Optionally, a question might define an additional field (e.g., a
     /// password, a selector, etc.).
