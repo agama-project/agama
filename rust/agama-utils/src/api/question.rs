@@ -49,8 +49,8 @@ pub enum Policy {
 
 /// Defines the answer to use for any question which matches the rule.
 ///
-/// If the rule matches with the question ([Self::class](AnserRule::class),
-/// [text](Self::text) or [Self::data], it applies the specified `answer`.
+/// If the rule matches with the question ([class](Self::class),
+/// [text](Self::text) or [data](Self::data), it applies the specified `answer`).
 #[derive(Clone, Serialize, Deserialize, Debug, utoipa::ToSchema)]
 pub struct AnswerRule {
     /// Question class (see [QuestionSpec::class]).
