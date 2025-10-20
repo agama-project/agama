@@ -21,18 +21,16 @@
 use std::{path::Path, sync::Arc};
 
 use agama_lib::{
-    product::Product,
-    software::{
+    http::event, product::Product, software::{
         model::{ResolvableType, SoftwareConfig, SoftwareSelection},
         Pattern,
-    },
+    }
 };
 use tokio::sync::{mpsc, oneshot, Mutex};
 
 use crate::{
     products::{ProductSpec, ProductsRegistry},
     software_ng::backend::SoftwareServiceResult,
-    web::EventsSender,
 };
 
 use super::{client::SoftwareServiceClient, SoftwareServiceError};
@@ -68,7 +66,7 @@ pub enum SoftwareAction {
 /// Software service server.
 pub struct SoftwareServiceServer {
     receiver: mpsc::UnboundedReceiver<SoftwareAction>,
-    events: EventsSender,
+    events: event::Sender,
     products: Arc<Mutex<ProductsRegistry>>,
     // FIXME: what about having a SoftwareServiceState to keep business logic state?
     selected_product: Option<String>,
@@ -80,7 +78,7 @@ impl SoftwareServiceServer {
     ///
     /// The service runs on a separate thread and gets the client requests using a channel.
     pub fn start(
-        events: EventsSender,
+        events: event::Sender,
         products: Arc<Mutex<ProductsRegistry>>,
     ) -> SoftwareServiceResult<SoftwareServiceClient> {
         let (sender, receiver) = mpsc::unbounded_channel();

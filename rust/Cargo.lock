@@ -199,7 +199,6 @@ dependencies = [
  "hyper 1.6.0",
  "hyper-util",
  "libsystemd",
- "merge-struct",
  "openssl",
  "pam",
  "pin-project",

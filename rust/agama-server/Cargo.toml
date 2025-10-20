@@ -60,7 +60,6 @@ glob = "0.3.1"
 tempfile = "3.13.0"
 url = "2.5.2"
 serde_yaml = "0.9.34"
-merge-struct = "0.1.0"
 strum = { version = "0.27.2", features = ["derive"] }
 
 [[bin]]

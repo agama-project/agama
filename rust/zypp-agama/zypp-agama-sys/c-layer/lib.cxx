@@ -28,6 +28,8 @@
 
 extern "C" {
 
+#include <systemd/sd-journal.h>
+
 struct Zypp {
   zypp::ZYpp::Ptr zypp_pointer;
   zypp::RepoManager *repo_manager;
@@ -35,6 +37,81 @@ struct Zypp {
 
 static struct Zypp the_zypp {
   .zypp_pointer = NULL, .repo_manager = NULL,
+};
+
+// formatter which actually logs the messages to the systemd journal,
+// that is a bit hacky but in the logger we receive an already formatted
+// message as a single string and it would not be easy to get back the original
+// components of the message
+struct AgamaFormatter : public zypp::base::LogControl::LineFormater {
+  virtual std::string format(const std::string &zypp_group,
+                             zypp::base::logger::LogLevel zypp_level,
+                             const char *zypp_file, const char *zypp_func,
+                             int zypp_line, const std::string &zypp_message) {
+    // the systemd/syslog compatible log level
+    int level;
+
+    // convert the zypp log level to the systemd/syslog log level
+    switch (zypp_level) {
+    // for details about the systemd levels see
+    // https://www.freedesktop.org/software/systemd/man/latest/sd-daemon.html
+    case zypp::base::logger::E_DBG:
+      level = LOG_DEBUG;
+      break;
+    case zypp::base::logger::E_MIL:
+      level = LOG_INFO;
+      break;
+    case zypp::base::logger::E_WAR:
+      level = LOG_WARNING;
+      break;
+    case zypp::base::logger::E_ERR:
+      level = LOG_ERR;
+      break;
+    case zypp::base::logger::E_SEC:
+      // security error => critical
+      level = LOG_CRIT;
+      break;
+    case zypp::base::logger::E_INT:
+      // internal error => critical
+      level = LOG_CRIT;
+      break;
+    // libzypp specific level
+    case zypp::base::logger::E_USR:
+      level = LOG_INFO;
+      break;
+    // libzypp specific level
+    case zypp::base::logger::E_XXX:
+      level = LOG_CRIT;
+      break;
+    }
+
+    // unlike the other values, the location needs to be sent in an already
+    // formatted strings
+    std::string file("CODE_FILE=");
+    file.append(zypp_file);
+    std::string line("CODE_LINE=");
+    line.append(std::to_string(zypp_line));
+
+    // this will log the message with libzypp location, not from *this* file,
+    // see "man sd_journal_send_with_location"
+    sd_journal_send_with_location(
+        file.c_str(), line.c_str(), zypp_func, "PRIORITY=%i", level,
+        "MESSAGE=[%s] %s", zypp_group.c_str(), zypp_message.c_str(),
+        // some custom data to allow easy filtering of the libzypp messages
+        "COMPONENT=libzypp", "ZYPP_GROUP=%s", zypp_group.c_str(),
+        "ZYPP_LEVEL=%i", zypp_level, NULL);
+
+    // libzypp aborts when the returned message is empty,
+    // return some static fake data to make it happy
+    return "msg";
+  }
+};
+
+// a dummy logger
+struct AgamaLogger : public zypp::base::LogControl::LineWriter {
+  virtual void writeOut(const std::string &formatted) {
+    // do nothing, the message has been already logged by the formatter
+  }
 };
 
 void free_zypp(struct Zypp *zypp) noexcept {
@@ -48,28 +125,19 @@ void free_zypp(struct Zypp *zypp) noexcept {
 }
 
 static zypp::ZYpp::Ptr zypp_ptr() {
-  // set logging to ~/zypp-agama.log for now. For final we need to decide it
-  zypp::Pathname home(getenv("HOME"));
-  zypp::Pathname log_path = home.cat("zypp-agama.log");
-  zypp::base::LogControl::instance().logfile(log_path);
+  sd_journal_print(LOG_NOTICE, "Redirecting libzypp logs to systemd journal");
 
-  int max_count = 5;
-  unsigned int seconds = 3;
+  // log to systemd journal using our specific formatter
+  boost::shared_ptr<AgamaFormatter> formatter(new AgamaFormatter);
+  zypp::base::LogControl::instance().setLineFormater(formatter);
+  // use a dummy logger, using a NULL logger would skip the formatter completely
+  // so the messages would not be logged in the end
+  boost::shared_ptr<AgamaLogger> logger(new AgamaLogger);
+  zypp::base::LogControl::instance().setLineWriter(logger);
 
-  zypp::ZYpp::Ptr zypp = NULL;
-  while (zypp == NULL && max_count > 0) {
-    try {
-      zypp = zypp::getZYpp();
-
-      return zypp;
-    } catch (const zypp::Exception &excpt) {
-      max_count--;
-
-      sleep(seconds);
-    }
-  }
-
-  return NULL;
+  // do not do any magic waiting for lock as in agama context we work
+  // on our own root, so there should be no need to wait
+  return zypp::getZYpp();
 }
 
 void switch_target(struct Zypp *zypp, const char *root,
@@ -110,6 +178,9 @@ struct Zypp *init_target(const char *root, struct Status *status,
 
   const std::string root_str(root);
 
+  // create the libzypp lock also in the target directory
+  setenv("ZYPP_LOCKFILE_ROOT", root, 1 /* allow overwrite */);
+
   struct Zypp *zypp = NULL;
   try {
     zypp::RepoManagerOptions repo_manager_options(root);
@@ -127,6 +198,11 @@ struct Zypp *init_target(const char *root, struct Status *status,
     if (progress != NULL)
       progress("Initializing the Target System", 0, 2, user_data);
     the_zypp.zypp_pointer = zypp_ptr();
+    if (the_zypp.zypp_pointer == NULL) {
+        STATUS_ERROR(status, "Failed to obtain zypp pointer. "
+                         "See journalctl for details.");
+        return NULL;
+    }
     zypp = &the_zypp;
     zypp->zypp_pointer->initializeTarget(root_str, false);
     if (progress != NULL)

@@ -56,6 +56,7 @@ fn main() {
     );
     println!("cargo::rustc-link-lib=static=agama-zypp");
     println!("cargo::rustc-link-lib=dylib=zypp");
+    println!("cargo::rustc-link-lib=dylib=systemd");
     // NOTE: install the matching library for your compiler version, for example
     // libstdc++6-devel-gcc13.rpm
     println!("cargo::rustc-link-lib=dylib=stdc++");

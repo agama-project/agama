@@ -34,11 +34,12 @@
 
 use std::sync::Arc;
 
+use agama_lib::http::event;
 pub use client::SoftwareServiceClient;
 use tokio::sync::{mpsc, oneshot, Mutex};
 use zypp_agama::ZyppError;
 
-use crate::{products::ProductsRegistry, web::EventsSender};
+use crate::{products::ProductsRegistry};
 
 mod client;
 mod server;
@@ -90,7 +91,7 @@ pub struct SoftwareService {}
 impl SoftwareService {
     /// Starts the software service.
     pub fn start(
-        events: EventsSender,
+        events: event::Sender,
         products: Arc<Mutex<ProductsRegistry>>,
     ) -> Result<SoftwareServiceClient, SoftwareServiceError> {
         server::SoftwareServiceServer::start(events, products)
