@@ -1,0 +1,102 @@
+#! /bin/bash
+
+shopt -s nullglob
+set -e
+
+[ -e /dracut-state.sh ] && . /dracut-state.sh
+
+REPO_FILE="/run/live-self-update/repositories"
+
+# do the cleanup even in case of failure
+trap cleanup_chroot EXIT
+
+# helper for running a command in the live root system, works both when running
+# in initramfs ($NEWROOT is set) and in mounted Live root ($NEWROOT unset)
+run_command() {
+  if [ -z "$NEWROOT" ]; then
+    "$@"
+  else
+    "$NEWROOT/usr/bin/chroot" "$NEWROOT" "$@"
+  fi
+}
+
+# Prepare the system root to be used by scripts before switching to it.
+prepare_chroot() {
+  if [ -n "$NEWROOT" ]; then
+    echo "<5>Preparing for the self update..."
+
+    # make local devices available to "agama download"
+    mount -o bind /run "$NEWROOT"/run
+    mount -o bind /sys "$NEWROOT"/sys
+    mount -o bind /proc "$NEWROOT"/proc
+    mount -o bind /dev "$NEWROOT"/dev
+    cp /run/NetworkManager/resolv.conf "$NEWROOT"/etc/resolv.conf
+  fi
+}
+
+# Revert the changes done by prepare_chroot() and restore the system to the
+# original state
+cleanup_chroot() {
+  if [ "$?" != "0" ]; then
+    echo "<3>Error: Self update failed!"
+  else
+    echo "<5>Self update successfully finished"
+  fi
+
+  if [ -n "$NEWROOT" ]; then
+    rm "$NEWROOT"/etc/resolv.conf
+    umount "$NEWROOT"/run
+    umount "$NEWROOT"/sys
+    umount "$NEWROOT"/proc
+    umount "$NEWROOT"/dev
+  fi
+}
+
+# Applies all the updates
+#
+# Reads the URL of the updates from $AGAMA_DUD_INFO and process each one.
+install_updates() {
+  prepare_chroot
+
+  index=0
+  self_update_repos=()
+
+  echo "<5>Adding self update repositories..."
+  # add the self-update repositories  
+  while read -r update_url; do
+    if [ -n "$update_url" ]; then
+      repo="self-update-$index"
+      run_command zypper addrepo -f "$update_url" "$repo"
+      self_update_repos+=("$repo")
+      ((++index))
+    fi
+  done <"$REPO_FILE"
+
+  echo "<5>Loading repositories..."
+  run_command zypper refresh "${self_update_repos[@]}"
+
+  # build the list of repository options passed to zypper
+  repo_options=()
+  for repo in "${self_update_repos[@]}"; do
+    repo_options+=("--repo" "$repo")
+  done
+
+  echo "<5>Updating packages..."
+  # update the system only using the predefined "agama-devel" repository,
+  # in real implementation we would need to add the self-update repository and 
+  # we should use the "--non-interactive" option to run without asking the user
+  run_command zypper --non-interactive update --allow-downgrade --allow-vendor-change --details --no-recommends "${repo_options[@]}"
+
+  echo "<5>Cleaning the system..."
+  # delete the repository cache, not needed anymore, saves space in RAM disk
+  run_command zypper clean --all
+
+  # disable the self update repositories (keep them for debugging purposes)
+  for repo in "${self_update_repos[@]}"; do
+    run_command zypper modifyrepo --disable "$repo"
+  done
+}
+
+if [ -f "$REPO_FILE" ]; then
+  install_updates
+fi

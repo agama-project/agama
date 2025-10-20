@@ -1,0 +1,30 @@
+[Unit]
+Description=Live system self update
+DefaultDependencies=no
+
+# see https://man7.org/linux/man-pages/man7/dracut.bootup.7.html
+# for the dependency order of the dracut services
+
+# after network is configured
+After=network.target
+# after /sysroot is mounted
+After=initrd-fs.target
+# before running the pre-pivot dracut hooks (before the driver update)
+Before=dracut-pre-pivot.service
+# the file contains list of the self-update repositories,
+# it is created by a dracut hook while parsing the command line parameters
+ConditionPathExists=/run/live-self-update/repositories
+
+[Service]
+Type=oneshot
+ExecStart=live-self-update
+StandardOutput=journal+console
+# always wait until the self update is fully finished, booting a half updated
+# system could have nasty side effects, if the service gets stuck it can be
+# manually disabled with the "inst.self_update=0" boot parameter
+TimeoutStartSec=infinity
+SyslogIdentifier=live-self-update
+RemainAfterExit=true
+
+[Install]
+WantedBy=initrd.target
