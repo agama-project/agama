@@ -23,11 +23,9 @@ use tokio::sync::{mpsc, oneshot};
 
 use crate::{
     model::{
-        license::License,
         packages::{Repository, ResolvableType},
         pattern::Pattern,
-        product::Product,
-        products::{ProductSpec, ProductsRegistry, UserPattern},
+        products::{ProductSpec, UserPattern},
         registration::{AddonProperties, RegistrationInfo},
         software_selection::SoftwareSelection,
     },
@@ -54,26 +52,14 @@ pub trait ModelAdapter: Send + Sync + 'static {
     /// List of available patterns.
     async fn patterns(&self) -> Result<Vec<Pattern>, service::Error>;
 
-    /// List of available products.
-    fn products(&self) -> Vec<Product>;
-
     /// List of available repositories.
     async fn repositories(&self) -> Result<Vec<Repository>, service::Error>;
-
-    /// List of available licenses.
-    fn licenses(&self) -> Result<Vec<License>, service::Error>;
 
     /// List of available addons.
     fn addons(&self) -> Result<Vec<AddonProperties>, service::Error>;
 
-    /// selected product
-    fn selected_product(&self) -> Option<String>;
-
     /// info about registration
     fn registration_info(&self) -> Result<RegistrationInfo, service::Error>;
-
-    /// selects given product
-    fn select_product(&mut self, product_id: &str) -> Result<(), service::Error>;
 
     /// check if package is available
     async fn is_package_available(&self, tag: String) -> Result<bool, service::Error>;
@@ -94,7 +80,7 @@ pub trait ModelAdapter: Send + Sync + 'static {
     ) -> Result<(), service::Error>;
 
     /// Probes system and updates info about it.
-    async fn probe(&mut self) -> Result<(), service::Error>;
+    async fn probe(&mut self, product: &ProductSpec) -> Result<(), service::Error>;
 
     /// install rpms to target system
     async fn install(&self) -> Result<bool, service::Error>;
@@ -106,7 +92,6 @@ pub trait ModelAdapter: Send + Sync + 'static {
 /// [ModelAdapter] implementation for libzypp systems.
 pub struct Model {
     zypp_sender: mpsc::UnboundedSender<SoftwareAction>,
-    products: ProductsRegistry,
     // FIXME: what about having a SoftwareServiceState to keep business logic state?
     selected_product: Option<ProductSpec>,
     software_selection: SoftwareSelection,
@@ -117,7 +102,6 @@ impl Model {
     pub fn new(zypp_sender: mpsc::UnboundedSender<SoftwareAction>) -> Result<Self, service::Error> {
         Ok(Self {
             zypp_sender,
-            products: ProductsRegistry::load()?,
             selected_product: None,
             software_selection: SoftwareSelection::default(),
         })
@@ -145,30 +129,6 @@ impl ModelAdapter for Model {
         self.zypp_sender
             .send(SoftwareAction::GetPatternsMetadata(names, tx))?;
         Ok(rx.await??)
-    }
-
-    fn products(&self) -> Vec<Product> {
-        self.products
-            .products
-            .iter()
-            .map(|p| Product {
-                id: p.id.clone(),
-                name: p.name.clone(),
-                description: p.description.clone(),
-                icon: p.icon.clone(),
-                registration: p.registration,
-                license: None,
-            })
-            .collect()
-    }
-
-    fn select_product(&mut self, product_id: &str) -> Result<(), service::Error> {
-        let product_str = product_id.to_string();
-        let Some(product_spec) = self.products.find(product_id) else {
-            return Err(service::Error::WrongProduct(product_str));
-        };
-        self.selected_product = Some(product_spec.clone());
-        Ok(())
     }
 
     async fn is_package_available(&self, tag: String) -> Result<bool, service::Error> {
@@ -204,11 +164,7 @@ impl ModelAdapter for Model {
         Ok(())
     }
 
-    async fn probe(&mut self) -> Result<(), service::Error> {
-        let Some(product) = &self.selected_product else {
-            return Err(service::Error::MissingProduct);
-        };
-
+    async fn probe(&mut self, product: &ProductSpec) -> Result<(), service::Error> {
         let (tx, rx) = oneshot::channel();
         let repositories = product
             .software
@@ -317,16 +273,8 @@ impl ModelAdapter for Model {
         Ok(rx.await??)
     }
 
-    fn licenses(&self) -> Result<Vec<License>, service::Error> {
-        todo!()
-    }
-
     fn addons(&self) -> Result<Vec<AddonProperties>, service::Error> {
         todo!()
-    }
-
-    fn selected_product(&self) -> Option<String> {
-        self.selected_product.clone().map(|p| p.id)
     }
 
     fn registration_info(&self) -> Result<RegistrationInfo, service::Error> {

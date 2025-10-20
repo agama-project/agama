@@ -22,7 +22,11 @@ use crate::{
     config::Config,
     event::{self},
     message,
-    model::{products::ProductsRegistryError, ModelAdapter},
+    model::{
+        license::{Error as LicenseError, LicensesRepo},
+        products::{ProductsRegistry, ProductsRegistryError},
+        ModelAdapter,
+    },
     proposal::Proposal,
     system_info::SystemInfo,
     zypp_server::{self, SoftwareAction},
@@ -54,6 +58,8 @@ pub enum Error {
     #[error(transparent)]
     ProductsRegistry(#[from] ProductsRegistryError),
     #[error(transparent)]
+    License(#[from] LicenseError),
+    #[error(transparent)]
     ZyppServerError(#[from] zypp_server::ZyppServerError),
     #[error(transparent)]
     ZyppError(#[from] zypp_agama::errors::ZyppError),
@@ -69,13 +75,17 @@ pub enum Error {
 /// * Applies the user configuration at the end of the installation.
 pub struct Service {
     model: Box<dyn ModelAdapter + Send + 'static>,
+    products: ProductsRegistry,
+    licenses: LicensesRepo,
     issues: Handler<issue::Service>,
     events: event::Sender,
     state: State,
 }
 
+#[derive(Default)]
 struct State {
     config: Config,
+    system: SystemInfo,
 }
 
 impl Service {
@@ -88,11 +98,29 @@ impl Service {
             model: Box::new(model),
             issues,
             events,
-            state: State {
-                // we start with empty config as without product selection, there is basically nothing in config
-                config: Config::default(),
-            },
+            licenses: LicensesRepo::default(),
+            products: ProductsRegistry::default(),
+            state: Default::default(),
         }
+    }
+
+    pub fn read(&mut self) -> Result<(), Error> {
+        self.licenses.read()?;
+        self.products.read()?;
+        Ok(())
+    }
+
+    pub fn update_system(&mut self) -> Result<(), Error> {
+        let licenses = self.licenses.licenses().into_iter().cloned().collect();
+        let products = self.products.products();
+
+        self.state.system = SystemInfo {
+            licenses,
+            products,
+            ..Default::default()
+        };
+
+        Ok(())
     }
 }
 
@@ -103,7 +131,7 @@ impl Actor for Service {
 #[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
-        Ok(SystemInfo::read_from(self.model.as_ref()).await?)
+        Ok(self.state.system.clone())
     }
 }
 
@@ -131,7 +159,16 @@ impl MessageHandler<message::GetProposal> for Service {
 #[async_trait]
 impl MessageHandler<message::Probe> for Service {
     async fn handle(&mut self, _message: message::Probe) -> Result<(), Error> {
-        self.model.probe().await?;
+        let Some(product_id) = self.state.config.product.clone().and_then(|c| c.id) else {
+            return Err(Error::MissingProduct);
+        };
+
+        let Some(product) = self.products.find(&product_id) else {
+            return Err(Error::WrongProduct(product_id));
+        };
+
+        self.model.probe(product).await?;
+        self.update_system();
         Ok(())
     }
 }

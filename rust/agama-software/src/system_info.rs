@@ -29,7 +29,7 @@ use serde::Serialize;
 
 /// Localization-related information of the system where the installer
 /// is running.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Default, Serialize)]
 pub struct SystemInfo {
     /// List of known patterns.
     pub patterns: Vec<Pattern>,
@@ -41,23 +41,4 @@ pub struct SystemInfo {
     pub licenses: Vec<License>,
     /// List of available addons to register
     pub addons: Vec<AddonProperties>,
-}
-
-impl SystemInfo {
-    /// Reads the information from the system adapter.
-    pub async fn read_from(model: &dyn ModelAdapter) -> Result<Self, service::Error> {
-        let patterns = model.patterns().await?;
-        let repositories = model.repositories().await?;
-        let products = model.products();
-        let licenses = model.licenses()?;
-        let addons = model.addons()?;
-
-        Ok(Self {
-            patterns,
-            repositories,
-            products,
-            licenses,
-            addons,
-        })
-    }
 }
