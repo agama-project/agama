@@ -128,7 +128,7 @@ impl HTTPClient {
     }
 
     pub async fn delete_question(&self, id: u32) -> Result<(), QuestionsHTTPClientError> {
-        let update = UpdateOperation::Remove(id);
+        let update = UpdateOperation::Remove { id };
         self.client.patch_void("/v2/questions", &update).await?;
         Ok(())
     }

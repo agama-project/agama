@@ -318,7 +318,7 @@ pub enum UpdateOperation {
     /// Answer the question with the given answer.
     Answer { id: u32, answer: Answer },
     /// Remove the question.
-    Remove(u32),
+    Remove { id: u32 },
 }
 
 #[cfg(test)]
