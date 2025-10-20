@@ -32,6 +32,14 @@ use std::{
 };
 use thiserror::Error;
 
+#[derive(Error, Debug)]
+pub enum Error {
+    #[error("Not a valid language code: {0}")]
+    InvalidLanguageCode(String),
+    #[error("I/O error")]
+    IO(#[from] std::io::Error),
+}
+
 /// Represents a product license.
 ///
 /// It contains the license ID and the list of languages that with a translation.
@@ -73,9 +81,9 @@ pub struct LicenseContent {
 #[derive(Clone)]
 pub struct LicensesRepo {
     /// Repository path.
-    pub path: std::path::PathBuf,
+    path: std::path::PathBuf,
     /// Licenses in the repository.
-    pub licenses: Vec<License>,
+    licenses: Vec<License>,
     /// Fallback languages per territory.
     fallback: HashMap<String, LanguageTag>,
 }
@@ -220,6 +228,11 @@ impl LicensesRepo {
             .into_iter()
             .find(|c| license.languages.contains(&c))
     }
+
+    /// Returns a vector with the licenses from the repository.
+    pub fn licenses(&self) -> Vec<&License> {
+        self.licenses.iter().collect()
+    }
 }
 
 impl Default for LicensesRepo {
@@ -269,14 +282,14 @@ impl Display for LanguageTag {
 pub struct InvalidLanguageCode(String);
 
 impl TryFrom<&str> for LanguageTag {
-    type Error = InvalidLanguageCode;
+    type Error = Error;
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let language_regexp: Regex = Regex::new(r"^([[:alpha:]]+)(?:[_-]([A-Z]+))?").unwrap();
 
         let captures = language_regexp
             .captures(value)
-            .ok_or_else(|| InvalidLanguageCode(value.to_string()))?;
+            .ok_or_else(|| Error::InvalidLanguageCode(value.to_string()))?;
 
         Ok(Self {
             language: captures.get(1).unwrap().as_str().to_string(),

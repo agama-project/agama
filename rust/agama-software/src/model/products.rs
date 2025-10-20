@@ -28,6 +28,8 @@ use serde::{Deserialize, Deserializer};
 use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
 use std::path::{Path, PathBuf};
 
+use crate::model::product::Product;
+
 #[derive(thiserror::Error, Debug)]
 pub enum ProductsRegistryError {
     #[error("Could not read the products registry: {0}")]
@@ -42,34 +44,24 @@ pub enum ProductsRegistryError {
 /// location by setting the `AGAMA_PRODUCTS_DIR` environment variable.
 ///
 /// Dynamic behavior, like filtering by architecture, is not supported yet.
-#[derive(Clone, Default, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct ProductsRegistry {
-    pub products: Vec<ProductSpec>,
+    path: std::path::PathBuf,
+    products: Vec<ProductSpec>,
 }
 
 impl ProductsRegistry {
-    /// Creates a registry loading the products from the default location.
-    pub fn load() -> Result<Self, ProductsRegistryError> {
-        let products_dir = if let Ok(dir) = std::env::var("AGAMA_PRODUCTS_DIR") {
-            PathBuf::from(dir)
-        } else {
-            PathBuf::from("/usr/share/agama/products.d")
-        };
-
-        if !products_dir.exists() {
-            return Err(ProductsRegistryError::IO(std::io::Error::new(
-                std::io::ErrorKind::NotFound,
-                "products.d directory does not exist",
-            )));
+    pub fn new<P: AsRef<Path>>(path: P) -> Self {
+        Self {
+            path: path.as_ref().to_owned(),
+            products: vec![],
         }
-
-        Self::load_from(products_dir)
     }
 
-    /// Creates a registry loading the products from the given location.
-    pub fn load_from<P: AsRef<Path>>(products_path: P) -> Result<Self, ProductsRegistryError> {
-        let entries = std::fs::read_dir(products_path)?;
-        let mut products = vec![];
+    /// Creates a registry loading the products from its location.
+    pub fn read(&mut self) -> Result<(), ProductsRegistryError> {
+        let entries = std::fs::read_dir(&self.path)?;
+        self.products.clear();
 
         for entry in entries {
             let entry = entry?;
@@ -81,11 +73,11 @@ impl ProductsRegistry {
 
             if path.is_file() && (ext == "yaml" || ext == "yml") {
                 let product = ProductSpec::load_from(path)?;
-                products.push(product);
+                self.products.push(product);
             }
         }
 
-        Ok(Self { products })
+        Ok(())
     }
 
     /// Determines whether the are are multiple products.
@@ -98,6 +90,33 @@ impl ProductsRegistry {
     /// * `id`: product ID.
     pub fn find(&self, id: &str) -> Option<&ProductSpec> {
         self.products.iter().find(|p| p.id == id)
+    }
+
+    /// Returns a vector with the licenses from the repository.
+    pub fn products(&self) -> Vec<Product> {
+        self.products
+            .iter()
+            .map(|p| Product {
+                id: p.id.clone(),
+                name: p.name.clone(),
+                description: p.description.clone(),
+                icon: p.icon.clone(),
+                registration: p.registration,
+                license: None,
+            })
+            .collect()
+    }
+}
+
+impl Default for ProductsRegistry {
+    fn default() -> Self {
+        let products_dir = if let Ok(dir) = std::env::var("AGAMA_PRODUCTS_DIR") {
+            PathBuf::from(dir)
+        } else {
+            PathBuf::from("/usr/share/agama/products.d")
+        };
+
+        Self::new(products_dir)
     }
 }
 
@@ -197,16 +216,18 @@ mod test {
     #[test]
     fn test_load_registry() {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/share/products.d");
-        let config = ProductsRegistry::load_from(path.as_path()).unwrap();
+        let mut repo = ProductsRegistry::new(path.as_path());
+        repo.read().unwrap();
         // ensuring that we can load all products from tests
-        assert_eq!(config.products.len(), 8);
+        assert_eq!(repo.products.len(), 8);
     }
 
     #[test]
     fn test_find_product() {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/share/products.d");
-        let products = ProductsRegistry::load_from(path.as_path()).unwrap();
-        let tw = products.find("Tumbleweed").unwrap();
+        let mut repo = ProductsRegistry::new(path.as_path());
+        repo.read().unwrap();
+        let tw = repo.find("Tumbleweed").unwrap();
         assert_eq!(tw.id, "Tumbleweed");
         assert_eq!(tw.name, "openSUSE Tumbleweed");
         assert_eq!(tw.icon, "Tumbleweed.svg");
@@ -231,7 +252,7 @@ mod test {
             Some(&UserPattern::Preselected(expected_pattern))
         );
 
-        let missing = products.find("Missing");
+        let missing = repo.find("Missing");
         assert!(missing.is_none());
     }
 }
