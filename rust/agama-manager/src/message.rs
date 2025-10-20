@@ -18,14 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::collections::HashMap;
-
-use crate::supervisor::{
-    l10n, proposal::Proposal, scope::ConfigScope, scope::Scope, service, system_info::SystemInfo,
-};
+use crate::{l10n, proposal::Proposal, service, system_info::SystemInfo};
 use agama_lib::{install_settings::InstallSettings, issue::Issue};
 use agama_utils::{actor::Message, progress::Progress};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 /// Gets the installation status.
 pub struct GetStatus;
@@ -60,22 +57,6 @@ pub struct GetExtendedConfig;
 
 impl Message for GetExtendedConfig {
     type Reply = InstallSettings;
-}
-
-/// Gets a scope from the full config.
-#[derive(Debug)]
-pub struct GetExtendedConfigScope {
-    pub scope: Scope,
-}
-
-impl GetExtendedConfigScope {
-    pub fn new(scope: Scope) -> Self {
-        Self { scope }
-    }
-}
-
-impl Message for GetExtendedConfigScope {
-    type Reply = Option<ConfigScope>;
 }
 
 /// Gets the current config set by the user.
@@ -115,54 +96,6 @@ impl UpdateConfig {
 }
 
 impl Message for UpdateConfig {
-    type Reply = ();
-}
-
-/// Gets a scope from the config.
-#[derive(Debug)]
-pub struct GetConfigScope {
-    pub scope: Scope,
-}
-
-impl GetConfigScope {
-    pub fn new(scope: Scope) -> Self {
-        Self { scope }
-    }
-}
-
-impl Message for GetConfigScope {
-    type Reply = Option<ConfigScope>;
-}
-
-/// Sets a config scope
-#[derive(Debug)]
-pub struct SetConfigScope {
-    pub config: ConfigScope,
-}
-
-impl SetConfigScope {
-    pub fn new(config: ConfigScope) -> Self {
-        Self { config }
-    }
-}
-
-impl Message for SetConfigScope {
-    type Reply = ();
-}
-
-/// Updates a config scope
-#[derive(Debug)]
-pub struct UpdateConfigScope {
-    pub config: ConfigScope,
-}
-
-impl UpdateConfigScope {
-    pub fn new(config: ConfigScope) -> Self {
-        Self { config }
-    }
-}
-
-impl Message for UpdateConfigScope {
     type Reply = ();
 }
 

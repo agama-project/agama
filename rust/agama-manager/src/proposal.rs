@@ -18,21 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-mod start;
-pub use start::start;
+use crate::l10n;
+use serde::Serialize;
 
-pub mod service;
-pub use service::Service;
-
-mod scope;
-pub use scope::{ConfigScope, Scope};
-
-mod system_info;
-pub use system_info::SystemInfo;
-
-pub mod message;
-
-mod listener;
-mod proposal;
-
-pub use agama_l10n as l10n;
+#[derive(Clone, Debug, Serialize)]
+pub struct Proposal {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub localization: Option<l10n::Proposal>,
+}

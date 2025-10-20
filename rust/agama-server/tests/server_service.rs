@@ -150,13 +150,15 @@ async fn test_put_config() -> Result<(), Box<dyn Error>> {
 #[test]
 #[cfg(not(ci))]
 async fn test_patch_config() -> Result<(), Box<dyn Error>> {
+    use agama_server::server::types::ConfigPatch;
+
     let localization = Config {
         locale: Some("es_ES.UTF-8".to_string()),
         keymap: Some("es".to_string()),
         timezone: Some("Atlantic/Canary".to_string()),
     };
 
-    let mut config = InstallSettings {
+    let config = InstallSettings {
         localization: Some(localization),
         ..Default::default()
     };
@@ -177,13 +179,18 @@ async fn test_patch_config() -> Result<(), Box<dyn Error>> {
         keymap: Some("en".to_string()),
         timezone: None,
     };
-    config.localization = Some(localization);
+    let patch = ConfigPatch {
+        update: Some(InstallSettings {
+            localization: Some(localization),
+            ..Default::default()
+        }),
+    };
 
     let request = Request::builder()
         .uri("/config")
         .header("Content-Type", "application/json")
         .method(Method::PATCH)
-        .body(serde_json::to_string(&config)?)
+        .body(serde_json::to_string(&patch)?)
         .unwrap();
 
     let response = server_service.clone().oneshot(request).await.unwrap();
