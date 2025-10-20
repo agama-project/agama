@@ -20,12 +20,13 @@
 
 use crate::l10n;
 use crate::message;
-use agama_utils::actor::{self, Actor, Handler, MessageHandler};
-use agama_utils::api::event;
-use agama_utils::api::status::State;
-use agama_utils::api::{Action, Config, Event, IssueMap, Proposal, Scope, Status, SystemInfo};
-use agama_utils::progress;
-use agama_utils::{issue, question};
+use agama_utils::{
+    actor::{self, Actor, Handler, MessageHandler},
+    api::{
+        event, status::State, Action, Config, Event, IssueMap, Proposal, Scope, Status, SystemInfo,
+    },
+    issue, progress, question,
+};
 use async_trait::async_trait;
 use merge_struct::merge;
 use tokio::sync::broadcast;

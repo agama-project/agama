@@ -21,9 +21,11 @@
 use crate::model::Model;
 use crate::monitor::{self, Monitor};
 use crate::service::{self, Service};
-use agama_utils::actor::{self, Handler};
-use agama_utils::api::event;
-use agama_utils::issue;
+use agama_utils::{
+    actor::{self, Handler},
+    api::event,
+    issue,
+};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {

@@ -21,21 +21,23 @@
 //! This module implements Agama's HTTP API.
 
 use agama_lib::error::ServiceError;
-use agama_manager as manager;
-use agama_manager::message;
-use agama_utils::actor::Handler;
-use agama_utils::api::config;
-use agama_utils::api::event;
-use agama_utils::api::question::UpdateOperation;
-use agama_utils::api::question::{Question, QuestionSpec};
-use agama_utils::api::{Action, Config, IssueMap, Status, SystemInfo};
-use agama_utils::question;
+use agama_manager::{self as manager, message};
+use agama_utils::{
+    actor::Handler,
+    api::{
+        config, event,
+        question::{Question, QuestionSpec, UpdateOperation},
+        Action, Config, IssueMap, Status, SystemInfo,
+    },
+    question,
+};
 use anyhow;
-use axum::extract::State;
-use axum::response::{IntoResponse, Response};
-use axum::routing::{get, post};
-use axum::Json;
-use axum::Router;
+use axum::{
+    extract::State,
+    response::{IntoResponse, Response},
+    routing::{get, post},
+    Json, Router,
+};
 use hyper::StatusCode;
 use serde::Serialize;
 use serde_json::json;

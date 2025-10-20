@@ -20,10 +20,11 @@
 
 use crate::l10n;
 use crate::service::Service;
-use agama_utils::actor::{self, Handler};
-use agama_utils::api::event;
-use agama_utils::progress;
-use agama_utils::{issue, question};
+use agama_utils::{
+    actor::{self, Handler},
+    api::event,
+    issue, progress, question,
+};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
