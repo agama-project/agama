@@ -45,7 +45,7 @@ module Agama
         # @param id [Integer] question ID
         # @return [void]
         def delete(id)
-          payload = { "remove" => id }
+          payload = { "delete" => id }
           patch("/v2/questions", payload)
         end
 
