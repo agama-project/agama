@@ -22,7 +22,7 @@
 require "logger"
 require "yast"
 require "agama/question"
-require "agama/dbus/clients/questions"
+require "agama/http/clients"
 require "agama/software/callbacks/base"
 
 Yast.import "Pkg"
@@ -74,9 +74,9 @@ module Agama
         # @return [Logger]
         attr_reader :logger
 
-        # @return [Agama::DBus::Clients::Questions]
+        # @return [Agama::HTTP::Clients::Questions]
         def questions_client
-          @questions_client ||= Agama::DBus::Clients::Questions.new(logger: logger)
+          @questions_client ||= Agama::HTTP::Clients::Questions.new(logger)
         end
 
         def start_package(package, _file, _summary, _size, _other)
@@ -98,8 +98,8 @@ module Agama
             data:    { "package" => current_package }
           )
 
-          questions_client.ask(question) do |question_client|
-            case question_client.answer
+          questions_client.ask(question) do |answer|
+            case answer
             when retry_label.to_sym
               "R"
             # FIXME: temporarily disabled

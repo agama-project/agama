@@ -20,10 +20,11 @@
 
 use crate::l10n;
 use crate::service::Service;
-use agama_utils::actor::{self, Handler};
-use agama_utils::api::event;
-use agama_utils::issue;
-use agama_utils::progress;
+use agama_utils::{
+    actor::{self, Handler},
+    api::event,
+    issue, progress, question,
+};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -49,6 +50,7 @@ pub enum Error {
 /// * `dbus`: connection to Agama's D-Bus server. If it is not given, those features
 ///           that require to connect to the Agama's D-Bus server won't work.
 pub async fn start(
+    questions: Handler<question::Service>,
     events: event::Sender,
     dbus: Option<zbus::Connection>,
 ) -> Result<Handler<Service>, Error> {
@@ -56,7 +58,7 @@ pub async fn start(
     let progress = progress::start(events.clone()).await?;
     let l10n = l10n::start(issues.clone(), events.clone()).await?;
 
-    let service = Service::new(l10n, issues, progress, events.clone());
+    let service = Service::new(l10n, issues, progress, questions, events.clone());
     let handler = actor::spawn(service);
     Ok(handler)
 }
@@ -69,6 +71,7 @@ mod test {
     use agama_utils::actor::Handler;
     use agama_utils::api::l10n;
     use agama_utils::api::{Config, Event};
+    use agama_utils::question;
     use tokio::sync::broadcast;
 
     async fn start_service() -> Handler<Service> {
@@ -80,7 +83,10 @@ mod test {
             }
         });
 
-        manager::start(events_sender, None).await.unwrap()
+        let questions = question::start(events_sender.clone()).await.unwrap();
+        manager::start(questions, events_sender, None)
+            .await
+            .unwrap()
     }
 
     #[tokio::test]
@@ -94,6 +100,7 @@ mod test {
                 keymap: Some("es".to_string()),
                 timezone: Some("Atlantic/Canary".to_string()),
             }),
+            ..Default::default()
         };
 
         handler
@@ -125,6 +132,7 @@ mod test {
                 keymap: Some(keymap.to_string()),
                 ..Default::default()
             }),
+            ..Default::default()
         };
 
         handler

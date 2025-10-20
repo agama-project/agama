@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,17 +20,20 @@
 # find current contact information at www.suse.com.
 
 module Agama
-  module HTTP
-    # Namespace for HTTP clients
-    module Clients
+  # Represents an answer for a [Agama::Question].
+  class Answer
+    attr_reader :action
+    attr_reader :value
+
+    class << self
+      def from_api(hash)
+        Answer.new(hash["action"], hash["value"])
+      end
+    end
+
+    def initialize(action, value = nil)
+      @action = action.to_sym
+      @value = value
     end
   end
 end
-
-require "agama/http/clients/base"
-require "agama/http/clients/files"
-require "agama/http/clients/main"
-require "agama/http/clients/network"
-require "agama/http/clients/questions"
-require "agama/http/clients/scripts"
-require "agama/http/clients/software"

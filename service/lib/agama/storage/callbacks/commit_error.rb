@@ -28,7 +28,7 @@ module Agama
       class CommitError
         # Constructor
         #
-        # @param questions_client [Agama::DBus::Clients::Questions]
+        # @param questions_client [Agama::HTTP::Clients::Questions]
         # @param logger [Logger, nil]
         def initialize(questions_client, logger: nil)
           @questions_client = questions_client
@@ -51,16 +51,16 @@ module Agama
 
           question = question(message, details)
 
-          questions_client.ask(question) do |question_client|
-            answer = question_client.answer
-            logger.info "User answer: #{answer}"
-            answer == :yes
+          questions_client.ask(question) do |answer|
+            action = answer.action
+            logger.info "User answer: #{action}"
+            action == :yes
           end
         end
 
       private
 
-        # @return [Agama::DBus::Clients::Questions]
+        # @return [Agama::HTTP::Clients::Questions]
         attr_reader :questions_client
 
         # @return [Logger]

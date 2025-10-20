@@ -49,6 +49,14 @@ pub enum Event {
     ProposalChanged {
         scope: Scope,
     },
+    /// New question
+    QuestionAdded {
+        id: u32,
+    },
+    /// A question was answered.
+    QuestionAnswered {
+        id: u32,
+    },
 }
 
 pub type Sender = broadcast::Sender<Event>;

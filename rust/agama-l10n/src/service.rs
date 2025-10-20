@@ -22,13 +22,16 @@ use crate::config::Config;
 use crate::message;
 use crate::model::ModelAdapter;
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
-use agama_utils::actor::{self, Actor, Handler, MessageHandler};
-use agama_utils::api;
-use agama_utils::api::event;
-use agama_utils::api::event::Event;
-use agama_utils::api::l10n::{Proposal, SystemConfig, SystemInfo};
-use agama_utils::api::{Issue, IssueSeverity, IssueSource, Scope};
-use agama_utils::issue;
+use agama_utils::{
+    actor::{self, Actor, Handler, MessageHandler},
+    api::{
+        self,
+        event::{self, Event},
+        l10n::{Proposal, SystemConfig, SystemInfo},
+        Issue, IssueSeverity, IssueSource, Scope,
+    },
+    issue,
+};
 use async_trait::async_trait;
 use tokio::sync::broadcast;
 

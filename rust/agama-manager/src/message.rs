@@ -18,8 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::actor::Message;
-use agama_utils::api::{Action, Config, IssueMap, Proposal, Status, SystemInfo};
+use agama_utils::{
+    actor::Message,
+    api::{Action, Config, IssueMap, Proposal, Status, SystemInfo},
+};
 
 /// Gets the installation status.
 pub struct GetStatus;

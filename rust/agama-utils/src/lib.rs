@@ -30,3 +30,4 @@ pub mod dbus;
 pub mod issue;
 pub mod openapi;
 pub mod progress;
+pub mod question;

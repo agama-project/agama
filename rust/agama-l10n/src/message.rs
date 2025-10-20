@@ -19,9 +19,13 @@
 // find current contact information at www.suse.com.
 
 use agama_locale_data::{KeymapId, LocaleId};
-use agama_utils::actor::Message;
-use agama_utils::api;
-use agama_utils::api::l10n::{Proposal, SystemInfo};
+use agama_utils::{
+    actor::Message,
+    api::{
+        self,
+        l10n::{Proposal, SystemInfo},
+    },
+};
 
 #[derive(Clone)]
 pub struct GetSystem;

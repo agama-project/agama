@@ -23,7 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { AnswerCallback, Question } from "~/types/questions";
+import { AnswerCallback, Question, FieldType } from "~/types/questions";
 import { InstallationPhase } from "~/types/status";
 import { Product } from "~/types/software";
 import LuksActivationQuestion from "~/components/questions/LuksActivationQuestion";
@@ -34,8 +34,12 @@ const questionMock: Question = {
   id: 1,
   class: "storage.luks_activation",
   text: "A Luks device found. Do you want to open it?",
-  options: ["decrypt", "skip"],
-  defaultOption: "decrypt",
+  field: { type: FieldType.String },
+  actions: [
+    { id: "decrypt", label: "Decrypt" },
+    { id: "skip", label: "Skip" },
+  ],
+  defaultAction: "decrypt",
   data: { attempt: "1" },
 };
 const tumbleweed: Product = {
@@ -141,8 +145,8 @@ describe("LuksActivationQuestion", () => {
         const skipButton = await screen.findByRole("button", { name: /Skip/ });
         await user.click(skipButton);
 
-        expect(question).toEqual(
-          expect.objectContaining({ password: "notSecret", answer: "skip" }),
+        expect(question.answer).toEqual(
+          expect.objectContaining({ value: "notSecret", action: "skip" }),
         );
         expect(answerFn).toHaveBeenCalledWith(question);
       });
@@ -157,8 +161,8 @@ describe("LuksActivationQuestion", () => {
         const decryptButton = await screen.findByRole("button", { name: /Decrypt/ });
         await user.click(decryptButton);
 
-        expect(question).toEqual(
-          expect.objectContaining({ password: "notSecret", answer: "decrypt" }),
+        expect(question.answer).toEqual(
+          expect.objectContaining({ value: "notSecret", action: "decrypt" }),
         );
         expect(answerFn).toHaveBeenCalledWith(question);
       });
@@ -171,8 +175,8 @@ describe("LuksActivationQuestion", () => {
         const passwordInput = await screen.findByLabelText("Encryption Password");
         await user.type(passwordInput, "notSecret{enter}");
 
-        expect(question).toEqual(
-          expect.objectContaining({ password: "notSecret", answer: "decrypt" }),
+        expect(question.answer).toEqual(
+          expect.objectContaining({ value: "notSecret", action: "decrypt" }),
         );
         expect(answerFn).toHaveBeenCalledWith(question);
       });

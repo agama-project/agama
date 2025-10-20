@@ -36,7 +36,6 @@ install6() {
 
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama"
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama-autoinstall"
-install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama-dbus-server"
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama-web-server"
 
 install6 -D -p "${SRCDIR}"/share/agama.pam "${DESTDIR}${pamvendordir}"/agama
@@ -46,8 +45,6 @@ install6 -D -t "${DESTDIR}${datadir}"/agama-cli "${SRCDIR}"/agama-lib/share/prof
 install6 -D -t "${DESTDIR}${datadir}"/agama-cli "${SRCDIR}"/agama-lib/share/storage.schema.json
 install6 -D -t "${DESTDIR}${datadir}"/agama-cli "${SRCDIR}"/agama-lib/share/storage.model.schema.json
 install6 -D -t "${DESTDIR}${datadir}"/agama-cli "${SRCDIR}"/share/agama.libsonnet
-
-install6 -D -t "${DESTDIR}${datadir}"/dbus-1/agama-services "${SRCDIR}"/share/org.opensuse.Agama1.service
 
 install -D -t "${DESTDIR}${libexecdir}" "${SRCDIR}"/share/agama-scripts.sh
 

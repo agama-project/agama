@@ -34,7 +34,6 @@ BuildRequires:  pkgconfig(openssl)
 # used in tests for dbus service
 BuildRequires:  dbus-1-common
 Requires:       dbus-1-common
-# required by agama-dbus-server integration tests
 BuildRequires:  dbus-1-daemon
 BuildRequires:  clang-devel
 BuildRequires:  pkgconfig(pam)
@@ -60,9 +59,6 @@ BuildRequires:  python-langtable-data
 Requires:       python-langtable-data
 # dependency on the YaST part of Agama
 Requires:       agama-yast
-
-# conflicts with the old packages
-Conflicts:      agama-dbus-server
 
 %description
 Agama is a service-based Linux installer. It is composed of an HTTP-based API,
@@ -216,7 +212,6 @@ echo $PATH
 %files
 %doc README.md
 %license LICENSE
-%{_bindir}/agama-dbus-server
 %{_bindir}/agama-web-server
 %{_datadir}/dbus-1/agama-services
 %{_pam_vendordir}/agama

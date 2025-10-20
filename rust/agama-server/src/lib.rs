@@ -28,7 +28,6 @@ pub mod logs;
 pub mod manager;
 pub mod network;
 pub mod profile;
-pub mod questions;
 pub mod scripts;
 pub mod security;
 pub mod software;

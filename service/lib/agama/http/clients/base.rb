@@ -38,7 +38,7 @@ module Agama
         # @param data[#to_json] data to send in request
         def post(path, data)
           response = Net::HTTP.post(uri(path), data.to_json, headers)
-          return unless response.is_a?(Net::HTTPClientError)
+          return response unless response.is_a?(Net::HTTPClientError)
 
           @logger.warn "server returned #{response.code} with body: #{response.body}"
         end

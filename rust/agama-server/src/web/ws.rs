@@ -70,14 +70,14 @@ async fn handle_socket(
     loop {
         tokio::select! {
             msg = old_events_rx.recv() => {
-                if send_msg(&mut socket, msg).await.is_err() {
-                    return;
+                if let Err(e) = send_msg(&mut socket, msg).await {
+                    eprintln!("Error sending old event: {e:?}");
                 }
             }
 
             msg = events_rx.recv() => {
-                if send_msg(&mut socket, msg).await.is_err() {
-                    return;
+                if let Err(e) = send_msg(&mut socket, msg).await {
+                    eprintln!("Error sending event: {e:?}");
                 }
             }
         }

@@ -41,12 +41,11 @@ export default function QuestionWithPassword({
   question: Question;
   answerCallback: AnswerCallback;
 }): React.ReactNode {
-  const [password, setPassword] = useState(question.password || "");
-  const defaultAction = question.defaultOption;
+  const [password, setPassword] = useState(question.answer?.value || "");
 
-  const actionCallback = (option: string) => {
-    question.password = password;
-    question.answer = option;
+  const actionCallback = (action: string) => {
+    const answer = { action, value: password };
+    question.answer = answer;
     answerCallback(question);
   };
 
@@ -74,8 +73,8 @@ export default function QuestionWithPassword({
 
       <Popup.Actions>
         <QuestionActions
-          actions={question.options}
-          defaultAction={defaultAction}
+          actions={question.actions}
+          defaultAction={question.defaultAction}
           actionCallback={actionCallback}
         />
       </Popup.Actions>

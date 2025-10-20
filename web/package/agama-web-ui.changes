@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Oct 17 13:14:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt to the new questions HTTP API (gh#agama-project/agama#2813).
+
+-------------------------------------------------------------------
 Thu Oct 16 04:52:55 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Adapt to the changes in the HTTP API (gh#agama-project/agama#2801).

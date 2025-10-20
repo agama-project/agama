@@ -30,7 +30,6 @@ use crate::{
     manager::{http_client::ManagerHTTPClientError, InstallationPhase, ManagerHTTPClient},
     network::{NetworkStore, NetworkStoreError},
     product::{ProductHTTPClient, ProductStore, ProductStoreError},
-    questions::store::{QuestionsStore, QuestionsStoreError},
     scripts::{ScriptsClient, ScriptsClientError, ScriptsGroup, ScriptsStore, ScriptsStoreError},
     security::store::{SecurityStore, SecurityStoreError},
     software::{SoftwareStore, SoftwareStoreError},
@@ -62,8 +61,6 @@ pub enum StoreError {
     Users(#[from] UsersStoreError),
     #[error(transparent)]
     Network(#[from] NetworkStoreError),
-    #[error(transparent)]
-    Questions(#[from] QuestionsStoreError),
     #[error(transparent)]
     Product(#[from] ProductStoreError),
     #[error(transparent)]
@@ -102,7 +99,6 @@ pub struct Store {
     hostname: HostnameStore,
     users: UsersStore,
     network: NetworkStore,
-    questions: QuestionsStore,
     product: ProductStore,
     security: SecurityStore,
     software: SoftwareStore,
@@ -123,7 +119,6 @@ impl Store {
             hostname: HostnameStore::new(http_client.clone()),
             users: UsersStore::new(http_client.clone()),
             network: NetworkStore::new(http_client.clone()),
-            questions: QuestionsStore::new(http_client.clone()),
             product: ProductStore::new(http_client.clone()),
             security: SecurityStore::new(http_client.clone()),
             software: SoftwareStore::new(http_client.clone()),
@@ -144,8 +139,6 @@ impl Store {
             files: self.files.load().await?,
             hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),
-            // FIXME: do not export questions yet.
-            questions: self.questions.load().await?,
             security: self.security.load().await?.to_option(),
             software: self.software.load().await?.to_option(),
             user: Some(self.users.load().await?),
@@ -178,10 +171,6 @@ impl Store {
             if scripts.pre.as_ref().is_some_and(|s| !s.is_empty()) {
                 self.run_pre_scripts().await?;
             }
-        }
-
-        if let Some(questions) = &settings.questions {
-            self.questions.store(questions).await?;
         }
 
         if let Some(network) = &settings.network {

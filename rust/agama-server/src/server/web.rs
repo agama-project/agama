@@ -21,18 +21,23 @@
 //! This module implements Agama's HTTP API.
 
 use agama_lib::error::ServiceError;
-use agama_manager as manager;
-use agama_manager::message;
-use agama_utils::actor::Handler;
-use agama_utils::api::config;
-use agama_utils::api::event;
-use agama_utils::api::{Action, Config, IssueMap, Status, SystemInfo};
+use agama_manager::{self as manager, message};
+use agama_utils::{
+    actor::Handler,
+    api::{
+        config, event,
+        question::{Question, QuestionSpec, UpdateOperation},
+        Action, Config, IssueMap, Status, SystemInfo,
+    },
+    question,
+};
 use anyhow;
-use axum::extract::State;
-use axum::response::{IntoResponse, Response};
-use axum::routing::{get, post};
-use axum::Json;
-use axum::Router;
+use axum::{
+    extract::State,
+    response::{IntoResponse, Response},
+    routing::{get, post},
+    Json, Router,
+};
 use hyper::StatusCode;
 use serde::Serialize;
 use serde_json::json;
@@ -41,6 +46,8 @@ use serde_json::json;
 pub enum Error {
     #[error(transparent)]
     Manager(#[from] manager::service::Error),
+    #[error(transparent)]
+    Questions(#[from] question::service::Error),
 }
 
 impl IntoResponse for Error {
@@ -56,6 +63,7 @@ impl IntoResponse for Error {
 #[derive(Clone)]
 pub struct ServerState {
     manager: Handler<manager::Service>,
+    questions: Handler<question::Service>,
 }
 
 type ServerResult<T> = Result<T, Error>;
@@ -69,11 +77,14 @@ pub async fn server_service(
     events: event::Sender,
     dbus: Option<zbus::Connection>,
 ) -> Result<Router, ServiceError> {
-    let manager = manager::start(events, dbus)
+    let questions = question::start(events.clone())
+        .await
+        .map_err(|e| anyhow::Error::new(e))?;
+    let manager = manager::start(questions.clone(), events, dbus)
         .await
         .map_err(|e| anyhow::Error::new(e))?;
 
-    let state = ServerState { manager };
+    let state = ServerState { manager, questions };
 
     Ok(Router::new()
         .route("/status", get(get_status))
@@ -86,6 +97,10 @@ pub async fn server_service(
         .route("/proposal", get(get_proposal))
         .route("/action", post(run_action))
         .route("/issues", get(get_issues))
+        .route(
+            "/questions",
+            get(get_questions).post(ask_question).patch(update_question),
+        )
         .with_state(state))
 }
 
@@ -229,6 +244,74 @@ async fn get_issues(State(state): State<ServerState>) -> ServerResult<Json<Issue
     let issues = state.manager.call(message::GetIssues).await?;
     let issues_map: IssueMap = issues.into();
     Ok(Json(issues_map))
+}
+
+/// Returns the issues for each scope.
+#[utoipa::path(
+    get,
+    path = "/questions",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "Agama questions", body = HashMap<u32, QuestionSpec>),
+        (status = 400, description = "Not possible to retrieve the questions")
+    )
+)]
+async fn get_questions(State(state): State<ServerState>) -> ServerResult<Json<Vec<Question>>> {
+    let questions = state.questions.call(question::message::Get).await?;
+    Ok(Json(questions))
+}
+
+/// Registers a new question.
+#[utoipa::path(
+    post,
+    path = "/questions",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "New question's ID", body = u32),
+        (status = 400, description = "Not possible to register the question")
+    )
+)]
+async fn ask_question(
+    State(state): State<ServerState>,
+    Json(question): Json<QuestionSpec>,
+) -> ServerResult<Json<Question>> {
+    let question = state
+        .questions
+        .call(question::message::Ask::new(question))
+        .await?;
+    Ok(Json(question))
+}
+
+/// Updates the question collection by answering or removing a question.
+#[utoipa::path(
+    patch,
+    path = "/questions",
+    context_path = "/api/v2",
+    request_body = UpdateOperation,
+    responses(
+        (status = 200, description = "The question was answered or deleted"),
+        (status = 400, description = "It was not possible to update the question")
+    )
+)]
+async fn update_question(
+    State(state): State<ServerState>,
+    Json(operation): Json<UpdateOperation>,
+) -> ServerResult<()> {
+    match operation {
+        UpdateOperation::Answer { id, answer } => {
+            state
+                .questions
+                .call(question::message::Answer { id, answer })
+                .await?;
+        }
+        UpdateOperation::Delete { id } => {
+            state
+                .questions
+                .call(question::message::Delete { id })
+                .await?;
+        }
+    }
+    Ok(())
 }
 
 #[utoipa::path(

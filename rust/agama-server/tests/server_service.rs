@@ -91,6 +91,7 @@ async fn test_put_config() -> Result<(), Box<dyn Error>> {
             keymap: Some("es".to_string()),
             timezone: Some("Atlantic/Canary".to_string()),
         }),
+        ..Default::default()
     };
 
     let server_service = build_server_service().await?;
@@ -122,6 +123,7 @@ async fn test_put_config() -> Result<(), Box<dyn Error>> {
             keymap: Some("en".to_string()),
             timezone: None,
         }),
+        ..Default::default()
     };
 
     let request = Request::builder()
@@ -157,7 +159,10 @@ async fn test_patch_config() -> Result<(), Box<dyn Error>> {
         timezone: Some("Atlantic/Canary".to_string()),
     };
 
-    let config = api::Config { l10n: Some(l10n) };
+    let config = api::Config {
+        l10n: Some(l10n),
+        ..Default::default()
+    };
 
     let server_service = build_server_service().await?;
     let request = Request::builder()
@@ -177,6 +182,7 @@ async fn test_patch_config() -> Result<(), Box<dyn Error>> {
                 keymap: Some("en".to_string()),
                 timezone: None,
             }),
+            ..Default::default()
         }),
     };
 

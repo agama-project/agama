@@ -20,8 +20,7 @@
 
 use crate::service;
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
-use agama_utils::api;
-use agama_utils::api::l10n::SystemInfo;
+use agama_utils::api::{self, l10n::SystemInfo};
 
 #[derive(Clone, PartialEq)]
 pub struct Config {

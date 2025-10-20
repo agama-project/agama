@@ -20,12 +20,13 @@
 
 use crate::l10n;
 use crate::message;
-use agama_utils::actor::{self, Actor, Handler, MessageHandler};
-use agama_utils::api::event;
-use agama_utils::api::status::State;
-use agama_utils::api::{Action, Config, Event, IssueMap, Proposal, Scope, Status, SystemInfo};
-use agama_utils::issue;
-use agama_utils::progress;
+use agama_utils::{
+    actor::{self, Actor, Handler, MessageHandler},
+    api::{
+        event, status::State, Action, Config, Event, IssueMap, Proposal, Scope, Status, SystemInfo,
+    },
+    issue, progress, question,
+};
 use async_trait::async_trait;
 use merge_struct::merge;
 use tokio::sync::broadcast;
@@ -43,13 +44,16 @@ pub enum Error {
     #[error(transparent)]
     L10n(#[from] l10n::service::Error),
     #[error(transparent)]
-    IssueService(#[from] issue::service::Error),
+    Issues(#[from] issue::service::Error),
+    #[error(transparent)]
+    Questions(#[from] question::service::Error),
 }
 
 pub struct Service {
     l10n: Handler<l10n::service::Service>,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
+    questions: Handler<question::Service>,
     state: State,
     config: Config,
     events: event::Sender,
@@ -60,12 +64,14 @@ impl Service {
         l10n: Handler<l10n::Service>,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
+        questions: Handler<question::Service>,
         events: event::Sender,
     ) -> Self {
         Self {
             l10n,
             issues,
             progress,
+            questions,
             events,
             state: State::Configuring,
             config: Config::default(),
@@ -124,7 +130,11 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     /// It includes user and default values.
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
-        Ok(Config { l10n: Some(l10n) })
+        let questions = self.questions.call(question::message::GetConfig).await?;
+        Ok(Config {
+            l10n: Some(l10n),
+            questions: Some(questions),
+        })
     }
 }
 
@@ -151,6 +161,12 @@ impl MessageHandler<message::SetConfig> for Service {
         if let Some(l10n) = &message.config.l10n {
             self.l10n
                 .call(l10n::message::SetConfig::new(l10n.clone()))
+                .await?;
+        }
+
+        if let Some(questions) = &message.config.questions {
+            self.questions
+                .call(question::message::SetConfig::new(questions.clone()))
                 .await?;
         }
         self.config = message.config;
