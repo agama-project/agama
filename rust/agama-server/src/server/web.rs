@@ -304,7 +304,7 @@ async fn update_question(
                 .call(question::message::Answer { id, answer })
                 .await?;
         }
-        UpdateOperation::Remove(id) => {
+        UpdateOperation::Delete { id } => {
             state
                 .questions
                 .call(question::message::Delete { id })
