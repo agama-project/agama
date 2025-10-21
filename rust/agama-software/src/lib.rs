@@ -53,9 +53,6 @@ pub use config::Config;
 mod proposal;
 pub use proposal::Proposal;
 
-pub mod event;
-pub use event::Event;
-
 mod extended_config;
 pub mod message;
 mod zypp_server;

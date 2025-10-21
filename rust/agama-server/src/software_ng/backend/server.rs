@@ -21,10 +21,12 @@
 use std::{path::Path, sync::Arc};
 
 use agama_lib::{
-    http::event, product::Product, software::{
+    http::event,
+    product::Product,
+    software::{
         model::{ResolvableType, SoftwareConfig, SoftwareSelection},
         Pattern,
-    }
+    },
 };
 use tokio::sync::{mpsc, oneshot, Mutex};
 

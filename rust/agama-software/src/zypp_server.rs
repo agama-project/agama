@@ -26,13 +26,10 @@ use tokio::sync::{
 use zypp_agama::ZyppError;
 
 use crate::model::{
-    packages::{Repository, ResolvableType, SoftwareConfig},
-    pattern::{self, Pattern},
-    product::Product,
-    products::{ProductSpec, RepositorySpec},
-    software_selection::SoftwareSelection,
+    packages::{Repository, ResolvableType},
+    pattern::Pattern,
+    products::RepositorySpec,
 };
-
 const TARGET_DIR: &str = "/run/agama/software_ng_zypp";
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 
@@ -84,8 +81,9 @@ pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
 #[derive(Debug)]
 pub enum SoftwareAction {
     AddRepositories(Vec<RepositorySpec>, oneshot::Sender<ZyppServerResult<()>>),
+    RemoveRepositories(Vec<String>, oneshot::Sender<ZyppServerResult<()>>),
     Install(oneshot::Sender<ZyppServerResult<bool>>),
-    Finish,
+    Finish(oneshot::Sender<ZyppServerResult<()>>),
     ListRepositories(oneshot::Sender<ZyppServerResult<Vec<Repository>>>),
     GetPatternsMetadata(Vec<String>, oneshot::Sender<ZyppServerResult<Vec<Pattern>>>),
     PackageAvailable(String, oneshot::Sender<Result<bool, ZyppError>>),
@@ -172,6 +170,10 @@ impl ZyppServer {
                 self.add_repositories(repos, tx, zypp).await?;
             }
 
+            SoftwareAction::RemoveRepositories(repos, tx) => {
+                self.remove_repositories(repos, tx, zypp).await?;
+            }
+
             SoftwareAction::GetPatternsMetadata(names, tx) => {
                 self.get_patterns(names, tx, zypp).await?;
             }
@@ -189,8 +191,8 @@ impl ZyppServer {
                     .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
             }
 
-            SoftwareAction::Finish => {
-                //self.finish(zypp).await?;
+            SoftwareAction::Finish(tx) => {
+                self.finish(zypp, tx).await?;
             }
 
             SoftwareAction::SetResolvables {
@@ -314,12 +316,47 @@ impl ZyppServer {
         Ok(())
     }
 
-    async fn finish(&mut self, zypp: &zypp_agama::Zypp) -> ZyppServerResult<()> {
-        self.remove_dud_repo(zypp)?;
-        self.disable_local_repos(zypp)?;
-        self.registration_finish()?;
-        self.modify_zypp_conf()?;
-        self.modify_full_repo(zypp)?;
+    async fn remove_repositories(
+        &self,
+        repos: Vec<String>,
+        tx: oneshot::Sender<ZyppServerResult<()>>,
+        zypp: &zypp_agama::Zypp,
+    ) -> Result<(), ZyppDispatchError> {
+        for repo in repos {
+            let res = zypp.remove_repository(&repo, |_, _| true);
+            if res.is_err() {
+                tx.send(res.map_err(|e| e.into()))
+                    .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
+                return Ok(());
+            }
+        }
+
+        Ok(())
+    }
+
+    async fn finish(
+        &mut self,
+        zypp: &zypp_agama::Zypp,
+        tx: oneshot::Sender<ZyppServerResult<()>>,
+    ) -> Result<(), ZyppDispatchError> {
+        if let Err(error) = self.remove_dud_repo(zypp) {
+            tx.send(Err(error.into()))
+                .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
+            return Ok(());
+        }
+        if let Err(error) = self.disable_local_repos(zypp) {
+            tx.send(Err(error.into()))
+                .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
+            return Ok(());
+        }
+        self.registration_finish(); // TODO: move it outside of zypp server as it do not need zypp lock
+        self.modify_zypp_conf(); // TODO: move it outside of zypp server as it do not need zypp lock
+
+        if let Err(error) = self.modify_full_repo(zypp) {
+            tx.send(Err(error.into()))
+                .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
+            return Ok(());
+        }
         Ok(())
     }
 

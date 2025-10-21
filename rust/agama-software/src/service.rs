@@ -20,7 +20,6 @@
 
 use crate::{
     config::Config,
-    event::{self},
     message,
     model::{
         license::{Error as LicenseError, LicensesRepo},

@@ -29,7 +29,7 @@ use backend::SoftwareService;
 pub use backend::SoftwareServiceError;
 use tokio::sync::Mutex;
 
-use crate::{products::ProductsRegistry};
+use crate::products::ProductsRegistry;
 
 pub async fn software_ng_service(
     events: event::Sender,
