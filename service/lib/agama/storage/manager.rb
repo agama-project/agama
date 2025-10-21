@@ -122,37 +122,41 @@ module Agama
         @on_configure_callbacks << block
       end
 
-      # Probes storage devices and performs an initial proposal
-      #
-      # @param keep_config [Boolean] Whether to use the current storage config for calculating the
-      #   proposal.
-      # @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided LUKS
-      #   passwords).
-      def probe(keep_config: false, keep_activation: true)
-        start_progress_with_descriptions(
-          _("Activating storage devices"),
-          _("Probing storage devices"),
-          _("Calculating the storage proposal")
-        )
-
-        product_config.pick_product(software.selected_product)
+      # TODO: move to storage_service
+      def setup
         # Underlying yast-storage-ng has own mechanism for proposing boot strategies.
         # However, we don't always want to use BLS when it proposes so. Currently
         # we want to use BLS only for Tumbleweed / Slowroll
         prohibit_bls_boot if !product_config.boot_strategy&.casecmp("BLS")
         check_multipath
+      end
 
-        progress.step { activate_devices(keep_activation: keep_activation) }
-        progress.step { probe_devices }
-        progress.step do
-          config_json = proposal.storage_json if keep_config
-          configure(config_json)
-        end
+      def activated?
+        !!@activated
+      end
 
-        # The system is not deprecated anymore
-        self.deprecated_system = false
-        update_issues
-        @on_probe_callbacks&.each(&:call)
+      def reset_activation
+        Y2Storage::Luks.reset_activation_infos
+        @activated = false
+      end
+
+      # Activates the devices.
+      def activate
+        iscsi.activate
+        callbacks = Callbacks::Activate.new(questions_client, logger)
+        Y2Storage::StorageManager.instance.activate(callbacks)
+        @activated = true
+      end
+
+      def probed?
+        Y2Storage::StorageManager.instance.probed?
+      end
+
+      # Probes the devices.
+      def probe
+        iscsi.probe
+        callbacks = Y2Storage::Callbacks::UserProbe.new
+        Y2Storage::StorageManager.instance.probe(callbacks)
       end
 
       # Prepares the partitioning to install the system
@@ -256,26 +260,6 @@ module Agama
 
       def register_progress_callbacks
         on_progress_change { logger.info(progress.to_s) }
-      end
-
-      # Activates the devices, calling activation callbacks if needed
-      #
-      # @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided LUKS
-      #   passwords).
-      def activate_devices(keep_activation: true)
-        Y2Storage::Luks.reset_activation_infos unless keep_activation
-
-        callbacks = Callbacks::Activate.new(questions_client, logger)
-        iscsi.activate
-        Y2Storage::StorageManager.instance.activate(callbacks)
-      end
-
-      # Probes the devices
-      def probe_devices
-        callbacks = Y2Storage::Callbacks::UserProbe.new
-
-        iscsi.probe
-        Y2Storage::StorageManager.instance.probe(callbacks)
       end
 
       # Adds the required packages to the list of resolvables to install

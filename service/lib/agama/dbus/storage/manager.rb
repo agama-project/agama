@@ -93,18 +93,53 @@ module Agama
         STORAGE_INTERFACE = "org.opensuse.Agama.Storage1"
         private_constant :STORAGE_INTERFACE
 
-        # @param keep_config [Boolean] Whether to use the current storage config for calculating
-        #   the proposal.
-        # @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided
-        #   LUKS passwords).
-        def probe(keep_config: false, keep_activation: true)
-          busy_while do
-            # Clean trees in advance to avoid having old objects exported in D-Bus.
-            system_devices_tree.clean
-            staging_devices_tree.clean
+        # Whether the system is in a deprecated status
+        #
+        # @return [Boolean]
+        def deprecated_system
+          backend.deprecated_system?
+        end
 
-            backend.probe(keep_config: keep_config, keep_activation: keep_activation)
-          end
+        # TODO: add progress
+        def activate
+          backend.reset_activation if backend.activated?
+          backend.activate
+          backend.probe
+          config_json = proposal.storage_json
+          backend.configure(config_json) if config_json
+        end
+
+        # TODO: add progress
+        def probe
+          backend.activate unless backend.activated?
+          backend.probe
+          config_json = proposal.storage_json
+          backend.configure(config_json) if config_json
+        end
+
+        def configure_product(id)
+          backend.product_config.pick_product(id)
+          backend.activate unless backend.activated?
+          backend.probe unless backend.probed?
+          backend.configure
+        end
+
+        # TODO: add progress
+        def install
+          backend.install
+        end
+
+        # TODO: add progress
+        def finish
+          backend.finish
+        end
+
+        # Gets and serializes the storage config used for calculating the current proposal.
+        #
+        # @return [String]
+        def recover_config
+          json = proposal.storage_json
+          JSON.pretty_generate(json)
         end
 
         # @todo Drop support for the guided settings.
@@ -121,7 +156,15 @@ module Agama
         def apply_config(serialized_config)
           logger.info("Setting storage config from D-Bus: #{serialized_config}")
           config_json = JSON.parse(serialized_config, symbolize_names: true)
-          configure(config_json)
+          backend.configure(config_json)
+        end
+
+        # Gets and serializes the storage config model.
+        #
+        # @return [String]
+        def recover_config_model
+          json = proposal.model_json
+          JSON.pretty_generate(json)
         end
 
         # Applies the given serialized config model according to the JSON schema.
@@ -139,38 +182,14 @@ module Agama
           ).convert
           config_json = { storage: Agama::Storage::ConfigConversions::ToJSON.new(config).convert }
 
-          configure(config_json)
-        end
-
-        # Resets to the default config.
-        #
-        # @return [Integer] 0 success; 1 error
-        def reset_config
-          logger.info("Reset storage config from D-Bus")
-          configure
-        end
-
-        # Gets and serializes the storage config used for calculating the current proposal.
-        #
-        # @return [String]
-        def recover_config
-          json = proposal.storage_json
-          JSON.pretty_generate(json)
-        end
-
-        # Gets and serializes the storage config model.
-        #
-        # @return [String]
-        def recover_model
-          json = proposal.model_json
-          JSON.pretty_generate(json)
+          backend.configure(config_json)
         end
 
         # Solves the given serialized config model.
         #
         # @param serialized_model [String] Serialized storage config model.
         # @return [String] Serialized solved model.
-        def solve_model(serialized_model)
+        def solve_config_model(serialized_model)
           logger.info("Solving storage config model from D-Bus: #{serialized_model}")
 
           model_json = JSON.parse(serialized_model, symbolize_names: true)
@@ -178,34 +197,20 @@ module Agama
           JSON.pretty_generate(solved_model_json)
         end
 
-        def install
-          busy_while { backend.install }
-        end
-
-        def finish
-          busy_while { backend.finish }
-        end
-
-        # Whether the system is in a deprecated status
-        #
-        # @return [Boolean]
-        def deprecated_system
-          backend.deprecated_system?
-        end
-
         dbus_interface STORAGE_INTERFACE do
-          dbus_method(:Activate) {}
-          dbus_method(:Probe) {}
-          dbus_method(:Install) {}
-          dbus_method(:Finish) {}
+          dbus_method(:Activate) { activate }
+          dbus_method(:Probe) { probe }
+          dbus_method(:Install) { install }
+          dbus_method(:Finish) { finish }
           dbus_method(:SetLocale, "in locale:s") {}
-          dbus_method(:SetProduct, "in product_config:s") {}
+          # TODO: receive a product_config instead of an id.
+          dbus_method(:SetProduct, "in id:s") { |id| configure_product(id) }
           dbus_method(:GetSystem, "out system:s") {}
-          dbus_method(:GetConfig, "out config:s") {}
-          dbus_method(:SetConfig, "in config:s") {}
-          dbus_method(:GetConfigModel, "out config_model:s") {}
-          dbus_method(:SetConfigModel, "in config_model:s") {}
-          dbus_method(:SolveConfigModel, "in config_model:s, out solved_config_model:s") {}
+          dbus_method(:GetConfig, "out config:s") { recover_config }
+          dbus_method(:SetConfig, "in config:s") { |c| apply_config(c) }
+          dbus_method(:GetConfigModel, "out model:s") { recover_config_model }
+          dbus_method(:SetConfigModel, "in model:s") { |m| apply_config_model(m)}
+          dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
           dbus_method(:GetProposal, "out proposal:s") {}
           dbus_method(:GetIssues, "out issues:s") {}
           dbus_method(:GetProgress, "out progress:s") {}
@@ -468,16 +473,6 @@ module Agama
 
         # @return [DBus::Storage::Proposal, nil]
         attr_reader :dbus_proposal
-
-        # Configures storage.
-        #
-        # @param config_json [Hash, nil] Storage config according to the JSON schema. If nil, then
-        #   the default config is applied.
-        # @return [Integer] 0 success; 1 error
-        def configure(config_json = nil)
-          success = backend.configure(config_json)
-          success ? 0 : 1
-        end
 
         def send_configured_signal
           self.Configured(request_data["client_id"].to_s)

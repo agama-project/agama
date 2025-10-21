@@ -93,10 +93,10 @@ module Agama
     #
     # @param reprobe [Boolean] Whether a reprobe should be done instead of a probe.
     # @param data [Hash] Extra data provided to the D-Bus calls.
-    def config_phase(reprobe: false, data: {})
+    def config_phase(reprobe: false, _data: {})
       installation_phase.config
       start_progress_with_descriptions(_("Analyze disks"), _("Configure software"))
-      progress.step { reprobe ? storage.reprobe(data) : storage.probe(data) }
+      progress.step { configure_storage(reprobe) }
       progress.step { software.probe }
 
       logger.info("Config phase done")
@@ -293,6 +293,22 @@ module Agama
     DEFAULT_METHOD = "reboot"
     # Finish shutdown option for each finish method
     SHUTDOWN_OPT = { REBOOT => "-r", HALT => "-H", POWEROFF => "-P" }.freeze
+
+    # Configures storage.
+    #
+    # Storage is configured as part of the config phase. The config phase is executed after
+    # selecting or registering a product.
+    #
+    # @param reprobe [Boolean] is used to keep the current storage config after registering a
+    #   product, see https://github.com/agama-project/agama/pull/2532.
+    def configure_storage(reprobe)
+      # Note that probing storage is not needed after the product registration, but let's keep the
+      # current behavior.
+      return storage.probe if reprobe
+
+      # Select the product
+      storage.product = software.selected_product
+    end
 
     # @param method [String, nil]
     # @return [String] the cmd to be run for finishing the installation
