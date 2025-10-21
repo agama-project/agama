@@ -193,44 +193,27 @@ module Agama
           backend.deprecated_system?
         end
 
-        # FIXME: Revisit return values.
-        #   * Methods like #SetConfig or #ResetConfig return whether the proposal successes, but
-        #     they should return whether the config was actually applied.
-        #   * Methods like #Probe or #Install return nothing.
         dbus_interface STORAGE_INTERFACE do
-          dbus_signal :Configured, "client_id:s"
-          dbus_method(:Probe, "in data:a{sv}") do |data|
-            busy_request(data) { probe }
-          end
-          dbus_method(:Reprobe, "in data:a{sv}") do |data|
-            busy_request(data) { probe(keep_config: true) }
-          end
-          dbus_method(:Reactivate, "in data:a{sv}") do |data|
-            busy_request(data) { probe(keep_config: true, keep_activation: false) }
-          end
-          dbus_method(
-            :SetConfig,
-            "in serialized_config:s, in data:a{sv}, out result:u"
-          ) do |serialized_config, data|
-            busy_request(data) { apply_config(serialized_config) }
-          end
-          dbus_method(:ResetConfig, "in data:a{sv}, out result:u") do |data|
-            busy_request(data) { reset_config }
-          end
-          dbus_method(
-            :SetConfigModel,
-            "in serialized_model:s, in data:a{sv}, out result:u"
-          ) do |serialized_model, data|
-            busy_request(data) { apply_config_model(serialized_model) }
-          end
-          dbus_method(:GetConfig, "out serialized_config:s") { recover_config }
-          dbus_method(:GetConfigModel, "out serialized_model:s") { recover_model }
-          dbus_method(:SolveConfigModel, "in sparse_model:s, out solved_model:s") do |sparse_model|
-            solve_model(sparse_model)
-          end
-          dbus_method(:Install) { install }
-          dbus_method(:Finish) { finish }
-          dbus_reader(:deprecated_system, "b")
+          dbus_method(:Activate) {}
+          dbus_method(:Probe) {}
+          dbus_method(:Install) {}
+          dbus_method(:Finish) {}
+          dbus_method(:SetLocale, "in locale:s") {}
+          dbus_method(:SetProduct, "in product_config:s") {}
+          dbus_method(:GetSystem, "out system:s") {}
+          dbus_method(:GetConfig, "out config:s") {}
+          dbus_method(:SetConfig, "in config:s") {}
+          dbus_method(:GetConfigModel, "out config_model:s") {}
+          dbus_method(:SetConfigModel, "in config_model:s") {}
+          dbus_method(:SolveConfigModel, "in config_model:s, out solved_config_model:s") {}
+          dbus_method(:GetProposal, "out proposal:s") {}
+          dbus_method(:GetIssues, "out issues:s") {}
+          dbus_method(:GetProgress, "out progress:s") {}
+          dbus_signal(:SystemChanged)
+          dbus_signal(:ConfigChanged)
+          dbus_signal(:ProposalChanged)
+          dbus_signal(:IssuesChanged)
+          dbus_signal(:ProgressChanged)
         end
 
         BOOTLOADER_INTERFACE = "org.opensuse.Agama.Storage1.Bootloader"
