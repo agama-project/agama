@@ -193,7 +193,6 @@ translate_ifcfg() {
 
   return 0
 }
-
 parse_domain() {
   local domain
 
@@ -203,7 +202,7 @@ parse_domain() {
     echo "### Processing domain search list '$domain'"
     mkdir -p /run/NetworkManager/conf.d
     echo "[global-dns]" >/run/NetworkManager/conf.d/10-agama-domain.conf
-    echo "searches=$domain" >>/run/NetworkManager/conf.d/10-agama-domain.conf
+    echo "searches=${domain// /,}" >>/run/NetworkManager/conf.d/10-agama-domain.conf
   fi
 
   return 0
