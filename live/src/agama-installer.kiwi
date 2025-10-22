@@ -24,8 +24,16 @@
         <timezone>Europe/Berlin</timezone>
         <rpm-excludedocs>true</rpm-excludedocs>
         <rpm-check-signatures>false</rpm-check-signatures>
-        <bootsplash-theme>bgrt</bootsplash-theme>
+    </preferences>
+    <!-- different boot menu theme for openSUSE and SLES, actually this is
+    ignored as the fix_bootconfig script automatically checks which theme is
+    present, but keep the option here otherwise a text mode boot menu is
+    displayed -->
+    <preferences profiles="openSUSE,Leap_16.0">
         <bootloader-theme>openSUSE</bootloader-theme>
+    </preferences>
+    <preferences profiles="SUSE_SLE_16">
+        <bootloader-theme>SLE</bootloader-theme>
     </preferences>
     <!-- the ISO Volume ID is set by the fix_bootconfig script -->
     <preferences arch="ppc64le" profiles="openSUSE,SUSE_SLE_16,Leap_16.0">
@@ -117,6 +125,7 @@
         <package name="tpm2.0-tools" />
         <!-- plymouth bsc#1248507 -->
         <package name="plymouth" />
+        <package name="plymouth-dracut" />
     </packages>
 
     <!-- packages for local installation (desktop, browser, etc.) -->
@@ -142,6 +151,7 @@
         <package name="openSUSE-build-key"/>
         <package name="patterns-openSUSE-base"/>
         <package name="staging-build-key"/>
+        <package name="plymouth-branding-openSUSE" />
     </packages>
     <!-- additional packages for the Leap distributions -->
     <packages type="image" profiles="Leap_16.0">
