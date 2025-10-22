@@ -68,7 +68,7 @@ module Agama
         # @param data [#to_json] data to send in request
         def patch(path, data)
           url = uri(path)
-          http = Net::HTTP.start(url.hostname, url.port, :use_ssl => url.scheme == 'https' )
+          http = Net::HTTP.start(url.hostname, url.port, use_ssl: url.scheme == "https")
           response = http.patch(url, data.to_json, headers)
           return response unless response.is_a?(Net::HTTPClientError)
 
