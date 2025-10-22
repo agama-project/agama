@@ -31,13 +31,14 @@ require "agama/dbus/storage/devices_tree"
 require "agama/dbus/storage/iscsi_nodes_tree"
 require "agama/dbus/storage/proposal"
 require "agama/dbus/storage/proposal_settings_conversion"
-require "agama/dbus/storage/volume_conversion"
 require "agama/dbus/with_service_status"
 require "agama/storage/config_conversions"
 require "agama/storage/encryption_settings"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume_templates_builder"
 require "agama/with_progress"
+require "agama/storage/devicegraph_conversions"
+require "agama/storage/volume_conversions"
 
 Yast.import "Arch"
 
@@ -67,14 +68,11 @@ module Agama
           super(PATH, logger: logger)
           @backend = backend
           @service_status = service_status
-          @encryption_methods = read_encryption_methods
-          @actions = read_actions
 
           register_storage_callbacks
           register_progress_callbacks
           register_service_status_callbacks
           register_iscsi_callbacks
-          register_software_callbacks
 
           add_s390_interfaces if Yast::Arch.s390
         end
@@ -241,13 +239,13 @@ module Agama
           dbus_method(:SetLocale, "in locale:s") {}
           # TODO: receive a product_config instead of an id.
           dbus_method(:SetProduct, "in id:s") { |id| configure_product(id) }
-          dbus_method(:GetSystem, "out system:s") {}
+          dbus_method(:GetSystem, "out system:s") { recover_system }
           dbus_method(:GetConfig, "out config:s") { recover_config }
           dbus_method(:SetConfig, "in config:s") { |c| configure(c) }
           dbus_method(:GetConfigModel, "out model:s") { recover_config_model }
           dbus_method(:SetConfigModel, "in model:s") { |m| configure_with_model(m)}
           dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
-          dbus_method(:GetProposal, "out proposal:s") {}
+          dbus_method(:GetProposal, "out proposal:s") { recover_proposal }
           dbus_method(:GetIssues, "out issues:s") {}
           dbus_method(:GetProgress, "out progress:s") { progress.to_json }
           dbus_signal(:SystemChanged)
@@ -299,67 +297,46 @@ module Agama
 
         # List of sorted actions.
         #
-        # @return [Hash<String, Object>]
-        #   * "Device" [Integer]
-        #   * "Text" [String]
-        #   * "Subvol" [Boolean]
-        #   * "Delete" [Boolean]
-        #   * "Resize" [Boolean]
-        def read_actions
+        # @return [Hash<Symbol, Object>]
+        #   * :device [Integer]
+        #   * :text [String]
+        #   * :subvol [Boolean]
+        #   * :delete [Boolean]
+        #   * :resize [Boolean]
+        def actions
           backend.actions.map do |action|
             {
-              "Device" => action.device_sid,
-              "Text"   => action.text,
-              "Subvol" => action.on_btrfs_subvolume?,
-              "Delete" => action.delete?,
-              "Resize" => action.resize?
+              device: action.device_sid,
+              text:   action.text,
+              subvol: action.on_btrfs_subvolume?,
+              delete: action.delete?,
+              resize: action.resize?
             }
           end
         end
 
-        # A PropertiesChanged signal is emitted (see ::DBus::Object.dbus_reader_attr_accessor).
-        def update_actions
-          self.actions = read_actions
-        end
-
         # @see Storage::System#available_drives
-        # @return [Array<::DBus::ObjectPath>]
+        # @return [Array<Integer>]
         def available_drives
-          proposal.storage_system.available_drives.map { |d| system_device_path(d)  }
+          proposal.storage_system.available_drives.map(&:sid)
         end
 
         # @see Storage::System#available_drives
-        # @return [Array<::DBus::ObjectPath>]
+        # @return [Array<Integer>]
         def candidate_drives
-          proposal.storage_system.candidate_drives.map { |d| system_device_path(d)  }
+          proposal.storage_system.candidate_drives.map(&:sid)
         end
 
         # @see Storage::System#available_drives
-        # @return [Array<::DBus::ObjectPath>]
+        # @return [Array<Integer>]
         def available_md_raids
-          proposal.storage_system.available_md_raids.map { |d| system_device_path(d)  }
+          proposal.storage_system.available_md_raids.map(&:sid)
         end
 
         # @see Storage::System#available_drives
-        # @return [Array<::DBus::ObjectPath>]
+        # @return [Array<Integer>]
         def candidate_md_raids
-          proposal.storage_system.candidate_md_raids.map { |d| system_device_path(d)  }
-        end
-
-        # @param device [Y2Storage::Device]
-        # @return [::DBus::ObjectPath]
-        def system_device_path(device)
-          system_devices_tree.path_for(device)
-        end
-
-        dbus_interface STORAGE_DEVICES_INTERFACE do
-          # PropertiesChanged signal if storage is configured, see {#register_callbacks}.
-          dbus_reader_attr_accessor :actions, "aa{sv}"
-
-          dbus_reader :available_drives, "ao"
-          dbus_reader :candidate_drives, "ao"
-          dbus_reader :available_md_raids, "ao"
-          dbus_reader :candidate_md_raids, "ao"
+          proposal.storage_system.candidate_md_raids.map(&:sid)
         end
 
         PROPOSAL_CALCULATOR_INTERFACE = "org.opensuse.Agama.Storage1.Proposal.Calculator"
@@ -392,36 +369,46 @@ module Agama
         # Reads the list of possible encryption methods for the current system and product.
         #
         # @return [Array<String>]
-        def read_encryption_methods
+        def encryption_methods
           Agama::Storage::EncryptionSettings
             .available_methods
             .map { |m| m.id.to_s }
         end
 
-        # Default volume used as template
+        # Default volumes to be used as templates
         #
-        # @return [Hash]
-        def default_volume(mount_path)
-          volume = volume_templates_builder.for(mount_path)
-          VolumeConversion.to_dbus(volume)
+        # @return [Array<Hash>]
+        def volume_templates
+          volumes = volume_templates_builder.all
+          volumes << volume_templates_builder.for("") unless volumes.map(&:mount_path).include?("")
+
+          volumes.map do |vol|
+            Agama::Storage::VolumeConversions::ToJSON.new(vol).convert
+          end
         end
 
-        dbus_interface PROPOSAL_CALCULATOR_INTERFACE do
-          dbus_reader :product_mount_points, "as"
+        # NOTE: memoization of the values?
+        def recover_proposal
+          json = {
+            devices: json_devices(:staging),
+            actions: actions
+          }
+          JSON.pretty_generate(json)
+        end
 
-          # PropertiesChanged signal if software is probed, see {#register_software_callbacks}.
-          dbus_reader_attr_accessor :encryption_methods, "as"
-
-          dbus_method :DefaultVolume, "in mount_path:s, out volume:a{sv}" do |mount_path|
-            [default_volume(mount_path)]
-          end
-
-          # @deprecated Use #Storage1.SetConfig
-          #
-          # result: 0 success; 1 error
-          dbus_method(:Calculate, "in settings_dbus:a{sv}, out result:u") do |settings_dbus|
-            busy_while { calculate_guided_proposal(settings_dbus) }
-          end
+        # NOTE: memoization of the values?
+        def recover_system
+          json = {
+            devices:            json_devices(:probed),
+            availableDrives:    available_drives,
+            availableMdRaids:   available_md_raids,
+            candidateDrives:    candidate_drives,
+            candidateMdRaids:   candidate_md_raids,
+            productMountPoints: product_mount_points,
+            encryptionMethods:  encryption_methods,
+            volumeTemplates:    volume_templates
+          }
+          JSON.pretty_generate(json)
         end
 
         ISCSI_INITIATOR_INTERFACE = "org.opensuse.Agama.Storage1.ISCSI.Initiator"
@@ -520,10 +507,18 @@ module Agama
         # @return [DBus::Storage::Proposal, nil]
         attr_reader :dbus_proposal
 
-
         def register_progress_callbacks
           on_progress_change { self.ProgressChanged(progress.to_json) }
           on_progress_finish { self.ProgressFinished }
+        end
+
+        # JSON representation of the given devicegraph from StorageManager
+        #
+        # @param meth [Symbol] method used to get the devicegraph from StorageManager
+        # @return [Hash]
+        def json_devices(meth)
+          devicegraph = Y2Storage::StorageManager.instance.send(meth)
+          Agama::Storage::DevicegraphConversions::ToJSON.new(devicegraph).convert
         end
 
         def add_s390_interfaces
@@ -550,7 +545,6 @@ module Agama
             export_proposal
             proposal_properties_changed
             refresh_staging_devices
-            update_actions
           end
         end
 
@@ -568,13 +562,6 @@ module Agama
             # If the UI is adapted to use the new iSCSI API (i.e., #SetConfig), then this behaviour
             # should be reevaluated. Ideally, the system would be reprobed if the sessions change.
             deprecate_system
-          end
-        end
-
-        def register_software_callbacks
-          backend.software.on_probe_finished do
-            # A PropertiesChanged signal is emitted (see ::DBus::Object.dbus_reader_attr_accessor).
-            self.encryption_methods = read_encryption_methods
           end
         end
 
