@@ -92,8 +92,7 @@ module Agama
     # Runs the config phase
     #
     # @param reprobe [Boolean] Whether a reprobe should be done instead of a probe.
-    # @param data [Hash] Extra data provided to the D-Bus calls.
-    def config_phase(reprobe: false, _data: {})
+    def config_phase(reprobe: false)
       installation_phase.config
       start_progress_with_descriptions(_("Analyze disks"), _("Configure software"))
       progress.step { configure_storage(reprobe) }

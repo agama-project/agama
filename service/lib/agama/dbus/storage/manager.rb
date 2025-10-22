@@ -26,19 +26,18 @@ require "y2storage/storage_manager"
 require "agama/dbus/base_object"
 require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/locale"
-require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
 require "agama/dbus/storage/devices_tree"
 require "agama/dbus/storage/iscsi_nodes_tree"
 require "agama/dbus/storage/proposal"
 require "agama/dbus/storage/proposal_settings_conversion"
 require "agama/dbus/storage/volume_conversion"
-require "agama/dbus/with_progress"
 require "agama/dbus/with_service_status"
 require "agama/storage/config_conversions"
 require "agama/storage/encryption_settings"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume_templates_builder"
+require "agama/with_progress"
 
 Yast.import "Arch"
 
@@ -47,12 +46,13 @@ module Agama
     module Storage
       # D-Bus object to manage storage installation
       class Manager < BaseObject # rubocop:disable Metrics/ClassLength
+        extend Yast::I18n
+
         include WithProgress
         include WithServiceStatus
         include ::DBus::ObjectManager
         include DBus::Interfaces::Issues
         include DBus::Interfaces::Locale
-        include DBus::Interfaces::Progress
         include DBus::Interfaces::ServiceStatus
 
         PATH = "/org/opensuse/Agama/Storage1"
@@ -64,6 +64,8 @@ module Agama
         # @param service_status [Agama::DBus::ServiceStatus, nil]
         # @param logger [Logger, nil]
         def initialize(backend, service_status: nil, logger: nil)
+          textdomain "agama"
+
           super(PATH, logger: logger)
           @backend = backend
           @service_status = service_status
@@ -100,28 +102,49 @@ module Agama
           backend.deprecated_system?
         end
 
-        # TODO: add progress
+        # Implementation for the API method #Activate.
         def activate
+          start_progress(3, ACTIVATING_STEP)
           backend.reset_activation if backend.activated?
           backend.activate
+
+          next_progress_step(PROBING_STEP)
           backend.probe
-          config_json = proposal.storage_json
-          backend.configure(config_json) if config_json
+
+          next_progress_step(CONFIGURING_STEP)
+          backend.configure_with_current
+
+          finish_progress
         end
 
-        # TODO: add progress
+        # Implementation for the API method #Probe.
         def probe
+          start_progress(3, ACTIVATING_STEP)
           backend.activate unless backend.activated?
+
+          next_progress_step(PROBING_STEP)
           backend.probe
-          config_json = proposal.storage_json
-          backend.configure(config_json) if config_json
+
+          next_progress_step(CONFIGURING_STEP)
+          backend.configure_with_current
+
+          finish_progress
         end
 
+        # Implementation for the API method #SetProduct.
         def configure_product(id)
           backend.product_config.pick_product(id)
+
+          start_progress(3, ACTIVATING_STEP)
           backend.activate unless backend.activated?
+
+          next_progress_step(PROBING_STEP)
           backend.probe unless backend.probed?
+
+          next_progress_step(CONFIGURING_STEP)
           backend.configure
+
+          finish_progress
         end
 
         # TODO: add progress
@@ -213,12 +236,13 @@ module Agama
           dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
           dbus_method(:GetProposal, "out proposal:s") {}
           dbus_method(:GetIssues, "out issues:s") {}
-          dbus_method(:GetProgress, "out progress:s") {}
+          dbus_method(:GetProgress, "out progress:s") { progress.to_json }
           dbus_signal(:SystemChanged)
           dbus_signal(:ConfigChanged)
           dbus_signal(:ProposalChanged)
           dbus_signal(:IssuesChanged)
-          dbus_signal(:ProgressChanged)
+          dbus_signal(:ProgressChanged, "progress:s")
+          dbus_signal(:ProgressFinished)
         end
 
         BOOTLOADER_INTERFACE = "org.opensuse.Agama.Storage1.Bootloader"
@@ -468,14 +492,25 @@ module Agama
 
       private
 
+        ACTIVATING_STEP = N_("Activating storage devices")
+        private_constant :ACTIVATING_STEP
+
+        PROBING_STEP = N_("Probing storage devices")
+        private_constant :PROBING_STEP
+
+        CONFIGURING_STEP = N_("Applying storage configuration")
+        private_constant :CONFIGURING_STEP
+
         # @return [Agama::Storage::Manager]
         attr_reader :backend
 
         # @return [DBus::Storage::Proposal, nil]
         attr_reader :dbus_proposal
 
-        def send_configured_signal
-          self.Configured(request_data["client_id"].to_s)
+
+        def register_progress_callbacks
+          on_progress_change { self.ProgressChanged(progress.to_json) }
+          on_progress_finish { self.ProgressFinished }
         end
 
         def add_s390_interfaces
@@ -503,7 +538,6 @@ module Agama
             proposal_properties_changed
             refresh_staging_devices
             update_actions
-            send_configured_signal
           end
         end
 

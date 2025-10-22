@@ -54,7 +54,7 @@ module Agama
         #
         # @param done [Proc] Block to execute once the probing is done
         def probe(&done)
-          dbus_object[STORAGE_IFACE].Probe(&done)
+          dbus_object.Probe(&done)
         end
 
         # Performs the packages installation
