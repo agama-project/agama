@@ -319,9 +319,14 @@ pub struct Answer {
 ///
 /// It is used by the HTTP layer only.
 #[derive(Serialize, Deserialize, utoipa::ToSchema)]
-pub enum UpdateOperation {
+#[serde(rename_all = "camelCase")]
+pub enum UpdateQuestion {
     /// Answer the question with the given answer.
-    Answer { id: u32, answer: Answer },
+    Answer {
+        id: u32,
+        #[serde(flatten)]
+        answer: Answer,
+    },
     /// Remove the question.
     Delete { id: u32 },
 }

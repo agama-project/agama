@@ -46,7 +46,7 @@ module Agama
         # @return [void]
         def delete(id)
           payload = { "delete" => { "id" => id } }
-          patch("/v2/questions", payload)
+          patch("v2/questions", payload)
         end
 
         # Waits until specified question is answered
@@ -79,13 +79,13 @@ module Agama
         # @return [Agama::Answer] The question answer, or the result of the block in case a block
         #   is given.
         def ask(question)
-          question_id = add(question)
-          answer = wait_answer(question_id)
+          added_question = add(question)
+          answer = wait_answer(added_question.id)
 
-          logger.info("#{question.text} #{answer}")
+          @logger.info("#{added_question.text} #{answer}")
 
           result = block_given? ? yield(answer) : answer
-          delete(question_id)
+          delete(added_question.id)
 
           result
         end
