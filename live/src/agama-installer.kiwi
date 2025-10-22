@@ -115,6 +115,8 @@
         <package name="ipmitool" />
         <!-- jsc#PED-13114 -->
         <package name="tpm2.0-tools" />
+        <!-- plymouth bsc#1248507 -->
+        <package name="plymouth" />
     </packages>
 
     <!-- packages for local installation (desktop, browser, etc.) -->
