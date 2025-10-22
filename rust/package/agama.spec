@@ -213,7 +213,6 @@ echo $PATH
 %doc README.md
 %license LICENSE
 %{_bindir}/agama-web-server
-%{_datadir}/dbus-1/agama-services
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
 
