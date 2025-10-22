@@ -27,6 +27,8 @@ module Agama
     module Clients
       # HTTP client to interact with the files API.
       class Questions < Base
+        class CouldNotAddQuestion < StandardError; end
+
         # Adds a question
         #
         # @param question [Agama::Question]
@@ -80,6 +82,11 @@ module Agama
         #   is given.
         def ask(question)
           added_question = add(question)
+          if added_question.nil?
+            @logger.error "Could not add a question with data: {question.inspect}"
+            raise CouldNotAddQuestion
+          end
+
           answer = wait_answer(added_question.id)
 
           @logger.info("#{added_question.text} #{answer}")
