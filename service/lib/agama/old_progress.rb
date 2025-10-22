@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -59,7 +59,7 @@ module Agama
   #   progress.current_step.description                   #=> "Partitioning"
   #   progress.step("Installing packages") { installing } # overwrite the description
   #   progress.current_step.description                   # "Installing packages"
-  class Progress
+  class OldProgress
     # Step of the progress
     class Step
       # Id of the step

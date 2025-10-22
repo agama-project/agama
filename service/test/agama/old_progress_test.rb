@@ -20,9 +20,9 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
-require "agama/progress"
+require "agama/old_progress"
 
-describe Agama::Progress do
+describe Agama::OldProgress do
   subject { described_class.with_size(steps) }
 
   describe "when the steps are known in advance" do
@@ -63,7 +63,7 @@ describe Agama::Progress do
       it "returns an step with the id and description of the current step" do
         step = subject.current_step
 
-        expect(step).to be_a(Agama::Progress::Step)
+        expect(step).to be_a(Agama::OldProgress::Step)
         expect(step.id).to eq(2)
         expect(step.description).to match(/step 2/)
       end
