@@ -34,8 +34,11 @@ const fetchQuestions = async (): Promise<Question[]> => await get("/api/v2/quest
  * The answer is part of the Question object.
  */
 const updateAnswer = async (question: Question): Promise<void> => {
-  const { id, answer } = question;
-  await patch(`/api/v2/questions`, { id, answer });
+  const {
+    id,
+    answer: { action, value },
+  } = question;
+  await patch(`/api/v2/questions`, { answer: { id, action, value } });
 };
 
 export { fetchQuestions, updateAnswer };

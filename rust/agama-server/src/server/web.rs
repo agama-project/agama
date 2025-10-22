@@ -26,7 +26,7 @@ use agama_utils::{
     actor::Handler,
     api::{
         config, event,
-        question::{Question, QuestionSpec, UpdateOperation},
+        question::{Question, QuestionSpec, UpdateQuestion},
         Action, Config, IssueMap, Status, SystemInfo,
     },
     question,
@@ -287,7 +287,7 @@ async fn ask_question(
     patch,
     path = "/questions",
     context_path = "/api/v2",
-    request_body = UpdateOperation,
+    request_body = UpdateQuestion,
     responses(
         (status = 200, description = "The question was answered or deleted"),
         (status = 400, description = "It was not possible to update the question")
@@ -295,16 +295,16 @@ async fn ask_question(
 )]
 async fn update_question(
     State(state): State<ServerState>,
-    Json(operation): Json<UpdateOperation>,
+    Json(operation): Json<UpdateQuestion>,
 ) -> ServerResult<()> {
     match operation {
-        UpdateOperation::Answer { id, answer } => {
+        UpdateQuestion::Answer { id, answer } => {
             state
                 .questions
                 .call(question::message::Answer { id, answer })
                 .await?;
         }
-        UpdateOperation::Delete { id } => {
+        UpdateQuestion::Delete { id } => {
             state
                 .questions
                 .call(question::message::Delete { id })

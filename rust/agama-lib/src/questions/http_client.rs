@@ -24,7 +24,7 @@ use agama_utils::api::{
     config::Patch,
     question::{
         Answer, AnswerRule, Config as QuestionsConfig, Policy, Question, QuestionSpec,
-        UpdateOperation,
+        UpdateQuestion,
     },
     Config,
 };
@@ -128,7 +128,7 @@ impl HTTPClient {
     }
 
     pub async fn delete_question(&self, id: u32) -> Result<(), QuestionsHTTPClientError> {
-        let update = UpdateOperation::Delete { id };
+        let update = UpdateQuestion::Delete { id };
         self.client.patch_void("/v2/questions", &update).await?;
         Ok(())
     }
