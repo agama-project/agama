@@ -26,7 +26,7 @@ require "agama/config"
 require "agama/network"
 require "agama/proxy_setup"
 require "agama/with_locale"
-require "agama/with_progress"
+require "agama/with_progress_manager"
 require "agama/installation_phase"
 require "agama/service_status_recorder"
 require "agama/dbus/service_status"
@@ -46,7 +46,7 @@ module Agama
   # {Agama::Network}, {Agama::Storage::Proposal}, etc.) or asks
   # other services via D-Bus (e.g., `org.opensuse.Agama.Software1`).
   class Manager
-    include WithProgress
+    include WithProgressManager
     include WithLocale
     include Helpers
     include Yast::I18n

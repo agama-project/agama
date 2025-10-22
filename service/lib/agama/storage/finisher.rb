@@ -26,7 +26,7 @@ require "yast2/systemd/service"
 require "yast2/fs_snapshot"
 require "bootloader/finish_client"
 require "y2storage/storage_manager"
-require "agama/with_progress"
+require "agama/with_progress_manager"
 require "agama/helpers"
 require "agama/http"
 require "agama/network"
@@ -40,7 +40,7 @@ module Agama
   module Storage
     # Auxiliary class to handle the last storage-related steps of the installation
     class Finisher
-      include WithProgress
+      include WithProgressManager
       include Helpers
 
       # Constructor

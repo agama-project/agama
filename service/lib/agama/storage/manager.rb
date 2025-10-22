@@ -49,7 +49,7 @@ module Agama
     class Manager
       include WithLocale
       include WithIssues
-      include WithProgress
+      include WithProgressManager
       include Yast::I18n
 
       # @return [Agama::Config]

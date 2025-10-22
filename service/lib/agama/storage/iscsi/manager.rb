@@ -24,7 +24,7 @@ require "agama/storage/iscsi/adapter"
 require "agama/storage/iscsi/config_importer"
 require "agama/storage/iscsi/node"
 require "agama/with_issues"
-require "agama/with_progress"
+require "agama/with_progress_manager"
 require "yast/i18n"
 
 module Agama
@@ -33,7 +33,7 @@ module Agama
       # Manager for iSCSI.
       class Manager
         include WithIssues
-        include WithProgress
+        include WithProgressManager
         include Yast::I18n
 
         STARTUP_OPTIONS = ["onboot", "manual", "automatic"].freeze

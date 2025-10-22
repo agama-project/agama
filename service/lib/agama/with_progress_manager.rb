@@ -23,7 +23,7 @@ require "agama/progress_manager"
 
 module Agama
   # Mixin that allows to start a progress and configure callbacks
-  module WithProgress
+  module WithProgressManager
     # @return [ProgressManager]
     def progress_manager
       @progress_manager ||= Agama::ProgressManager.new
