@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Oct 14 10:36:49 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not log errors when retrieving NetworkManager secrets to prevent
+  leaking them (bsc#1251898).
+
+-------------------------------------------------------------------
 Tue Oct  7 09:55:46 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
 
 - Add IpConfig.link_local4 to specify ZeroConf/AutoIP behavior.
