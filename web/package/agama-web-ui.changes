@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Fri Oct 17 12:30:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Preserve installer options values after successful submission
+  (bsc#1249636).
+
+-------------------------------------------------------------------
+Tue Oct 14 14:01:15 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed the check about which DASDs can be formatted (bsc#1243795).
+
+-------------------------------------------------------------------
 Thu Sep 18 08:57:11 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Preserve installer options values after successful submission
