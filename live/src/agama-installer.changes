@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 22 05:34:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Remove kernel-default-extra and kernel-default-optional from
+  SLES 16 images (bsc#1249690).
+
+-------------------------------------------------------------------
 Tue Oct 21 20:10:44 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Enable plymouth bootsplash for agama and also propose it for
