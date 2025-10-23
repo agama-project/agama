@@ -6,7 +6,7 @@ DefaultDependencies=no
 # for the dependency order of the dracut services
 
 # after network is configured
-After=network.target
+After=network-online.target
 # after /sysroot is mounted
 After=initrd-fs.target
 # before running the pre-pivot dracut hooks (before the driver update)
