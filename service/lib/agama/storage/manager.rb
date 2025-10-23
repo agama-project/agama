@@ -33,9 +33,7 @@ require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/with_issues"
 require "agama/with_locale"
-require "agama/with_progress"
 require "yast"
-require "bootloader/proposal_client"
 require "y2storage/clients/inst_prepdisk"
 require "y2storage/luks"
 require "y2storage/storage_env"
@@ -49,8 +47,6 @@ module Agama
     class Manager
       include WithLocale
       include WithIssues
-      include WithProgressManager
-      include Yast::I18n
 
       # @return [Agama::Config]
       attr_reader :product_config
@@ -63,8 +59,6 @@ module Agama
       # @param product_config [Agama::Config]
       # @param logger [Logger, nil]
       def initialize(product_config, logger: nil)
-        textdomain "agama"
-
         @product_config = product_config
         @logger = logger || Logger.new($stdout)
         @bootloader = Bootloader.new(logger)
@@ -159,30 +153,6 @@ module Agama
         Y2Storage::StorageManager.instance.probe(callbacks)
       end
 
-      # Prepares the partitioning to install the system
-      def install
-        start_progress_with_size(4)
-        progress.step(_("Preparing bootloader proposal")) do
-          # first make bootloader proposal to be sure that required packages are installed
-          proposal = ::Bootloader::ProposalClient.new.make_proposal({})
-          # then also apply changes to that proposal
-          bootloader.write_config
-          logger.debug "Bootloader proposal #{proposal.inspect}"
-        end
-        progress.step(_("Adding storage-related packages")) { add_packages }
-        progress.step(_("Preparing the storage devices")) { perform_storage_actions }
-        progress.step(_("Writing bootloader sysconfig")) do
-          # call inst bootloader to get properly initialized bootloader
-          # sysconfig before package installation
-          Yast::WFM.CallFunction("inst_bootloader", [])
-        end
-      end
-
-      # Performs the final steps on the target file system(s)
-      def finish
-        Finisher.new(logger, product_config, security).run
-      end
-
       # Configures storage.
       #
       # @param config_json [Hash, nil] Storage config according to the JSON schema. If nil, then
@@ -201,6 +171,31 @@ module Agama
       def configure_with_current
         config_json = proposal.storage_json
         configure(config_json) if config_json
+      end
+
+      # Commits the storage changes.
+      #
+      # @return [Boolean] true if the all actions were successful.
+      def install
+        callbacks = Callbacks::Commit.new(questions_client, logger: logger)
+
+        client = Y2Storage::Clients::InstPrepdisk.new(commit_callbacks: callbacks)
+        client.run == :next
+      end
+
+      # Adds the required packages to the list of resolvables to install.
+      def add_packages
+        packages = devicegraph.used_features.pkg_list
+        packages += ISCSI::Manager::PACKAGES if need_iscsi?
+        return if packages.empty?
+
+        logger.info "Selecting these packages for installation: #{packages}"
+        Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :package, packages)
+      end
+
+      # Performs the final steps on the target file system(s).
+      def finish
+        Finisher.new(logger, product_config, security).run
       end
 
       # Storage proposal manager
@@ -270,16 +265,6 @@ module Agama
         on_progress_change { logger.info(progress.to_s) }
       end
 
-      # Adds the required packages to the list of resolvables to install
-      def add_packages
-        packages = devicegraph.used_features.pkg_list
-        packages += ISCSI::Manager::PACKAGES if need_iscsi?
-        return if packages.empty?
-
-        logger.info "Selecting these packages for installation: #{packages}"
-        Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :package, packages)
-      end
-
       # Whether iSCSI is needed in the target system.
       #
       # @return [Boolean]
@@ -292,16 +277,6 @@ module Agama
       # @return [Y2Storage::Devicegraph]
       def devicegraph
         Y2Storage::StorageManager.instance.staging
-      end
-
-      # Prepares the storage devices for installation
-      #
-      # @return [Boolean] true if the all actions were successful
-      def perform_storage_actions
-        callbacks = Callbacks::Commit.new(questions_client, logger: logger)
-
-        client = Y2Storage::Clients::InstPrepdisk.new(commit_callbacks: callbacks)
-        client.run == :next
       end
 
       # Recalculates the list of issues

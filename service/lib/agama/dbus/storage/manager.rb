@@ -58,8 +58,6 @@ module Agama
         PATH = "/org/opensuse/Agama/Storage1"
         private_constant :PATH
 
-        # Constructor
-        #
         # @param backend [Agama::Storage::Manager]
         # @param service_status [Agama::DBus::ServiceStatus, nil]
         # @param logger [Logger, nil]
@@ -147,14 +145,29 @@ module Agama
           finish_progress
         end
 
-        # TODO: add progress
+        # Implementation for the API method #Install.
         def install
+          start_progress(4, _("Preparing bootloader proposal"))
+          backend.bootloader.configure
+
+          next_progress_step(_("Adding storage-related packages"))
+          backend.add_packages
+
+          next_progress_step(_("Preparing the storage devices"))
           backend.install
+
+          next_progress_step(_("Writing bootloader sysconfig"))
+          backend.bootloader.install
+
+          finish_progress
         end
 
-        # TODO: add progress
+        # Implementation for the API method #Finish.
         def finish
+          start_progress(1, _("Finishing installation"))
           backend.finish
+
+          finish_progress
         end
 
         # Gets and serializes the storage config used for calculating the current proposal.
@@ -162,6 +175,14 @@ module Agama
         # @return [String]
         def recover_config
           json = proposal.storage_json
+          JSON.pretty_generate(json)
+        end
+
+        # Gets and serializes the storage config model.
+        #
+        # @return [String]
+        def recover_config_model
+          json = proposal.model_json
           JSON.pretty_generate(json)
         end
 
@@ -176,25 +197,17 @@ module Agama
         #
         # @param serialized_config [String] Serialized storage config.
         # @return [Integer] 0 success; 1 error
-        def apply_config(serialized_config)
+        def configure(serialized_config)
           logger.info("Setting storage config from D-Bus: #{serialized_config}")
           config_json = JSON.parse(serialized_config, symbolize_names: true)
           backend.configure(config_json)
-        end
-
-        # Gets and serializes the storage config model.
-        #
-        # @return [String]
-        def recover_config_model
-          json = proposal.model_json
-          JSON.pretty_generate(json)
         end
 
         # Applies the given serialized config model according to the JSON schema.
         #
         # @param serialized_model [String] Serialized storage config model.
         # @return [Integer] 0 success; 1 error
-        def apply_config_model(serialized_model)
+        def configure_with_model(serialized_model)
           logger.info("Setting storage config model from D-Bus: #{serialized_model}")
 
           model_json = JSON.parse(serialized_model, symbolize_names: true)
@@ -230,9 +243,9 @@ module Agama
           dbus_method(:SetProduct, "in id:s") { |id| configure_product(id) }
           dbus_method(:GetSystem, "out system:s") {}
           dbus_method(:GetConfig, "out config:s") { recover_config }
-          dbus_method(:SetConfig, "in config:s") { |c| apply_config(c) }
+          dbus_method(:SetConfig, "in config:s") { |c| configure(c) }
           dbus_method(:GetConfigModel, "out model:s") { recover_config_model }
-          dbus_method(:SetConfigModel, "in model:s") { |m| apply_config_model(m)}
+          dbus_method(:SetConfigModel, "in model:s") { |m| configure_with_model(m)}
           dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
           dbus_method(:GetProposal, "out proposal:s") {}
           dbus_method(:GetIssues, "out issues:s") {}
