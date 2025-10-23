@@ -44,6 +44,9 @@ pub use service::Service;
 mod model;
 pub use model::{Model, ModelAdapter};
 
+mod event;
+pub use event::Event;
+
 mod system_info;
 pub use system_info::SystemInfo;
 

@@ -18,28 +18,34 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use std::sync::{Arc, Mutex, RwLock};
+
 use crate::{
     config::Config,
-    message,
+    event,
+    message::{self, Probe},
     model::{
         license::{Error as LicenseError, LicensesRepo},
+        packages::ResolvableType,
         products::{ProductsRegistry, ProductsRegistryError},
         ModelAdapter,
     },
     proposal::Proposal,
     system_info::SystemInfo,
     zypp_server::{self, SoftwareAction},
+    Event,
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     issue::{self},
 };
 use async_trait::async_trait;
+use tokio::sync::mpsc::error::SendError;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("software service could not send the event")]
-    Event,
+    Event(#[from] SendError<Event>),
     #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error("Failed to send message to libzypp thread: {0}")]
@@ -73,7 +79,7 @@ pub enum Error {
 /// * Holds the user configuration.
 /// * Applies the user configuration at the end of the installation.
 pub struct Service {
-    model: Box<dyn ModelAdapter + Send + 'static>,
+    model: Arc<Mutex<dyn ModelAdapter + Send + 'static>>,
     products: ProductsRegistry,
     licenses: LicensesRepo,
     issues: Handler<issue::Service>,
@@ -94,7 +100,7 @@ impl Service {
         events: event::Sender,
     ) -> Service {
         Self {
-            model: Box::new(model),
+            model: Arc::new(Mutex::new(model)),
             issues,
             events,
             licenses: LicensesRepo::default(),
@@ -109,7 +115,7 @@ impl Service {
         Ok(())
     }
 
-    pub fn update_system(&mut self) -> Result<(), Error> {
+    fn update_system(&mut self) -> Result<(), Error> {
         let licenses = self.licenses.licenses().into_iter().cloned().collect();
         let products = self.products.products();
 
@@ -118,6 +124,39 @@ impl Service {
             products,
             ..Default::default()
         };
+
+        self.events.send(Event::SystemChanged)?;
+
+        Ok(())
+    }
+
+    async fn apply_config(&mut self) -> Result<(), Error> {
+        if let Some(software) = &self.state.config.software {
+            let user_id = "user";
+            let patterns = software.patterns.clone().unwrap_or_default();
+            let packages = software.packages.clone().unwrap_or_default();
+            let extra_repositories = software.extra_repositories.clone().unwrap_or_default();
+            //self.model
+            //    .set_resolvables(user_id, ResolvableType::Pattern, patterns, false)
+            //    .await?;
+            self.model
+                .set_resolvables(user_id, ResolvableType::Package, packages, false)
+                .await?;
+            // for repositories we should allow also to remove previously defined one, but now for simplicity just check if it there and if not, then add it
+            // TODO: replace it with future repository registry
+            let existing_repositories = self.model.repositories().await?;
+            let new_repos = extra_repositories
+                .iter()
+                .filter(|r| {
+                    existing_repositories
+                        .iter()
+                        .find(|repo| repo.alias == r.alias)
+                        .is_none()
+                })
+                .cloned()
+                .collect();
+            self.model.add_repositories(new_repos).await?;
+        }
 
         Ok(())
     }
@@ -144,7 +183,19 @@ impl MessageHandler<message::GetConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
-        todo!();
+        let need_probe = message.config.product.as_ref().map(|c| c.id.as_ref())
+            != self.state.config.product.as_ref().map(|c| c.id.as_ref());
+        self.state.config = message.config.clone();
+        self.events.send(Event::ConfigChanged)?;
+        tokio::task::spawn( async move {
+            // FIXME: convert unwraps to sending issues
+            if need_probe {
+                self.handle(Probe).await.unwrap();
+            }
+            self.apply_config().await.unwrap();        
+        });
+        
+        Ok(())
     }
 }
 
@@ -166,7 +217,7 @@ impl MessageHandler<message::Probe> for Service {
             return Err(Error::WrongProduct(product_id));
         };
 
-        self.model.probe(product).await?;
+        self.model.lock().unwrap().probe(product).await?;
         self.update_system();
         Ok(())
     }
@@ -175,14 +226,14 @@ impl MessageHandler<message::Probe> for Service {
 #[async_trait]
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<bool, Error> {
-        self.model.install().await
+        self.model.lock().unwrap().install().await
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
-        self.model.finish()?;
+        self.model.lock().unwrap().await?;
         Ok(())
     }
 }

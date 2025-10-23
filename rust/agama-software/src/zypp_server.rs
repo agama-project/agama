@@ -26,7 +26,7 @@ use tokio::sync::{
 use zypp_agama::ZyppError;
 
 use crate::model::{
-    packages::{Repository, ResolvableType},
+    packages::{Repository, RepositoryParams, ResolvableType},
     pattern::Pattern,
     products::RepositorySpec,
 };
@@ -80,7 +80,7 @@ pub type ZyppServerResult<R> = Result<R, ZyppServerError>;
 
 #[derive(Debug)]
 pub enum SoftwareAction {
-    AddRepositories(Vec<RepositorySpec>, oneshot::Sender<ZyppServerResult<()>>),
+    AddRepositories(Vec<RepositoryParams>, oneshot::Sender<ZyppServerResult<()>>),
     RemoveRepositories(Vec<String>, oneshot::Sender<ZyppServerResult<()>>),
     Install(oneshot::Sender<ZyppServerResult<bool>>),
     Finish(oneshot::Sender<ZyppServerResult<()>>),
@@ -282,7 +282,7 @@ impl ZyppServer {
 
     async fn add_repositories(
         &self,
-        repos: Vec<RepositorySpec>,
+        repos: Vec<RepositoryParams>,
         tx: oneshot::Sender<ZyppServerResult<()>>,
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {

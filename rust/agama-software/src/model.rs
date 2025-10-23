@@ -23,7 +23,7 @@ use tokio::sync::{mpsc, oneshot};
 
 use crate::{
     model::{
-        packages::{Repository, ResolvableType},
+        packages::{Repository, RepositoryParams, ResolvableType},
         pattern::Pattern,
         products::{ProductSpec, UserPattern},
         registration::{AddonProperties, RegistrationInfo},
@@ -55,6 +55,9 @@ pub trait ModelAdapter: Send + Sync + 'static {
     /// List of available repositories.
     async fn repositories(&self) -> Result<Vec<Repository>, service::Error>;
 
+    /// Adds given list of repositories and loads them
+    async fn add_repositories(&self, list: Vec<RepositoryParams>) -> Result<(), service::Error>;
+
     /// List of available addons.
     fn addons(&self) -> Result<Vec<AddonProperties>, service::Error>;
 
@@ -75,7 +78,7 @@ pub trait ModelAdapter: Send + Sync + 'static {
         &mut self,
         id: &str,
         r#type: ResolvableType,
-        resolvables: &[&str],
+        resolvables: Vec<String>,
         optional: bool,
     ) -> Result<(), service::Error>;
 
@@ -86,7 +89,7 @@ pub trait ModelAdapter: Send + Sync + 'static {
     async fn install(&self) -> Result<bool, service::Error>;
 
     /// Finalizes system like disabling local repositories
-    fn finish(&self) -> Result<(), service::Error>;
+    async fn finish(&self) -> Result<(), service::Error>;
 }
 
 /// [ModelAdapter] implementation for libzypp systems.
@@ -155,7 +158,7 @@ impl ModelAdapter for Model {
         &mut self,
         id: &str,
         r#type: ResolvableType,
-        resolvables: &[&str],
+        resolvables: Vec<String>,
         optional: bool,
     ) -> Result<(), service::Error> {
         self.software_selection
@@ -164,14 +167,26 @@ impl ModelAdapter for Model {
         Ok(())
     }
 
+    async fn add_repositories(&self, list: Vec<RepositoryParams>) -> Result<(), service::Error> {
+        let (tx, rx) = oneshot::channel();
+        self.zypp_sender
+            .send(SoftwareAction::AddRepositories(list, tx))?;
+        Ok(rx.await??)
+    }
+
     async fn probe(&mut self, product: &ProductSpec) -> Result<(), service::Error> {
         let (tx, rx) = oneshot::channel();
+        // TODO: create own repository registry that will hold all sources of repositories
+        // like manual ones, product ones or ones from kernel cmdline
         let repositories = product
             .software
             .repositories()
             .into_iter()
-            .map(|r| r.clone())
-            .collect();
+            .enumerate()
+            .map(|(i, r)|
+                // we need to get somehow better names and aliases
+                RepositoryParams { alias: format!("{}_{}", product.id, i), name: Some(format!("{} {}", product.name, i)), url: r.url.clone(), product_dir: None, enabled: Some(true), priority: None, allow_unsigned: Some(false), gpg_fingerprints: None }
+            ).collect();
         self.zypp_sender
             .send(SoftwareAction::AddRepositories(repositories, tx))?;
         rx.await??;
@@ -183,79 +198,61 @@ impl ModelAdapter for Model {
                 installer_id,
                 ResolvableType::Product,
                 false,
-                &[product.id.as_str()],
+                vec![product.id.clone()],
             )
             .await?;
 
-        let resolvables: Vec<_> = product
-            .software
-            .mandatory_patterns
-            .iter()
-            .map(String::as_str)
-            .collect();
+        let resolvables: Vec<_> = product.software.mandatory_patterns.clone();
         self.software_selection
             .set(
                 &self.zypp_sender,
                 installer_id,
                 ResolvableType::Pattern,
                 false,
-                &resolvables,
+                resolvables,
             )
             .await?;
 
-        let resolvables: Vec<_> = product
-            .software
-            .mandatory_packages
-            .iter()
-            .map(String::as_str)
-            .collect();
+        let resolvables: Vec<_> = product.software.mandatory_packages.clone();
         self.software_selection
             .set(
                 &self.zypp_sender,
                 installer_id,
                 ResolvableType::Package,
                 false,
-                &resolvables,
+                resolvables,
             )
             .await?;
 
-        let resolvables: Vec<_> = product
-            .software
-            .optional_patterns
-            .iter()
-            .map(String::as_str)
-            .collect();
+        let resolvables: Vec<_> = product.software.optional_patterns.clone();
         self.software_selection
             .set(
                 &self.zypp_sender,
                 installer_id,
                 ResolvableType::Pattern,
                 true,
-                &resolvables,
+                resolvables,
             )
             .await?;
 
-        let resolvables: Vec<_> = product
-            .software
-            .optional_packages
-            .iter()
-            .map(String::as_str)
-            .collect();
+        let resolvables: Vec<_> = product.software.optional_packages.clone();
         self.software_selection
             .set(
                 &self.zypp_sender,
                 installer_id,
                 ResolvableType::Package,
                 true,
-                &resolvables,
+                resolvables,
             )
             .await?;
 
         Ok(())
     }
 
-    fn finish(&self) -> Result<(), service::Error> {
-        todo!()
+    async fn finish(&self) -> Result<(), service::Error> {
+        let (tx, rx) = oneshot::channel();
+        self.zypp_sender.send(SoftwareAction::Finish(tx))?;
+        Ok(rx.await??)
     }
 
     async fn install(&self) -> Result<bool, service::Error> {

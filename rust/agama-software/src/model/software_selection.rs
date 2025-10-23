@@ -52,7 +52,7 @@ impl SoftwareSelection {
         id: &str,
         r#type: ResolvableType,
         optional: bool,
-        resolvables: &[&str],
+        resolvables: Vec<String>,
     ) -> Result<(), service::Error> {
         let list = self.find_or_create_selection(id, r#type, optional);
         // FIXME: use reference counting here, if multiple ids require some package, to not unselect it
@@ -65,8 +65,7 @@ impl SoftwareSelection {
         })?;
         rx.await??;
 
-        let new_resolvables: Vec<_> = resolvables.iter().map(|r| r.to_string()).collect();
-        list.resolvables = new_resolvables;
+        list.resolvables = resolvables;
         let (tx, rx) = oneshot::channel();
         zypp.send(SoftwareAction::UnsetResolvables {
             tx,
