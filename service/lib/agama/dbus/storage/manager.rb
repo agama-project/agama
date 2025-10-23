@@ -27,14 +27,10 @@ require "agama/dbus/base_object"
 require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/locale"
 require "agama/dbus/interfaces/service_status"
-require "agama/dbus/storage/devices_tree"
 require "agama/dbus/storage/iscsi_nodes_tree"
-require "agama/dbus/storage/proposal"
-require "agama/dbus/storage/proposal_settings_conversion"
 require "agama/dbus/with_service_status"
 require "agama/storage/config_conversions"
 require "agama/storage/encryption_settings"
-require "agama/storage/proposal_settings"
 require "agama/storage/volume_templates_builder"
 require "agama/with_progress"
 require "agama/storage/devicegraph_conversions"
@@ -339,23 +335,6 @@ module Agama
           proposal.storage_system.candidate_md_raids.map(&:sid)
         end
 
-        PROPOSAL_CALCULATOR_INTERFACE = "org.opensuse.Agama.Storage1.Proposal.Calculator"
-        private_constant :PROPOSAL_CALCULATOR_INTERFACE
-
-        # Calculates a guided proposal.
-        #
-        # @param settings_dbus [Hash]
-        # @return [Integer] 0 success; 1 error
-        def calculate_guided_proposal(settings_dbus)
-          logger.info("Calculating guided storage proposal from D-Bus: #{settings_dbus}")
-
-          settings = ProposalSettingsConversion.from_dbus(settings_dbus,
-            config: product_config, logger: logger)
-
-          proposal.calculate_guided(settings)
-          proposal.success? ? 0 : 1
-        end
-
         # Meaningful mount points for the current product.
         #
         # @return [Array<String>]
@@ -504,9 +483,6 @@ module Agama
         # @return [Agama::Storage::Manager]
         attr_reader :backend
 
-        # @return [DBus::Storage::Proposal, nil]
-        attr_reader :dbus_proposal
-
         def register_progress_callbacks
           on_progress_change { self.ProgressChanged(progress.to_json) }
           on_progress_finish { self.ProgressFinished }
@@ -584,30 +560,6 @@ module Agama
           backend.deprecated_system = true
         end
 
-        # @todo Do not export a separate proposal object. For now, the guided proposal is still
-        #   exported to keep the current UI working.
-        def export_proposal
-          if dbus_proposal
-            @service.unexport(dbus_proposal)
-            @dbus_proposal = nil
-          end
-
-          return unless proposal.guided?
-
-          @dbus_proposal = DBus::Storage::Proposal.new(proposal, logger)
-          @service.export(@dbus_proposal)
-        end
-
-        def refresh_system_devices
-          devicegraph = Y2Storage::StorageManager.instance.probed
-          system_devices_tree.update(devicegraph)
-        end
-
-        def refresh_staging_devices
-          devicegraph = Y2Storage::StorageManager.instance.staging
-          staging_devices_tree.update(devicegraph)
-        end
-
         def refresh_iscsi_nodes
           nodes = backend.iscsi.nodes
           iscsi_nodes_tree.update(nodes)
@@ -615,21 +567,6 @@ module Agama
 
         def iscsi_nodes_tree
           @iscsi_nodes_tree ||= ISCSINodesTree.new(@service, backend.iscsi, logger: logger)
-        end
-
-        # FIXME: D-Bus trees should not be created by the Manager D-Bus object. Note that the
-        #   service (`@service`) is nil until the Manager object is exported. The service should
-        #   have the responsibility of creating the trees and pass them to Manager if needed.
-        def system_devices_tree
-          @system_devices_tree ||= DevicesTree.new(@service, tree_path("system"), logger: logger)
-        end
-
-        def staging_devices_tree
-          @staging_devices_tree ||= DevicesTree.new(@service, tree_path("staging"), logger: logger)
-        end
-
-        def tree_path(tree_root)
-          File.join(PATH, tree_root)
         end
 
         # @return [Agama::Config]

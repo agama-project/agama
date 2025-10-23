@@ -22,7 +22,6 @@
 require_relative "../../../test_helper"
 require_relative "../../storage/storage_helpers"
 require "agama/dbus/storage/manager"
-require "agama/dbus/storage/proposal"
 require "agama/storage/config"
 require "agama/storage/device_settings"
 require "agama/storage/manager"
@@ -418,169 +417,6 @@ describe Agama::DBus::Storage::Manager do
   describe "#apply_config" do
     let(:serialized_config) { config_json.to_json }
 
-    context "if the serialized config contains guided proposal settings" do
-      let(:config_json) do
-        {
-          storage: {
-            guided: {
-              target:     {
-                disk: "/dev/vda"
-              },
-              boot:       {
-                device: "/dev/vdb"
-              },
-              encryption: {
-                password: "notsecret"
-              },
-              volumes:    volumes_settings
-            }
-          }
-        }
-      end
-
-      let(:volumes_settings) do
-        [
-          {
-            mount: {
-              path: "/"
-            }
-          },
-          {
-            mount: {
-              path: "swap"
-            }
-          }
-        ]
-      end
-
-      it "calculates a guided proposal with the given settings" do
-        expect(proposal).to receive(:calculate_guided) do |settings|
-          expect(settings).to be_a(Agama::Storage::ProposalSettings)
-          expect(settings.device).to be_a(Agama::Storage::DeviceSettings::Disk)
-          expect(settings.device.name).to eq "/dev/vda"
-          expect(settings.boot.device).to eq "/dev/vdb"
-          expect(settings.encryption).to be_a(Agama::Storage::EncryptionSettings)
-          expect(settings.encryption.password).to eq("notsecret")
-          expect(settings.volumes).to contain_exactly(
-            an_object_having_attributes(mount_path: "/"),
-            an_object_having_attributes(mount_path: "swap")
-          )
-        end
-
-        subject.apply_config(serialized_config)
-      end
-
-      context "when the serialized config omits some settings" do
-        let(:config_json) do
-          {
-            storage: {
-              guided: {}
-            }
-          }
-        end
-
-        it "calculates a proposal with default values for the missing settings" do
-          expect(proposal).to receive(:calculate_guided) do |settings|
-            expect(settings).to be_a(Agama::Storage::ProposalSettings)
-            expect(settings.device).to be_a(Agama::Storage::DeviceSettings::Disk)
-            expect(settings.device.name).to be_nil
-            expect(settings.boot.device).to be_nil
-            expect(settings.encryption).to be_a(Agama::Storage::EncryptionSettings)
-            expect(settings.encryption.password).to be_nil
-            expect(settings.volumes).to eq([])
-          end
-
-          subject.apply_config(serialized_config)
-        end
-      end
-
-      context "when the serialized config includes a volume" do
-        let(:volumes_settings) { [volume1_settings] }
-
-        let(:volume1_settings) do
-          {
-            mount:      {
-              path: "/"
-            },
-            size:       {
-              min: 1024,
-              max: 2048
-            },
-            filesystem: {
-              btrfs: {
-                snapshots: true
-              }
-            }
-          }
-        end
-
-        let(:config_data) do
-          { "storage" => { "volumes" => [], "volume_templates" => cfg_templates } }
-        end
-
-        let(:cfg_templates) do
-          [
-            {
-              "mount_path" => "/",
-              "outline"    => {
-                "snapshots_configurable" => true
-              }
-            }
-          ]
-        end
-
-        it "calculates a proposal with the given volume settings" do
-          expect(proposal).to receive(:calculate_guided) do |settings|
-            volume = settings.volumes.first
-
-            expect(volume.mount_path).to eq("/")
-            expect(volume.auto_size).to eq(false)
-            expect(volume.min_size.to_i).to eq(1024)
-            expect(volume.max_size.to_i).to eq(2048)
-            expect(volume.btrfs.snapshots).to eq(true)
-          end
-
-          subject.apply_config(serialized_config)
-        end
-
-        context "and the volume settings omits some values" do
-          let(:volume1_settings) do
-            {
-              mount: {
-                path: "/"
-              }
-            }
-          end
-
-          let(:cfg_templates) do
-            [
-              {
-                "mount_path" => "/", "filesystem" => "btrfs",
-                "size" => { "auto" => false, "min" => "5 GiB", "max" => "20 GiB" },
-                "outline" => {
-                  "filesystems" => ["btrfs"]
-                }
-              }
-            ]
-          end
-
-          it "calculates a proposal with default settings for the missing volume settings" do
-            expect(proposal).to receive(:calculate_guided) do |settings|
-              volume = settings.volumes.first
-
-              expect(volume.mount_path).to eq("/")
-              expect(volume.auto_size).to eq(false)
-              expect(volume.min_size.to_i).to eq(5 * (1024**3))
-              expect(volume.max_size.to_i).to eq(20 * (1024**3))
-              expect(volume.btrfs.snapshots).to eq(false)
-            end
-
-            subject.apply_config(serialized_config)
-          end
-        end
-      end
-    end
-
     context "if the serialized config contains storage settings" do
       let(:config_json) do
         {
@@ -675,43 +511,6 @@ describe Agama::DBus::Storage::Manager do
       end
     end
 
-    context "if a guided proposal has been calculated" do
-      before do
-        proposal.calculate_from_json(settings_json)
-      end
-
-      let(:settings_json) do
-        {
-          storage: {
-            guided: {
-              target: { disk: "/dev/vda" }
-            }
-          }
-        }
-      end
-
-      it "returns serialized solved guided storage config" do
-        expect(subject.recover_config).to eq(
-          serialize({
-            storage: {
-              guided: {
-                target:  {
-                  disk: "/dev/vda"
-                },
-                boot:    {
-                  configure: true
-                },
-                space:   {
-                  policy: "keep"
-                },
-                volumes: []
-              }
-            }
-          })
-        )
-      end
-    end
-
     context "if an agama proposal has been calculated" do
       before do
         proposal.calculate_from_json(config_json)
@@ -759,26 +558,6 @@ describe Agama::DBus::Storage::Manager do
 
   describe "#recover_model" do
     context "if a proposal has not been calculated" do
-      it "returns 'null'" do
-        expect(subject.recover_model).to eq("null")
-      end
-    end
-
-    context "if a guided proposal has been calculated" do
-      before do
-        proposal.calculate_from_json(settings_json)
-      end
-
-      let(:settings_json) do
-        {
-          storage: {
-            guided: {
-              target: { disk: "/dev/vda" }
-            }
-          }
-        }
-      end
-
       it "returns 'null'" do
         expect(subject.recover_model).to eq("null")
       end
