@@ -516,11 +516,8 @@ module Agama
         def register_storage_callbacks
           backend.on_issues_change { issues_properties_changed }
           backend.on_deprecated_system_change { storage_properties_changed }
-          backend.on_probe { refresh_system_devices }
           backend.on_configure do
-            export_proposal
             proposal_properties_changed
-            refresh_staging_devices
           end
         end
 
