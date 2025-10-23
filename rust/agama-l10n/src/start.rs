@@ -31,8 +31,6 @@ use agama_utils::{
 pub enum Error {
     #[error(transparent)]
     Service(#[from] service::Error),
-    #[error(transparent)]
-    Monitor(#[from] monitor::Error),
 }
 
 /// Starts the localization service.
@@ -53,8 +51,17 @@ pub async fn start(
     let model = Model::from_system()?;
     let service = Service::new(model, issues, events);
     let handler = actor::spawn(service);
-    let monitor = Monitor::new(handler.clone()).await?;
-    monitor::spawn(monitor);
+
+    match Monitor::new(handler.clone()).await {
+        Ok(monitor) => monitor::spawn(monitor),
+        Err(error) => {
+            tracing::error!(
+                "Could not launch the l10n monitor, therefore changes from systemd will be ignored. \
+                 The original error was {error}"
+            );
+        }
+    }
+
     Ok(handler)
 }
 

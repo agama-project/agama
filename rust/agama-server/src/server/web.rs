@@ -31,7 +31,6 @@ use agama_utils::{
     },
     question,
 };
-use anyhow;
 use axum::{
     extract::State,
     response::{IntoResponse, Response},
@@ -72,17 +71,17 @@ type ServerResult<T> = Result<T, Error>;
 ///
 /// * `events`: channel to send events to the websocket.
 /// * `dbus`: connection to Agama's D-Bus server. If it is not given, those features
-///           that require to connect to the Agama's D-Bus server won't work.
+///   that require to connect to the Agama's D-Bus server won't work.
 pub async fn server_service(
     events: event::Sender,
     dbus: Option<zbus::Connection>,
 ) -> Result<Router, ServiceError> {
     let questions = question::start(events.clone())
         .await
-        .map_err(|e| anyhow::Error::new(e))?;
+        .map_err(anyhow::Error::msg)?;
     let manager = manager::start(questions.clone(), events, dbus)
         .await
-        .map_err(|e| anyhow::Error::new(e))?;
+        .map_err(anyhow::Error::msg)?;
 
     let state = ServerState { manager, questions };
 
