@@ -41,7 +41,7 @@ module Agama
       # D-Bus object to manage storage installation
       class Manager < BaseObject # rubocop:disable Metrics/ClassLength
         extend Yast::I18n
-
+        include Yast::I18n
         include WithProgress
         include ::DBus::ObjectManager
         include DBus::Interfaces::Issues
@@ -82,9 +82,10 @@ module Agama
 
           next_progress_step(PROBING_STEP)
           backend.probe
+          self.SystemChanged
 
           next_progress_step(CONFIGURING_STEP)
-          backend.configure_with_current
+          configure_with_current
 
           finish_progress
         end
@@ -96,9 +97,10 @@ module Agama
 
           next_progress_step(PROBING_STEP)
           backend.probe
+          self.SystemChanged
 
           next_progress_step(CONFIGURING_STEP)
-          backend.configure_with_current
+          configure_with_current
 
           finish_progress
         end
@@ -111,10 +113,14 @@ module Agama
           backend.activate unless backend.activated?
 
           next_progress_step(PROBING_STEP)
-          backend.probe unless backend.probed?
+          if !backend.probed?
+            backend.probe
+            self.SystemChanged
+          end
 
           next_progress_step(CONFIGURING_STEP)
           backend.configure
+          self.ProposalChanged
 
           finish_progress
         end
@@ -176,6 +182,7 @@ module Agama
 
           config_json = JSON.parse(serialized_config, symbolize_names: true)
           backend.configure(config_json)
+          self.ProposalChanged
 
           finish_progress
         end
@@ -195,6 +202,7 @@ module Agama
           ).convert
           config_json = { storage: Agama::Storage::ConfigConversions::ToJSON.new(config).convert }
           backend.configure(config_json)
+          self.ProposalChanged
 
           finish_progress
         end
@@ -226,7 +234,6 @@ module Agama
           dbus_method(:GetProposal, "out proposal:s") { recover_proposal }
           dbus_method(:GetIssues, "out issues:s") {}
           dbus_signal(:SystemChanged)
-          dbus_signal(:ConfigChanged)
           dbus_signal(:ProposalChanged)
           dbus_signal(:IssuesChanged)
           dbus_signal(:ProgressChanged, "progress:s")
@@ -462,6 +469,17 @@ module Agama
         def register_progress_callbacks
           on_progress_change { self.ProgressChanged(progress.to_json) }
           on_progress_finish { self.ProgressFinished }
+        end
+
+        # Configures storage using the current config.
+        #
+        # @note The proposal is not calculated if there is not a config yet.
+        def configure_with_current
+          config_json = proposal.storage_json
+          return unless config_json
+
+          configure(config_json)
+          self.ProposalChanged
         end
 
         # JSON representation of the given devicegraph from StorageManager

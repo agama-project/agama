@@ -115,14 +115,6 @@ module Agama
         result
       end
 
-      # Configures storage using the current config.
-      #
-      # @note The proposal is not calculated if there is not a config yet.
-      def configure_with_current
-        config_json = proposal.storage_json
-        configure(config_json) if config_json
-      end
-
       # Commits the storage changes.
       #
       # @return [Boolean] true if the all actions were successful.
