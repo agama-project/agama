@@ -24,10 +24,4 @@ pub use start::start;
 pub mod service;
 pub use service::Service;
 
-pub mod event;
-pub use event::Event;
-
 pub mod message;
-
-mod model;
-pub use model::Progress;

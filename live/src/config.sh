@@ -35,7 +35,7 @@ REPO="/etc/zypp/repos.d/agama-${DISTRO}.repo"
 if [ -f "${REPO}.disabled" ]; then
   mv "${REPO}.disabled" $REPO
 fi
-rm /etc/zypp/repos.d/*.disabled
+rm -f /etc/zypp/repos.d/*.disabled
 
 # configure the repositories in the Live system
 # import the OBS key for the systemsmanagement OBS project

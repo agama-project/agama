@@ -120,7 +120,7 @@ const Providers = ({ children, withL10n }) => {
 
   if (withL10n) {
     const fetchConfig = async (): Promise<System> => ({
-      localization: {
+      l10n: {
         keymap: "us",
         timezone: "Europe/Berlin",
         locale: "en_US",

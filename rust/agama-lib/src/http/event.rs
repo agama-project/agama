@@ -34,21 +34,19 @@ use crate::{
     },
     users::{FirstUser, RootUser},
 };
-use agama_l10n as l10n;
-use agama_utils::{issue, progress};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use tokio::sync::broadcast;
 
-pub type Sender = broadcast::Sender<Event>;
-pub type Receiver = broadcast::Receiver<Event>;
+pub type OldSender = broadcast::Sender<OldEvent>;
+pub type OldReceiver = broadcast::Receiver<OldEvent>;
 
 /// Agama event.
 ///
 /// It represents an event that occurs in Agama.
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Event {
+pub struct OldEvent {
     /// The identifier of the client which caused the event.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub client_id: Option<ClientId>,
@@ -57,12 +55,12 @@ pub struct Event {
     pub payload: EventPayload,
 }
 
-impl Event {
+impl OldEvent {
     /// Creates a new event.
     ///
     /// * `payload`: event payload.
     pub fn new(payload: EventPayload) -> Self {
-        Event {
+        OldEvent {
             client_id: None,
             payload,
         }
@@ -73,7 +71,7 @@ impl Event {
     /// * `payload`: event payload.
     /// * `client_id`: client ID.
     pub fn new_with_client_id(payload: EventPayload, client_id: &ClientId) -> Self {
-        Event {
+        OldEvent {
             client_id: Some(client_id.clone()),
             payload,
         }
@@ -87,10 +85,6 @@ pub enum EventPayload {
     LocaleChanged {
         locale: String,
     },
-    #[serde(rename = "progress")]
-    ProgressEvent(progress::Event),
-    #[serde(rename = "l10n")]
-    L10nEvent(l10n::Event),
     DevicesDirty {
         dirty: bool,
     },
@@ -126,8 +120,6 @@ pub enum EventPayload {
         service: String,
         status: u32,
     },
-    #[serde(rename = "issues")]
-    Issues(issue::Event),
     ValidationChanged {
         service: String,
         path: String,
@@ -189,24 +181,6 @@ pub enum EventPayload {
     },
 }
 
-impl From<progress::Event> for EventPayload {
-    fn from(value: progress::Event) -> Self {
-        EventPayload::ProgressEvent(value)
-    }
-}
-
-impl From<l10n::Event> for EventPayload {
-    fn from(value: l10n::Event) -> Self {
-        EventPayload::L10nEvent(value)
-    }
-}
-
-impl From<issue::Event> for EventPayload {
-    fn from(value: issue::Event) -> Self {
-        EventPayload::Issues(value)
-    }
-}
-
 /// Makes it easier to create an event, reducing the boilerplate.
 ///
 /// # Event without additional data
@@ -254,21 +228,21 @@ impl From<issue::Event> for EventPayload {
 #[macro_export]
 macro_rules! event {
     ($variant:ident) => {
-        agama_lib::http::Event::new(agama_lib::http::EventPayload::$variant)
+        agama_lib::http::OldEvent::new(agama_lib::http::EventPayload::$variant)
     };
     ($variant:ident, $client:expr) => {
-        agama_lib::http::Event::new_with_client_id(
+        agama_lib::http::OldEvent::new_with_client_id(
             agama_lib::http::EventPayload::$variant,
             $client,
         )
     };
     ($variant:ident $inner:tt, $client:expr) => {
-        agama_lib::http::Event::new_with_client_id(
+        agama_lib::http::OldEvent::new_with_client_id(
             agama_lib::http::EventPayload::$variant $inner,
             $client
         )
     };
     ($variant:ident $inner:tt) => {
-        agama_lib::http::Event::new(agama_lib::http::EventPayload::$variant $inner)
+        agama_lib::http::OldEvent::new(agama_lib::http::EventPayload::$variant $inner)
     };
 }

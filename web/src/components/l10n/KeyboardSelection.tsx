@@ -34,10 +34,10 @@ import { _ } from "~/i18n";
 export default function KeyboardSelection() {
   const navigate = useNavigate();
   const {
-    localization: { keymaps },
+    l10n: { keymaps },
   } = useSystem();
   const {
-    localization: { keymap: currentKeymap },
+    l10n: { keymap: currentKeymap },
   } = useProposal();
 
   // FIXME: get current keymap from either, proposal or config
@@ -51,7 +51,7 @@ export default function KeyboardSelection() {
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     // FIXME: udpate when new API is ready
-    updateConfig({ localization: { keymap: selected } });
+    updateConfig({ l10n: { keymap: selected } });
     navigate(-1);
   };
 

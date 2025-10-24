@@ -23,7 +23,7 @@ use std::{collections::HashMap, pin::Pin, task::Poll};
 use agama_lib::{
     error::ServiceError,
     event,
-    http::Event,
+    http::OldEvent,
     jobs::{client::JobsClient, Job},
 };
 use agama_utils::{dbus::get_optional_property, property_from_dbus};
@@ -78,7 +78,7 @@ pub async fn jobs_stream(
     destination: &'static str,
     manager: &'static str,
     namespace: &'static str,
-) -> Result<Pin<Box<dyn Stream<Item = Event> + Send>>, Error> {
+) -> Result<Pin<Box<dyn Stream<Item = OldEvent> + Send>>, Error> {
     let stream = JobsStream::new(&dbus, destination, manager, namespace).await?;
     Ok(Box::pin(stream))
 }
@@ -159,7 +159,7 @@ impl JobsStream {
     fn handle_change(
         cache: &mut ObjectsCache<Job>,
         change: &DBusObjectChange,
-    ) -> Result<Event, JobsStreamError> {
+    ) -> Result<OldEvent, JobsStreamError> {
         match change {
             DBusObjectChange::Added(path, values) => {
                 let job = Self::update_job(cache, path, values)?;
@@ -178,7 +178,7 @@ impl JobsStream {
 }
 
 impl Stream for JobsStream {
-    type Item = Event;
+    type Item = OldEvent;
 
     fn poll_next(
         self: std::pin::Pin<&mut Self>,

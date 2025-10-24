@@ -22,7 +22,9 @@
 //! other Agama's crates.
 
 pub mod actor;
+pub mod api;
 pub mod dbus;
 pub mod issue;
 pub mod openapi;
 pub mod progress;
+pub mod question;

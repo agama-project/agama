@@ -11,6 +11,7 @@ anyhow = "1.0"
 agama-lib = { path = "../agama-lib" }
 agama-utils = { path = "../agama-utils" }
 agama-l10n = { path = "../agama-l10n" }
+agama-locale-data = { path = "../agama-locale-data" }
 agama-manager = { path = "../agama-manager" }
 zbus = { version = "5", default-features = false, features = ["tokio"] }
 uuid = { version = "1.10.0", features = ["v4"] }
@@ -58,10 +59,6 @@ tokio-util = "0.7.12"
 tempfile = "3.13.0"
 url = "2.5.2"
 strum = { version = "0.27.2", features = ["derive"] }
-
-[[bin]]
-name = "agama-dbus-server"
-path = "src/agama-dbus-server.rs"
 
 [[bin]]
 name = "agama-web-server"

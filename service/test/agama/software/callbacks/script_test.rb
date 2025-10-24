@@ -21,27 +21,26 @@
 
 require_relative "../../../test_helper"
 require "agama/software/callbacks/script"
-require "agama/dbus/clients/questions"
-require "agama/dbus/clients/question"
+require "agama/http/clients/questions"
+require "agama/question"
+require "agama/answer"
 
 describe Agama::Software::Callbacks::Script do
   subject { described_class.new(questions_client, logger) }
 
-  let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
+  let(:questions_client) { instance_double(Agama::HTTP::Clients::Questions) }
+  let(:question) { instance_double(Agama::Question, answer: answer) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:answer) { subject.retry_label.to_sym }
+  let(:answer) { Agama::Answer.new(subject.retry_label) }
 
   let(:description) { "Some description" }
 
   describe "#script_problem" do
     before do
-      allow(questions_client).to receive(:ask).and_yield(question_client)
-      allow(question_client).to receive(:answer).and_return(answer)
+      allow(questions_client).to receive(:ask).and_yield(answer)
     end
-
-    let(:question_client) { instance_double(Agama::DBus::Clients::Question) }
 
     it "registers a question with the details" do
       expect(questions_client).to receive(:ask) do |q|
@@ -54,7 +53,7 @@ describe Agama::Software::Callbacks::Script do
     end
 
     context "when the user asks to retry" do
-      let(:answer) { subject.retry_label.to_sym }
+      let(:answer) { Agama::Answer.new(subject.retry_label) }
 
       it "returns 'R'" do
         ret = subject.script_problem(description)
@@ -63,7 +62,7 @@ describe Agama::Software::Callbacks::Script do
     end
 
     context "when the user asks to continue" do
-      let(:answer) { subject.continue_label.to_sym }
+      let(:answer) { Agama::Answer.new(subject.continue_label) }
 
       it "returns 'I'" do
         ret = subject.script_problem(description)

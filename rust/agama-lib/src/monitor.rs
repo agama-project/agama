@@ -56,7 +56,8 @@ use tokio::sync::{broadcast, mpsc, oneshot};
 
 use crate::{
     http::{
-        BaseHTTPClient, BaseHTTPClientError, Event, EventPayload, WebSocketClient, WebSocketError,
+        BaseHTTPClient, BaseHTTPClientError, EventPayload, OldEvent, WebSocketClient,
+        WebSocketError,
     },
     manager::{InstallationPhase, InstallerStatus},
     progress::Progress,
@@ -224,7 +225,7 @@ impl Monitor {
     /// sends the updated state to its subscribers.
     ///
     /// * `event`: Agama event.
-    fn handle_event(&mut self, event: Event) {
+    fn handle_event(&mut self, event: OldEvent) {
         match event.payload {
             EventPayload::ProgressChanged { path, progress } => {
                 self.status.update_progress(path, progress);

@@ -23,7 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { Question } from "~/types/questions";
+import { Question, FieldType } from "~/types/questions";
 import { Product } from "~/types/software";
 import { InstallationPhase } from "~/types/status";
 import QuestionWithPassword from "~/components/questions/QuestionWithPassword";
@@ -34,8 +34,12 @@ const question: Question = {
   id: 1,
   class: "question.password",
   text: "Random question. Will you provide random password?",
-  options: ["ok", "cancel"],
-  defaultOption: "cancel",
+  field: { type: FieldType.None },
+  actions: [
+    { id: "ok", label: "OK" },
+    { id: "cancel", label: "Cancel" },
+  ],
+  defaultAction: "cancel",
 };
 
 const tumbleweed: Product = {
@@ -65,7 +69,7 @@ jest.mock("~/queries/status", () => ({
 
 jest.mock("~/queries/system", () => ({
   ...jest.requireActual("~/queries/l10n"),
-  useSystem: () => ({ localization: { locales, keymaps, keymap: "us", language: "de-DE" } }),
+  useSystem: () => ({ l10n: { locales, keymaps, keymap: "us", language: "de-DE" } }),
 }));
 
 jest.mock("~/queries/software", () => ({
@@ -111,10 +115,12 @@ describe("QuestionWithPassword", () => {
 
       const passwordInput = await screen.findByLabelText("Password");
       await user.type(passwordInput, "notSecret");
-      const skipButton = await screen.findByRole("button", { name: "Ok" });
+      const skipButton = await screen.findByRole("button", { name: "OK" });
       await user.click(skipButton);
 
-      expect(question).toEqual(expect.objectContaining({ password: "notSecret", answer: "ok" }));
+      expect(question.answer).toEqual(
+        expect.objectContaining({ value: "notSecret", action: "ok" }),
+      );
       expect(answerFn).toHaveBeenCalledWith(question);
     });
   });

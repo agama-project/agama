@@ -19,7 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/dbus/clients/questions"
+require "agama/http/clients"
 require "agama/dbus/clients/software"
 require "agama/issue"
 require "agama/security"
@@ -368,9 +368,9 @@ module Agama
 
       # Returns the client to ask questions
       #
-      # @return [Agama::DBus::Clients::Questions]
+      # @return [Agama::HTTP::Clients::Questions]
       def questions_client
-        @questions_client ||= Agama::DBus::Clients::Questions.new(logger: logger)
+        @questions_client ||= Agama::HTTP::Clients::Questions.new(logger)
       end
 
       MULTIPATH_CONFIG = "/etc/multipath.conf"

@@ -22,6 +22,7 @@
 
 use super::state::ServiceState;
 use agama_lib::{auth::ClientId, http};
+use agama_utils::api::event;
 use axum::{
     extract::{
         ws::{Message, WebSocket},
@@ -30,39 +31,64 @@ use axum::{
     response::IntoResponse,
     Extension,
 };
+use serde::Serialize;
 use std::sync::Arc;
+use tokio::sync::broadcast;
+
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    #[error("Error serializing WebSocket message")]
+    Serialize(#[from] serde_json::Error),
+    #[error("Could not receive the event")]
+    RecvEvent(#[from] broadcast::error::RecvError),
+    #[error("Websocket closed")]
+    WebSocketClosed(#[from] axum::Error),
+}
 
 pub async fn ws_handler(
     State(state): State<ServiceState>,
     Extension(client_id): Extension<Arc<ClientId>>,
     ws: WebSocketUpgrade,
 ) -> impl IntoResponse {
-    ws.on_upgrade(move |socket| handle_socket(socket, state.events, client_id))
+    ws.on_upgrade(move |socket| handle_socket(socket, state.events, state.old_events, client_id))
 }
 
 async fn handle_socket(
     mut socket: WebSocket,
-    events: http::event::Sender,
+    events: event::Sender,
+    old_events: http::event::OldSender,
     client_id: Arc<ClientId>,
 ) {
-    let mut rx = events.subscribe();
+    let mut events_rx = events.subscribe();
+    let mut old_events_rx = old_events.subscribe();
 
     let conn_event = agama_lib::event!(ClientConnected, client_id.as_ref());
     if let Ok(json) = serde_json::to_string(&conn_event) {
         _ = socket.send(Message::Text(json)).await;
     }
 
-    while let Ok(msg) = rx.recv().await {
-        match serde_json::to_string(&msg) {
-            Ok(json) => {
-                if let Err(e) = socket.send(Message::Text(json)).await {
-                    tracing::info!("ws: client disconnected: {e}");
-                    return;
+    loop {
+        tokio::select! {
+            msg = old_events_rx.recv() => {
+                if let Err(e) = send_msg(&mut socket, msg).await {
+                    eprintln!("Error sending old event: {e:?}");
                 }
             }
-            Err(e) => {
-                tracing::error!("ws: error serializing message: {e}")
+
+            msg = events_rx.recv() => {
+                if let Err(e) = send_msg(&mut socket, msg).await {
+                    eprintln!("Error sending event: {e:?}");
+                }
             }
         }
     }
+}
+
+async fn send_msg<T: Serialize>(
+    socket: &mut WebSocket,
+    msg: Result<T, broadcast::error::RecvError>,
+) -> Result<(), Error> {
+    let content = msg?;
+    let json = serde_json::to_string(&content)?;
+    Ok(socket.send(Message::Text(json)).await?)
 }

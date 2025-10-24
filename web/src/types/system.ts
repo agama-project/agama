@@ -23,7 +23,7 @@
 import { Localization } from "./l10n";
 
 type System = {
-  localization?: Localization;
+  l10n?: Localization;
 };
 
 export type { System };

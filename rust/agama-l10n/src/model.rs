@@ -19,18 +19,22 @@
 // find current contact information at www.suse.com.
 
 mod keyboard;
-pub use keyboard::{Keymap, KeymapsDatabase};
+pub use keyboard::KeymapsDatabase;
 
 mod locale;
-pub use locale::{LocaleEntry, LocalesDatabase};
+pub use locale::LocalesDatabase;
 
 mod timezone;
-pub use timezone::{TimezoneEntry, TimezonesDatabase};
+pub use timezone::TimezonesDatabase;
 
 use crate::{helpers, service};
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
+use agama_utils::api::l10n::SystemInfo;
 use regex::Regex;
-use std::{env, fs::OpenOptions, io::Write, process::Command};
+use std::env;
+use std::fs::OpenOptions;
+use std::io::Write;
+use std::process::Command;
 
 /// Abstract the localization-related configuration from the underlying system.
 ///
@@ -38,6 +42,22 @@ use std::{env, fs::OpenOptions, io::Write, process::Command};
 /// system. This trait can be implemented to replace the real system during
 /// tests.
 pub trait ModelAdapter: Send + 'static {
+    /// Reads the system info.
+    fn read_system_info(&self) -> SystemInfo {
+        let locales = self.locales_db().entries().clone();
+        let keymaps = self.keymaps_db().entries().clone();
+        let timezones = self.timezones_db().entries().clone();
+
+        SystemInfo {
+            locales,
+            keymaps,
+            timezones,
+            locale: self.locale(),
+            keymap: self.keymap().unwrap(),
+            timezone: Default::default(),
+        }
+    }
+
     /// Locales database.
     fn locales_db(&self) -> &LocalesDatabase;
 

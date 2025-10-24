@@ -69,10 +69,10 @@ export default function TimezoneSelection() {
   date = new Date();
   const navigate = useNavigate();
   const {
-    localization: { timezones },
+    l10n: { timezones },
   } = useSystem();
   const {
-    localization: { timezone: currentTimezone },
+    l10n: { timezone: currentTimezone },
   } = useProposal();
 
   const displayTimezones = timezones.map(timezoneWithDetails);
@@ -83,7 +83,7 @@ export default function TimezoneSelection() {
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    updateConfig({ localization: { timezone: selected } });
+    updateConfig({ l10n: { timezone: selected } });
     navigate(-1);
   };
 

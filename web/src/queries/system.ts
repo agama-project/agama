@@ -25,6 +25,7 @@ import { tzOffset } from "@date-fns/tz/tzOffset";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { fetchSystem } from "~/api/api";
+import { System } from "~/types/system";
 
 const transformLocales = (locales) =>
   locales.map(({ id, language: name, territory }) => ({ id, name, territory }));
@@ -57,23 +58,23 @@ const systemQuery = () => {
     // React Query layer, in a dedicated "state layer" or transformation step, so
     // that data remains normalized and consistently shaped for the rest of the app.
 
-    select: (data) => ({
-      ...data,
-      localization: {
-        locales: transformLocales(data.localization.locales),
-        keymaps: tranformKeymaps(data.localization.keymaps),
-        timezones: transformTimezones(data.localization.timezones),
-        locale: data.locale,
-        keypmap: data.keymap,
-        timezone: data.timezone,
+    select: (system: System) => ({
+      ...system,
+      l10n: {
+        locales: transformLocales(system.l10n.locales),
+        keymaps: tranformKeymaps(system.l10n.keymaps),
+        timezones: transformTimezones(system.l10n.timezones),
+        locale: system.l10n.locale,
+        keypmap: system.l10n.keymap,
+        timezone: system.l10n.timezone,
       },
     }),
   };
 };
 
 const useSystem = () => {
-  const { data: config } = useSuspenseQuery(systemQuery());
-  return config;
+  const { data: system } = useSuspenseQuery(systemQuery());
+  return system;
 };
 
 const useSystemChanges = () => {
@@ -84,7 +85,7 @@ const useSystemChanges = () => {
     if (!client) return;
 
     return client.onEvent((event) => {
-      if (event.type === "l10n" && event.name === "SystemChanged") {
+      if (event.type === "SystemChanged" && event.scope === "l10n") {
         queryClient.invalidateQueries({ queryKey: ["system"] });
       }
     });
