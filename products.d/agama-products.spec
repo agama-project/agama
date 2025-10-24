@@ -71,7 +71,6 @@ Definition of openSUSE products (Tumbleweed, Leap, MicroOS and Slowroll) for the
 %{_datadir}/agama/products.d/microos.yaml
 %{_datadir}/agama/products.d/tumbleweed.yaml
 %{_datadir}/agama/products.d/slowroll.yaml
-%{_datadir}/agama/products.d/kalpa.yaml
 %endif
 %if !0%{?is_opensuse} || 0%{?suse_version} == 1600
 %{_datadir}/agama/products.d/leap_160.yaml
