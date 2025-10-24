@@ -2,16 +2,21 @@
 
 # This script builds the POT file with the translatable texts from the web UI.
 
+# NOTE: The TSX input file format requires a newer version of the GNU gettext,
+# for running in openSUSE Leap or in SLE use the "build_pot_container" script
+# which runs a newer gettext in an openSUSE Tumbleweed container.
+
 # always run in the directory of this script to ensure the file paths
 # saved in the POT file are always the same
 cd "$(dirname "$0")"
 
 OUTPUT="${1:-agama.pot}"
+XGETTEXT="${2:-xgettext}"
 
 find . ! -name po-converter.js ! -name '*.test.js' -name '*.js' -o ! -name '*.test.jsx' -name '*.jsx' \
   -o ! -name '*.test.ts' -name '*.ts' -o ! -name '*.test.tsx' -name '*.tsx' |
 grep -vE "node_modules/|dist/|coverage/" | \
-xgettext --default-domain=agama --output="$OUTPUT" --language=C --files-from=- \
+$XGETTEXT --default-domain=agama --output="$OUTPUT" --language=tsx --files-from=- \
   --keyword= --keyword=_:1 --keyword=N_:1 --keyword=n_:1,2 --keyword=Nn_:1,2 \
   --foreign-user --copyright-holder="SuSE Linux Products GmbH, Nuernberg" \
   --from-code=UTF-8 --add-comments=TRANSLATORS --sort-by-file
