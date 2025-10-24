@@ -22,8 +22,7 @@ use std::{ops::DerefMut, sync::Arc};
 
 use crate::{
     config::Config,
-    event,
-    message,
+    event, message,
     model::{
         license::{Error as LicenseError, LicensesRepo},
         packages::ResolvableType,
@@ -135,7 +134,8 @@ impl Service {
             let packages = software.packages.clone().unwrap_or_default();
             let extra_repositories = software.extra_repositories.clone().unwrap_or_default();
             // TODO: patterns as it as it can be either set or add/remove set
-            model.set_resolvables(user_id, ResolvableType::Package, packages, false)
+            model
+                .set_resolvables(user_id, ResolvableType::Package, packages, false)
                 .await?;
             // for repositories we should allow also to remove previously defined one, but now for simplicity just check if it there and if not, then add it
             // TODO: replace it with future repository registry
@@ -180,21 +180,29 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
         let new_product = message.config.product.as_ref().and_then(|c| c.id.as_ref());
         let need_probe = new_product
-            != self.state.config.product.as_ref().and_then(|c| c.id.as_ref());
-        let new_product_spec = new_product.and_then(|id| self.products.find(id).and_then(|p| Some(p.clone())));
+            != self
+                .state
+                .config
+                .product
+                .as_ref()
+                .and_then(|c| c.id.as_ref());
+        let new_product_spec =
+            new_product.and_then(|id| self.products.find(id).and_then(|p| Some(p.clone())));
 
         self.state.config = message.config.clone();
         self.events.send(Event::ConfigChanged)?;
         let model = self.model.clone();
-        tokio::task::spawn( async move {
+        tokio::task::spawn(async move {
             let mut my_model = model.lock().await;
             // FIXME: convert unwraps to sending issues
             if need_probe {
                 my_model.probe(&new_product_spec.unwrap()).await.unwrap();
             }
-            Self::apply_config(&message.config, my_model.deref_mut()).await.unwrap();        
+            Self::apply_config(&message.config, my_model.deref_mut())
+                .await
+                .unwrap();
         });
-        
+
         Ok(())
     }
 }
