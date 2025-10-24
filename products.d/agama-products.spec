@@ -50,8 +50,9 @@ rm -f %{buildroot}%{_datadir}/agama/products.d/tumbleweed.yaml
 rm -f %{buildroot}%{_datadir}/agama/products.d/slowroll.yaml
 %endif
 
-# Keep TW-based distros on TW (drop Leap + Leap Micro)
+# Keep TW-based distros on TW (drop Kalpa + Leap + Leap Micro)
 %if 0%{?is_opensuse} && 0%{?suse_version} > 1600
+rm -f %{buildroot}%{_datadir}/agama/products.d/kalpa.yaml
 rm -f %{buildroot}%{_datadir}/agama/products.d/leap*.yaml
 %endif
 
