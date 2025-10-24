@@ -19,9 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "dbus"
-require "json"
-require "yast"
 require "y2storage/storage_manager"
 require "agama/dbus/base_object"
 require "agama/dbus/interfaces/issues"
@@ -31,9 +28,12 @@ require "agama/dbus/with_service_status"
 require "agama/storage/config_conversions"
 require "agama/storage/encryption_settings"
 require "agama/storage/volume_templates_builder"
-require "agama/with_progress"
 require "agama/storage/devicegraph_conversions"
 require "agama/storage/volume_conversions"
+require "agama/with_progress"
+require "dbus"
+require "json"
+require "yast"
 
 Yast.import "Arch"
 
@@ -80,13 +80,6 @@ module Agama
 
         STORAGE_INTERFACE = "org.opensuse.Agama.Storage1"
         private_constant :STORAGE_INTERFACE
-
-        # Whether the system is in a deprecated status
-        #
-        # @return [Boolean]
-        def deprecated_system
-          backend.deprecated_system?
-        end
 
         # Implementation for the API method #Activate.
         def activate
@@ -280,11 +273,6 @@ module Agama
             bootloader_config_as_json
           end
         end
-
-        # @todo Move device related properties here, for example, the list of system and staging
-        #   devices, dirty, etc.
-        STORAGE_DEVICES_INTERFACE = "org.opensuse.Agama.Storage1.Devices"
-        private_constant :STORAGE_DEVICES_INTERFACE
 
         # List of sorted actions.
         #
@@ -510,10 +498,6 @@ module Agama
 
         def register_storage_callbacks
           backend.on_issues_change { issues_properties_changed }
-          backend.on_deprecated_system_change { storage_properties_changed }
-          backend.on_configure do
-            proposal_properties_changed
-          end
         end
 
         def register_iscsi_callbacks
@@ -521,35 +505,11 @@ module Agama
             iscsi_initiator_properties_changed
             refresh_iscsi_nodes
           end
-
-          backend.iscsi.on_sessions_change do
-            # Currently, the system is set as deprecated instead of reprobing automatically. This
-            # is done so to avoid a reprobing after each single session change performed by the UI.
-            # Clients are expected to request a reprobing if they detect a deprecated system.
-            #
-            # If the UI is adapted to use the new iSCSI API (i.e., #SetConfig), then this behaviour
-            # should be reevaluated. Ideally, the system would be reprobed if the sessions change.
-            deprecate_system
-          end
-        end
-
-        def storage_properties_changed
-          properties = interfaces_and_properties[STORAGE_INTERFACE]
-          dbus_properties_changed(STORAGE_INTERFACE, properties, [])
-        end
-
-        def proposal_properties_changed
-          properties = interfaces_and_properties[PROPOSAL_CALCULATOR_INTERFACE]
-          dbus_properties_changed(PROPOSAL_CALCULATOR_INTERFACE, properties, [])
         end
 
         def iscsi_initiator_properties_changed
           properties = interfaces_and_properties[ISCSI_INITIATOR_INTERFACE]
           dbus_properties_changed(ISCSI_INITIATOR_INTERFACE, properties, [])
-        end
-
-        def deprecate_system
-          backend.deprecated_system = true
         end
 
         def refresh_iscsi_nodes

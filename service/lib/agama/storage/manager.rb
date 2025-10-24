@@ -66,40 +66,6 @@ module Agama
         @bootloader = Bootloader.new(logger)
       end
 
-      # Whether the system is in a deprecated status
-      #
-      # The system is usually set as deprecated as effect of managing some kind of devices, for
-      # example, when iSCSI sessions are created.
-      #
-      # A deprecated system means that the probed system could not match with the current system.
-      #
-      # @return [Boolean]
-      def deprecated_system?
-        !!@deprecated_system
-      end
-
-      # Sets whether the system is deprecated
-      #
-      # If the deprecated status changes, then callbacks are executed and the issues are
-      # recalculated, see {#on_deprecated_system_change}.
-      #
-      # @param value [Boolean]
-      def deprecated_system=(value)
-        return if deprecated_system? == value
-
-        @deprecated_system = value
-        @on_deprecated_system_change_callbacks&.each(&:call)
-        update_issues
-      end
-
-      # Registers a callback to be called when the system is set as deprecated
-      #
-      # @param block [Proc]
-      def on_deprecated_system_change(&block)
-        @on_deprecated_system_change_callbacks ||= []
-        @on_deprecated_system_change_callbacks << block
-      end
-
       # Registers a callback to be called when the system is probed
       #
       # @param block [Proc]
@@ -286,7 +252,6 @@ module Agama
       # @return [Array<Issue>]
       def system_issues
         issues = probing_issues + [
-          deprecated_system_issue,
           candidate_devices_issue
         ]
 
@@ -306,17 +271,6 @@ module Agama
             source:   Issue::Source::SYSTEM,
             severity: Issue::Severity::WARN)
         end
-      end
-
-      # Returns an issue if the system is deprecated
-      #
-      # @return [Issue, nil]
-      def deprecated_system_issue
-        return unless deprecated_system?
-
-        Issue.new("The system devices have changed",
-          source:   Issue::Source::SYSTEM,
-          severity: Issue::Severity::ERROR)
       end
 
       # Returns an issue if there is no candidate device for installation
