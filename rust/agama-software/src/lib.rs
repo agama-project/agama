@@ -24,7 +24,7 @@
 //!
 //! From a technical point of view, it includes:
 //!
-//! * The [UserConfig] struct that defines the settings the user can
+//! * The [Config] struct that defines the settings the user can
 //!   alter for the target system.
 //! * The [Proposal] struct that describes how the system will look like after
 //!   the installation.
