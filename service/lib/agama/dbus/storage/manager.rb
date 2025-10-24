@@ -64,15 +64,28 @@ module Agama
           add_s390_interfaces if Yast::Arch.s390
         end
 
-        # List of issues, see {DBus::Interfaces::Issues}
-        #
-        # @return [Array<Agama::Issue>]
-        def issues
-          backend.issues
+        dbus_interface "org.opensuse.Agama.Storage1" do
+          dbus_method(:Activate) { activate }
+          dbus_method(:Probe) { probe }
+          dbus_method(:SetProduct, "in id:s") { |id| configure_product(id) }
+          dbus_method(:Install) { install }
+          dbus_method(:Finish) { finish }
+          dbus_method(:SetLocale, "in locale:s") { |locale| backend.configure_locale(locale) }
+          # TODO: receive a product_config instead of an id.
+          dbus_method(:GetSystem, "out system:s") { recover_system }
+          dbus_method(:GetConfig, "out config:s") { recover_config }
+          dbus_method(:SetConfig, "in config:s") { |c| configure(c) }
+          dbus_method(:GetConfigModel, "out model:s") { recover_config_model }
+          dbus_method(:SetConfigModel, "in model:s") { |m| configure_with_model(m)}
+          dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
+          dbus_method(:GetProposal, "out proposal:s") { recover_proposal }
+          dbus_method(:GetIssues, "out issues:s") {}
+          dbus_signal(:SystemChanged)
+          dbus_signal(:ProposalChanged)
+          dbus_signal(:IssuesChanged)
+          dbus_signal(:ProgressChanged, "progress:s")
+          dbus_signal(:ProgressFinished)
         end
-
-        STORAGE_INTERFACE = "org.opensuse.Agama.Storage1"
-        private_constant :STORAGE_INTERFACE
 
         # Implementation for the API method #Activate.
         def activate
@@ -150,6 +163,22 @@ module Agama
           finish_progress
         end
 
+        # NOTE: memoization of the values?
+        # @return [String]
+        def recover_system
+          json = {
+            devices:            json_devices(:probed),
+            availableDrives:    available_drives,
+            availableMdRaids:   available_md_raids,
+            candidateDrives:    candidate_drives,
+            candidateMdRaids:   candidate_md_raids,
+            productMountPoints: product_mount_points,
+            encryptionMethods:  encryption_methods,
+            volumeTemplates:    volume_templates
+          }
+          JSON.pretty_generate(json)
+        end
+
         # Gets and serializes the storage config used for calculating the current proposal.
         #
         # @return [String]
@@ -166,8 +195,6 @@ module Agama
           JSON.pretty_generate(json)
         end
 
-        # @todo Drop support for the guided settings.
-        #
         # Applies the given serialized config according to the JSON schema.
         #
         # The JSON schema supports two different variants:
@@ -176,7 +203,6 @@ module Agama
         # @raise If the config is not valid.
         #
         # @param serialized_config [String] Serialized storage config.
-        # @return [Integer] 0 success; 1 error
         def configure(serialized_config)
           start_progress(1, CONFIGURING_STEP)
 
@@ -190,7 +216,6 @@ module Agama
         # Applies the given serialized config model according to the JSON schema.
         #
         # @param serialized_model [String] Serialized storage config model.
-        # @return [Integer] 0 success; 1 error
         def configure_with_model(serialized_model)
           start_progress(1, CONFIGURING_STEP)
 
@@ -217,31 +242,31 @@ module Agama
           JSON.pretty_generate(solved_model_json)
         end
 
-        dbus_interface STORAGE_INTERFACE do
-          dbus_method(:Activate) { activate }
-          dbus_method(:Probe) { probe }
-          dbus_method(:Install) { install }
-          dbus_method(:Finish) { finish }
-          dbus_method(:SetLocale, "in locale:s") { |locale| backend.configure_locale(locale) }
-          # TODO: receive a product_config instead of an id.
-          dbus_method(:SetProduct, "in id:s") { |id| configure_product(id) }
-          dbus_method(:GetSystem, "out system:s") { recover_system }
-          dbus_method(:GetConfig, "out config:s") { recover_config }
-          dbus_method(:SetConfig, "in config:s") { |c| configure(c) }
-          dbus_method(:GetConfigModel, "out model:s") { recover_config_model }
-          dbus_method(:SetConfigModel, "in model:s") { |m| configure_with_model(m)}
-          dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
-          dbus_method(:GetProposal, "out proposal:s") { recover_proposal }
-          dbus_method(:GetIssues, "out issues:s") {}
-          dbus_signal(:SystemChanged)
-          dbus_signal(:ProposalChanged)
-          dbus_signal(:IssuesChanged)
-          dbus_signal(:ProgressChanged, "progress:s")
-          dbus_signal(:ProgressFinished)
+        # NOTE: memoization of the values?
+        # @return [String]
+        def recover_proposal
+          json = {
+            devices: json_devices(:staging),
+            actions: actions
+          }
+          JSON.pretty_generate(json)
         end
 
-        BOOTLOADER_INTERFACE = "org.opensuse.Agama.Storage1.Bootloader"
-        private_constant :BOOTLOADER_INTERFACE
+        # List of issues, see {DBus::Interfaces::Issues}
+        #
+        # @return [Array<Agama::Issue>]
+        def issues
+          backend.issues
+        end
+
+        dbus_interface "org.opensuse.Agama.Storage1.Bootloader" do
+          dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
+            load_bootloader_config_from_json(serialized_config)
+          end
+          dbus_method(:GetConfig, "out serialized_config:s") do
+            bootloader_config_as_json
+          end
+        end
 
         # Applies the given serialized config according to the JSON schema.
         #
@@ -265,13 +290,122 @@ module Agama
           backend.bootloader.config.to_json
         end
 
-        dbus_interface BOOTLOADER_INTERFACE do
-          dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
-            load_bootloader_config_from_json(serialized_config)
+        # Gets the iSCSI initiator name
+        #
+        # @return [String]
+        def initiator_name
+          backend.iscsi.initiator.name || ""
+        end
+
+        # Sets the iSCSI initiator name
+        #
+        # @param value [String]
+        def initiator_name=(value)
+          backend.iscsi.update_initiator(name: value)
+        end
+
+        # Whether the initiator name was set via iBFT
+        #
+        # @return [Boolean]
+        def ibft
+          backend.iscsi.initiator.ibft_name?
+        end
+
+        ISCSI_INITIATOR_INTERFACE = "org.opensuse.Agama.Storage1.ISCSI.Initiator"
+        private_constant :ISCSI_INITIATOR_INTERFACE
+
+        dbus_interface ISCSI_INITIATOR_INTERFACE do
+          dbus_accessor :initiator_name, "s"
+
+          dbus_reader :ibft, "b", dbus_name: "IBFT"
+
+          dbus_method :Discover,
+            "in address:s, in port:u, in options:a{sv}, out result:u" do |address, port, options|
+            iscsi_discover(address, port, options)
           end
-          dbus_method(:GetConfig, "out serialized_config:s") do
-            bootloader_config_as_json
+
+          dbus_method(:Delete, "in node:o, out result:u") { |n| iscsi_delete(n) }
+        end
+
+        # Performs an iSCSI discovery
+        #
+        # @param address [String] IP address of the iSCSI server
+        # @param port [Integer] Port of the iSCSI server
+        # @param options [Hash<String, String>] Options from a D-Bus call:
+        #   @option Username [String] Username for authentication by target
+        #   @option Password [String] Password for authentication by target
+        #   @option ReverseUsername [String] Username for authentication by initiator
+        #   @option ReversePassword [String] Password for authentication by inititator
+        #
+        # @return [Integer] 0 on success, 1 on failure
+        def iscsi_discover(address, port, options = {})
+          credentials = {
+            username:           options["Username"],
+            password:           options["Password"],
+            initiator_username: options["ReverseUsername"],
+            initiator_password: options["ReversePassword"]
+          }
+
+          success = backend.iscsi.discover(address, port, credentials: credentials)
+          success ? 0 : 1
+        end
+
+        # Deletes an iSCSI node from the database
+        #
+        # @param path [::DBus::ObjectPath]
+        # @return [Integer] 0 on success, 1 on failure if the given node is not exported, 2 on
+        #   failure because any other reason.
+        def iscsi_delete(path)
+          dbus_node = iscsi_nodes_tree.find(path)
+          if !dbus_node
+            logger.info("iSCSI delete error: iSCSI node #{path} is not exported")
+            return 1
           end
+
+          success = backend.iscsi.delete(dbus_node.iscsi_node)
+          return 0 if success
+
+          logger.info("iSCSI delete error: fail to delete iSCSI node #{path}")
+          2 # Error code
+        end
+
+      private
+
+        ACTIVATING_STEP = N_("Activating storage devices")
+        private_constant :ACTIVATING_STEP
+
+        PROBING_STEP = N_("Probing storage devices")
+        private_constant :PROBING_STEP
+
+        CONFIGURING_STEP = N_("Applying storage configuration")
+        private_constant :CONFIGURING_STEP
+
+        # @return [Agama::Storage::Manager]
+        attr_reader :backend
+
+        def register_progress_callbacks
+          on_progress_change { self.ProgressChanged(progress.to_json) }
+          on_progress_finish { self.ProgressFinished }
+        end
+
+        # Configures storage using the current config.
+        #
+        # @note The proposal is not calculated if there is not a config yet.
+        def configure_with_current
+          config_json = proposal.storage_json
+          return unless config_json
+
+          configure(config_json)
+          self.ProposalChanged
+        end
+
+        # JSON representation of the given devicegraph from StorageManager
+        #
+        # @param meth [Symbol] method used to get the devicegraph from StorageManager
+        # @return [Hash]
+        def json_devices(meth)
+          devicegraph = Y2Storage::StorageManager.instance.send(meth)
+          Agama::Storage::DevicegraphConversions::ToJSON.new(devicegraph).convert
         end
 
         # List of sorted actions.
@@ -347,148 +481,6 @@ module Agama
           volumes.map do |vol|
             Agama::Storage::VolumeConversions::ToJSON.new(vol).convert
           end
-        end
-
-        # NOTE: memoization of the values?
-        def recover_proposal
-          json = {
-            devices: json_devices(:staging),
-            actions: actions
-          }
-          JSON.pretty_generate(json)
-        end
-
-        # NOTE: memoization of the values?
-        def recover_system
-          json = {
-            devices:            json_devices(:probed),
-            availableDrives:    available_drives,
-            availableMdRaids:   available_md_raids,
-            candidateDrives:    candidate_drives,
-            candidateMdRaids:   candidate_md_raids,
-            productMountPoints: product_mount_points,
-            encryptionMethods:  encryption_methods,
-            volumeTemplates:    volume_templates
-          }
-          JSON.pretty_generate(json)
-        end
-
-        ISCSI_INITIATOR_INTERFACE = "org.opensuse.Agama.Storage1.ISCSI.Initiator"
-        private_constant :ISCSI_INITIATOR_INTERFACE
-
-        # Gets the iSCSI initiator name
-        #
-        # @return [String]
-        def initiator_name
-          backend.iscsi.initiator.name || ""
-        end
-
-        # Sets the iSCSI initiator name
-        #
-        # @param value [String]
-        def initiator_name=(value)
-          backend.iscsi.update_initiator(name: value)
-        end
-
-        # Whether the initiator name was set via iBFT
-        #
-        # @return [Boolean]
-        def ibft
-          backend.iscsi.initiator.ibft_name?
-        end
-
-        # Performs an iSCSI discovery
-        #
-        # @param address [String] IP address of the iSCSI server
-        # @param port [Integer] Port of the iSCSI server
-        # @param options [Hash<String, String>] Options from a D-Bus call:
-        #   @option Username [String] Username for authentication by target
-        #   @option Password [String] Password for authentication by target
-        #   @option ReverseUsername [String] Username for authentication by initiator
-        #   @option ReversePassword [String] Password for authentication by inititator
-        #
-        # @return [Integer] 0 on success, 1 on failure
-        def iscsi_discover(address, port, options = {})
-          credentials = {
-            username:           options["Username"],
-            password:           options["Password"],
-            initiator_username: options["ReverseUsername"],
-            initiator_password: options["ReversePassword"]
-          }
-
-          success = backend.iscsi.discover(address, port, credentials: credentials)
-          success ? 0 : 1
-        end
-
-        # Deletes an iSCSI node from the database
-        #
-        # @param path [::DBus::ObjectPath]
-        # @return [Integer] 0 on success, 1 on failure if the given node is not exported, 2 on
-        #   failure because any other reason.
-        def iscsi_delete(path)
-          dbus_node = iscsi_nodes_tree.find(path)
-          if !dbus_node
-            logger.info("iSCSI delete error: iSCSI node #{path} is not exported")
-            return 1
-          end
-
-          success = backend.iscsi.delete(dbus_node.iscsi_node)
-          return 0 if success
-
-          logger.info("iSCSI delete error: fail to delete iSCSI node #{path}")
-          2 # Error code
-        end
-
-        dbus_interface ISCSI_INITIATOR_INTERFACE do
-          dbus_accessor :initiator_name, "s"
-
-          dbus_reader :ibft, "b", dbus_name: "IBFT"
-
-          dbus_method :Discover,
-            "in address:s, in port:u, in options:a{sv}, out result:u" do |address, port, options|
-            iscsi_discover(address, port, options)
-          end
-
-          dbus_method(:Delete, "in node:o, out result:u") { |n| iscsi_delete(n) }
-        end
-
-      private
-
-        ACTIVATING_STEP = N_("Activating storage devices")
-        private_constant :ACTIVATING_STEP
-
-        PROBING_STEP = N_("Probing storage devices")
-        private_constant :PROBING_STEP
-
-        CONFIGURING_STEP = N_("Applying storage configuration")
-        private_constant :CONFIGURING_STEP
-
-        # @return [Agama::Storage::Manager]
-        attr_reader :backend
-
-        def register_progress_callbacks
-          on_progress_change { self.ProgressChanged(progress.to_json) }
-          on_progress_finish { self.ProgressFinished }
-        end
-
-        # Configures storage using the current config.
-        #
-        # @note The proposal is not calculated if there is not a config yet.
-        def configure_with_current
-          config_json = proposal.storage_json
-          return unless config_json
-
-          configure(config_json)
-          self.ProposalChanged
-        end
-
-        # JSON representation of the given devicegraph from StorageManager
-        #
-        # @param meth [Symbol] method used to get the devicegraph from StorageManager
-        # @return [Hash]
-        def json_devices(meth)
-          devicegraph = Y2Storage::StorageManager.instance.send(meth)
-          Agama::Storage::DevicegraphConversions::ToJSON.new(devicegraph).convert
         end
 
         def add_s390_interfaces

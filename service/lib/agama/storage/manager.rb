@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "agama/http/clients"
-require "agama/dbus/clients/software"
 require "agama/issue"
 require "agama/security"
 require "agama/storage/actions_generator"
@@ -56,8 +55,6 @@ module Agama
       # @return [Bootloader]
       attr_reader :bootloader
 
-      # Constructor
-      #
       # @param product_config [Agama::Config]
       # @param logger [Logger, nil]
       def initialize(product_config, logger: nil)
@@ -154,13 +151,6 @@ module Agama
         # Uses the same progress as manager. Note that the callbacks of the progess are configured
         # by the D-Bus object in order to properly update the Progress D-Bus interface.
         @iscsi ||= ISCSI::Manager.new(progress_manager: progress_manager, logger: logger)
-      end
-
-      # Returns the client to ask the software service
-      #
-      # @return [Agama::DBus::Clients::Software]
-      def software
-        @software ||= DBus::Clients::Software.instance
       end
 
       # Storage actions.
