@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    config::{Config, PatternsSettings, ProductSettings, SoftwareSettings},
+    config::{Config, PatternsConfig, ProductConfig, SoftwareConfig},
     model::packages::RepositoryParams,
 };
 use serde::Serialize;
@@ -27,8 +27,8 @@ use serde::Serialize;
 #[derive(Clone, PartialEq, Serialize)]
 pub struct ExtendedConfig {
     /// Product related configuration
-    #[serde(skip_serializing_if = "ProductSettings::is_empty")]
-    pub product: ProductSettings,
+    #[serde(skip_serializing_if = "ProductConfig::is_empty")]
+    pub product: ProductConfig,
     /// Software related configuration
     pub software: ExtendedSoftwareSettings,
 }
@@ -38,7 +38,7 @@ pub struct ExtendedConfig {
 #[serde(rename_all = "camelCase")]
 pub struct ExtendedSoftwareSettings {
     /// List of user selected patterns to install.
-    pub patterns: PatternsSettings,
+    pub patterns: PatternsConfig,
     /// List of user selected packages to install.
     pub packages: Vec<String>,
     /// List of user specified repositories to use on top of default ones.
@@ -48,7 +48,7 @@ pub struct ExtendedSoftwareSettings {
 }
 
 impl ExtendedSoftwareSettings {
-    pub fn merge(&mut self, config: &SoftwareSettings) -> &Self {
+    pub fn merge(&mut self, config: &SoftwareConfig) -> &Self {
         if let Some(patterns) = &config.patterns {
             self.patterns = patterns.clone();
         }
@@ -72,7 +72,7 @@ impl ExtendedSoftwareSettings {
 impl Default for ExtendedSoftwareSettings {
     fn default() -> Self {
         Self {
-            patterns: PatternsSettings::default(),
+            patterns: PatternsConfig::default(),
             packages: Default::default(),
             extra_repositories: Default::default(),
             only_required: false,

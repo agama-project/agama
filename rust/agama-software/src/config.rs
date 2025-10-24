@@ -34,10 +34,10 @@ use serde::{Deserialize, Serialize};
 pub struct Config {
     /// Product related configuration
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub product: Option<ProductSettings>,
+    pub product: Option<ProductConfig>,
     /// Software related configuration
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub software: Option<SoftwareSettings>,
+    pub software: Option<SoftwareConfig>,
 }
 
 /// Addon settings for registration
@@ -57,7 +57,7 @@ pub struct AddonSettings {
 /// Software settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct ProductSettings {
+pub struct ProductConfig {
     /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.)
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
@@ -71,7 +71,7 @@ pub struct ProductSettings {
     pub addons: Option<Vec<AddonSettings>>,
 }
 
-impl ProductSettings {
+impl ProductConfig {
     pub fn is_empty(&self) -> bool {
         self.id.is_none()
             && self.registration_code.is_none()
@@ -84,10 +84,10 @@ impl ProductSettings {
 /// Software settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct SoftwareSettings {
+pub struct SoftwareConfig {
     /// List of user selected patterns to install.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub patterns: Option<PatternsSettings>,
+    pub patterns: Option<PatternsConfig>,
     /// List of user selected packages to install.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub packages: Option<Vec<String>>,
@@ -101,14 +101,14 @@ pub struct SoftwareSettings {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(untagged)]
-pub enum PatternsSettings {
+pub enum PatternsConfig {
     PatternsList(Vec<String>),
     PatternsMap(PatternsMap),
 }
 
-impl Default for PatternsSettings {
+impl Default for PatternsConfig {
     fn default() -> Self {
-        PatternsSettings::PatternsMap(PatternsMap {
+        PatternsConfig::PatternsMap(PatternsMap {
             add: None,
             remove: None,
         })
@@ -123,13 +123,13 @@ pub struct PatternsMap {
     pub remove: Option<Vec<String>>,
 }
 
-impl From<Vec<String>> for PatternsSettings {
+impl From<Vec<String>> for PatternsConfig {
     fn from(list: Vec<String>) -> Self {
         Self::PatternsList(list)
     }
 }
 
-impl From<HashMap<String, Vec<String>>> for PatternsSettings {
+impl From<HashMap<String, Vec<String>>> for PatternsConfig {
     fn from(map: HashMap<String, Vec<String>>) -> Self {
         let add = if let Some(to_add) = map.get("add") {
             Some(to_add.to_owned())
@@ -147,7 +147,7 @@ impl From<HashMap<String, Vec<String>>> for PatternsSettings {
     }
 }
 
-impl SoftwareSettings {
+impl SoftwareConfig {
     pub fn to_option(self) -> Option<Self> {
         if self.patterns.is_none()
             && self.packages.is_none()

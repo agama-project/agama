@@ -20,7 +20,6 @@
 
 use crate::{config::Config, proposal::Proposal, system_info::SystemInfo};
 use agama_utils::actor::Message;
-use serde::Deserialize;
 
 #[derive(Clone)]
 pub struct GetSystem;
@@ -41,12 +40,6 @@ impl<T> SetSystem<T> {
     pub fn new(config: T) -> Self {
         Self { config }
     }
-}
-
-#[derive(Clone, Debug, Deserialize, utoipa::ToSchema)]
-pub struct SystemConfig {
-    pub locale: Option<String>,
-    pub keymap: Option<String>,
 }
 
 pub struct GetConfig;
