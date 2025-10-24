@@ -245,7 +245,7 @@ update_kernel_modules() {
 setup_from_modules_order() {
   dud_modules_dir=$1
 
-  module_order=$(<"${dud_modules_dir}/module.order")
+  readarray -t module_order <"${dud_modules_dir}/module.order"
   # unload the modules in reverse order
   local idx
   idx=("${!module_order[@]}")
@@ -253,7 +253,7 @@ setup_from_modules_order() {
     rmmod "${module_order[$i]}" 2>&1
   done
 
-  cp "${dud_modules_dir}/module.order" "${NEWROOT}/etc/modules-load.d/99-agama.conf"
+  cat "${dud_modules_dir}/module.order" >>"${NEWROOT}/etc/modules-load.d/99-agama.conf"
 }
 
 # Sets up the kernel modules.
