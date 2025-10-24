@@ -88,7 +88,7 @@ where
             "/manager",
             manager_service(dbus.clone(), progress.clone()).await?,
         )
-        .add_service("/v2", server_service(events, Some(dbus.clone())).await?)
+        .add_service("/v2", server_service(events, dbus.clone()).await?)
         .add_service("/security", security_service(dbus.clone()).await?)
         .add_service(
             "/software",

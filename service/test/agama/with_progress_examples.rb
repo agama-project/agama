@@ -35,7 +35,7 @@ shared_examples "progress" do
       end
 
       it "returns the progress object" do
-        expect(subject.progress).to be_a(Agama::Progress)
+        expect(subject.progress).to be_a(Agama::OldProgress)
       end
     end
   end

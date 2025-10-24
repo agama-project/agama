@@ -89,7 +89,7 @@ module Agama
 
           answer = wait_answer(added_question.id)
 
-          @logger.info("#{added_question.text} #{answer}")
+          @logger.info("#{added_question.text} #{answer.inspect}")
 
           result = block_given? ? yield(answer) : answer
           delete(added_question.id)

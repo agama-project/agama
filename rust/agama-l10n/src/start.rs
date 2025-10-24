@@ -71,12 +71,16 @@ mod tests {
     use crate::model::{KeymapsDatabase, LocalesDatabase, ModelAdapter, TimezonesDatabase};
     use crate::service::{self, Service};
     use agama_locale_data::{KeymapId, LocaleId};
-    use agama_utils::actor::{self, Handler};
-    use agama_utils::api;
-    use agama_utils::api::event::{self, Event};
-    use agama_utils::api::l10n::{Keymap, LocaleEntry, TimezoneEntry};
-    use agama_utils::api::scope::Scope;
-    use agama_utils::issue;
+    use agama_utils::{
+        actor::{self, Handler},
+        api::{
+            self,
+            event::{self, Event},
+            l10n::{Keymap, LocaleEntry, TimezoneEntry},
+            scope::Scope,
+        },
+        issue, test,
+    };
     use tokio::sync::broadcast;
 
     pub struct TestModel {
@@ -145,7 +149,8 @@ mod tests {
     async fn start_testing_service() -> (event::Receiver, Handler<Service>, Handler<issue::Service>)
     {
         let (events_tx, events_rx) = broadcast::channel::<Event>(16);
-        let issues = issue::start(events_tx.clone(), None).await.unwrap();
+        let dbus = test::dbus::connection().await.unwrap();
+        let issues = issue::start(events_tx.clone(), dbus).await.unwrap();
 
         let model = build_adapter();
         let service = Service::new(model, issues.clone(), events_tx);

@@ -23,8 +23,7 @@ require_relative "../../../test_helper"
 require "agama/dbus/base_object"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/with_progress"
-require "agama/with_progress"
-require "agama/progress"
+require "agama/with_progress_manager"
 
 class DBusObjectWithProgressInterface < Agama::DBus::BaseObject
   include Agama::DBus::WithProgress
@@ -39,7 +38,7 @@ class DBusObjectWithProgressInterface < Agama::DBus::BaseObject
   end
 
   class Backend
-    include Agama::WithProgress
+    include Agama::WithProgressManager
   end
 end
 

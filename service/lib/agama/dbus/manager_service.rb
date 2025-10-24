@@ -25,7 +25,6 @@ require "agama/users"
 require "agama/dbus/bus"
 require "agama/dbus/manager"
 require "agama/dbus/users"
-require "agama/dbus/storage/proposal"
 
 module Agama
   module DBus

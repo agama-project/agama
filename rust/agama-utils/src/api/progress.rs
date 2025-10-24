@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! This module includes the struct that represent a service progress step.
+//! This module define types related to the progress report.
 
 use crate::api::scope::Scope;
 use serde::{Deserialize, Serialize};

@@ -52,42 +52,60 @@ describe Agama::Storage::VolumeConversions::ToJSON do
       # @todo Check whether the result matches the JSON schema.
 
       expect(described_class.new(default_volume).convert).to eq(
-        mount:  {
-          path:    "/test",
-          options: []
-        },
-        size:   {
-          min: 0
-        },
-        target: "default"
+        mountPath:     "/test",
+        mountOptions:  [],
+        fsType:        "",
+        minSize:       0,
+        autoSize:      false,
+        snapshots:     false,
+        transactional: false,
+        outline:       {
+          required:              false,
+          fsTypes:               [],
+          supportAutoSize:       false,
+          adjustByRam:           false,
+          snapshotsConfigurable: false,
+          snapshotsAffectSizes:  false,
+          sizeRelevantVolumes:   []
+        }
       )
 
       expect(described_class.new(custom_volume1).convert).to eq(
-        mount:      {
-          path:    "/test",
-          options: []
-        },
-        filesystem: "xfs",
-        size:       "auto",
-        target:     "default"
+        mountPath:     "/test",
+        mountOptions:  [],
+        fsType:        "xfs",
+        minSize:       0,
+        autoSize:      true,
+        snapshots:     false,
+        transactional: false,
+        outline:       {
+          required:              false,
+          fsTypes:               [],
+          supportAutoSize:       false,
+          adjustByRam:           false,
+          snapshotsConfigurable: false,
+          snapshotsAffectSizes:  false,
+          sizeRelevantVolumes:   []
+        }
       )
 
       expect(described_class.new(custom_volume2).convert).to eq(
-        mount:      {
-          path:    "/test",
-          options: ["rw", "default"]
-        },
-        size:       {
-          min: 1024,
-          max: 2048
-        },
-        target:     {
-          newPartition: "/dev/sda"
-        },
-        filesystem: {
-          btrfs: {
-            snapshots: true
-          }
+        mountPath:     "/test",
+        mountOptions:  ["rw", "default"],
+        fsType:        "btrfs",
+        minSize:       1024,
+        maxSize:       2048,
+        autoSize:      false,
+        snapshots:     true,
+        transactional: false,
+        outline:       {
+          required:              false,
+          fsTypes:               [],
+          supportAutoSize:       false,
+          adjustByRam:           false,
+          snapshotsConfigurable: false,
+          snapshotsAffectSizes:  false,
+          sizeRelevantVolumes:   []
         }
       )
     end

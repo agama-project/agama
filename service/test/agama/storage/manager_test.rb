@@ -549,14 +549,23 @@ describe Agama::Storage::Manager do
       before do
         mock_storage(devicegraph: "partitioned_md.yml")
 
-        subject.proposal.calculate_guided(settings)
+        subject.proposal.calculate_from_json(config_json)
       end
 
-      let(:settings) do
-        Agama::Storage::ProposalSettings.new.tap do |settings|
-          settings.device.name = "/dev/sdb"
-          settings.volumes = [Agama::Storage::Volume.new("/")]
-        end
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              {
+                search:     "/dev/sdb",
+                partitions: [
+                  { search: "*", delete: true },
+                  { filesystem: { path: "/" } }
+                ]
+              }
+            ]
+          }
+        }
       end
 
       it "returns the list of actions" do

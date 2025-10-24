@@ -63,8 +63,8 @@ module Agama
       FINISH_PHASE = 3
 
       dbus_interface MANAGER_INTERFACE do
-        dbus_method(:Probe, "in data:a{sv}") { |data| config_phase(data: data) }
-        dbus_method(:Reprobe, "in data:a{sv}") { |data| config_phase(reprobe: true, data: data) }
+        dbus_method(:Probe, "in data:a{sv}") { |_| config_phase }
+        dbus_method(:Reprobe, "in data:a{sv}") { |_| config_phase(reprobe: true) }
         dbus_method(:Commit, "") { install_phase }
         dbus_method(:CanInstall, "out result:b") { can_install? }
         dbus_method(:CollectLogs, "out tarball_filesystem_path:s") { collect_logs }
@@ -79,9 +79,9 @@ module Agama
       #
       # @param reprobe [Boolean] Whether a reprobe should be done instead of a probe.
       # @param data [Hash] Extra data provided to the D-Bus calls.
-      def config_phase(reprobe: false, data: {})
+      def config_phase(reprobe: false)
         safe_run do
-          busy_while { backend.config_phase(reprobe: reprobe, data: data) }
+          busy_while { backend.config_phase(reprobe: reprobe) }
         end
       end
 
