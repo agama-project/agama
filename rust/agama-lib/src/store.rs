@@ -30,13 +30,20 @@ use crate::{
     localization::{LocalizationStore, LocalizationStoreError},
     manager::{http_client::ManagerHTTPClientError, InstallationPhase, ManagerHTTPClient},
     network::{NetworkStore, NetworkStoreError},
-    product::{ProductStore, ProductStoreError},
+    product::{ProductHTTPClient, ProductStore, ProductStoreError},
+    questions::store::{QuestionsStore, QuestionsStoreError},
     scripts::{ScriptsClient, ScriptsClientError, ScriptsGroup, ScriptsStore, ScriptsStoreError},
     security::store::{SecurityStore, SecurityStoreError},
     software::{SoftwareStore, SoftwareStoreError},
     storage::{
-        http_client::iscsi::{ISCSIHTTPClient, ISCSIHTTPClientError},
-        store::dasd::{DASDStore, DASDStoreError},
+        http_client::{
+            iscsi::{ISCSIHTTPClient, ISCSIHTTPClientError},
+            StorageHTTPClient,
+        },
+        store::{
+            dasd::{DASDStore, DASDStoreError},
+            zfcp::{ZFCPStore, ZFCPStoreError},
+        },
         StorageStore, StorageStoreError,
     },
     users::{UsersStore, UsersStoreError},
@@ -57,6 +64,8 @@ pub enum StoreError {
     #[error(transparent)]
     Network(#[from] NetworkStoreError),
     #[error(transparent)]
+    Questions(#[from] QuestionsStoreError),
+    #[error(transparent)]
     Product(#[from] ProductStoreError),
     #[error(transparent)]
     Security(#[from] SecurityStoreError),
@@ -75,8 +84,12 @@ pub enum StoreError {
     ScriptsClient(#[from] ScriptsClientError),
     #[error(transparent)]
     Manager(#[from] ManagerHTTPClientError),
+    #[error(transparent)]
+    ZFCP(#[from] ZFCPStoreError),
     #[error("Could not calculate the context")]
     InvalidStoreContext,
+    #[error("Cannot proceed with profile without specified product")]
+    MissingProduct,
 }
 
 /// Struct that loads/stores the settings from/to the D-Bus services.
@@ -92,6 +105,7 @@ pub struct Store {
     hostname: HostnameStore,
     users: UsersStore,
     network: NetworkStore,
+    questions: QuestionsStore,
     product: ProductStore,
     security: SecurityStore,
     software: SoftwareStore,
@@ -101,6 +115,7 @@ pub struct Store {
     iscsi_client: ISCSIHTTPClient,
     manager_client: ManagerHTTPClient,
     http_client: BaseHTTPClient,
+    zfcp: ZFCPStore,
 }
 
 impl Store {
@@ -113,6 +128,7 @@ impl Store {
             localization: LocalizationStore::new(http_client.clone()),
             users: UsersStore::new(http_client.clone()),
             network: NetworkStore::new(http_client.clone()),
+            questions: QuestionsStore::new(http_client.clone()),
             product: ProductStore::new(http_client.clone()),
             security: SecurityStore::new(http_client.clone()),
             software: SoftwareStore::new(http_client.clone()),
@@ -120,6 +136,7 @@ impl Store {
             scripts: ScriptsStore::new(http_client.clone()),
             manager_client: ManagerHTTPClient::new(http_client.clone()),
             iscsi_client: ISCSIHTTPClient::new(http_client.clone()),
+            zfcp: ZFCPStore::new(http_client.clone()),
             http_client,
         })
     }
@@ -132,12 +149,15 @@ impl Store {
             files: self.files.load().await?,
             hostname: Some(self.hostname.load().await?),
             network: Some(self.network.load().await?),
+            // FIXME: do not export questions yet.
+            questions: self.questions.load().await?,
             security: self.security.load().await?.to_option(),
             software: self.software.load().await?.to_option(),
             user: Some(self.users.load().await?),
             product: Some(self.product.load().await?),
             localization: Some(self.localization.load().await?),
             scripts: self.scripts.load().await?.to_option(),
+            zfcp: self.zfcp.load().await?,
             ..Default::default()
         };
 
@@ -166,15 +186,10 @@ impl Store {
             }
         }
 
-        if let Some(files) = &settings.files {
-            self.files.store(files).await?;
+        if let Some(questions) = &settings.questions {
+            self.questions.store(questions).await?;
         }
 
-        // import the users (esp. the root password) before initializing software,
-        // if software fails the Web UI would be stuck in the root password dialog
-        if let Some(user) = &settings.user {
-            self.users.store(user).await?;
-        }
         if let Some(network) = &settings.network {
             self.network.store(network).await?;
         }
@@ -183,37 +198,92 @@ impl Store {
         if let Some(security) = &settings.security {
             self.security.store(security).await?;
         }
+        if let Some(user) = &settings.user {
+            self.users.store(user).await?;
+        }
         // order is important here as network can be critical for connection
         // to registration server and selecting product is important for rest
         if let Some(product) = &settings.product {
             self.product.store(product).await?;
         }
+        // here detect if product is properly selected, so later it can be checked
+        let is_product_selected = self.detect_selected_product().await?;
         // ordering: localization after product as some product may miss some locales
         if let Some(localization) = &settings.localization {
+            Store::ensure_selected_product(is_product_selected)?;
             self.localization.store(localization).await?;
         }
         if let Some(software) = &settings.software {
+            Store::ensure_selected_product(is_product_selected)?;
             self.software.store(software).await?;
         }
+        let mut dirty_flag_set = false;
         // iscsi has to be done before storage
         if let Some(iscsi) = &settings.iscsi {
+            Store::ensure_selected_product(is_product_selected)?;
+            dirty_flag_set = true;
             self.iscsi_client.set_config(iscsi).await?
         }
         // dasd devices has to be activated before storage
         if let Some(dasd) = &settings.dasd {
+            Store::ensure_selected_product(is_product_selected)?;
+            dirty_flag_set = true;
             self.dasd.store(dasd).await?
         }
+        // zfcp devices has to be activated before storage
+        if let Some(zfcp) = &settings.zfcp {
+            Store::ensure_selected_product(is_product_selected)?;
+            dirty_flag_set = true;
+            self.zfcp.store(zfcp).await?
+        }
+        // Reprobing storage is not directly done by zFCP, DASD or iSCSI services for a matter of
+        // efficiency. For now, clients are expected to explicitly reprobe. It is important to
+        // reprobe here before loading the storage settings. Otherwise, the new storage devices are
+        // not used.
+        if dirty_flag_set {
+            Store::ensure_selected_product(is_product_selected)?;
+            self.reprobe_storage().await?;
+        }
+
         if settings.storage.is_some() || settings.storage_autoyast.is_some() {
+            Store::ensure_selected_product(is_product_selected)?;
             self.storage.store(&settings.into()).await?
         }
         if let Some(bootloader) = &settings.bootloader {
             self.bootloader.store(bootloader).await?;
         }
         if let Some(hostname) = &settings.hostname {
+            Store::ensure_selected_product(is_product_selected)?;
             self.hostname.store(hostname).await?;
+        }
+        if let Some(files) = &settings.files {
+            self.files.store(files).await?;
         }
 
         Ok(())
+    }
+
+    // Reprobes the storage devices if the system was marked as deprecated.
+    async fn reprobe_storage(&self) -> Result<(), StorageStoreError> {
+        let storage_client = StorageHTTPClient::new(self.http_client.clone());
+        if storage_client.is_dirty().await? {
+            storage_client.reprobe().await?;
+        }
+        Ok(())
+    }
+
+    async fn detect_selected_product(&self) -> Result<bool, ProductStoreError> {
+        let product_client = ProductHTTPClient::new(self.http_client.clone());
+        let product = product_client.product().await?;
+        Ok(!product.is_empty())
+    }
+
+    fn ensure_selected_product(selected: bool) -> Result<(), StoreError> {
+        if selected {
+            Ok(())
+        } else {
+            Err(StoreError::MissingProduct)
+        }
     }
 
     /// Runs the pre-installation scripts and forces a probe if the installation phase is "config".

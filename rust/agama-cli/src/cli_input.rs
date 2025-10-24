@@ -120,7 +120,7 @@ impl CliInput {
     // Does it belong here?
     // vs the downloading code in web ProfileQuery::retrieve_profile
     // put it in agama-lib?
-    pub fn read_to_string(self) -> anyhow::Result<String> {
+    pub fn read_to_string(self, insecure: bool) -> anyhow::Result<String> {
         match self {
             Self::Full(s) => Ok(s),
             Self::Stdin => Self::stdin_to_string().map_err(|e| e.into()),
@@ -131,7 +131,7 @@ impl CliInput {
             }
             Self::Url(url_string) => {
                 let mut bytebuf = Vec::new();
-                Transfer::get(&url_string, &mut bytebuf)
+                Transfer::get(&url_string, &mut bytebuf, insecure)
                     .context(format!("Retrieving data from URL {}", url_string))?;
                 let s = String::from_utf8(bytebuf)
                     .context(format!("Invalid UTF-8 data at URL {}", url_string))?;

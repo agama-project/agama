@@ -25,7 +25,10 @@ use tokio::time::sleep;
 
 use crate::http::{BaseHTTPClient, BaseHTTPClientError};
 
-use super::model::{self, Answer, Question};
+use super::{
+    config::QuestionsConfig,
+    model::{self, Answer, Question},
+};
 
 #[derive(Debug, thiserror::Error)]
 pub enum QuestionsHTTPClientError {
@@ -38,8 +41,8 @@ pub struct HTTPClient {
 }
 
 impl HTTPClient {
-    pub fn new(client: BaseHTTPClient) -> Result<Self, QuestionsHTTPClientError> {
-        Ok(Self { client })
+    pub fn new(client: BaseHTTPClient) -> Self {
+        Self { client }
     }
 
     pub async fn list_questions(&self) -> Result<Vec<model::Question>, QuestionsHTTPClientError> {
@@ -89,6 +92,17 @@ impl HTTPClient {
     pub async fn delete_question(&self, question_id: u32) -> Result<(), QuestionsHTTPClientError> {
         let path = format!("/questions/{}", question_id);
         Ok(self.client.delete_void(path.as_str()).await?)
+    }
+
+    pub async fn get_config(&self) -> Result<QuestionsConfig, QuestionsHTTPClientError> {
+        Ok(QuestionsConfig::default())
+    }
+
+    pub async fn set_config(
+        &self,
+        config: &QuestionsConfig,
+    ) -> Result<(), QuestionsHTTPClientError> {
+        Ok(self.client.put_void("/questions/config", config).await?)
     }
 }
 

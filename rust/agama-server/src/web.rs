@@ -189,7 +189,6 @@ async fn run_events_monitor(dbus: zbus::Connection, events: EventsSender) -> Res
     tokio::pin!(stream);
     let e = events.clone();
     while let Some((_, event)) = stream.next().await {
-        tracing::info!("event: {:?}", &event);
         _ = e.send(event);
     }
     Ok(())

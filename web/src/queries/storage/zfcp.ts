@@ -119,6 +119,8 @@ const useZFCPControllersChanges = () => {
           }
         },
       );
+
+      queryClient.invalidateQueries({ queryKey: ["zfcp", "controllers"] });
     });
   }, [client, queryClient]);
 };

@@ -87,7 +87,7 @@ cat >$dst/boot/grub2/grub.cfg <<XXX
 
 gfxmode=auto
 
-set default="Install $label"
+set default="Boot from Hard Disk"
 
 insmod gettext
 
@@ -95,9 +95,13 @@ if sleep --interruptible 0 ; then
   timeout=60
 fi
 
+menuentry "Boot from Hard Disk" --class opensuse --class gnu-linux --class gnu --class os {
+  exit
+}
+
 menuentry "Install $label" --class os --unrestricted {
   echo 'Loading kernel...'
-  linux /boot/ppc64le/linux
+  linux /boot/ppc64le/linux splash=silent
   echo 'Loading initrd...'
   initrd /boot/ppc64le/initrd
 }
@@ -114,20 +118,6 @@ menuentry "Rescue System" --class os --unrestricted {
   linux /boot/ppc64le/linux $RESCUE_SYSTEM_BOOT_SETTINGS
   echo 'Loading initrd...'
   initrd /boot/ppc64le/initrd
-}
-
-menuentry 'local' {
-  exit
-}
-
-submenu 'Other options...' {
- menuentry 'Reboot' {
- reboot
- }
-
- menuentry 'Exit to Open Firmware' {
- exit
- }
 }
 XXX
 

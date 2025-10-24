@@ -20,126 +20,75 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Split, Flex, Label } from "@patternfly/react-core";
+import React, { useState } from "react";
 import MenuButton, { MenuButtonItem } from "~/components/core/MenuButton";
-import MenuDeviceDescription from "./MenuDeviceDescription";
 import NewVgMenuOption from "./NewVgMenuOption";
-import { useCandidateDevices, useLongestDiskTitle } from "~/hooks/storage/system";
+import { useAvailableDevices } from "~/hooks/storage/system";
 import { useModel } from "~/hooks/storage/model";
 import { useSwitchToDrive } from "~/hooks/storage/drive";
 import { useSwitchToMdRaid } from "~/hooks/storage/md-raid";
-import { deviceBaseName, deviceLabel, formattedPath } from "~/components/storage/utils";
+import { deviceBaseName, formattedPath } from "~/components/storage/utils";
 import * as model from "~/types/storage/model";
 import { StorageDevice } from "~/types/storage";
 import { sprintf } from "sprintf-js";
 import { _, formatList } from "~/i18n";
+import DeviceSelectorModal from "./DeviceSelectorModal";
+import { MenuItemProps } from "@patternfly/react-core";
+import { Icon } from "../layout";
 
 const baseName = (device: StorageDevice): string => deviceBaseName(device, true);
-const label = (device: StorageDevice): string => deviceLabel(device, true);
 
-const UseOnlyOneOption = (device: model.Drive | model.MdRaid): boolean => {
-  const hasPv = device.isTargetDevice;
-  if (!device.getMountPaths().length && (hasPv || device.isExplicitBoot)) return true;
+const useOnlyOneOption = (device: model.Drive | model.MdRaid): boolean => {
+  if (device.filesystem && device.filesystem.reuse) return true;
+
+  const { isTargetDevice, isExplicitBoot } = device;
+  if (!device.getMountPaths().length && (isTargetDevice || isExplicitBoot)) return true;
 
   return device.isReusingPartitions;
 };
 
-type DiskSelectorTitleProps = { device: StorageDevice; isSelected: boolean };
-
-const DiskSelectorTitle = ({
-  device,
-  isSelected = false,
-}: DiskSelectorTitleProps): React.ReactNode => {
-  const Name = () => (isSelected ? <b>{label(device)}</b> : label(device));
-  const Systems = () => {
-    if (!device.systems) return null;
-
-    return (
-      <Flex columnGap={{ default: "columnGapXs" }}>
-        {device.systems.map((s, i) => (
-          <Label key={i} isCompact>
-            {s}
-          </Label>
-        ))}
-      </Flex>
-    );
-  };
-
-  return (
-    <Split hasGutter>
-      <Name />
-      <Systems />
-    </Split>
-  );
-};
-
-const searchSelectorMultipleOptions = (
-  devices: StorageDevice[],
-  selected: StorageDevice,
-  onChange: (device: StorageDevice) => void,
-): React.ReactNode[] => {
-  return devices.map((device) => {
-    const isSelected = device.sid === selected.sid;
-
-    return (
-      <MenuButtonItem
-        key={device.sid}
-        itemId={device.sid}
-        isSelected={isSelected}
-        description={<MenuDeviceDescription device={device} />}
-        onClick={() => onChange(device)}
-      >
-        <DiskSelectorTitle device={device} isSelected={isSelected} />
-      </MenuButtonItem>
-    );
-  });
-};
-
-const SearchSelectorSingleOption = ({ selected }: { selected: StorageDevice }): React.ReactNode => {
-  return (
-    <MenuButtonItem
-      isSelected
-      key={selected.sid}
-      itemId={selected.sid}
-      description={<MenuDeviceDescription device={selected} />}
-    >
-      <DiskSelectorTitle device={selected} isSelected />
-    </MenuButtonItem>
-  );
-};
-
-const searchSelectorOptions = (
-  modelDevice: model.Drive | model.MdRaid,
-  devices: StorageDevice[],
-  selected: StorageDevice,
-  onChange: (device: StorageDevice) => void,
-): React.ReactNode[] => {
-  const onlyOneOption = UseOnlyOneOption(modelDevice);
-
-  if (onlyOneOption) return [<SearchSelectorSingleOption key="disk-option" selected={selected} />];
-
-  return searchSelectorMultipleOptions(devices, selected, onChange);
-};
-
-type DisksDrillDownMenuItemProps = {
+type ChangeDeviceMenuItemProps = {
   modelDevice: model.Drive | model.MdRaid;
-  selected: StorageDevice;
-  onDeviceClick: (device: StorageDevice) => void;
+  device: StorageDevice;
+} & MenuItemProps;
+
+const ChangeDeviceTitle = ({ modelDevice }) => {
+  const onlyOneOption = useOnlyOneOption(modelDevice);
+  if (onlyOneOption) {
+    return _("Selected disk cannot be changed");
+  }
+
+  if (modelDevice.filesystem) {
+    // TRANSLATORS: %s is a formatted mount point like '"/home"'
+    return sprintf(_("Select a disk to format as %s"), formattedPath(modelDevice.mountPath));
+  }
+
+  const mountPaths = modelDevice.getMountPaths();
+  const hasMountPaths = mountPaths.length > 0;
+
+  if (!hasMountPaths) {
+    return _("Select a disk to configure");
+  }
+
+  if (mountPaths.includes("/")) {
+    return _("Select a disk to install the system");
+  }
+
+  const newMountPaths = modelDevice.partitions
+    .filter((p) => !p.name)
+    .map((p) => formattedPath(p.mountPath));
+
+  return sprintf(
+    // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
+    // single mount point in the singular case).
+    _("Select a disk to create %s"),
+    formatList(newMountPaths),
+  );
 };
 
-/**
- * Internal component holding the logic for rendering the disks drilldown menu
- */
-const DisksDrillDownMenuItem = ({
-  modelDevice,
-  selected,
-  onDeviceClick,
-}: DisksDrillDownMenuItemProps): React.ReactNode => {
+const ChangeDeviceDescription = ({ modelDevice, device }) => {
+  const name = baseName(device);
   const volumeGroups = modelDevice.getVolumeGroups() || [];
-  const onlyOneOption = UseOnlyOneOption(modelDevice);
-  const devices = useCandidateDevices();
-
   const isBoot = modelDevice.isBoot;
   const isExplicitBoot = modelDevice.isExplicitBoot;
   const mountPaths = modelDevice.getMountPaths();
@@ -147,118 +96,100 @@ const DisksDrillDownMenuItem = ({
   const hasPv = volumeGroups.length > 0;
   const vgName = volumeGroups[0]?.vgName;
 
-  const mainText = (): string => {
-    if (onlyOneOption) {
-      return _("Selected disk (cannot be changed)");
-    }
+  if (modelDevice.filesystem && modelDevice.filesystem.reuse)
+    return _("This uses the existing file system at the disk");
 
-    if (!hasMountPaths) {
-      return _("Select a disk to configure");
-    }
+  if (modelDevice.isReusingPartitions) {
+    // The current device will be the only option to choose from
+    return _("This uses existing partitions at the disk");
+  }
 
-    if (mountPaths.includes("/")) {
-      return _("Select a disk to install the system");
-    }
-
-    const newMountPaths = modelDevice.partitions
-      .filter((p) => !p.name)
-      .map((p) => formattedPath(p.mountPath));
-
-    return sprintf(
-      // TRANSLATORS: %s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
-      // single mount point in the singular case).
-      _("Select a disk to create %s"),
-      formatList(newMountPaths),
-    );
-  };
-
-  const extraText = (): string => {
-    const name = baseName(selected);
-
-    if (modelDevice.isReusingPartitions) {
-      // The current device will be the only option to choose from
-      return _("This uses existing partitions at the disk");
-    }
-
-    if (!hasMountPaths) {
-      // The current device will be the only option to choose from
-      if (hasPv) {
-        if (volumeGroups.length > 1) {
-          if (isExplicitBoot) {
-            return _(
-              "This disk will contain the configured LVM groups and any partition needed to boot",
-            );
-          }
-          return _("This disk will contain the configured LVM groups");
-        }
-        if (isExplicitBoot) {
-          return sprintf(
-            // TRANSLATORS: %s is the name of the LVM
-            _("This disk will contain the LVM group '%s' and any partition needed to boot"),
-            vgName,
-          );
-        }
-
-        // TRANSLATORS: %s is the name of the LVM
-        return sprintf(_("This disk will contain the LVM group '%s'"), vgName);
-      }
-
-      // The current device will be the only option to choose from
-      if (isExplicitBoot) {
-        return _("This disk will contain any partition needed for booting");
-      }
-    }
-
+  if (!hasMountPaths) {
+    // The current device will be the only option to choose from
     if (hasPv) {
       if (volumeGroups.length > 1) {
         if (isExplicitBoot) {
-          return sprintf(
-            // TRANSLATORS: %s is the name of the disk (eg. sda)
-            _("%s will still contain the configured LVM groups and any partition needed to boot"),
-            name,
-          );
+          return _("It is chosen for booting and for some LVM groups");
         }
-
-        // TRANSLATORS: %s is the name of the disk (eg. sda)
-        return sprintf(_("The configured LVM groups will remain at %s"), name);
+        return _("It is chosen for some LVM groups");
       }
-
       if (isExplicitBoot) {
         return sprintf(
-          // TRANSLATORS: %1$s is the name of the disk (eg. sda) and %2$s the name of the LVM
-          _("%1$s will still contain the LVM group '%2$s' and any partition needed to boot"),
-          name,
+          // TRANSLATORS: %s is the name of the LVM
+          _("It is chosen for booting and for the LVM group '%s'"),
           vgName,
         );
       }
 
-      return sprintf(
-        // TRANSLATORS: %1$s is the name of the LVM and %2$s the name of the disk (eg. sda)
-        _("The LVM group '%1$s' will remain at %2$s"),
-        vgName,
-        name,
-      );
+      // TRANSLATORS: %s is the name of the LVM
+      return sprintf(_("It is chosen for the LVM group '%s'"), vgName);
+    }
+
+    // The current device will be the only option to choose from
+    if (isExplicitBoot) {
+      return _("It is chosen for booting");
+    }
+  }
+
+  if (hasPv) {
+    if (volumeGroups.length > 1) {
+      if (isExplicitBoot) {
+        return sprintf(
+          // TRANSLATORS: %s is the name of the disk (eg. sda)
+          _("%s will still contain the configured LVM groups and any partition needed to boot"),
+          name,
+        );
+      }
+
+      // TRANSLATORS: %s is the name of the disk (eg. sda)
+      return sprintf(_("The configured LVM groups will remain at %s"), name);
     }
 
     if (isExplicitBoot) {
-      // TRANSLATORS: %s is the name of the disk (eg. sda)
-      return sprintf(_("Partitions needed for booting will remain at %s"), name);
+      return sprintf(
+        // TRANSLATORS: %1$s is the name of the disk (eg. sda) and %2$s the name of the LVM
+        _("%1$s will still contain the LVM group '%2$s' and any partition needed to boot"),
+        name,
+        vgName,
+      );
     }
 
-    if (isBoot) {
-      return _("Partitions needed for booting will also be adapted");
-    }
-  };
+    return sprintf(
+      // TRANSLATORS: %1$s is the name of the LVM and %2$s the name of the disk (eg. sda)
+      _("The LVM group '%1$s' will remain at %2$s"),
+      vgName,
+      name,
+    );
+  }
 
-  const text = mainText();
+  if (isExplicitBoot) {
+    // TRANSLATORS: %s is the name of the disk (eg. sda)
+    return sprintf(_("Partitions needed for booting will remain at %s"), name);
+  }
+
+  if (isBoot) {
+    return _("Partitions needed for booting will also be adapted");
+  }
+};
+
+/**
+ * Internal component holding the presentation of the option to change the device
+ */
+const ChangeDeviceMenuItem = ({
+  modelDevice,
+  device,
+  ...props
+}: ChangeDeviceMenuItemProps): React.ReactNode => {
+  const onlyOneOption = useOnlyOneOption(modelDevice);
 
   return (
     <MenuButtonItem
       aria-label={_("Change device menu")}
-      description={extraText()}
-      items={searchSelectorOptions(modelDevice, devices, selected, onDeviceClick)}
+      description={<ChangeDeviceDescription modelDevice={modelDevice} device={device} />}
+      isDisabled={onlyOneOption}
+      {...props}
     >
-      {text}
+      <ChangeDeviceTitle modelDevice={modelDevice} />
     </MenuButtonItem>
   );
 };
@@ -297,6 +228,10 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
   const hasPv = device.isTargetDevice;
   const isDisabled = isExplicitBoot || hasPv;
 
+  // If these cases, the target device cannot be changed and this disabled button would only provide
+  // information that is redundant to the one already displayed at the disabled "change device" one.
+  if (!device.getMountPaths().length && (hasPv || isExplicitBoot)) return;
+
   if (isExplicitBoot) {
     if (hasPv) {
       description = _("The disk is used for LVM and boot");
@@ -324,6 +259,18 @@ const RemoveEntryOption = ({ device, onClick }: RemoveEntryOptionProps): React.R
   );
 };
 
+const targetDevices = (modelDevice, model, availableDevices): StorageDevice[] => {
+  return availableDevices.filter((availableDev) => {
+    if (modelDevice.name === availableDev.name) return true;
+
+    const collection = availableDev.isDrive ? model.drives : model.mdRaids;
+    const device = collection.find((d) => d.name === availableDev.name);
+    if (!device) return true;
+
+    return modelDevice.filesystem ? !device.isUsed : !device.filesystem;
+  });
+};
+
 export type SearchedDeviceMenuProps = {
   modelDevice: model.Drive | model.MdRaid;
   selected: StorageDevice;
@@ -340,35 +287,54 @@ export default function SearchedDeviceMenu({
   selected,
   deleteFn,
 }: SearchedDeviceMenuProps): React.ReactNode {
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const switchToDrive = useSwitchToDrive();
   const switchToMdRaid = useSwitchToMdRaid();
   const changeTargetFn = (device: StorageDevice) => {
     const hook = device.isDrive ? switchToDrive : switchToMdRaid;
     hook(modelDevice.name, { name: device.name });
   };
-  const longestTitle = useLongestDiskTitle();
+  const devices = targetDevices(modelDevice, useModel(), useAvailableDevices());
+
+  const onDeviceChange = ([drive]: StorageDevice[]) => {
+    setIsSelectorOpen(false);
+    changeTargetFn(drive);
+  };
 
   return (
-    <MenuButton
-      menuProps={{
-        "aria-label": sprintf(_("Device %s menu"), modelDevice.name),
-        popperProps: { minWidth: `min(${longestTitle * 0.75}em, 75vw)`, width: "max-content" },
-      }}
-      toggleProps={{
-        className: "agm-inline-toggle",
-      }}
-      items={[
-        <DisksDrillDownMenuItem
-          key="change-disk-option"
-          modelDevice={modelDevice}
+    <>
+      <MenuButton
+        menuProps={{
+          "aria-label": sprintf(_("Device %s menu"), modelDevice.name),
+          popperProps: { position: "end" },
+        }}
+        toggleProps={{
+          variant: "plain",
+        }}
+        items={[
+          <ChangeDeviceMenuItem
+            key="change"
+            modelDevice={modelDevice}
+            device={selected}
+            onClick={() => setIsSelectorOpen(true)}
+          />,
+          <NewVgMenuOption key="add-vg-option" device={modelDevice} />,
+          <RemoveEntryOption key="delete-disk-option" device={modelDevice} onClick={deleteFn} />,
+        ]}
+      >
+        <span className="action-text">{_("Change")}</span>{" "}
+        <Icon name="more_horiz" className="agm-strong-icon" />
+      </MenuButton>
+      {isSelectorOpen && (
+        <DeviceSelectorModal
+          title={<ChangeDeviceTitle modelDevice={modelDevice} />}
+          description={<ChangeDeviceDescription modelDevice={modelDevice} device={selected} />}
           selected={selected}
-          onDeviceClick={changeTargetFn}
-        />,
-        <NewVgMenuOption key="add-vg-option" device={modelDevice} />,
-        <RemoveEntryOption key="delete-disk-option" device={modelDevice} onClick={deleteFn} />,
-      ]}
-    >
-      {<b>{label(selected)}</b>}
-    </MenuButton>
+          devices={devices}
+          onConfirm={onDeviceChange}
+          onCancel={() => setIsSelectorOpen(false)}
+        />
+      )}
+    </>
   );
 }

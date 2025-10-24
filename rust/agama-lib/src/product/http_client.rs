@@ -29,8 +29,9 @@ use super::settings::AddonSettings;
 pub enum ProductHTTPClientError {
     #[error(transparent)]
     HTTP(#[from] BaseHTTPClientError),
+    // If present, the number is already printed in the String part
     #[error("Registration failed: {0}")]
-    FailedRegistration(String),
+    FailedRegistration(String, Option<u32>),
 }
 
 pub struct ProductHTTPClient {
@@ -70,6 +71,7 @@ impl ProductHTTPClient {
             patterns: None,
             packages: None,
             extra_repositories: None,
+            only_required: None,
         };
         self.set_software(&config).await
     }
@@ -112,15 +114,18 @@ impl ProductHTTPClient {
             return Ok(());
         };
 
+        let mut id: Option<u32> = None;
+
         let message = match error {
             BaseHTTPClientError::BackendError(_, details) => {
                 let details: RegistrationError = serde_json::from_str(&details).unwrap();
+                id = Some(details.id);
                 format!("{} (error code: {})", details.message, details.id)
             }
             _ => format!("Could not register the product: #{error:?}"),
         };
 
-        Err(ProductHTTPClientError::FailedRegistration(message))
+        Err(ProductHTTPClientError::FailedRegistration(message, id))
     }
 
     /// register addon
@@ -142,15 +147,18 @@ impl ProductHTTPClient {
             return Ok(());
         };
 
+        let mut id: Option<u32> = None;
+
         let message = match error {
             BaseHTTPClientError::BackendError(_, details) => {
                 println!("Details: {:?}", details);
                 let details: RegistrationError = serde_json::from_str(&details).unwrap();
+                id = Some(details.id);
                 format!("{} (error code: {})", details.message, details.id)
             }
             _ => format!("Could not register the addon: #{error:?}"),
         };
 
-        Err(ProductHTTPClientError::FailedRegistration(message))
+        Err(ProductHTTPClientError::FailedRegistration(message, id))
     }
 }

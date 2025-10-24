@@ -15,6 +15,11 @@ export default {
   "%1$s at %2$s": [
     "%1$s на %2$s"
   ],
+  "%1$s will be created as a partition at %2$s": [
+    "%1$s будет создан как раздел на %2$s",
+    "%1$s будут созданы как разделы на %2$s",
+    "%1$s будут созданы как разделы на %2$s"
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "Диск %1$s по-прежнему будет содержать группу LVM „%2$s“ и все разделы, необходимые для загрузки"
   ],
@@ -39,29 +44,47 @@ export default {
   "%s logo": [
     "Логотип %s"
   ],
+  "%s will be created as a logical volume": [
+    "%s будет создан как логический том",
+    "%s будут созданы как логические тома",
+    "%s будут созданы как логические тома"
+  ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "Диск %s по-прежнему будет содержать настроенные группы LVM и все разделы, необходимые для загрузки"
   ],
   "%s with %d partitions": [
     "%s с %d разделами"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "Для %3$s будет создан раздел %1$s размером %2$s"
+  "A %1$s of %2$s will be created for %3$s if possible": [
+    "Для %3$s будет создан раздел %1$s размером %2$s, если это возможно"
   ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "Для %3$s будет создан раздел %1$s с размером не менее %2$s"
+  "A %1$s of at least %2$s will be created for %3$s if possible": [
+    "Для %3$s будет создан раздел %1$s с размером не менее %2$s, если это возможно"
   ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "Для %4$s будет создан раздел %1$s с размером между %2$s и %3$s"
+  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
+    "Для %4$s будет создан раздел %1$s с размером между %2$s и %3$s, если это возможно"
+  ],
+  "A file system will be used for the whole device": [
+    "Файловая система будет использована для всего устройства"
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Для нового раздела %2$s будет использоваться минимум %1$s"
   ],
-  "A generic size of %s will be used for the new %2$s": [
-    "Для нового раздела %2$s будет использовано %s"
+  "A generic size of %1$s will be used for the new %2$s": [
+    "Для нового раздела %2$s будет использовано %1$s"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Для нового раздела %3$s будет использовано пространство в диапазоне между %1$s и %2$s"
+  ],
+  "A new partition will be created for %s": [
+    "Для %s будет создан новый раздел",
+    "Для %s будут созданы новые разделы",
+    "Для %s будут созданы новые разделы"
+  ],
+  "A new volume will be created for %s": [
+    "Для %s будет создан новый том",
+    "Для %s будут созданы новые тома",
+    "Для %s будут созданы новые тома"
   ],
   "A partition may be deleted": [
     "Раздел может быть удален"
@@ -108,6 +131,9 @@ export default {
   "Add LVM volume group": [
     "Добавить группу томов LVM"
   ],
+  "Add a partition or mount an existing one": [
+    "Добавьте раздел или смонтируйте существующий"
+  ],
   "Add an address": [
     "Добавить адрес"
   ],
@@ -144,6 +170,9 @@ export default {
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     "Все конфликты были разрешены, или их не было обнаружено. Вы можете безопасно продолжать установку."
   ],
+  "All content not configured to be mounted will be deleted": [
+    "Всё содержимое, не настроенное на монтирование, будет удалено"
+  ],
   "All content will be deleted": [
     "Все содержимое будет удалено"
   ],
@@ -153,17 +182,39 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Все сетевые подключения, управляемые через этот интерфейс, в настоящее время настроены на использование только во время установки и не будут скопированы в установленную систему"
   ],
+  "Allow growing": [
+    "Разрешить рост"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Наряду с определением первого пользователя можно настроить методы аутентификации для root-пользователя."
+  ],
+  "Already using all available devices": [
+    "Уже используются все доступные устройства"
   ],
   "Already using all available disks": [
     "Уже используются все доступные диски"
   ],
+  "An existing partition will be used for %s": [
+    "Для %s будет использован существующий раздел",
+    "Для %s будут использованы существующие разделы",
+    "Для %s будут использованы существующие разделы"
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Все существующие разделы будут удалены, а все данные на диске будут потеряны."
   ],
+  "Any partition needed to boot will be configured.": [
+    "Все разделы, необходимые для загрузки, будут настроены."
+  ],
   "Apply selected solution": [
     "Применить выбранное решение"
+  ],
+  "Apply to the selected device": [
+    "Применить к %s выбранному устройству",
+    "Применить к %s выбранным устройствам",
+    "Применить к %s выбранным устройствам"
+  ],
+  "Applying changes": [
+    "Применение изменений"
   ],
   "As a new partition on %s": [
     "Как новый раздел на %s"
@@ -175,10 +226,10 @@ export default {
     "По крайней мере один раздел будет удален"
   ],
   "At this point you can power off the machine.": [
-    "На этом этапе вы можете выключить устройство."
+    "На этом этапе устройство можно выключить."
   ],
   "At this point you can reboot the machine to log in to the new system.": [
-    "На этом этапе вы можете перезагрузить устройство, чтобы войти в новую систему."
+    "На этом этапе можно перезагрузить устройство, чтобы войти в новую систему."
   ],
   "Authentication": [
     "Аутентификация"
@@ -210,14 +261,14 @@ export default {
   "Back": [
     "Назад"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "Исходя из объема оперативной памяти в системе, для %3$s будет создан раздел %1s$ размером %2$s"
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
+    "Исходя из объема оперативной памяти в системе, для %3$s будет запланирован раздел %1$s размером %2$s"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "Исходя из объема оперативной памяти в системе, для %3$s будет создан раздел %1s$ размером не менее %2$s"
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
+    "Исходя из объема оперативной памяти в системе, для %3$s будет запланирован раздел %1$s размером не менее %2$s"
   ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "Исходя из объема оперативной памяти в системе, для %4$s будет создан раздел %1s$ размером от %2$s до %3$s"
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "Исходя из объема оперативной памяти в системе, для %4$s будет запланирован раздел %1$s размером от %2$s до %3$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -231,8 +282,23 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "Перед началом установки нужно устранить следующие проблемы:"
   ],
+  "Below %s devices are offline and cannot be formatted.": [
+    "%s устр. находятся в офлайн-режиме и не могут быть отформатированы."
+  ],
   "Beta": [
     "Бета-версия"
+  ],
+  "Bind to MAC address": [
+    "Привязать к MAC-адресу"
+  ],
+  "Bind to device name": [
+    "Привязать к имени устройства"
+  ],
+  "Binding": [
+    "Привязка"
+  ],
+  "Binding settings for '%s'": [
+    "Настройки привязки для «%s»"
   ],
   "BitLocker": [
     "BitLocker"
@@ -246,9 +312,6 @@ export default {
   "Btrfs with snapshots": [
     "Btrfs с моментальными снимками"
   ],
-  "Calculated automatically": [
-    "Рассчитывается автоматически"
-  ],
   "Cancel": [
     "Отмена"
   ],
@@ -258,7 +321,10 @@ export default {
   "Cannot connect to Agama server": [
     "Не удалось подключиться к серверу Agama"
   ],
-  "Cannot format all selected devices": [
+  "Cannot format %s": [
+    "Невозможно отформатировать %s"
+  ],
+  "Cannot format all the selected devices": [
     "Невозможно отформатировать все выбранные устройства"
   ],
   "Change": [
@@ -279,6 +345,9 @@ export default {
   "Change display language and keyboard layout": [
     "Изменить язык и раскладку клавиатуры"
   ],
+  "Change filters and try again.": [
+    "Измените фильтры и попробуйте снова."
+  ],
   "Change keyboard": [
     "Изменить клавиатуру"
   ],
@@ -291,11 +360,14 @@ export default {
   "Change selection": [
     "Изменить выбор"
   ],
+  "Change the file system or mount point": [
+    "Изменить файловую систему или точку монтирования"
+  ],
   "Channel ID": [
     "Идентификатор канала"
   ],
   "Check the %d planned actions": [
-    "Проверьте запланированные действия: %d"
+    "Показать запланированные действия: %d"
   ],
   "Check the authentication parameters.": [
     "Проверьте параметры аутентификации."
@@ -306,11 +378,23 @@ export default {
   "Choose a disk for placing the boot loader": [
     "Выберите диск для размещения загрузчика"
   ],
-  "Choose what to with current content": [
-    "Выберите, что делать с текущим содержимым"
+  "Choose device to bind by MAC": [
+    "Выберите устройство для привязки по MAC-адресу"
+  ],
+  "Choose device to bind by name": [
+    "Выберите устройство для привязки по имени"
+  ],
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
+    "Выберите, как подключение должно быть связано с сетевым устройством. Это помогает контролировать, какое устройство используется подключением."
   ],
   "Clear": [
     "Очистить"
+  ],
+  "Clear all filters": [
+    "Очистить все фильтры"
+  ],
+  "Clear input": [
+    "Очистить ввод"
   ],
   "Clear selected mount point": [
     "Очистить выбранную точку монтирования"
@@ -321,8 +405,14 @@ export default {
   "Collapse the list of planned actions": [
     "Свернуть список запланированных действий"
   ],
+  "Configuration out of sync": [
+    "Конфигурация рассинхронизирована"
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Конфигурация, считанная из таблицы iSCSI Boot Firmware Table (iBFT)."
+  ],
+  "Configuration unreachable or invalid": [
+    "Конфигурация недоступна или недействительна"
   ],
   "Configure DASD": [
     "Настройка DASD"
@@ -332,6 +422,9 @@ export default {
   ],
   "Configure LVM logical volume at %s volume group": [
     "Настройка логического тома LVM в группе томов %s"
+  ],
+  "Configure device %s": [
+    "Настроить устройство %s"
   ],
   "Configure device menu": [
     "Меню настройки устройства"
@@ -357,6 +450,9 @@ export default {
   "Confirm Installation": [
     "Подтвердить установку"
   ],
+  "Confirm that you really want to continue.": [
+    "Подтвердите, что вы действительно хотите продолжить."
+  ],
   "Congratulations!": [
     "Поздравляем!"
   ],
@@ -375,17 +471,35 @@ export default {
   "Connected (%s)": [
     "Подключено (%s)"
   ],
+  "Connected device": [
+    "Подключенное устройство"
+  ],
+  "Connected devices": [
+    "Подключенные устройства"
+  ],
+  "Connected devices tabs": [
+    "Вкладки подключенных устройств"
+  ],
   "Connecting to %s": [
     "Подключение к сети %s"
   ],
   "Connection details": [
     "Сведения о подключении"
   ],
+  "Connection is available to all devices.": [
+    "Подключение доступно для всех устройств."
+  ],
+  "Connection is bound to MAC address %s.": [
+    "Подключение привязано к MAC-адресу %s."
+  ],
+  "Connection is bound to device %s.": [
+    "Подключение привязано к устройству %s."
+  ],
   "Connection not found or lost": [
     "Соединение не найдено или потеряно"
   ],
-  "Content will be kept": [
-    "Содержимое будет сохранено"
+  "Content": [
+    "Содержимое"
   ],
   "Continue": [
     "Продолжить"
@@ -423,6 +537,12 @@ export default {
   "Current %s": [
     "Текущий %s"
   ],
+  "Current content": [
+    "Текущее содержимое"
+  ],
+  "Current partitions will be kept": [
+    "Текущие разделы будут сохранены"
+  ],
   "Custom": [
     "По-своему"
   ],
@@ -431,12 +551,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "Таблица выбора устройств DASD"
-  ],
-  "DASDs table section": [
-    "Раздел таблицы DASD"
   ],
   "DIAG": [
     "Режим DIAG"
@@ -456,11 +570,14 @@ export default {
   "Default file system for generic logical volumes": [
     "Файловая система по умолчанию для общих логических томов"
   ],
+  "Default file system for generic mount paths": [
+    "Файловая система по умолчанию для общих путей монтирования"
+  ],
   "Default file system for generic partitions": [
     "Файловая система по умолчанию для общих разделов"
   ],
-  "Define a custom size or a range": [
-    "Определить пользовательский размер или диапазон"
+  "Define a custom size": [
+    "Определить пользовательский размер"
   ],
   "Define a new LVM on the disk": [
     "Определить новый LVM на диске"
@@ -486,11 +603,20 @@ export default {
   "Delete volume group": [
     "Удалить группу томов"
   ],
+  "Description": [
+    "Описание"
+  ],
+  "Destroy current data and format device as": [
+    "Уничтожить текущие данные и отформатировать устройство как"
+  ],
   "Destroy current data and format partition as": [
     "Уничтожить текущие данные и отформатировать раздел как"
   ],
   "Details": [
-    "Подробности"
+    "Сведения"
+  ],
+  "Details for %s": [
+    "Сведения для %s"
   ],
   "Details will appear after the connection is successfully established.": [
     "После успешной установки подключения появится подробная информация."
@@ -501,11 +627,17 @@ export default {
   "Device %s menu": [
     "Меню устройства %s"
   ],
+  "Device Selection": [
+    "Выбор устройства"
+  ],
   "Device details": [
     "Сведения об устройстве"
   ],
   "Discard": [
     "Отказаться"
+  ],
+  "Discard the maximum size and continue with simplified configuration": [
+    "Откажитесь от максимального размера и продолжите работу с упрощенной конфигурацией"
   ],
   "Disconnected": [
     "Отключено"
@@ -541,7 +673,7 @@ export default {
     "Скачать журналы"
   ],
   "During installation, several actions will be performed to setup the layout shown at the table below.": [
-    "Во время установки будет выполнено несколько действий по настройке макета, показанных в таблице ниже."
+    "В процессе установки будут произведены действия для создания структуры разделов, указанной в таблице ниже."
   ],
   "Edit": [
     "Изменить"
@@ -549,14 +681,23 @@ export default {
   "Edit %s": [
     "Изменить %s"
   ],
+  "Edit binding settings": [
+    "Изменить настройки привязки"
+  ],
   "Edit connection %s": [
-    "Отредактировать подключение %s"
+    "Редактировать подключение %s"
+  ],
+  "Edit connection settings": [
+    "Изменить настройки подключения"
   ],
   "Edit user": [
     "Изменить пользователя"
   ],
   "Edit volume group": [
     "Изменить группу томов"
+  ],
+  "Email": [
+    "Электронная почта"
   ],
   "Empty LVM volume group %s": [
     "Очистить группу томов LVM %s"
@@ -597,6 +738,9 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
+  "Example: https://myserver.com": [
+    "Пример: https://myserver.com"
+  ],
   "Excellent signal": [
     "Отличный сигнал"
   ],
@@ -611,6 +755,16 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extend the installation beyond the currently selected device": [
+    "Расширение установки за пределы текущего %d устройства",
+    "Расширение установки за пределы текущих %d устройств",
+    "Расширение установки за пределы текущих %d устройств"
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "Расширение установки за пределы текущего %d диска",
+    "Расширение установки за пределы текущих %d дисков",
+    "Расширение установки за пределы текущих %d дисков"
   ],
   "Extensions": [
     "Расширения"
@@ -630,23 +784,23 @@ export default {
   "File system label": [
     "Метка файловой системы"
   ],
+  "Filesystems": [
+    "Файловые системы"
+  ],
   "Filter by description or keymap code": [
-    "Фильтр по описанию или коду карты клавиш"
+    "Фильтр по описанию или коду раскладки"
   ],
   "Filter by language, territory or locale code": [
     "Фильтр по языку, территории или коду локали"
-  ],
-  "Filter by max channel": [
-    "Фильтр по максимальному каналу"
-  ],
-  "Filter by min channel": [
-    "Фильтр по минимальному каналу"
   ],
   "Filter by pattern title or description": [
     "Фильтр по названию или описанию шаблона"
   ],
   "Filter by territory, time zone code or UTC offset": [
     "Фильтр по территории, коду часового пояса или смещению UTC"
+  ],
+  "Find space": [
+    "Найти пространство"
   ],
   "Find space in %s": [
     "Найти пространство в %s"
@@ -660,17 +814,38 @@ export default {
   "First user": [
     "Первый пользователь"
   ],
+  "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
+    "Для более продвинутых задач пользователи могут переключиться на полностраничную, выделенную версию, которая предоставляет больше места для детализированного просмотра, дополнительные столбцы, фильтры и расширенную функциональность."
+  ],
   "Format": [
     "Формат"
   ],
+  "Format RAID %s": [
+    "Отформатировать RAID-массив %s"
+  ],
+  "Format device %s": [
+    "Отформатировать устройство %s"
+  ],
+  "Format device as": [
+    "Отформатировать устройство как"
+  ],
+  "Format disk %s": [
+    "Форматировать диск %s"
+  ],
   "Format logical volume as": [
     "Форматировать логический том как"
+  ],
+  "Format now": [
+    "Отформатировать"
   ],
   "Format partition as": [
     "Отформатировать раздел как"
   ],
   "Format selected devices?": [
     "Отформатировать выбранные устройства?"
+  ],
+  "Format the whole device or mount an existing file system": [
+    "Отформатируйте всё устройство или смонтируйте существующую файловую систему"
   ],
   "Formatted": [
     "Отформатированный"
@@ -696,6 +871,9 @@ export default {
   "Go to network page": [
     "Перейти к разделу «Сеть»"
   ],
+  "Go to storage page": [
+    "Перейти к разделу «Хранилище»"
+  ],
   "Good signal": [
     "Хороший сигнал"
   ],
@@ -708,7 +886,7 @@ export default {
     "Скрыть %d действий подтома"
   ],
   "Hide details": [
-    "Скрыть подробности"
+    "Скрыть сведения"
   ],
   "Hostname": [
     "Имя узла"
@@ -746,11 +924,8 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Если для запуска этой программы установки использовался локальный носитель, извлеките его перед следующей загрузкой."
   ],
-  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "Если единица измерения не указана, будут использоваться байты (B). Более крупные единицы могут                 иметь вид GiB (степень 2) или GB (степень 10)."
-  ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
-    "Если вы продолжите, разделы на вашем жестком диске будут изменены в соответствии с заданными настройками установки."
+    "Если продолжите, разделы на жестком диске будут изменены в соответствии с заданными настройками установки."
   ],
   "In progress": [
     "В процессе"
@@ -842,6 +1017,24 @@ export default {
   "Issuer": [
     "Сертификационный центр"
   ],
+  "It doesn't exist or can't be reached.": [
+    "Его не существует или он недоступен."
+  ],
+  "It is chosen for booting": [
+    "Он выбран для загрузки"
+  ],
+  "It is chosen for booting and for some LVM groups": [
+    "Он выбран для загрузки и для некоторых групп LVM"
+  ],
+  "It is chosen for booting and for the LVM group '%s'": [
+    "Он выбран для загрузки и для группы LVM «%s»"
+  ],
+  "It is chosen for some LVM groups": [
+    "Он выбран для некоторых групп LVM"
+  ],
+  "It is chosen for the LVM group '%s'": [
+    "Он выбран для группы LVM «%s»"
+  ],
   "It is not possible to allocate space for %s.": [
     "Невозможно выделить пространство для %s."
   ],
@@ -851,14 +1044,14 @@ export default {
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Невозможно установить систему с текущей конфигурацией. Измените приведенные ниже настройки."
   ],
+  "It is offline and must be activated before formatting it.": [
+    "Устройство офлайн, перед форматированием его необходимо активировать."
+  ],
   "It may take some time.": [
     "Это может занять некоторое время."
   ],
   "JFS": [
     "JFS"
-  ],
-  "Keep size of %s": [
-    "Сохранить размер %s"
   ],
   "Keyboard": [
     "Клавиатура"
@@ -884,20 +1077,17 @@ export default {
   "Language and keyboard": [
     "Язык и клавиатура"
   ],
-  "Let the installer propose a sensible range of sizes": [
-    "Программа установки предложит разумный диапазон размеров"
-  ],
-  "License language": [
-    "Язык лицензии"
-  ],
-  "Limited": [
-    "Ограниченный"
+  "Let the installer propose a sensible size": [
+    "Программа установки предложит разумный размер"
   ],
   "Loading": [
     "Загрузка"
   ],
   "Loading data...": [
     "Загрузка данных..."
+  ],
+  "Loading storage": [
+    "Загрузка хранилища"
   ],
   "Loading the installation repositories...": [
     "Загрузка репозиториев установки..."
@@ -917,8 +1107,8 @@ export default {
   "Logical volume name": [
     "Имя логического тома"
   ],
-  "Logical volumes": [
-    "Логические тома"
+  "Logical volumes for %s": [
+    "Логические тома для %s"
   ],
   "Login": [
     "Вход"
@@ -947,26 +1137,14 @@ export default {
   "Manual": [
     "Вручную"
   ],
-  "Maximum": [
-    "Максимум"
-  ],
-  "Maximum size mode": [
-    "Режим максимального размера"
-  ],
-  "Maximum size options": [
-    "Опции максимального размера"
-  ],
-  "Maximum size value": [
-    "Максимальное значение размера"
+  "Max channel": [
+    "Макс. канал"
   ],
   "MiB": [
     "МиБ"
   ],
-  "Minimum": [
-    "Минимум"
-  ],
-  "Minimum size value": [
-    "Минимальное значение размера"
+  "Min channel": [
+    "Мин. канал"
   ],
   "Mode": [
     "Режим"
@@ -981,16 +1159,35 @@ export default {
     "Другие устройства"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    "Больше раскладок клавиатуры может быть доступно на странице [Локализации]"
+    "Для выбранного продукта могут быть доступны другие раскладки клавиатуры в разделе [Локализации]"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    "Больше вариантов языков и раскладок клавиатуры может быть доступно на странице [Локализации]."
+    "Для выбранного продукта могут быть доступны другие варианты языков и раскладок клавиатуры в разделе [Локализации]."
   ],
   "More languages might be available for the selected product at [Localization] page": [
-    "Больше языков может быть доступно на странице [Локализации]"
+    "Для выбранного продукта могут быть доступны другие языки в разделе [Локализации]"
+  ],
+  "Moreover, the following partition will be created.": [
+    "Кроме того, будет создан следующий раздел.",
+    "Кроме того, будут созданы следующие разделы.",
+    "Кроме того, будут созданы следующие разделы."
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "Кроме того, будет смонтирован следующий раздел.",
+    "Кроме того, будут смонтированы следующие разделы.",
+    "Кроме того, будут смонтированы следующие разделы."
+  ],
+  "Moreover, the following partitions will be created or mounted": [
+    "Кроме того, будут созданы или смонтированы следующие разделы"
   ],
   "Mount Point": [
     "Точка монтирования"
+  ],
+  "Mount RAID %s": [
+    "Монтировать RAID-массив %s"
+  ],
+  "Mount disk %s": [
+    "Монтировать диск %s"
   ],
   "Mount point": [
     "Точка монтирования"
@@ -1043,6 +1240,9 @@ export default {
   "No": [
     "Нет"
   ],
+  "No DASD devices were found in this machine.": [
+    "На этой машине не обнаружено ни одного устройства DASD."
+  ],
   "No Wi-Fi networks were found": [
     "Сети WiFi не найдены"
   ],
@@ -1058,8 +1258,14 @@ export default {
   "No content found": [
     "Содержимое не найдено"
   ],
+  "No device is currently using this connection.": [
+    "В настоящее время ни одно устройство не использует это подключение."
+  ],
   "No device selected yet": [
     "Устройство ещё не выбрано"
+  ],
+  "No devices available": [
+    "Нет доступных устройств"
   ],
   "No devices configured yet": [
     "Устройства ещё не настроены"
@@ -1109,8 +1315,14 @@ export default {
   "None of the time zones match the filter.": [
     "Ни один из часовых поясов не соответствует фильтру."
   ],
+  "None set": [
+    "Не задано"
+  ],
   "Not available": [
     "Недоступно"
+  ],
+  "Not configured yet": [
+    "Ещё не настроено"
   ],
   "Not defined": [
     "Не определён"
@@ -1130,14 +1342,17 @@ export default {
   "Not supported (%s)": [
     "Не поддерживается (%s)"
   ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Перед форматированием автономных устройств их необходимо активировать. Пожалуйста, отмените выбор или активацию устройств, перечисленных ниже, и повторите попытку"
-  ],
   "On boot": [
     "При загрузке"
   ],
   "Only available if authentication by target is provided": [
     "Доступно только при условии аутентификации по цели"
+  ],
+  "Only reused partitions and space not assigned to any partition will be used.": [
+    "Будут использоваться только повторно используемые разделы и пространство, не назначенное ни одному разделу."
+  ],
+  "Only reused partitions will be used.": [
+    "Будут использоваться только повторно используемые разделы."
   ],
   "Options toggle": [
     "Показ настроек"
@@ -1157,20 +1372,26 @@ export default {
   "Partition Info": [
     "Информация о разделе"
   ],
-  "Partitions": [
-    "Разделы"
-  ],
   "Partitions needed for booting will also be adapted": [
     "Разделы, необходимые для загрузки, также будут адаптированы"
   ],
   "Partitions needed for booting will remain at %s": [
     "Разделы, необходимые для загрузки, останутся в %s"
   ],
+  "Partitions that are not reused will be removed and that data will be lost.": [
+    "Разделы, которые не используются повторно, будут удалены, а данные потеряны."
+  ],
+  "Partitions that are not reused will be resized as needed.": [
+    "Разделы, которые не используются повторно, будут изменены в размере по мере необходимости."
+  ],
+  "Partitions that are not reused would be resized if needed.": [
+    "Разделы, которые не используются повторно, при необходимости будут изменены в размерах."
+  ],
   "Partitions to boot will be allocated at the following device.": [
     "Загрузочные разделы будут выделены на следующем устройстве."
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Загрузочные разделы будут выделены на установочном диске (%s)."
+  "Partitions to boot will be allocated at the installation disk %s.": [
+    "Загрузочные разделы будут выделены на установочном диске %s."
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Загрузочные разделы будут выделены на установочном диске."
@@ -1202,14 +1423,11 @@ export default {
   "Pending": [
     "Ожидается"
   ],
-  "Perform an action": [
-    "Выполнить действие"
-  ],
   "PiB": [
     "ПиБ"
   ],
   "Please, cancel and check the settings if you are unsure.": [
-    "Пожалуйста, отмените и проверьте настройки, если вы не уверены."
+    "Если вы не уверены, нажмите «Отмена» и перепроверьте настройки."
   ],
   "Please, check whether it is running.": [
     "Пожалуйста, проверьте, запущен ли он."
@@ -1247,6 +1465,9 @@ export default {
   "Provide email address": [
     "Укажите адрес эл. почты"
   ],
+  "Provide registration code": [
+    "Укажите код регистрации"
+  ],
   "Public SSH Key": [
     "Публичный ключ SSH"
   ],
@@ -1263,13 +1484,19 @@ export default {
     "Прочитать устройства zFCP"
   ],
   "Reboot": [
-    "Перезагрузка"
+    "Перезагрузить"
   ],
   "Recommended": [
     "Рекомендуется"
   ],
   "Register": [
     "Зарегистрировать"
+  ],
+  "Register using SUSE server": [
+    "Регистрация с помощью сервера SUSE"
+  ],
+  "Register using a custom registration server": [
+    "Регистрация с помощью пользовательского сервера регистрации"
   ],
   "Registration": [
     "Регистрация"
@@ -1280,23 +1507,26 @@ export default {
   "Registration code": [
     "Код регистрации"
   ],
+  "Registration server": [
+    "Сервер регистрации"
+  ],
   "ReiserFS": [
     "ReiserFS"
   ],
   "Reload": [
     "Обновить"
   ],
+  "Reload now": [
+    "Обновить"
+  ],
   "Reloading data, please wait...": [
     "Загрузка данных, подождите..."
   ],
+  "Reloading is required to get the latest data and avoid issues or data loss.": [
+    "Чтобы получить актуальную информацию и избежать проблем или потери данных, требуется обновить страницу."
+  ],
   "Remove": [
     "Удалить"
-  ],
-  "Remove max channel filter": [
-    "Удалить фильтр по максимальному каналу"
-  ],
-  "Remove min channel filter": [
-    "Удалить фильтр по минимальному каналу"
   ],
   "Remove the configuration for this disk": [
     "Удалить конфигурацию для этого диска"
@@ -1304,14 +1534,23 @@ export default {
   "Repository load failed": [
     "Не удалось загрузить репозиторий"
   ],
+  "Rescan devices": [
+    "Сканировать у-ва повторно"
+  ],
   "Reset to defaults": [
     "Сбросить по умолчанию"
   ],
   "Reset to the default configuration": [
     "Сброс настроек по умолчанию"
   ],
+  "Resource not found or lost": [
+    "Ресурс не найден или потерян"
+  ],
   "Result": [
     "Результат"
+  ],
+  "Reused partitions will not be shrunk": [
+    "Повторно используемые разделы не будут уменьшены"
   ],
   "Review and fix": [
     "Просмотреть и исправить"
@@ -1325,6 +1564,15 @@ export default {
   "Routes": [
     "Маршруты"
   ],
+  "Row actions": [
+    "Действия со строкой"
+  ],
+  "Row expansion": [
+    "Раскрытие строки"
+  ],
+  "Row selection": [
+    "Выбор строки"
+  ],
   "SD Card": [
     "SD-карта"
   ],
@@ -1337,8 +1585,8 @@ export default {
   "SSID": [
     "Имя сети"
   ],
-  "Same as minimum": [
-    "Аналогично минимальному"
+  "SUSE Customer Center (SCC)": [
+    "Центр обслуживания клиентов SUSE (SCC)"
   ],
   "Search": [
     "Поиск"
@@ -1355,6 +1603,9 @@ export default {
   "Select": [
     "Выбрать"
   ],
+  "Select a device to define partitions or to mount": [
+    "Выберите устройство для определения разделов или монтирования"
+  ],
   "Select a disk": [
     "Выберите диск"
   ],
@@ -1364,8 +1615,11 @@ export default {
   "Select a disk to create %s": [
     "Выберите диск для создания %s"
   ],
-  "Select a disk to define partitions": [
-    "Выберите диск для определения разделов"
+  "Select a disk to define partitions or to mount": [
+    "Выберите диск для определения разделов или монтирования"
+  ],
+  "Select a disk to format as %s": [
+    "Выберите диск для форматирования как %s"
   ],
   "Select a disk to install the system": [
     "Выберите диск для установки системы"
@@ -1376,11 +1630,17 @@ export default {
   "Select a solution to continue": [
     "Выберите решение, чтобы продолжить"
   ],
-  "Select another disk to define partitions": [
-    "Выберите другой диск для определения разделов"
+  "Select another device to define partitions or to mount": [
+    "Выберите другое устройство для определения разделов или монтирования"
+  ],
+  "Select another disk to define partitions or to mount": [
+    "Выберите другой диск для определения разделов или монтирования"
   ],
   "Select at least one disk.": [
     "Выберите хотя бы один диск."
+  ],
+  "Select devices to enable bulk actions.": [
+    "Выберите устройства для выполнения массовых действий."
   ],
   "Select or enter a mount point": [
     "Выберите или введите точку монтирования"
@@ -1400,8 +1660,8 @@ export default {
   "Select what to do with each partition.": [
     "Выберите, что делать с каждым разделом."
   ],
-  "Selected disk (cannot be changed)": [
-    "Выбранный диск (нельзя изменить)"
+  "Selected disk cannot be changed": [
+    "Выбранный диск не может быть изменен"
   ],
   "Selected patterns": [
     "Выбранные шаблоны"
@@ -1409,10 +1669,16 @@ export default {
   "Server IP": [
     "IP сервера"
   ],
-  "Set DIAG Off": [
+  "Server URL": [
+    "URL сервера"
+  ],
+  "Server options": [
+    "Опции серверов"
+  ],
+  "Set DIAG off": [
     "Отключить DIAG"
   ],
-  "Set DIAG On": [
+  "Set DIAG on": [
     "Включить DIAG"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
@@ -1420,6 +1686,9 @@ export default {
   ],
   "Setting up connection": [
     "Настройка подключения"
+  ],
+  "Settings": [
+    "Настройки"
   ],
   "Several partitions will be deleted": [
     "Несколько разделов будут удалены"
@@ -1456,14 +1725,11 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Ограничения на размер должны быть числами, за которыми могут следовать единицы измерения, например GiB или GB"
   ],
-  "Size options": [
-    "Опции размера"
+  "Size mode": [
+    "Режим размера"
   ],
-  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
-    "Размеры должны вводиться в виде чисел, за которыми следует единица измерения                 в виде GiB (степень 2) или GB (степень 10)."
-  ],
-  "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "Размеры должны быть введены в виде чисел, за которыми по желанию может следовать единица измерения."
+  "Size modes": [
+    "Режимы размера"
   ],
   "Skip to content": [
     "Перейти к содержимому"
@@ -1543,8 +1809,19 @@ export default {
   "The LVM group '%1$s' will remain at %2$s": [
     "Группа LVM „%1$s“ останется на диске %2$s"
   ],
+  "The configuration has been updated externally.": [
+    "Конфигурация была изменена извне."
+  ],
+  "The configuration must be adapted to address the following issue:": [
+    "Конфигурация должна быть адаптирована для решения следующей проблемы:",
+    "Конфигурация должна быть адаптирована для решения следующих проблем:",
+    "Конфигурация должна быть адаптирована для решения следующих проблем:"
+  ],
   "The configured LVM groups will remain at %s": [
     "Настроенные группы LVM останутся на диске %s"
+  ],
+  "The connection can be used by any available device.": [
+    "Это подключение может использоваться любым доступным устройством."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Это подключение будет использоваться только во время установки и не будет доступно в установленной системе."
@@ -1552,14 +1829,22 @@ export default {
   "The content may be deleted": [
     "Содержимое может быть удалено"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "Текущая конфигурация приведет к образованию раздела %1$s размером %2$s."
+  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
+    "Текущая конфигурация приведет к попытке создания раздела %1$s размером %2$s."
   ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "Текущая конфигурация приведет к образованию раздела %1$s размером не менее %2$s."
+  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
+    "Текущая конфигурация приведет к попытке создания раздела %1$s размером не менее %2$s."
   ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "Текущая конфигурация приведет к образованию раздела %1$s размером от %2$s до %3$s."
+  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
+    "Текущая конфигурация приведет к попытке создания раздела %1$s размером от %2$s до %3$s."
+  ],
+  "The current file system will be mounted at %s": [
+    "Текущая файловая система будет смонтирована по пути %s"
+  ],
+  "The current storage configuration has the following issue:": [
+    "Текущая конфигурация хранилища имеет следующую проблему:",
+    "Текущая конфигурация хранилища имеет следующие проблемы:",
+    "Текущая конфигурация хранилища имеет следующие проблемы:"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Данные сохраняются, но размер текущих разделов будет изменен по мере необходимости."
@@ -1569,6 +1854,15 @@ export default {
   ],
   "The device cannot be shrunk:": [
     "Устройство не может быть сокращено:"
+  ],
+  "The device will be formatted": [
+    "Устройство будет отформатировано"
+  ],
+  "The device will be formatted as %1$s and mounted at %2$s": [
+    "Устройство будет отформатировано как %1$s и смонтировано по пути %2$s"
+  ],
+  "The device will be mounted": [
+    "Устройство будет смонтировано"
   ],
   "The device will be mounted at %s.": [
     "Устройство будет смонтировано как %s."
@@ -1591,8 +1885,32 @@ export default {
   "The extension has been registered with key %s.": [
     "Расширение было зарегистрировано с ключом %s."
   ],
+  "The extension was registered without any registration code.": [
+    "Расширение было зарегистрировано без кода регистрации."
+  ],
+  "The final size can be bigger in order to fill the extra free space.": [
+    "Итоговый размер может быть больше, чтобы заполнить свободное пространство."
+  ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Последний шаг по настройке Доверенного платформенного модуля (TPM) на автоматическое открытие зашифрованных устройств будет выполнен во время первой загрузки новой системы. Чтобы это сработало, машина должна загрузиться непосредственно в новый загрузчик."
+  ],
+  "The following logical volume will be created": [
+    "Будет создан следующий логический том",
+    "Будут созданы следующие логические тома",
+    "Будут созданы следующие логические тома"
+  ],
+  "The following partition will be created.": [
+    "Будет создан следующий раздел.",
+    "Будут созданы следующие разделы.",
+    "Будут созданы следующие разделы."
+  ],
+  "The following partition will be mounted.": [
+    "Будет смонтирован следующий раздел.",
+    "Будут смонтированы следующие разделы.",
+    "Будут смонтированы следующие разделы."
+  ],
+  "The following partitions will be created or mounted": [
+    "Будут созданы или смонтированы следующие разделы"
   ],
   "The following software patterns are selected for installation:": [
     "Для установки выбраны следующие образцы программного обеспечения:"
@@ -1601,7 +1919,7 @@ export default {
     "Имя инициатора не может быть пустым"
   ],
   "The installation on your machine is complete.": [
-    "Установка на ваш компьютер завершена."
+    "Установка на устройство завершена."
   ],
   "The installation will take": [
     "Установка займёт"
@@ -1615,14 +1933,10 @@ export default {
   "The installer requires [root] user privileges.": [
     "Программа установки требует привилегий пользователя [root]."
   ],
-  "The logical volume can grow to use all the contiguous free space": [
-    "Логический том может расти и использовать всё смежное свободное пространство"
-  ],
-  "The logical volume can grow until a given limit size": [
-    "Логический том может расти до заданного предельного размера"
-  ],
-  "The logical volume is created exactly with the given size": [
-    "Логический том создается точно с заданным размером"
+  "The logical volume will also be deleted": [
+    "Логический том также будет удален",
+    "Логические тома также будут удалены",
+    "Логические тома также будут удалены"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Максимальное значение должно быть числом, за которым следует единица измерения, например GiB или GB"
@@ -1639,50 +1953,53 @@ export default {
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "Минимальное значение должно быть числом, за которым может следовать единица измерения, например GiB или GB"
   ],
+  "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
+    "Модальный селектор предлагает упрощенный интерфейс, разработанный для быстрого и прямого использования, не перегружая пользователя."
+  ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "Необходимые физические тома LVM будут добавлены в качестве разделов на выбранных дисках, исходя из размеров логических томов. Если вы выберете несколько дисков, физические тома могут быть распределены по нескольким дискам."
   ],
-  "The partition can grow to use all the contiguous free space": [
-    "Раздел может увеличиваться и использовать все свободное пространство"
-  ],
-  "The partition can grow until a given limit size": [
-    "Раздел может расти до заданного предельного размера"
-  ],
-  "The partition is created exactly with the given size": [
-    "Раздел создается точно с заданным размером"
+  "The password is weak": [
+    "Слабый пароль"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Пароль не понадобится для загрузки и доступа к данным, если TPM может проверить целостность системы. Запечатывание TPM требует непосредственной загрузки новой системы при первом запуске."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "Диапазон размеров для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе и наличия отдельной файловой системы для %2$s."
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
+    "Размер для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе и наличия отдельной файловой системы для %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "Диапазон размеров для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе и наличия отдельных файловых систем для %2$s."
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
+    "Размер для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе и наличия отдельных файловых систем для %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Диапазон размеров для %1$s будет динамически изменяться в зависимости от объема оперативной памяти в системе, использования моментальных снимков Btrfs и наличия отдельной файловой системы для %2$s."
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "Размер для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе, использования моментальных снимков Btrfs и наличия отдельной файловой системы для %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Диапазон размеров для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе, использования моментальных снимков Btrfs и наличия отдельных файловых систем для %2$s."
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "Размер для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе, использования моментальных снимков Btrfs и наличия отдельных файловых систем для %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "Диапазон размеров для %1$s будет динамически корректироваться в зависимости от наличия отдельной файловой системы для %2$s."
+  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
+    "Размер для %1$s будет динамически корректироваться в зависимости от наличия отдельной файловой системы для %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "Диапазон размеров для %1$s будет динамически корректироваться в зависимости от наличия отдельных файловых систем для %2$s."
+  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
+    "Размер для %1$s будет динамически корректироваться в зависимости от наличия отдельных файловых систем для %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Диапазон размеров для %1$s будет динамически корректироваться в зависимости от использования моментальных снимков Btrfs и наличия отдельной файловой системы для %2$s."
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "Размер для %1$s будет динамически корректироваться в зависимости от использования моментальных снимков Btrfs и наличия отдельной файловой системы для %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Диапазон размеров для %1$s будет динамически корректироваться в зависимости от использования моментальных снимков Btrfs и наличия отдельных файловых систем для %2$s."
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "Размер для %1$s будет динамически корректироваться в зависимости от использования моментальных снимков Btrfs и наличия отдельных файловых систем для %2$s."
   ],
-  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "Диапазон размеров для %s будет динамически изменяться в зависимости от объема оперативной памяти в системе и использования моментальных снимков Btrfs."
+  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
+    "Размер для %s будет динамически корректироваться в зависимости от объема оперативной памяти в системе и использования моментальных снимков Btrfs."
   ],
-  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "Диапазон размеров для %s будет динамически корректироваться в зависимости от использования моментальных снимков Btrfs."
+  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
+    "Размер для %s будет динамически корректироваться в зависимости от использования моментальных снимков Btrfs."
+  ],
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
+    "Размер настроен как диапазон между %s и %s, но этот интерфейс не может обрабатывать диапазоны с заданным максимальным размером."
+  ],
+  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
+    "Размер должен быть числом, за которым следует единица измерения в виде GiB (степень 2) или GB (степень 10)."
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "Конфигурация хранилища правильна (см. результат ниже), но использует элементы, не поддерживаемые данным интерфейсом."
@@ -1696,6 +2013,9 @@ export default {
   "The system will use %s as its default language.": [
     "Система будет использовать %s в качестве языка по умолчанию."
   ],
+  "The whole device will be used for %s": [
+    "Всё устройство будет использовано для %s"
+  ],
   "The zFCP disk was not activated.": [
     "Диск zFCP не был активирован."
   ],
@@ -1708,6 +2028,16 @@ export default {
   "There are not usable partitions": [
     "Нет пригодных для использования разделов"
   ],
+  "There is %d destructive action planned": [
+    "Планируется %d разрушительное действие",
+    "Планируется %d разрушительных действия",
+    "Планируется %d разрушительных действий"
+  ],
+  "There is %d destructive action planned affecting %s": [
+    "Планируется %d разрушительное действие, затрагивающие %s",
+    "Планируется %d разрушительных действия, затрагивающих %s",
+    "Планируется %d разрушительных действий, затрагивающих %s"
+  ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Это наиболее актуальные настройки установки. Более подробные сведения приведены в разделах меню."
   ],
@@ -1717,29 +2047,29 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Это настройки для устанавливаемого продукта. Язык программы установки можно изменить через [панель настроек], доступную на верхней панели."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Это действие может уничтожить все данные, хранящиеся на перечисленных ниже устройствах. Пожалуйста, подтвердите, что Вы действительно хотите продолжить."
+  "This action could destroy any data stored on the device.": [
+    "Это действие может уничтожить все данные, хранящиеся на этом устройстве."
   ],
-  "This disk will contain any partition needed for booting": [
-    "Этот диск будет содержать все разделы, необходимые для загрузки"
-  ],
-  "This disk will contain the LVM group '%s'": [
-    "Этот диск будет содержать группу LVM '%s'"
-  ],
-  "This disk will contain the LVM group '%s' and any partition needed to boot": [
-    "Этот диск будет содержать группу LVM „%s“ и все разделы, необходимые для загрузки"
-  ],
-  "This disk will contain the configured LVM groups": [
-    "Этот диск будет содержать настроенные группы LVM"
-  ],
-  "This disk will contain the configured LVM groups and any partition needed to boot": [
-    "Этот диск будет содержать настроенные группы LVM и все разделы, необходимые для загрузки"
+  "This action could destroy any data stored on the devices listed below.": [
+    "Это действие может уничтожить все данные, хранящиеся на перечисленных ниже устройствах."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Это расширение недоступно на сервере. Попросите администратора сервера \"отзеркалить\" расширение."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "Это имя узла является динамическим и может измениться после перезагрузки или обновления сети, как настроено администратором локальной сети."
+  ],
+  "This license is not available in %s.": [
+    "Лицензия недоступна на этом языке: %s."
+  ],
+  "This may take a moment while updates complete.": [
+    "Это может занять некоторое время, пока обновление будет завершено."
+  ],
+  "This message will close automatically when everything is done.": [
+    "Это сообщение закроется автоматически, когда все будет готово."
+  ],
+  "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
+    "Этот подход обеспечивает баланс между ясностью и эффективностью: модальное окно сохраняет легкость для простого выбора, в то время как полноэкранный режим поддерживает более глубокое изучение и сложные действия, специально для пользователей с большим количеством устройств."
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "Данный продукт не позволяет выбирать шаблоны программного обеспечения во время установки. Однако Вы можете добавить дополнительное программное обеспечение после завершения установки."
@@ -1750,8 +2080,11 @@ export default {
   "This uses existing partitions at the disk": [
     "При этом используются существующие разделы на диске"
   ],
+  "This uses the existing file system at the disk": [
+    "При этом используется существующая файловая система на диске"
+  ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "Это повлияет только на интерфейс установщика, не на устанавливаемый продукт. Изменить параметры локализации продукта вы сможете позже на странице настроек локализации."
+    "Это повлияет только на интерфейс программы установки, не на устанавливаемый продукт. Настроить локализацию продукта Вы сможете позже в разделе «Локализация»."
   ],
   "TiB": [
     "ТиБ"
@@ -1780,8 +2113,14 @@ export default {
   "Unable to modify the settings": [
     "Невозможно изменить настройки"
   ],
+  "Unbound": [
+    "Без привязки"
+  ],
   "Unselect": [
     "Отменить выбор"
+  ],
+  "Unselect or activate them and try it again.": [
+    "Отмените выбор или активируйте их, а затем попробуйте снова."
   ],
   "Unsupported AutoYaST elements": [
     "Неподдерживаемые элементы AutoYaST"
@@ -1791,6 +2130,9 @@ export default {
   ],
   "Up to %s can be recovered by shrinking the device.": [
     "До %s можно освободить, сократив устройство."
+  ],
+  "Update available disks and activate crypt devices": [
+    "Обновление доступных дисков и активация криптоустройств"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Обновление имени узла сейчас или позже не приведет к изменению текущего зарегистрированного имени узла."
@@ -1807,41 +2149,41 @@ export default {
   "Use": [
     "Использовать"
   ],
-  "Use %s": [
-    "Использовать %s"
+  "Use RAID %s": [
+    "Использовать RAID-массив %s"
   ],
-  "Use %s for LVM and additional partitions": [
-    "Использовать %s для LVM и дополнительных разделов"
+  "Use RAID %s for LVM and additional partitions": [
+    "Исп. RAID-массив %s для LVM и дополнительных разделов"
   ],
-  "Use %s for LVM, additional partitions and booting": [
-    "Использовать %s для LVM, дополнительных разделов и загрузки"
+  "Use RAID %s for LVM, additional partitions and booting": [
+    "Исп. RAID-массив %s для LVM, дополнительных разделов и загрузки"
   ],
-  "Use %s for additional partitions": [
-    "Использовать %s для дополнительных разделов"
+  "Use RAID %s for additional partitions": [
+    "Исп. RAID-массив %s для дополнительных разделов"
   ],
-  "Use %s for additional partitions and booting": [
-    "Использовать %s для дополнительных разделов и загрузки"
+  "Use RAID %s for additional partitions and booting": [
+    "Исп. RAID-массив %s для дополнительных разделов и загрузки"
   ],
-  "Use %s to configure boot partitions": [
-    "Использовать %s для настройки загрузочных разделов"
+  "Use RAID %s to configure boot partitions": [
+    "Исп. RAID-массив %s для настройки загрузочных разделов"
   ],
-  "Use %s to host LVM": [
-    "Использовать %s для размещения LVM"
+  "Use RAID %s to host LVM": [
+    "Исп. RAID-массив %s для размещения LVM"
   ],
-  "Use %s to host LVM and boot": [
-    "Использовать %s для размещения LVM и загрузки"
+  "Use RAID %s to host LVM and boot": [
+    "Исп. RAID-массив %s для размещения LVM и загрузки"
   ],
-  "Use %s to install": [
-    "Использовать %s для установки"
+  "Use RAID %s to install": [
+    "Исп. RAID-массив %s для установки"
   ],
-  "Use %s to install and boot": [
-    "Использовать %s для установки и загрузки"
+  "Use RAID %s to install and boot": [
+    "Исп. RAID-массив %s для установки и загрузки"
   ],
-  "Use %s to install and host LVM": [
-    "Использовать %s для установки и размещения LVM"
+  "Use RAID %s to install and host LVM": [
+    "Исп. RAID-массив %s для установки и размещения LVM"
   ],
-  "Use %s to install, host LVM and boot": [
-    "Использовать %s для установки, размещения LVM и загрузки"
+  "Use RAID %s to install, host LVM and boot": [
+    "Исп. RAID-массив %s для установки, размещения LVM и загрузки"
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
     "Используйте приведенные ниже действия для настройки устройств или нажмите %s, чтобы начать с нуля с конфигурацией по умолчанию."
@@ -1849,11 +2191,47 @@ export default {
   "Use available space": [
     "Использовать свободное пространство"
   ],
+  "Use disk %s": [
+    "Использовать диск %s"
+  ],
+  "Use disk %s for LVM and additional partitions": [
+    "Исп. диск %s для LVM и дополнительных разделов"
+  ],
+  "Use disk %s for LVM, additional partitions and booting": [
+    "Исп. диск %s для LVM, дополнительных разделов и загрузки"
+  ],
+  "Use disk %s for additional partitions": [
+    "Исп. диск %s для дополнительных разделов"
+  ],
+  "Use disk %s for additional partitions and booting": [
+    "Исп. диск %s для дополнительных разделов и загрузки"
+  ],
+  "Use disk %s to configure boot partitions": [
+    "Исп. диск %s для настройки загрузочных разделов"
+  ],
+  "Use disk %s to host LVM": [
+    "Исп. диск %s для размещения LVM"
+  ],
+  "Use disk %s to host LVM and boot": [
+    "Исп. диск %s для размещения LVM и загрузки"
+  ],
+  "Use disk %s to install": [
+    "Исп. диск %s для установки"
+  ],
+  "Use disk %s to install and boot": [
+    "Исп. диск %s для установки и загрузки"
+  ],
+  "Use disk %s to install and host LVM": [
+    "Исп. диск %s для установки и размещения LVM"
+  ],
+  "Use disk %s to install, host LVM and boot": [
+    "Исп. диск %s для установки, размещения LVM и загрузки"
+  ],
   "Use for installation only": [
-    "Использовать только при установке"
+    "Исп. только при установке"
   ],
   "Use for the selected product too": [
-    "Использовать также для выбранного продукта"
+    "Исп. также для выбранного продукта"
   ],
   "Use password": [
     "Использовать пароль"
@@ -1867,11 +2245,17 @@ export default {
   "Use suggested username": [
     "Используйте предложенное имя пользователя"
   ],
+  "Use the RAID without partitions": [
+    "Использовать RAID-массив без разделов"
+  ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     "Используйте Доверенный платформенный модуль (TPM) для автоматического дешифрования при каждой загрузке"
   ],
+  "Use the disk without partitions": [
+    "Использовать диск без разделов"
+  ],
   "Use these same settings for the selected product": [
-    "Использовать эти же настройки для выбранного продукта"
+    "Исп. эти же настройки для выбранного продукта"
   ],
   "Used space": [
     "Используемое"
@@ -1886,7 +2270,7 @@ export default {
     "Выпадающий список с предложением имени пользователя"
   ],
   "Using [%s] keyboard": [
-    "Раскладка клавиатуры [%s]"
+    "Раскладка клавиатуры: [%s]"
   ],
   "Using a hashed password.": [
     "Используя хэшированный пароль."
@@ -1966,6 +2350,18 @@ export default {
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] включён"
   ],
+  "[FIXME]": [
+    "[FIXME]"
+  ],
+  "active": [
+    "активно"
+  ],
+  "all": [
+    "все"
+  ],
+  "approx. %s": [
+    "прибл. %s"
+  ],
   "at least %s": [
     "не менее %s"
   ],
@@ -1984,11 +2380,23 @@ export default {
   "logical volume": [
     "логический том"
   ],
+  "no": [
+    "нет"
+  ],
+  "offline": [
+    "офлайн"
+  ],
   "partition": [
     "раздел"
   ],
+  "read_only": [
+    "только_чтение"
+  ],
   "reset to defaults": [
     "сброс настроек по умолчанию"
+  ],
+  "yes": [
+    "да"
   ],
   "zFCP": [
     "zFCP"

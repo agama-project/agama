@@ -23,7 +23,6 @@ require "dbus"
 require "suse/connect"
 require "agama/dbus/base_object"
 require "agama/dbus/interfaces/issues"
-require "agama/dbus/clients/locale"
 require "agama/errors"
 require "agama/registration"
 
@@ -212,7 +211,7 @@ module Agama
           if !backend.product
             [1, "Product not selected yet"]
           # report success and do nothing when already registered with the same code
-          elsif backend.registration.reg_code == reg_code
+          elsif backend.registration.registered && backend.registration.reg_code == reg_code
             [0, ""]
           elsif backend.registration.registered
             [2, "Product already registered"]
@@ -387,6 +386,8 @@ module Agama
           connect_result_from_error(e, first_error_code + 8)
         rescue Agama::Software::ServiceError => e
           connect_result_from_error(e, first_error_code + 9)
+        rescue StandardError => e
+          connect_result_from_error(e, first_error_code + 10)
         end
 
         # Generates a result from a given error.

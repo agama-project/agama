@@ -20,31 +20,26 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { useNavigate, generatePath } from "react-router-dom";
-import { sprintf } from "sprintf-js";
-import { _, n_, formatList } from "~/i18n";
+import React, { useId } from "react";
+import { Divider, Flex, Title } from "@patternfly/react-core";
+import { useNavigate } from "react-router-dom";
+import Link from "~/components/core/Link";
+import Text from "~/components/core/Text";
+import MenuButton from "~/components/core/MenuButton";
+import MenuHeader from "~/components/core/MenuHeader";
+import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
+import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
+import Icon from "~/components/layout/Icon";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { model } from "~/types/storage";
 import { baseName, formattedPath } from "~/components/storage/utils";
 import { contentDescription } from "~/components/storage/utils/volume-group";
 import { useDeleteVolumeGroup } from "~/hooks/storage/volume-group";
 import { useDeleteLogicalVolume } from "~/hooks/storage/logical-volume";
-import DeviceMenu from "~/components/storage/DeviceMenu";
-import DeviceHeader from "~/components/storage/DeviceHeader";
-import MountPathMenuItem from "~/components/storage/MountPathMenuItem";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
-  Divider,
-  Flex,
-  MenuItem,
-  MenuList,
-} from "@patternfly/react-core";
-
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import { generateEncodedPath } from "~/utils";
+import { isEmpty } from "radashi";
+import { sprintf } from "sprintf-js";
+import { _, n_, formatList } from "~/i18n";
 
 const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
   const deleteVolumeGroup = useDeleteVolumeGroup();
@@ -77,16 +72,15 @@ const DeleteVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
   }
 
   return (
-    <MenuItem
+    <MenuButton.Item
+      isDanger
       key="delete-volume-group"
       itemId="delete-volume-group"
-      isDanger
       description={description}
-      role="menuitem"
       onClick={() => deleteVolumeGroup(vg.vgName, convert)}
     >
-      <span>{_("Delete volume group")}</span>
-    </MenuItem>
+      {_("Delete volume group")}
+    </MenuButton.Item>
   );
 };
 
@@ -94,26 +88,32 @@ const EditVgOption = ({ vg }: { vg: model.VolumeGroup }) => {
   const navigate = useNavigate();
 
   return (
-    <MenuItem
+    <MenuButton.Item
       key="edit-volume-group"
       itemId="edit-volume-group"
       description={_("Modify settings and physical volumes")}
       role="menuitem"
-      onClick={() => navigate(generatePath(PATHS.volumeGroup.edit, { id: vg.vgName }))}
+      onClick={() => navigate(generateEncodedPath(PATHS.volumeGroup.edit, { id: vg.vgName }))}
     >
-      <span>{_("Edit volume group")}</span>
-    </MenuItem>
+      {_("Edit volume group")}
+    </MenuButton.Item>
   );
 };
 
 const VgMenu = ({ vg }: { vg: model.VolumeGroup }) => {
   return (
-    <DeviceMenu title={<b aria-hidden>{vg.vgName}</b>}>
-      <MenuList>
-        <EditVgOption vg={vg} />
-        <DeleteVgOption vg={vg} />
-      </MenuList>
-    </DeviceMenu>
+    <MenuButton
+      menuProps={{
+        popperProps: {
+          position: "end",
+        },
+      }}
+      toggleProps={{ variant: "plain" }}
+      items={[<EditVgOption key="edit" vg={vg} />, <DeleteVgOption key="delete" vg={vg} />]}
+    >
+      <Text className="action-text">{_("Change")}</Text>{" "}
+      <Icon name="more_horiz" className="agm-strong-icon" />
+    </MenuButton>
   );
 };
 
@@ -122,53 +122,82 @@ const VgHeader = ({ vg }: { vg: model.VolumeGroup }) => {
     ? _("Create LVM volume group %s")
     : _("Empty LVM volume group %s");
 
-  return (
-    <DeviceHeader title={title}>
-      <VgMenu vg={vg} />
-    </DeviceHeader>
-  );
+  return <Title headingLevel="h4">{sprintf(title, vg.vgName)}</Title>;
 };
 
 const LogicalVolumes = ({ vg }: { vg: model.VolumeGroup }) => {
   const navigate = useNavigate();
   const deleteLogicalVolume = useDeleteLogicalVolume();
+  const ariaLabelId = useId();
+  const toggleTextId = useId();
+  const newLvPath = generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: vg.vgName });
+  const menuAriaLabel = sprintf(_("Logical volumes for %s"), vg.vgName);
 
-  const editPath = (lv: model.LogicalVolume): string => {
-    return generatePath(PATHS.volumeGroup.logicalVolume.edit, {
-      id: vg.vgName,
-      logicalVolumeId: encodeURIComponent(lv.mountPath),
-    });
-  };
-  const deleteLv = (lv: model.LogicalVolume) => deleteLogicalVolume(vg.vgName, lv.mountPath);
+  if (isEmpty(vg.logicalVolumes)) {
+    return (
+      <Link to={newLvPath} variant="link" isInline>
+        {_("Add logical volume")}
+      </Link>
+    );
+  }
+
+  // FIXME: The markup is strange just for consistency with PartitionsMenu. See FIXME there.
+  // The markup should be fixed in both places (eg. to use MenuGroup) in a consistent way.
+
+  const description = n_(
+    "The following logical volume will be created",
+    "The following logical volumes will be created",
+    vg.logicalVolumes.length,
+  );
 
   return (
-    <DeviceMenu
-      title={<span aria-hidden>{contentDescription(vg)}</span>}
-      ariaLabel={_("Logical volumes")}
-    >
-      <MenuList>
-        {vg.logicalVolumes.map((lv) => {
-          return (
-            <MountPathMenuItem
-              key={lv.mountPath}
-              device={lv}
-              editPath={editPath(lv)}
-              deleteFn={() => deleteLv(lv)}
-            />
-          );
-        })}
-        {vg.logicalVolumes.length > 0 && <Divider component="li" />}
-        <MenuItem
-          key="add-logical-volume"
-          itemId="add-logical-volume"
-          onClick={() =>
-            navigate(generatePath(PATHS.volumeGroup.logicalVolume.add, { id: vg.vgName }))
-          }
-        >
-          <span>{_("Add logical volume")}</span>
-        </MenuItem>
-      </MenuList>
-    </DeviceMenu>
+    <Flex gap={{ default: "gapXs" }}>
+      <Text isBold aria-hidden>
+        {_("Details")}
+      </Text>
+      <Text id={ariaLabelId} srOnly>
+        {menuAriaLabel}
+      </Text>
+      <MenuButton
+        menuProps={{
+          "aria-labelledby": ariaLabelId,
+        }}
+        toggleProps={{
+          variant: "plainText",
+          "aria-labelledby": `${ariaLabelId} ${toggleTextId}`,
+        }}
+        items={[
+          <MenuHeader key="head" description={description} />,
+          <Divider key="divider" component="li" />,
+        ]
+          .concat(
+            vg.logicalVolumes.map((lv) => {
+              return (
+                <MountPathMenuItem
+                  key={lv.mountPath}
+                  device={lv}
+                  editPath={generateEncodedPath(PATHS.volumeGroup.logicalVolume.edit, {
+                    id: vg.vgName,
+                    logicalVolumeId: lv.mountPath,
+                  })}
+                  deleteFn={() => deleteLogicalVolume(vg.vgName, lv.mountPath)}
+                />
+              );
+            }),
+          )
+          .concat(
+            <MenuButton.Item
+              key="add-logical-volume"
+              itemId="add-logical-volume"
+              onClick={() => navigate(newLvPath)}
+            >
+              {_("Add logical volume")}
+            </MenuButton.Item>,
+          )}
+      >
+        <Text id={toggleTextId}>{contentDescription(vg)}</Text>
+      </MenuButton>
+    </Flex>
   );
 };
 
@@ -176,17 +205,10 @@ export type VolumeGroupEditorProps = { vg: model.VolumeGroup };
 
 export default function VolumeGroupEditor({ vg }: VolumeGroupEditorProps) {
   return (
-    <Card isCompact>
-      <CardHeader>
-        <CardTitle>
-          <VgHeader vg={vg} />
-        </CardTitle>
-      </CardHeader>
-      <CardBody className={spacingStyles.plLg}>
-        <Flex direction={{ default: "column" }}>
-          <LogicalVolumes vg={vg} />
-        </Flex>
-      </CardBody>
-    </Card>
+    <ConfigEditorItem
+      header={<VgHeader vg={vg} />}
+      content={<LogicalVolumes vg={vg} />}
+      actions={<VgMenu vg={vg} />}
+    />
   );
 }

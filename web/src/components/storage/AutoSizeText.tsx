@@ -21,6 +21,7 @@
  */
 
 import React from "react";
+import { Content } from "@patternfly/react-core";
 import { SubtleContent } from "~/components/core/";
 import { deviceSize } from "~/components/storage/utils";
 import { _, formatList } from "~/i18n";
@@ -42,15 +43,15 @@ function AutoSizeTextFallback({ size, deviceType }: AutoSizeTextFallbackProps): 
   if (size.max) {
     if (size.max === size.min) {
       return sprintf(
-        // TRANSLATORS: %1s$ is a size with units (eg. 3 GiB) and %1$s is a device type (eg. partition)
-        _("A generic size of %s will be used for the new %2$s"),
+        // TRANSLATORS: %1$s is a size with units (eg. 3 GiB) and %2$s is a device type (eg. partition)
+        _("A generic size of %1$s will be used for the new %2$s"),
         deviceSize(size.min),
         deviceTypeLabel(deviceType),
       );
     }
 
     return sprintf(
-      // TRANSLATORS: %1s$ and %2s$ are sizes with units (eg. 3 GiB) and %3$s is a device type (eg. partition)
+      // TRANSLATORS: %1$s and %2$s are sizes with units (eg. 3 GiB) and %3$s is a device type (eg. partition)
       _("A generic size range between %1$s and %2$s will be used for the new %3$s"),
       deviceSize(size.min),
       deviceSize(size.max),
@@ -59,7 +60,7 @@ function AutoSizeTextFallback({ size, deviceType }: AutoSizeTextFallbackProps): 
   }
 
   return sprintf(
-    // TRANSLATORS: %1s$ is a size with units (eg. 3 GiB) and %1$s is a device type (eg. partition)
+    // TRANSLATORS: %1$s is a size with units (eg. 3 GiB) and %1$s is a device type (eg. partition)
     _("A generic minimum size of %1$s will be used for the new %2$s"),
     deviceSize(size.min),
     deviceTypeLabel(deviceType),
@@ -77,7 +78,7 @@ function AutoSizeTextFixed({ path, size, deviceType }: AutoSizeTextFixedProps): 
     if (size.max === size.min) {
       return sprintf(
         // TRANSLATORS: %1$s is a device type (eg. partition), %2$s is a size with units (10 GiB) and %3$s is a mount path (/home)
-        _("A %1$s of %2$s will be created for %3$s"),
+        _("A %1$s of %2$s will be created for %3$s if possible"),
         deviceTypeLabel(deviceType),
         deviceSize(size.min),
         path,
@@ -86,7 +87,7 @@ function AutoSizeTextFixed({ path, size, deviceType }: AutoSizeTextFixedProps): 
 
     return sprintf(
       // TRANSLATORS: %1$s is a device type (eg. partition), %2$s and %3$s are sizes with units (10 GiB), and %4$s is a mount path (/home)
-      _("A %1$s with a size between %2$s and %3$s will be created for %4$s"),
+      _("A %1$s with a size between %2$s and %3$s will be created for %4$s if possible"),
       deviceTypeLabel(deviceType),
       deviceSize(size.min),
       deviceSize(size.max),
@@ -96,7 +97,7 @@ function AutoSizeTextFixed({ path, size, deviceType }: AutoSizeTextFixedProps): 
 
   return sprintf(
     // TRANSLATORS: %1$s is a device type (eg. partition), %2$s is a size with units (10 GiB) and %3$s is a mount path (/home)
-    _("A %1$s of at least %2$s will be created for %3$s"),
+    _("A %1$s of at least %2$s will be created for %3$s if possible"),
     deviceTypeLabel(deviceType),
     deviceSize(size.min),
     path,
@@ -114,7 +115,7 @@ function AutoSizeTextRam({ path, size, deviceType }: AutoSizeTextRamProps): Reac
     if (size.max === size.min) {
       return sprintf(
         // TRANSLATORS: %1$s is a device type (eg. partition), %2$s is a size with units (10 GiB) and %3$s is a mount path (/home)
-        _("Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s"),
+        _("Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s"),
         deviceTypeLabel(deviceType),
         deviceSize(size.min),
         path,
@@ -124,7 +125,7 @@ function AutoSizeTextRam({ path, size, deviceType }: AutoSizeTextRamProps): Reac
     return sprintf(
       // TRANSLATORS: %1$s is a device type (eg. partition), %2$s and %3$s are sizes with units (10 GiB), and %4$s is a mount path (/home)
       _(
-        "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s",
+        "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s",
       ),
       deviceTypeLabel(deviceType),
       deviceSize(size.min),
@@ -135,7 +136,7 @@ function AutoSizeTextRam({ path, size, deviceType }: AutoSizeTextRamProps): Reac
 
   return sprintf(
     // TRANSLATORS: %1$s is a device type (eg. partition), %2$s is a size with units (10 GiB) and %3$s is a mount path (/home)
-    _("Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s"),
+    _("Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s"),
     deviceTypeLabel(deviceType),
     deviceSize(size.min),
     path,
@@ -164,7 +165,7 @@ function AutoSizeTextDynamic({
         return sprintf(
           // TRANSLATORS: %1$s is a mount point (eg. /) and %2$s is another one (eg. /home)
           _(
-            "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.",
+            "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.",
           ),
           path,
           otherPaths[0],
@@ -175,7 +176,7 @@ function AutoSizeTextDynamic({
         // TRANSLATORS: %1$s is a mount point and %2$s is a list of other paths
         return sprintf(
           _(
-            "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.",
+            "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.",
           ),
           path,
           formatList(otherPaths),
@@ -185,7 +186,7 @@ function AutoSizeTextDynamic({
       return sprintf(
         // TRANSLATORS: %s is a mount point (eg. /)
         _(
-          "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.",
+          "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.",
         ),
         path,
       );
@@ -196,7 +197,7 @@ function AutoSizeTextDynamic({
         return sprintf(
           // TRANSLATORS: %1$s is a mount point (eg. /) and %2$s is another one (eg. /home)
           _(
-            "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.",
+            "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.",
           ),
           path,
           otherPaths[0],
@@ -206,7 +207,7 @@ function AutoSizeTextDynamic({
       return sprintf(
         // TRANSLATORS: %1$s is a mount point and %2$s is a list of other paths
         _(
-          "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.",
+          "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.",
         ),
         path,
         formatList(otherPaths),
@@ -218,7 +219,7 @@ function AutoSizeTextDynamic({
         return sprintf(
           // TRANSLATORS: %1$s is a mount point (eg. /) and %2$s is another one (eg. /home)
           _(
-            "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.",
+            "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.",
           ),
           path,
           otherPaths[0],
@@ -229,7 +230,7 @@ function AutoSizeTextDynamic({
         // TRANSLATORS: %1$s is a mount point and %2$s is a list of other paths
         return sprintf(
           _(
-            "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.",
+            "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.",
           ),
           path,
           formatList(otherPaths),
@@ -238,9 +239,7 @@ function AutoSizeTextDynamic({
 
       return sprintf(
         // TRANSLATORS: %s is a mount point (eg. /)
-        _(
-          "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.",
-        ),
+        _("The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots."),
         path,
       );
     }
@@ -249,7 +248,7 @@ function AutoSizeTextDynamic({
       return sprintf(
         // TRANSLATORS: %1$s is a mount point (eg. /) and %2$s is another one (eg. /home)
         _(
-          "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.",
+          "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.",
         ),
         path,
         otherPaths[0],
@@ -259,7 +258,7 @@ function AutoSizeTextDynamic({
     return sprintf(
       // TRANSLATORS: %1$s is a mount point and %2$s is a list of other paths
       _(
-        "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.",
+        "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.",
       ),
       path,
       formatList(otherPaths),
@@ -270,8 +269,8 @@ function AutoSizeTextDynamic({
     if (size.max) {
       if (size.max === size.min) {
         return sprintf(
-          // TRANSLATORS: %1$s is a device type (eg. partition) and %2s is a size with units (eg. 10 GiB)
-          _("The current configuration will result in a %1$s of %2$s."),
+          // TRANSLATORS: %1$s is a device type (eg. partition) and %2$s is a size with units (eg. 10 GiB)
+          _("The current configuration will result in an attempt to create a %1$s of %2$s."),
           deviceTypeLabel(deviceType),
           deviceSize(size.min),
         );
@@ -279,7 +278,9 @@ function AutoSizeTextDynamic({
 
       return sprintf(
         // TRANSLATORS: %1$s is a device type (eg. partition) %2$s is a min size, %3$s is the max size
-        _("The current configuration will result in a %1$s with a size between %2$s and %3$s."),
+        _(
+          "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.",
+        ),
         deviceTypeLabel(deviceType),
         deviceSize(size.min),
         deviceSize(size.max),
@@ -288,7 +289,7 @@ function AutoSizeTextDynamic({
 
     return sprintf(
       // TRANSLATORS: %1$s is a device type (eg. partition) and %2$s is a size with units (eg. 10 GiB)
-      _("The current configuration will result in a %1$s of at least %2$s."),
+      _("The current configuration will result in an attempt to create a %1$s of at least %2$s."),
       deviceTypeLabel(deviceType),
       deviceSize(size.min),
     );
@@ -296,8 +297,12 @@ function AutoSizeTextDynamic({
 
   return (
     <>
-      <SubtleContent component="p">{introText(volume)}</SubtleContent>
-      <SubtleContent component="p">{limitsText(size)}</SubtleContent>
+      <Content component="p">
+        <SubtleContent>{introText(volume)}</SubtleContent>
+      </Content>
+      <Content component="p">
+        <SubtleContent>{limitsText(size)}</SubtleContent>
+      </Content>
     </>
   );
 }

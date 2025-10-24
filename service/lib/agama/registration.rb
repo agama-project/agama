@@ -53,6 +53,9 @@ module Agama
       SUSE::Connect::YaST::GLOBAL_CREDENTIALS_FILE)
     private_constant :GLOBAL_CREDENTIALS_PATH
 
+    DEFAULT_REGISTRATION_URL = "https://scc.suse.com"
+    private_constant :DEFAULT_REGISTRATION_URL
+
     # Code used for registering the product.
     #
     # @return [boolean] true if base product is already registered
@@ -120,12 +123,12 @@ module Agama
         @logger.info "Activating product #{base_target_product.inspect}"
         service = SUSE::Connect::YaST.activate_product(base_target_product, activate_params, email)
         process_service(service)
-
         @registered = true
-        @reg_code = code
-        @email = email
-        run_on_change_callbacks
       end
+    ensure
+      @reg_code = code
+      @email = email
+      run_on_change_callbacks
     end
 
     def register_addon(name, version, code)
@@ -319,7 +322,7 @@ module Agama
     def connect_params(params = {})
       default_params = {}
       default_params[:language] = http_language if http_language
-      default_params[:url] = registration_url if registration_url
+      default_params[:url] = registration_url || DEFAULT_REGISTRATION_URL
       default_params[:verify_callback] = verify_callback
       default_params.merge(params)
     end
@@ -410,7 +413,7 @@ module Agama
     # @return [Agama::Question]
     def certificate_question(certificate)
       question_data = {
-        "url"                => registration_url || "https://scc.suse.com",
+        "url"                => registration_url || DEFAULT_REGISTRATION_URL,
         "issuer_name"        => certificate.issuer_name,
         "issue_date"         => certificate.issued_on,
         "expiration_date"    => certificate.expires_on,

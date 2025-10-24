@@ -21,11 +21,11 @@
 
 require "dbus"
 require "agama/dbus/bus"
-require "agama/dbus/clients/locale"
 require "agama/dbus/service_status"
 require "agama/dbus/storage/iscsi"
 require "agama/dbus/storage/manager"
 require "agama/storage"
+require "y2storage/inhibitors"
 
 module Agama
   module DBus
@@ -51,8 +51,11 @@ module Agama
         Bus.current
       end
 
-      # Starts storage service. It does more then just #export method.
+      # Starts storage service.
       def start
+        # Inhibits various storage subsystem (udisk, systemd mounts, raid auto-assembly) that
+        # interfere with the operation of yast-storage-ng and libstorage-ng.
+        Y2Storage::Inhibitors.new.inhibit
         export
       end
 
@@ -61,6 +64,11 @@ module Agama
         dbus_objects.each { |o| service.export(o) }
         paths = dbus_objects.map(&:path).join(", ")
         logger.info "Exported #{paths} objects"
+      end
+
+      # Actions before stopping the service.
+      def tear_down
+        Y2Storage::Inhibitors.new.uninhibit
       end
 
       # Call this from some main loop to dispatch the D-Bus messages

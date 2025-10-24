@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import LicenseDialog from "./LicenseDialog";
 import { Product } from "~/types/software";
@@ -37,6 +37,7 @@ const sle: Product = {
 };
 
 const mockUILanguage = "de-DE";
+let mockLicenseLanguage = "de-DE";
 const product: Product = sle;
 const onCloseFn = jest.fn();
 let mockFetchLicense: jest.SpyInstance;
@@ -52,10 +53,14 @@ jest.mock("~/context/installerL10n", () => ({
 }));
 
 describe("LicenseDialog", () => {
+  mockLicenseLanguage = mockUILanguage;
   beforeEach(() => {
-    mockFetchLicense = jest
-      .spyOn(softwareApi, "fetchLicense")
-      .mockImplementation(jest.fn().mockResolvedValue({ body: "El contenido de la licencia" }));
+    mockFetchLicense = jest.spyOn(softwareApi, "fetchLicense").mockImplementation(
+      jest.fn().mockImplementation(async () => ({
+        body: "El contenido de la licencia",
+        language: mockLicenseLanguage,
+      })),
+    );
   });
 
   it("loads given product license in the interface language", async () => {
@@ -66,28 +71,19 @@ describe("LicenseDialog", () => {
     });
   });
 
-  it("renders change language button in the header but not as part of the h1 heading", async () => {
-    installerRender(<LicenseDialog product={product} onClose={onCloseFn} />);
-    const header = await screen.findByRole("banner");
-    const heading = await within(header).findByRole("heading", { level: 1 });
-    expect(heading).toHaveTextContent(sle.name);
-    within(header).getByRole("button", { name: "License language" });
-  });
-
-  it("requests license in the language selected by user", async () => {
-    const { user } = installerRender(<LicenseDialog product={product} onClose={onCloseFn} />, {
-      withL10n: true,
+  describe("when the license is not available in the given language", () => {
+    beforeEach(() => {
+      mockLicenseLanguage = "en-US";
     });
-    const languageButton = screen.getByRole("button", { name: "License language" });
-    within(languageButton).getByText("Deutsch");
-    await user.click(languageButton);
-    expect(languageButton).toHaveAttribute("aria-expanded", "true");
-    // FIXME: the selector should not be hidden for the Accessiblity API
-    const languageFrenchOption = screen.getByRole("menuitem", { name: "Svenska", hidden: true });
-    await user.click(languageFrenchOption);
-    expect(mockFetchLicense).toHaveBeenCalledWith(sle.license, "sv-SE");
-    within(languageButton).getByText("Svenska");
-    expect(languageButton).toHaveAttribute("aria-expanded", "false");
+
+    it("it warns the user that the license is not translated", async () => {
+      installerRender(<LicenseDialog product={product} onClose={onCloseFn} />, { withL10n: true });
+      await waitFor(() => {
+        expect(mockFetchLicense).toHaveBeenCalledWith(sle.license, mockUILanguage);
+        screen.getByText("El contenido de la licencia");
+        screen.getByText("This license is not available in Deutsch.");
+      });
+    });
   });
 
   it("triggers given callback on Close click", async () => {

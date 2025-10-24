@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,6 +26,7 @@ import {
   ApFlags,
   ApSecurityFlags,
   Connection,
+  ConnectionBindingMode,
   Device,
   IPAddress,
   Route,
@@ -188,11 +189,25 @@ const connectionAddresses = (connection: Connection, devices: Device[]): string 
   return addresses?.map(formatIp).join(", ");
 };
 
+/**
+ * Returns the binding mode for the given connection.
+ */
+const connectionBindingMode = (connection: Connection): ConnectionBindingMode => {
+  if (connection.macAddress) {
+    return "mac";
+  } else if (connection.iface) {
+    return "iface";
+  } else {
+    return "none";
+  }
+};
+
 export {
   buildAddress,
   buildAddresses,
   buildRoutes,
   connectionAddresses,
+  connectionBindingMode,
   formatIp,
   intToIPString,
   ipPrefixFor,

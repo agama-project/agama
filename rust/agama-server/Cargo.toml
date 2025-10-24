@@ -37,7 +37,9 @@ utoipa = { version = "5.2.0", features = ["axum_extras", "uuid"] }
 config = "0.15.11"
 rand = "0.9.1"
 axum-extra = { version = "0.9.4", features = ["cookie", "typed-header"] }
-pam = "0.8.0"
+# pam 0.8.0 (2023-11) plus an unreleased commit from 2023-12
+# that switches from users to uzers, fixing CVE-2025-5791
+pam = { git = "https://github.com/1wilkens/pam.git", rev = "daf26ae" }
 serde_with = "3.10.0"
 pin-project = "1.1.5"
 openssl = "0.10.66"
@@ -66,3 +68,6 @@ path = "src/agama-web-server.rs"
 [dev-dependencies]
 http-body-util = "0.1.2"
 tokio-test = "0.4.4"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ci)'] }

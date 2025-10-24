@@ -129,10 +129,16 @@ jobs:
     - name: Install packages
       run: |
         sudo apt-get update
-        sudo apt-get -y install libclang-18-dev libpam0g-dev python3-langtable
+        sudo apt-get -y install libclang-18-dev libpam0g-dev python3-langtable jsonnet
+
+    - name: Prepare for tests
+      run: |
         # the langtable data location is different in SUSE/openSUSE, create a symlink
-        sudo mkdir -p /usr/share/langtable/data
-        sudo ln -s /usr/lib/python3/dist-packages/langtable/data/timezoneidparts.xml.gz /usr/share/langtable/data/timezoneidparts.xml.gz
+        sudo mkdir -p /usr/share/langtable
+        sudo ln -s /usr/lib/python3/dist-packages/langtable/data /usr/share/langtable/data
+        # create the /etc/agama.d/locales file with list of locales
+        sudo mkdir /etc/agama.d
+        sudo bash -c 'ls -1 -d /usr/share/i18n/locales/* | sed -e "s#/usr/share/i18n/locales/##" >/etc/agama.d/locales'
 
     - name: Installed packages
       run: apt list --installed
@@ -157,11 +163,13 @@ jobs:
       # flags, to avoid reusing the previous builds it always starts from scratch.
       # The --skip-clean skips the cleanup and allows using the cached results.
       # See https://github.com/xd009642/tarpaulin/discussions/772
-      run: cargo tarpaulin --all --doc --out xml --target-dir target-coverage --skip-clean -- --nocapture
+      run: cargo tarpaulin --workspace --all-targets --doc --engine llvm --out xml --target-dir target-coverage --skip-clean -- --nocapture
       env:
         # use the "stable" tool chain (installed by default) instead of the "nightly" default in tarpaulin
         RUSTC_BOOTSTRAP: 1
         RUSTUP_TOOLCHAIN: stable
+        RUST_BACKTRACE: 1
+        RUSTFLAGS: --cfg ci
 
     # send the code coverage for the Rust part to the coveralls.io
     - name: Send coverage data to Coveralls

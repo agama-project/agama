@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,19 +20,37 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { act } from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { DASDDevice } from "~/types/dasd";
 import DASDTable from "./DASDTable";
 
 let mockDASDDevices: DASDDevice[] = [];
+let eventCallback;
+const mockClient = {
+  onEvent: jest.fn().mockImplementation((cb) => {
+    eventCallback = cb;
+    return () => {};
+  }),
+};
+
+jest.mock("~/context/installer", () => ({
+  ...jest.requireActual("~/context/installer"),
+  useInstallerClient: () => mockClient,
+}));
 
 jest.mock("~/queries/storage/dasd", () => ({
   useDASDDevices: () => mockDASDDevices,
-  useDASDMutation: () => jest.fn(),
+  useDASDMutation: () => ({
+    mutate: jest.fn(),
+  }),
   useFormatDASDMutation: () => jest.fn(),
 }));
+
+jest.mock("~/components/storage/dasd/FormatActionHandler", () => () => (
+  <div>FormatActionHandler Mock</div>
+));
 
 describe("DASDTable", () => {
   describe("when there is some DASD devices available", () => {
@@ -70,50 +88,83 @@ describe("DASDTable", () => {
       screen.getByText("active");
     });
 
-    it("does not allow to perform any action if not selected any device", () => {
-      installerRender(<DASDTable />);
-      const button = screen.getByRole("button", { name: "Perform an action" });
-      expect(button).toHaveAttribute("disabled");
+    it("does not offer bulk actions until a device is selected", async () => {
+      const { user } = installerRender(<DASDTable />);
+      screen.getByText("Select devices to enable bulk actions.");
+      expect(screen.queryByRole("button", { name: "Activate" })).toBeNull();
+      const selection = screen.getByRole("checkbox", { name: "Select row 0" });
+      await user.click(selection);
+      expect(screen.queryByText("Select devices to enable bulk actions.")).toBeNull();
+      screen.getByRole("button", { name: "Activate" });
     });
 
-    describe("when there are some DASD selected", () => {
-      it("allows to perform a set of actions over them", async () => {
+    it("mounts FormatActionHandler on format action request", async () => {
+      const { user } = installerRender(<DASDTable />);
+      const selection = screen.getByRole("checkbox", { name: "Select row 1" });
+      await user.click(selection);
+      const button = screen.getByRole("button", { name: "Format" });
+      await user.click(button);
+      screen.getByText("FormatActionHandler Mock");
+    });
+
+    describe("when an action is requested", () => {
+      it("set component as busy", async () => {
         const { user } = installerRender(<DASDTable />);
         const selection = screen.getByRole("checkbox", { name: "Select row 0" });
         await user.click(selection);
-        const button = screen.getByRole("button", { name: "Perform an action" });
-        expect(button).not.toHaveAttribute("disabled");
+        const button = screen.getByRole("button", { name: "Activate" });
         await user.click(button);
-        screen.getByRole("menuitem", { name: "Format" });
+        screen.getByRole("dialog", { name: "Applying changes" });
+        expect(screen.queryByRole("checkbox", { name: "Select row 1" })).toBeNull();
       });
+    });
 
-      describe("and the user click on format", () => {
-        it("shows a confirmation dialog if all the devices are online", async () => {
-          const { user } = installerRender(<DASDTable />);
-          const selection = screen.getByRole("checkbox", { name: "Select row 1" });
-          await user.click(selection);
-          const button = screen.getByRole("button", { name: "Perform an action" });
-          expect(button).not.toHaveAttribute("disabled");
-          await user.click(button);
-          const format = screen.getByRole("menuitem", { name: "Format" });
-          await user.click(format);
-          screen.getByRole("dialog", { name: "Format selected devices?" });
+    describe("when all pending actions are done", () => {
+      it("set component as idle", async () => {
+        const { user } = installerRender(<DASDTable />);
+        const selection = screen.getByRole("checkbox", { name: "Select row 0" });
+        await user.click(selection);
+        const button = screen.getByRole("button", { name: "Activate" });
+        await user.click(button);
+        screen.getByRole("dialog", { name: "Applying changes" });
+        expect(screen.queryByRole("checkbox", { name: "Select row 0" })).toBeNull();
+
+        // Simulate a DASDDeviceChanged event
+        //
+        act(() => {
+          eventCallback({ type: "DASDDeviceChanged", device: mockDASDDevices[0] });
         });
 
-        it("shows a warning dialog if some device is offline", async () => {
-          const { user } = installerRender(<DASDTable />);
-          let selection = screen.getByRole("checkbox", { name: "Select row 0" });
-          await user.click(selection);
-          selection = screen.getByRole("checkbox", { name: "Select row 1" });
-          await user.click(selection);
-          const button = screen.getByRole("button", { name: "Perform an action" });
-          expect(button).not.toHaveAttribute("disabled");
-          await user.click(button);
-          const format = screen.getByRole("menuitem", { name: "Format" });
-          await user.click(format);
-          screen.getByRole("dialog", { name: "Cannot format all selected devices" });
-        });
+        expect(screen.queryByRole("dialog", { name: "Applying changes" })).toBeNull();
+        screen.getByRole("checkbox", { name: "Select row 0" });
       });
+    });
+  });
+
+  describe("DASDTable/DASDTableEmptyState", () => {
+    describe("when there are no devices in the system", () => {
+      beforeEach(() => {
+        mockDASDDevices = [];
+      });
+
+      it("renders informative empty state with no actions", () => {
+        installerRender(<DASDTable />);
+        screen.getByRole("heading", { name: "No devices available", level: 2 });
+        screen.getByText("No DASD devices were found in this machine.");
+      });
+    });
+
+    describe("when filters results in no matching device", () => {
+      it.todo("renders empty state with clear all filters option");
+      // it("renders empty state with clear all filters option", async () => {
+      //   const { user } = installerRender(<DASDTable />);
+      //   const statusFilterToggle = screen.getByRole("button", { name: "Status" });
+      //   await user.click(statusFilterToggle);
+      //   const readOnlyOption = screen.getByRole("option", { name: "read_only"});
+      //   await user.click(readOnlyOption);
+      //   screen.getByRole("heading", { name: "No devices found", level: 2 });
+      //   screen.getByRole("button", { name: "Clear all filters" });
+      // });
     });
   });
 });

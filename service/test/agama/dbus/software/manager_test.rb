@@ -21,7 +21,6 @@
 
 require_relative "../../../test_helper"
 require "agama/config"
-require "agama/dbus/clients/locale"
 require "agama/dbus/clients/network"
 require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/progress"
@@ -35,6 +34,8 @@ describe Agama::DBus::Software::Manager do
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:backend) { Agama::Software::Manager.new(config, logger) }
+
+  let(:target_dir) { Dir.mktmpdir }
 
   let(:config) { Agama::Config.new(config_data) }
 
@@ -52,7 +53,8 @@ describe Agama::DBus::Software::Manager do
   let(:issues_interface) { Agama::DBus::Interfaces::Issues::ISSUES_INTERFACE }
 
   before do
-    allow(Agama::DBus::Clients::Locale).to receive(:instance).and_return(locale_client)
+    stub_const("Agama::Software::Manager::TARGET_DIR", target_dir)
+    allow(Yast::PackageCallbacks).to receive(:InitPackageCallbacks)
     allow(Agama::DBus::Clients::Network).to receive(:new).and_return(network_client)
     allow(backend).to receive(:probe)
     allow(backend).to receive(:propose)
@@ -61,8 +63,8 @@ describe Agama::DBus::Software::Manager do
     allow(subject).to receive(:dbus_properties_changed)
   end
 
-  let(:locale_client) do
-    instance_double(Agama::DBus::Clients::Locale, on_language_selected: nil)
+  after do
+    FileUtils.rm_r(target_dir)
   end
 
   let(:network_client) do

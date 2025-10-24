@@ -21,6 +21,9 @@ user_pref("datareporting.healthreport.uploadEnabled", false);
 user_pref("datareporting.usage.uploadEnabled", false);
 user_pref("toolkit.telemetry.reportingpolicy.firstRun", false);
 
+// disable downloading the binary H.264 codec from ciscobinary.openh264.org
+user_pref("media.gmp-gmpopenh264.enabled", false);
+
 // globally disable extensions autoupdate,
 // the AutoFullscreen extension does not specify the update URL
 // but rather be on the safe side

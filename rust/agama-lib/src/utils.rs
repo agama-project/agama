@@ -22,6 +22,7 @@
 
 mod file_format;
 mod transfer;
+pub mod url;
 
 pub use file_format::*;
 pub use transfer::*;

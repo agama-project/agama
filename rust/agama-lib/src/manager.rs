@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -23,6 +23,7 @@
 pub mod http_client;
 pub use http_client::ManagerHTTPClient;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 use crate::error::ServiceError;
 use crate::proxies::ServiceStatusProxy;
@@ -141,9 +142,21 @@ impl<'a> ManagerClient<'a> {
     }
 
     /// Starts the probing process.
-    pub async fn probe(&self) -> Result<(), ServiceError> {
+    pub async fn probe(&self, client_id: String) -> Result<(), ServiceError> {
         self.wait().await?;
-        Ok(self.manager_proxy.probe().await?)
+        Ok(self
+            .manager_proxy
+            .probe(HashMap::from([("client_id", &client_id.into())]))
+            .await?)
+    }
+
+    /// Starts the reprobing process.
+    pub async fn reprobe(&self, client_id: String) -> Result<(), ServiceError> {
+        self.wait().await?;
+        Ok(self
+            .manager_proxy
+            .reprobe(HashMap::from([("client_id", &client_id.into())]))
+            .await?)
     }
 
     /// Starts the installation.

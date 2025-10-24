@@ -42,12 +42,11 @@ import {
   SelectList,
   SelectOption,
   SelectOptionProps,
-  Split,
   Stack,
   StackItem,
   TextInput,
 } from "@patternfly/react-core";
-import { NestedContent, Page, SelectWrapper as Select, SubtleContent } from "~/components/core/";
+import { Page, SelectWrapper as Select, SubtleContent } from "~/components/core/";
 import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import AutoSizeText from "~/components/storage/AutoSizeText";
@@ -66,12 +65,12 @@ import { unique } from "radashi";
 import { compact } from "~/utils";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
 
 const NO_VALUE = "";
 const BTRFS_SNAPSHOTS = "btrfsSnapshots";
 
-type SizeOptionValue = "" | "auto" | "custom";
-type CustomSizeValue = "fixed" | "unlimited" | "range";
+type SizeOptionValue = "" | SizeMode;
 type FormValue = {
   mountPoint: string;
   name: string;
@@ -80,10 +79,6 @@ type FormValue = {
   sizeOption: SizeOptionValue;
   minSize: string;
   maxSize: string;
-};
-type SizeRange = {
-  min: string;
-  max: string;
 };
 type Error = {
   id: string;
@@ -162,7 +157,8 @@ function toFormValue(logicalVolume: apiModel.LogicalVolume): FormValue {
     return "custom";
   };
 
-  const size = (value: number | undefined): string => (value ? deviceSize(value) : NO_VALUE);
+  const size = (value: number | undefined): string =>
+    value ? deviceSize(value, { exact: true }) : NO_VALUE;
 
   return {
     mountPoint: mountPoint(),
@@ -450,7 +446,11 @@ function LogicalVolumeName({
       {error && !isDisabled && (
         <FormHelperText>
           <HelperText>
-            {error && <HelperTextItem variant="error">{error.message}</HelperTextItem>}
+            {error && (
+              <HelperTextItem variant="error" screenReaderText="">
+                {error.message}
+              </HelperTextItem>
+            )}
           </HelperText>
         </FormHelperText>
       )}
@@ -476,9 +476,10 @@ type FilesystemOptionsProps = {
 function FilesystemOptions({ mountPoint }: FilesystemOptionsProps): React.ReactNode {
   const defaultFilesystem = useDefaultFilesystem(mountPoint);
   const usableFilesystems = useUsableFilesystems(mountPoint);
+  const volume = useVolume(mountPoint);
 
   const defaultOptText =
-    mountPoint !== NO_VALUE
+    mountPoint !== NO_VALUE && volume.mountPath
       ? sprintf(_("Default file system for %s"), mountPoint)
       : _("Default file system for generic logical volumes");
 
@@ -555,48 +556,6 @@ function FilesystemLabel({ id, value, onChange }: FilesystemLabelProps): React.R
   );
 }
 
-type SizeOptionLabelProps = {
-  value: SizeOptionValue;
-  mountPoint: string;
-};
-
-function SizeOptionLabel({ value, mountPoint }: SizeOptionLabelProps): React.ReactNode {
-  if (mountPoint === NO_VALUE) return _("Waiting for a mount point");
-  if (value === "auto") return _("Calculated automatically");
-  if (value === "custom") return _("Custom");
-
-  return value;
-}
-
-type SizeOptionsProps = {
-  mountPoint: string;
-};
-
-function SizeOptions({ mountPoint }: SizeOptionsProps): React.ReactNode {
-  return (
-    <SelectList aria-label={_("Size options")}>
-      {mountPoint === NO_VALUE && (
-        <SelectOption value={NO_VALUE}>
-          <SizeOptionLabel value={NO_VALUE} mountPoint={mountPoint} />
-        </SelectOption>
-      )}
-      {mountPoint !== NO_VALUE && (
-        <>
-          <SelectOption
-            value="auto"
-            description={_("Let the installer propose a sensible range of sizes")}
-          >
-            <SizeOptionLabel value="auto" mountPoint={mountPoint} />
-          </SelectOption>
-          <SelectOption value="custom" description={_("Define a custom size or a range")}>
-            <SizeOptionLabel value="custom" mountPoint={mountPoint} />
-          </SelectOption>
-        </>
-      )}
-    </SelectList>
-  );
-}
-
 type AutoSizeInfoProps = {
   value: FormValue;
 };
@@ -612,146 +571,6 @@ function AutoSizeInfo({ value }: AutoSizeInfoProps): React.ReactNode {
     <SubtleContent>
       <AutoSizeText volume={volume} size={size} deviceType="logicalVolume" />
     </SubtleContent>
-  );
-}
-
-type CustomSizeOptionLabelProps = {
-  value: CustomSizeValue;
-};
-
-function CustomSizeOptionLabel({ value }: CustomSizeOptionLabelProps): React.ReactNode {
-  const labels = {
-    fixed: _("Same as minimum"),
-    unlimited: _("None"),
-    range: _("Limited"),
-  };
-
-  return labels[value];
-}
-
-function CustomSizeOptions(): React.ReactNode {
-  return (
-    <SelectList aria-label={_("Maximum size options")}>
-      <SelectOption
-        value="fixed"
-        description={_("The logical volume is created exactly with the given size")}
-      >
-        <CustomSizeOptionLabel value="fixed" />
-      </SelectOption>
-      <SelectOption
-        value="range"
-        description={_("The logical volume can grow until a given limit size")}
-      >
-        <CustomSizeOptionLabel value="range" />
-      </SelectOption>
-      <SelectOption
-        value="unlimited"
-        description={_("The logical volume can grow to use all the contiguous free space")}
-      >
-        <CustomSizeOptionLabel value="unlimited" />
-      </SelectOption>
-    </SelectList>
-  );
-}
-
-type CustomSizeProps = {
-  value: FormValue;
-  onChange: (size: SizeRange) => void;
-};
-
-function CustomSize({ value, onChange }: CustomSizeProps) {
-  const initialOption = (): CustomSizeValue => {
-    if (value.minSize === NO_VALUE) return "fixed";
-    if (value.minSize === value.maxSize) return "fixed";
-    if (value.maxSize === NO_VALUE) return "unlimited";
-    return "range";
-  };
-
-  const [option, setOption] = React.useState<CustomSizeValue>(initialOption());
-  const { max: solvedMaxSize } = useSolvedSizes(value);
-  const { getVisibleError } = useErrors(value);
-
-  const error = getVisibleError("customSize");
-
-  const changeMinSize = (min: string) => {
-    const max = option === "fixed" ? min : value.maxSize;
-    onChange({ min, max });
-  };
-
-  const changeMaxSize = (max: string) => {
-    onChange({ min: value.minSize, max });
-  };
-
-  const changeOption = (v: CustomSizeValue) => {
-    setOption(v);
-
-    const min = value.minSize;
-    if (v === "fixed") onChange({ min, max: min });
-    if (v === "unlimited") onChange({ min, max: NO_VALUE });
-    if (v === "range") {
-      const max = solvedMaxSize || NO_VALUE;
-      onChange({ min, max });
-    }
-  };
-
-  return (
-    <Stack hasGutter>
-      <Stack>
-        <SubtleContent>
-          {_("Sizes must be entered as a numbers optionally followed by a unit.")}
-        </SubtleContent>
-        <SubtleContent>
-          {_(
-            "If the unit is omitted, bytes (B) will be used. Greater units can be of \
-              the form GiB (power of 2) or GB (power of 10).",
-          )}
-        </SubtleContent>
-      </Stack>
-      <FormGroup>
-        <Flex>
-          <FlexItem>
-            <FormGroup fieldId="minSizeValue" label={_("Minimum")}>
-              <TextInput
-                id="minSizeValue"
-                className="w-14ch"
-                value={value.minSize}
-                aria-label={_("Minimum size value")}
-                onChange={(_, v) => changeMinSize(v)}
-              />
-            </FormGroup>
-          </FlexItem>
-          <FlexItem>
-            <FormGroup fieldId="maxSize" label={_("Maximum")}>
-              <Split hasGutter>
-                <Select
-                  id="maxSize"
-                  value={option}
-                  label={<CustomSizeOptionLabel value={option} />}
-                  onChange={changeOption}
-                  toggleName={_("Maximum size mode")}
-                >
-                  <CustomSizeOptions />
-                </Select>
-                {option === "range" && (
-                  <TextInput
-                    id="maxSizeValue"
-                    className="w-14ch"
-                    value={value.maxSize}
-                    aria-label={_("Maximum size value")}
-                    onChange={(_, v) => changeMaxSize(v)}
-                  />
-                )}
-              </Split>
-            </FormGroup>
-          </FlexItem>
-        </Flex>
-        <FormHelperText>
-          <HelperText>
-            {error && <HelperTextItem variant="error">{error.message}</HelperTextItem>}
-          </HelperText>
-        </FormHelperText>
-      </FormGroup>
-    </Stack>
   );
 }
 
@@ -834,9 +653,15 @@ export default function LogicalVolumePage() {
     setFilesystem(value);
   };
 
-  const changeSize = ({ min, max }) => {
-    if (min !== undefined) setMinSize(min);
-    if (max !== undefined) setMaxSize(max);
+  const changeSizeMode = (mode: SizeMode, size: SizeRange) => {
+    setSizeOption(mode);
+    setMinSize(size.min);
+    if (mode === "custom" && initialValue.sizeOption === "auto" && size.min !== size.max) {
+      // Automatically stop using a range of sizes when a range is used by default.
+      setMaxSize("");
+    } else {
+      setMaxSize(size.max);
+    }
   };
 
   const onSubmit = () => {
@@ -852,6 +677,8 @@ export default function LogicalVolumePage() {
   const mountPointError = getVisibleError("mountPoint");
   const usedMountPt = mountPointError ? NO_VALUE : mountPoint;
   const showLabel = filesystem !== NO_VALUE && usedMountPt !== NO_VALUE;
+  const sizeMode: SizeMode = sizeOption === "" ? "auto" : sizeOption;
+  const sizeRange: SizeRange = { min: minSize, max: maxSize };
 
   return (
     <Page id="logicalVolumePage">
@@ -881,7 +708,10 @@ export default function LogicalVolumePage() {
                     />
                     <FormHelperText>
                       <HelperText>
-                        <HelperTextItem variant={mountPointError ? "error" : "default"}>
+                        <HelperTextItem
+                          variant={mountPointError ? "error" : "default"}
+                          screenReaderText=""
+                        >
                           {!mountPointError && _("Select or enter a mount point")}
                           {mountPointError?.message}
                         </HelperTextItem>
@@ -930,27 +760,27 @@ export default function LogicalVolumePage() {
                 </Flex>
               </FormGroup>
             </StackItem>
-            <FormGroup fieldId="size" label={_("Size")}>
-              <Flex
-                direction={{ default: "column" }}
-                alignItems={{ default: "alignItemsFlexStart" }}
-                gap={{ default: "gapMd" }}
-              >
-                <Select
-                  id="size"
-                  value={sizeOption}
-                  label={<SizeOptionLabel value={sizeOption} mountPoint={usedMountPt} />}
-                  onChange={(v: SizeOptionValue) => setSizeOption(v)}
-                  isDisabled={usedMountPt === NO_VALUE}
-                >
-                  <SizeOptions mountPoint={usedMountPt} />
-                </Select>
-                <NestedContent margin="mxMd" aria-live="polite">
-                  {sizeOption === "auto" && <AutoSizeInfo value={value} />}
-                  {sizeOption === "custom" && <CustomSize value={value} onChange={changeSize} />}
-                </NestedContent>
-              </Flex>
-            </FormGroup>
+            <StackItem>
+              <FormGroup fieldId="sizeMode" label={_("Size mode")}>
+                {usedMountPt === NO_VALUE && (
+                  <Select
+                    id="sizeMode"
+                    value={NO_VALUE}
+                    label={_("Waiting for a mount point")}
+                    isDisabled
+                  />
+                )}
+                {usedMountPt !== NO_VALUE && (
+                  <SizeModeSelect
+                    id="sizeMode"
+                    value={sizeMode}
+                    size={sizeRange}
+                    onChange={changeSizeMode}
+                    automaticHelp={<AutoSizeInfo value={value} />}
+                  />
+                )}
+              </FormGroup>
+            </StackItem>
             <ActionGroup>
               <Page.Submit isDisabled={!isFormValid} form="logicalVolumeForm" />
               <Page.Cancel />

@@ -20,12 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { ServerError } from "~/components/core";
 import { Loading } from "~/components/layout";
-import { useInstallerL10n } from "~/context/installerL10n";
-import { useInstallerClientStatus } from "~/context/installer";
 import { useProduct, useProductChanges } from "~/queries/software";
 import { useL10nConfigChanges } from "~/queries/l10n";
 import { useIssuesChanges } from "~/queries/issues";
@@ -33,27 +30,42 @@ import { useInstallerStatus, useInstallerStatusChanges } from "~/queries/status"
 import { useDeprecatedChanges } from "~/queries/storage";
 import { ROOT, PRODUCT } from "~/routes/paths";
 import { InstallationPhase } from "~/types/status";
+import { useQueryClient } from "@tanstack/react-query";
+import AlertOutOfSync from "~/components/core/AlertOutOfSync";
 
 /**
  * Main application component.
  */
 function App() {
-  const location = useLocation();
-  const { isBusy, phase } = useInstallerStatus({ suspense: true });
-  const { connected, error } = useInstallerClientStatus();
-  const { selectedProduct, products } = useProduct({
-    suspense: phase !== InstallationPhase.Install,
-  });
-  const { language } = useInstallerL10n();
   useL10nConfigChanges();
   useProductChanges();
   useIssuesChanges();
   useInstallerStatusChanges();
   useDeprecatedChanges();
 
-  const Content = () => {
-    if (error) return <ServerError />;
+  const location = useLocation();
+  const { isBusy, phase } = useInstallerStatus({ suspense: true });
+  const { selectedProduct, products } = useProduct({
+    suspense: phase !== InstallationPhase.Install,
+  });
+  const queryClient = useQueryClient();
 
+  useEffect(() => {
+    // Invalidate the queries when unmounting this component.
+    return () => {
+      queryClient.invalidateQueries();
+    };
+  }, [queryClient]);
+
+  console.log("App component", {
+    phase,
+    isBusy,
+    products,
+    selectedProduct,
+    location: location.pathname,
+  });
+
+  const Content = () => {
     if (phase === InstallationPhase.Install) {
       console.log("Navigating to the installation progress page");
       return <Navigate to={ROOT.installationProgress} />;
@@ -64,13 +76,7 @@ function App() {
       return <Navigate to={ROOT.installationFinished} />;
     }
 
-    if (!products || !connected || (selectedProduct === undefined && isBusy)) {
-      console.log("Loading screen: Initialization", {
-        products,
-        connected,
-        selectedProduct,
-        isBusy,
-      });
+    if (!products) {
       return <Loading listenQuestions />;
     }
 
@@ -79,7 +85,7 @@ function App() {
       return <Loading listenQuestions />;
     }
 
-    if (selectedProduct === undefined && location.pathname !== PRODUCT.root) {
+    if (selectedProduct === undefined && !isBusy && location.pathname !== PRODUCT.root) {
       console.log("Navigating to the product selection page");
       return <Navigate to={PRODUCT.root} />;
     }
@@ -92,9 +98,13 @@ function App() {
     return <Outlet />;
   };
 
-  if (!language) return null;
-
-  return <Content />;
+  return (
+    <>
+      {/* So far, only the storage backend is able to detect external changes.*/}
+      <AlertOutOfSync scope={"Storage"} />
+      <Content />
+    </>
+  );
 }
 
 export default App;

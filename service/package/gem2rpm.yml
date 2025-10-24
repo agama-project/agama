@@ -20,7 +20,7 @@
     Requires:       yast2-country
     Requires:       yast2-hardware-detection
     Requires:       yast2-installation
-    Requires:       yast2-iscsi-client >= 4.5.7
+    Requires:       yast2-iscsi-client >= 5.0.8
     Requires:       yast2-network
     Requires:       yast2-proxy
     Requires:       yast2-storage-ng >= 5.0.31

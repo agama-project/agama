@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/autoyast/bootloader_reader"
+require "agama/autoyast/dasd_reader"
 require "agama/autoyast/files_reader"
 require "agama/autoyast/hostname_reader"
 require "agama/autoyast/iscsi_reader"
@@ -32,6 +33,7 @@ require "agama/autoyast/security_reader"
 require "agama/autoyast/software_reader"
 require "agama/autoyast/storage_reader"
 require "agama/autoyast/user_reader"
+require "agama/autoyast/zfcp_reader"
 
 module Agama
   module AutoYaST
@@ -49,6 +51,7 @@ module Agama
       def to_agama(profile)
         [
           BootloaderReader.new(profile).read,
+          DASDReader.new(profile).read,
           FilesReader.new(profile).read,
           HostnameReader.new(profile).read,
           IscsiReader.new(profile).read,
@@ -60,7 +63,8 @@ module Agama
           SecurityReader.new(profile).read,
           SoftwareReader.new(profile).read,
           StorageReader.new(profile).read,
-          UserReader.new(profile).read
+          UserReader.new(profile).read,
+          ZFCPReader.new(profile).read
         ].inject(:merge)
       end
     end

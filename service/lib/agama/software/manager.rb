@@ -21,7 +21,10 @@
 
 require "fileutils"
 require "json"
+require "shellwords"
 require "yast"
+require "packager/cfa/zypp_conf"
+require "cfa/augeas_parser"
 require "y2packager/product"
 require "y2packager/resolvable"
 require "agama/config"
@@ -37,6 +40,7 @@ require "agama/with_locale"
 require "agama/with_progress"
 require "agama/with_issues"
 
+Yast.import "Installation"
 Yast.import "Language"
 Yast.import "Package"
 Yast.import "Packages"
@@ -55,7 +59,7 @@ module Agama
     #   * Manages product selection.
     #   * Manages software and product related issues.
     #
-    #   It shoud be splitted in separate and smaller classes.
+    #   It should be splitted in separate and smaller classes.
     class Manager # rubocop:disable Metrics/ClassLength
       include Helpers
       include WithLocale
@@ -65,6 +69,23 @@ module Agama
 
       GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
       private_constant :GPG_KEYS_GLOB
+
+      # location of the custom DUD package repository,
+      # see the /usr/lib/dracut/modules.d/99agama-dud/agama-dud-apply.sh script
+      DUD_REPOSITORY_DIR = "/var/lib/agama/dud/repo"
+      private_constant :DUD_REPOSITORY_DIR
+
+      # name for the custom DUD package repository, use some special name to
+      # minimize possible conflicts with user defined repositories, ugly name
+      # does not matter, it is deleted in the end anyway
+      DUD_REPOSITORY_NAME = "AgamaDriverUpdate"
+      private_constant :DUD_REPOSITORY_NAME
+
+      # use a higher priority for the custom DUD package repository,
+      # the default priority is 99, the lower number the higher priority!
+      # the linuxrc default is 50, let's use the same value here as well
+      DUD_REPOSITORY_PRIORITY = 50
+      private_constant :DUD_REPOSITORY_PRIORITY
 
       # Selected product.
       #
@@ -107,7 +128,12 @@ module Agama
         @user_patterns = []
         @selected_patterns_change_callbacks = []
         on_progress_change { logger.info(progress.to_s) }
+        Yast::PackageCallbacks.InitPackageCallbacks(logger)
         initialize_target
+      end
+
+      def self.dud_repository_url
+        "dir:#{DUD_REPOSITORY_DIR}"
       end
 
       # Selects a product with the given id.
@@ -123,6 +149,9 @@ module Agama
 
         raise ArgumentError unless new_product
 
+        proposal.set_resolvables(
+          PROPOSAL_ID, :pattern, new_product.preselected_patterns
+        )
         update_repositories(new_product)
 
         @product = new_product
@@ -153,7 +182,6 @@ module Agama
           start_progress_with_descriptions(
             _("Initializing sources"), *common_steps
           )
-          Yast::PackageCallbacks.InitPackageCallbacks(logger)
           progress.step { add_base_repos }
         else
           start_progress_with_descriptions(*common_steps)
@@ -217,8 +245,9 @@ module Agama
 
       # Writes the repositories information to the installed system
       def finish
-        # remove the dir:///run/initramfs/live/install repository and similar
-        remove_local_repos
+        # disable local repositories (DVD, USB flash...)
+        disable_local_repos
+        remove_dud_repo
         Yast::Pkg.SourceSaveAll
         Yast::Pkg.TargetFinish
         # copy the libzypp caches to the target
@@ -228,6 +257,7 @@ module Agama
           copy_zypp_to_target
         end
         registration.finish
+        modify_zypp_conf
       end
 
       # Determine whether the given tag is provided by the selected packages
@@ -244,6 +274,8 @@ module Agama
       # @param filtered [Boolean] If list of patterns should be filtered.
       #                           Filtering criteria can change.
       # @return [Array<Y2Packager::Resolvable>]
+      # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/PerceivedComplexity
       def patterns(filtered)
         # huge speed up, preload the used attributes to avoid querying libzypp again,
         # see "ListPatterns" method in service/lib/agama/dbus/software/manager.rb
@@ -255,14 +287,17 @@ module Agama
         if product.user_patterns && filtered
           base_repos = base_repositories
 
+          user_patterns_names = (product.user_patterns || []).map(&:name)
           patterns.select! do |p|
             # the pattern is not from a base repository or is included in the display list
-            !base_repos.include?(p.source) || product.user_patterns.include?(p.name)
+            !base_repos.include?(p.source) || user_patterns_names.include?(p.name)
           end
         end
 
         patterns
       end
+      # rubocop:enable Metrics/CyclomaticComplexity
+      # rubocop:enable Metrics/PerceivedComplexity
 
       def add_pattern(id)
         return false unless pattern_exist?(id)
@@ -511,6 +546,7 @@ module Agama
       end
 
       def add_base_repos
+        add_dud_repo
         return if add_repos_by_label
         return if add_repos_by_dir
 
@@ -519,13 +555,21 @@ module Agama
       end
 
       def add_repos_by_dir
-        # path to cdrom which can contain installation repositories
+        # path to the installation repository present on the Live medium (only on the Full medium)
         dir_path = "/run/initramfs/live/install"
-
         return false unless File.exist?(dir_path)
 
-        logger.info "/install found on source cd"
-        repositories.add("dir://" + dir_path)
+        logger.info "/install found on Live medium"
+        url = full_repo_url(dir_path, "/install")
+        return false unless url
+
+        logger.info "Using Full media installation repository #{url}"
+        # disable autorefresh, the packages on DVD cannot be updated, for USB flash disks it can be
+        # manually enabled in the installed system if needed (updating the packages need some user
+        # interaction anyway)
+        repositories.add(url, repo_alias: product.name, name: product.display_name,
+          autorefresh: false)
+
         true
       end
 
@@ -546,6 +590,17 @@ module Agama
         end
 
         false
+      end
+
+      # add a custom repository provided by DUD
+      def add_dud_repo
+        return unless File.directory?(DUD_REPOSITORY_DIR) && !Dir.empty?(DUD_REPOSITORY_DIR)
+
+        logger.info "Adding DUD repository at #{DUD_REPOSITORY_DIR}"
+        # if there is no repository metadata present in the dir:/ repository then libzypp
+        # automatically uses the "plaindir" repository type
+        repositories.add(self.class.dud_repository_url, repo_alias: DUD_REPOSITORY_NAME,
+          name: DUD_REPOSITORY_NAME, priority: DUD_REPOSITORY_PRIORITY)
       end
 
       # find all devices with the required disk label
@@ -586,6 +641,30 @@ module Agama
         else
           # none or just one disk
           disks.first
+        end
+      end
+
+      # build URL for the Full installation repository
+      # @param path [String] Local path where the Full repository is mounted
+      # @param url_path [String] Path part of the resulting URL
+      # @return [String,nil] URL or `nil` if the Full repository device was not found
+      def full_repo_url(path, url_path)
+        # find the device which is mounted at the repository location
+        live_device = `findmnt -n -o SOURCE --target #{Shellwords.escape(path)}`.chomp
+        logger.info "Installation device: #{live_device}"
+        return nil unless live_device
+
+        # distinguish between DVD and hard disks/USB flash
+        if live_device.match(/\A\/dev\/sr[0-9]+\z/)
+          "dvd:#{url_path}?devices=#{live_device}"
+        else
+          # try using a more stable by-id device name, important esp. for USB flash
+          by_id_devices = `find -L /dev/disk/by-id -samefile #{Shellwords.escape(live_device)}`
+            .chomp
+          # if there are more names just use the first one
+          by_id_device = by_id_devices.split("\n").first
+          device = (by_id_device && !by_id_device.empty?) ? by_id_device : live_device
+          "hd:#{url_path}?device=#{device}"
         end
       end
 
@@ -714,6 +793,48 @@ module Agama
         FileUtils.copy(glob_credentials, target_dir)
       end
 
+      # private class to ensure that cfa reads installed system
+      # YaST target file does not work reliably as Agama does not have
+      # always switched SCR
+      class TargetFile
+        # Reads file content with respect of changed root in installation.
+        def self.read(path)
+          ::File.read(final_path(path))
+        end
+
+        # Writes file content with respect of changed root in installation.
+        def self.write(path, content)
+          ::File.write(final_path(path), content)
+        end
+
+        def self.final_path(path)
+          ::File.join(Yast::Installation.destdir, path)
+        end
+        private_class_method :final_path
+      end
+
+      def modify_zypp_conf
+        # use defaults unless user explicitelly sets flag
+        return if proposal.only_required.nil?
+
+        # minimal system does not need to have libzypp, so in this case do not
+        # modify zypp.conf
+        if !File.exist?(File.join(Yast::Installation.destdir, "/etc/zypp/zypp.conf"))
+          logger.info "Target system does not have zypp.conf so skipping modification of it"
+          return
+        end
+
+        zypp_conf = Yast::Packager::CFA::ZyppConf.new(file_handler: TargetFile)
+        zypp_conf.load
+        tree = zypp_conf.generic_get("main")
+        if !tree
+          tree = ::CFA::AugeasTree.new
+          zypp_conf.generic_get("main", tree)
+        end
+        zypp_conf.generic_set("solver.onlyRequires", (!!proposal.only_required).to_s, tree)
+        zypp_conf.save
+      end
+
       # Is any local repository (CD/DVD, disk) currently used?
       # @return [Boolean] true if any local repository is used
       def local_repo?
@@ -742,9 +863,27 @@ module Agama
         end
       end
 
-      # remove all local repositories
-      def remove_local_repos
-        Agama::Software::Repository.all.select(&:local?).each(&:delete!)
+      # disable all local repositories, remove device name from the DVD Full repository
+      def disable_local_repos
+        local_repos = Agama::Software::Repository.all.select(&:local?)
+        local_repos.each(&:disable!)
+
+        # remove the installation device from the URL, libzypp will probe all present devices,
+        # this allows inserting the DVD medium into a different drive later
+        full_dvd_repo = local_repos.find { |r| r.url.to_s.start_with?("dvd:/install?devices=") }
+        return unless full_dvd_repo
+
+        new_url = "dvd:/install"
+        logger.info "Changing repository URL from #{full_dvd_repo.url} to #{new_url}"
+        full_dvd_repo.url = new_url
+      end
+
+      def remove_dud_repo
+        dud_repo = Agama::Software::Repository.all.find { |r| r.name == DUD_REPOSITORY_NAME }
+        return unless dud_repo
+
+        logger.info "Removing the temporary DUD repository"
+        dud_repo.delete!
       end
 
       # Return all enabled repositories belonging to the base product.

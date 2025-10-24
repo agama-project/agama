@@ -93,8 +93,8 @@ describe("PartitionMenuItem", () => {
   it("allows users to delete a not required partition", async () => {
     const { user } = plainRender(<PartitionsMenu device={drive1} />);
 
-    const partitionsButton = screen.getByRole("button", { name: "Partitions" });
-    await user.click(partitionsButton);
+    const detailsButton = screen.getByRole("button", { name: /Details for .*sda/ });
+    await user.click(detailsButton);
     const partitionsMenu = screen.getByRole("menu");
     const deleteSwapButton = within(partitionsMenu).getByRole("menuitem", {
       name: "Delete swap",
@@ -106,8 +106,8 @@ describe("PartitionMenuItem", () => {
   it("allows users to delete a required partition", async () => {
     const { user } = plainRender(<PartitionsMenu device={drive1} />);
 
-    const partitionsButton = screen.getByRole("button", { name: "Partitions" });
-    await user.click(partitionsButton);
+    const detailsButton = screen.getByRole("button", { name: /Details for .*sda/ });
+    await user.click(detailsButton);
     const partitionsMenu = screen.getByRole("menu");
     const deleteRootButton = within(partitionsMenu).getByRole("menuitem", {
       name: "Delete /",
@@ -119,8 +119,8 @@ describe("PartitionMenuItem", () => {
   it("allows users to edit a partition", async () => {
     const { user } = plainRender(<PartitionsMenu device={drive1} />);
 
-    const partitionsButton = screen.getByRole("button", { name: "Partitions" });
-    await user.click(partitionsButton);
+    const detailsButton = screen.getByRole("button", { name: /Details for .*sda/ });
+    await user.click(detailsButton);
     const partitionsMenu = screen.getByRole("menu");
     const editSwapButton = within(partitionsMenu).getByRole("menuitem", {
       name: "Edit swap",

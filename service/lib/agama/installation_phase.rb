@@ -30,6 +30,7 @@ module Agama
     FINISH = "finish"
 
     def initialize
+      @value = STARTUP
       @on_change_callbacks = []
     end
 

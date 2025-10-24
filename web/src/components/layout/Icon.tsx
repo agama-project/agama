@@ -22,8 +22,9 @@
 
 import React from "react";
 
-// NOTE: "@icons" is an alias to use a shorter path to real @material-symbols
-// icons location. Check the tsconfig.json file to see its value.
+// NOTE: "@icons" and "@bolderIcons" are aliases to use a shorter path to real
+// @material-symbols icons locations. Check the tsconfig.json file to see its
+// value.
 import Apps from "@icons/apps.svg?component";
 import AppRegistration from "@icons/app_registration.svg?component";
 import Backspace from "@icons/backspace.svg?component";
@@ -47,11 +48,13 @@ import ListAlt from "@icons/list_alt.svg?component";
 import Lock from "@icons/lock.svg?component";
 import ManageAccounts from "@icons/manage_accounts.svg?component";
 import Menu from "@icons/menu.svg?component";
-import MoreVert from "@icons/more_vert.svg?component";
+import MoreHoriz from "@bolderIcons/more_horiz.svg?component";
+import MoreVert from "@bolderIcons/more_vert.svg?component";
 import NetworkWifi from "@icons/network_wifi.svg?component";
 import NetworkWifi1Bar from "@icons/network_wifi_1_bar.svg?component";
 import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
 import Translate from "@icons/translate.svg?component";
+import SearchOff from "@icons/search_off.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
 import UnfoldLess from "@icons/unfold_less.svg?component";
 import UnfoldMore from "@icons/unfold_more.svg?component";
@@ -85,10 +88,12 @@ const icons = {
   lock: Lock,
   manage_accounts: ManageAccounts,
   menu: Menu,
+  more_horiz: MoreHoriz,
   more_vert: MoreVert,
   network_wifi: NetworkWifi,
   network_wifi_1_bar: NetworkWifi1Bar,
   network_wifi_3_bar: NetworkWifi3Bar,
+  search_off: SearchOff,
   settings_ethernet: SettingsEthernet,
   translate: Translate,
   unfold_less: UnfoldLess,

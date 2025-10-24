@@ -37,7 +37,7 @@ const DEFAULT_COMMANDS: [(&str, &str); 2] = [
     ("rpm -qa", "rpm-qa"),
 ];
 
-const DEFAULT_PATHS: [&str; 15] = [
+const DEFAULT_PATHS: [&str; 16] = [
     // logs
     "/var/log/build",
     "/var/log/YaST2",
@@ -50,6 +50,7 @@ const DEFAULT_PATHS: [&str; 15] = [
     "/var/log/boot.msg",
     "/var/log/udev.log",
     "/run/agama/dbus.log",
+    "/run/agama/inst-scripts",
     // config
     "/etc/install.inf",
     "/etc/os-release",

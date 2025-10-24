@@ -15,6 +15,10 @@ export default {
   "%1$s at %2$s": [
     "%1$s bei %2$s"
   ],
+  "%1$s will be created as a partition at %2$s": [
+    "%1$s wird als Partition unter %2$s erstellt",
+    "%1$s werden als Partitionen unter %2$s erstellt"
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s wird weiterhin die LVM-Gruppe ‚%2$s‘ und alle zum Booten benötigten Partitionen enthalten"
   ],
@@ -39,29 +43,44 @@ export default {
   "%s logo": [
     "%s-Logo"
   ],
+  "%s will be created as a logical volume": [
+    "%s wird als logisches Volume erstellt",
+    "%s wird als logische Volumes erstellt"
+  ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s wird weiterhin die konfigurierten LVM-Gruppen und alle zum Booten benötigten Partitionen enthalten"
   ],
   "%s with %d partitions": [
     "%s mit %d Partitionen"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "Eine %1$s mit %2$s wird für %3$s erstellt"
+  "A %1$s of %2$s will be created for %3$s if possible": [
+    "Eine %1$s mit %2$s wird nach Möglichkeit für %3$s erstellt"
   ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "Eine %1$s mit mindestens %2$s wird für %3$s erstellt"
+  "A %1$s of at least %2$s will be created for %3$s if possible": [
+    "Eine %1$s mit mindestens %2$s wird nach Möglichkeit für %3$s erstellt"
   ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "Eine %1$s mit einer Größe zwischen %2$s und %3$s wird für %4$s erstellt"
+  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
+    "Ein %1$s mit einer Größe zwischen %2$s und %3$s wird nach Möglichkeit für %4$s erstellt"
+  ],
+  "A file system will be used for the whole device": [
+    "Es wird ein Dateisystem für das gesamte Gerät verwendet"
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "Eine generische Mindestgröße von %1$s wird für die neue %2$s verwendet"
   ],
-  "A generic size of %s will be used for the new %2$s": [
-    "Für die neue %2$s wird eine generische Größe von %s verwendet"
+  "A generic size of %1$s will be used for the new %2$s": [
+    "Für die neue %2$s wird eine generische Größe von %1$s verwendet"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Ein generischer Größenbereich zwischen %1$s und %2$s wird für die neue %3$s verwendet"
+  ],
+  "A new partition will be created for %s": [
+    "Für %s wird eine neue Partition erstellt",
+    "Für %s werden neue Partitionen erstellt"
+  ],
+  "A new volume will be created for %s": [
+    "Für %s wird ein neues Volume erstellt",
+    "Für %s werden neue Volumes erstellt"
   ],
   "A partition may be deleted": [
     "Eine Partition kann gelöscht werden"
@@ -108,6 +127,9 @@ export default {
   "Add LVM volume group": [
     "LVM-Volume-Gruppe hinzufügen"
   ],
+  "Add a partition or mount an existing one": [
+    "Eine Partition hinzufügen oder eine vorhandene Partition einhängen"
+  ],
   "Add an address": [
     "Adresse hinzufügen"
   ],
@@ -144,6 +166,9 @@ export default {
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     "Alle Konflikte wurden gelöst, oder es wurden keine erkannt. Sie können gefahrlos mit Ihrer Einrichtung fortfahren."
   ],
+  "All content not configured to be mounted will be deleted": [
+    "Jeder Inhalt, der nicht zum Einhängen konfiguriert ist, wird gelöscht"
+  ],
   "All content will be deleted": [
     "Der gesamte Inhalt wird gelöscht"
   ],
@@ -153,17 +178,37 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Alle über diese Schnittstelle verwalteten Netzwerkverbindungen sind derzeit so eingestellt, dass sie nur während der Installation verwendet und nicht auf das installierte System kopiert werden"
   ],
+  "Allow growing": [
+    "Wachstum erlauben"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Neben der Definition des ersten Benutzers können auch die Authentifizierungsmethoden für den Root-Benutzer konfiguriert werden."
+  ],
+  "Already using all available devices": [
+    "Alle verfügbaren Geräte werden bereits verwendet"
   ],
   "Already using all available disks": [
     "Alle verfügbaren Festplatten werden bereits verwendet"
   ],
+  "An existing partition will be used for %s": [
+    "Eine vorhandene Partition wird für %s verwendet",
+    "Vorhandene Partitionen werden für %s verwendet"
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Alle vorhandenen Partitionen werden entfernt und alle Daten auf der Festplatte gehen verloren."
   ],
+  "Any partition needed to boot will be configured.": [
+    "Jede Partition, die zum Booten benötigt wird, wird konfiguriert."
+  ],
   "Apply selected solution": [
     "Ausgewählte Lösung anwenden"
+  ],
+  "Apply to the selected device": [
+    "Auf das ausgewählte Gerät anwenden",
+    "Auf die ausgewählten %s-Geräte anwenden"
+  ],
+  "Applying changes": [
+    "Änderungen werden angewendet"
   ],
   "As a new partition on %s": [
     "Als eine neue Partition auf %s"
@@ -190,7 +235,7 @@ export default {
     "Authentifizierung durch das Ziel"
   ],
   "Auto LUNs Scan": [
-    ""
+    "Automatischer LUNs-Scan"
   ],
   "Automatic": [
     "Automatisch"
@@ -199,10 +244,10 @@ export default {
     "Automatisch (DHCP)"
   ],
   "Automatic LUN scan is [disabled]. LUNs have to be manually       configured after activating a controller.": [
-    ""
+    "Der automatische LUN-Scan ist [deaktiviert]. LUNs müssen manuell       konfiguriert werden, nachdem ein Controller aktiviert wurde."
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
-    ""
+    "Der automatische LUN-Scan ist [aktiviert]. Wenn Sie einen Controller aktivieren, der im       NPIV-Modus ausgeführt wird, werden alle seine LUNs automatisch konfiguriert."
   ],
   "Available products": [
     "Verfügbare Produkte"
@@ -210,14 +255,14 @@ export default {
   "Back": [
     "Zurück"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "Basierend auf der Größe des RAM im System wird eine %1s$ mit %2$s für %3$s erstellt"
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
+    "Basierend auf der Menge an RAM im System wird ein %1$s von %2$s für %3$s geplant"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "Basierend auf der Größe des RAM im System wird eine %1s$ mit mindestens %2$s für %3$s erstellt"
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
+    "Basierend auf der Menge an RAM im System wird ein %1$s mit mindestens %2$s für %3$s geplant"
   ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "Basierend auf der Größe des RAM im System wird eine %1s$ mit einer Größe zwischen %2$s und %3$s für %4$s erstellt"
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "Basierend auf der Menge an RAM im System wird ein %1$s mit einer Größe zwischen %2$s und %3$s für %4$s geplant"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -231,8 +276,23 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "Bevor Sie mit der Installation beginnen, müssen Sie sich mit folgenden Problemen befassen:"
   ],
+  "Below %s devices are offline and cannot be formatted.": [
+    "Die folgenden %s Geräte sind offline und können nicht formatiert werden."
+  ],
   "Beta": [
     "Beta"
+  ],
+  "Bind to MAC address": [
+    "Mit MAC-Adresse verknüpfen"
+  ],
+  "Bind to device name": [
+    "Mit Gerätenamen verknüpfen"
+  ],
+  "Binding": [
+    "Bindung"
+  ],
+  "Binding settings for '%s'": [
+    "Verknüpfungseinstellungen für ‚%s‘"
   ],
   "BitLocker": [
     "BitLocker"
@@ -246,9 +306,6 @@ export default {
   "Btrfs with snapshots": [
     "Btrfs mit Schnappschüssen"
   ],
-  "Calculated automatically": [
-    "Automatisch berechnet"
-  ],
   "Cancel": [
     "Abbrechen"
   ],
@@ -258,7 +315,10 @@ export default {
   "Cannot connect to Agama server": [
     "Verbindung zum Agama-Server nicht möglich"
   ],
-  "Cannot format all selected devices": [
+  "Cannot format %s": [
+    "%s kann nicht formatiert werden"
+  ],
+  "Cannot format all the selected devices": [
     "Es können nicht alle ausgewählten Geräte formatiert werden"
   ],
   "Change": [
@@ -279,6 +339,9 @@ export default {
   "Change display language and keyboard layout": [
     "Anzeigesprache und Tastaturbelegung ändern"
   ],
+  "Change filters and try again.": [
+    "Ändern Sie die Filter und versuchen Sie es erneut."
+  ],
   "Change keyboard": [
     "Tastatur ändern"
   ],
@@ -290,6 +353,9 @@ export default {
   ],
   "Change selection": [
     "Auswahl ändern"
+  ],
+  "Change the file system or mount point": [
+    "Dateisystem oder Einhängepunkt ändern"
   ],
   "Channel ID": [
     "Kanalkennung"
@@ -306,11 +372,23 @@ export default {
   "Choose a disk for placing the boot loader": [
     "Wählen Sie eine Festplatte für den Bootloader aus"
   ],
-  "Choose what to with current content": [
-    "Auswählen, was mit dem aktuellen Inhalt geschehen soll"
+  "Choose device to bind by MAC": [
+    "Zu verknüpfendes Gerät nach MAC auswählen"
+  ],
+  "Choose device to bind by name": [
+    "Zu verknüpfendes Gerät nach Namen auswählen"
+  ],
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
+    "Wählen Sie aus, wie die Verbindung mit einem Netzwerkgerät verknüpft werden soll. Damit lässt sich steuern, welches Gerät die Verbindung verwendet."
   ],
   "Clear": [
     "Leeren"
+  ],
+  "Clear all filters": [
+    "Alle Filter löschen"
+  ],
+  "Clear input": [
+    "Eingabe löschen"
   ],
   "Clear selected mount point": [
     "Ausgewählten Einhängepunkt löschen"
@@ -321,8 +399,14 @@ export default {
   "Collapse the list of planned actions": [
     "Liste der geplanten Aktionen einklappen"
   ],
+  "Configuration out of sync": [
+    "Konfiguration nicht synchronisiert"
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Konfiguration aus der iSCSI Boot-Firmware-Tabelle (iBFT) gelesen."
+  ],
+  "Configuration unreachable or invalid": [
+    "Konfiguration nicht erreichbar oder ungültig"
   ],
   "Configure DASD": [
     "DASD konfigurieren"
@@ -331,7 +415,10 @@ export default {
     "LVM-Volume-Gruppe konfigurieren"
   ],
   "Configure LVM logical volume at %s volume group": [
-    ""
+    "Logisches LVM-Volume bei Volume-Gruppe '%s' konfigurieren"
+  ],
+  "Configure device %s": [
+    "Gerät %s konfigurieren"
   ],
   "Configure device menu": [
     "Gerätemenü konfigurieren"
@@ -357,6 +444,9 @@ export default {
   "Confirm Installation": [
     "Installation bestätigen"
   ],
+  "Confirm that you really want to continue.": [
+    "Bestätigen Sie, dass Sie wirklich fortfahren möchten."
+  ],
   "Congratulations!": [
     "Gratulation!"
   ],
@@ -375,17 +465,35 @@ export default {
   "Connected (%s)": [
     "Verbunden (%s)"
   ],
+  "Connected device": [
+    "Verbundenes Gerät"
+  ],
+  "Connected devices": [
+    "Verbundene Geräte"
+  ],
+  "Connected devices tabs": [
+    "Tabs für verbundene Geräte"
+  ],
   "Connecting to %s": [
     "Verbindung zu %s wird hergestellt"
   ],
   "Connection details": [
     "Verbindungsdetails"
   ],
+  "Connection is available to all devices.": [
+    "Die Verbindung ist für alle Geräte verfügbar."
+  ],
+  "Connection is bound to MAC address %s.": [
+    "Die Verbindung ist an die MAC-Adresse %s gebunden."
+  ],
+  "Connection is bound to device %s.": [
+    "Die Verbindung ist an das Gerät %s gebunden."
+  ],
   "Connection not found or lost": [
     "Verbindung nicht gefunden oder verloren"
   ],
-  "Content will be kept": [
-    "Inhalt wird beibehalten"
+  "Content": [
+    "Inhalt"
   ],
   "Continue": [
     "Fortsetzen"
@@ -423,6 +531,12 @@ export default {
   "Current %s": [
     "Aktuell %s"
   ],
+  "Current content": [
+    "Aktueller Inhalt"
+  ],
+  "Current partitions will be kept": [
+    "Aktuelle Partitionen werden beibehalten"
+  ],
   "Custom": [
     "Benutzerdefiniert"
   ],
@@ -431,9 +545,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "DASD-Geräte-Auswahltabelle"
   ],
   "DIAG": [
     "DIAG"
@@ -453,11 +564,14 @@ export default {
   "Default file system for generic logical volumes": [
     "Standard-Dateisystem für generische logische Volumes"
   ],
+  "Default file system for generic mount paths": [
+    "Standard-Dateisystem für generische Einhängepfade"
+  ],
   "Default file system for generic partitions": [
     "Standard-Dateisystem für generische Partitionen"
   ],
-  "Define a custom size or a range": [
-    "Benutzerdefinierte Größe oder einen Bereich definieren"
+  "Define a custom size": [
+    "Benutzerdefinierte Größe definieren"
   ],
   "Define a new LVM on the disk": [
     "Einen neuen LVM auf der Festplatte definieren"
@@ -483,11 +597,20 @@ export default {
   "Delete volume group": [
     "Volume-Gruppe löschen"
   ],
+  "Description": [
+    "Beschreibung"
+  ],
+  "Destroy current data and format device as": [
+    "Aktuelle Daten zerstören und Gerät formatieren als"
+  ],
   "Destroy current data and format partition as": [
     "Aktuelle Daten zerstören und Partition formatieren als"
   ],
   "Details": [
     "Details"
+  ],
+  "Details for %s": [
+    "Details für %s"
   ],
   "Details will appear after the connection is successfully established.": [
     "Nachdem die Verbindung erfolgreich hergestellt wurde, werden Details angezeigt."
@@ -498,11 +621,17 @@ export default {
   "Device %s menu": [
     "Menü von Gerät %s"
   ],
+  "Device Selection": [
+    "Geräteauswahl"
+  ],
   "Device details": [
     "Gerätedetails"
   ],
   "Discard": [
     "Verwerfen"
+  ],
+  "Discard the maximum size and continue with simplified configuration": [
+    "Die maximale Größe verwerfen und mit der vereinfachten Konfiguration fortfahren"
   ],
   "Disconnected": [
     "Getrennt"
@@ -517,7 +646,7 @@ export default {
     "iSCSI-Ziele erkennen"
   ],
   "Discover iSCSI targets": [
-    "iSCSI-Ziele erkennen"
+    "iSCSI-Ziele entdecken"
   ],
   "Disk": [
     "Festplatte"
@@ -546,14 +675,23 @@ export default {
   "Edit %s": [
     "%s bearbeiten"
   ],
+  "Edit binding settings": [
+    "Verknüpfungseinstellungen bearbeiten"
+  ],
   "Edit connection %s": [
     "Verbindung %s bearbeiten"
+  ],
+  "Edit connection settings": [
+    "Verbindungseinstellungen bearbeiten"
   ],
   "Edit user": [
     "Benutzer bearbeiten"
   ],
   "Edit volume group": [
     "Volume-Gruppe bearbeiten"
+  ],
+  "Email": [
+    "E-Mail"
   ],
   "Empty LVM volume group %s": [
     "LVM-Volume-Gruppe %s löschen"
@@ -594,6 +732,9 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
+  "Example: https://myserver.com": [
+    "Beispiel: https://myserver.com"
+  ],
   "Excellent signal": [
     "Ausgezeichnetes Signal"
   ],
@@ -608,6 +749,14 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extend the installation beyond the currently selected device": [
+    "Die Installation über das aktuell ausgewählte Gerät hinaus erweitern",
+    "Die Installation über die aktuellen %d Geräte hinaus erweitern"
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "Die Installation über die aktuell ausgewählte Festplatte hinaus erweitern",
+    "Die Installation über die aktuellen %d Festplatten hinaus erweitern"
   ],
   "Extensions": [
     "Erweiterungen"
@@ -627,23 +776,23 @@ export default {
   "File system label": [
     "Dateisystem-Bezeichnung"
   ],
+  "Filesystems": [
+    "Dateisysteme"
+  ],
   "Filter by description or keymap code": [
     "Nach Beschreibung oder Tastenzuordnungscode filtern"
   ],
   "Filter by language, territory or locale code": [
     "Nach Sprache, Gebiet oder Sprachumgebungscode filtern"
   ],
-  "Filter by max channel": [
-    ""
-  ],
-  "Filter by min channel": [
-    ""
-  ],
   "Filter by pattern title or description": [
     "Nach Mustertitel oder Beschreibung filtern"
   ],
   "Filter by territory, time zone code or UTC offset": [
     "Nach Gebiet, Zeitzonencode oder UTC-Abweichung filtern"
+  ],
+  "Find space": [
+    "Speicherplatz ausfindig machen"
   ],
   "Find space in %s": [
     "Speicherplatz in %s finden"
@@ -657,17 +806,38 @@ export default {
   "First user": [
     "Erster Benutzer"
   ],
+  "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
+    "Für fortgeschrittene Anforderungen können Benutzer zu dieser ganzseitigen Version mit eigenem Pfad wechseln, die mehr Platz für detaillierte Ansichten, zusätzliche Spalten, Filter und erweiterte Funktionen bietet."
+  ],
   "Format": [
     "Formatieren"
   ],
+  "Format RAID %s": [
+    "RAID %s formatieren"
+  ],
+  "Format device %s": [
+    "Gerät %s formatieren"
+  ],
+  "Format device as": [
+    "Gerät formatieren als"
+  ],
+  "Format disk %s": [
+    "Laufwerk %s formatieren"
+  ],
   "Format logical volume as": [
     "Logisches Volume formatieren als"
+  ],
+  "Format now": [
+    "Jetzt formatieren"
   ],
   "Format partition as": [
     "Partition formatieren als"
   ],
   "Format selected devices?": [
     "Ausgewählte Geräte formatieren?"
+  ],
+  "Format the whole device or mount an existing file system": [
+    "Gesamtes Gerät formatieren oder ein vorhandenes Dateisystem einhängen"
   ],
   "Formatted": [
     "Formatiert"
@@ -693,6 +863,9 @@ export default {
   "Go to network page": [
     "Zur Netzwerkseite gehen"
   ],
+  "Go to storage page": [
+    "Zur Speicherungsseite gehen"
+  ],
   "Good signal": [
     "Gutes Signal"
   ],
@@ -716,7 +889,7 @@ export default {
     "Hostname erfolgreich aktualisiert"
   ],
   "I have read and accept the [license] for %s": [
-    "Ich habe die [Lizenz] für %s gelesen und akzeptiere sie."
+    "Ich habe die [Lizenz] für %s gelesen und akzeptiere sie"
   ],
   "IP Address": [
     "IP-Adresse"
@@ -741,9 +914,6 @@ export default {
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Wenn ein lokales Medium zur Ausführung dieses Installationsprogramms verwendet wurde, entfernen Sie es vor dem nächsten Start."
-  ],
-  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "Wenn die Einheit weggelassen wird, werden Bytes (B) verwendet. Größere Einheiten können in der Form GiB (Potenz von 2) oder GB (Potenz von 10) angegeben werden."
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Wenn Sie fortfahren, werden die Partitionen auf Ihrer Festplatte entsprechend den vorgegebenen Installationseinstellungen geändert."
@@ -838,6 +1008,24 @@ export default {
   "Issuer": [
     "Aussteller"
   ],
+  "It doesn't exist or can't be reached.": [
+    "Sie existiert nicht oder ist nicht erreichbar."
+  ],
+  "It is chosen for booting": [
+    "Es wird zum Booten ausgewählt"
+  ],
+  "It is chosen for booting and for some LVM groups": [
+    "Es wird zum Booten und für einige LVM-Gruppen ausgewählt"
+  ],
+  "It is chosen for booting and for the LVM group '%s'": [
+    "Es wird zum Booten und für die LVM-Gruppe ‚%s‘ ausgewählt"
+  ],
+  "It is chosen for some LVM groups": [
+    "Es wird für einige LVM-Gruppen ausgewählt"
+  ],
+  "It is chosen for the LVM group '%s'": [
+    "Es wird für die LVM-Gruppe ‚%s‘ ausgewählt"
+  ],
   "It is not possible to allocate space for %s.": [
     "Es ist nicht möglich, Platz für %s zuzuweisen."
   ],
@@ -847,14 +1035,14 @@ export default {
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Es ist nicht möglich, das System mit der aktuellen Konfiguration zu installieren. Passen Sie die Einstellungen unten an."
   ],
+  "It is offline and must be activated before formatting it.": [
+    "Es ist offline und muss vor dem Formatieren aktiviert werden."
+  ],
   "It may take some time.": [
     "Es könnte einige Zeit dauern."
   ],
   "JFS": [
     "JFS"
-  ],
-  "Keep size of %s": [
-    "Größe von %s beibehalten"
   ],
   "Keyboard": [
     "Tastatur"
@@ -880,20 +1068,17 @@ export default {
   "Language and keyboard": [
     "Sprache und Tastatur"
   ],
-  "Let the installer propose a sensible range of sizes": [
-    "Eine vernünftige Auswahl an Größen durch das Installationsprogramm vorschlagen lassen"
-  ],
-  "License language": [
-    "Lizenzsprache"
-  ],
-  "Limited": [
-    "Begrenzt"
+  "Let the installer propose a sensible size": [
+    "Eine vernünftige Größe durch das Installationsprogramm vorschlagen lassen"
   ],
   "Loading": [
     "Wird geladen"
   ],
   "Loading data...": [
     "Daten werden gelesen ..."
+  ],
+  "Loading storage": [
+    "Datenspeicher wird geladen"
   ],
   "Loading the installation repositories...": [
     "Installations-Repositorien werden geladen ..."
@@ -913,8 +1098,8 @@ export default {
   "Logical volume name": [
     "Name des logischen Volumes"
   ],
-  "Logical volumes": [
-    "Logische Volumes"
+  "Logical volumes for %s": [
+    "Logische Volumes für %s"
   ],
   "Login": [
     "Anmelden"
@@ -943,26 +1128,14 @@ export default {
   "Manual": [
     "Manuell"
   ],
-  "Maximum": [
-    "Maximum"
-  ],
-  "Maximum size mode": [
-    "Modus der Maximalgröße"
-  ],
-  "Maximum size options": [
-    "Optionen für die maximale Größe"
-  ],
-  "Maximum size value": [
-    "Wert der Maximalgröße"
+  "Max channel": [
+    "Maximaler Kanal"
   ],
   "MiB": [
     "MiB"
   ],
-  "Minimum": [
-    "Minimum"
-  ],
-  "Minimum size value": [
-    "Wert der Mindestgröße"
+  "Min channel": [
+    "Minimaler Kanal"
   ],
   "Mode": [
     "Modus"
@@ -977,7 +1150,7 @@ export default {
     "Weitere Geräte"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    "Weitere Tastaturbelegungen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar."
+    "Weitere Tastaturbelegungen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
     "Weitere Sprach- und Tastaturbelegungsoptionen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar."
@@ -985,8 +1158,25 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "Weitere Sprachen für das ausgewählte Produkt sind unter Umständen auf der Seite [Localization] verfügbar"
   ],
+  "Moreover, the following partition will be created.": [
+    "Zudem wird die folgende Partition erstellt.",
+    "Zudem werden die folgenden Partitionen erstellt."
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "Zudem wird die folgende Partition eingehängt.",
+    "Zudem werden die folgenden Partitionen eingehängt."
+  ],
+  "Moreover, the following partitions will be created or mounted": [
+    "Zudem werden die folgenden Partitionen erstellt oder eingehängt"
+  ],
   "Mount Point": [
     "Einhängepunkt"
+  ],
+  "Mount RAID %s": [
+    "RAID %s einhängen"
+  ],
+  "Mount disk %s": [
+    "Laufwerk %s einhängen"
   ],
   "Mount point": [
     "Einhängepunkt"
@@ -1039,6 +1229,12 @@ export default {
   "No": [
     "Nein"
   ],
+  "No DASD devices were found in this machine.": [
+    "In dieser Maschine wurden keine DASD-Geräte gefunden."
+  ],
+  "No Wi-Fi networks were found": [
+    "Keine Wi-Fi-Netzwerke gefunden"
+  ],
   "No additional partitions will be created": [
     "Es werden keine zusätzlichen Partitionen erstellt"
   ],
@@ -1051,8 +1247,14 @@ export default {
   "No content found": [
     "Kein Inhalt gefunden"
   ],
+  "No device is currently using this connection.": [
+    "Derzeit verwendet kein Gerät diese Verbindung."
+  ],
   "No device selected yet": [
     "Noch kein Gerät ausgewählt"
+  ],
+  "No devices available": [
+    "Keine Geräte verfügbar"
   ],
   "No devices configured yet": [
     "Noch keine Geräte konfiguriert"
@@ -1078,6 +1280,9 @@ export default {
   "No user defined yet.": [
     "Noch kein Benutzer definiert."
   ],
+  "No wired connections were found": [
+    "Keine kabelgebundenen Verbindungen gefunden"
+  ],
   "No zFCP controllers found.": [
     "Keine zFCP-Controller gefunden."
   ],
@@ -1099,8 +1304,14 @@ export default {
   "None of the time zones match the filter.": [
     "Keine der Zeitzonen entspricht dem Filter."
   ],
+  "None set": [
+    "Keine festgelegt"
+  ],
   "Not available": [
     "Nicht verfügbar"
+  ],
+  "Not configured yet": [
+    "Noch nicht konfiguriert"
   ],
   "Not defined": [
     "Nicht definiert"
@@ -1120,20 +1331,26 @@ export default {
   "Not supported (%s)": [
     "Nicht unterstützt (%s)"
   ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Offline-Geräte müssen aktiviert werden, bevor sie formatiert werden können. Bitte deaktivieren oder aktivieren Sie die unten aufgeführten Geräte und versuchen Sie es erneut"
-  ],
   "On boot": [
     "Beim Booten"
   ],
   "Only available if authentication by target is provided": [
     "Nur verfügbar, wenn Authentifizierung durch das Ziel angeboten wird"
   ],
+  "Only reused partitions and space not assigned to any partition will be used.": [
+    "Es werden nur wiederverwendete Partitionen und Speicherplatz, der keiner Partition zugewiesen ist, verwendet."
+  ],
+  "Only reused partitions will be used.": [
+    "Es werden nur wiederverwendete Partitionen verwendet."
+  ],
   "Options toggle": [
     "Optionen umschalten"
   ],
   "Other options": [
     "Andere Optionen"
+  ],
+  "Other options toggle": [
+    "Umschalter für andere Optionen"
   ],
   "Overview": [
     "Übersicht"
@@ -1144,20 +1361,26 @@ export default {
   "Partition Info": [
     "Partitionierungsinformationen"
   ],
-  "Partitions": [
-    "Partitionen"
-  ],
   "Partitions needed for booting will also be adapted": [
     "Zum Booten benötigte Partitionen werden ebenfalls angepasst"
   ],
   "Partitions needed for booting will remain at %s": [
     "Zum Booten benötigte Partitionen bleiben bei %s"
   ],
+  "Partitions that are not reused will be removed and that data will be lost.": [
+    "Partitionen, die nicht wiederverwendet werden, werden entfernt und deren Daten gehen verloren."
+  ],
+  "Partitions that are not reused will be resized as needed.": [
+    "Die Größe von Partitionen, die nicht wiederverwendet werden, wird nach Bedarf geändert."
+  ],
+  "Partitions that are not reused would be resized if needed.": [
+    "Die Größe von Partitionen, die nicht wiederverwendet werden, wird bei Bedarf angepasst."
+  ],
   "Partitions to boot will be allocated at the following device.": [
     "Die zu bootenden Partitionen werden auf dem folgenden Gerät zugewiesen."
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Die zu bootenden Partitionen werden auf der Installationsfestplatte (%s) zugewiesen."
+  "Partitions to boot will be allocated at the installation disk %s.": [
+    "Die zu bootenden Partitionen werden auf der Installationsfestplatte %s zugewiesen."
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Die zu bootenden Partitionen werden auf der Installationsfestplatte zugewiesen."
@@ -1188,9 +1411,6 @@ export default {
   ],
   "Pending": [
     "Ausstehend"
-  ],
-  "Perform an action": [
-    "Aktion durchführen"
   ],
   "PiB": [
     "PiB"
@@ -1234,6 +1454,9 @@ export default {
   "Provide email address": [
     "E-Mail-Adresse angeben"
   ],
+  "Provide registration code": [
+    "Registrierungscode angeben"
+  ],
   "Public SSH Key": [
     "Öffentlicher SSH-Schlüssel"
   ],
@@ -1258,6 +1481,12 @@ export default {
   "Register": [
     "Registrieren"
   ],
+  "Register using SUSE server": [
+    "Mittels SUSE Server registrieren"
+  ],
+  "Register using a custom registration server": [
+    "Mittels eines benutzerdefinierten Registrierungsservers registrieren"
+  ],
   "Registration": [
     "Registrierung"
   ],
@@ -1267,23 +1496,26 @@ export default {
   "Registration code": [
     "Registrierungscode"
   ],
+  "Registration server": [
+    "Registrierungsserver"
+  ],
   "ReiserFS": [
     "ReiserFS"
   ],
   "Reload": [
     "Neu laden"
   ],
+  "Reload now": [
+    "Jetzt neu laden"
+  ],
   "Reloading data, please wait...": [
     "Daten werden neu geladen, bitte warten ..."
   ],
+  "Reloading is required to get the latest data and avoid issues or data loss.": [
+    "Ein Neuladen ist erforderlich, um die neuesten Daten abzurufen und Probleme oder Datenverluste zu vermeiden."
+  ],
   "Remove": [
     "Entfernen"
-  ],
-  "Remove max channel filter": [
-    ""
-  ],
-  "Remove min channel filter": [
-    ""
   ],
   "Remove the configuration for this disk": [
     "Konfiguration für diese Festplatte entfernen"
@@ -1291,14 +1523,23 @@ export default {
   "Repository load failed": [
     "Laden des Repositoriums ist fehlgeschlagen"
   ],
+  "Rescan devices": [
+    "Geräte neu scannen"
+  ],
   "Reset to defaults": [
     "Auf Standardeinstellungen zurücksetzen"
   ],
   "Reset to the default configuration": [
     "Auf die Standardkonfiguration zurücksetzen"
   ],
+  "Resource not found or lost": [
+    "Ressource nicht gefunden oder verloren"
+  ],
   "Result": [
     "Ergebnis"
+  ],
+  "Reused partitions will not be shrunk": [
+    "Wiederverwendete Partitionen werden nicht verkleinert"
   ],
   "Review and fix": [
     "Überprüfen und korrigieren"
@@ -1312,6 +1553,15 @@ export default {
   "Routes": [
     "Routen"
   ],
+  "Row actions": [
+    "Zeilenaktionen"
+  ],
+  "Row expansion": [
+    "Zeilenausdehnung"
+  ],
+  "Row selection": [
+    "Zeilenauswahl"
+  ],
   "SD Card": [
     "SD-Karte"
   ],
@@ -1324,8 +1574,8 @@ export default {
   "SSID": [
     "SSID"
   ],
-  "Same as minimum": [
-    "Gleich wie Minimum"
+  "SUSE Customer Center (SCC)": [
+    "SUSE Customer Center (SCC)"
   ],
   "Search": [
     "Suchen"
@@ -1342,6 +1592,9 @@ export default {
   "Select": [
     "Auswählen"
   ],
+  "Select a device to define partitions or to mount": [
+    "Wählen Sie ein Gerät aus, um Partitionen zu definieren oder einzuhängen"
+  ],
   "Select a disk": [
     "Festplatte auswählen"
   ],
@@ -1351,8 +1604,11 @@ export default {
   "Select a disk to create %s": [
     "Festplatte zum Erstellen von %s auswählen"
   ],
-  "Select a disk to define partitions": [
-    "Wählen Sie eine Festplatte, um Partitionen zu definieren"
+  "Select a disk to define partitions or to mount": [
+    "Wählen Sie eine Festplatte aus, um Partitionen zu definieren oder einzuhängen"
+  ],
+  "Select a disk to format as %s": [
+    "Festplatte zum Formatieren als %s auswählen"
   ],
   "Select a disk to install the system": [
     "Festplatte für die Installation des Systems auswählen"
@@ -1363,11 +1619,17 @@ export default {
   "Select a solution to continue": [
     "Eine Lösung auswählen, um fortzufahren"
   ],
-  "Select another disk to define partitions": [
-    "Wählen Sie eine andere Festplatte aus, um Partitionen zu definieren"
+  "Select another device to define partitions or to mount": [
+    "Wählen Sie ein anderes Gerät aus, um Partitionen zu definieren oder einzuhängen"
+  ],
+  "Select another disk to define partitions or to mount": [
+    "Wählen Sie eine andere Festplatte aus, um Partitionen zu definieren oder einzuhängen"
   ],
   "Select at least one disk.": [
     "Wählen Sie mindestens eine Festplatte aus."
+  ],
+  "Select devices to enable bulk actions.": [
+    "Wählen Sie Geräte aus, um Massenaktionen zu aktivieren."
   ],
   "Select or enter a mount point": [
     "Einhängepunkt auswählen oder eingeben"
@@ -1387,8 +1649,8 @@ export default {
   "Select what to do with each partition.": [
     "Wählen Sie aus, was mit jeder Partition gemacht werden soll."
   ],
-  "Selected disk (cannot be changed)": [
-    "Ausgewählte Festplatte (kann nicht geändert werden)"
+  "Selected disk cannot be changed": [
+    "Ausgewählte Festplatte kann nicht geändert werden"
   ],
   "Selected patterns": [
     "Ausgewählte Muster"
@@ -1396,10 +1658,16 @@ export default {
   "Server IP": [
     "Server-IP"
   ],
-  "Set DIAG Off": [
+  "Server URL": [
+    "Server-URL"
+  ],
+  "Server options": [
+    "Serveroptionen"
+  ],
+  "Set DIAG off": [
     "DIAG ausschalten"
   ],
-  "Set DIAG On": [
+  "Set DIAG on": [
     "DIAG einschalten"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
@@ -1407,6 +1675,9 @@ export default {
   ],
   "Setting up connection": [
     "Verbindung herstellen"
+  ],
+  "Settings": [
+    "Einstellungen"
   ],
   "Several partitions will be deleted": [
     "Mehrere Partitionen werden gelöscht"
@@ -1442,14 +1713,20 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Größenbeschränkungen müssen Zahlen sein, optional gefolgt von einer Einheit wie GiB oder GB"
   ],
-  "Size options": [
-    "Größenoptionen"
+  "Size mode": [
+    "Größenmodus"
   ],
-  "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "Größen müssen als Zahlen eingegeben werden, optional gefolgt von einer Einheit."
+  "Size modes": [
+    "Größenmodi"
   ],
   "Skip to content": [
     "Zum Inhalt springen"
+  ],
+  "Skip to next": [
+    "Zum nächsten Punkt springen"
+  ],
+  "Skip to previous": [
+    "Zum vorherigen Punkt springen"
   ],
   "Software": [
     "Software"
@@ -1487,6 +1764,9 @@ export default {
   "Start from scratch with the default configuration": [
     "Mit der Standardkonfiguration neu beginnen"
   ],
+  "Startup": [
+    "Start"
+  ],
   "Static hostname": [
     "Statischer Hostname"
   ],
@@ -1517,8 +1797,18 @@ export default {
   "The LVM group '%1$s' will remain at %2$s": [
     "Die LVM-Gruppe ‚%1$s‘ wird bei %2$s bleiben"
   ],
+  "The configuration has been updated externally.": [
+    "Die Konfiguration wurde extern aktualisiert."
+  ],
+  "The configuration must be adapted to address the following issue:": [
+    "Die Konfiguration muss angepasst werden, um das folgende Problem zu beheben:",
+    "Die Konfiguration muss angepasst werden, um die folgenden Probleme zu beheben:"
+  ],
   "The configured LVM groups will remain at %s": [
     "Die konfigurierten LVM-Gruppen bleiben bei %s"
+  ],
+  "The connection can be used by any available device.": [
+    "Die Verbindung kann von jedem verfügbaren Gerät genutzt werden."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Die Verbindung wird nur während der Installation verwendet und ist im installierten System nicht verfügbar."
@@ -1526,14 +1816,21 @@ export default {
   "The content may be deleted": [
     "Der Inhalt kann gelöscht werden"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "Die aktuelle Konfiguration führt zu einer %1$s mit %2$s."
+  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
+    "Die aktuelle Konfiguration führt zu einem Versuch, ein %1$s von %2$s zu erstellen."
   ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "Die aktuelle Konfiguration führt zu einer %1$s mit mindestens %2$s."
+  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
+    "Die aktuelle Konfiguration führt zu einem Versuch, eine %1$s mit mindestens %2$s zu erstellen."
   ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "Die aktuelle Konfiguration führt zu einer %1$s mit einer Größe zwischen %2$s und %3$s."
+  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
+    "Die aktuelle Konfiguration führt zu einem Versuch, ein %1$s mit einer Größe zwischen %2$s und %3$s zu erstellen."
+  ],
+  "The current file system will be mounted at %s": [
+    "Das aktuelle Dateisystem wird unter %s eingehängt"
+  ],
+  "The current storage configuration has the following issue:": [
+    "Die aktuelle Speicherungskonfiguration weist folgendes Problem auf:",
+    "Die aktuelle Speicherungskonfiguration weist folgende Probleme auf:"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Die Daten bleiben erhalten, aber die Größe der aktuellen Partitionen wird nach Bedarf geändert."
@@ -1543,6 +1840,15 @@ export default {
   ],
   "The device cannot be shrunk:": [
     "Das Gerät kann nicht verkleinert werden:"
+  ],
+  "The device will be formatted": [
+    "Das Gerät wird formatiert"
+  ],
+  "The device will be formatted as %1$s and mounted at %2$s": [
+    "Das Gerät wird als %1$s formatiert und unter %2$s eingehängt"
+  ],
+  "The device will be mounted": [
+    "Das Gerät wird eingehängt"
   ],
   "The device will be mounted at %s.": [
     "Das Gerät wird unter %s eingehängt."
@@ -1565,8 +1871,29 @@ export default {
   "The extension has been registered with key %s.": [
     "Die Erweiterung wurde mit dem Schlüssel %s registriert."
   ],
+  "The extension was registered without any registration code.": [
+    "Die Erweiterung wurde ohne einen Registrierungscode registriert."
+  ],
+  "The final size can be bigger in order to fill the extra free space.": [
+    "Die endgültige Größe kann größer sein, um den zusätzlichen freien Platz zu füllen."
+  ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Der letzte Schritt zur Konfiguration des Trusted Platform Module (TPM) zum automatischen Öffnen verschlüsselter Geräte erfolgt beim ersten Booten des neuen Systems. Damit dies funktioniert, muss der Rechner direkt mit dem neuen Bootloader booten."
+  ],
+  "The following logical volume will be created": [
+    "Das folgende logische Volume wird erstellt",
+    "Die folgenden logischen Volumes werden erstellt"
+  ],
+  "The following partition will be created.": [
+    "Die folgende Partition wird erstellt.",
+    "Die folgenden Partitionen werden erstellt."
+  ],
+  "The following partition will be mounted.": [
+    "Die folgende Partition wird eingehängt.",
+    "Die folgenden Partitionen werden eingehängt."
+  ],
+  "The following partitions will be created or mounted": [
+    "Die folgenden Partitionen werden erstellt oder eingehängt"
   ],
   "The following software patterns are selected for installation:": [
     "Die folgenden Softwaremuster werden für die Installation ausgewählt:"
@@ -1584,19 +1911,14 @@ export default {
     "Die Installation benötigt %s einschließlich:"
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
-    ""
+    "Die Oberfläche des Installationsprogramms ist nicht mehr verfügbar, daher können Sie dieses Fenster gefahrlos schließen."
   ],
   "The installer requires [root] user privileges.": [
     "Das Installationsprogramm erfordert [root]-Benutzerrechte."
   ],
-  "The logical volume can grow to use all the contiguous free space": [
-    "Das logische Volume kann so lange wachsen, bis es den gesamten zusammenhängenden freien Speicherplatz belegt"
-  ],
-  "The logical volume can grow until a given limit size": [
-    "Das logische Volume kann bis zu einer bestimmten Maximalgröße wachsen"
-  ],
-  "The logical volume is created exactly with the given size": [
-    "Das logische Volume wird genau mit der angegebenen Größe erstellt"
+  "The logical volume will also be deleted": [
+    "Das logische Volume wird ebenfalls gelöscht",
+    "Die logischen Volumes werden ebenfalls gelöscht"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Das Maximum muss eine Zahl sein, gefolgt von einer Einheit wie GiB oder GB"
@@ -1613,50 +1935,53 @@ export default {
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "Das Minimum muss eine Zahl sein, optional gefolgt von einer Einheit wie GiB oder GB"
   ],
+  "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
+    "Die modale Auswahl bietet eine vereinfachte Schnittstelle, die für eine schnelle und unkomplizierte Nutzung ausgelegt ist, ohne den Benutzer zu überfordern."
+  ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "Die benötigten physikalischen LVM-Volumes werden als Partitionen auf den ausgewählten Festplatten hinzugefügt, basierend auf den Größen der logischen Volumes. Wenn Sie mehr als eine Festplatte auswählen, können die physikalischen Volumes auf mehrere Festplatten verteilt werden."
   ],
-  "The partition can grow to use all the contiguous free space": [
-    "Die Partition kann so lange wachsen, bis sie den gesamten zusammenhängenden freien Speicherplatz belegt"
-  ],
-  "The partition can grow until a given limit size": [
-    "Die Partition kann bis zu einer bestimmten Maximalgröße wachsen"
-  ],
-  "The partition is created exactly with the given size": [
-    "Die Partition wird genau mit der angegebenen Größe erstellt"
+  "The password is weak": [
+    "Das Passwort ist schwach"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Das Passwort wird nicht benötigt, um zu booten und auf die Daten zuzugreifen, wenn das TPM die Integrität des Systems verifizieren kann. Die TPM-Versiegelung erfordert, dass das neue System bei seinem ersten Start direkt gebootet wird."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "Der Größenbereich für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System und dem Vorhandensein eines separaten Dateisystems für %2$s."
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
+    "Die Größe für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System und dem Vorhandensein eines separaten Dateisystems für %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "Der Größenbereich für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System und dem Vorhandensein von separaten Dateisystemen für %2$s."
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
+    "Die Größe für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System und dem Vorhandensein von separaten Dateisystemen für %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Der Größenbereich für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System, der Verwendung von Btrfs-Schnappschüssen und dem Vorhandensein eines separaten Dateisystems für %2$s."
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "Die Größe für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System, der Verwendung von Btrfs-Schnappschüssen und dem Vorhandensein eines separaten Dateisystems für %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Der Größenbereich für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System, der Verwendung von Btrfs-Schnappschüssen und dem Vorhandensein von separaten Dateisystemen für %2$s."
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "Die Größe für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System, der Verwendung von Btrfs-Schnappschüssen und dem Vorhandensein von separaten Dateisystemen für %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "Der Größenbereich für %1$s wird dynamisch angepasst, basierend auf dem Vorhandensein eines separaten Dateisystems für %2$s."
+  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
+    "Die Größe für %1$s wird dynamisch angepasst, basierend auf dem Vorhandensein eines separaten Dateisystems für %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "Der Größenbereich für %1$s wird dynamisch angepasst, basierend auf dem Vorhandensein von separaten Dateisystemen für %2$s."
+  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
+    "Die Größe für %1$s wird dynamisch angepasst, basierend auf dem Vorhandensein von separaten Dateisystemen für %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Der Größenbereich für %1$s wird dynamisch angepasst, basierend auf der Verwendung von Btrfs-Schnappschüssen und dem Vorhandensein eines separaten Dateisystems für %2$s."
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "Die Größe für %1$s wird dynamisch angepasst, basierend auf der Verwendung von Btrfs-Schnappschüssen und dem Vorhandensein eines separaten Dateisystems für %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Der Größenbereich für %1$s wird dynamisch angepasst, basierend auf der Verwendung von Btrfs-Schnappschüssen und dem Vorhandensein von separaten Dateisystemen für %2$s."
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "Die Größe für %1$s wird dynamisch angepasst, basierend auf der Verwendung von Btrfs-Schnappschüssen und dem Vorhandensein von separaten Dateisystemen für %2$s."
   ],
-  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "Der Größenbereich für %s wird dynamisch angepasst, basierend auf der Menge an RAM im System und der Verwendung von Btrfs-Schnappschüssen."
+  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
+    "Die Größe für %s wird dynamisch angepasst, basierend auf der Menge an RAM im System und der Verwendung von Btrfs-Schnappschüssen."
   ],
-  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "Der Größenbereich für %s wird dynamisch angepasst, basierend auf der Verwendung von Btrfs-Schnappschüssen."
+  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
+    "Die Größe für %s wird dynamisch angepasst, basierend auf der Verwendung von Btrfs-Schnappschüssen."
+  ],
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
+    "Die Größe ist als Bereich zwischen %s und %s konfiguriert, aber diese Schnittstelle kann keine Bereiche mit einer bestimmten maximalen Größe verarbeiten."
+  ],
+  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
+    "Die Größe muss eine Zahl sein, gefolgt von einer Einheit der Form GiB (Potenz von 2) oder GB (Potenz von 10)."
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "Die Speicherungskonfiguration ist gültig (siehe Ergebnis unten), verwendet aber Elemente, die von dieser Schnittstelle nicht unterstützt werden."
@@ -1664,8 +1989,14 @@ export default {
   "The storage configuration uses elements not supported by this interface.": [
     "Die Speicherungskonfiguration verwendet Elemente, die von dieser Schnittstelle nicht unterstützt werden."
   ],
+  "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
+    "Das System unterstützt keine WiFi-Verbindungen, wahrscheinlich wegen fehlender oder deaktivierter Hardware."
+  ],
   "The system will use %s as its default language.": [
     "Das System wird %s als Standardsprache verwenden."
+  ],
+  "The whole device will be used for %s": [
+    "Das gesamte Gerät wird für %s verwendet"
   ],
   "The zFCP disk was not activated.": [
     "Die zFCP-Festplatte wurde nicht aktiviert."
@@ -1679,6 +2010,14 @@ export default {
   "There are not usable partitions": [
     "Es sind keine nutzbaren Partitionen vorhanden"
   ],
+  "There is %d destructive action planned": [
+    "Es ist %d zerstörerische Aktion geplant",
+    "Es sind %d zerstörerische Aktionen geplant"
+  ],
+  "There is %d destructive action planned affecting %s": [
+    "Es ist %d zerstörerische Aktion geplant, die %s betrifft",
+    "Es sind %d zerstörerische Aktionen geplant, die %s betreffen"
+  ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Dies sind die wichtigsten Installationseinstellungen. Weitere Einzelheiten finden Sie in den Abschnitten des Menüs."
   ],
@@ -1688,29 +2027,29 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Dies sind die Einstellungen für das zu installierende Produkt. Die Sprache des Installationsprogramms kann über das [settings panel] in der oberen Leiste angepasst werden."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Diese Aktion könnte alle Daten zerstören, die auf den unten aufgeführten Geräten gespeichert sind. Bitte bestätigen Sie, dass Sie wirklich fortfahren möchten."
+  "This action could destroy any data stored on the device.": [
+    "Diese Aktion kann alle auf dem Gerät gespeicherten Daten zerstören."
   ],
-  "This disk will contain any partition needed for booting": [
-    "Diese Festplatte wird jede zum Booten benötigte Partition enthalten"
-  ],
-  "This disk will contain the LVM group '%s'": [
-    "Diese Festplatte wird die LVM-Gruppe ‚%s‘ enthalten"
-  ],
-  "This disk will contain the LVM group '%s' and any partition needed to boot": [
-    "Diese Festplatte wird die LVM-Gruppe ‚%s‘ und jede zum Booten benötigte Partition enthalten"
-  ],
-  "This disk will contain the configured LVM groups": [
-    "Diese Festplatte wird die konfigurierten LVM-Gruppen enthalten"
-  ],
-  "This disk will contain the configured LVM groups and any partition needed to boot": [
-    "Diese Festplatte wird die konfigurierten LVM-Gruppen und alle zum Booten benötigten Partitionen enthalten"
+  "This action could destroy any data stored on the devices listed below.": [
+    "Diese Aktion kann alle auf den unten aufgeführten Geräten gespeicherten Daten zerstören."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Diese Erweiterung ist auf dem Server nicht verfügbar. Bitten Sie den Serveradministrator, die Erweiterung zu spiegeln."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "Dieser Hostname ist dynamisch und kann sich nach einem Neustart oder einer Netzwerkaktualisierung ändern, wie vom lokalen Netzwerkadministrator konfiguriert."
+  ],
+  "This license is not available in %s.": [
+    "Diese Lizenz ist in %s nicht verfügbar."
+  ],
+  "This may take a moment while updates complete.": [
+    "Es kann einen Moment dauern, bis die Aktualisierungen abgeschlossen sind."
+  ],
+  "This message will close automatically when everything is done.": [
+    "Diese Meldung wird automatisch geschlossen, wenn alles erledigt ist."
+  ],
+  "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
+    "Dieses Muster schafft ein Gleichgewicht zwischen Klarheit und Effizienz: Das Modal hält die Dinge leicht für einfache Auswahlen, während die Vollansicht eine tiefere Erkundung und komplexere Aktionen unterstützt, insbesondere für Nutzer mit vielen Geräten."
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "Bei diesem Produkt ist es nicht möglich, während der Installation Softwaremuster auszuwählen. Sie können jedoch zusätzliche Software hinzufügen, sobald die Installation abgeschlossen ist."
@@ -1720,6 +2059,9 @@ export default {
   ],
   "This uses existing partitions at the disk": [
     "Dies verwendet vorhandene Partitionen auf der Festplatte"
+  ],
+  "This uses the existing file system at the disk": [
+    "Dies verwendet das vorhandene Dateisystem auf der Festplatte"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Dies betrifft nur die Oberfläche des Installationsprogramms, nicht das zu installierende Produkt. Sie können die Lokalisierung des Produkts später auf der Seite mit den Lokalisierungseinstellungen anpassen."
@@ -1751,8 +2093,14 @@ export default {
   "Unable to modify the settings": [
     "Einstellungen können nicht geändert werden"
   ],
+  "Unbound": [
+    "Ungebunden"
+  ],
   "Unselect": [
     "Abwählen"
+  ],
+  "Unselect or activate them and try it again.": [
+    "Wählen Sie sie ab oder aktivieren Sie sie und versuchen Sie es erneut."
   ],
   "Unsupported AutoYaST elements": [
     "Nicht unterstützte AutoYaST-Elemente"
@@ -1762,6 +2110,9 @@ export default {
   ],
   "Up to %s can be recovered by shrinking the device.": [
     "Bis zu %s können durch Verkleinern des Geräts zurückgewonnen werden."
+  ],
+  "Update available disks and activate crypt devices": [
+    "Verfügbare Festplatten aktualisieren und Kryptogeräte aktivieren"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Wenn Sie den Hostnamen jetzt oder später aktualisieren, wird der aktuell registrierte Hostname nicht geändert."
@@ -1778,47 +2129,83 @@ export default {
   "Use": [
     "Verwenden"
   ],
-  "Use %s": [
-    "%s verwenden"
+  "Use RAID %s": [
+    "RAID %s verwenden"
   ],
-  "Use %s for LVM and additional partitions": [
-    "%s für den LVM und zusätzliche Partitionen verwenden"
+  "Use RAID %s for LVM and additional partitions": [
+    "RAID %s für den LVM und zusätzliche Partitionen verwenden"
   ],
-  "Use %s for LVM, additional partitions and booting": [
-    "%s für den LVM, zusätzliche Partitionen und zum Booten verwenden"
+  "Use RAID %s for LVM, additional partitions and booting": [
+    "RAID %s für den LVM, zusätzliche Partitionen und zum Booten verwenden"
   ],
-  "Use %s for additional partitions": [
-    "%s für zusätzliche Partitionen verwenden"
+  "Use RAID %s for additional partitions": [
+    "RAID %s für zusätzliche Partitionen verwenden"
   ],
-  "Use %s for additional partitions and booting": [
-    "%s für zusätzliche Partitionen und zum Booten verwenden"
+  "Use RAID %s for additional partitions and booting": [
+    "RAID %s für zusätzliche Partitionen und zum Booten verwenden"
   ],
-  "Use %s to configure boot partitions": [
-    "Verwenden Sie %s zur Konfiguration von Bootpartitionen"
+  "Use RAID %s to configure boot partitions": [
+    "RAID %s zum Konfigurieren von Bootpartitionen verwenden"
   ],
-  "Use %s to host LVM": [
-    "%s zum Hosten des LVM verwenden"
+  "Use RAID %s to host LVM": [
+    "RAID %s zum Hosten des LVM verwenden"
   ],
-  "Use %s to host LVM and boot": [
-    "%s zum Hosten des LVM und Booten verwenden"
+  "Use RAID %s to host LVM and boot": [
+    "RAID %s zum Hosten des LVM und zum Booten verwenden"
   ],
-  "Use %s to install": [
-    "%s zum Installieren verwenden"
+  "Use RAID %s to install": [
+    "RAID %s zum Installieren verwenden"
   ],
-  "Use %s to install and boot": [
-    "%s zum Installieren und Booten verwenden"
+  "Use RAID %s to install and boot": [
+    "RAID %s zum Installieren und Booten verwenden"
   ],
-  "Use %s to install and host LVM": [
-    "%s zum Installieren und Hosten des LVM verwenden"
+  "Use RAID %s to install and host LVM": [
+    "RAID %s zum Installieren und Hosten des LVM verwenden"
   ],
-  "Use %s to install, host LVM and boot": [
-    "%s zum Installieren, Hosten des LVM und Booten verwenden"
+  "Use RAID %s to install, host LVM and boot": [
+    "RAID %s zum Installieren, Hosten des LVM und Booten verwenden"
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
     "Verwenden Sie die nachstehenden Aktionen, um Ihre Geräte einzurichten, oder klicken Sie auf %s, um mit der Standardkonfiguration von vorn zu beginnen."
   ],
   "Use available space": [
     "Verfügbaren Speicherplatz verwenden"
+  ],
+  "Use disk %s": [
+    "Laufwerk %s verwenden"
+  ],
+  "Use disk %s for LVM and additional partitions": [
+    "Laufwerk %s für den LVM und zusätzliche Partitionen verwenden"
+  ],
+  "Use disk %s for LVM, additional partitions and booting": [
+    "Laufwerk %s für den LVM, zusätzliche Partitionen und zum Booten verwenden"
+  ],
+  "Use disk %s for additional partitions": [
+    "Laufwerk %s für zusätzliche Partitionen verwenden"
+  ],
+  "Use disk %s for additional partitions and booting": [
+    "Laufwerk %s für zusätzliche Partitionen und zum Booten verwenden"
+  ],
+  "Use disk %s to configure boot partitions": [
+    "Laufwerk %s zur Konfiguration von Bootpartitionen verwenden"
+  ],
+  "Use disk %s to host LVM": [
+    "Laufwerk %s zum Hosten des LVM verwenden"
+  ],
+  "Use disk %s to host LVM and boot": [
+    "Laufwerk %s zum Hosten des LVM und Booten verwenden"
+  ],
+  "Use disk %s to install": [
+    "Laufwerk %s zum Installieren verwenden"
+  ],
+  "Use disk %s to install and boot": [
+    "Laufwerk %s zum Installieren und Booten verwenden"
+  ],
+  "Use disk %s to install and host LVM": [
+    "Laufwerk %s zum Installieren und Hosten von LVM verwenden"
+  ],
+  "Use disk %s to install, host LVM and boot": [
+    "Laufwerk %s zur Installation, zum Hosten von LVM und zum Booten verwenden"
   ],
   "Use for installation only": [
     "Nur für die Installation verwenden"
@@ -1838,8 +2225,14 @@ export default {
   "Use suggested username": [
     "Vorgeschlagenen Benutzernamen verwenden"
   ],
+  "Use the RAID without partitions": [
+    "RAID ohne Partitionen verwenden"
+  ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     "Das Trusted Platform Module (TPM) zur automatischen Entschlüsselung bei jedem Bootvorgang verwenden"
+  ],
+  "Use the disk without partitions": [
+    "Festplatte ohne Partitionen verwenden"
   ],
   "Use these same settings for the selected product": [
     "Dieselben Einstellungen für das ausgewählte Produkt verwenden"
@@ -1892,6 +2285,15 @@ export default {
   "Weak signal": [
     "Schwaches Signal"
   ],
+  "Wi-Fi connection form": [
+    "Formular für die WiFi-Verbindung"
+  ],
+  "Wi-Fi networks": [
+    "Wi-Fi-Netzwerke"
+  ],
+  "Wi-Fi not supported": [
+    "Kein Wi-Fi unterstützt"
+  ],
   "Will be supported in a future version.": [
     "Wird in einer zukünftigen Version unterstützt werden."
   ],
@@ -1920,13 +2322,25 @@ export default {
     "Sie stellen eine Verbindung zu einem öffentlichen Netzwerk ohne Verschlüsselung her. Ihre Daten sind möglicherweise nicht sicher."
   ],
   "Your system is rebooting": [
-    ""
+    "Ihr System wird neu gebootet"
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] ist eingeschaltet"
+  ],
+  "[FIXME]": [
+    "[REPARIERMICH]"
+  ],
+  "active": [
+    "aktiv"
+  ],
+  "all": [
+    "alle"
+  ],
+  "approx. %s": [
+    "ca. %s"
   ],
   "at least %s": [
     "mindestens %s"
@@ -1946,11 +2360,23 @@ export default {
   "logical volume": [
     "logisches Volume"
   ],
+  "no": [
+    "nein"
+  ],
+  "offline": [
+    "offline"
+  ],
   "partition": [
     "Partition"
   ],
+  "read_only": [
+    "schreibgeschützt"
+  ],
   "reset to defaults": [
     "Auf Standardeinstellungen zurücksetzen"
+  ],
+  "yes": [
+    "ja"
   ],
   "zFCP": [
     "zFCP"

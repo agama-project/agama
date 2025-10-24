@@ -22,6 +22,7 @@
 
 import { apiModel } from "~/api/storage/types";
 import { copyApiModel, findDevice, buildPartition } from "~/helpers/storage/api-model";
+import { isUsed } from "~/helpers/storage/search";
 import { data } from "~/types/storage";
 
 type Partitionable = apiModel.Drive | apiModel.MdRaid;
@@ -50,6 +51,10 @@ function addPartition(
   const device = findDevice(apiModel, list, listIndex);
 
   if (device === undefined) return apiModel;
+
+  // Reset the spacePolicy to the default value if the device goes from unused to used
+  if (!isUsed(apiModel, list, listIndex) && device.spacePolicy === "keep")
+    device.spacePolicy = null;
 
   const partition = buildPartition(data);
   const index = indexByName(device, partition.name);
@@ -95,6 +100,11 @@ function deletePartition(
 
   const index = indexByPath(device, mountPath);
   device.partitions.splice(index, 1);
+
+  // Do not delete anything if the device is not really used
+  if (!isUsed(apiModel, list, listIndex)) {
+    device.spacePolicy = "keep";
+  }
 
   return apiModel;
 }

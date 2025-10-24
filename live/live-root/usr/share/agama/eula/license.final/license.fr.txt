@@ -3,190 +3,144 @@ pour les logiciels SUSE
 
 
 Contrat de licence utilisateur final pour les logiciels SUSE
-LISEZ ATTENTIVEMENT LE PRÉSENT CONTRAT DE LICENCE. EN ACHETANT, EN 
-INSTALLANT, EN TÉLÉCHARGEANT OU EN UTILISANT DE TOUTE AUTRE MANIÈRE 
-CE LOGICIEL (TEL QUE DÉFINI CI-DESSOUS ET Y COMPRIS SES COMPOSANTS), 
-VOUS ACCEPTEZ LES TERMES DU PRÉSENT CONTRAT. SI VOUS N'ACCEPTEZ PAS 
-CES TERMES, VOUS N'ÊTES PAS AUTORISÉ À TÉLÉCHARGER, INSTALLER OU 
+EN ACHETANT, EN INSTALLANT, EN TÉLÉCHARGEANT OU EN UTILISANT DE 
+TOUTE AUTRE MANIÈRE CE LOGICIEL (TEL QUE DÉFINI CI-DESSOUS), VOUS 
+ACCEPTEZ LES TERMES DU PRÉSENT CONTRAT. SI VOUS N'ACCEPTEZ PAS CES 
+TERMES, VOUS N'ÊTES PAS AUTORISÉ À TÉLÉCHARGER, INSTALLER OU 
 UTILISER LE LOGICIEL. UNE PERSONNE AGISSANT AU NOM D'UNE ENTITÉ 
 DÉCLARE DISPOSER DE L'AUTORITÉ REQUISE POUR CONCLURE CE CONTRAT AU 
-NOM DE LADITE ENTITÉ.
+NOM DE LADITE ENTITÉ.  SI VOUS ACCEPTEZ CE CONTRAT AU NOM D'UNE 
+ENTITÉ, ALORS, LES TERMES " VOUS ", " VOTRE " ET " VOS " FONT 
+RÉFÉRENCE À CETTE ENTITÉ À CHAQUE FOIS QU'ILS SONT UTILISÉS 
+CI-DESSOUS.
 
-SUSE LLC (" Fournisseur de licence " ou " SUSE ") met à disposition 
-des produits logiciels, à savoir une compilation de : (i) logiciels 
-développés par SUSE et ses sociétés affiliées ; (ii) logiciels 
-développés par des tiers ; (iii) marques appartenant à SUSE et/ou à 
-ses sociétés affiliées (" Marques SUSE ") ; et (iv) supports ou 
-reproductions (physiques ou virtuelles) et documentation 
-accompagnant ces logiciels (cette compilation de programmes, de 
-marques et de documentations constituant le " Logiciel ").  
+SUSE LLC (le " Fournisseur de licence " ou " SUSE ") met à 
+disposition des produits logiciels, qui peuvent inclure : (i) des 
+programmes logiciels développés par SUSE et/ou ses sociétés 
+affiliées ; (ii) des programmes logiciels développés par des tiers ; 
+(iii) des compilations de programmes logiciels ; et (iv) des marques 
+de commerce détenues par SUSE et/ou ses sociétés affiliées (" 
+Marques SUSE "), ainsi que de la documentation accompagnant ces 
+programmes logiciels (ces programmes logiciels, compilations de 
+programmes logiciels, marques de commerce et documentation 
+constituant le " Logiciel ").
 
-Le Logiciel est protégé par les lois et traités sur le copyright en 
-vigueur aux États-Unis et par les lois sur le copyright dans 
-d'autres pays. Le présent Contrat de licence utilisateur final (" 
-CLUF ") est un accord légal entre Vous (entité ou personne) et SUSE 
-régissant votre utilisation du Logiciel. Si les lois du pays de 
-votre établissement principal exigent pour rendre les contrats 
-exécutoires, qu'ils soient rédigés dans la langue locale, une 
-version dans cette langue peut être obtenue auprès du Fournisseur de 
-licence en lui adressant une demande écrite et sera réputée régir 
-votre utilisation du Logiciel. Toute mise à jour, extension ou 
-application mobile ou tout produit complémentaire, adaptateur, 
-module ou encore version de support du Logiciel que Vous pouvez 
-télécharger ou recevoir et qui n'est accompagné d'aucun contrat de 
-licence est considéré comme étant le Logiciel et est dès lors régi 
-par le présent CLUF. 
-
+Le présent Contrat de Licence Utilisateur Final (" CLUF ") est un 
+contrat légal conclu entre Vous (personne physique ou morale) et 
+SUSE, et régit Votre utilisation du Logiciel. Toute mise à jour, 
+extension ou application mobile ou tout produit complémentaire, 
+adaptateur, module ou encore version de support du Logiciel que Vous 
+pouvez télécharger ou recevoir et qui n'est accompagné d'aucun autre 
+contrat de licence est considéré comme étant le Logiciel régi par le 
+présent CLUF. Si les lois de Votre établissement principal exigent 
+que les contrats soient rédigés dans la langue locale pour être 
+applicables, Vous pouvez obtenir une version dans la langue locale 
+en écrivant au Fournisseur de licence, et la version dans la langue 
+locale régira Votre utilisation du Logiciel.      
+ 
 Conditions de licence
 Open Source
 Le Logiciel contient de nombreux composants individuels qui sont des 
-logiciels Open Source et la licence Open Source pour chaque 
-composant, qui, selon le logiciel, peut être la licence publique 
-générale GNU v.2 
-(https://www.gnu.org/licenses/oldlicenses/gpl-2.0.en.html) ou Apache 
-2.0 (https://www.apache.org/licenses/LICENSE-2.0) ou toute autre 
-licence Open Source (chacune de ces licences étant la " Licence OSS 
-"), dans la documentation de licence et/ou dans le code source du 
-composant. 
-
-Le présent CLUF régit votre utilisation du Logiciel, y compris des 
-Marques SUSE, et ne limite pas, ne remplace pas ni ne modifie vos 
-droits en vertu de la Licence OSS applicable à votre utilisation de 
+logiciels Open Source. La licence Open Source pour chaque composant, 
+qui, selon le programme logiciel, peut être la Licence Publique 
+Générale GNU v2 
+(https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html), la 
+licence Apache version 2.0 
+(https://www.apache.org/licenses/LICENSE-2.0) ou toute autre licence 
+Open Source (chacune de ces licences étant la " Licence OSS "), se 
+trouve dans la documentation d'octroi de licence et/ou dans le code 
+source du composant.
+ 
+Le présent CLUF régit Votre utilisation du Logiciel, y compris les 
+Marques SUSE, mais ne limite pas, ne remplace pas ni ne modifie vos 
+droits en vertu de la Licence OSS applicable à Votre utilisation de 
 tout code Open Source contenu dans le Logiciel sans les Marques 
 SUSE.
-
-Le Logiciel peut inclure ou faire partie d'une offre groupée qui 
-comprend d'autres logiciels concédés sous licence régis par d'autres 
-clauses et/ou concédés sous licence par un tiers autre que le 
-Fournisseur de licence. L'utilisation de logiciels faisant l'objet 
-de contrats de licence distincts est régie par ces contrats.
+ 
+Le Logiciel peut être fourni avec des programmes tiers qui ne font 
+pas partie de celui-ci. Ces programmes tiers ne sont pas requis pour 
+exécuter le Logiciel ; ils sont fournis pour votre commodité et sont 
+soumis à leurs propres conditions de licence. Les conditions de 
+licence accompagnent les programmes tiers ou peuvent être consultées 
+à l'adresse https://www.suse.com/licensing/eula/. Si vous n'acceptez 
+pas de respecter les conditions de licence applicables aux 
+programmes tiers, vous ne devez pas les installer. Si vous souhaitez 
+installer les programmes tiers sur plusieurs systèmes ou transférer 
+les programmes tiers à une autre partie, vous devez contacter le 
+fournisseur de licence des programmes tiers concernés.
 
 Licence d'utilisation du Logiciel
-Sous réserve du respect des conditions générales du présent CLUF, le 
-Fournisseur de licence vous octroie une licence perpétuelle, non 
-exclusive, non cessible, révocable et de portée mondiale vous 
-permettant de reproduire le Logiciel et d'en utiliser des copies au 
-sein de votre Organisation pour son utilisation interne. Le terme " 
-Organisation " désigne une personne morale et ses sociétés 
-affiliées. Le terme " Sociétés affiliées " désigne les entités qui 
-vous contrôlent, que vous contrôlez ou qui sont sous le même 
-contrôle que Vous. La licence ci-dessus est octroyée à condition que 
-Vous soyez responsable de toute violation des dispositions du 
-présent CLUF par vos Sociétés affiliées.
-
-Ce CLUF ne vous permet pas de distribuer le Logiciel ou ses 
-composants sous les Marques SUSE, que la copie ait été modifiée ou 
-non. Vous pouvez effectuer une redistribution en dehors de votre 
-Organisation : (a) du Logiciel, uniquement si elle est autorisée par 
-un accord écrit distinct avec le Fournisseur de licence autorisant 
-une telle redistribution, ou (b) des composants constitutifs du 
-Logiciel, uniquement si Vous supprimez et remplacez toutes les 
-occurrences de toute Marque SUSE.
-
-Si Vous avez reçu, que ce soit directement ou indirectement de SUSE, 
-du matériel, un logiciel ou un autre applicatif qui utilise ou 
-intègre le Logiciel, Vous pouvez utiliser le Logiciel uniquement 
-dans le but d'exécuter ce matériel, logiciel ou applicatif et non de 
-façon autonome.
+Sous réserve du respect des termes contractuels du présent CLUF et 
+de la Licence OSS applicable, vous bénéficiez d'une licence 
+perpétuelle, non exclusive, non transférable, révocable et mondiale 
+pour reproduire et utiliser des copies du Logiciel pour l'usage 
+interne de Votre entité juridique. 
+ 
+Le présent CLUF ne vous autorise pas à distribuer le Logiciel ou ses 
+composants en utilisant les Marques SUSE. Il vous permet toutefois 
+de redistribuer en dehors de Votre entité juridique : (a) des copies 
+du Logiciel, mais uniquement si un accord écrit distinct avec le 
+Fournisseur de licence autorise une telle redistribution, ou (b) des 
+composants constitutifs du Logiciel, mais uniquement si Vous 
+supprimez et remplacez toutes les occurrences de toute Marque SUSE.
 
 Propriété
-Aucun titre de propriété du Logiciel ne vous est cédé.  Le 
-Fournisseur de licence et/ou ses fournisseurs de licences tiers 
-conservent tous les droits, titres et intérêts de propriété 
-intellectuelle attachés au Logiciel, y compris ceux portant sur 
-toute adaptation ou copie dudit Logiciel. Le Logiciel ne vous est 
-pas vendu, Vous faites uniquement l'acquisition d'une licence 
-conditionnelle d'utilisation du Logiciel. Le titre, les droits de 
-possession et de propriété intellectuelle du contenu disponible via 
-le Logiciel demeurent la propriété de l'éditeur de contenu et 
-peuvent être protégés par le droit sur le copyright ou d'autres lois 
-applicables. Le présent CLUF ne vous concède aucun droit sur ce type 
-de contenu.
+Le Logiciel est concédé sous licence et non vendu.  Aucun titre de 
+propriété du Logiciel ne Vous est cédé. Le Fournisseur de licence 
+et/ou les fournisseurs de licence tiers conservent tous les droits, 
+titres et intérêts sur tous les droits de propriété intellectuelle 
+du Logiciel.      
 
 Marques SUSE
-Aucun droit ou licence, explicite ou implicite, n'est accordé en 
-vertu du présent CLUF pour utiliser une Marque SUSE, un nom 
-commercial ou une marque de service du Fournisseur de licence ou de 
-ses sociétés affiliées ou fournisseurs de licence autrement que 
-nécessaire pour utiliser le Logiciel conformément au présent CLUF.
+Le présent CLUF n'octroie aucun droit ou licence, explicite ou 
+implicite, relatif à l'utilisation d'une Marque SUSE, d'une marque 
+de commerce ou d'une marque de service appartenant au Fournisseur de 
+licence ou à ses sociétés affiliées ou fournisseurs de licence.
 
-Services d'abonnement et assistance
-Le Fournisseur de licence n'est pas tenu de fournir une maintenance 
-ou un support, sauf si Vous achetez une offre d'abonnement, 
-conformément à un contrat supplémentaire avec le Fournisseur de 
-licence ou ses sociétés affiliées, qui inclut expressément ces 
-services. 
+Services d'abonnement et support
+Le Fournisseur de licence n'est pas tenu de fournir des services de 
+maintenance ou de support, sauf accord contraire dans le cadre d'un 
+contrat supplémentaire qui inclut expressément ces services.
 
 Garantie et responsabilité
 Garantie limitée
-Le Fournisseur de licence garantit que les supports sur lesquels 
-figure le Logiciel sont et seront exempts de défauts matériels ou de 
-fabrication dans le cadre d'une utilisation normale pour une période 
-de soixante (60) jours à compter de la date à laquelle ils vous sont 
-fournis. LA GARANTIE SUSMENTIONNÉE CONSTITUE VOTRE SEUL ET UNIQUE 
-RECOURS ET REMPLACE TOUTE AUTRE GARANTIE, EXPRESSE OU IMPLICITE. À 
-L'EXCEPTION DE LA GARANTIE SUSMENTIONNÉE, LE LOGICIEL EST FOURNI " 
-EN L'ÉTAT " SANS GARANTIE D'AUCUNE SORTE.
-LE LOGICIEL N'A PAS ÉTÉ CONÇU, FABRIQUÉ OU PRÉVU POUR UNE 
-UTILISATION OU UNE DISTRIBUTION SUR UN ÉQUIPEMENT FONCTIONNANT DANS 
-UN ENVIRONNEMENT DANGEREUX NÉCESSITANT UN FONCTIONNEMENT À L'ÉPREUVE 
-DE PANNES ET NE DOIT PAS ÊTRE UTILISÉ POUR CE TYPE D'ÉQUIPEMENT : 
-FONCTIONNEMENT SUR DES INSTALLATIONS NUCLÉAIRES, NAVIGATION 
-AÉRIENNE, COMMUNICATIONS OU SYSTÈMES DE CONTRÔLE, ÉQUIPEMENTS DE 
-SAUVETAGE, SYSTÈMES D'ARMES OU AUTRES UTILISATIONS AU COURS 
-DESQUELLES UNE PANNE DU LOGICIEL POURRAIT ENTRAÎNER DIRECTEMENT LA 
-MORT, DES BLESSURES CORPORELLES OU UNE DÉTÉRIORATION GRAVE DE 
-L'ENVIRONNEMENT.
-Produits d'un autre éditeur
-Le Logiciel peut inclure ou faire partie d'une offre groupée qui 
-inclut du matériel ou d'autres logiciels ou services concédés sous 
-licence ou vendus par une entité autre que le Fournisseur de 
-licence. LE FOURNISSEUR DE LICENCE NE GARANTIT PAS LES PRODUITS OU 
-SERVICES FOURNIS PAR UN AUTRE ÉDITEUR. CES PRODUITS OU SERVICES SONT 
-FOURNIS " TELS QUELS ". TOUTE GARANTIE ÉVENTUELLE SUR CES PRODUITS 
-D'UN AUTRE ÉDITEUR NE PEUT ÊTRE OFFERTE QUE PAR LE FOURNISSEUR DE 
-LICENCE DE CES PRODUITS EN VERTU DE SES PROPRES CONDITIONS DE 
-GARANTIE APPLICABLES.
-SOUS RÉSERVE DE RESTRICTIONS CONTRAIRES PRÉVUES PAR LA LOI, LE 
-FOURNISSEUR DE LICENCE EXCLUT TOUTE GARANTIE GÉNÉRALEMENT QUELCONQUE 
-ET TOUTE GARANTIE IMPLICITE NOTAMMENT TOUTE GARANTIE DE QUALITÉ 
-MARCHANDE OU D'ADÉQUATION À UN USAGE PARTICULIER, TOUT DROIT DE 
-PROPRIÉTÉ OU DE NON-CONTREFAÇON AINSI QUE TOUTE GARANTIE DÉCOULANT 
-D´ÉCHANGES COMMERCIAUX OU D'UNE UTILISATION COMMERCIALE OU TOUTE 
-GARANTIE DE PERFORMANCES. LE FOURNISSEUR DE LICENCE N'APPORTE AUCUNE 
-GARANTIE ET N'ENGAGE AUCUNE RESPONSABILITÉ NON EXPRESSÉMENT DÉFINIE 
-DANS LA PRÉSENTE GARANTIE LIMITÉE. IL NE GARANTIT PAS QUE LE 
-LOGICIEL OU LES SERVICES SATISFERONT À VOS EXIGENCES, QU'ILS SERONT 
-COMPATIBLES AVEC TOUS LES SYSTÈMES D'EXPLOITATION OU QU'ILS 
+LE LOGICIEL EST FOURNI " EN L'ÉTAT " SANS AUCUNE GARANTIE DE QUELQUE 
+NATURE QUE CE SOIT. SOUS RÉSERVE DE RESTRICTIONS CONTRAIRES PRÉVUES 
+PAR LA LOI, LE FOURNISSEUR DE LICENCE EXCLUT TOUTE GARANTIE 
+GÉNÉRALEMENT QUELCONQUE ET TOUTE GARANTIE IMPLICITE, NOTAMMENT TOUTE 
+GARANTIE DE QUALITÉ MARCHANDE OU D'ADÉQUATION À UN USAGE 
+PARTICULIER, TOUT DROIT DE PROPRIÉTÉ OU DE NON-CONTREFAÇON AINSI QUE 
+TOUTE GARANTIE DÉCOULANT D´ÉCHANGES COMMERCIAUX OU D'UNE UTILISATION 
+COMMERCIALE OU TOUTE GARANTIE DE PERFORMANCES.  IL NE GARANTIT PAS 
+QUE LE LOGICIEL OU LES SERVICES SATISFERONT À VOS EXIGENCES, QU'ILS 
+SERONT COMPATIBLES AVEC VOS SYSTÈMES D'EXPLOITATION OU QU'ILS 
 FONCTIONNERONT DE MANIÈRE ININTERROMPUE OU SANS ERREUR. LES 
-EXCLUSIONS ET LIMITATIONS DE GARANTIE PRÉCÉDENTES SONT UNE PARTIE 
-ESSENTIELLE DU PRÉSENT CONTRAT. Certaines juridictions n'autorisent 
-pas certaines exclusions ou limitations de garantie. Par conséquent, 
-il se peut qu'une partie des limitations susmentionnées ne Vous 
-soient pas applicables. La présente garantie limitée Vous confère 
-des droits spécifiques, auxquels peuvent s'ajouter d'autres droits 
-variables en fonction de la législation en vigueur dans l'État ou la 
-juridiction dont Vous relevez.
-Limitation de responsabilité 
-NI LE FOURNISSEUR DE LICENCE NI AUCUN DE SES FOURNISSEURS DE LICENCE 
-TIERS, FILIALES OU EMPLOYÉS NE SERONT RESPONSABLES DE QUELCONQUE 
-DOMMAGE CONSÉCUTIF OU INDIRECT, QU'IL SOIT FONDÉ SUR UN CONTRAT, UNE 
-NÉGLIGENCE, UN TORT OU TOUTE AUTRE THÉORIE DE RESPONSABILITÉ, OU DE 
-QUELCONQUE PERTE DE BÉNÉFICES OU D'ACTIVITÉS OU PERTE OU CORRUPTION 
-DE DONNÉES, DANS CHAQUE CAS, MÊME SI LA POSSIBILITÉ DE CES DOMMAGES 
-A ÉTÉ SIGNALÉE.
+EXCLUSIONS ET AVIS DE NON-RESPONSABILITÉ SUSMENTIONNÉS SONT UNE 
+PARTIE ESSENTIELLE DU PRÉSENT ACCORD. Certaines juridictions 
+n'autorisent pas certaines exclusions ou limitations de garantie. 
+Par conséquent, il se peut qu'une partie des limitations 
+susmentionnées ne vous soient pas applicables. La présente garantie 
+limitée Vous confère des droits spécifiques, auxquels peuvent 
+s'ajouter d'autres droits variables en fonction de la législation en 
+vigueur dans l'État ou la juridiction dont Vous relevez.
+
+Limitation de responsabilité
+NI LE FOURNISSEUR DE LICENCE NI AUCUN DE SES ACTIONNAIRES, SOCIÉTÉS 
+AFFILIÉES, DIRIGEANTS OU EMPLOYÉS NE SERONT RESPONSABLES DE 
+QUELCONQUE DOMMAGE CONSÉCUTIF OU INDIRECT, QU'IL SOIT FONDÉ SUR UN 
+CONTRAT, UNE NÉGLIGENCE, UN TORT OU TOUTE AUTRE THÉORIE DE 
+RESPONSABILITÉ, OU DE QUELCONQUE PERTE DE BÉNÉFICES OU D'ACTIVITÉS 
+OU PERTE OU CORRUPTION DE DONNÉES, DANS CHAQUE CAS, MÊME SI LA 
+POSSIBILITÉ DE CES DOMMAGES A ÉTÉ SIGNALÉE.
 
 EN AUCUN CAS, LA RESPONSABILITÉ GLOBALE DU FOURNISSEUR DE LICENCE 
-CONFORMÉMENT AU PRÉSENT CLUF OU EN ASSOCIATION À CELUI-CI (QUE CE 
-SOIT EN UNE SEULE INSTANCE OU UNE SÉRIE D'INSTANCES) NE DÉPASSERA LE 
-MONTANT QUE VOUS AVEZ PAYÉ POUR LE LOGICIEL À L'ORIGINE D'UNE TELLE 
-RÉCLAMATION (OU 50 USD SI VOUS N'AVEZ PAS PAYÉ POUR LE LOGICIEL), 
-DANS LES 12 MOIS PRÉCÉDANT LA PREMIÈRE RÉCLAMATION EN VERTU DU 
-PRÉSENT CLUF.
+DANS LE CADRE OU EN RELATION AVEC LE PRÉSENT CLUF (QU'IL S'AGISSE 
+D'UN CAS UNIQUE OU RÉPÉTÉ) NE DÉPASSERA 50 USD.
+
 Les exclusions et limitations stipulées plus haut ne s'appliquent 
 pas en cas de décès ou de dommage corporel causé par la négligence 
 du Fournisseur de licence, de ses employés, agents ou 
-sous-traitants. Dans les juridictions où la loi rend inapplicables 
+sous-traitants.  Dans les juridictions où la loi rend inapplicables 
 les exclusions ou limitations de responsabilité de ces dommages, y 
 compris, mais sans limitation, les dommages découlant d'une 
 violation des termes implicites quant au droit de propriété ou à la 
@@ -194,39 +148,30 @@ jouissance paisible du Logiciel concédé sous licence en vertu du
 présent CLUF ou d'une présentation frauduleuse, la responsabilité du 
 Fournisseur de licence sera exclue ou limitée dans la mesure 
 maximale permise par la législation de ces juridictions.
-
-Conditions générales d'utilisation
-Terme
-Le présent CLUF entre en vigueur à la date à laquelle Vous acquérez 
-le Logiciel. Il sera automatiquement résilié si Vous ne respectez 
-pas l'une de ses conditions.
-Cession
-Le présent CLUF ne peut en aucun cas être cédé ni assigné sans 
-l'accord préalable écrit du Fournisseur de licence. Toute tentative 
-de cession ou d'assignation sera considérée comme nulle et non 
-avenue. 
+ 
+Conditions générales
 Droit
 Tout litige découlant ou concernant le présent CLUF sera soumis aux 
 principales lois des États-Unis et de l'État de New York 
 indépendamment de ses dispositions concernant le choix de la loi 
 applicable. Tout procès, action ou procédure découlant ou concernant 
 le présent CLUF peut uniquement être porté devant les tribunaux 
-fédéraux ou fédérés de la juridiction compétente de New York. Si une 
-partie entame une procédure légale par rapport au présent CLUF, la 
-partie qui remporte le procès sera en droit de se voir dédommager, 
-dans la mesure du raisonnable, de ses frais d'avocat. Toutefois, si 
-votre établissement principal est situé dans un État membre de 
-l'Union européenne ou de l'Association européenne de libre-échange, 
-(1) les tribunaux d'Angleterre et du pays de Galles seront l'unique 
-juridiction habilitée à recevoir toute action juridique au titre du 
-présent CLUF et (2) les lois d'Angleterre s'appliqueront excepté si 
-les lois du pays de votre établissement principal exigent d'être 
-appliquées pour ce type d'action devant les tribunaux, auquel cas ce 
-seront les lois dudit pays qui régiront l'action. Ni la Convention 
-des Nations Unies sur les contrats de vente internationale de 
-marchandises ni les règles de conflit de lois de New York ou 
-d'Angleterre et du pays de Galles ne s'appliquent au présent CLUF ou 
-à son objet.
+fédéraux ou fédérés de la juridiction compétente de New York. 
+Toutefois, si Votre établissement principal est situé dans un État 
+membre de l'Union européenne ou de l'Association européenne de 
+libre-échange, (1) les tribunaux d'Angleterre et du pays de Galles 
+seront l'unique juridiction habilitée à recevoir toute action 
+juridique au titre du présent CLUF et (2) les lois d'Angleterre 
+s'appliqueront sauf lorsque les lois du pays de Votre établissement 
+principal exigent d'être appliquées pour ce type d'action devant les 
+tribunaux, auxquels cas les lois dudit pays s'appliqueront. La loi 
+américaine sur l'uniformisation des transactions informatiques 
+(Uniform Computer Information Transaction Act, " UCITA "), la 
+Convention des Nations Unies sur les contrats de vente 
+internationale de marchandises et les règles de l'État de New York, 
+d'Angleterre ou du pays de Galles relatives aux conflit de lois ne 
+s'appliquent pas au présent CLUF ni à son objet.
+
 Accord complet
 Le présent CLUF ainsi que tous les autres documents d'achat ou tout 
 autre accord écrit entre Vous et le Fournisseur de licence ou ses 
@@ -237,70 +182,18 @@ représentant autorisé du Fournisseur de licence. AUCUN FOURNISSEUR
 DE LICENCE TIERS, DISTRIBUTEUR, VENDEUR, DÉTAILLANT, REVENDEUR, 
 REPRÉSENTANT OU EMPLOYÉ N'EST AUTORISÉ À MODIFIER CE CONTRAT OU À 
 ENGAGER DES RESPONSABILITÉS AUTRES QUE CELLES INCLUSES DANS LES 
-PRÉSENTES CLAUSES DU CONTRAT. 
-Renonciation
-Toute renonciation à l'un des droits octroyés par le présent CLUF 
-devra, pour prendre effet, être formulée par écrit et signée par un 
-représentant dûment autorisé de la partie concernée. Toute 
-renonciation du droit passé ou présent causé par la violation de 
-l'une des clauses du présent CLUF représentera une renonciation des 
-droits futurs liés à ce CLUF.
+PRÉSENTES CLAUSES DU CONTRAT.
+
 Indépendance des Clauses
 Si l'une des clauses de ce CLUF perd sa valeur juridique ou sa force 
-exécutoire, ladite disposition sera interprétée, limitée, modifiée 
-ou, le cas échéant, résiliée afin d'éliminer son inapplicabilité ; 
-en revanche, les autres dispositions conserveront leur 
-applicabilité.
-Respect de la Réglementation en matière d'exportation
-Vous reconnaissez que les produits et/ou la technologie du 
-Fournisseur de licence peuvent être soumis à la réglementation 
-américaine sur les exportations ("EAR") et aux lois commerciales 
-d'autres pays. Vous acceptez de vous conformer à la réglementation 
-EAR et aux lois et réglementations locales applicables et ayant une 
-incidence sur votre droit d'importer, d'exporter ou d'utiliser les 
-produits et/ou la technologie du Fournisseur de licence. Vous 
-acceptez de ne pas exporter ni réexporter les produits du 
-Fournisseur de licence, de manière directe ou indirecte : (1) vers 
-des entités figurant sur les listes actuelles d'exclusion des 
-exportations des États-Unis ou vers des pays soumis à un embargo ou 
-soutenant le terrorisme tels que spécifiés dans la réglementation 
-EAR ; (2) vers tout utilisateur final dont Vous savez ou avez des 
-raisons de penser qu'il utilisera les produits du Fournisseur de 
-licence pour concevoir, développer ou produire des armes nucléaires, 
-chimiques ou biologiques, des systèmes de fusée, des lanceurs 
-spatiaux, des fusées sondes ou des systèmes de véhicules aériens 
-sans pilote, hormis s'il y est autorisé par l'agence gouvernementale 
-compétente par une réglementation ou licence spécifique ; (3) vers 
-tout utilisateur final frappé d'embargo par le Gouvernement fédéral 
-des États-Unis en matière de transactions à l'exportation. Vous 
-n'utiliserez pas les produits et/ou la technologie du Fournisseur de 
-licence pour des utilisations finales interdites dans le domaine des 
-armements nucléaires, des missiles ou des armes biologiques ou 
-chimiques, comme stipulé dans la réglementation EAR. En 
-téléchargeant ou en utilisant le Logiciel, Vous acceptez ce qui 
-précède et Vous déclarez et garantissez que Vous n'êtes pas situé 
-dans un tel pays, subordonné à ce dernier, originaire ou résident de 
-ce pays ou d'un pays de cette liste. Par ailleurs, Vous êtes tenu de 
-respecter toute législation locale de votre juridiction susceptible 
-d'avoir un impact sur votre droit à l'importation, l'exportation ou 
-l'utilisation des produits du Fournisseur de licence. Avant 
-d'exporter des produits soumis à la réglementation EAR, consultez la 
-page Web (en anglais) du Bureau of Industry and Security 
-https://www.bis.doc.gov . Pour plus d'informations sur l'exportation 
-du Logiciel ainsi que sur son numéro ECCN (numéro de classification 
-du contrôle à l'exportation) et les exceptions de licence associées 
-(le cas échéant), consultez le site Web 
-https://www.suse.com/fr-fr/company/legal/. Sur demande, le ministère 
-du Commerce international du Fournisseur de licence peut fournir des 
-informations relatives aux restrictions applicables aux produits du 
-Fournisseur de licence en matière d'exportation. Le Fournisseur de 
-licence décline toute responsabilité en cas de refus d'obtention des 
-autorisations d'exportation nécessaires.
+exécutoire, ladite disposition sera analysée, limitée, modifiée ou, 
+le cas échéant, résiliée afin d'éliminer son inapplicabilité ; en 
+revanche, les autres dispositions conserveront leur applicabilité. 
 
-:version:2024-02-01:001
+:version:2024-06-01:001
 SUSE.com
 
-Copyright (c) SUSE 2024
+Copyright (c) SUSE 2025
 
 SUSE - Juridique 
-Février 2024
+Juin 2024

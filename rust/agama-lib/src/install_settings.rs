@@ -26,7 +26,9 @@ use crate::context::InstallationContext;
 use crate::file_source::{FileSourceError, WithFileSource};
 use crate::files::model::UserFile;
 use crate::hostname::model::HostnameSettings;
+use crate::questions::config::QuestionsConfig;
 use crate::security::settings::SecuritySettings;
+use crate::storage::settings::zfcp::ZFCPConfig;
 use crate::{
     localization::LocalizationSettings, network::NetworkSettings, product::ProductSettings,
     scripts::ScriptsConfig, software::SoftwareSettings, storage::settings::dasd::DASDConfig,
@@ -55,47 +57,39 @@ pub enum InstallSettingsError {
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InstallSettings {
-    #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub bootloader: Option<BootloaderSettings>,
-    #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub dasd: Option<DASDConfig>,
-    #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub files: Option<Vec<UserFile>>,
-    #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hostname: Option<HostnameSettings>,
-    #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub iscsi: Option<Box<RawValue>>,
-    #[serde(default, flatten)]
+    #[serde(flatten)]
     pub user: Option<UserSettings>,
-    #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub security: Option<SecuritySettings>,
-    #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub software: Option<SoftwareSettings>,
-    #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub product: Option<ProductSettings>,
-    #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub storage: Option<Box<RawValue>>,
-    #[serde(default, rename = "legacyAutoyastStorage")]
+    #[serde(rename = "legacyAutoyastStorage")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub storage_autoyast: Option<Box<RawValue>>,
-    #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub network: Option<NetworkSettings>,
-    #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub localization: Option<LocalizationSettings>,
-    #[serde(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub scripts: Option<ScriptsConfig>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub zfcp: Option<ZFCPConfig>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub questions: Option<QuestionsConfig>,
 }
 
 impl InstallSettings {

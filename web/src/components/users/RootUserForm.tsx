@@ -37,6 +37,7 @@ import { useRootUser, useRootUserMutation } from "~/queries/users";
 import { RootUser } from "~/types/users";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
+import PasswordCheck from "~/components/users/PasswordCheck";
 
 const AVAILABLE_METHODS = ["password", "sshPublicKey"] as const;
 type ActiveMethods = { [key in (typeof AVAILABLE_METHODS)[number]]?: boolean };
@@ -164,12 +165,15 @@ const RootUserForm = () => {
                   </Button>
                 </Content>
               ) : (
-                <PasswordAndConfirmationInput
-                  inputRef={passwordRef}
-                  value={password}
-                  onChange={onPasswordChange}
-                  showErrors={false}
-                />
+                <>
+                  <PasswordAndConfirmationInput
+                    inputRef={passwordRef}
+                    value={password}
+                    onChange={onPasswordChange}
+                    showErrors={false}
+                  />
+                  <PasswordCheck password={password} />
+                </>
               )}
             </NestedContent>
           )}

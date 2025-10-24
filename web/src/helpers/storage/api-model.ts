@@ -78,6 +78,9 @@ function buildPartition(data: data.Partition): apiModel.Partition {
     ...data,
     filesystem: buildFilesystem(data.filesystem),
     size: buildSize(data.size),
+    // Using the ESP partition id for /boot/efi may not be strictly required, but it is
+    // a good practice. Let's force it here since it cannot be selected in the UI.
+    id: data.mountPath === "/boot/efi" ? "esp" : undefined,
   };
 }
 

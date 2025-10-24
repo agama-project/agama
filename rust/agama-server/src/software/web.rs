@@ -38,7 +38,8 @@ use crate::{
 
 use agama_lib::{
     error::ServiceError,
-    http::Event,
+    event,
+    http::{Event, EventPayload},
     product::{proxies::RegistrationProxy, Product, ProductClient},
     software::{
         model::{
@@ -71,7 +72,7 @@ struct SoftwareState<'a> {
     licenses: LicensesRepo,
     // cache the software values, during installation the software service is
     // not responsive (blocked in a libzypp call)
-    products: Arc<RwLock<Option<Vec<Product>>>>,
+    products: Arc<RwLock<Vec<Product>>>,
     config: Arc<RwLock<Option<SoftwareConfig>>>,
 }
 
@@ -116,7 +117,7 @@ async fn product_changed_stream(
         .await
         .then(|change| async move {
             if let Ok(id) = change.get().await {
-                return Some(Event::ProductChanged { id });
+                return Some(event!(ProductChanged { id }));
             }
             None
         })
@@ -143,7 +144,7 @@ async fn patterns_changed_stream(
             }
             None
         })
-        .filter_map(|e| e.map(|patterns| Event::SoftwareProposalChanged { patterns }));
+        .filter_map(|e| e.map(|patterns| event!(SoftwareProposalChanged { patterns })));
     Ok(stream)
 }
 
@@ -165,7 +166,7 @@ async fn conflicts_changed_stream(
             }
             None
         })
-        .filter_map(|e| e.map(|conflicts| Event::ConflictsChanged { conflicts }));
+        .filter_map(|e| e.map(|conflicts| event!(ConflictsChanged { conflicts })));
     Ok(stream)
 }
 
@@ -179,7 +180,7 @@ async fn registration_email_changed_stream(
         .then(|change| async move {
             if let Ok(_id) = change.get().await {
                 // TODO: add to stream also proxy and return whole cached registration info
-                return Some(Event::RegistrationChanged);
+                return Some(event!(RegistrationChanged));
             }
             None
         })
@@ -196,7 +197,7 @@ async fn registration_code_changed_stream(
         .await
         .then(|change| async move {
             if let Ok(_id) = change.get().await {
-                return Some(Event::RegistrationChanged);
+                return Some(event!(RegistrationChanged));
             }
             None
         })
@@ -224,12 +225,42 @@ fn reason_to_selected_by(
 /// * `products`: list of products (shared behind a mutex).
 pub async fn receive_events(
     mut events: EventsReceiver,
-    products: Arc<RwLock<Option<Vec<Product>>>>,
+    products: Arc<RwLock<Vec<Product>>>,
+    config: Arc<RwLock<Option<SoftwareConfig>>>,
+    client: ProductClient<'_>,
 ) {
     while let Ok(event) = events.recv().await {
-        if let Event::LocaleChanged { locale: _ } = event {
-            let mut cached_products = products.write().await;
-            *cached_products = None;
+        match event.payload {
+            EventPayload::LocaleChanged { locale: _ } => {
+                let mut cached_products = products.write().await;
+                if let Ok(products) = client.products().await {
+                    *cached_products = products;
+                } else {
+                    tracing::error!("Could not update the products cached");
+                }
+            }
+
+            EventPayload::SoftwareProposalChanged { patterns } => {
+                let mut cached_config = config.write().await;
+                if let Some(config) = cached_config.as_mut() {
+                    tracing::debug!(
+                        "Updating the patterns list in the software configuration cache"
+                    );
+                    let user_patterns: HashMap<String, bool> = patterns
+                        .into_iter()
+                        .filter_map(|(p, s)| {
+                            if s == SelectedBy::User {
+                                Some((p, true))
+                            } else {
+                                None
+                            }
+                        })
+                        .collect();
+                    config.patterns = Some(user_patterns);
+                }
+            }
+
+            _ => {}
         }
     }
 }
@@ -266,16 +297,22 @@ pub async fn software_service(
 
     let product = ProductClient::new(dbus.clone()).await?;
     let software = SoftwareClient::new(dbus).await?;
+    let all_products = product.products().await?;
+
     let state = SoftwareState {
         product,
         software,
         licenses: licenses_repo,
-        products: Arc::new(RwLock::new(None)),
+        products: Arc::new(RwLock::new(all_products)),
         config: Arc::new(RwLock::new(None)),
     };
 
     let cached_products = Arc::clone(&state.products);
-    tokio::spawn(async move { receive_events(events, cached_products).await });
+    let cached_config = Arc::clone(&state.config);
+    let products_client = state.product.clone();
+    tokio::spawn(async move {
+        receive_events(events, cached_products, cached_config, products_client).await
+    });
 
     let router = Router::new()
         .route("/patterns", get(patterns))
@@ -320,18 +357,7 @@ pub async fn software_service(
     )
 )]
 async fn products(State(state): State<SoftwareState<'_>>) -> Result<Json<Vec<Product>>, Error> {
-    let cached_products = state.products.read().await.clone();
-
-    if let Some(products) = cached_products {
-        tracing::info!("Returning cached products");
-        return Ok(Json(products));
-    }
-
-    let products = state.product.products().await?;
-
-    let mut cached_products_write = state.products.write().await;
-    *cached_products_write = Some(products.clone());
-
+    let products = state.products.read().await.clone();
     Ok(Json(products))
 }
 
@@ -394,6 +420,7 @@ async fn solve_conflicts(
 
     // refresh the config cache
     let config = read_config(&state).await?;
+    tracing::info!("Caching product configuration: {:?}", &config);
     let mut cached_config_write = state.config.write().await;
     *cached_config_write = Some(config);
 
@@ -603,6 +630,19 @@ async fn set_config(
     State(state): State<SoftwareState<'_>>,
     Json(config): Json<SoftwareConfig>,
 ) -> Result<(), Error> {
+    {
+        // first invalidate cache, so if it fails later, we know we need to re-read recent data
+        // use minimal context so it is released soon.
+        tracing::debug!("Invalidating product configuration cache");
+        let mut cached_config_invalidate = state.config.write().await;
+        *cached_config_invalidate = None;
+    }
+
+    // first set only require flag to ensure that it is used for later computing of solver
+    if let Some(only_required) = config.only_required {
+        state.software.set_only_required(only_required).await?;
+    }
+
     if let Some(product) = config.product {
         state.product.select_product(&product).await?;
     }
@@ -621,7 +661,7 @@ async fn set_config(
 
     // load the config cache
     let config = read_config(&state).await?;
-
+    tracing::debug!("Caching software configuration (set_config): {:?}", &config);
     let mut cached_config_write = state.config.write().await;
     *cached_config_write = Some(config);
 
@@ -646,12 +686,12 @@ async fn get_config(State(state): State<SoftwareState<'_>>) -> Result<Json<Softw
     let cached_config = state.config.read().await.clone();
 
     if let Some(config) = cached_config {
-        tracing::info!("Returning cached software config");
+        tracing::debug!("Returning cached software config: {:?}", &config);
         return Ok(Json(config));
     }
 
     let config = read_config(&state).await?;
-
+    tracing::debug!("Caching software configuration (get_config): {:?}", &config);
     let mut cached_config_write = state.config.write().await;
     *cached_config_write = Some(config.clone());
 
@@ -682,6 +722,7 @@ async fn read_config(state: &SoftwareState<'_>) -> Result<SoftwareConfig, Error>
         packages: Some(packages),
         product,
         extra_repositories: if repos.is_empty() { None } else { Some(repos) },
+        only_required: state.software.get_only_required().await?,
     })
 }
 

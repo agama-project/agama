@@ -16,7 +16,7 @@ suseSetupProduct
 # kiwi_metainfo_helper service before starting the build
 mkdir -p /var/log/build
 cat << EOF > /var/log/build/info
-Build date:    $(LC_ALL=C date -u "+%F %T %Z")
+Build date:    $(LC_ALL=C date -u -d "@${SOURCE_DATE_EPOCH:-$(date +%s)}" "+%F %T %Z")
 Build number:  Build%RELEASE%
 Image profile: $kiwi_profiles
 Image version: $kiwi_iversion
@@ -24,13 +24,18 @@ Image type:    $kiwi_type
 Source URL:    %SOURCEURL%
 EOF
 
+# for reproducible builds:
+echo -n > /var/log/alternatives.log
+sed -i 's/# AutoInstalled generated.*/# AutoInstalled generated in kiwi reproducible build/' /var/lib/zypp/AutoInstalled # drop timestamp
+rm -f /var/tmp/rpm-tmp.*
+
 # enable the corresponding repository
 DISTRO=$(grep "^NAME" /etc/os-release | cut -f2 -d\= | tr -d '"' | tr " " "_")
 REPO="/etc/zypp/repos.d/agama-${DISTRO}.repo"
 if [ -f "${REPO}.disabled" ]; then
   mv "${REPO}.disabled" $REPO
 fi
-rm /etc/zypp/repos.d/*.disabled
+rm -f /etc/zypp/repos.d/*.disabled
 
 # configure the repositories in the Live system
 # import the OBS key for the systemsmanagement OBS project
@@ -54,7 +59,7 @@ systemctl enable avahi-daemon.service
 systemctl enable agama.service
 systemctl enable agama-web-server.service
 systemctl enable agama-dbus-monitor.service
-systemctl enable agama-auto.service
+systemctl enable agama-autoinstall.service
 systemctl enable agama-hostname.service
 systemctl enable agama-proxy-setup.service
 systemctl enable agama-certificate-issue.path
@@ -71,7 +76,8 @@ systemctl enable live-root-shell.service
 systemctl enable checkmedia.service
 systemctl enable qemu-guest-agent.service
 systemctl enable setup-systemd-proxy-env.path
-test -f  /usr/lib/systemd/system/spice-vdagentd.service && systemctl enable spice-vdagentd.service
+test -f /usr/lib/systemd/system/gdm.service && systemctl enable gdm.service
+test -f /usr/lib/systemd/system/spice-vdagentd.service && systemctl enable spice-vdagentd.service
 systemctl enable zramswap
 
 # set the default target
@@ -90,6 +96,13 @@ systemctl disable snapper-timeline.timer
 systemctl disable YaST2-Firstboot.service
 systemctl disable YaST2-Second-Stage.service
 
+# Prevent premature activation of LVM (bsc#1246133)
+systemctl mask lvm2-monitor.service
+sed -i 's:# event_activation = 1:event_activation = 0:' /etc/lvm/lvm.conf
+
+# Prevent premature assembly of MD RAIDs (bsc#1245159)
+touch /etc/udev/rules.d/64-md-raid-assembly.rules
+
 # the "eurlatgr" is the default font for the English locale
 echo -e "\nFONT=eurlatgr.psfu" >> /etc/vconsole.conf
 
@@ -99,14 +112,11 @@ arch=$(uname -m)
 profile=$(echo "$kiwi_profiles" | tr "_" "-")
 label="Install-$profile-$arch"
 
-# Set the default live root except for PXE images
-if [[ "$kiwi_profiles" != *PXE* ]]; then
-  echo "Setting default live root: live:LABEL=$label"
-  mkdir /etc/cmdline.d
-  echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
-  echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
-  echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
-fi
+echo "Setting default live root: live:LABEL=$label"
+mkdir /etc/cmdline.d
+echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
+echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
+echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
 echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 
 # decrease the kernel logging on the console, use a dracut module to do it early in the boot process
@@ -133,6 +143,9 @@ fi
 
 # Remove nvme hostid and hostnqn (bsc#1238038)
 rm -f /etc/nvme/host*
+
+# Remove default iSCSI initiator name (bsc#1246280)
+rm -f /etc/iscsi/initiatorname.iscsi
 
 # replace the @@LIVE_MEDIUM_LABEL@@ with the real Live partition label name from KIWI
 sed -i -e "s/@@LIVE_MEDIUM_LABEL@@/$label/g" /usr/bin/live-password

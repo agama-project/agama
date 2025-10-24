@@ -86,7 +86,7 @@ shared_examples "without partitions" do
 
     it "generates the expected JSON" do
       config_json = subject.convert
-      expect(config_json[:partitions]).to eq([])
+      expect(config_json.keys).to_not include(:partitions)
     end
   end
 end
@@ -369,6 +369,29 @@ shared_examples "with size" do
       )
     end
 
+    context "if min size is not configured" do
+      let(:size) do
+        {
+          min: "1 GiB",
+          max: "10 GiB"
+        }
+      end
+
+      before do
+        config.size.min = nil
+      end
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:size]).to eq(
+          {
+            min: "current",
+            max: 10.GiB.to_i
+          }
+        )
+      end
+    end
+
     context "if max size is unlimited" do
       let(:size) do
         {
@@ -386,7 +409,29 @@ shared_examples "with size" do
       end
     end
 
-    context "if size was solved" do
+    context "if max size is not configured" do
+      let(:size) do
+        {
+          min: "1 GiB"
+        }
+      end
+
+      before do
+        config.size.max = nil
+      end
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:size]).to eq(
+          {
+            min: 1.GiB.to_i,
+            max: "current"
+          }
+        )
+      end
+    end
+
+    context "if size is default" do
       before do
         size_config = config.size
         size_config.default = true
@@ -396,12 +441,7 @@ shared_examples "with size" do
 
       it "generates the expected JSON" do
         config_json = subject.convert
-        expect(config_json[:size]).to eq(
-          {
-            min: 5.GiB.to_i,
-            max: 25.GiB.to_i
-          }
-        )
+        expect(config_json.keys).to_not include(:size)
       end
     end
   end

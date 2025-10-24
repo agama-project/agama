@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -58,11 +58,12 @@ import {
   probe,
   register,
   registerAddon,
+  updateRegistrationUrl,
   solveConflict,
   updateConfig,
 } from "~/api/software";
 import { QueryHookOptions } from "~/types/queries";
-import { probe as systemProbe } from "~/api/manager";
+import { probe as systemProbe, reprobe as systemReprobe } from "~/api/manager";
 
 /**
  * Query to retrieve software configuration
@@ -81,6 +82,15 @@ const proposalQuery = () => ({
 });
 
 /**
+ * Query to retrieve selected product
+ */
+const selectedProductQuery = () => ({
+  queryKey: ["software", "selectedProduct"],
+  queryFn: () => fetchConfig().then(({ product }) => product),
+  staleTime: Infinity,
+});
+
+/**
  * Query to retrieve available products
  */
 const productsQuery = () => ({
@@ -96,14 +106,6 @@ const licensesQuery = () => ({
   queryKey: ["software", "licenses"],
   queryFn: fetchLicenses,
   staleTime: Infinity,
-});
-
-/**
- * Query to retrieve selected product
- */
-const selectedProductQuery = () => ({
-  queryKey: ["software", "product"],
-  queryFn: () => fetchConfig().then(({ product }) => product),
 });
 
 /**
@@ -167,9 +169,9 @@ const useConfigMutation = () => {
     mutationFn: updateConfig,
     onSuccess: async (_, config: SoftwareConfig) => {
       queryClient.invalidateQueries({ queryKey: ["software", "config"] });
-      queryClient.invalidateQueries({ queryKey: ["software", "product"] });
       queryClient.invalidateQueries({ queryKey: ["software", "proposal"] });
       if (config.product) {
+        queryClient.invalidateQueries({ queryKey: ["software", "selectedProduct"] });
         await systemProbe();
         queryClient.invalidateQueries({ queryKey: ["storage"] });
       }
@@ -188,10 +190,14 @@ const useRegisterMutation = () => {
   const queryClient = useQueryClient();
 
   const query = {
-    mutationFn: register,
-    onSuccess: async () => {
-      await systemProbe();
+    mutationFn: async ({ url, key, email }: { url: string; key: string; email?: string }) => {
+      await updateRegistrationUrl(url).then(() => register({ key, email }));
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["software", "registration"] });
+    },
+    onSuccess: async () => {
+      await systemReprobe();
       queryClient.invalidateQueries({ queryKey: ["storage"] });
     },
   };
@@ -238,20 +244,20 @@ const useProduct = (
 ): { products?: Product[]; selectedProduct?: Product } => {
   const func = options?.suspense ? useSuspenseQueries : useQueries;
   const [
-    { data: selected, isPending: isSelectedPending },
+    { data: product, isPending: isSelectedProductPending },
     { data: products, isPending: isProductsPending },
   ] = func({
     queries: [selectedProductQuery(), productsQuery()],
-  }) as [{ data: string; isPending: boolean }, { data: Product[]; isPending: boolean }];
+  }) as [{ data: SoftwareConfig; isPending: boolean }, { data: Product[]; isPending: boolean }];
 
-  if (isSelectedPending || isProductsPending) {
+  if (isSelectedProductPending || isProductsPending) {
     return {
       products: [],
       selectedProduct: undefined,
     };
   }
 
-  const selectedProduct = products.find((p: Product) => p.id === selected);
+  const selectedProduct = products.find((p: Product) => p.id === product);
   return {
     products,
     selectedProduct,
@@ -371,7 +377,7 @@ const useProductChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "ProductChanged") {
-        queryClient.invalidateQueries({ queryKey: ["software", "config"] });
+        queryClient.invalidateQueries({ queryKey: ["software"] });
       }
 
       if (event.type === "LocaleChanged") {
@@ -423,7 +429,6 @@ const useConflictsChanges = () => {
 export {
   configQuery,
   productsQuery,
-  selectedProductQuery,
   useAddons,
   useConfigMutation,
   useConflicts,

@@ -18,7 +18,7 @@ translations:
       MicroSO proporciona actualitzacions transaccionals (atòmiques) en un
       sistema de fitxers d'arrel btrfs només de lectura. Com a distribució
       contínua, el programari està sempre actualitzat.
-    cs: Rychlá, malá distribuce určená pro úlohy hostitelského kontejneru s
+    cs: Malá a rychlá distribuce určená pro úlohy hostitele kontejnerů s
       automatizovanou správou a záplatováním. openSUSE MicroOS poskytuje
       transakční (atomické) aktualizace na kořenovém souborovém systému btrfs
       určeném pouze pro čtení. Jako distribuce s průběžným vydáváním je software
@@ -34,16 +34,29 @@ translations:
       proporciona actualizaciones transaccionales (atómicas) en un sistema de
       archivos raíz btrfs de solo lectura. Como distribución de actualización
       continua, el software siempre está actualizado.
+    fi: Nopea, pieni jakelu joka on suunniteltu konttityökuormien suorittamiseen
+      lisättynä automaattisella ylläpidolla ja päivityksillä. openSUSE MicroOS
+      tarjoaa transaktionaaliset (atomiset) päivitykset kirjoitussuojatussa
+      btrfs-juuritiedostojärjestelmässä. Jatkuvasti päivittyvänä jakeluna
+      ohjelmistot ovat aina ajan tasalla.
     fr: Une petite distribution rapide conçue pour héberger des charges de travail
       de conteneurs avec une administration et des correctifs automatisés.
       openSUSE MicroOS fournit des mises à jour transactionnelles (atomiques)
       sur un système de fichiers racine btrfs en lecture seule. En tant que
       distribution continue, le logiciel est toujours à jour.
+    he: הפצה מהירה וקלה, המתוכננת לאירוח קונטיינרים עם ניהול ותיקונים אוטומטיים.
+      MicroOS מבית OpenSUSE מספקת עדכונים אטומיים על גבי מערכת קבצים במצב קריאה
+      בלבד מסוג btrfs. כהפצה מתגלגלת התובנות תמיד עדכניות.
     id: Distribusi cepat dan ramping yang dirancang untuk menampung beban kerja
       kontainer dengan administrasi & penambalan otomatis. openSUSE MicroOS
       menyediakan pembaruan transaksional (atomik) pada sistem berkas root btrfs
       yang hanya dapat dibaca. Sebagai distribusi rilis bergulir, perangkat
       lunak didalamnya selalu diperbarui.
+    it: Una piccola distribuzione rapida progettata per l'hosting dei workload dei
+      container con amministrazione e applicazione di patch automatizzate.
+      openSUSE MicroOS fornisce aggiornamenti transazionali (atomici) su un file
+      system radice btrfs in sola lettura. In quanto distribuzione della
+      versione rolling, il software è sempre aggiornato.
     ja: 高速で小型のディストリビューションで、管理やパッチ適用の自動化のようなコンテナ処理を賄うのに最適な仕組みです。 openSUSE MicroOS
       はトランザクション型の (不可分の) 更新機構が提供されており、 btrfs
       のルートファイルシステムを読み込み専用にすることができます。こちらもローリングリリース型のディストリビューションであるため、常に最新を維持することができます。
@@ -52,17 +65,19 @@ translations:
       gir transaksjonelle (atomisk) oppdateringer oppå en skrivebeskyttet btrfs
       rotfilsystem. Som rullerende distribusjon er programvaren alltid
       oppdatert.
+    nl: Een sneller, kleine distributie ontworpen om container werklasten te
+      faciliteren met geautomatiseerde administratie en patchen. openSUSE
+      MicroOS biedt transactionele (atomische) updates op een alleen-lezen btrfs
+      root bestandssysteem. Als een rollende release distributie is de software
+      altijd up-to-date.
     pt_BR: Uma distribuição pequena e rápida projetada para hospedar cargas de
       trabalho de contêiner com administração e aplicação de patches
       automatizadas. O openSUSE MicroOS fornece atualizações transacionais
       (atômicas) em um sistema de arquivos raiz btrfs somente leitura. Como
       distribuição contínua, o software está sempre atualizado.
-    ru: Быстрый, минималистичный дистрибутив, предназначенный для размещения
-      контейнерных рабочих нагрузок с автоматизированным администрированием и
-      исправлениями. openSUSE MicroOS обеспечивает транзакционные (атомарные)
-      обновления на корневой файловой системе btrfs, доступной только для
-      чтения. Так как дистрибутив использует плавающий выпуск обновлений,
-      программное обеспечение всегда актуально.
+    ru: Лёгкий дистрибутив для контейнерных нагрузок с автоматическим управлением и
+      обновлениями. openSUSE MicroOS использует атомарные обновления и btrfs на
+      только-чтение. Всегда актуален благодаря модели непрерывных обновлений.
     sv: En snabb, liten distribution utformad för att vara värd för
       arbetsbelastningar i behållare med automatiserad administration och
       patchning. openSUSE MicroOS tillhandahåller transaktionella (atomära)
@@ -72,8 +87,16 @@ translations:
       tasarlanmış hızlı, küçük bir dağıtım. openSUSE MicroOS, salt okunur bir
       btrfs kök dosya sistemi üzerinde işlemsel (atomik) güncellemeler sağlar.
       Sürekli sürüm dağıtımı olarak yazılım her zaman günceldir.
-    zh_Hans: 一个快速、小型的发行版，旨在通过自动化管理和修补来托管容器工作负载。openSUSE MicroOS 提供基于只读 Btrfs
+    uk: Швидкий, мінімалістичний дистрибутив, призначений для розміщення
+      контейнерних робочих навантажень з автоматизованим адмініструванням і
+      виправленнями. openSUSE MicroOS забезпечує транзакційні (атомарні)
+      оновлення на кореневій файловій системі btrfs, яка доступна тільки для
+      читання. Оскільки дистрибутив використовує "плаваючий" випуск оновлень,
+      програмне забезпечення завжди актуальне.
+    zh_CN: 一个快速、小型的发行版，旨在通过自动化管理和修补来托管容器工作负载。openSUSE MicroOS 提供基于只读 Btrfs
       根文件系统之上的事务性（原子）更新。作为滚动发行版，它的软件始终保持最新。
+    zh_TW: 一個快速、輕量的發行版，專為承載容器工作負載而設計，具備自動化管理與修補功能。openSUSE MicroOS 採用唯讀的 btrfs
+      根檔案系統，提供具交易性 (原子性) 的更新。做為滾動更新的發行版，其軟體始終保持最新狀態。
 software:
   installation_repositories:
     - url: https://download.opensuse.org/tumbleweed/repo/oss/
@@ -114,6 +137,7 @@ software:
     - microos_base_zypper
     - microos_defaults
     - microos_hardware
+    - microos_selinux
   optional_patterns: null
   user_patterns:
     - container_runtime
@@ -131,7 +155,6 @@ security:
     selinux:
       patterns:
         - microos_selinux
-      policy: enforcing
     none:
       patterns: null
 

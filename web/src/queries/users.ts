@@ -122,7 +122,8 @@ const useRootUserMutation = () => {
 
       const previousRoot: RootUser = queryClient.getQueryData(["users", "root"]);
       queryClient.setQueryData(["users", "root"], {
-        password: !!newRoot.password,
+        password: newRoot.password,
+        hashedPassword: newRoot.hashedPassword,
         sshPublicKey: newRoot.sshPublicKey || previousRoot.sshPublicKey,
       });
       return { previousRoot };

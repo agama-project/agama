@@ -150,26 +150,50 @@ impl<'a> StorageClient<'a> {
     }
 
     /// Runs the probing process
-    pub async fn probe(&self) -> Result<(), ServiceError> {
-        Ok(self.storage_proxy.probe().await?)
+    pub async fn probe(&self, client_id: String) -> Result<(), ServiceError> {
+        Ok(self
+            .storage_proxy
+            .probe(HashMap::from([("client_id", &client_id.into())]))
+            .await?)
     }
 
     /// Runs the reprobing process
-    pub async fn reprobe(&self) -> Result<(), ServiceError> {
-        Ok(self.storage_proxy.reprobe().await?)
+    pub async fn reprobe(&self, client_id: String) -> Result<(), ServiceError> {
+        Ok(self
+            .storage_proxy
+            .reprobe(HashMap::from([("client_id", &client_id.into())]))
+            .await?)
+    }
+
+    /// Runs the reactivation process
+    pub async fn reactivate(&self, client_id: String) -> Result<(), ServiceError> {
+        Ok(self
+            .storage_proxy
+            .reactivate(HashMap::from([("client_id", &client_id.into())]))
+            .await?)
     }
 
     /// Set the storage config according to the JSON schema
-    pub async fn set_config(&self, settings: StorageSettings) -> Result<u32, ServiceError> {
+    pub async fn set_config(
+        &self,
+        settings: StorageSettings,
+        client_id: String,
+    ) -> Result<u32, ServiceError> {
         Ok(self
             .storage_proxy
-            .set_config(serde_json::to_string(&settings)?.as_str())
+            .set_config(
+                serde_json::to_string(&settings)?.as_str(),
+                HashMap::from([("client_id", &client_id.into())]),
+            )
             .await?)
     }
 
     /// Reset the storage config to the default value
-    pub async fn reset_config(&self) -> Result<u32, ServiceError> {
-        Ok(self.storage_proxy.reset_config().await?)
+    pub async fn reset_config(&self, client_id: String) -> Result<u32, ServiceError> {
+        Ok(self
+            .storage_proxy
+            .reset_config(HashMap::from([("client_id", &client_id.into())]))
+            .await?)
     }
 
     /// Get the storage config according to the JSON schema
@@ -180,10 +204,17 @@ impl<'a> StorageClient<'a> {
     }
 
     /// Set the storage config model according to the JSON schema
-    pub async fn set_config_model(&self, model: Box<RawValue>) -> Result<u32, ServiceError> {
+    pub async fn set_config_model(
+        &self,
+        model: Box<RawValue>,
+        client_id: String,
+    ) -> Result<u32, ServiceError> {
         Ok(self
             .storage_proxy
-            .set_config_model(serde_json::to_string(&model).unwrap().as_str())
+            .set_config_model(
+                serde_json::to_string(&model).unwrap().as_str(),
+                HashMap::from([("client_id", &client_id.into())]),
+            )
             .await?)
     }
 

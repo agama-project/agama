@@ -21,40 +21,41 @@
  */
 
 import React from "react";
+import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
+import DriveHeader from "~/components/storage/DriveHeader";
+import DeviceEditorContent from "~/components/storage/DeviceEditorContent";
+import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
 import { Drive } from "~/types/storage/model";
-import { StorageDevice } from "~/types/storage";
-import DriveDeviceMenu from "~/components/storage/DriveDeviceMenu";
-import PartitionableHeader from "~/components/storage/PartitionableHeader";
-import PartitionsMenu from "~/components/storage/PartitionsMenu";
-import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
-import { Card, CardBody, CardHeader, CardTitle, Flex } from "@patternfly/react-core";
+import { model, StorageDevice } from "~/types/storage";
+import { useDeleteDrive } from "~/hooks/storage/drive";
 
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+type DriveDeviceMenuProps = {
+  drive: model.Drive;
+  selected: StorageDevice;
+};
+
+/**
+ * Internal component that renders generic actions available for a Drive device.
+ */
+const DriveDeviceMenu = ({ drive, selected }: DriveDeviceMenuProps) => {
+  const deleteDrive = useDeleteDrive();
+  const deleteFn = (device: model.Drive) => deleteDrive(device.name);
+
+  return <SearchedDeviceMenu modelDevice={drive} selected={selected} deleteFn={deleteFn} />;
+};
 
 export type DriveEditorProps = { drive: Drive; driveDevice: StorageDevice };
 
-const DriveHeader = ({ drive, driveDevice }: DriveEditorProps) => {
-  return (
-    <PartitionableHeader device={drive}>
-      <DriveDeviceMenu drive={drive} selected={driveDevice} />
-    </PartitionableHeader>
-  );
-};
-
+/**
+ * Component responsible for displaying detailed information and available actions
+ * related to a specific Drive device within the storage ConfigEditor.
+ */
 export default function DriveEditor({ drive, driveDevice }: DriveEditorProps) {
   return (
-    <Card isCompact>
-      <CardHeader>
-        <CardTitle>
-          <DriveHeader drive={drive} driveDevice={driveDevice} />
-        </CardTitle>
-      </CardHeader>
-      <CardBody className={spacingStyles.plLg}>
-        <Flex direction={{ default: "column" }}>
-          <SpacePolicyMenu modelDevice={drive} device={driveDevice} />
-          <PartitionsMenu device={drive} />
-        </Flex>
-      </CardBody>
-    </Card>
+    <ConfigEditorItem
+      header={<DriveHeader drive={drive} device={driveDevice} />}
+      content={<DeviceEditorContent deviceModel={drive} device={driveDevice} />}
+      actions={<DriveDeviceMenu drive={drive} selected={driveDevice} />}
+    />
   );
 }

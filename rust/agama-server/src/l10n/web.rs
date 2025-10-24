@@ -26,7 +26,7 @@ use super::{
 };
 use crate::{error::Error, web::EventsSender};
 use agama_lib::{
-    error::ServiceError, http::Event, localization::model::LocaleConfig, localization::LocaleProxy,
+    auth::ClientId, error::ServiceError, event, localization::model::LocaleConfig,
     proxies::LocaleMixinProxy as ManagerLocaleProxy,
 };
 use agama_locale_data::LocaleId;
@@ -34,8 +34,8 @@ use axum::{
     extract::State,
     http::StatusCode,
     response::IntoResponse,
-    routing::{get, patch},
-    Json, Router,
+    routing::{get, patch, post},
+    Extension, Json, Router,
 };
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -43,7 +43,6 @@ use tokio::sync::RwLock;
 #[derive(Clone)]
 struct LocaleState<'a> {
     locale: Arc<RwLock<L10n>>,
-    proxy: LocaleProxy<'a>,
     manager_proxy: ManagerLocaleProxy<'a>,
     events: EventsSender,
 }
@@ -57,11 +56,9 @@ pub async fn l10n_service(
 ) -> Result<Router, ServiceError> {
     let id = LocaleId::default();
     let locale = L10n::new_with_locale(&id).unwrap();
-    let proxy = LocaleProxy::new(&dbus).await?;
     let manager_proxy = ManagerLocaleProxy::new(&dbus).await?;
     let state = LocaleState {
         locale: Arc::new(RwLock::new(locale)),
-        proxy,
         manager_proxy,
         events,
     };
@@ -71,6 +68,7 @@ pub async fn l10n_service(
         .route("/locales", get(locales))
         .route("/timezones", get(timezones))
         .route("/config", patch(set_config).get(get_config))
+        .route("/finish", post(finish))
         .with_state(state);
     Ok(router)
 }
@@ -130,6 +128,7 @@ async fn keymaps(State(state): State<LocaleState<'_>>) -> Json<Vec<Keymap>> {
 )]
 async fn set_config(
     State(state): State<LocaleState<'_>>,
+    Extension(client_id): Extension<Arc<ClientId>>,
     Json(value): Json<LocaleConfig>,
 ) -> Result<impl IntoResponse, Error> {
     let mut data = state.locale.write().await;
@@ -160,10 +159,9 @@ async fn set_config(
         let locale_string = locale.to_string();
         state.manager_proxy.set_locale(&locale_string).await?;
         changes.ui_locale = Some(locale_string);
-
-        _ = state.events.send(Event::LocaleChanged {
+        _ = state.events.send(event!(LocaleChanged {
             locale: locale.to_string(),
-        });
+        }));
     }
 
     if let Some(ui_keymap) = &value.ui_keymap {
@@ -171,10 +169,9 @@ async fn set_config(
         data.set_ui_keymap(ui_keymap)?;
     }
 
-    if let Err(e) = update_dbus(&state.proxy, &changes).await {
-        tracing::warn!("Could not synchronize settings in the localization D-Bus service: {e}");
-    }
-    _ = state.events.send(Event::L10nConfigChanged(changes));
+    _ = state
+        .events
+        .send(event!(L10nConfigChanged(changes), client_id.as_ref()));
 
     Ok(StatusCode::NO_CONTENT)
 }
@@ -200,26 +197,17 @@ async fn get_config(State(state): State<LocaleState<'_>>) -> Json<LocaleConfig> 
     })
 }
 
-pub async fn update_dbus(
-    client: &LocaleProxy<'_>,
-    config: &LocaleConfig,
-) -> Result<(), ServiceError> {
-    if let Some(locales) = &config.locales {
-        let locales: Vec<_> = locales.iter().map(|l| l.as_ref()).collect();
-        client.set_locales(&locales).await?;
-    }
-
-    if let Some(keymap) = &config.keymap {
-        client.set_keymap(keymap.as_str()).await?;
-    }
-
-    if let Some(timezone) = &config.timezone {
-        client.set_timezone(timezone).await?;
-    }
-
-    if let Some(ui_locale) = &config.ui_locale {
-        client.set_uilocale(ui_locale).await?;
-    }
-
-    Ok(())
+#[utoipa::path(
+    get,
+    path = "/finish",
+    context_path = "/api/l10n",
+    operation_id = "l10n_finish",
+    responses(
+        (status = 200, description = "Finish the l10n configuration")
+    )
+)]
+async fn finish(State(state): State<LocaleState<'_>>) -> Result<impl IntoResponse, Error> {
+    let data = state.locale.read().await;
+    data.commit()?;
+    Ok(StatusCode::NO_CONTENT)
 }

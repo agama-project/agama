@@ -3,189 +3,143 @@ per il software SUSE
 
 
 Contratto di licenza con l'Utente finale per i software SUSE
-LEGGERE ATTENTAMENTE IL PRESENTE CONTRATTO. ACQUISTANDO, 
-INSTALLANDO, SCARICANDO O ALTRIMENTI UTILIZZANDO QUESTO PRODOTTO 
-SOFTWARE (COME DEFINITO DI SEGUITO E INCLUSI I RELATIVI COMPONENTI), 
-L'UTENTE ACCETTA I TERMINI DEL PRESENTE CONTRATTO. SE NON SI 
-ACCETTANO QUESTE CONDIZIONI, NON È CONSENTITO SCARICARE, INSTALLARE 
-O UTILIZZARE IL SOFTWARE. UN INDIVIDUO CHE AGISCA PER CONTO DI 
-UN'ENTITÀ DISPONE DELL'AUTORITÀ PER ACCEDERE AL PRESENTE CONTRATTO 
-PER CONTO DI TALE ENTITÀ.
+ACQUISTANDO, INSTALLANDO, SCARICANDO O ALTRIMENTI UTILIZZANDO QUESTO 
+PRODOTTO SOFTWARE (DI SEGUITO DEFINITO), L'UTENTE ACCETTA I TERMINI 
+DEL PRESENTE CONTRATTO. SE NON SI ACCETTANO QUESTE CONDIZIONI, NON È 
+CONSENTITO SCARICARE, INSTALLARE O UTILIZZARE IL SOFTWARE. UN 
+INDIVIDUO CHE AGISCA PER CONTO DI UN'ENTITÀ DISPONE DELL'AUTORITÀ 
+PER ACCEDERE AL PRESENTE CONTRATTO PER CONTO DI TALE ENTITÀ.  SE 
+L'UTENTE ACCETTA IL PRESENTE CONTRATTO PER CONTO DI UN'ENTITÀ TERZA, 
+I TERMINI "UTENTE" E "VOSTRO" QUALORA UTILIZZATI DI SEGUITO SI 
+RIFERISCONO A TALE ENTITÀ.
 
-SUSE LLC ("Licenziante" o "SUSE") rende disponibili i prodotti 
-software come parte della seguente raccolta: (i) programmi software 
-sviluppati da SUSE e dalle sue affiliate; (ii) programmi software 
-sviluppati da terze parti;  (iii) marchi commerciali di proprietà di 
-SUSE e/o delle sue affiliate ("Marchi SUSE"); e (iv) supporti 
-multimediali o riproduzioni (fisiche o virtuali) e documentazione a 
-corredo dei tali programmi software (ad esempio, raccolte di 
-programmi, marchi commerciali e documentazione che rientrano nella 
-definizione di "Software").  
+SUSE LLC ("Licenziante" o "SUSE") fornisce prodotti software, che 
+possono includere: (i) programmi software sviluppati da SUSE e/o dai 
+propri affiliati; (ii) programmi software sviluppati da terzi; (iii) 
+compilazioni di programmi software; e (iv) marchi commerciali di 
+proprietà di SUSE e/o dei propri affiliati ("Marchi SUSE"), nonché 
+la documentazione che accompagna tali programmi software (programmi 
+software, compilazioni di programmi software, marchi commerciali e 
+documentazione costituiscono il "Software").
 
-Il software è protetto dai trattati e dalle leggi sul copyright 
-degli Stati Uniti e in altri Paesi. Il contratto di licenza con 
-l'utente finale ("EULA") è un accordo legale fra l'Utente (un'entità 
-o una persona) e SUSE, che disciplina l'utilizzo del Software. Se le 
-leggi del Paese della propria sede operativa principale richiedono 
-che i contratti siano redatti nella lingua locale per essere validi, 
-tale versione nella lingua locale può essere richiesta per iscritto 
-al Licenziante e disciplinerà l'uso del Software da parte 
-dell'Utente finale. Qualsiasi componente aggiuntivo, estensione, 
-versione di aggiornamento, applicazione mobile, modulo, adattatore o 
-supporto del presente Software scaricati o ricevuti dall'Utente e 
-non accompagnati da un contratto di licenza rientrano nel Software e 
-sono soggetti alle condizioni del presente Contratto di licenza con 
-l'utente finale. 
-
+Il presente Contratto di licenza con l'Utente finale ("EULA") è un 
+accordo legale tra l'Utente (una persona o un'entità giuridica) e 
+SUSE e regola l'utilizzo del Software. Qualsiasi versione di 
+componente aggiuntivo, estensione, aggiornamento, applicazione 
+mobile, modulo, adattatore o supporto del presente Software 
+scaricata o ricevuta dall'Utente non accompagnata da un altro 
+contratto di licenza è considerata Software e soggetta alle 
+condizioni del presente Contratto di licenza con l'Utente finale. Se 
+le leggi vigenti presso la sede operativa principale dell'Utente 
+richiedono che i contratti siano redatti nella lingua locale per 
+essere validi, è possibile ottenere una versione in lingua locale 
+scrivendo al Licenziante e in tal caso sarà la versione in lingua 
+locale a disciplinare l'utilizzo del Software.      
+ 
 Termini della licenza
 Open source
-Il Software contiene molti singoli componenti che costituiscono 
-software open source e la licenza open source per ciascun 
-componente, che, a seconda del programma software, può essere GNU 
-General Public License v.2 
-(https://www.gnu.org/licenses/oldlicenses/gpl-2.0.en.html) o Apache 
-2.0 (https://www.apache.org/licenses/LICENSE-2.0) o un'altra licenza 
-open source (ciascuna, "OSS License"), è disponibile nella 
-documentazione di licenza e/o nel codice sorgente del componente. 
-
-Il presente Contratto di licenza con l'utente finale disciplina 
-l'utilizzo del Software, compresi i Marchi SUSE, e non limita, 
-prevale su o modifica i diritti dell'Utente ai sensi della Licenza 
-OSS applicabile all'utilizzo di qualsiasi codice open source 
-contenuto nel Software senza i Marchi SUSE.
-
-Il Software può includere o essere venduto insieme ad altri 
-programmi software concessi in licenza ai sensi di termini diversi 
-e/o autorizzati da terze parti diverse dal Licenziante.  L'uso di 
-qualsiasi programma software provvisto di un contratto di licenza 
-separato è disciplinato da tale contratto di licenza.
+Il Software contiene svariati componenti singoli che sono software 
+open source. La licenza open source per ciascun componente, che a 
+seconda del programma software può essere la Licenza Pubblica 
+Generica GNU v.2 
+(https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html), la 
+licenza Apache versione 2.0 
+(https://www.https://www.apache.org/licenses/LICENSE-2.0) o un'altra 
+licenza open source (ciascuna di tali licenze rappresenta la 
+"Licenza OSS"), è inclusa nella documentazione della licenza e/o nel 
+codice sorgente del componente.
+ 
+Il presente Contratto di licenza con l'Utente finale regola 
+l'utilizzo del Software, compresi i Marchi SUSE, ma non limita, 
+sostituisce o modifica i diritti dell'utente ai sensi della Licenza 
+OSS applicabile all'uso dei codici open source contenuti nel 
+Software senza i Marchi SUSE.
+ 
+Il Software può essere fornito con programmi di terze parti che non 
+fanno parte del Software. Tali programmi terzi non sono necessari 
+per eseguire il Software, ma vengono forniti per comodità 
+dell'utente e sono soggetti ai rispettivi termini della licenza. I 
+termini della licenza accompagnano i programmi di terze parti o 
+possono essere visualizzati all'indirizzo 
+https://www.suse.com/licensing/eula/. Se l'Utente non accetta di 
+rispettare i termini della licenza applicabili per i programmi di 
+terze parti, deve astenersi dall'installarli. Se si desidera 
+installare i programmi di terze parti su più di un sistema o 
+trasferire i programmi di terze parti ad altro sistema, contattare 
+il licenziante dei rispettivi programmi terzi.
 
 Licenza di utilizzo del software
-Nel rispetto della conformità ai termini e condizioni del presente 
-Contratto di licenza con l'utente finale, il Licenziante concede 
-all'Utente una licenza perpetua internazionale non esclusiva, non 
-trasferibile e revocabile per riprodurre e utilizzare copie del 
-Software all'interno dell'Organizzazione dell'utente per scopi 
-aziendali. Il termine "Organizzazione" definisce un'entità legale e 
-i relativi affiliati. Il termine "Affiliate" si riferisce alle 
-entità che controllano l'Utente, sono controllate dall'Utente o sono 
-controllate dalla stessa entità che controlla l'Utente. In relazione 
-alla licenza in questione, l'Utente sarà ritenuto responsabile di 
-qualunque violazione delle disposizioni del presente Contratto di 
-licenza con l'utente finale, anche da parte delle relative 
-Affiliate.
-
-Questo Contratto di licenza con l'utente finale vieta la 
-distribuzione del Software o dei relativi componenti utilizzando i 
-marchi del SUSE, indipendentemente dal fatto che la copia degli 
-stessi sia stata modificata. L'utente può ridistribuire all'esterno 
-dell'organizzazione: (a) il software solo se tale ridistribuzione è 
-consentita e autorizzata ai sensi di un contratto distinto in forma 
-scritta stipulato con il licenziante, oppure (b) i componenti 
-costitutivi del software solo se l'Utente rimuove e sostituisce 
-tutte le occorrenze del marchio SUSE.
-
-Qualora avesse ricevuto componenti hardware, software o altri 
-appliance che utilizzano o integrano il software, l'Utente può 
-utilizzarlo al solo scopo di eseguire tale hardware, software o 
-appliance. Non è consentito l'utilizzo del software come componente 
-autonomo.
+Fatto salvo il rispetto dei termini e delle condizioni del presente 
+Contratto di licenza con l'Utente finale e della Licenza OSS 
+applicabile, all'utente viene concessa una licenza mondiale 
+perpetua, non esclusiva, non trasferibile e revocabile per 
+riprodurre e utilizzare copie del Software per uso interno da parte 
+della propria entità giuridica. 
+ 
+Il presente Contratto di licenza con l'Utente finale non consente 
+all'utente di distribuire il Software o i suoi componenti 
+utilizzando i Marchi SUSE, salvo il caso in cui l'utente possa 
+ridistribuire all'esterno della propria entità giuridica: (a) copie 
+del Software, ma solo se consentito da un accordo scritto separato 
+con il Licenziante che autorizza tale ridistribuzione, o (b) i 
+componenti costitutivi del Software, ma solo dopo aver rimosso e 
+sostituito tutte le occorrenze di qualsiasi Marchio SUSE.
 
 Proprietà
-All'Utente non viene trasferito alcun titolo o diritto di proprietà 
-sul Software. Il Licenziante e/o i suoi concessori di licenza di 
-terze parti mantengono tutti i titoli e i diritti di proprietà 
-intellettuale sul Software, inclusi quelli di adattamento o copia. 
-Il Software non viene venduto all'Utente, il quale acquista 
-esclusivamente una licenza condizionale per l'utilizzo del Software. 
-Titolo, diritti di proprietà e diritti di proprietà intellettuale in 
-merito ai contenuti a cui si accede mediante il Software sono di 
-proprietà del rispettivo proprietario e possono essere protetti 
-dalle leggi sul copyright o da altre leggi applicabili. Il presente 
-Contratto di licenza con l'utente finale non comporta alcun diritto 
-dell'Utente nei confronti di tali contenuti.
+Il Software viene concesso in licenza, non venduto.  All'Utente non 
+viene trasferito alcun titolo o diritto di proprietà sul Software. 
+Il Licenziante e/o i licenzianti terzi mantengono ogni diritto, 
+titolarità e interesse su tutti i diritti di proprietà intellettuale 
+del Software.      
 
 Marchi SUSE
-Il presente Contratto di licenza con l'utente finale non concede 
-diritti o licenze, espressi o impliciti, per l'utilizzo di qualsiasi 
-marchio, marchio SUSE o marchio di servizio del Licenziatario o dei 
-relativi licenzianti e delle relative affiliate al di fuori dei casi 
-necessari per l'utilizzo del Software come consentito dal presente 
-Contratto di licenza con l'utente finale.
+Il presente Contratto di licenza con l'Utente finale non offre alcun 
+diritto o licenza, implicita o esplicita, di utilizzo nomi 
+commerciali, marchi di servizio o Marchi SUSE del Licenziante o dei 
+relativi affiliati o licenzianti.
 
-Supporto e servizi associati alla sottoscrizione
-Il licenziante non ha alcun obbligo di fornire manutenzione o 
-assistenza a meno che l'Utente non acquisti un'offerta di 
-abbonamento, in conformità con qualsivoglia contratto aggiuntivo con 
-il Licenziante o le sue affiliate, che includa espressamente tali 
-servizi. 
+Supporto e servizi in abbonamento
+Il Licenziante non ha alcun obbligo di fornire manutenzione o 
+supporto se non diversamente concordato ai sensi di un accordo 
+aggiuntivo che includa espressamente tali servizi.
 
-Garanzia
+Garanzia e responsabilità
 Garanzia limitata
-Il Licenziante garantisce che il supporto su cui il Software è 
-fornito sarà privo di difetti a livello di materiale e fabbricazione 
-durante il normale utilizzo per un periodo di sessanta (60) giorni 
-dalla data di consegna all'Utente. LA SUDDETTA GARANZIA È L'UNICA 
-TUTELA DELL'UTENTE E SOSTITUISCE QUALSIASI ALTRA GARANZIA, ESPLICITA 
-O IMPLICITA. FATTA ECCEZIONE PER LA PRESENTE GARANZIA, IL SOFTWARE 
-VIENE FORNITO "NELLO STATO IN CUI SI TROVA" SENZA ALCUN TIPO DI 
-GARANZIA.
-IL SOFTWARE NON È PROGETTATO, REALIZZATO O DESTINATO ALL'USO O ALLA 
-VENDITA CON, E NON DEVE ESSERE UTILIZZATO PER, APPARECCHIATURE DI 
-CONTROLLO IN TEMPO REALE, IN AMBIENTI AD ALTO RISCHIO PER I QUALI 
-SONO NECESSARIE PRESTAZIONI CHE GARANTISCANO LA MASSIMA SICUREZZA, 
-QUALI SISTEMI PER IL CONTROLLO DI IMPIANTI NUCLEARI, SISTEMI PER LA 
-NAVIGAZIONE, LA COMUNICAZIONE O IL CONTROLLO AEREO, STRUMENTI DI 
-SUPPORTO DIRETTO ALLA VITA DELLE PERSONE, SISTEMI DI ARMI  ALTRI 
-STRUMENTI PER I QUALI IL GUASTO DEL SOFTWARE POTREBBE CAUSARE MORTE, 
-GRAVI DANNI ALLE PERSONE O ALL'AMBIENTE.
-Prodotti di terze parti
-Il Software può includere o essere venduto insieme a hardware o ad 
-altri programmi software concessi in licenza o forniti da un 
-concessore di licenza diverso dal Licenziante. IL LICENZIANTE NON 
-FORNISCE ALCUNA GARANZIA PER I PRODOTTI O I SERVIZI DI TERZE PARTI. 
- TALI PRODOTTI O SERVIZI VENGONO FORNITI "COSĚ COME SONO". QUALSIASI 
-SERVIZIO DI GARANZIA PER PRODOTTI DI TERZE PARTI VIENE FORNITO DAL 
-RELATIVO CONCESSORE DI LICENZA IN CONFORMITÀ ALLE CONDIZIONI DI 
-GARANZIA DEFINITE DALLO STESSO.
-SALVO NEI CASI DIVERSAMENTE PREVISTI DALLA LEGGE, IL LICENZIANTE NON 
-RICONOSCE ALCUNA GARANZIA IMPLICITA, INCLUSE LE GARANZIE DI 
-COMMERCIABILITÀ, IDONEITÀ A UNO SCOPO PARTICOLARE, PROPRIETÀ O NON 
-VIOLAZIONE DEI DIRITTI ALTRUI, NÉ RILASCIA ALCUNA GARANZIA DERIVANTE 
-DAGLI USI DEL COMMERCIO E DALLA PRASSI COMMERCIALE. IL LICENZIANTE 
-NON CONCEDE ALCUNA GARANZIA NÉ RILASCIA ALCUNA ASSERZIONE O 
-ASSICURAZIONE NON ESPRESSAMENTE DICHIARATA IN QUESTA GARANZIA 
-LIMITATA. IL LICENZIANTE NON GARANTISCE CHE IL SOFTWARE O I SERVIZI 
-CORRISPONDANO AI REQUISITI DELL'UTENTE, SIANO COMPATIBILI CON TUTTI 
-I SISTEMI OPERATIVI O CHE IL FUNZIONAMENTO DEL SOFTWARE O DEI 
-SERVIZI NON SUBIRÀ INTERRUZIONI O SIA PRIVO DI ERRORI. LE SEGUENTI 
-ESCLUSIONI E LIMITAZIONI DI GARANZIA COSTITUISCONO PARTE INTEGRANTE 
-DEL PRESENTE CONTRATTO. Poiché alcune giurisdizioni non consentono 
-determinate esclusioni e limitazioni di garanzia, alcune parti delle 
-suddette limitazioni potrebbero non essere applicabili a uno 
-specifico Utente. In aggiunta ai diritti specifici che la presente 
-garanzia limitata riconosce all'Utente, questo potrebbe godere di 
-ulteriori diritti, che variano in base alla giurisdizione.
-Limitazione di responsabilità 
-NÉ IL LICENZIANTE NÉ ALCUN LICENZIANTE DI TERZE PARTI, DISTRIBUTORE 
-O DIPENDENTE SARÀ IN ALCUN CASO RESPONSABILE PER DANNI DI QUALSIASI 
+IL SOFTWARE VIENE FORNITO "COS COM" SENZA NESSUNA GARANZIA DI ALCUN 
+TIPO. SALVO NEI CASI DIVERSAMENTE PREVISTI DALLA LEGGE, IL 
+LICENZIATARIO NON RICONOSCE ALCUNA GARANZIA IMPLICITA, INCLUSE LE 
+GARANZIE DI COMMERCIABILITÀ, IDONEITÀ PER UNO SCOPO PARTICOLARE, 
+PROPRIETÀ O NON VIOLAZIONE DEI DIRITTI ALTRUI, NÉ RILASCIA ALCUNA 
+GARANZIA DERIVANTE DAGLI USI DEL COMMERCIO E DALLA PRASSI 
+COMMERCIALE.  IL LICENZIANTE NON GARANTISCE CHE IL SOFTWARE O I 
+SERVIZI CORRISPONDANO AI REQUISITI DELL'UTENTE, SIANO COMPATIBILI 
+CON I SUOI SISTEMI OPERATIVI O CHE IL FUNZIONAMENTO DEL SOFTWARE NON 
+SUBIRÀ INTERRUZIONI O SIA PRIVO DI ERRORI. LE PRECEDENTI ESCLUSIONI 
+ED ESONERI DI RESPONSABILITÀ SONO PARTE ESSENZIALE DEL PRESENTE 
+CONTRATTO. Alcune giurisdizioni non riconoscono l'esclusione o la 
+limitazione di responsabilità, pertanto è possibile che alcune delle 
+limitazioni sopra descritte non si applichino all'Utente. In 
+aggiunta ai diritti specifici che la presente garanzia limitata 
+riconosce all'Utente, questo potrebbe godere di ulteriori diritti, 
+che variano in base alla giurisdizione.
+
+Limitazione di responsabilità
+NÉ IL LICENZIANTE NÉ ALCUN AFFILIATO, AZIONISTA, DIRIGENTE O 
+DIPENDENTE SARÀ IN ALCUN CASO RESPONSABILE PER DANNI DI QUALSIASI 
 TIPO, CONSEQUENZIALI O INDIRETTI, AI SENSI DEL CONTRATTO, PER 
 NEGLIGENZA, PER ILLECITO O ALTRE IPOTESI DI RESPONSABILITÀ, O PER 
 QUALSIVOGLIA PERDITA DI PROFITTO O AFFARI, O ALTRESÌ PERDITA O 
 CORRUZIONE DI DATI, IN OGNI CIRCOSTANZA, ANCHE QUALORA SIANO STATI 
 INFORMATI DELLA POSSIBILITÀ DI TALI DANNI.
 
-IN NESSUN CASO LA RESPONSABILITÀ COMPLESSIVA DEL LICENZIANTEAI SENSI 
-O IN RELAZIONE AL PRESENTE CONTRATTO DI LICENZA CON L'UTENTE FINALE 
-(CHE SIA IN UNA CIRCOSTANZA O IN UNA SERIE DI CIRCOSTANZE) POTRÀ 
-SUPERARE L'IMPORTO CORRISPOSTO DALL'UTENTE PER IL SOFTWARE DA CUI 
-DERIVI TALE RIVENDICAZIONE (OPPURE $ 50 USD SE L'UTENTE NON HA 
-PAGATO ALCUNO IMPORTO PER IL SOFTWARE), NEI 12 MESI PRECEDENTI LA 
-PRIMA RIVENDICAZIONE AI SENSI DEL PRESENTE CONTRATTO DI LICENZA CON 
-L'UTENTE FINALE.
+IN NESSUN CASO LA RESPONSABILITÀ COMPLESSIVA DEL LICENZIANTE AI 
+SENSI DEL O IN RELAZIONE CON IL PRESENTE CONTRATTO DI LICENZA CON 
+L'UTENTE FINALE (IN UN'ISTANZA O IN UNA SERIE DI ISTANZE) SUPERERÀ 
+LA SOMMA DI $ 50 (DOLLARI USA).
+
 Le suddette esclusioni e limitazioni non sono applicabili ai reclami 
 relativi a casi di decesso o di grave danno alle persone causati 
-dalla negligenza del Licenziante o dei suoi dipendenti, agenti o 
+dalla negligenza del Licenziatario o dei suoi dipendenti, agenti o 
 contraenti. Negli Stati in cui non sono ammesse esclusioni o 
 limitazioni della responsabilità per danni, compresi, a titolo 
 esemplificativo, danni derivanti dalla violazione di termini 
@@ -194,115 +148,59 @@ qualsiasi Software ottenuto in virtù del presente Contratto di
 licenza con l'utente finale o per falsa dichiarazione fraudolenta, 
 la responsabilità del Licenziante sarà limitata o esclusa nei limiti 
 massimi concessi all'interno di essi.
-
+ 
 Termini generali
-Termine
-Gli effetti del presente Contratto di licenza con l'utente finale 
-decorrono dal giorno in cui l'Utente ha effettuato il download del 
-Software e verranno automaticamente a cessare in caso di violazione 
-di una qualsiasi delle sue condizioni.
-Trasferimento
-Questo Contratto di licenza con l'utente finale non può essere 
-trasferito o concesso senza previo consenso scritto del 
-Licenziatario. Qualsiasi tentativo di trasferimento o assegnazione 
-sarà nullo e senza efficacia.
 Legislazione
 Tutte le questioni derivanti o correlate al presente Contratto di 
-licenza con l'utente finale saranno disciplinate dalle leggi vigenti 
+licenza con l'Utente finale saranno disciplinate dalle leggi vigenti 
 negli Stati Uniti e nello Stato di New York senza tenere in conto le 
 clausole normative e regolamentative stabilite nel presente 
 contratto. Ogni azione legale o procedimento derivanti o relativi al 
-presente Contratto di licenza con l'utente finale potrà essere 
+presente Contratto di licenza con l'Utente finale potrà essere 
 discusso esclusivamente davanti ai tribunali della giurisdizione 
-competente dello Stato di New York. Se una parte avvia procedimenti 
-legali relativi al Contratto di licenza con l'utente finale, la 
-parte vincitrice avrà diritto a recuperare le spese legali 
-ragionevoli. Se, tuttavia, la sede operativa principale dell'Utente 
-risiede in un paese membro dell'Unione europea o dell'Associazione 
-europea di libero scambio, (1) i tribunali dell'Inghilterra e del 
-Galles avranno competenza esclusiva per quanto riguarda azioni 
-legali relative al presente Contratto di licenza con l'utente 
-finale; (2) le leggi dell'Inghilterra saranno applicate tranne che 
-nei casi in cui le leggi del paese della sede operativa principale 
-debbano essere applicate per qualsiasi azione legale; in tal caso le 
-leggi di tale paese verranno applicate. Né la convenzione delle 
-Nazioni Unite sui contratti di vendita internazionale di merci né le 
-norme sul conflitto di legge in vigore nello Stato di New York, in 
-Inghilterra o in Galles si applicano al presente Contratto di 
-licenza con l'utente finale o al suo oggetto.
+competente dello Stato di New York. Se, tuttavia, la sede operativa 
+principale dell'Utente risiede in un paese membro dell'Unione 
+europea o dell'Associazione europea di libero scambio, (1) i 
+tribunali di Inghilterra e Galles avranno competenza esclusiva per 
+quanto riguarda azioni legali relative al presente Contratto di 
+licenza con l'Utente finale; (2) si applicheranno le leggi 
+dell'Inghilterra, salvo nei casi in cui per qualsiasi azione legale 
+debbano essere applicate le leggi del paese della sede operativa 
+principale, nel qual caso si applicheranno le leggi di tale paese. 
+Al presente Contratto di licenza con l'Utente finale o al suo 
+oggetto non si applicano né lo Uniform Computer Information 
+Transaction Act (Codice uniforme delle transazioni telematiche), la 
+Convenzione delle Nazioni Unite sui contratti di vendita 
+internazionale di merci, né le norme di diritto internazionale di 
+New York o Inghilterra e Galles.
+
 Intero Contratto
 Il presente Contratto di licenza con l'utente finale, insieme ad 
-altri documenti relativi all'acquisto o ad altri contratti scritti 
-tra l'Utente e il Licenziante o le relative Affiliate, definisce 
-tutti i termini dell'accordo tra l'Utente e il Licenziante e può 
-essere rettificato o modificato solo per iscritto mediante un 
-accordo accettato dall'Utente e da un rappresentante autorizzato del 
-Licenziante. NESSUN LICENZIANTE DI TERZE PARTI, DISTRIBUTORE, 
+altri documenti relativi all'acquisto o ad altri accordi scritti tra 
+l'Utente e il Licenziatario o i propri Affiliati, definisce tutti i 
+termini dell'accordo tra l'Utente e il Licenziatario e può essere 
+rettificato o modificato solo per iscritto mediante un accordo 
+accettato dall'Utente e da un rappresentante autorizzato del 
+Licenziatario. NESSUN LICENZIANTE DI TERZE PARTI, DISTRIBUTORE, 
 RIVENDITORE, CONCESSIONARIO, RAPPRESENTANTE O DIPENDENTE POTRÀ 
 MODIFICARE IL PRESENTE CONTRATTO O FORNIRE DICHIARAZIONI O PROMESSE 
 DIVERSE O AGGIUNTIVE RISPETTO AI TERMINI E ALLE CONDIZIONI INDICATI 
-NEL PRESENTE CONTRATTO.  
-Rinuncia
-Nessuna rinuncia a un qualsiasi diritto concesso da questo Contratto 
-di licenza con l'utente finale sarà effettiva a meno che non venga 
-riportata per iscritto e firmata da un rappresentante autorizzato 
-della parte vincolata. Nessuna rinuncia a un qualsiasi diritto 
-passato o presente derivante da violazione o inadempienza potrà 
-essere considerata una rinuncia a un qualsiasi diritto futuro 
-risultante da questo Contratto di licenza con l'utente finale.
-Separabilità di clausole
-Se una qualsiasi clausola del presente Contratto di licenza con 
-l'utente finale non è valida o è inapplicabile, verrà interpretata, 
-limitata, modificata o, se necessario, eliminata nella misura 
-necessaria, in modo da garantirne la validità o l'applicabilità, 
-senza che ciò abbia alcun effetto sulle altre clausole del Contratto 
-di licenza con l'utente finale.
-Responsabilità collegata alle esportazioni
-L'Utente riconosce che la tecnologia e/o i prodotti del Licenziante 
-possono essere soggetti alle U.S. Export Administration Regulations 
-(the "EAR") e alle normative sul commercio vigenti in altri paesi. 
-L'Utente accetta di rispettare l'EAR, nonché i regolamenti e le 
-normative locali, che possono essere applicabili al e influenzare il 
-diritto dell'Utente all'importazione, all'esportazione o 
-all'utilizzo dei prodotti e/o delle tecnologie del Licenziante. 
-L'Utente accetta di non esportare o riesportare i prodotti del 
-Licenziante, direttamente o indirettamente, verso: (1)  paesi su cui 
-gravano restrizioni all'esportazione da parte degli USA, paesi 
-sottoposti a embargo o paesi che sostengono il terrorismo in base a 
-quanto specificato nell'EAR; (2) utenti finali per i quali si sa o 
-si ha ragione di credere che utilizzeranno i prodotti del 
-Licenziante nella progettazione, nello sviluppo o nella produzione 
-di armi nucleari, chimiche o batteriologiche, o di razzi, vettori e 
-razzi-sonda o droni, salvo autorizzazione dell'agenzia governativa 
-pertinente tramite regolamento o licenza specifica; o (3) utenti 
-finali ai quali è stato proibito di partecipare a transazioni di 
-esportazione statunitensi da parte di un'agenzia federale del 
-governo degli Stati Uniti. L'utente non utilizzerà le tecnologie e/o 
-i prodotti del Licenziante per applicazioni finali di carattere 
-nucleare, missilistico o armi chimiche o biologiche, come 
-specificato dall'EAR. Scaricando o utilizzando il Software, l'Utente 
-accetta quanto stabilito in precedenza e dichiara di non trovarsi, 
-essere sotto il controllo di o essere un residente di Paesi presenti 
-in uno dei citati elenchi. Inoltre, l'Utente accetta di attenersi 
-alle leggi locali della propria giurisdizione che potrebbero avere 
-un impatto sul suo diritto di importare, esportare o utilizzare i 
-prodotti del Concessore di licenza. Fare riferimento al sito Web del 
-Bureau of Industry and Security https://www.bis.doc.gov prima di 
-esportare prodotti soggetti alle normative EAR. Per ulteriori 
-informazioni sull'esportazione del Software, compresi l'Export 
-Control Classification Number (ECCN) e le eccezioni relative alle 
-licenze associate (se applicabili), consultare 
-https://www.suse.com/company/legal/. Su richiesta, il dipartimento 
-dei servizi per il commercio internazionale del Licenziante può 
-offrire informazioni specifiche sulle limitazioni applicabili 
-relative all'esportazione. Il Licenziante non si assume alcuna 
-responsabilità per il mancato ottenimento da parte dell'Utente delle 
-necessarie autorizzazioni all'esportazione.
+NEL PRESENTE CONTRATTO.
 
-:versione:2024-02-01:001
+Separabilità di clausole
+Qualora una delle disposizioni del presente Contratto di licenza con 
+l'utente finale risulti non valida o inapplicabile, tale 
+disposizione verrà riformulata, limitata, modificata o, se 
+necessario, resa più severa fino ai massimi limiti possibili e 
+necessari per rendere la disposizione valida e applicabile. 
+Tuttavia, la modifica di una disposizione non avrà alcun effetto 
+sugli altri termini e condizioni del Contratto di licenza con 
+l'utente finale. 
+
+:versione:2024-06-01:001
 SUSE.com
 
-Copyright (c) SUSE 2024
+Copyright (c) SUSE 2025
 
 SUSE Legal		
-Febbraio 2024
+Giugno 2024

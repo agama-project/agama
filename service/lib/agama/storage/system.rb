@@ -79,15 +79,17 @@ module Agama
       # All mdRaid devices that are considered as a valid target for the boot partitions and,
       # as such, as candidates for a typical installation.
       #
-      # Although it could diverge in the future, this relies in the historical YaST heuristics
-      # that considers software RAIDs with partition table or without children as candidates for
-      # installation, but only when booting in EFI mode.
+      # Technically, it makes no sense to consider any software RAID as a candidate. But for
+      # historical reasons (check Y2Storage::DiskAnalyzer for background), YaST considers some
+      # software RAIDs as candidates when booting in EFI mode.
       #
-      # Check Y2Storage::DiskAnalyzer for some historical background.
+      # After checking with the involved SUSE partners, we decided Agama does not need to
+      # inherit that behavior. If needed, the variable LIBSTORAGE_MDPART can still be used to
+      # consider software RAIDs as BIOS-based RAIDs.
       #
       # @return [Array<Y2Storage::Md>]
       def candidate_md_raids
-        available_md_raids.select { |r| analyzer.supports_boot_partitions?(r) }
+        available_md_raids.reject { |r| r.is?(:software_raid) }
       end
 
       # Whether the device is usable as drive or mdRaid
@@ -107,7 +109,7 @@ module Agama
       # @param device [Y2Storage::Partitionable, Y2Storage::Md]
       # @return [Boolean]
       def candidate?(device)
-        analyzer.supports_boot_partitions?(device) && available?(device)
+        available?(device) && device.is?(:disk_device)
       end
 
       # Devicegraph representing the system.

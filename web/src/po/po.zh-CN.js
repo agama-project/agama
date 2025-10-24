@@ -15,6 +15,9 @@ export default {
   "%1$s at %2$s": [
     "%1$s（%2$s 上）"
   ],
+  "%1$s will be created as a partition at %2$s": [
+    "%1$s 将会创建为 %2$s 上的分区"
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s 仍将包含 LVM 组 '%2$s' 和引导所需的任何分区"
   ],
@@ -39,29 +42,41 @@ export default {
   "%s logo": [
     "%s 徽标"
   ],
+  "%s will be created as a logical volume": [
+    "%s 将创建为逻辑卷"
+  ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s 仍将包含配置的 LVM 组和引导所需的任何分区"
   ],
   "%s with %d partitions": [
     "%s （包含 %d 个分区）"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "将创建一个 %1$s (%2$s)，以用于 %3$s"
+  "A %1$s of %2$s will be created for %3$s if possible": [
+    "将创建一个 %1$s (%2$s)，以用于 %3$s（如果可能）"
   ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "将创建一个 %1$s（至少 %2$s），以用于 %3$s"
+  "A %1$s of at least %2$s will be created for %3$s if possible": [
+    "将创建一个 %1$s（至少 %2$s），以用于 %3$s（如果可能）"
   ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "将创建一个 %1$s（大小介于 %2$s 至 %3$s 之间），以用于 %4$s"
+  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
+    "将创建一个 %1$s（大小介于 %2$s 至 %3$s 之间），以用于 %4$s（如果可能）"
+  ],
+  "A file system will be used for the whole device": [
+    "一个文件系统将用于整个设备"
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "至少 %1$s 的通用大小将用于新 %2$s"
   ],
-  "A generic size of %s will be used for the new %2$s": [
-    "新 %2$s 将使用 %s 的通用大小"
+  "A generic size of %1$s will be used for the new %2$s": [
+    "%1$s 的通用大小将用于新 %2$s"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "介于 %1$s 至 %2$s 的通用大小将用于新 %3$s"
+  ],
+  "A new partition will be created for %s": [
+    "将会为 %s 创建新分区"
+  ],
+  "A new volume will be created for %s": [
+    "将会为 %s 创建新卷"
   ],
   "A partition may be deleted": [
     "可能会删除某个分区"
@@ -108,6 +123,9 @@ export default {
   "Add LVM volume group": [
     "添加 LVM 卷组"
   ],
+  "Add a partition or mount an existing one": [
+    "添加一个分区或挂载一个现有分区"
+  ],
   "Add an address": [
     "添加地址"
   ],
@@ -144,6 +162,9 @@ export default {
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     "所有冲突都已解决，或者未检测到任何冲突。您可以安心继续进行设置。"
   ],
+  "All content not configured to be mounted will be deleted": [
+    "将删除未配置为待挂载的所有内容"
+  ],
   "All content will be deleted": [
     "所有内容都将被删除"
   ],
@@ -153,17 +174,35 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "通过此界面管理的所有网络连接当前都设置为仅在安装过程中使用，并且不会复制到安装好的系统中"
   ],
+  "Allow growing": [
+    "允许增长"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "除了定义首个用户外，还可配置 root 用户的身份验证方法。"
+  ],
+  "Already using all available devices": [
+    "已在使用所有可用设备"
   ],
   "Already using all available disks": [
     "已使用所有可用磁盘"
   ],
+  "An existing partition will be used for %s": [
+    "将会为 %s 使用现有分区"
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "所有现有分区都将被去除，磁盘上的所有数据都将丢失。"
   ],
+  "Any partition needed to boot will be configured.": [
+    "将配置引导所需的所有分区。"
+  ],
   "Apply selected solution": [
     "应用所选的解决方案"
+  ],
+  "Apply to the selected device": [
+    "应用于 %s 个所选设备"
+  ],
+  "Applying changes": [
+    "正在应用更改"
   ],
   "As a new partition on %s": [
     "作为 %s 上的新分区"
@@ -210,14 +249,14 @@ export default {
   "Back": [
     "返回"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "将根据系统中的 RAM 容量创建一个 %1s$ (%2$s)，以用于 %3$s"
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
+    "将根据系统中的 RAM 容量规划一个 %1$s (%2$s)，以用于 %3$s"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "将根据系统中的 RAM 容量创建一个 %1s$（至少 %2$s），以用于 %3$s"
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
+    "将根据系统中的 RAM 容量规划一个 %1$s（至少 %2$s），以用于 %3$s"
   ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "将根据系统中的 RAM 容量创建一个 %1s$（大小介于 %2$s 至 %3$s 之间），以用于 %4$s"
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "将根据系统中的 RAM 容量规划一个 %1$s（大小介于 %2$s 至 %3$s 之间），以用于 %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -231,8 +270,23 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "在开始安装前，您需要解决下列问题："
   ],
+  "Below %s devices are offline and cannot be formatted.": [
+    "以下 %s 个设备已脱机，无法格式化。"
+  ],
   "Beta": [
     "Beta 版"
+  ],
+  "Bind to MAC address": [
+    "绑定到 MAC 地址"
+  ],
+  "Bind to device name": [
+    "绑定到设备名称"
+  ],
+  "Binding": [
+    "正在绑定"
+  ],
+  "Binding settings for '%s'": [
+    "'%s' 的绑定设置"
   ],
   "BitLocker": [
     "BitLocker"
@@ -246,9 +300,6 @@ export default {
   "Btrfs with snapshots": [
     "带快照的 Btrfs"
   ],
-  "Calculated automatically": [
-    "已自动计算"
-  ],
   "Cancel": [
     "取消"
   ],
@@ -258,7 +309,10 @@ export default {
   "Cannot connect to Agama server": [
     "无法连接到 Agama 服务器"
   ],
-  "Cannot format all selected devices": [
+  "Cannot format %s": [
+    "无法格式化 %s"
+  ],
+  "Cannot format all the selected devices": [
     "无法格式化全部所选设备"
   ],
   "Change": [
@@ -279,6 +333,9 @@ export default {
   "Change display language and keyboard layout": [
     "更改显示语言和键盘布局"
   ],
+  "Change filters and try again.": [
+    "请更改过滤条件，然后重试。"
+  ],
   "Change keyboard": [
     "更改键盘"
   ],
@@ -290,6 +347,9 @@ export default {
   ],
   "Change selection": [
     "修改选择"
+  ],
+  "Change the file system or mount point": [
+    "更改文件系统或挂载点"
   ],
   "Channel ID": [
     "通道 ID"
@@ -306,11 +366,23 @@ export default {
   "Choose a disk for placing the boot loader": [
     "选择一个放置引导加载器的磁盘"
   ],
-  "Choose what to with current content": [
-    "选择如何处理当前内容"
+  "Choose device to bind by MAC": [
+    "按 MAC 选择要绑定的设备"
+  ],
+  "Choose device to bind by name": [
+    "按名称选择要绑定的设备"
+  ],
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
+    "选择连接与网络设备关联的方式。这有助于控制连接使用的设备。"
   ],
   "Clear": [
     "清除"
+  ],
+  "Clear all filters": [
+    "清除所有过滤条件"
+  ],
+  "Clear input": [
+    "清除输入"
   ],
   "Clear selected mount point": [
     "清除所选的挂载点"
@@ -321,8 +393,14 @@ export default {
   "Collapse the list of planned actions": [
     "收起已计划操作列表"
   ],
+  "Configuration out of sync": [
+    "配置未同步"
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "已从 iSCSI 引导固件表 (iBFT) 读取配置。"
+  ],
+  "Configuration unreachable or invalid": [
+    "配置无效或无法访问"
   ],
   "Configure DASD": [
     "配置 DASD"
@@ -332,6 +410,9 @@ export default {
   ],
   "Configure LVM logical volume at %s volume group": [
     "在 %s 卷组上配置 LVM 逻辑卷"
+  ],
+  "Configure device %s": [
+    "配置设备 %s"
   ],
   "Configure device menu": [
     "配置设备菜单"
@@ -357,6 +438,9 @@ export default {
   "Confirm Installation": [
     "确认安装"
   ],
+  "Confirm that you really want to continue.": [
+    "请确认您确实要继续。"
+  ],
   "Congratulations!": [
     "恭喜！"
   ],
@@ -375,17 +459,35 @@ export default {
   "Connected (%s)": [
     "已连接（%s）"
   ],
+  "Connected device": [
+    "已连接设备"
+  ],
+  "Connected devices": [
+    "已连接设备"
+  ],
+  "Connected devices tabs": [
+    "已连接设备选项卡"
+  ],
   "Connecting to %s": [
     "正在连接到 %s"
   ],
   "Connection details": [
     "连接详细信息"
   ],
+  "Connection is available to all devices.": [
+    "连接可用于所有设备。"
+  ],
+  "Connection is bound to MAC address %s.": [
+    "连接已绑定到 MAC 地址 %s。"
+  ],
+  "Connection is bound to device %s.": [
+    "连接已绑定到设备 %s。"
+  ],
   "Connection not found or lost": [
     "未找到连接，或者连接中断"
   ],
-  "Content will be kept": [
-    "内容将会保留"
+  "Content": [
+    "内容"
   ],
   "Continue": [
     "继续"
@@ -423,6 +525,12 @@ export default {
   "Current %s": [
     "当前 %s"
   ],
+  "Current content": [
+    "当前内容"
+  ],
+  "Current partitions will be kept": [
+    "将保留当前分区"
+  ],
   "Custom": [
     "自定义"
   ],
@@ -431,12 +539,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "DASD 设备选择表"
-  ],
-  "DASDs table section": [
-    "DASD 表部分"
   ],
   "DIAG": [
     "DIAG"
@@ -456,11 +558,14 @@ export default {
   "Default file system for generic logical volumes": [
     "通用逻辑卷的默认文件系统"
   ],
+  "Default file system for generic mount paths": [
+    "通用挂载路径的默认文件系统"
+  ],
   "Default file system for generic partitions": [
     "通用分区的默认文件系统"
   ],
-  "Define a custom size or a range": [
-    "指定自定义大小或范围"
+  "Define a custom size": [
+    "指定自定义大小"
   ],
   "Define a new LVM on the disk": [
     "在该磁盘上定义新 LVM"
@@ -486,11 +591,20 @@ export default {
   "Delete volume group": [
     "删除卷组"
   ],
+  "Description": [
+    "描述"
+  ],
+  "Destroy current data and format device as": [
+    "销毁当前数据并将设备格式化为"
+  ],
   "Destroy current data and format partition as": [
     "销毁当前数据并将分区格式化为"
   ],
   "Details": [
     "细节"
+  ],
+  "Details for %s": [
+    "%s 的细节"
   ],
   "Details will appear after the connection is successfully established.": [
     "成功建立连接后将会显示详细信息。"
@@ -501,11 +615,17 @@ export default {
   "Device %s menu": [
     "设备 %s 菜单"
   ],
+  "Device Selection": [
+    "选择设备"
+  ],
   "Device details": [
     "设备详细信息"
   ],
   "Discard": [
     "丢弃"
+  ],
+  "Discard the maximum size and continue with simplified configuration": [
+    "请忽略大小上限，继续使用简化配置"
   ],
   "Disconnected": [
     "已断开连接"
@@ -549,14 +669,23 @@ export default {
   "Edit %s": [
     "编辑 %s"
   ],
+  "Edit binding settings": [
+    "编辑绑定设置"
+  ],
   "Edit connection %s": [
     "编辑连接 %s"
+  ],
+  "Edit connection settings": [
+    "编辑连接设置"
   ],
   "Edit user": [
     "编辑用户"
   ],
   "Edit volume group": [
     "编辑卷组"
+  ],
+  "Email": [
+    "电子邮件"
   ],
   "Empty LVM volume group %s": [
     "清空 LVM 卷组 %s"
@@ -597,6 +726,9 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
+  "Example: https://myserver.com": [
+    "示例：https://myserver.com"
+  ],
   "Excellent signal": [
     "信号极佳"
   ],
@@ -611,6 +743,12 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extend the installation beyond the currently selected device": [
+    "将安装扩展至超过目前 %d 个设备的容量"
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "将安装扩展至超过目前 %d 磁盘的容量"
   ],
   "Extensions": [
     "扩展"
@@ -630,23 +768,23 @@ export default {
   "File system label": [
     "文件系统标签"
   ],
+  "Filesystems": [
+    "文件系统"
+  ],
   "Filter by description or keymap code": [
     "按描述或键盘映射代码过滤"
   ],
   "Filter by language, territory or locale code": [
     "按语言、地区或区域设定代码过滤"
   ],
-  "Filter by max channel": [
-    "按最大通道过滤"
-  ],
-  "Filter by min channel": [
-    "按最小通道过滤"
-  ],
   "Filter by pattern title or description": [
     "按合集名称或描述筛选"
   ],
   "Filter by territory, time zone code or UTC offset": [
     "按地区、时区代码或 UTC 偏移量过滤"
+  ],
+  "Find space": [
+    "查找空间"
   ],
   "Find space in %s": [
     "在 %s 中查找可用空间"
@@ -660,17 +798,38 @@ export default {
   "First user": [
     "首个用户"
   ],
+  "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
+    "如有更复杂的需求，用户可切换到此显示完整页面的专用路径版本，它提供了更多空间，可呈现详细视图、更多列、过滤器及扩展功能。"
+  ],
   "Format": [
     "格式化"
   ],
+  "Format RAID %s": [
+    "格式化 RAID %s"
+  ],
+  "Format device %s": [
+    "格式化设备 %s"
+  ],
+  "Format device as": [
+    "将设备格式化为"
+  ],
+  "Format disk %s": [
+    "格式化磁盘 %s"
+  ],
   "Format logical volume as": [
     "将逻辑卷格式化为"
+  ],
+  "Format now": [
+    "立即格式化"
   ],
   "Format partition as": [
     "将分区格式化为"
   ],
   "Format selected devices?": [
     "要格式化所选设备？"
+  ],
+  "Format the whole device or mount an existing file system": [
+    "格式化整个设备或挂载现有文件系统"
   ],
   "Formatted": [
     "已格式化"
@@ -695,6 +854,9 @@ export default {
   ],
   "Go to network page": [
     "前往网络页面"
+  ],
+  "Go to storage page": [
+    "前往存储页面"
   ],
   "Good signal": [
     "信号良好"
@@ -743,9 +905,6 @@ export default {
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "如果运行此次安装时使用了本地介质，请在下次启动前移除。"
-  ],
-  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "如果未指定单位，则使用字节 (B)。更大的单位可以采用               GiB（2 的幂次）或 GB（10 的幂次）的形式。"
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "如果继续，硬盘上的分区将会根据已提供的安装设置进行修改。"
@@ -840,6 +999,24 @@ export default {
   "Issuer": [
     "颁发者"
   ],
+  "It doesn't exist or can't be reached.": [
+    "该资源不存在或无法访问。"
+  ],
+  "It is chosen for booting": [
+    "该设备选定用于引导"
+  ],
+  "It is chosen for booting and for some LVM groups": [
+    "该设备选定用于引导及部分 LVM 组"
+  ],
+  "It is chosen for booting and for the LVM group '%s'": [
+    "该设备选定用于引导及 LVM 组 '%s'"
+  ],
+  "It is chosen for some LVM groups": [
+    "该设备选定用于部分 LVM 组"
+  ],
+  "It is chosen for the LVM group '%s'": [
+    "该设备选定用于 LVM 组 '%s'"
+  ],
   "It is not possible to allocate space for %s.": [
     "无法为 %s 分配空间。"
   ],
@@ -849,14 +1026,14 @@ export default {
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "无法采用当前配置安装系统，请调整下面的设置。"
   ],
+  "It is offline and must be activated before formatting it.": [
+    "该设备已脱机，必须将其激活才能格式化。"
+  ],
   "It may take some time.": [
     "这可能需要一些时间。"
   ],
   "JFS": [
     "JFS"
-  ],
-  "Keep size of %s": [
-    "保留 %s 的大小"
   ],
   "Keyboard": [
     "键盘"
@@ -882,20 +1059,17 @@ export default {
   "Language and keyboard": [
     "语言和键盘"
   ],
-  "Let the installer propose a sensible range of sizes": [
-    "让安装程序建议适当的大小范围"
-  ],
-  "License language": [
-    "许可语言"
-  ],
-  "Limited": [
-    "有限制"
+  "Let the installer propose a sensible size": [
+    "让安装程序建议适当的大小"
   ],
   "Loading": [
     "正在加载"
   ],
   "Loading data...": [
     "正在读取数据……"
+  ],
+  "Loading storage": [
+    "正在加载存储"
   ],
   "Loading the installation repositories...": [
     "正在加载安装储存库..."
@@ -915,8 +1089,8 @@ export default {
   "Logical volume name": [
     "逻辑卷名称"
   ],
-  "Logical volumes": [
-    "逻辑卷"
+  "Logical volumes for %s": [
+    "%s 的逻辑卷"
   ],
   "Login": [
     "登录"
@@ -945,26 +1119,14 @@ export default {
   "Manual": [
     "手动"
   ],
-  "Maximum": [
-    "最大"
-  ],
-  "Maximum size mode": [
-    "大小上限模式"
-  ],
-  "Maximum size options": [
-    "大小上限选项"
-  ],
-  "Maximum size value": [
-    "大小上限值"
+  "Max channel": [
+    "最大通道"
   ],
   "MiB": [
     "MiB"
   ],
-  "Minimum": [
-    "最小"
-  ],
-  "Minimum size value": [
-    "大小下限值"
+  "Min channel": [
+    "最小通道"
   ],
   "Mode": [
     "模式"
@@ -987,8 +1149,23 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "[本地化] 页面可能会提供更多适用于所选产品的语言"
   ],
+  "Moreover, the following partition will be created.": [
+    "此外还将创建以下分区。"
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "此外还将挂载以下分区。"
+  ],
+  "Moreover, the following partitions will be created or mounted": [
+    "此外，将会创建或挂载以下分区"
+  ],
   "Mount Point": [
     "挂载点"
+  ],
+  "Mount RAID %s": [
+    "挂载 RAID %s"
+  ],
+  "Mount disk %s": [
+    "挂载磁盘 %s"
   ],
   "Mount point": [
     "挂载点"
@@ -1041,6 +1218,9 @@ export default {
   "No": [
     "否"
   ],
+  "No DASD devices were found in this machine.": [
+    "在此计算机上未找到任何 DASD 设备。"
+  ],
   "No Wi-Fi networks were found": [
     "未找到 WiFi 网络"
   ],
@@ -1056,8 +1236,14 @@ export default {
   "No content found": [
     "未找到内容"
   ],
+  "No device is currently using this connection.": [
+    "目前没有设备在使用此连接。"
+  ],
   "No device selected yet": [
     "尚未选择设备"
+  ],
+  "No devices available": [
+    "没有可用设备"
   ],
   "No devices configured yet": [
     "尚未配置设备"
@@ -1107,8 +1293,14 @@ export default {
   "None of the time zones match the filter.": [
     "没有符合过滤器的时区。"
   ],
+  "None set": [
+    "未进行任何设置"
+  ],
   "Not available": [
     "不可用"
+  ],
+  "Not configured yet": [
+    "尚未配置"
   ],
   "Not defined": [
     "未定义"
@@ -1128,14 +1320,17 @@ export default {
   "Not supported (%s)": [
     "不受支持 (%s)"
   ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "格式化前必须激活脱机设备。请先取消选择或激活下列设备，然后再试"
-  ],
   "On boot": [
     "开机时"
   ],
   "Only available if authentication by target is provided": [
     "仅当目标提供身份认证时可用"
+  ],
+  "Only reused partitions and space not assigned to any partition will be used.": [
+    "将会仅使用重复使用的分区及未分配给任何分区的空间。"
+  ],
+  "Only reused partitions will be used.": [
+    "将会仅使用重复使用的分区。"
   ],
   "Options toggle": [
     "选项切换开关"
@@ -1155,20 +1350,26 @@ export default {
   "Partition Info": [
     "分区信息"
   ],
-  "Partitions": [
-    "分区"
-  ],
   "Partitions needed for booting will also be adapted": [
     "引导所需的分区也会进行调整"
   ],
   "Partitions needed for booting will remain at %s": [
     "引导所需的分区将保留在 %s 中"
   ],
+  "Partitions that are not reused will be removed and that data will be lost.": [
+    "不重复使用的分区将被去除，其中的数据将会丢失。"
+  ],
+  "Partitions that are not reused will be resized as needed.": [
+    "不重复使用的分区将按需调整大小。"
+  ],
+  "Partitions that are not reused would be resized if needed.": [
+    "不重复使用的分区将根据需要调整大小。"
+  ],
   "Partitions to boot will be allocated at the following device.": [
     "引导分区将在以下设备上分配。"
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "引导分区将在安装磁盘（%s）上进行分配。"
+  "Partitions to boot will be allocated at the installation disk %s.": [
+    "引导分区将在安装磁盘 %s 上进行分配。"
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "引导分区将会分配在安装磁盘上。"
@@ -1199,9 +1400,6 @@ export default {
   ],
   "Pending": [
     "等待中"
-  ],
-  "Perform an action": [
-    "执行操作"
   ],
   "PiB": [
     "PiB"
@@ -1245,6 +1443,9 @@ export default {
   "Provide email address": [
     "提供电子邮件地址"
   ],
+  "Provide registration code": [
+    "提供注册代码"
+  ],
   "Public SSH Key": [
     "SSH 公共密钥"
   ],
@@ -1269,6 +1470,12 @@ export default {
   "Register": [
     "注册"
   ],
+  "Register using SUSE server": [
+    "使用 SUSE 服务器注册"
+  ],
+  "Register using a custom registration server": [
+    "使用自定义注册服务器注册"
+  ],
   "Registration": [
     "注册"
   ],
@@ -1278,23 +1485,26 @@ export default {
   "Registration code": [
     "注册码"
   ],
+  "Registration server": [
+    "注册服务器"
+  ],
   "ReiserFS": [
     "ReiserFS"
   ],
   "Reload": [
     "重载"
   ],
+  "Reload now": [
+    "立即重新加载"
+  ],
   "Reloading data, please wait...": [
     "正在重新加载数据，请稍候..."
   ],
+  "Reloading is required to get the latest data and avoid issues or data loss.": [
+    "为获取最新数据并避免出现问题或数据丢失，需要重新加载。"
+  ],
   "Remove": [
     "移除"
-  ],
-  "Remove max channel filter": [
-    "移除最大通道过滤器"
-  ],
-  "Remove min channel filter": [
-    "移除最小通道过滤器"
   ],
   "Remove the configuration for this disk": [
     "去除此磁盘的配置"
@@ -1302,14 +1512,23 @@ export default {
   "Repository load failed": [
     "加载储存库失败"
   ],
+  "Rescan devices": [
+    "重新扫描设备"
+  ],
   "Reset to defaults": [
     "重设为默认"
   ],
   "Reset to the default configuration": [
     "重置为默认配置"
   ],
+  "Resource not found or lost": [
+    "未找到资源，或者资源丢失"
+  ],
   "Result": [
     "结果"
+  ],
+  "Reused partitions will not be shrunk": [
+    "将不收缩重复使用的分区"
   ],
   "Review and fix": [
     "检查并修复"
@@ -1323,6 +1542,15 @@ export default {
   "Routes": [
     "路由"
   ],
+  "Row actions": [
+    "行操作"
+  ],
+  "Row expansion": [
+    "行展开"
+  ],
+  "Row selection": [
+    "行选择"
+  ],
   "SD Card": [
     "SD 卡"
   ],
@@ -1335,8 +1563,8 @@ export default {
   "SSID": [
     "SSID"
   ],
-  "Same as minimum": [
-    "与下限相同"
+  "SUSE Customer Center (SCC)": [
+    "SUSE Customer Center (SCC)"
   ],
   "Search": [
     "搜索"
@@ -1353,6 +1581,9 @@ export default {
   "Select": [
     "选择"
   ],
+  "Select a device to define partitions or to mount": [
+    "选择一个要定义分区或要挂载的设备"
+  ],
   "Select a disk": [
     "选择一个磁盘"
   ],
@@ -1362,8 +1593,11 @@ export default {
   "Select a disk to create %s": [
     "选择用于创建 %s 的磁盘"
   ],
-  "Select a disk to define partitions": [
-    "选择一个要定义分区的磁盘"
+  "Select a disk to define partitions or to mount": [
+    "选择一个要定义分区或要挂载的磁盘"
+  ],
+  "Select a disk to format as %s": [
+    "选择一个要格式化为 %s 的磁盘"
   ],
   "Select a disk to install the system": [
     "选择用于安装系统的磁盘"
@@ -1374,11 +1608,17 @@ export default {
   "Select a solution to continue": [
     "选择一个解决方案以继续"
   ],
-  "Select another disk to define partitions": [
-    "选择另一个要定义分区的磁盘"
+  "Select another device to define partitions or to mount": [
+    "选择另一个要定义分区或要挂载的设备"
+  ],
+  "Select another disk to define partitions or to mount": [
+    "选择另一个要定义分区或要挂载的磁盘"
   ],
   "Select at least one disk.": [
     "请至少选择一个磁盘。"
+  ],
+  "Select devices to enable bulk actions.": [
+    "选择设备以启用批量操作。"
   ],
   "Select or enter a mount point": [
     "选择或输入挂载点"
@@ -1398,8 +1638,8 @@ export default {
   "Select what to do with each partition.": [
     "选择对每个分区执行的操作。"
   ],
-  "Selected disk (cannot be changed)": [
-    "所选磁盘（无法更改）"
+  "Selected disk cannot be changed": [
+    "无法更改所选磁盘"
   ],
   "Selected patterns": [
     "已选择合集"
@@ -1407,10 +1647,16 @@ export default {
   "Server IP": [
     "服务器 IP"
   ],
-  "Set DIAG Off": [
+  "Server URL": [
+    "服务器 URL"
+  ],
+  "Server options": [
+    "服务器选项"
+  ],
+  "Set DIAG off": [
     "关闭 DIAG"
   ],
-  "Set DIAG On": [
+  "Set DIAG on": [
     "开启 DIAG"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
@@ -1418,6 +1664,9 @@ export default {
   ],
   "Setting up connection": [
     "正在设置连接"
+  ],
+  "Settings": [
+    "设置"
   ],
   "Several partitions will be deleted": [
     "将删除多个分区"
@@ -1452,14 +1701,11 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "大小限制必须为数字，可选择性附带 GiB 或 GB 等单位"
   ],
-  "Size options": [
-    "大小选项"
+  "Size mode": [
+    "大小模式"
   ],
-  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
-    "输入的大小必须为数字，可选择性附带               GiB（2 的幂次）或 GB（10 的幂次）形式的单位。"
-  ],
-  "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "输入的大小必须为数字，可选择性附带单位。"
+  "Size modes": [
+    "大小模式"
   ],
   "Skip to content": [
     "跳到内容"
@@ -1539,8 +1785,17 @@ export default {
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM 组 '%1$s' 将保留在 %2$s 中"
   ],
+  "The configuration has been updated externally.": [
+    "配置已在外部更新。"
+  ],
+  "The configuration must be adapted to address the following issue:": [
+    "必须调整配置，以解决以下问题："
+  ],
   "The configured LVM groups will remain at %s": [
     "配置的 LVM 组将保留在 %s 中"
+  ],
+  "The connection can be used by any available device.": [
+    "任何可用设备都可以使用此连接。"
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "此连接仅在安装过程中使用，安装好的系统中不可用。"
@@ -1548,14 +1803,20 @@ export default {
   "The content may be deleted": [
     "内容可能会被删除"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "当前配置将会产生一个 %1$s (%2$s)。"
+  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
+    "当前配置将会导致尝试创建一个 %1$s (%2$s)。"
   ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "当前配置将会产生一个 %1$s（至少 %2$s）。"
+  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
+    "当前配置将会导致尝试创建一个 %1$s（至少 %2$s）。"
   ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "当前配置将会产生一个 %1$s（大小介于 %2$s 至 %3$s 之间）。"
+  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
+    "当前配置将会导致尝试创建一个 %1$s（大小介于 %2$s 至 %3$s 之间）。"
+  ],
+  "The current file system will be mounted at %s": [
+    "当前文件系统将挂载到 %s 上"
+  ],
+  "The current storage configuration has the following issue:": [
+    "当前的存储配置存在以下问题："
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "数据将被保留，但当前分区的大小将会按需调整。"
@@ -1565,6 +1826,15 @@ export default {
   ],
   "The device cannot be shrunk:": [
     "无法收缩该设备："
+  ],
+  "The device will be formatted": [
+    "将格式化该设备"
+  ],
+  "The device will be formatted as %1$s and mounted at %2$s": [
+    "该设备将格式化为 %1$s 并挂载到 %2$s 上"
+  ],
+  "The device will be mounted": [
+    "将挂载该设备"
   ],
   "The device will be mounted at %s.": [
     "该设备将挂载到 %s 上。"
@@ -1587,8 +1857,26 @@ export default {
   "The extension has been registered with key %s.": [
     "已使用密钥 %s 注册该扩展。"
   ],
+  "The extension was registered without any registration code.": [
+    "该扩展已注册，但未使用任何注册代码。"
+  ],
+  "The final size can be bigger in order to fill the extra free space.": [
+    "最终大小可增大，以便使用额外的可用空间。"
+  ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "配置可信平台模块 (TPM) 以自动开启加密设备的最后一步将在新系统首次启动时进行。为此，本机需要直接启动到新的引导加载程序。"
+  ],
+  "The following logical volume will be created": [
+    "将会创建以下逻辑卷"
+  ],
+  "The following partition will be created.": [
+    "将会创建以下分区。"
+  ],
+  "The following partition will be mounted.": [
+    "将会挂载以下分区。"
+  ],
+  "The following partitions will be created or mounted": [
+    "将会创建或挂载以下分区"
   ],
   "The following software patterns are selected for installation:": [
     "下列软件合集已被选择以进行安装："
@@ -1606,19 +1894,13 @@ export default {
     "安装将会占用 %s，包括："
   ],
   "The installer interface is no longer available, so you can safely close this window.": [
-    ""
+    "安装程序界面已不再可用，因此您可以安全关闭此窗口。"
   ],
   "The installer requires [root] user privileges.": [
     "安装程序要求 [root] 用户权限。"
   ],
-  "The logical volume can grow to use all the contiguous free space": [
-    "逻辑卷可扩展，直至使用所有连续的可用空间"
-  ],
-  "The logical volume can grow until a given limit size": [
-    "逻辑卷可扩展至给定的限制大小"
-  ],
-  "The logical volume is created exactly with the given size": [
-    "逻辑卷将严格按给定大小创建"
+  "The logical volume will also be deleted": [
+    "同时也会删除逻辑卷"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "上限必须为带单位（如 GiB 或 GB）的数字"
@@ -1635,50 +1917,53 @@ export default {
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "下限必须为数字，可选择性附带 GiB 或 GB 等单位"
   ],
+  "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
+    "该模态选择器提供精简的界面，使用方便快捷，对用户而言非常友好。"
+  ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "所需的 LVM 物理卷将根据逻辑卷的大小，作为分区                 添加到所选磁盘上。如果选择多个磁盘，                 物理卷可能会分布在多个磁盘上。"
   ],
-  "The partition can grow to use all the contiguous free space": [
-    "分区可扩展以使用所有连续的可用空间"
-  ],
-  "The partition can grow until a given limit size": [
-    "分区可扩展至给定的限制大小"
-  ],
-  "The partition is created exactly with the given size": [
-    "分区将严格按给定大小创建"
+  "The password is weak": [
+    "口令强度太弱"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "若 TPM 可以验证系统的完整性，启动和访问数据的时候将无需使用密码。 TPM 密封要求新系统在首次启动时直接开始引导。"
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "%1$s 的大小范围将会动态调整，考量因素包括系统中的 RAM 容量以及 %2$s 是否存在单独的文件系统。"
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
+    "%1$s 的大小将会动态调整，考量因素包括系统中的 RAM 容量以及 %2$s 是否存在单独的文件系统。"
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "%1$s 的大小范围将会动态调整，考量因素包括系统中的 RAM 容量以及 %2$s 是否存在单独的文件系统。"
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
+    "%1$s 的大小将会动态调整，考量因素包括系统中的 RAM 容量以及 %2$s 是否存在单独的文件系统。"
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "%1$s 的大小范围将会动态调整，考量因素包括系统中的 RAM 容量、Btrfs 快照的使用情况，以及 %2$s 是否存在单独的文件系统。"
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "%1$s 的大小将会动态调整，考量因素包括系统中的 RAM 容量、Btrfs 快照的使用情况，以及 %2$s 是否存在单独的文件系统。"
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "%1$s 的大小范围将会动态调整，考量因素包括系统中的 RAM 容量、Btrfs 快照的使用情况，以及 %2$s 是否存在单独的文件系统。"
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "%1$s 的大小将会动态调整，考量因素包括系统中的 RAM 容量、Btrfs 快照的使用情况，以及 %2$s 是否存在单独的文件系统。"
   ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "%1$s 的大小范围将会根据 %2$s 是否存在单独的文件系统动态调整。"
+  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
+    "%1$s 的大小将会根据 %2$s 是否存在单独的文件系统动态调整。"
   ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "%1$s 的大小范围将会根据 %2$s 是否存在单独的文件系统动态调整。"
+  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
+    "%1$s 的大小将会根据 %2$s 是否存在单独的文件系统动态调整。"
   ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "%1$s 的大小范围将会动态调整，考量因素包括 Btrfs 快照的使用情况以及 %2$s 是否存在单独的文件系统。"
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "%1$s 的大小将会动态调整，考量因素包括 Btrfs 快照的使用情况以及 %2$s 是否存在单独的文件系统。"
   ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "%1$s 的大小范围将会动态调整，考量因素包括 Btrfs 快照的使用情况以及 %2$s 是否存在单独的文件系统。"
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "%1$s 的大小将会动态调整，考量因素包括 Btrfs 快照的使用情况以及 %2$s 是否存在单独的文件系统。"
   ],
-  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "%s 的大小范围将会动态调整，考量因素包括系统中的 RAM 容量以及 Btrfs 快照的使用情况。"
+  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
+    "%s 的大小将会动态调整，考量因素包括系统中的 RAM 容量以及 Btrfs 快照的使用情况。"
   ],
-  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "%s 的大小范围将会根据 Btrfs 快照的使用情况动态调整。"
+  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
+    "%s 的大小将会根据 Btrfs 快照的使用情况动态调整。"
+  ],
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
+    "为大小配置了介于 %s 到 %s 的范围，但此界面无法处理给定大小上限的范围。"
+  ],
+  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
+    "大小必须为数字，附带 GiB（2 的幂次）或 GB（10 的幂次）形式的单位。"
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "该存储配置有效（请参见下面的结果），但使用了此界面不支持的元素。"
@@ -1692,6 +1977,9 @@ export default {
   "The system will use %s as its default language.": [
     "系统会使用 %s 作为默认语言。"
   ],
+  "The whole device will be used for %s": [
+    "整个设备将用于 %s"
+  ],
   "The zFCP disk was not activated.": [
     "zFCP 磁盘未激活。"
   ],
@@ -1704,6 +1992,12 @@ export default {
   "There are not usable partitions": [
     "没有可使用的分区"
   ],
+  "There is %d destructive action planned": [
+    "已计划执行 %d 个具有破坏性的操作"
+  ],
+  "There is %d destructive action planned affecting %s": [
+    "已计划执行 %d 个会影响 %s 的破坏性操作"
+  ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "这些是最主要的安装设置。如需获取更详细的信息，请随意浏览菜单中的各节。"
   ],
@@ -1713,29 +2007,29 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "以下是待安装产品的相关设置。安装程序语言可通过顶部栏的[设置面板]进行调整。"
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "此操作无法销毁下列设备上存储的任何数据。请确认您确实要继续。"
+  "This action could destroy any data stored on the device.": [
+    "此操作无法销毁该设备上存储的任何数据。"
   ],
-  "This disk will contain any partition needed for booting": [
-    "此磁盘将包含引导所需的任何分区"
-  ],
-  "This disk will contain the LVM group '%s'": [
-    "此磁盘将包含 LVM 组 '%s'"
-  ],
-  "This disk will contain the LVM group '%s' and any partition needed to boot": [
-    "此磁盘将包含 LVM 组 '%s' 和引导所需的任何分区"
-  ],
-  "This disk will contain the configured LVM groups": [
-    "此磁盘将包含配置的 LVM 组"
-  ],
-  "This disk will contain the configured LVM groups and any partition needed to boot": [
-    "此磁盘将包含配置的 LVM 组和引导所需的任何分区"
+  "This action could destroy any data stored on the devices listed below.": [
+    "此操作无法销毁下列设备上存储的任何数据。"
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "无法在该服务器上使用此扩展。您可以请求服务器管理员镜像该扩展。"
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "此主机名是动态的，可能会在系统重引导或网络更新后更改，具体由本地网络管理员配置。"
+  ],
+  "This license is not available in %s.": [
+    "此许可证在 %s 中不可用。"
+  ],
+  "This may take a moment while updates complete.": [
+    "更新可能需要一段时间才能完成。"
+  ],
+  "This message will close automatically when everything is done.": [
+    "当所有操作完成后，此消息将会自动关闭。"
+  ],
+  "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
+    "此模式力求在清楚具体和快捷高效之间取得平衡：模态窗口提供简单、便捷的选择界面，而完整视图则支持更深入的探索和更复杂的操作，专为拥有大量设备的用户而设计。"
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "此产品不允许在安装期间选择软件集。不过，您可以在安装完成后添加其他软件。"
@@ -1745,6 +2039,9 @@ export default {
   ],
   "This uses existing partitions at the disk": [
     "此设置会使用磁盘上的现有分区"
+  ],
+  "This uses the existing file system at the disk": [
+    "此设置会使用磁盘上的现有文件系统"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "此操作只会影响安装程序界面，不会影响要安装的产品。您稍后可以在 \"本地化设置\" 页面调整产品的本地化设置。"
@@ -1776,8 +2073,14 @@ export default {
   "Unable to modify the settings": [
     "无法修改设置"
   ],
+  "Unbound": [
+    "已取消绑定"
+  ],
   "Unselect": [
     "取消选择"
+  ],
+  "Unselect or activate them and try it again.": [
+    "请将其取消选择或激活，然后重试。"
   ],
   "Unsupported AutoYaST elements": [
     "不受支持的 AutoYaST 元素"
@@ -1787,6 +2090,9 @@ export default {
   ],
   "Up to %s can be recovered by shrinking the device.": [
     "通过收缩设备最多可回收 %s 的空间。"
+  ],
+  "Update available disks and activate crypt devices": [
+    "更新可用磁盘并激活加密设备"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "现在或以后更新主机名不会更改当前注册的主机名。"
@@ -1803,47 +2109,83 @@ export default {
   "Use": [
     "使用"
   ],
-  "Use %s": [
-    "使用 %s"
+  "Use RAID %s": [
+    "使用 RAID %s"
   ],
-  "Use %s for LVM and additional partitions": [
-    "将 %s 用于 LVM 及附加分区"
+  "Use RAID %s for LVM and additional partitions": [
+    "将 RAID %s 用于 LVM 及附加分区"
   ],
-  "Use %s for LVM, additional partitions and booting": [
-    "将 %s 用于 LVM、附加分区及引导"
+  "Use RAID %s for LVM, additional partitions and booting": [
+    "将 RAID %s 用于 LVM、附加分区及引导"
   ],
-  "Use %s for additional partitions": [
-    "将 %s 用于附加分区"
+  "Use RAID %s for additional partitions": [
+    "将 RAID %s 用于附加分区"
   ],
-  "Use %s for additional partitions and booting": [
-    "将 %s 用于附加分区及引导"
+  "Use RAID %s for additional partitions and booting": [
+    "将 RAID %s 用于附加分区及引导"
   ],
-  "Use %s to configure boot partitions": [
-    "使用 %s 配置引导分区"
+  "Use RAID %s to configure boot partitions": [
+    "使用 RAID %s 配置引导分区"
   ],
-  "Use %s to host LVM": [
-    "使用 %s 托管 LVM"
+  "Use RAID %s to host LVM": [
+    "使用 RAID %s 托管 LVM"
   ],
-  "Use %s to host LVM and boot": [
-    "使用 %s 托管 LVM 及引导"
+  "Use RAID %s to host LVM and boot": [
+    "使用 RAID %s 托管 LVM 及引导"
   ],
-  "Use %s to install": [
-    "使用 %s 安装"
+  "Use RAID %s to install": [
+    "使用 RAID %s 安装"
   ],
-  "Use %s to install and boot": [
-    "使用 %s 安装及引导"
+  "Use RAID %s to install and boot": [
+    "使用 RAID %s 安装及引导"
   ],
-  "Use %s to install and host LVM": [
-    "使用 %s 安装及托管 LVM"
+  "Use RAID %s to install and host LVM": [
+    "使用 RAID %s 安装及托管 LVM"
   ],
-  "Use %s to install, host LVM and boot": [
-    "使用 %s 安装、托管 LVM 及引导"
+  "Use RAID %s to install, host LVM and boot": [
+    "使用 RAID %s 安装、托管 LVM 及引导"
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
     "使用下方操作设置您的设备，或单击 %s 采用默认配置从头开始。"
   ],
   "Use available space": [
     "使用可用空间"
+  ],
+  "Use disk %s": [
+    "使用磁盘 %s"
+  ],
+  "Use disk %s for LVM and additional partitions": [
+    "将磁盘 %s 用于 LVM 及附加分区"
+  ],
+  "Use disk %s for LVM, additional partitions and booting": [
+    "将磁盘 %s 用于 LVM、附加分区及引导"
+  ],
+  "Use disk %s for additional partitions": [
+    "将磁盘 %s 用于附加分区"
+  ],
+  "Use disk %s for additional partitions and booting": [
+    "将磁盘 %s 用于附加分区及引导"
+  ],
+  "Use disk %s to configure boot partitions": [
+    "使用磁盘 %s 配置引导分区"
+  ],
+  "Use disk %s to host LVM": [
+    "使用磁盘 %s 托管 LVM"
+  ],
+  "Use disk %s to host LVM and boot": [
+    "使用磁盘 %s 托管 LVM 及引导"
+  ],
+  "Use disk %s to install": [
+    "使用磁盘 %s 安装"
+  ],
+  "Use disk %s to install and boot": [
+    "使用磁盘 %s 安装及引导"
+  ],
+  "Use disk %s to install and host LVM": [
+    "使用磁盘 %s 安装及托管 LVM"
+  ],
+  "Use disk %s to install, host LVM and boot": [
+    "使用磁盘 %s 安装、托管 LVM 及引导"
   ],
   "Use for installation only": [
     "仅用于安装"
@@ -1863,8 +2205,14 @@ export default {
   "Use suggested username": [
     "使用建议的用户名"
   ],
+  "Use the RAID without partitions": [
+    "使用无分区的 RAID"
+  ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     "使用可信平台模块 (TPM) 在每次启动时自动解密"
+  ],
+  "Use the disk without partitions": [
+    "使用无分区的磁盘"
   ],
   "Use these same settings for the selected product": [
     "对所选产品使用同样的设置"
@@ -1954,13 +2302,25 @@ export default {
     "您将连接到未加密的公共网络。数据可能存在安全风险。"
   ],
   "Your system is rebooting": [
-    ""
+    "系统正在重新引导"
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "大写锁定已开启"
+  ],
+  "[FIXME]": [
+    "[请修复]"
+  ],
+  "active": [
+    "已激活"
+  ],
+  "all": [
+    "全部"
+  ],
+  "approx. %s": [
+    "大约为 %s"
   ],
   "at least %s": [
     "至少 %s"
@@ -1980,11 +2340,23 @@ export default {
   "logical volume": [
     "逻辑卷"
   ],
+  "no": [
+    "否"
+  ],
+  "offline": [
+    "脱机"
+  ],
   "partition": [
     "分区"
   ],
+  "read_only": [
+    "只读"
+  ],
   "reset to defaults": [
     "重置为默认值"
+  ],
+  "yes": [
+    "是"
   ],
   "zFCP": [
     "zFCP"

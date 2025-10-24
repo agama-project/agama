@@ -107,6 +107,17 @@ project for submitting.
   GitHub variable. Just to avoid accidentally updating the packages with the old
   code when a commit is added to the old branch.
 
+## Cleanup
+
+After deleting a branch in Git (either explicitly or automatically after merging a pull request) the
+respective OBS project should be deleted.
+
+That can be done by running `branch2obs.sh -c`, it scans the OBS subprojects and deletes the ones
+which do not have a matching Git branch. It also removes the brach from the mapping stored in the
+OBS_PROJECTS GitHub Action variable.
+
+To just print the obsolete projects without deleting them run command `branch2obs.sh -o`.
+
 ## Implementation details
 
 The mapping between the Git branch and the target OBS project is stored in the

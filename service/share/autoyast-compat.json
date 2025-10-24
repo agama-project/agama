@@ -71,6 +71,14 @@
     ]
   },
   { "key": "configuration_management", "support": "no" },
+  { "key": "dasd",
+    "children": [
+     { "key": "device", "support": "no" },
+     { "key": "dev_name", "support": "no" },
+     { "key": "channel", "support": "yes" },
+     { "key": "diag", "support": "yes" }
+    ]
+  },
   { "key": "deploy_image", "support": "no" },
   { "key": "dhcp-server", "support": "no" },
   { "key": "dns-server", "support": "no" },
@@ -589,7 +597,10 @@
         "support": "yes",
         "agama": "product.registrationCode"
       },
-      { "key": "reg_server", "support": "planned" },
+      { "key": "reg_server",
+        "support": "yes",
+        "agama": "product.registrationUrl"
+      },
       { "key": "reg_server_cert", "support": "no" },
       {
         "key": "reg_server_cert_fingerprint",
@@ -662,5 +673,6 @@
         "notes": "It only considers a single key."
       }
     ]
-  }
+  },
+  { "key": "zfcp", "support": "yes" }
 ]

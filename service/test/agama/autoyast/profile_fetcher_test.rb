@@ -57,6 +57,7 @@ describe Agama::AutoYaST::ProfileFetcher do
 
   before do
     stub_const("Y2Autoinstallation::XmlChecks::ERRORS_PATH", File.join(tmpdir, "errors"))
+    stub_const("Agama::AutoYaST::PreScript::SCRIPTS_DIR", File.join(tmpdir, "scripts"))
     Yast.import "Installation"
     allow(Yast::Installation).to receive(:sourcedir).and_return(File.join(tmpdir, "mount"))
     allow(Yast::AutoinstConfig).to receive(:scripts_dir)

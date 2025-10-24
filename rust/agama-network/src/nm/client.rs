@@ -297,6 +297,8 @@ impl<'a> NetworkManagerClient<'a> {
                 .map_err(NmError::FailedNmVersionParse)?,
         );
 
+        let devices = self.devices().await?;
+
         let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid).await {
             let original = proxy.get_settings().await?;
             let merged = merge_dbus_connections(&original, &new_conn)?;
@@ -305,6 +307,7 @@ impl<'a> NetworkManagerClient<'a> {
             } else {
                 UpdateFlags::InMemoryOnly
             };
+
             proxy
                 .update2(merged, persist as u32, Default::default())
                 .await?;
@@ -328,14 +331,46 @@ impl<'a> NetworkManagerClient<'a> {
         // FIXME: Do not like that an activation/deactivation could not apply the changes because of
         // a roolback when calling this method with an error.
         if conn.is_up() {
+            if let Some(interface) = &conn.interface {
+                for device in devices {
+                    if interface != &device.name {
+                        continue;
+                    }
+
+                    if let Some(device_conn) = device.connection {
+                        if device_conn != conn.id {
+                            tracing::info!(
+                                "Disconnecting {} because the connection is {}",
+                                &device_conn,
+                                &conn.id,
+                            );
+                            self.disconnect_device(device.name).await?;
+                        }
+                    }
+                }
+            }
+
             // FIXME: If it is a wireless and wireless is disabled it will fail, and if it is a
             // device which is not available it will also fail.
+
+            tracing::info!("Activating connection {}", &conn.id);
             self.activate_connection(path).await?;
         } else {
             if conn.is_down() || conn.is_removed() {
+                tracing::info!("Deactivating connection {}", &conn.id);
                 self.deactivate_connection(path).await?;
             }
         }
+        Ok(())
+    }
+
+    /// Disconnect the device with the given name.
+    pub async fn disconnect_device(&self, device: String) -> Result<(), NmError> {
+        let proxy = self.get_device_proxy(device.clone()).await?;
+        if let Err(e) = proxy.disconnect().await {
+            tracing::error!("Error disconnecting {}: {:?}", device, e);
+        }
+
         Ok(())
     }
 
@@ -374,9 +409,13 @@ impl<'a> NetworkManagerClient<'a> {
     async fn activate_connection(&self, path: OwnedObjectPath) -> Result<(), NmError> {
         let proxy = NetworkManagerProxy::new(&self.connection).await?;
         let root = ObjectPath::try_from("/").unwrap();
-        proxy
+        if let Err(e) = proxy
             .activate_connection(&path.as_ref(), &root, &root)
-            .await?;
+            .await
+        {
+            tracing::error!("Could not activate connection {}: {:?}", path, e);
+        }
+
         Ok(())
     }
 
@@ -411,6 +450,50 @@ impl<'a> NetworkManagerClient<'a> {
         Ok(proxy)
     }
 
+    // Returns the DeviceProxy for the given device name
+    //
+    /// * `name`: Device name.
+    async fn get_device_proxy(&self, name: String) -> Result<DeviceProxy, NmError> {
+        let mut device_path: Option<OwnedObjectPath> = None;
+        for path in &self.nm_proxy.get_all_devices().await? {
+            let proxy = DeviceProxy::builder(&self.connection)
+                .path(path.as_str())?
+                .build()
+                .await?;
+
+            if let Ok(device) = DeviceFromProxyBuilder::new(&self.connection, &proxy)
+                .build()
+                .await
+            {
+                if device.name == name {
+                    device_path = Some(path.to_owned());
+                    break;
+                }
+            }
+        }
+
+        if let Some(path) = device_path {
+            Ok(DeviceProxy::builder(&self.connection)
+                .path(path)?
+                .build()
+                .await?)
+        } else {
+            Err(NmError::InvalidDeviceName(name))
+        }
+    }
+
+    /// Retrieves the `org.freedesktop.NetworkManager.ActiveConnection` object
+    /// path corresponding to a given `org.freedesktop.NetworkManager.Settings` object path.
+    ///
+    /// # Arguments
+    ///
+    /// * `path`: D-Bus settings path of the connection
+    ///
+    /// # Returns
+    ///
+    /// * `Ok(Some(OwnedObjectPath))` - If the `ActiveConnection` was found.
+    /// * `Ok(None)` - If the `ActiveConnection` wasn't found.
+    /// * `Err(NmError)` - On an unexpected error.
     async fn settings_active_connection(
         &self,
         path: OwnedObjectPath,
@@ -421,9 +504,19 @@ impl<'a> NetworkManagerClient<'a> {
                 .build()
                 .await?;
 
-            let connection = proxy.connection().await?;
-            if path == connection {
-                return Ok(Some(active_path.to_owned()));
+            match proxy.connection().await {
+                /* Don't error out, if the ActiveConnection was deactivated and removed,
+                 * after the above call of `nm_proxy.active_connections()` */
+                Err(e) => {
+                    if !e.to_string().contains("Object does not exist") {
+                        return Err(NmError::DBus(e));
+                    }
+                }
+                Ok(connection) => {
+                    if path == connection {
+                        return Ok(Some(active_path.to_owned()));
+                    }
+                }
             };
         }
 
@@ -448,8 +541,8 @@ impl<'a> NetworkManagerClient<'a> {
                         wireless.password = get_optional_property(&secret, "psk")?;
                     }
                 }
-                Err(error) => {
-                    tracing::error!("Could not read connection secrets: {:?}", error);
+                Err(_) => {
+                    tracing::error!("Could not read connection secrets");
                 }
             }
         }

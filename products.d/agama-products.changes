@@ -4,9 +4,109 @@ Fri Oct 17 19:50:58 UTC 2025 - Shawn Dunn <sfalken@opensuse.org>
 - Remove Kalpa from multi-distribution installation image.
 
 -------------------------------------------------------------------
+Mon Sep 29 04:56:47 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Update patterns and packages Leap Micro 6.2
+  Fixes install issues of Leap Micro 6.2 (boo#1250435)
+- Explicitly add opensuse-migration-tool
+
+-------------------------------------------------------------------
+Fri Sep 12 14:30:16 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Change the openSUSE Leap autoinstallation ID from "Leap_16.0"
+  to "openSUSE_Leap" and the openSUSE Leap Micro ID from
+  "LeapMicro_6.2" to "openSUSE_Leap_Micro". This allows using the
+  same autoinstallation profile in future versions. (bsc#1249399)
+
+-------------------------------------------------------------------
+Fri Sep 12 08:14:28 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Update translations (bsc#1249378)
+
+-------------------------------------------------------------------
+Mon Aug 25 08:59:20 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix failure of agama-products build after drop of is_opensuse
+  on SLE16 (bsc#1248484)
+
+-------------------------------------------------------------------
+Mon Aug 18 12:44:14 UTC 2025 - Eugenio Paolantonio <eugenio.paolantonio@suse.com>
+
+- products: sles, sle-sap: remove Beta tag, switch to the final EULAs
+  (gh#agama-project/agama#2666).
+
+-------------------------------------------------------------------
+Wed Aug  6 12:44:13 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Drop Beta from Leap 16.0.
+  We've agreed to not use RC and simply go with Leap 16.0
+  just like on boot menu. 
+
+-------------------------------------------------------------------
+Thu Jul 31 07:44:04 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Remove selinux policy from products definition as it is noop
+  after changes to agama service (bsc#1247046)
+
+-------------------------------------------------------------------
+Tue Jul 29 14:13:55 UTC 2025 - Frederic Crozat <fcrozat@suse.com>
+
+- Add more patterns to installation UI (bsc#1246947)
+
+-------------------------------------------------------------------
+Mon Jul 28 11:05:31 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Set configuration for selinux for SLES4SAP to permissive
+  (bsc#1247046)
+
+-------------------------------------------------------------------
+Mon Jul 21 15:07:41 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 17
+
+-------------------------------------------------------------------
+Tue Jul 15 11:33:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt the products definition to the new way of pre-selecting
+  user patterns (gh#agama-project/agama#2560).
+
+-------------------------------------------------------------------
+Tue Jul 15 11:03:12 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Display only Tumblweed based distros in Tumbleweed installer
+  and vice versa.
+
+-------------------------------------------------------------------
+Fri Jul 11 13:03:48 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add Experimental xfce_wayland to Leap 16.0
+
+-------------------------------------------------------------------
+Thu Jul 10 13:39:30 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed base product names to install for Kalpa, Leap 16.0
+  and Leap-Micro 6.2 distributions (gh#agama-project/agama#2550)
+
+-------------------------------------------------------------------
+Tue Jul  1 12:58:07 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add initial Leap Micro 6.2 product
+  based on MicroOS, with renamed patterns
+
+-------------------------------------------------------------------
+Mon Jun 30 15:51:37 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 16
+
+-------------------------------------------------------------------
+Mon Jun 30 05:44:18 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix Kalpa product definition (gh#agama-project/agama#2520).
+
+-------------------------------------------------------------------
 Fri Jun 27 12:08:23 UTC 2025 - Shawn Dunn <sfalken@opensuse.org>
 
-- Added Kalpa to Products
+- Added Kalpa to Products (gh#agama-project/agama#2484).
 
 -------------------------------------------------------------------
 Thu May 29 14:41:10 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
@@ -27,12 +127,12 @@ Mon May 26 19:51:54 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Tue Apr 29 14:07:48 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
-- Bump openSUSE Leap 16.0 to Beta 
+- Bump openSUSE Leap 16.0 to Beta
 
 -------------------------------------------------------------------
 Tue Apr 22 14:27:59 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
 
-- Add NetworkManager-config-server package to SLES 16.0 and 
+- Add NetworkManager-config-server package to SLES 16.0 and
   SLES_SAP 16.0 as mandatory (bsc#1241224, bsc#1224868).
 
 -------------------------------------------------------------------
@@ -68,7 +168,7 @@ Mon Mar 24 14:08:29 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Drop basic-desktop pulling IceWM from Leap 16.0
   installation profiles jsc#PED-1721 code-o-o#leap/features#183
-   
+
 
 -------------------------------------------------------------------
 Fri Mar 21 16:58:18 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
@@ -126,7 +226,7 @@ Thu Feb 13 11:19:19 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
 
 - Change the default lsm to SELinux in enforcing for both Leap and Tumblweed
   keep AppArmor around as an option jsc#PED-12021
-  https://news.opensuse.org/2025/02/13/tw-plans-to-adopt-selinux-as-default/ 
+  https://news.opensuse.org/2025/02/13/tw-plans-to-adopt-selinux-as-default/
 
 -------------------------------------------------------------------
 Fri Jan 24 06:45:45 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

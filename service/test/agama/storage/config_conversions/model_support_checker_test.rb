@@ -146,6 +146,7 @@ describe Agama::Storage::ModelSupportChecker do
     shared_examples "partitionable with encryption" do
       context "and the device is going to be skipped" do
         let(:condition) { { name: "/not/found" } }
+        let(:filesystem) { nil }
 
         it "returns true" do
           expect(subject.supported?).to eq(true)
@@ -155,8 +156,30 @@ describe Agama::Storage::ModelSupportChecker do
       context "and the device is not going to be skipped" do
         let(:condition) { nil }
 
-        it "returns false" do
-          expect(subject.supported?).to eq(false)
+        context "and the device has no filesystem" do
+          let(:filesystem) { nil }
+
+          it "returns false" do
+            expect(subject.supported?).to eq(false)
+          end
+        end
+
+        context "and the device has filesystem" do
+          context "and the filesystem is going to be created" do
+            let(:filesystem) { { reuseIfPossible: false } }
+
+            it "returns true" do
+              expect(subject.supported?).to eq(true)
+            end
+          end
+
+          context "and the filesystem is going to be reused" do
+            let(:filesystem) { { reuseIfPossible: true } }
+
+            it "returns false" do
+              expect(subject.supported?).to eq(false)
+            end
+          end
         end
       end
     end
@@ -172,7 +195,8 @@ describe Agama::Storage::ModelSupportChecker do
               },
               encryption: {
                 luks1: { password: "12345" }
-              }
+              },
+              filesystem: filesystem
             }
           ]
         }
@@ -194,7 +218,8 @@ describe Agama::Storage::ModelSupportChecker do
               },
               encryption: {
                 luks1: { password: "12345" }
-              }
+              },
+              filesystem: filesystem
             }
           ]
         }
@@ -462,6 +487,50 @@ describe Agama::Storage::ModelSupportChecker do
       end
     end
 
+    context "if the config includes encryption for everything except an arbitrary partition" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                { filesystem: { path: "/home" } },
+                {
+                  encryption: { luks1: { password: "12345" } },
+                  filesystem: { path: "/" }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "returns false" do
+        expect(subject.supported?).to eq(false)
+      end
+    end
+
+    context "if the config includes encryption for everything except /boot/zipl" do
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                { filesystem: { path: "/boot/zipl" } },
+                {
+                  encryption: { luks1: { password: "12345" } },
+                  filesystem: { path: "/" }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "returns true" do
+        expect(subject.supported?).to eq(true)
+      end
+    end
+
     context "if the config is totally supported" do
       let(:scenario) { "md_raids.yaml" }
 
@@ -492,7 +561,10 @@ describe Agama::Storage::ModelSupportChecker do
               partitions: [
                 { search: "*", delete: true },
                 {
-                  filesystem: { path: "/home", type: "xfs" }
+                  filesystem: { path: "/home", type: "xfs" },
+                  encryption: {
+                    luks1: { password: "12345" }
+                  }
                 }
               ]
             }
@@ -500,7 +572,16 @@ describe Agama::Storage::ModelSupportChecker do
           volumeGroups: [
             {
               name:            "data",
-              physicalVolumes: [{ generate: ["pv"] }],
+              physicalVolumes: [
+                {
+                  generate: {
+                    targetDevices: ["pv"],
+                    encryption:    {
+                      luks1: { password: "12345" }
+                    }
+                  }
+                }
+              ],
               logicalVolumes:  [
                 {
                   filesystem: { path: "/data" },

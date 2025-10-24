@@ -29,8 +29,10 @@ import {
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
+  Stack,
 } from "@patternfly/react-core";
 import { Link, Page, SplitButton } from "~/components/core";
+import PasswordCheck from "~/components/users/PasswordCheck";
 import { useFirstUser, useFirstUserChanges, useRemoveFirstUserMutation } from "~/queries/users";
 import { PATHS } from "~/routes/users";
 import { isEmpty } from "radashi";
@@ -69,20 +71,23 @@ const UserData = () => {
   return (
     <Card isCompact isPlain>
       <CardBody>
-        <DescriptionList isHorizontal isFluid displaySize="lg" isCompact>
-          <DescriptionListGroup>
-            <DescriptionListTerm id={fullnameTermId}>{_("Full name")}</DescriptionListTerm>
-            <DescriptionListDescription aria-labelledby={fullnameTermId}>
-              {user.fullName}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm id={usernameTermId}>{_("Username")}</DescriptionListTerm>
-            <DescriptionListDescription aria-labelledby={usernameTermId}>
-              {user.userName}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-        </DescriptionList>
+        <Stack hasGutter>
+          <DescriptionList isHorizontal isFluid displaySize="lg" isCompact>
+            <DescriptionListGroup>
+              <DescriptionListTerm id={fullnameTermId}>{_("Full name")}</DescriptionListTerm>
+              <DescriptionListDescription aria-labelledby={fullnameTermId}>
+                {user.fullName}
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+            <DescriptionListGroup>
+              <DescriptionListTerm id={usernameTermId}>{_("Username")}</DescriptionListTerm>
+              <DescriptionListDescription aria-labelledby={usernameTermId}>
+                {user.userName}
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+          </DescriptionList>
+          <PasswordCheck password={user.password} />
+        </Stack>
       </CardBody>
     </Card>
   );

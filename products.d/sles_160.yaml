@@ -1,8 +1,8 @@
 id: SLES
-name: SUSE Linux Enterprise Server 16.0 Beta
+name: SUSE Linux Enterprise Server 16.0
 registration: true
 version: "16.0"
-license: "license.beta"
+license: "license.final"
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
 # at the at translations/description key below to avoid using obsolete
@@ -36,13 +36,45 @@ translations:
       sistema operativo seguro y adaptable para una infraestructura lista para
       la innovación y con soporte a largo plazo que ejecuta cargas de trabajo
       críticas para el negocio en las instalaciones, en la nube y en el borde.
+    fi: Avoin, luotettava, määräysten mukainen ja tulevaisuutta varten valmis
+      Linux-palvelin, joka varmistaa yrityksen liiketoiminnan jatkuvuuden. Se on
+      tietoturvallinen, mukautuva, pitkään tuettu uudistamista tukeva
+      infrastuktuurikäyttöjärjestelmä, jolla voidaan suorittaa
+      liiketoimintakriittisiä työkuormia omissa tiloissa, pilvessä tai verkon
+      reunalaitteissa.
+    fr: Choix de serveur Linux ouvert, fiable, conforme et à l'épreuve du temps qui
+      garantit la continuité des activités de l'entreprise. C'est le système
+      d'exploitation sûr et adaptable pour une infrastructure prise en charge
+      sur le long terme et prête pour l'innovation, qui exécute des charges de
+      travail critiques sur site, dans le cloud et à la périphérie.
+    he: הפצת שרתי לינוקס פתוחה, יציבה, עומדת בתקינה ועמידה לאורך זמן אשר מספקת
+      המשכיות של עסקי התאגיד או המיזם. היא בטוחה וניתנת להתאמה, נכונה לחידושים
+      ומהווה תשתית למשימות עסקיות קריטיות במתחם העבודה, בענן, ובקצוות.
+    id: Pilihan Server Linux yang terbuka, andal, sesuai standar, dan siap
+      menghadapi masa depan, yang memastikan kelangsungan bisnis perusahaan.
+      Sistem operasi ini aman dan fleksibel untuk infrastruktur yang didukung
+      jangka panjang, siap berinovasi, dan dapat menjalankan beban kerja penting
+      bisnis, baik di lokasi (on-premises), cloud, maupun edge.
+    it: Una scelta per server Linux aperta, affidabile, conforme e a prova di futuro
+      che garantisce la continuità aziendale dell'impresa. È il sistema
+      operativo sicuro e adattabile per infrastrutture supportate a lungo
+      termine e pronte per l'innovazione, che eseguono carichi di lavoro critici
+      per il business in locale, nel cloud e a livello di edge.
     ja: オープンで信頼性が高く、各種の標準にも準拠し、将来性とビジネスの継続性を支援する Linux
       サーバです。長期のサポートが提供されていることから、安全性と順応性に優れ、オンプレミスからクラウド、エッジ環境に至るまで、様々な場所で重要なビジネス処理をこなすことのできる革新性の高いインフラストラクチャです。
+    nl: Een open, betrouwbare, compliant en toekomstbestendige Linux Server keuze
+      die ervoor zorgt voor continuïteit in de enterprise business. Het is een
+      veilig en aanpasbaar besturingssysteem met langdurige ondersteuning,
+      innovatie-klaar infrastructuur om bedrijfs-kritische werklasten op locatie
+      te draaien, in de cloud en op de edge.
     pt_BR: Uma escolha de servidor Linux aberta, confiável, compatível e à prova do
       futuro que garante a continuidade dos negócios da empresa. É o SO seguro e
       adaptável para infraestrutura com suporte de longo prazo e pronta para
       inovação, executando cargas de trabalho críticas para os negócios no
       local, na nuvem e na borda.
+    ru: Открытая, надёжная и перспективная серверная ОС Linux для обеспечения
+      непрерывности бизнеса. Безопасна, гибка и подходит для критически важных
+      нагрузок — на локальных серверах, в облаке и на периферии.
     sv: Ett öppet, pålitligt, kompatibelt och framtidssäkert Linux-serverval som
       säkerställer företagets affärskontinuitet. Det är det säkra och
       anpassningsbara operativsystemet för långsiktigt stödd, innovationsfärdig
@@ -52,6 +84,15 @@ translations:
       dönük bir Linux Sunucu seçeneği. Uzun vadeli desteklenen, inovasyona hazır
       altyapı için güvenli ve uyarlanabilir işletim sistemidir. Şirket içinde,
       bulutta ve uçta iş açısından kritik iş yüklerini çalıştırır.
+    uk: Відкритий, надійний, сумісний і перспективний вибір Linux для сервера, що
+      забезпечує неперервність бізнесу підприємства. Це безпечна й адаптована ОС
+      для довгострокової підтримуваної, готової до інновацій інфраструктури, що
+      виконує критично важливі для бізнесу робочі навантаження в приміщеннях, у
+      хмарі та Edge.
+    zh_CN: 开放、可靠、合规且面向未来的 Linux
+      服务器系统，旨在确保企业业务持续运作。作为安全和可适应的操作系统，它适用于本地、云端或边缘计算平台的关键业务工作负载，运行在需要长期支持、容许创新的基础设施之上。
+    zh_TW: 一個開放、可靠、符合標準且具未來適應性的 Linux
+      伺服器系統，能確保企業業務的持續運作。它是一個安全且具備適應力的作業系統，適用於受到長期支援、具備創新彈性並用於在內部、雲端與邊緣環境中執行關鍵業務工作負載的基礎架構。
 software:
   installation_repositories: []
   installation_labels:
@@ -72,9 +113,11 @@ software:
     - cockpit
     - sles_sap_minimal_sap
     - fips
-    - selinux
+    - name: selinux
+      selected: true
     - documentation
     - sw_management
+    - container_runtime_docker
     - container_runtime_podman
     - dhcp_dns_server
     - directory_server
@@ -84,8 +127,12 @@ software:
     - kvm_tools
     - lamp_server
     - mail_server
-    - printing
     - gnome
+    - gnome_internet
+    - devel_basis
+    - devel_kernel
+    - oracle_server
+    - print_server
   mandatory_packages:
     - NetworkManager
     # bsc#1241224, bsc#1224868 avoid probe DHCP over all ethernet devices and ignore carrier
@@ -100,7 +147,6 @@ security:
     selinux:
       patterns:
         - selinux
-      policy: enforcing
     none:
       patterns: null
 

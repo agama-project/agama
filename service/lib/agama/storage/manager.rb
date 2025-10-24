@@ -37,6 +37,7 @@ require "agama/with_progress"
 require "yast"
 require "bootloader/proposal_client"
 require "y2storage/clients/inst_prepdisk"
+require "y2storage/luks"
 require "y2storage/storage_env"
 require "y2storage/storage_manager"
 
@@ -69,7 +70,6 @@ module Agama
         @bootloader = Bootloader.new(logger)
 
         register_progress_callbacks
-        register_proposal_callbacks
       end
 
       # Whether the system is in a deprecated status
@@ -114,26 +114,41 @@ module Agama
         @on_probe_callbacks << block
       end
 
+      # Registers a callback to be called when storage is configured.
+      #
+      # @param block [Proc]
+      def on_configure(&block)
+        @on_configure_callbacks ||= []
+        @on_configure_callbacks << block
+      end
+
       # Probes storage devices and performs an initial proposal
       #
       # @param keep_config [Boolean] Whether to use the current storage config for calculating the
       #   proposal.
-      def probe(keep_config: false)
-        start_progress_with_size(4)
-        product_config.pick_product(software.selected_product)
+      # @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided LUKS
+      #   passwords).
+      def probe(keep_config: false, keep_activation: true)
+        start_progress_with_descriptions(
+          _("Activating storage devices"),
+          _("Probing storage devices"),
+          _("Calculating the storage proposal")
+        )
 
+        product_config.pick_product(software.selected_product)
         # Underlying yast-storage-ng has own mechanism for proposing boot strategies.
         # However, we don't always want to use BLS when it proposes so. Currently
         # we want to use BLS only for Tumbleweed / Slowroll
         prohibit_bls_boot if !product_config.boot_strategy&.casecmp("BLS")
-
         check_multipath
-        progress.step(_("Activating storage devices")) { activate_devices }
-        progress.step(_("Probing storage devices")) { probe_devices }
-        progress.step(_("Calculating the storage proposal")) do
-          calculate_proposal(keep_config: keep_config)
+
+        progress.step { activate_devices(keep_activation: keep_activation) }
+        progress.step { probe_devices }
+        progress.step do
+          config_json = proposal.storage_json if keep_config
+          configure(config_json)
         end
-        progress.step(_("Selecting Linux Security Modules")) { security.probe }
+
         # The system is not deprecated anymore
         self.deprecated_system = false
         update_issues
@@ -164,13 +179,16 @@ module Agama
         Finisher.new(logger, product_config, security).run
       end
 
-      # Calculates the proposal.
+      # Configures storage.
       #
-      # @param keep_config [Boolean] Whether to use the current storage config for calculating the
-      #   proposal. If false, then the default config from the product is used.
-      def calculate_proposal(keep_config: false)
-        config_json = proposal.storage_json if keep_config
-        Configurator.new(proposal).configure(config_json)
+      # @param config_json [Hash, nil] Storage config according to the JSON schema. If nil, then
+      #   the default config is applied.
+      # @return [Boolean] Whether storage was successfully configured.
+      def configure(config_json = nil)
+        result = Configurator.new(proposal).configure(config_json)
+        update_issues
+        @on_configure_callbacks&.each(&:call)
+        result
       end
 
       # Storage proposal manager
@@ -215,6 +233,13 @@ module Agama
         update_issues
       end
 
+      # Security manager
+      #
+      # @return [Security]
+      def security
+        @security ||= Security.new(logger, product_config)
+      end
+
     private
 
       PROPOSAL_ID = "storage_proposal"
@@ -233,15 +258,14 @@ module Agama
         on_progress_change { logger.info(progress.to_s) }
       end
 
-      # Issues are updated when the proposal is calculated
-      def register_proposal_callbacks
-        proposal.on_calculate { update_issues }
-      end
-
       # Activates the devices, calling activation callbacks if needed
-      def activate_devices
-        callbacks = Callbacks::Activate.new(questions_client, logger)
+      #
+      # @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided LUKS
+      #   passwords).
+      def activate_devices(keep_activation: true)
+        Y2Storage::Luks.reset_activation_infos unless keep_activation
 
+        callbacks = Callbacks::Activate.new(questions_client, logger)
         iscsi.activate
         Y2Storage::StorageManager.instance.activate(callbacks)
       end
@@ -256,12 +280,26 @@ module Agama
 
       # Adds the required packages to the list of resolvables to install
       def add_packages
-        devicegraph = Y2Storage::StorageManager.instance.staging
         packages = devicegraph.used_features.pkg_list
+        packages += ISCSI::Manager::PACKAGES if need_iscsi?
         return if packages.empty?
 
         logger.info "Selecting these packages for installation: #{packages}"
         Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :package, packages)
+      end
+
+      # Whether iSCSI is needed in the target system.
+      #
+      # @return [Boolean]
+      def need_iscsi?
+        iscsi.configured? || devicegraph.used_features.any? { |f| f.id == :UF_ISCSI }
+      end
+
+      # Staging devicegraph
+      #
+      # @return [Y2Storage::Devicegraph]
+      def devicegraph
+        Y2Storage::StorageManager.instance.staging
       end
 
       # Prepares the storage devices for installation
@@ -326,13 +364,6 @@ module Agama
         Issue.new("There is no suitable device for installation",
           source:   Issue::Source::SYSTEM,
           severity: Issue::Severity::ERROR)
-      end
-
-      # Security manager
-      #
-      # @return [Security]
-      def security
-        @security ||= Security.new(logger, product_config)
       end
 
       # Returns the client to ask questions

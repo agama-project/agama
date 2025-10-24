@@ -22,7 +22,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 /// Software service configuration (product, patterns, etc.).
-#[derive(Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct SoftwareConfig {
     /// A map where the keys are the pattern names and the values whether to install them or not.
@@ -33,6 +33,8 @@ pub struct SoftwareConfig {
     pub product: Option<String>,
     /// Extra repositories defined by user.
     pub extra_repositories: Option<Vec<RepositoryParams>>,
+    /// Flag if solver should use only hard dependencies.
+    pub only_required: Option<bool>,
 }
 
 /// Software resolvable type (package or pattern).

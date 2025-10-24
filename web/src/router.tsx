@@ -31,6 +31,7 @@ import {
   InstallationProgress,
   LoginPage,
 } from "~/components/core";
+import StorageProgress from "~/components/storage/Progress";
 import { OverviewPage } from "~/components/overview";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/routes/network";
@@ -39,7 +40,7 @@ import registrationRoutes from "~/routes/registration";
 import storageRoutes from "~/routes/storage";
 import softwareRoutes from "~/routes/software";
 import usersRoutes from "~/routes/users";
-import { HOSTNAME, ROOT as PATHS } from "./routes/paths";
+import { HOSTNAME, ROOT as PATHS, STORAGE } from "./routes/paths";
 import { N_ } from "~/i18n";
 import HostnamePage from "./components/system/HostnamePage";
 
@@ -98,18 +99,9 @@ const protectedRoutes = () => [
         path: PATHS.installationFinished,
         element: <InstallationFinished />,
       },
-    ],
-  },
-  {
-    element: (
-      <PlainLayout mountHeader={false} mountSkipToContent={false}>
-        <Outlet />
-      </PlainLayout>
-    ),
-    children: [
       {
-        path: PATHS.installationExit,
-        element: <InstallationExit />,
+        path: STORAGE.progress,
+        element: <StorageProgress />,
       },
     ],
   },
@@ -124,6 +116,19 @@ const router = () =>
           <LoginPage />
         </PlainLayout>
       ),
+    },
+    {
+      element: (
+        <PlainLayout mountHeader={false} mountSkipToContent={false}>
+          <Outlet />
+        </PlainLayout>
+      ),
+      children: [
+        {
+          path: PATHS.installationExit,
+          element: <InstallationExit />,
+        },
+      ],
     },
     {
       path: PATHS.root,

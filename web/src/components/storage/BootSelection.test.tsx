@@ -141,6 +141,8 @@ describe("BootSelection", () => {
         isDefault: true,
         getDevice: () => null,
       },
+      drives: [],
+      mdRaids: [],
     });
   });
 
@@ -183,6 +185,8 @@ describe("BootSelection", () => {
           isDefault: false,
           getDevice: () => sda,
         },
+        drives: [],
+        mdRaids: [],
       });
     });
 
@@ -203,6 +207,8 @@ describe("BootSelection", () => {
           isDefault: false,
           getDevice: () => null,
         },
+        drives: [],
+        mdRaids: [],
       });
     });
 
@@ -224,6 +230,8 @@ describe("BootSelection", () => {
           isDefault: false,
           getDevice: () => sda,
         },
+        drives: [],
+        mdRaids: [],
       });
     });
 

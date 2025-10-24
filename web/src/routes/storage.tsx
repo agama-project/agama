@@ -29,12 +29,14 @@ import EncryptionSettingsPage from "~/components/storage/EncryptionSettingsPage"
 import SpacePolicySelection from "~/components/storage/SpacePolicySelection";
 import ProposalPage from "~/components/storage/ProposalPage";
 import ISCSIPage from "~/components/storage/ISCSIPage";
+import FormattableDevicePage from "~/components/storage/FormattableDevicePage";
 import PartitionPage from "~/components/storage/PartitionPage";
 import LvmPage from "~/components/storage/LvmPage";
 import LogicalVolumePage from "~/components/storage/LogicalVolumePage";
 import ZFCPPage from "~/components/storage/zfcp/ZFCPPage";
 import ZFCPDiskActivationPage from "~/components/storage/zfcp/ZFCPDiskActivationPage";
 import DASDPage from "~/components/storage/dasd/DASDPage";
+import DeviceSelectorPage from "~/components/storage/DeviceSelectorPage";
 import { supportedDASD, probeDASD } from "~/api/storage/dasd";
 import { probeZFCP, supportedZFCP } from "~/api/storage/zfcp";
 import { STORAGE as PATHS } from "~/routes/paths";
@@ -52,12 +54,20 @@ const routes = (): Route => ({
       element: <BootSelection />,
     },
     {
+      path: PATHS.selectDevice,
+      element: <DeviceSelectorPage />,
+    },
+    {
       path: PATHS.editEncryption,
       element: <EncryptionSettingsPage />,
     },
     {
       path: PATHS.editSpacePolicy,
       element: <SpacePolicySelection />,
+    },
+    {
+      path: PATHS.formatDevice,
+      element: <FormattableDevicePage />,
     },
     {
       path: PATHS.addPartition,

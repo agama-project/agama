@@ -407,9 +407,11 @@ describe Agama::Storage::Proposal do
             storage: {
               drives: [
                 {
-                  encryption: {
-                    luks1: { password: "12345" }
-                  }
+                  partitions: [
+                    {
+                      encryption: { luks1: { password: "12345" } }
+                    }
+                  ]
                 }
               ]
             }
@@ -590,21 +592,6 @@ describe Agama::Storage::Proposal do
     end
   end
 
-  shared_examples "check proposal callbacks" do |action, settings|
-    it "runs all the callbacks" do
-      callback1 = proc {}
-      callback2 = proc {}
-
-      subject.on_calculate(&callback1)
-      subject.on_calculate(&callback2)
-
-      expect(callback1).to receive(:call)
-      expect(callback2).to receive(:call)
-
-      subject.public_send(action, send(settings))
-    end
-  end
-
   shared_examples "check proposal return" do |action, achivable_settings, impossible_settings|
     it "returns whether the proposal was successful" do
       result = subject.public_send(action, send(achivable_settings))
@@ -624,19 +611,6 @@ describe Agama::Storage::Proposal do
       it "does not calculate a proposal" do
         subject.public_send(action, send(settings))
         expect(Y2Storage::StorageManager.instance.proposal).to be_nil
-      end
-
-      it "does not run the callbacks" do
-        callback1 = proc {}
-        callback2 = proc {}
-
-        subject.on_calculate(&callback1)
-        subject.on_calculate(&callback2)
-
-        expect(callback1).to_not receive(:call)
-        expect(callback2).to_not receive(:call)
-
-        subject.public_send(action, send(settings))
       end
 
       it "returns false" do
@@ -681,8 +655,6 @@ describe Agama::Storage::Proposal do
         an_object_having_attributes(mount_point: "/", device: "/dev/sdb")
       )
     end
-
-    include_examples "check proposal callbacks", :calculate_guided, :achivable_settings
 
     include_examples "check proposal return",
       :calculate_guided, :achivable_settings, :impossible_settings
@@ -739,8 +711,6 @@ describe Agama::Storage::Proposal do
       expect(Y2Storage::StorageManager.instance.proposal).to be_a(Y2Storage::AgamaProposal)
     end
 
-    include_examples "check proposal callbacks", :calculate_agama, :achivable_config
-
     include_examples "check proposal return",
       :calculate_agama, :achivable_config, :impossible_config
 
@@ -781,8 +751,6 @@ describe Agama::Storage::Proposal do
       subject.calculate_autoyast(achivable_settings)
       expect(Y2Storage::StorageManager.instance.proposal).to be_a(Y2Storage::AutoinstProposal)
     end
-
-    include_examples "check proposal callbacks", :calculate_autoyast, :achivable_settings
 
     include_examples "check proposal return",
       :calculate_autoyast, :achivable_settings, :impossible_settings
@@ -873,34 +841,6 @@ describe Agama::Storage::Proposal do
       it "raises an error" do
         expect { subject.calculate_from_json(config_json) }.to raise_error(/Invalid JSON/)
       end
-    end
-  end
-
-  describe "#calculate_from_model" do
-    let(:model_json) do
-      {
-        drives: [
-          {
-            name:       "/dev/vda",
-            filesystem: {
-              type: "xfs"
-            }
-          }
-        ]
-      }
-    end
-
-    it "calculates a proposal with the agama strategy and with the expected config" do
-      expect(subject).to receive(:calculate_agama) do |config|
-        expect(config).to be_a(Agama::Storage::Config)
-        expect(config.drives.size).to eq(1)
-
-        drive = config.drives.first
-        expect(drive.search.name).to eq("/dev/vda")
-        expect(drive.filesystem.type.fs_type).to eq(Y2Storage::Filesystems::Type::XFS)
-      end
-
-      subject.calculate_from_model(model_json)
     end
   end
 

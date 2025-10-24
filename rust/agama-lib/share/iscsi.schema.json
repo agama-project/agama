@@ -1,5 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://github.com/agama-project/agama/blob/master/rust/agama-lib/share/iscsi.schema.json",
   "title": "Config",
   "description": "iSCSI config.",
   "type": "object",

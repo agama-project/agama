@@ -41,6 +41,20 @@ env \
   datadir=%{_datadir} \
   %{_builddir}/agama/install.sh
 
+
+# Keep only Leap based distros on Leap
+%if 0%{?is_opensuse} && 0%{?suse_version} == 1600
+rm -f %{buildroot}%{_datadir}/agama/products.d/kalpa.yaml
+rm -f %{buildroot}%{_datadir}/agama/products.d/microos.yaml
+rm -f %{buildroot}%{_datadir}/agama/products.d/tumbleweed.yaml
+rm -f %{buildroot}%{_datadir}/agama/products.d/slowroll.yaml
+%endif
+
+# Keep TW-based distros on TW (drop Leap + Leap Micro)
+%if 0%{?is_opensuse} && 0%{?suse_version} > 1600
+rm -f %{buildroot}%{_datadir}/agama/products.d/leap*.yaml
+%endif
+
 %package opensuse
 Summary:        Definition of openSUSE products for the Agama installer.
 
@@ -52,10 +66,16 @@ Definition of openSUSE products (Tumbleweed, Leap, MicroOS and Slowroll) for the
 %license LICENSE
 %dir %{_datadir}/agama
 %dir %{_datadir}/agama/products.d
+# if building on SLES add all opensuse products
+%if !0%{?is_opensuse} || 0%{?suse_version} > 1600
 %{_datadir}/agama/products.d/microos.yaml
 %{_datadir}/agama/products.d/tumbleweed.yaml
-%{_datadir}/agama/products.d/leap_160.yaml
 %{_datadir}/agama/products.d/slowroll.yaml
+%endif
+%if !0%{?is_opensuse} || 0%{?suse_version} == 1600
+%{_datadir}/agama/products.d/leap_160.yaml
+%{_datadir}/agama/products.d/leap_micro_62.yaml
+%endif
 
 %package sle
 Summary:        Definition of SLE products for the Agama installer.

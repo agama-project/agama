@@ -43,10 +43,13 @@ import {
   Stack,
   TextInput,
 } from "@patternfly/react-core";
-import { NestedContent, Page, SelectWrapper as Select, SubtleContent } from "~/components/core/";
+import { Page, SelectWrapper as Select, SubtleContent } from "~/components/core/";
 import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
 import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import AutoSizeText from "~/components/storage/AutoSizeText";
+import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
+import AlertOutOfSync from "~/components/core/AlertOutOfSync";
+import ResourceNotFound from "~/components/core/ResourceNotFound";
 import { useAddPartition, useEditPartition } from "~/hooks/storage/partition";
 import { useMissingMountPaths } from "~/hooks/storage/product";
 import { useModel } from "~/hooks/storage/model";
@@ -58,18 +61,12 @@ import { useDevices, useVolume } from "~/queries/storage";
 import { useConfigModel, useSolvedConfigModel } from "~/queries/storage/config-model";
 import { findDevice } from "~/helpers/storage/api-model";
 import { StorageDevice } from "~/types/storage";
-import {
-  baseName,
-  deviceSize,
-  deviceLabel,
-  filesystemLabel,
-  parseToBytes,
-} from "~/components/storage/utils";
+import { deviceSize, deviceLabel, filesystemLabel, parseToBytes } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { apiModel } from "~/api/storage/types";
-import { STORAGE as PATHS } from "~/routes/paths";
-import { unique } from "radashi";
+import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
+import { isUndefined, unique } from "radashi";
 import { compact } from "~/utils";
 
 const NO_VALUE = "";
@@ -77,8 +74,7 @@ const NEW_PARTITION = "new";
 const BTRFS_SNAPSHOTS = "btrfsSnapshots";
 const REUSE_FILESYSTEM = "reuse";
 
-type SizeOptionValue = "" | "auto" | "custom";
-type CustomSizeValue = "fixed" | "unlimited" | "range";
+type SizeOptionValue = "" | SizeMode;
 type FormValue = {
   mountPoint: string;
   target: string;
@@ -87,10 +83,6 @@ type FormValue = {
   sizeOption: SizeOptionValue;
   minSize: string;
   maxSize: string;
-};
-type SizeRange = {
-  min: string;
-  max: string;
 };
 type Error = {
   id: string;
@@ -183,7 +175,8 @@ function toFormValue(partitionConfig: apiModel.Partition): FormValue {
     return "custom";
   };
 
-  const size = (value: number | undefined): string => (value ? deviceSize(value) : NO_VALUE);
+  const size = (value: number | undefined): string =>
+    value ? deviceSize(value, { exact: true }) : NO_VALUE;
 
   return {
     mountPoint: mountPoint(),
@@ -498,12 +491,13 @@ type TargetOptionLabelProps = {
 
 function TargetOptionLabel({ value }: TargetOptionLabelProps): React.ReactNode {
   const device = useDevice();
+  const partition = usePartition(value);
 
   if (value === NEW_PARTITION) {
     // TRANSLATORS: %s is a disk name with its size (eg. "sda, 10 GiB"
     return sprintf(_("As a new partition on %s"), deviceLabel(device, true));
   } else {
-    return sprintf(_("Using partition %s"), baseName(value, true));
+    return sprintf(_("Using partition %s"), deviceLabel(partition, true));
   }
 }
 
@@ -674,58 +668,6 @@ function FilesystemLabel({ id, value, onChange }: FilesystemLabelProps): React.R
   );
 }
 
-type SizeOptionLabelProps = {
-  value: SizeOptionValue;
-  mountPoint: string;
-  target: string;
-};
-
-function SizeOptionLabel({ value, mountPoint, target }: SizeOptionLabelProps): React.ReactNode {
-  const partition = usePartition(target);
-  if (mountPoint === NO_VALUE) return _("Waiting for a mount point");
-  if (value === NO_VALUE && target !== NEW_PARTITION) return deviceSize(partition.size);
-  if (value === "auto") return _("Calculated automatically");
-  if (value === "custom") return _("Custom");
-
-  return value;
-}
-
-type SizeOptionsProps = {
-  mountPoint: string;
-  target: string;
-};
-
-function SizeOptions({ mountPoint, target }: SizeOptionsProps): React.ReactNode {
-  return (
-    <SelectList aria-label={_("Size options")}>
-      {mountPoint === NO_VALUE && (
-        <SelectOption value={NO_VALUE}>
-          <SizeOptionLabel value={NO_VALUE} mountPoint={mountPoint} target={target} />
-        </SelectOption>
-      )}
-      {mountPoint !== NO_VALUE && target !== NEW_PARTITION && (
-        // TRANSLATORS: %s is a partition name like /dev/vda2
-        <SelectOption value={NO_VALUE} description={sprintf(_("Keep size of %s"), target)}>
-          <SizeOptionLabel value={NO_VALUE} mountPoint={mountPoint} target={target} />
-        </SelectOption>
-      )}
-      {mountPoint !== NO_VALUE && target === NEW_PARTITION && (
-        <>
-          <SelectOption
-            value="auto"
-            description={_("Let the installer propose a sensible range of sizes")}
-          >
-            <SizeOptionLabel value="auto" mountPoint={mountPoint} target={target} />
-          </SelectOption>
-          <SelectOption value="custom" description={_("Define a custom size or a range")}>
-            <SizeOptionLabel value="custom" mountPoint={mountPoint} target={target} />
-          </SelectOption>
-        </>
-      )}
-    </SelectList>
-  );
-}
-
 type AutoSizeInfoProps = {
   value: FormValue;
 };
@@ -744,148 +686,11 @@ function AutoSizeInfo({ value }: AutoSizeInfoProps): React.ReactNode {
   );
 }
 
-type CustomSizeOptionLabelProps = {
-  value: CustomSizeValue;
-};
-
-function CustomSizeOptionLabel({ value }: CustomSizeOptionLabelProps): React.ReactNode {
-  const labels = {
-    fixed: _("Same as minimum"),
-    unlimited: _("None"),
-    range: _("Limited"),
-  };
-
-  return labels[value];
-}
-
-function CustomSizeOptions(): React.ReactNode {
-  return (
-    <SelectList aria-label={_("Maximum size options")}>
-      <SelectOption
-        value="fixed"
-        description={_("The partition is created exactly with the given size")}
-      >
-        <CustomSizeOptionLabel value="fixed" />
-      </SelectOption>
-      <SelectOption
-        value="range"
-        description={_("The partition can grow until a given limit size")}
-      >
-        <CustomSizeOptionLabel value="range" />
-      </SelectOption>
-      <SelectOption
-        value="unlimited"
-        description={_("The partition can grow to use all the contiguous free space")}
-      >
-        <CustomSizeOptionLabel value="unlimited" />
-      </SelectOption>
-    </SelectList>
-  );
-}
-
-type CustomSizeProps = {
-  value: FormValue;
-  onChange: (size: SizeRange) => void;
-};
-
-function CustomSize({ value, onChange }: CustomSizeProps) {
-  const initialOption = (): CustomSizeValue => {
-    if (value.minSize === NO_VALUE) return "fixed";
-    if (value.minSize === value.maxSize) return "fixed";
-    if (value.maxSize === NO_VALUE) return "unlimited";
-    return "range";
-  };
-
-  const [option, setOption] = React.useState<CustomSizeValue>(initialOption());
-  const { max: solvedMaxSize } = useSolvedSizes(value);
-  const { getVisibleError } = useErrors(value);
-
-  const error = getVisibleError("customSize");
-
-  const changeMinSize = (min: string) => {
-    const max = option === "fixed" ? min : value.maxSize;
-    onChange({ min, max });
-  };
-
-  const changeMaxSize = (max: string) => {
-    onChange({ min: value.minSize, max });
-  };
-
-  const changeOption = (v: CustomSizeValue) => {
-    setOption(v);
-
-    const min = value.minSize;
-    if (v === "fixed") onChange({ min, max: min });
-    if (v === "unlimited") onChange({ min, max: NO_VALUE });
-    if (v === "range") {
-      const max = solvedMaxSize || NO_VALUE;
-      onChange({ min, max });
-    }
-  };
-
-  return (
-    <Stack hasGutter>
-      <Stack>
-        <SubtleContent>
-          {_(
-            "Sizes must be entered as a numbers followed by a unit of \
-              the form GiB (power of 2) or GB (power of 10).",
-          )}
-        </SubtleContent>
-      </Stack>
-      <FormGroup>
-        <Flex>
-          <FlexItem>
-            <FormGroup fieldId="minSizeValue" label={_("Minimum")}>
-              <TextInput
-                id="minSizeValue"
-                className="w-14ch"
-                value={value.minSize}
-                aria-label={_("Minimum size value")}
-                onChange={(_, v) => changeMinSize(v)}
-              />
-            </FormGroup>
-          </FlexItem>
-          <FlexItem>
-            <FormGroup fieldId="maxSize" label={_("Maximum")}>
-              <Split hasGutter>
-                <Select
-                  id="maxSize"
-                  value={option}
-                  label={<CustomSizeOptionLabel value={option} />}
-                  onChange={changeOption}
-                  toggleName={_("Maximum size mode")}
-                >
-                  <CustomSizeOptions />
-                </Select>
-                {option === "range" && (
-                  <TextInput
-                    id="maxSizeValue"
-                    className="w-14ch"
-                    value={value.maxSize}
-                    aria-label={_("Maximum size value")}
-                    onChange={(_, v) => changeMaxSize(v)}
-                  />
-                )}
-              </Split>
-            </FormGroup>
-          </FlexItem>
-        </Flex>
-        <FormHelperText>
-          <HelperText>
-            {error && <HelperTextItem variant="error">{error.message}</HelperTextItem>}
-          </HelperText>
-        </FormHelperText>
-      </FormGroup>
-    </Stack>
-  );
-}
-
 /**
  * @fixme This component has to be adapted to use the new hooks from ~/hooks/storage/ instead of the
  * deprecated hooks from ~/queries/storage/config-model.
  */
-export default function PartitionPage() {
+const PartitionPageForm = () => {
   const navigate = useNavigate();
   const headingId = useId();
   const [mountPoint, setMountPoint] = React.useState(NO_VALUE);
@@ -905,6 +710,7 @@ export default function PartitionPage() {
   const { errors, getVisibleError } = useErrors(value);
 
   const device = useModelDevice();
+
   const unusedMountPoints = useUnusedMountPoints();
 
   const addPartition = useAddPartition();
@@ -972,9 +778,15 @@ export default function PartitionPage() {
     setFilesystem(value);
   };
 
-  const changeSize = ({ min, max }) => {
-    if (min !== undefined) setMinSize(min);
-    if (max !== undefined) setMaxSize(max);
+  const changeSizeMode = (mode: SizeMode, size: SizeRange) => {
+    setSizeOption(mode);
+    setMinSize(size.min);
+    if (mode === "custom" && initialValue?.sizeOption === "auto" && size.min !== size.max) {
+      // Automatically stop using a range of sizes when a range is used by default.
+      setMaxSize("");
+    } else {
+      setMaxSize(size.max);
+    }
   };
 
   const onSubmit = () => {
@@ -991,6 +803,8 @@ export default function PartitionPage() {
   const mountPointError = getVisibleError("mountPoint");
   const usedMountPt = mountPointError ? NO_VALUE : mountPoint;
   const showLabel = filesystem !== NO_VALUE && filesystem !== REUSE_FILESYSTEM;
+  const sizeMode: SizeMode = sizeOption === "" ? "auto" : sizeOption;
+  const sizeRange: SizeRange = { min: minSize, max: maxSize };
 
   return (
     <Page id="partitionPage">
@@ -1001,6 +815,7 @@ export default function PartitionPage() {
       </Page.Header>
 
       <Page.Content>
+        <AlertOutOfSync scope={"Storage"} />
         <Form id="partitionForm" aria-labelledby={headingId} onSubmit={onSubmit}>
           <Stack hasGutter>
             <FormGroup fieldId="mountPoint" label={_("Mount point")}>
@@ -1031,7 +846,10 @@ export default function PartitionPage() {
               </Flex>
               <FormHelperText>
                 <HelperText>
-                  <HelperTextItem variant={mountPointError ? "error" : "default"}>
+                  <HelperTextItem
+                    variant={mountPointError ? "error" : "default"}
+                    screenReaderText=""
+                  >
                     {!mountPointError && _("Select or enter a mount point")}
                     {mountPointError?.message}
                   </HelperTextItem>
@@ -1064,33 +882,27 @@ export default function PartitionPage() {
                 )}
               </Flex>
             </FormGroup>
-            <FormGroup fieldId="size" label={_("Size")}>
-              <Flex
-                direction={{ default: "column" }}
-                alignItems={{ default: "alignItemsFlexStart" }}
-                gap={{ default: "gapMd" }}
-              >
-                <Select
-                  id="size"
-                  value={sizeOption}
-                  label={
-                    <SizeOptionLabel value={sizeOption} mountPoint={usedMountPt} target={target} />
-                  }
-                  onChange={(v: SizeOptionValue) => setSizeOption(v)}
-                  isDisabled={usedMountPt === NO_VALUE}
-                >
-                  <SizeOptions mountPoint={usedMountPt} target={target} />
-                </Select>
-                <NestedContent margin="mxMd" aria-live="polite">
-                  {target === NEW_PARTITION && sizeOption === "auto" && (
-                    <AutoSizeInfo value={value} />
-                  )}
-                  {target === NEW_PARTITION && sizeOption === "custom" && (
-                    <CustomSize value={value} onChange={changeSize} />
-                  )}
-                </NestedContent>
-              </Flex>
-            </FormGroup>
+            {target === NEW_PARTITION && (
+              <FormGroup fieldId="sizeMode" label={_("Size mode")}>
+                {usedMountPt === NO_VALUE && (
+                  <Select
+                    id="sizeMode"
+                    value={NO_VALUE}
+                    label={_("Waiting for a mount point")}
+                    isDisabled
+                  />
+                )}
+                {usedMountPt !== NO_VALUE && (
+                  <SizeModeSelect
+                    id="sizeMode"
+                    value={sizeMode}
+                    size={sizeRange}
+                    onChange={changeSizeMode}
+                    automaticHelp={<AutoSizeInfo value={value} />}
+                  />
+                )}
+              </FormGroup>
+            )}
             <ActionGroup>
               <Page.Submit isDisabled={!isFormValid} form="partitionForm" />
               <Page.Cancel />
@@ -1099,5 +911,15 @@ export default function PartitionPage() {
         </Form>
       </Page.Content>
     </Page>
+  );
+};
+
+export default function PartitionPage() {
+  const device = useModelDevice();
+
+  return isUndefined(device) ? (
+    <ResourceNotFound linkText={_("Go to storage page")} linkPath={STORAGE.root} />
+  ) : (
+    <PartitionPageForm />
   );
 }

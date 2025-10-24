@@ -76,10 +76,13 @@ if [ -f (\$root)/boot/grub2/themes/$theme/theme.txt ];then
 fi
 terminal_input console
 terminal_output gfxterm
+menuentry "Boot from Hard Disk" --class opensuse --class gnu-linux --class gnu --class os {
+  exit
+}
 menuentry "Install $label" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
-    linux (\$root)/boot/aarch64/loader/linux \${extra_cmdline} \${isoboot}
+    linux (\$root)/boot/aarch64/loader/linux \${extra_cmdline} \${isoboot} splash=silent
     echo Loading initrd...
     initrd (\$root)/boot/aarch64/loader/initrd
 }
@@ -103,9 +106,6 @@ menuentry "Rescue System" --class os --unrestricted {
     linux (\$root)/boot/aarch64/loader/linux \${extra_cmdline} \${isoboot} $RESCUE_SYSTEM_BOOT_SETTINGS
     echo Loading initrd...
     initrd (\$root)/boot/aarch64/loader/initrd
-}
-menuentry "Boot from Hard Disk" --class opensuse --class gnu-linux --class gnu --class os {
-  exit
 }
 if [ -f "/.snapshots/grub-snapshot.cfg" ]; then
     source "/.snapshots/grub-snapshot.cfg"

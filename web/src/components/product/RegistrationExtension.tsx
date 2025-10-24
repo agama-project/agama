@@ -30,7 +30,6 @@ import {
   FormGroup,
   Label,
   Title,
-  Stack,
 } from "@patternfly/react-core";
 import { AddonInfo, RegisteredAddonInfo } from "~/types/software";
 import { useRegisteredAddons, useRegisterAddonMutation } from "~/queries/software";
@@ -44,11 +43,16 @@ import RegistrationCodeInput from "./RegistrationCodeInput";
  * @param param0
  * @returns
  */
-const RegisteredExtensionStatus = ({ registrationCode }: { registrationCode: string }) => {
+const RegisteredExtensionStatus = ({ registrationCode }: { registrationCode: string | null }) => {
   const [showCode, setShowCode] = useState(false);
 
   // TRANSLATORS: %s will be replaced by the registration key.
   const [msg1, msg2] = _("The extension has been registered with key %s.").split("%s");
+
+  // free extension or registered via RMT
+  if (registrationCode === null) {
+    return <span>{_("The extension was registered without any registration code.")}</span>;
+  }
 
   return (
     <span>
@@ -92,6 +96,11 @@ export default function RegistrationExtension({
 
   const isRegistered = !!registrationData;
 
+  const id = `${extension.id}-${extension.version}`;
+  const formId = `register-form-${id}`;
+  const inputId = `input-reg-code-${id}`;
+  const buttonId = `register-button-${id}`;
+
   const submit = async (e: React.SyntheticEvent | undefined) => {
     e?.preventDefault();
     setLoading(true);
@@ -112,7 +121,7 @@ export default function RegistrationExtension({
   };
 
   return (
-    <Stack hasGutter>
+    <Content>
       {/* remove the "(BETA)" suffix, we display a Beta label instead */}
       <Title headingLevel="h4">
         {extension.label.replace(/\s*\(beta\)$/i, "")}{" "}
@@ -136,24 +145,18 @@ export default function RegistrationExtension({
           <RegisteredExtensionStatus registrationCode={registrationData.registrationCode} />
         )}
         {!isRegistered && extension.available && !extension.free && (
-          <Form id={`register-form-${extension.id}-${extension.version}`} onSubmit={submit}>
+          <Form id={formId} onSubmit={submit}>
             {/* // TRANSLATORS: input field label */}
-            <FormGroup label={_("Registration code")}>
+            <FormGroup fieldId={inputId} label={_("Registration code")}>
               <RegistrationCodeInput
                 isDisabled={loading}
-                id={`input-reg-code-${extension.id}-${extension.version}`}
+                id={inputId}
                 value={regCode}
                 onChange={(_, v) => setRegCode(v)}
               />
             </FormGroup>
             <ActionGroup>
-              <Button
-                id={`register-button-${extension.id}-${extension.version}`}
-                variant="primary"
-                type="submit"
-                isInline
-                isLoading={loading}
-              >
+              <Button id={buttonId} variant="primary" type="submit" isInline isLoading={loading}>
                 {/* TRANSLATORS: button label */}
                 {_("Register")}
               </Button>
@@ -184,6 +187,6 @@ export default function RegistrationExtension({
           </Alert>
         )}
       </Content>
-    </Stack>
+    </Content>
   );
 }

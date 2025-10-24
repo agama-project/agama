@@ -20,6 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
+import { noop } from "radashi";
+
 type RemoveFn = () => void;
 type BaseHandlerFn = () => void;
 export type EventHandlerFn = (event) => void;
@@ -39,6 +41,20 @@ const SocketStates = Object.freeze({
 const MAX_ATTEMPTS = 15;
 const ATTEMPT_INTERVAL = 1000;
 
+// WebSocket client interface
+//
+// It defines the interface a WebSocket client should adhere to.
+// The main point is to make it possible to replace the native
+// WebSocket implementation with something else in the tests.
+interface WSClientIface {
+  isConnected: () => boolean;
+  isRecoverable: () => boolean;
+  onOpen: (func: BaseHandlerFn) => RemoveFn;
+  onError: (func: ErrorHandlerFn) => RemoveFn;
+  onClose: (func: BaseHandlerFn) => RemoveFn;
+  onEvent: (func: EventHandlerFn) => RemoveFn;
+}
+
 /**
  * Agama WebSocket client.
  *
@@ -46,7 +62,7 @@ const ATTEMPT_INTERVAL = 1000;
  * This class is not expected to be used directly, but through the
  * HTTPClient API.
  */
-class WSClient {
+class WSClient implements WSClientIface {
   url: string;
 
   client: WebSocket;
@@ -106,6 +122,7 @@ class WSClient {
     };
 
     client.onmessage = (event) => {
+      console.debug("Event received", event);
       this.dispatchEvent(event);
     };
 
@@ -229,4 +246,32 @@ class WSClient {
   }
 }
 
-export { WSClient };
+// WebSocket client to be used in the tests.
+class DummyWSClient implements WSClientIface {
+  isConnected() {
+    return true;
+  }
+
+  isRecoverable() {
+    return true;
+  }
+
+  onOpen(): RemoveFn {
+    return noop;
+  }
+
+  onError(): RemoveFn {
+    return noop;
+  }
+
+  onClose(): RemoveFn {
+    return noop;
+  }
+
+  onEvent(): RemoveFn {
+    return noop;
+  }
+}
+
+export { WSClient, DummyWSClient };
+export type { WSClientIface };

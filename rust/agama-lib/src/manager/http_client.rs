@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -24,8 +24,8 @@ use crate::{
     manager::InstallerStatus,
 };
 use reqwest::header::CONTENT_ENCODING;
-use std::io::Cursor;
 use std::path::{Path, PathBuf};
+use std::{fs, io::Cursor, os::unix::fs::OpenOptionsExt};
 
 use super::FinishMethod;
 
@@ -50,6 +50,13 @@ impl ManagerHTTPClient {
         // BaseHTTPClient did not anticipate POST without request body
         // so we pass () which is rendered as `null`
         Ok(self.client.post_void("/manager/probe_sync", &()).await?)
+    }
+
+    /// Starts a "reprobing".
+    pub async fn reprobe(&self) -> Result<(), ManagerHTTPClientError> {
+        // BaseHTTPClient did not anticipate POST without request body
+        // so we pass () which is rendered as `null`
+        Ok(self.client.post_void("/manager/reprobe_sync", &()).await?)
     }
 
     /// Starts the installation.
@@ -86,11 +93,18 @@ impl ManagerHTTPClient {
         })?);
 
         // 3) store response's binary content (logs) in a file
-        let mut file = std::fs::File::create(destination.as_path()).map_err(|_| {
-            ManagerHTTPClientError::CannotGenerateLogs(String::from(
-                "Cannot store received response",
-            ))
-        })?;
+        let mut file = fs::OpenOptions::new()
+            .create(true)
+            .truncate(true)
+            .write(true)
+            .mode(0o600)
+            .open(&destination)
+            .map_err(|_| {
+                ManagerHTTPClientError::CannotGenerateLogs(String::from(
+                    "Cannot store received response",
+                ))
+            })?;
+
         let mut content = Cursor::new(response.bytes().await.map_err(BaseHTTPClientError::HTTP)?);
 
         std::io::copy(&mut content, &mut file).map_err(|_| {

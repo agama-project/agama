@@ -22,6 +22,7 @@
 
 import { _, n_, formatList } from "~/i18n";
 import { apiModel } from "~/api/storage/types";
+import { Drive } from "~/types/storage/model";
 import { SpacePolicy, SPACE_POLICIES, baseName, formattedPath } from "~/components/storage/utils";
 import { sprintf } from "sprintf-js";
 
@@ -62,19 +63,35 @@ const resizeTextFor = (partitions) => {
   return _("Some partitions may be shrunk");
 };
 
+const summaryForSpacePolicy = (drive: Drive): string | undefined => {
+  const { isBoot, isTargetDevice, isAddingPartitions, isReusingPartitions, spacePolicy } = drive;
+
+  switch (spacePolicy) {
+    case "delete":
+      if (isReusingPartitions) return _("All content not configured to be mounted will be deleted");
+      return _("All content will be deleted");
+    case "resize":
+      if (isReusingPartitions && !isBoot && !isTargetDevice && !isAddingPartitions)
+        return _("Reused partitions will not be shrunk");
+      return _("Some existing partitions may be shrunk");
+    case "keep":
+      return _("Current partitions will be kept");
+    default:
+      return undefined;
+  }
+};
+
 /**
- * FIXME: right now, this considers only the case in which the drive is going to be partitioned. If
- * it's directly used (as LVM PV, as MD member, to host a filesystem...) the content wil be deleted
- * anyways. That must be properly stated.
+ * This considers only the case in which the drive contains partitions initially and will contain
+ * partitions after installation.
  *
  * FIXME: the case with two sentences looks a bit weird. But trying to summarize everything in one
  * sentence was too hard.
  */
-const contentActionsDescription = (drive: apiModel.Drive): string => {
-  const policyLabel = spacePolicyEntry(drive).summaryLabel;
+const contentActionsSummary = (drive: Drive): string => {
+  const policyLabel = summaryForSpacePolicy(drive);
 
-  // eslint-disable-next-line agama-i18n/string-literals
-  if (policyLabel) return _(policyLabel);
+  if (policyLabel) return policyLabel;
 
   const partitions = drive.partitions.filter((p) => p.name);
   const deleteText = deleteTextFor(partitions);
@@ -90,22 +107,58 @@ const contentActionsDescription = (drive: apiModel.Drive): string => {
   if (deleteText) return deleteText;
   if (resizeText) return resizeText;
 
-  // eslint-disable-next-line agama-i18n/string-literals
-  return _(SPACE_POLICIES.find((p) => p.id === "keep").summaryLabel);
+  // This scenario is unlikely, as the backend is expected to enforce the "keep"
+  // space policy when all partitions in a custom policy are set to "keep".
+  // However, to be safe, we return the same summary as the "keep" policy.
+  return _("Current partitions will be kept");
 };
 
-/**
- * FIXME: right now, this considers only the case in which the drive is going to host some formatted
- * partitions.
- */
+const contentActionsDescription = (drive: Drive, policyId: string | undefined): string => {
+  const { isBoot, isTargetDevice, isAddingPartitions, isReusingPartitions } = drive;
+  if (!policyId) policyId = drive.spacePolicy;
+
+  switch (policyId) {
+    case "delete":
+      if (isReusingPartitions)
+        return _("Partitions that are not reused will be removed and that data will be lost.");
+      return _("Any existing partition will be removed and all data in the disk will be lost.");
+    case "resize":
+      if (isReusingPartitions) {
+        if (isBoot || isTargetDevice || isAddingPartitions)
+          return _("Partitions that are not reused will be resized as needed.");
+
+        return _("Partitions that are not reused would be resized if needed.");
+      }
+      return _("The data is kept, but the current partitions will be resized as needed.");
+    case "keep":
+      if (isReusingPartitions) {
+        if (isBoot || isTargetDevice || isAddingPartitions)
+          return _("Only reused partitions and space not assigned to any partition will be used.");
+
+        return _("Only reused partitions will be used.");
+      }
+      return _("The data is kept. Only the space not assigned to any partition will be used.");
+    default:
+      return _("Select what to do with each partition.");
+  }
+};
+
 const contentDescription = (drive: apiModel.Drive): string => {
   const newPartitions = drive.partitions.filter((p) => !p.name);
   const reusedPartitions = drive.partitions.filter((p) => p.name && p.mountPath);
 
+  if (drive.filesystem) {
+    if (drive.mountPath) {
+      return sprintf(_("The whole device will be used for %s"), formattedPath(drive.mountPath));
+    }
+
+    // I don't think this can happen, maybe when loading a configuration not created with the UI
+    return _("A file system will be used for the whole device");
+  }
+
   if (newPartitions.length === 0) {
     if (reusedPartitions.length === 0) {
-      // fixme: this is one of the several cases we need to handle better
-      return "";
+      return _("No additional partitions will be created");
     }
 
     const mountPaths = reusedPartitions.map((p) => formattedPath(p.mountPath));
@@ -141,4 +194,10 @@ const contentDescription = (drive: apiModel.Drive): string => {
   return sprintf(_("Partitions will be used and created for %s"), formatList(mountPaths));
 };
 
-export { label, spacePolicyEntry, contentActionsDescription, contentDescription };
+export {
+  label,
+  spacePolicyEntry,
+  contentActionsSummary,
+  contentActionsDescription,
+  contentDescription,
+};

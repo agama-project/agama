@@ -30,6 +30,7 @@ const L10N = {
 const NETWORK = {
   root: "/network",
   editConnection: "/network/connections/:id/edit",
+  editBindingSettings: "/network/connections/:id/binding/edit",
   wifiNetwork: "/network/wifi_networks/:ssid",
   wiredConnection: "/network/wired_connection/:id",
 };
@@ -74,11 +75,14 @@ const SOFTWARE = {
 
 const STORAGE = {
   root: "/storage",
+  progress: "/storage/progress",
   editBootDevice: "/storage/boot-device/edit",
   editEncryption: "/storage/encryption/edit",
   editSpacePolicy: "/storage/:list/:listIndex/space-policy/edit",
+  formatDevice: "/storage/:list/:listIndex/format",
   addPartition: "/storage/:list/:listIndex/partitions/add",
   editPartition: "/storage/:list/:listIndex/partitions/:partitionId/edit",
+  selectDevice: "/storage/devices/select",
   volumeGroup: {
     add: "/storage/volume-groups/add",
     edit: "/storage/volume-groups/:id/edit",
@@ -101,12 +105,12 @@ const HOSTNAME = {
 
 /**
  * A set of routes that do not directly allow fine-tuning the installation
- * settings for the selected product,  but rather serve special purposes, such
- * as authentication (e.g., login), product selection change,  or transitions
+ * settings for the selected product, but rather serve special purposes, such
+ * as authentication (e.g., login), product selection change, or transitions
  * between states (e.g., progress, error, success).
  *
- * These routes are defined separately to adjust the UI accordingly,  ensuring
- * that certain core elements, like the Install button,  are not displayed when
+ * These routes are defined separately to adjust the UI accordingly, ensuring
+ * that certain core elements, like the Install button, are not displayed when
  * visiting them.
  */
 const SIDE_PATHS = [
@@ -116,6 +120,7 @@ const SIDE_PATHS = [
   ROOT.installationProgress,
   ROOT.installationFinished,
   ROOT.installationExit,
+  STORAGE.progress,
 ];
 
 export {

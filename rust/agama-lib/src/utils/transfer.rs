@@ -40,7 +40,7 @@
 //!
 //! ```no_run
 //! use agama_lib::utils::Transfer;
-//! Transfer::get("label://OEMDRV/autoinst.xml", &mut std::io::stdout()).unwrap();
+//! Transfer::get("label://OEMDRV/autoinst.xml", &mut std::io::stdout(), false).unwrap();
 //! ````
 
 use std::io::Write;
@@ -56,23 +56,23 @@ use handlers::{DeviceHandler, GenericHandler, HdHandler, LabelHandler};
 
 #[derive(Error, Debug)]
 pub enum TransferError {
-    #[error("Could not retrieve the file: {0}")]
+    #[error("Could not retrieve the file")]
     CurlError(#[from] curl::Error),
-    #[error("Could not retrieve '{0}': {1}")]
+    #[error("Could not retrieve {0}")]
     CurlTransferError(String, #[source] curl::Error),
-    #[error("Could not parse the URL: {0}")]
+    #[error("Could not parse the URL")]
     ParseError(#[from] url::ParseError),
-    #[error("File not found: {0}")]
+    #[error("File not found {0}")]
     FileNotFound(String),
     #[error("IO error: {0}")]
     IO(#[from] std::io::Error),
     #[error("Could not mount the file system {0}")]
     FileSystemMount(String),
-    #[error("Missing file path: {0}")]
+    #[error("Missing file path {0}")]
     MissingPath(Url),
-    #[error("Missing device: {0}")]
+    #[error("Missing device {0}")]
     MissingDevice(Url),
-    #[error("Missing file system label: {0}")]
+    #[error("Missing file system label {0}")]
     MissingLabel(Url),
 }
 pub type TransferResult<T> = Result<T, TransferError>;
@@ -85,13 +85,14 @@ impl Transfer {
     ///
     /// * `url`: URL to get the data from.
     /// * `out_fd`: where to write the data.
-    pub fn get(url: &str, out_fd: &mut impl Write) -> TransferResult<()> {
+    /// * `insecure`: ignore SSL problems in HTTPS downloads.
+    pub fn get(url: &str, out_fd: &mut impl Write, insecure: bool) -> TransferResult<()> {
         let url = Url::parse(url)?;
         match url.scheme() {
             "device" | "usb" => DeviceHandler::default().get(url, out_fd),
             "label" => LabelHandler::default().get(url, out_fd),
             "cd" | "dvd" | "hd" => HdHandler::default().get(url, out_fd),
-            _ => GenericHandler::default().get(url, out_fd),
+            _ => GenericHandler::default().get(url, out_fd, insecure),
         }
     }
 }

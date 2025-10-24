@@ -1,5 +1,5 @@
-id: Leap_16.0
-name: Leap 16.0 Beta
+id: openSUSE_Leap
+name: Leap 16.0
 # ------------------------------------------------------------------------------
 # WARNING: When changing the product description delete the translations located
 # at the at translations/description key below to avoid using obsolete
@@ -17,20 +17,38 @@ translations:
       Enterprise Serveru.
     de: Die neueste Version einer Community-Distribution, die auf dem aktuellen SUSE
       Linux Enterprise Server basiert.
-    es: La última versión de una distribución comunitaria basada en el último SUSE
-      Linux Enterprise Server.
+    es: La última versión de una distribución de la comunidad basada en la última
+      versión de SUSE Linux Enterprise Server.
+    fi: Uusin versio yhteisöjakelusta, joka perustaa viimeisimään SUSE Linux
+      Enterprise Server -tuotteeseen.
+    fr: Dernière version d'une distribution communautaire basée sur la dernière
+      version de SUSE Linux Enterprise Server.
+    he: גרסת הקהילה העדכנית ביותר המבוססת על SUSE Linux Enterprise Server.
+    id: Versi terbaru dari distribusi komunitas yang berbasiskan SUSE Linux
+      Enterprise Server terbaru.
+    it: L'ultima versione di una distribuzione comunitaria basata su SUSE Linux
+      Enterprise Server più recente.
     ja: 最新のSUSE Linux Enterprise Server をベースにした、コミュニティディストリビューションの最新版です。
+    kab: Lqem aneggaru n uzuzer n temɣiwant yebnan ɣef uqeddac aneggaru n SUSE Linux
+      Enterprise Server.
     nb_NO: Leap 16.0 er den nyeste versjonen av den fellesskapte distribusjon basert
       på den nyeste SUSE Linux Enterprise Server.
+    nl: De nieuwste versie van een community distributie gebaseerd op de laatse SUSE
+      Linux Enterprise Server.
+    pl: Najnowsza wersja rozwijanej przez społeczność dystrybucji opartej na
+      aktualnym systemie SUSE Linux Enterprise Server.
     pt_BR: A versão mais recente de uma distribuição comunitária baseada no mais
       recente SUSE Linux Enterprise Server.
-    ru: Leap 16.0 - это последняя версия дистрибутива от сообщества, основанного на
-      последней версии SUSE Linux Enterprise Server.
+    ru: Последняя версия дистрибутива от сообщества, основанного на новейшей версии
+      SUSE Linux Enterprise Server.
     sv: Den senaste versionen av en gemenskapsdistribution baserad på den senaste
       SUSE Linux Enterprise Server.
     tr: En son SUSE Linux Enterprise Server'ı temel alan bir topluluk dağıtımının en
       son sürümü.
-    zh_Hans: Leap 16.0 是基于 SUSE Linux Enterprise Server 构建的社区发行版的最新版本。
+    uk: Остання версія дистрибутива від спільноти, заснованого на останній версії
+      SUSE Linux Enterprise Server.
+    zh_CN: 基于 SUSE Linux Enterprise Server 构建的社区发行版的最新版本。
+    zh_TW: 根據最新 SUSE Linux Enterprise Server 打造的最新社群版發行版本。
 software:
   installation_repositories:
     - url: https://download.opensuse.org/distribution/leap/16.0/repo/oss/$basearch
@@ -49,11 +67,13 @@ software:
   user_patterns:
     - gnome
     - kde
+    - xfce_wayland
     - multimedia
     - office
     - cockpit
     - fips
-    - selinux
+    - name: selinux
+      selected: true
     - documentation
     - sw_management
     - container_runtime_podman
@@ -71,7 +91,7 @@ software:
     - openSUSE-repos-Leap
     - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
   optional_packages: null
-  base_product: openSUSE
+  base_product: Leap
 
 security:
   lsm: selinux
@@ -82,7 +102,6 @@ security:
     selinux:
       patterns:
         - selinux
-      policy: enforcing
     none:
       patterns: null
 

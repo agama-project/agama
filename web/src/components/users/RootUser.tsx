@@ -29,8 +29,10 @@ import {
   DescriptionListGroup,
   DescriptionListTerm,
   Truncate,
+  Stack,
 } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
+import PasswordCheck from "~/components/users/PasswordCheck";
 import { useRootUser, useRootUserChanges } from "~/queries/users";
 import { USER } from "~/routes/paths";
 import { isEmpty } from "radashi";
@@ -56,20 +58,23 @@ export default function RootUser() {
     >
       <Card isCompact isPlain>
         <CardBody>
-          <DescriptionList isHorizontal isFluid displaySize="lg" isCompact>
-            <DescriptionListGroup>
-              <DescriptionListTerm>{_("Password")}</DescriptionListTerm>
-              <DescriptionListDescription>
-                {password ? _("Defined (hidden)") : _("Not defined")}
-              </DescriptionListDescription>
-            </DescriptionListGroup>
-            <DescriptionListGroup>
-              <DescriptionListTerm>{_("Public SSH Key")}</DescriptionListTerm>
-              <DescriptionListDescription>
-                {isEmpty(sshPublicKey) ? _("Not defined") : <SSHKeyLabel sshKey={sshPublicKey} />}
-              </DescriptionListDescription>
-            </DescriptionListGroup>
-          </DescriptionList>
+          <Stack hasGutter>
+            <DescriptionList isHorizontal isFluid displaySize="lg" isCompact>
+              <DescriptionListGroup>
+                <DescriptionListTerm>{_("Password")}</DescriptionListTerm>
+                <DescriptionListDescription>
+                  {password ? _("Defined (hidden)") : _("Not defined")}
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+              <DescriptionListGroup>
+                <DescriptionListTerm>{_("Public SSH Key")}</DescriptionListTerm>
+                <DescriptionListDescription>
+                  {isEmpty(sshPublicKey) ? _("Not defined") : <SSHKeyLabel sshKey={sshPublicKey} />}
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+            </DescriptionList>
+            {password && <PasswordCheck password={password} />}
+          </Stack>
         </CardBody>
       </Card>
     </Page.Section>

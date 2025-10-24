@@ -15,6 +15,10 @@ export default {
   "%1$s at %2$s": [
     "%1$s på %2$s"
   ],
+  "%1$s will be created as a partition at %2$s": [
+    "%1$s kommer att skapas som en partition på %2$s",
+    "%1$s kommer att skapa partitioner på %2$s"
+  ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s kommer fortfarande att innehålla LVM-gruppen '%2$s' och eventuell partition som behövs för att starta systemet"
   ],
@@ -39,29 +43,44 @@ export default {
   "%s logo": [
     "%s logotyp"
   ],
+  "%s will be created as a logical volume": [
+    "%s kommer att skapas som en logisk volym",
+    "%s kommer att skapas som flera logiska volymer"
+  ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s kommer fortfarande att innehålla de konfigurerade LVM-grupperna och alla partitioner som behövs för att starta systemet"
   ],
   "%s with %d partitions": [
     "%s med %d partitioner"
   ],
-  "A %1$s of %2$s will be created for %3$s": [
-    "En %1$s av %2$s kommer att skapas för %3$s"
+  "A %1$s of %2$s will be created for %3$s if possible": [
+    "En %1$s av %2$s kommer att skapas för %3$s om möjligt"
   ],
-  "A %1$s of at least %2$s will be created for %3$s": [
-    "En %1$s på minst %2$s kommer att skapas för %3$s"
+  "A %1$s of at least %2$s will be created for %3$s if possible": [
+    "En %1$s på minst %2$s kommer att skapas för %3$s om möjligt"
   ],
-  "A %1$s with a size between %2$s and %3$s will be created for %4$s": [
-    "En %1$s med en storlek mellan %2$s och %3$s kommer att skapas för %4$s"
+  "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
+    "En %1$s med en storlek mellan %2$s och %3$s kommer att skapas för %4$s om möjligt"
+  ],
+  "A file system will be used for the whole device": [
+    "Ett filsystem kommer att användas för hela enheten"
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
     "En generisk minimistorlek av%1$s kommer att användas för den nya %2$s"
   ],
-  "A generic size of %s will be used for the new %2$s": [
-    "En generisk storlek av %s kommer att användas för den nya %2$s"
+  "A generic size of %1$s will be used for the new %2$s": [
+    "En generisk storlek av %1$s kommer att användas för den nya %2$s"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Ett generiskt storleksintervall mellan %1$s och %2$s kommer att användas för den nya %3$s"
+  ],
+  "A new partition will be created for %s": [
+    "En ny partition kommer att skapas för %s",
+    "Flera nya partitioner kommer att skapas för %s"
+  ],
+  "A new volume will be created for %s": [
+    "En ny volym kommer att skapas för %s",
+    "Nya volymer kommer att skapas för %s"
   ],
   "A partition may be deleted": [
     "En partition kan tas bort"
@@ -108,6 +127,9 @@ export default {
   "Add LVM volume group": [
     "Lägg till LVM volymgrupp"
   ],
+  "Add a partition or mount an existing one": [
+    "Lägg till en partition eller montera en befintlig"
+  ],
   "Add an address": [
     "Lägg till en adress"
   ],
@@ -144,6 +166,9 @@ export default {
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     "Alla konflikter har lösts, eller så har inga upptäckts. Du kan tryggt fortsätta med din installation."
   ],
+  "All content not configured to be mounted will be deleted": [
+    "Allt innehåll som inte är konfigurerat för montering kommer att raderas"
+  ],
   "All content will be deleted": [
     "Allt innehåll kommer att raderas"
   ],
@@ -153,17 +178,37 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Alla nätverksanslutningar som hanteras via det här gränssnittet är för närvarande inställda på att endast användas under installationen och kommer inte att kopieras till det installerade systemet"
   ],
+  "Allow growing": [
+    "Tillåt växande"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Förutom att definiera den första användaren kan autentiseringsmetoder för rootanvändaren konfigureras."
+  ],
+  "Already using all available devices": [
+    "Använder redan alla tillgängliga enheter"
   ],
   "Already using all available disks": [
     "Använder redan alla tillgängliga diskar"
   ],
+  "An existing partition will be used for %s": [
+    "En befintlig partition kommer att användas för %s",
+    "Flera befintliga partitioner kommer att användas för %s"
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Alla befintliga partitioner kommer att tas bort och all data på disken kommer att gå förlorad."
   ],
+  "Any partition needed to boot will be configured.": [
+    "Alla partitioner som behövs för uppstart kommer att konfigureras."
+  ],
   "Apply selected solution": [
     "Använd den valda lösningen"
+  ],
+  "Apply to the selected device": [
+    "Tillämpa på den valda enheten",
+    "Tillämpa på det %s valda enheterna"
+  ],
+  "Applying changes": [
+    "Tillämpar ändringar"
   ],
   "As a new partition on %s": [
     "Som en ny partition på %s"
@@ -210,14 +255,14 @@ export default {
   "Back": [
     "Bakåt"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of %2$s will be created for %3$s": [
-    "Baserat på mängden RAM i systemet kommer en $1s$ av %2$s att skapas för %3$s"
+  "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
+    "Baserat på mängden RAM i systemet, kommer en %1$s av %2$s att planeras för %3$s"
   ],
-  "Based on the amount of RAM in the system, a %1s$ of at least %2$s will be created for %3$s": [
-    "Baserat på mängden RAM i systemet kommer en %1s$ på minst %2$s att skapas för %3$s"
+  "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
+    "Baserat på mängden RAM i systemet, kommer en %1$s på minst %2$s att planeras för %3$s"
   ],
-  "Based on the amount of RAM in the system, a %1s$ with a size between %2$s and %3$s will be created for %4$s": [
-    "Baserat på mängden RAM i systemet kommer en %1s$ med en storlek mellan %2$s och %3$s att skapas för %4$s"
+  "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
+    "Baserat på mängden RAM i systemet, kommer en %1$s med en storlek mellan %2$s och %3$s att planeras för %4$s"
   ],
   "Bcachefs": [
     "Bcachefs"
@@ -231,8 +276,23 @@ export default {
   "Before starting the installation, you need to address the following problems:": [
     "Innan du startar installationen måste du åtgärda följande problem:"
   ],
+  "Below %s devices are offline and cannot be formatted.": [
+    "Nedanstående %s enheter är offline och kan inte formateras."
+  ],
   "Beta": [
     "Beta"
+  ],
+  "Bind to MAC address": [
+    "Bind till MAC-adress"
+  ],
+  "Bind to device name": [
+    "Bind till enhetsnamn"
+  ],
+  "Binding": [
+    "Bindning"
+  ],
+  "Binding settings for '%s'": [
+    "Bindningsinställningar för '%s'"
   ],
   "BitLocker": [
     "BitLocker"
@@ -246,9 +306,6 @@ export default {
   "Btrfs with snapshots": [
     "Btrfs med ögonblicksavbilder"
   ],
-  "Calculated automatically": [
-    "Beräknas automatiskt"
-  ],
   "Cancel": [
     "Avbryt"
   ],
@@ -258,7 +315,10 @@ export default {
   "Cannot connect to Agama server": [
     "Kan inte ansluta till Agama server"
   ],
-  "Cannot format all selected devices": [
+  "Cannot format %s": [
+    "Kan inte formatera %s"
+  ],
+  "Cannot format all the selected devices": [
     "Kan inte formatera alla valda enheter"
   ],
   "Change": [
@@ -279,6 +339,9 @@ export default {
   "Change display language and keyboard layout": [
     "Ändra visningsspråk och tangentbordslayout"
   ],
+  "Change filters and try again.": [
+    "Ändra filter och försök igen."
+  ],
   "Change keyboard": [
     "Ändra tangentbordslayout"
   ],
@@ -290,6 +353,9 @@ export default {
   ],
   "Change selection": [
     "Ändra val"
+  ],
+  "Change the file system or mount point": [
+    "Ändra filsystemet eller monteringspunkten"
   ],
   "Channel ID": [
     "Kanal-ID"
@@ -306,11 +372,23 @@ export default {
   "Choose a disk for placing the boot loader": [
     "Välj en disk för att placera uppstartsladdaren"
   ],
-  "Choose what to with current content": [
-    "Välj vad du vill ska hända med aktuellt innehåll"
+  "Choose device to bind by MAC": [
+    "Välj enhet att binda via MAC"
+  ],
+  "Choose device to bind by name": [
+    "Välj enhet att binda efter namn"
+  ],
+  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
+    "Välj hur anslutningen ska kopplas till en nätverksenhet. Detta hjälper till att styra vilken enhet anslutningen använder."
   ],
   "Clear": [
     "Rensa"
+  ],
+  "Clear all filters": [
+    "Rensa alla filter"
+  ],
+  "Clear input": [
+    "Rensa inmatning"
   ],
   "Clear selected mount point": [
     "Rensa vald monteringspunkt"
@@ -321,8 +399,14 @@ export default {
   "Collapse the list of planned actions": [
     "Dölj listan över planerade åtgärder"
   ],
+  "Configuration out of sync": [
+    "Konfigurationen är inte synkroniserad"
+  ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT).": [
     "Konfiguration läst från iSCSI Boot Firmware Table (iBFT)."
+  ],
+  "Configuration unreachable or invalid": [
+    "Konfigurationen är oåtkomlig eller ogiltig"
   ],
   "Configure DASD": [
     "Konfigurera DASD"
@@ -332,6 +416,9 @@ export default {
   ],
   "Configure LVM logical volume at %s volume group": [
     "Konfigurera LVM logisk volym på %s volymgrupp"
+  ],
+  "Configure device %s": [
+    "Konfigurera enhet %s"
   ],
   "Configure device menu": [
     "Konfigurera enhetsmeny"
@@ -357,6 +444,9 @@ export default {
   "Confirm Installation": [
     "Bekräfta Installation"
   ],
+  "Confirm that you really want to continue.": [
+    "Bekräfta att du verkligen vill fortsätta."
+  ],
   "Congratulations!": [
     "Grattis!"
   ],
@@ -375,17 +465,35 @@ export default {
   "Connected (%s)": [
     "Ansluten (%s)"
   ],
+  "Connected device": [
+    "Ansluten enhet"
+  ],
+  "Connected devices": [
+    "Anslutna enheter"
+  ],
+  "Connected devices tabs": [
+    "Anslutna enheter flikar"
+  ],
   "Connecting to %s": [
     "Ansluter till %s"
   ],
   "Connection details": [
     "Anslutningsdetaljer"
   ],
+  "Connection is available to all devices.": [
+    "Anslutning är tillgänglig för alla enheter."
+  ],
+  "Connection is bound to MAC address %s.": [
+    "Anslutningen är bunden till MAC-adress %s."
+  ],
+  "Connection is bound to device %s.": [
+    "Anslutningen är bunden till enhet %s."
+  ],
   "Connection not found or lost": [
     "Anslutningen hittades inte eller förlorades"
   ],
-  "Content will be kept": [
-    "Innehåll kommer att behållas"
+  "Content": [
+    "Innehåll"
   ],
   "Continue": [
     "Fortsätt"
@@ -423,6 +531,12 @@ export default {
   "Current %s": [
     "Nuvarande %s"
   ],
+  "Current content": [
+    "Nuvarande innehåll"
+  ],
+  "Current partitions will be kept": [
+    "Nuvarande partitioner kommer att behållas"
+  ],
   "Custom": [
     "Anpassad"
   ],
@@ -431,12 +545,6 @@ export default {
   ],
   "DASD %s": [
     "DASD %s"
-  ],
-  "DASD devices selection table": [
-    "DASD-enhetsvalstabell"
-  ],
-  "DASDs table section": [
-    "DASDs tabellsektion"
   ],
   "DIAG": [
     "DIAG"
@@ -456,11 +564,14 @@ export default {
   "Default file system for generic logical volumes": [
     "Standardfilsystem för generiska logiska volymer"
   ],
+  "Default file system for generic mount paths": [
+    "Standardfilsystem för generiska monteringssökvägar"
+  ],
   "Default file system for generic partitions": [
     "Standardfilsystem för generiska partitioner"
   ],
-  "Define a custom size or a range": [
-    "Definiera en anpassad storlek eller ett intervall"
+  "Define a custom size": [
+    "Definiera en anpassad storlek"
   ],
   "Define a new LVM on the disk": [
     "Definiera en ny LVM på disken"
@@ -486,11 +597,20 @@ export default {
   "Delete volume group": [
     "Ta bort volymgrupp"
   ],
+  "Description": [
+    "Beskrivning"
+  ],
+  "Destroy current data and format device as": [
+    "Förstör nuvarande data och formatera enheten som"
+  ],
   "Destroy current data and format partition as": [
     "Förstör nuvarande data och formatera partition som"
   ],
   "Details": [
     "Detaljer"
+  ],
+  "Details for %s": [
+    "Detaljer för %s"
   ],
   "Details will appear after the connection is successfully established.": [
     "Detaljer kommer att visas efter att anslutningen har upprättats."
@@ -501,11 +621,17 @@ export default {
   "Device %s menu": [
     "Enhets %s-meny"
   ],
+  "Device Selection": [
+    "Val av enhet"
+  ],
   "Device details": [
     "Enhetsdetaljer"
   ],
   "Discard": [
     "Kasta bort"
+  ],
+  "Discard the maximum size and continue with simplified configuration": [
+    "Kassera den maximala storleken och fortsätt med förenklad konfiguration"
   ],
   "Disconnected": [
     "Frånkopplad"
@@ -549,14 +675,23 @@ export default {
   "Edit %s": [
     "Redigera %s"
   ],
+  "Edit binding settings": [
+    "Redigera bindningsinställningar"
+  ],
   "Edit connection %s": [
     "Redigera anslutning %s"
+  ],
+  "Edit connection settings": [
+    "Redigera anslutningsinställningar"
   ],
   "Edit user": [
     "Redigera användare"
   ],
   "Edit volume group": [
     "Redigera volymgrupp"
+  ],
+  "Email": [
+    "E-post"
   ],
   "Empty LVM volume group %s": [
     "Tom LVM volymgrupp %s"
@@ -597,6 +732,9 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
+  "Example: https://myserver.com": [
+    "Exempel: https://minserver.com"
+  ],
   "Excellent signal": [
     "Utmärkt signal"
   ],
@@ -611,6 +749,14 @@ export default {
   ],
   "Ext4": [
     "Ext4"
+  ],
+  "Extend the installation beyond the currently selected device": [
+    "Utöka installationen bortom den valda enheten",
+    "Utöka installationen bortom det nuvarande valda %d enheterna"
+  ],
+  "Extend the installation beyond the currently selected disk": [
+    "Utöka installationen bortom den valda disken",
+    "Utöka installationen bortom det nuvarande valda %d diskarna"
   ],
   "Extensions": [
     "Tillägg"
@@ -630,23 +776,23 @@ export default {
   "File system label": [
     "Filsystem etikett"
   ],
+  "Filesystems": [
+    "Filsystem"
+  ],
   "Filter by description or keymap code": [
     "Filtrera efter beskrivning eller tangentbordskod"
   ],
   "Filter by language, territory or locale code": [
     "Filtrera efter språk, territorium eller lokalkod"
   ],
-  "Filter by max channel": [
-    "Filtrera efter maximal kanal"
-  ],
-  "Filter by min channel": [
-    "Filtrera efter minimum kanal"
-  ],
   "Filter by pattern title or description": [
     "Filtrera efter mönstertitel eller beskrivning"
   ],
   "Filter by territory, time zone code or UTC offset": [
     "Filtrera efter område, tidszonskod eller UTC-förskjutning"
+  ],
+  "Find space": [
+    "Hitta utrymme"
   ],
   "Find space in %s": [
     "Hitta utrymme på %s"
@@ -660,17 +806,38 @@ export default {
   "First user": [
     "Första användare"
   ],
+  "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
+    "För mer avancerade behov kan användare växla till den här helsidesversionen med dedikerade sökvägar, som ger mer utrymme för detaljerade vyer, ytterligare kolumner, filter och utökad funktionalitet."
+  ],
   "Format": [
     "Formatera"
   ],
+  "Format RAID %s": [
+    "Formatera RAID %s"
+  ],
+  "Format device %s": [
+    "Formatera enhet %s"
+  ],
+  "Format device as": [
+    "Formatera enhet som"
+  ],
+  "Format disk %s": [
+    "Formatera disk %s"
+  ],
   "Format logical volume as": [
     "Formatera logisk volym som"
+  ],
+  "Format now": [
+    "Formatera nu"
   ],
   "Format partition as": [
     "Formatera partition som"
   ],
   "Format selected devices?": [
     "Formatera valda enheter?"
+  ],
+  "Format the whole device or mount an existing file system": [
+    "Formatera hela enheten eller montera ett befintligt filsystem"
   ],
   "Formatted": [
     "Formaterad"
@@ -695,6 +862,9 @@ export default {
   ],
   "Go to network page": [
     "Gå till nätverkssidan"
+  ],
+  "Go to storage page": [
+    "Gå till lagringssidan"
   ],
   "Good signal": [
     "Bra signal"
@@ -744,9 +914,6 @@ export default {
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Om ett lokalt media användes för att köra det här installationsprogrammet, ta bort det före nästa uppstart."
-  ],
-  "If the unit is omitted, bytes (B) will be used. Greater units can be of               the form GiB (power of 2) or GB (power of 10).": [
-    "Om enheten utelämnas kommer byte (B) att användas. Större enheter kan vara av              formen av GiB (effekt av 2) eller GB (effekt av 10)."
   ],
   "If you continue, partitions on your hard disk will be modified according to the provided installation settings.": [
     "Om du fortsätter kommer partitionerna på din hårddisk att modifieras enligt de medföljande installationsinställningarna."
@@ -841,6 +1008,24 @@ export default {
   "Issuer": [
     "Utfärdare"
   ],
+  "It doesn't exist or can't be reached.": [
+    "Det existerar inte eller kan inte nås."
+  ],
+  "It is chosen for booting": [
+    "Den är vald för uppstart"
+  ],
+  "It is chosen for booting and for some LVM groups": [
+    "Den är vald för uppstart och för vissa LVM-grupper"
+  ],
+  "It is chosen for booting and for the LVM group '%s'": [
+    "Den är vald för uppstart och för LVM-gruppen '%s'"
+  ],
+  "It is chosen for some LVM groups": [
+    "Den är vald för vissa LVM-grupper"
+  ],
+  "It is chosen for the LVM group '%s'": [
+    "Den är vald för LVM-gruppen '%s'"
+  ],
   "It is not possible to allocate space for %s.": [
     "Det går inte att allokera utrymme för %s."
   ],
@@ -850,14 +1035,14 @@ export default {
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     "Det är inte möjligt att installera systemet med den aktuella konfigurationen. Justera inställningarna nedan."
   ],
+  "It is offline and must be activated before formatting it.": [
+    "Den är offline och måste aktiveras innan den formateras."
+  ],
   "It may take some time.": [
     "Det kan ta lite tid."
   ],
   "JFS": [
     "JFS"
-  ],
-  "Keep size of %s": [
-    "Behåll storleken på %s"
   ],
   "Keyboard": [
     "Tangentbord"
@@ -883,20 +1068,17 @@ export default {
   "Language and keyboard": [
     "Språk och tangentbordslayout"
   ],
-  "Let the installer propose a sensible range of sizes": [
-    "Låt installationsprogrammet föreslå ett vettigt utbud av storlekar"
-  ],
-  "License language": [
-    "Licens språk"
-  ],
-  "Limited": [
-    "Begränsad"
+  "Let the installer propose a sensible size": [
+    "Låt installationsprogrammet föreslå en vettig storlek"
   ],
   "Loading": [
     "Laddar"
   ],
   "Loading data...": [
     "Laddar data..."
+  ],
+  "Loading storage": [
+    "Laddar lagring"
   ],
   "Loading the installation repositories...": [
     "Laddar installationsförråd..."
@@ -916,8 +1098,8 @@ export default {
   "Logical volume name": [
     "Logisk volym namn"
   ],
-  "Logical volumes": [
-    "Logiska volymer"
+  "Logical volumes for %s": [
+    "Logiska volymer för %s"
   ],
   "Login": [
     "Logga in"
@@ -946,26 +1128,14 @@ export default {
   "Manual": [
     "Manuell"
   ],
-  "Maximum": [
-    "Maximal"
-  ],
-  "Maximum size mode": [
-    "Läget för maximal storlek"
-  ],
-  "Maximum size options": [
-    "Största storleksalternativ"
-  ],
-  "Maximum size value": [
-    "Maximalt storleksvärde"
+  "Max channel": [
+    "Maximal kanal"
   ],
   "MiB": [
     "MiB"
   ],
-  "Minimum": [
-    "Minst"
-  ],
-  "Minimum size value": [
-    "Minsta storleksvärde"
+  "Min channel": [
+    "Minimum kanal"
   ],
   "Mode": [
     "Läge"
@@ -988,8 +1158,25 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "Fler språk kan vara tillgängliga för den valda produkten på [Lokalisering] sidan"
   ],
+  "Moreover, the following partition will be created.": [
+    "Dessutom kommer följande partition att skapas.",
+    "Dessutom kommer följande partitioner att skapas."
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "Dessutom kommer följande partition att monteras.",
+    "Dessutom kommer följande partitioner att monteras."
+  ],
+  "Moreover, the following partitions will be created or mounted": [
+    "Dessutom kommer följande partitioner att skapas eller monteras"
+  ],
   "Mount Point": [
     "Monteringspunkt"
+  ],
+  "Mount RAID %s": [
+    "Montera RAID %s"
+  ],
+  "Mount disk %s": [
+    "Montera disk %s"
   ],
   "Mount point": [
     "Monteringspunkt"
@@ -1042,6 +1229,9 @@ export default {
   "No": [
     "Nej"
   ],
+  "No DASD devices were found in this machine.": [
+    "Inga DASD-enheter hittades i den här maskinen."
+  ],
   "No Wi-Fi networks were found": [
     "Inga Wi-Fi-nätverk hittades"
   ],
@@ -1057,8 +1247,14 @@ export default {
   "No content found": [
     "Inget innehåll hittades"
   ],
+  "No device is currently using this connection.": [
+    "Ingen enhet använder för närvarande den här anslutningen."
+  ],
   "No device selected yet": [
     "Ingen enhet vald ännu"
+  ],
+  "No devices available": [
+    "Inga enheter tillgängliga"
   ],
   "No devices configured yet": [
     "Inga enheter har konfigurerats ännu"
@@ -1108,8 +1304,14 @@ export default {
   "None of the time zones match the filter.": [
     "Inget av tidszonerna matchar filtret."
   ],
+  "None set": [
+    "Ingen inställd"
+  ],
   "Not available": [
     "Inte tillgänglig"
+  ],
+  "Not configured yet": [
+    "Inte konfigurerad ännu"
   ],
   "Not defined": [
     "Inte definerad"
@@ -1129,14 +1331,17 @@ export default {
   "Not supported (%s)": [
     "Stöds inte (%s)"
   ],
-  "Offline devices must be activated before formatting them. Please, unselect or activate the devices listed below and try it again": [
-    "Offlineenheter måste aktiveras innan de formateras. Vänligen avmarkera eller aktivera enheterna listade nedan och försök igen"
-  ],
   "On boot": [
     "Vid uppstart"
   ],
   "Only available if authentication by target is provided": [
     "Endast tillgängligt om autentisering via mål tillhandahålls"
+  ],
+  "Only reused partitions and space not assigned to any partition will be used.": [
+    "Endast återanvända partitioner och utrymme som inte är tilldelat någon partition kommer att användas."
+  ],
+  "Only reused partitions will be used.": [
+    "Endast återanvända partitioner kommer att användas."
   ],
   "Options toggle": [
     "Växla mellan alternativ"
@@ -1156,20 +1361,26 @@ export default {
   "Partition Info": [
     "Partitionsinformation"
   ],
-  "Partitions": [
-    "Partitioner"
-  ],
   "Partitions needed for booting will also be adapted": [
     "Partitioner som behövs för uppstart kommer också att anpassas"
   ],
   "Partitions needed for booting will remain at %s": [
     "Partitioner för uppstart kommer att finnas kvar på %s"
   ],
+  "Partitions that are not reused will be removed and that data will be lost.": [
+    "Partitioner som inte återanvänds kommer att tas bort och den informationen kommer att gå förlorad."
+  ],
+  "Partitions that are not reused will be resized as needed.": [
+    "Partitioner som inte återanvänds kommer att ändra storlek efter behov."
+  ],
+  "Partitions that are not reused would be resized if needed.": [
+    "Partitioner som inte återanvänds kan ändras i storlek vid behov."
+  ],
   "Partitions to boot will be allocated at the following device.": [
     "Partitioner för att uppstart kommer att tilldelas på följande enhet."
   ],
-  "Partitions to boot will be allocated at the installation disk (%s).": [
-    "Partitioner som ska startas upp kommer att tilldelas på installationsdisken (%s)."
+  "Partitions to boot will be allocated at the installation disk %s.": [
+    "Partitioner att starta kommer att allokeras på installationsdisken %s."
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Partitioner som ska startas upp kommer att tilldelas på installationsdisken."
@@ -1200,9 +1411,6 @@ export default {
   ],
   "Pending": [
     "Väntar"
-  ],
-  "Perform an action": [
-    "Utför en åtgärd"
   ],
   "PiB": [
     "PiB"
@@ -1246,6 +1454,9 @@ export default {
   "Provide email address": [
     "Ange en e-postadress"
   ],
+  "Provide registration code": [
+    "Ange registreringskod"
+  ],
   "Public SSH Key": [
     "Publik SSH nyckel"
   ],
@@ -1270,6 +1481,12 @@ export default {
   "Register": [
     "Registrera"
   ],
+  "Register using SUSE server": [
+    "Registrera genom att använda SUSE server"
+  ],
+  "Register using a custom registration server": [
+    "Registrera dig med en anpassad registreringsserver"
+  ],
   "Registration": [
     "Registrering"
   ],
@@ -1279,23 +1496,26 @@ export default {
   "Registration code": [
     "Registreringskod"
   ],
+  "Registration server": [
+    "Registreringsserver"
+  ],
   "ReiserFS": [
     "ReiserFS"
   ],
   "Reload": [
     "Ladda om"
   ],
+  "Reload now": [
+    "Ladda om nu"
+  ],
   "Reloading data, please wait...": [
     "Laddar om data, vänligen vänta..."
   ],
+  "Reloading is required to get the latest data and avoid issues or data loss.": [
+    "Omladdning krävs för att få de senaste data och undvika problem eller dataförlust."
+  ],
   "Remove": [
     "Ta bort"
-  ],
-  "Remove max channel filter": [
-    "Ta bort maximum kanal filter"
-  ],
-  "Remove min channel filter": [
-    "Ta bort minimum kanal filter"
   ],
   "Remove the configuration for this disk": [
     "Ta bort konfigurationen för den här disken"
@@ -1303,14 +1523,23 @@ export default {
   "Repository load failed": [
     "Det gick inte att ladda förråd"
   ],
+  "Rescan devices": [
+    "Skanna om enheter"
+  ],
   "Reset to defaults": [
     "Återställ till standard"
   ],
   "Reset to the default configuration": [
     "Återställ till standardkonfiguration"
   ],
+  "Resource not found or lost": [
+    "Resursen hittades inte eller förlorades"
+  ],
   "Result": [
     "Resultat"
+  ],
+  "Reused partitions will not be shrunk": [
+    "Återanvända partitioner kommer inte att krympas"
   ],
   "Review and fix": [
     "Granska och åtgärda"
@@ -1324,6 +1553,15 @@ export default {
   "Routes": [
     "Rutter"
   ],
+  "Row actions": [
+    "Rad åtgärder"
+  ],
+  "Row expansion": [
+    "Radexpansion"
+  ],
+  "Row selection": [
+    "Radval"
+  ],
   "SD Card": [
     "SD-kort"
   ],
@@ -1336,8 +1574,8 @@ export default {
   "SSID": [
     "SSID"
   ],
-  "Same as minimum": [
-    "Samma som minimum"
+  "SUSE Customer Center (SCC)": [
+    "SUSE kundcenter (SCC)"
   ],
   "Search": [
     "Sök"
@@ -1354,6 +1592,9 @@ export default {
   "Select": [
     "Välj"
   ],
+  "Select a device to define partitions or to mount": [
+    "Välj en enhet för att definiera partitioner eller för att montera"
+  ],
   "Select a disk": [
     "Välj en disk"
   ],
@@ -1363,8 +1604,11 @@ export default {
   "Select a disk to create %s": [
     "Välj en disk för att skapa %s"
   ],
-  "Select a disk to define partitions": [
-    "Välj en disk för att definiera partitioner"
+  "Select a disk to define partitions or to mount": [
+    "Välj en disk för att definiera partitioner eller för att montera"
+  ],
+  "Select a disk to format as %s": [
+    "Välj en disk att formatera som %s"
   ],
   "Select a disk to install the system": [
     "Välj en disk för att installera systemet"
@@ -1375,11 +1619,17 @@ export default {
   "Select a solution to continue": [
     "Välj en lösning för att fortsätta"
   ],
-  "Select another disk to define partitions": [
-    "Välj en annan disk för att definiera partitioner"
+  "Select another device to define partitions or to mount": [
+    "Välj en annan enhet för att definiera partitioner eller för att montera"
+  ],
+  "Select another disk to define partitions or to mount": [
+    "Välj en annan disk för att definiera partitioner eller för att montera"
   ],
   "Select at least one disk.": [
     "Välj åtminstone en disk."
+  ],
+  "Select devices to enable bulk actions.": [
+    "Välj enheter för att aktivera massåtgärder."
   ],
   "Select or enter a mount point": [
     "Välj eller ange en monteringspunkt"
@@ -1399,8 +1649,8 @@ export default {
   "Select what to do with each partition.": [
     "Välj vad som ska göras med varje partition."
   ],
-  "Selected disk (cannot be changed)": [
-    "Vald disk (kan inte ändras)"
+  "Selected disk cannot be changed": [
+    "Vald disk kan inte ändras"
   ],
   "Selected patterns": [
     "Valda mönster"
@@ -1408,17 +1658,26 @@ export default {
   "Server IP": [
     "Server IP"
   ],
-  "Set DIAG Off": [
-    "Sätt DIAGNOS till av"
+  "Server URL": [
+    "Server URL"
   ],
-  "Set DIAG On": [
-    "Sätt DIAGNOS till på"
+  "Server options": [
+    "Server alternativ"
+  ],
+  "Set DIAG off": [
+    "Sätt DIAGNOS av"
+  ],
+  "Set DIAG on": [
+    "Sätt DIAGNOS på"
   ],
   "Set a permanent hostname that won’t change with network updates.": [
     "Ställ in ett permanent värdnamn som inte ändras med nätverksuppdateringar."
   ],
   "Setting up connection": [
     "Sätter upp anslutning"
+  ],
+  "Settings": [
+    "Inställningar"
   ],
   "Several partitions will be deleted": [
     "Flera partitioner kommer att tas bort"
@@ -1454,14 +1713,11 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Storleksgränser måste vara siffror, eventuellt följt av en enhet som GiB eller GB"
   ],
-  "Size options": [
-    "Storleksalternativ"
+  "Size mode": [
+    "Storleksläge"
   ],
-  "Sizes must be entered as a numbers followed by a unit of               the form GiB (power of 2) or GB (power of 10).": [
-    "Storlekar måste anges som siffror följt av en enhet              formen GiB (potens av 2) eller GB (potens av 10)."
-  ],
-  "Sizes must be entered as a numbers optionally followed by a unit.": [
-    "Storlekar måste anges som siffror, eventuellt följt av en enhet."
+  "Size modes": [
+    "Storlekslägen"
   ],
   "Skip to content": [
     "Hoppa till innehåll"
@@ -1541,8 +1797,18 @@ export default {
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM-gruppen '%1$s' kommer att vara kvar på %2$s"
   ],
+  "The configuration has been updated externally.": [
+    "Konfigurationen har uppdaterats externt."
+  ],
+  "The configuration must be adapted to address the following issue:": [
+    "Konfigurationen måste anpassas för att åtgärda följande problem:",
+    "Konfigurationen måste anpassas för att åtgärda dessa följande problem:"
+  ],
   "The configured LVM groups will remain at %s": [
     "De konfigurerade LVM-grupperna kommer att finnas kvar på %s"
+  ],
+  "The connection can be used by any available device.": [
+    "Anslutningen kan användas av vilken tillgänglig enhet som helst."
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Anslutningen kommer endast att användas under installationen och är inte tillgänglig i det installerade systemet."
@@ -1550,14 +1816,21 @@ export default {
   "The content may be deleted": [
     "Innehållet kan komma att raderas"
   ],
-  "The current configuration will result in a %1$s of %2$s.": [
-    "Den aktuella konfigurationen kommer att resultera i en %1$s på %2$s."
+  "The current configuration will result in an attempt to create a %1$s of %2$s.": [
+    "Den nuvarande konfigurationen kommer att resultera i ett försök att skapa en %1$s på %2$s."
   ],
-  "The current configuration will result in a %1$s of at least %2$s.": [
-    "Den aktuella konfigurationen kommer att resultera i en %1$s på minst %2$s."
+  "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
+    "Den nuvarande konfigurationen kommer att resultera i ett försök att skapa en %1$s på minst %2$s."
   ],
-  "The current configuration will result in a %1$s with a size between %2$s and %3$s.": [
-    "Den aktuella konfigurationen kommer att resultera i en %1$s med en storlek mellan %2$s och %3$s."
+  "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
+    "Den nuvarande konfigurationen kommer att resultera i ett försök att skapa en %1$s med en storlek mellan %2$s och %3$s."
+  ],
+  "The current file system will be mounted at %s": [
+    "Det nuvarande filsystemet kommer att monteras på %s"
+  ],
+  "The current storage configuration has the following issue:": [
+    "Den nuvarande lagringskonfigurationen har följande problem:",
+    "Det nuvarande lagringskonfigurationerna har följande problem:"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Data bevaras, men storleken på de aktuella partitionerna kommer att ändras efter behov."
@@ -1567,6 +1840,15 @@ export default {
   ],
   "The device cannot be shrunk:": [
     "Enheten kan inte krympas:"
+  ],
+  "The device will be formatted": [
+    "Enheten kommer att formateras"
+  ],
+  "The device will be formatted as %1$s and mounted at %2$s": [
+    "Enheten kommer att formateras som %1$s och monteras på %2$s"
+  ],
+  "The device will be mounted": [
+    "Enheten kommer att monteras"
   ],
   "The device will be mounted at %s.": [
     "Enheten kommer att monteras på %s."
@@ -1589,8 +1871,29 @@ export default {
   "The extension has been registered with key %s.": [
     "Tillägget har registrerats med nyckeln %s."
   ],
+  "The extension was registered without any registration code.": [
+    "Tillägget registrerades utan någon registreringskod."
+  ],
+  "The final size can be bigger in order to fill the extra free space.": [
+    "Den slutliga storleken kan bli större för att fylla det extra fria utrymmet."
+  ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Det sista steget för att konfigurera Trusted Platform Module (TPM) för att automatiskt öppna krypterade enheter kommer att ske under den första uppstarten av det nya systemet. För att det ska fungera måste maskinen startas direkt till den nya uppstartshanteraren."
+  ],
+  "The following logical volume will be created": [
+    "Följande logiska volym kommer att skapas",
+    "Följande logiska volymer kommer också att skapas"
+  ],
+  "The following partition will be created.": [
+    "Följande partition kommer att skapas.",
+    "Följande partitioner kommer att skapas."
+  ],
+  "The following partition will be mounted.": [
+    "Följande partition kommer att monteras.",
+    "Följande partitioner kommer att monteras."
+  ],
+  "The following partitions will be created or mounted": [
+    "Följande partitioner kommer att skapas eller monteras"
   ],
   "The following software patterns are selected for installation:": [
     "Följande programvarumönster är valda för installation:"
@@ -1613,14 +1916,9 @@ export default {
   "The installer requires [root] user privileges.": [
     "Installationsprogrammet kräver [root] användarrättigheter."
   ],
-  "The logical volume can grow to use all the contiguous free space": [
-    "Den logiska volymen kan växa för att använda allt angränsande ledigt utrymme"
-  ],
-  "The logical volume can grow until a given limit size": [
-    "Den logiska volymen kan växa tills en given gränsstorlek"
-  ],
-  "The logical volume is created exactly with the given size": [
-    "Den logiska volymen skapas exakt med den givna storleken"
+  "The logical volume will also be deleted": [
+    "Den logiska volymen kommer också att raderas",
+    "Det logiska volymerna kommer också att raderas"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Det maximala antalet måste vara ett tal följt av en enhet som GiB eller GB"
@@ -1637,50 +1935,53 @@ export default {
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     "Det minsta måste vara ett nummer, eventuellt följt av en enhet som GiB eller GB"
   ],
+  "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
+    "Modalväljaren erbjuder ett förenklat gränssnitt utformat för snabb och enkel användning, utan att överväldiga användaren."
+  ],
   "The needed LVM physical volumes will be added as partitions on the chosen disks,                 based on the sizes of the logical volumes. If you select more than one disk, the                 physical volumes may be distributed along several disks.": [
     "De fysiska LVM-volymerna som behövs kommer att läggas till som partitioner på de valda diskarna,                 baserat på storleken på de logiska volymerna. Om du väljer mer än en disk så kan,                 fysiska volymer vara fördelade på flera diskar."
   ],
-  "The partition can grow to use all the contiguous free space": [
-    "Partitionen kan växa för att använda allt angränsande ledigt utrymme"
-  ],
-  "The partition can grow until a given limit size": [
-    "Partitionen kan växa till en given storleksgräns"
-  ],
-  "The partition is created exactly with the given size": [
-    "Partitionen skapas exakt med den angivna storleken"
+  "The password is weak": [
+    "Lösenordet är svagt"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Lösenordet kommer inte att behövas för att starta och komma åt data om TPM kan verifiera systemets integritet. TPM-försegling kräver att det nya systemet startas upp direkt vid första körningen."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet och närvaro av ett separat filsystem för %2$s."
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
+    "Storleken för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet och förekomsten av ett separat filsystem för %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet och närvaro av separata filsystem för %2$s."
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
+    "Storleken för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet och förekomsten av separata filsystem för %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet, användningen av Btrfs-ögonblicksavbilder och närvaro av ett separat filsystem för %2$s."
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "Storleken för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet, användningen av Btrfs-ögonblicksavbilder och förekomsten av ett separat filsystem för %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet, användningen av Btrfs-ögonblicksavbilder och närvaro av separata filsystem för %2$s."
+  "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "Storleken för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet, användningen av Btrfs-ögonblicksavbilder och förekomsten av separata filsystem för %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på närvaro av ett separat filsystem för %2$s."
+  "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
+    "Storleken för %1$s kommer att justeras dynamiskt baserat på närvaron av ett separat filsystem för %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på närvaro av separata filsystem för %2$s."
+  "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
+    "Storleken för %1$s kommer att justeras dynamiskt baserat på närvaron av separata filsystem för %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på användningen av Btrfs-ögonblicksavbilder och närvaro av ett separat filsystem för %2$s."
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
+    "Storleken för %1$s kommer att justeras dynamiskt baserat på användningen av Btrfs-ögonblicksavbilder och närvaron av ett separat filsystem för %2$s."
   ],
-  "The size range for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Storleksintervallet för %1$s kommer att justeras dynamiskt baserat på användningen av Btrfs-ögonblicksavbilder och närvaro av separata filsystem för %2$s."
+  "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
+    "Storleken för %1$s kommer att justeras dynamiskt baserat på användningen av Btrfs-ögonblicksavbilder och förekomsten av separata filsystem för %2$s."
   ],
-  "The size range for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "Storleksintervallet för %s kommer att justeras dynamiskt baserat på mängden RAM i systemet och användningen av Btrfs ögonblicksavbilder."
+  "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
+    "Storleken för %s kommer att justeras dynamiskt baserat på mängden RAM i systemet och användningen av Btrfs-ögonblicksavbilder."
   ],
-  "The size range for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "Storleksintervallet för %s kommer att justeras dynamiskt baserat på användningen av Btrfs ögonblicksavbilder."
+  "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
+    "Storleken för %s kommer att justeras dynamiskt baserat på användningen av Btrfs-ögonblicksavbilder."
+  ],
+  "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
+    "Storleken är konfigurerad som ett intervall mellan %s och %s, men det här gränssnittet kan inte hantera intervall med en given maxstorlek."
+  ],
+  "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
+    "Storleken måste vara ett tal följt av en enhet av formen GiB (potens 2) eller GB (potens 10)."
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "Lagringskonfigurationen är giltig (se resultat nedan) men använder element som inte stöds av detta gränssnitt."
@@ -1694,6 +1995,9 @@ export default {
   "The system will use %s as its default language.": [
     "Systemet kommer att använda %s som dess standardspråk."
   ],
+  "The whole device will be used for %s": [
+    "Hela enheten kommer att användas för %s"
+  ],
   "The zFCP disk was not activated.": [
     "zFCP disken var inte aktiverad."
   ],
@@ -1706,6 +2010,14 @@ export default {
   "There are not usable partitions": [
     "Det finns inte några användbara partitioner"
   ],
+  "There is %d destructive action planned": [
+    "Det finns en %d destruktiv åtgärd planerad",
+    "Det finns flera %d destruktiva åtgärder planerade"
+  ],
+  "There is %d destructive action planned affecting %s": [
+    "Det finns %d planerade destruktiva åtgärder som påverkar %s",
+    "Det finns flera %d planerade destruktiva åtgärder som påverkar %s"
+  ],
   "These are the most relevant installation settings. Feel free to browse the sections in the menu for further details.": [
     "Dessa är de mest relevanta installationsinställningarna. Bläddra gärna igenom avsnitten i menyn för ytterligare detaljer."
   ],
@@ -1715,29 +2027,29 @@ export default {
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Det här är inställningarna för produkten som ska installeras. Installationsspråket kan justeras via [inställningspanelen] som är tillgänglig från det övre fältet."
   ],
-  "This action could destroy any data stored on the devices listed below. Please, confirm that you really want to continue.": [
-    "Denna åtgärd kan förstöra all data som lagras på enheterna som anges nedan. Vänligen bekräfta att du verkligen vill fortsätta."
+  "This action could destroy any data stored on the device.": [
+    "Denna åtgärd kan förstöra all data som lagras på enheten."
   ],
-  "This disk will contain any partition needed for booting": [
-    "Den här disken kommer att innehålla alla partitioner som behövs för uppstart"
-  ],
-  "This disk will contain the LVM group '%s'": [
-    "Den här disken kommer att innehålla LVM-gruppen '%s'"
-  ],
-  "This disk will contain the LVM group '%s' and any partition needed to boot": [
-    "Den här disken kommer att innehålla LVM-gruppen '%s' och vilken partition som helst som behövs för att starta systemet"
-  ],
-  "This disk will contain the configured LVM groups": [
-    "Den här disken kommer att innehålla de konfigurerade LVM-grupperna"
-  ],
-  "This disk will contain the configured LVM groups and any partition needed to boot": [
-    "Den här disken kommer att innehålla de konfigurerade LVM-grupperna och eventuella partitioner som behövs för att starta"
+  "This action could destroy any data stored on the devices listed below.": [
+    "Denna åtgärd kan förstöra all data som lagras på enheterna som listas nedan."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Det här tillägget är inte tillgängligt på servern. Be serveradministratören att spegla tillägget."
   ],
   "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
     "Detta värdnamn är dynamiskt och kan ändras efter en omstart eller nätverksuppdatering, som konfigurerats av den lokala nätverksadministratören."
+  ],
+  "This license is not available in %s.": [
+    "Den här licensen är inte tillgänglig i %s."
+  ],
+  "This may take a moment while updates complete.": [
+    "Detta kan ta en stund medan uppdateringarna slutförs."
+  ],
+  "This message will close automatically when everything is done.": [
+    "Detta meddelande kommer att stängas automatiskt när allt är klart."
+  ],
+  "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
+    "Detta mönster skapar en balans mellan tydlighet och effektivitet: modalvyn gör det lätt för enkla val, medan helvyn stöder djupare utforskning och mer komplexa åtgärder, särskilt för användare med massor av enheter."
   ],
   "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
     "Denna produkten tillåter inte att välja programvarumönster under installationen. Du kan dock lägga till ytterligare programvara när installationen är klar."
@@ -1747,6 +2059,9 @@ export default {
   ],
   "This uses existing partitions at the disk": [
     "Detta använder befintliga partitioner på disken"
+  ],
+  "This uses the existing file system at the disk": [
+    "Detta använder det befintliga filsystemet på disken"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Detta påverkar endast installationsgränssnittet, inte produkten som ska installeras. Du kan justera produktens lokalisering senare på sidan Lokaliseringsinställningar."
@@ -1778,8 +2093,14 @@ export default {
   "Unable to modify the settings": [
     "Det går inte att ändra inställningarna"
   ],
+  "Unbound": [
+    "Obunden"
+  ],
   "Unselect": [
     "Avmarkera"
+  ],
+  "Unselect or activate them and try it again.": [
+    "Avmarkera eller aktivera dem och försök igen."
   ],
   "Unsupported AutoYaST elements": [
     "Ostödda AutoYaST-element"
@@ -1789,6 +2110,9 @@ export default {
   ],
   "Up to %s can be recovered by shrinking the device.": [
     "Upp till %s kan återställas genom att krympa enheten."
+  ],
+  "Update available disks and activate crypt devices": [
+    "Uppdatera tillgängliga diskar och aktivera krypteringsenheter"
   ],
   "Updating the hostname now or later will not change the currently registered hostname.": [
     "Att uppdatera värdnamnet nu eller senare kommer inte att ändra det för närvarande registrerade värdnamnet."
@@ -1805,47 +2129,83 @@ export default {
   "Use": [
     "Använd"
   ],
-  "Use %s": [
-    "Använd %s"
+  "Use RAID %s": [
+    "Använd RAID %s"
   ],
-  "Use %s for LVM and additional partitions": [
-    "Använd %s för LVM och ytterligare partitioner"
+  "Use RAID %s for LVM and additional partitions": [
+    "Använd RAID %s för LVM och ytterligare partitioner"
   ],
-  "Use %s for LVM, additional partitions and booting": [
-    "Använd %s för LVM, ytterligare partitioner och uppstart"
+  "Use RAID %s for LVM, additional partitions and booting": [
+    "Använd RAID %s för LVM, ytterligare partitioner och uppstart"
   ],
-  "Use %s for additional partitions": [
-    "Använd %s för ytterligare partitioner"
+  "Use RAID %s for additional partitions": [
+    "Använd RAID %s för ytterligare partitioner"
   ],
-  "Use %s for additional partitions and booting": [
-    "Används %s för ytterligare partitioner och uppstart"
+  "Use RAID %s for additional partitions and booting": [
+    "Använd RAID %s för ytterligare partitioner och uppstart"
   ],
-  "Use %s to configure boot partitions": [
-    "Använd %s för att konfigurera uppstartspartitioner"
+  "Use RAID %s to configure boot partitions": [
+    "Använd RAID %s för att konfigurera uppstartspartitioner"
   ],
-  "Use %s to host LVM": [
-    "Använd %s för att vara värd för LVM"
+  "Use RAID %s to host LVM": [
+    "Använd RAID %s för att vara värd för LVM"
   ],
-  "Use %s to host LVM and boot": [
-    "Använd %s för att vara värd för LVM och uppstart"
+  "Use RAID %s to host LVM and boot": [
+    "Använd RAID %s för att vara värd för LVM och uppstart"
   ],
-  "Use %s to install": [
-    "Använd %s för att installera"
+  "Use RAID %s to install": [
+    "Använd RAID %s för att installera"
   ],
-  "Use %s to install and boot": [
-    "Använd %s för installation och uppstart"
+  "Use RAID %s to install and boot": [
+    "Använd RAID %s för installation och uppstart"
   ],
-  "Use %s to install and host LVM": [
-    "Använd %s för att installera och vara värd för LVM"
+  "Use RAID %s to install and host LVM": [
+    "Använd RAID %s för att installera och vara värd för LVM"
   ],
-  "Use %s to install, host LVM and boot": [
-    "Använd %s för att installera, värd LVM och uppstart"
+  "Use RAID %s to install, host LVM and boot": [
+    "Använd RAID %s för att installera, värd LVM och uppstart"
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
     "Använd åtgärderna nedan för att ställa in dina enheter eller klicka på %s för att börja från början med standardkonfigurationen."
   ],
   "Use available space": [
     "Använd tillgängligt utrymme"
+  ],
+  "Use disk %s": [
+    "Använd disk %s"
+  ],
+  "Use disk %s for LVM and additional partitions": [
+    "Använd disk %s för LVM och ytterligare partitioner"
+  ],
+  "Use disk %s for LVM, additional partitions and booting": [
+    "Använd disk %s för LVM, ytterligare partitioner och uppstart"
+  ],
+  "Use disk %s for additional partitions": [
+    "Använd disk %s för ytterligare partitioner"
+  ],
+  "Use disk %s for additional partitions and booting": [
+    "Använd disk %s för ytterligare partitioner och uppstart"
+  ],
+  "Use disk %s to configure boot partitions": [
+    "Använd disk %s för att konfigurera uppstartspartitioner"
+  ],
+  "Use disk %s to host LVM": [
+    "Använd disk %s för att vara värd för LVM"
+  ],
+  "Use disk %s to host LVM and boot": [
+    "Använd disk %s för att vara värd för LVM och uppstart"
+  ],
+  "Use disk %s to install": [
+    "Använd disk %s för att installera"
+  ],
+  "Use disk %s to install and boot": [
+    "Använd disk %s för installation och uppstart"
+  ],
+  "Use disk %s to install and host LVM": [
+    "Använd disk %s för att installera och vara värd för LVM"
+  ],
+  "Use disk %s to install, host LVM and boot": [
+    "Använd disk %s för att installera, värd LVM och uppstart"
   ],
   "Use for installation only": [
     "Använd för installation endast"
@@ -1865,8 +2225,14 @@ export default {
   "Use suggested username": [
     "Använd föreslaget användarnamn"
   ],
+  "Use the RAID without partitions": [
+    "Använd RAID utan partitioner"
+  ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
     "Använd Trusted Platform Module (TPM) för att dekryptera automatiskt vid varje uppstart"
+  ],
+  "Use the disk without partitions": [
+    "Använd disk utan partitioner"
   ],
   "Use these same settings for the selected product": [
     "Använd samma inställningar för den valda produkten"
@@ -1964,6 +2330,18 @@ export default {
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] är på"
   ],
+  "[FIXME]": [
+    "[FIXA MIG]"
+  ],
+  "active": [
+    "aktiv"
+  ],
+  "all": [
+    "alla"
+  ],
+  "approx. %s": [
+    "cirka. %s"
+  ],
   "at least %s": [
     "åtminstone %s"
   ],
@@ -1982,11 +2360,23 @@ export default {
   "logical volume": [
     "logisk volym"
   ],
+  "no": [
+    "nej"
+  ],
+  "offline": [
+    "offline"
+  ],
   "partition": [
     "partition"
   ],
+  "read_only": [
+    "läs_endast"
+  ],
   "reset to defaults": [
     "återställ till standard"
+  ],
+  "yes": [
+    "ja"
   ],
   "zFCP": [
     "zFCP"

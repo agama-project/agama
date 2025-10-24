@@ -28,20 +28,26 @@
 use crate::error::Error;
 use agama_lib::{
     error::ServiceError,
+    event,
     http::Event,
     proxies::questions::{GenericQuestionProxy, QuestionWithPasswordProxy, QuestionsProxy},
-    questions::model::{Answer, GenericQuestion, PasswordAnswer, Question, QuestionWithPassword},
+    questions::{
+        answers::{self, Answers},
+        config::{QuestionsConfig, QuestionsPolicy},
+        model::{self, GenericQuestion, PasswordAnswer, Question, QuestionWithPassword},
+    },
 };
 use agama_utils::dbus::{extract_id_from_path, get_property};
-use anyhow::Context;
+use anyhow::{anyhow, Context};
 use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::{IntoResponse, Response},
-    routing::{delete, get},
+    routing::{delete, get, put},
     Json, Router,
 };
-use std::{collections::HashMap, pin::Pin};
+use std::{collections::HashMap, io::Write, pin::Pin};
+use tempfile::NamedTempFile;
 use tokio_stream::{Stream, StreamExt};
 use zbus::{
     fdo::ObjectManagerProxy,
@@ -177,7 +183,7 @@ impl QuestionsClient<'_> {
             .map_err(|e| e.into())
     }
 
-    pub async fn get_answer(&self, id: u32) -> Result<Option<Answer>, ServiceError> {
+    pub async fn get_answer(&self, id: u32) -> Result<Option<model::Answer>, ServiceError> {
         let question_path = OwnedObjectPath::from(
             ObjectPath::try_from(format!("/org/opensuse/Agama1/Questions/{}", id))
                 .context("Failed to create dbus path")?,
@@ -187,7 +193,7 @@ impl QuestionsClient<'_> {
             InterfaceName::from_static_str("org.opensuse.Agama1.Questions.WithPassword")
                 .context("Failed to create interface name for question with password")?,
         );
-        let mut result = Answer::default();
+        let mut result = model::Answer::default();
         let question = objects
             .get(&question_path)
             .ok_or(ServiceError::QuestionNotExist(id))?;
@@ -213,7 +219,7 @@ impl QuestionsClient<'_> {
         }
     }
 
-    pub async fn answer(&self, id: u32, answer: Answer) -> Result<(), ServiceError> {
+    pub async fn answer(&self, id: u32, answer: model::Answer) -> Result<(), ServiceError> {
         let question_path = OwnedObjectPath::from(
             ObjectPath::try_from(format!("/org/opensuse/Agama1/Questions/{}", id))
                 .context("Failed to create dbus path")?,
@@ -238,6 +244,25 @@ impl QuestionsClient<'_> {
             .await?;
         Ok(())
     }
+
+    pub async fn set_interactive(&self, value: bool) -> Result<(), ServiceError> {
+        self.questions_proxy.set_interactive(value).await?;
+        Ok(())
+    }
+
+    pub async fn set_answers(&self, answers: Vec<answers::Answer>) -> Result<(), ServiceError> {
+        let mut file = NamedTempFile::new().context("Cannot create the answers file")?;
+        let all_answers = Answers::new(answers);
+        let json = serde_json::to_string(&all_answers)?;
+        write!(file, "{}", &json).context("Cannot write the answers file")?;
+        self.questions_proxy.remove_answers().await?;
+        let path = file
+            .path()
+            .to_str()
+            .ok_or(anyhow!("Could not create the answers file"))?;
+        self.questions_proxy.add_answer_file(path).await?;
+        Ok(())
+    }
 }
 
 #[derive(Clone)]
@@ -253,6 +278,7 @@ pub async fn questions_service(dbus: zbus::Connection) -> Result<Router, Service
         .route("/", get(list_questions).post(create_question))
         .route("/:id", delete(delete_question))
         .route("/:id/answer", get(get_answer).put(answer_question))
+        .route("/config", put(set_config))
         .with_state(state);
     Ok(router)
 }
@@ -274,11 +300,11 @@ pub async fn questions_stream(
     let add_stream = proxy
         .receive_interfaces_added()
         .await?
-        .then(|_| async move { Event::QuestionsChanged });
+        .then(|_| async move { event!(QuestionsChanged) });
     let remove_stream = proxy
         .receive_interfaces_removed()
         .await?
-        .then(|_| async move { Event::QuestionsChanged });
+        .then(|_| async move { event!(QuestionsChanged) });
     let stream = StreamExt::merge(add_stream, remove_stream);
     Ok(Box::pin(stream))
 }
@@ -344,7 +370,7 @@ async fn get_answer(
 async fn answer_question(
     State(state): State<QuestionsState<'_>>,
     Path(question_id): Path<u32>,
-    Json(answer): Json<Answer>,
+    Json(answer): Json<model::Answer>,
 ) -> Result<(), Error> {
     let res = state.questions.answer(question_id, answer).await;
     Ok(res?)
@@ -390,4 +416,33 @@ async fn create_question(
 ) -> Result<Json<Question>, Error> {
     let res = state.questions.create_question(question).await?;
     Ok(Json(res))
+}
+
+#[utoipa::path(
+    put,
+    path = "/config",
+    context_path = "/api/questions",
+    responses(
+        (status = 200, description = "set questions configuration"),
+        (status = 400, description = "The D-Bus service could not perform the action")
+    )
+)]
+async fn set_config(
+    State(state): State<QuestionsState<'_>>,
+    Json(config): Json<QuestionsConfig>,
+) -> Result<(), Error> {
+    if let Some(policy) = config.policy {
+        let interactive = match policy {
+            QuestionsPolicy::User => true,
+            QuestionsPolicy::Auto => false,
+        };
+
+        state.questions.set_interactive(interactive).await?;
+    }
+
+    if let Some(answers) = config.answers {
+        state.questions.set_answers(answers).await?;
+    }
+
+    Ok(())
 }

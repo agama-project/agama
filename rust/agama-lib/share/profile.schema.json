@@ -1,11 +1,20 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "$id": "https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/profile.schema.json",
+  "$id": "https://github.com/agama-project/agama/blob/master/rust/agama-lib/share/profile.schema.json",
   "title": "Profile",
   "description": "Profile definition for automated installation",
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "$schema": {
+      "title": "URL of the JSON validation schema",
+      "description": "The schema location is ignored by the installer, it always uses the built-in schema, but it can be useful for automatic validation and code completion in some editors",
+      "type": "string",
+      "examples": [
+        "https://raw.githubusercontent.com/agama-project/agama/refs/heads/SLE-16/rust/agama-lib/share/profile.schema.json",
+        "https://raw.githubusercontent.com/agama-project/agama/refs/heads/master/rust/agama-lib/share/profile.schema.json"
+      ]
+    },
     "files": {
       "title": "User-defined files to deploy",
       "description": "User-defined files to deploy after installation just before post install scripts",
@@ -86,7 +95,7 @@
       ]
     },
     "dasd": {
-      "title": "DASD device actiation (s390x only)",
+      "title": "DASD device activation (s390x only)",
       "type": "object",
       "properties": {
         "devices": {
@@ -115,6 +124,34 @@
               }
             },
             "required": ["channel"]
+          }
+        }
+      }
+    },
+    "zfcp": {
+      "title": "zFCP device activation (s390x only)",
+      "type": "object",
+      "properties": {
+        "devices": {
+          "title": "List of zFCP devices",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "channel": {
+                "title": "zFCP controller channel id (e.g., 0.0.fa00)",
+                "type": "string"
+              },
+              "wwpn": {
+                "title": "WWPN of the target port (e.g., 0x500507630300c562)",
+                "type": "string"
+              },
+              "lun": {
+                "title": "LUN of the SCSI device (e.g. 0x4010403300000000)",
+                "type": "string"
+              }
+            },
+            "required": ["channel", "wwpn", "lun"]
           }
         }
       }
@@ -167,12 +204,10 @@
       "type": "object",
       "properties": {
         "patterns": {
-          "title": "List of patterns to install",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "examples": ["minimal_base"]
-          }
+          "anyOf": [
+            { "$ref": "#/$defs/patternsArray" },
+            { "$ref": "#/$defs/patternsObject" }
+          ]
         },
         "packages": {
           "title": "List of packages to install",
@@ -181,6 +216,10 @@
             "type": "string",
             "examples": ["vim"]
           }
+        },
+        "onlyRequired": {
+          "title": "Flag if only minimal hard dependencies should be used in solver",
+          "type": "boolean"
         },
         "extraRepositories": {
           "title": "List of user specified repositories that will be used on top of default ones",
@@ -210,7 +249,7 @@
                 "type": "string"
               },
               "enabled": {
-                "title": "If repository should be enabled. Defaults to true. Useful when adding additional repo that should not be immediatelly use.",
+                "title": "If repository should be enabled. Defaults to true. Useful when adding additional repo that should not be immediately use.",
                 "type": "boolean"
               },
               "allowUnsigned": {
@@ -230,6 +269,27 @@
         }
       }
     },
+    "questions": {
+      "title": "How to handle Agama questions",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "policy": {
+          "title": "Policy to answer questions",
+          "description": "Ask questions to the user or select the default value",
+          "type": "string",
+          "enum": ["auto", "user"],
+          "default": "user"
+        },
+        "answers": {
+          "title": "Pre-defined answer for a matching question",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/answer"
+          }
+        }
+      }
+    },
     "product": {
       "title": "Product to install",
       "type": "object",
@@ -239,8 +299,17 @@
         "id": {
           "title": "Product identifier",
           "description": "The id field from a products.d/foo.yaml file",
-          "icon": "Product Icon path specified in products.d/foo.yaml file",
-          "type": "string"
+          "type": "string",
+          "examples": [
+            "Kalpa",
+            "MicroOS",
+            "openSUSE_Leap_Micro",
+            "openSUSE_Leap",
+            "SLES_SAP",
+            "SLES",
+            "Slowroll",
+            "Tumbleweed"
+          ]
         },
         "registrationCode": {
           "title": "Product registration code",
@@ -302,9 +371,13 @@
                 "title": "The name of the network interface bound to this connection",
                 "type": "string"
               },
-              "macAddress": {
-                "title": "Custom MAC address",
+              "customMacAddress": {
+                "title": "Custom MAC address to use",
                 "description": "Can also be 'preserve', 'permanent', 'random' or 'stable'.",
+                "type": "string"
+              },
+              "macAddress": {
+                "title": "The MAC address of the interface bound to this connection",
                 "type": "string"
               },
               "mtu": {
@@ -347,12 +420,11 @@
                   "type": "string"
                 }
               },
-              "dns_searchlist": {
+              "dnsSearchlist": {
                 "type": "array",
                 "items": {
                   "description": "DNS search domains",
-                  "type": "string",
-                  "additionalProperties": false
+                  "type": "string"
                 }
               },
               "ignoreAutoDns": {
@@ -363,7 +435,7 @@
                 "title": "Connection status",
                 "description": "The status of the connection",
                 "type": "string",
-                "enum": ["up", "down", "removed"]
+                "enum": ["up", "down", "keep", "removed"]
               },
               "autoconnect": {
                 "title": "Auto-connected",
@@ -637,6 +709,30 @@
                     "type": "boolean"
                   }
                 }
+              },
+              "vlan": {
+                "type": "object",
+                "title": "VLAN configuration",
+                "additionalProperties": false,
+                "required": ["id", "parent"],
+                "properties": {
+                  "id": {
+                    "title": "VLAN Identifier",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4095
+                  },
+                  "parent": {
+                    "title": "Parent interface",
+                    "type": "string"
+                  },
+                  "protocol": {
+                    "title": "VLAN protocol for encapsulation",
+                    "type": "string",
+                    "default": "802.1Q",
+                    "enum": ["802.1Q", "802.1ad"]
+                  }
+                }
               }
             }
           }
@@ -894,6 +990,64 @@
       },
       "required": ["destination"],
       "oneOf": [{ "required": ["url"] }, { "required": ["content"] }]
+    },
+    "answer": {
+      "title": "Automatic answer to questions",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "class": {
+          "title": "Question class",
+          "description": "Each question has a \"class\" which works as an identifier.",
+          "type": "string",
+          "examples": ["storage.activate_multipath"]
+        },
+        "text": {
+          "title": "Question text",
+          "description": "Question full text",
+          "type": "string"
+        },
+        "answer": {
+          "title": "Question answer",
+          "description": "Answer to use for the question.",
+          "type": "string"
+        },
+        "password": {
+          "title": "Password provided as response to a password-based question",
+          "type": "string"
+        },
+        "data": {
+          "title": "Additional data for matching questions",
+          "description": "Additional data for matching questions and answers",
+          "type": "object",
+          "examples": [{ "device": "/dev/sda" }]
+        }
+      }
+    },
+    "patternsArray": {
+      "title": "List of user-selected patterns to install",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "examples": ["minimal_base"]
+      }
+    },
+    "patternsObject": {
+      "title": "Modifications for the list of user-selected patterns to install",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "add": {
+          "title": "List of user-selected patterns to add to the list",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "remove": {
+          "title": "List of user-selected patterns to remove from the list",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
     }
   }
 }

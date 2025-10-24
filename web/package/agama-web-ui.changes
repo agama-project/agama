@@ -1,5 +1,240 @@
 -------------------------------------------------------------------
+Fri Oct 17 12:30:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
+- Preserve installer options values after successful submission
+  (bsc#1249636).
+
+-------------------------------------------------------------------
+Tue Oct 14 14:01:15 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed the check about which DASDs can be formatted (bsc#1243795).
+
+-------------------------------------------------------------------
+Thu Sep 18 08:57:11 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Preserve installer options values after successful submission
+  (bsc#1249636).
+
+-------------------------------------------------------------------
+Tue Sep 16 09:20:40 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Avoid missing translations due to missuse of top-level constants
+  (related to bsc#1248817)
+
+-------------------------------------------------------------------
+Fri Sep 12 08:14:28 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Update translations (bsc#1249378)
+
+-------------------------------------------------------------------
+Tue Sep 2 08:24:38 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Allow sorting devices by name or size in storage selector
+  (gh#agama-project/agama#2672).
+
+-------------------------------------------------------------------
+Mon Sep  1 18:22:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- The Chinese languages do not include the territory (bsc#1248826).
+
+-------------------------------------------------------------------
+Thu Aug 28 05:26:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Report the underlying problem for the "load.retry" question
+  (related to bsc#1248779).
+
+-------------------------------------------------------------------
+Wed Aug 27 08:39:36 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Invalidate zFCP controllers query after some controller change
+  is notified (bsc#1247445).
+
+-------------------------------------------------------------------
+Tue Aug 26 07:23:00 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Updated Node.js dependencies to their latest available versions
+  as of 2025-08-25 (gh#agama-project/agama#2440).
+
+-------------------------------------------------------------------
+Wed Aug 20 10:27:07 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Refactor DASD page to make it more usable and improve its
+  performance (related to bsc#1247444, gh#agama-project/agama#2648).
+
+-------------------------------------------------------------------
+Wed Aug 20 10:20:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Enforce ESP partition id for /boot/efi partitions manually
+  defined (bsc#1248189).
+
+-------------------------------------------------------------------
+Wed Aug 13 13:20:17 UTC 2025 - Jan Papež <honyczek@centrum.cz>
+
+- Fix messages about automatic storage sizes
+  (gh#agama-project/agama#2657).
+
+-------------------------------------------------------------------
+Tue Aug 12 09:45:01 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Split progress details into two lines for better readability
+  (gh#agama-project/agama#2647).
+
+-------------------------------------------------------------------
+Tue Aug  5 23:28:43 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Improve layout and accuracy of wired connection details view
+  (bsc#1247430, gh#agama-project/agama#2639).
+
+-------------------------------------------------------------------
+Thu Jul 31 09:13:09 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Block UI if storage is configured by any other client
+  (gh#agama-project/agama#2640).
+
+-------------------------------------------------------------------
+Fri Jul 25 19:42:18 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Fix an issue preventing connections from being set as
+  "installation-only" in the web interface
+  (gh#agama-project/agama#2613).
+
+-------------------------------------------------------------------
+Wed Jul 23 14:54:43 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Display RAID level at the storage results table (bsc#1244697).
+
+-------------------------------------------------------------------
+Mon Jul 21 15:07:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 17
+
+-------------------------------------------------------------------
+Mon Jul 21 13:13:08 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Fix extensions layout to reduce excessive gaps on large
+  screens (gh#agama-project/agama#2590).
+
+-------------------------------------------------------------------
+Mon Jul 21 10:49:02 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed crash when registering an extension without registration
+  key (bsc#1246690)
+
+-------------------------------------------------------------------
+Thu Jul 17 19:26:17 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Replaced all usage of generatePath with generateEncodedPath to
+  ensure proper URL encoding of route parameters and prevent issues
+  with special characters (bsc#1246551).
+
+-------------------------------------------------------------------
+Thu Jul 17 15:32:42 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add button to allow re-probing storage devices.
+  (gh#agama-project/agama#2565)
+
+-------------------------------------------------------------------
+Wed Jul 16 15:39:14 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Display a message when the license is not available in the
+  selected language (bsc#1238364, gh#agama-project/agama#2571).
+
+-------------------------------------------------------------------
+Wed Jul 16 14:46:32 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Allow to use a whole disk or MD RAID without a partition table
+  (gh#agama-project/agama#2559).
+
+-------------------------------------------------------------------
+Mon Jul 14 16:02:55 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Allow specifying the registration server (jsc#AGM-156).
+
+-------------------------------------------------------------------
+Mon Jul 14 11:58:04 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Improve UX around non-persistent connections (bsc#1245187).
+
+-------------------------------------------------------------------
+Mon Jul 14 10:05:31 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Reorganize the storage screen and introduce a new modal device
+  selector (related to bsc#1242002 and bsc#1240062).
+
+-------------------------------------------------------------------
+Fri Jul  4 14:51:14 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Avoid scroll to top on software selection (bsc#1245732).
+
+-------------------------------------------------------------------
+Fri Jul  4 11:34:59 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Reprobe the system after registering the product
+  (gh#agama-project/agama#2532, bsc#1245400).
+
+-------------------------------------------------------------------
+Tue Jul  1 12:57:50 UTC 2025 - Lubos Kocman <lubos.kocman@suse.com>
+
+- Add LeapMicro.svg
+
+-------------------------------------------------------------------
+Mon Jun 30 15:51:36 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 16
+
+-------------------------------------------------------------------
+Mon Jun 30 15:07:39 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Extra usability improvements defining the size of partitions and
+  logical volumes (related to gh#agama-project/agama#2496).
+
+-------------------------------------------------------------------
+Mon Jun 30 11:30:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Warn the user about using a weak encryption password
+  (gh#agama-project/agama#2524).
+
+-------------------------------------------------------------------
+Fri Jun 27 15:14:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Invalidate all software queries when the selected product changes
+  (gh#agama-project/agama#2517).
+
+-------------------------------------------------------------------
+Fri Jun 27 11:23:29 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Improve usability for defining the size of a partition or logical
+  volume (gh#agama-project/agama#2496).
+
+-------------------------------------------------------------------
+Fri Jun 27 06:30:11 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Warn the user when using a weak user password (bsc#1237480).
+
+-------------------------------------------------------------------
+Mon Jun 23 10:24:01 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to bind a connection to an specific interface based on its
+  mac address or its name (gh#agama-project/agama#2488,
+  bsc#1244259).
+
+-------------------------------------------------------------------
+Wed Jun 18 08:42:49 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Improve multilingual font support by fixing the font-face rule for
+  Chinese, adding Noto Sans Georgian, and setting Noto Sans as the
+  primary fallback (gh#agama-project/agama#2488, bsc#1236261).
+
+-------------------------------------------------------------------
+Tue Jun 17 12:22:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Make sure queries data is in sync with the WebSocket messages
+  (bsc#1243276, gh#agama-project/agama#2479).
+- Properly jump to the progress page when the product is selected
+  by a third party (e.g., "agama config load").
+- Log WebSocket messages in the console with "debug" log level.
+
+-------------------------------------------------------------------
 Fri Jun 13 08:24:59 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow registering against an RMT without a registration code.
@@ -70,7 +305,7 @@ Thu Jun  5 11:26:05 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 Thu Jun  5 10:35:40 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Updated Node.js dependencies to their latest available versions
-  as of 2024-06-03 (gh#agama-project/agama#2440).
+  as of 2025-06-03 (gh#agama-project/agama#2440).
 
 -------------------------------------------------------------------
 Mon Jun  2 22:29:03 UTC 2025 - David Diaz <dgonzalez@suse.com>

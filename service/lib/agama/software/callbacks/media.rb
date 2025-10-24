@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021-2023] SUSE LLC
+# Copyright (c) [2021-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -59,7 +59,7 @@ module Agama
         #   false for local packages
         def start_provide(name, size, _remote)
           self.attempt = 1
-          logger.info("Downloading #{name}, size: #{size}")
+          logger.debug("Downloading #{name}, size: #{size}")
         end
 
         # Media change callback
@@ -91,7 +91,7 @@ module Agama
           # in other cases automatic retry usually does not make much sense
           if ["IO", "IO_SOFT"].include?(error_code) && attempt <= Repository::RETRY_COUNT
             self.attempt += 1
-            logger.info("Retry in #{Repository::RETRY_DELAY} seconds, attempt #{attempt}...")
+            logger.debug("Retry in #{Repository::RETRY_DELAY} seconds, attempt #{attempt}...")
             sleep(Repository::RETRY_DELAY)
 
             # retry
@@ -99,11 +99,10 @@ module Agama
           end
 
           question = Agama::Question.new(
-            qclass:         "software.package_error.medium_error",
-            text:           error,
-            options:        [retry_label.to_sym, continue_label.to_sym],
-            default_option: retry_label.to_sym,
-            data:           { "url" => url }
+            qclass:  "software.package_error.medium_error",
+            text:    error,
+            options: [retry_label.to_sym, continue_label.to_sym],
+            data:    { "url" => url }
           )
           questions_client.ask(question) do |question_client|
             if question_client.answer == retry_label.to_sym

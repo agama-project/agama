@@ -24,7 +24,6 @@ require "agama/dbus/software/product"
 require "agama/config"
 require "agama/registration"
 require "agama/software/manager"
-require "agama/dbus/clients/locale"
 require "suse/connect"
 
 describe Agama::DBus::Software::Product do
@@ -38,16 +37,9 @@ describe Agama::DBus::Software::Product do
 
   let(:target_dir) { Dir.mktmpdir }
 
-  let(:locale_client) do
-    instance_double(
-      Agama::DBus::Clients::Locale,
-      ui_locale: "en_US.UTF-8", on_ui_locale_change: nil
-    )
-  end
-
   before do
     stub_const("Agama::Software::Manager::TARGET_DIR", target_dir)
-    allow(Agama::DBus::Clients::Locale).to receive(:instance).and_return(locale_client)
+    allow(Yast::PackageCallbacks).to receive(:InitPackageCallbacks)
     allow(config).to receive(:products).and_return(products)
     allow(subject).to receive(:dbus_properties_changed)
     allow(Agama::ProductReader).to receive(:new).and_call_original
@@ -130,12 +122,34 @@ describe Agama::DBus::Software::Product do
     end
   end
 
+  describe "#url" do
+    before do
+      allow(backend.registration).to receive(:registration_url).and_return(url)
+    end
+
+    context "if there is no registration url yet" do
+      let(:url) { nil }
+
+      it "returns an empty string" do
+        expect(subject.url).to eq("")
+      end
+    end
+
+    context "if there is a registration url" do
+      let(:url) { "https://example.com" }
+
+      it "returns the registration url" do
+        expect(subject.url).to eq("https://example.com")
+      end
+    end
+  end
+
   describe "#reg_code" do
     before do
       allow(backend.registration).to receive(:reg_code).and_return(reg_code)
     end
 
-    context "if there is no registered product yet" do
+    context "if there is no registration code yet" do
       let(:reg_code) { nil }
 
       it "returns an empty string" do
@@ -143,7 +157,7 @@ describe Agama::DBus::Software::Product do
       end
     end
 
-    context "if there is a registered product" do
+    context "if there is a registration code" do
       let(:reg_code) { "123XX432" }
 
       it "returns the registration code" do
@@ -157,7 +171,7 @@ describe Agama::DBus::Software::Product do
       allow(backend.registration).to receive(:email).and_return(email)
     end
 
-    context "if there is no registered email" do
+    context "if there is no registration email yet" do
       let(:email) { nil }
 
       it "returns an empty string" do
@@ -165,10 +179,10 @@ describe Agama::DBus::Software::Product do
       end
     end
 
-    context "if there is a registered email" do
+    context "if there is a registration email" do
       let(:email) { "test@suse.com" }
 
-      it "returns the registered email" do
+      it "returns the registration email" do
         expect(subject.email).to eq("test@suse.com")
       end
     end
@@ -289,6 +303,16 @@ describe Agama::DBus::Software::Product do
 
         it "returns result code 10 and description" do
           expect(subject.register("123XX432")).to contain_exactly(10, /registration server failed/)
+        end
+      end
+
+      context "if there is any other error" do
+        before do
+          allow(backend.registration).to receive(:register).and_raise(RuntimeError)
+        end
+
+        it "returns result code 14 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(14, /registration server failed/)
         end
       end
 

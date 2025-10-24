@@ -21,40 +21,41 @@
  */
 
 import React from "react";
+import ConfigEditorItem from "~/components/storage/ConfigEditorItem";
+import MdRaidHeader from "~/components/storage/MdRaidHeader";
+import DeviceEditorContent from "~/components/storage/DeviceEditorContent";
+import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
+import { model, StorageDevice } from "~/types/storage";
 import { MdRaid } from "~/types/storage/model";
-import { StorageDevice } from "~/types/storage";
-import PartitionableHeader from "~/components/storage/PartitionableHeader";
-import PartitionsMenu from "~/components/storage/PartitionsMenu";
-import MdRaidDeviceMenu from "~/components/storage/MdRaidDeviceMenu";
-import SpacePolicyMenu from "~/components/storage/SpacePolicyMenu";
-import { Card, CardBody, CardHeader, CardTitle, Flex } from "@patternfly/react-core";
+import { useDeleteMdRaid } from "~/hooks/storage/md-raid";
 
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
-
-export type MdRaidEditorProps = { raid: MdRaid; raidDevice: StorageDevice };
-
-const MdRaidHeader = ({ raid, raidDevice }: MdRaidEditorProps) => {
-  return (
-    <PartitionableHeader device={raid}>
-      <MdRaidDeviceMenu raid={raid} selected={raidDevice} />
-    </PartitionableHeader>
-  );
+type MdRaidDeviceMenuProps = {
+  raid: model.MdRaid;
+  selected: StorageDevice;
 };
 
+/**
+ * Internal component that renders generic actions available for an MdRaid device.
+ */
+const MdRaidDeviceMenu = ({ raid, selected }: MdRaidDeviceMenuProps): React.ReactNode => {
+  const deleteMdRaid = useDeleteMdRaid();
+  const deleteFn = (device: model.MdRaid) => deleteMdRaid(device.name);
+
+  return <SearchedDeviceMenu modelDevice={raid} selected={selected} deleteFn={deleteFn} />;
+};
+
+type MdRaidEditorProps = { raid: MdRaid; raidDevice: StorageDevice };
+
+/**
+ * Component responsible for displaying detailed information and available
+ * actions related to a specific MdRaid device within the storage ConfigEditor.
+ */
 export default function MdRaidEditor({ raid, raidDevice }: MdRaidEditorProps) {
   return (
-    <Card isCompact>
-      <CardHeader>
-        <CardTitle>
-          <MdRaidHeader raid={raid} raidDevice={raidDevice} />
-        </CardTitle>
-      </CardHeader>
-      <CardBody className={spacingStyles.plLg}>
-        <Flex direction={{ default: "column" }}>
-          <SpacePolicyMenu modelDevice={raid} device={raidDevice} />
-          <PartitionsMenu device={raid} />
-        </Flex>
-      </CardBody>
-    </Card>
+    <ConfigEditorItem
+      header={<MdRaidHeader raid={raid} device={raidDevice} />}
+      content={<DeviceEditorContent deviceModel={raid} device={raidDevice} />}
+      actions={<MdRaidDeviceMenu raid={raid} selected={raidDevice} />}
+    />
   );
 }

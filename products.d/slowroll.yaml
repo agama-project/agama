@@ -17,7 +17,7 @@ translations:
       continuïtat, dissenyada per actualitzar-se amb menys freqüència que el
       Tumbleweed però més sovint que el Leap, sense obligar els usuaris a triar
       entre paquets estables i nous.
-    cs: Experimentální a mírně zpomalené rolující vydání openSUSE, které je navržené
+    cs: Experimentální a mírně zpomalené průběžné vydání openSUSE, které je navržené
       tak, aby se aktualizovalo méně často než Tumbleweed. Zároveň se však
       aktualizuje častěji než Leap, aby se uživatelé nemuseli rozhodovat mezi
       "stabilními" a novějšími balíčky.
@@ -29,21 +29,61 @@ translations:
       de openSUSE, diseñada para actualizarse con menos frecuencia que
       Tumbleweed pero más a menudo que Leap, sin obligar a los usuarios a elegir
       entre paquetes "estables" y más nuevos.
+    fi: Kokeellinen ja hieman hitaammin mutta jatkuvasti päivittyvä
+      openSUSE-julkaisu, joka on suunniteltu päivittymään vähemmän usein kuin
+      Tumbleweed, mutta useammin kuin Leap, jotta käyttäjät eivät joudu
+      valitsemaan "vakaiden" ja uusien pakettien väliltä.
+    fr: Version d'openSUSE expérimentale et de publication légèrement plus lente
+      conçue pour disposer de mises à jour moins souvent qu'avec Tumbleweed mais
+      plus souvent qu'avec Leap, sans forcer les utilisateurs à choisir entre
+      des paquets "stables" et des paquets plus récents.
+    he: הפצת openSUSE מתגלגלת נסיונית אשר מתעדכנת בתדירות נמוכה יותר מאשר Tumbleweed
+      אך גבוהה יותר מאשר Leap ללא הכרח לבחור בין חבילות "יציבות" או מעודכנות.
+    id: Rilis eksperimental dan sedikit lebih lambat dari openSUSE yang dirancang
+      untuk pembaruan lebih jarang daripada Tumbleweed tetapi lebih sering
+      daripada Leap tanpa memaksa pengguna untuk memilih antara paket "stabil"
+      dan paket yang lebih baru.
+    it: Una versione rolling sperimentale e leggermente più lenta di openSUSE
+      progettata per aggiornarsi meno frequentemente rispetto a Tumbleweed, ma
+      più spesso di Leap, senza costringere gli utenti a scegliere tra pacchetti
+      "stabili" e più recenti.
     ja: 実験的なディストリビューションではありますが、 Tumbleweed よりは比較的ゆっくりした、かつ Leap よりは速いペースで公開される
       openSUSE ローリングリリース型ディストリビューションです。 "安定性" と最新パッケージの中間を目指しています。
+    nb_NO: En eksperimentell og en litt saktere rullende utgivelse av openSUSE, som
+      er designet for å oppdatere sjeldnere enn Tumbleweed men oftere enn Leap
+      uten å måtte tvinge brukere til å velge mellom "stabile" og nyere pakker.
+    nl: Een experimentele en enigszins langzamere rollende release van openSUSE
+      ontworpen minder updates te hebben dan Tumbleweed maar vaker dan Leap
+      zonder gebruikers te dwingen om te kiezen tussen "stabiele" en nieuwere
+      pakketten.
     pt_BR: Uma versão experimental e um pouco mais lenta do openSUSE, projetada para
       atualizar com menos frequência que o Tumbleweed, mas com mais frequência
       que o Leap, sem forçar os usuários a escolher entre pacotes "estáveis" e
       mais novos.
+    ru: Экспериментальная непрерывно обновляемая версия openSUSE, обновляющаяся реже
+      Tumbleweed, но чаще Leap. Предлагает баланс между высокой стабильностью и
+      новизной пакетов.
     sv: En experimentell och något långsammare rullande utgåva av openSUSE utformad
       för att få nya paketuppdateringar mer sällan än Tumbleweed men oftare än
       Leap utan att tvinga användarna att välja mellan "stabila" eller nyare
       paket.
+    tr: Kullanıcıları “kararlı” ve daha yeni paketler arasında seçim yapmaya
+      zorlamadan Tumbleweed'den daha az, ancak Leap'ten daha sık güncelleme için
+      tasarlanmış deneysel bir openSUSE sürümü.
+    uk: Експериментальний і трохи рідше оновлюваний випуск openSUSE, призначений для
+      оновлення не так часто, як Tumbleweed, але частіше, ніж Leap, не
+      примушуючи користувачів обирати між «стабільними» і новішими пакетами.
+    zh_CN: openSUSE 的实验性、更新速度稍慢的滚动发布版本，它的更新频率介于 Tumbleweed 和 Leap
+      之间，旨在让用户无需在“稳定版”和新版软件包之间抉择。
+    zh_TW: 一個具實驗性質且稍慢的 openSUSE 滾動發行版本，其更新頻率低於 Tumbleweed、高於 Leap，讓使用者無需在 "穩定性"
+      與新套件之間做出選擇。
 software:
   installation_repositories:
     - url: https://download.opensuse.org/slowroll/repo/oss/
       archs: x86_64
     - url: https://download.opensuse.org/slowroll/repo/non-oss/
+      archs: x86_64
+    - url: https://download.opensuse.org/update/slowroll/repo/oss/
       archs: x86_64
 
   mandatory_patterns:
@@ -74,7 +114,6 @@ security:
     selinux:
       patterns:
         - selinux
-      policy: enforcing
     none:
       patterns: null
 

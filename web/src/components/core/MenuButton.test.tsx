@@ -125,6 +125,34 @@ it("allows passing props to the toggle", () => {
   expect(button).toHaveClass("inline-toggle");
 });
 
+it("allows to set accessible menu name via aria-labelledby", async () => {
+  const { user } = plainRender(
+    <>
+      <span id="menu-label">Accessible menu</span>
+      <MenuButton
+        menuProps={{ "aria-label": "test menu", "aria-labelledby": "menu-label" }}
+        items={[
+          <MenuButtonItem
+            key="item1"
+            items={[
+              <MenuButtonItem key="item11">{"item 1-1"}</MenuButtonItem>,
+              <MenuButtonItem key="item12">{"item 1-2"}</MenuButtonItem>,
+            ]}
+          >
+            item 1
+          </MenuButtonItem>,
+        ]}
+      >
+        test
+      </MenuButton>
+      ,
+    </>,
+  );
+  const button = screen.getByRole("button", { name: "test" });
+  await user.click(button);
+  screen.getByRole("menu", { name: "Accessible menu" });
+});
+
 it("allows to drill in", async () => {
   const { user } = plainRender(
     <MenuButton

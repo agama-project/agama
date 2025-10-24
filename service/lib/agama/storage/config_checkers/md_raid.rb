@@ -274,7 +274,7 @@ module Agama
         # @param device [Y2Storage::BlkDevice]
         # @return [Issue, nil]
         def parent_reused_member_issue(device)
-          return false unless device.respond_to?(:partitionable)
+          return unless device.respond_to?(:partitionable)
 
           parent_config = find_config(device.partitionable)
           return unless parent_config&.filesystem

@@ -21,6 +21,7 @@
 //! Representation of the storage settings
 
 pub mod dasd;
+pub mod zfcp;
 
 use crate::install_settings::InstallSettings;
 use serde::{Deserialize, Serialize};

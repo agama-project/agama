@@ -65,6 +65,13 @@ module Agama
 
           search.create_device?
         end
+
+        # Whether the config is skipped.
+        #
+        # @return [Boolean]
+        def skipped?
+          search&.skip_device? || false
+        end
       end
     end
   end

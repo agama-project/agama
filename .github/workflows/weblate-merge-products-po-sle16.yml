@@ -1,0 +1,117 @@
+name: Weblate Merge Product PO (SLE-16)
+
+permissions:
+  # it merges the updated translations and creates a pull request with the changes
+  contents: write
+  pull-requests: write
+
+on:
+  schedule:
+    # run every Monday at 2:35AM UTC
+    - cron: "35 2 * * 0"
+
+  # allow running manually
+  workflow_dispatch:
+
+jobs:
+  merge-po:
+    # allow pushing and creating pull requests
+    permissions:
+      contents: write
+      pull-requests: write
+
+    # do not run in forks
+    if: ${{ !github.event.repository.fork }}
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: registry.opensuse.org/opensuse/leap:16.0
+      volumes:
+        # bind mount the GitHub CLI tool from the Ubuntu host,
+        # it is a statically linked binary so it should work also in Leap
+        - /usr/bin/gh:/usr/bin/gh
+
+    steps:
+      - name: Configure and refresh repositories
+        run: |
+          # disable unused repositories to have a faster refresh
+          zypper modifyrepo -d openSUSE:repo-openh264 && \
+            zypper --non-interactive ref
+
+      - name: Install tools
+        run: zypper --non-interactive install --no-recommends git gettext-tools npm-default
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "YaST Bot"
+          git config --global user.email "yast-devel@opensuse.org"
+
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          path: agama
+          # checkout the SLE-16 branch
+          ref: SLE-16
+
+      - name: Checkout Agama-weblate sources
+        uses: actions/checkout@v4
+        with:
+          path: agama-weblate
+          repository: ${{ github.repository_owner }}/agama-weblate
+          # checkout the SLE-16 branch
+          ref: SLE-16
+  
+      - name: Validate the product PO files
+        working-directory: ./agama-weblate
+        run:  ls products/*.po | xargs -n1 msgfmt --check-format -o /dev/null
+  
+      - name: Install NPM packages
+        working-directory: ./agama/.github/workflows/product_translations
+        run:  npm ci
+  
+      - name: Update product files with translations
+        env:
+          NODE_PATH: ./agama/.github/workflows/product_translations
+        run: |
+          ${NODE_PATH}/merge_po agama-weblate/products agama/products.d
+
+      - name: Check changes
+        id: check_changes
+        working-directory: ./agama
+        run: |
+          git diff products.d > po.diff
+
+          if [ -s po.diff ]; then
+            echo "Product files updated"
+            # this is an Output Parameter
+            # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
+            echo "products_updated=true" >> $GITHUB_OUTPUT
+          else
+            echo "Product files unchanged"
+            echo "products_updated=false" >> $GITHUB_OUTPUT
+          fi
+
+          rm po.diff
+
+      - name: Push updated product files
+        # run only when a PO file has been updated
+        if: steps.check_changes.outputs.products_updated == 'true'
+        working-directory: ./agama
+        run: |
+          # use a unique branch to avoid possible conflicts with already existing branches
+          git checkout -b "products_po_merge_sle16_${GITHUB_RUN_ID}"
+          git commit -a -m "Update translations in the product files"$'\n\n'"Agama-weblate commit: `git -C ../agama-weblate rev-parse HEAD`"
+          git push origin "products_po_merge_sle16_${GITHUB_RUN_ID}"
+
+      - name: Create pull request
+        # run only when a PO file has been updated
+        if: steps.check_changes.outputs.products_updated == 'true'
+        working-directory: ./agama
+        run: |
+          gh pr create -B SLE-16 -H "products_po_merge_sle16_${GITHUB_RUN_ID}" \
+            --label translations --label bot \
+            --title "Update translations in the product files (SLE-16)" \
+            --body "Updating the product translations from the agama-weblate repository"
+        env:
+          GH_TOKEN: ${{ github.token }}

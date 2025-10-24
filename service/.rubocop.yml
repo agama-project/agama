@@ -11,7 +11,7 @@ AllCops:
     - agama-yast.gemspec
     - package/*.spec
 
-# a D-Bus method definition may take up more line lenght than usual
+# a D-Bus method definition may take up more line length than usual
 Layout/LineLength:
   IgnoredPatterns:
     - dbus_method
@@ -31,6 +31,8 @@ Metrics/AbcSize:
 
 Metrics/ParameterLists:
   Max: 6
+  Exclude:
+    - lib/agama/software/repository.rb
 
 Metrics/ClassLength:
   Max: 300

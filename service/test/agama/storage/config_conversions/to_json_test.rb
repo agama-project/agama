@@ -123,9 +123,8 @@ describe Agama::Storage::ConfigConversions::ToJSON do
           ],
           mdRaids:      [
             {
-              level:      "raid0",
-              devices:    ["p2", "p3"],
-              partitions: []
+              level:   "raid0",
+              devices: ["p2", "p3"]
             }
           ],
           volumeGroups: [

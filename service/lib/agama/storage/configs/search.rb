@@ -62,10 +62,14 @@ module Agama
         #   matched
         attr_accessor :max
 
+        # return [Array<SortCriteria::Base>]
+        attr_accessor :sort_criteria
+
         # Constructor
         def initialize
           @solved = false
           @if_not_found = :error
+          @sort_criteria = []
         end
 
         # Whether the search was already solved.

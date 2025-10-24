@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,6 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast2/equatable"
 require "y2storage/secret_attributes"
 
 module Agama
@@ -26,7 +27,10 @@ module Agama
     module Configs
       # Configuration setting describing the desired encryption for a device
       class Encryption
+        include Yast2::Equatable
         include Y2Storage::SecretAttributes
+
+        eql_attr :eql_method, :password, :eql_pbkd_function, :label, :cipher, :key_size
 
         # @return [Y2Storage::EncryptionMethod::Base, nil]
         attr_accessor :method
@@ -64,6 +68,22 @@ module Agama
           return false unless method&.password_required?
 
           password.nil? || password.empty?
+        end
+
+      private
+
+        # Value to compare the encryption method.
+        #
+        # @return [Symbol, nil]
+        def eql_method
+          method&.to_sym
+        end
+
+        # Value to compare the PBKD function.
+        #
+        # @return [Symbol, nil]
+        def eql_pbkd_function
+          pbkd_function&.to_sym
         end
       end
     end

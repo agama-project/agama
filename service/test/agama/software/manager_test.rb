@@ -61,7 +61,8 @@ describe Agama::Software::Manager do
       set_resolvables:  nil,
       packages_count:   "500 MB",
       issues:           proposal_issues,
-      on_issues_change: nil
+      on_issues_change: nil,
+      only_required:    nil
     )
   end
 
@@ -310,7 +311,8 @@ describe Agama::Software::Manager do
         ]
       )
 
-      allow(subject.product).to receive(:user_patterns).and_return(["kde"])
+      kde = Agama::Software::UserPattern.new("kde", false)
+      allow(subject.product).to receive(:user_patterns).and_return([kde])
       patterns = subject.patterns(true)
 
       expect(patterns).to contain_exactly(
@@ -457,26 +459,25 @@ describe Agama::Software::Manager do
     context "only a local repository is used" do
       let(:repo_id) { 42 }
       before do
-        expect(Agama::Software::Repository).to receive(:all).and_return(
+        allow(Agama::Software::Repository).to receive(:all).and_return(
           [
             Agama::Software::Repository.new(
               repo_id: repo_id, repo_alias: "alias", name: "name",
-              url: "dir:///run/initramfs/live/install", enabled: true, autorefresh: false
+              url: "dvd:/install?devices=/dev/sr0", enabled: true, autorefresh: false
             )
-          ],
-          # for the second and further calls return empty list, the repo has been removed
-          []
+          ]
         )
       end
 
-      it "removes the local repository" do
-        expect(Yast::Pkg).to receive(:SourceDelete).with(repo_id)
+      it "disables the local repository" do
+        allow(subject).to receive(:copy_zypp_to_target)
+        expect(Yast::Pkg).to receive(:SourceSetEnabled).with(repo_id, false)
 
         subject.finish
       end
 
-      it "does not copy the libzypp cache" do
-        expect(subject).to_not receive(:copy_zypp_to_target)
+      it "copies the libzypp cache" do
+        expect(subject).to receive(:copy_zypp_to_target)
 
         subject.finish
       end

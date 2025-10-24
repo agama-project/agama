@@ -123,6 +123,12 @@ pub trait Software1 {
     #[allow(clippy::type_complexity)]
     fn conflicts(&self) -> zbus::Result<Vec<(u32, String, String, Vec<(u32, String, String)>)>>;
 
+    /// OnlyRequired property
+    #[zbus(property)]
+    fn only_required(&self) -> zbus::Result<u32>;
+    #[zbus(property)]
+    fn set_only_required(&self, value: u32) -> zbus::Result<()>;
+
     /// SelectedPatterns property
     #[zbus(property)]
     fn selected_patterns(&self) -> zbus::Result<std::collections::HashMap<String, u8>>;

@@ -22,6 +22,7 @@ use super::http::{login, login_from_query, logout, session};
 use super::{config::ServiceConfig, state::ServiceState, EventsSender};
 use agama_lib::auth::TokenClaims;
 use axum::http::HeaderValue;
+use axum::middleware::Next;
 use axum::{
     body::Body,
     extract::Request,
@@ -31,6 +32,7 @@ use axum::{
     Router,
 };
 use hyper::header::CACHE_CONTROL;
+use std::sync::Arc;
 use std::time::Duration;
 use std::{
     convert::Infallible,
@@ -107,8 +109,9 @@ impl MainServiceBuilder {
 
         let api_router = self
             .api_router
-            .route_layer(middleware::from_extractor_with_state::<TokenClaims, _>(
+            .route_layer(middleware::from_fn_with_state(
                 state.clone(),
+                auth_middleware,
             ))
             .route("/ping", get(super::http::ping))
             .route("/auth", post(login).get(session).delete(logout));
@@ -148,4 +151,14 @@ impl MainServiceBuilder {
             ))
             .with_state(state)
     }
+}
+
+// Authentication middleware.
+//
+// 1. Extracts the claims of the authentication token.
+// 2. Adds the client ID as a extension to the request.
+async fn auth_middleware(claims: TokenClaims, mut request: Request, next: Next) -> Response {
+    request.extensions_mut().insert(Arc::new(claims.client_id));
+    let response = next.run(request).await;
+    response
 }

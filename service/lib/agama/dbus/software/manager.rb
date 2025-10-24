@@ -21,7 +21,6 @@
 
 require "dbus"
 require "agama/dbus/base_object"
-require "agama/dbus/clients/locale"
 require "agama/dbus/clients/network"
 require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/locale"
@@ -66,10 +65,41 @@ module Agama
           backend.issues
         end
 
+        def only_required
+          case backend.proposal.only_required
+          when nil then 0
+          when false then 1
+          when true then 2
+          else
+            @logger.warn(
+              "Unexpected value in only_required #{backend.proposal.only_required.inspect}"
+            )
+            0
+          end
+        end
+
+        def only_required=(flag)
+          value = case flag
+          when 0 then nil
+          when 1 then false
+          when 2 then true
+          else
+            @logger.warn "Unexpected value in only_required #{flag.inspect}"
+          end
+          backend.proposal.only_required = value
+          # propose again after changing solver flag
+          propose
+        end
+
         SOFTWARE_INTERFACE = "org.opensuse.Agama.Software1"
         private_constant :SOFTWARE_INTERFACE
 
         dbus_interface SOFTWARE_INTERFACE do
+          # Flag for proposing required only dependencies
+          # Propose is called automatically whenever the value is assigned.
+          # value mapping 0 for not set, 1 for false and 2 for true
+          dbus_accessor :only_required, "u"
+
           # array of repository properties: pkg-bindings ID, alias, name, URL, product dir, enabled
           # and loaded flag
           dbus_method :ListRepositories, "out Result:a(issssbb)" do
@@ -211,11 +241,6 @@ module Agama
 
         # Registers callback to be called
         def register_callbacks
-          Agama::DBus::Clients::Locale.instance.on_language_selected do |language_ids|
-            backend.languages = language_ids
-            probe
-          end
-
           nm_client = Agama::DBus::Clients::Network.new
           nm_client.on_connection_changed do |connected|
             probe if connected

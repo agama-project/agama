@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "agama/autoyast/pre_script"
 
 # :nodoc:
 module Agama
@@ -74,9 +75,10 @@ module Agama
       end
 
       def run_pre_scripts
+        PreScript.clean_all
         pre_scripts = Yast::Profile.current.fetch_as_hash("scripts")
           .fetch_as_array("pre-scripts")
-          .map { |h| Y2Autoinstallation::PreScript.new(h) }
+          .map { |h| PreScript.new(h) }
         script_runner = Y2Autoinstall::ScriptRunner.new
 
         pre_scripts.each do |script|

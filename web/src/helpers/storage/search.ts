@@ -39,10 +39,17 @@ function deviceLocation(apiModel: apiModel.Config, name: string) {
 function buildModelDevice(
   apiModel: apiModel.Config,
   list: string,
-  index: number,
+  index: number | string,
 ): model.Drive | model.MdRaid | undefined {
   const model = buildModel(apiModel);
   return model[list].at(index);
+}
+
+function isUsed(apiModel: apiModel.Config, list: string, index: number | string): boolean {
+  const device = buildModelDevice(apiModel, list, index);
+  if (!device) return false;
+
+  return device.isUsed;
 }
 
 function deleteIfUnused(apiModel: apiModel.Config, name: string): apiModel.Config {
@@ -51,8 +58,7 @@ function deleteIfUnused(apiModel: apiModel.Config, name: string): apiModel.Confi
   const { list, index } = deviceLocation(apiModel, name);
   if (!list) return apiModel;
 
-  const device = buildModelDevice(apiModel, list, index);
-  if (!device || device.isUsed) return apiModel;
+  if (isUsed(apiModel, list, index)) return apiModel;
 
   apiModel[list].splice(index, 1);
   return apiModel;
@@ -73,6 +79,26 @@ function switchSearched(
 
   const device = findDevice(apiModel, oldList, index);
   const deviceModel = buildModelDevice(apiModel, oldList, index);
+  const targetIndex = findDeviceIndex(apiModel, list, name);
+  const target = targetIndex === -1 ? null : findDevice(apiModel, list, targetIndex);
+
+  if (deviceModel.filesystem) {
+    if (target) {
+      target.mountPath = device.mountPath;
+      target.filesystem = device.filesystem;
+      target.spacePolicy = "keep";
+    } else {
+      apiModel[list].push({
+        name,
+        mountPath: device.mountPath,
+        filesystem: device.filesystem,
+        spacePolicy: "keep",
+      });
+    }
+
+    apiModel[oldList].splice(index, 1);
+    return apiModel;
+  }
 
   const [newPartitions, existingPartitions] = fork(deviceModel.partitions, (p) => p.isNew);
   const reusedPartitions = existingPartitions.filter((p) => p.isReused);
@@ -84,9 +110,7 @@ function switchSearched(
     apiModel[oldList].splice(index, 1);
   }
 
-  const targetIndex = findDeviceIndex(apiModel, list, name);
-  if (targetIndex !== -1) {
-    const target = findDevice(apiModel, list, targetIndex);
+  if (target) {
     target.partitions ||= [];
     target.partitions = [...target.partitions, ...newPartitions];
   } else {
@@ -100,4 +124,4 @@ function switchSearched(
   return apiModel;
 }
 
-export { deleteIfUnused, switchSearched };
+export { deleteIfUnused, isUsed, switchSearched };

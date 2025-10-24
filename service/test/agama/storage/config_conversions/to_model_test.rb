@@ -106,7 +106,7 @@ describe Agama::Storage::ConfigConversions::ToModel do
                 type:    "ext4"
               },
               mountPath:   "/data",
-              spacePolicy: "delete",
+              spacePolicy: "keep",
               partitions:  []
             }
           ],

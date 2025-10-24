@@ -97,11 +97,10 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Config do
         expect(config_json[:drives]).to eq(
           [
             {
-              search:     {
+              search: {
                 condition:  { name: "/dev/vda" },
                 ifNotFound: "error"
-              },
-              partitions: []
+              }
             },
             {
               search:     {
@@ -113,8 +112,7 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Config do
                 mountOptions:    [],
                 path:            "/",
                 reuseIfPossible: false
-              },
-              partitions: []
+              }
             }
           ]
         )
@@ -136,9 +134,8 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Config do
         expect(config_json[:mdRaids]).to eq(
           [
             {
-              level:      "raid1",
-              devices:    ["disk1", "disk2"],
-              partitions: []
+              level:   "raid1",
+              devices: ["disk1", "disk2"]
             }
           ]
         )

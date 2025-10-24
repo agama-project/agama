@@ -15,13 +15,9 @@
         <profile name="openSUSE" description="openSUSE multiproduct image" import="true" />
         <!-- TODO: add SPx in the future -->
         <profile name="SUSE_SLE_16" description="SLE-based image" import="true" />
-        <profile name="SUSE_SLE_16_PXE" description="SLE OEM image for remote installation" import="true" />
-        <profile name="SUSE_SLE_16_PXE_MINI" description="Minimal SLE OEM image for remote installation" import="true" />
-        <profile name="openSUSE_PXE" description="openSUSE OEM image for remote installation" import="true" />
-        <profile name="Leap_16.0_PXE" description="openSUSE Leap OEM image for remote installation" import="true" />
     </profiles>
     <preferences>
-        <version>16.pre.0.0</version>
+        <version>18.pre.0.0</version>
         <packagemanager>zypper</packagemanager>
         <locale>en_US</locale>
         <keytable>us</keytable>
@@ -47,46 +43,6 @@
             <bootloader name="custom" />
         </type>
     </preferences>
-    <preferences arch="ppc64le" profiles="openSUSE_PXE,Leap_16.0_PXE,SUSE_SLE_16_PXE,SUSE_SLE_16_PXE_MINI">
-        <!-- For some reason the compression results on ppc64le are not as good as on the other archs -->
-        <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" firmware="ofw" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=3174400">
-            <bootloader name="grub2" console="serial" timeout="1"/>
-            <oemconfig>
-                <oem-skip-verify>true</oem-skip-verify>
-                <oem-unattended>true</oem-unattended>
-                <oem-unattended-id>/dev/ram1</oem-unattended-id>
-                <oem-swap>false</oem-swap>
-                <oem-multipath-scan>false</oem-multipath-scan>
-            </oemconfig>
-            <size unit="M">3000</size>
-        </type>
-    </preferences>
-    <preferences arch="s390x" profiles="openSUSE_PXE,Leap_16.0_PXE,SUSE_SLE_16_PXE,SUSE_SLE_16_PXE_MINI">
-        <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=2097152">
-            <bootloader name="custom"/>
-            <oemconfig>
-                <oem-skip-verify>true</oem-skip-verify>
-                <oem-unattended>true</oem-unattended>
-                <oem-unattended-id>/dev/ram1</oem-unattended-id>
-                <oem-swap>false</oem-swap>
-                <oem-multipath-scan>false</oem-multipath-scan>
-            </oemconfig>
-            <size unit="M">1900</size>
-        </type>
-    </preferences>
-    <preferences arch="aarch64,x86_64" profiles="openSUSE_PXE,Leap_16.0_PXE,SUSE_SLE_16_PXE,SUSE_SLE_16_PXE_MINI">
-        <type image="oem" filesystem="btrfs" fsmountoptions="compress=zstd:15" firmware="uefi" installiso="true" installpxe="true" installboot="install" kernelcmdline="rd.kiwi.ramdisk ramdisk_size=2097152">
-            <bootloader name="grub2" timeout="1"/>
-            <oemconfig>
-                <oem-skip-verify>true</oem-skip-verify>
-                <oem-unattended>true</oem-unattended>
-                <oem-unattended-id>/dev/ram1</oem-unattended-id>
-                <oem-swap>false</oem-swap>
-                <oem-multipath-scan>false</oem-multipath-scan>
-            </oemconfig>
-            <size unit="M">1900</size>
-        </type>
-    </preferences>
     <users>
         <!-- the password is configured during boot -->
         <user password="!*" home="/root" name="root" groups="root"/>
@@ -94,13 +50,6 @@
     <repository type="rpm-md">
         <source path="obsrepositories:/"/>
     </repository>
-    <packages type="image" profiles="openSUSE_PXE,Leap_16.0_PXE,SUSE_SLE_16_PXE,SUSE_SLE_16_PXE_MINI">
-        <package name="NetworkManager-config-server"/>
-        <package name="dracut-kiwi-oem-repart"/>
-        <package name="dracut-kiwi-oem-dump"/>
-        <archive name="live-root-PXE.tar.xz"/>
-    </packages>
-
     <!-- common set of packages (SSH-based and remote installation, etc.) -->
     <packages type="image">
         <package name="avahi"/>
@@ -108,6 +57,7 @@
         <package name="systemd"/>
         <package name="procps"/>
         <package name="iputils"/>
+        <package name="hyper-v" arch="aarch64,x86_64"/>
         <package name="vim"/>
         <package name="vim-data"/>
         <package name="grub2"/>
@@ -144,7 +94,7 @@
         <package name="agama-web-ui"/>
         <package name="agama-cli"/>
         <package name="agama-cli-bash-completion"/>
-        <package name="agama-auto"/>
+        <package name="agama-autoinstall"/>
         <package name="rubygem(agama-yast)"/>
         <package name="rubygem(byebug)"/>
         <package name="psmisc"/>
@@ -156,23 +106,28 @@
         <package name="qrencode"/>
         <package name="qemu-guest-agent" />
         <package name="aaa_base-extras"/>
-        <package name="createrepo_c" />
+        <!-- to work correctly with the fips=1 boot parameter -->
+        <package name="libopenssl-3-fips-provider"/>
         <!-- it can be used by users in AutoYaST pre-scripts -->
         <package name="perl-XML-Simple"/>
         <archive name="live-root.tar.xz"/>
+        <!-- IPMI support -->
+        <package name="ipmitool" />
+        <!-- jsc#PED-13114 -->
+        <package name="tpm2.0-tools" />
+        <!-- plymouth bsc#1248507 -->
+        <package name="plymouth" />
     </packages>
 
     <!-- packages for local installation (desktop, browser, etc.) -->
-    <packages type="image" profiles="Leap_16.0,Leap_16.0_PXE,openSUSE,openSUSE_PXE,SUSE_SLE_16,SUSE_SLE_16_PXE">
+    <packages type="image" profiles="Leap_16.0,openSUSE,SUSE_SLE_16">
         <package name="bluez-firmware"/>
         <package name="agama-integration-tests"/>
         <package name="fontconfig"/>
         <package name="fonts-config"/>
-        <package name="adobe-sourcecodepro-fonts"/>
-        <package name="adobe-sourcehansans-jp-fonts"/>
         <package name="xauth"/>
         <package name="MozillaFirefox"/>
-        <package name="gdm"/>
+        <package name="gdm-systemd"/>
         <package name="gnome-shell"/>
         <package name="gnome-session-wayland"/>
         <package name="gnome-kiosk"/>
@@ -180,7 +135,7 @@
     </packages>
 
     <!-- common packages for openSUSE Tumbleweed and Leap distributions -->
-    <packages type="image" profiles="Leap_16.0,Leap_16.0_PXE,openSUSE,openSUSE_PXE">
+    <packages type="image" profiles="Leap_16.0,openSUSE">
         <package name="agama-products-opensuse"/>
         <package name="grub2-branding-openSUSE" arch="aarch64,x86_64"/>
         <package name="MozillaFirefox-branding-openSUSE"/>
@@ -189,26 +144,24 @@
         <package name="staging-build-key"/>
     </packages>
     <!-- additional packages for the Leap distributions -->
-    <packages type="image" profiles="Leap_16.0,Leap_16.0_PXE">
+    <packages type="image" profiles="Leap_16.0">
         <package name="openSUSE-repos-Leap"/>
         <package name="kernel-default-extra"/>
         <package name="kernel-default-optional"/>
     </packages>
     <!-- additional packages for the openSUSE Tumbleweed distribution -->
-    <packages type="image" profiles="openSUSE,openSUSE_PXE">
+    <packages type="image" profiles="openSUSE">
         <package name="openSUSE-repos-Tumbleweed"/>
     </packages>
     <!-- additional packages for the SLE distributions -->
-    <packages type="image" profiles="SUSE_SLE_16,SUSE_SLE_16_PXE,SUSE_SLE_16_PXE_MINI">
+    <packages type="image" profiles="SUSE_SLE_16">
         <package name="agama-products-sle"/>
         <package name="grub2-branding-SLE" arch="aarch64,x86_64"/>
         <package name="patterns-base-base"/>
         <package name="suse-build-key"/>
     </packages>
-    <packages type="image" profiles="SUSE_SLE_16,SUSE_SLE_16_PXE">
+    <packages type="image" profiles="SUSE_SLE_16">
         <package name="MozillaFirefox-branding-SLE"/>
-        <package name="kernel-default-extra"/>
-        <package name="kernel-default-optional"/>
     </packages>
     <packages type="bootstrap">
         <package name="udev"/>
@@ -217,14 +170,14 @@
         <package name="ca-certificates"/>
         <package name="ca-certificates-mozilla"/>
     </packages>
-    <packages type="bootstrap" profiles="Leap_16.0,Leap_16.0_PXE">
+    <packages type="bootstrap" profiles="Leap_16.0">
         <package name="Leap-release"/>
     </packages>
-    <packages type="bootstrap" profiles="openSUSE,openSUSE_PXE">
+    <packages type="bootstrap" profiles="openSUSE">
         <package name="openSUSE-release"/>
         <package name="openSUSE-release-ftp"/>
     </packages>
-    <packages type="bootstrap" profiles="SUSE_SLE_16,SUSE_SLE_16_PXE,SUSE_SLE_16_PXE_MINI">
+    <packages type="bootstrap" profiles="SUSE_SLE_16">
         <package name="SLES-release"/>
     </packages>
 </image>

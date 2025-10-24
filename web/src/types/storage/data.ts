@@ -55,27 +55,35 @@ type SpacePolicy = {
   actions?: SpacePolicyAction[];
 };
 
+type Formattable = {
+  mountPath?: string;
+  filesystem?: Filesystem;
+};
+
 // So far this type is used only for adding a pre-existing RAID searched by name. So we are starting
 // with this simplistic definition. Such a definition will likely grow in the future if the same
 // type is used for more operations.
 type MdRaid = {
   name: string;
+  spacePolicy?: apiModel.SpacePolicy;
 };
 
 // This type is used only for adding a disk device searched by name. See commend on MdRaid about
 // starting simple.
 type Drive = {
   name: string;
+  spacePolicy?: apiModel.SpacePolicy;
 };
 
 export type {
   Drive,
+  Filesystem,
+  Formattable,
+  LogicalVolume,
   MdRaid,
   Partition,
-  VolumeGroup,
-  LogicalVolume,
-  Filesystem,
   Size,
   SpacePolicy,
   SpacePolicyAction,
+  VolumeGroup,
 };

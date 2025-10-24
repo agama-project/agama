@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-15 03:15+0000\n"
-"PO-Revision-Date: 2025-06-13 22:59+0000\n"
-"Last-Translator: Fran Serrador <serrador@proton.me>\n"
+"POT-Creation-Date: 2025-10-12 02:50+0000\n"
+"PO-Revision-Date: 2025-08-09 13:59+0000\n"
+"Last-Translator: Javier Llorente <javier@opensuse.org>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/es/>\n"
 "Language: es\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.11.4\n"
+"X-Generator: Weblate 5.12.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -26,43 +26,46 @@ msgstr ""
 #, perl-brace-format
 msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr ""
-"Se encontraron elementos no soportados en el perfil de AutoYaST: %{keys}."
+"Se han encontrado elementos no admitidos en el perfil de AutoYaST: %{keys}."
 
 #. Runs the config phase
-#: service/lib/agama/manager.rb:96
+#.
+#. @param reprobe [Boolean] Whether a reprobe should be done instead of a probe.
+#. @param data [Hash] Extra data provided to the D-Bus calls.
+#: service/lib/agama/manager.rb:98
 msgid "Analyze disks"
 msgstr "Analizar discos"
 
-#: service/lib/agama/manager.rb:96
+#: service/lib/agama/manager.rb:98
 msgid "Configure software"
 msgstr "Configurar software"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-#: service/lib/agama/manager.rb:119
+#: service/lib/agama/manager.rb:117
 msgid "Prepare disks"
 msgstr "Preparar discos"
 
-#: service/lib/agama/manager.rb:120
+#: service/lib/agama/manager.rb:118
 msgid "Install software"
 msgstr "Instalar software"
 
-#: service/lib/agama/manager.rb:121
+#: service/lib/agama/manager.rb:119
 msgid "Configure the system"
 msgstr "Configurar el sistema"
 
 #. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
-#: service/lib/agama/manager.rb:161
+#: service/lib/agama/manager.rb:160
 msgid "Load software translations"
 msgstr "Cargar traducciones de software"
 
-#: service/lib/agama/manager.rb:162
+#: service/lib/agama/manager.rb:161
 msgid "Load storage translations"
 msgstr "Cargar traducciones de almacenamiento"
 
 #. @param certificate [Agama::SSL::Certificate]
 #. @return [Agama::Question]
-#: service/lib/agama/registration.rb:421
+#: service/lib/agama/registration.rb:424
 msgid ""
 "Trying to import a self signed certificate. Do you want to trust it and "
 "register the product?"
@@ -73,7 +76,7 @@ msgstr ""
 #. TRANSLATORS: button label, try downloading the failed package again
 #: service/lib/agama/software/callbacks/base.rb:48
 msgid "Try again"
-msgstr "Probar otra vez"
+msgstr "Volver a intentar"
 
 #. TRANSLATORS: button label, ignore the failed download, skip package installation
 #: service/lib/agama/software/callbacks/base.rb:54
@@ -83,7 +86,7 @@ msgstr "Continuar de todos modos"
 #. TRANSLATORS: button label, abort the installation completely after an error
 #: service/lib/agama/software/callbacks/base.rb:60
 msgid "Abort installation"
-msgstr "Abortar instalación"
+msgstr "Cancelar instalación"
 
 #. TRANSLATORS: button label, skip the error
 #: service/lib/agama/software/callbacks/base.rb:66
@@ -155,9 +158,9 @@ msgstr ""
 #. @param description [String] Problem description
 #. @return [String] "I" for ignore, "R" for retry and "C" for abort (not implemented)
 #. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
-#: service/lib/agama/software/callbacks/script.rb:59
+#: service/lib/agama/software/callbacks/script.rb:50
 msgid "There was a problem running a package script."
-msgstr "Hubo un problema al correr un script de paquete."
+msgstr "Se ha producido un problema al ejecutar un guion de paquete."
 
 #. Callback to handle unsigned files
 #.
@@ -231,8 +234,8 @@ msgid ""
 "anyway?"
 msgstr ""
 "El archivo %{filename} de %{repo_url} está firmado digitalmente con la "
-"siguiente clave GnuPG, pero la comprobación de integridad ha fallado: "
-"%{key_id} (%{key_name}). ¿Desea usarlo de todas formas?"
+"siguiente clave GnuPG, pero la comprobación de integridad ha fallado: %"
+"{key_id} (%{key_name}). ¿Desea usarlo de todas formas?"
 
 #: service/lib/agama/software/callbacks/signature.rb:175
 #, perl-brace-format
@@ -241,8 +244,8 @@ msgid ""
 "the integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
 msgstr ""
 "El archivo %{filename} está firmado digitalmente con la siguiente clave "
-"GnuPG, pero la comprobación de integridad ha fallado: %{key_id} "
-"(%{key_name}). ¿Desea usarlo de todas formas?"
+"GnuPG, pero la comprobación de integridad ha fallado: %{key_id} (%"
+"{key_name}). ¿Desea usarlo de todas formas?"
 
 #. TRANSLATORS: button label, trust the GPG key or the signature
 #: service/lib/agama/software/callbacks/signature.rb:199
@@ -250,44 +253,44 @@ msgid "Trust"
 msgstr "Confiar"
 
 #. Should an error be raised?
-#: service/lib/agama/software/manager.rb:149
+#: service/lib/agama/software/manager.rb:178
 msgid "Refreshing repositories metadata"
 msgstr "Actualizando los metadatos del repositorios"
 
-#: service/lib/agama/software/manager.rb:150
+#: service/lib/agama/software/manager.rb:179
 msgid "Calculating the software proposal"
 msgstr "Calcular la propuesta de software"
 
-#: service/lib/agama/software/manager.rb:154
+#: service/lib/agama/software/manager.rb:183
 msgid "Initializing sources"
 msgstr "Inicializando fuentes"
 
 #. error message
-#: service/lib/agama/software/manager.rb:392
+#: service/lib/agama/software/manager.rb:427
 #, c-format
 msgid "Adding service '%s' failed."
 msgstr "Error al añadir el servicio %s."
 
 #. error message
-#: service/lib/agama/software/manager.rb:397
+#: service/lib/agama/software/manager.rb:432
 #, c-format
 msgid "Updating service '%s' failed."
 msgstr "Error al actualizar el servicio %s."
 
 #. error message
-#: service/lib/agama/software/manager.rb:403
+#: service/lib/agama/software/manager.rb:438
 #, c-format
 msgid "Saving service '%s' failed."
 msgstr "Error al guardar el servicio %s."
 
 #. error message
-#: service/lib/agama/software/manager.rb:409
+#: service/lib/agama/software/manager.rb:444
 #, c-format
 msgid "Refreshing service '%s' failed."
 msgstr "Error al renovar el servicio %s."
 
 #. rubocop:enable Metrics/AbcSize
-#: service/lib/agama/software/manager.rb:418
+#: service/lib/agama/software/manager.rb:453
 #, c-format
 msgid "Removing service '%s' failed."
 msgstr "Error al eliminar el servicio %s."
@@ -297,7 +300,7 @@ msgstr "Error al eliminar el servicio %s."
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:631
+#: service/lib/agama/software/manager.rb:710
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "No se pudo leer el repositorio \"%s\""
@@ -305,21 +308,21 @@ msgstr "No se pudo leer el repositorio \"%s\""
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:641
+#: service/lib/agama/software/manager.rb:720
 msgid "Product not selected yet"
 msgstr "Producto aún no seleccionado"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:650
+#: service/lib/agama/software/manager.rb:729
 msgid "Product must be registered"
 msgstr "El producto debe estar registrado"
 
 #. Returns solver error messages from the last attempt
 #.
 #. @return [Array<String>] Error messages
-#: service/lib/agama/software/proposal.rb:270
+#: service/lib/agama/software/proposal.rb:276
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "Se encontraron %s problemas de dependencias."
@@ -415,8 +418,8 @@ msgstr "No hay ningún dispositivo de arranque con el alias %s"
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr ""
-"No se proporcionó ninguna contraseña (obligatoria para utilizar el método "
-"'%{crypt_method}')."
+"No se proporcionó ninguna contraseña (obligatoria para utilizar el método '%"
+"{crypt_method}')."
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
@@ -437,7 +440,7 @@ msgstr "'%{crypt_method}' no es un método adecuado para cifrar el dispositivo."
 #: service/lib/agama/storage/config_checkers/filesystem.rb:79
 #, c-format
 msgid "Missing file system type for '%s'"
-msgstr "Falta el tipo de sistema de archivos para '%s'"
+msgstr "Falta el tipo de sistema de archivos de '%s'"
 
 #. TRANSLATORS: %{filesystem} is replaced by a file system type (e.g., "Btrfs") and
 #. %{path} is replaced by a mount path (e.g., "/home").
@@ -445,8 +448,7 @@ msgstr "Falta el tipo de sistema de archivos para '%s'"
 #, perl-brace-format
 msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr ""
-"El tipo de sistema de archivos para '%{filesystem}' no es adecuado para "
-"'%{path}'"
+"El tipo de sistema de archivos '%{filesystem}' no es adecuado para '%{path}'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
 #: service/lib/agama/storage/config_checkers/logical_volume.rb:82
@@ -482,11 +484,11 @@ msgstr "Se requieren al menos %s dispositivos para %s"
 #: service/lib/agama/storage/config_checkers/md_raid.rb:168
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be deleted because it is part of the MD RAID "
-"%{md_raid}"
+"The device '%{member}' cannot be deleted because it is part of the MD RAID %"
+"{md_raid}"
 msgstr ""
-"El dispositivo %{member} no puede ser borrado porque es parte del RAID MD "
-"%{md_raid}"
+"El dispositivo %{member} no puede ser borrado porque es parte del RAID MD %"
+"{md_raid}"
 
 #. Issue if the device member is resized.
 #.
@@ -495,8 +497,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:191
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be resized because it is part of the MD RAID "
-"%{md_raid}"
+"The device '%{member}' cannot be resized because it is part of the MD RAID %"
+"{md_raid}"
 msgstr ""
 "El dispositivo %{member} no puede ser redimensionado porque es parte del "
 "RAID MD %{md_raid}"
@@ -511,8 +513,8 @@ msgid ""
 "The device '%{member}' cannot be formatted because it is part of the MD RAID "
 "%{md_raid}"
 msgstr ""
-"El dispositivo %{member} no se puede formatear porque es parte del RAID MD "
-"%{md_raid}"
+"El dispositivo %{member} no se puede formatear porque es parte del RAID MD %"
+"{md_raid}"
 
 #. Issue if the device member is partitioned.
 #.
@@ -534,11 +536,11 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:259
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be used because it is part of the MD RAID "
-"%{md_raid}"
+"The device '%{member}' cannot be used because it is part of the MD RAID %"
+"{md_raid}"
 msgstr ""
-"El dispositivo '%{member}' no se puede usar porque es parte del RAID MD "
-"%{md_raid}"
+"El dispositivo '%{member}' no se puede usar porque es parte del RAID MD %"
+"{md_raid}"
 
 #. Issue if the parent of the device member is formatted.
 #.
@@ -653,14 +655,68 @@ msgstr ""
 msgid "Shrinking is not supported by this device"
 msgstr "Este dispositivo no admite la reducción"
 
+#. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
+#: service/lib/agama/storage/finisher.rb:145
+msgid "Copying important installation files to the target system"
+msgstr "Copiando archivos de instalación importantes al sistema de destino"
+
+#. Constructor
+#: service/lib/agama/storage/finisher.rb:186
+msgid "Writing Linux Security Modules configuration"
+msgstr "Escribiendo configuración de módulos de seguridad de Linux"
+
+#. Step to write the bootloader configuration
+#: service/lib/agama/storage/finisher.rb:197
+msgid "Installing bootloader"
+msgstr "Instalando cargador de arranque"
+
+#. Step to finish the Y2Storage configuration
+#: service/lib/agama/storage/finisher.rb:214
+msgid "Adjusting storage configuration"
+msgstr "Ajustando configuración de almacenamiento"
+
+#. Step to finish the iSCSI configuration
+#: service/lib/agama/storage/finisher.rb:225
+msgid "Adjusting iSCSI configuration"
+msgstr "Ajustando configuración iSCSI"
+
+#. Step to configure the file-system snapshots
+#: service/lib/agama/storage/finisher.rb:236
+msgid "Configuring file systems snapshots"
+msgstr "Configurando instantáneas del sistema de archivos"
+
+#. Step to copy the installation logs
+#: service/lib/agama/storage/finisher.rb:254
+msgid "Copying logs"
+msgstr "Copiando registros"
+
+#. Executes post-installation scripts
+#: service/lib/agama/storage/finisher.rb:288
+msgid "Running user-defined scripts"
+msgstr "Ejecutando comandos definidos por el usuario"
+
+#. Executes post-installation scripts
+#: service/lib/agama/storage/finisher.rb:327
+msgid "Deploying user-defined files"
+msgstr "Implementando los archivos definidos por el usuario"
+
+#. Step to unmount the target file-systems
+#: service/lib/agama/storage/finisher.rb:346
+msgid "Unmounting storage devices"
+msgstr "Desmontando dispositivos de almacenamiento"
+
 #. Applies the target configs.
 #.
 #. @param config [ISCSI::Config]
-#: service/lib/agama/storage/iscsi/manager.rb:291
+#: service/lib/agama/storage/iscsi/manager.rb:300
 msgid "Logout iSCSI targets"
 msgstr "Cerrar sesión en destinos iSCSI"
 
-#: service/lib/agama/storage/iscsi/manager.rb:292
+#: service/lib/agama/storage/iscsi/manager.rb:301
+msgid "Discover iSCSI targets"
+msgstr "Buscar destinos iSCSI"
+
+#: service/lib/agama/storage/iscsi/manager.rb:302
 msgid "Login iSCSI targets"
 msgstr "Iniciar sesión en destinos iSCSI"
 
@@ -668,52 +724,51 @@ msgstr "Iniciar sesión en destinos iSCSI"
 #.
 #. @param target [ISCSI::Configs::Target]
 #. @return [Issue]
-#: service/lib/agama/storage/iscsi/manager.rb:346
+#: service/lib/agama/storage/iscsi/manager.rb:366
 #, c-format
 msgid "Cannot login to iSCSI target %s"
 msgstr "No es posible iniciar sesión en el destino iSCSI %s"
 
-#. Underlying yast-storage-ng has own mechanism for proposing boot strategies.
-#. However, we don't always want to use BLS when it proposes so. Currently
-#. we want to use BLS only for Tumbleweed / Slowroll
-#: service/lib/agama/storage/manager.rb:131
+#. Probes storage devices and performs an initial proposal
+#.
+#. @param keep_config [Boolean] Whether to use the current storage config for calculating the
+#. proposal.
+#. @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided LUKS
+#. passwords).
+#: service/lib/agama/storage/manager.rb:133
 msgid "Activating storage devices"
 msgstr "Activar dispositivos de almacenamiento"
 
-#: service/lib/agama/storage/manager.rb:132
+#: service/lib/agama/storage/manager.rb:134
 msgid "Probing storage devices"
 msgstr "Probando los dispositivos de almacenamiento"
 
-#: service/lib/agama/storage/manager.rb:133
+#: service/lib/agama/storage/manager.rb:135
 msgid "Calculating the storage proposal"
 msgstr "Calcular la propuesta de almacenamiento"
 
-#: service/lib/agama/storage/manager.rb:136
-msgid "Selecting Linux Security Modules"
-msgstr "Seleccionar módulos de seguridad de Linux"
-
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:146
+#: service/lib/agama/storage/manager.rb:161
 msgid "Preparing bootloader proposal"
 msgstr "Preparando la propuesta del gestor de arranque"
 
 #. then also apply changes to that proposal
-#: service/lib/agama/storage/manager.rb:153
+#: service/lib/agama/storage/manager.rb:168
 msgid "Adding storage-related packages"
 msgstr "Agregar paquetes relacionados con el almacenamiento"
 
-#: service/lib/agama/storage/manager.rb:154
+#: service/lib/agama/storage/manager.rb:169
 msgid "Preparing the storage devices"
 msgstr "Preparando los dispositivos de almacenamiento"
 
-#: service/lib/agama/storage/manager.rb:155
+#: service/lib/agama/storage/manager.rb:170
 msgid "Writing bootloader sysconfig"
 msgstr "Escribiendo el gestor de arranque sysconfig"
 
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:364
+#: service/lib/agama/storage/proposal.rb:345
 msgid "Cannot calculate a valid storage setup with the current configuration"
 msgstr ""
 "No es posible calcular una configuración de almacenamiento válida con la "
@@ -722,7 +777,7 @@ msgstr ""
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:375
+#: service/lib/agama/storage/proposal.rb:356
 msgid "A problem ocurred while calculating the storage setup"
 msgstr "Ocurrió un problema al calcular la configuración de almacenamiento"
 
@@ -742,19 +797,22 @@ msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
 "The following selected devices are not found in the system: %{devices}"
 msgstr[0] ""
-"El siguiente dispositivo seleccionado no se encuentra en el sistema: "
-"%{devices}"
+"El siguiente dispositivo seleccionado no se encuentra en el sistema: %"
+"{devices}"
 msgstr[1] ""
-"Los siguientes dispositivos seleccionados no se encuentran en el sistema: "
-"%{devices}"
+"Los siguientes dispositivos seleccionados no se encuentran en el sistema: %"
+"{devices}"
 
 #. Recalculates the list of issues
 #: service/lib/agama/users.rb:154
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Es necesario definir un usuario, configurar la contraseña de root o una "
+"Es necesario definir un usuario, establecer la contraseña de root o una "
 "clave pública SSH"
+
+#~ msgid "Selecting Linux Security Modules"
+#~ msgstr "Seleccionar módulos de seguridad de Linux"
 
 #, perl-brace-format
 #~ msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"
@@ -792,6 +850,3 @@ msgstr ""
 
 #~ msgid "Writing repositories information"
 #~ msgstr "Escribiendo información de repositorios"
-
-#~ msgid "Finishing storage configuration"
-#~ msgstr "Finalizando configuración de almacenamiento"

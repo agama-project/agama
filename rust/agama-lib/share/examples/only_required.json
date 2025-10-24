@@ -1,0 +1,15 @@
+{
+  "software": {
+    "patterns": ["gnome"],
+    "packages": ["helix"],
+    "onlyRequired": true
+  },
+  "product": {
+    "id": "Tumbleweed"
+  },
+  "user": {
+    "fullName": "Monsignore Tux",
+    "password": "linux",
+    "userName": "tux"
+  }
+}

@@ -44,15 +44,6 @@ We use these resources to get more familiar with D-Bus API designing.
 - network manager design https://people.freedesktop.org/~lkundrak/nm-docs/spec.html
 - anakonda D-Bus API ( spread in `*_interface.py` files https://github.com/rhinstaller/anaconda/tree/master/pyanaconda/modules
 
-## Language
-
-Iface: o.o.Agama1.Locale
-
-See the new-style [reference][lang-ref] ([source][lang-src]).
-
-[lang-ref]: https://opensuse.github.io/agama/dbus/ref-org.opensuse.Agama1.Locale.html
-[lang-src]: dbus/org.opensuse.Agama1.Locale.doc.xml
-
 ## Base Product
 
 Iface: o.o.Agama.Software1

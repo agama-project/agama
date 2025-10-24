@@ -55,7 +55,7 @@ describe Agama::Software::RepositoriesManager do
     it "registers the repository in the packaging system" do
       url = "https://example.net"
       expect(Agama::Software::Repository).to receive(:create)
-        .with(name: url, url: url)
+        .with(autorefresh: true, name: url, repo_alias: "", url: url, priority: 99)
         .and_return(repo)
       subject.add(url)
       expect(subject.repositories).to include(repo)

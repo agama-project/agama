@@ -155,9 +155,20 @@ const lvmLv1: StorageDevice = {
 lvmVg.logicalVolumes = [lvmLv1];
 
 describe("deviceSize", () => {
-  it("returns the size with units", () => {
-    const result = deviceSize(1024);
-    expect(result).toEqual("1 KiB");
+  it("returns the approx size with units", () => {
+    expect(deviceSize(1028)).toEqual("1 KiB");
+    expect(deviceSize(5 * 1024 ** 2 - 1024)).toEqual("5 MiB");
+    expect(deviceSize(5 * 1024 ** 2 - 1000)).toEqual("5 MiB");
+    expect(deviceSize(5 * 1024 ** 2 - 7)).toEqual("5 MiB");
+  });
+
+  describe("with exact option", () => {
+    it("returns the exact size with units", () => {
+      expect(deviceSize(1028, { exact: true })).toEqual("1028 B");
+      expect(deviceSize(5 * 1024 ** 2 - 1024, { exact: true })).toEqual("5119 KiB");
+      expect(deviceSize(5 * 1024 ** 2 - 1000, { exact: true })).toEqual("5241.88 KB");
+      expect(deviceSize(5 * 1024 ** 2 - 7, { exact: true })).toEqual("5242873 B");
+    });
   });
 });
 
@@ -174,7 +185,7 @@ describe("deviceBaseName", () => {
 describe("deviceLabel", () => {
   it("returns the device basename and size", () => {
     const result = deviceLabel(sda);
-    expect(result).toEqual("sda, 1 KiB");
+    expect(result).toEqual("sda (1 KiB)");
   });
 
   it("returns only the device basename if the device has no size", () => {

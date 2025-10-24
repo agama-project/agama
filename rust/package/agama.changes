@@ -1,4 +1,336 @@
 -------------------------------------------------------------------
+Tue Oct 14 10:36:49 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not log errors when retrieving NetworkManager secrets to prevent
+  leaking them (bsc#1251898).
+
+-------------------------------------------------------------------
+Tue Oct  7 09:55:46 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Add IpConfig.link_local4 to specify ZeroConf/AutoIP behavior.
+  (gh#agama-project/agama#2792).
+
+-------------------------------------------------------------------
+Wed Oct  1 13:45:23 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Autoinstallation schema improvements (gh#agama-project/agama#2773):
+  - Added product name examples
+  - Allow using "$schema" key for linking the schema definition,
+    some editors like VSCode uses that for validaing the file
+    automatically
+  - Use "agama-project" in the GitHub URLs
+
+-------------------------------------------------------------------
+Mon Sep 15 21:09:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not log the events to prevent leaking passwords (bsc#1249622).
+- Set logs permissions to 0o600.
+
+-------------------------------------------------------------------
+Tue Sep  2 12:24:00 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Drop the D-Bus interface to localization configuration
+  (gh#agama-project/agama#2684).
+
+-------------------------------------------------------------------
+Thu Aug 28 10:15:23 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update the software cache when the patterns selection changes (bsc#1248826).
+
+-------------------------------------------------------------------
+Thu Aug 28 05:26:06 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Include the output of the "agama config" commands when
+  agama-autoinstall fails (related to bsc#1248779).
+
+-------------------------------------------------------------------
+Wed Aug 27 08:57:02 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Add the zFCP controller internal id to the device when some
+  update is notified (bsc#1247445).
+
+-------------------------------------------------------------------
+Mon Aug 25 16:13:43 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- bsc#1247424
+  - introduced --local option for agama config validate CLI command
+    to make validation working without connecting to remote agama
+    server
+
+-------------------------------------------------------------------
+Tue Aug 19 12:38:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix software configuration cache (bsc#1247933).
+
+-------------------------------------------------------------------
+Wed Aug 13 15:16:25 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify "bootloader" and "files" section in agama
+  profile without specified product (bsc#1247248)
+
+-------------------------------------------------------------------
+Thu Aug  7 11:47:55 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to "add" or "remove" patterns from the current or defined
+  user selection patterns list (bsc#1247456).
+
+-------------------------------------------------------------------
+Wed Aug  6 15:37:52 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Automatically retry registration when a network error happens
+  during autoinstallation (bsc#1246990)
+
+-------------------------------------------------------------------
+Wed Aug  6 12:52:41 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Emit HTTP event when storage is configured, including the client
+  id (gh#agama-project/agama#2640).
+
+-------------------------------------------------------------------
+Mon Aug  4 09:29:29 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Do not return an Err when a connection is not activated or
+  deactivated when adding or updating it but just log the error
+  and write the connections profiles (bsc#1245548).
+
+-------------------------------------------------------------------
+Fri Aug  1 10:10:40 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- Fixed "agama config edit" when used with a remote --host option
+  (gh#agama-project/agama#2628).
+
+-------------------------------------------------------------------
+Thu Jul 31 11:54:49 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for a "questions" section in the Agama configuration
+  that allows defining how to answer questions (bsc#1246997).
+
+-------------------------------------------------------------------
+Tue Jul 29 09:50:59 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not complain about missing a selected product when it is not
+  required (bsc#1247248).
+
+-------------------------------------------------------------------
+Mon Jul 28 12:40:40 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- update pam crate not to use a vulnerable users dependency
+  (bsc#1244200, CVE-2025-5791)
+
+-------------------------------------------------------------------
+Mon Jul 28 08:18:09 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- When the files in inst.auto or inst.script cannot be downloaded,
+  write the errors earlier (gh#agama-project/agama#2168).
+
+-------------------------------------------------------------------
+Thu Jul 24 13:19:52 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Introduce inst.auto_insecure and inst.script_insecure to disable
+  SSL checks for inst.auto and inst.script (bsc#1246836).
+
+-------------------------------------------------------------------
+Wed Jul 23 14:48:53 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Added "--insecure" option to "agama config load" and
+  "agama config generate" commands (related to bsc#1246836)
+
+-------------------------------------------------------------------
+Wed Jul 23 11:37:04 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix CLI connection update when using an special character in
+  the connection ID (bsc#1246930, gh#agama-project/agama#2605).
+
+-------------------------------------------------------------------
+Thu Jul 22 11:00:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Fixed a potential race condition when deleting network connections
+  in deactivate_connection() (gh#agama-project/agama#2582).
+
+-------------------------------------------------------------------
+Tue Jul 22 10:47:36 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Log ProgressChanged events (gh#agama-project/agama#2597).
+
+-------------------------------------------------------------------
+Tue Jul 22 07:53:34 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- fix .changes errors reported by obs-service-source_validator
+  (gh#agama-project/agama#2593)
+
+-------------------------------------------------------------------
+Mon Jul 21 15:07:40 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 17
+
+-------------------------------------------------------------------
+Mon Jul 21 14:35:57 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for an inst.script option that allows to run an
+  arbitrary script (bsc#1246702, gh#agama-project/agama#2589).
+
+-------------------------------------------------------------------
+Mon Jul 21 14:17:25 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Ensure software cache is updated even if part of its config
+  cause error (gh#agama-project/agama#2585)
+
+-------------------------------------------------------------------
+Mon Jul 21 10:56:54 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix device type detection when reading a VLAN connection
+  (gh#agama-project/agama#2586).
+
+-------------------------------------------------------------------
+Fri Jul 18 06:54:08 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Add support to configure VLANs through the CLI or HTTP API
+  (gh#agama-project/agama#2580).
+
+-------------------------------------------------------------------
+Thu Jul 17 10:35:10 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adjust the information included in the logs (gh#agama-project/agama#2575).
+
+-------------------------------------------------------------------
+Wed Jul 16 19:05:48 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix crash when an Agama profile contains only the zfcp section by
+  providing better error report when product selection have to be
+  done before or in the same profile (bsc#1246601)
+
+-------------------------------------------------------------------
+Wed Jul 16 15:37:34 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- When searching for a translation of a license, use the first
+  language in the same territory as fallback (bsc#1238364,
+  gh#agama-project/agama#2571).
+- Add the language tag to the /licences/:id endpoint.
+
+-------------------------------------------------------------------
+Wed Jul 16 14:55:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Fix deletion of controller connections (gh#agama-project/agama#2564)
+
+-------------------------------------------------------------------
+Wed Jul 16 14:21:30 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Make the method4 and method6 default to be "auto" in case of
+  absense (bsc#1246194).
+
+-------------------------------------------------------------------
+Wed Jul  16 13:22:07 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Add initial support for ovs in agama network model (gh#agama-project/agama#2536).
+
+-------------------------------------------------------------------
+Wed Jul 16 13:17:22 UTC 2025 - Jorik Cronenberg <jorik.cronenberg@suse.com>
+
+- Add dns priority to network model (gh#agama-project/agama#2533).
+
+-------------------------------------------------------------------
+Wed Jul 16 08:42:59 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Added -i/--insecure optional argument to the "agama download"
+  command to ignore SSL problems in HTTPS downloads (self-signed
+  certificate, non-matching host, unknown CA...)
+  (related to bsc#1245393)
+
+-------------------------------------------------------------------
+Wed Jul 16 07:30:02 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add support for activating zFCP disks to Agama unattended profile
+  (gh#agama-project/agama#2551)
+- Fix export of empty DASD section leading to failure on non s390
+  system (bsc#1246102)
+
+-------------------------------------------------------------------
+Tue Jul 15 09:00:00 UTC 2025 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- Fix autoconnect setting for port interfaces (bsc#1246070).
+
+-------------------------------------------------------------------
+Fri Jul 11 06:56:29 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not exported null values for localization, hostname
+  and product settings (gh#agama-project/agama#2543).
+
+-------------------------------------------------------------------
+Wed Jul  9 12:25:08 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- unattended installation: allow registration to RMT when
+  registration code is ommited (bsc#1246069)
+
+-------------------------------------------------------------------
+Mon Jul  7 13:22:05 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve handling of the inst.auto option (gh#agama-project/agama#2534):
+  - Replace the "agama-auto" service with "agama-autoinstall".
+  - Report when the configuration could not be loaded.
+  - Allow importing multiple configurations.
+- Add a new `inst.install` option to stop the installation after
+  loading the configuration.
+
+-------------------------------------------------------------------
+Fri Jul  4 11:33:44 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Reprobe the system after registering the product
+  (gh#agama-project/agama#2532, bsc#1245400).
+
+-------------------------------------------------------------------
+Wed Jul  2 16:02:07 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Cache the list of products during the startup (bsc#1241208).
+
+-------------------------------------------------------------------
+Mon Jun 30 15:51:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 16
+
+-------------------------------------------------------------------
+Fri Jun 27 10:02:43 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Reprobe storage if need while loading a config (bsc#1245114).
+
+-------------------------------------------------------------------
+Fri Jun 27 06:29:46 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add an end-point to check passwords strenght (bsc#1237480).
+
+-------------------------------------------------------------------
+Fri Jun 27 05:29:26 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix error messages formatting (gh#agama-project/agama#2471).
+
+-------------------------------------------------------------------
+Wed Jun 25 07:56:57 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to specify onlyRequired in software config and in software
+  section of agama profile (jsc#AGM-154)
+
+-------------------------------------------------------------------
+Wed Jun 18 14:36:50 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to bind a connection to an specific device mac address
+   (bsc#1244259).
+
+-------------------------------------------------------------------
+Wed Jun 18 07:17:30 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Preserve AutoYaST pre-scripts artifacts (bsc#1243776, gh#agama-project/agama#2344).
+
+-------------------------------------------------------------------
+Tue Jun 17 12:21:43 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve logging of WebSocket events (gh#agama-project/agama#2479).
+
+-------------------------------------------------------------------
+Mon Jun 16 14:28:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Extend the storage schema to allow sorting storage devices as
+  part of the search (gh#agama-project/agama#2474).
+
+-------------------------------------------------------------------
 Fri Jun 13 12:45:49 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Configure the console font so the non-ASCII characters are

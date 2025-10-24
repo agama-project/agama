@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { mockNavigateFn, plainRender } from "~/test-utils";
 import ConfigureDeviceMenu from "./ConfigureDeviceMenu";
 import { StorageDevice } from "~/types/storage";
@@ -72,8 +72,7 @@ const mockUseModel = jest.fn();
 
 jest.mock("~/hooks/storage/system", () => ({
   ...jest.requireActual("~/hooks/storage/system"),
-  useCandidateDevices: () => [vda, vdb],
-  useLongestDiskTitle: () => 20,
+  useAvailableDevices: () => [vda, vdb],
 }));
 
 jest.mock("~/hooks/storage/model", () => ({
@@ -118,9 +117,13 @@ describe("ConfigureDeviceMenu", () => {
         await user.click(toggler);
         const disksMenuItem = screen.getByRole("menuitem", { name: "Add device menu" });
         await user.click(disksMenuItem);
-        const vdaItem = screen.getByRole("menuitem", { name: /vda/ });
-        await user.click(vdaItem);
-        expect(mockAddDrive).toHaveBeenCalled();
+        const dialog = screen.getByRole("dialog", { name: /Select a disk/ });
+        const confirmButton = screen.getByRole("button", { name: "Confirm" });
+        const vdaItemRow = within(dialog).getByRole("row", { name: /\/dev\/vda/ });
+        const vdaItemRadio = within(vdaItemRow).getByRole("radio");
+        await user.click(vdaItemRadio);
+        await user.click(confirmButton);
+        expect(mockAddDrive).toHaveBeenCalledWith({ name: "/dev/vda", spacePolicy: "keep" });
       });
     });
 
@@ -135,10 +138,14 @@ describe("ConfigureDeviceMenu", () => {
         await user.click(toggler);
         const disksMenuItem = screen.getByRole("menuitem", { name: "Add device menu" });
         await user.click(disksMenuItem);
-        expect(screen.queryByRole("menuitem", { name: /vda/ })).toBeNull();
-        const vdbItem = screen.getByRole("menuitem", { name: /vdb/ });
-        await user.click(vdbItem);
-        expect(mockAddDrive).toHaveBeenCalled();
+        const dialog = screen.getByRole("dialog", { name: /Select another disk/ });
+        const confirmButton = screen.getByRole("button", { name: "Confirm" });
+        expect(screen.queryByRole("row", { name: /vda$/ })).toBeNull();
+        const vdaItemRow = within(dialog).getByRole("row", { name: /\/dev\/vdb/ });
+        const vdaItemRadio = within(vdaItemRow).getByRole("radio");
+        await user.click(vdaItemRadio);
+        await user.click(confirmButton);
+        expect(mockAddDrive).toHaveBeenCalledWith({ name: "/dev/vdb", spacePolicy: "keep" });
       });
     });
   });

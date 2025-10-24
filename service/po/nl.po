@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-15 03:15+0000\n"
-"PO-Revision-Date: 2025-05-18 15:59+0000\n"
-"Last-Translator: Feike Donia <feikedonia@proton.me>\n"
+"POT-Creation-Date: 2025-10-12 02:50+0000\n"
+"PO-Revision-Date: 2025-07-02 06:59+0000\n"
+"Last-Translator: Natasha Ament <stacheldrahtje@gmail.com>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-service-"
 "master/nl/>\n"
 "Language: nl\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.11.4\n"
+"X-Generator: Weblate 5.12.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -28,44 +28,49 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Niet-ondersteunde elementen in het AutoYaST-profiel gevonden: %{keys}."
 
 #. Runs the config phase
-#: service/lib/agama/manager.rb:96
+#.
+#. @param reprobe [Boolean] Whether a reprobe should be done instead of a probe.
+#. @param data [Hash] Extra data provided to the D-Bus calls.
+#: service/lib/agama/manager.rb:98
 msgid "Analyze disks"
 msgstr "Analyseer schijven"
 
-#: service/lib/agama/manager.rb:96
+#: service/lib/agama/manager.rb:98
 msgid "Configure software"
 msgstr "Configureer software"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-#: service/lib/agama/manager.rb:119
+#: service/lib/agama/manager.rb:117
 msgid "Prepare disks"
 msgstr "Prepareer schijven"
 
-#: service/lib/agama/manager.rb:120
+#: service/lib/agama/manager.rb:118
 msgid "Install software"
 msgstr "Installeer software"
 
-#: service/lib/agama/manager.rb:121
+#: service/lib/agama/manager.rb:119
 msgid "Configure the system"
 msgstr "Configureer het systeem"
 
 #. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
-#: service/lib/agama/manager.rb:161
+#: service/lib/agama/manager.rb:160
 msgid "Load software translations"
 msgstr "Laad software vertalingen"
 
-#: service/lib/agama/manager.rb:162
+#: service/lib/agama/manager.rb:161
 msgid "Load storage translations"
 msgstr "Laad opslag vertalingen"
 
 #. @param certificate [Agama::SSL::Certificate]
 #. @return [Agama::Question]
-#: service/lib/agama/registration.rb:421
+#: service/lib/agama/registration.rb:424
 msgid ""
 "Trying to import a self signed certificate. Do you want to trust it and "
 "register the product?"
 msgstr ""
+"Probeer een zelf ondertekend certificaat te importeren. Wil je deze "
+"vertrouwen en het product registreren?"
 
 #. TRANSLATORS: button label, try downloading the failed package again
 #: service/lib/agama/software/callbacks/base.rb:48
@@ -85,17 +90,17 @@ msgstr "Installatie annuleren"
 #. TRANSLATORS: button label, skip the error
 #: service/lib/agama/software/callbacks/base.rb:66
 msgid "Skip"
-msgstr ""
+msgstr "Overslaan"
 
 #. TRANSLATORS: button label
 #: service/lib/agama/software/callbacks/base.rb:72
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #. TRANSLATORS: button label
 #: service/lib/agama/software/callbacks/base.rb:78
 msgid "No"
-msgstr ""
+msgstr "Nee"
 
 #. Callback to accept a file without a checksum
 #.
@@ -108,6 +113,10 @@ msgid ""
 "that although the file is part of the signed repository, the list of "
 "checksums does not mention this file. Use it anyway?"
 msgstr ""
+"Geen controlesom voor het bestand %{file} gevonden in de opslagruimte. Dit "
+"betekent dat hoewel het bestand onderdeel is van een ondertekende "
+"opslagruimtec, de lijst met controlesommen dit bestand niet vermeld. "
+"Desondanks gebruiken?"
 
 #. Callback to accept an unknown digest
 #.
@@ -115,14 +124,15 @@ msgstr ""
 #. @param digest [String] expected checksum
 #. @return [Boolean]
 #: service/lib/agama/software/callbacks/digest.rb:84
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "The checksum of the file %{file} is \"%{digest}\" but the expected checksum "
 "is unknown. This means that the origin and integrity of the file cannot be "
 "verified. Use it anyway?"
 msgstr ""
-"%{source} is niet digitaal ondertekend. De herkomst en integriteit van het "
-"bestand kan niet worden gecontroleerd. Toch gebruiken?"
+"De controlesom van het bestand %{file} is %{digest} maar de verwachte "
+"controlesom is onbekend. De herkomst en integriteit van het bestand kan niet "
+"worden gecontroleerd. Desondanks gebruiken?"
 
 #. Callback to accept wrong digest
 #.
@@ -137,13 +147,17 @@ msgid ""
 "be \"%{expected}\". The file has changed by accident or by an attacker since "
 "the creater signed it. Use it anyway?"
 msgstr ""
+"De verwachte controlesom van bestand %{file} is \"%{found}\" maar de waarde "
+"bleek \"%{expected}\". Het bestand is per ongeluk gewijzigd of is door een "
+"aanvaller aangepast nadat deze door de maker is gesigneerd. Desondanks "
+"gebruiken?"
 
 #. DoneProvide callback
 #.
 #. @param description [String] Problem description
 #. @return [String] "I" for ignore, "R" for retry and "C" for abort (not implemented)
 #. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
-#: service/lib/agama/software/callbacks/script.rb:59
+#: service/lib/agama/software/callbacks/script.rb:50
 msgid "There was a problem running a package script."
 msgstr ""
 "Er is een probleem ontstaan tijdens het uitvoeren van een package script."
@@ -153,22 +167,24 @@ msgstr ""
 #. @param filename [String] File name
 #. @param repo_id [Integer] Repository ID. It might be -1 if there is not an associated repo.
 #: service/lib/agama/software/callbacks/signature.rb:66
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "The file %{filename} from %{repo_url} is not digitally signed. The origin "
 "and integrity of the file cannot be verified. Use it anyway?"
 msgstr ""
-"%{source} is niet digitaal ondertekend. De herkomst en integriteit van het "
-"bestand kan niet worden gecontroleerd. Toch gebruiken?"
+"Het bestand %{filename} van %{repo_url} is niet digitaal ondertekend. De "
+"herkomst en integriteit van het bestand kan niet worden gecontroleerd. "
+"Desondanks gebruiken?"
 
 #: service/lib/agama/software/callbacks/signature.rb:72
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "The file %{filename} is not digitally signed. The origin and integrity of "
 "the file cannot be verified. Use it anyway?"
 msgstr ""
-"%{source} is niet digitaal ondertekend. De herkomst en integriteit van het "
-"bestand kan niet worden gecontroleerd. Toch gebruiken?"
+"Het bestand %{filename} is niet digitaal ondertekend. De herkomst en "
+"integriteit van het bestand kan niet worden gecontroleerd. Desondanks "
+"gebruiken?"
 
 #. Callback to handle signature verification failures
 #.
@@ -194,6 +210,8 @@ msgid ""
 "The file %{filename} from %{repo_url} is digitally signed with the following "
 "unknown GnuPG key: %{key_id}. Use it anyway?"
 msgstr ""
+"Het bestand %{filename} van %{repo_url} is digitaal ondertekend met de "
+"volgende onbekende GnuPG sleutel: %{key_id}. Desondanks gebruiken?"
 
 #: service/lib/agama/software/callbacks/signature.rb:137
 #, perl-brace-format
@@ -201,6 +219,8 @@ msgid ""
 "The file %{filename} is digitally signed with the following unknown GnuPG "
 "key: %{key_id}. Use it anyway?"
 msgstr ""
+"Het bestand %{filename} is digitaal ondertekend met de volgende onbekende "
+"GnuPG sleutel: %{key_id}. Desondanks gebruiken?"
 
 #. Callback to handle file verification failures
 #.
@@ -214,6 +234,9 @@ msgid ""
 "GnuPG key, but the integrity check failed: %{key_id} (%{key_name}). Use it "
 "anyway?"
 msgstr ""
+"Het bestand %{filename} van %{repo_url} is digitaal ondertekend met de "
+"volgende GnuPG sleutel, maar de integriteitscontrole is mislukt: %{key_id} (%"
+"{key_name}). Desondanks gebruiken?"
 
 #: service/lib/agama/software/callbacks/signature.rb:175
 #, perl-brace-format
@@ -221,61 +244,64 @@ msgid ""
 "The file %{filename} is digitally signed with the following GnuPG key, but "
 "the integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
 msgstr ""
+"Het bestand %{filename} is digitaal ondertekend met de volgende GnuPG "
+"sleutel, maar de integriteitscontrole is mislukt: %{key_id} (%{key_name}). "
+"Desondanks gebruiken?"
 
 #. TRANSLATORS: button label, trust the GPG key or the signature
 #: service/lib/agama/software/callbacks/signature.rb:199
 msgid "Trust"
-msgstr ""
+msgstr "Vertrouwen"
 
 #. Should an error be raised?
-#: service/lib/agama/software/manager.rb:149
+#: service/lib/agama/software/manager.rb:178
 msgid "Refreshing repositories metadata"
 msgstr "Metadata van opslagruimtes verversen"
 
-#: service/lib/agama/software/manager.rb:150
+#: service/lib/agama/software/manager.rb:179
 msgid "Calculating the software proposal"
 msgstr "Berekenen van het softwarevoorstel"
 
-#: service/lib/agama/software/manager.rb:154
+#: service/lib/agama/software/manager.rb:183
 msgid "Initializing sources"
 msgstr "Bronnen initialiseren"
 
 #. error message
-#: service/lib/agama/software/manager.rb:392
+#: service/lib/agama/software/manager.rb:427
 #, c-format
 msgid "Adding service '%s' failed."
-msgstr ""
+msgstr "Toevoegen service '%s' mislukt."
 
 #. error message
-#: service/lib/agama/software/manager.rb:397
+#: service/lib/agama/software/manager.rb:432
 #, c-format
 msgid "Updating service '%s' failed."
-msgstr ""
+msgstr "Updaten van service '%s' milsukt."
 
 #. error message
-#: service/lib/agama/software/manager.rb:403
+#: service/lib/agama/software/manager.rb:438
 #, c-format
 msgid "Saving service '%s' failed."
-msgstr ""
+msgstr "Opslaan service '%s' mislukt."
 
 #. error message
-#: service/lib/agama/software/manager.rb:409
-#, fuzzy, c-format
+#: service/lib/agama/software/manager.rb:444
+#, c-format
 msgid "Refreshing service '%s' failed."
-msgstr "Metadata van opslagruimtes verversen"
+msgstr "Verversen service '%s' milsukt."
 
 #. rubocop:enable Metrics/AbcSize
-#: service/lib/agama/software/manager.rb:418
+#: service/lib/agama/software/manager.rb:453
 #, c-format
 msgid "Removing service '%s' failed."
-msgstr ""
+msgstr "Verwijderen service '%s' mislukt."
 
 #. Issues related to the software proposal.
 #.
 #. Repositories that could not be probed are reported as errors.
 #.
 #. @return [Array<Agama::Issue>]
-#: service/lib/agama/software/manager.rb:631
+#: service/lib/agama/software/manager.rb:710
 #, c-format
 msgid "Could not read repository \"%s\""
 msgstr "Kan opslagruimte \"%s\" niet lezen"
@@ -283,21 +309,21 @@ msgstr "Kan opslagruimte \"%s\" niet lezen"
 #. Issue when a product is missing
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:641
+#: service/lib/agama/software/manager.rb:720
 msgid "Product not selected yet"
 msgstr "Nog geen product geselecteerd"
 
 #. Issue when a product requires registration but it is not registered yet.
 #.
 #. @return [Agama::Issue]
-#: service/lib/agama/software/manager.rb:650
+#: service/lib/agama/software/manager.rb:729
 msgid "Product must be registered"
 msgstr "Product moet geregistreerd zijn"
 
 #. Returns solver error messages from the last attempt
 #.
 #. @return [Array<String>] Error messages
-#: service/lib/agama/software/proposal.rb:270
+#: service/lib/agama/software/proposal.rb:276
 #, c-format
 msgid "Found %s dependency issues."
 msgstr "%s afhankelijkheidsissues gevonden."
@@ -305,38 +331,38 @@ msgstr "%s afhankelijkheidsissues gevonden."
 #. TRANSLATORS: SSL certificate details
 #: service/lib/agama/ssl/certificate_details.rb:31
 msgid "Certificate:"
-msgstr ""
+msgstr "Certificaat:"
 
 #: service/lib/agama/ssl/certificate_details.rb:31
 msgid "Issued To"
-msgstr ""
+msgstr "Uitgegeven aan"
 
 #: service/lib/agama/ssl/certificate_details.rb:32
 msgid "Issued By"
-msgstr ""
+msgstr "Uitgegeven door"
 
 #: service/lib/agama/ssl/certificate_details.rb:32
 msgid "SHA1 Fingerprint: "
-msgstr ""
+msgstr "SHA1 vingerafdruk: "
 
 #: service/lib/agama/ssl/certificate_details.rb:34
 msgid "SHA256 Fingerprint: "
-msgstr ""
+msgstr "SHA256 vingerafdruk: "
 
 #. label followed by the SSL certificate identification
 #: service/lib/agama/ssl/certificate_details.rb:46
 msgid "Common Name (CN): "
-msgstr ""
+msgstr "Normale naam (CN): "
 
 #. label followed by the SSL certificate identification
 #: service/lib/agama/ssl/certificate_details.rb:48
 msgid "Organization (O): "
-msgstr ""
+msgstr "Organisatie (O): "
 
 #. label followed by the SSL certificate identification
 #: service/lib/agama/ssl/certificate_details.rb:50
 msgid "Organization Unit (OU): "
-msgstr ""
+msgstr "Organisatie eenheid (OU): "
 
 #. Issue when the device has several users.
 #.
@@ -344,7 +370,7 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/alias.rb:74
 #, c-format
 msgid "The device with alias '%s' is used by more than one device"
-msgstr ""
+msgstr "Het apparaat met alias '%s' wordt door meer dan een apparaat gebruikt"
 
 #. Issue when the device has both filesystem and a user.
 #.
@@ -355,6 +381,8 @@ msgid ""
 "The device with alias '%s' cannot be formatted because it is used by other "
 "device"
 msgstr ""
+"Het apparaat met alias '%s' kan niet worden geformatteerd omdat deze wordt "
+"gebruikt door een ander apparaat"
 
 #. Issue when the device has both partitions and a user.
 #.
@@ -365,6 +393,8 @@ msgid ""
 "The device with alias '%s' cannot be partitioned because it is used by other "
 "device"
 msgstr ""
+"Het apparaat met alias '%s' kan niet worden gepartitioneerd omdat deze wordt "
+"gebruikt door een ander apparaat"
 
 #. Error if a boot device is required and unknown.
 #.
@@ -374,13 +404,13 @@ msgstr ""
 #. @return [Issue, nil]
 #: service/lib/agama/storage/config_checkers/boot.rb:75
 msgid "The boot device cannot be automatically selected"
-msgstr ""
+msgstr "Het opstart apparaat kan niet automatisch worden geselecteerd"
 
 #. TRANSLATORS: %s is replaced by a device alias (e.g., "boot").
 #: service/lib/agama/storage/config_checkers/boot.rb:86
-#, fuzzy, c-format
+#, c-format
 msgid "There is no boot device with alias '%s'"
-msgstr "Er is geen LVM thin pool volume met alias '%s'"
+msgstr "Er is geen opstart apparaat met alias '%s'"
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
@@ -389,8 +419,8 @@ msgstr "Er is geen LVM thin pool volume met alias '%s'"
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr ""
-"Geen wachtwoordzin opgegeven (vereist bij gebruik van methode "
-"'%{crypt_method}')."
+"Geen wachtwoordzin opgegeven (vereist bij gebruik van methode '%"
+"{crypt_method}')."
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
@@ -431,16 +461,16 @@ msgstr "Er is geen LVM thin pool volume met alias '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "md1").
 #: service/lib/agama/storage/config_checkers/md_raid.rb:98
-#, fuzzy, c-format
+#, c-format
 msgid "There is no MD RAID member device with alias '%s'"
-msgstr "Er is geen LVM thin pool volume met alias '%s'"
+msgstr "Er is geen apparaat dat is lid is van een MD RAID met alias '%s'"
 
 #. Issue if the MD RAID level is missing and the device is not reused.
 #.
 #. @return [Issue, nil]
 #: service/lib/agama/storage/config_checkers/md_raid.rb:110
 msgid "There is a MD RAID without level"
-msgstr ""
+msgstr "Er is een MD RAID zonder niveau"
 
 #. Issue if the MD RAID does not contain enough member devices.
 #.
@@ -448,7 +478,7 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:121
 #, c-format
 msgid "At least %s devices are required for %s"
-msgstr ""
+msgstr "Ten minste %s apparaten zijn benodigd voor %s"
 
 #. Issue if the device member is deleted.
 #.
@@ -457,9 +487,11 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:168
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be deleted because it is part of the MD RAID "
-"%{md_raid}"
+"The device '%{member}' cannot be deleted because it is part of the MD RAID %"
+"{md_raid}"
 msgstr ""
+"Het apparaat '%{member}' kan niet worden verwijderd omdat het onderdeel is "
+"van MD RAID %{md_raid}"
 
 #. Issue if the device member is resized.
 #.
@@ -468,9 +500,11 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:191
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be resized because it is part of the MD RAID "
-"%{md_raid}"
+"The device '%{member}' cannot be resized because it is part of the MD RAID %"
+"{md_raid}"
 msgstr ""
+"Het apparaat '%{member} kan niet van grootte veranderen omdat deze deel is "
+"van MD RAID %{md_raid}"
 
 #. Issue if the device member is formatted.
 #.
@@ -482,6 +516,8 @@ msgid ""
 "The device '%{member}' cannot be formatted because it is part of the MD RAID "
 "%{md_raid}"
 msgstr ""
+"Het apparaat '%{member} kan niet worden geformateerd omdat het onderdeel is "
+"van MD RAID %{md_raid}"
 
 #. Issue if the device member is partitioned.
 #.
@@ -493,6 +529,8 @@ msgid ""
 "The device '%{member}' cannot be partitioned because it is part of the MD "
 "RAID %{md_raid}"
 msgstr ""
+"Het apparaat '%{member}' kan niet worden gepartitioneerd omdat het onderdeel "
+"is van MD RAID %{md_raid}"
 
 #. Issue if the device member is used by other device (e.g., as target for physical volumes).
 #.
@@ -501,9 +539,11 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:259
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be used because it is part of the MD RAID "
-"%{md_raid}"
+"The device '%{member}' cannot be used because it is part of the MD RAID %"
+"{md_raid}"
 msgstr ""
+"Het apparaat '%{member}' kan niet worden gebruikt omdat het onderdeel is van "
+"MD RAID %{md_raid}"
 
 #. Issue if the parent of the device member is formatted.
 #.
@@ -515,55 +555,57 @@ msgid ""
 "The device '%{device}' cannot be formatted because it is part of the MD RAID "
 "%{md_raid}"
 msgstr ""
+"Het apparaat '%{device}' kan niet worden geformateerd omdat deze onderdeel "
+"is van MD RAID %{md_raid}"
 
 #. TRANSLATORS: 'method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1').
 #: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:61
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid "'%{method}' is not a suitable method to encrypt the physical volumes."
 msgstr ""
-"'%{crypt_method}' is geen geschikte methode voor het versleutelen van "
-"fysieke volumes."
+"'%{method}' is geen geschikte methode voor het versleutelen van fysieke "
+"volumes."
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
 #: service/lib/agama/storage/config_checkers/search.rb:74
 #, c-format
 msgid "Mandatory device %s not found"
-msgstr ""
+msgstr "Verplicht apparaat %s niet gevonden"
 
 #. TRANSLATORS: %s is replaced by a device type (e.g., "drive").
 #: service/lib/agama/storage/config_checkers/search.rb:77
 #, c-format
 msgid "Mandatory %s not found"
-msgstr ""
+msgstr "Verplicht(e) %s niet gevonden"
 
 #. @return [String]
 #: service/lib/agama/storage/config_checkers/search.rb:85
 msgid "drive"
-msgstr ""
+msgstr "Schijf"
 
 #: service/lib/agama/storage/config_checkers/search.rb:87
 msgid "MD RAID"
-msgstr ""
+msgstr "MD RAID"
 
 #: service/lib/agama/storage/config_checkers/search.rb:89
 msgid "partition"
-msgstr ""
+msgstr "partitie"
 
 #: service/lib/agama/storage/config_checkers/search.rb:91
 msgid "LVM logical volume"
-msgstr ""
+msgstr "LVM logisch volume"
 
 #: service/lib/agama/storage/config_checkers/search.rb:93
 msgid "device"
-msgstr ""
+msgstr "apparaat"
 
 #. Issue if the volume group name is missing.
 #.
 #. @return [Issue, nil]
 #: service/lib/agama/storage/config_checkers/volume_group.rb:76
 msgid "There is a volume group without name"
-msgstr ""
+msgstr "Er is een volume groep zonder naam"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
 #: service/lib/agama/storage/config_checkers/volume_group.rb:106
@@ -578,6 +620,8 @@ msgid ""
 "The list of target devices for the volume group '%s' is mixing reused "
 "devices and new devices"
 msgstr ""
+"De lijst van doel apparaaten voor volume groep '%s' is mengt hergebruikte en "
+"nieuwe apparaten"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checkers/volume_group.rb:153
@@ -615,74 +659,130 @@ msgstr ""
 msgid "Shrinking is not supported by this device"
 msgstr "Verkleinen wordt niet ondersteund door dit apparaat"
 
+#. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
+#: service/lib/agama/storage/finisher.rb:145
+msgid "Copying important installation files to the target system"
+msgstr ""
+"Belangrijke installatie bestanden worden gekopieerd naar het doel systeem"
+
+#. Constructor
+#: service/lib/agama/storage/finisher.rb:186
+msgid "Writing Linux Security Modules configuration"
+msgstr "Wegschrijven configuratie van Linux beveiligingsmodules"
+
+#. Step to write the bootloader configuration
+#: service/lib/agama/storage/finisher.rb:197
+msgid "Installing bootloader"
+msgstr "Bootloader wordt geinstalleerd"
+
+#. Step to finish the Y2Storage configuration
+#: service/lib/agama/storage/finisher.rb:214
+msgid "Adjusting storage configuration"
+msgstr "Aanpassen van de opslag configuratie"
+
+#. Step to finish the iSCSI configuration
+#: service/lib/agama/storage/finisher.rb:225
+msgid "Adjusting iSCSI configuration"
+msgstr "Aanpassen van de iSCSI configuratie"
+
+#. Step to configure the file-system snapshots
+#: service/lib/agama/storage/finisher.rb:236
+msgid "Configuring file systems snapshots"
+msgstr "Configureer snapshots van het bestandssysteem"
+
+#. Step to copy the installation logs
+#: service/lib/agama/storage/finisher.rb:254
+msgid "Copying logs"
+msgstr "Kopieren van logs"
+
+#. Executes post-installation scripts
+#: service/lib/agama/storage/finisher.rb:288
+msgid "Running user-defined scripts"
+msgstr "Uitvoeren van gebruiker-gedefinieerde scripts"
+
+#. Executes post-installation scripts
+#: service/lib/agama/storage/finisher.rb:327
+msgid "Deploying user-defined files"
+msgstr "Uitrol van gebruiker-gedefinieerde bestanden"
+
+#. Step to unmount the target file-systems
+#: service/lib/agama/storage/finisher.rb:346
+msgid "Unmounting storage devices"
+msgstr "Ontkoppelen van opslag apparaten"
+
 #. Applies the target configs.
 #.
 #. @param config [ISCSI::Config]
-#: service/lib/agama/storage/iscsi/manager.rb:291
+#: service/lib/agama/storage/iscsi/manager.rb:300
 msgid "Logout iSCSI targets"
-msgstr ""
+msgstr "iSCSI doelen uitloggen"
 
-#: service/lib/agama/storage/iscsi/manager.rb:292
+#: service/lib/agama/storage/iscsi/manager.rb:301
+#, fuzzy
+msgid "Discover iSCSI targets"
+msgstr "iSCSI doelen inloggen"
+
+#: service/lib/agama/storage/iscsi/manager.rb:302
 msgid "Login iSCSI targets"
-msgstr ""
+msgstr "iSCSI doelen inloggen"
 
 #. Login issue.
 #.
 #. @param target [ISCSI::Configs::Target]
 #. @return [Issue]
-#: service/lib/agama/storage/iscsi/manager.rb:346
+#: service/lib/agama/storage/iscsi/manager.rb:366
 #, c-format
 msgid "Cannot login to iSCSI target %s"
-msgstr ""
+msgstr "Kan niet inloggen op iSCSI doel %s"
 
-#. Underlying yast-storage-ng has own mechanism for proposing boot strategies.
-#. However, we don't always want to use BLS when it proposes so. Currently
-#. we want to use BLS only for Tumbleweed / Slowroll
-#: service/lib/agama/storage/manager.rb:131
+#. Probes storage devices and performs an initial proposal
+#.
+#. @param keep_config [Boolean] Whether to use the current storage config for calculating the
+#. proposal.
+#. @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided LUKS
+#. passwords).
+#: service/lib/agama/storage/manager.rb:133
 msgid "Activating storage devices"
 msgstr "Activeren van opslag apparaten"
 
-#: service/lib/agama/storage/manager.rb:132
+#: service/lib/agama/storage/manager.rb:134
 msgid "Probing storage devices"
 msgstr "Onderzoeken van opslag apparaten"
 
-#: service/lib/agama/storage/manager.rb:133
+#: service/lib/agama/storage/manager.rb:135
 msgid "Calculating the storage proposal"
 msgstr "Berekenen van het opslagvoorstel"
 
-#: service/lib/agama/storage/manager.rb:136
-msgid "Selecting Linux Security Modules"
-msgstr "Selecteren van Linux beveiligingsmodules"
-
 #. Prepares the partitioning to install the system
-#: service/lib/agama/storage/manager.rb:146
+#: service/lib/agama/storage/manager.rb:161
 msgid "Preparing bootloader proposal"
 msgstr "Voorbereiden bootloader voorstel"
 
 #. then also apply changes to that proposal
-#: service/lib/agama/storage/manager.rb:153
+#: service/lib/agama/storage/manager.rb:168
 msgid "Adding storage-related packages"
 msgstr "Toevoegen opslag gerelateerde pakketten"
 
-#: service/lib/agama/storage/manager.rb:154
+#: service/lib/agama/storage/manager.rb:169
 msgid "Preparing the storage devices"
 msgstr "Voorbereiden van de opslag apparaten"
 
-#: service/lib/agama/storage/manager.rb:155
+#: service/lib/agama/storage/manager.rb:170
 msgid "Writing bootloader sysconfig"
 msgstr "Schrijven van de bootloader sysconfig"
 
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:364
+#: service/lib/agama/storage/proposal.rb:345
 msgid "Cannot calculate a valid storage setup with the current configuration"
 msgstr ""
+"Kan geen geldige opslag configuratie berekenen met de huidige configuratie"
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:375
+#: service/lib/agama/storage/proposal.rb:356
 msgid "A problem ocurred while calculating the storage setup"
 msgstr "Een probleem is ontstaan bij het berekenen van de opslag opstelling"
 
@@ -702,11 +802,11 @@ msgid "The following selected device is not found in the system: %{devices}"
 msgid_plural ""
 "The following selected devices are not found in the system: %{devices}"
 msgstr[0] ""
-"Het volgende, geselecteerde apparaat is niet gevonden in het systeem: "
-"%{devices}"
+"Het volgende, geselecteerde apparaat is niet gevonden in het systeem: %"
+"{devices}"
 msgstr[1] ""
-"De volgende, geselecteerde apparaten zijn niet gevonden in het systeem: "
-"%{devices}"
+"De volgende, geselecteerde apparaten zijn niet gevonden in het systeem: %"
+"{devices}"
 
 #. Recalculates the list of issues
 #: service/lib/agama/users.rb:154
@@ -715,6 +815,9 @@ msgid ""
 msgstr ""
 "Het aanmaken van een gebruiker, het instellen van een root password of een "
 "publieke SSH sleutel is vereist"
+
+#~ msgid "Selecting Linux Security Modules"
+#~ msgstr "Selecteren van Linux beveiligingsmodules"
 
 #, perl-brace-format
 #~ msgid "The file %{filename} from repository %{repo_name} (%{repo_url})"

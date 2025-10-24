@@ -39,6 +39,14 @@ import {
   useDisableBootConfig,
 } from "~/hooks/storage/boot";
 
+const filteredCandidates = (candidates, model): StorageDevice[] => {
+  return candidates.filter((candidate) => {
+    const collection = candidate.isDrive ? model.drives : model.mdRaids;
+    const device = collection.find((d) => d.name === candidate.name);
+    return !device || !device.filesystem;
+  });
+};
+
 // FIXME: improve classNames
 // FIXME: improve and rename to BootSelectionDialog
 
@@ -62,8 +70,8 @@ export default function BootSelectionDialog() {
   const [state, setState] = useState<BootSelectionState>({ load: false });
   const navigate = useNavigate();
   const devices = useDevices("system");
-  const candidateDevices = useCandidateDevices();
   const model = useModel({ suspense: true });
+  const candidateDevices = filteredCandidates(useCandidateDevices(), model);
   const setBootDevice = useSetBootDevice();
   const setDefaultBootDevice = useSetDefaultBootDevice();
   const disableBootConfig = useDisableBootConfig();
@@ -135,7 +143,7 @@ partitions in the appropriate disk.",
 
     return sprintf(
       // TRANSLATORS: %s is replaced by a device name and size (e.g., "/dev/sda, 500GiB")
-      _("Partitions to boot will be allocated at the installation disk (%s)."),
+      _("Partitions to boot will be allocated at the installation disk %s."),
       deviceLabel(state.defaultBootDevice),
     );
   };

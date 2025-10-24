@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Content, Stack } from "@patternfly/react-core";
+import { Content } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import DASDTable from "./DASDTable";
 import DASDFormatProgress from "./DASDFormatProgress";
@@ -40,12 +40,7 @@ export default function DASDPage() {
       </Page.Header>
 
       <Page.Content>
-        {/** TRANSLATORS: DASD devices selection table */}
-        <Page.Section aria-label={_("DASD devices selection table")}>
-          <Stack>
-            <DASDTable />
-          </Stack>
-        </Page.Section>
+        <DASDTable />
         <DASDFormatProgress />
       </Page.Content>
 

@@ -22,9 +22,11 @@
 require "agama/storage/iscsi/initiator"
 require "agama/storage/iscsi/node"
 require "yast"
+require "yast2/execute"
 require "y2iscsi_client/authentication"
 
 Yast.import "IscsiClientLib"
+Yast.import "Service"
 
 module Agama
   module Storage
@@ -37,10 +39,15 @@ module Agama
           # Check initiator name, creating one if missing.
           return false unless Yast::IscsiClientLib.checkInitiatorName(silent: true)
 
+          start_services
           # Why we need to sleep here? This was copied from yast2-iscsi-client.
           sleep(0.5)
           Yast::IscsiClientLib.getConfig
           Yast::IscsiClientLib.autoLogOn
+          # We are already logged into the iSCSI targets. But device detection in the kernel is
+          # asynchronous, so let's wait until the corresponding iSCSI devices really appear in
+          # the system (so yast-storage-ng can handle them).
+          Yast::Execute.locally("/usr/bin/udevadm", "settle", "--timeout=20")
         end
 
         # Performs an iSCSI discovery.
@@ -59,6 +66,14 @@ module Agama
         # @return [Boolean] Whether the action successes
         def discover(host, port, credentials: {})
           Yast::IscsiClientLib.discover(host, port, authentication(credentials), silent: true)
+        end
+
+        # Discovers iSCSI targets from a portal.
+        #
+        # @param portal [String]
+        # @param interfaces [Array<String>]
+        def discover_from_portal(portal, interfaces: [])
+          Yast::IscsiClientLib.discover_from_portal(portal, interfaces)
         end
 
         # Reads the iSCSI initiator config.
@@ -136,6 +151,16 @@ module Agama
         end
 
       private
+
+        # Starts the iSCSI services.
+        #
+        # To be precise, it actually restarts the services, in case any of them was already running
+        # for whatever reason.
+        def start_services
+          Yast::Service.restart("iscsi")
+          Yast::Service.restart("iscsid")
+          Yast::Service.restart("iscsiuio")
+        end
 
         # Creates an iSCSI authentication object.
         #

@@ -35,6 +35,7 @@ require "agama/dbus/storage/proposal_settings_conversion"
 require "agama/dbus/storage/volume_conversion"
 require "agama/dbus/with_progress"
 require "agama/dbus/with_service_status"
+require "agama/storage/config_conversions"
 require "agama/storage/encryption_settings"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume_templates_builder"
@@ -70,7 +71,6 @@ module Agama
           @actions = read_actions
 
           register_storage_callbacks
-          register_proposal_callbacks
           register_progress_callbacks
           register_service_status_callbacks
           register_iscsi_callbacks
@@ -95,13 +95,15 @@ module Agama
 
         # @param keep_config [Boolean] Whether to use the current storage config for calculating
         #   the proposal.
-        def probe(keep_config: false)
+        # @param keep_activation [Boolean] Whether to keep the current activation (e.g., provided
+        #   LUKS passwords).
+        def probe(keep_config: false, keep_activation: true)
           busy_while do
             # Clean trees in advance to avoid having old objects exported in D-Bus.
             system_devices_tree.clean
             staging_devices_tree.clean
 
-            backend.probe(keep_config: keep_config)
+            backend.probe(keep_config: keep_config, keep_activation: keep_activation)
           end
         end
 
@@ -118,27 +120,8 @@ module Agama
         # @return [Integer] 0 success; 1 error
         def apply_config(serialized_config)
           logger.info("Setting storage config from D-Bus: #{serialized_config}")
-
           config_json = JSON.parse(serialized_config, symbolize_names: true)
-          proposal.calculate_from_json(config_json)
-          proposal.success? ? 0 : 1
-        end
-
-        # Calculates the initial proposal.
-        #
-        # @return [Integer] 0 success; 1 error
-        def reset_config
-          logger.info("Reset storage config from D-Bus")
-          backend.calculate_proposal
-          backend.proposal.success? ? 0 : 1
-        end
-
-        # Gets and serializes the storage config used for calculating the current proposal.
-        #
-        # @return [String]
-        def recover_config
-          json = proposal.storage_json
-          JSON.pretty_generate(json)
+          configure(config_json)
         end
 
         # Applies the given serialized config model according to the JSON schema.
@@ -149,8 +132,30 @@ module Agama
           logger.info("Setting storage config model from D-Bus: #{serialized_model}")
 
           model_json = JSON.parse(serialized_model, symbolize_names: true)
-          proposal.calculate_from_model(model_json)
-          proposal.success? ? 0 : 1
+          config = Agama::Storage::ConfigConversions::FromModel.new(
+            model_json,
+            product_config: product_config,
+            storage_system: proposal.storage_system
+          ).convert
+          config_json = { storage: Agama::Storage::ConfigConversions::ToJSON.new(config).convert }
+
+          configure(config_json)
+        end
+
+        # Resets to the default config.
+        #
+        # @return [Integer] 0 success; 1 error
+        def reset_config
+          logger.info("Reset storage config from D-Bus")
+          configure
+        end
+
+        # Gets and serializes the storage config used for calculating the current proposal.
+        #
+        # @return [String]
+        def recover_config
+          json = proposal.storage_json
+          JSON.pretty_generate(json)
         end
 
         # Gets and serializes the storage config model.
@@ -193,18 +198,32 @@ module Agama
         #     they should return whether the config was actually applied.
         #   * Methods like #Probe or #Install return nothing.
         dbus_interface STORAGE_INTERFACE do
-          dbus_method(:Probe) { probe }
-          dbus_method(:Reprobe) { probe(keep_config: true) }
-          dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
-            busy_while { apply_config(serialized_config) }
+          dbus_signal :Configured, "client_id:s"
+          dbus_method(:Probe, "in data:a{sv}") do |data|
+            busy_request(data) { probe }
           end
-          dbus_method(:ResetConfig, "out result:u") do
-            busy_while { reset_config }
+          dbus_method(:Reprobe, "in data:a{sv}") do |data|
+            busy_request(data) { probe(keep_config: true) }
+          end
+          dbus_method(:Reactivate, "in data:a{sv}") do |data|
+            busy_request(data) { probe(keep_config: true, keep_activation: false) }
+          end
+          dbus_method(
+            :SetConfig,
+            "in serialized_config:s, in data:a{sv}, out result:u"
+          ) do |serialized_config, data|
+            busy_request(data) { apply_config(serialized_config) }
+          end
+          dbus_method(:ResetConfig, "in data:a{sv}, out result:u") do |data|
+            busy_request(data) { reset_config }
+          end
+          dbus_method(
+            :SetConfigModel,
+            "in serialized_model:s, in data:a{sv}, out result:u"
+          ) do |serialized_model, data|
+            busy_request(data) { apply_config_model(serialized_model) }
           end
           dbus_method(:GetConfig, "out serialized_config:s") { recover_config }
-          dbus_method(:SetConfigModel, "in serialized_model:s, out result:u") do |serialized_model|
-            busy_while { apply_config_model(serialized_model) }
-          end
           dbus_method(:GetConfigModel, "out serialized_model:s") { recover_model }
           dbus_method(:SolveConfigModel, "in sparse_model:s, out solved_model:s") do |sparse_model|
             solve_model(sparse_model)
@@ -309,8 +328,7 @@ module Agama
         end
 
         dbus_interface STORAGE_DEVICES_INTERFACE do
-          # PropertiesChanged signal if a proposal is calculated, see
-          # {#register_proposal_callbacks}.
+          # PropertiesChanged signal if storage is configured, see {#register_callbacks}.
           dbus_reader_attr_accessor :actions, "aa{sv}"
 
           dbus_reader :available_drives, "ao"
@@ -330,7 +348,7 @@ module Agama
           logger.info("Calculating guided storage proposal from D-Bus: #{settings_dbus}")
 
           settings = ProposalSettingsConversion.from_dbus(settings_dbus,
-            config: config, logger: logger)
+            config: product_config, logger: logger)
 
           proposal.calculate_guided(settings)
           proposal.success? ? 0 : 1
@@ -468,6 +486,20 @@ module Agama
         # @return [DBus::Storage::Proposal, nil]
         attr_reader :dbus_proposal
 
+        # Configures storage.
+        #
+        # @param config_json [Hash, nil] Storage config according to the JSON schema. If nil, then
+        #   the default config is applied.
+        # @return [Integer] 0 success; 1 error
+        def configure(config_json = nil)
+          success = backend.configure(config_json)
+          success ? 0 : 1
+        end
+
+        def send_configured_signal
+          self.Configured(request_data["client_id"].to_s)
+        end
+
         def add_s390_interfaces
           require "agama/dbus/storage/interfaces/dasd_manager"
           require "agama/dbus/storage/interfaces/zfcp_manager"
@@ -488,14 +520,12 @@ module Agama
           backend.on_issues_change { issues_properties_changed }
           backend.on_deprecated_system_change { storage_properties_changed }
           backend.on_probe { refresh_system_devices }
-        end
-
-        def register_proposal_callbacks
-          proposal.on_calculate do
+          backend.on_configure do
             export_proposal
             proposal_properties_changed
             refresh_staging_devices
             update_actions
+            send_configured_signal
           end
         end
 
@@ -591,13 +621,13 @@ module Agama
         end
 
         # @return [Agama::Config]
-        def config
+        def product_config
           backend.product_config
         end
 
         # @return [Agama::VolumeTemplatesBuilder]
         def volume_templates_builder
-          Agama::Storage::VolumeTemplatesBuilder.new_from_config(config)
+          Agama::Storage::VolumeTemplatesBuilder.new_from_config(product_config)
         end
       end
     end

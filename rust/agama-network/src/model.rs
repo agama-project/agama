@@ -24,11 +24,13 @@
 //!   agnostic from the real network service (e.g., NetworkManager).
 use crate::error::NetworkStateError;
 use crate::settings::{
-    BondSettings, BridgeSettings, IEEE8021XSettings, NetworkConnection, WirelessSettings,
+    BondSettings, BridgeSettings, IEEE8021XSettings, NetworkConnection, VlanSettings,
+    WirelessSettings,
 };
 use crate::types::{BondMode, ConnectionState, DeviceState, DeviceType, Status, SSID};
 use agama_utils::openapi::schemas;
 use cidr::IpInet;
+use macaddr::MacAddr6;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
 use std::{
@@ -509,8 +511,10 @@ pub struct Device {
 pub struct Connection {
     pub id: String,
     pub uuid: Uuid,
+    #[schema(schema_with = schemas::mac_addr6)]
+    pub mac_address: Option<MacAddr6>,
     #[serde_as(as = "DisplayFromStr")]
-    pub mac_address: MacAddress,
+    pub custom_mac_address: MacAddress,
     pub firewall_zone: Option<String>,
     pub mtu: u32,
     pub ip_config: IpConfig,
@@ -594,6 +598,7 @@ impl Default for Connection {
             id: Default::default(),
             uuid: Uuid::new_v4(),
             mac_address: Default::default(),
+            custom_mac_address: Default::default(),
             firewall_zone: Default::default(),
             mtu: Default::default(),
             ip_config: Default::default(),
@@ -645,6 +650,10 @@ impl TryFrom<NetworkConnection> for Connection {
             connection.ip_config.ignore_auto_dns = ignore_auto_dns;
         }
 
+        if let Some(vlan_config) = conn.vlan {
+            let config = VlanConfig::try_from(vlan_config)?;
+            connection.config = config.into();
+        }
         if let Some(wireless_config) = conn.wireless {
             let config = WirelessConfig::try_from(wireless_config)?;
             connection.config = config.into();
@@ -661,6 +670,13 @@ impl TryFrom<NetworkConnection> for Connection {
 
         if let Some(ieee_8021x_config) = conn.ieee_8021x {
             connection.ieee_8021x_config = Some(IEEE8021XConfig::try_from(ieee_8021x_config)?);
+        }
+
+        if let Some(mac) = conn.mac_address {
+            connection.mac_address = match MacAddr6::from_str(mac.as_str()) {
+                Ok(mac) => Some(mac),
+                Err(_) => None,
+            }
         }
 
         connection.ip_config.addresses = conn.addresses;
@@ -680,10 +696,11 @@ impl TryFrom<Connection> for NetworkConnection {
 
     fn try_from(conn: Connection) -> Result<Self, Self::Error> {
         let id = conn.clone().id;
-        let mac = conn.mac_address.to_string();
+        let custom_mac = conn.custom_mac_address.to_string();
         let method4 = Some(conn.ip_config.method4.to_string());
         let method6 = Some(conn.ip_config.method6.to_string());
-        let mac_address = (!mac.is_empty()).then_some(mac);
+        let mac_address = conn.mac_address.and_then(|mac| Some(mac.to_string()));
+        let custom_mac_address = (!custom_mac.is_empty()).then_some(custom_mac);
         let nameservers = conn.ip_config.nameservers;
         let dns_searchlist = conn.ip_config.dns_searchlist;
         let ignore_auto_dns = Some(conn.ip_config.ignore_auto_dns);
@@ -709,6 +726,7 @@ impl TryFrom<Connection> for NetworkConnection {
             nameservers,
             dns_searchlist,
             ignore_auto_dns,
+            custom_mac_address,
             mac_address,
             interface,
             addresses,
@@ -729,6 +747,9 @@ impl TryFrom<Connection> for NetworkConnection {
             ConnectionConfig::Bridge(config) => {
                 connection.bridge = Some(BridgeSettings::try_from(config)?);
             }
+            ConnectionConfig::Vlan(config) => {
+                connection.vlan = Some(VlanSettings::try_from(config)?);
+            }
             _ => {}
         }
 
@@ -748,6 +769,9 @@ pub enum ConnectionConfig {
     Bridge(BridgeConfig),
     Infiniband(InfinibandConfig),
     Tun(TunConfig),
+    OvsBridge(OvsBridgeConfig),
+    OvsPort(OvsPortConfig),
+    OvsInterface(OvsInterfaceConfig),
 }
 
 #[derive(Default, Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
@@ -755,6 +779,7 @@ pub enum PortConfig {
     #[default]
     None,
     Bridge(BridgePortConfig),
+    OvsBridge(OvsBridgePortConfig),
 }
 
 impl From<BridgeConfig> for ConnectionConfig {
@@ -766,6 +791,12 @@ impl From<BridgeConfig> for ConnectionConfig {
 impl From<BondConfig> for ConnectionConfig {
     fn from(value: BondConfig) -> Self {
         Self::Bond(value)
+    }
+}
+
+impl From<VlanConfig> for ConnectionConfig {
+    fn from(value: VlanConfig) -> Self {
+        Self::Vlan(value)
     }
 }
 
@@ -840,6 +871,36 @@ impl From<InvalidMacAddress> for zbus::fdo::Error {
     }
 }
 
+#[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum LinkLocal {
+    #[default]
+    Default = 0,
+    Auto = 1,
+    Disabled = 2,
+    Enabled = 3,
+    Fallback = 4,
+}
+
+#[derive(Debug, Error)]
+#[error("Invalid link-local value: {0}")]
+pub struct InvalidLinkLocalValue(i32);
+
+impl TryFrom<i32> for LinkLocal {
+    type Error = InvalidLinkLocalValue;
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(LinkLocal::Default),
+            1 => Ok(LinkLocal::Auto),
+            2 => Ok(LinkLocal::Disabled),
+            3 => Ok(LinkLocal::Enabled),
+            4 => Ok(LinkLocal::Fallback),
+            _ => Err(InvalidLinkLocalValue(value)),
+        }
+    }
+}
+
 #[skip_serializing_none]
 #[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
@@ -866,6 +927,9 @@ pub struct IpConfig {
     pub dhcp4_settings: Option<Dhcp4Settings>,
     pub dhcp6_settings: Option<Dhcp6Settings>,
     pub ip6_privacy: Option<i32>,
+    pub dns_priority4: Option<i32>,
+    pub dns_priority6: Option<i32>,
+    pub link_local4: LinkLocal,
 }
 
 #[skip_serializing_none]
@@ -1061,8 +1125,8 @@ pub struct UnknownIpMethod(String);
 #[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Ipv4Method {
-    #[default]
     Disabled = 0,
+    #[default]
     Auto = 1,
     Manual = 2,
     LinkLocal = 3,
@@ -1097,8 +1161,8 @@ impl FromStr for Ipv4Method {
 #[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Ipv6Method {
-    #[default]
     Disabled = 0,
+    #[default]
     Auto = 1,
     Manual = 2,
     LinkLocal = 3,
@@ -1249,6 +1313,40 @@ impl TryFrom<ConnectionConfig> for WirelessConfig {
             ConnectionConfig::Wireless(config) => Ok(config),
             _ => Err(NetworkStateError::UnexpectedConfiguration),
         }
+    }
+}
+
+impl TryFrom<VlanSettings> for VlanConfig {
+    type Error = NetworkStateError;
+
+    fn try_from(settings: VlanSettings) -> Result<Self, Self::Error> {
+        let id = settings.id;
+        let parent = settings.parent;
+
+        let mut config = VlanConfig {
+            id,
+            parent,
+            ..Default::default()
+        };
+
+        if let Some(protocol) = &settings.protocol {
+            config.protocol = VlanProtocol::from_str(protocol)
+                .map_err(|_| NetworkStateError::InvalidVlanProtocol(protocol.to_string()))?;
+        }
+
+        Ok(config)
+    }
+}
+
+impl TryFrom<VlanConfig> for VlanSettings {
+    type Error = NetworkStateError;
+
+    fn try_from(vlan: VlanConfig) -> Result<Self, Self::Error> {
+        Ok(VlanSettings {
+            id: vlan.id,
+            parent: vlan.parent,
+            protocol: Some(vlan.protocol.to_string()),
+        })
     }
 }
 
@@ -1713,19 +1811,14 @@ impl TryFrom<BondConfig> for BondSettings {
     }
 }
 
+#[skip_serializing_none]
 #[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
 pub struct BridgeConfig {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub stp: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub priority: Option<u32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub forward_delay: Option<u32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub hello_time: Option<u32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub max_age: Option<u32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub ageing_time: Option<u32>,
 }
 
@@ -2031,3 +2124,71 @@ impl fmt::Display for Phase2AuthMethod {
         write!(f, "{}", value)
     }
 }
+
+#[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+pub struct OvsBridgeConfig {
+    pub mcast_snooping_enable: Option<bool>,
+    pub rstp_enable: Option<bool>,
+    pub stp_enable: Option<bool>,
+}
+
+#[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+pub struct OvsPortConfig {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tag: Option<u16>,
+}
+
+#[derive(Debug, Error)]
+#[error("Invalid OvsInterfaceType: {0}")]
+pub struct InvalidOvsInterfaceType(String);
+
+impl FromStr for OvsInterfaceType {
+    type Err = InvalidOvsInterfaceType;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "" => Ok(Self::Empty),
+            "internal" => Ok(Self::Internal),
+            "system" => Ok(Self::System),
+            "patch" => Ok(Self::Patch),
+            "dpdk" => Ok(Self::Dpdk),
+            _ => Err(InvalidOvsInterfaceType(s.to_string())),
+        }
+    }
+}
+
+impl From<InvalidOvsInterfaceType> for zbus::fdo::Error {
+    fn from(value: InvalidOvsInterfaceType) -> Self {
+        zbus::fdo::Error::Failed(value.to_string())
+    }
+}
+
+impl fmt::Display for OvsInterfaceType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let value = match self {
+            Self::Empty => "",
+            Self::Internal => "internal",
+            Self::System => "system",
+            Self::Patch => "patch",
+            Self::Dpdk => "dpdk",
+        };
+        write!(f, "{}", value)
+    }
+}
+#[derive(Default, Debug, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+pub enum OvsInterfaceType {
+    #[default]
+    Empty,
+    Internal,
+    System,
+    Patch,
+    Dpdk,
+}
+
+#[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+pub struct OvsInterfaceConfig {
+    pub interface_type: OvsInterfaceType,
+}
+
+#[derive(Debug, Default, PartialEq, Clone, Serialize, utoipa::ToSchema)]
+pub struct OvsBridgePortConfig {}

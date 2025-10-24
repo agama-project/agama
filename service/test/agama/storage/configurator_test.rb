@@ -111,29 +111,30 @@ describe Agama::Storage::Configurator do
         expect(proposal).to_not receive(:calculate_from_json).with(storage_json)
       end
 
-      it "calculates a proposal using MD RAIDs first and then drives" do
-        expect_calculated(md0)
-        expect_calculated(md2)
+      it "calculates a proposal using drives and not considering software RAIDs" do
         expect_calculated(vda)
         expect_calculated(vdb)
         # Repeats the first config if everything fails.
-        expect_calculated(md0)
+        expect_calculated(vda)
+        expect_not_calculated(md0)
+        expect_not_calculated(md1)
+        expect_not_calculated(md2)
         subject.configure
       end
 
       context "if there are removable devices" do
         before do
           allow(vda).to receive(:usb?).and_return(true)
-          allow(md0).to receive(:sd_card?).and_return(true)
         end
 
         it "calculates a proposal using the removable devices as last resort" do
-          expect_calculated(md2)
           expect_calculated(vdb)
-          expect_calculated(md0)
           expect_calculated(vda)
           # Repeats the first config if everything fails.
-          expect_calculated(md2)
+          expect_calculated(vdb)
+          expect_not_calculated(md0)
+          expect_not_calculated(md1)
+          expect_not_calculated(md2)
           subject.configure
         end
       end
@@ -141,16 +142,14 @@ describe Agama::Storage::Configurator do
       context "if there are BOSS devices" do
         before do
           allow(vdb).to receive(:boss?).and_return(true)
-          allow(md0).to receive(:boss?).and_return(true)
         end
 
         it "calculates a proposal only for the BOSS devices" do
-          expect_calculated(md0)
           expect_calculated(vdb)
-          # Repeats the first config if everything fails.
-          expect_calculated(md0)
           expect_not_calculated(vda)
+          expect_not_calculated(md0)
           expect_not_calculated(md1)
+          expect_not_calculated(md2)
           subject.configure
         end
       end
@@ -160,10 +159,11 @@ describe Agama::Storage::Configurator do
         let(:max) { "50 GiB" }
 
         it "does not calculate a proposal for the rest of configs" do
-          expect_calculated(md0)
-          expect_calculated(md2)
-          expect_not_calculated(vda)
+          expect_calculated(vda)
           expect_not_calculated(vdb)
+          expect_not_calculated(md0)
+          expect_not_calculated(md1)
+          expect_not_calculated(md2)
           subject.configure
         end
       end

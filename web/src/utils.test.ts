@@ -20,7 +20,15 @@
  * find current contact information at www.suse.com.
  */
 
-import { compact, localConnection, hex, mask, timezoneTime } from "./utils";
+import {
+  compact,
+  localConnection,
+  hex,
+  mask,
+  timezoneTime,
+  generateEncodedPath,
+  sortCollection,
+} from "./utils";
 
 describe("compact", () => {
   it("removes null and undefined values", () => {
@@ -37,15 +45,14 @@ describe("compact", () => {
 });
 
 describe("hex", () => {
-  it("parses numeric dot strings as hex", () => {
+  it("parses hexadecimal numeric dot strings as hex", () => {
     expect(hex("0.0.0160")).toBe(352); // "000160"
+    expect(hex("0.0.019d")).toBe(413); // "00019d"
     expect(hex("1.2.3")).toBe(291); // "123"
     expect(hex("123")).toBe(291); // "123"
   });
 
-  it("returns 0 for strings with letters or invalid characters", () => {
-    expect(hex("1A")).toBe(0);
-    expect(hex("1A.3F")).toBe(0);
+  it("returns 0 for strings invalid characters", () => {
     expect(hex("xyz")).toBe(0);
     expect(hex("123Z")).toBe(0);
   });
@@ -187,5 +194,121 @@ describe("localConnection", () => {
     it("returns true for non-local hostnames", () => {
       expect(localConnection(remoteURL)).toBe(true);
     });
+  });
+});
+
+describe("generateEncodedPath", () => {
+  it("encodes special characters in parameters", () => {
+    const path = "/network/:id";
+    const params = { id: "Wired #1" };
+
+    const result = generateEncodedPath(path, params);
+
+    expect(result).toBe("/network/Wired%20%231");
+  });
+
+  it("handles multiple parameters", () => {
+    const path = "/network/:id/bridge/:bridge";
+    const params = { id: "Wired #1", bridge: "br $0" };
+
+    const result = generateEncodedPath(path, params);
+
+    expect(result).toBe("/network/Wired%20%231/bridge/br%20%240");
+  });
+
+  it("leaves safe characters unchanged", () => {
+    const path = "/product/:id";
+    const params = { id: "12345" };
+
+    const result = generateEncodedPath(path, params);
+
+    expect(result).toBe("/product/12345");
+  });
+
+  it("works with empty params", () => {
+    const path = "/static/path";
+
+    const result = generateEncodedPath(path, {});
+
+    expect(result).toBe("/static/path");
+  });
+
+  it("throws if a param is missing", () => {
+    const path = "/network/:id";
+
+    expect(() => generateEncodedPath(path, {})).toThrow();
+  });
+});
+
+describe("simpleFastSort", () => {
+  const fakeDevices = [
+    { sid: 100, name: "/dev/sdz", size: 5 },
+    { sid: 2, name: "/dev/sdb", size: 10 },
+    { sid: 3, name: "/dev/sdc", size: 2 },
+    { sid: 10, name: "/dev/sda", size: 5 },
+  ];
+
+  it("sorts by a string key in ascending order", () => {
+    expect(sortCollection(fakeDevices, "asc", "size")).toEqual([
+      { sid: 3, name: "/dev/sdc", size: 2 },
+      { sid: 100, name: "/dev/sdz", size: 5 },
+      { sid: 10, name: "/dev/sda", size: 5 },
+      { sid: 2, name: "/dev/sdb", size: 10 },
+    ]);
+  });
+
+  it("sorts by a string key in descending order", () => {
+    expect(sortCollection(fakeDevices, "desc", "size")).toEqual([
+      { sid: 2, name: "/dev/sdb", size: 10 },
+      { sid: 100, name: "/dev/sdz", size: 5 },
+      { sid: 10, name: "/dev/sda", size: 5 },
+      { sid: 3, name: "/dev/sdc", size: 2 },
+    ]);
+  });
+
+  it("sorts by ISortBy functions in ascending order", () => {
+    const sortingFunctions = [(d) => d.size, (d) => d.name];
+
+    expect(sortCollection(fakeDevices, "asc", sortingFunctions)).toEqual([
+      { sid: 3, name: "/dev/sdc", size: 2 },
+      { sid: 10, name: "/dev/sda", size: 5 },
+      { sid: 100, name: "/dev/sdz", size: 5 },
+      { sid: 2, name: "/dev/sdb", size: 10 },
+    ]);
+  });
+
+  it("sorts by ISortBy functions in descending order", () => {
+    const sortingFunctions = [(d) => d.size, (d) => d.name];
+
+    expect(sortCollection(fakeDevices, "desc", sortingFunctions)).toEqual([
+      { sid: 2, name: "/dev/sdb", size: 10 },
+      { sid: 100, name: "/dev/sdz", size: 5 },
+      { sid: 10, name: "/dev/sda", size: 5 },
+      { sid: 3, name: "/dev/sdc", size: 2 },
+    ]);
+  });
+
+  it("sorts by ISortBy function for a computed value in ascending order", () => {
+    expect(sortCollection(fakeDevices, "asc", (d) => d.sid + d.size)).toEqual([
+      { sid: 3, name: "/dev/sdc", size: 2 }, // 5
+      { sid: 2, name: "/dev/sdb", size: 10 }, // 12
+      { sid: 10, name: "/dev/sda", size: 5 }, // 15
+      { sid: 100, name: "/dev/sdz", size: 5 }, // 105
+    ]);
+  });
+
+  it("sorts by ISortBy function for a computed value in descending order", () => {
+    expect(sortCollection(fakeDevices, "desc", (d) => d.sid + d.size)).toEqual([
+      { sid: 100, name: "/dev/sdz", size: 5 }, // 105
+      { sid: 10, name: "/dev/sda", size: 5 }, // 15
+      { sid: 2, name: "/dev/sdb", size: 10 }, // 12
+      { sid: 3, name: "/dev/sdc", size: 2 }, // 5
+    ]);
+  });
+
+  it("does not mutate the original array", () => {
+    const original = [...fakeDevices];
+    sortCollection(fakeDevices, "asc", "size");
+    expect(fakeDevices).toEqual(original);
   });
 });

@@ -48,6 +48,8 @@ pub enum NmError {
     UnsupporedWirelessMode(String),
     #[error("Missing connection information")]
     MissingConnectionSection,
+    #[error("Invalid device name: '{0}'")]
+    InvalidDeviceName(String),
     #[error("Invalid network UUID")]
     InvalidNetworkUUID(#[from] uuid::Error),
     #[error("Connection type not supported for '{0}'")]
@@ -76,6 +78,10 @@ pub enum NmError {
     InvalidDeviceState(#[from] InvalidNmDeviceState),
     #[error("Failed to parse NetworkManager version: '{0}'")]
     FailedNmVersionParse(#[from] semver::Error),
+    #[error("Invalid valud from DBUS: '{0}'")]
+    InvalidDBUSValue(String),
+    #[error("Invalid ovs-interface type '{0}'")]
+    InvalidOvsInterfaceType(#[from] crate::model::InvalidOvsInterfaceType),
 }
 
 impl From<NmError> for NetworkStateError {

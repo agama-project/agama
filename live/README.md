@@ -24,7 +24,6 @@
     - [Avahi/mDNS](#avahimdns)
       - [The Default Hostname](#the-default-hostname)
       - [Service Advertisement](#service-advertisement)
-    - [Autoinstallation support](#autoinstallation-support)
     - [Firmware cleanup](#firmware-cleanup)
 
 ---
@@ -36,8 +35,6 @@ This directory contains a set of files that are used to build the Agama Live ISO
 - [src](src) subdirectory contains all source files which are copied unmodified to the OBS project
 - [root](root) subdirectory contains files which are added to the Live ISO root system (inside the
   squashfs image)
-- [root-PXE](root-PXE) subdirectory contains specific files for the image used for the PXE boot, see
-  a separate [PXE documentation](PXE.md) for more details about the PXE boot
 - [config-cdroot](config-cdroot) subdirectory contains file which are copied to the uncompressed
   root of the ISO image, the files can be accessed just by mounting the ISO file or the DVD medium
 - [test](test) subdirectory contains tests to verify correctness of content. Can be run with `make check`
@@ -60,6 +57,15 @@ make clean
 
 or just simply delete the `dist` subdirectory.
 
+By default it builds the sources for openSUSE, if you want to build the sources for SLES run
+
+```shell
+make sles
+```
+
+It is recommended to run `make clean` before changing the target product to ensure there are no
+leftovers from the previous product.
+
 ## Building the ISO image
 
 To build the ISO locally run the
@@ -80,8 +86,6 @@ By default this will build the openSUSE image. If you want to build another imag
 
 ```shell
 make build FLAVOR=<flavor>
-# for building the openSUSE-PXE flavor:
-make build FLAVOR=openSUSE-PXE
 ```
 
 See the [_multibuild](src/_multibuild) file for the list of available build flavors.
@@ -232,12 +236,6 @@ That allows scanning all running Agama instances in the local network with comma
 ```shell
 avahi-browse -t -r _agama._sub._https._tcp
 ```
-
-### Autoinstallation support
-
-The autoinstallation is started using the [agama-auto](root/etc/systemd/system/agama-auto.service)
-service which starts the [auto.sh](root/usr/bin/auto.sh) script. This script downloads the
-installation profile, applies it to Agama and starts the installation.
 
 ### Firmware cleanup
 

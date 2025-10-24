@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/from_model_conversions/base"
+require "agama/storage/config_conversions/from_model_conversions/with_encryption"
 require "agama/storage/config_conversions/from_model_conversions/with_filesystem"
 require "agama/storage/config_conversions/from_model_conversions/with_partitions"
 require "agama/storage/config_conversions/from_model_conversions/with_ptable_type"
@@ -32,6 +33,7 @@ module Agama
       module FromModelConversions
         # Drive conversion from model according to the JSON schema.
         class Drive < Base
+          include WithEncryption
           include WithFilesystem
           include WithPtableType
           include WithPartitions
@@ -67,6 +69,7 @@ module Agama
           def conversions
             {
               search:      convert_search,
+              encryption:  convert_encryption,
               filesystem:  convert_filesystem,
               ptable_type: convert_ptable_type,
               partitions:  convert_partitions(encryption_model)

@@ -165,6 +165,22 @@ const AncillaryAction = ({ children, ...actionsProps }: PredefinedAction) => (
 );
 
 /**
+ * A Popup action with danger variant
+ *
+ * It always set `variant` {@link https://www.patternfly.org/components/button PF/Button}
+ * prop to "danger", no matter what given in `props`.
+ *
+ * @example <caption>Simple usage</caption>
+ *   <DangerousAction onClick={format}>Format</DangerousAction>
+ *
+ */
+const DangerousAction = ({ children, ...actionProps }: PredefinedAction) => (
+  <Action {...actionProps} variant="danger">
+    {children}
+  </Action>
+);
+
+/**
  * Agama component for displaying a popup
  *
  * Built on top of {@link https://www.patternfly.org/components/modal PF/Modal}, it
@@ -245,6 +261,7 @@ const Popup = ({
 
 Popup.Actions = Actions;
 Popup.PrimaryAction = PrimaryAction;
+Popup.DangerousAction = DangerousAction;
 Popup.Confirm = Confirm;
 Popup.SecondaryAction = SecondaryAction;
 Popup.Cancel = Cancel;

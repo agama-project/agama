@@ -59,6 +59,8 @@ type LicenseContent = {
   id: string;
   /** License body */
   body: string;
+  /** License language (e.g., "en-US") */
+  language: string;
 };
 
 type PatternsSelection = { [key: string]: SelectedBy };
@@ -114,10 +116,9 @@ type RegistrationInfo = {
 };
 
 type RegistrationParams = {
-  registered?: boolean;
   key: string;
   email?: string;
-  url?: string;
+  url: string;
 };
 
 type AddonInfo = {

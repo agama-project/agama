@@ -29,5 +29,7 @@ end
 
 require "agama/http/clients/base"
 require "agama/http/clients/files"
+require "agama/http/clients/localization"
 require "agama/http/clients/network"
 require "agama/http/clients/scripts"
+require "agama/http/clients/software"

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActionGroup,
   Alert,
@@ -34,10 +34,21 @@ import {
   Flex,
   Form,
   FormGroup,
+  SelectList,
+  SelectOption,
   Title,
   TextInput,
+  List,
+  ListItem,
+  Divider,
 } from "@patternfly/react-core";
-import { Link, Page } from "~/components/core";
+import {
+  Link,
+  NestedContent,
+  Page,
+  SelectWrapper as Select,
+  SubtleContent,
+} from "~/components/core";
 import RegistrationExtension from "./RegistrationExtension";
 import RegistrationCodeInput from "./RegistrationCodeInput";
 import { RegistrationParams } from "~/types/software";
@@ -47,10 +58,13 @@ import { useHostname } from "~/queries/system";
 import { isEmpty } from "radashi";
 import { mask } from "~/utils";
 import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
+import { _, N_ } from "~/i18n";
 
 const FORM_ID = "productRegistration";
-const EMAIL_LABEL = "Email";
+const SERVER_LABEL = N_("Registration server");
+const EMAIL_LABEL = N_("Email");
+const SCC_SERVER_LABEL = N_("SUSE Customer Center (SCC)");
+const CUSTOM_SERVER_LABEL = N_("Custom");
 
 const RegisteredProductSection = () => {
   const { selectedProduct: product } = useProduct();
@@ -65,19 +79,30 @@ const RegisteredProductSection = () => {
       </Content>
       <DescriptionList>
         <DescriptionListGroup>
-          {/* TRANSLATORS: input field label */}
-          <DescriptionListTerm>{_("Registration code")}</DescriptionListTerm>
-          <DescriptionListDescription>
-            <Flex gap={{ default: "gapSm" }}>
-              {showCode ? registration.key : mask(registration.key)}
-              <Button variant="link" isInline onClick={toggleCodeVisibility}>
-                {showCode ? _("Hide") : _("Show")}
-              </Button>
-            </Flex>
-          </DescriptionListDescription>
+          {!isEmpty(registration.url) && (
+            <>
+              {/* eslint-disable agama-i18n/string-literals */}
+              <DescriptionListTerm>{_(SERVER_LABEL)}</DescriptionListTerm>
+              <DescriptionListDescription>{registration.url}</DescriptionListDescription>
+            </>
+          )}
+          {!isEmpty(registration.key) && (
+            <>
+              <DescriptionListTerm>{_("Registration code")}</DescriptionListTerm>
+              <DescriptionListDescription>
+                <Flex gap={{ default: "gapSm" }}>
+                  {showCode ? registration.key : mask(registration.key)}
+                  <Button variant="link" isInline onClick={toggleCodeVisibility}>
+                    {showCode ? _("Hide") : _("Show")}
+                  </Button>
+                </Flex>
+              </DescriptionListDescription>
+            </>
+          )}
           {!isEmpty(registration.email) && (
             <>
-              <DescriptionListTerm>{EMAIL_LABEL}</DescriptionListTerm>
+              {/* eslint-disable agama-i18n/string-literals */}
+              <DescriptionListTerm>{_(EMAIL_LABEL)}</DescriptionListTerm>
               <DescriptionListDescription>{registration.email}</DescriptionListDescription>
             </>
           )}
@@ -87,24 +112,228 @@ const RegisteredProductSection = () => {
   );
 };
 
+type ServerOption = "default" | "custom";
+
+type RegistrationServerProps = {
+  id?: string;
+  value: ServerOption;
+  onChange: (v: ServerOption) => void;
+};
+
+function RegistrationServer({
+  id = "server",
+  value,
+  onChange,
+}: RegistrationServerProps): React.ReactNode {
+  return (
+    <FormGroup
+      fieldId={id}
+      /* eslint-disable agama-i18n/string-literals */
+      label={_(SERVER_LABEL)}
+    >
+      <Select
+        id={"server"}
+        value={value}
+        /* eslint-disable agama-i18n/string-literals */
+        label={value === "default" ? _(SCC_SERVER_LABEL) : _(CUSTOM_SERVER_LABEL)}
+        onChange={(v: ServerOption) => onChange(v)}
+      >
+        <SelectList aria-label={_("Server options")}>
+          <SelectOption value="default" description={_("Register using SUSE server")}>
+            {/* eslint-disable agama-i18n/string-literals */}
+            {_(SCC_SERVER_LABEL)}
+          </SelectOption>
+          <SelectOption
+            value="custom"
+            description={_("Register using a custom registration server")}
+          >
+            {/* eslint-disable agama-i18n/string-literals */}
+            {_(CUSTOM_SERVER_LABEL)}
+          </SelectOption>
+        </SelectList>
+      </Select>
+    </FormGroup>
+  );
+}
+
+type RegistrationUrlProps = {
+  id?: string;
+  value: string;
+  onChange: (v: string) => void;
+};
+
+function RegistrationUrl({ id = "url", value, onChange }: RegistrationUrlProps): React.ReactNode {
+  return (
+    <FormGroup fieldId={id} label={_("Server URL")}>
+      <TextInput id={id} value={value} onChange={(_, v) => onChange(v)} />
+      <SubtleContent>{_("Example: https://myserver.com")}</SubtleContent>
+    </FormGroup>
+  );
+}
+
+type RegistrationCodeFieldProps = {
+  id?: string;
+  value: string;
+  onChange: (v: string) => void;
+};
+
+function RegistrationCodeField({
+  id,
+  value,
+  onChange,
+}: RegistrationCodeFieldProps): React.ReactNode {
+  return (
+    <FormGroup fieldId={id} label={_("Registration code")}>
+      <RegistrationCodeInput id={id} value={value} onChange={(_, v) => onChange(v)} />
+    </FormGroup>
+  );
+}
+
+type RegistrationCodeProps = {
+  id?: string;
+  value: string;
+  onChange: (v: string) => void;
+  isOptional?: boolean;
+  isProvided?: boolean;
+  onProvidedChange?: (v: boolean) => void;
+};
+
+function RegistrationCode({
+  id = "code",
+  value,
+  onChange,
+  isOptional = false,
+  isProvided = false,
+  onProvidedChange,
+}: RegistrationCodeProps): React.ReactNode {
+  if (!isOptional) return <RegistrationCodeField id={id} value={value} onChange={onChange} />;
+
+  const optionalId = `provide-${id}`;
+
+  return (
+    <>
+      <FormGroup fieldId={optionalId}>
+        <Checkbox
+          id={optionalId}
+          label={_("Provide registration code")}
+          isChecked={isProvided}
+          onChange={() => onProvidedChange && onProvidedChange(!isProvided)}
+        />
+      </FormGroup>
+      {isProvided && (
+        <NestedContent margin="mxMd" aria-live="polite">
+          <RegistrationCodeField id={id} value={value} onChange={onChange} />
+        </NestedContent>
+      )}
+    </>
+  );
+}
+
+type RegistrationEmailProps = {
+  id?: string;
+  value: string;
+  onChange: (v: string) => void;
+  isProvided?: boolean;
+  onProvidedChange?: (v: boolean) => void;
+};
+
+function RegistrationEmail({
+  id = "email",
+  value,
+  onChange,
+  isProvided = false,
+  onProvidedChange,
+}: RegistrationEmailProps): React.ReactNode {
+  const optionalId = `provide-${id}`;
+
+  return (
+    <>
+      <FormGroup fieldId={optionalId}>
+        <Checkbox
+          id={optionalId}
+          label={_("Provide email address")}
+          isChecked={isProvided}
+          onChange={() => onProvidedChange(!isProvided)}
+        />
+      </FormGroup>
+
+      {isProvided && (
+        <NestedContent margin="mxMd" aria-live="polite">
+          <FormGroup fieldId={id} label={EMAIL_LABEL}>
+            <TextInput id={id} value={value} onChange={(_, v) => onChange(v)} />
+          </FormGroup>
+        </NestedContent>
+      )}
+    </>
+  );
+}
+
 const RegistrationFormSection = () => {
   const { mutate: register } = useRegisterMutation();
+  const [server, setServer] = useState<ServerOption>("default");
+  const [url, setUrl] = useState("");
   const [key, setKey] = useState("");
   const [email, setEmail] = useState("");
+  const [provideKey, setProvideKey] = useState(true);
   const [provideEmail, setProvideEmail] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [requestError, setRequestError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const registration = useRegistration();
+
+  useEffect(() => {
+    if (registration) {
+      const { key, email, url } = registration;
+      const server = isEmpty(url) ? "default" : "custom";
+      setServer(server);
+      setKey(key);
+      setEmail(email);
+      setUrl(url);
+      setProvideKey(!isEmpty(key));
+      setProvideEmail(!isEmpty(email));
+    }
+  }, [registration]);
+
+  const changeServer = (value: ServerOption) => {
+    if (value !== "default") setProvideKey(!isEmpty(key));
+    setServer(value);
+  };
+
+  const changeProvideKey = (value: boolean) => {
+    if (!value) setKey("");
+    setProvideKey(value);
+  };
+
+  const changeProvideEmail = (value: boolean) => {
+    if (!value) setEmail("");
+    setProvideEmail(value);
+  };
 
   // FIXME: use the right type for AxiosResponse
   const onRegisterError = ({ response }) => {
-    setError(response.data.message);
+    setRequestError(response.data.message);
   };
 
   const submit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    setError(null);
+    setRequestError(null);
 
-    const data: RegistrationParams = { key, email: provideEmail ? email : "" };
+    const isUrlRequired = server !== "default";
+    const isKeyRequired = server === "default" || provideKey;
+
+    const errors = [];
+    if (isUrlRequired && isEmpty(url)) errors.push("Enter a server URL");
+    if (isKeyRequired && isEmpty(key)) errors.push("Enter a registration code");
+    if (provideEmail && isEmpty(email)) errors.push("Enter an email");
+    setErrors(errors);
+
+    if (!isEmpty(errors)) return;
+
+    const data: RegistrationParams = {
+      url: isUrlRequired ? url : "",
+      key: isKeyRequired ? key : "",
+      email: provideEmail ? email : "",
+    };
 
     setLoading(true);
 
@@ -116,26 +345,36 @@ const RegistrationFormSection = () => {
 
   return (
     <Form id={FORM_ID} onSubmit={submit}>
-      {error && <Alert variant="warning" isInline title={error} />}
-      {/* // TRANSLATORS: input field label */}
-      <FormGroup fieldId="key" label={_("Registration code")}>
-        <RegistrationCodeInput id="key" value={key} onChange={(_, v) => setKey(v)} />
-      </FormGroup>
+      {requestError && <Alert variant="warning" isInline title={requestError} />}
 
-      <FormGroup fieldId="provideEmail">
-        <Checkbox
-          id="provideEmail"
-          label={_("Provide email address")}
-          isChecked={provideEmail}
-          onChange={() => setProvideEmail(!provideEmail)}
-        />
-      </FormGroup>
-
-      {provideEmail && (
-        <FormGroup fieldId="email" label={EMAIL_LABEL}>
-          <TextInput id="email" value={email} onChange={(_, v) => setEmail(v)} />
-        </FormGroup>
+      {!isEmpty(errors) && (
+        <Alert variant="warning" isInline title={_("Check the following before continuing")}>
+          <List isPlain>
+            {errors.map((e, i) => (
+              <ListItem key={i}>{e}</ListItem>
+            ))}
+          </List>
+        </Alert>
       )}
+
+      <RegistrationServer value={server} onChange={changeServer} />
+
+      {server !== "default" && <RegistrationUrl value={url} onChange={setUrl} />}
+
+      <RegistrationCode
+        value={key}
+        onChange={setKey}
+        isOptional={server !== "default"}
+        isProvided={provideKey}
+        onProvidedChange={changeProvideKey}
+      />
+
+      <RegistrationEmail
+        value={email}
+        onChange={setEmail}
+        isProvided={provideEmail}
+        onProvidedChange={changeProvideEmail}
+      />
 
       <ActionGroup>
         <Button variant="primary" type="submit" form={FORM_ID} isInline isLoading={loading}>
@@ -185,8 +424,13 @@ const Extensions = () => {
 
   return (
     <>
-      <Title headingLevel="h2">{_("Extensions")}</Title>
-      {extensionComponents}
+      <Divider />
+      <Title headingLevel="h3">{_("Extensions")}</Title>
+      <NestedContent>
+        <Flex gap={{ default: "gap2xl" }} direction={{ default: "column" }}>
+          {extensionComponents}
+        </Flex>
+      </NestedContent>
     </>
   );
 };

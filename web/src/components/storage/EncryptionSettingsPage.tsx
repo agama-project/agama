@@ -24,6 +24,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ActionGroup, Alert, Checkbox, Content, Form } from "@patternfly/react-core";
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
+import PasswordCheck from "~/components/users/PasswordCheck";
 import { useEncryptionMethods } from "~/queries/storage";
 import { useEncryption } from "~/queries/storage/config-model";
 import { apiModel } from "~/api/storage/types";
@@ -132,6 +133,7 @@ at the new file systems, including data, programs, and system files.",
                 isDisabled={!isEnabled}
                 showErrors={false}
               />
+              <PasswordCheck password={password} />
               {isTpmAvailable && (
                 <Checkbox
                   id="tpmEncryptionMethod"

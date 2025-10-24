@@ -1,6 +1,7 @@
 {
   "$comment": "Based on doc/auto_storage.md",
   "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://github.com/agama-project/agama/blob/master/rust/agama-lib/share/storage.schema.json",
   "title": "Config",
   "description": "Storage config.",
   "type": "object",
@@ -369,6 +370,10 @@
       "minimum": 1,
       "maximum": 128
     },
+    "searchSortCriterionOrder": {
+      "description": "Direction of sorting at the search results",
+      "enum": ["asc", "desc"]
+    },
     "driveSearch": {
       "anyOf": [
         { "$ref": "#/$defs/searchAll" },
@@ -381,6 +386,7 @@
       "additionalProperties": false,
       "properties": {
         "condition": { "$ref": "#/$defs/driveSearchCondition" },
+        "sort": { "$ref": "#/$defs/driveSearchSort" },
         "max": { "$ref": "#/$defs/searchMax" },
         "ifNotFound": { "$ref": "#/$defs/searchActions" }
       }
@@ -390,6 +396,34 @@
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" }
       ]
+    },
+    "driveSearchSort": {
+      "anyOf": [
+        { "$ref": "#/$defs/driveSearchSortCriterion" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/driveSearchSortCriterion" }
+        }
+      ]
+    },
+    "driveSearchSortCriterion": {
+      "anyOf": [
+        { "$ref": "#/$defs/driveSearchSortCriterionShort" },
+        { "$ref": "#/$defs/driveSearchSortCriterionFull" }
+      ]
+    },
+    "driveSearchSortCriterionShort": {
+      "enum": ["name", "size"]
+    },
+    "driveSearchSortCriterionFull": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/$defs/searchSortCriterionOrder" },
+        "size": { "$ref": "#/$defs/searchSortCriterionOrder" }
+      },
+      "minProperties": 1,
+      "maxProperties": 1
     },
     "mdRaidSearch": {
       "anyOf": [
@@ -403,6 +437,7 @@
       "additionalProperties": false,
       "properties": {
         "condition": { "$ref": "#/$defs/mdRaidSearchCondition" },
+        "sort": { "$ref": "#/$defs/mdRaidSearchSort" },
         "max": { "$ref": "#/$defs/searchMax" },
         "ifNotFound": { "$ref": "#/$defs/searchCreatableActions" }
       }
@@ -412,6 +447,34 @@
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" }
       ]
+    },
+    "mdRaidSearchSort": {
+      "anyOf": [
+        { "$ref": "#/$defs/mdRaidSearchSortCriterion" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/mdRaidSearchSortCriterion" }
+        }
+      ]
+    },
+    "mdRaidSearchSortCriterion": {
+      "anyOf": [
+        { "$ref": "#/$defs/mdRaidSearchSortCriterionShort" },
+        { "$ref": "#/$defs/mdRaidSearchSortCriterionFull" }
+      ]
+    },
+    "mdRaidSearchSortCriterionShort": {
+      "enum": ["name", "size"]
+    },
+    "mdRaidSearchSortCriterionFull": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/$defs/searchSortCriterionOrder" },
+        "size": { "$ref": "#/$defs/searchSortCriterionOrder" }
+      },
+      "minProperties": 1,
+      "maxProperties": 1
     },
     "partitionSearch": {
       "anyOf": [
@@ -425,6 +488,7 @@
       "additionalProperties": false,
       "properties": {
         "condition": { "$ref": "#/$defs/partitionSearchCondition" },
+        "sort": { "$ref": "#/$defs/partitionSearchSort" },
         "max": { "$ref": "#/$defs/searchMax" },
         "ifNotFound": { "$ref": "#/$defs/searchCreatableActions" }
       }
@@ -441,6 +505,7 @@
       "additionalProperties": false,
       "properties": {
         "condition": { "$ref": "#/$defs/partitionSearchCondition" },
+        "sort": { "$ref": "#/$defs/partitionSearchSort" },
         "max": { "$ref": "#/$defs/searchMax" },
         "ifNotFound": { "$ref": "#/$defs/searchActions" }
       }
@@ -511,6 +576,35 @@
         }
       }
     },
+    "partitionSearchSort": {
+      "anyOf": [
+        { "$ref": "#/$defs/partitionSearchSortCriterion" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/partitionSearchSortCriterion" }
+        }
+      ]
+    },
+    "partitionSearchSortCriterion": {
+      "anyOf": [
+        { "$ref": "#/$defs/partitionSearchSortCriterionShort" },
+        { "$ref": "#/$defs/partitionSearchSortCriterionFull" }
+      ]
+    },
+    "partitionSearchSortCriterionShort": {
+      "enum": ["name", "size", "number"]
+    },
+    "partitionSearchSortCriterionFull": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/$defs/searchSortCriterionOrder" },
+        "size": { "$ref": "#/$defs/searchSortCriterionOrder" },
+        "number": { "$ref": "#/$defs/searchSortCriterionOrder" }
+      },
+      "minProperties": 1,
+      "maxProperties": 1
+    },
     "searchMax": {
       "description": "Maximum devices to match.",
       "type": "integer",
@@ -531,7 +625,7 @@
       "const": "*"
     },
     "searchName": {
-      "descrition": "Search by device name",
+      "description": "Search by device name",
       "type": "string",
       "examples": ["/dev/vda", "/dev/disk/by-id/ata-WDC_WD3200AAKS-75L9"]
     },
@@ -671,7 +765,7 @@
       }
     },
     "encryptionTPM": {
-      "description": "TPM-Based Full Disk Encrytion.",
+      "description": "TPM-Based Full Disk Encryption.",
       "type": "object",
       "additionalProperties": false,
       "required": ["tpmFde"],

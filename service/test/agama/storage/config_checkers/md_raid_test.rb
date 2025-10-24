@@ -306,5 +306,23 @@ describe Agama::Storage::ConfigCheckers::MdRaid do
         expect(subject.issues).to eq([])
       end
     end
+
+    context "if the reused MD RAID is valid" do
+      let(:scenario) { "md_disks.yaml" }
+
+      let(:config_json) do
+        {
+          mdRaids: [
+            { search: "/dev/md0" }
+          ]
+        }
+      end
+
+      before { solve_config }
+
+      it "does not report issues" do
+        expect(subject.issues).to eq([])
+      end
+    end
   end
 end

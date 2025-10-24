@@ -47,6 +47,10 @@ use zbus::proxy;
     assume_defaults = true
 )]
 pub trait Storage1 {
+    /// Storage configured signal
+    #[zbus(signal)]
+    fn configured(&self, client_id: &str) -> zbus::Result<()>;
+
     /// Finish method
     fn finish(&self) -> zbus::Result<()>;
 
@@ -54,22 +58,45 @@ pub trait Storage1 {
     fn install(&self) -> zbus::Result<()>;
 
     /// Probe method
-    fn probe(&self) -> zbus::Result<()>;
+    fn probe(
+        &self,
+        data: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+    ) -> zbus::Result<()>;
 
     /// Reprobe method
-    fn reprobe(&self) -> zbus::Result<()>;
+    fn reprobe(
+        &self,
+        data: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+    ) -> zbus::Result<()>;
+
+    /// Reactivate method
+    fn reactivate(
+        &self,
+        data: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+    ) -> zbus::Result<()>;
 
     /// Set the storage config according to the JSON schema
-    fn set_config(&self, settings: &str) -> zbus::Result<u32>;
+    fn set_config(
+        &self,
+        settings: &str,
+        data: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+    ) -> zbus::Result<u32>;
 
     /// Reset the storage config to the default value
-    fn reset_config(&self) -> zbus::Result<u32>;
+    fn reset_config(
+        &self,
+        data: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+    ) -> zbus::Result<u32>;
+
+    /// Set the storage config model according to the JSON schema
+    fn set_config_model(
+        &self,
+        model: &str,
+        data: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+    ) -> zbus::Result<u32>;
 
     /// Get the current storage config according to the JSON schema
     fn get_config(&self) -> zbus::Result<String>;
-
-    /// Set the storage config model according to the JSON schema
-    fn set_config_model(&self, model: &str) -> zbus::Result<u32>;
 
     /// Get the storage config model according to the JSON schema
     fn get_config_model(&self) -> zbus::Result<String>;

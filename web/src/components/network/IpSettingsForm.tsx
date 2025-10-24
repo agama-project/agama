@@ -139,7 +139,9 @@ export default function IpSettingsForm() {
 
     return (
       <HelperText>
-        <HelperTextItem variant="error">{fieldErrors[field]}</HelperTextItem>
+        <HelperTextItem variant="error" screenReaderText="">
+          {fieldErrors[field]}
+        </HelperTextItem>
       </HelperText>
     );
   };
@@ -192,10 +194,10 @@ export default function IpSettingsForm() {
               isDisabled={isGatewayDisabled}
               onChange={(_, value) => setGateway(value)}
             />
-            {isGatewayDisabled && (
+            {!isGatewayDisabled && (
               <FormHelperText>
                 <HelperText>
-                  <HelperTextItem variant="indeterminate">
+                  <HelperTextItem variant="indeterminate" screenReaderText="">
                     {/** FIXME: check if that affirmation is true */}
                     {_("Gateway can be defined only in 'Manual' mode")}
                   </HelperTextItem>

@@ -21,10 +21,19 @@ OBS_API = "https://api.opensuse.org"
 OBS_TARGET = "images"
 ARCH = $(shell uname -m)
 
-# files to copy from src/
-COPY_FILES = $(patsubst $(SRCDIR)/%,$(DESTDIR)/%,$(wildcard $(SRCDIR)/*))
+# list of target files, ignore the SLES specific files (matching *_sles pattern)
+COPY_FILES = $(patsubst $(SRCDIR)/%,$(DESTDIR)/%, $(filter-out ./src/%_sles,$(wildcard $(SRCDIR)/*)))
+# only the SLES specific target files (matching *_sles pattern)
+COPY_FILES_SLES = $(patsubst $(SRCDIR)/%,$(DESTDIR)/%, $(filter ./src/%_sles,$(wildcard $(SRCDIR)/*)))
 
-all: $(DESTDIR) $(COPY_FILES) $(DESTDIR)/config-cdroot.tar.xz $(DESTDIR)/live-root.tar.xz $(DESTDIR)/live-root-PXE.tar.xz
+# the default target, build the sources for openSUSE image
+all: $(DESTDIR) $(COPY_FILES) $(DESTDIR)/config-cdroot.tar.xz $(DESTDIR)/live-root.tar.xz
+
+# build the sources for SLES image, builds the openSUSE sources and then modifies them for SLES
+# (use the SLES specific _multibuild file, add "SLES" into the changes and the Kiwi file name)
+sles: all $(COPY_FILES_SLES)
+	rename _sles "" $(DESTDIR)/*_sles
+	rename . -- -SLES. $(DESTDIR)/*-installer.changes $(DESTDIR)/*-installer.kiwi
 
 # clean the destination directory (but keep the .osc directory if it is present)
 clean:
@@ -75,9 +84,9 @@ check:
 # in full mode with warnings but ignore the failures (some are false positives).
 # TODO: Fix/disable the warnings and run it in more strict mode.
 shellcheck:
-	@find config-cdroot root src -type f -exec grep -l -E "^#! *(/usr/|)/bin/(ba|)sh" \{\} \; \
+	@find config-cdroot live-root src -type f -exec grep -l -E "^#! *(/usr/|)/bin/(ba|)sh" \{\} \; \
 	  | xargs -I% bash -c "echo 'Checking errors in %...' && shellcheck --severity=error %"
-	@find config-cdroot root src -type f -exec grep -l -E "^#! *(/usr/|)/bin/(ba|)sh" \{\} \; \
+	@find config-cdroot live-root src -type f -exec grep -l -E "^#! *(/usr/|)/bin/(ba|)sh" \{\} \; \
 	  | xargs -I% bash -c "echo 'Checking warnings in %...' && shellcheck %" || true
 
-.PHONY: build all clean shellcheck
+.PHONY: build all sles clean shellcheck

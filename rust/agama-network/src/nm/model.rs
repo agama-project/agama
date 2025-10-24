@@ -103,6 +103,7 @@ impl TryFrom<NmDeviceType> for DeviceType {
             NmDeviceType(1) => Ok(DeviceType::Ethernet),
             NmDeviceType(2) => Ok(DeviceType::Wireless),
             NmDeviceType(10) => Ok(DeviceType::Bond),
+            NmDeviceType(11) => Ok(DeviceType::Vlan),
             NmDeviceType(13) => Ok(DeviceType::Bridge),
             NmDeviceType(22) => Ok(DeviceType::Dummy),
             NmDeviceType(32) => Ok(DeviceType::Loopback),
@@ -280,12 +281,4 @@ impl fmt::Display for NmMethod {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", &self.0)
     }
-}
-
-#[derive(Debug, Default, PartialEq)]
-pub struct NmIp4Config {
-    pub addresses: Vec<(String, u32)>,
-    pub nameservers: Vec<String>,
-    pub gateway: Option<String>,
-    pub method: NmMethod,
 }

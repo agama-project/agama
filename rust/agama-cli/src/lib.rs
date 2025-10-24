@@ -60,7 +60,7 @@ use std::{
 use url::Url;
 
 /// Agama's CLI global options
-#[derive(Args)]
+#[derive(Args, Clone)]
 pub struct GlobalOpts {
     #[clap(long, default_value = "http://localhost")]
     /// URI pointing to Agama's remote host.
@@ -71,6 +71,11 @@ pub struct GlobalOpts {
     #[clap(long, default_value = "false")]
     /// Whether to accept invalid (self-signed, ...) certificates or not
     pub insecure: bool,
+
+    #[clap(long, default_value = "false")]
+    /// Some commands could be able to work even without connection to
+    /// the agama server
+    pub local: bool,
 }
 
 /// Agama's command-line interface
@@ -169,7 +174,7 @@ async fn wait_until_idle(monitor: MonitorClient) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn download_file(url: &str, path: &PathBuf) -> anyhow::Result<()> {
+pub fn download_file(url: &str, path: &PathBuf, insecure: bool) -> anyhow::Result<()> {
     let mut file = fs::OpenOptions::new()
         .create(true)
         .write(true)
@@ -186,7 +191,7 @@ pub fn download_file(url: &str, path: &PathBuf) -> anyhow::Result<()> {
         uri.resolve_against(&context.source)?.to_string()
     };
 
-    Transfer::get(&absolute_url, &mut file)?;
+    Transfer::get(&absolute_url, &mut file, insecure)?;
     println!("File saved to {}", path.display());
     Ok(())
 }
@@ -242,7 +247,7 @@ async fn build_ws_client(api_url: Url, insecure: bool) -> anyhow::Result<WebSock
 ///
 /// * `host`: ip or host name. The protocol is optional, using https if omitted (e.g, "myserver",
 /// "http://myserver", "192.168.100.101").
-fn api_url(host: String) -> anyhow::Result<Url> {
+pub fn api_url(host: String) -> anyhow::Result<Url> {
     let sanitized_host = host.trim_end_matches('/').to_string();
 
     let url_str = if sanitized_host.starts_with("http://") || sanitized_host.starts_with("https://")
@@ -288,13 +293,10 @@ pub async fn show_progress(monitor: MonitorClient, stop_on_idle: bool) {
 }
 
 pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
-    let api_url = api_url(cli.opts.host)?;
+    let api_url = api_url(cli.opts.clone().host)?;
 
     match cli.command {
-        Commands::Config(subcommand) => {
-            let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
-            run_config_cmd(client, monitor, subcommand).await?
-        }
+        Commands::Config(subcommand) => run_config_cmd(subcommand, cli.opts).await?,
         Commands::Probe => {
             let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
             let manager = ManagerHTTPClient::new(client.clone());
@@ -322,7 +324,9 @@ pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
             let client = build_http_client(api_url, cli.opts.insecure, true).await?;
             run_logs_cmd(client, subcommand).await?
         }
-        Commands::Download { url, destination } => download_file(&url, &destination)?,
+        Commands::Download { url, destination } => {
+            download_file(&url, &destination, cli.opts.insecure)?
+        }
         Commands::Auth(subcommand) => {
             let client = build_http_client(api_url, cli.opts.insecure, false).await?;
             run_auth_cmd(client, subcommand).await?;

@@ -37,7 +37,7 @@ const fetchDevices = (): Promise<APIDevice[]> => get("/api/network/devices");
  * Returns data for given connection name
  */
 const fetchConnection = (name: string): Promise<APIConnection> =>
-  get(`/api/network/connections/${name}`);
+  get(`/api/network/connections/${encodeURIComponent(name)}`);
 
 /**
  * Returns the list of known connections
@@ -62,12 +62,13 @@ const addConnection = (connection: APIConnection) => post("/api/network/connecti
  * @param connection - connection to be updated
  */
 const updateConnection = (connection: APIConnection) =>
-  put(`/api/network/connections/${connection.id}`, connection);
+  put(`/api/network/connections/${encodeURIComponent(connection.id)}`, connection);
 
 /**
  * Deletes the connection matching given name
  */
-const deleteConnection = (name: string) => del(`/api/network/connections/${name}`);
+const deleteConnection = (name: string) =>
+  del(`/api/network/connections/${encodeURIComponent(name)}`);
 
 /**
  * Apply network changes
@@ -77,12 +78,14 @@ const applyChanges = () => post("/api/network/system/apply");
 /**
  * Performs the connect action for connection matching given name
  */
-const connect = (name: string) => post(`/api/network/connections/${name}/connect`);
+const connect = (name: string) =>
+  post(`/api/network/connections/${encodeURIComponent(name)}/connect`);
 
 /**
  * Performs the disconnect action for connection matching given name
  */
-const disconnect = (name: string) => post(`/api/network/connections/${name}/disconnect`);
+const disconnect = (name: string) =>
+  post(`/api/network/connections/${encodeURIComponent(name)}/disconnect`);
 
 /**
  * Make the connection persistent after the installation

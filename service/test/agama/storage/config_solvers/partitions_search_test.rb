@@ -335,6 +335,45 @@ describe Agama::Storage::ConfigSolvers::PartitionsSearch do
           include_examples "do not find device"
         end
       end
+
+      context "if a partition config has a search with sorting" do
+        let(:scenario) { "sizes.yaml" }
+        let(:disk) { devicegraph.find_by_name("/dev/vdb") }
+
+        let(:partitions) do
+          [
+            {
+              search: {
+                sort: sort
+              }
+            }
+          ]
+        end
+
+        context "by size" do
+          let(:sort) { { size: "desc" } }
+
+          it "matches the partitions in the expected order" do
+            subject.solve(drive)
+            partitions = drive.partitions
+            expect(partitions.map(&:search).map(&:device).map(&:name)).to eq [
+              "/dev/vdb2", "/dev/vdb3", "/dev/vdb1"
+            ]
+          end
+        end
+
+        context "by size and partition number" do
+          let(:sort) { [{ size: "desc" }, { number: "desc" }] }
+
+          it "matches the partitions in the expected order" do
+            subject.solve(drive)
+            partitions = drive.partitions
+            expect(partitions.map(&:search).map(&:device).map(&:name)).to eq [
+              "/dev/vdb3", "/dev/vdb2", "/dev/vdb1"
+            ]
+          end
+        end
+      end
     end
   end
 end

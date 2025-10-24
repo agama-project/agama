@@ -21,13 +21,14 @@
  */
 
 import React from "react";
-import { _ } from "~/i18n";
-import { useDevices, useResetConfigMutation } from "~/queries/storage";
-import { useModel } from "~/hooks/storage/model";
+import { Alert, Button, DataList } from "@patternfly/react-core";
+import Text from "~/components/core/Text";
 import DriveEditor from "~/components/storage/DriveEditor";
 import VolumeGroupEditor from "~/components/storage/VolumeGroupEditor";
 import MdRaidEditor from "~/components/storage/MdRaidEditor";
-import { Alert, Button, List, ListItem } from "@patternfly/react-core";
+import { useDevices, useResetConfigMutation } from "~/queries/storage";
+import { useModel } from "~/hooks/storage/model";
+import { _ } from "~/i18n";
 
 const NoDevicesConfiguredAlert = () => {
   const { mutate: reset } = useResetConfigMutation();
@@ -42,12 +43,12 @@ const NoDevicesConfiguredAlert = () => {
     <Alert title={title} variant="custom" isInline>
       {bodyStart}{" "}
       <Button variant="link" onClick={() => reset()} isInline>
-        <b>
+        <Text isBold>
           {
             // TRANSLATORS: label for a button
             _("reset to defaults")
           }
-        </b>
+        </Text>
       </Button>{" "}
       {bodyEnd}
     </Alert>
@@ -81,22 +82,14 @@ export default function ConfigEditor() {
   }
 
   return (
-    <List isPlain>
+    <DataList aria-label={_("[FIXME]")} isCompact className="storage-structure">
       {volumeGroups.map((vg, i) => {
-        return (
-          <ListItem key={`vg-${i}`}>
-            <VolumeGroupEditor vg={vg} />
-          </ListItem>
-        );
+        return <VolumeGroupEditor key={`vg-${i}`} vg={vg} />;
       })}
       {mdRaids.map((raid, i) => {
         const device = devices.find((d) => d.name === raid.name);
 
-        return (
-          <ListItem key={`md-${i}`}>
-            <MdRaidEditor raid={raid} raidDevice={device} />
-          </ListItem>
-        );
+        return <MdRaidEditor key={`md-${i}`} raid={raid} raidDevice={device} />;
       })}
       {drives.map((drive, i) => {
         const device = devices.find((d) => d.name === drive.name);
@@ -107,12 +100,8 @@ export default function ConfigEditor() {
          */
         if (device === undefined) return null;
 
-        return (
-          <ListItem key={`drive-${i}`}>
-            <DriveEditor drive={drive} driveDevice={device} />
-          </ListItem>
-        );
+        return <DriveEditor key={`drive-${i}`} drive={drive} driveDevice={device} />;
       })}
-    </List>
+    </DataList>
   );
 }

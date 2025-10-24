@@ -32,11 +32,12 @@ import React from "react";
 import { MemoryRouter, useParams } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
-import { render } from "@testing-library/react";
+import { render, within } from "@testing-library/react";
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 import { InstallerL10nProvider } from "~/context/installerL10n";
 import { isObject, noop } from "radashi";
+import { DummyWSClient } from "./client/ws";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default
@@ -95,10 +96,16 @@ jest.mock("react-router-dom", () => ({
   Navigate: ({ to: route }) => <>Navigating to {route}</>,
   Outlet: () => <>Outlet Content</>,
   useRevalidator: () => mockUseRevalidator,
+  useLinkClickHandler:
+    ({ to }) =>
+    () => {
+      to;
+    },
 }));
 
 const Providers = ({ children, withL10n }) => {
-  const client = createClient(new URL("https://localhost"));
+  const ws = new DummyWSClient();
+  const client = createClient(new URL("https://localhost"), ws);
 
   if (!client.onConnect) {
     client.onConnect = noop;
@@ -111,9 +118,17 @@ const Providers = ({ children, withL10n }) => {
   }
 
   if (withL10n) {
+    const fetchConfig = async () => ({
+      keymap: "us",
+      timezone: "Europe/Berlin",
+      uiLocale: "en_US",
+      uiKeymap: "us",
+    });
     return (
       <InstallerClientProvider client={client}>
-        <InstallerL10nProvider initialLanguage="en-US">{children}</InstallerL10nProvider>
+        <InstallerL10nProvider initialLanguage="en-US" fetchConfigFn={fetchConfig}>
+          {children}
+        </InstallerL10nProvider>
       </InstallerClientProvider>
     );
   }
@@ -204,6 +219,29 @@ const resetLocalStorage = (initialState?: { [key: string]: string }) => {
   });
 };
 
+/**
+ * Extracts all cell values from a specific column in an HTML table,
+ * based on the column's `data-label` attribute.
+ *
+ * Skips the header row and returns trimmed text content for each matching cell.
+ *
+ * @param table - The `<table>` element to extract data from.
+ * @param columnName - The value of the `data-label` attribute identifying the column (e.g., "Device", "Size").
+ * @returns An array of strings containing the text content of each cell in the specified column.
+ *
+ * @example
+ * ```ts
+ * const table = screen.getByRole("table");
+ * const deviceNames = getColumnValues(table, "Device");
+ * expect(deviceNames).toEqual(["/dev/sda", "/dev/sdb", "/dev/sdc"]);
+ * ```
+ */
+const getColumnValues = (table: HTMLElement | HTMLTableElement, columnName: string) =>
+  within(table)
+    .getAllByRole("row")
+    .slice(1) // Skip header
+    .map((row) => row.querySelector(`[data-label="${columnName}"]`)?.textContent?.trim());
+
 export {
   plainRender,
   installerRender,
@@ -213,4 +251,5 @@ export {
   mockRoutes,
   mockUseRevalidator,
   resetLocalStorage,
+  getColumnValues,
 };

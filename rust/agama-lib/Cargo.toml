@@ -9,6 +9,7 @@ edition = "2021"
 anyhow = "1.0"
 agama-utils = { path = "../agama-utils" }
 agama-network = { path = "../agama-network" }
+agama-locale-data = { path = "../agama-locale-data" }
 async-trait = "0.1.83"
 futures-util = "0.3.30"
 jsonschema = { version = "0.30.0", default-features = false, features = [
@@ -43,6 +44,8 @@ regex = "1.11.1"
 fluent-uri = { version = "0.3.2", features = ["serde"] }
 tokio-tungstenite = { version = "0.26.2", features = ["native-tls"] }
 tokio-native-tls = "0.3.1"
+percent-encoding = "2.3.1"
+uuid = { version = "1.17.0", features = ["serde", "v4"] }
 
 [dev-dependencies]
 httpmock = "0.7.0"

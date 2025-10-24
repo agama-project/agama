@@ -39,6 +39,7 @@ impl ApiDocBuilder for UsersApiDocBuilder {
             .path_from::<crate::users::web::__path_patch_root>()
             .path_from::<crate::users::web::__path_remove_first_user>()
             .path_from::<crate::users::web::__path_set_first_user>()
+            .path_from::<crate::users::web::__path_check_password>()
             .build()
     }
 
@@ -48,6 +49,8 @@ impl ApiDocBuilder for UsersApiDocBuilder {
             .schema_from::<agama_lib::users::FirstUser>()
             .schema_from::<agama_lib::users::RootUser>()
             .schema_from::<agama_lib::users::model::RootPatchSettings>()
+            .schema_from::<crate::users::password::PasswordCheckResult>()
+            .schema_from::<crate::users::web::PasswordParams>()
             .schema(
                 "zbus.zvariant.OwnedValue",
                 utoipa::openapi::ObjectBuilder::new()

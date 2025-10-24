@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2021-2024] SUSE LLC
+ * Copyright (c) [2021-2025] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,13 +22,8 @@
 
 import React, { useState, useEffect } from "react";
 import { createDefaultClient, InstallerClient } from "~/client";
-
-type ClientStatus = {
-  /** Whether the client is connected or not. */
-  connected: boolean;
-  /** Whether the client present an error and cannot reconnect. */
-  error: boolean;
-};
+import Loading from "~/components/layout/Loading";
+import ServerError from "~/components/core/ServerError";
 
 type InstallerClientProviderProps = React.PropsWithChildren<{
   /** Client to connect to Agama service; if it is undefined, it instantiates a
@@ -37,15 +32,9 @@ type InstallerClientProviderProps = React.PropsWithChildren<{
 }>;
 
 const InstallerClientContext = React.createContext(null);
-// TODO: we use a separate context to avoid changing all the codes to
-// `useInstallerClient`. We should merge them in the future.
-const InstallerClientStatusContext = React.createContext({
-  connected: false,
-  error: false,
-});
 
 /**
- * Returns the D-Bus installer client
+ * Returns the installer client
  */
 function useInstallerClient(): InstallerClient {
   const context = React.useContext(InstallerClientContext);
@@ -56,26 +45,21 @@ function useInstallerClient(): InstallerClient {
   return context;
 }
 
-/**
- * Returns the client status.
- */
-function useInstallerClientStatus(): ClientStatus {
-  const context = React.useContext(InstallerClientStatusContext);
-  if (!context) {
-    throw new Error("useInstallerClientStatus must be used within a InstallerClientProvider");
-  }
-
-  return context;
-}
-
 function InstallerClientProvider({ children, client = null }: InstallerClientProviderProps) {
   const [value, setValue] = useState(client);
-  const [connected, setConnected] = useState(false);
+  const [connected, setConnected] = useState(!!client?.isConnected());
   const [error, setError] = useState(false);
 
   useEffect(() => {
     const connectClient = async () => {
       const client = await createDefaultClient();
+
+      client.onEvent((event) => {
+        if (event.type === "ClientConnected") {
+          client.id = event.clientId;
+        }
+      });
+
       setValue(client);
     };
 
@@ -108,13 +92,18 @@ function InstallerClientProvider({ children, client = null }: InstallerClientPro
     });
   }, [value]);
 
+  const Content = () => {
+    if (error) return <ServerError />;
+    if (!connected) return <Loading />;
+
+    return children;
+  };
+
   return (
     <InstallerClientContext.Provider value={value}>
-      <InstallerClientStatusContext.Provider value={{ connected, error }}>
-        {children}
-      </InstallerClientStatusContext.Provider>
+      <Content />
     </InstallerClientContext.Provider>
   );
 }
 
-export { InstallerClientProvider, useInstallerClient, useInstallerClientStatus };
+export { InstallerClientProvider, useInstallerClient };

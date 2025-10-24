@@ -1,0 +1,56 @@
+name: CI - Profile schema
+
+permissions:
+  contents: read
+
+on:
+  push:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used below for the pull request event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-profile-schema.yml
+      # any change in the schema definitions
+      - rust/agama-lib/share/*.schema.json
+
+  pull_request:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used above for the push event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-profile-schema.yml
+      # any change in the schema definitions
+      - rust/agama-lib/share/*.schema.json
+
+  # allow running manually
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v4
+      with:
+        # checkout only the directory with the schema
+        sparse-checkout: |
+          rust/agama-lib/share
+
+    - name: Install Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 22
+        cache: npm
+        cache-dependency-path: rust/agama-lib/share
+
+    - name: Install Node Packages
+      run: npm ci
+      working-directory: rust/agama-lib/share
+
+    - name: Validate the schema
+      run: npm run validate
+      working-directory: rust/agama-lib/share

@@ -20,6 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
+import { mapEntries } from "radashi";
+import { generatePath } from "react-router-dom";
+import { ISortBy, sort } from "fast-sort";
+
 /**
  * Generates a new array without null and undefined values.
  */
@@ -30,8 +34,8 @@ const compact = <T>(collection: Array<T>) => {
 /**
  * Parses a "numeric dot string" as a hexadecimal number.
  *
- * Accepts only strings containing digits (`0–9`) and dots (`.`),
- * for example: `"0.0.0160"` or `"123"`. Dots are removed before parsing.
+ * Accepts only strings containing hexadecimal numbers (`0–9a-fA-F`) and dots (`.`),
+ * for example: `"0.0.0160"` `"0.0.019d"` or `"123"`. Dots are removed before parsing.
  *
  * If the cleaned string contains any non-digit characters (such as letters),
  * or is not a valid integer string, the function returns `0`.
@@ -40,8 +44,8 @@ const compact = <T>(collection: Array<T>) => {
  *
  * ```ts
  * hex("0.0.0.160"); // Returns 352
+ * hex("0.0.0.19d"); // Returns 352
  * hex("1.2.3");     // Returns 291
- * hex("1.A.3");     // Returns 0 (letters are not allowed)
  * hex("..");        // Returns 0 (empty string before removing dots)
  * ```
  *
@@ -50,7 +54,7 @@ const compact = <T>(collection: Array<T>) => {
  */
 const hex = (value: string): number => {
   const sanitizedValued = value.replaceAll(".", "");
-  return /^[0-9]+$/.test(sanitizedValued) ? parseInt(sanitizedValued, 16) : 0;
+  return /^[0-9a-fA-F]+$/.test(sanitizedValued) ? parseInt(sanitizedValued, 16) : 0;
 };
 
 /**
@@ -156,4 +160,59 @@ const mask = (value: string, visible: number = 4, maskChar: string = "*"): strin
   return maskChar.repeat(maskedLength) + visiblePart;
 };
 
-export { compact, hex, locationReload, setLocationSearch, localConnection, timezoneTime, mask };
+/**
+ * A wrapper around React Router's `generatePath` that ensures all path parameters
+ * are URI-encoded using `encodeURIComponent`. This prevents broken URLs caused by
+ * special characters such as spaces, `#`, `$`, and others.
+ *
+ * @example
+ * ```ts
+ *   // Returns "/network/Wired%20%231"
+ *   generateEncodedPath("/network/:id", { id: "Wired #1" });
+ * ```
+ */
+const generateEncodedPath = (...args: Parameters<typeof generatePath>) => {
+  const [path, params] = args;
+  return generatePath(
+    path,
+    mapEntries(params, (key, value) => [key, encodeURIComponent(value)]),
+  );
+};
+
+/**
+ * A lightweight wrapper around `fast-sort`.
+ *
+ * Rather than using `fast-sort`'s method-chaining syntax, this function accepts
+ * the sort direction (`"asc"` or `"desc"`) as a direct argument, resulting in a
+ * cleaner and more declarative API for Agama components, where sorting is often
+ * built dynamically.
+ *
+ * @example
+ * ```ts
+ * sortCollection(devices, 'asc', size');
+ * sortCollection(devices, 'desc', d => d.sid + d.size);
+ * sortCollection(devices, 'asc', [d => d.size, d => d.name]);
+ * ```
+ * @param collection - The array of items to be sorted.
+ * @param direction - The direction of the sort. Use "asc" for ascending or
+ *   "desc" for descending.
+ * @param key - The key (as a string) to sort by, or a custom function
+ *   compatible with `fast-sort`'s ISortBy.
+ *
+ * @returns A new array sorted based on the given key and direction.
+ *
+ */
+const sortCollection = <T>(collection: T[], direction: "asc" | "desc", key: string | ISortBy<T>) =>
+  sort(collection)[direction](key as ISortBy<T>);
+
+export {
+  compact,
+  hex,
+  locationReload,
+  setLocationSearch,
+  localConnection,
+  timezoneTime,
+  mask,
+  generateEncodedPath,
+  sortCollection,
+};

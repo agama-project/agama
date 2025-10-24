@@ -27,6 +27,7 @@ import LuksActivationQuestion from "~/components/questions/LuksActivationQuestio
 import PackageErrorQuestion from "~/components/questions/PackageErrorQuestion";
 import UnsupportedAutoYaST from "~/components/questions/UnsupportedAutoYaST";
 import RegistrationCertificateQuestion from "~/components/questions/RegistrationCertificateQuestion";
+import LoadConfigRetryQuestion from "~/components/questions/LoadConfigRetryQuestion";
 import { useQuestions, useQuestionsConfig, useQuestionsChanges } from "~/queries/questions";
 import { AnswerCallback, QuestionType } from "~/types/questions";
 
@@ -68,6 +69,11 @@ export default function Questions(): React.ReactNode {
   // special popup for self signed registration certificate
   if (currentQuestion.class === "registration.certificate") {
     QuestionComponent = RegistrationCertificateQuestion;
+  }
+
+  // special popup for self signed registration certificate
+  if (currentQuestion.class === "load.retry") {
+    QuestionComponent = LoadConfigRetryQuestion;
   }
 
   return <QuestionComponent question={currentQuestion} answerCallback={answerQuestion} />;

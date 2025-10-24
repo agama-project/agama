@@ -69,6 +69,8 @@
     </method>
     <method name="Reprobe">
     </method>
+    <method name="Reactivate">
+    </method>
     <method name="SetConfig">
       <arg name="serialized_config" direction="in" type="s"/>
       <arg name="result" direction="out" type="u"/>

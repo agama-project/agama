@@ -33,6 +33,9 @@ export type NewVgMenuOptionProps = { device: model.Drive | model.MdRaid };
 
 export default function NewVgMenuOption({ device }: NewVgMenuOptionProps): React.ReactNode {
   const convertToVg = useConvertToVolumeGroup();
+
+  if (device.filesystem) return;
+
   const vgs = device.getVolumeGroups();
   const paths = device.partitions.filter((p) => !p.name).map((p) => formattedPath(p.mountPath));
   const displayName = deviceBaseName(device, true);

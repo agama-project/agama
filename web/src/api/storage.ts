@@ -33,6 +33,9 @@ const probe = (): Promise<any> => post("/api/storage/probe");
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const reprobe = (): Promise<any> => post("/api/storage/reprobe");
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const reactivate = (): Promise<any> => post("/api/storage/reactivate");
+
 const fetchConfig = (): Promise<config.Config | null> =>
   get("/api/storage/config").then((config) => config.storage ?? null);
 
@@ -86,6 +89,7 @@ const findStorageJob = (id: string): Promise<Job | undefined> =>
 export {
   probe,
   reprobe,
+  reactivate,
   fetchConfig,
   fetchConfigModel,
   setConfig,

@@ -22,6 +22,7 @@
 
 pub mod dasd;
 pub mod iscsi;
+pub mod zfcp;
 
 use crate::{
     http::{BaseHTTPClient, BaseHTTPClientError},
@@ -49,5 +50,13 @@ impl StorageHTTPClient {
 
     pub async fn set_config(&self, config: &StorageSettings) -> Result<(), StorageHTTPClientError> {
         Ok(self.client.put_void("/storage/config", config).await?)
+    }
+
+    pub async fn is_dirty(&self) -> Result<bool, StorageHTTPClientError> {
+        Ok(self.client.get("/storage/devices/dirty").await?)
+    }
+
+    pub async fn reprobe(&self) -> Result<(), StorageHTTPClientError> {
+        Ok(self.client.post_void("/storage/reprobe", &()).await?)
     }
 }

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2025] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -33,22 +33,37 @@ module Agama
             @config = config
           end
 
+          # The size is not generated for default size.
+          #
+          # @see Base#convert
+          def convert
+            super unless config.default?
+          end
+
         private
 
           # @see Base#conversions
           def conversions
             {
-              min: config.min&.to_i,
+              min: convert_min_size,
               max: convert_max_size
             }
           end
 
-          # @return [Integer, nil]
-          def convert_max_size
-            max = config.max
-            return if max.nil? || max.unlimited?
+          # @return [String, Integer]
+          def convert_min_size
+            return "current" unless config.min
 
-            max.to_i
+            config.min.to_i
+          end
+
+          # @return [String, Integer, nil]
+          def convert_max_size
+            return "current" unless config.max
+
+            return if config.max.unlimited?
+
+            config.max.to_i
           end
         end
       end

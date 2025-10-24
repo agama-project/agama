@@ -40,7 +40,7 @@ describe Agama::Storage::ISCSI::Manager do
   before do
     allow(Yast::IscsiClientLib).to receive(:initiatorname).and_return(initiator_name)
     allow(Yast::IscsiClientLib).to receive(:getiBFT).and_return(ibft)
-    allow(Yast::IscsiClientLib).to receive(:checkInitiatorName)
+    allow(Yast::IscsiClientLib).to receive(:checkInitiatorName).and_return true
     allow(Yast::IscsiClientLib).to receive(:getConfig)
     allow(Yast::IscsiClientLib).to receive(:autoLogOn)
     allow(Yast::IscsiClientLib).to receive(:readSessions)
@@ -50,6 +50,9 @@ describe Agama::Storage::ISCSI::Manager do
     allow(Yast::IscsiClientLib).to receive(:iBFT?)
     allow(Yast::IscsiClientLib).to receive(:find_session)
     allow(Yast::IscsiClientLib).to receive(:getStartupStatus)
+    allow(Yast::IscsiClientLib).to receive(:discover_from_portal)
+    allow(Yast::Service).to receive(:restart)
+    allow(Yast::Execute).to receive(:locally).with(/udevadm/, any_args)
     allow(subject).to receive(:adapter).and_return(adapter)
     allow(subject).to receive(:sleep)
   end
@@ -65,6 +68,20 @@ describe Agama::Storage::ISCSI::Manager do
   describe "#activate" do
     it "activates iSCSI" do
       expect(adapter).to receive(:activate).and_call_original
+
+      subject.activate
+    end
+
+    it "restarts the iSCSI services" do
+      expect(Yast::Service).to receive(:restart).with("iscsi").ordered
+      expect(Yast::Service).to receive(:restart).with("iscsid").ordered
+      expect(Yast::Service).to receive(:restart).with("iscsiuio").ordered
+
+      subject.activate
+    end
+
+    it "waits for udev events queue to be empty" do
+      expect(Yast::Execute).to receive(:locally).with(/udevadm/, "settle", any_args)
 
       subject.activate
     end
@@ -230,24 +247,19 @@ describe Agama::Storage::ISCSI::Manager do
   end
 
   describe "#login" do
-    let(:node) { Agama::Storage::ISCSI::Node.new }
-
     before do
       allow(Yast::IscsiClientLib).to receive(:default_startup_status).and_return("onboot")
-      allow(Yast::IscsiClientLib).to receive(:login_into_current)
-      allow(Yast::IscsiClientLib).to receive(:setStartupStatus)
-    end
-
-    let(:startup) { "automatic" }
-
-    before do
       allow(Yast::IscsiClientLib).to receive(:login_into_current).and_return(login_success)
       allow(Yast::IscsiClientLib).to receive(:setStartupStatus).and_return(startup_success)
     end
 
+    let(:node) { Agama::Storage::ISCSI::Node.new }
+
     let(:login_success) { nil }
 
     let(:startup_success) { nil }
+
+    let(:startup) { "automatic" }
 
     it "tries to login without credentials" do
       expect(Yast::IscsiClientLib).to receive(:login_into_current) do |auth, _|
@@ -612,6 +624,16 @@ describe Agama::Storage::ISCSI::Manager do
           allow(adapter).to receive(:login).and_return(true)
         end
 
+        it "performs a discovery for each portal" do
+          expect(adapter).to receive(:discover_from_portal)
+            .with("192.168.100.151:3260", interfaces: ["default"])
+
+          expect(adapter).to receive(:discover_from_portal)
+            .with("192.168.100.152:3260", interfaces: ["default"])
+
+          subject.apply_config_json(config_json)
+        end
+
         it "tries to login to each target" do
           expect(adapter).to receive(:login) do |node, options|
             expect(node.address).to eq("192.168.100.151")
@@ -682,6 +704,52 @@ describe Agama::Storage::ISCSI::Manager do
             expect(result).to eq(false)
           end
         end
+      end
+    end
+  end
+
+  describe "#configured?" do
+    context "if no session has been configured yet" do
+      it "returns false" do
+        expect(subject.configured?).to eq(false)
+      end
+    end
+
+    context "if a session was configured by loading a config" do
+      let(:config_json) do
+        {
+          targets: [
+            {
+              address:   "192.168.100.152",
+              port:      3260,
+              name:      "iqn.2025-01.com.example:becda24e8804c6580bd1",
+              interface: "default"
+            }
+          ]
+        }
+      end
+
+      before do
+        allow(adapter).to receive(:login).and_return(true)
+        subject.apply_config_json(config_json)
+      end
+
+      it "returns true" do
+        expect(subject.configured?).to eq(true)
+      end
+    end
+
+    context "if a session was manually configured" do
+      before do
+        allow(Yast::IscsiClientLib).to receive(:default_startup_status).and_return("onboot")
+        allow(Yast::IscsiClientLib).to receive(:login_into_current).and_return(true)
+        allow(Yast::IscsiClientLib).to receive(:setStartupStatus).and_return(true)
+        node = Agama::Storage::ISCSI::Node.new
+        subject.login(node)
+      end
+
+      it "returns true" do
+        expect(subject.configured?).to eq(true)
       end
     end
   end

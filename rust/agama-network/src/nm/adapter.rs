@@ -131,6 +131,14 @@ impl Adapter for NetworkManagerAdapter<'_> {
         }
 
         for conn in ordered_connections(network) {
+            let ctrl = conn
+                .controller
+                .and_then(|uuid| network.get_connection_by_uuid(uuid));
+
+            /* Consider the connection as removed, whenever the controller connection
+            was removed */
+            let is_removed = conn.is_removed() || ctrl.is_some_and(|c| c.is_removed());
+
             if let Some(old_conn) = old_state.get_connection_by_uuid(conn.uuid) {
                 if old_conn == conn {
                     tracing::info!(
@@ -140,7 +148,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
                     );
                     continue;
                 }
-            } else if conn.is_removed() {
+            } else if is_removed {
                 tracing::info!(
                     "Connection {} ({}) does not need to be removed",
                     conn.id,
@@ -149,13 +157,11 @@ impl Adapter for NetworkManagerAdapter<'_> {
                 continue;
             }
 
-            tracing::info!("Updating connection {} ({})", conn.id, conn.uuid);
-            let result = if conn.is_removed() {
+            let result = if is_removed {
+                tracing::info!("Deleting connection {} ({})", conn.id, conn.uuid);
                 self.client.remove_connection(conn.uuid).await
             } else {
-                let ctrl = conn
-                    .controller
-                    .and_then(|uuid| network.get_connection_by_uuid(uuid));
+                tracing::info!("Updating connection {} ({})", conn.id, conn.uuid);
                 self.client.add_or_update_connection(conn, ctrl).await
             };
 

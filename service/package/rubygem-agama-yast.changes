@@ -1,4 +1,217 @@
 -------------------------------------------------------------------
+Mon Sep 15 13:50:54 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Fix JSON conversion for not configured sizes (bsc#1249591).
+
+-------------------------------------------------------------------
+Fri Sep 12 08:14:28 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Update translations (bsc#1249378)
+
+-------------------------------------------------------------------
+Tue Sep  2 12:24:12 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not use the D-Bus interface for localization
+  (gh#agama-project/agama#2684).
+
+-------------------------------------------------------------------
+Wed Aug 27 10:23:31 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix calling GPG import callbacks for unattended installation for
+  addons (bsc#1248782)
+
+-------------------------------------------------------------------
+Mon Aug 25 19:47:35 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Improved initialization of iBFT (bsc#1247711).
+
+-------------------------------------------------------------------
+Wed Aug 20 10:16:04 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Removed the heuristic that used to consider some software RAID as
+  bootable devices under some circumstances (bsc#1248195).
+- Ensure that /boot/efi and /boot/zipl partitions created using the
+  web UI are never encrypted (bsc#1248189, bsc#1247447).
+
+-------------------------------------------------------------------
+Thu Aug  7 10:57:30 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Do not use 'retry' as default answer for questions (bsc#1247436).
+
+-------------------------------------------------------------------
+Wed Aug  6 12:47:13 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Emit D-Bus signal when storage is configured, including the
+  client id (gh#agama-project/agama#2640).
+
+-------------------------------------------------------------------
+Tue Aug  5 14:01:23 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Fix MD RAID config checker to avoid generating a list of issues
+  including a false value (bsc#1247557, bsc#1247585).
+
+-------------------------------------------------------------------
+Thu Jul 31 07:34:52 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Do not set selinux policy during installation and lets keep
+  defaults provided by packages
+  (bsc#1247046)
+
+-------------------------------------------------------------------
+Thu Jul 24 21:09:25 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Make encryption work with whole formatted devices (bsc#1246939).
+- Do not export partitions to json if there is no partition
+  (bsc#1246940).
+
+-------------------------------------------------------------------
+Mon Jul 21 15:07:39 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 17
+
+-------------------------------------------------------------------
+Thu Jul 17 14:45:23 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Report all steps of the storage progress
+  (gh#agama-project/agama#2565).
+
+-------------------------------------------------------------------
+Thu Jul 17 10:34:38 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adjust the information included in the logs (gh#agama-project/agama#2575).
+
+-------------------------------------------------------------------
+Wed Jul 16 07:29:03 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add AutoYaST conversion for DASD and zFCP sections
+  (gh#agama-project/agama#2551)
+
+-------------------------------------------------------------------
+Tue Jul 15 10:53:18 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not overwrite the list of chosen patterns when selecting an LSM
+  (gh#agama-project/agama#2560).
+- Extend products definition with the possibility to define whether a
+  user pattern should be pre-selected or not.
+
+-------------------------------------------------------------------
+Mon Jul 14 15:57:59 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Save registration code and email, even if registration fails
+  (related to jsc#AGM-156).
+
+-------------------------------------------------------------------
+Mon Jul 14 11:32:19 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Install the packages from DUD to the target system
+  (gh#agama-project/agama#2543)
+- Allow ignoring GPG signature problems for the DUD packages using
+  the "inst.dud_packages.gpg=0" boot parameter
+  (problems for packages from other repositories are still reported)
+- Fixed parsing the boot command line options,
+  using both nested and parent option would crash the installer
+  (like "inst.foo" with "inst.foo.bar")
+
+-------------------------------------------------------------------
+Thu Jul 10 12:13:14 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Inhibit storage subsystems (bsc#1245159, bsc#1246133).
+
+-------------------------------------------------------------------
+Wed Jul  9 14:04:23 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- Fix error at /api/manager/installer: initialize the backend value
+  for org.opensuse.Agama1.Manager.CurrentInstallationPhase (bsc#1245760)
+
+-------------------------------------------------------------------
+Wed Jul  9 12:21:55 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Add AutoYaST conversion for RMT registration (gh#agama-project/agama#2545).
+
+-------------------------------------------------------------------
+Wed Jul  9 08:32:37 UTC 2025 - Knut Anderssen <kanderssen@suse.com>
+
+- Handle the LSM defined in the product definition as it was
+  selected by the user allowing to deselect it (bsc#1244431).
+
+-------------------------------------------------------------------
+Fri Jul  4 11:31:21 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Extend D-Bus API to allow reprobing the system
+  (gh#agama-project/agama#2532, bsc#1245400).
+
+-------------------------------------------------------------------
+Wed Jul  2 10:50:56 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add missing iSCSI discovery when importing the iSCSI config
+  (bsc#1245171).
+
+-------------------------------------------------------------------
+Mon Jun 30 15:51:33 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 16
+
+-------------------------------------------------------------------
+Mon Jun 30 11:23:03 UTC 2025 - Martin Vidner <mvidner@suse.com>
+
+- ipmitool invocation: do not write spurious % percent sign
+  (jsc#PED-12285)
+
+-------------------------------------------------------------------
+Fri Jun 27 14:02:57 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- jsc#PED-11193
+  - do not create the "after install" snapshot
+
+-------------------------------------------------------------------
+Fri Jun 27 12:07:35 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the conversion of the "language" section from AutoYaST profiles
+  (gh#agama-project/agama#2516).
+
+-------------------------------------------------------------------
+Wed Jun 25 20:29:58 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- do not crash if onlyRequired flag is set and libzypp is not
+  installed on target system (jsc#AGM-154)
+
+-------------------------------------------------------------------
+Wed Jun 25 07:55:53 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- allow to set onlyRequired flag for software service
+  (jsc#AGM-154)
+
+-------------------------------------------------------------------
+Mon Jun 23 07:22:22 UTC 2025 - Michal Filka <mfilka@suse.com>
+
+- jsc#PED-12285
+  - initial implementation for installer state status report via
+    IPMI
+
+-------------------------------------------------------------------
+Thu Jun 19 10:21:13 UTC 2025 - José Iván López González <jlopez@suse.com>
+
+- Add missing steps for iSCSI installation
+  (gh#agama-project/agama#2473).
+
+-------------------------------------------------------------------
+Wed Jun 18 12:28:14 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Disable local installation repositories instead of removing them
+  (bsc#1243064)
+
+-------------------------------------------------------------------
+Wed Jun 18 07:17:23 UTC 2025 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Preserve AutoYaST pre-scripts artifacts (bsc#1243776, gh#agama-project/agama#2344).
+
+-------------------------------------------------------------------
+Mon Jun 16 14:26:06 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Initial support for sorting storage devices when searching them
+  at the configuration (gh#agama-project/agama#2474).
+
+-------------------------------------------------------------------
 Fri Jun 13 20:51:10 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix copy of self-signed certificates for RMT

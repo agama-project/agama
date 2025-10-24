@@ -22,6 +22,8 @@ use std::{collections::HashMap, pin::Pin, task::Poll};
 
 use agama_lib::{
     error::ServiceError,
+    event,
+    http::Event,
     jobs::{client::JobsClient, Job},
 };
 use agama_utils::{dbus::get_optional_property, property_from_dbus};
@@ -35,7 +37,6 @@ use zbus::zvariant::{ObjectPath, OwnedObjectPath, OwnedValue};
 use crate::{
     dbus::{DBusObjectChange, DBusObjectChangesStream, ObjectsCache},
     error::Error,
-    web::Event,
 };
 
 /// Builds a router for the jobs objects.
@@ -162,15 +163,15 @@ impl JobsStream {
         match change {
             DBusObjectChange::Added(path, values) => {
                 let job = Self::update_job(cache, path, values)?;
-                Ok(Event::JobAdded { job: job.clone() })
+                Ok(event!(JobAdded { job: job.clone() }))
             }
             DBusObjectChange::Changed(path, updated) => {
                 let job = Self::update_job(cache, path, updated)?;
-                Ok(Event::JobChanged { job: job.clone() })
+                Ok(event!(JobChanged { job: job.clone() }))
             }
             DBusObjectChange::Removed(path) => {
                 let job = Self::remove_job(cache, path)?;
-                Ok(Event::JobRemoved { job })
+                Ok(event!(JobRemoved { job }))
             }
         }
     }

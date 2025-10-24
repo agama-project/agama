@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 
 const http = axios.create({
   responseType: "json",
@@ -47,8 +47,10 @@ const patch = (url: string, data?: object) => http.patch(url, data);
  *
  * @param url - endpoint URL
  * @param data - request payload
+ * @param config - request config (optional)
  */
-const put = (url: string, data: object) => http.put(url, data);
+const put = (url: string, data: object | string, config?: AxiosRequestConfig) =>
+  http.put(url, data, config);
 
 /**
  * Performs a POST request with the given URL and data

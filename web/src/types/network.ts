@@ -60,6 +60,14 @@ enum ApSecurityFlags {
   KEY_MGMT_8021_X = 0x00000200,
 }
 
+/**
+ * The  binding mode for the connection
+ *  - "none":  No specific interface binding.
+ *  - "iface": Bind to a specific interface name.
+ *  - "mac":   Bind to a specific MAC address.
+ */
+type ConnectionBindingMode = "none" | "iface" | "mac";
+
 enum ConnectionType {
   ETHERNET = "ethernet",
   WIFI = "wireless",
@@ -223,6 +231,7 @@ type APIRoute = {
 type APIConnection = {
   id: string;
   interface?: string;
+  macAddress?: string;
   addresses?: string[];
   nameservers?: string[];
   gateway4?: string;
@@ -261,6 +270,7 @@ class Wireless {
 
 type ConnectionOptions = {
   iface?: string;
+  macAddress?: string;
   addresses?: IPAddress[];
   nameservers?: string[];
   gateway4?: string;
@@ -277,6 +287,7 @@ class Connection {
   status: ConnectionStatus = ConnectionStatus.UP;
   state: ConnectionState;
   iface: string;
+  macAddress?: string;
   addresses: IPAddress[] = [];
   nameservers: string[] = [];
   gateway4?: string = "";
@@ -370,6 +381,7 @@ export {
 export type {
   APIAccessPoint,
   APIConnection,
+  ConnectionBindingMode,
   ConnectionOptions,
   APIDevice,
   IPAddress,

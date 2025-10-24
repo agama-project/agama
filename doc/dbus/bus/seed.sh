@@ -20,10 +20,6 @@ cleanup() {
 DD=org.opensuse.Agama
 SS=/${DD//./\/}
 
-abusctl introspect --xml-interface ${DD}1 ${SS}1/Locale \
-        | cleanup \
-        > ${DD}1.Locale.bus.xml
-
 look() {
     abusctl tree --list $DD.${1%.*}
     abusctl introspect --xml-interface $DD.${1%.*} $SS/${1//./\/} \

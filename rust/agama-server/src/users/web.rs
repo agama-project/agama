@@ -26,16 +26,27 @@
 
 use crate::{
     error::Error,
+    users::password::PasswordChecker,
     web::common::{service_status_router, EventStreams, IssuesClient, IssuesRouterBuilder},
 };
 use agama_lib::{
     error::ServiceError,
+    event,
     http::Event,
     users::{model::RootPatchSettings, proxies::Users1Proxy, FirstUser, RootUser, UsersClient},
 };
 use anyhow::Context;
-use axum::{extract::State, http::StatusCode, response::IntoResponse, routing::get, Json, Router};
+use axum::{
+    extract::State,
+    http::StatusCode,
+    response::IntoResponse,
+    routing::{get, post},
+    Json, Router,
+};
+use serde::Deserialize;
 use tokio_stream::{Stream, StreamExt};
+
+use super::password::PasswordCheckResult;
 
 #[derive(Clone)]
 struct UsersState<'a> {
@@ -44,7 +55,7 @@ struct UsersState<'a> {
 
 /// Returns streams that emits users related events coming from D-Bus.
 ///
-/// It emits the Event::RootPasswordChange, Event::RootSSHKeyChanged and Event::FirstUserChanged events.
+/// It emits the RootPasswordChange, RootSSHKeyChanged and FirstUserChanged events.
 ///
 /// * `connection`: D-Bus connection to listen for events.
 pub async fn users_streams(dbus: zbus::Connection) -> Result<EventStreams, Error> {
@@ -79,7 +90,7 @@ async fn first_user_changed_stream(
                     password: user.2,
                     hashed_password: user.3,
                 };
-                return Some(Event::FirstUserChanged(user_struct));
+                return Some(event!(FirstUserChanged(user_struct)));
             }
             None
         })
@@ -97,7 +108,7 @@ async fn root_user_changed_stream(
         .then(|change| async move {
             if let Ok(user) = change.get().await {
                 if let Ok(root) = RootUser::from_dbus(user) {
-                    return Some(Event::RootUserChanged(root));
+                    return Some(event!(RootUserChanged(root)));
                 }
             }
             None
@@ -130,6 +141,7 @@ pub async fn users_service(
                 .delete(remove_first_user),
         )
         .route("/root", get(get_root_config).patch(patch_root))
+        .route("/password_check", post(check_password))
         .merge(status_router)
         .nest("/issues", issues_router)
         .with_state(state);
@@ -236,4 +248,27 @@ async fn patch_root(
 )]
 async fn get_root_config(State(state): State<UsersState<'_>>) -> Result<Json<RootUser>, Error> {
     Ok(Json(state.users.root_user().await?))
+}
+
+#[derive(Deserialize, utoipa::ToSchema)]
+pub struct PasswordParams {
+    password: String,
+}
+
+#[utoipa::path(
+    post,
+    path = "/password_check",
+    context_path = "/api/users",
+    description = "Performs a quality check on a given password",
+    responses(
+        (status = 200, description = "The password was checked", body = String),
+        (status = 400, description = "Could not check the password")
+    )
+)]
+async fn check_password(
+    Json(password): Json<PasswordParams>,
+) -> Result<Json<PasswordCheckResult>, Error> {
+    let checker = PasswordChecker::default();
+    let result = checker.check(&password.password);
+    Ok(Json(result?))
 }
