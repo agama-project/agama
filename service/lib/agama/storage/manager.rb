@@ -33,6 +33,7 @@ require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/with_issues"
 require "agama/with_locale"
+require "agama/with_progress_manager"
 require "yast"
 require "y2storage/clients/inst_prepdisk"
 require "y2storage/luks"
@@ -47,6 +48,7 @@ module Agama
     class Manager
       include WithLocale
       include WithIssues
+      include WithProgressManager
 
       # @return [Agama::Config]
       attr_reader :product_config
@@ -62,8 +64,6 @@ module Agama
         @product_config = product_config
         @logger = logger || Logger.new($stdout)
         @bootloader = Bootloader.new(logger)
-
-        register_progress_callbacks
       end
 
       # Whether the system is in a deprecated status
@@ -159,6 +159,7 @@ module Agama
       #   the default config is applied.
       # @return [Boolean] Whether storage was successfully configured.
       def configure(config_json = nil)
+        logger.info("Configuring storage: #{config_json}")
         result = Configurator.new(proposal).configure(config_json)
         update_issues
         @on_configure_callbacks&.each(&:call)
@@ -235,7 +236,7 @@ module Agama
       # Changes the service's locale
       #
       # @param locale [String] new locale
-      def locale=(locale)
+      def configure_locale(locale)
         change_process_locale(locale)
         update_issues
       end
@@ -259,10 +260,6 @@ module Agama
         ENV["YAST_NO_BLS_BOOT"] = "1"
         # avoiding problems with cached values
         Y2Storage::StorageEnv.instance.reset_cache
-      end
-
-      def register_progress_callbacks
-        on_progress_change { logger.info(progress.to_s) }
       end
 
       # Whether iSCSI is needed in the target system.

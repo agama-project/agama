@@ -25,7 +25,6 @@ require "yast"
 require "y2storage/storage_manager"
 require "agama/dbus/base_object"
 require "agama/dbus/interfaces/issues"
-require "agama/dbus/interfaces/locale"
 require "agama/dbus/interfaces/service_status"
 require "agama/dbus/storage/iscsi_nodes_tree"
 require "agama/dbus/with_service_status"
@@ -49,7 +48,6 @@ module Agama
         include WithServiceStatus
         include ::DBus::ObjectManager
         include DBus::Interfaces::Issues
-        include DBus::Interfaces::Locale
         include DBus::Interfaces::ServiceStatus
 
         PATH = "/org/opensuse/Agama/Storage1"
@@ -71,10 +69,6 @@ module Agama
           register_iscsi_callbacks
 
           add_s390_interfaces if Yast::Arch.s390
-        end
-
-        def locale=(locale)
-          backend.locale = locale
         end
 
         # List of issues, see {DBus::Interfaces::Issues}
@@ -192,9 +186,12 @@ module Agama
         # @param serialized_config [String] Serialized storage config.
         # @return [Integer] 0 success; 1 error
         def configure(serialized_config)
-          logger.info("Setting storage config from D-Bus: #{serialized_config}")
+          start_progress(1, CONFIGURING_STEP)
+
           config_json = JSON.parse(serialized_config, symbolize_names: true)
           backend.configure(config_json)
+
+          finish_progress
         end
 
         # Applies the given serialized config model according to the JSON schema.
@@ -202,7 +199,7 @@ module Agama
         # @param serialized_model [String] Serialized storage config model.
         # @return [Integer] 0 success; 1 error
         def configure_with_model(serialized_model)
-          logger.info("Setting storage config model from D-Bus: #{serialized_model}")
+          start_progress(1, CONFIGURING_STEP)
 
           model_json = JSON.parse(serialized_model, symbolize_names: true)
           config = Agama::Storage::ConfigConversions::FromModel.new(
@@ -211,8 +208,9 @@ module Agama
             storage_system: proposal.storage_system
           ).convert
           config_json = { storage: Agama::Storage::ConfigConversions::ToJSON.new(config).convert }
-
           backend.configure(config_json)
+
+          finish_progress
         end
 
         # Solves the given serialized config model.
@@ -220,8 +218,6 @@ module Agama
         # @param serialized_model [String] Serialized storage config model.
         # @return [String] Serialized solved model.
         def solve_config_model(serialized_model)
-          logger.info("Solving storage config model from D-Bus: #{serialized_model}")
-
           model_json = JSON.parse(serialized_model, symbolize_names: true)
           solved_model_json = proposal.solve_model(model_json)
           JSON.pretty_generate(solved_model_json)
@@ -232,7 +228,7 @@ module Agama
           dbus_method(:Probe) { probe }
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
-          dbus_method(:SetLocale, "in locale:s") {}
+          dbus_method(:SetLocale, "in locale:s") { |locale| backend.configure_locale(locale) }
           # TODO: receive a product_config instead of an id.
           dbus_method(:SetProduct, "in id:s") { |id| configure_product(id) }
           dbus_method(:GetSystem, "out system:s") { recover_system }
@@ -243,7 +239,6 @@ module Agama
           dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
           dbus_method(:GetProposal, "out proposal:s") { recover_proposal }
           dbus_method(:GetIssues, "out issues:s") {}
-          dbus_method(:GetProgress, "out progress:s") { progress.to_json }
           dbus_signal(:SystemChanged)
           dbus_signal(:ConfigChanged)
           dbus_signal(:ProposalChanged)
