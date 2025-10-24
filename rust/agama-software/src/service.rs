@@ -18,12 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::sync::{Arc, Mutex, RwLock};
+use std::{ops::DerefMut, sync::Arc};
 
 use crate::{
     config::Config,
     event,
-    message::{self, Probe},
+    message,
     model::{
         license::{Error as LicenseError, LicensesRepo},
         packages::ResolvableType,
@@ -40,7 +40,7 @@ use agama_utils::{
     issue::{self},
 };
 use async_trait::async_trait;
-use tokio::sync::mpsc::error::SendError;
+use tokio::sync::{mpsc::error::SendError, Mutex, RwLock};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -90,7 +90,7 @@ pub struct Service {
 #[derive(Default)]
 struct State {
     config: Config,
-    system: SystemInfo,
+    system: Arc<RwLock<SystemInfo>>,
 }
 
 impl Service {
@@ -115,36 +115,31 @@ impl Service {
         Ok(())
     }
 
-    fn update_system(&mut self) -> Result<(), Error> {
+    async fn update_system(&self) -> Result<(), Error> {
         let licenses = self.licenses.licenses().into_iter().cloned().collect();
         let products = self.products.products();
 
-        self.state.system = SystemInfo {
-            licenses,
-            products,
-            ..Default::default()
-        };
+        let mut system = self.state.system.write().await;
+        system.licenses = licenses;
+        system.products = products;
 
         self.events.send(Event::SystemChanged)?;
 
         Ok(())
     }
 
-    async fn apply_config(&mut self) -> Result<(), Error> {
-        if let Some(software) = &self.state.config.software {
+    async fn apply_config(config: &Config, model: &mut dyn ModelAdapter) -> Result<(), Error> {
+        if let Some(software) = &config.software {
             let user_id = "user";
             let patterns = software.patterns.clone().unwrap_or_default();
             let packages = software.packages.clone().unwrap_or_default();
             let extra_repositories = software.extra_repositories.clone().unwrap_or_default();
-            //self.model
-            //    .set_resolvables(user_id, ResolvableType::Pattern, patterns, false)
-            //    .await?;
-            self.model
-                .set_resolvables(user_id, ResolvableType::Package, packages, false)
+            // TODO: patterns as it as it can be either set or add/remove set
+            model.set_resolvables(user_id, ResolvableType::Package, packages, false)
                 .await?;
             // for repositories we should allow also to remove previously defined one, but now for simplicity just check if it there and if not, then add it
             // TODO: replace it with future repository registry
-            let existing_repositories = self.model.repositories().await?;
+            let existing_repositories = model.repositories().await?;
             let new_repos = extra_repositories
                 .iter()
                 .filter(|r| {
@@ -155,7 +150,7 @@ impl Service {
                 })
                 .cloned()
                 .collect();
-            self.model.add_repositories(new_repos).await?;
+            model.add_repositories(new_repos).await?;
         }
 
         Ok(())
@@ -169,7 +164,7 @@ impl Actor for Service {
 #[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
-        Ok(self.state.system.clone())
+        Ok(self.state.system.read().await.clone())
     }
 }
 
@@ -183,16 +178,21 @@ impl MessageHandler<message::GetConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::SetConfig<Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
-        let need_probe = message.config.product.as_ref().map(|c| c.id.as_ref())
-            != self.state.config.product.as_ref().map(|c| c.id.as_ref());
+        let new_product = message.config.product.as_ref().and_then(|c| c.id.as_ref());
+        let need_probe = new_product
+            != self.state.config.product.as_ref().and_then(|c| c.id.as_ref());
+        let new_product_spec = new_product.and_then(|id| self.products.find(id).and_then(|p| Some(p.clone())));
+
         self.state.config = message.config.clone();
         self.events.send(Event::ConfigChanged)?;
+        let model = self.model.clone();
         tokio::task::spawn( async move {
+            let mut my_model = model.lock().await;
             // FIXME: convert unwraps to sending issues
             if need_probe {
-                self.handle(Probe).await.unwrap();
+                my_model.probe(&new_product_spec.unwrap()).await.unwrap();
             }
-            self.apply_config().await.unwrap();        
+            Self::apply_config(&message.config, my_model.deref_mut()).await.unwrap();        
         });
         
         Ok(())
@@ -217,7 +217,7 @@ impl MessageHandler<message::Probe> for Service {
             return Err(Error::WrongProduct(product_id));
         };
 
-        self.model.lock().unwrap().probe(product).await?;
+        self.model.lock().await.probe(product).await?;
         self.update_system();
         Ok(())
     }
@@ -226,14 +226,14 @@ impl MessageHandler<message::Probe> for Service {
 #[async_trait]
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<bool, Error> {
-        self.model.lock().unwrap().install().await
+        self.model.lock().await.install().await
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
-        self.model.lock().unwrap().await?;
+        self.model.lock().await.finish().await?;
         Ok(())
     }
 }
