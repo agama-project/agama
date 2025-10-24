@@ -208,11 +208,7 @@ module Agama
     #
     # @return [DBus::Clients::Storage]
     def storage
-      @storage ||= DBus::Clients::Storage.new.tap do |client|
-        client.on_service_status_change do |status|
-          service_status_recorder.save(client.service.name, status)
-        end
-      end
+      @storage ||= DBus::Clients::Storage.new
     end
 
     # Name of busy services

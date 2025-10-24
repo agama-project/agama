@@ -21,7 +21,6 @@
 
 require "dbus"
 require "agama/dbus/bus"
-require "agama/dbus/service_status"
 require "agama/dbus/storage/iscsi"
 require "agama/dbus/storage/manager"
 require "agama/storage"
@@ -97,31 +96,17 @@ module Agama
 
       # @return [Agama::DBus::Storage::Manager]
       def manager_object
-        @manager_object ||= Agama::DBus::Storage::Manager.new(
-          manager,
-          service_status: service_status,
-          logger:         logger
-        )
+        @manager_object ||= Agama::DBus::Storage::Manager.new(manager, logger: logger)
       end
 
       # @return [Agama::DBus::Storage::ISCSI]
       def iscsi_object
-        # Uses the same service status as the manager D-Bus object.
-        @iscsi_object ||= Agama::DBus::Storage::ISCSI.new(
-          manager.iscsi,
-          service_status: service_status,
-          logger:         logger
-        )
+        @iscsi_object ||= Agama::DBus::Storage::ISCSI.new(manager.iscsi, logger: logger)
       end
 
       # @return [Agama::Storage::Manager]
       def manager
         @manager ||= Agama::Storage::Manager.new(config, logger: logger)
-      end
-
-      # @return [Agama::DBus::ServiceStatus]
-      def service_status
-        @service_status ||= Agama::DBus::ServiceStatus.new
       end
     end
   end

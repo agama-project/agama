@@ -66,22 +66,6 @@ module Agama
         @bootloader = Bootloader.new(logger)
       end
 
-      # Registers a callback to be called when the system is probed
-      #
-      # @param block [Proc]
-      def on_probe(&block)
-        @on_probe_callbacks ||= []
-        @on_probe_callbacks << block
-      end
-
-      # Registers a callback to be called when storage is configured.
-      #
-      # @param block [Proc]
-      def on_configure(&block)
-        @on_configure_callbacks ||= []
-        @on_configure_callbacks << block
-      end
-
       # TODO: move to storage_service
       def setup
         # Underlying yast-storage-ng has own mechanism for proposing boot strategies.
@@ -128,7 +112,6 @@ module Agama
         logger.info("Configuring storage: #{config_json}")
         result = Configurator.new(proposal).configure(config_json)
         update_issues
-        @on_configure_callbacks&.each(&:call)
         result
       end
 

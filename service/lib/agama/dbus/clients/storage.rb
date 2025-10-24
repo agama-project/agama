@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "agama/dbus/clients/base"
-require "agama/dbus/clients/with_service_status"
 require "agama/dbus/clients/with_locale"
 require "agama/dbus/clients/with_progress"
 require "agama/dbus/clients/with_issues"
@@ -32,7 +31,6 @@ module Agama
       # D-Bus client for storage configuration
       class Storage < Base
         include WithLocale
-        include WithServiceStatus
         include WithProgress
         include WithIssues
 

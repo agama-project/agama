@@ -22,9 +22,7 @@
 require "y2storage/storage_manager"
 require "agama/dbus/base_object"
 require "agama/dbus/interfaces/issues"
-require "agama/dbus/interfaces/service_status"
 require "agama/dbus/storage/iscsi_nodes_tree"
-require "agama/dbus/with_service_status"
 require "agama/storage/config_conversions"
 require "agama/storage/encryption_settings"
 require "agama/storage/volume_templates_builder"
@@ -45,27 +43,22 @@ module Agama
         extend Yast::I18n
 
         include WithProgress
-        include WithServiceStatus
         include ::DBus::ObjectManager
         include DBus::Interfaces::Issues
-        include DBus::Interfaces::ServiceStatus
 
         PATH = "/org/opensuse/Agama/Storage1"
         private_constant :PATH
 
         # @param backend [Agama::Storage::Manager]
-        # @param service_status [Agama::DBus::ServiceStatus, nil]
         # @param logger [Logger, nil]
-        def initialize(backend, service_status: nil, logger: nil)
+        def initialize(backend, logger: nil)
           textdomain "agama"
 
           super(PATH, logger: logger)
           @backend = backend
-          @service_status = service_status
 
           register_storage_callbacks
           register_progress_callbacks
-          register_service_status_callbacks
           register_iscsi_callbacks
 
           add_s390_interfaces if Yast::Arch.s390
@@ -446,7 +439,7 @@ module Agama
 
           dbus_method :Discover,
             "in address:s, in port:u, in options:a{sv}, out result:u" do |address, port, options|
-            busy_while { iscsi_discover(address, port, options) }
+            iscsi_discover(address, port, options)
           end
 
           dbus_method(:Delete, "in node:o, out result:u") { |n| iscsi_delete(n) }
