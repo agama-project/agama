@@ -36,7 +36,6 @@ require "agama/with_progress_manager"
 require "yast"
 require "y2storage/clients/inst_prepdisk"
 require "y2storage/luks"
-require "y2storage/storage_env"
 require "y2storage/storage_manager"
 
 Yast.import "PackagesProposal"
@@ -61,15 +60,6 @@ module Agama
         @product_config = product_config
         @logger = logger || Logger.new($stdout)
         @bootloader = Bootloader.new(logger)
-      end
-
-      # TODO: move to storage_service
-      def setup
-        # Underlying yast-storage-ng has own mechanism for proposing boot strategies.
-        # However, we don't always want to use BLS when it proposes so. Currently
-        # we want to use BLS only for Tumbleweed / Slowroll
-        prohibit_bls_boot if !product_config.boot_strategy&.casecmp("BLS")
-        check_multipath
       end
 
       def activated?
@@ -187,12 +177,6 @@ module Agama
       # @return [Logger]
       attr_reader :logger
 
-      def prohibit_bls_boot
-        ENV["YAST_NO_BLS_BOOT"] = "1"
-        # avoiding problems with cached values
-        Y2Storage::StorageEnv.instance.reset_cache
-      end
-
       # Whether iSCSI is needed in the target system.
       #
       # @return [Boolean]
@@ -254,23 +238,6 @@ module Agama
       # @return [Agama::HTTP::Clients::Questions]
       def questions_client
         @questions_client ||= Agama::HTTP::Clients::Questions.new(logger)
-      end
-
-      MULTIPATH_CONFIG = "/etc/multipath.conf"
-      # Checks if all requirement for multipath probing is correct and if not
-      # then log it
-      def check_multipath
-        # check if kernel module is loaded
-        mods = `lsmod`.lines.grep(/dm_multipath/)
-        logger.warn("dm_multipath modules is not loaded") if mods.empty?
-
-        binary = system("which multipath")
-        if binary
-          conf = `multipath -t`.lines.grep(/find_multipaths "smart"/)
-          logger.warn("multipath: find_multipaths is not set to 'smart'") if conf.empty?
-        else
-          logger.warn("multipath is not installed.")
-        end
       end
     end
   end
