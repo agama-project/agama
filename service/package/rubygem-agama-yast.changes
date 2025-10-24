@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 24 06:53:48 UTC 2025 - Imobach González Sosa <igonzalezsosa@suse.com>
+
+- Fix systemd target import from AutoYaST profiles
+  (gh#agama-project/agama#2826).
+
+-------------------------------------------------------------------
 Mon Sep 15 13:50:54 UTC 2025 - José Iván López González <jlopez@suse.com>
 
 - Fix JSON conversion for not configured sizes (bsc#1249591).
