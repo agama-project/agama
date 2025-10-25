@@ -23,6 +23,7 @@
 import React from "react";
 import { InstallerClientProvider } from "./installer";
 import { InstallerL10nProvider } from "./installerL10n";
+import { StorageUiStateProvider } from "./storage-ui-state";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { localConnection } from "~/utils";
 
@@ -57,7 +58,9 @@ function AppProviders({ children }: React.PropsWithChildren) {
   return (
     <InstallerClientProvider>
       <QueryClientProvider client={queryClient}>
-        <InstallerL10nProvider>{children}</InstallerL10nProvider>
+        <InstallerL10nProvider>
+          <StorageUiStateProvider>{children}</StorageUiStateProvider>
+        </InstallerL10nProvider>
       </QueryClientProvider>
     </InstallerClientProvider>
   );

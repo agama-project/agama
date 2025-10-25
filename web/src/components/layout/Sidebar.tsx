@@ -54,6 +54,8 @@ const MainNavigation = (): React.ReactNode => {
         component={({ className }) => (
           <NavLink
             to={path}
+            // Hopefully this could be removed soon. See rationale at UseStorageUiState.
+            state={{ resetStorageUiState: true }}
             className={({ isActive: isNavLinkActive }) => {
               const isActive = isNavLinkActive || data.alsoActiveOn?.includes(location.pathname);
               return [className, isActive ? "pf-m-current" : ""].join(" ");

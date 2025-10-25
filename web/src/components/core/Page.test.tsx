@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender, mockNavigateFn, mockRoutes, installerRender } from "~/test-utils";
+import { mockNavigateFn, mockRoutes, plainRender, installerRender } from "~/test-utils";
 import { Page } from "~/components/core";
 import { _ } from "~/i18n";
 import { PRODUCT, ROOT } from "~/routes/paths";
@@ -44,7 +44,7 @@ describe("Page", () => {
   });
 
   it("renders given children", () => {
-    plainRender(
+    installerRender(
       <Page>
         <h1>The Page Component</h1>
       </Page>,
@@ -121,14 +121,16 @@ describe("Page", () => {
   });
 
   describe("Page.Cancel", () => {
+    // Page.Cancel uses core/Link. It needs installerRender because of
+    // useLocation usage
     it("renders a link that navigates to the top level route by default", () => {
-      plainRender(<Page.Cancel />);
+      installerRender(<Page.Cancel />);
       const link = screen.getByRole("link", { name: "Cancel" });
       expect(link).toHaveAttribute("href", "..");
     });
 
     it("renders a link that navigates to the given route", () => {
-      plainRender(<Page.Cancel navigateTo="somewhere" />);
+      installerRender(<Page.Cancel navigateTo="somewhere" />);
       const link = screen.getByRole("link", { name: "Cancel" });
       expect(link).toHaveAttribute("href", "somewhere");
     });
