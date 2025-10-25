@@ -231,6 +231,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "agama-software"
+version = "0.1.0"
+dependencies = [
+ "agama-locale-data",
+ "agama-utils",
+ "async-trait",
+ "glob",
+ "regex",
+ "serde",
+ "serde_with",
+ "serde_yaml",
+ "strum",
+ "thiserror 2.0.16",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+ "utoipa",
+ "zypp-agama",
+]
+
+[[package]]
 name = "agama-utils"
 version = "0.1.0"
 dependencies = [

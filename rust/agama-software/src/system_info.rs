@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,26 +18,27 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub(crate) mod backend;
-pub(crate) mod web;
+use crate::{
+    model::{
+        license::License, packages::Repository, pattern::Pattern, product::Product,
+        registration::AddonProperties, ModelAdapter,
+    },
+    service,
+};
+use serde::Serialize;
 
-use std::sync::Arc;
-
-use agama_lib::http::event;
-use axum::Router;
-use backend::SoftwareService;
-pub use backend::SoftwareServiceError;
-use tokio::sync::Mutex;
-
-use crate::products::ProductsRegistry;
-
-pub async fn software_ng_service(
-    events: event::Sender,
-    products: Arc<Mutex<ProductsRegistry>>,
-) -> Router {
-    let client =
-        SoftwareService::start(events, products).expect("Could not start the software service.");
-    web::software_router(client)
-        .await
-        .expect("Could not build the software router.")
+/// Localization-related information of the system where the installer
+/// is running.
+#[derive(Clone, Debug, Default, Serialize)]
+pub struct SystemInfo {
+    /// List of known patterns.
+    pub patterns: Vec<Pattern>,
+    /// List of known repositories.
+    pub repositories: Vec<Repository>,
+    /// List of known products.
+    pub products: Vec<Product>,
+    /// List of known licenses
+    pub licenses: Vec<License>,
+    /// List of available addons to register
+    pub addons: Vec<AddonProperties>,
 }

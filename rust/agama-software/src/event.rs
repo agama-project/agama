@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,26 +18,23 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub(crate) mod backend;
-pub(crate) mod web;
+use serde::{Deserialize, Serialize};
+use tokio::sync::mpsc;
 
-use std::sync::Arc;
-
-use agama_lib::http::event;
-use axum::Router;
-use backend::SoftwareService;
-pub use backend::SoftwareServiceError;
-use tokio::sync::Mutex;
-
-use crate::products::ProductsRegistry;
-
-pub async fn software_ng_service(
-    events: event::Sender,
-    products: Arc<Mutex<ProductsRegistry>>,
-) -> Router {
-    let client =
-        SoftwareService::start(events, products).expect("Could not start the software service.");
-    web::software_router(client)
-        .await
-        .expect("Could not build the software router.")
+/// Localization-related events.
+// FIXME: is it really needed to implement Deserialize?
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(tag = "name")]
+pub enum Event {
+    /// Proposal changed.
+    ProposalChanged,
+    /// The underlying system changed.
+    SystemChanged,
+    /// The use configuration changed.
+    ConfigChanged,
 }
+
+/// Multi-producer single-consumer events sender.
+pub type Sender = mpsc::UnboundedSender<Event>;
+/// Multi-producer single-consumer events receiver.
+pub type Receiver = mpsc::UnboundedReceiver<Event>;

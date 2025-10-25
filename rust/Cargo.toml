@@ -8,10 +8,11 @@ members = [
     "agama-manager",
     "agama-network",
     "agama-server",
+    "agama-software",
     "agama-utils",
+    "xtask",
     "zypp-agama",
     "zypp-agama/zypp-agama-sys",
-    "xtask",
 ]
 resolver = "2"
 

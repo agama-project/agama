@@ -39,7 +39,7 @@ pub use client::SoftwareServiceClient;
 use tokio::sync::{mpsc, oneshot, Mutex};
 use zypp_agama::ZyppError;
 
-use crate::{products::ProductsRegistry};
+use crate::products::ProductsRegistry;
 
 mod client;
 mod server;
