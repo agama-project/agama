@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_utils::api::software::RepositoryParams;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -88,32 +89,4 @@ pub struct Repository {
     pub enabled: bool,
     /// Whether the repository is loaded
     pub loaded: bool,
-}
-
-/// Parameters for creating new a repository
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub struct RepositoryParams {
-    /// repository alias. Has to be unique
-    pub alias: String,
-    /// repository name, if not specified the alias is used
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
-    /// Repository url (raw format without expanded variables)
-    pub url: String,
-    /// product directory (currently not used, valid only for multiproduct DVDs)
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub product_dir: Option<String>,
-    /// Whether the repository is enabled, if missing the repository is enabled
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub enabled: Option<bool>,
-    /// Repository priority, lower number means higher priority, the default priority is 99
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub priority: Option<i32>,
-    /// Whenever repository can be unsigned. Default is false
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub allow_unsigned: Option<bool>,
-    /// List of fingerprints for GPG keys used for repository signing. By default empty
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub gpg_fingerprints: Option<Vec<String>>,
 }

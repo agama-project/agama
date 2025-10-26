@@ -59,7 +59,6 @@ impl ApiDocBuilder for SoftwareApiDocBuilder {
             .schema_from::<agama_lib::software::model::RegistrationInfo>()
             .schema_from::<agama_lib::software::model::RegistrationParams>()
             .schema_from::<agama_lib::software::model::Repository>()
-            .schema_from::<agama_lib::software::model::RepositoryParams>()
             .schema_from::<agama_lib::software::model::ResolvableParams>()
             .schema_from::<agama_lib::software::model::ResolvableType>()
             .schema_from::<agama_lib::software::model::SoftwareConfig>()

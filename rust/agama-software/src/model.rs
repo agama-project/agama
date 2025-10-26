@@ -18,12 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_utils::api::software::RepositoryParams;
 use async_trait::async_trait;
 use tokio::sync::{mpsc, oneshot};
 
 use crate::{
     model::{
-        packages::{Repository, RepositoryParams, ResolvableType},
+        packages::{Repository, ResolvableType},
         pattern::Pattern,
         products::{ProductSpec, UserPattern},
         registration::{AddonProperties, RegistrationInfo},

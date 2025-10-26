@@ -21,8 +21,7 @@
 use std::{ops::DerefMut, sync::Arc};
 
 use crate::{
-    config::Config,
-    event, message,
+    message,
     model::{
         license::{Error as LicenseError, LicensesRepo},
         packages::ResolvableType,

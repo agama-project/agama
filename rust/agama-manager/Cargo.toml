@@ -7,6 +7,7 @@ edition.workspace = true
 [dependencies]
 agama-utils = { path = "../agama-utils" }
 agama-l10n = { path = "../agama-l10n" }
+agama-software = { path = "../agama-software" }
 thiserror = "2.0.12"
 tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread", "sync"] }
 async-trait = "0.1.83"
