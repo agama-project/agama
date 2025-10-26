@@ -405,8 +405,8 @@ module Agama
       return false unless SSL::ErrorCodes::IMPORT_ERROR_CODES.include?(error_code)
 
       question = certificate_question(cert)
-      questions_client = Agama::DBus::Clients::Questions.new(logger: @logger)
-      questions_client.ask(question) { |c| c.answer == :trust }
+      questions_client = Agama::HTTP::Clients::Questions.new(@logger)
+      questions_client.ask(question) { |a| a.action == :trust }
     end
 
     # @param certificate [Agama::SSL::Certificate]

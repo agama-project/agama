@@ -21,24 +21,24 @@
 
 require_relative "../../../test_helper"
 require "agama/software/callbacks/digest"
-require "agama/dbus/clients/questions"
-require "agama/dbus/clients/question"
+require "agama/http/clients"
+require "agama/answer"
+require "agama/question"
 
 describe Agama::Software::Callbacks::Digest do
   subject { described_class.new(questions_client, logger) }
 
-  let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
-  let(:question_client) { instance_double(Agama::DBus::Clients::Question) }
+  let(:questions_client) { instance_double(Agama::HTTP::Clients::Questions) }
+  let(:question) { instance_double(Agama::Question, answer: answer) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   before do
-    allow(questions_client).to receive(:ask).and_yield(question_client)
-    allow(question_client).to receive(:answer).and_return(answer)
+    allow(questions_client).to receive(:ask).and_yield(answer)
   end
 
   describe "#accept_file_without_checksum" do
-    let(:answer) { subject.yes_label.to_sym }
+    let(:answer) { Agama::Answer.new(subject.yes_label) }
 
     it "registers a question informing of the error" do
       expect(questions_client).to receive(:ask) do |q|
@@ -48,7 +48,7 @@ describe Agama::Software::Callbacks::Digest do
     end
 
     context "when the user answers :Yes" do
-      let(:answer) { subject.yes_label.to_sym }
+      let(:answer) { Agama::Answer.new(subject.yes_label) }
 
       it "returns true" do
         expect(subject.accept_file_without_checksum("repomd.xml")).to eq(true)
@@ -56,7 +56,7 @@ describe Agama::Software::Callbacks::Digest do
     end
 
     context "when the user answers :No" do
-      let(:answer) { subject.no_label.to_sym }
+      let(:answer) { Agama::Answer.new(subject.no_label) }
 
       it "returns false" do
         expect(subject.accept_file_without_checksum("repomd.xml")).to eq(false)
@@ -65,7 +65,7 @@ describe Agama::Software::Callbacks::Digest do
   end
 
   describe "#accept_unknown_digest" do
-    let(:answer) { subject.yes_label.to_sym }
+    let(:answer) { Agama::Answer.new(subject.yes_label) }
 
     it "registers a question informing of the error" do
       expect(questions_client).to receive(:ask) do |q|
@@ -75,7 +75,7 @@ describe Agama::Software::Callbacks::Digest do
     end
 
     context "when the user answers :Yes" do
-      let(:answer) { subject.yes_label.to_sym }
+      let(:answer) { Agama::Answer.new(subject.yes_label) }
 
       it "returns true" do
         expect(subject.accept_unknown_digest("repomd.xml", "123456")).to eq(true)
@@ -83,7 +83,7 @@ describe Agama::Software::Callbacks::Digest do
     end
 
     context "when the user answers :No" do
-      let(:answer) { subject.no_label.to_sym }
+      let(:answer) { Agama::Answer.new(subject.no_label) }
 
       it "returns false" do
         expect(subject.accept_unknown_digest("repomd.xml", "123456")).to eq(false)
@@ -92,7 +92,7 @@ describe Agama::Software::Callbacks::Digest do
   end
 
   describe "#accept_wrong_digest" do
-    let(:answer) { subject.yes_label.to_sym }
+    let(:answer) { Agama::Answer.new(subject.yes_label) }
 
     it "registers a question informing of the error" do
       expect(questions_client).to receive(:ask) do |q|
@@ -104,7 +104,7 @@ describe Agama::Software::Callbacks::Digest do
     end
 
     context "when the user answers :Yes" do
-      let(:answer) { subject.yes_label.to_sym }
+      let(:answer) { Agama::Answer.new(subject.yes_label) }
 
       it "returns true" do
         expect(subject.accept_wrong_digest("repomd.xml", "123456", "654321")).to eq(true)
@@ -112,7 +112,7 @@ describe Agama::Software::Callbacks::Digest do
     end
 
     context "when the user answers :No" do
-      let(:answer) { subject.no_label.to_sym }
+      let(:answer) { Agama::Answer.new(subject.no_label) }
 
       it "returns false" do
         expect(subject.accept_wrong_digest("repomd.xml", "123456", "654321")).to eq(false)

@@ -32,8 +32,6 @@ mod bootloader;
 pub use bootloader::BootloaderApiDocBuilder;
 mod software;
 pub use software::SoftwareApiDocBuilder;
-mod questions;
-pub use questions::QuestionsApiDocBuilder;
 mod profile;
 pub use profile::ProfileApiDocBuilder;
 mod manager;

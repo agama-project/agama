@@ -18,28 +18,25 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    l10n,
-    message::{self, Action},
-    proposal::Proposal,
-    system_info::SystemInfo,
-};
-use agama_lib::install_settings::InstallSettings;
+use crate::l10n;
+use crate::message;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    issue, progress,
+    api::{
+        event, status::State, Action, Config, Event, IssueMap, Proposal, Scope, Status, SystemInfo,
+    },
+    issue, progress, question,
 };
 use async_trait::async_trait;
 use merge_struct::merge;
-use serde::Serialize;
-use std::collections::HashMap;
-
-const PROGRESS_SCOPE: &str = "main";
+use tokio::sync::broadcast;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Cannot merge the configuration")]
     MergeConfig,
+    #[error(transparent)]
+    Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error(transparent)]
@@ -47,26 +44,19 @@ pub enum Error {
     #[error(transparent)]
     L10n(#[from] l10n::service::Error),
     #[error(transparent)]
-    Issues(#[from] agama_utils::issue::service::Error),
-}
-
-#[derive(Clone, Serialize, utoipa::ToSchema)]
-#[serde(rename_all = "camelCase")]
-pub enum State {
-    /// Configuring the installation
-    Configuring,
-    /// Installing the system
-    Installing,
-    /// Installation finished
-    Finished,
+    Issues(#[from] issue::service::Error),
+    #[error(transparent)]
+    Questions(#[from] question::service::Error),
 }
 
 pub struct Service {
     l10n: Handler<l10n::service::Service>,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
+    questions: Handler<question::Service>,
     state: State,
-    config: InstallSettings,
+    config: Config,
+    events: event::Sender,
 }
 
 impl Service {
@@ -74,30 +64,36 @@ impl Service {
         l10n: Handler<l10n::Service>,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
+        questions: Handler<question::Service>,
+        events: event::Sender,
     ) -> Self {
         Self {
             l10n,
             issues,
             progress,
+            questions,
+            events,
             state: State::Configuring,
-            config: InstallSettings::default(),
+            config: Config::default(),
         }
     }
 
     async fn install(&mut self) -> Result<(), Error> {
         self.state = State::Installing;
+        self.events.send(Event::StateChanged)?;
         // TODO: translate progress steps.
         self.progress
             .call(progress::message::StartWithSteps::new(
-                PROGRESS_SCOPE,
+                Scope::Manager,
                 &["Installing l10n"],
             ))
             .await?;
         self.l10n.call(l10n::message::Install).await?;
-        self.state = State::Finished;
         self.progress
-            .call(progress::message::Finish::new(PROGRESS_SCOPE))
+            .call(progress::message::Finish::new(Scope::Manager))
             .await?;
+        self.state = State::Finished;
+        self.events.send(Event::StateChanged)?;
         Ok(())
     }
 }
@@ -109,9 +105,9 @@ impl Actor for Service {
 #[async_trait]
 impl MessageHandler<message::GetStatus> for Service {
     /// It returns the status of the installation.
-    async fn handle(&mut self, _message: message::GetStatus) -> Result<message::Status, Error> {
+    async fn handle(&mut self, _message: message::GetStatus) -> Result<Status, Error> {
         let progresses = self.progress.call(progress::message::Get).await?;
-        Ok(message::Status {
+        Ok(Status {
             state: self.state.clone(),
             progresses,
         })
@@ -122,10 +118,8 @@ impl MessageHandler<message::GetStatus> for Service {
 impl MessageHandler<message::GetSystem> for Service {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
-        let l10n_system = self.l10n.call(l10n::message::GetSystem).await?;
-        Ok(SystemInfo {
-            localization: l10n_system,
-        })
+        let l10n = self.l10n.call(l10n::message::GetSystem).await?;
+        Ok(SystemInfo { l10n })
     }
 }
 
@@ -134,14 +128,12 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     /// Gets the current configuration.
     ///
     /// It includes user and default values.
-    async fn handle(
-        &mut self,
-        _message: message::GetExtendedConfig,
-    ) -> Result<InstallSettings, Error> {
-        let l10n_config = self.l10n.call(l10n::message::GetConfig).await?;
-        Ok(InstallSettings {
-            localization: Some(l10n_config),
-            ..Default::default()
+    async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
+        let l10n = self.l10n.call(l10n::message::GetConfig).await?;
+        let questions = self.questions.call(question::message::GetConfig).await?;
+        Ok(Config {
+            l10n: Some(l10n),
+            questions: Some(questions),
         })
     }
 }
@@ -151,7 +143,7 @@ impl MessageHandler<message::GetConfig> for Service {
     /// Gets the current configuration set by the user.
     ///
     /// It includes only the values that were set by the user.
-    async fn handle(&mut self, _message: message::GetConfig) -> Result<InstallSettings, Error> {
+    async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, Error> {
         Ok(self.config.clone())
     }
 }
@@ -166,9 +158,15 @@ impl MessageHandler<message::SetConfig> for Service {
     /// FIXME: We should replace not given sections with the default ones.
     /// After all, now we have config/user/:scope URLs.
     async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        if let Some(l10n_config) = &message.config.localization {
+        if let Some(l10n) = &message.config.l10n {
             self.l10n
-                .call(l10n::message::SetConfig::new(l10n_config.clone()))
+                .call(l10n::message::SetConfig::new(l10n.clone()))
+                .await?;
+        }
+
+        if let Some(questions) = &message.config.questions {
+            self.questions
+                .call(question::message::SetConfig::new(questions.clone()))
                 .await?;
         }
         self.config = message.config;
@@ -191,18 +189,15 @@ impl MessageHandler<message::UpdateConfig> for Service {
 impl MessageHandler<message::GetProposal> for Service {
     /// It returns the current proposal, if any.
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
-        let localization = self.l10n.call(l10n::message::GetProposal).await?;
-        Ok(Some(Proposal { localization }))
+        let l10n = self.l10n.call(l10n::message::GetProposal).await?;
+        Ok(Some(Proposal { l10n }))
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::GetIssues> for Service {
     /// It returns the current proposal, if any.
-    async fn handle(
-        &mut self,
-        _message: message::GetIssues,
-    ) -> Result<HashMap<String, Vec<issue::Issue>>, Error> {
+    async fn handle(&mut self, _message: message::GetIssues) -> Result<IssueMap, Error> {
         Ok(self.issues.call(issue::message::Get).await?)
     }
 }

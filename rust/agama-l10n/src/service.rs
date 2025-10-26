@@ -18,21 +18,22 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    config::Config,
-    event::{self, Event},
-    extended_config::ExtendedConfig,
-    message,
-    model::ModelAdapter,
-    proposal::Proposal,
-    system_info::SystemInfo,
-};
+use crate::config::Config;
+use crate::message;
+use crate::model::ModelAdapter;
 use agama_locale_data::{InvalidKeymapId, InvalidLocaleId, InvalidTimezoneId, KeymapId, LocaleId};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    issue::{self, Issue},
+    api::{
+        self,
+        event::{self, Event},
+        l10n::{Proposal, SystemConfig, SystemInfo},
+        Issue, IssueSeverity, IssueSource, Scope,
+    },
+    issue,
 };
 use async_trait::async_trait;
+use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -48,8 +49,12 @@ pub enum Error {
     InvalidKeymap(#[from] InvalidKeymapId),
     #[error(transparent)]
     InvalidTimezone(#[from] InvalidTimezoneId),
-    #[error("l10n service could not send the event")]
-    Event,
+    #[error(transparent)]
+    Event(#[from] broadcast::error::SendError<Event>),
+    #[error(transparent)]
+    Issue(#[from] api::issue::Error),
+    #[error(transparent)]
+    IssueService(#[from] issue::service::Error),
     #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error(transparent)]
@@ -69,16 +74,11 @@ pub enum Error {
 /// * Holds the user configuration.
 /// * Applies the user configuration at the end of the installation.
 pub struct Service {
-    state: State,
+    system: SystemInfo,
+    config: Config,
     model: Box<dyn ModelAdapter + Send + 'static>,
     issues: Handler<issue::Service>,
     events: event::Sender,
-}
-
-struct State {
-    system: SystemInfo,
-    config: ExtendedConfig,
-    proposal: Option<Proposal>,
 }
 
 impl Service {
@@ -87,35 +87,42 @@ impl Service {
         issues: Handler<issue::Service>,
         events: event::Sender,
     ) -> Service {
-        let system = SystemInfo::read_from(&model);
-        let config = ExtendedConfig::new_from(&system);
-        let proposal = (&config).into();
-        let state = State {
-            system,
-            config,
-            proposal: Some(proposal),
-        };
+        let system = model.read_system_info();
+        let config = Config::new_from(&system);
 
         Self {
-            state,
+            system,
+            config,
             model: Box::new(model),
             issues,
             events,
         }
     }
 
+    fn get_proposal(&self) -> Option<Proposal> {
+        if !self.find_issues().is_empty() {
+            return None;
+        }
+
+        Some(Proposal {
+            keymap: self.config.keymap.clone(),
+            locale: self.config.locale.clone(),
+            timezone: self.config.timezone.clone(),
+        })
+    }
+
     /// Returns configuration issues.
     ///
     /// It returns an issue for each unknown element (locale, keymap and timezone).
     fn find_issues(&self) -> Vec<Issue> {
-        let config = &self.state.config;
+        let config = &self.config;
         let mut issues = vec![];
         if !self.model.locales_db().exists(&config.locale) {
             issues.push(Issue {
                 description: format!("Locale '{}' is unknown", &config.locale),
                 details: None,
-                source: issue::IssueSource::Config,
-                severity: issue::IssueSeverity::Error,
+                source: IssueSource::Config,
+                severity: IssueSeverity::Error,
                 kind: "unknown_locale".to_string(),
             });
         }
@@ -124,8 +131,8 @@ impl Service {
             issues.push(Issue {
                 description: format!("Keymap '{}' is unknown", &config.keymap),
                 details: None,
-                source: issue::IssueSource::Config,
-                severity: issue::IssueSeverity::Error,
+                source: IssueSource::Config,
+                severity: IssueSeverity::Error,
                 kind: "unknown_keymap".to_string(),
             });
         }
@@ -134,8 +141,8 @@ impl Service {
             issues.push(Issue {
                 description: format!("Timezone '{}' is unknown", &config.timezone),
                 details: None,
-                source: issue::IssueSource::Config,
-                severity: issue::IssueSeverity::Error,
+                source: IssueSource::Config,
+                severity: IssueSeverity::Error,
                 kind: "unknown_timezone".to_string(),
             });
         }
@@ -151,16 +158,13 @@ impl Actor for Service {
 #[async_trait]
 impl MessageHandler<message::GetSystem> for Service {
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
-        Ok(self.state.system.clone())
+        Ok(self.system.clone())
     }
 }
 
 #[async_trait]
-impl MessageHandler<message::SetSystem<message::SystemConfig>> for Service {
-    async fn handle(
-        &mut self,
-        message: message::SetSystem<message::SystemConfig>,
-    ) -> Result<(), Error> {
+impl MessageHandler<message::SetSystem<SystemConfig>> for Service {
+    async fn handle(&mut self, message: message::SetSystem<SystemConfig>) -> Result<(), Error> {
         let config = &message.config;
         if let Some(locale) = &config.locale {
             self.model.set_locale(locale.parse()?)?;
@@ -176,32 +180,33 @@ impl MessageHandler<message::SetSystem<message::SystemConfig>> for Service {
 
 #[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
-    async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, Error> {
-        Ok((&self.state.config).into())
+    async fn handle(&mut self, _message: message::GetConfig) -> Result<api::l10n::Config, Error> {
+        Ok(api::l10n::Config {
+            locale: Some(self.config.locale.to_string()),
+            keymap: Some(self.config.keymap.to_string()),
+            timezone: Some(self.config.timezone.to_string()),
+        })
     }
 }
 
 #[async_trait]
-impl MessageHandler<message::SetConfig<Config>> for Service {
-    async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
-        let merged = self.state.config.merge(&message.config)?;
-        if merged == self.state.config {
+impl MessageHandler<message::SetConfig<api::l10n::Config>> for Service {
+    async fn handle(
+        &mut self,
+        message: message::SetConfig<api::l10n::Config>,
+    ) -> Result<(), Error> {
+        let config = Config::new_from(&self.system);
+        let merged = config.merge(&message.config)?;
+        if merged == self.config {
             return Ok(());
         }
 
-        self.state.config = merged;
+        self.config = merged;
         let issues = self.find_issues();
-
-        self.state.proposal = if issues.is_empty() {
-            Some((&self.state.config).into())
-        } else {
-            None
-        };
-
-        _ = self
-            .issues
-            .cast(issue::message::Update::new("localization", issues));
-        _ = self.events.send(Event::ProposalChanged);
+        self.issues
+            .cast(issue::message::Update::new(Scope::L10n, issues))?;
+        self.events
+            .send(Event::ProposalChanged { scope: Scope::L10n })?;
         Ok(())
     }
 }
@@ -209,14 +214,14 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
 #[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Proposal>, Error> {
-        Ok(self.state.proposal.clone())
+        Ok(self.get_proposal())
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::Install> for Service {
     async fn handle(&mut self, _message: message::Install) -> Result<(), Error> {
-        let Some(proposal) = &self.state.proposal else {
+        let Some(proposal) = self.get_proposal() else {
             return Err(Error::MissingProposal);
         };
 
@@ -229,8 +234,10 @@ impl MessageHandler<message::Install> for Service {
 #[async_trait]
 impl MessageHandler<message::UpdateLocale> for Service {
     async fn handle(&mut self, message: message::UpdateLocale) -> Result<(), Error> {
-        self.state.system.locale = message.locale;
-        _ = self.events.send(Event::SystemChanged);
+        self.system.locale = message.locale;
+        _ = self
+            .events
+            .send(Event::SystemChanged { scope: Scope::L10n });
         Ok(())
     }
 }
@@ -238,8 +245,10 @@ impl MessageHandler<message::UpdateLocale> for Service {
 #[async_trait]
 impl MessageHandler<message::UpdateKeymap> for Service {
     async fn handle(&mut self, message: message::UpdateKeymap) -> Result<(), Error> {
-        self.state.system.keymap = message.keymap;
-        _ = self.events.send(Event::SystemChanged);
+        self.system.keymap = message.keymap;
+        _ = self
+            .events
+            .send(Event::SystemChanged { scope: Scope::L10n });
         Ok(())
     }
 }

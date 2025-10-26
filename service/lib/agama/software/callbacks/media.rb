@@ -104,8 +104,8 @@ module Agama
             options: [retry_label.to_sym, continue_label.to_sym],
             data:    { "url" => url }
           )
-          questions_client.ask(question) do |question_client|
-            if question_client.answer == retry_label.to_sym
+          questions_client.ask(question) do |answer|
+            if answer.action == retry_label.to_sym
               self.attempt += 1
               ""
             else

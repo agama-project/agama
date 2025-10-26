@@ -19,24 +19,23 @@
 // find current contact information at www.suse.com.
 
 use crate::actor::{self, Actor, MessageHandler};
-use crate::progress::model::Progress;
-use crate::progress::{
-    event::{self, Event},
-    message,
-};
+use crate::api::event::{self, Event};
+use crate::api::progress::{self, Progress};
+use crate::api::scope::Scope;
+use crate::progress::message;
 use async_trait::async_trait;
-use tokio::sync::mpsc::error::SendError;
+use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("Progress already exists for {0}")]
-    DuplicatedProgress(String),
+    DuplicatedProgress(Scope),
     #[error("Progress does not exist for {0}")]
-    MissingProgress(String),
-    #[error("Next step does not exist for {0}")]
-    MissingStep(String),
+    MissingProgress(Scope),
     #[error(transparent)]
-    Event(#[from] SendError<Event>),
+    Progress(#[from] progress::Error),
+    #[error(transparent)]
+    Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
     Actor(#[from] actor::Error),
 }
@@ -54,15 +53,15 @@ impl Service {
         }
     }
 
-    fn get_progress(&self, scope: &str) -> Option<&Progress> {
+    fn get_progress(&self, scope: Scope) -> Option<&Progress> {
         self.progresses.iter().find(|p| p.scope == scope)
     }
 
-    fn get_mut_progress(&mut self, scope: &str) -> Option<&mut Progress> {
+    fn get_mut_progress(&mut self, scope: Scope) -> Option<&mut Progress> {
         self.progresses.iter_mut().find(|p| p.scope == scope)
     }
 
-    fn get_progress_index(&self, scope: &str) -> Option<usize> {
+    fn get_progress_index(&self, scope: Scope) -> Option<usize> {
         self.progresses.iter().position(|p| p.scope == scope)
     }
 }
@@ -81,12 +80,15 @@ impl MessageHandler<message::Get> for Service {
 #[async_trait]
 impl MessageHandler<message::Start> for Service {
     async fn handle(&mut self, message: message::Start) -> Result<(), Error> {
-        if self.get_progress(message.scope.as_str()).is_some() {
+        if self.get_progress(message.scope).is_some() {
             return Err(Error::DuplicatedProgress(message.scope));
         }
-        self.progresses
-            .push(Progress::new(message.scope, message.size, message.step));
-        self.events.send(Event::ProgressChanged)?;
+        let progress = Progress::new(message.scope, message.size, message.step);
+        self.progresses.push(progress.clone());
+        self.events.send(Event::ProgressChanged {
+            scope: message.scope,
+            progress,
+        })?;
         Ok(())
     }
 }
@@ -94,12 +96,15 @@ impl MessageHandler<message::Start> for Service {
 #[async_trait]
 impl MessageHandler<message::StartWithSteps> for Service {
     async fn handle(&mut self, message: message::StartWithSteps) -> Result<(), Error> {
-        if self.get_progress(message.scope.as_str()).is_some() {
+        if self.get_progress(message.scope).is_some() {
             return Err(Error::DuplicatedProgress(message.scope));
         }
-        self.progresses
-            .push(Progress::new_with_steps(message.scope, message.steps));
-        self.events.send(Event::ProgressChanged)?;
+        let progress = Progress::new_with_steps(message.scope, message.steps);
+        self.progresses.push(progress.clone());
+        self.events.send(Event::ProgressChanged {
+            scope: message.scope,
+            progress,
+        })?;
         Ok(())
     }
 }
@@ -107,21 +112,31 @@ impl MessageHandler<message::StartWithSteps> for Service {
 #[async_trait]
 impl MessageHandler<message::Next> for Service {
     async fn handle(&mut self, message: message::Next) -> Result<(), Error> {
-        self.get_mut_progress(message.scope.as_str())
-            .ok_or(Error::MissingProgress(message.scope))
-            .and_then(|p| p.next())?;
-        self.events.send(Event::ProgressChanged)?;
+        let Some(progress) = self.get_mut_progress(message.scope) else {
+            return Err(Error::MissingProgress(message.scope));
+        };
+        progress.next()?;
+        let progress = progress.clone();
+        self.events.send(Event::ProgressChanged {
+            scope: message.scope,
+            progress,
+        })?;
         Ok(())
     }
 }
 
 #[async_trait]
-impl MessageHandler<message::NextStep> for Service {
-    async fn handle(&mut self, message: message::NextStep) -> Result<(), Error> {
-        self.get_mut_progress(message.scope.as_str())
-            .ok_or(Error::MissingProgress(message.scope))
-            .and_then(|p| p.next_step(message.step))?;
-        self.events.send(Event::ProgressChanged)?;
+impl MessageHandler<message::NextWithStep> for Service {
+    async fn handle(&mut self, message: message::NextWithStep) -> Result<(), Error> {
+        let Some(progress) = self.get_mut_progress(message.scope) else {
+            return Err(Error::MissingProgress(message.scope));
+        };
+        progress.next_with_step(message.step)?;
+        let progress = progress.clone();
+        self.events.send(Event::ProgressChanged {
+            scope: message.scope,
+            progress,
+        })?;
         Ok(())
     }
 }
@@ -130,10 +145,12 @@ impl MessageHandler<message::NextStep> for Service {
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, message: message::Finish) -> Result<(), Error> {
         let index = self
-            .get_progress_index(message.scope.as_str())
+            .get_progress_index(message.scope)
             .ok_or(Error::MissingProgress(message.scope))?;
         self.progresses.remove(index);
-        self.events.send(Event::ProgressChanged)?;
+        self.events.send(Event::ProgressFinished {
+            scope: message.scope,
+        })?;
         Ok(())
     }
 }

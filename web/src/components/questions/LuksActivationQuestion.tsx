@@ -49,9 +49,9 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
   const conditions = { disable: { decrypt: password === "" } };
   const defaultAction = "decrypt";
 
-  const actionCallback = (option: string) => {
-    question.password = password;
-    question.answer = option;
+  const actionCallback = (action: string) => {
+    const answer = { action, value: password };
+    question.answer = answer;
     answerCallback(question);
   };
 
@@ -87,8 +87,8 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
 
       <Popup.Actions>
         <QuestionActions
-          actions={question.options}
-          defaultAction={defaultAction}
+          actions={question.actions}
+          defaultAction={question.defaultAction}
           actionCallback={actionCallback}
           conditions={conditions}
         />

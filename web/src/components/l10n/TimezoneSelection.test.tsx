@@ -52,12 +52,12 @@ const timezones: Timezone[] = [
 
 jest.mock("~/queries/system", () => ({
   ...jest.requireActual("~/queries/system"),
-  useSystem: () => ({ localization: { timezones } }),
+  useSystem: () => ({ l10n: { timezones } }),
 }));
 
 jest.mock("~/queries/proposal", () => ({
   ...jest.requireActual("~/queries/proposal"),
-  useProposal: () => ({ localization: { timezones, timezone: "Europe/Berlin" } }),
+  useProposal: () => ({ l10n: { timezones, timezone: "Europe/Berlin" } }),
 }));
 
 jest.mock("react-router-dom", () => ({
@@ -89,7 +89,7 @@ it("allows changing the timezone", async () => {
   await user.click(option);
   const button = await screen.findByRole("button", { name: "Select" });
   await user.click(button);
-  expect(mockUpdateConfigFn).toHaveBeenCalledWith({ localization: { timezone: "Europe/Madrid" } });
+  expect(mockUpdateConfigFn).toHaveBeenCalledWith({ l10n: { timezone: "Europe/Madrid" } });
   expect(mockNavigateFn).toHaveBeenCalledWith(-1);
 });
 

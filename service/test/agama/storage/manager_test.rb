@@ -23,7 +23,7 @@ require_relative "../../test_helper"
 require_relative "../with_progress_examples"
 require_relative "../with_issues_examples"
 require_relative "storage_helpers"
-require "agama/dbus/clients/questions"
+require "agama/http/clients"
 require "agama/config"
 require "agama/http"
 require "agama/issue"
@@ -57,7 +57,7 @@ describe Agama::Storage::Manager do
   before do
     mock_storage(devicegraph: scenario)
     allow(Agama::Storage::Proposal).to receive(:new).and_return(proposal)
-    allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
+    allow(Agama::HTTP::Clients::Questions).to receive(:new).and_return(questions_client)
     allow(Agama::HTTP::Clients::Software).to receive(:new).and_return(software)
     allow(Bootloader::FinishClient).to receive(:new).and_return(bootloader_finish)
     allow(Agama::Security).to receive(:new).and_return(security)
@@ -77,7 +77,7 @@ describe Agama::Storage::Manager do
 
   let(:y2storage_manager) { Y2Storage::StorageManager.instance }
   let(:proposal) { Agama::Storage::Proposal.new(config, logger: logger) }
-  let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
+  let(:questions_client) { instance_double(Agama::HTTP::Clients::Questions) }
   let(:software) do
     instance_double(Agama::HTTP::Clients::Software, config: { "product" => "ALP" })
   end

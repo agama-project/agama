@@ -21,19 +21,8 @@
 //! This module provides support for reading the timezones database.
 
 use agama_locale_data::{territory::Territories, timezone_part::TimezoneIdParts, TimezoneId};
-use serde::Serialize;
+use agama_utils::api::l10n::TimezoneEntry;
 use std::collections::HashMap;
-
-/// Represents a timezone, including each part as localized.
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
-pub struct TimezoneEntry {
-    /// Timezone identifier (e.g. "Atlantic/Canary").
-    pub id: TimezoneId,
-    /// Localized parts (e.g., "Atlántico", "Canarias").
-    pub parts: Vec<String>,
-    /// Localized name of the territory this timezone is associated to
-    pub country: Option<String>,
-}
 
 #[derive(Default)]
 pub struct TimezonesDatabase {

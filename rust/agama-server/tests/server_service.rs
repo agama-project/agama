@@ -19,11 +19,9 @@
 // find current contact information at www.suse.com.
 
 pub mod common;
-
-use agama_l10n::Config;
 use agama_lib::error::ServiceError;
-use agama_lib::install_settings::InstallSettings;
 use agama_server::server::server_service;
+use agama_utils::api;
 use axum::{
     body::Body,
     http::{Method, Request, StatusCode},
@@ -35,7 +33,13 @@ use tokio::{sync::broadcast::channel, test};
 use tower::ServiceExt;
 
 async fn build_server_service() -> Result<Router, ServiceError> {
-    let (tx, _rx) = channel(16);
+    let (tx, mut rx) = channel(16);
+
+    tokio::spawn(async move {
+        while let Ok(event) = rx.recv().await {
+            println!("{:?}", event);
+        }
+    });
 
     server_service(tx, None).await
 }
@@ -81,14 +85,12 @@ async fn test_get_empty_config() -> Result<(), Box<dyn Error>> {
 #[test]
 #[cfg(not(ci))]
 async fn test_put_config() -> Result<(), Box<dyn Error>> {
-    let localization = Config {
-        locale: Some("es_ES.UTF-8".to_string()),
-        keymap: Some("es".to_string()),
-        timezone: Some("Atlantic/Canary".to_string()),
-    };
-
-    let mut config = InstallSettings {
-        localization: Some(localization),
+    let config = api::Config {
+        l10n: Some(api::l10n::Config {
+            locale: Some("es_ES.UTF-8".to_string()),
+            keymap: Some("es".to_string()),
+            timezone: Some("Atlantic/Canary".to_string()),
+        }),
         ..Default::default()
     };
 
@@ -112,16 +114,17 @@ async fn test_put_config() -> Result<(), Box<dyn Error>> {
     assert_eq!(response.status(), StatusCode::OK);
 
     let body = body_to_string(response.into_body()).await;
-    assert!(body.contains(
-        r#""localization":{"locale":"es_ES.UTF-8","keymap":"es","timezone":"Atlantic/Canary"#
-    ));
+    assert!(body
+        .contains(r#""l10n":{"locale":"es_ES.UTF-8","keymap":"es","timezone":"Atlantic/Canary"#));
 
-    let localization = Config {
-        locale: None,
-        keymap: Some("en".to_string()),
-        timezone: None,
+    let config = api::Config {
+        l10n: Some(api::l10n::Config {
+            locale: None,
+            keymap: Some("en".to_string()),
+            timezone: None,
+        }),
+        ..Default::default()
     };
-    config.localization = Some(localization);
 
     let request = Request::builder()
         .uri("/config")
@@ -142,7 +145,7 @@ async fn test_put_config() -> Result<(), Box<dyn Error>> {
     assert_eq!(response.status(), StatusCode::OK);
 
     let body = body_to_string(response.into_body()).await;
-    assert!(body.contains(r#""localization":{"keymap":"en"}"#));
+    assert!(body.contains(r#""l10n":{"keymap":"en"}"#));
 
     Ok(())
 }
@@ -150,16 +153,14 @@ async fn test_put_config() -> Result<(), Box<dyn Error>> {
 #[test]
 #[cfg(not(ci))]
 async fn test_patch_config() -> Result<(), Box<dyn Error>> {
-    use agama_server::server::types::ConfigPatch;
-
-    let localization = Config {
+    let l10n = api::l10n::Config {
         locale: Some("es_ES.UTF-8".to_string()),
         keymap: Some("es".to_string()),
         timezone: Some("Atlantic/Canary".to_string()),
     };
 
-    let config = InstallSettings {
-        localization: Some(localization),
+    let config = api::Config {
+        l10n: Some(l10n),
         ..Default::default()
     };
 
@@ -174,14 +175,13 @@ async fn test_patch_config() -> Result<(), Box<dyn Error>> {
     let response = server_service.clone().oneshot(request).await.unwrap();
     assert_eq!(response.status(), StatusCode::OK);
 
-    let localization = Config {
-        locale: None,
-        keymap: Some("en".to_string()),
-        timezone: None,
-    };
-    let patch = ConfigPatch {
-        update: Some(InstallSettings {
-            localization: Some(localization),
+    let patch = api::config::Patch {
+        update: Some(api::Config {
+            l10n: Some(api::l10n::Config {
+                locale: None,
+                keymap: Some("en".to_string()),
+                timezone: None,
+            }),
             ..Default::default()
         }),
     };
@@ -204,9 +204,8 @@ async fn test_patch_config() -> Result<(), Box<dyn Error>> {
     assert_eq!(response.status(), StatusCode::OK);
 
     let body = body_to_string(response.into_body()).await;
-    assert!(body.contains(
-        r#""localization":{"locale":"es_ES.UTF-8","keymap":"en","timezone":"Atlantic/Canary"#
-    ));
+    assert!(body
+        .contains(r#""l10n":{"locale":"es_ES.UTF-8","keymap":"en","timezone":"Atlantic/Canary"#));
 
     Ok(())
 }

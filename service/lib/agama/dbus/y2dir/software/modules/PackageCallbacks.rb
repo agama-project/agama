@@ -20,7 +20,7 @@
 require "yast"
 require "logger"
 require "agama/software/callbacks"
-require "agama/dbus/clients/questions"
+require "agama/http/clients"
 
 # :nodoc:
 module Yast
@@ -63,7 +63,7 @@ module Yast
     #
     # @return [Agama::DBus::Clients::Questions]
     def questions_client
-      @questions_client ||= Agama::DBus::Clients::Questions.new(logger: logger)
+      @questions_client ||= Agama::HTTP::Clients::Questions.new(logger)
     end
 
   private

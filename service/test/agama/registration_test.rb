@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
+require "agama/answer"
 require "agama/config"
 require "agama/registration"
 require "agama/software/manager"
@@ -259,6 +260,8 @@ describe Agama::Registration do
         end
 
         context "if the registration server has self-signed certificate" do
+          let(:questions_client) { instance_double(Agama::HTTP::Clients::Questions) }
+
           let(:certificate) do
             Agama::SSL::Certificate.load(File.read(File.join(FIXTURES_PATH, "test.pem")))
           end
@@ -296,12 +299,9 @@ describe Agama::Registration do
           end
 
           it "opens question" do
-            expect(Agama::Question).to receive(:new)
-            q_client = double
-            expect(q_client).to receive(:ask).and_yield(q_client)
-            expect(q_client).to receive(:answer).and_return(:Abort)
-            expect(Agama::DBus::Clients::Questions).to receive(:new)
-              .and_return(q_client)
+            expect(questions_client).to receive(:ask).and_yield(Agama::Answer.new(:Abort))
+            expect(Agama::HTTP::Clients::Questions).to receive(:new)
+              .and_return(questions_client)
 
             expect { subject.register("11112222", email: "test@test.com") }.to(
               raise_error(OpenSSL::SSL::SSLError)

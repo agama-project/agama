@@ -18,28 +18,28 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use super::Issue;
 use crate::actor::Message;
-use std::collections::HashMap;
+use crate::api::issue::{Issue, IssueMap};
+use crate::api::Scope;
 
 pub struct Get;
 
 impl Message for Get {
-    type Reply = HashMap<String, Vec<Issue>>;
+    type Reply = IssueMap;
 }
 
 // FIXME: consider an alternative approach to avoid pub(crate),
 // making it only visible to the service.
 pub struct Update {
-    pub(crate) list: String,
+    pub(crate) scope: Scope,
     pub(crate) issues: Vec<Issue>,
     pub(crate) notify: bool,
 }
 
 impl Update {
-    pub fn new(list: &str, issues: Vec<Issue>) -> Self {
+    pub fn new(scope: Scope, issues: Vec<Issue>) -> Self {
         Self {
-            list: list.to_string(),
+            scope,
             issues,
             notify: true,
         }

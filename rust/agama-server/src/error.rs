@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::{error::ServiceError, questions::QuestionsError};
+use agama_lib::error::ServiceError;
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
@@ -36,8 +36,6 @@ pub enum Error {
     Anyhow(String),
     #[error("Agama service error: {0}")]
     Service(#[from] ServiceError),
-    #[error("Questions service error: {0}")]
-    Questions(QuestionsError),
     #[error("Progress service error: {0}")]
     Progress(#[from] ProgressServiceError),
     #[error("Could not check the password")]
