@@ -53,7 +53,7 @@ module Agama
     def initialize(size, step)
       @size = size
       @steps = []
-      @step= step
+      @step = step
       @index = 1
     end
 

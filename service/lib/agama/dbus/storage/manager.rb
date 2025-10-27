@@ -76,7 +76,7 @@ module Agama
           dbus_method(:GetConfig, "out config:s") { recover_config }
           dbus_method(:SetConfig, "in config:s") { |c| configure(c) }
           dbus_method(:GetConfigModel, "out model:s") { recover_config_model }
-          dbus_method(:SetConfigModel, "in model:s") { |m| configure_with_model(m)}
+          dbus_method(:SetConfigModel, "in model:s") { |m| configure_with_model(m) }
           dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
           dbus_method(:GetProposal, "out proposal:s") { recover_proposal }
           dbus_method(:GetIssues, "out issues:s") { recover_issues }
