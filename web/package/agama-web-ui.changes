@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 27 15:51:48 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Use the JavaScript/TypeScript parser to extract strings for
+  translation (gh#agama-project/agama#2748).
+
+-------------------------------------------------------------------
 Tue Sep 16 09:20:40 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Avoid missing translations due to missuse of top-level constants
