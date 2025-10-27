@@ -18,16 +18,33 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::service::Service;
-use agama_utils::actor::{self, Handler};
+use crate::{
+    monitor::{self, Monitor},
+    service::Service,
+};
+use agama_utils::{
+    actor::{self, Handler},
+    api::event,
+    progress,
+};
 
 #[derive(thiserror::Error, Debug)]
-pub enum Error {}
+pub enum Error {
+    #[error(transparent)]
+    Monitor(#[from] monitor::Error),
+}
 
 /// Starts the storage service.
 ///
 /// * `dbus`: connection to Agama's D-Bus server.
-pub async fn start(dbus: zbus::Connection) -> Result<Handler<Service>, Error> {
+pub async fn start(
+    progress: Handler<progress::Service>,
+    events: event::Sender,
+    dbus: zbus::Connection,
+) -> Result<Handler<Service>, Error> {
+    let monitor = Monitor::new(progress, events, dbus.clone());
+    monitor::spawn(monitor)?;
+
     let service = Service::new(dbus);
     let handler = actor::spawn(service);
     Ok(handler)

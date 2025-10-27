@@ -23,6 +23,7 @@ pub use service::Service;
 
 mod dbus;
 pub mod message;
+mod monitor;
 
 pub mod start;
 pub use start::start;

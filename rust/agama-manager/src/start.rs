@@ -50,9 +50,9 @@ pub async fn start(
     let issues = issue::start(events.clone(), dbus.clone()).await?;
     let progress = progress::start(events.clone()).await?;
     let l10n = l10n::start(issues.clone(), events.clone()).await?;
-    let storage = storage::start(dbus).await?;
+    let storage = storage::start(progress.clone(), events.clone(), dbus).await?;
 
-    let service = Service::new(l10n, storage, issues, progress, questions, events.clone());
+    let service = Service::new(l10n, storage, issues, progress, questions, events);
     let handler = actor::spawn(service);
     Ok(handler)
 }
