@@ -88,10 +88,11 @@ ifcfg_to_ip() {
     return 0
   fi
 
-  # ifcifg=<interface_spec>=ip,gateway,nameserver,domain
+  # ifcfg=<interface_spec>=ip,gateway,nameserver,domain
   if strglob "$1" "*.*.*.*/*"; then
     [[ -n "$2" ]] && gateway=$2
     [[ -n "$3" ]] && nameserver=$3
+    [[ -n "$4" ]] && domain=$4
 
     ip="$1 "
     set --
@@ -125,6 +126,13 @@ ifcfg_to_ip() {
         echo "nameserver=${nameserver%% *}" >>$conf_path
         nameserver="${nameserver#* }"
       done
+    fi
+
+    ## Configure domain search list
+    if [[ -n $domain ]]; then
+      mkdir -p /run/NetworkManager/conf.d
+      echo "[global-dns]" >/run/NetworkManager/conf.d/10-agama-domain.conf
+      echo "searches=$domain" >>/run/NetworkManager/conf.d/10-agama-domain.conf
     fi
   fi
 
@@ -185,7 +193,22 @@ translate_ifcfg() {
 
   return 0
 }
+parse_domain() {
+  local domain
+
+  domain=$(getarg domain=)
+
+  if [[ -n $domain ]]; then
+    echo "### Processing domain search list '$domain'"
+    mkdir -p /run/NetworkManager/conf.d
+    echo "[global-dns]" >/run/NetworkManager/conf.d/10-agama-domain.conf
+    echo "searches=${domain// /,}" >>/run/NetworkManager/conf.d/10-agama-domain.conf
+  fi
+
+  return 0
+}
 
 parse_hostname
 parse_ifname
 translate_ifcfg
+parse_domain
