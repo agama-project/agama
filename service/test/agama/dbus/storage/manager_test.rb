@@ -418,7 +418,13 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#apply_config" do
+  describe "#configure" do
+    before do
+      allow(subject).to receive(:ProposalChanged)
+      allow(subject).to receive(:ProgressChanged)
+      allow(subject).to receive(:ProgressFinished)
+    end
+
     let(:serialized_config) { config_json.to_json }
 
     context "if the serialized config contains storage settings" do
@@ -454,7 +460,17 @@ describe Agama::DBus::Storage::Manager do
           expect(partition.filesystem.path).to eq("/")
         end
 
-        subject.apply_config(serialized_config)
+        subject.configure(serialized_config)
+      end
+
+      it "emits signals for ProposalChanged, ProgressChanged and ProgressFinished" do
+        allow(proposal).to receive(:calculate_agama)
+
+        expect(subject).to receive(:ProposalChanged)
+        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
+        expect(subject).to receive(:ProgressFinished)
+
+        subject.configure(serialized_config)
       end
     end
 
@@ -472,12 +488,28 @@ describe Agama::DBus::Storage::Manager do
           expect(settings).to eq(config_json[:legacyAutoyastStorage])
         end
 
-        subject.apply_config(serialized_config)
+        subject.configure(serialized_config)
+      end
+
+      it "emits signals for ProposalChanged, ProgressChanged and ProgressFinished" do
+        allow(proposal).to receive(:calculate_autoyast)
+
+        expect(subject).to receive(:ProposalChanged)
+        expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
+        expect(subject).to receive(:ProgressFinished)
+
+        subject.configure(serialized_config)
       end
     end
   end
 
-  describe "#apply_config_model" do
+  describe "#configure_with_model" do
+    before do
+      allow(subject).to receive(:ProposalChanged)
+      allow(subject).to receive(:ProgressChanged)
+      allow(subject).to receive(:ProgressFinished)
+    end
+
     let(:serialized_model) { model_json.to_json }
 
     let(:model_json) do
@@ -504,7 +536,17 @@ describe Agama::DBus::Storage::Manager do
         expect(partition.filesystem.path).to eq("/")
       end
 
-      subject.apply_config_model(serialized_model)
+      subject.configure_with_model(serialized_model)
+    end
+
+    it "emits signals for ProposalChanged, ProgressChanged and ProgressFinished" do
+      allow(proposal).to receive(:calculate_agama)
+
+      expect(subject).to receive(:ProposalChanged)
+      expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
+      expect(subject).to receive(:ProgressFinished)
+
+      subject.configure_with_model(serialized_model)
     end
   end
 
@@ -560,10 +602,10 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#recover_model" do
+  describe "#recover_config_model" do
     context "if a proposal has not been calculated" do
       it "returns 'null'" do
-        expect(subject.recover_model).to eq("null")
+        expect(subject.recover_config_model).to eq("null")
       end
     end
 
@@ -590,7 +632,7 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "returns the serialized config model" do
-        expect(subject.recover_model).to eq(
+        expect(subject.recover_config_model).to eq(
           serialize({
             boot:         {
               configure: true,
@@ -644,12 +686,12 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "returns 'null'" do
-        expect(subject.recover_model).to eq("null")
+        expect(subject.recover_config_model).to eq("null")
       end
     end
   end
 
-  describe "#solve_model" do
+  describe "#solve_config_model" do
     let(:model) do
       {
         drives: [
@@ -664,7 +706,7 @@ describe Agama::DBus::Storage::Manager do
     end
 
     it "returns the serialized solved model" do
-      result = subject.solve_model(model.to_json)
+      result = subject.solve_config_model(model.to_json)
 
       expect(result).to eq(
         serialize({
@@ -711,7 +753,7 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "returns 'null'" do
-        result = subject.solve_model(model.to_json)
+        result = subject.solve_config_model(model.to_json)
         expect(result).to eq("null")
       end
     end
