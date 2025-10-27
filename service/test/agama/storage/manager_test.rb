@@ -33,6 +33,7 @@ require "agama/storage/manager"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume"
+require "agama/dbus"
 require "y2storage/issue"
 require "y2storage/luks"
 require "yast2/fs_snapshot"
@@ -86,72 +87,6 @@ describe Agama::Storage::Manager do
   let(:security) { instance_double(Agama::Security, write: nil) }
 
   let(:scenario) { "empty-hd-50GiB.yaml" }
-
-  describe "#deprecated_system=" do
-    let(:callback) { proc {} }
-
-    context "if the current value is changed" do
-      before do
-        storage.deprecated_system = true
-      end
-
-      it "executes the on_deprecated_system_change callbacks" do
-        storage.on_deprecated_system_change(&callback)
-
-        expect(callback).to receive(:call)
-
-        storage.deprecated_system = false
-      end
-    end
-
-    context "if the current value is not changed" do
-      before do
-        storage.deprecated_system = true
-      end
-
-      it "does not execute the on_deprecated_system_change callbacks" do
-        storage.on_deprecated_system_change(&callback)
-
-        expect(callback).to_not receive(:call)
-
-        storage.deprecated_system = true
-      end
-    end
-
-    context "when the system is set as deprecated" do
-      it "marks the system as deprecated" do
-        storage.deprecated_system = true
-
-        expect(storage.deprecated_system?).to eq(true)
-      end
-
-      it "adds a deprecated system issue" do
-        expect(storage.issues).to be_empty
-
-        storage.deprecated_system = true
-
-        expect(storage.issues).to include(
-          an_object_having_attributes(description: /system devices have changed/)
-        )
-      end
-    end
-
-    context "when the system is set as not deprecated" do
-      it "marks the system as not deprecated" do
-        storage.deprecated_system = false
-
-        expect(storage.deprecated_system?).to eq(false)
-      end
-
-      it "does not add a deprecated system issue" do
-        storage.deprecated_system = false
-
-        expect(storage.issues).to_not include(
-          an_object_having_attributes(description: /system devices have changed/)
-        )
-      end
-    end
-  end
 
   describe "#probe" do
     before do

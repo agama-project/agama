@@ -82,28 +82,6 @@ describe Agama::DBus::Storage::Manager do
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
   end
 
-  describe "#deprecated_system" do
-    before do
-      allow(backend).to receive(:deprecated_system?).and_return(deprecated)
-    end
-
-    context "if the system is set as deprecated" do
-      let(:deprecated) { true }
-
-      it "returns true" do
-        expect(subject.deprecated_system).to eq(true)
-      end
-    end
-
-    context "if the system is not set as deprecated" do
-      let(:deprecated) { false }
-
-      it "returns false" do
-        expect(subject.deprecated_system).to eq(false)
-      end
-    end
-  end
-
   describe "#recover_proposal" do
     describe "recover_proposal[:actions]" do
       before do
