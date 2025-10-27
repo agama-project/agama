@@ -30,7 +30,6 @@ pub enum Event {
     StateChanged,
     /// Progress changed.
     ProgressChanged {
-        scope: Scope,
         progress: Progress,
     },
     /// Progress finished.
