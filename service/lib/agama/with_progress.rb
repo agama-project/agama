@@ -22,6 +22,7 @@
 require "agama/progress"
 
 module Agama
+  # Mixin to use Agama::Progress to track the status of an object.
   module WithProgress
     attr_reader :progress
 

@@ -22,6 +22,7 @@
 require "json"
 
 module Agama
+  # Class to keep track of a process divided in a set of steps.
   class Progress
     class MissingStep < StandardError; end
 

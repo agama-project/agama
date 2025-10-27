@@ -78,7 +78,6 @@ module Agama
       # Runs the config phase
       #
       # @param reprobe [Boolean] Whether a reprobe should be done instead of a probe.
-      # @param data [Hash] Extra data provided to the D-Bus calls.
       def config_phase(reprobe: false)
         safe_run do
           busy_while { backend.config_phase(reprobe: reprobe) }
