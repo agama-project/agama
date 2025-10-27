@@ -27,3 +27,4 @@ pub use service::Service;
 pub mod message;
 
 pub use agama_l10n as l10n;
+pub use agama_software as software;

@@ -18,8 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::l10n;
 use crate::message;
+use crate::{l10n, software};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -44,6 +44,8 @@ pub enum Error {
     #[error(transparent)]
     L10n(#[from] l10n::service::Error),
     #[error(transparent)]
+    Software(#[from] software::service::Error),
+    #[error(transparent)]
     Issues(#[from] issue::service::Error),
     #[error(transparent)]
     Questions(#[from] question::service::Error),
@@ -51,6 +53,7 @@ pub enum Error {
 
 pub struct Service {
     l10n: Handler<l10n::service::Service>,
+    software: Handler<software::service::Service>,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
@@ -62,6 +65,7 @@ pub struct Service {
 impl Service {
     pub fn new(
         l10n: Handler<l10n::Service>,
+        software: Handler<software::Service>,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
@@ -69,6 +73,7 @@ impl Service {
     ) -> Self {
         Self {
             l10n,
+            software,
             issues,
             progress,
             questions,
@@ -130,10 +135,12 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
     /// It includes user and default values.
     async fn handle(&mut self, _message: message::GetExtendedConfig) -> Result<Config, Error> {
         let l10n = self.l10n.call(l10n::message::GetConfig).await?;
+        let software = self.software.call(software::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
         Ok(Config {
             l10n: Some(l10n),
             questions: Some(questions),
+            software: Some(software),
         })
     }
 }
@@ -167,6 +174,12 @@ impl MessageHandler<message::SetConfig> for Service {
         if let Some(questions) = &message.config.questions {
             self.questions
                 .call(question::message::SetConfig::new(questions.clone()))
+                .await?;
+        }
+
+        if let Some(software) = &message.config.software {
+            self.software
+                .call(software::message::SetConfig::new(software.clone()))
                 .await?;
         }
         self.config = message.config;

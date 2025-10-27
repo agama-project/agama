@@ -31,19 +31,23 @@ use crate::{
     proposal::Proposal,
     system_info::SystemInfo,
     zypp_server::{self, SoftwareAction},
-    Event,
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
+    api::{
+        event::{self, Event},
+        software::Config,
+        Scope,
+    },
     issue::{self},
 };
 use async_trait::async_trait;
-use tokio::sync::{mpsc::error::SendError, Mutex, RwLock};
+use tokio::sync::{broadcast, Mutex, RwLock};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("software service could not send the event")]
-    Event(#[from] SendError<Event>),
+    Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error("Failed to send message to libzypp thread: {0}")]
@@ -121,7 +125,9 @@ impl Service {
         system.licenses = licenses;
         system.products = products;
 
-        self.events.send(Event::SystemChanged)?;
+        self.events.send(Event::SystemChanged {
+            scope: Scope::Software,
+        })?;
 
         Ok(())
     }
@@ -189,7 +195,9 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
             new_product.and_then(|id| self.products.find(id).and_then(|p| Some(p.clone())));
 
         self.state.config = message.config.clone();
-        self.events.send(Event::ConfigChanged)?;
+        self.events.send(Event::ConfigChanged {
+            scope: Scope::Software,
+        })?;
         let model = self.model.clone();
         tokio::task::spawn(async move {
             let mut my_model = model.lock().await;

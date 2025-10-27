@@ -45,6 +45,11 @@ pub enum Event {
     SystemChanged {
         scope: Scope,
     },
+    /// The configuration changed.
+    // TODO: do we need this event?
+    ConfigChanged {
+        scope: Scope,
+    },
     /// Proposal changed.
     ProposalChanged {
         scope: Scope,

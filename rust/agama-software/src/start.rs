@@ -19,13 +19,13 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    event,
     model::Model,
     service::{self, Service},
     zypp_server::{ZyppServer, ZyppServerError},
 };
 use agama_utils::{
     actor::{self, Handler},
+    api::event,
     issue,
 };
 
