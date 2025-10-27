@@ -5,6 +5,17 @@ Mon Oct 27 15:51:48 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
   translation (gh#agama-project/agama#2748).
 
 -------------------------------------------------------------------
+Fri Oct 17 12:30:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
+
+- Preserve installer options values after successful submission
+  (bsc#1249636).
+  
+-------------------------------------------------------------------
+Tue Oct 14 14:01:15 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed the check about which DASDs can be formatted (bsc#1243795).
+
+-------------------------------------------------------------------
 Tue Sep 16 09:20:40 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Avoid missing translations due to missuse of top-level constants
@@ -31,7 +42,7 @@ Wed Aug 20 10:27:07 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Refactor DASD page to make it more usable and improve its
   performance (related to bsc#1247444, gh#agama-project/agama#2648).
-  
+
 -------------------------------------------------------------------
 Wed Aug 20 10:20:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
 
@@ -61,7 +72,7 @@ Thu Jul 31 09:13:09 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Block UI if storage is configured by any other client
   (gh#agama-project/agama#2640).
-  
+
 -------------------------------------------------------------------
 Fri Jul 25 19:42:18 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
@@ -97,7 +108,7 @@ Thu Jul 17 19:26:17 UTC 2025 - David Diaz <dgonzalez@suse.com>
 - Replaced all usage of generatePath with generateEncodedPath to
   ensure proper URL encoding of route parameters and prevent issues
   with special characters (bsc#1246551).
-  
+
 -------------------------------------------------------------------
 Thu Jul 17 15:32:42 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
