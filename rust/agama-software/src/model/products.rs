@@ -179,6 +179,7 @@ impl SoftwareSpec {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
+#[serde(untagged)]
 pub enum UserPattern {
     Plain(String),
     Preselected(PreselectedPattern),
