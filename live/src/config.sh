@@ -105,6 +105,18 @@ touch /etc/udev/rules.d/64-md-raid-assembly.rules
 # the "eurlatgr" is the default font for the English locale
 echo -e "\nFONT=eurlatgr.psfu" >> /etc/vconsole.conf
 
+# configure self-update in SLES
+if [[ "$kiwi_profiles" == *SLE* ]]; then
+  echo "Configuring the installer self-update..."
+  # read the self-update configuration variables
+  . /usr/lib/live-self-update/conf.sh
+  mkdir -p  "$CONFIG_DIR"
+  # the default registration server (SCC) if RMT is not set
+  echo "https://scc.suse.com" > "$CONFIG_DEFAULT_REG_SERVER_FILE"
+  # fallback URL when contacting SCC/RMT fails or no self-update is returned
+  echo 'https://installer-updates.suse.com/SUSE/Products/SLE-INSTALLER/$os_release_version_id/$arch/product/' > "$CONFIG_FALLBACK_FILE"
+fi
+
 ### setup dracut for live system
 arch=$(uname -m)
 # keep in sync with ISO Volume ID set in the fix_bootconfig script

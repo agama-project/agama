@@ -1,17 +1,42 @@
 #! /bin/bash
 
 shopt -s nullglob
-set -e
+# Later we could disable "-x" or enable it on request, let's be more verbose in
+# the initial implementation. Since we have enabled using the plymouth splash
+# screen the verbose details will not be visible to users by default.
+set -ex
 
 [ -e /dracut-state.sh ] && . /dracut-state.sh
 
-REPO_FILE="/run/live-self-update/repositories"
+. "$(dirname "$0")"/../lib/live-self-update/conf.sh
 
-# do the cleanup even in case of failure
+RESPONSE_FILE="$RUN_DIR/server_response"
+REG_REPO_FILE="$RUN_DIR/reg_repos"
+OSR="/etc/os-release"
+ARCH=$(uname -m)
+
+# do the cleanup at the end, trap ensures it runs even if something fails
 trap cleanup_chroot EXIT
 
+# helper function to log important steps (highlighted in the journalctl output)
+# use "set +x" to avoid logging the message again (it is already logged in the
+# original caller place so it would be actually logged three times...)
+milestone() {
+  ({ set +x; } 2>/dev/null; echo "<5>$1")
+}
+
+# log error
+error() {
+  ({ set +x; } 2>/dev/null; echo "<3>$1")
+}
+
+# normal message
+info() {
+  ({ set +x; } 2>/dev/null; echo "<6>$1")
+}
+
 # helper for running a command in the live root system, works both when running
-# in initramfs ($NEWROOT is set) and in mounted Live root ($NEWROOT unset)
+# in initramfs ($NEWROOT is set) and in already mounted root ($NEWROOT unset)
 run_command() {
   if [ -z "$NEWROOT" ]; then
     "$@"
@@ -23,56 +48,140 @@ run_command() {
 # Prepare the system root to be used by scripts before switching to it.
 prepare_chroot() {
   if [ -n "$NEWROOT" ]; then
-    echo "<5>Preparing for the self update..."
+    milestone "Preparing for the self update..."
 
-    # make local devices available to "agama download"
+    # make system directories active also in the chroot directory
     mount -o bind /run "$NEWROOT"/run
     mount -o bind /sys "$NEWROOT"/sys
     mount -o bind /proc "$NEWROOT"/proc
     mount -o bind /dev "$NEWROOT"/dev
-    cp /run/NetworkManager/resolv.conf "$NEWROOT"/etc/resolv.conf
+    [ -f /run/NetworkManager/resolv.conf ] && cp /run/NetworkManager/resolv.conf "$NEWROOT"/etc/resolv.conf
   fi
 }
 
 # Revert the changes done by prepare_chroot() and restore the system to the
-# original state
+# original state, called from bash "trap" handler
 cleanup_chroot() {
   if [ "$?" != "0" ]; then
-    echo "<3>Error: Self update failed!"
+    error "Error: Self update failed!"
   else
-    echo "<5>Self update successfully finished"
+    milestone "Self update successfully finished"
   fi
 
   if [ -n "$NEWROOT" ]; then
-    rm "$NEWROOT"/etc/resolv.conf
-    umount "$NEWROOT"/run
-    umount "$NEWROOT"/sys
-    umount "$NEWROOT"/proc
-    umount "$NEWROOT"/dev
+    rm -f "$NEWROOT"/etc/resolv.conf
+    # do not fail if not mounted
+    findmnt "$NEWROOT"/run > /dev/null && umount "$NEWROOT"/run
+    findmnt "$NEWROOT"/sys > /dev/null && umount "$NEWROOT"/sys
+    findmnt "$NEWROOT"/proc > /dev/null && umount "$NEWROOT"/proc
+    findmnt "$NEWROOT"/dev > /dev/null && umount "$NEWROOT"/dev
   fi
+}
+
+# read the data from /etc/os-release file (source it)
+read_os_release() {
+  # get the product data
+  if [ -f "$OSR" ]; then
+    . "$OSR"
+  else
+    error "File $OSR is missing!"
+    exit 1
+  fi
+}
+
+# ask the registration server (SCC or RMT) for the self-update URL
+query_reg_server() {
+  local server
+  # custom server (RMT)
+  if [ -f "$SERVER_FILE" ]; then
+    server=$(cat "$SERVER_FILE")
+  # default server (SCC)
+  elif  [ -f "$CONFIG_DEFAULT_REG_SERVER_FILE" ]; then
+    server=$(cat "$CONFIG_DEFAULT_REG_SERVER_FILE")
+  fi
+
+  if [ -n "$server" ]; then
+    read_os_release
+
+    local query
+    query="$server/connect/repositories/installer?identifier=$NAME&version=$VERSION_ID&arch=$ARCH"
+    info "Running query $query...."
+
+    curl --silent --globoff --location --retry 3 --connect-timeout 20 --max-time 10 --fail --show-error --output "$RESPONSE_FILE" -- "$query"
+
+    info "Found self-update repository: $(jq -r ".[] | select(.installer_updates==true) | .description" "$RESPONSE_FILE") "
+    jq -r ".[] | select(.installer_updates==true) | .url" "$RESPONSE_FILE" > "$REG_REPO_FILE"
+  else
+    milestone "Registration server not defined"
+  fi
+}
+
+# add the self-update repositories into the system
+add_update_repos() {
+  milestone "Adding self update repositories..."
+  # add the self-update repositories
+  while read -r update_url; do
+    if [ -n "$update_url" ]; then
+      repo="self-update-$index"
+      # try removing the repo, it might be a leftover from the previous run
+      run_command zypper removerepo "$repo" || true
+      run_command zypper addrepo -f "$update_url" "$repo"
+      self_update_repos+=("$repo")
+      ((++index))
+    fi
+  done < "$1"
+}
+
+# read the configured fallback repository, the URL might contain several placeholders
+# so it works is multiple architectures and does not contain hardcoded version
+# (the fallback URL should work with SLES-16.0, SLES-16.1, SLES-16.2...)
+read_fallback_repos() {
+  # Substituting $arch pattern with the architecture of the current system.
+  # Substituting these variables with the /etc/os-release content:
+  #   $os_release_name       => NAME
+  #   $os_release_id         => ID
+  #   $os_release_version    => VERSION
+  #   $os_release_version_id => VERSION_ID
+  # IMPORTANT NOTE: the "VERSION_ID" replacement must happen *before*
+  # the "VERSION" replacement because it partially matches that string!
+  sed -e "s/\$os_release_name/$NAME/g" -e "s/\$os_release_id/$ID/g" \
+    -e "s/\$os_release_version_id/$VERSION_ID/g" \
+    -e "s/\$os_release_version/$VERSION/g" \
+    -e "s/\$arch/$ARCH/g" "$CONFIG_FALLBACK_FILE" > "$FALLBACK_REPOS_FILE"
 }
 
 # Applies all the updates
 #
 # Reads the URL of the updates from $AGAMA_DUD_INFO and process each one.
 install_updates() {
-  prepare_chroot
-
   index=0
   self_update_repos=()
 
-  echo "<5>Adding self update repositories..."
-  # add the self-update repositories  
-  while read -r update_url; do
-    if [ -n "$update_url" ]; then
-      repo="self-update-$index"
-      run_command zypper addrepo -f "$update_url" "$repo"
-      self_update_repos+=("$repo")
-      ((++index))
-    fi
-  done <"$REPO_FILE"
+  if [ -f "$REPO_FILE" ]; then
+    prepare_chroot
+    add_update_repos "$REPO_FILE"
+  else
+    # try SCC/RMT
+    query_reg_server
 
-  echo "<5>Loading repositories..."
+    # repo from the registration server
+    if [ -s "$REG_REPO_FILE" ]; then
+      prepare_chroot
+      add_update_repos "$REG_REPO_FILE"
+    # use a fallback URL
+    elif [ -s "$CONFIG_FALLBACK_FILE" ]; then
+      milestone "Using fallback repository"
+      read_fallback_repos
+      prepare_chroot
+      add_update_repos "$FALLBACK_REPOS_FILE"
+    # no self-update repo found, exit (in the openSUSE installer)
+    else
+      milestone "No self-update repository configured, skipping self-update"
+      exit 0
+    fi
+  fi
+
+  milestone "Loading repositories..."
   run_command zypper refresh "${self_update_repos[@]}"
 
   # build the list of repository options passed to zypper
@@ -81,14 +190,13 @@ install_updates() {
     repo_options+=("--repo" "$repo")
   done
 
-  echo "<5>Updating packages..."
-  # update the system only using the predefined "agama-devel" repository,
-  # in real implementation we would need to add the self-update repository and 
-  # we should use the "--non-interactive" option to run without asking the user
+  milestone "Updating packages..."
+  # update the system only using the predefined self-update repositories,
+  # allow downgrading and changing vendor (can be useful for testing)
   run_command zypper --non-interactive update --allow-downgrade --allow-vendor-change --details --no-recommends "${repo_options[@]}"
 
-  echo "<5>Cleaning the system..."
-  # delete the repository cache, not needed anymore, saves space in RAM disk
+  milestone "Cleaning the system..."
+  # delete the repository caches, not needed anymore, saves space in RAM disk
   run_command zypper clean --all
 
   # disable the self update repositories (keep them for debugging purposes)
@@ -97,6 +205,4 @@ install_updates() {
   done
 }
 
-if [ -f "$REPO_FILE" ]; then
-  install_updates
-fi
+install_updates
