@@ -169,6 +169,13 @@ module Agama
         @security ||= Security.new(logger, product_config)
       end
 
+      # Issues from the system
+      #
+      # @return [Array<Issue>]
+      def system_issues
+        probing_issues + [candidate_devices_issue].compact
+      end
+
     private
 
       PROPOSAL_ID = "storage_proposal"
@@ -193,18 +200,7 @@ module Agama
 
       # Recalculates the list of issues
       def update_issues
-        self.issues = system_issues + proposal.issues
-      end
-
-      # Issues from the system
-      #
-      # @return [Array<Issue>]
-      def system_issues
-        issues = probing_issues + [
-          candidate_devices_issue
-        ]
-
-        issues.compact
+        self.issues = proposal.issues
       end
 
       # Issues from the probing phase

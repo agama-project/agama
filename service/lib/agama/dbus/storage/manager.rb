@@ -79,7 +79,7 @@ module Agama
           dbus_method(:SetConfigModel, "in model:s") { |m| configure_with_model(m)}
           dbus_method(:SolveConfigModel, "in model:s, out result:s") { |m| solve_config_model(m) }
           dbus_method(:GetProposal, "out proposal:s") { recover_proposal }
-          dbus_method(:GetIssues, "out issues:s") {}
+          dbus_method(:GetIssues, "out issues:s") { recover_issues }
           dbus_signal(:SystemChanged)
           dbus_signal(:ProposalChanged)
           dbus_signal(:IssuesChanged)
@@ -172,6 +172,7 @@ module Agama
             availableMdRaids:   available_md_raids,
             candidateDrives:    candidate_drives,
             candidateMdRaids:   candidate_md_raids,
+            issues:             system_issues,
             productMountPoints: product_mount_points,
             encryptionMethods:  encryption_methods,
             volumeTemplates:    volume_templates
@@ -252,11 +253,12 @@ module Agama
           JSON.pretty_generate(json)
         end
 
-        # List of issues, see {DBus::Interfaces::Issues}
+        # Gets and serializes the list of issues.
         #
-        # @return [Array<Agama::Issue>]
-        def issues
-          backend.issues
+        # @return [String]
+        def recover_issues
+          json = backend.issues.map { |i| json_issue(i) }
+          JSON.pretty_generate(json)
         end
 
         dbus_interface "org.opensuse.Agama.Storage1.Bootloader" do
@@ -408,6 +410,20 @@ module Agama
           Agama::Storage::DevicegraphConversions::ToJSON.new(devicegraph).convert
         end
 
+        # JSON representation of the given Agama issue
+        #
+        # @param issue [Array<Agama::Issue>]
+        # @return [Hash]
+        def json_issue(issue)
+          {
+            description: issue.description,
+            class:       issue.kind&.to_s,
+            details:     issue.details&.to_s,
+            source:      issue.source&.to_s,
+            severity:    issue.severity&.to_s
+          }.compact
+        end
+
         # List of sorted actions.
         #
         # @return [Hash<Symbol, Object>]
@@ -450,6 +466,15 @@ module Agama
         # @return [Array<Integer>]
         def candidate_md_raids
           proposal.storage_system.candidate_md_raids.map(&:sid)
+        end
+
+        # Problems found during system probing
+        #
+        # @see #recover_system
+        #
+        # @return [Hash]
+        def system_issues
+          backend.system_issues.map { |i| json_issue(i) }
         end
 
         # Meaningful mount points for the current product.

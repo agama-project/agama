@@ -205,6 +205,8 @@ describe Agama::DBus::Storage::Manager do
       allow(proposal.storage_system).to receive(:candidate_drives).and_return(candidate_drives)
       allow(proposal.storage_system).to receive(:available_md_raids).and_return(available_raids)
       allow(proposal.storage_system).to receive(:candidate_md_raids).and_return(candidate_raids)
+      allow(proposal.storage_system).to receive(:candidate_devices)
+        .and_return(candidate_drives + candidate_raids)
     end
 
     let(:available_drives) { [] }
@@ -298,6 +300,30 @@ describe Agama::DBus::Storage::Manager do
         it "retuns the path of each MD RAID" do
           result = parse(subject.recover_system)[:candidateMdRaids]
           expect(result).to contain_exactly(100, 101)
+        end
+      end
+    end
+
+    describe "recover_system[:issues]" do
+      context "if there is no candidate drives" do
+        let(:candidate_drives) { [] }
+
+        it "contains a issue about the absence of disks" do
+          result = parse(subject.recover_system)[:issues]
+          expect(result).to contain_exactly(
+            a_hash_including(description: /no suitable device for installation/i)
+          )
+        end
+      end
+
+      context "if there are candidate drives" do
+        let(:candidate_drives) { [drive] }
+
+        let(:drive) { instance_double(Y2Storage::Disk, name: "/dev/vda", sid: 95) }
+
+        it "retuns an empty array" do
+          result = parse(subject.recover_system)[:issues]
+          expect(result).to eq []
         end
       end
     end
@@ -709,6 +735,70 @@ describe Agama::DBus::Storage::Manager do
       it "returns 'null'" do
         result = subject.solve_model(model.to_json)
         expect(result).to eq("null")
+      end
+    end
+  end
+
+  describe "#recover_issues" do
+    context "if no proposal has been calculated" do
+      it "returns an empty array" do
+        expect(subject.recover_issues).to eq "[]"
+      end
+    end
+
+    context "if an agama proposal has been succesfully calculated" do
+      before do
+        backend.configure(config_json)
+      end
+
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              {
+                partitions: [
+                  { size: "10 GiB", filesystem: { path: "/" } }
+                ]
+              }
+            ]
+          }
+        }
+      end
+
+      it "returns an empty array" do
+        expect(subject.recover_issues).to eq "[]"
+      end
+    end
+
+    context "if an agama proposal failed to be calculated" do
+      before do
+        backend.configure(config_json)
+      end
+
+      let(:config_json) do
+        {
+          storage: {
+            drives: [
+              {
+                partitions: [
+                  { size: "60 TiB", filesystem: { path: "/home" } }
+                ]
+              }
+            ]
+          }
+        }
+      end
+
+      it "returns an empty array" do
+        result = parse(subject.recover_issues)
+        expect(result).to include(
+          a_hash_including(
+            description: /cannot calculate a valid storage setup/i, severity: "error"
+          ),
+          a_hash_including(
+            description: /boot device cannot be automatically/i, severity: "error"
+          )
+        )
       end
     end
   end
