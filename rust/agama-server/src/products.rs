@@ -26,7 +26,10 @@
 
 use serde::{Deserialize, Deserializer};
 use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
-use std::path::{Path, PathBuf};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 
 #[derive(thiserror::Error, Debug)]
 pub enum ProductsRegistryError {
@@ -110,6 +113,8 @@ pub struct ProductSpec {
     pub description: String,
     pub icon: String,
     #[serde(default)]
+    pub translations: TranslationsSpec,
+    #[serde(default)]
     pub registration: bool,
     pub version: Option<String>,
     pub software: SoftwareSpec,
@@ -128,6 +133,11 @@ where
     D: Deserializer<'de>,
 {
     Deserialize::deserialize(d).map(|x: Option<_>| x.unwrap_or_default())
+}
+
+#[derive(Clone, Debug, Default, Deserialize)]
+pub struct TranslationsSpec {
+    description: HashMap<String, String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -198,6 +208,11 @@ mod test {
         assert_eq!(tw.icon, "Tumbleweed.svg");
         assert_eq!(tw.registration, false);
         assert_eq!(tw.version, None);
+
+        let translations = &tw.translations;
+        let description = &translations.description;
+        assert!(description["cs"].contains("verze"));
+
         let software = &tw.software;
         assert_eq!(software.installation_repositories.len(), 12);
         assert_eq!(software.installation_labels.len(), 4);
