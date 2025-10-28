@@ -20,98 +20,72 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { _ } from "~/i18n";
-import {
-  Dropdown,
-  MenuToggleElement,
-  MenuToggle,
-  DropdownList,
-  DropdownItem,
-  Divider,
-} from "@patternfly/react-core";
-import { useResetConfigMutation } from "~/queries/storage";
 import { useReactivateSystem } from "~/hooks/storage/system";
 import { STORAGE as PATHS } from "~/routes/paths";
 import { useZFCPSupported } from "~/queries/storage/zfcp";
 import { useDASDSupported } from "~/queries/storage/dasd";
+import { Icon } from "~/components/layout";
+import MenuButton from "../core/MenuButton";
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
-export default function ConfigEditorMenu() {
+export default function ConnectedDevicesMenu() {
   const navigate = useNavigate();
   const isZFCPSupported = useZFCPSupported();
   const isDASDSupported = useDASDSupported();
-  const { mutate: reset } = useResetConfigMutation();
   const reactivate = useReactivateSystem();
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = () => setIsOpen(!isOpen);
 
   return (
-    <Dropdown
-      isOpen={isOpen}
-      onOpenChange={toggle}
-      onSelect={toggle}
-      onActionClick={toggle}
-      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-        <MenuToggle
-          ref={toggleRef}
-          onClick={toggle}
-          aria-label={_("Other options toggle")}
-          isExpanded={isOpen}
-        >
-          {_("Other options")}
-        </MenuToggle>
-      )}
-    >
-      <DropdownList>
-        <DropdownItem
-          key="boot-link"
-          onClick={() => navigate(PATHS.editBootDevice)}
-          description={_("Select the disk to configure partitions for booting")}
-        >
-          {_("Change boot options")}
-        </DropdownItem>
-        <DropdownItem
-          key="reset-link"
-          onClick={() => reset()}
-          description={_("Start from scratch with the default configuration")}
-        >
-          {_("Reset to defaults")}
-        </DropdownItem>
-        <Divider />
-        <DropdownItem
+    <MenuButton
+      menuProps={{
+        popperProps: {
+          position: "end",
+        },
+      }}
+      toggleProps={{
+        variant: "plain",
+        className: spacingStyles.p_0,
+        // TRANSLATORS: this is an ARIA (accesibility) description of an UI element
+        "aria-label": _("More storage options"),
+      }}
+      items={[
+        <MenuButton.Item
           key="iscsi-link"
           onClick={() => navigate(PATHS.iscsi)}
           description={_("Discover and connect to iSCSI targets")}
         >
           {_("Configure iSCSI")}
-        </DropdownItem>
-        {isZFCPSupported && (
-          <DropdownItem
+        </MenuButton.Item>,
+        isZFCPSupported && (
+          <MenuButton.Item
             key="zfcp-link"
             onClick={() => navigate(PATHS.zfcp.root)}
             description={_("Activate zFCP disks")}
           >
             {_("Configure zFCP")}
-          </DropdownItem>
-        )}
-        {isDASDSupported && (
-          <DropdownItem
+          </MenuButton.Item>
+        ),
+        isDASDSupported && (
+          <MenuButton.Item
             key="dasd-link"
             onClick={() => navigate(PATHS.dasd)}
             description={_("Activate and format DASD devices")}
           >
             {_("Configure DASD")}
-          </DropdownItem>
-        )}
-        <DropdownItem
+          </MenuButton.Item>
+        ),
+        <MenuButton.Item
           key="reprobe-link"
           onClick={reactivate}
           description={_("Update available disks and activate crypt devices")}
         >
           {_("Rescan devices")}
-        </DropdownItem>
-      </DropdownList>
-    </Dropdown>
+        </MenuButton.Item>,
+      ]}
+    >
+      <Icon name="more_horiz" className="agm-three-dots-icon" />
+    </MenuButton>
   );
 }

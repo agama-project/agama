@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Oct 28 16:34:22 UTC 2025 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Rearrange the information in the storage page
+  (gh#agama-project/agama#2767).
+
+-------------------------------------------------------------------
 Fri Oct 17 12:30:56 UTC 2025 - David Diaz <dgonzalez@suse.com>
 
 - Preserve installer options values after successful submission
