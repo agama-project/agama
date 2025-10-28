@@ -21,7 +21,7 @@
 pub mod service;
 pub use service::Service;
 
-mod dbus;
+mod client;
 pub mod message;
 mod monitor;
 
