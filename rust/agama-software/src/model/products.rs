@@ -173,7 +173,7 @@ impl SoftwareSpec {
         let arch = std::env::consts::ARCH.to_string();
         self.installation_repositories
             .iter()
-            .filter(|r| r.archs.contains(&arch))
+            .filter(|r| r.archs.is_empty() || r.archs.contains(&arch))
             .collect()
     }
 }
