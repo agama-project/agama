@@ -20,7 +20,8 @@
 
 //! Implements a client to access Agama's storage service.
 
-use serde_json::value::RawValue;
+use agama_utils::api::storage::Config;
+use serde_json::{value::RawValue, Value};
 use zbus::{names::BusName, zvariant::OwnedObjectPath, Connection, Message};
 
 const SERVICE_NAME: &str = "org.opensuse.Agama.Storage1";
@@ -70,44 +71,41 @@ impl Client {
         Ok(())
     }
 
-    pub async fn get_system(&self) -> Result<Box<RawValue>, Error> {
+    pub async fn get_system(&self) -> Result<Option<Box<RawValue>>, Error> {
         let message = self.call("GetSystem", &()).await?;
         self.json_from(message)
     }
 
-    pub async fn get_config(&self) -> Result<Box<RawValue>, Error> {
+    pub async fn get_config(&self) -> Result<Option<Config>, Error> {
         let message = self.call("GetConfig", &()).await?;
-        self.json_from(message)
+        let value: String = message.body().deserialize()?;
+        let config = serde_json::from_str(value.as_str())?;
+        Ok(config)
     }
 
-    pub async fn get_config_model(&self) -> Result<Box<RawValue>, Error> {
+    pub async fn get_config_model(&self) -> Result<Option<Box<RawValue>>, Error> {
         let message = self.call("GetConfigModel", &()).await?;
         self.json_from(message)
     }
 
-    pub async fn get_proposal(&self) -> Result<Box<RawValue>, Error> {
+    pub async fn get_proposal(&self) -> Result<Option<Box<RawValue>>, Error> {
         let message = self.call("GetProposal", &()).await?;
         self.json_from(message)
     }
 
-    pub async fn get_issues(&self) -> Result<Box<RawValue>, Error> {
+    pub async fn get_issues(&self) -> Result<Option<Box<RawValue>>, Error> {
         let message = self.call("GetIssues", &()).await?;
         self.json_from(message)
     }
 
+    //TODO: send a product config instead of an id.
+    pub async fn set_product(&self, id: String) -> Result<(), Error> {
+        self.call("SetProduct", &(id)).await?;
+        Ok(())
+    }
+
     pub async fn set_config(&self, config: Box<RawValue>) -> Result<(), Error> {
         self.call("SetConfig", &(config.to_string())).await?;
-        Ok(())
-    }
-
-    //TODO: send a product config instead of an id.
-    pub async fn set_product(&self, product_id: &str) -> Result<(), Error> {
-        self.call("SetProduct", &(product_id)).await?;
-        Ok(())
-    }
-
-    pub async fn set_locale(&self, locale: &str) -> Result<(), Error> {
-        self.call("SetLocale", &(locale)).await?;
         Ok(())
     }
 
@@ -116,9 +114,17 @@ impl Client {
         Ok(())
     }
 
-    pub async fn solve_config_model(&self, model: Box<RawValue>) -> Result<Box<RawValue>, Error> {
+    pub async fn solve_config_model(
+        &self,
+        model: Box<RawValue>,
+    ) -> Result<Option<Box<RawValue>>, Error> {
         let message = self.call("SolveConfigModel", &(model.to_string())).await?;
         self.json_from(message)
+    }
+
+    pub async fn set_locale(&self, locale: String) -> Result<(), Error> {
+        self.call("SetLocale", &(locale)).await?;
+        Ok(())
     }
 
     async fn call<T: serde::ser::Serialize + zbus::zvariant::DynamicType>(
@@ -134,8 +140,20 @@ impl Client {
             .map_err(|e| e.into())
     }
 
-    fn json_from(&self, message: Message) -> Result<Box<RawValue>, Error> {
+    fn json_from(&self, message: Message) -> Result<Option<Box<RawValue>>, Error> {
         let value: String = message.body().deserialize()?;
-        RawValue::from_string(value).map_err(|e| e.into())
+        if self.is_null(value.as_str()) {
+            return Ok(None);
+        }
+        let json = RawValue::from_string(value)?;
+        Ok(Some(json))
+    }
+
+    fn is_null(&self, value: &str) -> bool {
+        match serde_json::from_str::<Value>(value) {
+            Ok(Value::Null) => true,
+            Ok(_) => false,
+            Err(_) => false,
+        }
     }
 }
