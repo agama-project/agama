@@ -42,6 +42,7 @@ pub mod product;
 pub mod products;
 pub mod registration;
 pub mod software_selection;
+pub mod state;
 
 /// Abstract the software-related configuration from the underlying system.
 ///

@@ -1,0 +1,325 @@
+// Copyright (c) [2025] SUSE LLC
+//
+// All Rights Reserved.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by the Free
+// Software Foundation; either version 2 of the License, or (at your option)
+// any later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+// more details.
+//
+// You should have received a copy of the GNU General Public License along
+// with this program; if not, contact SUSE LLC.
+//
+// To contact SUSE LLC about this file by physical or electronic mail, you may
+// find current contact information at www.suse.com.
+
+#![allow(dead_code)]
+
+use agama_utils::api::software::{Config, PatternsConfig};
+
+use crate::model::products::{ProductSpec, UserPattern};
+
+/// Represents the wanted software configuration.
+#[derive(Debug)]
+pub struct SoftwareState {
+    pub product: String,
+    pub repositories: Vec<Repository>,
+    // TODO: consider implementing a list to make easier working with them.
+    pub patterns: Vec<Resolvable>,
+    pub packages: Vec<Resolvable>,
+    pub options: SoftwareOptions,
+}
+
+pub struct SoftwareStateBuilder<'a> {
+    product: &'a ProductSpec,
+    config: Option<&'a Config>,
+}
+
+impl<'a> SoftwareStateBuilder<'a> {
+    pub fn for_product(product: &'a ProductSpec) -> Self {
+        Self {
+            product,
+            config: None,
+        }
+    }
+
+    pub fn with_config(mut self, config: &'a Config) -> Self {
+        self.config = Some(config);
+        self
+    }
+
+    pub fn build(self) -> SoftwareState {
+        let mut state = self.from_product_spec();
+
+        if let Some(config) = self.config {
+            self.add_user_config(&mut state, &config);
+        }
+
+        state
+    }
+
+    fn add_user_config(&self, state: &mut SoftwareState, config: &Config) {
+        let Some(software) = &config.software else {
+            return;
+        };
+
+        if let Some(repositories) = &software.extra_repositories {
+            let extra = repositories.iter().map(|r|
+                // TODO: implement From<RepositoryParams>
+                Repository {
+                    name: r.name.as_ref().unwrap_or(&r.alias).clone(),
+                    alias: r.alias.clone(),
+                    url: r.url.clone(),
+                    enabled: r.enabled.unwrap_or(true),
+                });
+            state.repositories.extend(extra);
+        }
+
+        if let Some(patterns) = &software.patterns {
+            match patterns {
+                PatternsConfig::PatternsList(list) => {
+                    state.patterns.retain(|p| p.optional == false);
+                    state
+                        .patterns
+                        .extend(list.iter().map(|n| Resolvable::new(n, false)));
+                }
+                PatternsConfig::PatternsMap(map) => {
+                    if let Some(add) = &map.add {
+                        state
+                            .patterns
+                            .extend(add.iter().map(|n| Resolvable::new(n, false)));
+                    }
+
+                    if let Some(remove) = &map.remove {
+                        state.patterns.retain(|p| !remove.contains(&p.name))
+                    }
+                }
+            }
+        }
+    }
+
+    fn from_product_spec(&self) -> SoftwareState {
+        let software = &self.product.software;
+        let repositories = software
+            .repositories()
+            .into_iter()
+            .enumerate()
+            .map(|(i, r)| {
+                let alias = format!("agama-{}", i);
+                Repository {
+                    name: alias.clone(),
+                    alias,
+                    url: r.url.clone(),
+                    enabled: true,
+                }
+            })
+            .collect();
+
+        let mut patterns: Vec<Resolvable> = software
+            .mandatory_patterns
+            .iter()
+            .map(|p| Resolvable::new(p, false))
+            .collect();
+
+        patterns.extend(
+            software
+                .optional_patterns
+                .iter()
+                .map(|p| Resolvable::new(p, true)),
+        );
+
+        patterns.extend(software.user_patterns.iter().filter_map(|p| match p {
+            UserPattern::Plain(_) => None,
+            UserPattern::Preselected(pattern) => {
+                if pattern.selected {
+                    Some(Resolvable::new(&pattern.name, true))
+                } else {
+                    None
+                }
+            }
+        }));
+
+        SoftwareState {
+            product: software.base_product.clone(),
+            repositories,
+            patterns,
+            packages: vec![],
+            options: Default::default(),
+        }
+    }
+}
+
+impl SoftwareState {
+    // TODO: Add SoftwareSelection as additional argument.
+    pub fn build_from(product: &ProductSpec, config: &Config) -> Self {
+        SoftwareStateBuilder::for_product(product)
+            .with_config(config)
+            .build()
+    }
+}
+
+#[derive(Debug)]
+pub struct Repository {
+    pub alias: String,
+    pub name: String,
+    pub url: String,
+    pub enabled: bool,
+}
+
+#[derive(Debug, PartialEq)]
+pub struct Resolvable {
+    pub name: String,
+    pub optional: bool,
+}
+
+impl Resolvable {
+    pub fn new(name: &str, optional: bool) -> Self {
+        Self {
+            name: name.to_string(),
+            optional,
+        }
+    }
+}
+
+#[derive(Default, Debug)]
+pub struct SoftwareOptions {
+    only_required: bool,
+}
+
+#[cfg(test)]
+mod tests {
+    use agama_utils::api::software::{
+        PatternsConfig, PatternsMap, RepositoryParams, SoftwareConfig,
+    };
+
+    use super::*;
+
+    fn build_user_config(patterns: Option<PatternsConfig>) -> Config {
+        let repo = RepositoryParams {
+            alias: "user-repo-0".to_string(),
+            url: "http://example.net/repo".to_string(),
+            name: None,
+            product_dir: None,
+            enabled: Some(true),
+            priority: None,
+            allow_unsigned: None,
+            gpg_fingerprints: None,
+        };
+
+        let software = SoftwareConfig {
+            patterns,
+            extra_repositories: Some(vec![repo]),
+            ..Default::default()
+        };
+
+        Config {
+            software: Some(software),
+            ..Default::default()
+        }
+    }
+
+    fn build_product_spec() -> ProductSpec {
+        let product = std::fs::read_to_string("test/share/products.d/tumbleweed.yaml").unwrap();
+        serde_yaml::from_str(&product).unwrap()
+    }
+
+    #[test]
+    fn test_build_state() {
+        let product = build_product_spec();
+        let config = Config::default();
+        let state = SoftwareState::build_from(&product, &config);
+
+        assert_eq!(state.repositories.len(), 3);
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
+        let expected_aliases = vec![
+            "agama-0".to_string(),
+            "agama-1".to_string(),
+            "agama-2".to_string(),
+        ];
+        assert_eq!(expected_aliases, aliases);
+
+        assert_eq!(state.product, "openSUSE".to_string());
+
+        assert_eq!(
+            state.patterns,
+            vec![
+                Resolvable::new("enhanced_base", false),
+                Resolvable::new("selinux", true),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_add_user_repositories() {
+        let product = build_product_spec();
+        let config = build_user_config(None);
+        let state = SoftwareState::build_from(&product, &config);
+
+        assert_eq!(state.repositories.len(), 4);
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
+        let expected_aliases = vec![
+            "agama-0".to_string(),
+            "agama-1".to_string(),
+            "agama-2".to_string(),
+            "user-repo-0".to_string(),
+        ];
+        assert_eq!(expected_aliases, aliases);
+    }
+
+    #[test]
+    fn test_add_patterns() {
+        let product = build_product_spec();
+        let patterns = PatternsConfig::PatternsMap(PatternsMap {
+            add: Some(vec!["gnome".to_string()]),
+            remove: None,
+        });
+        let config = build_user_config(Some(patterns));
+
+        let state = SoftwareState::build_from(&product, &config);
+        assert_eq!(
+            state.patterns,
+            vec![
+                Resolvable::new("enhanced_base", false),
+                Resolvable::new("selinux", true),
+                Resolvable::new("gnome", false)
+            ]
+        );
+    }
+
+    #[test]
+    fn test_remove_patterns() {
+        let product = build_product_spec();
+        let patterns = PatternsConfig::PatternsMap(PatternsMap {
+            add: None,
+            remove: Some(vec!["selinux".to_string()]),
+        });
+        let config = build_user_config(Some(patterns));
+
+        let state = SoftwareState::build_from(&product, &config);
+        assert_eq!(
+            state.patterns,
+            vec![Resolvable::new("enhanced_base", false),]
+        );
+    }
+
+    #[test]
+    fn test_replace_patterns_list() {
+        let product = build_product_spec();
+        let patterns = PatternsConfig::PatternsList(vec!["gnome".to_string()]);
+        let config = build_user_config(Some(patterns));
+
+        let state = SoftwareState::build_from(&product, &config);
+        assert_eq!(
+            state.patterns,
+            vec![
+                Resolvable::new("enhanced_base", false),
+                Resolvable::new("gnome", false)
+            ]
+        );
+    }
+}
