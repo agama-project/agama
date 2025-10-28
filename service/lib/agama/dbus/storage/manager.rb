@@ -42,7 +42,7 @@ module Agama
       class Manager < BaseObject # rubocop:disable Metrics/ClassLength
         extend Yast::I18n
         include Yast::I18n
-        include WithProgress
+        include Agama::WithProgress
         include ::DBus::ObjectManager
         include DBus::Interfaces::Issues
 
