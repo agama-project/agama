@@ -104,7 +104,7 @@ export default function UnsupportedAutoYaST({
           {/* a single quote string ('foo\'s') so split it into several parts */}
           {_(
             'If you want to disable this check, please specify "inst.ay_check=0" at kernel' +
-            "'s command-line",
+              "'s command-line",
           )}
         </Content>
       </Stack>
