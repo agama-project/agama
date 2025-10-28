@@ -124,7 +124,8 @@ impl MessageHandler<message::GetSystem> for Service {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
-        Ok(SystemInfo { l10n })
+        let storage = self.storage.call(storage::message::GetSystem).await?;
+        Ok(SystemInfo { l10n, storage })
     }
 }
 
