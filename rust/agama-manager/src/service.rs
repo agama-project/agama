@@ -22,7 +22,8 @@ use crate::{l10n, message, storage};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
-        event, status::State, Action, Config, Event, IssueMap, Proposal, Scope, Status, SystemInfo,
+        self, event, status::State, Action, Config, Event, IssueMap, Proposal, Scope, Status,
+        SystemInfo,
     },
     issue, progress, question,
 };
@@ -99,6 +100,17 @@ impl Service {
             .await?;
         self.state = State::Finished;
         self.events.send(Event::StateChanged)?;
+        Ok(())
+    }
+
+    async fn configure_l10n(&self, config: api::l10n::SystemConfig) -> Result<(), Error> {
+        self.l10n
+            .call(l10n::message::SetSystem::new(config.clone()))
+            .await?;
+        if let Some(locale) = config.locale {
+            self.storage
+                .cast(storage::message::SetLocale::new(locale.as_str()))?;
+        }
         Ok(())
     }
 }
@@ -217,8 +229,7 @@ impl MessageHandler<message::RunAction> for Service {
     async fn handle(&mut self, message: message::RunAction) -> Result<(), Error> {
         match message.action {
             Action::ConfigureL10n(config) => {
-                let l10n_message = l10n::message::SetSystem::new(config);
-                self.l10n.call(l10n_message).await?;
+                self.configure_l10n(config).await?;
             }
             Action::Install => {
                 self.install().await?;
